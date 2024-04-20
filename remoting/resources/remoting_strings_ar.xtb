@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">تعذّر فتح <ph name="URL" /> على الجهاز العميل.</translation>
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2366718077645204424">يتعذر الوصول إلى المضيف. ربما يرجع ذلك إلى إعداد الشبكة التي تستخدمها.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  شوهد متصلاً آخر مرة <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">منح إذن "أدوات تمكين الوصول" إلى <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">متصل بـ <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">هل ترغب في مشاركة هذا الكمبيوتر مع مستخدم آخر للمشاهدة والتحكم؟</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">عملية التحكم عن بعد في مفتاح الأمان</translation>
 <translation id="3581045510967524389">تعذر الاتصال بالشبكة. يُرجى التحقق من اتصال الجهاز بالإنترنت.</translation>
 <translation id="3596628256176442606">‏تمكن هذه الخدمة الاتصالات الواردة من عملاء التوافق مع نظام التشغيل Chrome.</translation>
-<translation id="369442766917958684">بلا اتصال.</translation>
 <translation id="3695446226812920698">تعرَّف على كيفية إجراء ذلك</translation>
 <translation id="3776024066357219166">‏انتهت جلسة سطح المكتب البعيد من Chrome.</translation>
 <translation id="3858860766373142691">الاسم</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">رقم التعريف الشخصي</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">تتم مشاركة سطح المكتب حاليًا مع <ph name="USER" />.</translation>
-<translation id="5750083143895808682">تم تسجيل الدخول باسم <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">إعادة الاتصال</translation>
 <translation id="5810269635982033450">تعمل الشاشة كلوحة تتبع</translation>
 <translation id="5823554426827907568">طلب <ph name="CLIENT_USERNAME" /> إذنًا بالوصول إلى جهاز الكمبيوتر الخاص بك للاطّلاع على شاشة جهازك والتحكّم بلوحة المفاتيح والماوس. انقر على "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" إذا لم تكن تتوقّع هذا الطلب. ويمكنك النقر على "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" للسماح بهذا الاتصال في حال كنت مستعدًا.</translation>

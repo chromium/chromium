@@ -1437,7 +1437,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3714633008798122362">veb kalendar</translation>
 <translation id="3714780639079136834">da uključite podatke za mobilne uređaje ili WiFi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Otpremanje fajla je blokirano}one{Otpremanje <ph name="FILE_COUNT" /> fajla je blokirano}few{Otpremanje <ph name="FILE_COUNT" /> fajla je blokirano}other{Otpremanje <ph name="FILE_COUNT" /> fajlova je blokirano}}</translation>
-<translation id="3715545959749027023">Kada Chrome obeleži bezbednosne događaje, relevantni podaci o događajima se šalju administratoru. To može da obuhvata URL-ove stranica koje posećujete u Chrome-u, nazive ili metapodatke fajlova, otkazivanja pregledača ili kartica i korisničko ime koje koristite za prijavljivanje u aplikacije na vebu, na uređaj i u Chrome.</translation>
 <translation id="3715597595485130451">Povezivanje sa WiFi mrežom</translation>
 <translation id="3716622997181469465">zaključavanje tastature</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />da proverite konfiguraciju proksija, zaštitnog zida i DNS-a<ph name="END_LINK" /></translation>

@@ -28,7 +28,6 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="2329392777730037872">Hindi nabuksan ang <ph name="URL" /> sa client.</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2366718077645204424">Hindi maabot ang host. Malamang na dahil ito sa configuration ng network na iyong ginagamit.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Huling nakitang naka-online noong <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Magbigay ng pahintulot sa 'Accessibility' sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Nakakonekta sa <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Gusto mo bang ibahagi ang computer na ito upang makita at makontrol ng ibang user?</translation>
@@ -53,7 +52,6 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="3423542133075182604">Proseso ng Pagre-remote sa Security Key</translation>
 <translation id="3581045510967524389">Hindi makakonekta sa network. Pakitiyak na on-line ang iyong device.</translation>
 <translation id="3596628256176442606">Ini-enable ng serbisyong ito ang mga papasok na koneksyon mula sa mga client ng Chromoting.</translation>
-<translation id="369442766917958684">Naka-offline.</translation>
 <translation id="3695446226812920698">Alamin kung paano</translation>
 <translation id="3776024066357219166">Natapos na ang iyong session sa Remote na Desktop ng Chrome.</translation>
 <translation id="3858860766373142691">Pangalan</translation>
@@ -105,7 +103,6 @@ Kung mayroon nang check ang '<ph name="SERVICE_SCRIPT_NAME" />,' i-uncheck ito a
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Kasalukuyang nakabahagi ang iyong desktop kay <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Naka-sign in bilang <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Muling kumonekta</translation>
 <translation id="5810269635982033450">Gumagana ang screen tulad ng trackpad</translation>
 <translation id="5823554426827907568">Humiling si <ph name="CLIENT_USERNAME" /> ng access para makita ang iyong screen at kontrolin ang keyboard at mouse mo. Pindutin ang ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' kung hindi mo inaasahan ang kahilingang ito. Kung hindi, piliin ang ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' para payagan ang koneksyon kapag handa na ito.</translation>

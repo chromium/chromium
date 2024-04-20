@@ -28,7 +28,6 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="2329392777730037872">Falha ao abrir <ph name="URL" /> no cliente.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2366718077645204424">Não é possível acessar o host. Isso se deve, provavelmente, à configuração da rede que você está usando.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Visto on-line pela última vez <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Conceder a permissão "Acessibilidade" para o <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Conectado a <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Gostaria de compartilhar este computador para que outro usuário o veja e controle?</translation>
@@ -53,7 +52,6 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="3423542133075182604">Processo remoto de Chave de segurança</translation>
 <translation id="3581045510967524389">Não foi possível conectar à rede. Verifique se seu dispositivo está on-line.</translation>
 <translation id="3596628256176442606">Este serviço permite conexões de entrada a partir de clientes do Chromoting.</translation>
-<translation id="369442766917958684">Off-line.</translation>
 <translation id="3695446226812920698">Saiba como</translation>
 <translation id="3776024066357219166">Sua sessão na Área de trabalho remota do Google Chrome foi encerrada.</translation>
 <translation id="3858860766373142691">Nome</translation>
@@ -105,7 +103,6 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Seu computador está sendo compartilhado com <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Conectado como <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Reconectar</translation>
 <translation id="5810269635982033450">A tela atua como um trackpad</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> solicitou acesso para ver sua tela e controlar seu teclado e mouse. Se você não esperava essa solicitação, pressione "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />". Se estiver tudo certo, pressione "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" para permitir a conexão.</translation>

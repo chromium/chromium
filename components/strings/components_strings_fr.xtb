@@ -1437,7 +1437,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3714633008798122362">Agenda sur le Web</translation>
 <translation id="3714780639079136834">Activez les données mobiles ou le réseau Wi-Fi.</translation>
 <translation id="3715016660240337709">{0,plural, =1{Importation bloquée pour le fichier}one{Importation bloquée pour <ph name="FILE_COUNT" /> fichier}other{Importation bloquée pour <ph name="FILE_COUNT" /> fichiers}}</translation>
-<translation id="3715545959749027023">Lorsque Chrome signale des événements liés à la sécurité, votre administrateur reçoit des données sur ces événements (URL des pages que vous consultez dans Chrome, métadonnées ou noms des fichiers, plantage du navigateur ou d'un onglet, nom d'utilisateur avec lequel vous vous connectez à des applis Web, à votre appareil et à Chrome, etc.).</translation>
 <translation id="3715597595485130451">Connexion au réseau Wi-Fi</translation>
 <translation id="3716622997181469465">verrouillage du clavier</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Vérifier les configurations du proxy, du pare-feu et du DNS<ph name="END_LINK" /></translation>
@@ -2109,6 +2108,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5040262127954254034">Confidentialité</translation>
 <translation id="5043480802608081735">Lien copié</translation>
 <translation id="5045550434625856497">Mot de passe incorrect</translation>
+<translation id="5048293684454354469">Les thèmes des annonces ne sont que l'une des nombreuses options qu'un site peut utiliser pour personnaliser les annonces. Même sans ces thèmes, les sites peuvent toujours vous présenter des annonces, lesquelles pourraient toutefois être moins intéressantes. Découvrez comment <ph name="BEGIN_LINK" />gérer la confidentialité des annonces<ph name="LINK_END" />.</translation>
 <translation id="5052517576853118371">Thèmes actifs</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Pour partager ce fichier à proximité, libérez de l'espace (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}one{Pour partager ce fichier à proximité, libérez de l'espace (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}other{Pour partager ces fichiers à proximité, libérez de l'espace (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}}</translation>
 <translation id="505757197798929356">Indiquez le motif de l'ouverture (obligatoire)</translation>
@@ -2327,6 +2327,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
     <ph name="LINE_BREAK" />
     Essayez de contacter votre administrateur système.</translation>
 <translation id="549333378215107354">Taille 3</translation>
+<translation id="5496804587179176046">Enregistrer les codes de sécurité (aucun code de sécurité actuellement enregistré)</translation>
 <translation id="550365051221576010">Tout indiquer</translation>
 <translation id="5508443345185481044">Appareils photo et caméscopes</translation>
 <translation id="5509762909502811065">B0</translation>

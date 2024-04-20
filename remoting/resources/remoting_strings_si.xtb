@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">සේවාලාභියා මත <ph name="URL" /> විවෘත කිරීම අසාර්ථක විය.</translation>
 <translation id="2359808026110333948">කරගෙන යන්න</translation>
 <translation id="2366718077645204424">අනුග්‍රාහක වෙත ළඟා විය නොහැකි විය. මීට හේතු විය හැක්කේ ඔබ භාවිතා කරන ජාලයේ වින්‍යාසකරණය වේ.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  අවසන් වරට සබැඳිව දැක්කේ <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> ට 'ප්‍රවේශ්‍යතා' අවසර දෙන්න</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> වෙත සම්බන්ධ විය</translation>
 <translation id="2540992418118313681">මෙම පරිගණකය බැලීමට හා පාලනයට වෙනත් පරිශීලකයකු හා බෙදාගැනීමට කැමතිද?</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">ආරක්ෂිත යතුරු දුරස්ථකරණ ක්‍රියාවලිය</translation>
 <translation id="3581045510967524389">ජාලය වෙත සම්බන්ධ කළ නොහැකි විය. උපාංගය ඔන්ලයින් තිබේදැයි පරීක්ෂා කරන්න.</translation>
 <translation id="3596628256176442606">මෙම සේවාව Chromoting සේවාලාභීන් වෙතින් ලැබෙන සබඳතා සක්‍රීය කරයි.</translation>
-<translation id="369442766917958684">නොබැඳි</translation>
 <translation id="3695446226812920698">කෙසේදැයි දැන ගන්න</translation>
 <translation id="3776024066357219166">ඔබේ  Chrome දුරස්ථ වැඩබිම් වාරය අවසන් විය.</translation>
 <translation id="3858860766373142691">නම</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">ඔබේ වැඩබිම දැනට <ph name="USER" /> සමඟ බෙදාගෙන ඇත.</translation>
-<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> ලෙස පුරනය වී ඇත.</translation>
 <translation id="579702532610384533">නැවත සම්බන්ධ කරන්න</translation>
 <translation id="5810269635982033450">තිරය ​​ට්‍රැක්පැඩයක් මෙන් ක්‍රියා කරයි</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ඔබගේ තිරය දැකීමට සහ ඔබගේ යතුරුපුවරුව සහ මූසිකය පාලනය කිරීමට ප්‍රවේශය ඉල්ලා ඇත. ඔබ මෙම ඉල්ලීම බලාපොරොත්තු නොවන්නේ නම් ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ඔබන්න. එසේ නැතිනම් සූදානම් විට සම්බන්ධතාව ඉඩ දීමට ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' තෝරන්න.</translation>

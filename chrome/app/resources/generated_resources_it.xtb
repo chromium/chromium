@@ -1418,7 +1418,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2042279886444479655">Profili attivi</translation>
 <translation id="2044014337866019681">Per sbloccare la sessione devi assicurarti di verificare l'account <ph name="ACCOUNT" />.</translation>
 <translation id="204497730941176055">Nome modello di certificato Microsoft</translation>
-<translation id="2045117674524495717">Guida alle scorciatoie da tastiera</translation>
 <translation id="2045211794962848221">Non vedrai più questo messaggio specifico</translation>
 <translation id="2045838962742066664">Digitazione in forma breve</translation>
 <translation id="204622017488417136">Sul dispositivo verrà ripristinata la versione di Chrome installata precedentemente. Tutti gli account utente e i dati locali verranno rimossi. L'operazione non può essere annullata.</translation>
@@ -6663,12 +6662,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6082877069782862752">Mappatura dei tasti</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - Parte di un gruppo senza nome</translation>
 <translation id="6086004606538989567">L'account che hai verificato non è autorizzato ad accedere a questo dispositivo.</translation>
-<translation id="6086366524552602071">Puoi personalizzare Chrome come preferisci:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Il meglio di Google&lt;/em&gt;, per chiunque lo desideri. Ad esempio, puoi scegliere la Ricerca Google come motore di ricerca predefinito di Chrome e usare il Gestore delle password di Google per recuperare tutte le tue password su qualsiasi dispositivo. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Scelta significativa&lt;/em&gt;: Chrome ti offre scelta e controllo tramite impostazioni e informazioni per aiutarti a prendere decisioni importanti.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Estensioni&lt;/em&gt;: puoi estendere la funzionalità di Chrome con oltre 100.000 estensioni nel Chrome Web Store.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Installata dall'amministratore</translation>
 <translation id="6087746524533454243">Stai cercando la pagina delle informazioni sul browser? Visita la pagina</translation>
 <translation id="6087960857463881712">Faccina splendente</translation>

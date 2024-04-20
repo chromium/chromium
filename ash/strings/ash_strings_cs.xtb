@@ -129,6 +129,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1420408895951708260">Zapnout nebo vypnout noční režim. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Ano</translation>
 <translation id="1435537621343861112">Diktování nelze spustit. Máte vypnutý mikrofon.</translation>
+<translation id="1448963928642384376">Hotspoty vašich zařízení</translation>
 <translation id="1455242230282523554">Zobrazit jazykové nastavení</translation>
 <translation id="1460620680449458626">Zvuk je vypnutý.</translation>
 <translation id="14648076227129703">Umožňuje přístup k fotoaparátu aplikacím <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> a všem aplikacím a webům s příslušným oprávněním</translation>
@@ -161,6 +162,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1569384531973824928">Tímto povolíte přístup všem aplikacím a webům, které mají oprávnění používat kameru a mikrofon. Možná budete muset obnovit webovou stránku nebo restartovat aplikaci.</translation>
 <translation id="1571697193564730395">Přepnout možnost Nerušit. <ph name="STATE_TEXT" /></translation>
 <translation id="1576623706766186887">Oddálit, když je zapnutá lupa</translation>
+<translation id="1582946770779745370">Je k dispozici Herní panel. Můžete ho kdykoli otevřít stisknutím kláves <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape a poté <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1586324912145647027">Přejděte na plochu 1 až 8</translation>
 <translation id="158838227375272121">Web Učebny Google</translation>
 <translation id="1589090746204042747">Získat přístup k veškeré vaší aktivitě v této relaci</translation>

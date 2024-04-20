@@ -1435,7 +1435,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3714633008798122362">internetes naptár</translation>
 <translation id="3714780639079136834">A mobiladatok vagy a Wi-Fi bekapcsolása</translation>
 <translation id="3715016660240337709">{0,plural, =1{A fájl feltöltése le van tiltva}other{<ph name="FILE_COUNT" /> fájl feltöltése le van tiltva}}</translation>
-<translation id="3715545959749027023">Amikor a Chrome biztonsági eseményeket észlel, a böngésző elküldi az eseménnyel kapcsolatos releváns adatokat a rendszergazdának. Az ilyen adatok közé tartozhatnak a Chrome-ban felkeresett oldalak URL-jei, a fájlnevek és metaadatok, a böngésző vagy a lapok összeomlásai, valamint a webalapú alkalmazásokba, az eszközre és a Chrome-ba való bejelentkezéshez használt felhasználónév.</translation>
 <translation id="3715597595485130451">Csatlakozás Wi-Fi-hálózathoz</translation>
 <translation id="3716622997181469465">billentyűzetzárolás</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />A proxy, a tűzfal és a DNS-konfiguráció ellenőrzése<ph name="END_LINK" /></translation>

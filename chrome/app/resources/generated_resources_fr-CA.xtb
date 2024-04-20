@@ -1419,7 +1419,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2042279886444479655">Profils actifs</translation>
 <translation id="2044014337866019681">Assurez-vous de vérifier <ph name="ACCOUNT" /> pour déverrouiller la session.</translation>
 <translation id="204497730941176055">Nom du modèle de certificat Microsoft</translation>
-<translation id="2045117674524495717">Aide des raccourcis-clavier</translation>
 <translation id="2045211794962848221">Vous ne verrez plus ce message</translation>
 <translation id="2045838962742066664">Saisie abrégée</translation>
 <translation id="204622017488417136">Votre appareil reviendra à la version précédemment installée de Chrome. La totalité des comptes d'utilisateur et des données locales sera supprimée. Cette opération est définitive.</translation>
@@ -6670,12 +6669,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6082877069782862752">Affectation des touches</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> : fait partie d'un groupe sans nom</translation>
 <translation id="6086004606538989567">Le compte que vous avez vérifié n'est pas autorisé à accéder à cet appareil.</translation>
-<translation id="6086366524552602071">Vous pouvez personnaliser Chrome comme vous le souhaitez :
-&lt;ul&gt;
-&lt;li&gt;&lt;em&gt;Le meilleur de Google&lt;/em&gt;, pour ceux qui le souhaitent. Par exemple, vous pouvez choisir Recherche Google comme moteur de recherche par défaut de Chrome et utiliser le gestionnaire de mots de passe Google pour obtenir tous vos mots de passe sur n'importe quel appareil. &lt;/li&gt;
-&lt;li&gt;&lt;em&gt;Choix judicieux :&lt;/em&gt; Chrome vous offre le choix et le contrôle avec des paramètres et des renseignements pour vous aider à prendre des décisions judicieuses.&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;Extensions :&lt;/em&gt; vous pouvez étendre les fonctionnalités de Chrome avec plus de 100 000 extensions offertes dans la boutique en ligne Chrome Web Store.&lt;/li&gt;
-&lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Élément installé par votre administrateur</translation>
 <translation id="6087746524533454243">Vous recherchez la page à propos du navigateur? Consultez</translation>
 <translation id="6087960857463881712">Superbe visage</translation>

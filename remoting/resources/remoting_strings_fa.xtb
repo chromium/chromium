@@ -28,7 +28,6 @@
 <translation id="2329392777730037872"><ph name="URL" /> در کارخواه باز نشد.</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2366718077645204424">دسترسی به میزبان امکان‌پذیر نیست. این احتمالاً به دلیل پیکربندی شبکه‌ای است که استفاده می‌کنید.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  آخرین حضور آنلاین <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">به <ph name="PRODUCT_NAME" /> مجوز «دسترس‌پذیری» اعطا کنید</translation>
 <translation id="2509394361235492552">متصل به <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">می‌خواهید این رایانه را برای کاربر دیگر جهت مشاهده و کنترل به اشتراک بگذارید؟</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">فرایند برقراری ارتباط ازراه‌دور کلید ایمنی</translation>
 <translation id="3581045510967524389">اتصال به شبکه انجام نشد. لطفاً بررسی کنید که دستگاه شما به اینترنت وصل باشد.</translation>
 <translation id="3596628256176442606">‏این سرویس اتصالات ورودی از کلاینت‌های کنترل دسک‌تاپ ازراه‌دور Chrome را فعال می‌کند.</translation>
-<translation id="369442766917958684">آفلاین.</translation>
 <translation id="3695446226812920698">با نحوه انجام کار آشنا شوید</translation>
 <translation id="3776024066357219166">‏جلسه "کنترل رایانه ازراه‌دور Chrome" تمام شد.</translation>
 <translation id="3858860766373142691">نام</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">پین</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">دسک‌تاپ شما در حال حاضر با <ph name="USER" /> به‌ اشتراک گذاشته شده است.</translation>
-<translation id="5750083143895808682">واردشده به سیستم به‌عنوان <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">اتصال مجدد</translation>
 <translation id="5810269635982033450">صفحه نمایش مانند ترک‌پد عمل می‌کند</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> درخواست دسترسی کرده تا صفحه‌تان را ببیند و صفحه‌کلید و موشواره‌تان را کنترل کند. اگر انتظار چنین درخواستی را ندارید، «<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />» را فشار دهید. درغیراین‌صورت، هر وقت آماده بودید «<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />» را انتخاب کنید تا اتصال مجاز شود.</translation>

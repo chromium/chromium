@@ -1417,7 +1417,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2042279886444479655">Faol profillar</translation>
 <translation id="2044014337866019681">Bu seansni qulfdan chiqarish uchun <ph name="ACCOUNT" /> hisobidan kiring.</translation>
 <translation id="204497730941176055">Microsoft sertifikati andozasi nomi</translation>
-<translation id="2045117674524495717">Tezkor tugmalar yordamchisi</translation>
 <translation id="2045211794962848221">Bu maxsus xabar boshqa chiqmaydi</translation>
 <translation id="2045838962742066664">Qisqartirilgan matn terish</translation>
 <translation id="204622017488417136">Qurilmangiz Chrome’ning avvalgi versiyasiga qaytariladi. Barcha foydalanuvchilar hisoblari va mahalliy ma’lumotlar o‘chib ketadi. Buni ortga qaytarib bo‘lmaydi.</translation>
@@ -6670,12 +6669,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6082877069782862752">Tugmalarning tayinlanishi</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – nomsiz guruhning qismi</translation>
 <translation id="6086004606538989567">Siz kirgan hisob bu qurilmadan foydalana olmaydi.</translation>
-<translation id="6086366524552602071">Chrome brauzerini xohlaganingizdek sozlashingiz mumkin:
-      &lt;ul&gt;
-        Barcha xohlovchilar uchun&lt;li&gt;&lt;em&gt;Googledan eng zoʻrlari&lt;/em&gt;. Masalan, Google Qidiruvni Chrome brauzerida standart qidiruv vositasi sifatida sozlashingiz va istalgan qurilmada parollaringizga kirish uchun Google Parollar menejeridan foydalanishingiz mumkin. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Kerakli tanlov&lt;/em&gt;: Chrome yordamida siz sozlamalaringizni boshqarishingiz va kerakli qarorlar qabul qilishingiz mumkin.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Kengaytmalar&lt;/em&gt;: Chrome Web Store doʻkonida brauzer uchun qoʻshimcha imkoniyatlarga ega 100 000 dan ortiq kengaytmalar mavjud.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Administratoringiz tomonidan o‘rnatilgan</translation>
 <translation id="6087746524533454243">Brauzer haqida sahifasini qidiryapsizmi? Bu sahifaga kiring</translation>
 <translation id="6087960857463881712">Hayratdagi yuz</translation>

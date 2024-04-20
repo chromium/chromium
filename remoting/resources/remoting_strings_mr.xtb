@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">क्लायंट वर <ph name="URL" /> उघडता आली नाही.</translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
 <translation id="2366718077645204424">होस्‍टवर पोहोचण्‍यात अक्षम. हे बहुदा तुम्ही वापरत असलेल्या नेटवर्कच्या कॉन्फिगरेशनमुळे झाले आहे.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> अंतिम ऑनलाइन पाहिले <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">'<ph name="PRODUCT_NAME" />' ला ॲक्सेसिबिलिटी' ची परवानगी द्या</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> शी कनेक्ट केले</translation>
 <translation id="2540992418118313681">तुम्ही हा कॉंप्युटर दुसर्‍या वापरकर्त्याकरिता पाहण्यासाठी आणि नियंत्रित करण्यासाठी शेअर करू इच्छिता?</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">सुरक्षा की रिमोट करणे प्रक्रिया</translation>
 <translation id="3581045510967524389">नेटवर्कला कनेक्ट करू शकलो नाही. कृपया तुमचे डिव्हाइस ऑन-लाइन असल्याचे तपासा.</translation>
 <translation id="3596628256176442606">ही सेवा Chromoting क्लायंटकडील येणारी कनेक्शन सक्षम करते.</translation>
-<translation id="369442766917958684">ऑफलाइन.</translation>
 <translation id="3695446226812920698">कसे ते जाणून घ्या</translation>
 <translation id="3776024066357219166">तुमचे Chrome रिमोट डेस्कटॉप सेशन समाप्त झाले आहे.</translation>
 <translation id="3858860766373142691">नाव</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">पिन</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">तुमचा डेस्कटॉप सध्या <ph name="USER" /> सह शेअर केला आहे.</translation>
-<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> म्हणून साइन इन केले.</translation>
 <translation id="579702532610384533">रीकनेक्ट करा</translation>
 <translation id="5810269635982033450">स्क्रीन ट्रॅकपॅडसारखी काम करत आहे</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ने तुमची स्क्रीन पाहण्यासाठी आणि तुमचा कीबोर्ड व माउस नियंत्रित करण्यासाठी ॲक्सेसची विनंती केली आहे. तुम्हाला ही विनंती अपेक्षित नसल्यास, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' प्रेस करा. अन्यथा तयार असाल तेव्हा, कनेक्शनची अनुमती देण्यासाठी ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' निवडा.</translation>

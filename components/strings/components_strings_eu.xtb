@@ -1433,7 +1433,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3714633008798122362">web-egutegia</translation>
 <translation id="3714780639079136834">Datu-konexioa edo wifi-konexioa gaitu.</translation>
 <translation id="3715016660240337709">{0,plural, =1{Fitxategia ezin da kargatu}other{<ph name="FILE_COUNT" /> fitxategi ezin dira kargatu}}</translation>
-<translation id="3715545959749027023">Chrome-k segurtasun-gertaeren berri ematen badu, gertaerei buruzko datu garrantzitsuak bidaliko zaizkio administratzaileari. Datu horien artean baliteke hauek agertzea: Chrome-n bisitatzen dituzun orrien URLak, fitxategien izenak edo metadatuak, arakatzailearen edo fitxen hutsegiteak eta gailuan, sareko aplikazioetan nahiz Chrome-n saioa hasteko erabiltzen duzun erabiltzaile-izena.</translation>
 <translation id="3715597595485130451">Konektatu wifi-sarera</translation>
 <translation id="3716622997181469465">teklatuaren blokeoa</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Proxya, suebakia eta DNS konfigurazioa egiaztatu<ph name="END_LINK" />.</translation>
@@ -2943,6 +2942,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" tekla zure gailua Google-ko kontuan bilatzeko</translation>
 <translation id="6695428916538794739">Ekintza- eta abentura-filmak</translation>
 <translation id="6696424331653607346">Bidaia-gidak eta bidaia-dokumentalak</translation>
+<translation id="6698097747703777657">Ez duzu jaso kodea? <ph name="BEGIN_LINK" />Lortu beste kode bat<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Sortze-data:</translation>
 <translation id="67007264085648978">Denboraren garapen-adierazlea</translation>
 <translation id="6702851555558236418">Audio- eta musika-softwarea</translation>

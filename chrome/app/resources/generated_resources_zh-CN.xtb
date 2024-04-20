@@ -1411,7 +1411,6 @@
 <translation id="2042279886444479655">使用中的配置文件</translation>
 <translation id="2044014337866019681">请确保您验证的账号是 <ph name="ACCOUNT" /> 以解锁会话。</translation>
 <translation id="204497730941176055">Microsoft 证书模板名称</translation>
-<translation id="2045117674524495717">键盘快捷键助手</translation>
 <translation id="2045211794962848221">系统不会再显示这条特定消息</translation>
 <translation id="2045838962742066664">简略输入</translation>
 <translation id="204622017488417136">您的设备将还原到之前安装的 Chrome 版本。所有用户账号和本地数据都将移除。此操作无法撤消。</translation>
@@ -6655,12 +6654,6 @@
 <translation id="6082877069782862752">按键映射</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 属于未命名群组</translation>
 <translation id="6086004606538989567">您已验证的账号无权访问此设备。</translation>
-<translation id="6086366524552602071">您可以按照自己喜欢的方式自定义 Chrome：
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;&lt;/em&gt;Google 的精华应用，专为需要的用户打造。例如，您可选择 Google 搜索作为 Chrome 的默认搜索引擎，并在任何设备上使用 Google 密码管理工具获取所有密码。&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;&lt;/em&gt;根据需要做出选择：Chrome 通过设置为您提供选择权和控制权，并提供相关信息来帮助您做出符合需求的决定。&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;&lt;/em&gt;扩展程序：Chrome 应用商店中提供超过 10 万个扩展程序，您可以利用这些扩展程序完善 Chrome 功能。&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">这是您的管理员安装的</translation>
 <translation id="6087746524533454243">想要查看浏览器简介页面？请访问</translation>
 <translation id="6087960857463881712">酷炫表情</translation>

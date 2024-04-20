@@ -1437,7 +1437,6 @@
 <translation id="3714633008798122362">웹 캘린더</translation>
 <translation id="3714780639079136834">모바일 데이터 또는 Wi-Fi 사용 설정</translation>
 <translation id="3715016660240337709">{0,plural, =1{파일 업로드 차단됨}other{파일 <ph name="FILE_COUNT" />개 업로드 차단됨}}</translation>
-<translation id="3715545959749027023">Chrome에서 보안 관련 활동을 신고한 경우 활동에 관한 데이터가 관리자에게 전송됩니다. 여기에는 Chrome에서 방문한 페이지 URL, 파일 이름 또는 메타데이터, 브라우저 또는 탭 비정상 종료와 더불어 웹 기반 애플리케이션, 기기, Chrome에 로그인할 때 사용한 사용자 이름이 포함될 수 있습니다.</translation>
 <translation id="3715597595485130451">Wi-Fi 연결</translation>
 <translation id="3716622997181469465">키보드 잠금</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />프록시, 방화벽, DNS 설정 확인<ph name="END_LINK" /></translation>

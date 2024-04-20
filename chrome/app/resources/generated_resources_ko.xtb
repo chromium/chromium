@@ -1431,7 +1431,6 @@
 <translation id="2042279886444479655">활성화된 프로필</translation>
 <translation id="2044014337866019681">세션을 잠금 해제하려면 <ph name="ACCOUNT" /> 계정을 인증하세요.</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
-<translation id="2045117674524495717">단축키 도움말</translation>
 <translation id="2045211794962848221">이 메시지가 다시 표시되지 않습니다.</translation>
 <translation id="2045838962742066664">약식 입력</translation>
 <translation id="204622017488417136">기기가 이전에 설치된 버전의 Chrome으로 돌아갑니다. 사용자 계정과 로컬 데이터가 모두 삭제됩니다. 이 작업은 취소할 수 없습니다.</translation>
@@ -6683,12 +6682,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6082877069782862752">키 매핑</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 이름이 지정되지 않은 그룹에 속함</translation>
 <translation id="6086004606538989567">인증한 계정은 이 기기에 액세스할 권한이 없습니다.</translation>
-<translation id="6086366524552602071">원하는 대로 Chrome을 맞춤설정할 수 있습니다.
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;최고의 Google 기능을&lt;/em&gt; 원하는 사용자가 이용할 수 있습니다. 예를 들어 Google 검색을 Chrome의 기본 검색엔진으로 선택하고 Google 비밀번호 관리자를 사용하여 어느 기기에서나 모든 비밀번호를 가져올 수 있습니다. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;의미 있는 선택&lt;/em&gt;: Chrome은 설정을 통해 선택권과 제어 기능을 제공하며 사용자가 의미 있는 결정을 내리는 데 도움이 되는 정보도 제공합니다.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;확장 프로그램&lt;/em&gt;: Chrome 웹 스토어에 있는 100,000개 이상의 확장 프로그램으로 Chrome 기능을 확장할 수 있습니다.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">관리자가 설치함</translation>
 <translation id="6087746524533454243">브라우저의 정보 페이지를 찾는다면 다음으로 이동하세요.</translation>
 <translation id="6087960857463881712">멋진 얼굴</translation>

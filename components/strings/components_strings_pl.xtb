@@ -1437,7 +1437,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3714633008798122362">kalendarz sieciowy</translation>
 <translation id="3714780639079136834">Włącz komórkową transmisję danych lub Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Przesyłanie pliku zostało zablokowane}few{Przesyłanie <ph name="FILE_COUNT" /> plików zostało zablokowane}many{Przesyłanie <ph name="FILE_COUNT" /> plików zostało zablokowane}other{Przesyłanie <ph name="FILE_COUNT" /> pliku zostało zablokowane}}</translation>
-<translation id="3715545959749027023">Gdy Chrome oznacza zdarzenia związane z bezpieczeństwem, odpowiednie dane o nich są wysyłane do administratora. Mogą one obejmować adresy URL stron odwiedzanych w Chrome, nazwy plików lub metadane, awarie przeglądarki lub kart oraz nazwę użytkownika, pod którą logujesz się w aplikacjach internetowych, na danym urządzeniu i w Chrome.</translation>
 <translation id="3715597595485130451">Połączenie z siecią Wi-Fi</translation>
 <translation id="3716622997181469465">blokada klawiatury</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Sprawdź serwer proxy, zaporę sieciową i konfigurację DNS<ph name="END_LINK" /></translation>

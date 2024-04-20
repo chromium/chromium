@@ -1420,7 +1420,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2042279886444479655">Aktivni profili</translation>
 <translation id="2044014337866019681">Provjerite potvrđujete li račun <ph name="ACCOUNT" /> da biste otključali sesiju.</translation>
 <translation id="204497730941176055">Naziv predloška Microsoftovog certifikata</translation>
-<translation id="2045117674524495717">Pomoć za tipkovničke prečace</translation>
 <translation id="2045211794962848221">Više vam se neće prikazivati ta određena poruka</translation>
 <translation id="2045838962742066664">Stenografsko tipkanje</translation>
 <translation id="204622017488417136">Uređaj će se vratiti na prethodno instaliranu verziju Chromea, a svi korisnički računi i lokalni podaci bit će uklonjeni. Tu radnju nije moguće poništiti.</translation>
@@ -6667,12 +6666,6 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6082877069782862752">Mapiranje tipki</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – dio neimenovane grupe</translation>
 <translation id="6086004606538989567">Račun koji ste potvrdili nije ovlašten pristupiti ovom uređaju.</translation>
-<translation id="6086366524552602071">Prilagodite Chrome kako želite:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Najbolje od Googlea&lt;/em&gt;, za one koji ga žele. Na primjer, možete odabrati Google pretraživanje kao Chromeovu zadanu tražilicu i upotrebljavati Google upravitelj zaporki kako biste pristupali svim svojim zaporkama na bilo kojem uređaju. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Smislen odabir&lt;/em&gt;: Chrome vam nudi mogućnost izbora i kontrolu pomoću postavki, kao i informacija koje vam pomažu pri donošenju smislenih odluka.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Proširenja&lt;/em&gt;: funkcije Chromea možete nadopuniti s više od 100.000 proširenja dostupnih u Chrome web-trgovini.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Instalirao vaš administrator</translation>
 <translation id="6087746524533454243">Tražite li stranicu s informacijama o pregledniku? Otvorite</translation>
 <translation id="6087960857463881712">Oduševljeno lice</translation>

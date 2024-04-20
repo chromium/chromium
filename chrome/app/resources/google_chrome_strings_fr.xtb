@@ -249,6 +249,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4793679854893018356">Découvrir comment Chrome vous protège</translation>
 <translation id="4828579605166583682">Google Chrome tente de remplacer les mots de passe existants. Saisissez votre mot de passe Windows pour autoriser l'opération.</translation>
 <translation id="4842397268809523050">ChromeOS Flex n'a pas pu synchroniser vos données, car la synchronisation n'est pas disponible pour votre domaine.</translation>
+<translation id="4862446263930606916">Votre organisation peut voir et gérer les données de navigation de votre profil professionnel, telles que vos favoris, votre historique et vos mots de passe. En revanche, elle ne peut pas voir les données de navigation de profils Chrome personnels.</translation>
 <translation id="4873692836499071887">Vous devez disposer de macOS 11 ou d'une version ultérieure pour recevoir les futures mises à jour de Google Chrome. macOS 10.15 est installé sur cet ordinateur.</translation>
 <translation id="4873783916118289636">Examinez les paramètres clés de confidentialité et de sécurité dans Chrome</translation>
 <translation id="4891791193823137474">Laisser Google Chrome s'exécuter en arrière-plan</translation>
@@ -497,6 +498,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="8989968390305463310">Votre historique de navigation influe sur les annonces que vous voyez et les centres d'intérêt estimés ci-dessous. Pour protéger votre confidentialité, Chrome supprime automatiquement vos centres d'intérêt tous les mois. Les centres d'intérêt peuvent s'actualiser, sauf si vous les supprimez.</translation>
 <translation id="8999117580775242387">Lorsque HTTPS n'est pas disponible, Chrome utilise une connexion non sécurisée sans vous avertir</translation>
 <translation id="8999208279178790196">{0,plural, =0{Une mise à jour de Chrome est disponible}=1{Une mise à jour de Chrome est disponible}one{Une mise à jour de Chrome est disponible depuis # jour}other{Une mise à jour de Chrome est disponible depuis # jours}}</translation>
+<translation id="9024318700713112071">Définir Chrome comme navigateur par défaut</translation>
 <translation id="9053892488859122171">Système ChromeOS Flex</translation>
 <translation id="9090566250983691233">Découvrez pourquoi Chrome bloque certains fichiers</translation>
 <translation id="911206726377975832">Supprimer également vos données de navigation ?</translation>

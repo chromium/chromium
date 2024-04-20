@@ -1435,7 +1435,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2042279886444479655">Mga aktibong profile</translation>
 <translation id="2044014337866019681">Tiyaking ang <ph name="ACCOUNT" /> ang vine-verify mo para ma-unlock ang session.</translation>
 <translation id="204497730941176055">Pangalan ng Template ng Certificate sa Microsoft</translation>
-<translation id="2045117674524495717">Keyboard Shortcut Helper</translation>
 <translation id="2045211794962848221">Hindi mo na makikita ulit ang partikular na mensaheng ito</translation>
 <translation id="2045838962742066664">Shorthand typing</translation>
 <translation id="204622017488417136">Ibabalik ang iyong device sa dating naka-install na bersyon ng Chrome. Aalisin ang lahat ng user account at lokal na data. Hindi na ito maaaring bawiin.</translation>
@@ -2933,7 +2932,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3157387275655328056">Idagdag sa Listahan ng Babasahin</translation>
 <translation id="3157931365184549694">Ipanumbalik</translation>
 <translation id="3158033540161634471">I-set up ang iyong fingerprint</translation>
-<translation id="3158358739412246752">&lt;em&gt;Kung minsan, gumagamit ang mga site ng cookies sa mga paraang hindi unang inilaan para sa mga ito&lt;/em&gt;, kaya naman pinaplano ng Chrome na alisin na ang paggamit ng “third-party” na cookies kapag natugunan na namin ang anumang natitirang alalahanin sa kumpetisyon ng <ph name="BEGIN_LINK" />Competition and Markets Authority (CMA) ng U.K.<ph name="END_LINK" />.</translation>
 <translation id="3158770568048368350">Posibleng maging dahilan ito panandaliang pagdiskonekta ng iyong mobile network</translation>
 <translation id="3159493096109238499">Beige</translation>
 <translation id="3159978855457658359">I-edit ang pangalan ng device</translation>
@@ -6726,12 +6724,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="6082877069782862752">Pagmamapa ng key</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - Bahagi ng grupong walang pangalan</translation>
 <translation id="6086004606538989567">Hindi awtorisadong i-access ng account na na-verify mo ang device na ito.</translation>
-<translation id="6086366524552602071">Puwede mong i-customize ang Chrome sa paraang gusto mo:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Ang pinkamahusay ng Google&lt;/em&gt;, para sa mga may gusto nito. Halimbawa, puwede mong piliin ang Google Search bilang default na search engine ng Chrome at gamitin ang Google Password Manager para makuha ang lahat ng iyong password sa anumang device. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Makabuluhang pasya&lt;/em&gt;: Nag-aalok sa iyo ang Chrome ng opsyon at kontrol sa pamamagitan ng mga setting, at ng impormasyong tutulong sa iyong gumawa ng mga makabuluhang pasya.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Mga extension&lt;/em&gt;: Puwede mong palawakin ang functionality ng Chrome sa pamamagitan ng mahigit 100,000 extension sa Chrome Web Store.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Na-install ng iyong administrator</translation>
 <translation id="6087746524533454243">Hinahanap ang page na tungkol sa browser? Bisitahin ang</translation>
 <translation id="6087960857463881712">Astig na mukha</translation>
@@ -8335,7 +8327,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7348920948593871738">Naka-off ang camera sa Mga Setting ng System ng Mac</translation>
 <translation id="7349010927677336670">Pagka-smooth ng Video</translation>
 <translation id="7350327333026851413">{COUNT,plural, =1{May {COUNT} password na naka-save lang device na ito}one{May {COUNT} password na naka-save lang sa device na ito}other{May {COUNT} na password na naka-save lang sa device na ito}}</translation>
-<translation id="7351772668400411728">Mapapaganda ng cookies ang online na experience mo, dahil binibigyang-daan nito ang mga site na makapag-alok sa iyo ng mga kapaki-pakinabang na feature.</translation>
 <translation id="7352651011704765696">Nagkaroon ng problema</translation>
 <translation id="7352664183151911163">Sa lahat ng iyong app at Chrome browser</translation>
 <translation id="7353261921908507769">Makakapagbahagi sa iyo ang mga contact mo kapag malapit sila. Hindi magsisimula ang mga paglilipat hangga't hindi mo tinatanggap ang mga ito.</translation>

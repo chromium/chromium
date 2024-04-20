@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">Չհաջողվեց բացել <ph name="URL" /> հղումը սպասառու սարքում։</translation>
 <translation id="2359808026110333948">Շարունակել</translation>
 <translation id="2366718077645204424">Հնարավոր չէ կապ հաստատել խնամորդի հետ: Հավանաբար, սա ձեր ցանցի կազմաձևումների պատճառով է:</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Վերջին անգամ առցանց է եղել <ph name="RELATIVE_TIMESTAMP" />:</translation>
 <translation id="2504109125669302160">Տրամադրեք հատուկ գործառույթների թույլտվություն <ph name="PRODUCT_NAME" />ին</translation>
 <translation id="2509394361235492552">Միացած է <ph name="HOSTNAME" /> խնամորդին</translation>
 <translation id="2540992418118313681">Ցանկանո՞ւմ եք համօգտագործել այս համակարգիչը մեկ այլ օգտատիրոջ հետ:</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">Անվտանգության բանալու հեռակա հասանելիություն</translation>
 <translation id="3581045510967524389">Չհաջողվեց կապակցվել ցանցին: Համոզվեք, որ ձեր սարքն առցանց է:</translation>
 <translation id="3596628256176442606">Այս ծառայությունը միացնում է մուտքային կապակցումները Chromoting-ի սպասառուներից:</translation>
-<translation id="369442766917958684">Անցանց է:</translation>
 <translation id="3695446226812920698">Իմանալ ինչպես</translation>
 <translation id="3776024066357219166">Chrome Հեռակա աշխատասեղանի աշխատաշրջանն ավարտվել է:</translation>
 <translation id="3858860766373142691">Անուն</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Ձեր աշխատասեղանն այս պահին համօգտագործվում է <ph name="USER" />-ի հետ:</translation>
-<translation id="5750083143895808682">Դուք մուտք եք գործել <ph name="EMAIL_ADDRESS" /> հաշիվ:</translation>
 <translation id="579702532610384533">Նորից կապակցվել</translation>
 <translation id="5810269635982033450">Էկրանն աշխատում է որպես հպահարթակ</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> օգտատերը ձեր էկրանը տեսնելու, ինչպես նաև ստեղնաշարն ու մկնիկը կառավարելու թույլտվություն է խնդրել։ Եթե չեք ուզում թույլտվություն տրամադրել, սեղմեք «<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />»։ Թույլատրելու համար սեղմեք «<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />», երբ պատրաստ լինեք:</translation>

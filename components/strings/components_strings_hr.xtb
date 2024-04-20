@@ -1436,7 +1436,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3714633008798122362">web-kalendar</translation>
 <translation id="3714780639079136834">uključite mobilne podatke ili Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Blokiran je prijenos datoteke}one{Blokiran je prijenos <ph name="FILE_COUNT" /> datoteke}few{Blokiran je prijenos <ph name="FILE_COUNT" /> datoteke}other{Blokiran je prijenos <ph name="FILE_COUNT" /> datoteka}}</translation>
-<translation id="3715545959749027023">Kad Chrome označi sigurnosne događaje, vašem administratoru šalju se relevantni podaci o tim događajima. To može uključivati URL-ove stranica koje posjetite u Chromeu, nazive ili metapodatke datoteka, rušenja preglednika ili kartica te korisničko ime koje upotrebljavate za prijavu u aplikacije temeljene na webu, uređaj i Chrome.</translation>
 <translation id="3715597595485130451">Povezivanje s Wi-Fi mrežom</translation>
 <translation id="3716622997181469465">zaključavanje tipkovnice</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />provjerite proxy, vatrozid i konfiguraciju DNS-a<ph name="END_LINK" /></translation>

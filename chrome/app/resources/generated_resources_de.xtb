@@ -1415,7 +1415,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2042279886444479655">Aktive Profile</translation>
 <translation id="2044014337866019681">Bitte bestätige <ph name="ACCOUNT" />, um die Sitzung zu entsperren.</translation>
 <translation id="204497730941176055">Name der Microsoft-Zertifikatsvorlage</translation>
-<translation id="2045117674524495717">Assistent für Tastenkombinationen</translation>
 <translation id="2045211794962848221">Diese Meldung wird dir nicht mehr angezeigt</translation>
 <translation id="2045838962742066664">Kurzeingabe</translation>
 <translation id="204622017488417136">Dein Gerät wird auf die zuvor installierte Chrome-Version zurückgesetzt und alle Nutzerkonten und lokalen Daten werden gelöscht. Dieser Vorgang kann nicht rückgängig gemacht werden.</translation>
@@ -6661,12 +6660,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6082877069782862752">Tastenbelegung</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – Teil einer unbenannten Gruppe</translation>
 <translation id="6086004606538989567">Das bestätigte Konto ist nicht berechtigt, auf dieses Gerät zuzugreifen.</translation>
-<translation id="6086366524552602071">Du kannst Chrome nach deinen Wünschen personalisieren:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Das Beste von Google&lt;/em&gt;: für alle, die es möchten. Du kannst beispielsweise die Google Suche als Standardsuchmaschine in Chrome festlegen und den Google Passwortmanager verwenden, um alle deine Passwörter auf einem beliebigen Gerät abzurufen. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Relevante Optionen&lt;/em&gt;: Chrome bietet dir Auswahlmöglichkeiten und Kontrolle über die Einstellungen sowie Informationen, die dir dabei helfen, informierte Entscheidungen zu treffen.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Erweiterungen&lt;/em&gt;: Dank über 100.000 Erweiterungen, die im Chrome Web Store verfügbar sind, kannst du noch mehr Funktionen in Chrome nutzen.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Von deinem Administrator installiert</translation>
 <translation id="6087746524533454243">Suchst du die Seite „Über den Browser“? Gehe zu</translation>
 <translation id="6087960857463881712">Cooles Gesicht</translation>

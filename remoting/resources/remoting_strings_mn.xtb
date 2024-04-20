@@ -28,7 +28,6 @@
 <translation id="2329392777730037872"><ph name="URL" />-г клиент дээр нээж чадсангүй.</translation>
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2366718077645204424">Толгой компьютер луу хүрэх боломжгүй байна. Энэ нь магадгүй таны ашиглаж байгаа сүлжээний тохиргоотой холбоотой байх.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Хамгийн сүүлд онлайн байсан <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" />-д 'Хандалтын' зөвшөөрөл олгох</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" />-д холбогдсон</translation>
 <translation id="2540992418118313681">Та энэ компьютерийг өөр хэрэглэгч харах мөн хянах боломжтой болгохыг хүсч байна уу?</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">Аюулгүй байдлын түлхүүрийг удирдах үйл явц</translation>
 <translation id="3581045510967524389">Сүлжээнд холбогдож чадсангүй. Төхөөрөмжөө онлайн байгаа эсэхийг шалгана уу.</translation>
 <translation id="3596628256176442606">Энэхүү үйлчилгээ нь Chromoting хэрэглэгчидээс ирж буй холболтыг идэвхжүүлнэ.</translation>
-<translation id="369442766917958684">Офлайн.</translation>
 <translation id="3695446226812920698">Заавар харах</translation>
 <translation id="3776024066357219166">Chrome-ын Алсын Зайнаас Хянах Десктопын ажиллах хугацаа дууссан байна.</translation>
 <translation id="3858860766373142691">Нэр</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">ПИН</translation>
 <translation id="5690427481109656848">Google ХХК</translation>
 <translation id="5708869785009007625">Одоогоор таны десктопыг <ph name="USER" />-тай хуваалцсан байна.</translation>
-<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" />-р нэвтэрсэн байна.</translation>
 <translation id="579702532610384533">Дахин холбогд</translation>
 <translation id="5810269635982033450">Дэлгэц trackpad-н үүргийг гүйцэтгэж байна</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> таны дэлгэцийг харж, гар болон хулганыг тань удирдахын тулд хандах хүсэлт тавьсан. Хэрэв та энэ хүсэлтийг хүлээгээгүй бол ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' дээр дарна уу. Өөрөөр бэлэн үедээ холболтыг зөвшөөрөхийн тулд ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />''-г сонгоно уу.</translation>

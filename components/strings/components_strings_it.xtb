@@ -1434,7 +1434,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3714633008798122362">Calendario web</translation>
 <translation id="3714780639079136834">Attivare la rete dati mobile o Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Caricamento del file bloccato}other{Caricamento di <ph name="FILE_COUNT" /> file bloccato}}</translation>
-<translation id="3715545959749027023">Quando Chrome segnala eventi di sicurezza, i relativi dati pertinenti vengono inviati al tuo amministratore. Questi dati possono includere URL delle pagine visitate in Chrome, metadati o nomi dei file, arresti anomali del browser o delle schede e il nome utente che usi per accedere alle applicazioni basate sul web, al tuo dispositivo e a Chrome.</translation>
 <translation id="3715597595485130451">Collegati alla rete Wi-Fi</translation>
 <translation id="3716622997181469465">blocco della tastiera</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Controllare la configurazione del proxy, firewall e DNS<ph name="END_LINK" /></translation>

@@ -1429,7 +1429,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2042279886444479655">Aktiiviset profiilit</translation>
 <translation id="2044014337866019681">Avaa istunto varmistamalla, että vahvistamasi tili on <ph name="ACCOUNT" />.</translation>
 <translation id="204497730941176055">Microsoftin varmenteen mallin nimi</translation>
-<translation id="2045117674524495717">Pikanäppäinapuri</translation>
 <translation id="2045211794962848221">Et näe tätä viestiä enää</translation>
 <translation id="2045838962742066664">Pikakirjoitus</translation>
 <translation id="204622017488417136">Laitteeseesi palautetaan aiemmin asennettu Chromen versio. Kaikki käyttäjätilit ja paikalliset tiedot poistetaan. Tätä ei voi kumota.</translation>
@@ -6679,12 +6678,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6082877069782862752">Näppäinkartta</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – kuuluu nimettömään ryhmään</translation>
 <translation id="6086004606538989567">Vahvistamallasi tilillä ei ole tämän laitteen käyttöoikeuksia.</translation>
-<translation id="6086366524552602071">Voit tehdä Chromesta omannäköisesi:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Googlen parhaat ominaisuudet&lt;/em&gt; kaikille halukkaille. Voit esimerkiksi valita Google Haun Chromen oletushakukoneeksi ja löytää kaikki salasanasi millä tahansa laitteella Google Salasanojen avulla. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Järkevä valinta&lt;/em&gt;: Chromen asetusten ja tietojen avulla voit tehdä harkittuja päätöksiä.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Laajennukset&lt;/em&gt;: Voit laajentaa Chromen toimintaa yli 100 000 laajennuksella, jotka löydät Chrome Web Storesta.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Järjestelmänvalvojasi asentama</translation>
 <translation id="6087746524533454243">Etsitkö selaimen tietosivua? Avaa</translation>
 <translation id="6087960857463881712">Eeppinen hymiö</translation>

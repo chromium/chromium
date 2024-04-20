@@ -1437,7 +1437,6 @@
 <translation id="3714633008798122362">веб-календар</translation>
 <translation id="3714780639079136834">Да вклучите мобилен интернет или Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Датотека е блокирана за прикачување}one{<ph name="FILE_COUNT" /> датотека се блокирани за прикачување}other{<ph name="FILE_COUNT" /> датотеки се блокирани за прикачување}}</translation>
-<translation id="3715545959749027023">Кога Chrome пријавува безбедносни настани, важните податоци за нив се испраќаат до вашиот администратор. Тука спаѓаат URL-адресите на страниците што ги посетувате во Chrome, имињата или метаподатоците на датотеките, падовите на прелистувачот или картичките и корисничкото име што го користите за најавување на онлајн апликациите, вашиот уред и Chrome.</translation>
 <translation id="3715597595485130451">Поврзете се со Wi-Fi</translation>
 <translation id="3716622997181469465">заклучување тастатура</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Да ги проверите проксито, заштитниот ѕид и DNS-конфигурацијата<ph name="END_LINK" /></translation>
@@ -2948,6 +2947,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за „Најди го мојот уред“ во сметката на Google</translation>
 <translation id="6695428916538794739">Акциони и авантуристички филмови</translation>
 <translation id="6696424331653607346">Водичи за патување и филмувани патеписи</translation>
+<translation id="6698097747703777657">Не го примивте вашиот код? <ph name="BEGIN_LINK" />Побарајте нов код<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Создадено:</translation>
 <translation id="67007264085648978">Прелистувач на „Времеплов“</translation>
 <translation id="6702851555558236418">Софтвер за аудио и музика</translation>

@@ -1424,7 +1424,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2042279886444479655">Aktive profiler</translation>
 <translation id="2044014337866019681">Du må verifisere <ph name="ACCOUNT" /> for å låse opp økten.</translation>
 <translation id="204497730941176055">Navn på Microsoft sertifikatmal</translation>
-<translation id="2045117674524495717">Hurtigtasthjelp</translation>
 <translation id="2045211794962848221">Du kommer ikke til å se denne meldingen igjen</translation>
 <translation id="2045838962742066664">Skrivesnarveier</translation>
 <translation id="204622017488417136">Enheten blir tilbakestilt til den tidligere installerte versjonen av Chrome. Alle brukerkontoer og lokale data fjernes. Dette kan ikke gjøres om.</translation>
@@ -6674,12 +6673,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6082877069782862752">Tastetilordninger</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – del av gruppe uten navn</translation>
 <translation id="6086004606538989567">Kontoen du verifiserte, er ikke autorisert for tilgang til denne enheten.</translation>
-<translation id="6086366524552602071">Du kan tilpasse Chrome slik du vil:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Det beste fra Google&lt;/em&gt;, for dem som vil ha det. Du kan for eksempel velge Google Søk som standard søkemotor for Chrome og bruke Google Passordlagring for å få alle passordene dine på alle enheter. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Meningsfulle valg&lt;/em&gt;: Chrome gir deg valgmuligheter og kontroll med innstillinger, og du får informasjon som gjør det lettere å ta meningsfulle avgjørelser.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Utvidelser&lt;/em&gt;: Du kan utvide Chrome-funksjonaliteten med over 100 000 utvidelser fra Chrome Nettmarked.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Installert av administratoren din</translation>
 <translation id="6087746524533454243">Ser du etter nettleserens Om-side? Gå til</translation>
 <translation id="6087960857463881712">Fantastisk-fjes</translation>

@@ -1437,7 +1437,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3714633008798122362">calendario web</translation>
 <translation id="3714780639079136834">Activar los datos móviles o la conexión Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{No se ha podido subir el archivo}other{No se han podido subir <ph name="FILE_COUNT" /> archivos}}</translation>
-<translation id="3715545959749027023">Cuando Chrome detecte actividades relacionadas con la seguridad, tu administrador recibirá los datos pertinentes. Esto puede incluir URLs de páginas que visites en Chrome, nombres o metadatos de archivos, fallos del navegador o de pestañas y el nombre de usuario que utilizas para iniciar sesión en aplicaciones web, en tu dispositivo y en Chrome.</translation>
 <translation id="3715597595485130451">Conectarse a una red Wi-Fi</translation>
 <translation id="3716622997181469465">bloqueo del teclado</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Comprobar el proxy, el cortafuegos y la configuración de DNS<ph name="END_LINK" /></translation>

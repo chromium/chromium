@@ -1437,7 +1437,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3714633008798122362">web calendar</translation>
 <translation id="3714780639079136834">Turning on mobile data or Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{File blocked from uploading}other{<ph name="FILE_COUNT" /> files blocked from uploading}}</translation>
-<translation id="3715545959749027023">When security events are flagged by Chrome, relevant data about the events is sent to your administrator. This can include URLs of pages that you visit in Chrome, file names or metadata, browser or tab crashes and the username that you use to sign in to web based applications, your device and Chrome.</translation>
 <translation id="3715597595485130451">Connect to Wi-Fi</translation>
 <translation id="3716622997181469465">keyboard lock</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Checking the proxy, firewall and DNS configuration<ph name="END_LINK" /></translation>

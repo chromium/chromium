@@ -1415,7 +1415,6 @@
 <translation id="2042279886444479655">有効なプロファイル</translation>
 <translation id="2044014337866019681">セッションのロックを解除するには、<ph name="ACCOUNT" /> の確認を行ってください。</translation>
 <translation id="204497730941176055">Microsoft 証明書テンプレート名</translation>
-<translation id="2045117674524495717">キーボード ショートカット ヘルパー</translation>
 <translation id="2045211794962848221">今後このメッセージは表示されなくなります</translation>
 <translation id="2045838962742066664">省略入力</translation>
 <translation id="204622017488417136">以前インストールしたバージョンの Chrome にデバイスを戻します。すべてのユーザー アカウントとローカルデータは削除されます。この操作は元に戻せません。</translation>
@@ -6655,12 +6654,6 @@
 <translation id="6082877069782862752">キーのマッピング</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 名前のないグループの一部</translation>
 <translation id="6086004606538989567">確認を行ったアカウントにはこのデバイスにアクセスする権限がありません。</translation>
-<translation id="6086366524552602071">Chrome は好きなようにカスタマイズできます。
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;&lt;/em&gt;Google の機能を最大限に活用する: たとえば、Chrome の既定の検索エンジンとして Google 検索を選択し、Google パスワード マネージャーを使用してどのデバイスからでもすべてのパスワードを入力できるようにします。&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;&lt;/em&gt;情報に基づいて選択する: Chrome では、設定を自分で選択、管理し、情報に基づいて判断できます。&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;&lt;/em&gt;拡張機能を活用する: Chrome ウェブストアの 100,000 を超える拡張機能を使用して Chrome の機能を拡張できます。&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">管理者によりインストールされています</translation>
 <translation id="6087746524533454243">ブラウザ情報のページをお探しですか？次にアクセスしてください</translation>
 <translation id="6087960857463881712">エピック スマイリー</translation>

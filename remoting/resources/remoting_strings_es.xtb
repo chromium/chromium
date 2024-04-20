@@ -28,7 +28,6 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="2329392777730037872">No se ha podido abrir <ph name="URL" /> en el cliente.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2366718077645204424">No se puede establecer conexión con el host. Es probable que el error se deba a la configuración de la red que se está utilizando.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Visto por última vez online <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Conceder permiso de accesibilidad a <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Conectado a <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">¿Quieres compartir este ordenador para que otro usuario pueda acceder a él y controlarlo?</translation>
@@ -53,7 +52,6 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="3423542133075182604">Proceso remoto de la llave de seguridad</translation>
 <translation id="3581045510967524389">No se ha podido establecer conexión con la red. Comprueba que el dispositivo esté conectado a Internet.</translation>
 <translation id="3596628256176442606">Este servicio permite las conexiones entrantes de los clientes de Chromoting.</translation>
-<translation id="369442766917958684">No conectado</translation>
 <translation id="3695446226812920698">Descubre cómo hacerlo</translation>
 <translation id="3776024066357219166">Ha finalizado tu sesión en Escritorio Remoto de Chrome.</translation>
 <translation id="3858860766373142691">Nombre</translation>
@@ -105,7 +103,6 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Tu ordenador está compartido actualmente con <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Has iniciado sesión como <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Reconectar</translation>
 <translation id="5810269635982033450">La pantalla hace de panel táctil</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ha solicitado acceso para ver tu pantalla y controlar tu teclado y ratón. Si no esperabas esta solicitud, pulsa <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />. De lo contrario, selecciona <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> para permitir la conexión cuanto todo esté listo.</translation>

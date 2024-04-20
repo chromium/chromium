@@ -1433,7 +1433,6 @@
 <translation id="3714633008798122362">veb təqvimi</translation>
 <translation id="3714780639079136834">Mobil data və ya Wi-Fi aktiv edilir</translation>
 <translation id="3715016660240337709">{0,plural, =1{Faylın yüklənməsi bloklandı}other{<ph name="FILE_COUNT" /> faylın yüklənməsi bloklandı}}</translation>
-<translation id="3715545959749027023">Chrome tərəfindən təhlükəsizliklə bağlı hadisələr qeyd edildikdə, hadisə haqqında uyğun data administratorunuza göndərilir. Buraya Chrome'da daxil olduğunuz səhifələrin URL'ləri, fayl adları və ya metadatası, brauzer və ya tab xətaları, habelə veb əsaslı tətbiqlərə, cihazınıza və Chrome'a daxil olmaq üçün istifadə etdiyiniz istifadəçi adı daxil ola bilər.</translation>
 <translation id="3715597595485130451">Wi-Fi'a qoşulun</translation>
 <translation id="3716622997181469465">klaviatura kilidi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Proksi, güvənlik divarı və DNS konfiqurasiyası yoxlanılır<ph name="END_LINK" /></translation>

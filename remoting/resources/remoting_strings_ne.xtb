@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">क्लाइन्टमा <ph name="URL" /> खोल्न सकिएन।</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2366718077645204424">होस्टसम्म पुग्न असफल। यसको कारण तपाइँले प्रयोग गरिरहनुभएको सञ्जालको विन्यास हुन सक्छ।</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> अन्तिम पटक अनलाइन देखिएको <ph name="RELATIVE_TIMESTAMP" />।</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> लाई 'पहुँच' सम्बन्धी अनुमति दिनुहोस्</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> मा कनेक्ट गरियो</translation>
 <translation id="2540992418118313681">तपाईं अर्को प्रयोगकर्तालाई हेर्न र नियन्त्रणको लागि यस कम्प्युटर साझेदारी गर्न चाहनुहुन्छ?</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">सुरक्षा साँचोको दूर प्रक्रिया</translation>
 <translation id="3581045510967524389">नेटवर्कमा जडान गर्न सकिएन। तपाईंको यन्त्र अन-लाइन छ कि छैन जाँच्नुहोस्।</translation>
 <translation id="3596628256176442606">यो सेवाले Chromoting ग्राहकहरूबाट आउने जडानहरूलाई सक्षम बनाउँछ।</translation>
-<translation id="369442766917958684">अफलाइन।</translation>
 <translation id="3695446226812920698">कसरी सिक्नुहोस्</translation>
 <translation id="3776024066357219166">तपाईंको Chrome रिमोट डेस्कटप सत्र समाप्त भएको छ ।</translation>
 <translation id="3858860766373142691">नाम</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">पिन</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">तपाईंको डेस्कटप अहिले <ph name="USER" /> सँग साझा गरिएको छ ।</translation>
-<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> का रूपमा साइन इन गरियो।</translation>
 <translation id="579702532610384533">पुन: कनेक्ट गर्नुहोस्</translation>
 <translation id="5810269635982033450">स्क्रिनले ट्र्याकप्याडको काम गर्छ</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ले तपाईंको कम्प्युटरको स्क्रिन हेर्ने र तपाईंको किबोर्ड र माउस नियन्त्रण गर्ने अनुमति मागेका छन्। उहाँले तपाईंलाई अग्रिम रूपमा जानकारी नगराइकन यो अनुमति मागेका हुन् भने ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' थिच्नुहोस्। अथवा तपाईं उहाँलाई तपाईंको कम्प्युटरमा कनेक्ट गर्ने अनुमति दिन तयार हुनुहुन्छ भने ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' चयन गर्नुहोस्।</translation>

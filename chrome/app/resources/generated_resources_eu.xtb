@@ -1418,7 +1418,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2042279886444479655">Profil aktiboak</translation>
 <translation id="2044014337866019681">Ziurtatu <ph name="ACCOUNT" /> kontua ari zarela egiaztatzen saioa desblokeatzeko.</translation>
 <translation id="204497730941176055">Microsoft ziurtagiriaren txantiloiaren izena</translation>
-<translation id="2045117674524495717">Lasterbideei buruzko laguntza</translation>
 <translation id="2045211794962848221">Mezu hau ez zaizu berriro erakutsiko</translation>
 <translation id="2045838962742066664">Idazkera takigrafikoa</translation>
 <translation id="204622017488417136">Gailua aurrez instalatutako Chrome bertsiora itzuliko da. Erabiltzaile-kontu eta tokiko datu guztiak kendu egingo dira. Ekintza hau ezin da desegin.</translation>
@@ -6664,12 +6663,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6082877069782862752">Tekla-esleipena</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" />, talde izengabe batekoa</translation>
 <translation id="6086004606538989567">Egiaztatu duzun kontuak ez du baimenik gailua atzitzeko.</translation>
-<translation id="6086366524552602071">Nahi duzun bezala pertsonaliza dezakezu Chrome:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Google-ren onena&lt;/em&gt;, nahi dutenentzat. Adibidez, Google Bilaketa Chome-ren bilatzaile lehenetsi gisa ezar dezakezu, eta Google-ren Pasahitz-kudeatzailea erabili zure pasahitz guztiak edozein gailutan eskuratzeko. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Aukera esanguratsua&lt;/em&gt;: Chrome-k ezarpenak aukeratzeko eta kontrolatzeko ahalmena eskaintzen dizu, baita erabaki esanguratsuak hartzeko informazioa ere.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Luzapenak&lt;/em&gt;: Chrome-ren funtzioak hedatu egin ditzakezu, Chrome Web Store-ko 100.000 luzapenekin baino gehiagorekin.&lt;/li&gt;
-       &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Administratzaileak instalatu du</translation>
 <translation id="6087746524533454243">Arakatzailearen "Honi buruz" orriaren bila zabiltza? Joan helbide honetara:</translation>
 <translation id="6087960857463881712">Aurpegi zoragarria</translation>

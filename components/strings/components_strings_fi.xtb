@@ -1438,7 +1438,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3714633008798122362">verkkokalenteri</translation>
 <translation id="3714780639079136834">Ota mobiilidata tai Wi-Fi käyttöön.</translation>
 <translation id="3715016660240337709">{0,plural, =1{Tiedoston lataaminen estetty}other{<ph name="FILE_COUNT" /> tiedoston lataaminen estetty}}</translation>
-<translation id="3715545959749027023">Kun Chrome merkitsee tietoturvatapahtuman, tapahtumasta lähetetään olennaista dataa järjestelmänvalvojallesi. Data voi sisältää Chromessa avaamiesi sivujen URL-osoitteita, tiedostonimiä tai metadataa, selaimen tai välilehden kaatumisia ja käyttäjätunnuksen, jolla kirjaudut sisään verkkopohjaisiin sovelluksiin, laitteellesi ja Chromeen.</translation>
 <translation id="3715597595485130451">Yhteyden muodostaminen Wi-Fi-verkkoon</translation>
 <translation id="3716622997181469465">näppäimistön lukitus</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Tarkista välityspalvelimen, palomuurin ja nimipalvelun määritykset<ph name="END_LINK" />.</translation>

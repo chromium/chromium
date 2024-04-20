@@ -1418,7 +1418,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2042279886444479655">Etkin profiller</translation>
 <translation id="2044014337866019681">Oturumun kilidini açmak için lütfen <ph name="ACCOUNT" /> hesabını doğruladığınızdan emin olun.</translation>
 <translation id="204497730941176055">Microsoft Sertifika Şablonu Adı</translation>
-<translation id="2045117674524495717">Klavye Kısayolu Yardımcısı</translation>
 <translation id="2045211794962848221">Bu mesajı bir daha görmeyeceksiniz</translation>
 <translation id="2045838962742066664">Steno ile yazma</translation>
 <translation id="204622017488417136">Cihazınız Chrome'un bundan önce yüklenmiş olan sürümüne geri dönecektir. Tüm kullanıcı hesapları ve yerel veriler silinecektir. Bu işlem geri alınamaz.</translation>
@@ -6666,12 +6665,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6082877069782862752">Tuş eşleme</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - Adsız grubun parçası</translation>
 <translation id="6086004606538989567">Doğruladığınız hesabın bu cihaza erişim yetkisi yok.</translation>
-<translation id="6086366524552602071">Chrome'u istediğiniz gibi özelleştirebilirsiniz:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Google'ın en iyi özelliklerinden&lt;/em&gt; yararlanabilirsiniz. Örneğin, Google Arama'yı Chrome'un varsayılan arama motoru olarak seçebilir ve istediğiniz cihazda tüm şifrelerinize ulaşmak için Google Şifre Yöneticisi'ni kullanabilirsiniz. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Anlamlı seçim&lt;/em&gt;: Chrome, istediğiniz ayarları seçmenizi ve ayarlar üzerinde kontrol sahibi olmanızı sağlar. Ayrıca, anlamlı kararlar almanıza yardımcı olacak bilgiler sunar.&lt;/li&gt;
-        &lt;li&gt;&lt;em &gt;Uzantılar&lt;/em&gt;: Chrome Web Mağazası'ndaki 100.000'den fazla uzantıyla Chrome'un işlevselliğini artırabilirsiniz.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Yöneticiniz tarafından yüklendi</translation>
 <translation id="6087746524533454243">Tarayıcı bilgisi sayfasını mı arıyorsunuz? Şu adresi ziyaret edin:</translation>
 <translation id="6087960857463881712">Çok beğenen</translation>

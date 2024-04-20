@@ -1429,7 +1429,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2042279886444479655">Aktivni profili</translation>
 <translation id="2044014337866019681">Provjerite potvrđujete li račun <ph name="ACCOUNT" /> radi otključavanja sesije.</translation>
 <translation id="204497730941176055">Naziv šablona za Microsoftovu potvrdu</translation>
-<translation id="2045117674524495717">Pomoćnik za prečice na tastaturi</translation>
 <translation id="2045211794962848221">Ova određena poruka vam se više neće prikazivati</translation>
 <translation id="2045838962742066664">Stenografsko pisanje</translation>
 <translation id="204622017488417136">Vaš uređaj će se vratiti na prethodno instaliranu verziju Chromea. Uklonit će se računi svih korisnika. Ovu radnju nije moguće opozvati.</translation>
@@ -6682,12 +6681,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6082877069782862752">Mapiranje tipki</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – dio neimenovane grupe</translation>
 <translation id="6086004606538989567">Račun koji ste potvrdili nema odobrenje za pristup ovom uređaju.</translation>
-<translation id="6086366524552602071">Možete prilagoditi Chrome kako želite:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Najbolje na Googleu&lt;/em&gt;, za one koji to žele. Naprimjer, možete odabrati Google Pretraživanje kao Chromeov zadani pretraživač i pomoću Google upravitelja lozinki dobiti sve svoje lozinke na bilo kojem uređaju. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Informirane odluke&lt;/em&gt;: Chrome vam nudi izbor i kontrolu pomoću postavki te informacije koje će vam pomoći da donosite informirane odluke.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Ekstenzije&lt;/em&gt;: možete proširiti funkcije Chromea pomoću više od 100.000 ekstenzija iz Chrome Web trgovine.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Instalirao administrator</translation>
 <translation id="6087746524533454243">Tražite stranicu s informacijama o pregledniku? Posjetite</translation>
 <translation id="6087960857463881712">Oduševljeno lice</translation>

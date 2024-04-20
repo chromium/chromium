@@ -1418,7 +1418,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2042279886444479655">Perfils actius</translation>
 <translation id="2044014337866019681">Comprova que estàs verificant <ph name="ACCOUNT" /> per desbloquejar la sessió.</translation>
 <translation id="204497730941176055">Nom de plantilla de certificat de Microsoft</translation>
-<translation id="2045117674524495717">Aplicació d'ajuda de les tecles de drecera</translation>
 <translation id="2045211794962848221">No tornaràs a veure aquest missatge concret</translation>
 <translation id="2045838962742066664">Escriptura abreviada</translation>
 <translation id="204622017488417136">Es restablirà la versió de Chrome que hi havia instal·lada anteriorment al dispositiu. S'eliminaran tots els comptes d'usuari i les dades desades al dispositiu. Aquesta acció no es pot desfer.</translation>
@@ -6665,12 +6664,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6082877069782862752">Mapatge de teclat</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> (part d'un grup sense nom)</translation>
 <translation id="6086004606538989567">El compte que has verificat no té autorització per accedir a aquest dispositiu.</translation>
-<translation id="6086366524552602071">Pots personalitzar Chrome com vulguis:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;El millor de Google&lt;/em&gt;, per a qui ho vulgui. Per exemple, pots triar la Cerca de Google com a motor de cerca predeterminat de Chrome i utilitzar el gestor de contrasenyes de Google per obtenir totes les contrasenyes en qualsevol dispositiu. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Elecció significativa&lt;/em&gt;: Chrome t'ofereix opcions i control mitjançant la configuració, així com informació per ajudar-te a prendre decisions fonamentades.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Extensions&lt;/em&gt;: pots ampliar la funcionalitat de Chrome amb les més de 100.000 extensions de Chrome Web Store.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Extensió instal·lada per l'administrador</translation>
 <translation id="6087746524533454243">Busques la pàgina d'informació del navegador? Ves a</translation>
 <translation id="6087960857463881712">Cara de fascinació</translation>

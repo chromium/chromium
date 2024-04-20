@@ -27,7 +27,6 @@
 <translation id="2329392777730037872">Ni bilo mogoče odpreti <ph name="URL" /> v tem odjemalcu.</translation>
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2366718077645204424">Ni mogoče vzpostaviti povezave z gostiteljem; verjetno zaradi konfiguracije omrežja, ki ga uporabljate.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Zadnji odziv z vzpostavljeno povezavo: <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Odobritev dovoljenja »Dostopnost« izdelku <ph name="PRODUCT_NAME" /></translation>
 <translation id="2540992418118313681">Ali želite ta računalnik deliti z drugimi, tako da bo imel drug uporabnik do njega dostop in ga bo lahko nadziral?</translation>
 <translation id="2579271889603567289">Gostitelj se je zrušil ali ga ni bilo mogoče zagnati.</translation>
@@ -51,7 +50,6 @@
 <translation id="3423542133075182604">Postopek oddaljenega delovanja varnostnega ključa</translation>
 <translation id="3581045510967524389">Povezana z omrežjem ni uspela. Preverite, ali je naprava povezana v omrežje.</translation>
 <translation id="3596628256176442606">Ta storitev omogoča dohodne povezave iz odjemalcev za Oddaljeno povezovanje s Chromom.</translation>
-<translation id="369442766917958684">Brez povezave.</translation>
 <translation id="3695446226812920698">Oglejte si navodila</translation>
 <translation id="3776024066357219166">Seja Oddaljenega namizja za Chrome je končana.</translation>
 <translation id="3858860766373142691">Ime</translation>
@@ -97,7 +95,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Vaše namizje je trenutno v skupni rabi z uporabnikom <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Prijavljen kot <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Znova poveži</translation>
 <translation id="5810269635982033450">Zaslon deluje kot sledilna ploščica</translation>
 <translation id="5823554426827907568">Oseba <ph name="CLIENT_USERNAME" /> je zahtevala dostop za ogled vašega zaslona in nadziranje tipkovnice ter miške. Pritisnite »<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />«, če te zahteve ne pričakujete. Sicer izberite »<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />«, če želite dovoliti povezavo, ko bo pripravljena.</translation>

@@ -1416,7 +1416,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2042279886444479655">Aktivni profili</translation>
 <translation id="2044014337866019681">Uverite se da verifikujete <ph name="ACCOUNT" /> da biste otključali sesiju.</translation>
 <translation id="204497730941176055">Naziv šablona Microsoft sertifikata</translation>
-<translation id="2045117674524495717">Pomoćnik za tasterske prečice</translation>
 <translation id="2045211794962848221">Više vam se neće prikazivati ova konkretna poruka</translation>
 <translation id="2045838962742066664">Unos prečicama</translation>
 <translation id="204622017488417136">Uređaj će biti vraćen na prethodno instaliranu verziju Chrome-a. Svi korisnički nalozi i lokalni podaci će biti uklonjeni. Ova radnja ne može da se opozove.</translation>
@@ -6665,12 +6664,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6082877069782862752">Mapiranje ključa</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – deo grupe bez naziva</translation>
 <translation id="6086004606538989567">Nalog koji ste verifikovali nije ovlašćen za pristup ovom uređaju.</translation>
-<translation id="6086366524552602071">Možete da prilagodite Chrome onako kako želite:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Najbolje od Google-a&lt;/em&gt;, za one koji to žele. Na primer, možete da odaberete Google pretragu kao podrazumevani pretraživač Chrome-a i da koristite Google menadžer lozinki da biste pristupali svim lozinkama na bilo kom uređaju. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Pametan izbor&lt;/em&gt;: Chrome vam nudi izbor i kontrolu pomoću podešavanja i informacija koje će vam pomoći da donosite pametne odluke.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Dodaci&lt;/em&gt;: Možete da povećate funkcionalnost Chrome-a pomoću preko 100.000 dodataka u Chrome veb-prodavnici.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Instalirao je administrator</translation>
 <translation id="6087746524533454243">Tražite stranicu sa osnovnim podacima o pregledaču? Posetite</translation>
 <translation id="6087960857463881712">Zadovoljno lice</translation>

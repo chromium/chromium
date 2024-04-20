@@ -28,7 +28,6 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="2329392777730037872">Otevření <ph name="URL" /> na klientovi se nezdařilo.</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2366718077645204424">Hostitele nelze nalézt. Pravděpodobnou příčinou je aktuální konfigurace sítě.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Naposledy online: <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Udělte službě <ph name="PRODUCT_NAME" /> oprávnění Přístupnost</translation>
 <translation id="2509394361235492552">Připojeno k zařízení <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Chcete tento počítač sdílet s dalším uživatelem, aby jej mohl zobrazit a ovládat?</translation>
@@ -53,7 +52,6 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="3423542133075182604">Proces vzdálené komunikace Bezpečnostního klíče</translation>
 <translation id="3581045510967524389">Nelze se připojit k síti. Zkontrolujte prosím, zda je zařízení online.</translation>
 <translation id="3596628256176442606">Tato služba umožňuje příchozí připojení od klientů funkce Chromoting.</translation>
-<translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Postup</translation>
 <translation id="3776024066357219166">Relace Vzdálené plochy Chrome byla ukončena.</translation>
 <translation id="3858860766373142691">Název</translation>
@@ -105,7 +103,6 @@ Pokud je položka <ph name="SERVICE_SCRIPT_NAME" /> již zaškrtnutá, zrušte j
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Aktuálně sdílíte plochu s uživatelem <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Jste přihlášeni pomocí účtu <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Znovu připojit</translation>
 <translation id="5810269635982033450">Obrazovka se chová jako trackpad</translation>
 <translation id="5823554426827907568">Uživatel <ph name="CLIENT_USERNAME" /> požádal o přístup k zobrazení obrazovky a ovládání vaší klávesnice a myši. Pokud tento požadavek nečekáte, stiskněte „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“. Jinak připojení povolte výběrem možnosti „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“, až budete připraveni.</translation>

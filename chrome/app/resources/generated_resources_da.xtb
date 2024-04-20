@@ -1431,7 +1431,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2042279886444479655">Aktive profiler</translation>
 <translation id="2044014337866019681">Sørg for, at du verificerer <ph name="ACCOUNT" /> for at låse sessionen op.</translation>
 <translation id="204497730941176055">Navn på skabelon til Microsoft-certifikat</translation>
-<translation id="2045117674524495717">Hjælp til tastaturgenveje</translation>
 <translation id="2045211794962848221">Du får ikke vist denne specifikke meddelelse igen</translation>
 <translation id="2045838962742066664">Stenografisk skrivning</translation>
 <translation id="204622017488417136">Enheden nulstilles til sin forrige installerede version af Chrome. Alle brugerkonti og lokale data fjernes. Du kan ikke fortryde denne handling.</translation>
@@ -6684,12 +6683,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6082877069782862752">Tastaturtilknytning</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – del af en unavngiven gruppe</translation>
 <translation id="6086004606538989567">Den konto, du har verificeret, har ikke adgangstilladelse til denne enhed.</translation>
-<translation id="6086366524552602071">Du kan tilpasse Chrome, som du vil:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Det bedste fra Google&lt;/em&gt; til dem, der vil have det. Du kan f.eks. vælge Google Søgning som Chromes standardsøgemaskine og bruge Google Adgangskodeadministrator til at få adgang til alle dine adgangskoder på en hvilken som helst enhed. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Et meningsfuldt valg:&lt;/em&gt; Med Chrome får du valgmuligheder og kontrol, da indstillinger og oplysninger kan hjælpe dig med at træffe meningsfulde beslutninger.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Udvidelser:&lt;/em&gt; Du kan udvide Chromes funktioner med mere end 100.000 udvidelser fra Chrome Webshop.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Installeret af din administrator</translation>
 <translation id="6087746524533454243">Leder du efter siden Om for browseren? Gå til</translation>
 <translation id="6087960857463881712">Fantastisk-smiley</translation>

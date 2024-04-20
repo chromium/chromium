@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">ગ્રાહકના ડિવાઇસ પર <ph name="URL" /> ખોલવામાં નિષ્ફળ રહ્યાં.</translation>
 <translation id="2359808026110333948">આગળ વધો</translation>
 <translation id="2366718077645204424">હોસ્ટ સુધી પહોંચવામાં અક્ષમ. આ કદાચ તમે ઉપયોગ કરી રહ્યાં છો એ નેટવર્કની ગોઠવણીનાં કારણે છે.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  છેલ્લે <ph name="RELATIVE_TIMESTAMP" /> ઓનલાઇન જોવામાં આવ્યા.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" />ને 'ઍક્સેસિબિલિટી'ની પરવાનગી આપો</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> સાથે કનેક્ટ કર્યું</translation>
 <translation id="2540992418118313681">શું તમે આ કમ્પ્યુટર બીજા વપરાશકર્તા માટે જોવા અને નિયંત્રિત કરવા માટે શેર કરવા માંગો છો?</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">સુરક્ષા કી રીમોટિંગ પ્રક્રિયા</translation>
 <translation id="3581045510967524389">નેટવર્ક સાથે કનેક્ટ કરી શકાયું નથી. કૃપા કરીને તપાસો કે તમારું ઉપકરણ ઓન-લાઇન છે.</translation>
 <translation id="3596628256176442606">આ સેવા Chromoting ક્લાઇન્ટ્સ પાસેથી આવતા કનેક્શન્સ સક્ષમ કરે છે.</translation>
-<translation id="369442766917958684">ઑફલાઇન.</translation>
 <translation id="3695446226812920698">જાણો કેવી રીતે</translation>
 <translation id="3776024066357219166">તમારું Chrome રીમોટ ડેસ્કટૉપ સત્ર સમાપ્ત થયું.</translation>
 <translation id="3858860766373142691">નામ</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">તમારું ડેસ્કટૉપ હાલમાં <ph name="USER" /> સાથે શેર કરવામાં આવી રહ્યું છે.</translation>
-<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> તરીકે સાઇન ઇન કર્યું.</translation>
 <translation id="579702532610384533">ફરીથી કનેક્ટ કરો</translation>
 <translation id="5810269635982033450">સ્ક્રીન એ ટ્રૅકપૅડના જેવું કાર્ય કરે છે</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> દ્વારા તમારી સ્ક્રીન જોવા અને તમારા કીબોર્ડ અને માઉસના નિયંત્રણના ઍક્સેસ માટે વિનંતી કરવામાં આવી છે. જો તમે આ વિનંતીની અપેક્ષા કરી રહ્યાં ન હો, તો ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' દબાવો. અન્યથા જ્યારે તૈયાર હોય, ત્યારે કનેક્શનની મંજૂરી આપવા માટે ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' પસંદ કરો.</translation>

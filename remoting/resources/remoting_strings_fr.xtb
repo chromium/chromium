@@ -28,7 +28,6 @@ Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la,
 <translation id="2329392777730037872">Impossible d'ouvrir <ph name="URL" /> sur le client.</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2366718077645204424">Impossible de joindre l'hôte, probablement en raison de la configuration du réseau que vous utilisez.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Dernière connexion <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Accorder l'autorisation "Accessibilité" à <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Connecté à <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Voulez-vous partager cet ordinateur pour qu'un autre utilisateur puisse consulter le contenu et en prendre le contrôle ?</translation>
@@ -53,7 +52,6 @@ Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la,
 <translation id="3423542133075182604">Processus de communication à distance de la clé de sécurité</translation>
 <translation id="3581045510967524389">Impossible de se connecter au réseau. Veuillez vérifier que votre appareil est en ligne.</translation>
 <translation id="3596628256176442606">Ce service permet la réception de connexions provenant des clients de Chromoting.</translation>
-<translation id="369442766917958684">Hors connexion</translation>
 <translation id="3695446226812920698">Comment procéder</translation>
 <translation id="3776024066357219166">La session du bureau à distance Google Chrome est terminée.</translation>
 <translation id="3858860766373142691">Nom</translation>
@@ -105,7 +103,6 @@ Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la,
 <translation id="5601503069213153581">Code d'accès</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Vous partagez actuellement votre bureau avec <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Connecté en tant que <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Reconnexion</translation>
 <translation id="5810269635982033450">L'écran se comporte comme un pavé tactile</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> demande à voir votre écran et à contrôler votre clavier et votre souris. Appuyez sur ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' si vous n'avez pas connaissance de cette demande. Sinon, sélectionnez ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' pour autoriser la connexion lorsque vous êtes prêt.</translation>

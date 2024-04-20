@@ -1437,7 +1437,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3714633008798122362">webkalender</translation>
 <translation id="3714780639079136834">Tænde for mobildata eller Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Filen er blokeret, så den ikke kan uploades}one{<ph name="FILE_COUNT" /> fil er blokeret, så den ikke kan uploades}other{<ph name="FILE_COUNT" /> filer er blokeret, så de ikke kan uploades}}</translation>
-<translation id="3715545959749027023">Når sikkerhedshændelser rapporteres af Chrome, sendes der relevante data om hændelserne til din administrator. Disse data kan omfatte webadresserne på de sider, du besøger i Chrome, filnavne eller metadata, browser- eller fanenedbrud samt det brugernavn, du bruger til at logge ind på webbaserede apps, på din enhed og i Chrome.</translation>
 <translation id="3715597595485130451">Opret forbindelse til Wi-Fi</translation>
 <translation id="3716622997181469465">tastaturlås</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Tjekke proxy-, firewall- og DNS-konfigurationen<ph name="END_LINK" /></translation>

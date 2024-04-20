@@ -1435,7 +1435,6 @@
 <translation id="3714633008798122362">網路日曆</translation>
 <translation id="3714780639079136834">開啟行動數據或 Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{禁止上傳這個檔案}other{禁止上傳這 <ph name="FILE_COUNT" /> 個檔案}}</translation>
-<translation id="3715545959749027023">當 Chrome 標記安全性事件時，系統會將與事件相關的資料傳送給系統管理員，內容可能包括在 Chrome 中造訪的網頁網址、檔案名稱或中繼資料、停止運作的瀏覽器或分頁資料，以及用於登入網頁應用程式、裝置和 Chrome 的使用者名稱。</translation>
 <translation id="3715597595485130451">連線至 Wi-Fi</translation>
 <translation id="3716622997181469465">鍵盤鎖定</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />檢查 Proxy、防火牆和 DNS 設定<ph name="END_LINK" /></translation>

@@ -1437,7 +1437,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3714633008798122362">webbkalender</translation>
 <translation id="3714780639079136834">aktivera mobildata eller wifi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Filen har blockerats från att laddas upp}other{<ph name="FILE_COUNT" /> filer har blockerats från att laddas upp}}</translation>
-<translation id="3715545959749027023">När säkerhetshändelser flaggas av Chrome skickas relevant data om händelserna till administratören. Exempel på sådan data är webbadresser till sidor du besöker i Chrome, filnamn eller metadata, webbläsar- eller flikkrascher och användarnamnet du loggar in med i webbaserade appar, på dina enheter och i Chrome.</translation>
 <translation id="3715597595485130451">Anslut till wifi</translation>
 <translation id="3716622997181469465">tangentbordslås</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />kontrollera proxyn, brandväggen och DNS-konfigureringen<ph name="END_LINK" /></translation>

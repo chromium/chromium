@@ -28,7 +28,6 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="2329392777730037872">Det gick inte att öppna <ph name="URL" /> på klientenheten.</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2366718077645204424">Det går inte att nå värden. Detta beror troligen på konfigurationen av nätverket som du använder.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Var senast uppe på webben <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Ge behörigheten Tillgänglighet till <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Ansluten till <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Vill du dela den här datorn så att en annan användare kan visa och styra den?</translation>
@@ -53,7 +52,6 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="3423542133075182604">Fjärrkommunikationsprocess för säkerhetsnyckel</translation>
 <translation id="3581045510967524389">Det gick inte att ansluta till nätverket. Kontrollera att enheten är online.</translation>
 <translation id="3596628256176442606">Med den här tjänsten aktiveras inkommande anslutningar från Chromoting-klienter.</translation>
-<translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Läs mer</translation>
 <translation id="3776024066357219166">Chrome Remote Desktop-sessionen har avslutats.</translation>
 <translation id="3858860766373142691">Namn</translation>
@@ -105,7 +103,6 @@ Om <ph name="SERVICE_SCRIPT_NAME" /> redan har markerats avmarkerar du rutan och
 <translation id="5601503069213153581">Pinkod</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Ditt skrivbord delas just nu med <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Inloggad som <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Återanslut</translation>
 <translation id="5810269635982033450">Skärmen används som styrplatta</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> har begärt åtkomst till att se din skärm och styra tangentbordet och musen. Tryck på <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> om du inte väntar på en sådan begäran. Annars väljer du <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> för att tillåta anslutningen när du är redo.</translation>

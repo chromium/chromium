@@ -1418,7 +1418,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2042279886444479655">Actieve profielen</translation>
 <translation id="2044014337866019681">Zorg dat je <ph name="ACCOUNT" /> verifieert om de sessie te ontgrendelen.</translation>
 <translation id="204497730941176055">Sjabloonnaam van Microsoft-certificaat</translation>
-<translation id="2045117674524495717">Helper voor sneltoetsen</translation>
 <translation id="2045211794962848221">Je krijgt dit specifieke bericht niet meer te zien</translation>
 <translation id="2045838962742066664">Stenotypen</translation>
 <translation id="204622017488417136">Je apparaat wordt hersteld naar de vorige geïnstalleerde versie van Chrome. Alle gebruikersaccounts en lokale gegevens worden verwijderd. Dit kan niet ongedaan worden gemaakt.</translation>
@@ -6662,12 +6661,6 @@ Als je dit uitzet, gebruikt Android alleen het IP-adres voor de locatie. Dit kan
 <translation id="6082877069782862752">Toetstoewijzing</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - deel van naamloze groep</translation>
 <translation id="6086004606538989567">Het account dat je hebt geverifieerd, heeft geen toegangsrechten voor dit apparaat.</translation>
-<translation id="6086366524552602071">Je kunt Chrome aanpassen zoals jij dat wilt:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Het beste van Google&lt;/em&gt;, voor wie dat wil. Je kunt bijvoorbeeld Google Zoeken kiezen als de standaard zoekmachine van Chrome en Google Wachtwoordmanager gebruiken om al je wachtwoorden op elk apparaat te gebruiken. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Betekenisvolle keuze&lt;/em&gt;: Chrome biedt je keuzemogelijkheden en controle met instellingen en informatie waarmee je weloverwogen beslissingen kunt nemen.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Extensies&lt;/em&gt;: Je kunt de Chrome-functionaliteit uitbreiden met meer dan 100.000 extensies in de Chrome Web Store.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Geïnstalleerd door je beheerder</translation>
 <translation id="6087746524533454243">Zoek je de informatiepagina van de browser? Ga naar</translation>
 <translation id="6087960857463881712">Geweldig gezicht</translation>

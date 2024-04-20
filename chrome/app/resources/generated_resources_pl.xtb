@@ -1415,7 +1415,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2042279886444479655">Aktywne profile</translation>
 <translation id="2044014337866019681">Aby odblokować sesję, upewnij się, że potwierdzasz własność konta <ph name="ACCOUNT" />.</translation>
 <translation id="204497730941176055">Nazwa szablonu certyfikatu firmy Microsoft</translation>
-<translation id="2045117674524495717">Informacje o skrótach klawiszowych</translation>
 <translation id="2045211794962848221">Nie zobaczysz więcej tego komunikatu</translation>
 <translation id="2045838962742066664">Pisanie skrótowe</translation>
 <translation id="204622017488417136">Na Twoim urządzeniu zostanie przywrócona poprzednia wersja Chrome. Wszystkie zapisane lokalnie konta użytkowników i dane zostaną usunięte. Tej czynności nie można cofnąć.</translation>
@@ -6647,12 +6646,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6082877069782862752">Mapowanie klawiszy</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – należy do grupy bez nazwy</translation>
 <translation id="6086004606538989567">Potwierdzone przez Ciebie konto nie ma dostępu do tego urządzenia.</translation>
-<translation id="6086366524552602071">Możesz dostosować Chrome do swoich potrzeb:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;To, co najlepsze w Google&lt;/em&gt;, dla użytkowników, którzy tego potrzebują. Możesz na przykład ustawić wyszukiwarkę Google jako domyślną wyszukiwarkę w Chrome i skorzystać z Menedżera haseł Google, aby mieć dostęp do wszystkich swoich haseł na dowolnym urządzeniu. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Skuteczny wybór:&lt;/em&gt; Chrome daje Ci wybór i kontrolę w zakresie ustawień oraz udostępnia informacje, które pomagają podejmować uzasadnione decyzje.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Rozszerzenia:&lt;/em&gt; funkcje Chrome możesz rozszerzyć, korzystając z ponad 100 tys. rozszerzeń w sklepie Chrome Web Store.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Zainstalowane przez administratora</translation>
 <translation id="6087746524533454243">Szukasz strony z informacjami o przeglądarce? Wejdź na</translation>
 <translation id="6087960857463881712">Niesamowita twarz</translation>

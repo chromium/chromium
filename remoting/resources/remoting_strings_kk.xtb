@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">Клиент құрылғысында <ph name="URL" /> мекенжайы ашылмады.</translation>
 <translation id="2359808026110333948">Жалғастыру</translation>
 <translation id="2366718077645204424">Хостқа қол жеткізу мүмкін емес. Бұған сіз пайдаланып жатқан желінің конфигурациясы себеп болуы мүмкін.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Соңғы рет желіде болған уақыты <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> қызметіне арнайы мүмкіндіктерді пайдалануға рұқсат беріңіз</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> хостымен байланыс орнатылды</translation>
 <translation id="2540992418118313681">Бұл компьютерді басқа пайдаланушының көруі үшін және басқаруы үшін бөліскіңіз келе ме?</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">Қауіпсіздік кодын қашықтан пайдалану процесі</translation>
 <translation id="3581045510967524389">Желіге қосылу мүмкін емес. Құрылғыңыз келіде екендігін тексеріңіз.</translation>
 <translation id="3596628256176442606">Бұл қызмет Chromoting клиенттерінен жасалатын кіріс байланыстарға мүмкіндік береді.</translation>
-<translation id="369442766917958684">Желіден тыс.</translation>
 <translation id="3695446226812920698">Әдісін білу</translation>
 <translation id="3776024066357219166">Сіздің Chrome қашықтағы жұмыс үстелі сеансыңыз аяқталды.</translation>
 <translation id="3858860766373142691">Аты</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Жұмыс үстеліңіз қазір <ph name="USER" /> пайдаланушысымен бөлісілген.</translation>
-<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> аккаунтымен кірдіңіз.</translation>
 <translation id="579702532610384533">Қайта қосылу</translation>
 <translation id="5810269635982033450">Экран сенсорлық тақта сияқты жұмыс істейді</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> экраныңызды көру, пернетақта мен тінтуірді басқару рұқсатын сұрады. Бұл сұрауды күтпесеңіз, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' түймесін басыңыз. Не болмаса дайын болған кезде байланысқа рұқсат беру үшін, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' түймесін басыңыз.</translation>

@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">클라이언트 기기에서 <ph name="URL" /> 페이지를 열지 못했습니다.</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2366718077645204424">호스트에 연결할 수 없습니다. 사용 중인 네트워크의 구성 때문일 수 있습니다.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  <ph name="RELATIVE_TIMESTAMP" /> 온라인에 마지막으로 연결했습니다.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" />에 '접근성' 권한 부여</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" />에 연결되었습니다</translation>
 <translation id="2540992418118313681">이 컴퓨터를 다른 사용자가 보고 제어하도록 공유하시겠습니까?</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">보안 키 원격 설정 프로세스</translation>
 <translation id="3581045510967524389">네트워크에 연결할 수 없습니다. 기기가 온라인 상태인지 확인하시기 바랍니다.</translation>
 <translation id="3596628256176442606">이 서비스를 이용하면 Chromoting 클라이언트로부터의 연결을 수신할 수 있습니다.</translation>
-<translation id="369442766917958684">오프라인.</translation>
 <translation id="3695446226812920698">자세히 알아보기</translation>
 <translation id="3776024066357219166">Chrome 원격 데스크톱 세션이 종료되었습니다.</translation>
 <translation id="3858860766373142691">이름</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">내 컴퓨터를 <ph name="USER" />님과 공유하고 있습니다.</translation>
-<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> 계정으로 로그인했습니다.</translation>
 <translation id="579702532610384533">다시 연결</translation>
 <translation id="5810269635982033450">화면이 트랙패드처럼 작동합니다</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" />님이 화면을 보고 키보드와 마우스를 제어하기 위한 액세스 권한을 요청했습니다. 이런 요청을 받을 일이 없다면 ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />''를 누르세요. 아니면 ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />''를 선택해 준비가 되었을 때 연결을 허용합니다.</translation>

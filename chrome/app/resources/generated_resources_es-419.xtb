@@ -1415,7 +1415,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2042279886444479655">Perfiles activos</translation>
 <translation id="2044014337866019681">Para desbloquear la sesión, asegúrate de verificar <ph name="ACCOUNT" />.</translation>
 <translation id="204497730941176055">Nombre de la plantilla de certificado de Microsoft</translation>
-<translation id="2045117674524495717">Asistente de combinaciones de teclas</translation>
 <translation id="2045211794962848221">No volverás a ver este mensaje específico</translation>
 <translation id="2045838962742066664">Escritura mediante combinación de teclas</translation>
 <translation id="204622017488417136">El dispositivo volverá a la versión de Chrome instalada anteriormente. Se eliminarán todas las cuentas de usuario y los datos locales. Esta acción no se puede deshacer.</translation>
@@ -6664,12 +6663,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6082877069782862752">Asignación de teclas</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" />: Parte de un grupo sin nombre</translation>
 <translation id="6086004606538989567">La cuenta que verificaste no tiene autorización para acceder a este dispositivo.</translation>
-<translation id="6086366524552602071">Puedes personalizar Chrome como quieras:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Lo mejor de Google&lt;/em&gt;, para quienes lo deseen. Por ejemplo, puedes elegir Búsqueda de Google como el motor de búsqueda predeterminado de Chrome y usar el Administrador de contraseñas de Google para obtener todas tus contraseñas en cualquier dispositivo. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Decisiones significativas&lt;/em&gt;: Chrome te ofrece opciones y control con la configuración y la información para ayudarte a tomar decisiones significativas.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Extensiones&lt;/em&gt;: Puedes extender la funcionalidad de Chrome con más de 100,000 extensiones en Chrome Web Store.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Instalado por el administrador</translation>
 <translation id="6087746524533454243">¿Buscas la página de información del navegador? Visita</translation>
 <translation id="6087960857463881712">Cara increíble</translation>

@@ -1440,7 +1440,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3714633008798122362">kalendaryo ng web</translation>
 <translation id="3714780639079136834">I-on ang mobile data o Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Na-block ang file para hindi ma-upload}one{<ph name="FILE_COUNT" /> file ang na-block para hindi ma-upload}other{<ph name="FILE_COUNT" /> na file ang na-block para hindi ma-upload}}</translation>
-<translation id="3715545959749027023">Kapag na-flag ng Chrome ang mga event tungkol sa seguridad, ipapadala sa iyong administrator ang nauugnay na data tungkol sa mga event. Puwedeng kabilang dito ang mga URL ng mga page na binibisita mo sa Chrome, pangalan ng file or metadata, pag-crash ng browser o tab, at ang username na ginamit mo para mag-sign in sa mga web-based na application, iyong device at Chrome.</translation>
 <translation id="3715597595485130451">Kumonekta sa Wi-Fi</translation>
 <translation id="3716622997181469465">lock ng keyboard</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Suriin ang configuration ng proxy, firewall at DNS<ph name="END_LINK" /></translation>

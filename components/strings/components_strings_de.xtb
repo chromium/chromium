@@ -1435,7 +1435,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3714633008798122362">Web-Kalender</translation>
 <translation id="3714780639079136834">Mobile Daten oder WLAN aktivieren</translation>
 <translation id="3715016660240337709">{0,plural, =1{Datei kann nicht hochgeladen werden}other{<ph name="FILE_COUNT" /> Dateien können nicht hochgeladen werden}}</translation>
-<translation id="3715545959749027023">Wenn Chrome Sicherheitshinweise meldet, werden relevante Informationen an deinen Administrator gesendet. Dazu gehören z. B. URLs der von dir in Chrome besuchten Seiten, Dateinamen oder Metadaten, Browser- oder Tab-Abstürze sowie der Nutzername, den du zum Anmelden in Webanwendungen, auf deinem Gerät und in Chrome verwendest.</translation>
 <translation id="3715597595485130451">WLAN-Verbindung herstellen</translation>
 <translation id="3716622997181469465">Tastatursperre</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Proxy, Firewall und DNS-Konfiguration prüfen<ph name="END_LINK" /></translation>

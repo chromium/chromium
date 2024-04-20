@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">Не успеа да отвори <ph name="URL" /> на клиентот.</translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2366718077645204424">Не може да се добие домаќинот. Тоа е веројатно поради конфигурацијата на мрежата што ја користите.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Последен пат онлајн <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Одобрете дозвола за „Пристапност“ на <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Поврзано со <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Дали би сакале да го споделите овој компјутер за друг корисник да го гледа и контролира?</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">Далечински процес за Безбедносен клуч</translation>
 <translation id="3581045510967524389">Не може да се поврзе на мрежата. Проверете дали уредот е вклучен.</translation>
 <translation id="3596628256176442606">Услугата овозможува дојдовни врски од клиенти на Chromoting.</translation>
-<translation id="369442766917958684">Офлајн.</translation>
 <translation id="3695446226812920698">Дознајте како</translation>
 <translation id="3776024066357219166">Сесијата на Chrome Remote Desktop заврши.</translation>
 <translation id="3858860766373142691">Име</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Работната површина моментално ја споделувате со <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Најавени сте како: <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Поврзи се повторно</translation>
 <translation id="5810269635982033450">Екранот дејствува како подлога на допир</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> побара пристап да го гледа вашиот екран и да ги контролира тастатурата и глувчето. Притиснете „<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />“ ако не го очекувате ова барање. Во спротивно, изберете „<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />“ за да го дозволите поврзувањето кога ќе бидете спремни.</translation>

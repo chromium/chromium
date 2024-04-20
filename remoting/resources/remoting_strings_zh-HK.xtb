@@ -28,7 +28,6 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="2329392777730037872">無法在用戶端上開啟 <ph name="URL" />。</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2366718077645204424">無法連線至主機，這可能與您使用的網絡設定有關。</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />最後上線時間：<ph name="RELATIVE_TIMESTAMP" />。</translation>
 <translation id="2504109125669302160">將「無障礙功能」權限授予「<ph name="PRODUCT_NAME" />」</translation>
 <translation id="2509394361235492552">已連線至「<ph name="HOSTNAME" />」</translation>
 <translation id="2540992418118313681">您想與另一名使用者共用這部電腦的檢視權及控制權嗎？</translation>
@@ -53,7 +52,6 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="3423542133075182604">遠端處理安全密鑰</translation>
 <translation id="3581045510967524389">無法連線至網絡，請確認裝置已上網。</translation>
 <translation id="3596628256176442606">這項服務允許來自 Chromoting 用戶端的連線。</translation>
-<translation id="369442766917958684">離線。</translation>
 <translation id="3695446226812920698">瞭解詳情</translation>
 <translation id="3776024066357219166">您的 Chrome 遠端桌面工作階段已結束。</translation>
 <translation id="3858860766373142691">名稱</translation>
@@ -105,7 +103,6 @@ host_ip =「<ph name="HOST_IP_ADDRESS_AND_PORT" />」版本=「<ph name="CHANNEL
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">您目前正與 <ph name="USER" /> 共用桌面電腦。</translation>
-<translation id="5750083143895808682">以 <ph name="EMAIL_ADDRESS" /> 嘅身分登入。</translation>
 <translation id="579702532610384533">重新連線</translation>
 <translation id="5810269635982033450">將螢幕變成觸控板</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> 已要求權限來查看您的螢幕畫面，並控制您的鍵盤和滑鼠。如果您並未預期此要求，請按下 [<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />]；否則，請在準備就緒時選取 [<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />] 允許連線。</translation>

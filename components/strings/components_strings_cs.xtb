@@ -1433,7 +1433,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3714633008798122362">webový kalendář</translation>
 <translation id="3714780639079136834">Zapnout mobilní datové připojení nebo Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Nahrání souboru je blokováno}few{Nahrání <ph name="FILE_COUNT" /> souborů je blokováno}many{Nahrání <ph name="FILE_COUNT" /> souboru je blokováno}other{Nahrání <ph name="FILE_COUNT" /> souborů je blokováno}}</translation>
-<translation id="3715545959749027023">Když Chrome nahlásí události týkající se zabezpečení, administrátorovi se odešlou relevantní data o událostech. Mohou být zahrnuty adresy URL stránek, které v Chromu navštěvujete, názvy nebo metadata souborů, selhání prohlížeče nebo karet a uživatelské jméno, pomocí něhož se přihlašujete do webových aplikací, do zařízení a do Chromu.</translation>
 <translation id="3715597595485130451">Připojení k síti Wi-Fi</translation>
 <translation id="3716622997181469465">zámek klávesnice</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Zkontrolovat proxy server, firewall a konfiguraci DNS<ph name="END_LINK" /></translation>
@@ -2105,6 +2104,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5040262127954254034">Ochrana soukromí</translation>
 <translation id="5043480802608081735">Zkopírovaný odkaz</translation>
 <translation id="5045550434625856497">Nesprávné heslo</translation>
+<translation id="5048293684454354469">Témata reklam jsou jen jednou z mnoha věcí, které web může použít k personalizaci reklam. Weby vám mohou reklamy zobrazovat i bez témat reklam, ale mohou být méně přizpůsobené. <ph name="BEGIN_LINK" />Další informace o správě ochrany soukromí v reklamách<ph name="LINK_END" /></translation>
 <translation id="5052517576853118371">Aktivní témata</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Pokud tento soubor chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}few{Pokud tyto soubory chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}many{Pokud tyto soubory chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}other{Pokud tyto soubory chcete odeslat pomocí funkce Sdílení nablízko, uvolněte v zařízení místo (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="505757197798929356">Uveďte důvod otevření (povinné)</translation>
@@ -2323,6 +2323,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <ph name="LINE_BREAK" />
 Kontaktujte administrátora systému.</translation>
 <translation id="549333378215107354">Velikost 3</translation>
+<translation id="5496804587179176046">Uložte si bezpečnostní kódy, aktuálně žádné uloženy nejsou</translation>
 <translation id="550365051221576010">Vyplnit vše</translation>
 <translation id="5508443345185481044">Fotoaparáty a kamery</translation>
 <translation id="5509762909502811065">B0</translation>

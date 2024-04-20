@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">በደንበኛው ላይ <ph name="URL" />ን መክፈት አልተሳካም።</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2366718077645204424">አስተናጋጁን መድረስ አልተቻለም። ይሄ በሚጠቀሙት አውታረ መረብ ላይ ባለ ውቅር ምክንያት ሳይሆን አይቀርም።</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  ለመጨረሻ ጊዜ መስመር ላይ የታየው በ<ph name="RELATIVE_TIMESTAMP" />።</translation>
 <translation id="2504109125669302160">የ«ተደራሽነት» ፈቃዱን ለ<ph name="PRODUCT_NAME" /> ይስጡ</translation>
 <translation id="2509394361235492552">ከ<ph name="HOSTNAME" /> ጋር ተገናኝቷል</translation>
 <translation id="2540992418118313681">ሌላ ተጠቃሚ ይህን ኮምፒውተር እንዲመለከት እና እንዲቆጣጠር ማጋራት ይፈልጋሉ?</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">የደህንነት ቁልፍ በርቀት የመጠቀም ሂደት</translation>
 <translation id="3581045510967524389">ከአውታረ መረቡ ጋር መገናኘት አልተቻለም። እባክዎ መሥሪያዎ መስመር ላይ መሆኑን ያረጋግጡ።</translation>
 <translation id="3596628256176442606">ይህ አገልግሎት ከChromoting ደንበኞች ገቢ ግንኙነቶችን ያነቃል።</translation>
-<translation id="369442766917958684">ከመስመር ውጭ።</translation>
 <translation id="3695446226812920698">እንዴት እንደሆነ ይወቁ</translation>
 <translation id="3776024066357219166">የChrome የርቀት ዴስክቶፕ ክፍለ-ጊዜው ተጠናቅቋል።</translation>
 <translation id="3858860766373142691">ስም</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">ፒን</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">ዴስክቶፕዎ በአሁኑ ጊዜ ከ<ph name="USER" /> ጋር ተጋርቷል።</translation>
-<translation id="5750083143895808682">እንደ <ph name="EMAIL_ADDRESS" /> ሆነው ገብተዋል።</translation>
 <translation id="579702532610384533">ዳግም ያገናኙ</translation>
 <translation id="5810269635982033450">ማያ ገፅ እንደ የመከታተያ ፓድ ይሆናል</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ማያ ገጽዎን ለማየት እና የእርስዎን ቁልፍ ሰሌዳ እና መዳፊት ለመቆጣጠር መዳረሻን ጠይቋል። ይህን ጥያቄ እየጠበቁ ካልሆነ ከሆነ «<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />»ን ይጫኑ። አለበለዚያ ዝግጁ ሲሆኑ ግንኙነትን ለመፍቀድ «<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />»ን ይምረጡ።</translation>

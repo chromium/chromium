@@ -1431,7 +1431,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2042279886444479655">Perfis ativos</translation>
 <translation id="2044014337866019681">Você precisa verificar a conta <ph name="ACCOUNT" /> para desbloquear a sessão.</translation>
 <translation id="204497730941176055">Nome do modelo de certificado da Microsoft</translation>
-<translation id="2045117674524495717">Assistente de atalhos do teclado</translation>
 <translation id="2045211794962848221">Essa mensagem específica não vai ser mostrada novamente</translation>
 <translation id="2045838962742066664">Digitação abreviada</translation>
 <translation id="204622017488417136">Seu dispositivo voltará à versão do Google Chrome instalada anteriormente. Todas as contas de usuário e dados locais serão removidos. Esta ação não pode ser desfeita.</translation>
@@ -6685,12 +6684,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6082877069782862752">Mapa de atalhos</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" />: parte de grupo sem nome</translation>
 <translation id="6086004606538989567">A conta que você verificou não está autorizada a acessar este dispositivo.</translation>
-<translation id="6086366524552602071">Você pode personalizar o Chrome do jeito que preferir:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;O melhor do Google&lt;/em&gt;, para quem quiser. Por exemplo, você pode escolher a Pesquisa Google como o mecanismo de pesquisa padrão do Chrome e usar o Gerenciador de senhas do Google para acessar todas as suas senhas em qualquer dispositivo. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Escolha significativa&lt;/em&gt;: o Chrome oferece opções e controles com configurações e dados para ajudar você a tomar decisões importantes.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Extensões&lt;/em&gt;: é possível aumentar ainda mais a funcionalidade do Chrome com as mais de 100 mil extensões na Chrome Web Store.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Instalada pelo administrador</translation>
 <translation id="6087746524533454243">Procurando a página de detalhes do navegador? Acesse</translation>
 <translation id="6087960857463881712">Rosto maravilhado</translation>

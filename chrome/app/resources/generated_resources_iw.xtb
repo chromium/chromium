@@ -1427,7 +1427,6 @@
 <translation id="2042279886444479655">פרופילים פעילים</translation>
 <translation id="2044014337866019681">עליך לוודא שהחשבון המאומת הוא <ph name="ACCOUNT" /> כדי לבטל את נעילת הפעילות.</translation>
 <translation id="204497730941176055">‏שם תבנית אישור של Microsoft</translation>
-<translation id="2045117674524495717">כלי העזרה למקשי קיצור</translation>
 <translation id="2045211794962848221">ההודעה הספציפית הזו לא תוצג לך יותר</translation>
 <translation id="2045838962742066664">הקלדה מקוצרת</translation>
 <translation id="204622017488417136">‏המכשיר שלך יוחזר לגרסה הקודמת המותקנת של Chrome. כל חשבונות המשתמשים והנתונים המקומיים יוסרו. לא ניתן לבטל פעולה זו.</translation>
@@ -6677,12 +6676,6 @@
 <translation id="6082877069782862752">מיפוי מקשים</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – חלק מקבוצה ללא שם</translation>
 <translation id="6086004606538989567">לחשבון המאומת אין הרשאת גישה למכשיר.</translation>
-<translation id="6086366524552602071">‏יש לך אפשרות להתאים אישית את Chrome בכל דרך:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;המיטב של Google‏&lt;/em&gt;, אם זה מתאים לך. לדוגמה, אפשר להגדיר את מנוע החיפוש של Google כברירת מחדל ב-Chrome ולהשתמש במנהל הסיסמאות של Google כדי לנהל את כל הסיסמאות בכל מכשיר. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;בחירה משמעותית&lt;/em&gt;: ב-Chrome אפשר לבחור את ההגדרות ולשלוט בהן, כולל מידע שיעזור לך לקבל החלטות חשובות.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;תוספים&lt;/em&gt;: ניתן להרחיב את הפונקציונליות של Chrome עם יותר מ-100,000 תוספים בחנות האינטרנט של Chrome.‏&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">הותקן על ידי מנהל המערכת שלך</translation>
 <translation id="6087746524533454243">רוצה לאתר את דף המידע על הדפדפן? יש לעבור לכתובת</translation>
 <translation id="6087960857463881712">פרצוף "אדיר!"</translation>

@@ -702,7 +702,9 @@
 <translation id="4732120983431207637">ຕົວມາຍສະແຕັກ</translation>
 <translation id="4736934858538408121">ບັດສະເໝືອນ</translation>
 <translation id="473775607612524610">ອັບເດດ</translation>
+<translation id="4738065825338914557">ກຳລັງຍົກເລີກການເປັນສະມາຊິກ…</translation>
 <translation id="4738836084190194332">ຊິ້ງຂໍ້ມູນຫຼ້າສຸດ: <ph name="WHEN" /></translation>
+<translation id="474121291218385686">ກັ່ນຕອງຕາມແອັບ</translation>
 <translation id="4741753828624614066">ທ່ານຈະໄດ້ຮັບການແນະນຳທີ່ມີການປັບປຸງໃນແຖບທີ່ຢູ່</translation>
 <translation id="4742970037960872810">ລຶບໄຮໄລ້ອອກ</translation>
 <translation id="4749960740855309258">ເປີດແຖບໃໝ່</translation>
@@ -786,6 +788,7 @@
 <translation id="5099845111805573968">ເມື່ອທ່ານເລືອກເວັບໄຊເດັສທັອບເທື່ອໜຶ່ງ, ການຕັ້ງຄ່າຈະຖືກນຳໃຊ້ໄປໃສ່ເວັບໄຊໃນແຕ່ລະເທື່ອທີ່ທ່ານເຂົ້າ</translation>
 <translation id="5102401324271069229">ຖ້າເວັບໄຊພະຍາຍາມລັກເອົາລະຫັດຜ່ານຂອງທ່ານ ຫຼື ເມື່ອທ່ານດາວໂຫຼດໄຟລ໌ທີ່ເປັນອັນຕະລາຍ, Chrome ອາດສົ່ງ URL ຮວມທັງເນື້ອຫາບາງສ່ວນຂອງໜ້າໄປໃຫ້ Safe Browsing</translation>
 <translation id="510275257476243843">ຍັງເຫຼືອ 1 ຊົ່ວໂມງ</translation>
+<translation id="5114895953710637392">ປິດຊີດຕົວກັ່ນຕອງແອັບແລ້ວ.</translation>
 <translation id="5115811374190515607">ຫາ <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">ຄວາມສົນໃຈ</translation>
 <translation id="5122378528687922675">ກະລຸນາຂໍຄວາມຊ່ວຍເຫຼືອຈາກຜູ້ປົກຄອງ (<ph name="PARENT_NAME_1" /> ຫຼື <ph name="PARENT_NAME_2" />) ຂອງທ່ານ, ຫາກທ່ານຕ້ອງການ</translation>
@@ -1138,6 +1141,7 @@
 <translation id="685850645784703949">Discover ໂດຍ Google - ປິດຢູ່</translation>
 <translation id="686366188661646310">ລຶບລະຫັດຜ່ານບໍ?</translation>
 <translation id="6864459304226931083">ດາວໂຫຼດຮູບພາບ</translation>
+<translation id="686490460830618322">ຊີດຕົວກັ່ນຕອງແອັບ</translation>
 <translation id="6865313869410766144">ຕື່ມຂໍ້ມູນແບບຟອມອັດຕະໂນມັດ</translation>
 <translation id="6867400383614725881">ແຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="6869056123412990582">ຄອມພິວເຕີ</translation>
@@ -1205,6 +1209,7 @@
 <translation id="7177466738963138057">ທ່ານສາມາດປ່ຽນສິ່ງນີ້ໄດ້ພາຍຫຼັງໃນການຕັ້ງຄ່າ</translation>
 <translation id="7177873915659574692">ບໍ່ສາມາດສ້າງລະຫັດ QR ໄດ້. URL ຫຼາຍກວ່າ <ph name="CHARACTER_LIMIT" /> ຕົວອັກສອນ.</translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
+<translation id="7183517696921903380">ເປີດຊີດຕົວກັ່ນຕອງແອັບແລ້ວ.</translation>
 <translation id="7183693674623539380">ກຸ່ມແຖບ - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">ຄວບຄຸມການໃຊ້ປະຫວັດການທ່ອງເວັບກັບຂໍ້ມູນອື່ນໆຂອງທ່ານໃນບໍລິການຕ່າງໆຂອງ Google</translation>
 <translation id="7187993566681480880">ຮັກສາໃຫ້ທ່ານປອດໄພໃນ Chrome ແລະ ອາດຈະຖືກໃຊ້ເພື່ອປັບປຸງຄວາມປອດໄພໃນແອັບອື່ນຂອງ Google ເມື່ອທ່ານເຂົ້າສູ່ລະບົບ.</translation>
@@ -1331,6 +1336,7 @@
 <translation id="7780645209293383778">ລິ້ງຂໍ້ມູນນີ້ກັບບັນຊີ Google ຂອງທ່ານຊົ່ວຄາວເມື່ອທ່ານເຂົ້າສູ່ລະບົບແລ້ວ, ເພື່ອປົກປ້ອງທ່ານໃນຕ່າງໆຂອງ Google</translation>
 <translation id="7791543448312431591">ເພີ່ມ</translation>
 <translation id="7798392620021911922">ກູ້ <ph name="TAB_COUNT" /> ແຖບຄືນແລ້ວ</translation>
+<translation id="780287761701992588">ໃຊ້ບຸກມາກ, ລະຫັດຜ່ານ ແລະ ອື່ນໆຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ</translation>
 <translation id="780301667611848630">ບໍ່​, ​ຂອບ​ໃຈ</translation>
 <translation id="7808889146555843082">ການລຶບລະຫັດຜ່ານນີ້ຈະບໍ່ລຶບບັນຊີຂອງທ່ານໃນ <ph name="SITE" />. ການປ່ຽນລະຫັດຜ່ານຂອງທ່ານ ຫຼື ລຶບບັນຊີຂອງທ່ານໃນ <ph name="SITE" /> ເພື່ອຮັກສາໃຫ້ມັນປອດໄພຈາກຄົນອື່ນ.</translation>
 <translation id="7810647596859435254">ເປີດດ້ວຍ...</translation>

@@ -1432,7 +1432,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3714633008798122362">veb-taqvim</translation>
 <translation id="3714780639079136834">Mobil internet yoki Wi-Fi tarmoqlarini yoqish</translation>
 <translation id="3715016660240337709">{0,plural, =1{Faylni yuklash taqiqlangan}other{<ph name="FILE_COUNT" /> ta faylni yuklash taqiqlangan}}</translation>
-<translation id="3715545959749027023">Xavfsizlikka oid hodisalarni Chrome aniqlasa, bunga aloqador hodisalar haqidagi maʼlumotlar administratorga yuboriladi. Bu ochilgan sahifalarning URL manzillari, fayl nomlari yoki meta-axborotlar, brauzer yoki varaqlarning ishdan chiqishi hamda qurilma va Chrome foydalanuvchilari nomlaridan iborat boʻlishi mumkin.</translation>
 <translation id="3715597595485130451">Wi-Fi‘ga ulanish</translation>
 <translation id="3716622997181469465">klaviaturani qulflash</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Proksi-server, himoya devori va DNS sozlamalarini tekshirish<ph name="END_LINK" /></translation>

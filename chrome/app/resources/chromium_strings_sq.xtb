@@ -418,6 +418,7 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="813913629614996137">Po fillon...</translation>
 <translation id="8166782796394721554">Aktivizo mbrojtjen shtesë në motorin e JavaScript dhe WebAssembly të Chromium</translation>
 <translation id="81770708095080097">Ky skedar është i rrezikshëm, prandaj Chromium e ka bllokuar.</translation>
+<translation id="8232193495299001329">Chromium nuk mund të verifikojë se nga vjen kjo shtesë dhe ajo mund të jetë e pasigurt. Hiqe atë nga Chromium që të mos arrijë të shikojë dhe të ndryshojë më të dhënat e tua në sajtin që viziton ti, duke përfshirë informacionet personale.</translation>
 <translation id="8248265253516264921">Nëse një imazh nuk ka një përshkrim të dobishëm, Chromium do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google. Këtë mund ta çaktivizosh te cilësimet në çdo moment.</translation>
 <translation id="8266560134891435528">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua sepse nuk je identifikuar</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium të paralajmëron<ph name="END_LINK" /> për sajtet dhe shkarkimet e pasigurta</translation>

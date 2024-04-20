@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">មិនអាចបើក <ph name="URL" /> នៅលើ​កម្មវិធីភ្ញៀវបានទេ។</translation>
 <translation id="2359808026110333948">បន្ត</translation>
 <translation id="2366718077645204424">មិនអាចទៅកាន់ឧបករណ៍ចែករំលែកបណ្តាញ។ វាអាចមកពីការតំឡើងបណ្តាញដែលអ្នកកំពុងប្រើប្រាស់។</translation>
-<translation id="2370754117186920852">បានឃើញ<ph name="OPTIONAL_OFFLINE_REASON" />  ចុងក្រោយនៅលើអ៊ីនធឺណិតកាលពី <ph name="RELATIVE_TIMESTAMP" /></translation>
 <translation id="2504109125669302160">ផ្ដល់​ការអនុញ្ញាត 'ភាពងាយស្រួល' ឱ្យ <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">បានភ្ជាប់ទៅ <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">តើអ្នកចង់ចែករំលែកកុំព្យូទ័រនេះដើម្បីឲ្យអ្នកប្រើផ្សេងទៀតអាចមើលឃើញ និងគ្រប់គ្រងបានទេ?</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">ដំណើរការសោសុវត្ថិភាពពីចម្ងាយ</translation>
 <translation id="3581045510967524389">មិនអាចភ្ជាប់ទៅបណ្តាញទេ។ សូមពិនិត្យថាឧបករណ៍របស់អ្នកមាននៅលើអ៊ីនធឺណិត។</translation>
 <translation id="3596628256176442606">សេវាកម្មនេះបើកដំណើរការភ្ជាប់ចូលមកពីអតិថិជន Chromoting។</translation>
-<translation id="369442766917958684">ក្រៅបណ្តាញ</translation>
 <translation id="3695446226812920698">ស្វែងយល់ពីរបៀប</translation>
 <translation id="3776024066357219166">វេន Chrome Remote Desktop របស់អ្នកបានបញ្ចប់។</translation>
 <translation id="3858860766373142691">ឈ្មោះ</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">លេខសម្គាល់</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">បច្ចុប្បន្ន ដេស៍ថបរបស់អ្នកត្រូវបានចែករំលែកជាមួយ <ph name="USER" />។</translation>
-<translation id="5750083143895808682">បានចូលជា <ph name="EMAIL_ADDRESS" /> ។</translation>
 <translation id="579702532610384533">ភ្ជាប់ឡើងវិញ</translation>
 <translation id="5810269635982033450">អេក្រង់​ដំណើរការ​ដូចជា​ផ្ទាំងប៉ះ</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> បានស្នើសុំចូលប្រើ ដើម្បីមើលអេក្រង់របស់អ្នក ព្រមទាំងគ្រប់គ្រងក្ដារចុច និងកណ្ដុររបស់អ្នក។ ចុច ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ប្រសិនបើអ្នកមិនយល់ព្រមលើសំណើនេះទេ។ បើមិនដូច្នោះទេ សូមជ្រើសរើស ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ដើម្បីអនុញ្ញាតការតភ្ជាប់ នៅពេលរួចរាល់។</translation>

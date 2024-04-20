@@ -1418,7 +1418,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2042279886444479655">Perfiles activos</translation>
 <translation id="2044014337866019681">Asegúrate de que estás verificando <ph name="ACCOUNT" /> para desbloquear la sesión.</translation>
 <translation id="204497730941176055">Nombre de plantilla de certificado de Microsoft</translation>
-<translation id="2045117674524495717">Asistente de combinaciones de teclas</translation>
 <translation id="2045211794962848221">No volverás a ver este mensaje concreto</translation>
 <translation id="2045838962742066664">Escritura abreviada</translation>
 <translation id="204622017488417136">Se restaurará la versión de Chrome instalada previamente en el dispositivo y se eliminarán todas las cuentas de usuario y todos los datos locales. Esta acción no se puede deshacer.</translation>
@@ -6666,12 +6665,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6082877069782862752">Asignación de teclas</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" />: parte de un grupo sin nombre</translation>
 <translation id="6086004606538989567">La cuenta que has verificado no tiene autorización para acceder a este dispositivo.</translation>
-<translation id="6086366524552602071">Puedes personalizar Chrome a tu gusto:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Lo mejor de Google&lt;/em&gt;, para quien lo quiera. Por ejemplo, puedes elegir la Búsqueda de Google como buscador predeterminado de Chrome y utilizar el Gestor de contraseñas de Google para acceder a todas tus contraseñas en cualquier dispositivo. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Elección eficaz:&lt;/em&gt; Chrome te ofrece opciones y control mediante su configuración, así como información para ayudarte a tomar decisiones fundamentadas.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Extensiones:&lt;/em&gt; puedes ampliar las funciones de Chrome con las más de 100.000 extensiones de Chrome Web Store.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Instalada por tu administrador</translation>
 <translation id="6087746524533454243">¿Buscas la página de información del navegador? Visita</translation>
 <translation id="6087960857463881712">Cara de emoción</translation>

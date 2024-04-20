@@ -1437,7 +1437,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3714633008798122362">webkalender</translation>
 <translation id="3714780639079136834">Mobiele data of Wi-Fi aanskakel</translation>
 <translation id="3715016660240337709">{0,plural, =1{Lêer kan weens blokkering nie opgelaai word nie}other{<ph name="FILE_COUNT" /> lêers kan weens blokkering nie opgelaai word nie}}</translation>
-<translation id="3715545959749027023">Wanneer sekuriteitsgevalle deur Chrome gevlag word, word relevante data oor die gevalle aan jou administrateur gestuur. Dit kan insluit: URL’e van bladsye wat jy in Chrome besoek, lêername of metadata, blaaier- of oortjie-omvalle, en die gebruikernaam wat jy gebruik om by webgegronde apps, jou toestel en Chrome aan te meld.</translation>
 <translation id="3715597595485130451">Koppel aan Wi-Fi</translation>
 <translation id="3716622997181469465">sleutelbordslot</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Die instaanbediener, brandmuur en DNS-opstelling nagaan<ph name="END_LINK" /></translation>
@@ -2948,6 +2947,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om jou toestel in die Google-rekening te kry</translation>
 <translation id="6695428916538794739">Aksie- en avontuurflieks</translation>
 <translation id="6696424331653607346">Reisgidse en reispraatjies</translation>
+<translation id="6698097747703777657">Het jy nie die kode ontvang nie? <ph name="BEGIN_LINK" />Kry nuwe kode<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Geskep:</translation>
 <translation id="67007264085648978">Tydglyer</translation>
 <translation id="6702851555558236418">Oudio- en musieksagteware</translation>

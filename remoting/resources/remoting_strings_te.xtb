@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">క్లయింట్ పరికరంలో <ph name="URL" />‌ను తెరవడం విఫలమైంది.</translation>
 <translation id="2359808026110333948">కొనసాగించండి</translation>
 <translation id="2366718077645204424">హోస్ట్‌కు చేరుకోవడం సాధ్యపడలేదు. ఇది బహుశా మీరు ఉపయోగిస్తున్న నెట్‌వర్క్ కాన్ఫిగరేషన్ వల్ల ఏర్పడి ఉండవచ్చు.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> ఆన్‌లైన్‌లో చివరిగా కనిపించినది <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" />కు 'యాక్సెస్ సామర్థ్యం' అనుమతిని మంజూరు చేయండి</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" />కి కనెక్ట్ అయ్యింది</translation>
 <translation id="2540992418118313681">మీరు ఈ కంప్యూటర్‌ను మరో వినియోగదారు చూడటానికి మరియు నియంత్రించడానికి దీన్ని షేర్‌ చేయాలని అనుకుంటున్నారా?</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">భద్రతా కీ రిమోటింగ్ ప్రాసెస్</translation>
 <translation id="3581045510967524389">నెట్‌వర్క్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు. దయచేసి మీ పరికరం ఆన్‌లైన్‌లో ఉందా? అని చెక్ చేయండి.</translation>
 <translation id="3596628256176442606">ఈ సేవ Chromoting క్లయింట్‌ల నుండి ఇన్‌కమింగ్ కనెక్షన్‌లను అనుమతిస్తుంది.</translation>
-<translation id="369442766917958684">ఆఫ్‌లైన్‌లో ఉన్నారు.</translation>
 <translation id="3695446226812920698">ఎలాగో తెలుసుకోండి</translation>
 <translation id="3776024066357219166">మీ Chrome రిమోట్ డెస్క్‌టాప్ సెషన్ ముగిసింది.</translation>
 <translation id="3858860766373142691">పేరు</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">మీ డెస్క్‌టాప్ ప్రస్తుతం <ph name="USER" />తో షేర్‌ చేయబడింది.</translation>
-<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> లాగా సైన్ ఇన్ చేశారు.</translation>
 <translation id="579702532610384533">మళ్ళీ కనెక్ట్ చేయి</translation>
 <translation id="5810269635982033450">స్క్రీన్ ట్రాక్‌ప్యాడ్ లాగా పని చేస్తుంది</translation>
 <translation id="5823554426827907568">మీ స్క్రీన్‌ను చూడడానికి, ఇంకా మీ కీబోర్డ్, మౌస్‌ను కంట్రోల్ చేయడానికి కావాల్సిన యాక్సెస్ కోసం <ph name="CLIENT_USERNAME" /> రిక్వెస్ట్ చేశారు. మీరు ఈ రిక్వెస్ట్ కోసం వేచి ఉండకూదనుకుంటే "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />"ను నొక్కండి. లేకపోతే, కనెక్షన్ సిద్ధంగా ఉన్నప్పుడు దానిని అనుమతించడానికి "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />"ను ఎంచుకోండి.</translation>

@@ -28,7 +28,6 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="2329392777730037872">Gagal membuka <ph name="URL" /> pada klien.</translation>
 <translation id="2359808026110333948">Teruskan</translation>
 <translation id="2366718077645204424">Tidak dapat mencapai hos. Hal ini mungkin disebabkan oleh konfigurasi rangkaian yang anda gunakan.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Terakhir dilihat dalam talian <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Berikan kebenaran 'Kebolehaksesan' kepada <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Disambungkan ke <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Adakah anda ingin berkongsi komputer ini untuk dilihat dan dikawal oleh pengguna lain?</translation>
@@ -53,7 +52,6 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="3423542133075182604">Proses Kaedah Jauh Kunci Keselamatan</translation>
 <translation id="3581045510967524389">Tidak dapat menyambung ke rangkaian. Sila pastikan peranti anda berada dalam talian.</translation>
 <translation id="3596628256176442606">Perkhidmatan ini membolehkan sambungan masuk daripada klien Chromoting.</translation>
-<translation id="369442766917958684">Luar talian.</translation>
 <translation id="3695446226812920698">Ketahui caranya</translation>
 <translation id="3776024066357219166">Sesi Desktop Jauh Chrome anda telah tamat.</translation>
 <translation id="3858860766373142691">Nama</translation>
@@ -105,7 +103,6 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Desktop anda sedang dikongsi dengan <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Log masuk sebagai <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Sambung semula</translation>
 <translation id="5810269635982033450">Skrin bertindak seperti pad jejak</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> telah meminta akses untuk melihat skrin anda serta mengawal papan kekunci dan tetikus anda. Tekan ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' jika anda tidak menjangkakan permintaan ini. Jika tidak, pilih ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' untuk membenarkan sambungan apabila anda bersedia.</translation>

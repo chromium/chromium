@@ -1429,7 +1429,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2042279886444479655">Aktív profilok</translation>
 <translation id="2044014337866019681">A munkamenet zárolásának feloldásához igazolja a következő fiókot: <ph name="ACCOUNT" />.</translation>
 <translation id="204497730941176055">Microsoft tanúsítványsablon neve</translation>
-<translation id="2045117674524495717">Billentyűparancsokat ismertető súgó</translation>
 <translation id="2045211794962848221">Ez a konkrét üzenet nem fog többé megjelenni</translation>
 <translation id="2045838962742066664">Gyorsírás</translation>
 <translation id="204622017488417136">Eszköze visszatér a Chrome korábban telepített példányához. A rendszer minden felhasználói fiókot és helyi adatot eltávolít. A műveletet nem lehet visszavonni.</translation>
@@ -6682,12 +6681,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6082877069782862752">Billentyűpárosítások megadása</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – név nélküli csoport tagja</translation>
 <translation id="6086004606538989567">Az igazolt fióknak nincs jogosultsága az eszközhöz való hozzáférésre.</translation>
-<translation id="6086366524552602071">A Chrome-ot saját kedve szerint személyre szabhatja:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;A Google legjava&lt;/em&gt; azoknak, akiknek szükségük van rá. Kiválaszthatja például a Google Keresőt a Chrome alapértelmezett keresőmotorjaként, a Google Jelszókezelővel pedig bármely eszközön hozzáférhet az összes jelszavához. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Átgondolt választás&lt;/em&gt;: A Chrome a beállításokkal választási és vezérlési lehetőségeket kínál, valamint információkat biztosít, hogy Ön átgondolt döntéseket hozhasson.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Bővítmények&lt;/em&gt;: A Chrome funkcióit több mint 100 000 bővítménnyel bővítheti a Chrome Webáruházon keresztül.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">A rendszergazda telepítette</translation>
 <translation id="6087746524533454243">A böngésző névjegyoldalát keresi? Nyissa meg ezt az oldalt:</translation>
 <translation id="6087960857463881712">Menő arc</translation>

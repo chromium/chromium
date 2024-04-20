@@ -702,7 +702,9 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4732120983431207637">Moduli i zbërthimit të stivës</translation>
 <translation id="4736934858538408121">Karta virtuale</translation>
 <translation id="473775607612524610">Përditësoje</translation>
+<translation id="4738065825338914557">Po çabonohet…</translation>
 <translation id="4738836084190194332">Sinkronizimi i fundit: <ph name="WHEN" /></translation>
+<translation id="474121291218385686">Filtro sipas aplikacionit</translation>
 <translation id="4741753828624614066">Do të marrësh sugjerime të përmirësuara në shiritin e kërkimit</translation>
 <translation id="4742970037960872810">Hiq theksimin</translation>
 <translation id="4749960740855309258">Hap një skedë të re</translation>
@@ -786,6 +788,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5099845111805573968">Kur zgjedh një herë sajtin për desktop, cilësimi zbatohet te sajti sa herë që e viziton atë</translation>
 <translation id="5102401324271069229">Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë URL-të, duke përfshirë pjesë të përmbajtjes së faqeve te "Shfletimi i sigurt"</translation>
 <translation id="510275257476243843">1 orë e mbetur</translation>
+<translation id="5114895953710637392">Fleta e filtrit të aplikacioneve është mbyllur.</translation>
 <translation id="5115811374190515607">te <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Interesat</translation>
 <translation id="5122378528687922675">Nëse ke nevojë për ndihmë, pyet prindin tënd (<ph name="PARENT_NAME_1" /> ose <ph name="PARENT_NAME_2" />)</translation>
@@ -1138,6 +1141,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="685850645784703949">"Zbulo" nga Google - joaktive</translation>
 <translation id="686366188661646310">Të fshihet fjalëkalimi?</translation>
 <translation id="6864459304226931083">Shkarko imazhin</translation>
+<translation id="686490460830618322">Fleta e filtrit të aplikacioneve</translation>
 <translation id="6865313869410766144">Plotëso automatikisht të dhënat e formularit</translation>
 <translation id="6867400383614725881">Skedë e re "e fshehtë"</translation>
 <translation id="6869056123412990582">kompjuter</translation>
@@ -1205,6 +1209,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7177466738963138057">Këtë mund ta ndryshosh më vonë te "Cilësimet"</translation>
 <translation id="7177873915659574692">Kodi QR nuk mund të krijohet. URL-ja është më shumë se <ph name="CHARACTER_LIMIT" /> karaktere.</translation>
 <translation id="7180611975245234373">Rifresko</translation>
+<translation id="7183517696921903380">Fleta e filtrit të aplikacioneve është hapur.</translation>
 <translation id="7183693674623539380">Grupi i skedave - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">Kontrollo se si përdoret historiku i shfletimit me të dhënat e tua të tjera nëpër shërbimet e Google</translation>
 <translation id="7187993566681480880">Të mban të sigurt në Chrome dhe mund të përdoret për të përmirësuar sigurinë tënde në aplikacionet e tjera të Google kur je i identifikuar.</translation>
@@ -1331,6 +1336,7 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7780645209293383778">I lidh përkohësisht këto të dhëna me "Llogarinë tënde të Google" kur je identifikuar, për të të mbrojtur në të gjitha aplikacionet e Google</translation>
 <translation id="7791543448312431591">Shtoje</translation>
 <translation id="7798392620021911922">Rikthyer <ph name="TAB_COUNT" /> skeda</translation>
+<translation id="780287761701992588">Merr faqeshënuesit, fjalëkalimet etj. në të gjitha pajisjet e tua</translation>
 <translation id="780301667611848630">Jo, faleminderit</translation>
 <translation id="7808889146555843082">Fshirja e këtij fjalëkalimi nuk do ta fshijë llogarinë tënde në <ph name="SITE" />. Ndrysho fjalëkalimin ose fshi llogarinë tënde në <ph name="SITE" /> për ta mbajtur të sigurt nga të tjerët.</translation>
 <translation id="7810647596859435254">Hape me...</translation>

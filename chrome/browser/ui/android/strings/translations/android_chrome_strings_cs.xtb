@@ -702,7 +702,9 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4732120983431207637">Rozbalovač zásobníku</translation>
 <translation id="4736934858538408121">Virtuální karta</translation>
 <translation id="473775607612524610">Aktualizovat</translation>
+<translation id="4738065825338914557">Odhlašování…</translation>
 <translation id="4738836084190194332">Poslední synchronizace: <ph name="WHEN" /></translation>
+<translation id="474121291218385686">Filtrovat podle aplikace</translation>
 <translation id="4741753828624614066">V adresním řádku se vám budou zobrazovat lepší návrhy</translation>
 <translation id="4742970037960872810">Odstranit zvýraznění</translation>
 <translation id="4749960740855309258">Otevření nové karty</translation>
@@ -786,6 +788,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5099845111805573968">Když jednou vyberete web pro počítače, toto nastavení bude na web použito při každé návštěvě</translation>
 <translation id="5102401324271069229">Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chrome Bezpečnému prohlížení odeslat adresy URL, včetně částí obsahu stránky</translation>
 <translation id="510275257476243843">Zbývá: 1 h</translation>
+<translation id="5114895953710637392">Panel filtrování podle aplikace je zavřený.</translation>
 <translation id="5115811374190515607">do: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Zájmy</translation>
 <translation id="5122378528687922675">Pokud potřebuješ pomoc, požádej rodiče (<ph name="PARENT_NAME_1" /> nebo <ph name="PARENT_NAME_2" />)</translation>
@@ -1051,6 +1054,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="6477928892249167417">Tyto weby jsou pro vás zřejmě důležité:</translation>
 <translation id="6481963882741794338">Propojte Chrome a další služby Google pro personalizaci a další účely</translation>
 <translation id="6482749332252372425">Stažení souboru <ph name="FILE_NAME" /> se nezdařilo z důvodu nedostatku místa v úložišti.</translation>
+<translation id="6495590690749880440">Otevřít skupinu karet?</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{Byl stažen jeden soubor}few{Byly staženy # soubory}many{Bylo staženo # souboru}other{Bylo staženo # souborů}}</translation>
 <translation id="6508722015517270189">Restartujte Chrome</translation>
 <translation id="6518133107902771759">Ověřit</translation>
@@ -1137,6 +1141,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="685850645784703949">Kanál Objevit od Googlu – vypnuto</translation>
 <translation id="686366188661646310">Vymazat heslo?</translation>
 <translation id="6864459304226931083">Stáhnout obrázek</translation>
+<translation id="686490460830618322">Panel filtrování podle aplikace</translation>
 <translation id="6865313869410766144">Automatické vyplňování formulářů</translation>
 <translation id="6867400383614725881">Nová anonymní karta</translation>
 <translation id="6869056123412990582">počítač</translation>
@@ -1204,6 +1209,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7177466738963138057">Svoji volbu můžete později změnit v nabídce Nastavení</translation>
 <translation id="7177873915659574692">QR kód nelze vytvořit. Adresa URL je delší než <ph name="CHARACTER_LIMIT" /> znaků.</translation>
 <translation id="7180611975245234373">Obnovit</translation>
+<translation id="7183517696921903380">Panel filtrování podle aplikace je otevřený.</translation>
 <translation id="7183693674623539380">Skupina karet – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">Mějte pod kontrolou, jak se historie prohlížení používá s vašimi dalšími daty ve službách Google</translation>
 <translation id="7187993566681480880">Zajišťuje vám bezpečí v Chromu a může zvýšit vaši bezpečnost v jiných aplikacích Google, když jste přihlášeni.</translation>
@@ -1330,6 +1336,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7780645209293383778">Když jste přihlášeni k účtu Google, jsou s ním tato data dočasně spojena, abychom vás mohli v aplikacích Google chránit</translation>
 <translation id="7791543448312431591">Přidat</translation>
 <translation id="7798392620021911922">Obnovené karty: <ph name="TAB_COUNT" /></translation>
+<translation id="780287761701992588">Mějte své záložky, hesla a další obsah na všech svých zařízeních</translation>
 <translation id="780301667611848630">Ne, děkuji</translation>
 <translation id="7808889146555843082">Odstraněním tohoto hesla nesmažete svůj účet na webu <ph name="SITE" />. Pokud chcete ochránit svá data, změňte své heslo nebo účet na <ph name="SITE" /> smažte.</translation>
 <translation id="7810647596859435254">Otevřít v aplikaci…</translation>

@@ -1437,7 +1437,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3714633008798122362">calendr gwe</translation>
 <translation id="3714780639079136834">Wrthi'n troi data symudol neu Wi-Fi ymlaen</translation>
 <translation id="3715016660240337709">{0,plural, =1{Ffeil wedi'i rhwystro rhag cael ei huwchlwytho}zero{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu huwchlwytho}two{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu huwchlwytho}few{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu huwchlwytho}many{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu huwchlwytho}other{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu huwchlwytho}}</translation>
-<translation id="3715545959749027023">Pan fydd digwyddiadau diogelwch yn cael eu nodi gan Chrome, anfonir data perthnasol am y digwyddiadau at eich gweinyddwr. Gall hyn gynnwys cyfeiriadau URL o dudalennau rydych yn ymweld â nhw yn Chrome, enwau ffeiliau neu fetaddata, toriadau porwr neu dab a'r enw defnyddiwr rydych yn ei ddefnyddio i fewngofnodi i apiau ar-lein, i'ch dyfais ac i Chrome.</translation>
 <translation id="3715597595485130451">Cysylltu â Wi-Fi</translation>
 <translation id="3716622997181469465">clo bysellfwrdd</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Wrthi'n gwirio'r dirprwy weinydd, y wal dân, a'r ffurfweddiad DNS<ph name="END_LINK" /></translation>

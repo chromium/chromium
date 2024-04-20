@@ -1436,7 +1436,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3714633008798122362">tīmekļa kalendārs</translation>
 <translation id="3714780639079136834">Ieslēdziet mobilo datu savienojumu vai Wi-Fi.</translation>
 <translation id="3715016660240337709">{0,plural, =1{Faila augšupielāde ir bloķēta}zero{<ph name="FILE_COUNT" /> failu augšupielāde ir bloķēta}one{<ph name="FILE_COUNT" /> faila augšupielāde ir bloķēta}other{<ph name="FILE_COUNT" /> failu augšupielāde ir bloķēta}}</translation>
-<translation id="3715545959749027023">Ja pārlūkā Chrome tiek atzīmēti ar drošību saistīti notikumi, atbilstošie dati par notikumiem tiek nosūtīti administratoram. Šie dati var būt, piemēram, pārlūkā Chrome apmeklēto lapu URL, failu nosaukumi vai metadati, pārlūka vai ciļņu avārijas, kā arī lietotājvārds, ar kuru pierakstāties tīmekļa lietojumprogrammās, ierīcē un pārlūkā Chrome.</translation>
 <translation id="3715597595485130451">Savienojuma izveide ar Wi-Fi</translation>
 <translation id="3716622997181469465">tastatūras bloķēšana</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Pārbaudiet starpniekserveri, ugunsmūri un DNS konfigurāciju<ph name="END_LINK" />.</translation>

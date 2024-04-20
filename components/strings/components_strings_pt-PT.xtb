@@ -1437,7 +1437,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3714633008798122362">calendário Web</translation>
 <translation id="3714780639079136834">Ativar os dados móveis ou o Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{O carregamento do ficheiro foi bloqueado}other{O carregamento de <ph name="FILE_COUNT" /> ficheiros foi bloqueado}}</translation>
-<translation id="3715545959749027023">Quando o Chrome sinaliza eventos de segurança, são enviados dados relevantes acerca dos eventos ao seu administrador. Estes podem incluir os URLs das páginas que visita no Chrome, os metadados ou os nomes de ficheiros, as falhas de sistema do navegador ou dos separadores e o nome de utilizador que usa para iniciar sessão nas aplicações baseadas na Web, no dispositivo e no Chrome.</translation>
 <translation id="3715597595485130451">Estabelecer ligação a redes Wi-Fi</translation>
 <translation id="3716622997181469465">bloqueio do teclado</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Rever a configuração do proxy, da firewall e de DNS<ph name="END_LINK" /></translation>

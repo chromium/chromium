@@ -1421,7 +1421,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2042279886444479655">Aktiivsed profiilid</translation>
 <translation id="2044014337866019681">Seansi avamiseks veenduge, et kinnitaksite konto <ph name="ACCOUNT" />.</translation>
 <translation id="204497730941176055">Microsofti sertifikaadi malli nimi</translation>
-<translation id="2045117674524495717">Klaviatuuri otseteede abiline</translation>
 <translation id="2045211794962848221">Te ei näe enam seda konkreetset sõnumit</translation>
 <translation id="2045838962742066664">Kiirkirja sisestamine</translation>
 <translation id="204622017488417136">Teie seadmes taastatakse varem installitud Chrome'i versioon. Kõik kasutajakontod ja kohalikud andmed kustutatakse. Seda ei saa tagasi võtta.</translation>
@@ -6673,12 +6672,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6082877069782862752">Klahvide vastendamine</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – osa nimeta grupist</translation>
 <translation id="6086004606538989567">Kontol, mille kinnitasite, pole luba sellele seadmele juurdepääsemiseks.</translation>
-<translation id="6086366524552602071">Saate Chrome'i soovitud viisil kohandada:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Parim Google'ist&lt;/em&gt; neile, kes seda soovivad. Näiteks saate valida Google'i otsingu Chrome'i vaikeotsingumootoriks ja kasutada Google'i paroolihaldurit, et kõik oma paroolid ükskõik millisesse seadmesse salvestada. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Mõtestatud valik&lt;/em&gt;: Chrome pakub teile seadete kaudu valiku- ja juhtimisvõimalust ning teavet, mis aitab teil teha mõtestatud otsuseid.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Extensions&lt;/em&gt;: Chrome'i funktsioone saate Chrome'i veebipoes laiendada enam kui 100 000 laiendusega.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Selle installis administraator</translation>
 <translation id="6087746524533454243">Kas otsite brauseri teabe lehte? Külastage saiti</translation>
 <translation id="6087960857463881712">Lahe nägu</translation>

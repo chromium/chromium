@@ -1437,7 +1437,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3714633008798122362">calendari web</translation>
 <translation id="3714780639079136834">Activa les dades mòbils o la Wi-Fi.</translation>
 <translation id="3715016660240337709">{0,plural, =1{S'ha bloquejat el fitxer perquè no es pugui penjar}other{S'han bloquejat <ph name="FILE_COUNT" /> fitxers perquè no es puguin penjar}}</translation>
-<translation id="3715545959749027023">Quan Chrome marca esdeveniments de seguretat, se n'envien les dades rellevants a l'administrador. Per exemple, URL de pàgines que visites a Chrome, noms o metadades de fitxers, bloquejos de navegadors o de pestanyes i el nom d'usuari que fas servir per iniciar la sessió en aplicacions web, al dispositiu i a Chrome.</translation>
 <translation id="3715597595485130451">Connexió a xarxes Wi-Fi</translation>
 <translation id="3716622997181469465">bloqueig del teclat</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Comproveu el servidor intermediari, el tallafoc i la configuració de DNS<ph name="END_LINK" /></translation>

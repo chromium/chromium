@@ -1437,7 +1437,6 @@
 <translation id="3714633008798122362">יומן אינטרנט</translation>
 <translation id="3714780639079136834">‏להפעיל את חבילת הגלישה או את ה-Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{אין אפשרות להעלות את הקובץ}one{אין אפשרות להעלות <ph name="FILE_COUNT" /> קבצים}two{אין אפשרות להעלות <ph name="FILE_COUNT" /> קבצים}other{אין אפשרות להעלות <ph name="FILE_COUNT" /> קבצים}}</translation>
-<translation id="3715545959749027023">‏כאשר אירועי אבטחה מדווחים על ידי Chrome, נתונים רלוונטיים לגבי האירועים האלה נשלחים לאדמין. הנתונים האלה יכולים לכלול את כתובות ה-URL של הדפים שבהם ביקרת ב-Chrome, השמות או המטא-נתונים של הקבצים, קריסות של כרטיסיות או הדפדפן ואת שם המשתמש שבאמצעותו נכנסת לאפליקציות מבוססות-אינטרנט, למכשיר שלך ול-Chrome.</translation>
 <translation id="3715597595485130451">‏התחברות ל-Wi-Fi</translation>
 <translation id="3716622997181469465">נעילה של המקלדת</translation>
 <translation id="3717027428350673159">‏<ph name="BEGIN_LINK" />לבדוק את תצורת ה-DNS, חומת האש ושרת ה-Proxy<ph name="END_LINK" /></translation>

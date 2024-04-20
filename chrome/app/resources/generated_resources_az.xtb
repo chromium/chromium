@@ -1414,7 +1414,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2042279886444479655">Aktiv profillər</translation>
 <translation id="2044014337866019681">Seansı blokdan çıxarmaq üçün <ph name="ACCOUNT" /> hesabını doğruladığınıza əmin olun.</translation>
 <translation id="204497730941176055">Microsoft Sertifikat Şablon adı</translation>
-<translation id="2045117674524495717">Klaviatura Qısayol Yardımı</translation>
 <translation id="2045211794962848221">Bu xüsusi mesajı bir daha görməyəcəksiniz</translation>
 <translation id="2045838962742066664">Stenoqrafiya</translation>
 <translation id="204622017488417136">Cihazınız əvvəlcə quraşdırılmış Chrome versiyasına qaytarılacaq. Bütün istifadəçi hesabları və lokal data silinəcək. Bu geri qaytarıla bilməz.</translation>
@@ -6662,12 +6661,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6082877069782862752">Açarların əks olunması</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - Adsız qrupun hissəsi</translation>
 <translation id="6086004606538989567">Doğruladığınız hesabın bu cihaza giriş icazəsi yoxdur.</translation>
-<translation id="6086366524552602071">Chrome-u fərdiləşdirə bilərsiniz:
-      &lt;ul&gt;
-        &lt;li&gt;İstəyənlər üçün &lt;em&gt;Google-un ən yaxşı versiyası&lt;/em&gt;. Məsələn, Google Axtarışı Chrome-un defolt axtarış mexanizmi kimi seçə və istənilən cihazda bütün parolları əldə etmək üçün Google Parol Meneceri istifadə edə bilərsiniz. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Mənalı seçim&lt;/em&gt;: Mənalı qərarlar qəbul etməyiniz üçün Chrome ayar və məlumatlarla birgə seçim və nəzarət təklif edir.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Artırmalar&lt;/em&gt;: Chrome funksionallığını Chrome Veb Marketdə 100000-dən çox artırma ilə genişləndirə bilərsiniz.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Administratorunuz tərəfindən quraşdırılıb</translation>
 <translation id="6087746524533454243">Brauzerin haqqında səhifəsini axtarırsınız? Ziyarət edin</translation>
 <translation id="6087960857463881712">Zəhmli üz</translation>

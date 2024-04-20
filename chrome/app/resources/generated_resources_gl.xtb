@@ -1417,7 +1417,6 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2042279886444479655">Perfís activos</translation>
 <translation id="2044014337866019681">Asegúrate de estar verificando a conta <ph name="ACCOUNT" /> para desbloquear a sesión.</translation>
 <translation id="204497730941176055">Nome do modelo do certificado de Microsoft</translation>
-<translation id="2045117674524495717">Axuda de atallos de teclado</translation>
 <translation id="2045211794962848221">Non volverás ver esta mensaxe concreta</translation>
 <translation id="2045838962742066664">Escritura abreviada</translation>
 <translation id="204622017488417136">O teu dispositivo volverá á versión de Chrome instalada anteriormente. Eliminaranse todas as contas de usuario e os datos locais. Esta acción non se pode desfacer.</translation>
@@ -6666,12 +6665,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6082877069782862752">Asignación de teclas</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> (forma parte dun grupo sen nome)</translation>
 <translation id="6086004606538989567">A conta que verificaches non está autorizada para acceder a este dispositivo.</translation>
-<translation id="6086366524552602071">Podes personalizar Chrome como queiras:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;O mellor de Google&lt;/em&gt; para aqueles que o queiran. Por exemplo, podes escoller a Busca de Google como o buscador predeterminado de Google, así como usar o xestor de contrasinais de Google para poder acceder a todos os contrasinais desde calquera dispositivo. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Eleccións importantes&lt;/em&gt;: Chrome permíteche seleccionar e controlar a configuración, así como a información, para que poidas tomar decisións importantes.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Extensións&lt;/em&gt;: Podes ampliar a funcionalidade de Chrome con máis de 100.000 extensións en Chrome Web Store.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Extensión instalada polo administrador</translation>
 <translation id="6087746524533454243">Buscas a páxina de información do navegador? Visita</translation>
 <translation id="6087960857463881712">Cara de sorpresa</translation>

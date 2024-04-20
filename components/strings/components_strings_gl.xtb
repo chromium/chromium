@@ -1437,7 +1437,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3714633008798122362">calendario web</translation>
 <translation id="3714780639079136834">Activar os datos móbiles ou a wifi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Bloqueouse a carga do ficheiro}other{Bloqueouse a carga de <ph name="FILE_COUNT" /> ficheiros}}</translation>
-<translation id="3715545959749027023">Cando Chrome marca un evento de seguranza, envíanselle datos relevantes sobre este ao teu administrador. Entre eles poden incluírse os URL das páxinas que visitas en Chrome, metadatos ou nomes de ficheiros, información sobre fallos do navegador ou das pestanas e o nome de usuario que utilizas para iniciar sesión nas aplicacións baseadas na Web, no teu dispositivo e en Chrome.</translation>
 <translation id="3715597595485130451">Conectarse á wifi</translation>
 <translation id="3716622997181469465">bloqueo do teclado</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Comprobar o proxy, o firewall e a configuración de DNS<ph name="END_LINK" /></translation>

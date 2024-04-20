@@ -1437,7 +1437,6 @@
 <translation id="3714633008798122362">Agenda Web</translation>
 <translation id="3714780639079136834">D'activer les données mobiles ou le Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Le téléversement du fichier a été bloqué}one{Le téléversement de <ph name="FILE_COUNT" /> fichier a été bloqué}other{Le téléversement de <ph name="FILE_COUNT" /> fichiers a été bloqué}}</translation>
-<translation id="3715545959749027023">Lorsque Chrome signale des événements relatifs à la sécurité, les données pertinentes sur les événements sont envoyées à votre administrateur. Ces données pourraient comprendre les URL des pages que vous visitez dans Chrome, les noms de fichiers ou les métadonnées, les plantages du navigateur ou des onglets, et le nom d'utilisateur que vous utilisez pour vous connecter aux applications Web, à votre appareil et à Chrome.</translation>
 <translation id="3715597595485130451">Connexion au réseau Wi-Fi</translation>
 <translation id="3716622997181469465">verrouillage du clavier</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />De vérifier la configuration du mandataire, du pare-feu et du DNS<ph name="END_LINK" /></translation>

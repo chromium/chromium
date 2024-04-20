@@ -1438,7 +1438,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3714633008798122362">žiniatinklio kalendorius</translation>
 <translation id="3714780639079136834">Įjungti mobiliojo ryšio duomenis arba „Wi-Fi“</translation>
 <translation id="3715016660240337709">{0,plural, =1{Failas užblokuotas, kad nebūtų galima įkelti}one{<ph name="FILE_COUNT" /> failas užblokuotas, kad nebūtų galima įkelti}few{<ph name="FILE_COUNT" /> failai užblokuoti, kad nebūtų galima įkelti}many{<ph name="FILE_COUNT" /> failo užblokuota, kad nebūtų galima įkelti}other{<ph name="FILE_COUNT" /> failų užblokuota, kad nebūtų galima įkelti}}</translation>
-<translation id="3715545959749027023">Kai saugos įvykius pažymi „Chrome“, atitinkami įvykių duomenys išsiunčiami administratoriui. Tai gali būti naršyklėje „Chrome“ lankomų puslapių URL, failų pavadinimai ar metaduomenys, naršyklės ar skirtukų strigtys ir naudotojo vardas, kurį naudodami prisijungiate prie žiniatinklio programų, įrenginio ir „Chrome“.</translation>
 <translation id="3715597595485130451">Prisijungimas prie „Wi-Fi“</translation>
 <translation id="3716622997181469465">klaviatūros užraktas</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Patikrinti tarpinio serverio, užkardos ir DNS konfigūraciją<ph name="END_LINK" /></translation>

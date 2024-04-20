@@ -28,7 +28,6 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="2329392777730037872">Hapja e <ph name="URL" /> në pajisjen e klientit dështoi.</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2366718077645204424">Strehuesi nuk mund të arrihet. Kjo ndodh ndoshta për shkak të konfigurimit të rrjetit që po përdor.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Parë për herë të fundit online <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Jepi autorizim "Qasshmërisë" te <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">U lidh me <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Dëshiron ta ndash këtë kompjuter për t'u parë dhe kontrolluar nga një përdorues tjetër?</translation>
@@ -53,7 +52,6 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="3423542133075182604">Procesi në largësi i çelësit të sigurisë</translation>
 <translation id="3581045510967524389">Nuk mund të lidhej me rrjetin. Kontrollo që pajisja jote të jetë online.</translation>
 <translation id="3596628256176442606">Ky shërbim bën të mundur lidhjet hyrëse nga klientët e Chromoting.</translation>
-<translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Mëso se si</translation>
 <translation id="3776024066357219166">Sesioni yt i "Desktopit në distancë të Chrome" ka përfunduar.</translation>
 <translation id="3858860766373142691">Emri</translation>
@@ -105,7 +103,6 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="5601503069213153581">Kodi PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Desktopi yt është ndarë aktualisht me <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Identifikuar si <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Rilidhe</translation>
 <translation id="5810269635982033450">Ekrani vepron si bllok me prekje</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ka kërkuar qasje për të parë ekranin tënd dhe për të kontrolluar tastierën dhe miun tënd. Shtyp "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" nëse nuk e prisje këtë kërkesë. Përndryshe zgjidh "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" për të lejuar lidhjen kur të jesh gati.</translation>

@@ -1433,7 +1433,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2042279886444479655">Aktivni profili</translation>
 <translation id="2044014337866019681">Prepričajte se, da zaradi odklepanja seje preverjate račun <ph name="ACCOUNT" />.</translation>
 <translation id="204497730941176055">Microsoftovo ime predloge potrdila</translation>
-<translation id="2045117674524495717">Pomočnik za bližnjične tipke</translation>
 <translation id="2045211794962848221">To sporočilo ne bo več prikazano.</translation>
 <translation id="2045838962742066664">Stenografsko tipkanje</translation>
 <translation id="204622017488417136">Naprava bo povrnjena na prej nameščeno različico Chroma. Vsi uporabniški računi in lokalni podatki bodo odstranjeni. Tega ni mogoče razveljaviti.</translation>
@@ -6688,12 +6687,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6082877069782862752">Dodelitev tipk</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – del neimenovane skupine</translation>
 <translation id="6086004606538989567">Račun, ki ste ga preverili, ni pooblaščen za dostopanje do te naprave.</translation>
-<translation id="6086366524552602071">Chrome lahko prilagodite po svojih željah:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Najboljše iz Googla&lt;/em&gt; za vse, ki to želijo. Izberete lahko na primer, da je Iskanje Google privzeti iskalnik v Chromu, z Googlovim upraviteljem gesel pa si zagotovite vsa gesla v kateri koli napravi. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Pomembna izbira&lt;/em&gt;: Chrome vam ponuja izbiro in nadzor z nastavitvami ter informacije, ki vam pomagajo pri sprejemanju pomembnih odločitev.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Razširitve&lt;/em&gt;: Funkcije Chroma lahko razširite z več kot 100.000 razširitvami v Spletni trgovini Chrome.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Namestil skrbnik</translation>
 <translation id="6087746524533454243">Ali iščete stran z vizitko brskalnika? Obiščite</translation>
 <translation id="6087960857463881712">Navdušen obraz</translation>

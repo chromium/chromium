@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">ক্লায়েণ্টৰ ডিভাইচটোত <ph name="URL" /> খুলিব পৰা নগ’ল।</translation>
 <translation id="2359808026110333948">অব্যাহত ৰাখক</translation>
 <translation id="2366718077645204424">হ‘ষ্টৰ সৈতে সংযোগ কৰিব পৰা নগ‘ল। এইটো সম্ভৱতঃ আপুনি ব্যৱহাৰ কৰি থকা নেটৱৰ্কটোৰ কনফিগাৰেশ্বনৰ কাৰণে হৈছে।</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  অন্তিমবাৰ অনলাইন দেখা গৈছিল <ph name="RELATIVE_TIMESTAMP" />ত।</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" />ক সাধ্য সুবিধাসমূহৰ অনুমতি দিয়ক</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" />ৰ সৈতে সংযোজিত</translation>
 <translation id="2540992418118313681">আপুনি এই কম্পিউটাৰটো আন ব্যৱহাৰকাৰীয়ে ব্যৱহাৰ কৰিবলৈ বা চাবলৈ শ্বেয়াৰ কৰিবনে?</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">সুৰক্ষাৰ চাবি ৰিম’টিং প্ৰক্ৰিয়া</translation>
 <translation id="3581045510967524389">নেটৱৰ্কৰ সৈতে সংযোগ কৰিব পৰা নগ’ল৷ অনুগ্ৰহ কৰি আপোনাৰ ডিভাইচ অনলাইন হৈ আছেনে নাই চাওক৷</translation>
 <translation id="3596628256176442606">এই সেৱাটোৱে Chromoting ক্লাইণ্টৰ অন্তৰ্গামী সংযোগসমূহ সক্ষম কৰে।</translation>
-<translation id="369442766917958684">অফলাইন।</translation>
 <translation id="3695446226812920698">কেনেকৈ কৰিব সেয়া জানক</translation>
 <translation id="3776024066357219166">আপোনাৰ Chrome ৰিম’ট ডেস্কটপ ছেশ্বন অন্ত পৰিছে।</translation>
 <translation id="3858860766373142691">নাম</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">পিন</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">আপোনাৰ ডেস্কট’প বৰ্তমান <ph name="USER" />ৰ সৈতে শ্বেয়াৰ কৰা হৈছে৷</translation>
-<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> ৰূপে ছাইন ইন কৰা হৈছে।</translation>
 <translation id="579702532610384533">পুনৰ সংযোগ কৰক</translation>
 <translation id="5810269635982033450">স্ক্ৰীণে ট্ৰেকপেড হিচাপে কার্য কৰে</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" />এ আপোনাৰ স্ক্ৰীনখন চাবলৈ আৰু আপোনাৰ কীব’ৰ্ড আৰু মাউছ নিয়ন্ত্ৰণ কৰিবলৈ এক্সেছৰ অনুৰোধ কৰিছে। যদি এই অনুৰোধটো আপোনাৰ বাবে অনাকাংক্ষিত, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />''ত টিপক। অন্যথা, সাজু হ’লে সংযোগটোক অনুমতি দিবলৈ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' বাছনি কৰক।</translation>

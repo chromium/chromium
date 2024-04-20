@@ -108,7 +108,7 @@
 <translation id="1513858653616922153">刪除密碼</translation>
 <translation id="1521774566618522728">今天已使用</translation>
 <translation id="1544826120773021464">如要管理 Google 帳戶，請輕按「管理帳戶」按鈕</translation>
-<translation id="154513667535157406">按讚可給予這則摘要正面評價</translation>
+<translation id="154513667535157406">㩒一下鍾意就可以俾正評呢篇摘要。</translation>
 <translation id="1549000191223877751">移至其他視窗</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
 <translation id="1554532453982918912">可協助 Chrome 為使用者提供更優質的使用體驗</translation>
@@ -830,7 +830,7 @@
 <translation id="5342314432463739672">權限要求</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" />未瀏覽任何網站</translation>
 <translation id="5355191726083956201">已開啟「強化保護功能」</translation>
-<translation id="5364112109233799727">你要提供意見的網頁網址會傳送至 Google，且可能會交由人工審查，以便改進這項功能</translation>
+<translation id="5364112109233799727">你要提供意見的網頁網址會傳送至 Google，且可能會交由人工審核，以便改善此功能</translation>
 <translation id="5375577065097716013">使用「Google 智能鏡頭」搜尋圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="5395376160638294582">請確保您可隨時使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="539881862970320163">建議用安全度高嘅密碼。隱藏咗鍵盤。</translation>
@@ -1052,7 +1052,7 @@
 <translation id="6473086018775716761">分享選項清單宜家顯示喺畫面下半部。</translation>
 <translation id="6475951671322991020">下載影片</translation>
 <translation id="6477928892249167417">這些網站似乎對您很重要：</translation>
-<translation id="6481963882741794338">連結 Chrome 和其他 Google 服務，用於個人化等用途</translation>
+<translation id="6481963882741794338">連結 Chrome 和其他 Google 服務，用於個人化和其他用途</translation>
 <translation id="6482749332252372425">儲存空間不足，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="6495590690749880440">要開啟分頁群組嗎？</translation>
 <translation id="650224091954855786">{FILE_COUNT,plural, =1{已下載檔案}other{已完成 # 項下載}}</translation>
@@ -1160,7 +1160,7 @@
 <translation id="6910211073230771657">已刪除</translation>
 <translation id="6918398787259831832">如果此問題持續發生，你可從「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」<ph name="BEGIN_LINK" />取得更多資訊<ph name="END_LINK" />。</translation>
 <translation id="6929224077895306814">系統將刪除已儲存在裝置上和 Google 帳戶中的所有安全碼</translation>
-<translation id="6937524809504266803">個人化與連結</translation>
+<translation id="6937524809504266803">個人化和連結</translation>
 <translation id="6942665639005891494">用「設定」選單選項，隨時更改預設嘅下載位置</translation>
 <translation id="694267552845942083">你自訂緊同步設定。㩒一下畫面底部附近嘅 [確認] 掣，就可以完成打開同步處理功能嘅程序喇。向上瀏覽</translation>
 <translation id="6945221475159498467">選取</translation>
@@ -1178,7 +1178,7 @@
 <translation id="7013762323294215682">此密鑰將會儲存至密碼管理工具。任何擁有存取權的使用者都可使用此密鑰。</translation>
 <translation id="7020741890149022655">新增至閱讀清單 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="7022756207310403729">在瀏覽器中開啟</translation>
-<translation id="7025769836128625875">這項 AI 功能仍在實驗階段，提供的摘要未必正確。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="7025769836128625875">這是實驗版 AI 功能，生成的摘要不一定符合需求。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7027549951530753705">還原咗 <ph name="ITEM_TITLE" /></translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7030304022046916278">將網址傳送至「安全瀏覽」功能檢查</translation>
@@ -1211,7 +1211,7 @@
 <translation id="7180611975245234373">重新整理</translation>
 <translation id="7183517696921903380">應用程式篩選器工作表開咗。</translation>
 <translation id="7183693674623539380">分頁群組 - <ph name="TITLE_OF_GROUP" /></translation>
-<translation id="7186568385131859684">控管在各項 Google 服務中將瀏覽記錄和其他資料搭配使用的方式</translation>
+<translation id="7186568385131859684">控制瀏覽記錄和其他資料在各項 Google 服務中配合使用的方式</translation>
 <translation id="7187993566681480880">確保您登入使用 Chrome 的安全，並可提升您在其他 Google 應用程式的安全性。</translation>
 <translation id="7191430249889272776">已在背景開啟分頁。</translation>
 <translation id="7196215469483532480">私隱權指南說明宜家顯示喺成個畫面</translation>
@@ -1498,7 +1498,7 @@
 <translation id="8512053371384421952">你不會再收到 <ph name="DOMAIN" /> 的通知。</translation>
 <translation id="8514477925623180633">匯出儲存在 Chrome 中的密碼</translation>
 <translation id="8516012719330875537">圖片編輯器</translation>
-<translation id="8521833595674902532">發生錯誤，無法完成摘要</translation>
+<translation id="8521833595674902532">發生問題，無法完成摘要</translation>
 <translation id="8523928698583292556">刪除已儲存的密碼</translation>
 <translation id="8526855376374973824">通知權限流程</translation>
 <translation id="8540136935098276800">請輸入正確格式的網址</translation>
@@ -1573,7 +1573,7 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕式分頁和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕式分頁和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="8970887620466824814">發生錯誤。</translation>
 <translation id="8972098258593396643">要下載至預設資料夾嗎？</translation>
-<translation id="8982113230057126145">按倒讚可給予這則摘要負面評價</translation>
+<translation id="8982113230057126145">㩒一下唔鍾意就可以俾負評呢篇摘要。</translation>
 <translation id="8992769679401294069">你已使用密碼短語加密資料。如要在 Google 帳戶中使用及儲存 Chrome 資料，請輸入密碼短語。</translation>
 <translation id="8993760627012879038">在無痕模式中開啟新分頁</translation>
 <translation id="8996847606757455498">選擇其他供應商</translation>

@@ -1433,7 +1433,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2042279886444479655">Gweithredu proffiliau</translation>
 <translation id="2044014337866019681">Gwnewch yn siŵr eich bod yn dilysu <ph name="ACCOUNT" /> i ddatgloi'r sesiwn.</translation>
 <translation id="204497730941176055">Enw Templed Tystysgrif Microsoft</translation>
-<translation id="2045117674524495717">Cynorthwyydd Llwybr Byr Bysellfwrdd</translation>
 <translation id="2045211794962848221">Ni fyddwch yn gweld y neges benodol hon eto</translation>
 <translation id="2045838962742066664">Teipio llaw-fer</translation>
 <translation id="204622017488417136">Bydd eich dyfais yn cael ei dychwelyd i'r fersiwn a osodwyd yn flaenorol o Chrome. Bydd yr holl gyfrifon defnyddwyr a data lleol yn cael eu tynnu. Nid oes modd dadwneud hyn.</translation>
@@ -6686,12 +6685,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6082877069782862752">Mapio allweddi</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - Rhan o grŵp dienw</translation>
 <translation id="6086004606538989567">Nid yw'r cyfrif a ddilyswyd gennych wedi'i awdurdodi i gael mynediad at y ddyfais hon.</translation>
-<translation id="6086366524552602071">Gallwch addasu Chrome fel y dymunwch:
-       &lt;ul&gt;
-         &lt;li&gt;&lt;em&gt;Y gorau o Google&lt;/em&gt;, i'r rhai sydd ei eisiau. Er enghraifft, gallwch ddewis Google Search fel peiriant chwilio diofyn Chrome a defnyddio Rheolwr Cyfrineiriau Google i gael eich holl gyfrineiriau ar unrhyw ddyfais. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Dewis ystyrlon&lt;/em&gt;: Mae Chrome yn cynnig dewis a rheolaeth i chi gyda gosodiadau, a gwybodaeth i'ch helpu i wneud penderfyniadau ystyrlon.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Estyniadau&lt;/em&gt;: Gallwch ymestyn ymarferoldeb Chrome gyda dros 100,000 o estyniadau yn Chrome Web Store.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Wedi'i osod gan eich gweinyddwr</translation>
 <translation id="6087746524533454243">Chwilio am dudalen ynghylch y porwr? Ewch i</translation>
 <translation id="6087960857463881712">Wyneb anhygoel</translation>

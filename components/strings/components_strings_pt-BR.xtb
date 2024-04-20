@@ -1437,7 +1437,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3714633008798122362">agenda na web</translation>
 <translation id="3714780639079136834">Ativar os dados da rede celular ou o Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{O upload do arquivo está bloqueado}one{O upload de <ph name="FILE_COUNT" /> arquivo está bloqueado}other{O upload de <ph name="FILE_COUNT" /> arquivos está bloqueado}}</translation>
-<translation id="3715545959749027023">Quando ocorrências de segurança são sinalizadas pelo Chrome, dados relevantes sobre elas são enviados ao administrador. Isso pode incluir URLs de páginas visitadas no Chrome, metadados ou nomes de arquivos, falhas do navegador ou da guia e o nome de usuário usado para fazer login no dispositivo, no Chrome e em apps baseados na Web.</translation>
 <translation id="3715597595485130451">Conectar ao Wi-Fi</translation>
 <translation id="3716622997181469465">bloqueio do teclado</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Verificar a configuração de DNS, proxy e firewall<ph name="END_LINK" /></translation>

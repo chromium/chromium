@@ -28,7 +28,6 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="2329392777730037872">Kan <ph name="URL" /> niet openen op de client.</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2366718077645204424">Kan de host niet bereiken. Dit komt waarschijnlijk door de configuratie van het netwerk dat je gebruikt.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Laatst online gezien: <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Toegangsrechten verlenen aan <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Verbonden met <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Wil je deze computer delen zodat een andere gebruiker deze kan bekijken en bedienen?</translation>
@@ -53,7 +52,6 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="3423542133075182604">Proces voor externe toegang tot beveiligingssleutel</translation>
 <translation id="3581045510967524389">Kan geen verbinding maken met het netwerk. Controleer of je apparaat online is.</translation>
 <translation id="3596628256176442606">Met deze service zijn inkomende verbindingen van Chromoting-clients mogelijk.</translation>
-<translation id="369442766917958684">Offline.</translation>
 <translation id="3695446226812920698">Meer informatie</translation>
 <translation id="3776024066357219166">Je Chrome Remote Desktop-sessie is beëindigd.</translation>
 <translation id="3858860766373142691">Naam</translation>
@@ -105,7 +103,6 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="5601503069213153581">Pincode</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Je bureaublad wordt momenteel gedeeld met <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Ingelogd als <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Opnieuw verbinding maken</translation>
 <translation id="5810269635982033450">Scherm werkt als een trackpad</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> heeft toegang gevraagd om je scherm te zien en je toetsenbord en muis te bedienen. Druk op <ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" /> als je dit verzoek niet verwacht. Selecteer anders <ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" /> om de verbinding toe te staan als je zover bent.</translation>

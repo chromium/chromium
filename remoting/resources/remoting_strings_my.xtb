@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">ကလိုင်းယင့်တွင် <ph name="URL" /> ကို ဖွင့်၍မရပါ။</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2366718077645204424">ဟို့စ်ကို လက်လှမ်း မမှီပါ။ သင် သုံးနေသည့် ကွန်ရက်၏ စီစဉ်ဖွဲ့စည်းမှုကြောင့် ဖြစ်ဖို့ များသည်။</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> အွန်လိုင်းမှာ နောက်ဆုံး မြင်ခဲ့ခြင်း <ph name="RELATIVE_TIMESTAMP" />။</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> ကို 'အများသုံးနိုင်မှု' ခွင့်ပြုချက်ပေးပါ</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> သို့ ချိတ်ဆက်ထားသည်</translation>
 <translation id="2540992418118313681">သင် ဤကွန်ပျူတာအား အခြားသုံးစွဲသူတစ်ဦးမှ ကြည့်ရှု ထိန်းချုပ်နိုင်ရန် မျှဝေလိုပါသလား။</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">လုံခြုံရေးကီး အဝေးထိန်းလုပ်ဆောင်ချက်</translation>
 <translation id="3581045510967524389">ကွန်ရက်သို့ ချိတ်ဆက် မရနိုင်ခဲ့ပါ။ ကျေးဇူးပြုပြီး သင်၏ ကိရိယာ အွန်လိုင်း ဖြစ်တာကို စစ်ကြည့်ပါ။</translation>
 <translation id="3596628256176442606">ဒီဝန်ဆောင်မှုက Chromoting သုံးစွဲသူတို့ ထံမှ ဝင်လာသည့် ချိတ်ဆက်မှုများကို ဖွင့်ပေးသည်။</translation>
-<translation id="369442766917958684">အော့ဖ်လိုင်း</translation>
 <translation id="3695446226812920698">လုပ်ပုံကို လေ့လာပါ။</translation>
 <translation id="3776024066357219166">သင့် Chrome အဝေးထိန်း ကွန်ပြူတာ အချိန်ပိုင်း ပြီးဆုံးသွားပါပြီ။</translation>
 <translation id="3858860766373142691">အမည်</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">ပင်နံပါတ်</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">သင့်ဒက်စတော့သည်လက်ရှိတွ၍် <ph name="USER" /> နှင့်မျှဝေ သုံးစွဲနေသည်။</translation>
-<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> အဖြစ် လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="579702532610384533">ပြန်လည်ချိတ်ဆက်ရန်</translation>
 <translation id="5810269635982033450">ဖန်သားပြင်ကို ထိရွှေ့မျက်နှာပြင်ကဲ့သို့ အသုံးပြုနိုင်သည်</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> က သင့်ဖန်သားပြင်ကို ကြည့်ရန်၊ ကီးဘုတ်နှင့် မောက်စ်ကို ထိန်းချုပ်ရန် ခွင့်တောင်းထားသည်။ ဤတောင်းဆိုချက်ကို သင်စောင့်နေခြင်း မဟုတ်ပါက “<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />” ကို နှိပ်ပါ။ သို့မဟုတ် အသင့်ဖြစ်ပါက ချိတ်ဆက်ခွင့်ပြုရန် “<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />” ကို ရွေးပါ။</translation>

@@ -1437,7 +1437,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3714633008798122362">veebikalender</translation>
 <translation id="3714780639079136834">Lülitage sisse mobiilne andmeside või WiFi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Faili üleslaadimine on blokeeritud}other{<ph name="FILE_COUNT" /> faili üleslaadimine on blokeeritud}}</translation>
-<translation id="3715545959749027023">Kui Chrome märgistab turvalisusega seotud sündmused, saadetakse teie administraatorile asjakohased andmed sündmuste kohta. See võib hõlmata teie Chrome'is külastatud lehtede URL-e, failinimesid või metaandmeid, brauseri või vahelehtede kokkujooksmisi ja kasutajanime, mida kasutate veebipõhistesse rakendustesse, seadmesse ja Chrome'i sisselogimiseks.</translation>
 <translation id="3715597595485130451">Ühenduse loomine WiFi-võrguga</translation>
 <translation id="3716622997181469465">klaviatuurilukk</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Kontrollige puhverserveri, tulemüüri ja DNS-i seadistust<ph name="END_LINK" /></translation>

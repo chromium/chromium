@@ -702,7 +702,9 @@
 <translation id="4732120983431207637">স্ট্যাক আনউইন্ডার</translation>
 <translation id="4736934858538408121">ভার্চুয়াল কার্ড</translation>
 <translation id="473775607612524610">আপডেট করুন</translation>
+<translation id="4738065825338914557">আনসাবস্ক্রাইব করা হচ্ছে…</translation>
 <translation id="4738836084190194332">সর্বশেষ সিঙ্ক হয়েছে: <ph name="WHEN" /></translation>
+<translation id="474121291218385686">অ্যাপ অনুযায়ী ফিল্টার করুন</translation>
 <translation id="4741753828624614066">অ্যাড্রেস বারে উন্নত সাজেশন পাবেন</translation>
 <translation id="4742970037960872810">হাইলাইট সরিয়ে দিন</translation>
 <translation id="4749960740855309258">একটি নতুন ট্যাব খুলুন</translation>
@@ -786,6 +788,7 @@
 <translation id="5099845111805573968">আপনি একবার ডেস্কটপ সাইট বেছে নিলে, আপনার প্রতিবার ভিজিট করার সময় সাইটে সেটিংটি প্রয়োগ করা হয়</translation>
 <translation id="5102401324271069229">যদি কোনও সাইট আপনার পাসওয়ার্ড চুরি করার চেষ্টা করে বা আপনি কোনও ক্ষতিকারক ফাইল ডাউনলোড করলে, Chrome, পৃষ্ঠার কিছু কন্টেন্ট সহ URL ও হয়ত Safe Browsing-এ পাঠাতে পারে</translation>
 <translation id="510275257476243843">১ ঘণ্টা বাকি আছে</translation>
+<translation id="5114895953710637392">অ্যাপ ফিল্টার শিট বন্ধ করা হয়েছে।</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" />-এ</translation>
 <translation id="5118713593561876160">আগ্রহগুলি</translation>
 <translation id="5122378528687922675">সাহায্যের প্রয়োজন হলে, অভিভাবককে জিজ্ঞাসা করো (<ph name="PARENT_NAME_1" /> বা <ph name="PARENT_NAME_2" />)</translation>
@@ -1138,6 +1141,7 @@
 <translation id="685850645784703949">Google-এর ডিসকভার - বন্ধ আছে</translation>
 <translation id="686366188661646310">পাসওয়ার্ড মুছবেন?</translation>
 <translation id="6864459304226931083">ছবি ডাউনলোড করুন</translation>
+<translation id="686490460830618322">অ্যাপ ফিল্টার শিট</translation>
 <translation id="6865313869410766144">স্বতঃপূর্ণ ফর্ম ডেটা</translation>
 <translation id="6867400383614725881">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="6869056123412990582">কম্পিউটার</translation>
@@ -1205,6 +1209,7 @@
 <translation id="7177466738963138057">আপনি পরে সেটিংসে এই পরিবর্তন করতে পারবেন</translation>
 <translation id="7177873915659574692">QR কোড তৈরি করা যায়নি। URL-এ <ph name="CHARACTER_LIMIT" />টির বেশি অক্ষর রয়েছে।</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
+<translation id="7183517696921903380">অ্যাপ ফিল্টার শিট খোলা হয়েছে।</translation>
 <translation id="7183693674623539380">ট্যাব গ্রুপ - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">Google পরিষেবা জুড়ে আপনার অন্যান্য ডেটার সাথে কীভাবে আপনার ব্রাউজিং ইতিহাস ব্যবহার করা হয় তা নিয়ন্ত্রণ করুন</translation>
 <translation id="7187993566681480880">এই সুরক্ষা আপনাকে Chrome-এ সাইন-ইন করা অবস্থাতে নিরাপদে রাখে এবং যদি অন্যান্য Google অ্যাপে আপনি সাইন-ইন করে থাকেন, সেখানেও আপনার নিরাপত্তার বিষয়টি উন্নত করতে এটিকে ব্যবহার করা যেতে পারে।</translation>
@@ -1331,6 +1336,7 @@
 <translation id="7780645209293383778">সব Google অ্যাপ জুড়ে আপনাকে সুরক্ষিত রাখতে, যখন আপনি সাইন-ইন করেন, তখন আপনার Google অ্যাকাউন্টে অস্থায়ীভাবে এই ডেটা লিঙ্ক করায়</translation>
 <translation id="7791543448312431591">জুড়ুন</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" />টি ট্যাব ফিরিয়ে আনা হয়েছে</translation>
+<translation id="780287761701992588">আপনার সবকটি ডিভাইসে, বুকমার্ক, পাসওয়ার্ড এবং আরও অনেক কিছু পান</translation>
 <translation id="780301667611848630">না থাক</translation>
 <translation id="7808889146555843082">এই পাসওয়ার্ডটি মুছে দিলেও, <ph name="SITE" />-এ থাকা আপনার অ্যাকাউন্ট মুছে যাবে না। অন্যদের কাছ থেকে গোপন রাখতে, <ph name="SITE" />-এ আপনার দেওয়া পাসওয়ার্ড পরিবর্তন করুন বা অ্যাকাউন্ট মুছে দিন।</translation>
 <translation id="7810647596859435254">এর মাধ্যমে খুলুন...</translation>

@@ -1419,7 +1419,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2042279886444479655">Profiluri active</translation>
 <translation id="2044014337866019681">Confirmă <ph name="ACCOUNT" /> pentru a debloca sesiunea.</translation>
 <translation id="204497730941176055">Nume șablon de certificat Microsoft</translation>
-<translation id="2045117674524495717">Ajutor pentru comenzi rapide de la tastatură</translation>
 <translation id="2045211794962848221">Nu vei mai vedea acest mesaj</translation>
 <translation id="2045838962742066664">Introducerea textului abreviat</translation>
 <translation id="204622017488417136">Dispozitivul va reveni la versiunea Chrome instalată anterior. Toate conturile de utilizator și datele locale vor fi eliminate. Această operațiune nu poate fi anulată.</translation>
@@ -6668,12 +6667,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6082877069782862752">Maparea tastelor</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – parte a unui grup nedenumit</translation>
 <translation id="6086004606538989567">Contul pe care l-ai confirmat nu este autorizat să acceseze acest dispozitiv.</translation>
-<translation id="6086366524552602071">Poți să personalizezi Chrome așa cum dorești.
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Cele mai bune funcții de la Google&lt;/em&gt;, pentru cei care îl folosesc. De exemplu, poți să alegi Căutarea Google ca motor de căutare prestabilit pentru Chrome și să folosești Managerul de parole Google pentru a accesa toate parolele pe orice dispozitiv. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Alegere relevantă&lt;/em&gt;: Chrome îți oferă opțiuni și control, cu setări și informații utile pentru a lua decizii importante;&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Extensii&lt;/em&gt;: poți extinde funcționalitatea Chrome cu peste 100.000 de extensii în Magazinul web Chrome.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Instalată de administrator</translation>
 <translation id="6087746524533454243">Cauți pagina despre browser? Accesează</translation>
 <translation id="6087960857463881712">Față extraordinară</translation>

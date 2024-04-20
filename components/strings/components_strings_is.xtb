@@ -1437,7 +1437,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3714633008798122362">vefdagatal</translation>
 <translation id="3714780639079136834">Kveikja á farsímagögnum eða Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Lokað er á upphleðslu skráar}one{Lokað er á upphleðslu <ph name="FILE_COUNT" /> skráar}other{Lokað er á upphleðslu <ph name="FILE_COUNT" /> skráa}}</translation>
-<translation id="3715545959749027023">Þegar Chrome flaggar öryggisatvik eru viðeigandi gögn um atvikin send til kerfisstjórans. Þetta getur innihaldið vefslóðir síðna sem þú opnar í Chrome, skráaheiti eða lýsigögn, hrun vafra eða flipa og notandanafnið sem þú notar til að skrá þig inn í forrit á vefnum, í tækinu þínu og í Chrome.</translation>
 <translation id="3715597595485130451">Tengstu við Wi-Fi</translation>
 <translation id="3716622997181469465">lyklaborðslás</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Athuga staðgengilsþjóninn, eldvegginn og DNS-stillingarnar<ph name="END_LINK" /></translation>
@@ -2948,6 +2947,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að leita að tækinu þínu á Google reikningnum</translation>
 <translation id="6695428916538794739">Hasar- og ævintýramyndir</translation>
 <translation id="6696424331653607346">Ferðahandbækur og -lýsingar</translation>
+<translation id="6698097747703777657">Fékkstu ekki kóðann? <ph name="BEGIN_LINK" />Fá nýjan kóða<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Búið til:</translation>
 <translation id="67007264085648978">Tímasleði</translation>
 <translation id="6702851555558236418">Hljóð- og tónlistarhugbúnaður</translation>

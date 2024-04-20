@@ -28,7 +28,6 @@
 <translation id="2329392777730037872">ಕ್ಲೈಂಟ್‌ನಲ್ಲಿ <ph name="URL" /> ತೆರೆಯಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
 <translation id="2366718077645204424">ಹೋಸ್ಟ್‌ ಅನ್ನು ತಲುಪಲು ಸಾಧ್ಯವಿಲ್ಲ. ಇದಕ್ಕೆ ಬಹುಶಃ ನೀವು ಬಳಸುತ್ತಿರುವ ಕಾನ್ಫಿಗರೇಶನ್ ನೆಟ್‌ವರ್ಕ್ ಕಾರಣವಾಗಿರಬಹುದು.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  ಆನ್‌ಲೈನ್‌ನಲ್ಲಿನ ಕೊನೆಯ ವೀಕ್ಷಣೆ <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160"><ph name="PRODUCT_NAME" /> ಗೆ 'ಆ್ಯಕ್ಸೆಸಿಬಿಲಿಟಿ' ಅನುಮತಿಯನ್ನು ನೀಡಿ</translation>
 <translation id="2509394361235492552"><ph name="HOSTNAME" /> ಗೆ ಸಂಪರ್ಕಿಸಲಾಗಿದೆ</translation>
 <translation id="2540992418118313681">ನಿಯಂತ್ರಣವನ್ನು ವೀಕ್ಷಿಸಲು ನೀವು ಮತ್ತೊಬ್ಬ ಬಳಕೆದಾರರಿಗೆ ಈ ಕಂಪ್ಯೂಟರ್ ಅನ್ನು ಹಂಚಲು ಬಯಸುತ್ತೀರಾ?</translation>
@@ -53,7 +52,6 @@
 <translation id="3423542133075182604">ಭದ್ರತಾ ಕೀ ರಿಮೋಟಿಂಗ್ ಪ್ರಕ್ರಿಯೆ</translation>
 <translation id="3581045510967524389">ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕಗೊಳ್ಳಲಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಸಾಧನವು ಆನ್‌ಲೈನ್ ಆಗಿದೆಯೇ ಎಂದು ಪರಿಶೀಲಿಸಿ.</translation>
 <translation id="3596628256176442606">ಈ ಸೇವೆಯು ಕ್ರೊಮೋಟಿಂಗ್ ಕ್ಲೈಂಟ್‌ಗಳಿಂದ ಒಳಬರುವ ಸಂಪರ್ಕಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ.</translation>
-<translation id="369442766917958684">ಆಫ್‌ಲೈನ್.</translation>
 <translation id="3695446226812920698">ಹೇಗೆ ಎಂಬುದನ್ನು ತಿಳಿದುಕೊಳ್ಳಿ</translation>
 <translation id="3776024066357219166">ನಿಮ್ಮ Chrome ರಿಮೋಟ್ ಡೆಸ್ಕ್‌ಟಾಪ್ ಅವಧಿಯು ಕೊನೆಗೊಂಡಿದೆ.</translation>
 <translation id="3858860766373142691">ಹೆಸರು</translation>
@@ -105,7 +103,6 @@
 <translation id="5601503069213153581">PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625"><ph name="USER" /> ಅವರೊಂದಿಗೆ ನಿಮ್ಮ ಡೆಸ್ಕ್‌ಟಾಪ್ ಅನ್ನು ಪ್ರಸ್ತುತ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ.</translation>
-<translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> ನಂತೆ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="579702532610384533">ಮರುಸಂಪರ್ಕಿಸು</translation>
 <translation id="5810269635982033450">ಪರದೆಯು ಟ್ರ್ಯಾಕ್‌ಪ್ಯಾಡ್‌ನಂತೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ</translation>
 <translation id="5823554426827907568">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ನೋಡಲು ಹಾಗೂ ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ಮತ್ತು ಮೌಸ್ ನಿಯಂತ್ರಿಸಲು <ph name="CLIENT_USERNAME" /> ಅವರು ಪ್ರವೇಶಕ್ಕಾಗಿ ವಿನಂತಿಸಿದ್ದಾರೆ. ನೀವು ಈ ವಿನಂತಿಯನ್ನು ನಿರೀಕ್ಷಿಸದಿದ್ದರೆ, ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ಅನ್ನು ಒತ್ತಿರಿ. ಇಲ್ಲವಾದರೆ, ಕನೆಕ್ಷನ್ ಸಿದ್ದಗೊಂಡಾಗ ಅನುಮತಿಸಲು ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>

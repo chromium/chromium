@@ -1438,7 +1438,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3714633008798122362">Calendario web</translation>
 <translation id="3714780639079136834">Activar los datos móviles o la conexión Wi-Fi.</translation>
 <translation id="3715016660240337709">{0,plural, =1{No se permite cargar el archivo}other{No se permite cargar <ph name="FILE_COUNT" /> archivos}}</translation>
-<translation id="3715545959749027023">Cuando Chrome marca eventos de seguridad, se envían datos relacionados con los eventos a tu administrador. Esta información puede incluir URLs de las páginas que visitas en Chrome, nombres de archivos o metadatos, fallas en el navegador o las pestañas, y el nombre de usuario con el que accedes a aplicaciones web, tu dispositivo y Chrome.</translation>
 <translation id="3715597595485130451">Conectar a Wi-Fi</translation>
 <translation id="3716622997181469465">bloqueo del teclado</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Comprobar la configuración del proxy, firewall o DNS<ph name="END_LINK" />.</translation>

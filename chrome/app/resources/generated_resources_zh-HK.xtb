@@ -418,7 +418,7 @@
 <translation id="1307559529304613120">糟糕！系統無法為這部裝置儲存長期 API 存取憑證。</translation>
 <translation id="131112695174432497">系統將刪除會影響廣告個人化的資料</translation>
 <translation id="1311294419381837540">您正在投放分頁。您可以隨時暫停或停止投放。</translation>
-<translation id="131188242279372879">探索強化防護，享有 Chrome 最強大的下載項目安全防護機制</translation>
+<translation id="131188242279372879">探索強化保護功能，即可享有 Chrome 就下載檔案提供的最強大安全防護</translation>
 <translation id="1312811472299082263">使用 Ansible Playbook 或 Crostini 備份檔案建立</translation>
 <translation id="13130607084115184">已儲存的密碼會在這裡顯示。如要在此裝置上將密碼匯入「<ph name="BRAND" />」，請<ph name="BEGIN_LINK" />選取 CSV 檔案<ph name="END_LINK" />。</translation>
 <translation id="1313264149528821971">已移除 <ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /></translation>
@@ -1078,7 +1078,7 @@
 <translation id="1794212650797661990">隱藏 <ph name="DOMAIN" /> 嘅密碼</translation>
 <translation id="1794791083288629568">請提供寶貴意見，協助我們修正此問題。</translation>
 <translation id="1795214765651529549">使用經典主題</translation>
-<translation id="1795668164971917185">下次 Google 安全瀏覽功能偵測到可疑的下載項目時，就會根據你選擇的<ph name="LINK" />設定自動掃描該項目</translation>
+<translation id="1795668164971917185">下次「Google 安全瀏覽」功能偵測到可疑的下載項目時，就會根據你選擇的<ph name="LINK" />設定自動掃瞄該項目</translation>
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
 <translation id="1797117170091578105">使用 Chromebook 鍵盤玩遊戲。您可為特定動作自訂按鍵。</translation>
 <translation id="1798335429200675510">在文字框中按一下右鍵，即可採用 Google AI 技術建立草稿或修正現有作品。此功能目前僅供部分使用者使用。</translation>
@@ -1430,7 +1430,6 @@
 <translation id="2042279886444479655">使用中的設定檔</translation>
 <translation id="2044014337866019681">請確保您驗證的是 <ph name="ACCOUNT" />，才能解鎖工作階段。</translation>
 <translation id="204497730941176055">Microsoft 憑證範本名稱</translation>
-<translation id="2045117674524495717">鍵盤快速鍵助手</translation>
 <translation id="2045211794962848221">您不會再看到此訊息</translation>
 <translation id="2045838962742066664">速記輸入</translation>
 <translation id="204622017488417136">您的裝置將被重設為上次安裝的 Chrome 版本，且所有使用者帳戶和本機資料都會被移除。這項操作無法復原。</translation>
@@ -2092,7 +2091,7 @@
 <translation id="251722524540674480">確認您的使用者名稱</translation>
 <translation id="2517472476991765520">掃瞄</translation>
 <translation id="2518024842978892609">使用您的客戶憑證。</translation>
-<translation id="2518620532958109495">允許自動進入全螢幕模式</translation>
+<translation id="2518620532958109495">已允許自動進入全螢幕模式</translation>
 <translation id="2519250377986324805">查看操作說明</translation>
 <translation id="2519517390894391510">憑證設定檔名稱</translation>
 <translation id="2520644704042891903">正在等待可用的通訊端…</translation>
@@ -2560,7 +2559,7 @@
 <translation id="287286579981869940">新增「<ph name="PROVIDER_NAME" />」…</translation>
 <translation id="2872961005593481000">關閉</translation>
 <translation id="2873744479411987024">較高的更新率可讓畫面顯示更流暢，細節更清晰。提高更新率可能會影響電池壽命。</translation>
-<translation id="2873956234023215251">發生錯誤，無法安裝應用程式。</translation>
+<translation id="2873956234023215251">發生問題，無法安裝應用程式。</translation>
 <translation id="2874939134665556319">上一首曲目</translation>
 <translation id="2875698561019555027">(Chrome 錯誤頁面)</translation>
 <translation id="2876336351874743617">手指 2</translation>
@@ -3617,7 +3616,7 @@
 <translation id="3708295717182051206">字幕</translation>
 <translation id="3708684582558000260">不允許已關閉的網站完成資料收發</translation>
 <translation id="3709244229496787112">瀏覽器在下載尚未完成時被關閉。</translation>
-<translation id="3710735707339428760">無法安裝這個應用程式</translation>
+<translation id="3710735707339428760">無法安裝此應用程式</translation>
 <translation id="3711931198657368127">貼上並前往 <ph name="URL" /> (&amp;S)</translation>
 <translation id="3711945201266135623">在列印伺服器中找到 <ph name="NUM_PRINTERS" /> 部打印機</translation>
 <translation id="3712050472459130149">必須更新帳戶</translation>
@@ -4955,7 +4954,7 @@
 <translation id="4730492586225682674">在上鎖畫面上顯示最新觸控筆筆記</translation>
 <translation id="4730888769809690665">已允許 <ph name="SITE" /> 傳送通知</translation>
 <translation id="4731306954230393087">已允許使用與你相關的既有資料</translation>
-<translation id="4732643897849344524">無法下載應用程式資料。請再試一次。</translation>
+<translation id="4732643897849344524">無法下載應用程式資料，請再試一次。</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (左邊)</translation>
 <translation id="4733793249294335256">位置</translation>
 <translation id="473546211690256853">這個帳戶是由 <ph name="DOMAIN" /> 負責管理</translation>
@@ -5622,7 +5621,7 @@
 <translation id="5263656105659419083">㩒一下右上角嘅 [固定]，就可以輕易返去側面板</translation>
 <translation id="5264148714798105376">這可能需要幾分鐘時間。</translation>
 <translation id="5264252276333215551">如要以 Kiosk 模式啟動您的應用程式，請連線至互聯網。</translation>
-<translation id="526539328530966548">強化防護</translation>
+<translation id="526539328530966548">強化保護功能</translation>
 <translation id="5265797726250773323">安裝時發生錯誤</translation>
 <translation id="5266113311903163739">憑證授權單位匯入錯誤</translation>
 <translation id="526622169288322445">可以對「<ph name="ADDRESS_SUMMARY" />」執行嘅其他動作</translation>
@@ -6676,12 +6675,6 @@
 <translation id="6082877069782862752">對應鍵</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - 屬於未命名嘅群組</translation>
 <translation id="6086004606538989567">您已驗證的帳戶無權存取此裝置。</translation>
-<translation id="6086366524552602071">你可隨意自訂 Chrome：
-      &lt;ul&gt;
-        &lt;li&gt;Google 最強大的功能&lt;em&gt;&lt;/em&gt;：你可按需要決定是否使用。例如，你可將「Google 搜尋」設定為 Chrome 的預設搜尋引擎，並在任何裝置上使用「Google 密碼管理工具」存取所有密碼。&lt;/li&gt;
-        &lt;li&gt;按需求作出選擇&lt;em&gt;&lt;/em&gt;：Chrome 提供設定控制選項和相關資料，方便你作出符合需求的決定。&lt;/li&gt;
-        &lt;li&gt;擴充程式&lt;em&gt;&lt;/em&gt;：「Chrome 網上應用程式商店」有超過 10 萬個擴充程式，善用擴充程式可拓展 Chrome 的功能。&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">已由管理員安裝</translation>
 <translation id="6087746524533454243">要查看瀏覽器的「關於」頁面嗎？請前往</translation>
 <translation id="6087960857463881712">開懷大笑</translation>
@@ -7003,7 +6996,7 @@
 <translation id="6326855256003666642">Keepalive 數量</translation>
 <translation id="6327065839080961103">「<ph name="FEATURE_NAME" />」數據用量</translation>
 <translation id="6327785803543103246">Web Proxy Autodiscovery</translation>
-<translation id="6329916384047371874">你將在 <ph name="DOMAIN" /> 使用 <ph name="PASSWORD_DOMAIN" /> 的密碼。除非你信任 <ph name="DOMAIN" />，否則請勿使用你的密碼。</translation>
+<translation id="6329916384047371874">你將會在 <ph name="DOMAIN" /> 上使用 <ph name="PASSWORD_DOMAIN" /> 的密碼。如果你不信任 <ph name="DOMAIN" />，請勿使用該密碼。</translation>
 <translation id="6333064448949140209">檔案將傳送至 Google 執行偵錯</translation>
 <translation id="6333170995003625229">無法驗證您的電郵地址或密碼，請再試一次。</translation>
 <translation id="6334267141726449402">複製此連結，並傳送給要收集記錄的使用者。</translation>
@@ -7121,7 +7114,7 @@
 <translation id="6429384232893414837">更新錯誤</translation>
 <translation id="6430814529589430811">Base64 編碼 ASCII，單一憑證</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> 將為這部電腦的所有使用者設定自動更新。</translation>
-<translation id="6432072919019816301">掃描 PDF 來擷取文字，供輔助技術使用</translation>
+<translation id="6432072919019816301">掃瞄 PDF，擷取文字俾輔助科技用</translation>
 <translation id="6434104957329207050">點掃瞄速度</translation>
 <translation id="6434309073475700221">捨棄</translation>
 <translation id="6434325376267409267">您需要先更新裝置，才能使用 <ph name="APP_NAME" />。</translation>
@@ -7563,7 +7556,7 @@
 <translation id="6783036716881942511">要忘記此裝置嗎？</translation>
 <translation id="6783667414610055871">Microsoft OneDrive 設定</translation>
 <translation id="6784523122863989144">支援設定檔</translation>
-<translation id="6785594991951195537">使用 <ph name="PASSWORD_DOMAIN" /> 的密碼</translation>
+<translation id="6785594991951195537">使用 <ph name="PASSWORD_DOMAIN" /></translation>
 <translation id="6785739405821760313">睇緊儲存咗嘅桌面。㩒一下 Tab 鍵就可以瀏覽。</translation>
 <translation id="6785915470941880363">反向捲動<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">紫羅蘭色</translation>
@@ -7952,7 +7945,7 @@
 <translation id="7067396782363924830">氛圍顏色</translation>
 <translation id="7067725467529581407">不再顯示此訊息。</translation>
 <translation id="7068279399556423026">登入即可查看在其他裝置上開啟的分頁</translation>
-<translation id="706949303827219454">在新分頁中開啟安全性設定頁面</translation>
+<translation id="706949303827219454">喺新分頁入面打開安全設定頁面</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{收到此網站的新密碼}other{收到此網站的新密碼}}</translation>
 <translation id="7070484045139057854">可讀取及變更網站資料</translation>
 <translation id="7072010813301522126">捷徑名稱</translation>
@@ -8078,7 +8071,7 @@
 <translation id="718427252411067142">如要防止其他人使用你的密碼，請開啟應用程式變更密碼</translation>
 <translation id="7186088072322679094">保留在工具列上</translation>
 <translation id="7186303001964993981">由於資料夾中包含系統檔案，<ph name="ORIGIN" /> 無法開啟此資料夾</translation>
-<translation id="7186568385131859684">控管在各項 Google 服務中將瀏覽記錄和其他資料搭配使用的方式</translation>
+<translation id="7186568385131859684">控制瀏覽記錄和其他資料在各項 Google 服務中配合使用的方式</translation>
 <translation id="7188508872042490670">裝置上的網站資料</translation>
 <translation id="7189234443051076392">確保您的裝置上有足夠的儲存空間</translation>
 <translation id="7189451821249468368">您沒有足夠升級，無法註冊這部裝置。如要購買更多升級，請與銷售人員聯絡。如果您認為這則訊息有誤，請與支援團隊聯絡。</translation>
@@ -9363,7 +9356,7 @@
 <translation id="8135557862853121765"><ph name="NUM_KILOBYTES" />K</translation>
 <translation id="8136269678443988272">您所輸入的 PIN 不符</translation>
 <translation id="8137559199583651773">管理擴充程式</translation>
-<translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{檢查 1 個可能不安全的擴充功能}other{檢查 {NUM_EXTENSIONS} 個可能不安全的擴充功能}}</translation>
+<translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{檢查 1 個可能不安全的擴充程式}other{檢查 {NUM_EXTENSIONS} 個可能不安全的擴充程式}}</translation>
 <translation id="8138217203226449454">您要變更搜尋服務供應商嗎？</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> 狀態</translation>
 <translation id="8139440916039659819">游標加速</translation>
@@ -10057,12 +10050,12 @@
 <translation id="8669284339312441707">暖色調</translation>
 <translation id="8670537393737592796">如要快速返回此處，請按一下安裝按鈕來安裝「<ph name="APP_NAME" />」</translation>
 <translation id="867085395664725367">伺服器暫時發生錯誤。</translation>
-<translation id="86716700541305908">自訂桌布、深色主題等</translation>
+<translation id="86716700541305908">根據個人喜好設定桌布、深色主題背景等項目</translation>
 <translation id="8673026256276578048">搜尋網頁…</translation>
 <translation id="867329473311423817">允許在您所有的顯示屏上管理視窗</translation>
 <translation id="8673383193459449849">伺服器問題</translation>
 <translation id="8674903726754070732">抱歉，您的電腦是由格式錯誤的硬件 ID 所設定。這導致 Chrome OS 無法使用最新的安全性修正程式進行更新，您的電腦也可能<ph name="BEGIN_BOLD" />容易被惡意攻擊<ph name="END_BOLD" />。</translation>
-<translation id="8675657007450883866">網站會使用這項功能自動進入全螢幕模式。通常使用者必須進行互動才能進入全螢幕模式。</translation>
+<translation id="8675657007450883866">網站會使用此功能自動進入全螢幕模式。通常使用者需要進行互動，才會進入全螢幕模式。</translation>
 <translation id="8675704450909805533">安裝程式找不到可安裝 <ph name="DEVICE_OS" /> 的有效目的地。</translation>
 <translation id="8676152597179121671">{COUNT,plural, =1{影片}other{# 部影片}}</translation>
 <translation id="8676276370198826499">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 註冊 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
@@ -10264,7 +10257,7 @@
 <translation id="8820817407110198400">書籤</translation>
 <translation id="8821045908425223359">自動設定 IP 位址</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> 已可使用。</translation>
-<translation id="8821647731831124007">沒有可用的無線基地台</translation>
+<translation id="8821647731831124007">沒有可用的熱點</translation>
 <translation id="882204272221080310">更新韌體以提高安全性。</translation>
 <translation id="8823514049557262177">複製連結文字(&amp;X)</translation>
 <translation id="8823704566850948458">建議密碼…</translation>

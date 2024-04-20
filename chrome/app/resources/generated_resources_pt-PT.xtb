@@ -1418,7 +1418,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2042279886444479655">Perfis ativos</translation>
 <translation id="2044014337866019681">Certifique-se de que está a validar a conta <ph name="ACCOUNT" /> para desbloquear a sessão.</translation>
 <translation id="204497730941176055">Nome do modelo de certificado Microsoft</translation>
-<translation id="2045117674524495717">Ajuda dos atalhos de teclado</translation>
 <translation id="2045211794962848221">Não vai voltar a ver esta mensagem específica</translation>
 <translation id="2045838962742066664">Escrita abreviada</translation>
 <translation id="204622017488417136">O dispositivo regressa à versão do Chrome instalada anteriormente. Todos os dados locais e as contas de utilizador são removidos. Não é possível anular esta ação.</translation>
@@ -6669,12 +6668,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6082877069782862752">Mapeamento de teclas</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – Parte de um grupo sem nome</translation>
 <translation id="6086004606538989567">A conta que validou não está autorizada a aceder a este dispositivo.</translation>
-<translation id="6086366524552602071">Pode personalizar o Chrome como quiser:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;O melhor da Google&lt;/em&gt; para quem o quiser. Por exemplo, pode escolher a Pesquisa Google como o motor de pesquisa predefinido do Chrome e usar o Gestor de Palavras-passe da Google para ter todas as suas palavras-passe em qualquer dispositivo. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Escolha relevante&lt;/em&gt;: o Chrome oferece-lhe escolha e controlo com as definições, bem como informações para ajudar a tomar decisões significativas.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Extensões&lt;/em&gt;: pode expandir a funcionalidade do Chrome com mais de 100 000 extensões na Web Store do Chrome.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Instalada pelo gestor</translation>
 <translation id="6087746524533454243">Está à procura da página Acerca do navegador? Visite</translation>
 <translation id="6087960857463881712">Cara de fantástico</translation>

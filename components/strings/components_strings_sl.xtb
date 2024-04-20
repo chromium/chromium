@@ -1437,7 +1437,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3714633008798122362">spletni koledar</translation>
 <translation id="3714780639079136834">vklopiti prenos podatkov v mobilnih omrežjih ali Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Nalaganje datoteke je blokirano}one{Nalaganje <ph name="FILE_COUNT" /> datoteke je blokirano}two{Nalaganje <ph name="FILE_COUNT" /> datotek je blokirano}few{Nalaganje <ph name="FILE_COUNT" /> datotek je blokirano}other{Nalaganje <ph name="FILE_COUNT" /> datotek je blokirano}}</translation>
-<translation id="3715545959749027023">Ko Chrome opozori na varnostne dogodke, se ustrezni podatki glede dogodkov pošljejo skrbniku. To lahko vključuje URL-je strani, ki jih obiščete v Chromu, imena ali metapodatke datotek, sesutja brskalnika ali zavihkov in uporabniško ime, s katerim se prijavite v spletne aplikacije, napravo in Chrome.</translation>
 <translation id="3715597595485130451">Vzpostavljanje povezave z omrežjem Wi-Fi</translation>
 <translation id="3716622997181469465">zaklepanje tipkovnice</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />preveriti strežnik proxy, požarni zid in konfiguracijo DNS-ja<ph name="END_LINK" /></translation>

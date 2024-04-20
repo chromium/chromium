@@ -702,7 +702,9 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4732120983431207637">Stapellosdraaier</translation>
 <translation id="4736934858538408121">Virtuele kaart</translation>
 <translation id="473775607612524610">Dateer op</translation>
+<translation id="4738065825338914557">Teken tans uit …</translation>
 <translation id="4738836084190194332">Laas gesinkroniseer: <ph name="WHEN" /></translation>
+<translation id="474121291218385686">Filtreer volgens app</translation>
 <translation id="4741753828624614066">Jy sal verbeterde voorstelle in die adresbalk kry</translation>
 <translation id="4742970037960872810">Verwyder kleurmerk</translation>
 <translation id="4749960740855309258">Maak 'n nuwe oortjie oop</translation>
@@ -786,6 +788,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5099845111805573968">As jy een keer rekenaarwerf gekies het, sal die instelling elke keer wanneer jy besoek aflê op die werf toegepas word</translation>
 <translation id="5102401324271069229">As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chrome dalk URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur</translation>
 <translation id="510275257476243843">1 uur oor</translation>
+<translation id="5114895953710637392">Appfilterblad is toe.</translation>
 <translation id="5115811374190515607">na <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Belangstellings</translation>
 <translation id="5122378528687922675">Vra jou ouer (<ph name="PARENT_NAME_1" /> of <ph name="PARENT_NAME_2" />) as jy hulp benodig</translation>
@@ -1138,6 +1141,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="685850645784703949">Ontdek deur Google – af</translation>
 <translation id="686366188661646310">Vee wagwoord uit?</translation>
 <translation id="6864459304226931083">Laai prent af</translation>
+<translation id="686490460830618322">Appfilterblad</translation>
 <translation id="6865313869410766144">Vul vormdata outomaties in</translation>
 <translation id="6867400383614725881">Nuwe Incognito-oortjie</translation>
 <translation id="6869056123412990582">rekenaar</translation>
@@ -1205,6 +1209,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7177466738963138057">Jy kan dit later verander in Instellings</translation>
 <translation id="7177873915659574692">Kan nie QR-kode skep nie. URL is meer as <ph name="CHARACTER_LIMIT" /> karakters.</translation>
 <translation id="7180611975245234373">Herlaai</translation>
+<translation id="7183517696921903380">Appfilterblad is oop.</translation>
 <translation id="7183693674623539380">Oortjiegroep – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">Beheer hoe blaaigeskiedenis met jou ander data oral in Google-dienste gebruik word</translation>
 <translation id="7187993566681480880">Hou jou veilig op Chrome en kan gebruik word om jou sekuriteit in ander Google-programme te verbeter wanneer jy aangemeld is.</translation>
@@ -1331,6 +1336,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7780645209293383778">Koppel hierdie data tydelik aan jou Google-rekening wanneer jy aangemeld is om jou oral in Google-programme te beskerm</translation>
 <translation id="7791543448312431591">Voeg by</translation>
 <translation id="7798392620021911922">Het <ph name="TAB_COUNT" /> oortjies teruggestel</translation>
+<translation id="780287761701992588">Kry jou boekmerke, wagwoorde en meer op al jou toestelle</translation>
 <translation id="780301667611848630">Nee, dankie</translation>
 <translation id="7808889146555843082">As hierdie wagwoord uitgevee word, sal dit nie jou rekening op <ph name="SITE" /> uitvee nie. Verander jou wagwoord of vee jou rekening op <ph name="SITE" /> uit om dit veilig te hou van ander.</translation>
 <translation id="7810647596859435254">Maak oop met …</translation>

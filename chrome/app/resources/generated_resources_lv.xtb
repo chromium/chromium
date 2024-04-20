@@ -1420,7 +1420,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2042279886444479655">Aktīvie profili</translation>
 <translation id="2044014337866019681">Lai atbloķētu sesiju, verificējiet kontu <ph name="ACCOUNT" />.</translation>
 <translation id="204497730941176055">Microsoft sertifikāta veidnes nosaukums</translation>
-<translation id="2045117674524495717">Īsinājumtaustiņu palīgs</translation>
 <translation id="2045211794962848221">Šis konkrētais ziņojums vairs netiks rādīts.</translation>
 <translation id="2045838962742066664">Stenogrāfiskā rakstīšana</translation>
 <translation id="204622017488417136">Ierīcē tiks atjaunota iepriekš instalētā Chrome versija. Visi lietotāju konti un ierīcē glabātie dati tiks noņemti. Šo darbību nevar atsaukt.</translation>
@@ -6666,12 +6665,6 @@ Ja šī funkcija tiks izslēgta, Android ierīce atrašanās vietas noteikšanai
 <translation id="6082877069782862752">Taustiņu saistīšana</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> — grupas bez nosaukuma elements</translation>
 <translation id="6086004606538989567">Ar jūsu verificēto kontu nav atļauts piekļūt šai ierīcei.</translation>
-<translation id="6086366524552602071">Varat pielāgot pārlūku Chrome atbilstoši savām vajadzībām.
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Labākās Google piedāvātās iespējas&lt;/em&gt; lietotājiem, kuri tās vēlas. Piemēram, varat izvēlēties Google meklēšanu kā Chrome noklusējuma meklētājprogrammu un izmantot Google paroļu pārvaldnieku, lai piekļūtu visām savām parolēm jebkurā ierīcē. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Jēgpilna izvēle&lt;/em&gt;: Chrome piedāvā izvēles iespējas un kontroli, nodrošinot iestatījumus un informāciju, kas ļauj pieņemt jēgpilnus lēmumus.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Paplašinājumi&lt;/em&gt;: jūs varat paplašināt Chrome funkcijas ar vairāk nekā 100 000 paplašinājumiem, kas ir pieejami veikalā Chrome Web Store.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Instalēja administrators.</translation>
 <translation id="6087746524533454243">Vai meklējat pārlūka lapu “Par”? Apmeklējiet vietni</translation>
 <translation id="6087960857463881712">Satriecoša seja</translation>

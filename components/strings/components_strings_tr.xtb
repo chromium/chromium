@@ -1437,7 +1437,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3714633008798122362">web takvimi</translation>
 <translation id="3714780639079136834">Mobil veriyi veya kablosuz bağlantıyı açma</translation>
 <translation id="3715016660240337709">{0,plural, =1{Dosyanın yüklenmesi engellendi}other{<ph name="FILE_COUNT" /> dosyanın yüklenmesi engellendi}}</translation>
-<translation id="3715545959749027023">Güvenlik işlemleri Chrome tarafından işaretlendiğinde bu işlemlerle ilgili veriler yöneticinize gönderilir. Bu veriler Chrome'da ziyaret ettiğiniz sayfaların URL'si, dosya adları veya meta veriler, tarayıcı ya da sekme kilitlenmelerinin yanı sıra web tabanlı uygulamalarda, cihazınızda ve Chrome'da oturum açmak için kullandığınız kullanıcı adını içerir.</translation>
 <translation id="3715597595485130451">Kablosuz Ağ Bağlantısı</translation>
 <translation id="3716622997181469465">klavye kilidi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Proxy, güvenlik duvarı ve DNS yapılandırmasını kontrol etme<ph name="END_LINK" /></translation>
@@ -2948,6 +2947,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Hesabı'nda cihazınızı bulmak için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="6695428916538794739">Aksiyon ve Macera Filmleri</translation>
 <translation id="6696424331653607346">Seyahat Kılavuzları ve Tanıtım Filmleri</translation>
+<translation id="6698097747703777657">Kodunuzu almadınız mı? <ph name="BEGIN_LINK" />Yeni kod alın<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Oluşturma tarihi:</translation>
 <translation id="67007264085648978">Zaman işaretçisi</translation>
 <translation id="6702851555558236418">Ses ve Müzik Yazılımları</translation>

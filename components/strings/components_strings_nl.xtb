@@ -1432,7 +1432,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3714633008798122362">online agenda</translation>
 <translation id="3714780639079136834">Zet je mobiele data of wifi aan</translation>
 <translation id="3715016660240337709">{0,plural, =1{Bestand kan niet worden geüpload}other{<ph name="FILE_COUNT" /> bestanden kunnen niet worden geüpload}}</translation>
-<translation id="3715545959749027023">Als Chrome beveiligingsgebeurtenissen markeert, worden relevante gegevens over de gebeurtenissen naar je beheerder gestuurd. Dit kunnen URL's zijn van pagina's die je bezoekt in Chrome, bestandsnamen of metadata, browser- of tabbladcrashes en de gebruikersnaam die je gebruikt om in te loggen bij webgebaseerde apps, je apparaat en Chrome.</translation>
 <translation id="3715597595485130451">Verbinding maken met wifi</translation>
 <translation id="3716622997181469465">toetsenbordvergrendeling</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Controleer de proxy, firewall en DNS-configuratie<ph name="END_LINK" /></translation>

@@ -1430,7 +1430,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2042279886444479655">Active profiles</translation>
 <translation id="2044014337866019681">Please make sure that you are verifying <ph name="ACCOUNT" /> to unlock the session.</translation>
 <translation id="204497730941176055">Microsoft certificate template name</translation>
-<translation id="2045117674524495717">Keyboard Shortcut Helper</translation>
 <translation id="2045211794962848221">You won't see this specific message again</translation>
 <translation id="2045838962742066664">Shorthand typing</translation>
 <translation id="204622017488417136">Your device will be returned to the previously installed version of Chrome. All user accounts and local data will be removed. This cannot be undone.</translation>
@@ -6683,12 +6682,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6082877069782862752">Key mapping</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – Part of unnamed group</translation>
 <translation id="6086004606538989567">The account that you verified is not authorised to access this device.</translation>
-<translation id="6086366524552602071">You can customise Chrome the way that you want:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;The best of Google&lt;/em&gt;, for those who want it. For example, you can choose Google Search as Chrome's default search engine and use Google Password Manager to get all your passwords on any device. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Meaningful choice&lt;/em&gt;: Chrome offers you choice and control with settings, and information to help you make meaningful decisions.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Extensions&lt;/em&gt;: You can extend Chrome functionality with over 100,000 extensions in the Chrome Web Store.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Installed by your administrator</translation>
 <translation id="6087746524533454243">Looking for the browser about page? Visit</translation>
 <translation id="6087960857463881712">Awesome face</translation>

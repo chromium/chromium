@@ -1437,7 +1437,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3714633008798122362">lịch trên web</translation>
 <translation id="3714780639079136834">Bật dữ liệu di dộng hoặc Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{Tệp đã bị chặn không cho tải lên}other{<ph name="FILE_COUNT" /> tệp đã bị chặn không cho tải lên}}</translation>
-<translation id="3715545959749027023">Khi Chrome gắn cờ cho các sự kiện bảo mật, quản trị viên của bạn sẽ nhận được dữ liệu liên quan đến các sự kiện đó. Dữ liệu này có thể bao gồm URL của những trang bạn truy cập trong Chrome, tên tệp hoặc siêu dữ liệu, sự cố của trình duyệt hoặc thẻ, cũng như tên người dùng mà bạn dùng để đăng nhập vào các ứng dụng dựa trên nền tảng web, thiết bị của bạn và Chrome.</translation>
 <translation id="3715597595485130451">Kết nối Wi-Fi</translation>
 <translation id="3716622997181469465">khoá bàn phím</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Kiểm tra proxy, tường lửa và cấu hình DNS<ph name="END_LINK" /></translation>
@@ -2948,6 +2947,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để Tìm thiết bị của tôi của bạn trong Tài khoản Google</translation>
 <translation id="6695428916538794739">Phim hành động và phiêu lưu</translation>
 <translation id="6696424331653607346">Hướng dẫn và thông tin du lịch</translation>
+<translation id="6698097747703777657">Bạn chưa nhận được mã? <ph name="BEGIN_LINK" />Nhận mã mới<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Tạo:</translation>
 <translation id="67007264085648978">Thanh trượt thời gian</translation>
 <translation id="6702851555558236418">Phần mềm âm thanh và âm nhạc</translation>

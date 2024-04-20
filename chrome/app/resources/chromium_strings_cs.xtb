@@ -177,6 +177,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="4095980151185649725">{COUNT,plural, =1{Vaše organizace prohlížeč Chromium po 1 minutě nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}few{Vaše organizace prohlížeč Chromium po # minutách nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}many{Vaše organizace prohlížeč Chromium po # minuty nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}other{Vaše organizace prohlížeč Chromium po # minutách nečinnosti automaticky zavře. Údaje o prohlížení se vymažou. Může to zahrnovat historii, automatické vyplňování a stažené soubory.}}</translation>
 <translation id="4118474109249235144">Anonymní režim prohlížeče Chromium</translation>
 <translation id="4148957013307229264">Instalace...</translation>
+<translation id="4149336151887611710">Vaše organizace může zobrazit a spravovat údaje o prohlížení ve vašem pracovním profilu (například vaše záložky, historii a hesla). Údaje o prohlížení v osobních profilech prohlížeče Chromium nevidí.</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – přihlášení k síti – Chromium</translation>
 <translation id="421369550622382712">Objevte skvělé aplikace, hry, rozšíření a motivy prohlížeče Chromium.</translation>
 <translation id="4216212958613226427">V tomto jazyce se zobrazuje uživatelské rozhraní prohlížeče Chromium</translation>
@@ -405,6 +406,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="7867198900892795913">Chromium nebylo možné aktualizovat na nejnovější verzi. Nemáte proto k dispozici nové funkce a opravy zabezpečení.</translation>
 <translation id="7872446069773932638">Stahování… Zbývající čas: <ph name="SECONDS" /> s</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Jak můžete své údaje spravovat:<ph name="END_BOLD" /> Abychom chránili vaše soukromí, vaše zájmy starší než 4 měsíce automaticky mažeme. Jak budete pracovat s internetem, zájmy se mohou na seznamu znovu objevit. Pokud se zájmy nemají zohledňovat, můžete je z Chromia odstranit.</translation>
+<translation id="7888981273428720788">Nastavte si Chromium jako výchozí prohlížeč</translation>
 <translation id="7937630085815544518">K prohlížeči Chromium jste byli přihlášeni s účtem <ph name="USER_EMAIL_ADDRESS" />. Přihlaste se prosím znovu pomocí stejného účtu.</translation>
 <translation id="7975919845073681630">Toto je druhá instalace prohlížeče Chromium. Tuto instalaci nelze nastavit jako výchozí prohlížeč.</translation>
 <translation id="7997934263947464652">Rozšíření, aplikace a motivy z neznámých zdrojů mohou poškodit vaše zařízení. Chromium doporučuje instalovat je pouze z tohoto zdroje: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
@@ -417,6 +419,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="813913629614996137">Probíhá inicializace...</translation>
 <translation id="8166782796394721554">Zapnout další ochranu v modulu prohlížeče Chromium pro JavaScript a WebAssembly</translation>
 <translation id="81770708095080097">Tento soubor je nebezpečný, proto jej prohlížeč Chromium zablokoval.</translation>
+<translation id="8232193495299001329">Toto rozšíření nemusí být bezpečné. Chromium nedokáže ověřit, odkud pochází. Odstraňte ho z prohlížeče Chromium, aby již nemohlo číst a měnit vaše data (včetně osobních údajů) na webech, které navštěvujete.</translation>
 <translation id="8248265253516264921">Pokud obrázek nemá užitečný popis, Chromium se vám jej pokusí poskytnout. Za účelem vytváření popisů jsou obrázky odesílány do Googlu. Tuto funkci můžete kdykoliv vypnout v nastavení.</translation>
 <translation id="8266560134891435528">Chromium nemůže zkontrolovat vaše hesla, protože nejste přihlášeni</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium vás varuje<ph name="END_LINK" /> před nebezpečnými weby a soubory ke stažení</translation>

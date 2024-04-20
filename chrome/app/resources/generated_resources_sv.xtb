@@ -1430,7 +1430,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2042279886444479655">Aktiva profiler</translation>
 <translation id="2044014337866019681">Kontrollera att du verifierar <ph name="ACCOUNT" /> om du vill låsa upp sessionen.</translation>
 <translation id="204497730941176055">Namn på Microsoft-certifikatmall</translation>
-<translation id="2045117674524495717">Hjälp med kortkommandon</translation>
 <translation id="2045211794962848221">Det här meddelandet visas inte igen</translation>
 <translation id="2045838962742066664">Snabbskrift</translation>
 <translation id="204622017488417136">Enheten kommer att återgå till den tidigare installerade versionen av Chrome. Alla användarkonton och lokala uppgifter kommer att tas bort. Det går inte att ångra åtgärden.</translation>
@@ -6683,12 +6682,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6082877069782862752">Tangentmappning</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> – ingår i namnlös grupp</translation>
 <translation id="6086004606538989567">Kontot som du har verifierat har inte åtkomstbehörighet till den här enheten.</translation>
-<translation id="6086366524552602071">Du kan anpassa Chrome som du vill:
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;Det bästa från Google&lt;/em&gt; för de som vill ha det. Du kan till exempel välja Google Sök som standardsökmotor i Chrome och använda Google Lösenordshantering för att få tillgång till alla dina lösenord på alla enheter. &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Meningsfullt val&lt;/em&gt;: I Chrome får du valmöjligheter och kontroll med inställningar och information som hjälper dig att fatta meningsfulla beslut.&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;Tillägg&lt;/em&gt;: Du kan utöka funktionerna i Chrome med över 100 000 tillägg i Chrome Web Store.&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">Har installerats av administratören</translation>
 <translation id="6087746524533454243">Letar du webbläsarens about-sida? Besök</translation>
 <translation id="6087960857463881712">Entusiastiskt ansikte</translation>

@@ -28,7 +28,6 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="2329392777730037872">Không mở được <ph name="URL" /> trên ứng dụng.</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
 <translation id="2366718077645204424">Không thể kết nối với máy chủ. Điều này có thể do cấu hình của mạng bạn đang sử dụng.</translation>
-<translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Nhìn thấy trực tuyến lần cuối <ph name="RELATIVE_TIMESTAMP" />.</translation>
 <translation id="2504109125669302160">Cấp quyền 'Hỗ trợ tiếp cận' cho <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Đã kết nối với <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Bạn có muốn chia sẻ máy tính này cho một người dùng khác xem và kiểm soát không?</translation>
@@ -53,7 +52,6 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="3423542133075182604">Xử lý từ xa bằng khóa bảo mật</translation>
 <translation id="3581045510967524389">Không thể kết nối với mạng. Vui lòng kiểm tra xem thiết bị của bạn đã được kết nối với mạng hay chưa.</translation>
 <translation id="3596628256176442606">Dịch vụ này kích hoạt các kết nối đến từ ứng dụng khách kết nối từ xa trên Chrome.</translation>
-<translation id="369442766917958684">Ngoại tuyến.</translation>
 <translation id="3695446226812920698">Tìm hiểu cách thức</translation>
 <translation id="3776024066357219166">Phiên Chrome Remote Desktop của bạn đã kết thúc.</translation>
 <translation id="3858860766373142691">Tên</translation>
@@ -105,7 +103,6 @@ Nếu đã chọn '<ph name="SERVICE_SCRIPT_NAME" />', hãy bỏ chọn rồi ch
 <translation id="5601503069213153581">Mã PIN</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Máy tính của bạn hiện đang được chia sẻ với <ph name="USER" />.</translation>
-<translation id="5750083143895808682">Đã đăng nhập bằng địa chỉ <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Kết nối lại</translation>
 <translation id="5810269635982033450">Màn hình đóng vai trò như bàn di chuột</translation>
 <translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> đã yêu cầu quyền truy cập để xem màn hình và điều khiển bàn phím cũng như chuột của bạn. Hãy nhấn ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' nếu bạn không biết yêu cầu này. Nếu bạn có biết, hãy chọn ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' để cho phép kết nối khi đã sẵn sàng.</translation>

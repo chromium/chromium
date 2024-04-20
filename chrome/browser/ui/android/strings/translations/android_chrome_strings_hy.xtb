@@ -702,7 +702,9 @@
 <translation id="4732120983431207637">Stack Unwinder</translation>
 <translation id="4736934858538408121">Վիրտուալ քարտ</translation>
 <translation id="473775607612524610">Թարմացնել</translation>
+<translation id="4738065825338914557">Բաժանորդագրության չեղարկում…</translation>
 <translation id="4738836084190194332">Վերջին համաժամացումը՝ <ph name="WHEN" /></translation>
+<translation id="474121291218385686">Զտել ըստ հավելվածի</translation>
 <translation id="4741753828624614066">Հասցեագոտում կհայտնվեն բարելավված հուշումներ</translation>
 <translation id="4742970037960872810">Հեռացնել ընդգծումը</translation>
 <translation id="4749960740855309258">Բացել նոր ներդիր</translation>
@@ -786,6 +788,7 @@
 <translation id="5099845111805573968">Երբ դուք մեկ անգամ ընտրեք կայքի համակարգչային տարբերակը, ամեն անգամ կայք այցելելիս այն կցուցադրվի այդ տարբերակով</translation>
 <translation id="5102401324271069229">Եթե կայքը փորձում է գողանալ ձեր գաղտնաբառը, կամ երբ վնասակար ֆայլ եք ներբեռնում, Chrome-ը կարող է ուղարկել URL-ն ու էջի բովանդակությունը՝ անվտանգ դիտարկման միջոցով ստուգելու համար։</translation>
 <translation id="510275257476243843">Մնացել է 1 ժամ</translation>
+<translation id="5114895953710637392">Ըստ հավելվածի զտման աղյուսակը փակված է։</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Հետաքրքրություններ</translation>
 <translation id="5122378528687922675">Եթե օգնության կարիք ունենաս, դիմիր ծնողիդ (<ph name="PARENT_NAME_1" /> կամ <ph name="PARENT_NAME_2" />)</translation>
@@ -1138,6 +1141,7 @@
 <translation id="685850645784703949">Discover by Google – անջատված է</translation>
 <translation id="686366188661646310">Ջնջե՞լ գաղտնաբառը</translation>
 <translation id="6864459304226931083">Ներբեռնել պատկերը</translation>
+<translation id="686490460830618322">Ըստ հավելվածի զտման աղյուսակ</translation>
 <translation id="6865313869410766144">Ինքնալցման տվյալներ</translation>
 <translation id="6867400383614725881">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="6869056123412990582">համակարգիչ</translation>
@@ -1205,6 +1209,7 @@
 <translation id="7177466738963138057">Կարող եք սա հետագայում փոխել կարգավորումներում</translation>
 <translation id="7177873915659574692">Չհաջողվեց ստեղծել QR կոդ։ URL-ը կարող է պարունակել առավելագույնը <ph name="CHARACTER_LIMIT" /> նիշ։</translation>
 <translation id="7180611975245234373">Թարմացնել</translation>
+<translation id="7183517696921903380">Ըստ հավելվածի զտման աղյուսակը բացված է։</translation>
 <translation id="7183693674623539380">Ներդիրների խումբ – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">Կառավարեք, թե ինչպես այցելությունների պատմությունը ձեր մյուս տվյալների հետ օգտագործվի Google-ի ծառայություններում</translation>
 <translation id="7187993566681480880">Ապահովում է ձեր անվտանգությունը Chrome-ում և Google հավելվածներում, երբ մտել եք ձեր հաշիվ։</translation>
@@ -1331,6 +1336,7 @@
 <translation id="7780645209293383778">Երբ մտնում եք Google հաշիվ, այդ տվյալները ժամանակավորապես կապվում են տվյալ հաշվի հետ՝ պաշտպանելով ձեզ Google-ի հավելվածներում։</translation>
 <translation id="7791543448312431591">Ավելացնել</translation>
 <translation id="7798392620021911922">Վերականգնվել է <ph name="TAB_COUNT" /> ներդիր</translation>
+<translation id="780287761701992588">Օգտագործեք ձեր էջանիշները, գաղտնաբառերը և մյուս տվյալները ձեր բոլոր սարքերում</translation>
 <translation id="780301667611848630">Ոչ</translation>
 <translation id="7808889146555843082">Եթե հեռացնեք այս գաղտնաբառը, ձեր հաշիվը չի ջնջվի <ph name="SITE" /> կայքից։ Անվտանգության նկատառումներով փոխեք գաղտնաբառը կամ ջնջեք հաշիվը <ph name="SITE" /> կայքում։</translation>
 <translation id="7810647596859435254">Բացել հավելվածով…</translation>

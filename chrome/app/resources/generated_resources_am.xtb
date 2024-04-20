@@ -1426,7 +1426,6 @@
 <translation id="2042279886444479655">ንቁ መገለጫዎች</translation>
 <translation id="2044014337866019681">እባክዎ ክፍለ-ጊዜውን ለመክፈት <ph name="ACCOUNT" />ን እያረጋገጡ መሆንዎን ያረጋግጡ።</translation>
 <translation id="204497730941176055">Microsoft Certificate Template Name</translation>
-<translation id="2045117674524495717">የቁልፍ ሰሌዳ አቋራጭ አጋዥ</translation>
 <translation id="2045211794962848221">ይህን የተወሰነ መልዕክት በድጋሚ አያዩም</translation>
 <translation id="2045838962742066664">የአጭር አጻጻፍ ትየባ</translation>
 <translation id="204622017488417136">የእርስዎ መሣሪያ ወደ ቀደም ሲል ተጭኖ የነበረው የChrome ስሪት እንዲመለስ ይደረጋል። ሁሉም የተጠቃሚ መለያዎች እና የአካባቢ ውሂብ ይወገዳሉ። ይህ አንዴ ከተደረገ በኋላ ሊቀለበስ አይችልም።</translation>
@@ -6674,12 +6673,6 @@
 <translation id="6082877069782862752">ቁልፍ ማዛመድ</translation>
 <translation id="608531959444400877"><ph name="WINDOW_TITLE" /> - ያልተሰየመ ቡድን አካል</translation>
 <translation id="6086004606538989567">ያረጋገጡት መለያ ይህን መሣሪያ የመድረስ ፈቃድ የለውም።</translation>
-<translation id="6086366524552602071">Chromeን በሚፈልጉት መንገድ ማበጀት ይችላሉ፡-
-      &lt;ul&gt;
-        &lt;li&gt;&lt;em&gt;የGoogle ምርጡ&lt;/em&gt;፣ ለሚፈልጉት። ለምሳሌ፣ Google ፍለጋን እንደ የChrome ነባሪ የፍለጋ ፕሮግራም መምረጥ እና ሁሉንም የይለፍ ቃሎችዎን በማንኛውም መሣሪያ ላይ ለማግኘት የGoogle የይለፍ ቃል አስተዳዳሪን መጠቀም ይችላሉ። &lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;ትርጉም ያለው ምርጫ&lt;/em&gt;: Chrome ከቅንብሮች ጋር ምርጫ እና ቁጥጥር እና ትርጉም ያለው ውሳኔ እንዲያደርጉ የሚያግዝዎትን መረጃ ይሰጥዎታል።&lt;/li&gt;
-        &lt;li&gt;&lt;em&gt;ቅጥያዎች&lt;/em&gt;፦ በChrome ድር መደብር ውስጥ የChrome ተግባራዊነትን ከ100,000 በላይ ቅጥያዎች ጋር ማራዘም ይችላሉ።&lt;/li&gt;
-      &lt;/ul&gt;</translation>
 <translation id="6086846494333236931">በእርስዎ አስተዳዳሪ የተጫነ</translation>
 <translation id="6087746524533454243">የአሳሹን ስለ ገፅ እየፈለጉ ነው? ይጎብኙ</translation>
 <translation id="6087960857463881712">ግሩም ፊት</translation>
