@@ -822,14 +822,7 @@ DCLayerTree::VisualTree::VisualTree(DCLayerTree* dc_layer_tree)
 DCLayerTree::VisualTree::~VisualTree() = default;
 
 bool DCLayerTree::VisualTree::BuildTree(
-    const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
-    bool needs_rebuild_visual_tree) {
-  // For optimized tree |needs_rebuild_visual_tree| means that we may need to
-  // add/re-add a delegated ink visual into the root surface's visual.
-  // TODO(http://crbug.com/1380822): Clean up needs_rebuild_visual_tree
-  // and use dedicated add_delegated_ink_visual flag instead.
-  const bool add_delegated_ink_visual = needs_rebuild_visual_tree;
-
+    const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays) {
   // Index into the subtree from the previous frame that is being reused in the
   // current frame for the given overlay index.
   // |overlay_index_to_reused_subtree| has an entry for every overlay in the
@@ -879,8 +872,6 @@ bool DCLayerTree::VisualTree::BuildTree(
   VisualTreeValid(subtree_index_to_overlay, prev_subtree_is_attached_to_root);
 #endif  // DCHECK_IS_ON()
 
-  // Visual for root surface. Cache it to add DelegatedInk visual if needed.
-  Microsoft::WRL::ComPtr<IDCompositionVisual2> root_surface_visual;
   IDCompositionVisual2* left_sibling_visual = nullptr;
 
   // This loop walks the overlays and builds or updates the visual subtree for
@@ -954,23 +945,12 @@ bool DCLayerTree::VisualTree::BuildTree(
       needs_commit = true;
     }
     left_sibling_visual = visual_subtree->container_visual();
-
-    // Zero z_order represents root layer.
-    if (visual_subtree->z_order() == 0) {
-      // Verify we have single root visual layer.
-      DCHECK(!root_surface_visual);
-      root_surface_visual = visual_subtree->content_visual();
-    }
   }
 
   // Update subtree_map_ and visual_subtrees_ with new values.
   subtree_map_ = std::move(subtree_map);
   visual_subtrees_ = std::move(visual_subtrees);
 
-  if (add_delegated_ink_visual && root_surface_visual) {
-    needs_commit |= dc_layer_tree_->AddDelegatedInkVisualToTreeIfNeeded(
-        root_surface_visual.Get());
-  }
   if (needs_commit) {
     TRACE_EVENT0("gpu", "DCLayerTree::CommitAndClearPendingOverlays::Commit");
     HRESULT hr = dc_layer_tree_->dcomp_device_->Commit();
@@ -1171,30 +1151,31 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
     std::vector<std::unique_ptr<DCLayerOverlayParams>> overlays) {
   TRACE_EVENT1("gpu", "DCLayerTree::CommitAndClearPendingOverlays",
                "num_overlays", overlays.size());
-  DCHECK(!needs_rebuild_visual_tree_ || ink_renderer_->HasBeenInitialized());
 
-  {
-    Microsoft::WRL::ComPtr<IDXGISwapChain1> root_swap_chain;
-    Microsoft::WRL::ComPtr<IDCompositionSurface> root_dcomp_surface;
-    auto it = base::ranges::find(overlays, 0, &DCLayerOverlayParams::z_order);
-    if (it != overlays.end() && (*it)->overlay_image) {
-      Microsoft::WRL::ComPtr<IUnknown> root_visual_content =
-          (*it)->overlay_image->dcomp_visual_content();
-      CHECK(root_visual_content);
-      HRESULT hr = root_visual_content.As(&root_swap_chain);
-      if (hr == E_NOINTERFACE) {
-        DCHECK_EQ(nullptr, root_swap_chain);
-        hr = root_visual_content.As(&root_dcomp_surface);
-      }
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> root_swap_chain;
+  auto it = base::ranges::find(overlays, 0, &DCLayerOverlayParams::z_order);
+  if (it != overlays.end() && (*it)->overlay_image) {
+    Microsoft::WRL::ComPtr<IUnknown> root_visual_content =
+        (*it)->overlay_image->dcomp_visual_content();
+    CHECK(root_visual_content);
+    HRESULT hr = root_visual_content.As(&root_swap_chain);
+    if (hr == E_NOINTERFACE) {
+      DCHECK_EQ(root_swap_chain, nullptr);
+    } else {
       CHECK_EQ(S_OK, hr);
+      CHECK_NE(root_swap_chain, nullptr);
     }
+  }
 
-    if (root_swap_chain != root_swap_chain_ ||
-        root_dcomp_surface != root_dcomp_surface_) {
-      DCHECK(!(root_swap_chain && root_dcomp_surface));
-      root_swap_chain_ = std::move(root_swap_chain);
-      root_dcomp_surface_ = std::move(root_dcomp_surface);
-      needs_rebuild_visual_tree_ = true;
+  // If delegated ink metadata exists for this frame, attempt to make an overlay
+  // so that a visual subtree can be created for a delegated ink visual.
+  // TODO(crbug.com/335553727) Consider clearing ink_renderer_ when there's no
+  // metadata.
+  if (pending_delegated_ink_metadata_) {
+    if (auto ink_layer = ink_renderer_->MakeDelegatedInkOverlay(
+            dcomp_device_.Get(), root_swap_chain.Get(),
+            std::move(pending_delegated_ink_metadata_))) {
+      overlays.push_back(std::move(ink_layer));
     }
   }
 
@@ -1208,7 +1189,6 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
     video_swap_chains_.resize(num_swap_chain_presenters);
     // If we need to grow or shrink swap chain presenters, we'll need to add or
     // remove visuals.
-    needs_rebuild_visual_tree_ = true;
   }
 
   // Sort layers by z-order.
@@ -1262,10 +1242,7 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
     visual_tree_ = std::make_unique<VisualTree>(this);
   }
 
-  const bool status =
-      visual_tree_->BuildTree(overlays, needs_rebuild_visual_tree_);
-
-  needs_rebuild_visual_tree_ = false;
+  const bool status = visual_tree_->BuildTree(overlays);
 
   // Clean up excess surfaces so the pool will not grow unbounded.
   solid_color_surface_pool_->TrimAfterCommit();
@@ -1301,50 +1278,10 @@ bool DCLayerTree::SupportsDelegatedInk() {
   return ink_renderer_->DelegatedInkIsSupported(dcomp_device_);
 }
 
-bool DCLayerTree::InitializeInkRenderer() {
-  return ink_renderer_->Initialize(dcomp_device_, root_swap_chain_);
-}
-
-bool DCLayerTree::AddDelegatedInkVisualToTreeIfNeeded(
-    IDCompositionVisual2* root_surface_visual) {
-  // Only add the ink visual to the tree if it has already been initialized.
-  // It will only have been initialized if delegated ink has been used, so
-  // this ensures the visual is only added when it is needed. The ink renderer
-  // must be updated so that if the root swap chain or dcomp device have
-  // changed the ink visual and delegated ink object can be updated
-  // accordingly.
-  if (!ink_renderer_->HasBeenInitialized()) {
-    return false;
-  }
-
-  // Reinitialize the ink renderer in case the root swap chain or dcomp
-  // device changed since initialization.
-  if (!InitializeInkRenderer()) {
-    return false;
-  }
-
-  DCHECK(SupportsDelegatedInk());
-  root_surface_visual->AddVisual(ink_renderer_->GetInkVisual(), FALSE, nullptr);
-  // Adding the ink visual to a new visual tree invalidates all previously set
-  // properties. Therefore, force update.
-  ink_renderer_->SetNeedsDcompPropertiesUpdate();
-  return true;
-}
-
 void DCLayerTree::SetDelegatedInkTrailStartPoint(
     std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
   DCHECK(SupportsDelegatedInk());
-
-  if (!ink_renderer_->HasBeenInitialized()) {
-    if (!InitializeInkRenderer())
-      return;
-    // This ensures that the delegated ink visual is added to the tree after
-    // the root visual is created, during
-    // DCLayerTree::CommitAndClearPendingOverlays
-    needs_rebuild_visual_tree_ = true;
-  }
-
-  ink_renderer_->SetDelegatedInkTrailStartPoint(std::move(metadata));
+  pending_delegated_ink_metadata_ = std::move(metadata);
 }
 
 void DCLayerTree::InitDelegatedInkPointRendererReceiver(

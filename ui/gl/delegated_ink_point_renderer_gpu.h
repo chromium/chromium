@@ -11,11 +11,14 @@
 #include <optional>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/delegated_ink_metadata.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
+#include "ui/gl/dc_layer_overlay_params.h"
 #include "ui/gl/gl_export.h"
 
 namespace gl {
@@ -51,16 +54,6 @@ class GL_EXPORT DelegatedInkPointRendererGpu
       mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
           pending_receiver);
 
-  bool Initialize(
-      const Microsoft::WRL::ComPtr<IDCompositionDevice2>& dcomp_device2,
-      const Microsoft::WRL::ComPtr<IDXGISwapChain1>& root_swap_chain);
-
-  bool HasBeenInitialized() const {
-    return ink_visual_ && delegated_ink_trail_;
-  }
-
-  IDCompositionVisual* GetInkVisual() const { return ink_visual_.Get(); }
-
   bool DelegatedInkIsSupported(
       const Microsoft::WRL::ComPtr<IDCompositionDevice2>& dcomp_device) const;
 
@@ -74,6 +67,15 @@ class GL_EXPORT DelegatedInkPointRendererGpu
   gfx::DelegatedInkMetadata* MetadataForTesting() const {
     return metadata_.get();
   }
+
+  // Creates an overlay for the current frame's Delegated Ink Metadata.
+  // If the Delegated Ink Renderer can not be initialized, it returns a
+  // nullptr. The ink trail will synchronize its updates with |root_swap_chain|
+  // if present, otherwise it will synchronize with DComp commit.
+  std::unique_ptr<DCLayerOverlayParams> MakeDelegatedInkOverlay(
+      IDCompositionDevice2* dcomp_device2,
+      IDXGISwapChain1* root_swap_chain,
+      std::unique_ptr<gfx::DelegatedInkMetadata> metadata);
 
   uint64_t InkTrailTokenCountForTesting() const;
 
@@ -96,18 +98,11 @@ class GL_EXPORT DelegatedInkPointRendererGpu
 
   uint64_t GetMaximumNumberOfPointerIdsForTesting() const;
 
-  void SetNeedsDcompPropertiesUpdate() {
-    // This should be set from an external event that invalidates our DCOMP
-    // resources: |ink_visual_|, |delegated_ink_trail_|. This will be checked in
-    // the next call to |SetDelegatedInkTrailStartPoint| - the entry point for
-    // using these resources to render a new trail. That code optimizes based on
-    // the consideration that properties persist after being set.
-    needs_dcomp_properties_update_ = true;
-  }
+  void InitializeForTesting(IDCompositionDevice2* dcomp_device2);
 
  private:
-  bool UpdateVisualClip(const gfx::RectF& new_presentation_area,
-                        bool force_update);
+  bool Initialize(IDCompositionDevice2* dcomp_device2,
+                  IDXGISwapChain1* root_swap_chain);
 
   void EraseExcessPointerIds();
 
@@ -117,19 +112,15 @@ class GL_EXPORT DelegatedInkPointRendererGpu
 
   bool DrawDelegatedInkPoint(const gfx::DelegatedInkPoint& point);
 
-  // The visual within the tree that will contain the delegated ink trail. It
-  // should be a child of the root surface visual.
-  Microsoft::WRL::ComPtr<IDCompositionVisual> ink_visual_;
-
   // The delegated ink trail object that the ink trail is drawn on. This is the
   // content of the ink visual.
   Microsoft::WRL::ComPtr<IDCompositionDelegatedInkTrail> delegated_ink_trail_;
 
-  // Remember the dcomp device and swap chain used to create
-  // |delegated_ink_trail_| and |ink_visual_| so that we can avoid recreating
-  // them when it isn't necessary.
-  raw_ptr<IDCompositionDevice2> dcomp_device_ = nullptr;
+  // The swap chain whose updates |delegated_ink_trail_| is synchronized with.
+  // If null, |delegated_ink_trail_| is synchronized with DComp commit.
   raw_ptr<IDXGISwapChain1> swap_chain_ = nullptr;
+
+  Microsoft::WRL::ComPtr<IDCompositionInkTrailDevice> ink_trail_device_;
 
   // The most recent metadata received. The metadata marks the last point of
   // the app rendered stroke, which corresponds to the first point of the
@@ -166,10 +157,10 @@ class GL_EXPORT DelegatedInkPointRendererGpu
   // |delegated_ink_points_|.
   bool wait_for_new_trail_to_draw_ = true;
 
-  // When the visual tree was updated, all properties we've set on DCOMP are
-  // outdated, and need to be re-set (i.e. from |ink_visual_| and
-  // |delegated_ink_trail_|). This is done at |SetDelegatedInkTrailStartPoint|.
-  bool needs_dcomp_properties_update_ = false;
+  // Set to true when DelegatedInkPointRendererGPU has been (re)initialized.
+  // This can happen due to the first metadata being received, or change in
+  // root surface swap chain or DirectCompositionDevice.
+  bool force_new_ink_trail_ = false;
 
   mojo::Receiver<gfx::mojom::DelegatedInkPointRenderer> receiver_{this};
 };

@@ -60,7 +60,7 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
   }
 
   void SendMetadata(const gfx::DelegatedInkMetadata& metadata) {
-    presenter()->SetDelegatedInkTrailStartPoint(
+    ink_renderer()->SetDelegatedInkTrailStartPoint(
         std::make_unique<gfx::DelegatedInkMetadata>(metadata));
   }
 
@@ -103,9 +103,8 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
         /*init_bindings=*/true,
         /*gpu_preference=*/gl::GpuPreference::kDefault);
     if (!gl::DirectCompositionSupported()) {
-      LOG(WARNING)
+      GTEST_SKIP()
           << "GL implementation not using DirectComposition, skipping test.";
-      return;
     }
 
     std::tie(gl_surface_, context_) =
@@ -114,13 +113,14 @@ class DelegatedInkPointRendererGpuTest : public testing::Test {
     CreateDCompPresenter();
 
     if (!presenter_->SupportsDelegatedInk()) {
-      LOG(WARNING) << "Delegated ink unsupported, skipping test.";
-      return;
+      GTEST_SKIP() << "Delegated ink unsupported, skipping test.";
     }
 
     // Create the swap chain
     constexpr gfx::Size window_size(100, 100);
     EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+
+    ink_renderer()->InitializeForTesting(gl::GetDirectCompositionDevice());
   }
 
   void TearDown() override {

@@ -11,6 +11,7 @@
 
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace gl {
 
@@ -56,58 +57,32 @@ void DelegatedInkPointRendererGpu::InitMessagePipeline(
 }
 
 bool DelegatedInkPointRendererGpu::Initialize(
-    const Microsoft::WRL::ComPtr<IDCompositionDevice2>& dcomp_device2,
-    const Microsoft::WRL::ComPtr<IDXGISwapChain1>& root_swap_chain) {
-  if (dcomp_device_ == dcomp_device2.Get() &&
-      swap_chain_ == root_swap_chain.Get() && HasBeenInitialized()) {
+    IDCompositionDevice2* dcomp_device2,
+    IDXGISwapChain1* root_swap_chain) {
+  if (swap_chain_ == root_swap_chain && delegated_ink_trail_) {
     return true;
   }
 
-  dcomp_device_ = dcomp_device2.Get();
-  swap_chain_ = root_swap_chain.Get();
+  swap_chain_ = root_swap_chain;
 
-  Microsoft::WRL::ComPtr<IDCompositionInkTrailDevice> ink_trail_device;
-  TraceEventOnFailure(dcomp_device2.As(&ink_trail_device),
-                      "DelegatedInkPointRendererGpu::Initialize - "
-                      "DCompDevice2 as InkTrailDevice failed");
-  if (!ink_trail_device) {
-    return false;
-  }
-
-  TraceEventOnFailure(
-      ink_trail_device->CreateDelegatedInkTrailForSwapChain(
-          root_swap_chain.Get(), &delegated_ink_trail_),
-      "DelegatedInkPointRendererGpu::Initialize - Failed to create "
-      "delegated ink trail.");
-  if (!delegated_ink_trail_) {
-    return false;
-  }
-
-  Microsoft::WRL::ComPtr<IDCompositionDevice> dcomp_device;
-  TraceEventOnFailure(dcomp_device2.As(&dcomp_device),
-                      "DelegatedInkPointRendererGpu::Initialize - "
-                      "DCompDevice2 as DCompDevice failed");
-  if (!dcomp_device) {
-    return false;
-  }
-
-  TraceEventOnFailure(dcomp_device->CreateVisual(&ink_visual_),
-                      "DelegatedInkPointRendererGpu::Initialize - "
-                      "Failed to create ink visual.");
-  if (!ink_visual_) {
+  if (!ink_trail_device_ &&
+      TraceEventOnFailure(
+          dcomp_device2->QueryInterface(IID_PPV_ARGS(&ink_trail_device_)),
+          "DelegatedInkPointRendererGpu::Initialize - "
+          "DCompDevice2 as InkTrailDevice failed")) {
     return false;
   }
 
   if (TraceEventOnFailure(
-          ink_visual_->SetContent(delegated_ink_trail_.Get()),
-          "DelegatedInkPointRendererGpu::Initialize - SetContent failed")) {
-    // Initialization has failed because SetContent failed. However, we must
-    // reset the members so that HasBeenInitialized() does not return true
-    // when queried.
-    ink_visual_.Reset();
-    delegated_ink_trail_.Reset();
+          ink_trail_device_->CreateDelegatedInkTrailForSwapChain(
+              root_swap_chain, &delegated_ink_trail_),
+          "DelegatedInkPointRendererGpu::Initialize - Failed to create "
+          "delegated ink trail.")) {
     return false;
   }
+
+  // Start a new trail if the renderer needs to be (re)initialized.
+  force_new_ink_trail_ = true;
 
   return true;
 }
@@ -132,7 +107,6 @@ void DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint(
       TRACE_ID_GLOBAL(metadata->trace_id()), TRACE_EVENT_FLAG_FLOW_IN,
       "metadata", metadata->ToString());
 
-  DCHECK(ink_visual_);
   DCHECK(delegated_ink_trail_);
 
   // If certain conditions are met, we can simply erase the trail up to the
@@ -142,11 +116,10 @@ void DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint(
   //     |pointer_id_| exist.
   //  2. The current |metadata_| and |metadata| both have the same color, so
   //     the color of the trail does not need to change.
-  //  3. |needs_dcomp_properties_update_| isn't forcing an update of the DCOMP
-  //     resources: |ink_visual_|, |delegated_ink_trail_|. This happens after
-  //     a swap chain recreation.
+  //  3. |force_new_ink_trail_| is false - renderer has not been
+  //     re-initialized.
   // (continued below)
-  if (!needs_dcomp_properties_update_ && metadata_ &&
+  if (!force_new_ink_trail_ && metadata_ &&
       metadata->color() == metadata_->color() && pointer_id_) {
     DelegatedInkPointRendererGpu::DelegatedInkPointTokenMap& token_map =
         delegated_ink_points_[pointer_id_.value()];
@@ -178,8 +151,7 @@ void DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint(
             delegated_ink_trail_->RemoveTrailPoints(token.value()),
             "DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint - "
             "Failed to remove trail points.");
-        if (!remove_trail_points_failed &&
-            UpdateVisualClip(metadata->presentation_area(), false)) {
+        if (!remove_trail_points_failed) {
           // Remove all points up to and including the point that matches
           // |metadata|. No need to hold on to the point that matches metadata
           // because we've already added it to AddTrailPoints previously, and
@@ -191,11 +163,6 @@ void DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint(
         }
       }
     }
-  }
-
-  if (!UpdateVisualClip(metadata->presentation_area(),
-                        needs_dcomp_properties_update_)) {
-    return;
   }
 
   D2D1_COLOR_F d2d1_color;
@@ -214,7 +181,7 @@ void DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint(
   wait_for_new_trail_to_draw_ = false;
   metadata_ = std::move(metadata);
   DrawSavedTrailPoints();
-  needs_dcomp_properties_update_ = false;
+  force_new_ink_trail_ = false;
 }
 
 void DelegatedInkPointRendererGpu::StoreDelegatedInkPoint(
@@ -282,30 +249,6 @@ uint64_t DelegatedInkPointRendererGpu::InkTrailTokenCountForTesting() const {
 bool DelegatedInkPointRendererGpu::CheckForPointerIdForTesting(
     int32_t pointer_id) const {
   return delegated_ink_points_.find(pointer_id) != delegated_ink_points_.end();
-}
-
-bool DelegatedInkPointRendererGpu::UpdateVisualClip(
-    const gfx::RectF& new_presentation_area,
-    bool force_update) {
-  if (!force_update && metadata_ &&
-      metadata_->presentation_area() == new_presentation_area) {
-    return true;
-  }
-
-  // If (0,0) of a visual is clipped out, it can result in delegated ink not
-  // being drawn at all. This is more common when DComp Surfaces are enabled,
-  // but doesn't negatively impact things when the swapchain is used, so just
-  // offset the visual instead of clipping the top left corner in all cases.
-  ink_visual_->SetOffsetX(new_presentation_area.x());
-  ink_visual_->SetOffsetY(new_presentation_area.y());
-
-  D2D_RECT_F clip_rect;
-  clip_rect.bottom = new_presentation_area.bottom();
-  clip_rect.right = new_presentation_area.right();
-  // If setting the clip or committing failed, we want to bail early so that a
-  // trail can't incorrectly appear over things on the user's screen.
-  return SUCCEEDED(ink_visual_->SetClip(clip_rect)) &&
-         SUCCEEDED(dcomp_device_->Commit());
 }
 
 void DelegatedInkPointRendererGpu::EraseExcessPointerIds() {
@@ -441,6 +384,37 @@ void DelegatedInkPointRendererGpu::DrawSavedTrailPoints() {
   }
 }
 
+std::unique_ptr<DCLayerOverlayParams>
+DelegatedInkPointRendererGpu::MakeDelegatedInkOverlay(
+    IDCompositionDevice2* dcomp_device2,
+    IDXGISwapChain1* root_swap_chain,
+    std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
+  if (!Initialize(dcomp_device2, root_swap_chain)) {
+    return nullptr;
+  }
+  auto ink_layer = std::make_unique<DCLayerOverlayParams>();
+  // Ink trail should be rendered on top of all content.
+  ink_layer->z_order = INT_MAX;
+  const gfx::Rect presentation_rect =
+      gfx::ToEnclosedRect(metadata->presentation_area());
+  const gfx::Size presentation_area_enclosed_size =
+      gfx::Size(presentation_rect.width(), presentation_rect.height());
+  ink_layer->quad_rect = gfx::Rect(presentation_area_enclosed_size);
+  ink_layer->content_rect = gfx::RectF(presentation_area_enclosed_size);
+  // If (0,0) of a visual is clipped out, it can result in delegated ink not
+  // being drawn at all. This is more common when DComp Surfaces are enabled,
+  // but doesn't negatively impact things when the swapchain is used, so just
+  // offset the visual instead of clipping the top left corner in all cases.
+  ink_layer->clip_rect = std::make_optional<gfx::Rect>(
+      0, 0, presentation_rect.right(), presentation_rect.bottom());
+  ink_layer->transform = gfx::Transform::MakeTranslation(
+      metadata->presentation_area().OffsetFromOrigin());
+  ink_layer->overlay_image = DCLayerOverlayImage(
+      presentation_area_enclosed_size, delegated_ink_trail_);
+  SetDelegatedInkTrailStartPoint(std::move(metadata));
+  return ink_layer;
+}
+
 bool DelegatedInkPointRendererGpu::DrawDelegatedInkPoint(
     const gfx::DelegatedInkPoint& point) {
   // Always wait for a new trail to be started before attempting to draw
@@ -486,6 +460,12 @@ bool DelegatedInkPointRendererGpu::DrawDelegatedInkPoint(
                          TRACE_EVENT_FLAG_FLOW_IN, "point", point.ToString());
   delegated_ink_points_[point.pointer_id()][point] = token;
   return true;
+}
+
+void DelegatedInkPointRendererGpu::InitializeForTesting(
+    IDCompositionDevice2* dcomp_device2) {
+  CHECK_IS_TEST();
+  Initialize(dcomp_device2, nullptr);
 }
 
 }  // namespace gl

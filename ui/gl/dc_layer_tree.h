@@ -264,8 +264,7 @@ class GL_EXPORT DCLayerTree {
     // Given overlays, builds or updates this visual tree.
     // Returns true if commit succeeded.
     bool BuildTree(
-        const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays,
-        bool needs_rebuild_visual_tree);
+        const std::vector<std::unique_ptr<DCLayerOverlayParams>>& overlays);
 
     void GetSwapChainVisualInfoForTesting(size_t index,
                                           gfx::Transform* transform,
@@ -502,18 +501,6 @@ class GL_EXPORT DCLayerTree {
   };
 
  private:
-  // This will add an ink visual to the visual tree to enable delegated ink
-  // trails. This will initially always be called directly before an OS
-  // delegated ink API is used. After that, it can also be added anytime the
-  // visual tree is rebuilt.
-  // Returns true if the commit is needed.
-  bool AddDelegatedInkVisualToTreeIfNeeded(
-      IDCompositionVisual2* root_surface_visual);
-
-  // The ink renderer must be initialized before an OS API is used in order to
-  // set up the delegated ink visual and delegated ink trail object.
-  bool InitializeInkRenderer();
-
   const bool disable_nv12_dynamic_textures_;
   const bool disable_vp_auto_hdr_;
   const bool disable_vp_scaling_;
@@ -539,18 +526,6 @@ class GL_EXPORT DCLayerTree {
   gfx::ColorSpace video_input_color_space_;
   gfx::ColorSpace video_output_color_space_;
 
-  // Set to true if a direct composition root visual needs rebuild.
-  // Each overlay is represented by a VisualSubtree, which is placed in the root
-  // visual's child list in draw order. Whenever the number of overlays or their
-  // draw order changes, the root visual needs to be rebuilt.
-  bool needs_rebuild_visual_tree_ = false;
-
-  // Set if root surface is using a swap chain currently.
-  Microsoft::WRL::ComPtr<IDXGISwapChain1> root_swap_chain_;
-
-  // Set if root surface is using a direct composition surface currently.
-  Microsoft::WRL::ComPtr<IDCompositionSurface> root_dcomp_surface_;
-
   // Root direct composition visual for window dcomp target.
   Microsoft::WRL::ComPtr<IDCompositionVisual2> dcomp_root_visual_;
 
@@ -569,9 +544,15 @@ class GL_EXPORT DCLayerTree {
 
   // Renderer for drawing delegated ink trails using OS APIs. This is created
   // when the DCLayerTree is created, but can only be queried to check if the
-  // platform supports delegated ink trails. It must be initialized via the
-  // Initialize() method in order to be used for drawing delegated ink trails.
+  // platform supports delegated ink trails. It will be initialized via the
+  // call to MakeDelegatedInkOverlay when DCLayerTree has received a
+  // delegated_ink_metadata_ and CommitAndClearPendingOverlays is underway.
   std::unique_ptr<DelegatedInkRenderer> ink_renderer_;
+
+  // Cache the metadata received by the DCLayerTree until it is time to
+  // CommitAndClearPendingOverlays. At that point the metadata will be moved
+  // to DelegatedInkPointRendererGPU.
+  std::unique_ptr<gfx::DelegatedInkMetadata> pending_delegated_ink_metadata_;
 };
 
 }  // namespace gl
