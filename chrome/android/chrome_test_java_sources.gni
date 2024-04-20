@@ -15,6 +15,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/ChromeActionModeHandlerTest.java",
   "javatests/src/org/chromium/chrome/browser/ChromeTabbedActivityTest.java",
   "javatests/src/org/chromium/chrome/browser/ContentViewFocusTest.java",
+  "javatests/src/org/chromium/chrome/browser/ContentWebFeatureUsageUtilsIntegrationTest.java",
   "javatests/src/org/chromium/chrome/browser/CopylessPasteTest.java",
   "javatests/src/org/chromium/chrome/browser/ExampleUiCaptureTest.java",
   "javatests/src/org/chromium/chrome/browser/FeaturesAnnotationsTest.java",

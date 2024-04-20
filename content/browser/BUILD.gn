@@ -3045,6 +3045,7 @@ source_set("browser") {
       "android/content_url_loader_factory.cc",
       "android/content_url_loader_factory.h",
       "android/content_view_statics.cc",
+      "android/content_web_feature_usage_utils_android.cc",
       "android/devtools_auth.cc",
       "android/dialog_overlay_impl.cc",
       "android/dialog_overlay_impl.h",

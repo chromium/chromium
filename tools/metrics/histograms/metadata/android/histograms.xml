@@ -4166,6 +4166,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabNavigationInterceptResult.ForMdoc"
+    enum="NavigationInterceptResult" expires_after="2024-09-29">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>rbyers@chromium.org</owner>
+  <summary>
+    The distribution of results when running ExternalNavigationHandler for
+    mdoc:// navigations which are intercepted. This shows how frequently mdoc://
+    navigations trigger a dialog (that the user may potentially cancel to cancel
+    the external app launch.)
+  </summary>
+</histogram>
+
+<histogram name="Android.TabNavigationInterceptResult.ForOpenId4Vp"
+    enum="NavigationInterceptResult" expires_after="2024-09-29">
+  <owner>pkotwicz@chromium.org</owner>
+  <owner>rbyers@chromium.org</owner>
+  <summary>
+    The distribution of results when running ExternalNavigationHandler for
+    openid4vp:// navigations which are intercepted. This shows how frequently
+    openid4vp:// navigations trigger a dialog (that the user may potentially
+    cancel to cancel the external app launch.)
+  </summary>
+</histogram>
+
 <histogram name="Android.TabNavigationInterceptResult.For{ProtocolType}"
     enum="NavigationInterceptResult" expires_after="2024-09-29">
   <owner>blundell@chromium.org</owner>

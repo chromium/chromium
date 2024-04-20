@@ -4333,6 +4333,8 @@ enum WebFeature {
   kV8Translation_CanTranslate_Method = 4946,
   kV8Translation_CreateTranslator_Method = 4947,
 
+  kIdentityDigitalCredentialsDeepLink = 4948,
+
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
   // Also, run update_use_counter_feature_enum.py in
