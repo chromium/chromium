@@ -50,7 +50,7 @@ class QuadF;
 namespace blink {
 
 // Represents a rect with rounded corners.
-// We don't use gfx::RRect in blink because gfx::RRect is based on SkRRect
+// We don't use gfx::RRectF in blink because gfx::RRectF is based on SkRRect
 // which always keeps the radii constrained within the size of the rect, but
 // in blink sometimes we need to keep the unconstrained status of a rounded
 // rect. See ConstrainRadii(). This class also provides functions that are

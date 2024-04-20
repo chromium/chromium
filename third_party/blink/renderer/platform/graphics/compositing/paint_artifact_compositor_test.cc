@@ -3677,23 +3677,21 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBackdropFilter) {
   Update(artifact.Build());
 
   // Expectation in effect stack diagram:
-  //                     content1
-  //       content0      [  e1  ]  clip_mask1        content2
-  // [ mask_isolation_0 ][  mask_isolation_1  ][ mask_isolation_2  ]
-  // [                             e0                              ]
+  //                           content1
+  //       content0      [        e1        ]      content2
+  // [ mask_isolation_0 ][ mask_isolation_1 ][ mask_isolation_2  ]
+  // [                            e0                             ]
   // Three content layers.
-  ASSERT_EQ(4u, LayerCount());
+  ASSERT_EQ(3u, LayerCount());
   const cc::Layer* content0 = LayerAt(0);
   const cc::Layer* content1 = LayerAt(1);
-  const cc::Layer* clip_mask1 = LayerAt(2);
-  const cc::Layer* content2 = LayerAt(3);
+  const cc::Layer* content2 = LayerAt(2);
 
-  // Three synthesized layers, two of which are null because they use fast
-  // rounded corners. One real synthesized layer is needed because the rounded
-  // clip and the backdrop filter are in different transform spaces.
+  // Three synthesized layers, all are null because they use fast rounded
+  // corners.
   ASSERT_EQ(3u, SynthesizedClipLayerCount());
   EXPECT_FALSE(SynthesizedClipLayerAt(0));
-  EXPECT_EQ(clip_mask1, SynthesizedClipLayerAt(1));
+  EXPECT_FALSE(SynthesizedClipLayerAt(1));
   EXPECT_FALSE(SynthesizedClipLayerAt(2));
 
   int t1_id = content0->transform_tree_index();
@@ -3737,23 +3735,11 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBackdropFilter) {
   EXPECT_EQ(t1_id, mask_isolation_1.transform_id);
   EXPECT_EQ(c2_id, mask_isolation_1.clip_id);
   EXPECT_FALSE(mask_isolation_1.backdrop_filters.IsEmpty());
-  EXPECT_FALSE(mask_isolation_1.is_fast_rounded_corner);
+  EXPECT_TRUE(mask_isolation_1.is_fast_rounded_corner);
   // Opacity should also be moved to mask_isolation_1.
   EXPECT_EQ(0.5f, mask_isolation_1.opacity);
-  EXPECT_EQ(gfx::RRectF(),
+  EXPECT_EQ(gfx::RRectF(40, 30, 300, 200, 5),
             mask_isolation_1.mask_filter_info.rounded_corner_bounds());
-
-  EXPECT_EQ(t1_id, clip_mask1->transform_tree_index());
-  EXPECT_EQ(c2_id, clip_mask1->clip_tree_index());
-  const cc::EffectNode& mask =
-      *GetPropertyTrees().effect_tree().Node(clip_mask1->effect_tree_index());
-  ASSERT_EQ(mask_isolation_1_id, mask.parent_id);
-  EXPECT_EQ(SkBlendMode::kDstIn, mask.blend_mode);
-  EXPECT_TRUE(static_cast<const cc::PictureLayer*>(clip_mask1)
-                  ->is_backdrop_filter_mask());
-  EXPECT_TRUE(clip_mask1->element_id());
-  EXPECT_EQ(clip_mask1->element_id(),
-            mask_isolation_1.backdrop_mask_element_id);
 
   EXPECT_EQ(t1_id, content2->transform_tree_index());
   EXPECT_EQ(c1_id, content2->clip_tree_index());

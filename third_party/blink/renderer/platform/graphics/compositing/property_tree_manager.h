@@ -27,6 +27,7 @@ enum class RenderSurfaceReason : uint8_t;
 
 namespace gfx {
 class PointF;
+class RRectF;
 }
 
 namespace blink {
@@ -214,9 +215,10 @@ class PropertyTreeManager {
     kSyntheticFor2dAxisAlignment = 1 << 1
   };
 
-  static bool SupportsShaderBasedRoundedCorner(
+  static std::optional<gfx::RRectF> ShaderBasedRRect(
       const ClipPaintPropertyNode&,
       CcEffectType type,
+      const TransformPaintPropertyNode& transform,
       const EffectPaintPropertyNode* next_effect);
 
   // Note: EffectState holds direct references to property nodes. Ordinarily it
