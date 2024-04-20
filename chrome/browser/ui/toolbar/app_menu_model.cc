@@ -1803,7 +1803,8 @@ void AppMenuModel::Build() {
           kShowSearchCompanion);
     }
 #endif
-    if (TabOrganizationUtils::GetInstance()->IsEnabled(browser_->profile())) {
+    if (base::FeatureList::IsEnabled(features::kTabOrganizationAppMenuItem) &&
+        TabOrganizationUtils::GetInstance()->IsEnabled(browser_->profile())) {
       auto* const tab_organization_service =
           TabOrganizationServiceFactory::GetForProfile(browser_->profile());
       if (tab_organization_service) {

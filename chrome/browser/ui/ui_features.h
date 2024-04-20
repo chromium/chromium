@@ -195,7 +195,11 @@ bool IsTabOrganization();
 
 BASE_DECLARE_FEATURE(kMultiTabOrganization);
 
+BASE_DECLARE_FEATURE(kTabOrganizationAppMenuItem);
+
 BASE_DECLARE_FEATURE(kTabReorganization);
+
+BASE_DECLARE_FEATURE(kTabReorganizationDivider);
 
 // The target (and minimum) interval between proactive nudge triggers. Measured
 // against a clock that only runs while Chrome is in the foreground.
