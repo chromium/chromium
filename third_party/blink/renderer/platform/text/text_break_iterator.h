@@ -216,7 +216,7 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
  private:
   FRIEND_TEST_ALL_PREFIXES(TextBreakIteratorTest, Strictness);
 
-  template <typename CharacterType>
+  template <typename CharacterType, bool use_fast_table>
   struct Context;
 
   const AtomicString& LocaleWithKeyword() const;
@@ -247,6 +247,13 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
     return iterator_.get();
   }
 
+  template <typename CharacterType,
+            LineBreakType,
+            BreakSpaceType,
+            bool use_fast_table>
+  unsigned NextBreakablePosition(unsigned pos,
+                                 const CharacterType* str,
+                                 unsigned len) const;
   template <typename CharacterType, LineBreakType, BreakSpaceType>
   unsigned NextBreakablePosition(unsigned pos,
                                  const CharacterType* str,
