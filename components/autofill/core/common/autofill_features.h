@@ -225,6 +225,9 @@ extern const base::FeatureParam<int>
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillEnableSecurityTouchEventFilteringAndroid);
+
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillVirtualViewStructureAndroid);
 inline constexpr base::FeatureParam<bool>
     kAutofillVirtualViewStructureAndroidSkipsCompatibilityCheck{

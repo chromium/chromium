@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.ui.widget.ViewRectProvider;
 
@@ -161,9 +162,14 @@ class KeyboardAccessoryView extends LinearLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID)) {
+            return super.onInterceptTouchEvent(event);
+        }
         final boolean isViewObscured =
                 (event.getFlags() & MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED) != 0
                         || (event.getFlags() & MotionEvent.FLAG_WINDOW_IS_OBSCURED) != 0;
+
         // The event is filtered out when the keyboard accessory view is fully or partially obscured
         // given that no user education bubbles are shown to the user.
         if (isViewObscured && !mAllowClicksWhileObscured) {
