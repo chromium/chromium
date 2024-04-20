@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -53,6 +52,8 @@ import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
+import org.chromium.ui.AsyncViewProvider;
+import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.ViewProvider;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -177,25 +178,26 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     private ViewProvider<SuggestionListViewHolder> createViewProvider(
             Context context, MVCListAdapter.ModelList modelList, boolean forcePhoneStyleOmnibox) {
         return new ViewProvider<SuggestionListViewHolder>() {
+            private AsyncViewProvider<ViewGroup> mAsyncProvider;
             private List<Callback<SuggestionListViewHolder>> mCallbacks = new ArrayList<>();
             private SuggestionListViewHolder mHolder;
 
             @Override
             public void inflate() {
+                AsyncViewStub stub =
+                        mParent.getRootView().findViewById(R.id.omnibox_results_container_stub);
+                stub.setShouldInflateOnBackgroundThread(true);
+                mAsyncProvider = AsyncViewProvider.of(stub, R.id.omnibox_results_container);
+                mAsyncProvider.whenLoaded(this::onAsyncInflationComplete);
+                mAsyncProvider.inflate();
+            }
+
+            private void onAsyncInflationComplete(ViewGroup container) {
                 OmniboxSuggestionsDropdown dropdown =
                         new OmniboxSuggestionsDropdown(
                                 context, mRecycledViewPool, forcePhoneStyleOmnibox);
 
                 dropdown.setAdapter(mAdapter);
-
-                ViewGroup container =
-                        (ViewGroup)
-                                ((ViewStub)
-                                                mParent.getRootView()
-                                                        .findViewById(
-                                                                R.id
-                                                                        .omnibox_results_container_stub))
-                                        .inflate();
 
                 mHolder = new SuggestionListViewHolder(container, dropdown);
                 for (int i = 0; i < mCallbacks.size(); i++) {

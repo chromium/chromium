@@ -91,13 +91,13 @@ found in the LICENSE file.
             android:layout_width="0dp"
             android:layout_height="0dp" />
 
-        <ViewStub
+        <org.chromium.ui.AsyncViewStub
             android:id="@+id/omnibox_results_container_stub"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_anchor="@id/control_container"
             android:inflatedId="@+id/omnibox_results_container"
-            android:layout="@layout/omnibox_results_container" />
+            app:layout="@layout/omnibox_results_container" />
 
         <!-- Toolbar size area painted black to avoid the action bar showing the window background -->
         <View
