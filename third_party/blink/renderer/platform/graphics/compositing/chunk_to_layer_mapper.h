@@ -24,9 +24,13 @@ class PLATFORM_EXPORT ChunkToLayerMapper {
   ChunkToLayerMapper(const PropertyTreeState& layer_state,
                      const gfx::Vector2dF& layer_offset);
 
+  const PropertyTreeState& LayerState() const { return layer_state_; }
+  gfx::Vector2dF LayerOffset() const { return layer_offset_; }
+
   // This class can map from multiple chunks. Before mapping from a chunk, this
   // method must be called to prepare for the chunk.
   void SwitchToChunk(const PaintChunk&);
+  void SwitchToChunkWithState(const PaintChunk&, const PropertyTreeState&);
 
   const PropertyTreeState& ChunkState() const { return chunk_state_; }
 

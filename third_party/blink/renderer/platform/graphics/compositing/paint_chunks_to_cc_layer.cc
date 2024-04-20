@@ -55,12 +55,10 @@ class ConversionContext {
   ConversionContext(const PropertyTreeState& layer_state,
                     const gfx::Vector2dF& layer_offset,
                     Result& result)
-      : layer_state_(layer_state),
-        layer_offset_(layer_offset),
+      : chunk_to_layer_mapper_(layer_state, layer_offset),
         current_transform_(&layer_state.Transform()),
         current_clip_(&layer_state.Clip()),
         current_effect_(&layer_state.Effect()),
-        chunk_to_layer_mapper_(layer_state_, layer_offset_),
         result_(result) {}
   ~ConversionContext();
 
@@ -114,14 +112,11 @@ class ConversionContext {
                const gfx::Rect* additional_cull_rect = nullptr);
 
  private:
+  bool HasDrawing(PaintChunkIterator, const PropertyTreeState&) const;
+
   // Adjust the translation of the whole display list relative to layer offset.
   // It's only called if we actually paint anything.
   void TranslateForLayerOffsetOnce();
-
-  // Switch the current property tree state to the chunk's state. It's only
-  // called if we actually paint anything, and should execute for a chunk
-  // only once.
-  void SwitchToChunkState(const PaintChunk&);
 
   // Switch the current clip to the target state, staying in the same effect.
   // It is no-op if the context is already in the target state.
@@ -239,16 +234,18 @@ class ConversionContext {
     // RAW_PTR_EXCLUSION: Performance reasons: regressions in MotionMark
     // (crbug.com/1495275#c116). The struct is performance critical and stack
     // scoped.
+    // These fields are never nullptr. They save ConversionContext::
+    // current_transform_, current_clip_ and current_effect_, respectively.
     RAW_PTR_EXCLUSION const TransformPaintPropertyNode* transform;
     // RAW_PTR_EXCLUSION: The struct is performance critical and stack scoped.
     RAW_PTR_EXCLUSION const ClipPaintPropertyNode* clip;
     // RAW_PTR_EXCLUSION: The struct is performance critical and stack scoped.
     RAW_PTR_EXCLUSION const EffectPaintPropertyNode* effect;
-    // See ConversionContext<Result>::previous_transform_.
+    // This saves ConversionContext::previous_transform_.
     // RAW_PTR_EXCLUSION: The struct is performance critical and stack scoped.
     RAW_PTR_EXCLUSION const TransformPaintPropertyNode* previous_transform;
 #if DCHECK_IS_ON()
-    bool has_pre_cap_effect_hierarchy_issue = false;
+    bool has_effect_hierarchy_issue = false;
 #endif
 
    private:
@@ -258,8 +255,8 @@ class ConversionContext {
   void PopState();
   Vector<StateEntry> state_stack_;
 
-  const PropertyTreeState& layer_state_;
-  const gfx::Vector2dF layer_offset_;
+  ChunkToLayerMapper chunk_to_layer_mapper_;
+
   bool translated_for_layer_offset_ = false;
 
   // These fields are never nullptr.
@@ -295,8 +292,6 @@ class ConversionContext {
   };
   Vector<EffectBoundsInfo> effect_bounds_stack_;
 
-  ChunkToLayerMapper chunk_to_layer_mapper_;
-
   Result& result_;
 };
 
@@ -316,25 +311,16 @@ ConversionContext<Result>::~ConversionContext() {
 
 template <typename Result>
 void ConversionContext<Result>::TranslateForLayerOffsetOnce() {
-  if (translated_for_layer_offset_ || layer_offset_ == gfx::Vector2dF())
+  gfx::Vector2dF layer_offset = chunk_to_layer_mapper_.LayerOffset();
+  if (translated_for_layer_offset_ || layer_offset == gfx::Vector2dF()) {
     return;
+  }
 
   result_.StartPaint();
   push<cc::SaveOp>();
-  push<cc::TranslateOp>(-layer_offset_.x(), -layer_offset_.y());
+  push<cc::TranslateOp>(-layer_offset.x(), -layer_offset.y());
   result_.EndPaintOfPairedBegin();
   translated_for_layer_offset_ = true;
-}
-
-template <typename Result>
-void ConversionContext<Result>::SwitchToChunkState(const PaintChunk& chunk) {
-  TranslateForLayerOffsetOnce();
-  chunk_to_layer_mapper_.SwitchToChunk(chunk);
-
-  const auto& chunk_state = chunk.properties;
-  SwitchToEffect(chunk_state.Effect().Unalias());
-  SwitchToClip(chunk_state.Clip().Unalias());
-  SwitchToTransform(chunk_state.Transform().Unalias());
 }
 
 // Tries to combine a clip node's clip rect into |combined_clip_rect|.
@@ -345,18 +331,20 @@ static bool CombineClip(const ClipPaintPropertyNode& clip,
     return true;
 
   // Don't combine into a clip with clip path.
-  DCHECK(clip.Parent());
-  if (clip.UnaliasedParent()->ClipPath())
+  const auto* parent = clip.UnaliasedParent();
+  CHECK(parent);
+  if (parent->ClipPath()) {
     return false;
+  }
 
   // Don't combine clips in different transform spaces.
   const auto& transform_space = clip.LocalTransformSpace().Unalias();
-  const auto& parent_transform_space =
-      clip.UnaliasedParent()->LocalTransformSpace().Unalias();
+  const auto& parent_transform_space = parent->LocalTransformSpace().Unalias();
   if (&transform_space != &parent_transform_space &&
       (transform_space.Parent() != &parent_transform_space ||
-       !transform_space.IsIdentity()))
+       !transform_space.IsIdentity())) {
     return false;
+  }
 
   // Don't combine two rounded clip rects.
   bool clip_is_rounded = clip.PaintClipRect().IsRounded();
@@ -391,32 +379,35 @@ void ConversionContext<Result>::SwitchToClip(
     return;
 
   // Step 1: Exit all clips until the lowest common ancestor is found.
-  const auto* lca_clip =
-      &target_clip.LowestCommonAncestor(*current_clip_).Unalias();
-  while (current_clip_ != lca_clip) {
-    if (!state_stack_.size() || !state_stack_.back().IsClip()) {
-      // TODO(crbug.com/803649): We still have clip hierarchy issues with
-      // fragment clips. See crbug.com/1240080 for the test case. Will change
-      // the above condition to DCHECK after LayoutNGBlockFragmentation is fully
-      // launched.
+  {
+    const auto* lca_clip =
+        &target_clip.LowestCommonAncestor(*current_clip_).Unalias();
+    const auto* clip = current_clip_;
+    while (clip != lca_clip) {
+      if (!state_stack_.size() || !state_stack_.back().IsClip()) {
+        // TODO(crbug.com/40558824): We still have clip hierarchy issues.
+        // See crbug.com/40558824#comment57 for the test case.
 #if DCHECK_IS_ON()
-      DLOG(ERROR) << "Error: Chunk has a clip that escaped its layer's or "
-                  << "effect's clip.\ntarget_clip:\n"
-                  << target_clip.ToTreeString().Utf8() << "current_clip_:\n"
-                  << current_clip_->ToTreeString().Utf8();
+        DLOG(ERROR) << "Error: Chunk has a clip that escaped its layer's or "
+                    << "effect's clip.\ntarget_clip:\n"
+                    << target_clip.ToTreeString().Utf8() << "current_clip_:\n"
+                    << clip->ToTreeString().Utf8();
 #endif
-      break;
+        break;
+      }
+      DCHECK(clip->Parent());
+      clip = &clip->Parent()->Unalias();
+      StateEntry& previous_state = state_stack_.back();
+      if (clip == lca_clip) {
+        // |lca_clip| may be an intermediate clip in a series of combined clips.
+        // Jump to the first of the combined clips.
+        clip = lca_clip = previous_state.clip;
+      }
+      if (clip == previous_state.clip) {
+        EndClip();
+        DCHECK_EQ(current_clip_, clip);
+      }
     }
-    DCHECK(current_clip_->Parent());
-    current_clip_ = &current_clip_->Parent()->Unalias();
-    StateEntry& previous_state = state_stack_.back();
-    if (current_clip_ == lca_clip) {
-      // |lca_clip| is an intermediate clip in a series of combined clips.
-      // Jump to the first of the combined clips.
-      current_clip_ = lca_clip = previous_state.clip;
-    }
-    if (current_clip_ == previous_state.clip)
-      EndClip();
   }
 
   if (&target_clip == current_clip_)
@@ -517,10 +508,8 @@ void ConversionContext<Result>::SwitchToEffect(
     // This EndClips() and the later EndEffect() pop to the parent effect.
     EndClips();
     if (!state_stack_.size()) {
-      // TODO(crbug.com/803649): We still have clip hierarchy issues with
-      // fragment clips. See crbug.com/1240080 for the test case. Will change
-      // the above condition to DCHECK after LayoutNGBlockFragmentation is fully
-      // launched.
+      // TODO(crbug.com/40558824): We still have clip hierarchy issues.
+      // See crbug.com/40558824#comment57 for the test case.
 #if DCHECK_IS_ON()
       DLOG(ERROR) << "Error: Chunk has an effect that escapes layer's effect.\n"
                   << "target_effect:\n"
@@ -528,12 +517,11 @@ void ConversionContext<Result>::SwitchToEffect(
                   << current_effect_->ToTreeString().Utf8();
       has_effect_hierarchy_issue = true;
 #endif
-      // In pre-CompositeAfterPaint, we may squash one layer into another, but
-      // the squashing layer may create more effect nodes not for real effects,
-      // causing squashed layer's effect to escape the squashing layer's effect.
-      // We can continue because the extra effects are noop.
-      if (!HasRealEffects(*current_effect_, lca_effect))
+      // We can continue if the extra effects causing the clip hierarchy issue
+      // are no-op.
+      if (!HasRealEffects(*current_effect_, lca_effect)) {
         break;
+      }
       return;
     }
     EndEffect();
@@ -559,8 +547,7 @@ void ConversionContext<Result>::SwitchToEffect(
 #endif
     StartEffect(*sub_effect);
 #if DCHECK_IS_ON()
-    state_stack_.back().has_pre_cap_effect_hierarchy_issue =
-        has_effect_hierarchy_issue;
+    state_stack_.back().has_effect_hierarchy_issue = has_effect_hierarchy_issue;
     // This applies only to the first new effect.
     has_effect_hierarchy_issue = false;
 #endif
@@ -667,8 +654,9 @@ void ConversionContext<Result>::EndEffect() {
 #if DCHECK_IS_ON()
   const auto& previous_state = state_stack_.back();
   DCHECK(previous_state.IsEffect());
-  if (!previous_state.has_pre_cap_effect_hierarchy_issue)
+  if (!previous_state.has_effect_hierarchy_issue) {
     DCHECK_EQ(current_effect_->UnaliasedParent(), previous_state.effect);
+  }
   DCHECK_EQ(current_clip_, previous_state.clip);
 #endif
 
@@ -772,20 +760,52 @@ void ConversionContext<Result>::EndTransform() {
 }
 
 template <typename Result>
+bool ConversionContext<Result>::HasDrawing(
+    PaintChunkIterator chunk_it,
+    const PropertyTreeState& chunk_state) const {
+  // If we have an empty paint chunk, then we would prefer ignoring it.
+  // However, a reference filter can generate visible effect from invisible
+  // source, and we need to emit paint operations for it.
+  if (&chunk_state.Effect() != current_effect_) {
+    return true;
+  }
+  DisplayItemRange items = chunk_it.DisplayItems();
+  if (items.size() == 0) {
+    return false;
+  }
+  if (items.size() > 1) {
+    // Assume the chunk has drawing if it has more than one display items.
+    return true;
+  }
+  if (auto* drawing = DynamicTo<DrawingDisplayItem>(*items.begin())) {
+    if (drawing->GetPaintRecord().empty() &&
+        // See can_ignore_record in Convert()'s inner loop.
+        &chunk_state.Effect() == &EffectPaintPropertyNode::Root()) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template <typename Result>
 void ConversionContext<Result>::Convert(const PaintChunkSubset& chunks,
                                         const gfx::Rect* additional_cull_rect) {
   for (auto it = chunks.begin(); it != chunks.end(); ++it) {
     const auto& chunk = *it;
-    if (chunk.effectively_invisible)
+    if (chunk.effectively_invisible) {
       continue;
-    const auto& chunk_state = chunk.properties;
-    bool switched_to_chunk_state = false;
+    }
+
+    PropertyTreeState chunk_state =
+        chunk.properties.GetPropertyTreeState().Unalias();
+    if (!HasDrawing(it, chunk_state)) {
+      continue;
+    }
+
+    TranslateForLayerOffsetOnce();
+    chunk_to_layer_mapper_.SwitchToChunkWithState(chunk, chunk_state);
 
     if (additional_cull_rect) {
-      // `SwitchToChunkState` will also update `chunk_to_layer_mapper_`'s chunk
-      // but we need to explicitly switch the state ahead of time to ensure the
-      // call to `chunk_to_layer_mapper_.MapVisualRect` uses the correct state.
-      chunk_to_layer_mapper_.SwitchToChunk(chunk);
       gfx::Rect chunk_visual_rect =
           chunk_to_layer_mapper_.MapVisualRect(chunk.drawable_bounds);
       if (additional_cull_rect &&
@@ -794,14 +814,19 @@ void ConversionContext<Result>::Convert(const PaintChunkSubset& chunks,
       }
     }
 
+    SwitchToEffect(chunk_state.Effect());
+    SwitchToClip(chunk_state.Clip());
+    SwitchToTransform(chunk_state.Transform());
+
     for (const auto& item : it.DisplayItems()) {
       PaintRecord record;
-      if (auto* scrollbar = DynamicTo<ScrollbarDisplayItem>(item))
+      if (auto* scrollbar = DynamicTo<ScrollbarDisplayItem>(item)) {
         record = scrollbar->Paint();
-      else if (auto* drawing = DynamicTo<DrawingDisplayItem>(item))
+      } else if (auto* drawing = DynamicTo<DrawingDisplayItem>(item)) {
         record = drawing->GetPaintRecord();
-      else
+      } else {
         continue;
+      }
 
       // If we have an empty paint record, then we would prefer ignoring it.
       // However, if we also have a non-root effect, the empty paint record
@@ -812,11 +837,6 @@ void ConversionContext<Result>::Convert(const PaintChunkSubset& chunks,
           &chunk_state.Effect() == &EffectPaintPropertyNode::Root();
       if (record.empty() && can_ignore_record) {
         continue;
-      }
-
-      if (!switched_to_chunk_state) {
-        SwitchToChunkState(chunk);
-        switched_to_chunk_state = true;
       }
 
       gfx::Rect visual_rect =
@@ -833,17 +853,11 @@ void ConversionContext<Result>::Convert(const PaintChunkSubset& chunks,
       result_.EndPaintOfUnpaired(visual_rect);
     }
 
-    // If we have an empty paint chunk, then we would prefer ignoring it.
-    // However, a reference filter can generate visible effect from invisible
-    // source, and we need to emit paint operations for it.
-    if (!switched_to_chunk_state && &chunk_state.Effect() != current_effect_)
-      SwitchToChunkState(chunk);
-
     // Most effects apply to drawable contents only. Reference filters are
     // exceptions, for which we have already added the chunk bounds mapped
     // through the filter to the bounds of the effect in StartEffect().
     UpdateEffectBounds(gfx::RectF(chunk.drawable_bounds),
-                       chunk_state.Transform().Unalias());
+                       chunk_state.Transform());
   }
 }
 

@@ -19,12 +19,19 @@ ChunkToLayerMapper::ChunkToLayerMapper(const PropertyTreeState& layer_state,
       transform_(gfx::Transform::MakeTranslation(-layer_offset)) {}
 
 void ChunkToLayerMapper::SwitchToChunk(const PaintChunk& chunk) {
+  SwitchToChunkWithState(chunk,
+                         chunk.properties.GetPropertyTreeState().Unalias());
+}
+
+void ChunkToLayerMapper::SwitchToChunkWithState(
+    const PaintChunk& chunk,
+    const PropertyTreeState& new_chunk_state) {
   raster_effect_outset_ = chunk.raster_effect_outset;
 
-  const auto& new_chunk_state =
-      chunk.properties.GetPropertyTreeState().Unalias();
-  if (new_chunk_state == chunk_state_)
+  DCHECK_EQ(new_chunk_state, chunk.properties.GetPropertyTreeState().Unalias());
+  if (new_chunk_state == chunk_state_) {
     return;
+  }
 
   if (new_chunk_state == layer_state_) {
     has_filter_that_moves_pixels_ = false;
