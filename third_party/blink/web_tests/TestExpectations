@@ -1678,13 +1678,6 @@ crbug.com/40287045 external/wpt/html/semantics/popovers/popover-focus-2.html [ P
 crbug.com/40268721 [ Mac ] external/wpt/html/semantics/popovers/light-dismiss-event-ordering.html [ Pass Timeout ]
 crbug.com/332331836 external/wpt/html/semantics/popovers/popover-attribute-basic.html [ Pass Timeout ]
 
-# crbug.com/335223786  Popover with anchor attribute - need html.css rule put back
-crbug.com/335223786 external/wpt/html/semantics/popovers/popover-anchor-display.tentative.html [ Failure ]
-crbug.com/335223786 external/wpt/html/semantics/popovers/popover-anchor-scroll-display.tentative.html [ Failure ]
-crbug.com/335223786 external/wpt/html/semantics/popovers/popover-anchor-change-display.tentative.html [ Failure ]
-crbug.com/335223786 external/wpt/html/semantics/popovers/popover-anchor-transition.tentative.tentative.html [ Failure ]
-crbug.com/335223786 external/wpt/html/semantics/popovers/popover-anchor-display-none.tentative.html [ Failure ]
-
 # Only virtual/threaded version of these tests pass (or running them with --enable-threaded-compositing).
 crbug.com/936891 fast/scrolling/document-level-touchmove-event-listener-passive-by-default.html [ Failure ]
 
