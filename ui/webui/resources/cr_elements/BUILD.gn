@@ -149,6 +149,7 @@ build_webui("build") {
       "cr_shared_vars.css",
       "md_select.css",
       "mwb_element_shared_style.css",
+      "mwb_element_shared_style_lit.css",
       "mwb_shared_style.css",
       "mwb_shared_vars.css",
       "search_highlight_style.css",

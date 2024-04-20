@@ -88,8 +88,15 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
     override firstUpdated(changedProperties: PropertyValues<this>) {
       super.firstUpdated(changedProperties);
       this.addEventListener('click', e => this.onClick_(e));
+      this.observeItems();
+    }
+
+    // Override this method in client code to modify the observation logic,
+    // or to turn it off completely. By default it listens for any changes on
+    // the first <slot> node in this shadowRoot.
+    observeItems() {
       this.getSlot_().addEventListener(
-          'slotchange', () => this.itemsChanged_());
+          'slotchange', () => this.itemsChanged());
     }
 
     override connectedCallback() {
@@ -155,15 +162,25 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
       return slot;
     }
 
-    private updateItems_() {
+    // Override this method in client code to modify this logic, for example to
+    // grab children that don't reside in a <slot>.
+    queryItems(): Element[] {
       const elements = this.getSlot_().assignedElements();
       const excluded = ['template', 'dom-bind', 'dom-if', 'dom-repeat'];
-      this.items_ = elements.filter(el => {
+      return elements.filter(el => {
         if (excluded.includes(el.tagName)) {
           return false;
         }
         return !this.selectable || el.matches(this.selectable);
       });
+    }
+
+    private updateItems_() {
+      this.items_ = this.queryItems();
+    }
+
+    get selectedItem(): Element|null {
+      return this.selectedItem_;
     }
 
     private updateSelectedItem_() {
@@ -232,7 +249,7 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
           item.getAttribute(this.attrForSelected);
     }
 
-    private itemsChanged_() {
+    itemsChanged() {
       this.updateItems_();
       this.updateSelectedItem_();
 
@@ -263,9 +280,15 @@ export interface CrSelectableMixinInterface {
   attrForSelected: string|null;
   selected?: string|number;
   selectable?: string;
+  readonly selectedItem: Element|null;
 
   getItemsForTest(): Element[];
-  select(value: string|number): void;
+  itemsChanged(): void;
   selectNext(): void;
   selectPrevious(): void;
+  select(value: string|number): void;
+
+  // Methods to override to modify default behavior.
+  observeItems(): void;
+  queryItems(): Element[];
 }

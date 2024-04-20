@@ -19,6 +19,7 @@ ts_library("build_ts") {
     # - a few chrome/browser/resources/ folders  that hold small UIs.
     # Update when the migration enters its next phase.
     "//chrome/browser/resources/side_panel/reading_list:build_ts",
+    "//chrome/browser/resources/side_panel/shared:build_ts",
     "//chrome/browser/resources/welcome:build_ts",
     "//chrome/browser/resources/whats_new:build_ts",
     "//chrome/test/data/webui/cr_components:build_ts",

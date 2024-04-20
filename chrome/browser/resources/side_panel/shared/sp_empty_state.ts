@@ -6,27 +6,30 @@
  * @fileoverview Shared styles for showing an empty state for a side panel UI.
  */
 
-import '//resources/cr_elements/cr_shared_vars.css.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getCss} from './sp_empty_state.css.js';
+import {getHtml} from './sp_empty_state.html.js';
 
-import {getTemplate} from './sp_empty_state.html.js';
-
-export class SpEmptyStateElement extends PolymerElement {
+export class SpEmptyStateElement extends CrLitElement {
   static get is() {
     return 'sp-empty-state';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      body: String,
-      darkImagePath: String,
-      heading: String,
-      imagePath: String,
+      body: {type: String},
+      darkImagePath: {type: String},
+      heading: {type: String},
+      imagePath: {type: String},
     };
   }
 
