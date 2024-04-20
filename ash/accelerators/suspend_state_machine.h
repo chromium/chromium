@@ -20,6 +20,14 @@ namespace ash {
 // accelerator from waking up the system instantly.
 class ASH_EXPORT SuspendStateMachine : public ui::EventHandler {
  public:
+  // This enum is used for metrics, do not reorder entries.
+  enum class SuspendStateMachineEvent {
+    kTriggered,
+    kCancelled,
+    kSuspended,
+    kMaxValue = kSuspended
+  };
+
   explicit SuspendStateMachine(ui::InputController* input_controller);
   SuspendStateMachine(const SuspendStateMachine&) = delete;
   SuspendStateMachine& operator=(const SuspendStateMachine&) = delete;
@@ -33,6 +41,8 @@ class ASH_EXPORT SuspendStateMachine : public ui::EventHandler {
   void OnKeyEvent(ui::KeyEvent* event) override;
 
  private:
+  void CancelSuspend();
+
   std::optional<ui::Accelerator> trigger_accelerator_;
   raw_ptr<ui::InputController> input_controller_;
 };

@@ -5,6 +5,7 @@
 #include "ash/accelerators/suspend_state_machine.h"
 
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -221,6 +222,7 @@ const bool kKeysPressed = true;
 const bool kNoKeysPressed = false;
 
 using EventTypeVariant = std::variant<TestKeyEvent, bool>;
+using SuspendStateMachineEvent = SuspendStateMachine::SuspendStateMachineEvent;
 
 }  // namespace
 
@@ -233,7 +235,6 @@ class SuspendStateMachineTest
     AshTestBase::SetUp();
 
     std::tie(trigger_accelerator_, events_) = GetParam();
-
     input_controller_ = std::make_unique<MockInputController>();
     suspend_state_machine_ =
         std::make_unique<SuspendStateMachine>(input_controller_.get());
@@ -304,10 +305,21 @@ INSTANTIATE_TEST_SUITE_P(
 
             // No modifiers in accelerator.
             {{ui::VKEY_A, ui::EF_NONE}, {kNoKeysPressed, KeyA::Released()}},
+
+            // Other keys currently held down, not triggered until all keys
+            // released.
+            {{ui::VKEY_A, ui::EF_ALT_DOWN},
+             {kKeysPressed, KeyLAlt::Released(), KeyA::Released(),
+              kNoKeysPressed, KeyRAlt::Released()}},
+
         }));
 
 TEST_P(SuccessfulSuspendStateMachineTest, SuspendTriggered) {
+  base::HistogramTester histogram_tester;
+
   suspend_state_machine_->StartObservingToTriggerSuspend(trigger_accelerator_);
+  histogram_tester.ExpectBucketCount("ChromeOS.Inputs.SuspendStateMachine",
+                                     SuspendStateMachineEvent::kTriggered, 1);
   for (const auto& event : events_) {
     ASSERT_EQ(0, power_manager_client()->num_request_suspend_calls());
     if (std::holds_alternative<bool>(event)) {
@@ -324,6 +336,8 @@ TEST_P(SuccessfulSuspendStateMachineTest, SuspendTriggered) {
   }
 
   EXPECT_EQ(1, power_manager_client()->num_request_suspend_calls());
+  histogram_tester.ExpectBucketCount("ChromeOS.Inputs.SuspendStateMachine",
+                                     SuspendStateMachineEvent::kSuspended, 1);
 }
 
 class CancelledSuspendStateMachineTest : public SuspendStateMachineTest {};
@@ -355,14 +369,14 @@ INSTANTIATE_TEST_SUITE_P(
             {{ui::VKEY_A, ui::EF_COMMAND_DOWN},
              {kKeysPressed, KeyLMeta::Released(), KeyB::Pressed(),
               kNoKeysPressed, KeyA::Released()}},
-
-            // Other keys currently held down.
-            {{ui::VKEY_A, ui::EF_ALT_DOWN},
-             {kKeysPressed, KeyLAlt::Released(), KeyA::Released()}},
         }));
 
 TEST_P(CancelledSuspendStateMachineTest, SuspendNotTriggered) {
+  base::HistogramTester histogram_tester;
+
   suspend_state_machine_->StartObservingToTriggerSuspend(trigger_accelerator_);
+  histogram_tester.ExpectBucketCount("ChromeOS.Inputs.SuspendStateMachine",
+                                     SuspendStateMachineEvent::kTriggered, 1);
   for (const auto& event : events_) {
     ASSERT_EQ(0, power_manager_client()->num_request_suspend_calls());
     if (std::holds_alternative<bool>(event)) {
@@ -379,6 +393,8 @@ TEST_P(CancelledSuspendStateMachineTest, SuspendNotTriggered) {
   }
 
   EXPECT_EQ(0, power_manager_client()->num_request_suspend_calls());
+  histogram_tester.ExpectBucketCount("ChromeOS.Inputs.SuspendStateMachine",
+                                     SuspendStateMachineEvent::kCancelled, 1);
 }
 
 }  // namespace ash::accelerators

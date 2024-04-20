@@ -1751,6 +1751,12 @@ https://chromium.googlesource.com/chromiumos/platform2/+/main/secagentd/proto/se
   <int value="2" label="Search"/>
 </enum>
 
+<enum name="SuspendStateMachineEvent">
+  <int value="0" label="Triggered"/>
+  <int value="1" label="Cancelled"/>
+  <int value="2" label="Suspended"/>
+</enum>
+
 <enum name="UmaInitParamsResult">
   <int value="0" label="Client ID and entropy sources were found"/>
   <int value="1" label="Only the client ID was found"/>

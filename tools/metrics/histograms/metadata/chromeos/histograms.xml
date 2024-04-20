@@ -1902,6 +1902,17 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Inputs.SuspendStateMachine"
+    enum="SuspendStateMachineEvent" expires_after="2025-03-22">
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records actions of the suspend state machine once it is triggered to start
+    tracking key releases. Result can either be cancelled or successfully
+    triggered suspend.
+  </summary>
+</histogram>
+
 <histogram
     name="ChromeOS.Inputs.TouchscreenUsage.Temporary.{TimePeriod}.{Mode}"
     units="ms" expires_after="2024-10-06">
