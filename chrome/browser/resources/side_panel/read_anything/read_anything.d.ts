@@ -166,8 +166,8 @@ declare namespace chrome {
     // Called when the voice used for speech is changed via the webui toolbar.
     function onVoiceChange(voice: string, lang: string): void;
 
-    // Called when a language is enabled/disabled for via the webui language
-    // menu.
+    // Called when a language is enabled/disabled for Read Aloud
+    // via the webui language menu.
     function onLanguagePrefChange(lang: string, enabled: boolean): void;
 
     // Called when the highlight granularity is changed via the webui toolbar.
