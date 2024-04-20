@@ -847,6 +847,7 @@
 <translation id="5407969256130905701">Адхіліць змяненні</translation>
 <translation id="5414763847370083940">Пры зніжэнні цаны на любым з сайтаў вы атрымаеце абвестку.</translation>
 <translation id="5416022985862681400">За апошнія 7 дзён</translation>
+<translation id="5416455648658732408">Перамясціць у групу ўкладак</translation>
 <translation id="5423269318075950257">Адсочванне цэн</translation>
 <translation id="543338862236136125">Змяніць пароль</translation>
 <translation id="5433691172869980887">Імя карыстальніка скапіравана</translation>
@@ -1335,6 +1336,7 @@
 <translation id="7853202427316060426">Дзеянні</translation>
 <translation id="7856733331829174190">Не ўдалося спампаваць</translation>
 <translation id="7859704718976024901">Гісторыя прагляду сайтаў</translation>
+<translation id="7860900259978879139">Выдаліць з групы</translation>
 <translation id="7866501058614003444">Гэта пасылка больш не адсочваецца.</translation>
 <translation id="7866872729285243843">Каб спіс на прагляд быў даступны на ўсіх вашых прыладах, уключыце "Спіс на прагляд" у наладах.</translation>
 <translation id="7866993391592926595">Калі вы схаваеце гэту картку, адсочванне пасылак спыніцца, а ўсе даныя будуць выдалены</translation>
@@ -1422,9 +1424,11 @@
 <translation id="8273982424131314219">Інфармацыя будзе запоўнена на старонцы <ph name="URL" /></translation>
 <translation id="8281781826761538115">Стандартная мова: <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Прапусціць</translation>
+<translation id="8282657446819506217">Адкрыць у групе ўкладак</translation>
 <translation id="828291969289324795">{count,plural, =1{Дадаць укладку ў новую групу}one{Дадаць укладкі ў новую групу}few{Дадаць укладкі ў новую групу}many{Дадаць укладкі ў новую групу}other{Дадаць укладкі ў новую групу}}</translation>
 <translation id="8283172974887967105">Так…</translation>
 <translation id="8286036467436129157">Увайсці</translation>
+<translation id="8289930144142009940">Апавяшчэнні па тэме "<ph name="FEATURE_NAME" />" выключаны</translation>
 <translation id="8292843446079898078">Атрымліваць абвесткі пра скідкі на тавары, якія вы адсочваеце.</translation>
 <translation id="8299417921174340354">Каб выкарыстоўваць паролі, на прыладзе трэба спачатку наладзіць блакіроўку экрана.</translation>
 <translation id="8299613349954694191">Для прыватнага прагляду вэб-сайтаў адкрыйце ўкладку інкогніта.</translation>
@@ -1432,6 +1436,7 @@
 <translation id="8313645224014086262">Захаваць файл</translation>
 <translation id="8319076807703933069">Новы пошук</translation>
 <translation id="8328777765163860529">Закрыць усе</translation>
+<translation id="8343286328361420468">Выключыць апавяшчэнні па тэме "<ph name="FEATURE_NAME" />"</translation>
 <translation id="8343993175958086504">Стварайце рэзервовыя копіі сваіх даных, каб іх можна было выкарыстоўваць на іншых прыладах.</translation>
 <translation id="834783239627985533">Сайты, якія часцей за ўсё наведваліся</translation>
 <translation id="8358401059263985056">Уключыць апавяшчэнні</translation>

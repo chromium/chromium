@@ -847,6 +847,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="5407969256130905701">Zahodit změny</translation>
 <translation id="5414763847370083940">Pokud cena na některém webu klesne, obdržíte upozornění.</translation>
 <translation id="5416022985862681400">Posledních 7 dní</translation>
+<translation id="5416455648658732408">Přesunout do skupiny karet</translation>
 <translation id="5423269318075950257">Sledovat cenu</translation>
 <translation id="543338862236136125">Upravit heslo</translation>
 <translation id="5433691172869980887">Uživatelské jméno bylo zkopírováno</translation>
@@ -1335,6 +1336,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7853202427316060426">Aktivita</translation>
 <translation id="7856733331829174190">Stažení se nezdařilo</translation>
 <translation id="7859704718976024901">Historie procházení</translation>
+<translation id="7860900259978879139">Odstranit ze skupiny</translation>
 <translation id="7866501058614003444">Sledování této zásilky bylo úspěšně zrušeno.</translation>
 <translation id="7866872729285243843">Pokud svůj seznam četby chcete mít na všech svých zařízeních, zapněte v nastavení možnost Seznam četby.</translation>
 <translation id="7866993391592926595">Skrytím této karty vypnete sledování zásilek a odstraníte všechna svá data</translation>
@@ -1422,9 +1424,11 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8273982424131314219">Vyplníte údaje na webu <ph name="URL" /></translation>
 <translation id="8281781826761538115">Výchozí – <ph name="DEFAULT_LOCALE" /></translation>
 <translation id="8281886186245836920">Přeskočit</translation>
+<translation id="8282657446819506217">Otevřít ve skupině karet</translation>
 <translation id="828291969289324795">{count,plural, =1{Přidat kartu do nové skupiny}few{Přidat karty do nové skupiny}many{Přidat karty do nové skupiny}other{Přidat karty do nové skupiny}}</translation>
 <translation id="8283172974887967105">Nastavit…</translation>
 <translation id="8286036467436129157">Přihlásit se</translation>
+<translation id="8289930144142009940">Oznámení pro <ph name="FEATURE_NAME" /> jsou vypnutá</translation>
 <translation id="8292843446079898078">Odebírat upozornění na pokles cen u produktů, které sledujete.</translation>
 <translation id="8299417921174340354">Chcete-li použít hesla, musíte nejdříve na zařízení nastavit heslo.</translation>
 <translation id="8299613349954694191">Pokud web chcete prohlížet v soukromí, otevřete anonymní kartu.</translation>
@@ -1432,6 +1436,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="8313645224014086262">Uložit soubor</translation>
 <translation id="8319076807703933069">Nové vyhledávání</translation>
 <translation id="8328777765163860529">Zavřít vše</translation>
+<translation id="8343286328361420468">Dočasně vypnout oznámení pro: <ph name="FEATURE_NAME" /></translation>
 <translation id="8343993175958086504">Zálohujte si data a používejte je na libovolném zařízení.</translation>
 <translation id="834783239627985533">Nejnavštěvovanější weby</translation>
 <translation id="8358401059263985056">Zapnout oznámení</translation>
