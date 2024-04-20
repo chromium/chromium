@@ -34,6 +34,7 @@ export function createObject(id: string, boundingBox: RectF): OverlayObject {
         rotation: 0,
         coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
       },
+      segmentationPolygon: [],
     },
   };
 }

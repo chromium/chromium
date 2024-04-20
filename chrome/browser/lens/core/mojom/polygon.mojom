@@ -1,0 +1,33 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// These Mojo structs are converted from
+// third_party/lens_server_proto/lens_overlay_polygon.proto.
+module lens.mojom;
+
+
+struct Polygon {
+  array<Vertex> vertex;
+
+  enum VertexOrdering {
+    kUnspecified = 0,
+    kClockwise = 1,
+    kCounterClockwise = 2,
+  };
+  VertexOrdering vertex_ordering;
+
+  enum CoordinateType {
+    kUnspecified = 0,
+    // Normalized coordinates.
+    kNormalized = 1,
+    // Image pixel coordinates.
+    kImage = 2,
+  };
+  CoordinateType coordinate_type;
+};
+
+struct Vertex {
+  float x;
+  float y;
+};

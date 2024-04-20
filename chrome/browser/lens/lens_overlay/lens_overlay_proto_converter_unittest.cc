@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
+#include "chrome/browser/lens/core/mojom/polygon.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom-forward.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom-forward.h"
@@ -95,6 +96,14 @@ class LensOverlayProtoConverterTest : public testing::Test {
     return object;
   }
 
+  lens::OverlayObject CreateServerOverlayObjectWithPolygon(
+      BoundingBoxStruct box) {
+    lens::OverlayObject object;
+    object.set_id(box.id);
+    CreateServerGeometryWithPolygon(box, object.mutable_geometry());
+    return object;
+  }
+
   void CreateServerText(TextStruct text_struct, lens::Text* text) {
     text->set_content_language(text_struct.content_language);
     auto* paragraph = text->mutable_text_layout()->add_paragraphs();
@@ -122,7 +131,18 @@ class LensOverlayProtoConverterTest : public testing::Test {
     geometry->mutable_bounding_box()->set_coordinate_type(box.coordinate_type);
   }
 
-  void VerifiyGeometryDimensionsAreEqual(
+  void CreateServerGeometryWithPolygon(
+      BoundingBoxStruct box, lens::Geometry* geometry) {
+    CreateServerGeometry(box, geometry);
+    auto* polygon = geometry->add_segmentation_polygon();
+    auto* vertex = polygon->add_vertex();
+    vertex->set_x(0.19);
+    vertex->set_y(0.21);
+    polygon->set_vertex_ordering(lens::Polygon::CLOCKWISE);
+    polygon->set_coordinate_type(lens::NORMALIZED);
+  }
+
+  void VerifyGeometriesAreEqual(
       lens::Geometry server_geometry,
       lens::mojom::GeometryPtr mojo_geometry) {
     EXPECT_EQ(gfx::PointF(server_geometry.bounding_box().center_x(),
@@ -136,6 +156,29 @@ class LensOverlayProtoConverterTest : public testing::Test {
     EXPECT_EQ(
         static_cast<int>(server_geometry.bounding_box().coordinate_type()),
         static_cast<int>(mojo_geometry->bounding_box->coordinate_type));
+
+    EXPECT_EQ(static_cast<size_t>(
+                  server_geometry.segmentation_polygon().size()),
+              mojo_geometry->segmentation_polygon.size());
+    for (int i = 0; i < server_geometry.segmentation_polygon().size(); i++) {
+      lens::Polygon server_polygon =
+          server_geometry.segmentation_polygon().at(i);
+      lens::mojom::PolygonPtr mojo_polygon =
+          mojo_geometry->segmentation_polygon.at(i)->Clone();
+      EXPECT_EQ(static_cast<size_t>(server_polygon.vertex().size()),
+                mojo_polygon->vertex.size());
+      for (int j = 0; j < server_polygon.vertex().size(); j++) {
+        lens::Polygon::Vertex server_vertex = server_polygon.vertex().at(j);
+        lens::mojom::VertexPtr mojo_vertex =
+            mojo_polygon->vertex.at(j)->Clone();
+        EXPECT_EQ(server_vertex.x(), mojo_vertex->x);
+        EXPECT_EQ(server_vertex.y(), mojo_vertex->y);
+      }
+      EXPECT_EQ(static_cast<int>(server_polygon.vertex_ordering()),
+                static_cast<int>(mojo_polygon->vertex_ordering));
+      EXPECT_EQ(static_cast<int>(server_polygon.coordinate_type()),
+                static_cast<int>(mojo_polygon->coordinate_type));
+    }
   }
 
   void VerifyOverlayObjectsAreEqual(
@@ -147,7 +190,7 @@ class LensOverlayProtoConverterTest : public testing::Test {
       lens::OverlayObject server_object = server_objects.at(i);
       lens::mojom::OverlayObjectPtr mojo_object = mojo_objects.at(i)->Clone();
       EXPECT_EQ(server_object.id(), mojo_object->id);
-      VerifiyGeometryDimensionsAreEqual(server_object.geometry(),
+      VerifyGeometriesAreEqual(server_object.geometry(),
                                         std::move(mojo_object->geometry));
     }
   }
@@ -157,7 +200,7 @@ TEST_F(LensOverlayProtoConverterTest,
        CreateObjectsMojomArrayFromServerResponse) {
   std::vector<lens::OverlayObject> server_objects = {
       CreateServerOverlayObject(kTestBoundingBox1),
-      CreateServerOverlayObject(kTestBoundingBox2)};
+      CreateServerOverlayObjectWithPolygon(kTestBoundingBox2)};
   lens::LensOverlayServerResponse server_response =
       CreateLensServerOverlayResponse(server_objects);
 
@@ -212,14 +255,14 @@ TEST_F(LensOverlayProtoConverterTest, CreateTextMojomFromServerResponse) {
   EXPECT_TRUE(mojo_paragraph->writing_direction.has_value());
   EXPECT_EQ(static_cast<int>(mojo_paragraph->writing_direction.value()),
             static_cast<int>(kTestText.writing_direction));
-  VerifiyGeometryDimensionsAreEqual(server_paragraph.geometry(),
+  VerifyGeometriesAreEqual(server_paragraph.geometry(),
                                     mojo_paragraph->geometry->Clone());
 
   // Compare line for a paragraph.
   EXPECT_EQ(mojo_paragraph->lines.size(), static_cast<unsigned long>(1));
   lens::TextLayout_Line server_line = server_paragraph.lines()[0];
   lens::mojom::LinePtr mojo_line = mojo_paragraph->lines[0]->Clone();
-  VerifiyGeometryDimensionsAreEqual(server_line.geometry(),
+  VerifyGeometriesAreEqual(server_line.geometry(),
                                     mojo_line->geometry->Clone());
 
   // Compare words in line.
@@ -228,7 +271,7 @@ TEST_F(LensOverlayProtoConverterTest, CreateTextMojomFromServerResponse) {
   EXPECT_EQ(mojo_word->plain_text, kTestText.word_plain_text);
   EXPECT_EQ(mojo_word->text_separator, kTestText.word_text_seperator);
   lens::TextLayout_Word server_word = server_line.words()[0];
-  VerifiyGeometryDimensionsAreEqual(server_word.geometry(),
+  VerifyGeometriesAreEqual(server_word.geometry(),
                                     mojo_word->geometry->Clone());
   EXPECT_TRUE(mojo_word->writing_direction.has_value());
   EXPECT_EQ(static_cast<int>(mojo_word->writing_direction.value()),

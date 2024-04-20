@@ -34,6 +34,7 @@ export function createWord(
         rotation: 0,
         coordinateType: CenterRotatedBox_CoordinateType.kNormalized,
       },
+      segmentationPolygon: [],
     },
     formulaMetadata: null,
   };

@@ -6,8 +6,10 @@
 
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
+#include "chrome/browser/lens/core/mojom/polygon.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "third_party/lens_server_proto/lens_overlay_geometry.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_polygon.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_text.pb.h"
@@ -15,6 +17,47 @@
 namespace lens {
 
 namespace {
+
+lens::mojom::Polygon_VertexOrdering ProtoToMojo(
+    lens::Polygon::VertexOrdering vertex_ordering) {
+  switch (vertex_ordering) {
+    case lens::Polygon::VERTEX_ORDERING_UNSPECIFIED:
+      return lens::mojom::Polygon_VertexOrdering::kUnspecified;
+    case lens::Polygon::CLOCKWISE:
+      return lens::mojom::Polygon_VertexOrdering::kClockwise;
+    case lens::Polygon::COUNTER_CLOCKWISE:
+      return lens::mojom::Polygon_VertexOrdering::kCounterClockwise;
+  }
+  return lens::mojom::Polygon_VertexOrdering::kUnspecified;
+}
+
+lens::mojom::Polygon_CoordinateType ProtoToMojo(
+    lens::CoordinateType coordinate_type) {
+  switch (coordinate_type) {
+    case lens::COORDINATE_TYPE_UNSPECIFIED:
+      return lens::mojom::Polygon_CoordinateType::kUnspecified;
+    case lens::NORMALIZED:
+      return lens::mojom::Polygon_CoordinateType::kNormalized;
+    case lens::IMAGE:
+      return lens::mojom::Polygon_CoordinateType::kImage;
+  }
+  return lens::mojom::Polygon_CoordinateType::kUnspecified;
+}
+
+lens::mojom::PolygonPtr CreatePolygonMojomFromProto(
+    lens::Polygon proto_polygon) {
+  lens::mojom::PolygonPtr polygon = lens::mojom::Polygon::New();
+
+  std::vector<lens::mojom::VertexPtr> vertices;
+  for (auto vertex : proto_polygon.vertex()) {
+    vertices.push_back(lens::mojom::Vertex::New(vertex.x(), vertex.y()));
+  }
+  polygon->vertex = std::move(vertices);
+  polygon->vertex_ordering = ProtoToMojo(proto_polygon.vertex_ordering());
+  polygon->coordinate_type = ProtoToMojo(proto_polygon.coordinate_type());
+
+  return polygon;
+}
 
 lens::mojom::GeometryPtr CreateGeometryMojomFromProto(
     lens::Geometry response_geometry) {
@@ -38,6 +81,13 @@ lens::mojom::GeometryPtr CreateGeometryMojomFromProto(
   center_rotated_box->rotation = bounding_box_response.rotation_z();
 
   geometry->bounding_box = std::move(center_rotated_box);
+
+  std::vector<lens::mojom::PolygonPtr> polygons;
+  for (auto polygon : response_geometry.segmentation_polygon()) {
+    polygons.push_back(CreatePolygonMojomFromProto(polygon));
+  }
+  geometry->segmentation_polygon = std::move(polygons);
+
   return geometry;
 }
 

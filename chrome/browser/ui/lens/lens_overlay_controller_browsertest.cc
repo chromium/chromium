@@ -12,6 +12,7 @@
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
+#include "chrome/browser/lens/core/mojom/polygon.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/lens/lens_overlay/lens_overlay_url_builder.h"
 #include "chrome/browser/profiles/profile.h"
@@ -75,7 +76,8 @@ const lens::mojom::GeometryPtr kTestGeometry =
     lens::mojom::Geometry::New(lens::mojom::CenterRotatedBox::New(
         gfx::RectF(0.1, 0.1, 0.8, 0.8),
         0.1,
-        lens::mojom::CenterRotatedBox_CoordinateType::kNormalized));
+        lens::mojom::CenterRotatedBox_CoordinateType::kNormalized),
+        std::vector<lens::mojom::PolygonPtr>());
 const lens::mojom::OverlayObjectPtr kTestOverlayObject =
     lens::mojom::OverlayObject::New("unique_id", kTestGeometry->Clone());
 const lens::mojom::TextPtr kTestText =

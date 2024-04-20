@@ -4,6 +4,7 @@
 
 module lens.mojom;
 
+import "chrome/browser/lens/core/mojom/polygon.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 struct CenterRotatedBox {
@@ -31,4 +32,6 @@ struct CenterRotatedBox {
 struct Geometry {
   // Specifies the bounding box for this geometry.
   CenterRotatedBox bounding_box;
+
+  array<Polygon> segmentation_polygon;
 };
