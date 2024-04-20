@@ -523,6 +523,29 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Bool(),
     OSSettingsRevampOsA11yTestPdfOcrEnabled::DescribeParams);
 
+class OSSettingsRevampFilesTestCrosComponentsAndJellyEnabled
+    : public OSSettingsRevampMochaTest {
+ protected:
+  OSSettingsRevampFilesTestCrosComponentsAndJellyEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            chromeos::features::kCrosComponents,
+            chromeos::features::kJelly,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampFilesTestCrosComponentsAndJellyEnabled,
+    testing::Bool(),
+    OSSettingsRevampFilesTestCrosComponentsAndJellyEnabled::DescribeParams);
+
 /* End Test Classes */
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, AppLanguageSelectionDialog) {
@@ -1408,7 +1431,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
   RunSettingsTest("os_bluetooth_page/os_paired_bluetooth_list_item_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsFilesPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsFilesPage) {
   RunSettingsTest("os_files_page/os_files_page_test.js");
 }
 
@@ -1417,54 +1440,38 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
   RunSettingsTest("os_files_page/files_settings_card_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsFilesPageGoogleDrivePage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsFilesPageGoogleDrivePage) {
   RunSettingsTest("os_files_page/google_drive_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsFilesPageOneDrivePage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsFilesPageOneDrivePage) {
   RunSettingsTest("os_files_page/one_drive_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsFilesPageOfficePage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsFilesPageOfficePage) {
   RunSettingsTest("os_files_page/office_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsFilesPageSmbSharesPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsFilesPageSmbSharesPage) {
   RunSettingsTest("os_files_page/smb_shares_page_test.js");
 }
 
-class OSSettingsFilesTestCrosComponentsAndJellyEnabled
-    : public OSSettingsMochaTest {
- protected:
-  OSSettingsFilesTestCrosComponentsAndJellyEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {
-            chromeos::features::kCrosComponents,
-            chromeos::features::kJelly,
-        },
-        /*disabled=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(OSSettingsFilesTestCrosComponentsAndJellyEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampFilesTestCrosComponentsAndJellyEnabled,
                        OsFilesPageSmbSharesPageJelly) {
   RunSettingsTest("os_files_page/smb_shares_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsLanguagesPageAppLanguagesPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       OsLanguagesPageAppLanguagesPage) {
   RunSettingsTest("os_languages_page/app_languages_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsLanguagesPageInputMethodOptionsPage) {
   RunSettingsTest("os_languages_page/input_method_options_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsLanguagesPageInputPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsLanguagesPageInputPage) {
   RunSettingsTest("os_languages_page/input_page_test.js");
 }
 
@@ -1473,57 +1480,49 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
   RunSettingsTest("os_languages_page/language_settings_card_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsLanguagesPageOsClearPersonalizationDataPage) {
   RunSettingsTest(
       "os_languages_page/os_clear_personalization_data_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsLanguagesPageV2) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsLanguagesPageV2) {
   RunSettingsTest("os_languages_page/os_languages_page_v2_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsLanguagesPageOsEditDictionaryPage) {
   RunSettingsTest("os_languages_page/os_edit_dictionary_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled, OsPageAvailability) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsPageAvailability) {
   RunSettingsTest("os_page_availability_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
-                       OsPageAvailabilityRevamp) {
-  RunSettingsTest("os_page_availability_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled, OsPeoplePage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsPeoplePage) {
   RunSettingsTest("os_people_page/os_people_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled, OsPeoplePageRevamp) {
-  RunSettingsTest("os_people_page/os_people_page_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPeoplePageAddUserDialog) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsPeoplePageAddUserDialog) {
   RunSettingsTest("os_people_page/add_user_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsPeoplePageFingerprintListSubpage) {
   RunSettingsTest("os_people_page/fingerprint_list_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPeoplePageOsSyncControlsSubpage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       OsPeoplePageOsSyncControlsSubpage) {
   RunSettingsTest("os_people_page/os_sync_controls_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsPeoplePagePersonalizationOptions) {
   RunSettingsTest("os_people_page/personalization_options_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsPrintingPage) {
   RunSettingsTest("os_printing_page/os_printing_page_test.js");
 }
 
@@ -1532,28 +1531,32 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
   RunSettingsTest("os_printing_page/printing_settings_card_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPageCupsPrintServer) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       OsPrintingPageCupsPrintServer) {
   RunSettingsTest("os_printing_page/cups_print_server_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPageCupsPrinterDialog) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       OsPrintingPageCupsPrinterDialog) {
   RunSettingsTest("os_printing_page/cups_printer_dialog_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsPrintingPageCupsPrinterLandingPage) {
   RunSettingsTest("os_printing_page/cups_printer_landing_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPageCupsPrintersEntry) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       OsPrintingPageCupsPrintersEntry) {
   RunSettingsTest("os_printing_page/cups_printers_entry_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPageCupsPrinterPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       OsPrintingPageCupsPrinterPage) {
   RunSettingsTest("os_printing_page/cups_printer_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrintingPagePrinterStatus) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsPrintingPagePrinterStatus) {
   RunSettingsTest("os_printing_page/printer_status_test.js");
 }
 
