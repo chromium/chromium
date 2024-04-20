@@ -122,7 +122,9 @@ enum class ComposeSessionEventTypes {
   kCancelEditClicked = 20,
   kAnyModifierUsed = 21,
   kRedoClicked = 22,
-  kMaxValue = kRedoClicked,
+  kResultEdited = 23,
+  kEditedResultInserted = 24,
+  kMaxValue = kEditedResultInserted,
 };
 
 // Enum for recording the show status of the Compose context menu item.
@@ -204,9 +206,11 @@ struct ComposeSessionEvents {
   unsigned int undo_count = 0;
   // Times the user has pressed "redo" this session.
   unsigned int redo_count = 0;
+  // Times the user has edited the result text this session.
+  unsigned int result_edit_count = 0;
   // Compose request after input edited.
   unsigned int update_input_count = 0;
-  // Tiems the user has pressed the "Retry" button.
+  // Times the user has pressed the "Retry" button.
   unsigned int regenerate_count = 0;
   // Times the user has picked the "Shorter" option.
   unsigned int shorten_count = 0;
@@ -234,6 +238,8 @@ struct ComposeSessionEvents {
 
   // True if the results were eventually inserted back to the web page.
   bool inserted_results = false;
+  // True if an edited result was eventually inserted back to the web page.
+  bool edited_result_inserted = false;
   // True if the the user closed the compose session via the "x" button.
   bool close_clicked = false;
   // True if the user has pressed the "Edit" button this session.
