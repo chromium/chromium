@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -41,10 +42,34 @@ class POLICY_EXPORT PolicyServiceImpl
       std::vector<raw_ptr<ConfigurationPolicyProvider, VectorExperimental>>;
   using Migrators = std::vector<std::unique_ptr<PolicyMigrator>>;
 
+  static constexpr char kInitTimeHistogramPrefix[] =
+      "Enterprise.PolicyServiceInitTime";
+  static constexpr char kMachineHistogramSuffix[] = ".Machine";
+  static constexpr char kUserHistogramSuffix[] = ".User";
+  static constexpr char kWithoutPoliciesHistogramSuffix[] = ".WithoutPolicies";
+  static constexpr char kWithPoliciesHistogramSuffix[] = ".WithPolicies";
+  static constexpr char kWith1to50PoliciesHistogramSuffix[] =
+      ".With_1_to_50_Policies";
+  static constexpr char kWith51to100PoliciesHistogramSuffix[] =
+      ".With_1_to_50_Policies";
+  static constexpr char kWith101PlusPoliciesHistogramSuffix[] =
+      ".With_101_Plus_Policies";
+
+  // Represents the scope for the policy service to be logged via histograms.
+  enum class ScopeForMetrics {
+    // For cases when there is no need to collect metrics, e.g. in unit tests.
+    kUnspecified,
+    // Policy applicable to all profiles.
+    kMachine,
+    // Policy applicable only to the current signed-in user.
+    kUser,
+  };
+
   // Creates a new PolicyServiceImpl with the list of
   // ConfigurationPolicyProviders, in order of decreasing priority.
   explicit PolicyServiceImpl(
       Providers providers,
+      ScopeForMetrics scope_for_metrics = ScopeForMetrics::kUnspecified,
       Migrators migrators = std::vector<std::unique_ptr<PolicyMigrator>>());
 
   // Creates a new PolicyServiceImpl with the list of
@@ -54,6 +79,7 @@ class POLICY_EXPORT PolicyServiceImpl
   // |UnthrottleInitialization| has been called.
   static std::unique_ptr<PolicyServiceImpl> CreateWithThrottledInitialization(
       Providers providers,
+      ScopeForMetrics scope_for_metrics,
       Migrators migrators = std::vector<std::unique_ptr<PolicyMigrator>>());
 
   PolicyServiceImpl(const PolicyServiceImpl&) = delete;
@@ -99,6 +125,12 @@ class POLICY_EXPORT PolicyServiceImpl
       std::vector<const policy::PolicyBundle*>& bundles,
       Migrators& migrators);
 
+  // Records histograms for tracking policy service initialization time.
+  // Visible for testing.
+  static void RecordInitializationTime(ScopeForMetrics scope_for_metrics,
+                                       size_t policy_count,
+                                       base::TimeDelta initialization_time);
+
  private:
   enum class PolicyDomainStatus { kUninitialized, kInitialized, kPolicyReady };
 
@@ -109,6 +141,7 @@ class POLICY_EXPORT PolicyServiceImpl
   // notify observers that initialization has completed (for any domain) after
   // |UnthrottleInitialization| has been called.
   PolicyServiceImpl(Providers providers,
+                    ScopeForMetrics scope_for_metrics,
                     Migrators migrators,
                     bool initialization_throttled);
 
@@ -193,6 +226,14 @@ class POLICY_EXPORT PolicyServiceImpl
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<android::PolicyServiceAndroid> policy_service_android_;
 #endif
+
+  // The time when the policy service was created, used for logging a histogram
+  // that indicates how long it takes for the service's initialization to be
+  // completed.
+  base::Time creation_time_ = base::Time::Now();
+  // The scope of the current policy service, to be used only for metrics
+  // reporting.
+  ScopeForMetrics scope_for_metrics_;
 
   // Used to verify usage in correct sequence.
   SEQUENCE_CHECKER(sequence_checker_);

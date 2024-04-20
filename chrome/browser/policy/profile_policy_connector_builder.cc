@@ -89,7 +89,8 @@ std::unique_ptr<ProfilePolicyConnector> CreateAndInitProfilePolicyConnector(
     PolicyServiceImpl::Providers providers;
     providers.push_back(test_providers->front());
     test_providers->pop_front();
-    auto service = std::make_unique<PolicyServiceImpl>(std::move(providers));
+    auto service = std::make_unique<PolicyServiceImpl>(
+        std::move(providers), PolicyServiceImpl::ScopeForMetrics::kUser);
     connector->InitForTesting(std::move(service));
   }
 

@@ -2616,6 +2616,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.PolicyServiceInitTime{Scope}{PolicyCountSuffix}"
+    units="ms" expires_after="2025-05-01">
+  <owner>ftirelo@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    The amount of time required for full initialization of the PolicyService,
+    measured from the moment the object is created until policies are ready.
+
+    {Scope}
+
+    {PolicyCountSuffix}
+  </summary>
+  <token key="Scope">
+    <variant name=".Machine"
+        summary="Recorded for the top-level PolicyService (either browser or
+                 device) on startup."/>
+    <variant name=".User"
+        summary="Recorded for profile-level PolicyService objects, each time
+                 a profile is created."/>
+  </token>
+  <token key="PolicyCountSuffix">
+    <variant name=""
+        summary="Recorded regardless of the number of policies it contains."/>
+    <variant name=".With_1_to_50_Policies"
+        summary="Recorded only for PolicyService objects that with 1-50
+                 policies."/>
+    <variant name=".With_51_to_100_Policies"
+        summary="Recorded only for PolicyService objects that with 51-100
+                 policies."/>
+    <variant name=".With_101_Plus_Policies"
+        summary="Recorded only for PolicyService objects that with 101+
+                 policies."/>
+    <variant name=".WithoutPolicies"
+        summary="Recorded only for PolicyService objects that without any
+                 policy."/>
+    <variant name=".WithPolicies"
+        summary="Recorded only for PolicyService objects that with at least
+                 one policy."/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.PolicyUI.ButtonUsage.{ButtonType}" units="counts"
     expires_after="2024-09-01">
   <owner>zmin@chromium.org</owner>

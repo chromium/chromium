@@ -787,7 +787,9 @@ void TestingProfile::CreateProfilePolicyConnector() {
         raw_ptr<policy::ConfigurationPolicyProvider, VectorExperimental>>
         providers;
     std::unique_ptr<policy::PolicyServiceImpl> policy_service =
-        std::make_unique<policy::PolicyServiceImpl>(std::move(providers));
+        std::make_unique<policy::PolicyServiceImpl>(
+            std::move(providers),
+            policy::PolicyServiceImpl::ScopeForMetrics::kUser);
     policy_service_ = std::move(policy_service);
   }
   profile_policy_connector_ =

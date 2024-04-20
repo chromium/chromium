@@ -96,6 +96,7 @@ PolicyService* BrowserPolicyConnectorBase::GetPolicyService() {
   g_created_policy_service = true;
   policy_service_ = std::make_unique<PolicyServiceImpl>(
       GetProvidersForPolicyService(),
+      PolicyServiceImpl::ScopeForMetrics::kMachine,
       std::vector<std::unique_ptr<PolicyMigrator>>());
   return policy_service_.get();
 }
