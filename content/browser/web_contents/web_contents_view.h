@@ -70,7 +70,7 @@ class WebContentsView {
 
   // Used to transfer WebContentsViewDragSecurityInfo across portal activation
   // (where we destroy and create a new WebContentsView for a tab).
-  // TODO(crbug.com/1254770): We don't need this after we migrate portals to
+  // TODO(crbug.com/40199730): We don't need this after we migrate portals to
   // MPArch.
   virtual void TransferDragSecurityInfo(WebContentsView* view) = 0;
 

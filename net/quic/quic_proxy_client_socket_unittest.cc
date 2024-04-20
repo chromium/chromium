@@ -192,7 +192,7 @@ TEST_P(QuicProxyClientSocketTest, ConnectSendsCorrectRequest) {
 }
 
 TEST_P(QuicProxyClientSocketTest, ProxyDelegateExtraHeaders) {
-  // TODO(https://crbug.com/1491092): Add a version of this test for multi-hop.
+  // TODO(crbug.com/40284947): Add a version of this test for multi-hop.
   proxy_delegate_ = std::make_unique<TestProxyDelegate>();
   proxy_delegate_->set_extra_header_name(kTestHeaderName);
   // TODO(crbug.com/1206799) Construct `proxy_chain` with plain

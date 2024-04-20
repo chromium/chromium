@@ -37,7 +37,7 @@ using ShmemMode = perfetto::SharedMemoryArbiter::ShmemMode;
 namespace tracing {
 namespace {
 
-// TODO(crbug.com/83907): Find a good compromise between performance and
+// TODO(crbug.com/40574593): Find a good compromise between performance and
 // data granularity (mainly relevant to running with small buffer sizes
 // when we use background tracing) on Android.
 #if BUILDFLAG(IS_ANDROID)

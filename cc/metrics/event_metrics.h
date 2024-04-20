@@ -37,9 +37,9 @@ class CC_EXPORT EventMetrics {
     kMousePressed,
     kMouseReleased,
     kMouseWheel,
-    // TODO(crbug/1071645): Currently, all ET_KEY_PRESSED events are reported
-    // under EventLatency.KeyPressed histogram. This includes both key-down and
-    // key-char events. Consider reporting them separately.
+    // TODO(crbug.com/40126863): Currently, all ET_KEY_PRESSED events are
+    // reported under EventLatency.KeyPressed histogram. This includes both
+    // key-down and key-char events. Consider reporting them separately.
     kKeyPressed,
     kKeyReleased,
     kTouchPressed,

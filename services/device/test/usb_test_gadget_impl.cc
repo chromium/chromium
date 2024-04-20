@@ -196,7 +196,7 @@ int SimplePOSTRequest(
 
 class UsbGadgetFactory : public UsbService::Observer {
  public:
-  // TODO(crbug.com/1010491): Remove `io_task_runner` parameter.
+  // TODO(crbug.com/40101494): Remove `io_task_runner` parameter.
   UsbGadgetFactory(UsbService* usb_service,
                    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
       : usb_service_(usb_service),

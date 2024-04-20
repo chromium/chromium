@@ -417,7 +417,7 @@ void WorkerScriptFetcher::CreateScriptLoader(
     }
 
     const url::Origin& request_initiator = *resource_request->request_initiator;
-    // TODO(https://crbug.com/1060837): Pass the Mojo remote which is connected
+    // TODO(crbug.com/40122194): Pass the Mojo remote which is connected
     // to the COEP reporter in DedicatedWorkerHost.
     network::mojom::URLLoaderFactoryParamsPtr factory_params =
         URLLoaderFactoryParamsHelper::CreateForWorker(

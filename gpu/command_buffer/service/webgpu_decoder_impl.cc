@@ -1892,7 +1892,7 @@ error::Error WebGPUDecoderImpl::HandleDawnCommands(
     return error::kLostContext;
   }
 
-  // TODO(crbug.com/1174145): This is O(N) where N is the number of devices.
+  // TODO(crbug.com/40167398): This is O(N) where N is the number of devices.
   // Multiple submits would be O(N*M). We should find a way to more
   // intelligently poll for work on only the devices that need it.
   PerformPollingWork();

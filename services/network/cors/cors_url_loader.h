@@ -192,7 +192,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // This is used to soft-launch Private Network Access preflights: we send
   // preflights but do not require them to succeed.
   //
-  // TODO(https://crbug.com/1268378): Remove this once preflight enforcement
+  // TODO(crbug.com/40204695): Remove this once preflight enforcement
   // is enabled.
   bool ShouldIgnorePrivateNetworkAccessErrors(
       mojom::IPAddressSpace target_address_space) const;
@@ -202,7 +202,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // This is used to soft-launch Private Network Access preflights: we send
   // preflights but do not require them to succeed.
   //
-  // TODO(https://crbug.com/1268378): Remove this once preflight enforcement
+  // TODO(crbug.com/40204695): Remove this once preflight enforcement
   // is enabled.
   PrivateNetworkAccessPreflightBehavior
   GetPrivateNetworkAccessPreflightBehavior(
@@ -339,7 +339,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   // INVARIANT: if this is true, then
   // `ShouldIgnorePrivateNetworkAccessErrors()` is also true.
   //
-  // TODO(https://crbug.com/1268378): Remove this along with
+  // TODO(crbug.com/40204695): Remove this along with
   // `ShouldIgnorePrivateNetworkAccessErrors()`.
   bool sending_pna_only_warning_preflight_ = false;
 

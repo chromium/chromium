@@ -1209,7 +1209,7 @@ void PageHandler::CaptureScreenshot(
         modified_web_prefs);
 
     {
-      // TODO(crbug.com/1141835): Remove the bug is fixed.
+      // TODO(crbug.com/40727379): Remove the bug is fixed.
       // Walkaround for the bug. Emulated `view_size` has to be set twice,
       // otherwise the scrollbar will be on the screenshot present.
       blink::DeviceEmulationParams tmp_params = modified_params;

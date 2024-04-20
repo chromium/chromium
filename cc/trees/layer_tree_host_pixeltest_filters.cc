@@ -164,7 +164,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_BackdropFilterBlurRadius) {
   }
 #endif
   if (use_software_renderer()) {
-    // TODO(989238): Software renderer does not support/implement
+    // TODO(crbug.com/40036319): Software renderer does not support/implement
     // kClamp_TileMode.
     return;
   }

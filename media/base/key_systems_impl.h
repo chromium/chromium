@@ -95,7 +95,7 @@ class MEDIA_EXPORT KeySystemsImpl : public KeySystems {
   bool IsValidMimeTypeCodecsCombination(const std::string& mime_type,
                                         SupportedCodecs codecs) const;
 
-  // TODO(crbug.com/417440): Separate container enum from codec mask value.
+  // TODO(crbug.com/40386158): Separate container enum from codec mask value.
   // Potentially pass EmeMediaType and a container enum.
   SupportedCodecs GetCodecMaskForMimeType(
       const std::string& container_mime_type) const;

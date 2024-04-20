@@ -217,7 +217,7 @@ void HandleMediaPermissionsRequestResult(
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback,
     const std::vector<blink::mojom::PermissionStatus>& result) {
-  // TODO(crbug.com/1300883): Generalize to multiple streams.
+  // TODO(crbug.com/40216442): Generalize to multiple streams.
   blink::mojom::StreamDevicesPtr devices = blink::mojom::StreamDevices::New();
 
   int result_pos = 0;
@@ -1535,7 +1535,7 @@ bool FrameImpl::CheckMediaAccessPermission(
       return false;
   }
 
-  // TODO(crbug.com/1321100): Remove `security_origin`.
+  // TODO(crbug.com/40223767): Remove `security_origin`.
   if (security_origin != render_frame_host->GetLastCommittedOrigin()) {
     return false;
   }

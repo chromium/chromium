@@ -69,7 +69,7 @@ void PassHistogramSharedMemoryHandle(
     [[maybe_unused]] base::CommandLine* command_line,
     [[maybe_unused]] base::LaunchOptions* launch_options,
     [[maybe_unused]] FileMappedForLaunch* files_to_register) {
-  // TODO(crbug.com/1028263): Once all process types support histogram shared
+  // TODO(crbug.com/40109064): Once all process types support histogram shared
   // memory being passed at launch, remove this if.
   if (!histogram_memory_region.IsValid()) {
     return;
@@ -78,7 +78,7 @@ void PassHistogramSharedMemoryHandle(
   CHECK(command_line);
   CHECK(histogram_memory_region.IsValid());
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-  // TODO(crbug.com/1028263): content::FileMappedForLaunch (POSIX) is redundant
+  // TODO(crbug.com/40109064): content::FileMappedForLaunch (POSIX) is redundant
   // wrt the base::LaunchOptions::<platform-specific-handles-to-transfer>
   // members. Refactor this so that the details of base::Launch vs Zygote on
   // (some) POSIX platforms is an implementation detail and not exposed here.
@@ -122,7 +122,7 @@ void PassFieldTrialSharedMemoryHandle(
     [[maybe_unused]] FileMappedForLaunch* files_to_register) {
   CHECK(command_line);
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
-  // TODO(crbug.com/1028263): content::FileMappedForLaunch (POSIX) is redundant
+  // TODO(crbug.com/40109064): content::FileMappedForLaunch (POSIX) is redundant
   // wrt the base::LaunchOptions::<platform-specific-handles-to-transfer>
   // members. Refactor this so that the details of base::Launch vs Zygote on
   // (some) POSIX platforms is an implementation detail and not exposed here.

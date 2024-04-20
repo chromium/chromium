@@ -61,7 +61,7 @@ struct URLLoaderCompletionStatus {
   // This is used to record metrics in the client for compatibility risk
   // analysis and rollout monitoring. See https://crbug.com/1427470.
   //
-  // TODO(https://crbug.com/1268378): Remove this once preflights are enforced.
+  // TODO(crbug.com/40204695): Remove this once preflights are enforced.
   PrivateNetworkAccessPreflightResult private_network_access_preflight_result =
       PrivateNetworkAccessPreflightResult.kNone;
 

@@ -492,8 +492,8 @@ class small_map {
     }
 
     size_t i = static_cast<size_t>(position.array_iter_ - array_);
-    // TODO(crbug.com/817982): When we have a checked iterator, this CHECK might
-    // not be necessary.
+    // TODO(crbug.com/40565371): When we have a checked iterator, this CHECK
+    // might not be necessary.
     CHECK_LE(i, size_);
     array_[i].~value_type();
     --size_;

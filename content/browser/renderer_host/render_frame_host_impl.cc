@@ -8473,7 +8473,7 @@ void RenderFrameHostImpl::CreateNewWindow(
   if (IsCredentialless() || IsNestedWithinFencedFrame() ||
       CoopSuppressOpener(/*opener=*/this)) {
     params->opener_suppressed = true;
-    // TODO(https://crbug.com/1060691) This should be applied to all
+    // TODO(crbug.com/40679181) This should be applied to all
     // popups opened with noopener.
     params->frame_name.clear();
   }
@@ -9723,7 +9723,7 @@ void RenderFrameHostImpl::HandleAXEvents(
   } else {
     // If the page is in back/forward cache, do not return early and continue to
     // apply AX tree updates.
-    // TODO(https://crbug.com/1328126): Define and implement the behavior for
+    // TODO(crbug.com/40841648): Define and implement the behavior for
     // when the page is prerendering, too.
     if (!IsInBackForwardCache() &&
         IsInactiveAndDisallowActivation(DisallowActivationReasonId::kAXEvent)) {
@@ -11115,8 +11115,8 @@ void RenderFrameHostImpl::FailedNavigation(
                              std::move(subresource_loader_factories),
                              document_token, std::move(policy_container));
 
-  // TODO(crbug/1129537): support UKM source creation for failed navigations
-  // too.
+  // TODO(crbug.com/40149432): support UKM source creation for failed
+  // navigations too.
 
   has_committed_any_navigation_ = true;
   DCHECK(navigation_request && navigation_request->IsNavigationStarted() &&
@@ -11411,7 +11411,7 @@ RenderFrameHostImplPpapiSupport& RenderFrameHostImpl::GetPpapiSupport() {
 void RenderFrameHostImpl::RequestAXTreeSnapshot(
     AXTreeSnapshotCallback callback,
     mojom::SnapshotAccessibilityTreeParamsPtr params) {
-  // TODO(https://crbug.com/859110): Remove once frame_ can no longer be null.
+  // TODO(crbug.com/40583141): Remove once frame_ can no longer be null.
   if (!IsRenderFrameLive())
     return;
 

@@ -125,7 +125,7 @@ void TCPConnectedSocket::Connect(
   DCHECK(!socket_);
   DCHECK(callback);
 
-  // TODO(https://crbug.com/1123197): Pass a non-null NetworkQualityEstimator.
+  // TODO(crbug.com/40146880): Pass a non-null NetworkQualityEstimator.
   net::NetworkQualityEstimator* network_quality_estimator = nullptr;
 
   std::unique_ptr<net::TransportClientSocket> socket =

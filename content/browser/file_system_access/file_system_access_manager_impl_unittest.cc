@@ -504,7 +504,7 @@ TEST_F(FileSystemAccessManagerImplTest, GetSandboxedFileSystem_CustomBucket) {
   // Note: we can test that the open succeeded, but because the FileSystemURL
   // is not exposed to the callback we rely on WPTs to ensure the bucket
   // locator was actually used.
-  // TODO(crbug.com/1322897): Ensure the bucket override is actually used.
+  // TODO(crbug.com/40224463): Ensure the bucket override is actually used.
   ASSERT_TRUE(root);
 }
 

@@ -176,7 +176,7 @@ class CONTENT_EXPORT FencedFrameURLMapping {
   // replacements map. The true URLs for any component ads associated with this
   // URN will also have substrings substituted. This function will be removed
   // once all FLEDGE auctions switch to using fenced frames.
-  // TODO(crbug.com/1253118): Remove this function when we remove support for
+  // TODO(crbug.com/40199055): Remove this function when we remove support for
   // showing FLEDGE ads in iframes.
   void SubstituteMappedURL(
       const GURL& urn_uuid,

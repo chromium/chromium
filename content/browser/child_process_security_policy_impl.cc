@@ -1917,7 +1917,7 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
         // require COOP/COEP handling, to pass in their COOP/COEP information
         // so it can be used here instead of the values in
         // |actual_process_lock|.
-        // TODO(crbug.com/1271197): The code below is subtly incorrect in cases
+        // TODO(crbug.com/40205612): The code below is subtly incorrect in cases
         // where actual_process_lock.is_pdf() is true, since in the case of PDFs
         // the lock is intended to prevent access to the lock's site/origin,
         // while still allowing the navigation to commit.

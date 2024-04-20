@@ -236,7 +236,7 @@ def try_builder(
     # TODO(crbug.com/1346781): Remove when the experiment is the default.
     experiments.setdefault("chromium_swarming.expose_merge_script_failures", 100)
 
-    # TODO(crbug.com/1466962): Remove when the experiment is the default.
+    # TODO(crbug.com/40276579): Remove when the experiment is the default.
     experiments.setdefault("swarming.prpc.cli", 100)
 
     merged_resultdb_bigquery_exports = [

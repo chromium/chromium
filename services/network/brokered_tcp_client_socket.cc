@@ -93,7 +93,7 @@ int BrokeredTcpClientSocket::Connect(net::CompletionOnceCallback callback) {
 
   net_log_source_.BeginEvent(net::NetLogEventType::BROKERED_CREATE_SOCKET);
 
-  // TODO(https://crbug.com/1321274): Pass in AddressFamily of single IPEndPoint
+  // TODO(crbug.com/40223835): Pass in AddressFamily of single IPEndPoint
   client_socket_factory_->BrokerCreateTcpSocket(
       addresses_.begin()->GetFamily(),
       base::BindOnce(&BrokeredTcpClientSocket::DidCompleteCreate,

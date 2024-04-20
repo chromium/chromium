@@ -36,7 +36,7 @@ void OriginTrialStateHostImpl::ApplyFeatureDiffForOriginTrial(
     base::flat_map<::blink::mojom::RuntimeFeature,
                    ::blink::mojom::OriginTrialFeatureStatePtr>
         origin_trial_features) {
-  // TODO(crbug.com/1377000): RuntimeFeatureState does not yet support
+  // TODO(crbug.com/40243430): RuntimeFeatureState does not yet support
   // HTTP header origin trial tokens, which currently cause this function to be
   // called between RenderFrameHostImpl::CommitNavigation() and
   // RenderFrameHostImpl::DidCommitNavigation(). As a result, we will reject all

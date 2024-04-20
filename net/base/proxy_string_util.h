@@ -47,7 +47,7 @@ namespace net {
 //   "BLAH xxx:xx"      INVALID
 NET_EXPORT ProxyChain
 PacResultElementToProxyChain(std::string_view pac_result_element);
-// TODO(crbug.com/1491092): Remove method once all calls are updated to use
+// TODO(crbug.com/40284947): Remove method once all calls are updated to use
 // PacResultElementToProxyChain.
 NET_EXPORT ProxyServer
 PacResultElementToProxyServer(std::string_view pac_result_element);

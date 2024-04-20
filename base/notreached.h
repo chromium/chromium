@@ -26,7 +26,7 @@ namespace logging {
 // Canary and Dev with intent to roll out to stable in M124 absent any blocking
 // issues that come up.
 //
-// TODO(crbug.com/851128): After kNotReachedIsFatal is universally rolled out
+// TODO(crbug.com/40580068): After kNotReachedIsFatal is universally rolled out
 // then move callers without a non-fatal milestone argument to
 // NOTREACHED_NORETURN(). Then rename the [[noreturn]] version back to
 // NOTREACHED().
@@ -46,8 +46,8 @@ namespace logging {
 
 // NOTREACHED_NORETURN() annotates paths that are supposed to be unreachable.
 // They crash if they are ever hit.
-// TODO(crbug.com/851128): Rename back to NOTREACHED() once there are no callers
-// of the old non-CHECK-fatal macro.
+// TODO(crbug.com/40580068): Rename back to NOTREACHED() once there are no
+// callers of the old non-CHECK-fatal macro.
 #if CHECK_WILL_STREAM()
 #define NOTREACHED_NORETURN() ::logging::NotReachedNoreturnError()
 #else

@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoAudio_WebM_Opus) {
   TestSimplePlayback("bear-320x240-opus-av_enc-av.webm");
 }
 
-// TODO(crbug.com/1360765): Flaky on Android.
+// TODO(crbug.com/40863269): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_Playback_VideoClearAudio_WebM_Opus \
   DISABLED_Playback_VideoClearAudio_WebM_Opus
@@ -315,11 +315,11 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4_VP9) {
   TestSimplePlayback("bear-320x240-v_frag-vp9-cenc.mp4");
 }
 
-// TODO(crbug.com/707127): Decide when it's supported on Android.
+// TODO(crbug.com/40513452): Decide when it's supported on Android.
 #if !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM_FAMILY))
-// TODO(https://crbug.com/1222685): Failing on Mac.
+// TODO(crbug.com/40187305): Failing on Mac.
 // TODO(https://crbug.com/1280308): Failing on Fuchsia arm.
 #define MAYBE_Playback_VideoOnly_WebM_VP9Profile2 \
   DISABLED_Playback_VideoOnly_WebM_VP9Profile2
@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_WebM_AV1) {
   TestSimplePlayback("bear-av1-cenc.webm");
 }
 
-// TODO(crbug.com/1360665): Flaky on Android.
+// TODO(crbug.com/40863206): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_Playback_VideoOnly_WebM_AV1_10bit \
   DISABLED_Playback_VideoOnly_WebM_AV1_10bit
@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_Encryption_CBC1) {
                       media::kErrorTitle);
 }
 
-// TODO(crbug.com/1360698): Flaky on Android.
+// TODO(crbug.com/40863223): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_Playback_Encryption_CENS DISABLED_Playback_Encryption_CENS
 #else

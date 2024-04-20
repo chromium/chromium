@@ -686,7 +686,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
       store_->AddNelPolicy(policy);
 
     auto iter_and_result = policies_.emplace(policy.key, std::move(policy));
-    // TODO(crbug.com/1326282): Change this to a DCHECK when we're sure the bug
+    // TODO(crbug.com/40225752): Change this to a DCHECK when we're sure the bug
     // is fixed.
     CHECK(iter_and_result.second);
 

@@ -79,7 +79,7 @@ std::optional<ULONG> GetBatteryTag(HANDLE battery) {
     if (::GetLastError() == ERROR_FILE_NOT_FOUND) {
       // No battery present in this interface.
       //
-      // TODO(crbug.com/1191045): Change CHECK to DCHECK in October 2022 after
+      // TODO(crbug.com/40756364): Change CHECK to DCHECK in October 2022 after
       // verifying that there are no crash reports.
       CHECK_EQ(battery_tag, static_cast<ULONG>(BATTERY_TAG_INVALID));
       return battery_tag;

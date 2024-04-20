@@ -13,7 +13,7 @@ interface InfoCollectionGpuService {
   // Returning whether DX12 are supported, and if yes, the supported feature
   // level, together with a few metrics related to the device's performance for
   // about:gpu and histogram recording purpose.
-  // TODO(crbug.com/1028263): histograms need to be recorded at browser process
+  // TODO(crbug.com/40109064): histograms need to be recorded at browser process
   // for now.
   [EnableIf=is_win]
   GetGpuSupportedDirectXVersionAndDevicePerfInfo()

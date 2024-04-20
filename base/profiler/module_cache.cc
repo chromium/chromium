@@ -75,7 +75,7 @@ const ModuleCache::Module* ModuleCache::GetModuleForAddress(uintptr_t address) {
     return nullptr;
 
   const auto result = native_modules_.insert(std::move(new_module));
-  // TODO(https://crbug.com/1131769): Reintroduce DCHECK(result.second) after
+  // TODO(crbug.com/40150346): Reintroduce DCHECK(result.second) after
   // fixing the issue that is causing it to fail.
   return result.first->get();
 }

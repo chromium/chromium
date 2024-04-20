@@ -1050,7 +1050,7 @@ void FederatedAuthRequestImpl::RequestUserInfo(
 
 void FederatedAuthRequestImpl::CancelTokenRequest() {
   if (!auth_request_token_callback_) {
-    // TODO(crbug.com/1500499): this should only happen with a compromised
+    // TODO(crbug.com/40940748): this should only happen with a compromised
     // renderer process but for some reason that is not the case. We should
     // investigate what could go wrong about the abort controller.
     return;
@@ -1519,7 +1519,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     return state1 < state2;
   });
 
-  // TODO(crbug.com/1383384): Handle auto_reauthn_ for multi IDP.
+  // TODO(crbug.com/40246099): Handle auto_reauthn_ for multi IDP.
   bool auto_reauthn_enabled =
       mediation_requirement_ != MediationRequirement::kRequired;
 
@@ -1682,7 +1682,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       base::BindOnce(&FederatedAuthRequestImpl::CompleteRequestWithError,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  // TODO(crbug.com/1382863): Handle UI where some IDPs are successful and some
+  // TODO(crbug.com/40245853): Handle UI where some IDPs are successful and some
   // IDPs are failing in the multi IDP case.
   // Note that ShowAccountsDialog() may result in the request being completed
   // immediately (for instance on Android when we cannot create a BottomSheet),

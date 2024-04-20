@@ -400,7 +400,7 @@ bool RenderWidgetHostViewAndroid::ScreenStateChangeHandler::
     pending_screen_state_.any_non_rotation_size_changed = true;
   }
 
-  // TODO(crbug.com/1375258): We need a pre-Android S detection of
+  // TODO(crbug.com/40242839): We need a pre-Android S detection of
   // Picture-in-Picture mode. The `visible_viewport_size` and
   // `physical_backing_size` will be shrunk, though it is not guaranteed to be
   // simply a scale from the fullscreen size. As sometimes inset changes are

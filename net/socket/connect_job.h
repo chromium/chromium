@@ -60,7 +60,7 @@ class WebSocketEndpointLockManager;
 // ConnectJobs that wrap other ConnectJobs typically have different values for
 // those.
 struct NET_EXPORT_PRIVATE CommonConnectJobParams {
-  // TODO(https://crbug.com/1505765): Look into passing in HttpNetworkSession
+  // TODO(crbug.com/40946406): Look into passing in HttpNetworkSession
   // instead.
   CommonConnectJobParams(
       ClientSocketFactory* client_socket_factory,

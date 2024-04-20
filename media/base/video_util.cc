@@ -855,7 +855,7 @@ VideoPixelFormatFromSkColorType(SkColorType sk_color_type, bool is_opaque) {
     case kBGRA_8888_SkColorType:
       return is_opaque ? PIXEL_FORMAT_XRGB : PIXEL_FORMAT_ARGB;
     default:
-      // TODO(crbug.com/1073995): Add F16 support.
+      // TODO(crbug.com/40686604): Add F16 support.
       return PIXEL_FORMAT_UNKNOWN;
   }
 }
@@ -890,7 +890,7 @@ scoped_refptr<VideoFrame> CreateFromSkImage(sk_sp<SkImage> sk_image,
 
   auto frame = VideoFrame::WrapExternalDataWithLayout(
       *layout, visible_rect, natural_size,
-      // TODO(crbug.com/1161304): We should be able to wrap readonly memory in
+      // TODO(crbug.com/40162403): We should be able to wrap readonly memory in
       // a VideoFrame instead of using writable_addr() here.
       reinterpret_cast<uint8_t*>(pm.writable_addr()), pm.computeByteSize(),
       timestamp);

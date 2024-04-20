@@ -153,8 +153,8 @@ bool D3DImageBackingFactory::IsD3DSharedImageSupported(
 // static
 bool D3DImageBackingFactory::IsSwapChainSupported(
     const GpuPreferences& gpu_preferences) {
-  // TODO(crbug.com/1492685): enable swapchain support when d3d11 is shared with
-  // ANGLE.
+  // TODO(crbug.com/40074896): enable swapchain support when d3d11 is shared
+  // with ANGLE.
   return gl::DirectCompositionSupported() &&
          gl::DXGISwapChainTearingSupported() &&
          gpu_preferences.gr_context_type == GrContextType::kGL;
@@ -384,7 +384,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
       has_webgpu_usage ||
       (has_gl_usage && (d3d11_device_ != angle_d3d11_device_));
   if (needs_shared_handle) {
-    // TODO(crbug.com/1468604): Many texture formats cannot be shared on old
+    // TODO(crbug.com/40068319): Many texture formats cannot be shared on old
     // GPUs/drivers to try to detect that and implement a fallback path or
     // disallow Graphite/WebGPU in those cases.
     desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_NTHANDLE |

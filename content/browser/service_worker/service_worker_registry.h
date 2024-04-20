@@ -525,7 +525,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
 
   bool is_storage_disabled_ = false;
 
-  // TODO(crbug.com/1016065): Consider moving QuotaManagerProxy to
+  // TODO(crbug.com/40103974): Consider moving QuotaManagerProxy to
   // ServiceWorkerStorage once QuotaManager gets mojofied.
   const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
   const scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;

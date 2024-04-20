@@ -515,7 +515,7 @@ void FileSystemAccessFileHandleImpl::CreateFileWriterImpl(
   DCHECK_EQ(GetWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
-  // TODO(crbug.com/1241401): Expand this check to all backends.
+  // TODO(crbug.com/40194651): Expand this check to all backends.
   if (url().type() == storage::kFileSystemTypeLocal) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
@@ -648,7 +648,7 @@ void FileSystemAccessFileHandleImpl::DidTakeSwapLock(
     // existence check and when file contents are copied to the new file.
     // However, since we've acquired an exclusive lock to the swap file, this
     // is only possible if the file is created external to this API.
-    // TODO(https://crbug.com/1382215): Consider requiring a lock to create an
+    // TODO(crbug.com/40245515): Consider requiring a lock to create an
     // empty file, e.g. parent.getFileHandle(swapFileName, {create: true}).
     manager()->DoFileSystemOperation(
         FROM_HERE, &FileSystemOperationRunner::FileExists,

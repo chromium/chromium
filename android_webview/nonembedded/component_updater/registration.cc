@@ -89,7 +89,7 @@ void RegisterComponentsForUpdate(
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebViewEnableTrustTokensComponent)) {
-    // TODO(https://crbug.com/1170468): decide if this component is still
+    // TODO(crbug.com/40165770): decide if this component is still
     // needed. Note: We're using a command-line switch because finch features
     // isn't supported in nonembedded WebView.
     // After setting this flag, it may be necessary to force restart the

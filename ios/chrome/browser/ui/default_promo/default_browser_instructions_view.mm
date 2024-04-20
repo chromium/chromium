@@ -85,7 +85,7 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
   NSString* animationAssetName;
   NSString* animationAssetNameDarkMode;
 
-  // TODO(crbug.com/1508131): Handle the case when the promo is displayed and
+  // TODO(crbug.com/40948842): Handle the case when the promo is displayed and
   // the user switches between LTR and RLT.
   if (base::i18n::IsRTL()) {
     animationAssetName = kDefaultBrowserAnimationRtl;

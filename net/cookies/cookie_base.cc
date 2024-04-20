@@ -347,7 +347,7 @@ CookieAccessResult CookieBase::IncludeForRequestURL(
                 : CookieInclusionStatus::EXCLUDE_SAMESITE_LAX);
       }
       break;
-    // TODO(crbug.com/990439): Add a browsertest for this behavior.
+    // TODO(crbug.com/40638805): Add a browsertest for this behavior.
     case CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE:
       DCHECK(SameSite() == CookieSameSite::UNSPECIFIED);
       if (cookie_inclusion_context <

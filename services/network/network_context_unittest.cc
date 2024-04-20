@@ -5801,7 +5801,7 @@ TEST_F(NetworkContextTest, EnsureProperProxyChainIsUsed) {
   proxy_config_set[1].url = test_server.GetURL("/echo");
   proxy_config_set[1].expected_proxy_chain = net::ProxyChain::Direct();
 
-  // TODO(https://crbug.com/1491092): Add a test case for a proxy chain with
+  // TODO(crbug.com/40284947): Add a test case for a proxy chain with
   // more than one hop.
 
   for (const auto& proxy_data : proxy_config_set) {

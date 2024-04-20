@@ -27,7 +27,7 @@ GpuMemoryBufferFactoryDXGI::GpuMemoryBufferFactoryDXGI(
 }
 GpuMemoryBufferFactoryDXGI::~GpuMemoryBufferFactoryDXGI() = default;
 
-// TODO(crbug.com/1223490): Avoid the need for a separate D3D device here by
+// TODO(crbug.com/40774668): Avoid the need for a separate D3D device here by
 // sharing keyed mutex state between DXGI GMBs and D3D shared image backings.
 Microsoft::WRL::ComPtr<ID3D11Device>
 GpuMemoryBufferFactoryDXGI::GetOrCreateD3D11Device() {

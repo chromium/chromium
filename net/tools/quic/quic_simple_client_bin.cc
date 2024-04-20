@@ -71,7 +71,7 @@ class QuicSimpleClientFactory : public quic::QuicToyClient::ClientFactory {
     quic::QuicIpAddress ip_addr;
     if (!ip_addr.FromString(host_for_lookup)) {
       net::AddressList addresses;
-      // TODO(https://crbug.com/1300660) Let the caller pass in the scheme
+      // TODO(crbug.com/40216365) Let the caller pass in the scheme
       // rather than guessing "https"
       int rv = net::SynchronousHostResolver::Resolve(
           url::SchemeHostPort(url::kHttpsScheme, host_for_lookup, port),

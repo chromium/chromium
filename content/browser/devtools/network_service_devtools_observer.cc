@@ -218,7 +218,7 @@ void NetworkServiceDevToolsObserver::OnCorsError(
   if (!rfhi)
     return;
 
-  // TODO(https://crbug.com/1268378): Remove this once enforcement is always
+  // TODO(crbug.com/40204695): Remove this once enforcement is always
   // enabled and warnings are no more.
   if (is_warning && initiator_origin.has_value()) {
     if (!initiator_origin->IsSameOriginWith(url)) {

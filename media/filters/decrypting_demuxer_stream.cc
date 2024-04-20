@@ -348,7 +348,7 @@ void DecryptingDemuxerStream::OnBufferDecrypted(
 
   // Copy the key frame flag and duration from the encrypted to decrypted
   // buffer.
-  // TODO(crbug.com/1116263): Ensure all fields are copied by Decryptor.
+  // TODO(crbug.com/40711813): Ensure all fields are copied by Decryptor.
   decrypted_buffer->set_is_key_frame(
       pending_buffer_to_decrypt_->is_key_frame());
   decrypted_buffer->set_duration(pending_buffer_to_decrypt_->duration());

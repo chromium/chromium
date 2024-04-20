@@ -695,7 +695,7 @@ void PermissionControllerImpl::OnDelegatePermissionStatusChange(
     PermissionStatus status) {
   Subscription* subscription = subscriptions_.Lookup(subscription_id);
   DCHECK(subscription);
-  // TODO(crbug.com/1223407) Adding this block to prevent crashes while we
+  // TODO(crbug.com/40056329) Adding this block to prevent crashes while we
   // investigate the root cause of the crash. This block will be removed as the
   // CHECK() above should be enough.
   if (!subscription) {

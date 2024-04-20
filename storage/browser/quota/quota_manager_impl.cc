@@ -2083,8 +2083,8 @@ void QuotaManagerImpl::RetrieveBucketUsageForBucketTable(
 
   for (auto& entry : entries) {
     StorageType type = static_cast<StorageType>(entry->type);
-    // TODO(crbug.com/1175113): Change to DCHECK once persistent type is removed
-    // from QuotaDatabase.
+    // TODO(crbug.com/40167820): Change to DCHECK once persistent type is
+    // removed from QuotaDatabase.
     if (!IsSupportedType(type)) {
       continue;
     }
@@ -2337,7 +2337,7 @@ void QuotaManagerImpl::MaybeRunStoragePressureCallback(
   DCHECK_GE(total_space, 0);
   DCHECK_GE(available_space, 0);
 
-  // TODO(https://crbug.com/1059560): Figure out what 0 total_space means
+  // TODO(crbug.com/40121667): Figure out what 0 total_space means
   // and how to handle the storage pressure callback in these cases.
   if (total_space == 0) {
     return;

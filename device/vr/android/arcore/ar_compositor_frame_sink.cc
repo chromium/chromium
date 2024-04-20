@@ -297,7 +297,7 @@ void ArCompositorFrameSink::OnBeginFrame(
     const viz::FrameTimingDetailsMap& timing_details,
     bool frame_ack,
     std::vector<viz::ReturnedResource> resources) {
-  // TODO(crbug.com/1401032): Determine why the timing of this Ack leads to
+  // TODO(crbug.com/40250552): Determine why the timing of this Ack leads to
   // frame production stopping in tests.
   if (features::IsOnBeginFrameAcksEnabled()) {
     if (frame_ack) {

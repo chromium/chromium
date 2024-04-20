@@ -540,7 +540,7 @@ int HttpProxyConnectJob::DoTransportConnectComplete(int result) {
         // cert request info won't have been set up for the parent
         // HttpProxyConnectJob to use it in this method. Fail gracefully when
         // this case is encountered.
-        // TODO(https://crbug.com/1491092): Investigate whether changes are
+        // TODO(crbug.com/40284947): Investigate whether changes are
         // needed to support making the SSL cert request info available here in
         // the case described above. Just returning `result` here makes the
         // behavior for multi-proxy chains match that of single-proxy chains

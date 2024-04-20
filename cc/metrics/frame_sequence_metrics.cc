@@ -512,7 +512,7 @@ void FrameSequenceMetrics::CalculateCheckerboardingAndJankV3(
         will_ignore_current_frame = true;
       }
 
-      // TODO(crbug.com/1450940): A new FrameSequenceTracker, that has yet to
+      // TODO(crbug.com/40270377): A new FrameSequenceTracker, that has yet to
       // process its first frame uses its creation time as starting point of
       // nested traces. FrameSorter processes a FrameInfo when both threads are
       // complete. It's possible for the smoothness thread component to have

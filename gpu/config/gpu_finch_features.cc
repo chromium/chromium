@@ -626,7 +626,7 @@ namespace {
 bool IsSkiaGraphiteSupportedByDevice(const base::CommandLine* command_line) {
 #if BUILDFLAG(IS_APPLE)
   // Graphite only works well with ANGLE Metal on Mac or iOS.
-  // TODO(crbug.com/1423574): Remove this after ANGLE Metal launches fully.
+  // TODO(crbug.com/40063538): Remove this after ANGLE Metal launches fully.
   const bool is_angle_metal_enabled =
       UsePassthroughCommandDecoder() &&
       (base::FeatureList::IsEnabled(features::kDefaultANGLEMetal) ||
@@ -811,7 +811,7 @@ bool LimitAImageReaderMaxSizeToOne() {
 }
 
 bool IncreaseBufferCountForHighFrameRate() {
-  // TODO(crbug.com/1211332): We don't have a way to dynamically adjust number
+  // TODO(crbug.com/40767562): We don't have a way to dynamically adjust number
   // of buffers. So these checks, espeically the RAM one, is to limit the impact
   // of more buffers to devices that can handle them.
   // 8GB of ram with large margin for error.

@@ -156,7 +156,7 @@ class BASE_EXPORT NotReachedError : public CheckError {
   // discarding log-stream arguments. See base/notreached.h.
   NOMERGE NOINLINE NOT_TAIL_CALLED static void TriggerNotReached();
 
-  // TODO(crbug.com/851128): Mark [[noreturn]] once this is CHECK-fatal on all
+  // TODO(crbug.com/40580068): Mark [[noreturn]] once this is CHECK-fatal on all
   // builds.
   NOMERGE NOINLINE NOT_TAIL_CALLED ~NotReachedError();
 
@@ -164,8 +164,8 @@ class BASE_EXPORT NotReachedError : public CheckError {
   using CheckError::CheckError;
 };
 
-// TODO(crbug.com/851128): This should take the name of the above class once all
-// callers of NOTREACHED() have migrated to the CHECK-fatal version.
+// TODO(crbug.com/40580068): This should take the name of the above class once
+// all callers of NOTREACHED() have migrated to the CHECK-fatal version.
 class BASE_EXPORT NotReachedNoreturnError : public CheckError {
  public:
   explicit NotReachedNoreturnError(

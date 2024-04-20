@@ -1503,7 +1503,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   TestLocalizedLandmarkType(17, ax::mojom::Role::kSearch, "search");
 }
 
-// TODO(https://crbug.com/1020456) re-enable when crashing on linux is resolved.
+// TODO(crbug.com/40656480) re-enable when crashing on linux is resolved.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_LocalizedRoleDescription DISABLED_LocalizedRoleDescription
 #else

@@ -333,7 +333,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // directory entry's metadata. See crbug.com/1489517 and
   // https://devblogs.microsoft.com/oldnewthing/20111226-00/?p=8813
   //
-  // TODO(crbug.com/1493696): use an abstract model for quota instead of real
+  // TODO(crbug.com/40285925): use an abstract model for quota instead of real
   // world bytes.
   std::map<storage::BucketLocator, int64_t> bucket_size_map_;
 

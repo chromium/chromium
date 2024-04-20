@@ -1158,7 +1158,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // |controllee_map_| and |bfcached_controllee_map_| should not share the same
   // controllee.  ServiceWorkerContainerHost in the controllee maps should be
   // non-null.
-  // TODO(crbug.com/1253581): Fix cases where hosts can become nullptr while
+  // TODO(crbug.com/40199210): Fix cases where hosts can become nullptr while
   //                          stored in the maps.
   std::map<std::string, base::WeakPtr<ServiceWorkerContainerHost>>
       controllee_map_;

@@ -633,7 +633,7 @@ class MediaStreamManagerTest : public ::testing::Test {
       const std::string& label,
       blink::mojom::StreamDevicesSetPtr stream_devices_set,
       bool pan_tilt_zoom_allowed) {
-    // TODO(crbug.com/1300883): Generalize to multiple streams.
+    // TODO(crbug.com/40216442): Generalize to multiple streams.
     DCHECK_EQ(stream_devices_set->stream_devices.size(), 1u);
     if (request_audio && audio_share) {
       ASSERT_TRUE(

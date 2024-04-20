@@ -70,7 +70,7 @@ class MEDIA_EXPORT KeySystemInfo {
   // requirement, which is enforced by `KeySystemConfigSelector`. Therefore, the
   // returned `EmeConfig` doesn't need to specify persistence requirement
   // explicitly.
-  // TODO(crbug.com/1324262): Refactor `EmeConfig` to make it easier to
+  // TODO(crbug.com/40839176): Refactor `EmeConfig` to make it easier to
   // express combinations of requirements.
   virtual EmeConfig::Rule GetPersistentLicenseSessionSupport() const = 0;
 

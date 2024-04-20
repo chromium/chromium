@@ -495,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(EarlySwapNavigationBrowserTest,
 // response, the early swap still happens.  Currently, this leaves an
 // about:blank page from the swapped-in RFH as the primary page.
 //
-// TODO(https://crbug.com/1480129): This case should be converted to show a new
+// TODO(crbug.com/40281212): This case should be converted to show a new
 // error page.
 IN_PROC_BROWSER_TEST_F(EarlySwapNavigationBrowserTest,
                        EarlySwapWith204Response) {

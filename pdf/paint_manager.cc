@@ -217,7 +217,7 @@ void PaintManager::DoPaint() {
           SkImageInfo::MakeN32Premul(new_size.width(), new_size.height()));
       DCHECK(surface_);
 
-      // TODO(crbug.com/1317832): Can we guarantee repainting some other way?
+      // TODO(crbug.com/40222665): Can we guarantee repainting some other way?
       client_->InvalidatePluginContainer();
 
       device_scale_ = 1.0f;
@@ -305,7 +305,7 @@ void PaintManager::Flush() {
                                    SkSamplingOptions(), /*paint=*/nullptr);
   client_->UpdateSnapshot(std::move(snapshot));
 
-  // TODO(crbug.com/1403311): Complete flush synchronously.
+  // TODO(crbug.com/40251507): Complete flush synchronously.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&PaintManager::OnFlushComplete,
                                 weak_factory_.GetWeakPtr()));

@@ -500,7 +500,7 @@ gn_args.config(
     },
 )
 
-# TODO(https://crbug.com/1010584): Explicitly enable DirectX 12.
+# TODO(crbug.com/40101527): Explicitly enable DirectX 12.
 gn_args.config(
     name = "dx12vk",
     configs = [

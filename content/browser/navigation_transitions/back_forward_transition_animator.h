@@ -150,7 +150,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
     // responded, we will skip this state.
     kWaitingForBeforeUnloadResponse,
 
-    // TODO(https://crbug.com/1421082): If we were to bring the active page back
+    // TODO(crbug.com/40896070): If we were to bring the active page back
     // to let the user interact with the prompt (e.g., camera access), we need a
     // state for that.
 

@@ -410,7 +410,7 @@ void AesDecryptor::RemoveSession(const std::string& session_id,
   if (it->second == CdmSessionType::kPersistentLicense) {
     // The license release message is specified in the spec:
     // https://w3c.github.io/encrypted-media/#clear-key-release-format.
-    // TODO(crbug.com/1107614) Move session message for persistent-license
+    // TODO(crbug.com/40706999) Move session message for persistent-license
     // session from AesDecryptor to ClearKeyPersistentSessionCdm.
     KeyIdList key_ids;
     key_ids.reserve(keys_info.size());

@@ -165,7 +165,7 @@ class MetaBuildWrapper:
       subp.add_argument('--android-version-name',
                         help='Sets GN arg android_default_version_name')
 
-      # TODO(crbug.com/1060857): Remove this once swarming task templates
+      # TODO(crbug.com/40122201): Remove this once swarming task templates
       # support command prefixes.
       luci_auth_group = subp.add_mutually_exclusive_group()
       luci_auth_group.add_argument(

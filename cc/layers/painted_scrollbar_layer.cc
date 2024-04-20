@@ -159,7 +159,7 @@ bool PaintedScrollbarLayer::UpdateInternalContentScale() {
       transform, layer_tree_host()->device_scale_factor());
   float scale = std::max(transform_scales.x(), transform_scales.y());
   // Clamp minimum scale to 1 to avoid too low scale during scale animation.
-  // TODO(crbug.com/1009291): Move rasterization of scrollbars to the impl side
+  // TODO(crbug.com/40100995): Move rasterization of scrollbars to the impl side
   // to better handle scale changes.
   scale = std::max(1.0f, scale);
 

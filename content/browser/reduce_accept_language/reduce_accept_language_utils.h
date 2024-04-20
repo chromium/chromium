@@ -60,7 +60,7 @@ class CONTENT_EXPORT ReduceAcceptLanguageUtils {
   // `request_origin` is the origin to be used for reduced accept language
   // storage.
   //
-  // TODO(crbug.com/1323776) confirm with CSP sandbox owner if language
+  // TODO(crbug.com/40224802) confirm with CSP sandbox owner if language
   // preferences need to be hidden from sandboxed origins.
   static bool OriginCanReduceAcceptLanguage(const url::Origin& request_origin);
 

@@ -91,7 +91,7 @@ void IdentityUrlLoaderThrottle::HandleResponseOrRedirect(
   if (!network::IsOriginPotentiallyTrustworthy(origin))
     return;
 
-  // TODO(crbug.com/1357790):
+  // TODO(crbug.com/40236764):
   // - Limit to toplevel frames
   // - Decide whether to limit to same-origin
   // - Decide the right behavior with respect to user gestures.

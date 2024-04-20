@@ -498,7 +498,7 @@ void NavigationURLLoaderImpl::Start() {
   // interception is required, but these loaders are not; see crbug.com/1253314
   // and crbug.com/1253984.)
   //
-  // TODO(crbug.com/1255181): Consider getting rid of these exceptions.
+  // TODO(crbug.com/40794764): Consider getting rid of these exceptions.
   if (!request_info_->is_pdf) {
     // Requests to WebUI scheme won't get redirected to/from other schemes
     // or be intercepted, so we just let it go here.

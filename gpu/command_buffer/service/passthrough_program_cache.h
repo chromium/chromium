@@ -95,7 +95,7 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
    private:
     Value program_blob_;
 
-    // TODO(crbug.com/1132792): Change this into raw_ptr<...>, after
+    // TODO(crbug.com/40150759): Change this into raw_ptr<...>, after
     // investigating an earlier crash report most likely caused by a
     // use-after-move.
     RAW_PTR_EXCLUSION PassthroughProgramCache* program_cache_;

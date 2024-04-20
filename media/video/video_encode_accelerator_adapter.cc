@@ -54,7 +54,7 @@ uint32_t ComputeCheckedDefaultBitrate(const gfx::Size& frame_size) {
 }
 
 uint32_t ComputeCheckedPeakBitrate(uint32_t target_bitrate) {
-  // TODO(crbug.com/1342850): Reconsider whether this is good peak bps.
+  // TODO(crbug.com/40851972): Reconsider whether this is good peak bps.
   base::CheckedNumeric<uint32_t> checked_bitrate_product =
       base::CheckMul<uint32_t>(target_bitrate, 10u);
   return checked_bitrate_product.ValueOrDefault(

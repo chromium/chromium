@@ -219,13 +219,13 @@ void CookieManager::AddCookieChangeListener(
       base::Unretained(listener_registration.get()));
 
   if (name) {
-    // TODO(https://crbug.com/1225444): Include the correct cookie partition
+    // TODO(crbug.com/40188414): Include the correct cookie partition
     // key when attaching cookie change listeners to service workers.
     listener_registration->subscription =
         cookie_store_->GetChangeDispatcher().AddCallbackForCookie(
             url, *name, std::nullopt, std::move(cookie_change_callback));
   } else {
-    // TODO(https://crbug.com/1225444): Include the correct cookie partition
+    // TODO(crbug.com/40188414): Include the correct cookie partition
     // key when attaching cookie change listeners to service workers.
     listener_registration->subscription =
         cookie_store_->GetChangeDispatcher().AddCallbackForUrl(

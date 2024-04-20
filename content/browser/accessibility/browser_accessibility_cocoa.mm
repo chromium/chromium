@@ -1595,8 +1595,8 @@ bool content::IsNSRange(id value) {
     return nil;
   }
   if (!root_manager->GetParentView()) {
-    // TODO(crbug.com/1425682) Find out why this happens, there should always be
-    // a parent view. This used to be a CHECK() but caused too many crashes.
+    // TODO(crbug.com/40898856) Find out why this happens, there should always
+    // be a parent view. This used to be a CHECK() but caused too many crashes.
     // Repro steps are available in the bug.
     return nil;
   }

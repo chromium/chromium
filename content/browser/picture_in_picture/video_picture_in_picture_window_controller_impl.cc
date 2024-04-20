@@ -275,8 +275,8 @@ PictureInPictureResult VideoPictureInPictureWindowControllerImpl::StartSession(
     std::move(on_window_created_notify_observers_callback_).Run();
   }
 
-  // TODO(crbug.com/1331248): Rather than set this synchronously, we should call
-  // back with the bounds once the window provides them.
+  // TODO(crbug.com/40227464): Rather than set this synchronously, we should
+  // call back with the bounds once the window provides them.
   *window_size = GetSize();
   return result;
 }

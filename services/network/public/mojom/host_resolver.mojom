@@ -261,7 +261,7 @@ struct ResolveHostParameters {
   // Enumeration for specifying the purpose of a host resolve request.
   // These values are used for UMA. Entries should not be reordered. Keep this
   // in sync with tools/metrics/histograms/enums.xml.
-  // TODO(crbug.com/1232623): Consider adding more values if kPreconnect isn't
+  // TODO(crbug.com/40191203): Consider adding more values if kPreconnect isn't
   // a majority of the purpose of host resolve requests.
   enum Purpose {
     kUnspecified,

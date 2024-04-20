@@ -137,7 +137,7 @@ bool FrameSequenceTracker::ShouldIgnoreBeginFrameSource(
 }
 
 void FrameSequenceTracker::ResetAllStateIfPaused() {
-  // TODO(crbug.com/1256879): With FrameSequenceMetrics handling
+  // TODO(crbug.com/40200408): With FrameSequenceMetrics handling
   // FrameInfo::FrameFinalState::kNoUpdateDesired we likely do not need this
   // anymore.
   if (!reset_all_state_) {

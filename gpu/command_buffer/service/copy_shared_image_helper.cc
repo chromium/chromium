@@ -816,7 +816,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
                            ToSkYUVAPlaneConfig(dest_format),
                            ToSkYUVASubsampling(dest_format), yuv_color_space);
       // Perform skia::BlitRGBAToYUVA for the multiplanar YUV format image.
-      // TODO(crbug.com/1451025): This will scale the image if the source image
+      // TODO(crbug.com/40270413): This will scale the image if the source image
       // is smaller than the destination image. What we should actually do
       // instead is just blit the destination rect and clear out the rest.
       // However, doing that resulted in resulted in pixeltest failures due to

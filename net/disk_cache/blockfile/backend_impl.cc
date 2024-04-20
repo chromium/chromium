@@ -333,7 +333,7 @@ void BackendImpl::CleanupCache() {
 
     if (user_flags_ & kNoRandom) {
       // This is a net_unittest, verify that we are not 'leaking' entries.
-      // TODO(https://crbug.com/1184679): Refactor this and eliminate the
+      // TODO(crbug.com/40171748): Refactor this and eliminate the
       //    WaitForPendingIOForTesting API.
       File::WaitForPendingIOForTesting(&num_pending_io_);
       DCHECK(!num_refs_);

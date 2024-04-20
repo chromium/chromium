@@ -103,7 +103,8 @@ void ScrollJankDroppedFrameTracker::EmitPerScrollHistogramsAndResetCounters() {
   // There should be at least one presented frame given the method is only
   // called after we have a successful presentation.
   if (per_scroll_->num_presented_frames == 0) {
-    // TODO(1464878): Debug cases where we can have 0 presented frames.
+    // TODO(crbug.com/40067426): Debug cases where we can have 0 presented
+    // frames.
     TRACE_EVENT_INSTANT("input", "NoPresentedFramesInScroll");
     return;
   }
@@ -221,10 +222,10 @@ void ScrollJankDroppedFrameTracker::ReportLatestPresentationData(
           EventMetrics::DispatchStage::kGenerated);
   if ((last_input_generation_ts < first_input_generation_ts) ||
       (presentation_ts <= last_input_generation_ts)) {
-    // TODO(crbug/1447358): Investigate when these edge cases can be triggered
-    // in field and web tests. We have already seen this triggered in field, and
-    // some web tests where an event with null(0) timestamp gets coalesced with
-    // a "normal" input.
+    // TODO(crbug.com/40913586): Investigate when these edge cases can be
+    // triggered in field and web tests. We have already seen this triggered in
+    // field, and some web tests where an event with null(0) timestamp gets
+    // coalesced with a "normal" input.
     return;
   }
   // TODO(b/276722271) : Analyze and reduce these cases of out of order

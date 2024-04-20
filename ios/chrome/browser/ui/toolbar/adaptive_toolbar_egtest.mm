@@ -483,7 +483,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 // Verifies that the back/forward buttons are working and are correctly enabled
 // during navigations.
-// TODO(crbug.com/1488801): Test is failing on downstream bots.
+// TODO(crbug.com/40073965): Test is failing on downstream bots.
 - (void)DISABLED_testNavigationButtons {
   // Setup the server.
   self.testServer->RegisterRequestHandler(

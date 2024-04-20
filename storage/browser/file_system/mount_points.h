@@ -57,7 +57,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MountPoints {
   // the given mount type.
   virtual bool HandlesFileSystemMountType(FileSystemType type) const = 0;
 
-  // TODO(https://crbug.com/1240603): Determine if MountPoints::CrackURL()
+  // TODO(crbug.com/40194313): Determine if MountPoints::CrackURL()
   // and its overrides in child classes should be removed and replaced with
   // FileSystemContext::CrackURL().
   //

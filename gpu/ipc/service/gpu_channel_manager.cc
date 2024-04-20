@@ -943,7 +943,7 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
         gles2::GenerateGLContextAttribsForCompositor(use_passthrough_decoder);
 
     // Disable robust resource initialization for raster decoder and compositor.
-    // TODO(crbug.com/1192632): disable robust_resource_initialization for
+    // TODO(crbug.com/40174948): disable robust_resource_initialization for
     // SwANGLE.
     if (gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplayType() !=
         gl::ANGLE_SWIFTSHADER) {

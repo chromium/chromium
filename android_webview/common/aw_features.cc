@@ -187,7 +187,7 @@ BASE_FEATURE(kWebViewWideColorGamutSupport,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Control the default behaviour for the XRequestedWith header.
-// TODO(crbug.com/1493963): enable by default after M120 branch point.
+// TODO(crbug.com/40286009): enable by default after M120 branch point.
 BASE_FEATURE(kWebViewXRequestedWithHeaderControl,
              "WebViewXRequestedWithHeaderControl",
              base::FEATURE_DISABLED_BY_DEFAULT);

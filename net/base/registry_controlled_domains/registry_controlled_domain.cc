@@ -132,7 +132,7 @@ size_t GetRegistryLengthInTrimmedHost(std::string_view host,
       // "!foo").  This would only be valid if we had a corresponding
       // wildcard rule, which would have to be "*".  But we explicitly
       // disallow that case, so this kind of rule is invalid.
-      // TODO(https://crbug.com/459802): This assumes that all wildcard entries,
+      // TODO(crbug.com/40406311): This assumes that all wildcard entries,
       // such as *.foo.invalid, also have their parent, foo.invalid, as an entry
       // on the PSL, which is why it returns the length of foo.invalid. This
       // isn't entirely correct.

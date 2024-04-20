@@ -83,7 +83,7 @@ void HistogramProxyUsed(const ProxyInfo& proxy_info, bool success) {
   ProxyServer::Scheme proxy_scheme = ProxyServer::Scheme::SCHEME_INVALID;
   if (!proxy_info.is_empty() && !proxy_info.is_direct()) {
     if (proxy_info.proxy_chain().is_multi_proxy()) {
-      // TODO(https://crbug.com/1491092): Update this histogram to have a new
+      // TODO(crbug.com/40284947): Update this histogram to have a new
       // bucket for multi-chain proxies. Until then, don't influence the
       // existing metric counts which have historically been only for single-hop
       // proxies.
@@ -1390,7 +1390,8 @@ HttpStreamFactory::JobController::CalculateAlternateProtocolUsage(
       return ALTERNATE_PROTOCOL_USAGE_DNS_ALPN_H3_JOB_WON_RACE;
     }
   }
-  // TODO(crbug.com/1345536): Implement better logic to support uncovered cases.
+  // TODO(crbug.com/40232167): Implement better logic to support uncovered
+  // cases.
   return ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON;
 }
 
@@ -1410,7 +1411,7 @@ int HttpStreamFactory::JobController::ReconsiderProxyAfterError(Job* job,
   }
 
   // Clear client certificates for all proxies in the chain.
-  // TODO(https://crbug.com/1491092): client certificates for multi-proxy
+  // TODO(crbug.com/40284947): client certificates for multi-proxy
   // chains are not yet supported, and this is only tested with single-proxy
   // chains.
   for (auto& proxy_server : proxy_info_.proxy_chain().proxy_servers()) {

@@ -23,7 +23,7 @@ enum class VideoCodec;
 
 namespace cast {
 
-// TODO(https://crbug.com/1363514): should be removed in favor of
+// TODO(crbug.com/40238715): should be removed in favor of
 // media::VideoCodec, media::AudioCodec.
 enum class Codec {
   kUnknown,
@@ -187,7 +187,7 @@ struct FrameSenderConfig {
   //
   // All three delays are set to the same value due to adaptive latency
   // being disabled in Chrome.
-  // TODO(https://crbug.com/1363017): re-enable adaptive playout dleay.
+  // TODO(crbug.com/40238532): re-enable adaptive playout dleay.
   base::TimeDelta min_playout_delay = kDefaultTargetPlayoutDelay;
   base::TimeDelta max_playout_delay = kDefaultTargetPlayoutDelay;
 

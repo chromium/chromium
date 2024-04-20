@@ -10,7 +10,7 @@ module network.mojom;
 // must therefore be used when creating the report.
 struct TriggerVerification {
   string token;
-  // TODO(https://crbug.com/1240405): replace with `guid` once a type-mapping exists.
+  // TODO(crbug.com/40194244): replace with `guid` once a type-mapping exists.
   string aggregatable_report_id;
 };
 

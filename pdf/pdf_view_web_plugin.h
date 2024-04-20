@@ -562,7 +562,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   // Callback to print without re-entrancy issues. The callback prevents the
   // invocation of printing in the middle of an event handler, which is risky;
   // see crbug.com/66334.
-  // TODO(crbug.com/1217012): Re-evaluate the need for a callback when parts of
+  // TODO(crbug.com/40185029): Re-evaluate the need for a callback when parts of
   // the plugin are moved off the main thread.
   void OnInvokePrintDialog();
 

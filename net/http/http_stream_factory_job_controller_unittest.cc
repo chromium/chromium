@@ -3478,7 +3478,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, DelayedTCPWithLargeSrtt) {
   EXPECT_FALSE(job_controller_->alternative_job());
 }
 
-// TODO(https://crbug.com/1007502): Disabled because the pending task count does
+// TODO(crbug.com/40649375): Disabled because the pending task count does
 //                                  not match expectations.
 TEST_P(HttpStreamFactoryJobControllerTest,
        DISABLED_ResumeMainJobImmediatelyOnStreamFailed) {

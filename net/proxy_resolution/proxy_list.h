@@ -100,7 +100,7 @@ class NET_EXPORT_PRIVATE ProxyList {
   // Returns a semicolon-separated list of proxy chain debug representations.
   // For single-proxy chains, this is just the PAC representation of the proxy;
   // otherwise the chain is displayed in "[..]".
-  // TODO(https://crbug.com/1491092): Once a PAC string format for multi-proxy
+  // TODO(crbug.com/40284947): Once a PAC string format for multi-proxy
   // chains is implemented, this can be removed in favor of `ToPacString()`.
   std::string ToDebugString() const;
 

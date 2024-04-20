@@ -83,7 +83,7 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
     // animation (impl's dtor will reset the layer's position and reclaim all
     // the resources).
     //
-    // TODO(https://crbug.com/1425943): We need a proper UX to support this.
+    // TODO(crbug.com/40261105): We need a proper UX to support this.
     animator_.reset();
   }
 

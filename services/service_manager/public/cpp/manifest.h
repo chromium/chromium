@@ -152,7 +152,7 @@ struct COMPONENT_EXPORT(SERVICE_MANAGER_CPP) Manifest {
     // if |execution_mode| is |kOutOfProcessBuiltin| or
     // |kStandaloneExecutable|.
     //
-    // TODO(https://crbug.com/915806): Make this field a
+    // TODO(crbug.com/40606841): Make this field a
     // sandbox::mojom::Sandbox enum.
     std::string sandbox_type{"utility"};
   };

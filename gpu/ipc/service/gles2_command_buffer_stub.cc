@@ -138,7 +138,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
       channel_->sync_point_manager()->CreateSyncPointClientState(
           CommandBufferNamespace::GPU_IO, command_buffer_id_, sequence_id_);
 
-  // TODO(crbug.com/1251724): Remove this after testing.
+  // TODO(crbug.com/40198488): Remove this after testing.
   // Only enable multiple displays on ANGLE/Metal and only behind a feature.
   bool force_default_display = true;
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&

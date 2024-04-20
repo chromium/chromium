@@ -396,8 +396,8 @@ void PrefetchCanaryChecker::StartDNSResolution(const GURL& url) {
           base::BindOnce(&PrefetchCanaryChecker::OnDNSResolved, GetWeakPtr())),
       client_remote.InitWithNewPipeAndPassReceiver());
 
-  // TODO(crbug.com/1355169): Consider passing a SchemeHostPort to trigger HTTPS
-  // DNS resource record query.
+  // TODO(crbug.com/40235854): Consider passing a SchemeHostPort to trigger
+  // HTTPS DNS resource record query.
   browser_context_->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(

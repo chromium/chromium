@@ -570,7 +570,7 @@ void BrowserChildProcessHostImpl::CreateMetricsAllocator() {
   }
 
   // This class is not expected to be used for renderer child processes.
-  // TODO(crbug/1028263): CHECK, once proven that this scenario does not
+  // TODO(crbug.com/40109064): CHECK, once proven that this scenario does not
   // occur in the wild, else remove dump and just return early if disproven.
   if (data_.process_type == PROCESS_TYPE_RENDERER) {
     base::debug::DumpWithoutCrashing();

@@ -39,7 +39,7 @@ BASE_FEATURE(kEnforceNoExecutableFileHandles,
              "EnforceNoExecutableFileHandles",
              FEATURE_ENABLED_BY_DEFAULT);
 
-// TODO(crbug.com/851128): Roll out this to 100% before replacing existing
+// TODO(crbug.com/40580068): Roll out this to 100% before replacing existing
 // NOTREACHED()s with NOTREACHED_NORETURN() as part of NOTREACHED() migration.
 // Note that a prerequisite for rolling out this experiment is that existing
 // NOTREACHED reports are at a very low rate. Once this rolls out we should

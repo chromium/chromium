@@ -702,7 +702,7 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryIdOption) {
     writer->Finish();
     if (GetManagerType() == TestManagerType::kOnDisk) {
       FlushCacheTasks();
-      // TODO(crbug.com/1413922): Currently `id` is not supported by the disk
+      // TODO(crbug.com/40255884): Currently `id` is not supported by the disk
       // cache backend.
       continue;
     }
@@ -792,8 +792,8 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryMatchDestOption) {
     writer->Finish();
     if (GetManagerType() == TestManagerType::kOnDisk) {
       FlushCacheTasks();
-      // TODO(crbug.com/1413922): Currently `match-dest` is not supported by the
-      // disk cache backend.
+      // TODO(crbug.com/40255884): Currently `match-dest` is not supported by
+      // the disk cache backend.
       continue;
     }
     std::vector<network::mojom::SharedDictionaryInfoPtr> result =

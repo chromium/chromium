@@ -301,7 +301,7 @@ struct URLResponseHead {
   // when the request failed without ever returning a `URLResponseHead` to the
   // loader client.
   //
-  // TODO(https://crbug.com/1268378): Remove this once preflights are enforced.
+  // TODO(crbug.com/40204695): Remove this once preflights are enforced.
   PrivateNetworkAccessPreflightResult private_network_access_preflight_result =
       PrivateNetworkAccessPreflightResult.kNone;
 

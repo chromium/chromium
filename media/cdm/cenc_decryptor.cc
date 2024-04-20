@@ -48,7 +48,7 @@ void CopySubsamples(const std::vector<SubsampleEntry>& subsamples,
   }
 }
 
-// TODO(crbug.com/840983): This should be done in DecoderBuffer so that
+// TODO(crbug.com/40575437): This should be done in DecoderBuffer so that
 // additional fields are more easily handled.
 void CopyExtraSettings(const DecoderBuffer& input, DecoderBuffer* output) {
   output->set_timestamp(input.timestamp());

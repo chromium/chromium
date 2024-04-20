@@ -699,7 +699,7 @@ template("test") {
     }
 
     if (is_asan) {
-      # TODO(crbug.com/1465997): Remove the extra cml segment for asan.
+      # TODO(crbug.com/40276216): Remove the extra cml segment for asan.
       _manifest_fragments +=
           [ "//build/config/fuchsia/test/asan_options.shard.test-cml" ]
     }

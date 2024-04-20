@@ -41,7 +41,7 @@ using AccessStreamSet = base::EnumSet<SharedImageAccessStream,
 // A compound backing that combines a shared memory backing and real GPU
 // backing. The real GPU backing must implement `UploadFromMemory()` and not
 // have it's own shared memory segment.
-// TODO(crbug.com/1293509): Support multiple GPU backings.
+// TODO(crbug.com/40213543): Support multiple GPU backings.
 class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
  public:
   using CreateBackingCallback =
@@ -88,7 +88,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking : public SharedImageBacking {
   // provided by `gpu_backing_factory`. We additionally pass a |buffer_usage|
   // parameter here in order to create a CPU mappable by creating a shared
   // memory handle.
-  // TODO(crbug.com/1467670): Remove this method once we figure out the mapping
+  // TODO(crbug.com/40276878): Remove this method once we figure out the mapping
   // between SharedImageUsage and BufferUsage and no longer need to use
   // BufferUsage.
   static std::unique_ptr<SharedImageBacking> CreateSharedMemory(

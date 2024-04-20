@@ -122,7 +122,7 @@ TEST_F(ProductInfoTest, SystemServiceReturnsValidValues) {
   EXPECT_FALSE(product_info.manufacturer()->empty());
 }
 
-// TODO(crbug.com/101396): Re-enable once all clients
+// TODO(crbug.com/40103081): Re-enable once all clients
 // provide this service.
 TEST_F(ProductInfoDeathTest, DISABLED_DcheckOnServiceNotPresent) {
   EXPECT_DCHECK_DEATH_WITH(GetProductInfoViaTask(), "ZX_ERR_PEER_CLOSED");

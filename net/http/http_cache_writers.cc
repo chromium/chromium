@@ -398,7 +398,7 @@ int HttpCache::Writers::DoNetworkRead() {
   DCHECK(network_transaction_);
   next_state_ = State::NETWORK_READ_COMPLETE;
 
-  // TODO(https://crbug.com/778641): This is a partial mitigation. When
+  // TODO(crbug.com/40089413): This is a partial mitigation. When
   // reading from the network, a valid HttpNetworkTransaction must be always
   // available.
   if (!network_transaction_) {

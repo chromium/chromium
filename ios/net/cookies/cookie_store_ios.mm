@@ -280,7 +280,7 @@ void CookieStoreIOS::GetCookieListWithOptionsAsync(
   // instead.
   DCHECK(SystemCookiesAllowed());
 
-  // TODO(crbug.com/1225444): Include cookie partition key when/if iOS supports
+  // TODO(crbug.com/40188414): Include cookie partition key when/if iOS supports
   // it.
 
   // TODO(mkwst): If/when iOS supports Same-Site cookies, we'll need to pass

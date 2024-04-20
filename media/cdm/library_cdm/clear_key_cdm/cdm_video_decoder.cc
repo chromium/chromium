@@ -104,7 +104,7 @@ bool ToCdmVideoFrame(const VideoFrame& video_frame,
   cdm_video_frame->SetSize(
       {video_frame.coded_size().width(), video_frame.coded_size().height()});
   cdm_video_frame->SetTimestamp(video_frame.timestamp().InMicroseconds());
-  // TODO(crbug.com/707127): Set ColorSpace here. It's not trivial to convert
+  // TODO(crbug.com/40513452): Set ColorSpace here. It's not trivial to convert
   // a gfx::ColorSpace (from VideoFrame) to another other ColorSpace like
   // cdm::ColorSpace.
 

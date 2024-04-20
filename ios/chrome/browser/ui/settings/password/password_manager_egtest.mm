@@ -1624,7 +1624,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // TODO(crbug.com/1442985): This test is flaky.
 - (void)FLAKY_testManyPasswords {
   if ([ChromeEarlGrey isIPadIdiom]) {
-    // TODO(crbug.com/906551): Enable the test on iPad once the bug is fixed.
+    // TODO(crbug.com/40602996): Enable the test on iPad once the bug is fixed.
     EARL_GREY_TEST_DISABLED(@"Disabled for iPad.");
   }
 

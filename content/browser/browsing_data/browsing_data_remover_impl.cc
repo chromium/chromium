@@ -539,7 +539,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(
 
     RenderProcessHostImpl::ClearAllResourceCaches();
 
-    // TODO(crbug.com/813882): implement retry on network service.
+    // TODO(crbug.com/40563720): implement retry on network service.
 
     // The clearing of the HTTP cache happens in the network service process
     // when enabled. Note that we've deprecated the concept of a media cache,
@@ -613,7 +613,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(
 
   //////////////////////////////////////////////////////////////////////////////
   // Reporting cache.
-  // TODO(https://crbug.com/1291489): Add unit test to cover this.
+  // TODO(crbug.com/40818785): Add unit test to cover this.
   if (remove_mask & DATA_TYPE_COOKIES) {
     network::mojom::NetworkContext* network_context =
         storage_partition->GetNetworkContext();

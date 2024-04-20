@@ -180,7 +180,7 @@ class GPU_EXPORT ClientSharedImage
   // Returns an unowned copy of the current ClientSharedImage. This function
   // is a temporary workaround for the situation where a ClientSharedImage may
   // have more than one reference when being destroyed.
-  // TODO(crbug.com/1494911): Remove this function once ClientSharedImage
+  // TODO(crbug.com/40286368): Remove this function once ClientSharedImage
   // can properly handle shared image destruction internally.
   scoped_refptr<ClientSharedImage> MakeUnowned();
 

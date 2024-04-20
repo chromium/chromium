@@ -127,7 +127,7 @@ void NavigationEntryScreenshotManager::Unregister(
 // regardless of which tab the entry is from. The pro of this alternative is to
 // have all the eviction logic inside the global manager.
 //
-// TODO(https://crbug.com/1420998): We need some metrics to understand if the
+// TODO(crbug.com/40259040): We need some metrics to understand if the
 // currently implementation affects the cache hit rate. (I.e., would the
 // alternative be a better approach?)
 void NavigationEntryScreenshotManager::EvictIfOutOfMemoryBudget() {

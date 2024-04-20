@@ -658,7 +658,7 @@ bool CollectD3D11FeatureInfo(D3D_FEATURE_LEVEL* d3d11_feature_level,
     return false;
 
   // The order of feature levels to attempt to create in D3D CreateDevice.
-  // TODO(crbug.com/1312519): Using 12_2 in kFeatureLevels[] will cause failure
+  // TODO(crbug.com/40831714): Using 12_2 in kFeatureLevels[] will cause failure
   // in D3D11CreateDevice(). Limit the highest feature to 12_1.
   const D3D_FEATURE_LEVEL kFeatureLevels[] = {
       D3D_FEATURE_LEVEL_12_1, D3D_FEATURE_LEVEL_12_0, D3D_FEATURE_LEVEL_11_1,

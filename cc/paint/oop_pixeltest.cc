@@ -758,7 +758,7 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
 
 #if BUILDFLAG(IS_ANDROID)
   // Allow large quantization error on Android.
-  // TODO(https://crbug.com/1363056): Ensure higher precision for HDR images.
+  // TODO(crbug.com/40238547): Ensure higher precision for HDR images.
   constexpr float kEpsilon = 1 / 16.f;
 #elif BUILDFLAG(IS_IOS) && BUILDFLAG(SKIA_USE_METAL)
   // TODO(crbug.com/1476507): Allow larger errors on iOS as well.

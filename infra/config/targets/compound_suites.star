@@ -859,7 +859,7 @@ targets.legacy_compound_suite(
     ],
 )
 
-# TODO(crbug.com/1080424): Merge with an existing set of tests such as
+# TODO(crbug.com/40130073): Merge with an existing set of tests such as
 # gpu_fyi_linux_release_gtests once all CrOS tests have been enabled.
 targets.legacy_compound_suite(
     name = "gpu_fyi_chromeos_release_gtests",

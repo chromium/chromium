@@ -209,7 +209,7 @@ void ShellFederatedPermissionContext::SetIdpSigninStatus(
     observer.OnIdpSigninStatusReceived(idp_origin, idp_signin_status);
   }
 
-  // TODO(crbug.com/1382989): Replace this with AddIdpSigninStatusObserver.
+  // TODO(crbug.com/40245925): Replace this with AddIdpSigninStatusObserver.
   if (idp_signin_status_closure_)
     idp_signin_status_closure_.Run();
 }

@@ -332,7 +332,7 @@ void SerialDeviceEnumeratorWin::EnumeratePort(HDEVINFO dev_info,
   info->path = path;
   info->device_instance_id = *instance_id;
 
-  // TODO(https://crbug.com/1015074): While the "bus reported device
+  // TODO(crbug.com/40653536): While the "bus reported device
   // description" is usually the USB product string this is still up to the
   // individual serial driver and could be equal to the "friendly name". It
   // would be more reliable to read the real USB strings here.

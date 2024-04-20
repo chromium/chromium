@@ -22,7 +22,7 @@ import "device/bluetooth/public/mojom/uuid.mojom";
 // contains additional properties pertaining to the characteristic.
 // The properties |RELIABLE_WRITE| and |WRITABLE_AUXILIARIES| are retrieved from
 // that characteristic.
-// TODO(crbug.com/684168): Remove assignment of values when this is automated.
+// TODO(crbug.com/40502994): Remove assignment of values when this is automated.
 enum Property {
   NONE = 0,
   BROADCAST = 1,

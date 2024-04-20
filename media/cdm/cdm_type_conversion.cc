@@ -119,8 +119,8 @@ CdmSessionType ToMediaSessionType(cdm::SessionType session_type) {
       return CdmSessionType::kTemporary;
     case cdm::kPersistentLicense:
       return CdmSessionType::kPersistentLicense;
-    // TODO(crbug.com/1181029): Remove after `kPersistentUsageRecord` is removed
-    // from the CDM interface.
+    // TODO(crbug.com/40170205): Remove after `kPersistentUsageRecord` is
+    // removed from the CDM interface.
     case cdm::kPersistentUsageRecord:
       break;
   }

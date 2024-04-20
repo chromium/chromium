@@ -1176,7 +1176,7 @@ void NodeController::OnRequestPortMerge(
   {
     base::AutoLock lock(reserved_ports_lock_);
     auto it = reserved_ports_.find(from_node);
-    // TODO(https://crbug.com/822034): We should send a notification back to the
+    // TODO(crbug.com/40567118): We should send a notification back to the
     // requestor so they can clean up their dangling port in this failure case.
     // This requires changes to the internal protocol, which can't be made yet.
     // Until this is done, pipes from |MojoExtractMessagePipeFromInvitation()|

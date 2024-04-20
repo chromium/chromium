@@ -87,10 +87,10 @@ class NET_EXPORT HostResolver {
   // Handler for an individual host resolution request. Created by
   // HostResolver::CreateRequest().
   //
-  // TODO(crbug.com/1290920): Most result retrieval here follows a pattern where
-  // it may return null or empty for requests where that result type is not
-  // available. Clean this up to always return empty for such cases and remove
-  // nullability from the return types.
+  // TODO(crbug.com/40212535): Most result retrieval here follows a pattern
+  // where it may return null or empty for requests where that result type is
+  // not available. Clean this up to always return empty for such cases and
+  // remove nullability from the return types.
   class ResolveHostRequest {
    public:
     // Destruction cancels the request if running asynchronously, causing the
@@ -392,11 +392,11 @@ class NET_EXPORT HostResolver {
     // the system resolver, e.g. non-address requests or requests specifying a
     // non-`SYSTEM` `source`.
     //
-    // TODO(crbug.com/1282281): Consider allowing the built-in resolver to still
-    // be used with this parameter. Would then function as a request to just
-    // keep the single final name from the alias chain instead of all aliases,
-    // and also skip the canonicalization unless that canonicalization is found
-    // to be fine for usage.
+    // TODO(crbug.com/40209534): Consider allowing the built-in resolver to
+    // still be used with this parameter. Would then function as a request to
+    // just keep the single final name from the alias chain instead of all
+    // aliases, and also skip the canonicalization unless that canonicalization
+    // is found to be fine for usage.
     bool include_canonical_name = false;
 
     // Hint to the resolver that resolution is only being requested for loopback

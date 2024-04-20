@@ -482,8 +482,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Pending disconnect request.
   std::unique_ptr<FederatedAuthDisconnectRequest> disconnect_request_;
 
-  // TODO(crbug.com/1361649): Refactor these member variables introduced through
-  // the multi IDP prototype implementation to make them less confusing.
+  // TODO(crbug.com/40238075): Refactor these member variables introduced
+  // through the multi IDP prototype implementation to make them less confusing.
 
   // Parameters passed to RequestToken().
   base::flat_map<GURL, IdentityProviderGetInfo> token_request_get_infos_;

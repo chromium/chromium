@@ -586,7 +586,8 @@ PropertyToElementIdMap ElementAnimations::GetPropertyToElementIdMap() const {
         // We deliberately use two branches here so that the DCHECK can
         // differentiate between models with different element ids, and the case
         // where some models don't have an element id.
-        // TODO(crbug.com/900241): All KeyframeModels should have an ElementId.
+        // TODO(crbug.com/40600273): All KeyframeModels should have an
+        // ElementId.
         if (model->element_id()) {
           DCHECK(!element_id_for_property ||
                  element_id_for_property == model->element_id())

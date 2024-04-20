@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessBackgroundedBridgeTest,
             base::Process::Priority::kUserBlocking);
 }
 
-// TODO(crbug.com/1426160): Disabled because this test is flaky.
+// TODO(crbug.com/40899195): Disabled because this test is flaky.
 IN_PROC_BROWSER_TEST_F(BrowserChildProcessBackgroundedBridgeTest,
                        DISABLED_InitiallyBackgrounded) {
   // Set the browser process as backgrounded.

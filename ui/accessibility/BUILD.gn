@@ -361,7 +361,7 @@ test("accessibility_unittests") {
 
     if (is_fuchsia) {
       additional_manifest_fragments = [
-        # TODO(https://crbug.com/1185811): Investigate removing the requirement
+        # TODO(crbug.com/40055105): Investigate removing the requirement
         # for VmexResource.
         "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
         "//build/config/fuchsia/test/network.shard.test-cml",

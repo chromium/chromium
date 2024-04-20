@@ -41,7 +41,7 @@ void AwJavaScriptDialogManager::RunJavaScriptDialog(
   // origin of the "last committed URL" can be different due to a legacy app-
   // exposed setting, so such a change might be even more breaking.
   //
-  // TODO(crbug.com/1241925): Figure out if some kind of migration can be done
+  // TODO(crbug.com/40194877): Figure out if some kind of migration can be done
   // here, as this is one of several instances in which moving from URL to
   // origin would be desirable.
   //

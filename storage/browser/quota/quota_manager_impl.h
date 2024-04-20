@@ -352,8 +352,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // deletion, `callback` may be called with a kErrorAbort status.
   // TODO(estade): Consider removing the status code from `callback` as it's
   // unused outside of tests.
-  // TODO(crbug/1456643): DEPRECATED please prefer using `DeleteStorageKeyData`.
-  // This should be removed as part of `CookiesTreeModel` deprecation.
+  // TODO(crbug.com/40273188): DEPRECATED please prefer using
+  // `DeleteStorageKeyData`. This should be removed as part of
+  // `CookiesTreeModel` deprecation.
   void DeleteHostData(const std::string& host,
                       blink::mojom::StorageType type,
                       StatusCallback callback);
@@ -744,7 +745,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Evaluates disk statistics to identify storage pressure
   // (low disk space availability) and starts the storage
   // pressure event dispatch if appropriate.
-  // TODO(crbug.com/1088004): Implement UsageAndQuotaInfoGatherer::Completed()
+  // TODO(crbug.com/40133191): Implement UsageAndQuotaInfoGatherer::Completed()
   // to use DetermineStoragePressure().
   void DetermineStoragePressure(int64_t free_space, int64_t total_space);
 
@@ -831,7 +832,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Iterating over this list is almost always incorrect. Most algorithms should
   // iterate over an entry in |client_types_|.
   //
-  // TODO(crbug.com/1016065): Handle Storage Service crashes. Will likely entail
+  // TODO(crbug.com/40103974): Handle Storage Service crashes. Will likely
+  // entail
   //                          using a mojo::RemoteSet here.
   std::vector<mojo::Remote<mojom::QuotaClient>> clients_for_ownership_;
 

@@ -82,7 +82,7 @@ class NET_EXPORT CookiePartitionKey {
   // we will not be able to attach the saved cookie to any future requests. This
   // is because opaque origins' nonces are only stored in volatile memory.
   //
-  // TODO(crbug.com/1225444) Investigate ways to persist partition keys with
+  // TODO(crbug.com/40188414) Investigate ways to persist partition keys with
   // opaque origins if a browser session is restored.
   [[nodiscard]] static base::expected<SerializedCookiePartitionKey, std::string>
   Serialize(const std::optional<CookiePartitionKey>& in);
@@ -121,7 +121,7 @@ class NET_EXPORT CookiePartitionKey {
   // either the `from_script_` flag should be set or the cookie partition key
   // should match the browser's. Otherwise the renderer may be compromised.
   //
-  // TODO(crbug.com/1225444) Consider removing this factory method and
+  // TODO(crbug.com/40188414) Consider removing this factory method and
   // `from_script_` flag when BlinkStorageKey is available in
   // ServiceWorkerGlobalScope.
   static std::optional<CookiePartitionKey> FromScript() {

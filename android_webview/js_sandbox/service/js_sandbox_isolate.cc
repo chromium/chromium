@@ -64,8 +64,8 @@ using base::android::JavaRef;
 
 namespace {
 
-// TODO(crbug.com/1297672): This is what shows up as filename in errors. Revisit
-// this once error handling is in place.
+// TODO(crbug.com/40215244): This is what shows up as filename in errors.
+// Revisit this once error handling is in place.
 constexpr std::string_view resource_name = "<expression>";
 constexpr jlong kUnknownAssetFileDescriptorLength = -1;
 constexpr int64_t kDefaultChunkSize = 1 << 16;

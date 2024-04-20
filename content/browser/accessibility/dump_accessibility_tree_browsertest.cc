@@ -159,7 +159,7 @@ class YieldingParserDumpAccessibilityTreeTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(https://crbug.com/1470120): We need to create a way to incrementally
+// TODO(crbug.com/40925629): We need to create a way to incrementally
 // enable and create UIA tests.
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -1619,7 +1619,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("aside-inside-section-role-generic.html"));
 }
 
-// TODO(crbug.com/1502854): Fix failure on android
+// TODO(crbug.com/40943250): Fix failure on android
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_AccessibilityAudio DISABLED_AccessibilityAudio
 #else
@@ -2360,7 +2360,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 
 // TODO: date and time controls drop their children, including the popup button,
 // on Android.
-// TODO(https://crbug.com/1378498): Flaky on every platform.
+// TODO(crbug.com/40875029): Flaky on every platform.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        DISABLED_AccessibilityInputDateWithPopupOpen) {
   RunHtmlTest(FILE_PATH_LITERAL("input-date-with-popup-open.html"));
@@ -2617,8 +2617,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 #if BUILDFLAG(IS_MAC)
-// TODO(1038813): The /blink test pass is different on Windows and Mac, versus
-// Linux. Also, see https://crbug.com/1314896.
+// TODO(crbug.com/40666501): The /blink test pass is different on Windows and
+// Mac, versus Linux. Also, see https://crbug.com/1314896.
 #define MAYBE_AccessibilityInputTime DISABLED_AccessibilityInputTime
 #else
 #define MAYBE_AccessibilityInputTime AccessibilityInputTime
@@ -3503,7 +3503,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("node-changed-crash-in-editable-text.html"));
 }
 
-// TODO(https://crbug.com/1366446): This test is failing on Android.
+// TODO(crbug.com/40866942): This test is failing on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_AccessibilityNoSourceVideo DISABLED_AccessibilityNoSourceVideo
 #else

@@ -641,7 +641,7 @@ void SchedulerDfs::RunNextTask() {
       // runnable sequences. Change logic to check for that too (that changes
       // old behavior - so leaving for now).
 
-      // TODO(crbug.com/1472145): this assert is firing frequently on
+      // TODO(crbug.com/40278526): this assert is firing frequently on
       // Release builds with dcheck_always_on on Intel Macs. It looks
       // like it happens when the browser drops frames.
       /*

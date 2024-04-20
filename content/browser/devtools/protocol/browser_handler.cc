@@ -113,7 +113,7 @@ namespace {
 // //content/browser/permissions:permission_service_impl
 // ::PermissionDescriptorToPermissionType, producing an error in
 // |error_message| as necessary.
-// TODO(crbug.com/989983): De-duplicate this logic.
+// TODO(crbug.com/40638575): De-duplicate this logic.
 Response PermissionDescriptorToPermissionType(
     std::unique_ptr<protocol::Browser::PermissionDescriptor> descriptor,
     PermissionType* permission_type) {

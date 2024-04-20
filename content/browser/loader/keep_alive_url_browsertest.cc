@@ -1348,7 +1348,7 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param;
     });
 
-// TODO(crbug.com/1482176): Re-enable this test on Mac.
+// TODO(crbug.com/40931297): Re-enable this test on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_MultipleRedirectsRequestWithIframeRemoval \
   DISABLED_MultipleRedirectsRequestWithIframeRemoval

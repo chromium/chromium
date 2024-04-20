@@ -79,7 +79,7 @@ void CacheScreenshotImpl(base::WeakPtr<NavigationControllerImpl> controller,
   }
 
   if (entry == controller->GetLastCommittedEntry()) {
-    // TODO(https://crbug.com/1472395): We shouldn't cache the screenshot into
+    // TODO(crbug.com/40278616): We shouldn't cache the screenshot into
     // the navigation entry if the entry is re-navigated after we send out the
     // copy request. See the two cases below.
     //
@@ -158,7 +158,7 @@ bool CanTraverseToPreviousEntryAfterNavigation(
 // TODO(liuwilliam): remove it once all the TODOs are implemented.
 ShouldCapture ShouldCaptureForWorkInProgressConditions(
     const NavigationRequest& navigation_request) {
-  // TODO(https://crbug.com/1420995): Support same-doc navigations. Make sure
+  // TODO(crbug.com/40259037): Support same-doc navigations. Make sure
   // to test the `history.pushState` and `history.replaceState` APIs.
   if (navigation_request.IsSameDocument()) {
     return ShouldCapture::kNo;
@@ -192,7 +192,7 @@ ShouldCapture ShouldCaptureForWorkInProgressConditions(
     return ShouldCapture::kOnlyAskEmbedder;
   }
 
-  // TODO(https://crbug.com/1474904): Test capturing for WebUI.
+  // TODO(crbug.com/40279439): Test capturing for WebUI.
 
   return ShouldCapture::kYes;
 }

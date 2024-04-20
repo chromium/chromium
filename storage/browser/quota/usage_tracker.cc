@@ -308,7 +308,7 @@ void UsageTracker::AccumulateClientUsageWithBreakdown(
     case QuotaClientType::kMediaLicense:
       // Media license data does not count against quota and should always
       // report 0 usage.
-      // TODO(crbug.com/1305441): Consider counting media license data against
+      // TODO(crbug.com/40218094): Consider counting media license data against
       // quota.
       DCHECK_EQ(total_usage, 0);
       break;

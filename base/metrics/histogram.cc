@@ -418,7 +418,7 @@ bool Histogram::InspectConstructionArguments(std::string_view name,
 
   // Defensive code for backward compatibility.
   if (*minimum < 1) {
-    // TODO(crbug.com/1288842): Temporarily disabled during cleanup.
+    // TODO(crbug.com/40211696): Temporarily disabled during cleanup.
     // DLOG(ERROR) << "Histogram: " << name << " has bad minimum: " << *minimum;
     *minimum = 1;
     if (*maximum < 1)

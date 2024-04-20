@@ -216,7 +216,7 @@ std::unique_ptr<test_server::HttpResponse> TestDohServer::HandleRequest(
   // For now, this server does not support configuring additional records. When
   // testing more complex HTTPS record cases, this will need to be extended.
   //
-  // TODO(crbug.com/1251204): Add SOA records to test the default TTL.
+  // TODO(crbug.com/40198298): Add SOA records to test the default TTL.
   DnsResponse response(dns_query.id(), /*is_authoritative=*/true,
                        /*answers=*/answers, /*authority_records=*/{},
                        /*additional_records=*/{}, dns_query);

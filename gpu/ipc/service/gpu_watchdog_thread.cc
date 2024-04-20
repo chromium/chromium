@@ -732,7 +732,7 @@ void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
   // Short term investigation into report only mode, bug tracking report only
   // mode can be found at crbug.com/1356196. The Catan team has not seen the
   // expected rampup in crashes where report only mode is enabled.
-  // TODO(crbug.com/1356196): remove this when investigation is over.
+  // TODO(crbug.com/40236187): remove this when investigation is over.
   UMA_HISTOGRAM_BOOLEAN("GPU.ReportOnlyModeStatusAtHang", in_report_only_mode_);
 
   // Create a crash dump first

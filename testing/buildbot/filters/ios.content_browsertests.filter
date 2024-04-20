@@ -149,22 +149,22 @@
 # implemented for IOS.
 -RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition.NewContentTimeoutIsSetWhenLeavingBFCacheWithViewTransition
 
-# TODO(crbug.com/1466927): unexpected level of support for codec.
+# TODO(crbug.com/40276565): unexpected level of support for codec.
 -MediaCanPlayTypeTest.CodecSupportTest_mp4
 
 # TODO(crbug.com/1467854): This test is flaky.
 -BackForwardCacheBrowserTest.NavigateToTwoPagesOnSameSiteWithSubframes
 
-# TODO(crbug.com/1477792): This test is flaky.
+# TODO(crbug.com/40280396): This test is flaky.
 -All/DumpAccessibilityTreeTest.AccessibilitySelectList/blink
 
-# TODO(crbug.com/1482265): These consistently fail.
+# TODO(crbug.com/40281785): These consistently fail.
 -All/DumpAccessibilityTreeTest.AccessibilityInputSubmit/blink
 
 # TODO(crbug.com/325678250): This test is failing due to the line wrapping.
 -All/DumpAccessibilityTreeTest.AccessibilityInputRadioCheckboxLabel/blink
 
-# TODO(crbug.com/1459221): These WebSockets tests seem to depend on the spawned
+# TODO(crbug.com/40274214): These WebSockets tests seem to depend on the spawned
 # test server, which is not supported on iOS.
 -BackForwardCacheBrowserTestNoTestingConfig.CCNSAndWebSocketBothRecorded
 -BackForwardCacheBrowserTestWithJavaScriptDetails.BlockAndUnblockFromHTMLFile
@@ -273,7 +273,7 @@
 # TODO(crbug.com/40285557): reports the wrong width/height.
 -RenderWidgetHostFoldableCSSTest.ViewportSegmentsWorksInUAFullscreenCSS
 
-# TODO(crbug.com/1495761): Text area handle has shrunk.
+# TODO(crbug.com/40286643): Text area handle has shrunk.
 -FormControlsBrowserTest.Textarea
 
 # TODO(crbug.com/1500334): Flakily fails on the platform.
@@ -298,7 +298,7 @@
 -All/BackForwardCacheMediaTest.DoesCacheIfMediaStreamTrackUsingGetDisplayMediaEndedButDoesNotWithoutFlags/0
 -All/BackForwardCacheMediaTest.DoesCacheIfMediaStreamTrackUsingGetDisplayMediaEndedButDoesNotWithoutFlags/1
 
-# TODO(crbug.com/1504145): Fails due to incorrect line wrapping.
+# TODO(crbug.com/40944655): Fails due to incorrect line wrapping.
 -All/YieldingParserDumpAccessibilityTreeTest.AccessibilityPopoverApi/blink
 -All/DumpAccessibilityTreeTestWithIgnoredNodes.AccessibilityInputRadioCheckboxLabel/blink
 

@@ -1583,7 +1583,7 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
     return false;
   }
 
-  // TODO(crbug.com/1108154): Support more texture target, e.g.
+  // TODO(crbug.com/40141173): Support more texture target, e.g.
   // 2d array, 3d etc.
   if (target != GL_TEXTURE_2D) {
     return false;

@@ -8,7 +8,7 @@ import "media/mojo/mojom/media_types.mojom";
 
 // Interface for decrypting (and decoding) encrypted streams.
 // See media/base/decryptor.h for details.
-// TODO(crbug.com/794326): Deduplicate this interface with audio_decoder.mojom
+// TODO(crbug.com/40554405): Deduplicate this interface with audio_decoder.mojom
 // and audio_decoder.mojom.
 interface Decryptor {
   // Status of a decrypt or decrypt-and-decode operation. See decryptor.h for

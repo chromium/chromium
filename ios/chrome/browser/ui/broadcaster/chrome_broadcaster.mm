@@ -189,7 +189,7 @@ NSInvocation* InvocationForBroadcasterSelector(SEL selector) {
   // Sanity check: `selector` must not already be broadcast.
   DCHECK(!self.items[name]);
 
-  // TODO(crbug.com/719911) -- Another sanity check is needed here -- verify
+  // TODO(crbug.com/40519578) -- Another sanity check is needed here -- verify
   // that the value to be observed is of the type that `selector` expects.
 
   self.items[name] =

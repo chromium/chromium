@@ -195,7 +195,7 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
     std::vector<blink::AdDescriptor> ad_component_descriptors,
     scoped_refptr<FencedFrameReporter> fenced_frame_reporter) {
   // Move pending mapped urn::uuid to `urn_uuid_to_url_map_`.
-  // TODO(crbug.com/1422301): Remove the check for whether `urn_uuid` has been
+  // TODO(crbug.com/40896818): Remove the check for whether `urn_uuid` has been
   // mapped already once the crash is resolved.
   CHECK(!IsMapped(urn_uuid));
   auto pending_it = pending_urn_uuid_to_url_map_.find(urn_uuid);

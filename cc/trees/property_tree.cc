@@ -1684,7 +1684,7 @@ gfx::PointF ScrollTree::GetScrollOffsetForScrollTimeline(
   const TransformNode* transform_node =
       property_trees()->transform_tree().Node(scroll_node.transform_id);
 
-  // TODO(crbug.com/1418689): current_scroll_offset can disagree with
+  // TODO(crbug.com/40894892): current_scroll_offset can disagree with
   // transform_node->scroll_offset if the delta on a main frame update is
   // simply rounding of the scroll position and not using fractional scroll
   // deltas (see needs_scroll_update in PushScrollUpdatesFromMainThread).
@@ -1702,8 +1702,8 @@ gfx::PointF ScrollTree::GetScrollOffsetForScrollTimeline(
     // snapping needed, due to floating point precision errors. In general this
     // is fine, but we never want to report a negative scroll offset so avoid
     // that case here.
-    // TODO(crbug.com/1076878): Remove the clamping when scroll timeline effects
-    // always match the snapping.
+    // TODO(crbug.com/40688441): Remove the clamping when scroll timeline
+    // effects always match the snapping.
     offset = ClampScrollOffsetToLimits(offset - transform_node->snap_amount,
                                        scroll_node);
   }

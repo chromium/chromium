@@ -207,7 +207,7 @@ void BackForwardTransitionAnimator::OnGestureProgressed(
   // and 1.0 to 0.0 from right to left.
   CHECK_GE(gesture.progress(), 0.f);
   CHECK_LE(gesture.progress(), 1.f);
-  // TODO(https://crbug.com/1499915): Should check the number of KeyFrameModels
+  // TODO(crbug.com/40287990): Should check the number of KeyFrameModels
   // is 1 (for scrim).
 
   float progress_delta =

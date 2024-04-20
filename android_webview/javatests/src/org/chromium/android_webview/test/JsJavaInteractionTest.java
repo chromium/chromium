@@ -278,7 +278,8 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     @SmallTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
     public void testAddWebMessageListenerAffectsRendererInitiatedNavigation() throws Throwable {
-        // TODO(crbug.com/969842): We'd either replace the following html file with a file contains
+        // TODO(crbug.com/40630430): We'd either replace the following html file with a file
+        // contains
         // no JavaScript code or add a test to ensure that evaluateJavascript() won't
         // over-trigger DidClearWindowObject.
         loadUrlFromPath(POST_MESSAGE_WITH_PORTS_HTML);

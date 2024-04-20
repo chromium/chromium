@@ -65,8 +65,8 @@ void VizCompositorThreadRunnerWebView::InitFrameSinkManagerOnViz() {
   // Android doesn't support software compositing, but in some cases
   // unaccelerated canvas can use SharedBitmaps as resource so we create
   // SharedBitmapManager anyway.
-  // TODO(1056184): Stop using SharedBitmapManager after fixing fallback to
-  // SharedBitmap.
+  // TODO(crbug.com/40120216): Stop using SharedBitmapManager after fixing
+  // fallback to SharedBitmap.
   server_shared_bitmap_manager_ =
       std::make_unique<viz::ServerSharedBitmapManager>();
 

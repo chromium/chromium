@@ -776,7 +776,7 @@ TEST_F(SQLitePersistentCookieStoreTest, FilterBadCookiesAndFixupDb) {
 
     stmt.BindInt64(0, creation_time++);
     stmt.BindString(1, cookie_info.domain);
-    // TODO(crbug.com/1225444) Test some non-empty values when CanonicalCookie
+    // TODO(crbug.com/40188414) Test some non-empty values when CanonicalCookie
     // supports partition key.
     stmt.BindString(2, net::kEmptyCookiePartitionKey);
     stmt.BindString(3, cookie_info.name);

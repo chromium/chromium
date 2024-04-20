@@ -36,7 +36,7 @@ struct GenerateFilenameCase {
 };
 
 // The expected filenames are coded as wchar_t for convenience.
-// TODO(https://crbug.com/911896): Make these char16_t once std::u16string is
+// TODO(crbug.com/40605133): Make these char16_t once std::u16string is
 // std::u16string.
 std::wstring FilePathAsWString(const base::FilePath& path) {
 #if BUILDFLAG(IS_WIN)

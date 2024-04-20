@@ -108,7 +108,7 @@ void AwComponentInstallerPolicy::ComponentReady(
       GetVersionDirName(highest_sequence_number + 1, version.GetString());
   const base::FilePath temp_copy_path =
       temp_dir.GetPath().AppendASCII(new_sequence_version_string);
-  // TODO(crbug.com/1176335) use file links to optimize copies number.
+  // TODO(crbug.com/40747851) use file links to optimize copies number.
   if (!base::CopyDirectory(install_dir, temp_copy_path,
                            /* recursive= */ true)) {
     LOG(ERROR) << "Error copying from " << install_dir << " to "

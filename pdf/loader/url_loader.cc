@@ -133,7 +133,7 @@ void UrlLoader::Open(const UrlRequest& request,
   blink_request.SetRequestDestination(
       network::mojom::RequestDestination::kEmbed);
 
-  // TODO(crbug.com/822081): Revisit whether we need universal access.
+  // TODO(crbug.com/40567141): Revisit whether we need universal access.
   blink::WebAssociatedURLLoaderOptions options;
   options.grant_universal_access = true;
   ignore_redirects_ = request.ignore_redirects;

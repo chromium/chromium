@@ -286,7 +286,7 @@ TEST_P(SocketBIOAdapterTest, ReadEOFSync) {
 
 #if BUILDFLAG(IS_ANDROID)
 // Test that asynchronous EOF is mapped to ERR_CONNECTION_CLOSED.
-// TODO(crbug.com/1480024): Test is flaky on Android.
+// TODO(crbug.com/40281159): Test is flaky on Android.
 #define MAYBE_ReadEOFAsync DISABLED_ReadEOFAsync
 #else
 #define MAYBE_ReadEOFAsync ReadEOFAsync

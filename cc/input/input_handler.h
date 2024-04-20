@@ -538,7 +538,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // compositor side. The information gets shared by the main thread as part of
   // the begin_main_frame_state. Finally Use counters are updated in the main
   // thread side to keep track of the frequency of scrolling with different
-  // sources per page load. TODO(crbug.com/691886): Use GRC API to plumb the
+  // sources per page load. TODO(crbug.com/40506330): Use GRC API to plumb the
   // scroll source info for Use Counters.
   void UpdateScrollSourceInfo(const ScrollState& scroll_state,
                               ui::ScrollInputType type);

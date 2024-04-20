@@ -850,7 +850,7 @@ TEST_F(CorsURLLoaderPrivateNetworkAccessTest, DoesNotShareCache) {
 // Network Access. The `*PolicyWarnPreflight*` variants test what happens when
 // a preflight was attempted before noticing the private network access.
 //
-// TODO(https://crbug.com/1268378): Remove these tests once the policy is never
+// TODO(crbug.com/40204695): Remove these tests once the policy is never
 // set to `kPreflightWarn` anymore.
 
 // This test verifies that when:

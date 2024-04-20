@@ -754,7 +754,7 @@ void UDPSocketPosix::LogWrite(int result,
   }
 }
 
-// TODO(crbug.com/1491628): Because InternalRecvFromConnectedSocket() uses
+// TODO(crbug.com/40285166): Because InternalRecvFromConnectedSocket() uses
 // recvfrom() instead of recvmsg(), it cannot report received ECN marks for
 // QUIC ACK-ECN frames. It might be time to deprecate
 // experimental_recv_optimization_enabled_ if that experiment has run its

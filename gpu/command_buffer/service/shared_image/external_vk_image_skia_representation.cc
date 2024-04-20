@@ -233,7 +233,7 @@ void ExternalVkImageSkiaImageRepresentation::EndAccess(bool readonly) {
   DCHECK_NE(access_mode_, AccessMode::kNone);
   DCHECK(backing_impl()->need_synchronization() || !end_access_semaphore_);
 
-  // TODO(crbug.com/1307914): This check is specific to the interop case i.e.
+  // TODO(crbug.com/40218936): This check is specific to the interop case i.e.
   // when need_synchronization() is true, but we can generalize this by making
   // the client TakeEndState() and asserting that the |end_state_| is null here.
 #if DCHECK_IS_ON()

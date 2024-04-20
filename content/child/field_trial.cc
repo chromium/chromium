@@ -37,12 +37,13 @@ void InitializeFieldTrialAndFeatureList() {
   base::FieldTrialList::CreateTrialsInChildProcess(command_line);
   std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
   base::FieldTrialList::ApplyFeatureOverridesInChildProcess(feature_list.get());
-  // TODO(crbug.com/988603): This may be redundant. The way this is supposed to
-  // work is that the parent process's state should be passed via command-line
-  // to the child process, such that a feature explicitly enabled or disabled in
-  // the parent process via this mechanism (since the browser process also
-  // registers these switch-dependent overrides), it will get passed via the
-  // command line - so then no extra logic would be needed in the child.
+  // TODO(crbug.com/40638048): This may be redundant. The way this is supposed
+  // to work is that the parent process's state should be passed via
+  // command-line to the child process, such that a feature explicitly enabled
+  // or disabled in the parent process via this mechanism (since the browser
+  // process also registers these switch-dependent overrides), it will get
+  // passed via the command line - so then no extra logic would be needed in the
+  // child.
   // TODO(chlily): Test this more thoroughly and understand the behavior to see
   // whether this is actually needed.
   feature_list->RegisterExtraFeatureOverrides(

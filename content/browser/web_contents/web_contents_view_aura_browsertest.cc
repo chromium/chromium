@@ -508,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
   // this test to fail. This observer will let us know if this is happening.
   SpuriousMouseMoveEventObserver mouse_observer(GetRenderWidgetHost());
 
-  // TODO(crbug.com/1322921): Use a mock timer to generate timestamps for
+  // TODO(crbug.com/40838320): Use a mock timer to generate timestamps for
   // events. This would need injecting the mock timer into
   // `cc::CompositorFrameReportingController`.
   ui::TouchEvent press(

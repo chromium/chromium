@@ -110,7 +110,7 @@ void ClientUsageTracker::UpdateBucketUsageCache(const BucketLocator& bucket,
 
   if (delta.has_value()) {
     // Constrain `delta` to avoid negative usage values.
-    // TODO(crbug.com/463729): At least one storage API sends deltas that
+    // TODO(crbug.com/40408082): At least one storage API sends deltas that
     // result in negative total usage. The line below works around this bug.
     // Fix the bug, and remove the workaround.
     bucket_it->second += std::max(*delta, -bucket_it->second);
@@ -185,7 +185,7 @@ void ClientUsageTracker::AccumulateBucketsUsage(
     int64_t usage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Defend against confusing inputs from clients.
-  // TODO(crbug.com/1292210): Remove this check after fixing QuotaClients.
+  // TODO(crbug.com/40213066): Remove this check after fixing QuotaClients.
   if (usage < 0)
     usage = 0;
 
@@ -251,7 +251,7 @@ void ClientUsageTracker::DidGetBucketUsage(const BucketLocator& bucket,
 void ClientUsageTracker::OnGranted(const url::Origin& origin_url,
                                    int change_flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1215208): Remove this conversion once the storage policy
+  // TODO(crbug.com/40184305): Remove this conversion once the storage policy
   // APIs are converted to use StorageKey instead of Origin.
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFirstParty(origin_url);
@@ -264,7 +264,7 @@ void ClientUsageTracker::OnGranted(const url::Origin& origin_url,
 void ClientUsageTracker::OnRevoked(const url::Origin& origin_url,
                                    int change_flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/1215208): Remove this conversion once the storage policy
+  // TODO(crbug.com/40184305): Remove this conversion once the storage policy
   // APIs are converted to use StorageKey instead of Origin.
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFirstParty(origin_url);

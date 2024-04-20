@@ -20078,7 +20078,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
   EXPECT_EQ(nullptr, RunAuctionAndWait(auction_config));
 }
 
-// TODO(crbug.com/1474303): Re-enable this test
+// TODO(crbug.com/40927353): Re-enable this test
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, AuctionNonceIsValid) {
   GURL test_url =
       embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");

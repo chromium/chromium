@@ -38,7 +38,7 @@ PortLocker::PortLocker(const PortRef** port_refs, size_t num_ports)
       port_refs_, port_refs_ + num_ports_,
       [](const PortRef* a, const PortRef* b) { return a->port() < b->port(); });
   for (size_t i = 0; i < num_ports_; ++i) {
-    // TODO(crbug.com/725605): Remove this CHECK.
+    // TODO(crbug.com/40522227): Remove this CHECK.
     CHECK(port_refs_[i]->port());
     port_refs_[i]->port()->lock_.Acquire();
   }

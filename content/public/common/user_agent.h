@@ -58,7 +58,7 @@ CONTENT_EXPORT std::string GetOSVersion(
 CONTENT_EXPORT std::string GetReducedUserAgent(bool mobile,
                                                std::string major_version);
 
-// TODO(crbug.com/1257310): Remove this after user agent reduction phase 5 and
+// TODO(crbug.com/40200617): Remove this after user agent reduction phase 5 and
 // --force-major-version-to-minor is removed.
 // Return the <unifiedPlatform> token of a reduced User-Agent header.
 CONTENT_EXPORT std::string GetUnifiedPlatformForTesting();

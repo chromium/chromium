@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport
   // a scoped_refptr<gpu::ClientSharedImage> with that texture copied
   // to a shared buffer. The two values are currently returned
   // together via a wrapping WebXrSharedBuffer.
-  // TODO(crbug.com/1494911): Change the return type to
+  // TODO(crbug.com/40286368): Change the return type to
   // scoped_refptr<gpu::ClientSharedImage> once the sync token is
   // incorporated into ClientSharedImage.
   virtual WebXrSharedBuffer* TransferCameraImageFrame(

@@ -90,7 +90,7 @@ class GPU_GLES2_EXPORT SharedImageBackingFactory {
   // This new api is introduced for MappableSI work where client code sends
   // |buffer_usage| info while creating shared image. This info is used in some
   // backings to create native handle.
-  // TODO(crbug.com/1466569) : Remove this api once the MappableSI is complete
+  // TODO(crbug.com/40276430) : Remove this api once the MappableSI is complete
   // and we have a mapping between shared image usage and BufferUsage.
   virtual std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,

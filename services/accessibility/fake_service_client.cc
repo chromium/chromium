@@ -115,7 +115,7 @@ void FakeServiceClient::BindAccessibilityFileLoader(
 
 void FakeServiceClient::Load(const base::FilePath& path,
                              LoadCallback callback) {
-  // TODO(crbug.com/1493546): Implement file loading for
+  // TODO(crbug.com/40936729): Implement file loading for
   // FakeAccessibilityServiceClient.
 }
 

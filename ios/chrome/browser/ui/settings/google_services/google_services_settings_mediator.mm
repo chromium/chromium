@@ -128,7 +128,7 @@ bool GetStatusForSigninPolicy() {
 @property(nonatomic, strong, readonly)
     PrefBackedBoolean* allowChromeSigninPreference;
 // Preference value for the "Help improve Chromium's features" for Wifi-Only.
-// TODO(crbug.com/872101): Needs to create the UI to change from Wifi-Only to
+// TODO(crbug.com/40588486): Needs to create the UI to change from Wifi-Only to
 // always
 @property(nonatomic, strong, readonly)
     PrefBackedBoolean* sendDataUsageWifiOnlyPreference;

@@ -889,7 +889,7 @@ void SharedContextState::MarkContextLost(error::ContextLostReason reason) {
 
     // Only abandon the GrContext if it is owned by SharedContextState, because
     // the passed in GrContext will be reused.
-    // TODO(https://crbug.com/1048692): always abandon GrContext to release all
+    // TODO(crbug.com/40672147): always abandon GrContext to release all
     // resources when chrome goes into background with low end device.
     if (owned_gr_context_) {
       owned_gr_context_->abandonContext();

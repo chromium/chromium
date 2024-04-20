@@ -607,7 +607,7 @@ NetworkContext::NetworkContext(
       app_status_listeners_.push_back(
           std::make_unique<NetworkContextApplicationStatusListener>());
 #endif  // BUILDFLAG(IS_ANDROID)
-      // TODO(crbug.com/1413922): Set `file_operations_factory` to support
+      // TODO(crbug.com/40255884): Set `file_operations_factory` to support
       // sandboxed network service on Android.
       shared_dictionary_manager_ = SharedDictionaryManager::CreateOnDisk(
           params_->file_paths->shared_dictionary_directory->path().Append(

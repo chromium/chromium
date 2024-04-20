@@ -134,7 +134,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     bool context_supports_distance_field_text = true;
     int max_texture_size = 0;
 
-    // TODO(crbug.com/1096123): Cleanup after study completion.
+    // TODO(crbug.com/40136055): Cleanup after study completion.
     //
     // If true, perform serializaion in a way that avoids serializing transient
     // members, such as IDs, so that a stable digest can be calculated. This

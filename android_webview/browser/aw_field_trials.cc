@@ -145,10 +145,10 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // WebView.
   aw_feature_overrides.DisableFeature(::features::kWebOTP);
 
-  // TODO(https://crbug.com/1012899): WebXR is not yet supported on WebView.
+  // TODO(crbug.com/40652382): WebXR is not yet supported on WebView.
   aw_feature_overrides.DisableFeature(::features::kWebXr);
 
-  // TODO(https://crbug.com/1312827): Digital Goods API is not yet supported
+  // TODO(crbug.com/40831925): Digital Goods API is not yet supported
   // on WebView.
   aw_feature_overrides.DisableFeature(::features::kDigitalGoodsApi);
 
@@ -170,7 +170,7 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Disable dr-dc on webview.
   aw_feature_overrides.DisableFeature(::features::kEnableDrDc);
 
-  // TODO(crbug.com/1100993): Web Bluetooth is not yet supported on WebView.
+  // TODO(crbug.com/40703318): Web Bluetooth is not yet supported on WebView.
   aw_feature_overrides.DisableFeature(::features::kWebBluetooth);
 
   // TODO(crbug.com/933055): WebUSB is not yet supported on WebView.

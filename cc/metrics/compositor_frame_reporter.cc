@@ -1458,7 +1458,7 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
           reporter->add_high_latency_contribution_stage(stage);
         }
 
-        // TODO(crbug.com/1086974): Set 'drop reason' if applicable.
+        // TODO(crbug.com/40132773): Set 'drop reason' if applicable.
       });
 
   for (const auto& stage : stage_history_) {
@@ -1769,7 +1769,7 @@ void CompositorFrameReporter::CalculateCompositorLatencyPrediction(
                                current_stage_durations.total_blink_latency);
     }
 
-    // TODO(crbug.com/1349930): implement check that ensure the prediction is
+    // TODO(crbug.com/40233949): implement check that ensure the prediction is
     // correct by checking if platform supports breakdown of the stage
     // SubmitCompositorFrameToPresentationCompositorFrame.SwapStartToSwapEnd,
     // then SwapStartToSwapEnd should always be 0s and data for breakdown of it

@@ -1596,8 +1596,8 @@ void SQLitePersistentCookieStore::Backend::DeleteSessionCookiesOnStartup() {
     LOG(WARNING) << "Unable to delete session cookies.";
 }
 
-// TODO(crbug.com/1225444) Investigate including top_frame_site_key in the WHERE
-// clause.
+// TODO(crbug.com/40188414) Investigate including top_frame_site_key in the
+// WHERE clause.
 void SQLitePersistentCookieStore::Backend::BackgroundDeleteAllInList(
     const std::list<CookieOrigin>& cookies) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());

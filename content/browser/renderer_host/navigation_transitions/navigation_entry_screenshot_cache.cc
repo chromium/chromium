@@ -124,7 +124,7 @@ void NavigationEntryScreenshotCache::EvictScreenshotsUntilUnderBudgetOrEmpty() {
   // is not true for Android where native OS gesture navigation only takes the
   // user back (even right-edge swipe).
   //
-  // TODO(crbug.com/1415332): Iterate on the eviction strategy based on metrics
+  // TODO(crbug.com/40256524): Iterate on the eviction strategy based on metrics
   // when this launches.
   //
   // Ex: [3, 4&, 5*, 6&, 7, 8&], where "*" means the last committed entry and

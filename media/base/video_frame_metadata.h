@@ -179,7 +179,7 @@ struct MEDIA_EXPORT VideoFrameMetadata {
 
   // CompositorFrameMetadata variables associated with this frame. Used for
   // remote debugging.
-  // TODO(crbug.com/832220): Use a customized dictionary value instead of
+  // TODO(crbug.com/40571471): Use a customized dictionary value instead of
   // using these keys directly.
   std::optional<double> device_scale_factor;
   std::optional<double> page_scale_factor;

@@ -976,7 +976,7 @@ size_t GetPlatformProcessLimit() {
     return std::numeric_limits<size_t>::max();
   return base::saturated_cast<size_t>(limit.rlim_cur);
 #else
-  // TODO(https://crbug.com/104689): Implement on other platforms.
+  // TODO(crbug.com/40671068): Implement on other platforms.
   return kUnknownPlatformProcessLimit;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 }

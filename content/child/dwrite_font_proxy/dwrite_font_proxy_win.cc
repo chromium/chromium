@@ -78,7 +78,7 @@ DWriteFontCollectionProxy::DWriteFontCollectionProxy() = default;
 
 DWriteFontCollectionProxy::~DWriteFontCollectionProxy() = default;
 
-// TODO(crbug.com/1256946): Confirm this is useful and remove it otherwise.
+// TODO(crbug.com/40200438): Confirm this is useful and remove it otherwise.
 void DWriteFontCollectionProxy::InitializePrewarmer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

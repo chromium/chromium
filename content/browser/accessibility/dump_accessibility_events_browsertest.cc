@@ -711,7 +711,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("expanded-changed.html"));
 }
 
-// TODO(crbug.com/1423530): disabled on UIA.
+// TODO(crbug.com/40897549): disabled on UIA.
 // TODO(crbug.com/1423845): Failing on Mac.
 // TODO(crbug.com/1423845): Actually failing everywhere. Disabled.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
@@ -883,7 +883,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("menulist-collapse-next.html"));
 }
 
-// TODO(crbug/1232295): Flaky on Linux and Win.
+// TODO(crbug.com/40780161): Flaky on Linux and Win.
 // TODO(crbug.com/1230894): locks up with popup open, only on Mac
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_AccessibilityEventsMenuListExpand \

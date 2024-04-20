@@ -477,7 +477,7 @@ class SplitCacheContentBrowserTestDisabled
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1486165): Times out on Mac.
+// TODO(crbug.com/40933594): Times out on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SplitCache DISABLED_SplitCache
 #else
@@ -875,7 +875,7 @@ class SplitCacheComputeHttpCacheSize {
 // is_subframe_document_resource by checking that the size of the http cache
 // resources accessed after the resource is loaded from the blink cache is the
 // same as before that.
-// TODO(crbug.com/1166650): Test is flaky on Win.
+// TODO(crbug.com/40164302): Test is flaky on Win.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_NotifyExternalCacheHitCheckSubframeBit \
   DISABLED_NotifyExternalCacheHitCheckSubframeBit

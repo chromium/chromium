@@ -273,7 +273,7 @@ struct MOJO_ALIGNAS(4) MojoHandleSignalsState {
 MOJO_STATIC_ASSERT(sizeof(struct MojoHandleSignalsState) == 8,
                    "MojoHandleSignalsState has wrong size");
 
-// TODO(https://crbug.com/819046): Remove these aliases.
+// TODO(crbug.com/40565809): Remove these aliases.
 #define MOJO_WATCH_CONDITION_SATISFIED MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED
 #define MOJO_WATCH_CONDITION_NOT_SATISFIED \
   MOJO_TRIGGER_CONDITION_SIGNALS_UNSATISFIED

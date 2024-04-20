@@ -59,7 +59,7 @@ HRESULT MediaFoundationSourceWrapper::RuntimeClassInitialize(
   }
   int stream_id = 0;
   for (DemuxerStream* demuxer_stream : demuxer_streams) {
-    // TODO(crbug.com/1453682): MediaFoundationRenderer playback won't end
+    // TODO(crbug.com/40272014): MediaFoundationRenderer playback won't end
     // after hitting the end of the video stream if no audio device. If any
     // video stream is available but no audio device, do not create an instance
     // of the MediaFoundationStreamWrapper so that the video playback can end

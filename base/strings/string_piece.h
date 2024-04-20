@@ -5,7 +5,7 @@
 // This header is deprecated. `base::StringPiece` is now `std::string_view`.
 // Use it and <string_view> instead.
 //
-// TODO(crbug.com/691162): Remove uses of this header.
+// TODO(crbug.com/40506050): Remove uses of this header.
 
 #ifndef BASE_STRINGS_STRING_PIECE_H_
 #define BASE_STRINGS_STRING_PIECE_H_

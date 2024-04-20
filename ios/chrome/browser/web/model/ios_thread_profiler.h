@@ -4,7 +4,7 @@
 
 // Adapted from chrome/common/profiler/thread_profiler.h
 
-// TODO(crbug.com/1229530): remove this once //chrome/common/profiler is moved
+// TODO(crbug.com/40778431): remove this once //chrome/common/profiler is moved
 // to components/profiler.
 
 #ifndef IOS_CHROME_BROWSER_WEB_MODEL_IOS_THREAD_PROFILER_H_

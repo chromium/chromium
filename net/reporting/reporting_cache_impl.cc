@@ -410,7 +410,7 @@ void ReportingCacheImpl::OnParsedHeader(
   // Compute the total endpoint count for this origin. We can't just count the
   // number of endpoints per group because there may be duplicate endpoint URLs,
   // which we ignore. See http://crbug.com/983000 for discussion.
-  // TODO(crbug.com/983000): Allow duplicate endpoint URLs.
+  // TODO(crbug.com/40635629): Allow duplicate endpoint URLs.
   for (const auto& group_key_and_endpoint_set : endpoints_per_group) {
     new_client.endpoint_count += group_key_and_endpoint_set.second.size();
 

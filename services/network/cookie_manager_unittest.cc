@@ -123,7 +123,7 @@ class SynchronousCookieManager {
     return net::cookie_util::StripAccessResults(std::get<0>(future.Take()));
   }
 
-  // TODO(crbug.com/1225444): CookieManager should be able to see which cookies
+  // TODO(crbug.com/40188414): CookieManager should be able to see which cookies
   // are excluded because their partition key is not contained in the
   // key collection.
   net::CookieAccessResultList GetExcludedCookieList(

@@ -797,7 +797,7 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
     return false;
   }
 
-  // TODO(crbug.com/1103432): We should use
+  // TODO(crbug.com/40139254): We should use
   // VTDecompressionSessionCanAcceptFormatDescription() on |format| here to
   // avoid the configuration change if possible.
 

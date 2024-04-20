@@ -941,7 +941,7 @@ ParseStatus::Or<InfTag> InfTag::Parse(TagItem tag) {
   }
 
   // Extract duration
-  // TODO(crbug.com/1284763): Below version 3 this should be rounded to an
+  // TODO(crbug.com/40210233): Below version 3 this should be rounded to an
   // integer
   auto duration_result =
       types::ParseDecimalFloatingPoint(duration_str.SkipVariableSubstitution());

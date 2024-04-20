@@ -46,7 +46,7 @@ std::string ErrorToShortString(int error) {
 #include "net/base/net_error_list.h"
 #undef NET_ERROR
   default:
-    // TODO(crbug.com/1439949): Figure out why this is firing, fix and upgrade
+    // TODO(crbug.com/40909121): Figure out why this is firing, fix and upgrade
     // this to be fatal.
     DUMP_WILL_BE_NOTREACHED_NORETURN() << error;
     error_string = "<unknown>";

@@ -54,7 +54,7 @@ class NET_EXPORT CookiePartitionKeyCollection {
   // Returns an empty key collection, so no partitioned cookies will be returned
   // at callsites this is used.
   //
-  // TODO(crbug.com/1225444): Remove this method and update callsites to use
+  // TODO(crbug.com/40188414): Remove this method and update callsites to use
   // appropriate constructor.
   static CookiePartitionKeyCollection Todo() {
     return CookiePartitionKeyCollection();

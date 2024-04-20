@@ -103,7 +103,7 @@ public class WebViewApkApplication extends Application {
             PureJavaExceptionHandler.installHandler(AwPureJavaExceptionReporter::new);
             CustomAssertionHandler.installPreNativeHandler(AwPureJavaExceptionReporter::new);
 
-            // TODO(crbug.com/1182693): Do set up a native UMA recorder once we support recording
+            // TODO(crbug.com/40751605): Do set up a native UMA recorder once we support recording
             // metrics from native nonembedded code.
             UmaRecorderHolder.setUpNativeUmaRecorder(false);
 

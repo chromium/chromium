@@ -7214,7 +7214,7 @@ TEST_P(HttpNetworkTransactionTest, NestedProxyHttpOverSpdyProtocolError) {
 }
 
 // Test that a proxy server requesting a client auth cert doesn't cause a crash.
-// TODO(https://crbug.com/1491092): This test can be deleted once we no longer
+// TODO(crbug.com/40284947): This test can be deleted once we no longer
 // need the multi-proxy chain version below, since this functionality should
 // be sufficiently tested elsewhere. For now this test just shows that
 // single-proxy and multi-proxy behavior is consistent (when a read returns
@@ -7280,7 +7280,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsClientAuthCertNeededNoCrash) {
 
 // Test that the first proxy server in a multi-proxy chain requesting a client
 // auth cert doesn't cause a crash.
-// TODO(https://crbug.com/1491092): Support client auth certificates for
+// TODO(crbug.com/40284947): Support client auth certificates for
 // multi-proxy chains and then replace this test with a more robust one (for
 // instance, a version of the AuthEverywhere test that uses a multi-proxy
 // chain).
@@ -7355,7 +7355,7 @@ TEST_P(HttpNetworkTransactionTest,
 
 // Same as above but using a different method to request the client auth
 // certificate.
-// TODO(https://crbug.com/1491092): Support client auth certificates for
+// TODO(crbug.com/40284947): Support client auth certificates for
 // multi-proxy chains and then replace this test with a more robust one (for
 // instance, a version of the AuthEverywhere test that uses a multi-proxy
 // chain).
@@ -7416,7 +7416,7 @@ TEST_P(HttpNetworkTransactionTest,
 
 // Test that a read returning ERR_SSL_CLIENT_AUTH_CERT_NEEDED after the first
 // CONNECT doesn't result in a crash when a multi-proxy chain is in use.
-// TODO(https://crbug.com/1491092): Support client auth certificates for
+// TODO(crbug.com/40284947): Support client auth certificates for
 // multi-proxy chains and then replace this test with a more robust one (for
 // instance, a version of the AuthEverywhere test that uses a multi-proxy
 // chain).
@@ -7516,7 +7516,7 @@ TEST_P(HttpNetworkTransactionTest,
 
 // Test that the second proxy server in a multi-proxy chain requesting a client
 // auth cert doesn't cause a crash.
-// TODO(https://crbug.com/1491092): Support client auth certificates for
+// TODO(crbug.com/40284947): Support client auth certificates for
 // multi-proxy chains and then replace this test with a more robust one (for
 // instance, a version of the AuthEverywhere test that uses a multi-proxy
 // chain).
@@ -7602,7 +7602,7 @@ TEST_P(HttpNetworkTransactionTest,
 
 // Test that the endpoint requesting a client auth cert over a multi-proxy chain
 // tunnel doesn't cause a crash.
-// TODO(https://crbug.com/1491092): Support client auth certificates for
+// TODO(crbug.com/40284947): Support client auth certificates for
 // multi-proxy chains and then replace this test with a more robust one (for
 // instance, a version of the AuthEverywhere test that uses a multi-proxy
 // chain).

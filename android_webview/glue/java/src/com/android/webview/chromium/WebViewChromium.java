@@ -3385,7 +3385,7 @@ class WebViewChromium
         }
     }
 
-    // TODO(crbug.com/1479496): Add override annotation when SDK includes this method.
+    // TODO(crbug.com/40280893): Add override annotation when SDK includes this method.
     public PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
         return mAwContents.onResolvePointerIcon(event, pointerIndex);
     }

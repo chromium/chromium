@@ -183,7 +183,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   DOMStorageContextWrapper* GetDOMStorageContext() override;
   storage::mojom::LocalStorageControl* GetLocalStorageControl() override;
   LockManager* GetLockManager();  // override; TODO: Add to interface
-  // TODO(https://crbug.com/1218540): Add this method to the StoragePartition
+  // TODO(crbug.com/40185706): Add this method to the StoragePartition
   // interface, which would also require making SharedStorageWorkletHostManager
   // an interface accessible in //content/public/.
   SharedStorageWorkletHostManager*

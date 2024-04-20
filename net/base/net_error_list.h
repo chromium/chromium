@@ -267,7 +267,7 @@ NET_ERROR(TEMPORARILY_THROTTLED, -139)
 // received a 302 (temporary redirect) response.  The response body might
 // include a description of why the request failed.
 //
-// TODO(https://crbug.com/928551): This is deprecated and should not be used by
+// TODO(crbug.com/40093955): This is deprecated and should not be used by
 // new code.
 NET_ERROR(HTTPS_PROXY_TUNNEL_RESPONSE_REDIRECT, -140)
 

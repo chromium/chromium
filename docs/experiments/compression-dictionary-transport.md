@@ -74,7 +74,7 @@ fetching resources. This may negatively affect Chrome's loading performance.
 Therefore, we are conducting experiments to ensure that this does not cause
 regressions before rolling it out to all users.
 
-TODO(crbug.com/1413922): When we enable the backend for all Chrome, remove this
+TODO(crbug.com/40255884): When we enable the backend for all Chrome, remove this
 section.
 
 ## Feature detection

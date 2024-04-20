@@ -1068,7 +1068,7 @@ TEST_P(ReconsiderProxyAfterErrorTest, ReconsiderProxyAfterError) {
 
   // Configure the HTTP CONNECT to fail with `mock_error`.
   //
-  // TODO(crbug.com/1279685): Test this more accurately. Errors like
+  // TODO(crbug.com/40810987): Test this more accurately. Errors like
   // `ERR_PROXY_CONNECTION_FAILED` or `ERR_PROXY_CERTIFICATE_INVALID` are
   // surfaced in response to other errors in TCP or TLS connection setup.
   static const char kHttpConnect[] =

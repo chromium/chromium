@@ -1092,7 +1092,7 @@ TEST_F(PreflightControllerTest, CheckPreflightAccessDetectsErrorStatus) {
             result0.error().cors_error);
 }
 
-// TODO(https://crbug.com/1455123): Add test for private network access
+// TODO(crbug.com/40272627): Add test for private network access
 // permission.
 
 }  // namespace

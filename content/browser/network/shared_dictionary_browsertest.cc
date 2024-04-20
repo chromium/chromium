@@ -774,7 +774,7 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
 
 // Tests end to end functionality of "compression dictionary transport" feature
 // with FeatureState of params.
-// TODO(crbug.com/1413922): Remove this when we fully launch this feature.
+// TODO(crbug.com/40255884): Remove this when we fully launch this feature.
 class SharedDictionaryFeatureStateBrowserTest
     : public SharedDictionaryBrowserTestBase,
       public ::testing::WithParamInterface<FeatureState> {

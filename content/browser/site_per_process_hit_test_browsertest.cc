@@ -6260,7 +6260,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 // Tests that a <select>'s visibility is correctly computed and thus shows the
 // popup when clicked.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CASTOS)
-// TODO(crbug.com/1405317): Test is flaky on every platform.
+// TODO(crbug.com/40252258): Test is flaky on every platform.
 IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
                        DISABLED_ScrolledMainFrameSelectInLongIframe) {
   GURL main_url(embedded_test_server()->GetURL(

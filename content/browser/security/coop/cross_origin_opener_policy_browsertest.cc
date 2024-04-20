@@ -1283,7 +1283,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
   // COOP and COEP inherited from Blob creator (initial window) and not the
   // initiator (first popup)
-  // TODO(https://crbug.com/1059300) COOP should be inherited from creator and
+  // TODO(crbug.com/40051710) COOP should be inherited from creator and
   // be same-origin-allow-popups, instead of inheriting from initiator.
   EXPECT_EQ(
       second_popup_rfh->cross_origin_opener_policy(),
@@ -5016,7 +5016,7 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_EQ(false, EvalJs(sub_document, "'SharedArrayBuffer' in globalThis"));
 
-  // TODO(https://crbug.com/1144838): Being able to share SharedArrayBuffer from
+  // TODO(crbug.com/40155614): Being able to share SharedArrayBuffer from
   // a document with self.crossOriginIsolated == false sounds wrong.
   EXPECT_TRUE(ExecJs(sub_document, R"(
     // Create a WebAssembly Memory to bypass the SAB constructor restriction.

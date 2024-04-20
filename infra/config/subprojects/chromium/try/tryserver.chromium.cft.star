@@ -85,7 +85,7 @@ try_.builder(
         configs = [
             "release_try_builder",
             "reclient",
-            # TODO(crbug.com/1004523) Delete this once coverage mode is enabled
+            # TODO(crbug.com/40099061) Delete this once coverage mode is enabled
             # on the standard Windows trybot and the dedicated coverage trybot
             # is no longer needed.
             "no_resource_allowlisting",

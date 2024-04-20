@@ -113,7 +113,7 @@ class CC_ANIMATION_EXPORT ElementAnimations
   // that have changed since the last update.
   void UpdateClientAnimationState();
 
-  // TODO(crbug.com/1176334): Animation targets should be attached to curves
+  // TODO(crbug.com/40747850): Animation targets should be attached to curves
   // when they're created and the concrete subclass is known. This function
   // exists as a stopgap: the animation machinery previously expected to
   // announce a target and then pass curves that would implicitly animate the

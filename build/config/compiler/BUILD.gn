@@ -145,7 +145,7 @@ declare_args() {
   #
   # Flag discussion: https://crbug.com/977230
   #
-  # TODO(crbug.com/1131993): This regresses binary size by ~1MB on Android and
+  # TODO(crbug.com/40721698): This regresses binary size by ~1MB on Android and
   # needs to be evaluated before enabling it there as well.
   init_stack_vars = !(is_android && is_official_build)
 

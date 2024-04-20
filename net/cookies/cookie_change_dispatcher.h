@@ -160,7 +160,7 @@ class CookieChangeDispatcher {
   //
   // The callback will not observe a few bookkeeping changes.
   // See kChangeCauseMapping in cookie_monster.cc for details.
-  // TODO(crbug.com/1225444): Add support for Partitioned cookies.
+  // TODO(crbug.com/40188414): Add support for Partitioned cookies.
   [[nodiscard]] virtual std::unique_ptr<CookieChangeSubscription>
   AddCallbackForAllChanges(CookieChangeCallback callback) = 0;
 };

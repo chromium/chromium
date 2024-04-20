@@ -233,7 +233,7 @@ def _run_tests(work_dir, skia_util, *args):
   chrome_options.add_argument('user-data-dir=' + user_data_dir)
   chrome_options.add_argument('log-file=' + log_file)
   chrome_options.add_argument('variations-test-seed-path=' + path_seed)
-  #TODO(crbug/1342057): Remove this line.
+  #TODO(crbug.com/40230862): Remove this line.
   chrome_options.add_argument("disable-field-trial-config")
 
   for arg in args:

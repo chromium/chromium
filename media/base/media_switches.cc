@@ -1688,7 +1688,7 @@ BASE_FEATURE(kCameraMicEffects,
 
 // Controls whether system loopback audio can be Cast to audio-only Cast
 // receivers, e.g. speakers.
-// TODO(crbug.com/849335): Remove once launched.
+// TODO(crbug.com/40579200): Remove once launched.
 BASE_FEATURE(kCastLoopbackAudioToAudioReceivers,
              "CastLoopbackAudioToAudioReceivers",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1697,7 +1697,7 @@ BASE_FEATURE(kCastLoopbackAudioToAudioReceivers,
 // encoding.
 //
 // NOTE: currently only software AV1 encoding is supported.
-// TODO(https://crbug.com/1383333): hardware AV1 encoding should be added.
+// TODO(crbug.com/40246079): hardware AV1 encoding should be added.
 BASE_FEATURE(kCastStreamingAv1,
              "CastStreamingAv1",
              base::FEATURE_DISABLED_BY_DEFAULT);

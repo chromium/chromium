@@ -1442,7 +1442,7 @@ void EventRouter::DispatchPendingEvent(
     // event. This can happen if the extension asynchronously registers event
     // listeners. In this case, notify the caller (if they subscribed via a
     // callback) and drop the event.
-    // TODO(https://crbug.com/161155): We should provide feedback to
+    // TODO(crbug.com/40954888): We should provide feedback to
     // developers (e.g. emit a warning) when an event has no listeners.
     event->cannot_dispatch_callback.Run();
   }

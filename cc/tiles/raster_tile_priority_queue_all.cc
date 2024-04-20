@@ -177,7 +177,7 @@ RasterTilePriorityQueueAll::GetNextQueues() const {
 
   // Then, use the IsHigherPriorityThan condition for
   // SAME_PRIORITY_FOR_BOTH_TREES and the rest of the priority bins.
-  // TODO(crbug.com/1380831): For SAME_PRIORITY_FOR_BOTH_TREES mode and both
+  // TODO(crbug.com/40244895): For SAME_PRIORITY_FOR_BOTH_TREES mode and both
   // being NOW, should we give the priority to Active NOW instead?
   if (active_priority.IsHigherPriorityThan(pending_priority)) {
     return active_queues_;

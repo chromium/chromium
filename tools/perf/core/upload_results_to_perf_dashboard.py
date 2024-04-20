@@ -175,7 +175,8 @@ def main(argv):
     # The HistogramSet might have been batched if it would be too large to
     # upload together. It's safe to concatenate the batches in order to write
     # output_json_file.
-    # TODO(crbug.com/918208): Use a script in catapult to merge dashboard_jsons.
+    # TODO(crbug.com/40607890): Use a script in catapult to merge
+    # dashboard_jsons.
     dashboard_json = sum(dashboard_jsons, [])
 
   if args.output_json_file:

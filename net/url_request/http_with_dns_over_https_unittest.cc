@@ -140,7 +140,7 @@ class DnsOverHttpsIntegrationTest : public TestWithTaskEnvironment {
   URLRequestContext* context() { return request_context_.get(); }
 
   void ResetContext(SecureDnsMode mode = SecureDnsMode::kSecure) {
-    // TODO(crbug.com/1252155): Simplify this.
+    // TODO(crbug.com/40198637): Simplify this.
     HostResolver::ManagerOptions manager_options;
     // Without a DnsConfig, HostResolverManager will not use DoH, even in
     // kSecure mode. See https://crbug.com/1251715. However,

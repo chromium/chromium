@@ -1353,7 +1353,7 @@ TEST(ProcessGTestOutputTest, FoundTestCaseNotEnforced) {
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
-// TODO(crbug.com/1094369): Enable leaked-child checks on other platforms.
+// TODO(crbug.com/40135391): Enable leaked-child checks on other platforms.
 #if BUILDFLAG(IS_FUCHSIA)
 
 // Test that leaves a child process running. The test is DISABLED_, so it can

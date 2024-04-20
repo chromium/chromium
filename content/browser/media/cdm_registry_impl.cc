@@ -590,8 +590,8 @@ void CdmRegistryImpl::FinalizeCapability(
 #if BUILDFLAG(IS_ANDROID)
   // Querying for the CDM version requires creating a MediaDrm object, so
   // delaying it until the capability is determined.
-  // TODO(crbug.com/1478367): Once querying capabilities on Android is done in a
-  // separate process, include the version with the capabilities returned.
+  // TODO(crbug.com/40280540): Once querying capabilities on Android is done in
+  // a separate process, include the version with the capabilities returned.
   itr->version = media::MediaDrmBridge::GetVersion(key_system);
 #endif
 }

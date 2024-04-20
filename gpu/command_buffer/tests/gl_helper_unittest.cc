@@ -1295,7 +1295,7 @@ class GLHelperPixelReadbackTest
 
 // Per pixel tests, all sizes are small so that we can print
 // out the generated bitmaps.
-// TODO(crbug.com/1367486): Very flaky on Linux ASAN.
+// TODO(crbug.com/40867694): Very flaky on Linux ASAN.
 #if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
 #define MAYBE_ScaleTest DISABLED_ScaleTest
 #else

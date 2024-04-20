@@ -511,7 +511,7 @@ wgpu::TextureFormat ToDawnTextureViewFormat(viz::SharedImageFormat format,
         return wgpu::TextureFormat::R16Float;
     }
   } else if (format.IsLegacyMultiplanar()) {
-    // TODO(crbug.com/1366495): Remove legacy multiplanar checks once
+    // TODO(crbug.com/40239769): Remove legacy multiplanar checks once
     // multiplanar SI support lands.
     if (format == viz::LegacyMultiPlaneFormat::kNV12 ||
         format == viz::LegacyMultiPlaneFormat::kNV12A) {
@@ -549,7 +549,7 @@ wgpu::TextureUsage SupportedDawnTextureUsage(
   if (is_dcomp_surface) {
     // Textures from DComp surfaces cannot be used as TextureBinding, however
     // DCompSurfaceImageBacking creates a textureable intermediate texture.
-    // TODO(crbug.com/1468844): Remove TextureBinding usage when the
+    // TODO(crbug.com/40277263): Remove TextureBinding usage when the
     // intermediate workaround is remove.
     return usage | wgpu::TextureUsage::RenderAttachment |
            wgpu::TextureUsage::CopySrc | wgpu::TextureUsage::CopyDst;

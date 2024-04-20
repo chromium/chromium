@@ -1359,7 +1359,7 @@ TEST_F(MediaStreamDispatcherHostTest,
   EXPECT_EQ(media_stream_manager_->num_dispatcher_hosts(), 0u);
 }
 
-// TODO(crbug.com/1300883): Add test cases for multi stream generation.
+// TODO(crbug.com/40216442): Add test cases for multi stream generation.
 
 class MediaStreamDispatcherHostStreamTypeCombinationTest
     : public MediaStreamDispatcherHostTest,

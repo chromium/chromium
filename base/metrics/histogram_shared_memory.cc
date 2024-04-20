@@ -63,7 +63,7 @@
 // 4. The low 64 bits of the shared memory block GUID.
 // 5. The size of the shared memory segment as a string.
 //
-// TODO(crbug.com/1028263): Refactor the common logic here and in
+// TODO(crbug.com/40109064): Refactor the common logic here and in
 // base/metrics/field_trial.cc
 namespace base {
 
@@ -127,7 +127,7 @@ bool HistogramSharedMemory::PassOnCommandLineIsEnabled(
   // Example: The call to OpenSymbolFiles() in base/debug/stack_trace_posix.cc
   // grabs a read-only handle to the shmem region for some process types.
   //
-  // TODO(crbug.com/1028263): Fix ChromeOS and utility processes.
+  // TODO(crbug.com/40109064): Fix ChromeOS and utility processes.
   return (FeatureList::IsEnabled(kPassHistogramSharedMemoryOnLaunch)
 #if BUILDFLAG(IS_CHROMEOS)
           && process_type != "gpu-process"
@@ -172,7 +172,7 @@ void HistogramSharedMemory::AddToLaunchParameters(
 // static
 void HistogramSharedMemory::InitFromLaunchParameters(
     const CommandLine& command_line) {
-  // TODO(crbug.com/1028263): Clean up once fully launched.
+  // TODO(crbug.com/40109064): Clean up once fully launched.
   if (!command_line.HasSwitch(switches::kMetricsSharedMemoryHandle)) {
     return;
   }

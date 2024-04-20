@@ -20,7 +20,7 @@
 namespace content {
 
 // Disable FocusDistance test which fails with Logitech cameras.
-// TODO(crbug.com/957020): renable these tests when we have a way to detect
+// TODO(crbug.com/40624855): renable these tests when we have a way to detect
 // which device is connected and hence avoid running it if the camera is
 // Logitech.
 #define MAYBE_ManipulateFocusDistance DISABLED_ManipulateFocusDistance

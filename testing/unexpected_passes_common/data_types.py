@@ -589,7 +589,7 @@ class BaseTestExpectationMap(BaseTypedMap):
                                     [FULL_PASS, PARTIAL_PASS, NEVER_PASS])
         # Handle the case of a semi-stale expectation.
         else:
-          # TODO(crbug.com/998329): Sort by pass percentage so it's easier to
+          # TODO(crbug.com/40642384): Sort by pass percentage so it's easier to
           # find problematic builders without highlighting.
           builder_map = semi_stale_dict.setdefault(
               expectation_file,

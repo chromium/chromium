@@ -202,7 +202,7 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
       // case resulted in pixeltest failures due to pixel bleeding around image
       // borders that we weren't able to resolve (see crbug.com/1451025 for
       // details).
-      // TODO(crbug.com/1451025): Update this comment when we resolve that bug
+      // TODO(crbug.com/40270413): Update this comment when we resolve that bug
       // and change CopySharedImage() to crop rather than stretch.
       ri->CopySharedImage(src_mailbox_holder.mailbox,
                           dst_mailbox_holder.mailbox, GL_TEXTURE_2D, 0, 0, 0, 0,

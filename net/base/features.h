@@ -271,7 +271,7 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDocumentReporting);
 // When enabled, UDPSocketPosix increments the global counter of bytes received
 // every time bytes are received, instead of using a timer to batch updates.
 // This should reduce the number of wake ups and improve battery consumption.
-// TODO(https://crbug.com/1189805): Cleanup the feature after verifying that it
+// TODO(crbug.com/40755656): Cleanup the feature after verifying that it
 // doesn't negatively affect performance.
 NET_EXPORT BASE_DECLARE_FEATURE(kUdpSocketPosixAlwaysUpdateBytesReceived);
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)

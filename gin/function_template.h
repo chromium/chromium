@@ -54,7 +54,7 @@ struct CallbackParamTraits<const T*> {
 //   that even _if_ we become garbage, we might never get collected!)
 // - If the isolate gets disposed.
 //
-// TODO(crbug.com/1285119): When gin::Wrappable gets migrated over to using
+// TODO(crbug.com/40210365): When gin::Wrappable gets migrated over to using
 //   cppgc, this class should also be considered for migration.
 
 // This simple base class is used so that we can share a single object template

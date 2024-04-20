@@ -639,7 +639,7 @@ sk_sp<SkImage> ServiceImageTransferCacheEntry::GetImageWithToneMapApplied(
   sk_sp<SkImage> image;
 
   // Apply tone mapping.
-  // TODO(https://crbug.com/1286088): Pass a shared cache as a parameter.
+  // TODO(crbug.com/40210699): Pass a shared cache as a parameter.
   gfx::ColorConversionSkFilterCache cache;
   if (has_gainmap_) {
     image = cache.ApplyGainmap(
@@ -751,7 +751,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
       image_ =
           image_->makeColorSpace(graphite_recorder_, target_color_space, props);
     } else {
-      // TODO(crbug.com/1443068): It's possible for both `gr_context` and
+      // TODO(crbug.com/40267231): It's possible for both `gr_context` and
       // `graphite_recorder` to be nullptr if `image_` is not texture backed.
       // Need to handle this case (currently just goes through gr_context path
       // with nullptr context).

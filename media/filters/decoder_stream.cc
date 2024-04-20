@@ -81,7 +81,7 @@ const char* GetPrepareTraceString<DemuxerStream::AUDIO>() {
 }
 
 const char* GetStatusString(const DecoderStatus& status) {
-  // TODO(crbug.com/1129662): Replace this with generic Status-to-string.
+  // TODO(crbug.com/40149493): Replace this with generic Status-to-string.
   switch (status.code()) {
     case DecoderStatus::Codes::kOk:
       return "okay";
@@ -491,7 +491,7 @@ void DecoderStream<StreamType>::Decode(scoped_refptr<DecoderBuffer> buffer) {
     }
   }
 
-  // TODO(https://crbug.com/1324732): We should DCHECK(CanDecodeMore()) here,
+  // TODO(crbug.com/40839438): We should DCHECK(CanDecodeMore()) here,
   // but this breaks a number of tests.
 
   if (!fallback_buffers_.empty()) {

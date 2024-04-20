@@ -1111,8 +1111,8 @@ class LayerTreeHostScrollTestImplOnlyScroll : public LayerTreeHostScrollTest {
 // This tests scrolling on the impl side which is only possible with a thread.
 MULTI_THREAD_TEST_F(LayerTreeHostScrollTestImplOnlyScroll);
 
-// TODO(crbug.com/574283): Mac currently doesn't support smooth scrolling wheel
-// events.
+// TODO(crbug.com/40451005): Mac currently doesn't support smooth scrolling
+// wheel events.
 #if !BUILDFLAG(IS_MAC)
 // This test simulates scrolling on the impl thread such that it starts a scroll
 // animation. It ensures that RequestScrollAnimationEndNotification() correctly
@@ -1524,7 +1524,7 @@ class LayerTreeHostScrollTestImplOnlyMultipleScrollSnap
   ElementId snap_area_b_id_;
 };
 
-// TODO(crbug.com/1243814): Test is flaky on Chrome OS (both Ash and Lacros).
+// TODO(crbug.com/40787490): Test is flaky on Chrome OS (both Ash and Lacros).
 #if !BUILDFLAG(IS_CHROMEOS)
 MULTI_THREAD_TEST_F(LayerTreeHostScrollTestImplOnlyMultipleScrollSnap);
 #endif

@@ -2860,7 +2860,7 @@ TEST_F(CookieMonsterTest, GetKey) {
 }
 
 // Test that cookies transfer from/to the backing store correctly.
-// TODO(crbug.com/1225444): Include partitioned cookies in this test when we
+// TODO(crbug.com/40188414): Include partitioned cookies in this test when we
 // start saving them in the persistent store.
 TEST_F(CookieMonsterTest, BackingStoreCommunication) {
   // Store details for cookies transforming through the backing store interface.

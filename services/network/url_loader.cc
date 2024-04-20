@@ -1460,7 +1460,7 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
               coep_reporter_)) {
     CompleteBlockedResponse(net::ERR_BLOCKED_BY_RESPONSE, false,
                             blocked_reason);
-    // TODO(https://crbug.com/1154250):  Close the socket here.
+    // TODO(crbug.com/40054032):  Close the socket here.
     // For more details see https://crbug.com/1154250#c17.
     // Item 2 discusses redirect handling.
     //
@@ -2545,7 +2545,6 @@ bool URLLoader::DispatchOnRawResponse() {
     return false;
   }
 
-
   // This is gated by enable_reporting_raw_headers_ to be backwards compatible
   // with the old report_raw_headers behavior, where we wouldn't even send
   // raw_response_headers_ to the trusted browser process based devtools
@@ -2554,7 +2553,7 @@ bool URLLoader::DispatchOnRawResponse() {
   // Non-Authoritative-Reason, but raw_response_headers_ has something else
   // which doesn't include HSTS information. This is tested by
   // DevToolsTest.TestRawHeadersWithRedirectAndHSTS.
-  // TODO(crbug.com/1234823): Remove enable_reporting_raw_headers_
+  // TODO(crbug.com/40781698): Remove enable_reporting_raw_headers_
   const net::HttpResponseHeaders* response_headers =
       raw_response_headers_ && enable_reporting_raw_headers_
           ? raw_response_headers_.get()

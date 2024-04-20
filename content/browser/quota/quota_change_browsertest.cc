@@ -62,7 +62,7 @@ class QuotaChangeBrowserTest : public ContentBrowserTest,
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // TODO(crbug.com/1088004): Remove this when the QuotaChange
+    // TODO(crbug.com/40133191): Remove this when the QuotaChange
     // RuntimeEnabledFeature becomes "stable".
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
@@ -107,7 +107,7 @@ class QuotaChangeBrowserTest : public ContentBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All, QuotaChangeBrowserTest, ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(QuotaChangeBrowserTest, DispatchEvent) {
-  // TODO(crbug.com/1131242): Implement this test for incognito contexts after
+  // TODO(crbug.com/40721281): Implement this test for incognito contexts after
   // device information collection is unified into a single code path within
   // quota.
   if (is_incognito()) {

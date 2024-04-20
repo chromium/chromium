@@ -252,7 +252,7 @@ bool P2PSocketTcpBase::OnPacket(base::span<const uint8_t> data) {
   std::vector<mojom::P2PReceivedPacketPtr> received_packets;
   received_packets.push_back(std::move(packet));
 
-  // TODO(crbug.com/1376527): Batch multiple packets in the TCP case as well.
+  // TODO(crbug.com/40243224): Batch multiple packets in the TCP case as well.
   client_->DataReceived(std::move(received_packets));
 
   delegate_->DumpPacket(data, true);

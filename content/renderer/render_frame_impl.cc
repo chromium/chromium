@@ -464,7 +464,7 @@ bool MaybeGetOverriddenURL(WebDocumentLoader* document_loader, GURL* output) {
   // "document URL") and history URL (used as the "unreachable URL"/"URL for
   // history"). However, we want to return the data: URL (the URL originally
   // sent by the browser to commit the navigation) here.
-  // TODO(https://crbug.com/1223408): Since the DocumentState stays as long as
+  // TODO(crbug.com/40187600): Since the DocumentState stays as long as
   // the Document stays the same, this means the data: URL will be returned even
   // after same-document navigations. Investigate whether this is intended or
   // not.
@@ -6212,7 +6212,7 @@ void RenderFrameImpl::DecodeDataURL(
   if (net::DataURL::Parse(data_url, mime_type, charset, data)) {
     // Since the base URL will also be used as the document URL, we should not
     // use an empty URL. If it's empty, use the data: URL as a fallback.
-    // TODO(https://crbug.com/1223403): Maybe this should consider
+    // TODO(crbug.com/40187599): Maybe this should consider
     // `data_url_as_string` too. Otherwise, the base URL might be set to the
     // data: URL header with empty data, instead of the data: URL that contains
     // the actual data.
@@ -6672,7 +6672,7 @@ WebView* RenderFrameImpl::CreateNewWindow(
     auto pip_mojom_opts = blink::mojom::PictureInPictureWindowOptions::New();
     pip_mojom_opts->width = pip_options->width;
     pip_mojom_opts->height = pip_options->height;
-    // TODO(crbug.com/1444658): Remove this from mojom and the browser side.
+    // TODO(crbug.com/40911987): Remove this from mojom and the browser side.
     pip_mojom_opts->initial_aspect_ratio = 0.0;
     // TODO(crbug.com/1410379): Remove this from mojom and the browser side.
     pip_mojom_opts->lock_aspect_ratio = false;

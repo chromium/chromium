@@ -253,7 +253,7 @@ void MediaLicenseStorageHost::DidWriteFile(WriteFileCallback callback,
   }
 
   // Pass `delta`=0 since media license data does not count against quota.
-  // TODO(crbug.com/1305441): Consider counting this data against quota.
+  // TODO(crbug.com/40218094): Consider counting this data against quota.
   manager_->quota_manager_proxy()->NotifyBucketModified(
       storage::QuotaClientType::kMediaLicense, bucket_locator_, /*delta=*/0,
       /*modification_time=*/base::Time::Now(),

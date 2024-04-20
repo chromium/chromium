@@ -179,7 +179,7 @@ std::optional<bad_message::BadMessageReason> ValidateRequest(
     return bad_message::EFD_INVALID_EXTENSION_ID_FOR_PROCESS;
   }
 
-  // TODO(https://crbug.com/1186447): Validate `params.user_gesture`.
+  // TODO(crbug.com/40055124): Validate `params.user_gesture`.
 
   return std::nullopt;
 }

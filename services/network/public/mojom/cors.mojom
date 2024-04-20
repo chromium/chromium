@@ -192,7 +192,7 @@ struct CorsErrorStatus {
 };
 
 // Describes what happened wrt PNA preflights during a request.
-// TODO(https://crbug.com/1268378): Remove this once preflights are enforced.
+// TODO(crbug.com/40204695): Remove this once preflights are enforced.
 enum PrivateNetworkAccessPreflightResult {
   // No preflight was sent.
   kNone,

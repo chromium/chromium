@@ -349,7 +349,7 @@ static_library("web_test_renderer") {
     "//media/capture",
     "//printing/buildflags",
 
-    # TODO(crbug.com/1200443) Remove //printing/mojom requirement coming from
+    # TODO(crbug.com/40178248) Remove //printing/mojom requirement coming from
     # //third_party/blink/public:blink_headers.
     "//printing/mojom",
     "//services/service_manager/public/cpp",

@@ -702,7 +702,7 @@ class VideoResourceUpdater::HardwarePlaneResource
     DCHECK(context_provider_);
     auto* sii = SharedImageInterface();
     if (format.is_single_plane()) {
-      // TODO(crbug.com/1366495): Set `overlay_candidate_` for multiplanar
+      // TODO(crbug.com/40239769): Set `overlay_candidate_` for multiplanar
       // formats.
       overlay_candidate_ =
           use_gpu_memory_buffer_resources &&

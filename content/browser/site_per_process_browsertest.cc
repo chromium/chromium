@@ -5071,7 +5071,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // The blocked url reported in the console message should only contain the
   // origin, in order to avoid sensitive data being leaked to the parent frame.
   //
-  // TODO(https://crbug.com/1146651): We should not leak any information at all
+  // TODO(crbug.com/40053800): We should not leak any information at all
   // to the parent frame. Instead, we should send a message directly to Devtools
   // (without passing through a renderer): that can also contain more
   // information (like the full blocked url).

@@ -443,7 +443,7 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       storage_partition->GetWeakPtr(), final_response_url,
       coep.reporting_endpoint, coep.report_only_reporting_endpoint,
       reporting_source_, isolation_info_.network_anonymization_key());
-  // TODO(crbug.com/1197041): Bind the receiver of ReportingObserver to the
+  // TODO(crbug.com/40176729): Bind the receiver of ReportingObserver to the
   // worker in the renderer process.
 
   // > 14.8 If the result of checking a global object's embedder policy with

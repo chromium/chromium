@@ -835,7 +835,7 @@ bool SnapContainerData::IsSnapportCoveredOnAxis(
   }
 }
 
-// TODO(crbug.com/1501103): Use tolerance value less than 1.
+// TODO(crbug.com/40941354): Use tolerance value less than 1.
 // It is currently set to 1 because of differences in the way Blink and cc
 // currently handle fractional offsets when snapping.
 constexpr float kSnappedToTolerance = 1.0;

@@ -529,7 +529,7 @@ class PreflightController::PreflightLoader final {
 
     // Avoid overwriting if `CheckPreflightResult()` succeeds, just in case
     // there was a PNA warning in `detected_error_status`.
-    // TODO(https://crbug.com/1268378): Simplify this by always overwriting
+    // TODO(crbug.com/40204695): Simplify this by always overwriting
     // `detected_error_status` once preflights are always enforced.
     if (check_error_status.has_value()) {
       net_error = net::ERR_FAILED;

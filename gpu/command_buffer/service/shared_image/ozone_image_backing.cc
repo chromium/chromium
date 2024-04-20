@@ -383,7 +383,7 @@ OzoneImageBacking::ProduceSkiaGanesh(
         context_state->vk_context_provider()->GetVulkanImplementation();
 
     std::vector<std::unique_ptr<VulkanImage>> vulkan_images;
-    // TODO(crbug.com/1366495): Eliminate these branches once we migrate
+    // TODO(crbug.com/40239769): Eliminate these branches once we migrate
     // completely to MultiplanarSharedImage.
     if (format().is_single_plane()) {
       DCHECK(!format().IsLegacyMultiplanar() ||

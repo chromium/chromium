@@ -160,7 +160,7 @@ class OnDemandNetworkFetcher : public update_client::NetworkFetcher {
 };
 
 // A NetworkFetcher that fakes downloading a CRX file.
-// TODO(crbug.com/1190310) use EmbeddedTestServer instead of Mocking the
+// TODO(crbug.com/40755924) use EmbeddedTestServer instead of Mocking the
 // NetworkFetcher.
 class FakeCrxNetworkFetcher : public update_client::NetworkFetcher {
  public:

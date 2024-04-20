@@ -50,7 +50,7 @@ namespace extensions {
 
 namespace {
 
-// TODO(crbug.com/659750): Make this a proper resource.
+// TODO(crbug.com/40490789): Make this a proper resource.
 constexpr char kFullPageMimeHandlerViewHTML[] =
     "<!doctype html><html><body style='height: 100%%; width: 100%%; overflow: "
     "hidden; margin:0px; background-color: rgb(%d, %d, %d);'><embed "

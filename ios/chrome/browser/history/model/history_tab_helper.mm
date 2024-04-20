@@ -155,7 +155,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       /*did_replace_entry=*/false, consider_for_ntp_most_visited,
       navigation_context->IsSameDocument() ? GetPageTitle(*last_committed_item)
                                            : std::nullopt,
-      // TODO(crbug.com/1475717): due to WebKit constraints, iOS does not
+      // TODO(crbug.com/40279742): due to WebKit constraints, iOS does not
       // support triple-key partitioning. Once supported, we need to populate
       // `top_level_url` with the correct value. Until then, :visited history on
       // iOS is unpartitioned.

@@ -26,7 +26,7 @@ std::unique_ptr<DisplayWebView> DisplayWebView::Create(
   std::unique_ptr<viz::OverlayProcessorInterface> overlay_processor;
   OverlayProcessorWebView* overlay_processor_webview_raw = nullptr;
   if (features::IsAndroidSurfaceControlEnabled()) {
-    // TODO(crbug.com/1039876): This is to help triage bugs on pre-release
+    // TODO(crbug.com/40113791): This is to help triage bugs on pre-release
     // android. Remove this log once feature is controlled only by feature flag
     // or launched.
     LOG(WARNING) << "WebView overlays are enabled!";

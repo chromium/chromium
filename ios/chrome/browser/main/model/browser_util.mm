@@ -55,7 +55,7 @@ void MoveTabFromBrowserToBrowser(Browser* source_browser,
   MoveSnapshot(snapshot_tab_helper->GetSnapshotID(), source_browser,
                destination_browser);
 
-  // TODO(crbug.com/1264451): Remove this workaround when it will no longer be
+  // TODO(crbug.com/40203375): Remove this workaround when it will no longer be
   // required to have an active WebState in the WebStateList.
   if (destination_browser->GetWebStateList()->empty()) {
     params.Activate();

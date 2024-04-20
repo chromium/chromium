@@ -1502,7 +1502,7 @@ class DnsTransactionImpl final : public DnsTransaction {
     const DnsConfig& config = session_->config();
     DCHECK_LT(server_index, config.nameservers.size());
 
-    // TODO(https://crbug.com/1123197): Pass a non-null NetworkQualityEstimator.
+    // TODO(crbug.com/40146880): Pass a non-null NetworkQualityEstimator.
     NetworkQualityEstimator* network_quality_estimator = nullptr;
 
     std::unique_ptr<StreamSocket> socket =

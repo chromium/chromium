@@ -199,7 +199,7 @@ bool NetworkServiceProxyDelegate::IsInProxyConfig(
     return false;
   }
 
-  // TODO(https://crbug.com/1491092): Support nested proxies.
+  // TODO(crbug.com/40284947): Support nested proxies.
   if (proxy_chain.is_single_proxy() &&
       RulesContainsProxy(proxy_config_->rules, proxy_chain.First())) {
     return true;

@@ -9404,7 +9404,7 @@ class LayerTreeHostTestDelegatedInkMetadataCompositorOnlyFrame
   FakeContentLayerClient client_;
 };
 
-// TODO(crbug.com/1435551): flaky on win-asan.
+// TODO(crbug.com/40265182): flaky on win-asan.
 #if !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
 SINGLE_AND_MULTI_THREAD_TEST_F(
     LayerTreeHostTestDelegatedInkMetadataCompositorOnlyFrame);

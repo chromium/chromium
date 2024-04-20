@@ -21,7 +21,7 @@ import java.util.Locale;
 /** Factory class to build bug URI for a crash report. */
 public class CrashBugUrlFactory {
     // There is a limit on the length of this query string, see https://crbug.com/1015923
-    // TODO(https://crbug.com/1052295): add assert statement to check the length of this String.
+    // TODO(crbug.com/40674230): add assert statement to check the length of this String.
     @VisibleForTesting
     public static final String CRASH_REPORT_TEMPLATE =
             """

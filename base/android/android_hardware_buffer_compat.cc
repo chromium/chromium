@@ -14,7 +14,7 @@ namespace base {
 AndroidHardwareBufferCompat::AndroidHardwareBufferCompat() {
   DCHECK(IsSupportAvailable());
 
-  // TODO(https://crbug.com/1382595): If the Chromium build requires
+  // TODO(crbug.com/40877384): If the Chromium build requires
   // __ANDROID_API__ >= 26 at some point in the future, we could directly use
   // the global functions instead of dynamic loading. However, since this would
   // be incompatible with pre-Oreo devices, this is unlikely to happen in the

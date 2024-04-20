@@ -30,7 +30,7 @@ void FakeIdentityRequestDialogController::ShowAccountsDialog(
     LoginToIdPCallback on_add_account,
     DismissCallback dismiss_callback,
     AccountsDisplayedCallback accounts_displayed_callback) {
-  // TODO(crbug.com/1348262): Temporarily support only the first IDP, extend to
+  // TODO(crbug.com/40233285): Temporarily support only the first IDP, extend to
   // support multiple IDPs.
   std::vector<IdentityRequestAccount> accounts =
       identity_provider_data[0].accounts;

@@ -176,7 +176,7 @@ component("gpu") {
       "mediandk",
     ]
     deps += [
-      # TODO(crbug.com/789435): This can be removed once CdmManager is removed.
+      # TODO(crbug.com/40552063): This can be removed once CdmManager is removed.
       "//gpu/ipc/common",
       "//media/mojo:buildflags",
       "//services/service_manager/public/cpp:cpp",
@@ -270,9 +270,7 @@ component("gpu") {
       ]
       deps += [ "//third_party/libaom:libaomrc" ]
     }
-    configs += [
-      "//third_party/khronos:khronos_headers",
-    ]
+    configs += [ "//third_party/khronos:khronos_headers" ]
     deps += [
       "//gpu/ipc/common:common",
       "//media/base/win:color_space_util_win",

@@ -472,7 +472,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // Explainer:
   // https://github.com/jeremyroman/alternate-loading-modes/blob/main/browsing-context.md#session-history)
   //
-  // TODO(crbug.com/914108): Consider portals here as well.
+  // TODO(crbug.com/40606075): Consider portals here as well.
   bool ShouldMaintainTrivialSessionHistory(
       const FrameTreeNode* frame_tree_node) const;
 

@@ -874,7 +874,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       const std::vector<GlobalRenderFrameHostId>& render_frames);
 
   // Allow the embedder to control whether we can use Web Bluetooth.
-  // TODO(crbug.com/589228): Replace this with a use of the permission system.
+  // TODO(crbug.com/40458188): Replace this with a use of the permission system.
   enum class AllowWebBluetoothResult {
     ALLOW,
     BLOCK_POLICY,

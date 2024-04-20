@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 {
   program: {
-    // TODO(crbug.com/1465997): Remove the use of ASAN_OPTIONS once media does
+    // TODO(crbug.com/40276216): Remove the use of ASAN_OPTIONS once media does
     // not load the shared rust library separately.
     environ: [
       "ASAN_OPTIONS=detect_odr_violation=0",

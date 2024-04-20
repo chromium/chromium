@@ -632,6 +632,6 @@ mojom("shared_image_format") {
     },
   ]
 
-  # TODO(crbug.com/1378708): Does this need to be public_deps vs. deps?
+  # TODO(crbug.com/40244048): Does this need to be public_deps vs. deps?
   public_deps = [ ":singleplanar_format" ]
 }

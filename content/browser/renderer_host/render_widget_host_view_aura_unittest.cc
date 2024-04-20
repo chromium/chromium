@@ -4230,7 +4230,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest,
 
 // Tests that the gesture debounce timer plays nice with the overscroll
 // controller.
-// TODO(crbug.com/776424): Disabled due to flakiness on Linux tsan.
+// TODO(crbug.com/40545668): Disabled due to flakiness on Linux tsan.
 #if BUILDFLAG(USING_SANITIZER)
 #define MAYBE_GestureScrollDebounceTimerOverscroll \
   DISABLED_GestureScrollDebounceTimerOverscroll

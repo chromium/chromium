@@ -112,10 +112,11 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
      * "preloaded_fonts" AndroidManifest directive, and have not previously failed a programmatic
      * font fetch request.
      *
-     * TODO(crbug.com/1111148): Ensure the font preload by manifest XML is also done for WebView.
+     * <p>TODO(crbug.com/40142462): Ensure the font preload by manifest XML is also done for
+     * WebView.
      *
      * @param callback The callback to be called with the list of fonts expected (but not
-     *         guaranteed) to be available. The list is sorted in ascending order.
+     *     guaranteed) to be available. The list is sorted in ascending order.
      */
     @Override
     public void getUniqueNameLookupTable(GetUniqueNameLookupTable_Response callback) {

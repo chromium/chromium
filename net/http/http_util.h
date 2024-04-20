@@ -201,7 +201,7 @@ class NET_EXPORT HttpUtil {
   // within the headers themselves, it will be stripped. This is a workaround to
   // avoid later code from incorrectly interpreting it as a line terminator.
   //
-  // TODO(crbug.com/671799): Should remove or internalize this to
+  // TODO(crbug.com/40496844): Should remove or internalize this to
   //                         HttpResponseHeaders.
   static std::string AssembleRawHeaders(std::string_view buf);
 

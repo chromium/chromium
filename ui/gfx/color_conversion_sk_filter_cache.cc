@@ -37,7 +37,7 @@ static sk_sp<SkSurface> MakeSurfaceForResult(
   // backend, so perhaps this code should be moved to cc/
 #if defined(SK_GANESH)
   if (gr_context) {
-    // TODO(https://crbug.com/1286088): Consider adding mipmap support here.
+    // TODO(crbug.com/40210699): Consider adding mipmap support here.
     sk_sp<SkSurface> surface =
         SkSurfaces::RenderTarget(gr_context, skgpu::Budgeted::kNo, image_info,
                                  /*sampleCount=*/0, kTopLeft_GrSurfaceOrigin,
@@ -60,7 +60,7 @@ static sk_sp<SkSurface> MakeSurfaceForResult(
 #endif
 #if defined(SK_GRAPHITE)
   if (graphite_recorder) {
-    // TODO(https://crbug.com/1286088): Consider adding mipmap support here.
+    // TODO(crbug.com/40210699): Consider adding mipmap support here.
     sk_sp<SkSurface> surface = SkSurfaces::RenderTarget(
         graphite_recorder, image_info, skgpu::Mipmapped::kNo,
         /*surfaceProps=*/nullptr);

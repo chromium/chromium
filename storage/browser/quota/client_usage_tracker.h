@@ -123,7 +123,7 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer {
                          int64_t usage);
 
   // SpecialStoragePolicy::Observer overrides.
-  // TODO(crbug.com/1215208): Migrate to use StorageKey when the StoragePolicy
+  // TODO(crbug.com/40184305): Migrate to use StorageKey when the StoragePolicy
   // is migrated to use StorageKey instead of Origin.
   void OnGranted(const url::Origin& origin_url, int change_flags) override;
   void OnRevoked(const url::Origin& origin_url, int change_flags) override;

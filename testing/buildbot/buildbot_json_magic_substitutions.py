@@ -248,7 +248,7 @@ def GPUParallelJobs(test_config, tester_name, tester_config):
   # These bots can't handle parallel tests. See crbug.com/1353938.
   # The load can also negatively impact WebGL tests, so reduce the number of
   # jobs there.
-  # TODO(crbug.com/1349828): Try removing the Windows/Intel special casing once
+  # TODO(crbug.com/40233910): Try removing the Windows/Intel special casing once
   # we swap which machines we're using.
   is_webgpu_cts = test_name.startswith('webgpu_cts') or test_config.get(
       'telemetry_test_name') == 'webgpu_cts'

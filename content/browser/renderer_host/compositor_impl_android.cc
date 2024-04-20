@@ -411,7 +411,7 @@ void CompositorImpl::SetVisible(bool visible) {
 
 void CompositorImpl::TearDownDisplayAndUnregisterRootFrameSink() {
   // Make a best effort to try to complete pending readbacks.
-  // TODO(crbug.com/637035): Consider doing this in a better way,
+  // TODO(crbug.com/40480324): Consider doing this in a better way,
   // ideally with the guarantee of readbacks completing.
   if (display_private_ && pending_readbacks_) {
     // Note that while this is not a Sync IPC, the call to

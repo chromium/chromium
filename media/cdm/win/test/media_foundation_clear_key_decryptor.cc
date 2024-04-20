@@ -575,7 +575,7 @@ STDMETHODIMP MediaFoundationClearKeyDecryptor::ProcessOutput(
   // Decrypt the protected content.
   Decryptor::Status decryptor_status = Decryptor::kError;
 
-  // TODO(crbug.com/1442373): We may remove the tracking code of stream type
+  // TODO(crbug.com/40910495): We may remove the tracking code of stream type
   // if two decryptors get created for audio and video respectively.
   CHECK(stream_type_ != StreamType::kUnknown);
   Decryptor::StreamType stream_type = stream_type_ == StreamType::kVideo

@@ -13,8 +13,8 @@ import typing
 
 # Import the UKM codegen library for its hashing function, which is the same
 # hashing function as used for flag names.
-# TODO(crbug.com/1371214) Move `codegen.HashName()` somewhere common so we don't
-#  depend on 'ukm'.
+# TODO(crbug.com/40870309) Move `codegen.HashName()` somewhere common so we
+# don't depend on 'ukm'.
 sys.path.append(os.path.join(os.path.dirname(__file__), os.pardir, 'ukm'))
 import codegen
 

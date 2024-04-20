@@ -46,7 +46,7 @@ class NET_EXPORT NetworkIsolationKey {
       std::optional<base::UnguessableToken>&& nonce = std::nullopt);
 
   // Legacy constructor.
-  // TODO(https://crbug.com/1145294):  Remove this in favor of above
+  // TODO(crbug.com/40729378):  Remove this in favor of above
   // constructor.
   NetworkIsolationKey(const url::Origin& top_frame_origin,
                       const url::Origin& frame_origin);

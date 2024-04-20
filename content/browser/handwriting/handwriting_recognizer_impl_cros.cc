@@ -65,7 +65,7 @@ CreateGestureModelDescriptor() {
 }
 
 // Returns whether the two language tags are semantically the same.
-// TODO(https://crbug.com/1166910): We may need a better language tag matching
+// TODO(crbug.com/40742391): We may need a better language tag matching
 // method (e.g. libicu's LocaleMatcher).
 bool LanguageTagsAreMatching(std::string_view a, std::string_view b) {
   // Per BCP 47, language tag comparisons are case-insensitive.

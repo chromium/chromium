@@ -1672,7 +1672,7 @@ int HttpNetworkTransaction::HandleSSLClientAuthError(int error) {
 
   bool is_server = !UsingHttpProxyWithoutTunnel();
   HostPortPair host_port_pair;
-  // TODO(https://crbug.com/1491092): Remove check and return error when
+  // TODO(crbug.com/40284947): Remove check and return error when
   // multi-proxy chain.
   if (is_server) {
     host_port_pair = HostPortPair::FromURL(request_->url);
@@ -1968,7 +1968,7 @@ void HttpNetworkTransaction::ResetConnectionAndRequestForResend(
 }
 
 bool HttpNetworkTransaction::ShouldApplyProxyAuth() const {
-  // TODO(https://crbug.com/1491092): Update to handle multi-proxy chains.
+  // TODO(crbug.com/40284947): Update to handle multi-proxy chains.
   if (proxy_info_.proxy_chain().is_multi_proxy()) {
     return false;
   }
@@ -2016,7 +2016,7 @@ bool HttpNetworkTransaction::HaveAuth(HttpAuth::Target target) const {
 GURL HttpNetworkTransaction::AuthURL(HttpAuth::Target target) const {
   switch (target) {
     case HttpAuth::AUTH_PROXY: {
-      // TODO(https://crbug.com/1491092): Update to handle multi-proxy chain.
+      // TODO(crbug.com/40284947): Update to handle multi-proxy chain.
       CHECK(proxy_info_.proxy_chain().is_single_proxy());
       if (!proxy_info_.proxy_chain().IsValid() ||
           proxy_info_.proxy_chain().is_direct()) {

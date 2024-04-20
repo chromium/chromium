@@ -277,7 +277,7 @@ base::Time CanonicalCookie::ValidateAndAdjustExpiryDate(
     return expiry_date;
   base::Time fixed_creation_date = creation_date;
   if (fixed_creation_date.is_null()) {
-    // TODO(crbug.com/1264458): Push this logic into
+    // TODO(crbug.com/40800807): Push this logic into
     // CanonicalCookie::CreateSanitizedCookie. The four sites that call it
     // with a null `creation_date` (CanonicalCookie::Create cannot be called
     // this way) are:
@@ -917,7 +917,7 @@ bool CanonicalCookie::IsCanonical() const {
   // would fail this check. Note that we still don't want to enforce length
   // checks on domain or path for the reason stated above.
 
-  // TODO(crbug.com/1264458): Eventually we should push this logic into
+  // TODO(crbug.com/40800807): Eventually we should push this logic into
   // IsCanonicalForFromStorage, but for now we allow cookies already stored with
   // high expiration dates to be retrieved.
   if (ValidateAndAdjustExpiryDate(expiry_date_, CreationDate(),

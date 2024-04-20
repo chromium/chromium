@@ -177,7 +177,7 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
     // The SI backing this VideoFrame will be read by the display compositor and
     // raster. The latter will be over GL if not using OOP-R. NOTE: GL usage can
     // be eliminated once OOP-R ships definitively.
-    // TODO(crbug.com/1494911): Check the potential inconsistency between the
+    // TODO(crbug.com/40286368): Check the potential inconsistency between the
     // |usage| passed to NotifyMailboxAdded() here and the |usage| that
     // DCOMPTextureBacking's constructor uses to initialize
     // ClearTrackingSharedImageBacking.

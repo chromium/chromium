@@ -910,7 +910,7 @@ void CorsURLLoader::StartRequest() {
 
   if (needs_preflight.has_value() &&
       *needs_preflight == PreflightRequiredReason::kPrivateNetworkAccess) {
-    // TODO(https://crbug.com/1338439): Create a base function and clean up all
+    // TODO(crbug.com/40229602): Create a base function and clean up all
     // need_pna_permission check in the code base.
     const mojom::ClientSecurityState* state = GetClientSecurityState();
     const bool needs_pna_permission =

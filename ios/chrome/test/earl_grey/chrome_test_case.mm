@@ -54,7 +54,7 @@ NSArray* multitaskingTests() {
     @"testContextMenuOpenInNewTab",     // ContextMenuTestCase
     @"testContextMenuOpenInNewWindow",  // ContextMenuTestCase
     @"testSwitchToMain",                // CookiesTestCase
-    // TODO(crbug.com/1422238) Re-enable this flaky test on multitasking.
+    // TODO(crbug.com/40896793) Re-enable this flaky test on multitasking.
     // @"testSwitchToIncognito",              // CookiesTestCase
     @"testFindDefaultFormAssistControls",  // FormInputTestCase
     @"testTabDeletion",                    // TabUsageRecorderTestCase

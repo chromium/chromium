@@ -20,7 +20,7 @@ namespace content {
 // This class represents overall on-screen visibility for a given process of the
 // embedding application. Currently only works/is used in the browser process on
 // Android (Chrome and WebView).
-// TODO(crbug.com/1177542): implement usage in other processes.
+// TODO(crbug.com/40168826): implement usage in other processes.
 // Observers can be added from any sequence, but OnProcessVisibilityChanged()
 // should be called from the thread that created the tracker instance.
 class CONTENT_EXPORT ProcessVisibilityTracker {

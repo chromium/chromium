@@ -1024,7 +1024,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // still be early histograms recorded before the child reads its launch
   // parameters to learn of the shared memory region.
   //
-  // TODO(crbug/1028263): It may be possible to completely remove this once
+  // TODO(crbug.com/40109064): It may be possible to completely remove this once
   // passing the memory region on launch is rolled-out, if the shmem parameter
   // is consumed before the child records any histograms.
   void ShareMetricsMemoryRegion();

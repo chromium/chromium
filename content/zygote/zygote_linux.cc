@@ -430,7 +430,7 @@ int Zygote::ForkWithRealPid(const std::string& process_type,
     fds.push_back(pid_oracle.get());  // kPIDOracleFDIndex
     fds.push_back(field_trial_fd);    // kFieldTrialFDIndex
     if (histograms_fd != -1) {
-      // TODO(crbug/1028263): pass unconditionally once the metrics shared
+      // TODO(crbug.com/40109064): pass unconditionally once the metrics shared
       // memory region is always passed on startup.
       fds.push_back(histograms_fd);  // kHistogramFDIndex
     }

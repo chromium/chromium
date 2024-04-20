@@ -22,7 +22,7 @@ namespace storage {
 namespace {
 
 bool AreSameStorageKey(const FileSystemURL& a, const FileSystemURL& b) {
-  // TODO(https://crbug.com/1396116): Make the `storage_key_` member optional.
+  // TODO(crbug.com/40249324): Make the `storage_key_` member optional.
   // This class improperly uses a StorageKey with an opaque origin to indicate a
   // lack of origin for FileSystemURLs corresponding to non-sandboxed file
   // systems. This leads to unexpected behavior when comparing two non-sandboxed

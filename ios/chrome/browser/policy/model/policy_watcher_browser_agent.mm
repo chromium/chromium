@@ -154,7 +154,7 @@ void PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded() {
 void PolicyWatcherBrowserAgent::UpdateAppContainerBackupExclusion() {
   bool backup_allowed = browser_->GetBrowserState()->GetPrefs()->GetBoolean(
       prefs::kAllowChromeDataInBackups);
-  // TODO(crbug.com/1303652): If multiple profiles are supported on iOS, update
+  // TODO(crbug.com/40826035): If multiple profiles are supported on iOS, update
   // this logic to work with multiple profiles having possibly-possibly
   // conflicting preference values.
   base::FilePath storage_dir = base::apple::GetUserLibraryPath();

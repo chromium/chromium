@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("[]", InvokeTopicsAPI(web_contents()));
 }
 
-// TODO(crbug.com/1381167): migrate to WPT.
+// TODO(crbug.com/40245082): migrate to WPT.
 IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
                        Fetch_TopicsHeaderNotVisibleInServiceWorker) {
   GURL main_frame_url = https_server_.GetURL(

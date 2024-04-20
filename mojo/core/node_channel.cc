@@ -509,7 +509,7 @@ void NodeChannel::RelayEventMessage(const ports::NodeName& destination,
   // will leak, but that means something else has probably broken and the
   // sending process won't likely be around much longer.
   //
-  // TODO(https://crbug.com/813112): We would like to be able to violate the
+  // TODO(crbug.com/40563346): We would like to be able to violate the
   // above stated assumption. We should not leak handles in cases where we
   // outlive the broker, as we may continue existing and eventually accept a new
   // broker invitation.

@@ -142,7 +142,8 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // Partitioned cookie garbage collection thresholds.
   static const size_t kPerPartitionDomainMaxCookieBytes;
   static const size_t kPerPartitionDomainMaxCookies;
-  // TODO(crbug.com/1225444): Add global limit to number of partitioned cookies.
+  // TODO(crbug.com/40188414): Add global limit to number of partitioned
+  // cookies.
 
   // Quota for cookies with {low, medium, high} priorities within a domain.
   static const size_t kDomainCookiesQuotaLow;

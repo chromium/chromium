@@ -47,7 +47,7 @@ void SubresourceUrlAuthorizations::AuthorizeSubresourceUrls(
     // subresources, allow sites to alter their <script> tags after calling
     // runAdAuction().
     //
-    // TODO(crbug.com/1320908): If the tokens match, but the bundle URLs don't,
+    // TODO(crbug.com/40223695): If the tokens match, but the bundle URLs don't,
     // report a bad mojo message from the renderer.
     ++it->second.count;
 

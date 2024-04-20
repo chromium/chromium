@@ -131,7 +131,7 @@ class GPU_EXPORT SharedImageInterface
   // same format which would be passed to glTexImage2D to populate a similarly
   // specified texture.
   // May return null if |pixel_data| is too big for IPC.
-  // TODO(crbug.com/1447106): Have the caller specify a row span for
+  // TODO(crbug.com/40268891): Have the caller specify a row span for
   // |pixel_data| explicitly. Some backings have different row alignment
   // requirements which the caller has to match exactly or it won't work.
   virtual scoped_refptr<ClientSharedImage> CreateSharedImage(

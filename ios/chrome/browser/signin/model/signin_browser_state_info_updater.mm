@@ -28,7 +28,7 @@ SigninBrowserStateInfoUpdater::SigninBrowserStateInfoUpdater(
   signin_error_controller_observation_.Observe(signin_error_controller);
 
   UpdateBrowserStateInfo();
-  // TODO(crbug.com/908457): Call OnErrorChanged() here, to catch any change
+  // TODO(crbug.com/40603806): Call OnErrorChanged() here, to catch any change
   // that happened since the construction of SigninErrorController. BrowserState
   // metrics depend on this bug and must be fixed first.
 }

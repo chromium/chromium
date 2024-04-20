@@ -1200,7 +1200,7 @@ void CookieMonster::TrimDuplicateCookiesForKey(
     // duplicates.
     dupes.erase(dupes.begin());
 
-    // TODO(crbug.com/1225444) Include cookie partition key in this log
+    // TODO(crbug.com/40188414) Include cookie partition key in this log
     // statement as well if needed.
     // TODO(crbug.com/1170548): Include source scheme and source port.
     LOG(ERROR) << base::StringPrintf(
@@ -1251,7 +1251,7 @@ void CookieMonster::TrimDuplicateCookiesForKey(
     // duplicates.
     dupes.erase(dupes.begin());
 
-    // TODO(crbug.com/1225444) Include cookie partition key in this log
+    // TODO(crbug.com/40188414) Include cookie partition key in this log
     // statement as well if needed.
     // TODO(crbug.com/1170548): Include source scheme and source port.
     LOG(ERROR) << base::StringPrintf(
@@ -1782,8 +1782,9 @@ void CookieMonster::SetCanonicalCookie(
       // http:// URLs, but not cookies that are cleared by http:// URLs, to
       // understand if the former behavior can be deprecated for Secure
       // cookies.
-      // TODO(crbug.com/993120): Consider removing this histogram. The decision
-      // it was added to evaluate has been implemented and standardized.
+      // TODO(crbug.com/40640080): Consider removing this histogram. The
+      // decision it was added to evaluate has been implemented and
+      // standardized.
       CookieSource cookie_source_sample =
           (source_url.SchemeIsCryptographic()
                ? (cc->SecureAttribute()
@@ -2218,7 +2219,7 @@ size_t CookieMonster::GarbageCollectPartitionedCookies(
   if (NumBytesInCookieMapForKey(*cookie_partition_it->second.get(), key) >
           kPerPartitionDomainMaxCookieBytes ||
       cookie_partition_it->second->count(key) > kPerPartitionDomainMaxCookies) {
-    // TODO(crbug.com/1225444): Log garbage collection for partitioned cookies.
+    // TODO(crbug.com/40188414): Log garbage collection for partitioned cookies.
 
     CookieItVector non_expired_cookie_its;
     num_deleted += GarbageCollectExpiredPartitionedCookies(
@@ -2229,7 +2230,7 @@ size_t CookieMonster::GarbageCollectPartitionedCookies(
 
     if (bytes_used > kPerPartitionDomainMaxCookieBytes ||
         non_expired_cookie_its.size() > kPerPartitionDomainMaxCookies) {
-      // TODO(crbug.com/1225444): Log deep garbage collection for partitioned
+      // TODO(crbug.com/40188414): Log deep garbage collection for partitioned
       // cookies.
       std::sort(non_expired_cookie_its.begin(), non_expired_cookie_its.end(),
                 LRACookieSorter);
@@ -2247,7 +2248,7 @@ size_t CookieMonster::GarbageCollectPartitionedCookies(
     }
   }
 
-  // TODO(crbug.com/1225444): Enforce global limit on partitioned cookies.
+  // TODO(crbug.com/40188414): Enforce global limit on partitioned cookies.
 
   return num_deleted;
 }

@@ -63,7 +63,7 @@ using signin_metrics::RecordSigninUserActionForAccessPoint;
     }
     case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted: {
-      // TODO(crbug.com/951145): Add metric for when the sign-in has been
+      // TODO(crbug.com/40622384): Add metric for when the sign-in has been
       // interrupted.
       break;
     }

@@ -7,7 +7,7 @@
 #include <string>
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  // TODO(crbug.com/1375854) Add corpus so generated data is higher quality.
+  // TODO(crbug.com/40242947) Add corpus so generated data is higher quality.
   const std::string test_data(reinterpret_cast<const char*>(data), size);
   network::cors::IsCorsSafelistedHeader("accept", test_data);
   network::cors::IsCorsSafelistedHeader("accept-language", test_data);

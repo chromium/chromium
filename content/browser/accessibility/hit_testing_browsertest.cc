@@ -635,8 +635,8 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
-// Fails flakily with compared ID differences. TODO(crbug.com/1121099): Re-enable
-// this test.
+// Fails flakily with compared ID differences. TODO(crbug.com/40715277):
+// Re-enable this test.
 IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
                        DISABLED_CachingAsyncHitTest_WithPinchZoom) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -682,7 +682,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
 
 // TODO(https://crbug.com/1224978): Times out flakily on TSAN builds.
 // TODO(https://crbug.com/1459570): Times out flakily on ASan builds.
-// TODO(https://crbug.com/1461935): Times out flakily on win-asan.
+// TODO(crbug.com/40921699): Times out flakily on win-asan.
 IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
                        DISABLED_HitTest_WithPinchZoom) {
   ASSERT_TRUE(embedded_test_server()->Start());
