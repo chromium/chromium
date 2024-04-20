@@ -7,6 +7,7 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -263,7 +264,7 @@ std::unique_ptr<ContentNegotiationAlgorithm> GetContentNegotiationAlgorithm(
 
 // https://tools.ietf.org/id/draft-ietf-httpbis-variants-04.html#variants
 std::optional<std::vector<std::pair<std::string, std::vector<std::string>>>>
-ParseVariants(const base::StringPiece& str) {
+ParseVariants(const std::string_view& str) {
   // Compatibility note: Draft 4 of Variants
   // (https://tools.ietf.org/id/draft-ietf-httpbis-variants-04.html#variants)
   // uses a custom format for the Variants-04 header, which this method attempts
@@ -313,7 +314,7 @@ ParseVariants(const base::StringPiece& str) {
 
 // https://tools.ietf.org/id/draft-ietf-httpbis-variants-04.html#variant-key
 std::optional<std::vector<std::vector<std::string>>> ParseVariantKey(
-    const base::StringPiece& str,
+    const std::string_view& str,
     size_t num_variant_axes) {
   // Compatibility note: Draft 4 of Variants
   // (https://tools.ietf.org/id/draft-ietf-httpbis-variants-04.html#variant-key)

@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/ad_auction/validate_blink_interest_group.h"
 
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "mojo/public/cpp/bindings/map_traits_wtf_hash_map.h"
 #include "mojo/public/cpp/bindings/message.h"

@@ -29,9 +29,9 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
@@ -562,7 +562,7 @@ class PLATFORM_EXPORT ResourceFetcher
       bool handled_by_serviceworker,
       const blink::ServiceWorkerRouterInfo* router_info);
 
-  void RecordResourceHistogram(base::StringPiece prefix,
+  void RecordResourceHistogram(std::string_view prefix,
                                ResourceType type,
                                RevalidationPolicyForMetrics policy) const;
 

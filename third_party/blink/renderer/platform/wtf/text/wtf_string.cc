@@ -26,6 +26,7 @@
 #include <stdarg.h>
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -500,7 +501,7 @@ String String::FromUTF8(const LChar* string) {
   return FromUTF8(string, strlen(reinterpret_cast<const char*>(string)));
 }
 
-String String::FromUTF8(base::StringPiece s) {
+String String::FromUTF8(std::string_view s) {
   return FromUTF8(reinterpret_cast<const LChar*>(s.data()), s.size());
 }
 

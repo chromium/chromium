@@ -5,13 +5,13 @@
 #include "third_party/blink/public/common/unique_name/unique_name_helper.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
 #include "crypto/sha2.h"
@@ -30,7 +30,7 @@ class PendingChildFrameAdapter : public UniqueNameHelper::FrameAdapter {
 
   // FrameAdapter overrides:
   bool IsMainFrame() const override { return false; }
-  bool IsCandidateUnique(base::StringPiece name) const override {
+  bool IsCandidateUnique(std::string_view name) const override {
     return parent_->IsCandidateUnique(name);
   }
   int GetSiblingCount() const override {
@@ -45,7 +45,7 @@ class PendingChildFrameAdapter : public UniqueNameHelper::FrameAdapter {
   }
   std::vector<std::string> CollectAncestorNames(
       BeginPoint begin_point,
-      bool (*should_stop)(base::StringPiece)) const override {
+      bool (*should_stop)(std::string_view)) const override {
     DCHECK_EQ(BeginPoint::kParentFrame, begin_point);
     return parent_->CollectAncestorNames(BeginPoint::kThisFrame, should_stop);
   }
@@ -68,7 +68,7 @@ constexpr char kDynamicFrameMarker[] = "<!--dynamicFrame";
 // exactly 80 characters.
 constexpr size_t kMaxRequestedNameSize = 80;
 
-bool IsNameWithFramePath(base::StringPiece name) {
+bool IsNameWithFramePath(std::string_view name) {
   return base::StartsWith(name, kFramePathPrefix) &&
          base::EndsWith(name, "-->") &&
          (kFramePathPrefixLength + kFramePathSuffixLength) < name.size();
@@ -146,7 +146,7 @@ std::string AppendUniqueSuffix(const FrameAdapter* frame,
 }
 
 std::string CalculateNameInternal(const FrameAdapter* frame,
-                                  base::StringPiece name) {
+                                  std::string_view name) {
   if (!name.empty() && frame->IsCandidateUnique(name) && name != "_blank")
     return std::string(name);
 
@@ -158,7 +158,7 @@ std::string CalculateNameInternal(const FrameAdapter* frame,
   return AppendUniqueSuffix(frame, candidate, likely_unique_suffix);
 }
 
-std::string CalculateFrameHash(base::StringPiece name) {
+std::string CalculateFrameHash(std::string_view name) {
   DCHECK_GT(name.size(), kMaxRequestedNameSize);
 
   std::string hashed_name;
@@ -170,8 +170,7 @@ std::string CalculateFrameHash(base::StringPiece name) {
   return hashed_name;
 }
 
-std::string CalculateNewName(const FrameAdapter* frame,
-                             base::StringPiece name) {
+std::string CalculateNewName(const FrameAdapter* frame, std::string_view name) {
   std::string hashed_name;
   // By default, |name| is the browsing context name, which can be arbitrarily
   // long. Since the generated name is part of history entries and FrameState,
@@ -313,7 +312,7 @@ void UniqueNameHelper::PreserveStableUniqueNameForTesting() {
 }
 
 std::string UniqueNameHelper::ExtractStableNameForTesting(
-    base::StringPiece unique_name) {
+    std::string_view unique_name) {
   size_t i = unique_name.rfind(kDynamicFrameMarker);
   if (i == std::string::npos)
     return std::string(unique_name);

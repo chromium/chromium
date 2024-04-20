@@ -8,8 +8,8 @@
 #include <iosfwd>
 #include <optional>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/unguessable_token.h"
 #include "net/base/isolation_info.h"
 #include "net/base/schemeful_site.h"
@@ -161,12 +161,12 @@ class BLINK_COMMON_EXPORT StorageKey {
   // (3D) Deserialization from string.
   // Note that if the deserialization wouldn't create a well-formed StorageKey
   // then nullopt is returned. This function must never DCHECK.
-  static std::optional<StorageKey> Deserialize(base::StringPiece in);
+  static std::optional<StorageKey> Deserialize(std::string_view in);
 
   // A variant of deserialization for localStorage code only.
   // You almost always want to use Deserialize() instead.
   static std::optional<StorageKey> DeserializeForLocalStorage(
-      base::StringPiece in);
+      std::string_view in);
 
   // (3E) Serialization to string; origin must not be opaque.
   // Note that this function will DCHECK if the origin is opaque.

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule_mojom_traits.h"
 
+#include <string_view>
+
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
@@ -38,7 +40,7 @@ TEST(ServiceWorkerRouterRulesTest, SimpleRoundTrip) {
       {
         auto parse_result = liburlpattern::Parse(
             "/test/*",
-            [](base::StringPiece input) { return std::string(input); });
+            [](std::string_view input) { return std::string(input); });
         ASSERT_TRUE(parse_result.ok());
         url_pattern.pathname = parse_result.value().PartList();
       }

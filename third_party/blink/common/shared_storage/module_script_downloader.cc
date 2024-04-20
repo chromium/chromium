@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/shared_storage/module_script_downloader.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -62,7 +63,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 // Checks if `charset` is a valid charset, in lowercase ASCII. Takes `body` as
 // well, to ensure it uses the specified charset.
-bool IsAllowedCharset(base::StringPiece charset, const std::string& body) {
+bool IsAllowedCharset(std::string_view charset, const std::string& body) {
   if (charset == "utf-8" || charset.empty()) {
     return base::IsStringUTF8(body);
   } else if (charset == "us-ascii") {
@@ -91,7 +92,7 @@ ModuleScriptDownloader::ModuleScriptDownloader(
       network::mojom::CredentialsMode::kSameOrigin;
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAccept,
-      base::StringPiece("application/javascript"));
+      std::string_view("application/javascript"));
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);

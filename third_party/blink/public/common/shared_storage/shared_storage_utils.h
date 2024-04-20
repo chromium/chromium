@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SHARED_STORAGE_SHARED_STORAGE_UTILS_H_
 
 #include <cstdlib>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "third_party/blink/public/common/common_export.h"
 
 namespace blink {
@@ -81,7 +81,7 @@ BLINK_COMMON_EXPORT bool ShouldDefinePrivateAggregationInSharedStorage();
 
 // Whether the `context_id` is valid UTF-8 and has a valid length.
 BLINK_COMMON_EXPORT bool IsValidPrivateAggregationContextId(
-    base::StringPiece context_id);
+    std::string_view context_id);
 
 // Maximum allowed length of the context_id string.
 constexpr int kPrivateAggregationApiContextIdMaxLength = 64;

@@ -35,6 +35,8 @@
 
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
@@ -1258,7 +1260,7 @@ class KURLTestTraits {
  public:
   using UrlType = blink::KURL;
 
-  static UrlType CreateUrlFromString(base::StringPiece s) {
+  static UrlType CreateUrlFromString(std::string_view s) {
     return blink::KURL(String::FromUTF8(s));
   }
 

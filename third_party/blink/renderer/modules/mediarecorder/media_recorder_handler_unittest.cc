@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
@@ -343,7 +344,7 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
   std::string h264_video_stream_;
 
  private:
-  void LoadEncodedFile(base::StringPiece filename,
+  void LoadEncodedFile(std::string_view filename,
                        base::MemoryMappedFile& mapped_stream) {
     base::FilePath file_path = GetTestDataFilePath(filename);
 
@@ -351,7 +352,7 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
         << "Couldn't open stream file: " << file_path.MaybeAsASCII();
   }
 
-  base::FilePath GetTestDataFilePath(base::StringPiece name) {
+  base::FilePath GetTestDataFilePath(std::string_view name) {
     base::FilePath file_path;
     base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
     file_path = file_path.Append(FILE_PATH_LITERAL("media"))

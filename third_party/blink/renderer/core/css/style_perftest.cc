@@ -9,8 +9,7 @@
 // not yet checked in. The tests will be skipped if you don't have the
 // files available.
 
-#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
-#include "third_party/blink/renderer/core/css/style_recalc_change.h"
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
@@ -18,8 +17,10 @@
 #include "testing/perf/perf_test.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_recalc_change.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
@@ -190,7 +191,7 @@ static StylePerfResult MeasureStyleForDumpedPage(
       return result;
     }
     std::optional<base::Value> json = base::JSONReader::Read(
-        base::StringPiece(serialized->Data(), serialized->size()));
+        std::string_view(serialized->Data(), serialized->size()));
     CHECK(json.has_value());
     page = LoadDumpedPage(json->GetDict(), result.parse_time, reporter);
   }

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediarecorder/video_track_recorder.h"
 
 #include <sstream>
+#include <string_view>
 
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -514,8 +515,8 @@ TEST_P(VideoTrackRecorderTestParam, VideoEncoding) {
 
   InSequence s;
   const base::TimeTicks timeticks_now = base::TimeTicks::Now();
-  base::StringPiece first_frame_encoded_data;
-  base::StringPiece first_frame_encoded_alpha;
+  std::string_view first_frame_encoded_data;
+  std::string_view first_frame_encoded_alpha;
   EXPECT_CALL(*mock_callback_interface_,
               OnEncodedVideo(_, _, _, _, timeticks_now, true))
       .Times(1)
@@ -523,8 +524,8 @@ TEST_P(VideoTrackRecorderTestParam, VideoEncoding) {
                       SaveArg<2>(&first_frame_encoded_alpha)));
 
   const base::TimeTicks timeticks_later = base::TimeTicks::Now();
-  base::StringPiece second_frame_encoded_data;
-  base::StringPiece second_frame_encoded_alpha;
+  std::string_view second_frame_encoded_data;
+  std::string_view second_frame_encoded_alpha;
   EXPECT_CALL(*mock_callback_interface_,
               OnEncodedVideo(_, _, _, _, timeticks_later, false))
       .Times(1)
@@ -538,8 +539,8 @@ TEST_P(VideoTrackRecorderTestParam, VideoEncoding) {
 
   base::RunLoop run_loop;
 
-  base::StringPiece third_frame_encoded_data;
-  base::StringPiece third_frame_encoded_alpha;
+  std::string_view third_frame_encoded_data;
+  std::string_view third_frame_encoded_alpha;
   EXPECT_CALL(*mock_callback_interface_, OnEncodedVideo(_, _, _, _, _, true))
       .Times(1)
       .WillOnce(DoAll(SaveArg<1>(&third_frame_encoded_data),
@@ -943,7 +944,7 @@ TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam,
       media::VideoFrame::CreateBlackFrame(frame_size);
 
   InSequence s;
-  base::StringPiece first_frame_encoded_alpha;
+  std::string_view first_frame_encoded_alpha;
   EXPECT_CALL(*mock_callback_interface_, OnEncodedVideo(_, _, _, _, _, true))
       .Times(1)
       .WillOnce(SaveArg<2>(&first_frame_encoded_alpha));
@@ -951,14 +952,14 @@ TEST_P(VideoTrackRecorderTestMediaVideoEncoderParam,
 
   const scoped_refptr<media::VideoFrame> alpha_frame =
       media::VideoFrame::CreateTransparentFrame(frame_size);
-  base::StringPiece second_frame_encoded_alpha;
+  std::string_view second_frame_encoded_alpha;
   EXPECT_CALL(*mock_callback_interface_, OnEncodedVideo(_, _, _, _, _, true))
       .Times(1)
       .WillOnce(SaveArg<2>(&second_frame_encoded_alpha));
   Encode(alpha_frame, base::TimeTicks::Now());
 
   base::RunLoop run_loop;
-  base::StringPiece third_frame_encoded_alpha;
+  std::string_view third_frame_encoded_alpha;
   EXPECT_CALL(*mock_callback_interface_, OnEncodedVideo(_, _, _, _, _, false))
       .Times(1)
       .WillOnce(DoAll(SaveArg<2>(&third_frame_encoded_alpha),

@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -36,7 +37,7 @@ class StorageKeyTest : public ::testing::Test {
  protected:
   const net::SchemefulSite GetOpaqueSite(uint64_t high,
                                          uint64_t low,
-                                         base::StringPiece url_string) {
+                                         std::string_view url_string) {
     return net::SchemefulSite(url::Origin(
         url::Origin::Nonce(base::UnguessableToken::CreateForTesting(high, low)),
         url::SchemeHostPort(GURL(url_string))));

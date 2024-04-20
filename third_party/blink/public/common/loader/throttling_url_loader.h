@@ -7,12 +7,12 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -161,11 +161,11 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   // datapipe endpoints.
   network::mojom::URLLoaderClientEndpointsPtr Unbind();
 
-  void CancelWithError(int error_code, base::StringPiece custom_reason);
+  void CancelWithError(int error_code, std::string_view custom_reason);
 
   void CancelWithExtendedError(int error_code,
                                int extended_reason_code,
-                               base::StringPiece custom_reason);
+                               std::string_view custom_reason);
 
   bool response_intercepted() const { return response_intercepted_; }
 
@@ -239,7 +239,7 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
       mojo::ScopedDataPipeConsumerHandle* body);
 
   // Disconnects the client connection and releases the URLLoader.
-  void DisconnectClient(base::StringPiece custom_description);
+  void DisconnectClient(std::string_view custom_description);
 
   enum DeferredStage {
     DEFERRED_NONE,

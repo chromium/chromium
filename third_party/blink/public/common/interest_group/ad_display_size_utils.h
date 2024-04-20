@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_INTEREST_GROUP_AD_DISPLAY_SIZE_UTILS_H_
 
 #include <string>
+#include <string_view>
 #include <tuple>
 
 #include "third_party/blink/public/common/common_export.h"
@@ -35,7 +36,7 @@ BLINK_COMMON_EXPORT std::string ConvertAdDimensionToString(
 // - " 25sw "
 // - "100"
 BLINK_COMMON_EXPORT std::tuple<double, blink::AdSize::LengthUnit>
-ParseAdSizeString(const base::StringPiece input);
+ParseAdSizeString(const std::string_view input);
 
 BLINK_COMMON_EXPORT bool IsValidAdSize(const blink::AdSize& size);
 

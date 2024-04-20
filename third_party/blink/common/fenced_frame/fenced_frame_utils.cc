@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 
 #include <cstring>
+#include <string_view>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
@@ -32,7 +33,7 @@ bool IsValidUrnUuidURL(const GURL& url) {
   return base::StartsWith(spec, kURNUUIDprefix,
                           base::CompareCase::INSENSITIVE_ASCII) &&
          base::Uuid::ParseCaseInsensitive(
-             base::StringPiece(spec).substr(std::strlen(kURNUUIDprefix)))
+             std::string_view(spec).substr(std::strlen(kURNUUIDprefix)))
              .is_valid();
 }
 

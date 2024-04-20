@@ -27,6 +27,7 @@
 // on systems without case-sensitive file systems.
 
 #include <iosfwd>
+#include <string_view>
 #include <type_traits>
 
 #include "base/containers/span.h"
@@ -522,7 +523,7 @@ class WTF_EXPORT String {
   [[nodiscard]] static String FromUTF8(const char* s) {
     return FromUTF8(reinterpret_cast<const LChar*>(s));
   }
-  [[nodiscard]] static String FromUTF8(base::StringPiece);
+  [[nodiscard]] static String FromUTF8(std::string_view);
 
   // Tries to convert the passed in string to UTF-8, but will fall back to
   // Latin-1 if the string is not valid UTF-8.

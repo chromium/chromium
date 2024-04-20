@@ -7,14 +7,15 @@
 // since changes to it require review from security reviewers, listed in the
 // SECURITY_OWNERS file.
 
-#include "third_party/blink/public/common/origin_trials/origin_trials.h"
+#include <string_view>
 
 #include "base/containers/contains.h"
+#include "third_party/blink/public/common/origin_trials/origin_trials.h"
 
 namespace blink::origin_trials {
 
-bool IsTrialPersistentToNextResponse(base::StringPiece trial_name) {
-  static base::StringPiece const kPersistentTrials[] = {
+bool IsTrialPersistentToNextResponse(std::string_view trial_name) {
+  static std::string_view const kPersistentTrials[] = {
       // Enable the FrobulatePersistent* trials as a persistent trials for
       // tests.
       "FrobulatePersistent",

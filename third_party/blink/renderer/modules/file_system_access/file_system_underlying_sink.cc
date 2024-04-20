@@ -393,7 +393,7 @@ ScriptPromise<IDLUndefined> FileSystemUnderlyingSink::WriteData(
     case V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString::ContentType::
         kUSVString:
       data_source = std::make_unique<mojo::StringDataSource>(
-          StringUTF8Adaptor(data->GetAsUSVString()).AsStringPiece(),
+          StringUTF8Adaptor(data->GetAsUSVString()).AsStringView(),
           mojo::StringDataSource::AsyncWritingMode::
               STRING_MAY_BE_INVALIDATED_BEFORE_COMPLETION);
       break;

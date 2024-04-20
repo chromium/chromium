@@ -683,7 +683,7 @@ bool OriginTrialContext::EnableTrialFromToken(
 
   TrialTokenResult token_result =
       trial_token_validator_->ValidateTokenAndTrialWithOriginInfo(
-          token_string.AsStringPiece(),
+          token_string.AsStringView(),
           TrialTokenValidator::OriginInfo(origin_info.origin->ToUrlOrigin(),
                                           origin_info.is_secure),
           script_url_origins, base::Time::Now());

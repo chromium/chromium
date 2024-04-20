@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_UNIQUE_NAME_UNIQUE_NAME_HELPER_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "third_party/blink/public/common/common_export.h"
 
 namespace blink {
@@ -77,7 +77,7 @@ class BLINK_COMMON_EXPORT UniqueNameHelper {
     virtual ~FrameAdapter();
 
     virtual bool IsMainFrame() const = 0;
-    virtual bool IsCandidateUnique(base::StringPiece name) const = 0;
+    virtual bool IsCandidateUnique(std::string_view name) const = 0;
     // Returns the number of sibling frames of this frame. Note this should not
     // include this frame in the count.
     virtual int GetSiblingCount() const = 0;
@@ -100,7 +100,7 @@ class BLINK_COMMON_EXPORT UniqueNameHelper {
     // boolean predicate that indicates when to stop collection of names.
     virtual std::vector<std::string> CollectAncestorNames(
         BeginPoint begin_point,
-        bool (*should_stop)(base::StringPiece)) const = 0;
+        bool (*should_stop)(std::string_view)) const = 0;
     // Returns a vector of ints representing the child index of each frame in
     // the chain from this frame to the root.
     virtual std::vector<int> GetFramePosition(BeginPoint begin_point) const = 0;
@@ -192,7 +192,7 @@ class BLINK_COMMON_EXPORT UniqueNameHelper {
   //
   // Note: This method only works if |unique_name| was calculated after calling
   // PreserveStableUniqueNameForTesting (see above).
-  static std::string ExtractStableNameForTesting(base::StringPiece unique_name);
+  static std::string ExtractStableNameForTesting(std::string_view unique_name);
 
  private:
   const raw_ptr<FrameAdapter> frame_;

@@ -4,11 +4,13 @@
 
 #include "third_party/blink/renderer/core/loader/url_matcher.h"
 
+#include <string_view>
+
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
-UrlMatcher::UrlMatcher(const base::StringPiece& encoded_url_list_string) {
+UrlMatcher::UrlMatcher(const std::string_view& encoded_url_list_string) {
   ParseFieldTrialParam(encoded_url_list_string);
 }
 
@@ -41,7 +43,7 @@ bool UrlMatcher::Match(const KURL& url) const {
 }
 
 void UrlMatcher::ParseFieldTrialParam(
-    const base::StringPiece& encoded_url_list_string) {
+    const std::string_view& encoded_url_list_string) {
   Vector<String> parsed_strings;
   String::FromUTF8(encoded_url_list_string)
       .Split(",", /*allow_empty_entries=*/false, parsed_strings);

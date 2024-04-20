@@ -7,6 +7,7 @@
 #include <memory>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <tuple>
 
 #include "base/feature_list.h"
@@ -49,7 +50,7 @@ std::string SerializeAttributeSeparator(const EncodedAttribute type) {
 // E.x.: "^0" becomes kTopLevelSite.
 // Expects `in` to have a length of 2.
 std::optional<EncodedAttribute> DeserializeAttributeSeparator(
-    const base::StringPiece& in) {
+    const std::string_view& in) {
   DCHECK_EQ(in.size(), 2U);
   uint8_t number = in[1] - '0';
 
@@ -66,7 +67,7 @@ std::optional<EncodedAttribute> DeserializeAttributeSeparator(
 // This is to indicate that there is a valid separator with both a '^' and a
 // uint8_t and some amount of encoded data. I.e.: "^09" has both a "^0" as the
 // separator and '9' as the encoded data.
-bool ValidSeparatorWithData(base::StringPiece in, size_t pos_of_caret) {
+bool ValidSeparatorWithData(std::string_view in, size_t pos_of_caret) {
   if (in.length() > pos_of_caret + 2 && in[pos_of_caret + 2] != '^')
     return true;
 
@@ -78,7 +79,7 @@ bool ValidSeparatorWithData(base::StringPiece in, size_t pos_of_caret) {
 namespace blink {
 
 // static
-std::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
+std::optional<StorageKey> StorageKey::Deserialize(std::string_view in) {
   // As per the Serialize() call, we have to expect one of the following
   // structures:
   // <StorageKey `key`.origin> + "/" + "^1" + <StorageKey
@@ -167,7 +168,7 @@ std::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 
       // The origin is the portion up to, but not including, the caret
       // separator.
-      const base::StringPiece origin_substr = in.substr(0, pos_first_caret);
+      const std::string_view origin_substr = in.substr(0, pos_first_caret);
       key_origin = url::Origin::Create(GURL(origin_substr));
 
       // The origin should not be opaque and the serialization should be
@@ -178,7 +179,7 @@ std::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 
       // The top_level_site is the portion beyond the first separator.
       int length_of_site = pos_second_caret - (pos_first_caret + 2);
-      const base::StringPiece top_level_site_substr =
+      const std::string_view top_level_site_substr =
           in.substr(pos_first_caret + 2, length_of_site);
       key_top_level_site = net::SchemefulSite(GURL(top_level_site_substr));
 
@@ -223,7 +224,7 @@ std::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 
       // The origin is the portion up to, but not including, the caret
       // separator.
-      const base::StringPiece origin_substr = in.substr(0, pos_first_caret);
+      const std::string_view origin_substr = in.substr(0, pos_first_caret);
       key_origin = url::Origin::Create(GURL(origin_substr));
 
       // The origin should not be opaque and the serialization should be
@@ -234,7 +235,7 @@ std::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 
       // The ancestor_chain_bit is the portion beyond the first separator.
       int raw_bit;
-      const base::StringPiece raw_bit_substr =
+      const std::string_view raw_bit_substr =
           in.substr(pos_first_caret + 2, std::string::npos);
       if (!base::StringToInt(raw_bit_substr, &raw_bit)) {
         return std::nullopt;
@@ -281,7 +282,7 @@ std::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 
       // The origin is the portion up to, but not including, the first
       // separator.
-      const base::StringPiece origin_substr = in.substr(0, pos_first_caret);
+      const std::string_view origin_substr = in.substr(0, pos_first_caret);
       key_origin = url::Origin::Create(GURL(origin_substr));
 
       // The origin should not be opaque and the serialization should be
@@ -293,10 +294,10 @@ std::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
       // The first high 64 bits of the nonce are next, between the two
       // separators.
       int length_of_high = pos_second_caret - (pos_first_caret + 2);
-      base::StringPiece high_digits =
+      std::string_view high_digits =
           in.substr(pos_first_caret + 2, length_of_high);
       // The low 64 bits are last, after the second separator.
-      base::StringPiece low_digits = in.substr(pos_second_caret + 2);
+      std::string_view low_digits = in.substr(pos_second_caret + 2);
 
       uint64_t nonce_high = 0;
       uint64_t nonce_low = 0;
@@ -353,7 +354,7 @@ std::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 
       // The origin is the portion up to, but not including, the first
       // separator.
-      const base::StringPiece origin_substr = in.substr(0, pos_first_caret);
+      const std::string_view origin_substr = in.substr(0, pos_first_caret);
       key_origin = url::Origin::Create(GURL(origin_substr));
 
       // The origin should not be opaque and the serialization should be
@@ -365,11 +366,11 @@ std::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
       // The first high 64 bits of the sites's nonce are next, between the first
       // separators.
       int length_of_high = pos_second_caret - (pos_first_caret + 2);
-      base::StringPiece high_digits =
+      std::string_view high_digits =
           in.substr(pos_first_caret + 2, length_of_high);
       // The low 64 bits are next, after the second separator.
       int length_of_low = pos_third_caret - (pos_second_caret + 2);
-      base::StringPiece low_digits =
+      std::string_view low_digits =
           in.substr(pos_second_caret + 2, length_of_low);
 
       uint64_t nonce_high = 0;
@@ -413,7 +414,7 @@ std::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
       }
 
       // The precursor is the rest of the input.
-      const base::StringPiece url_precursor_substr =
+      const std::string_view url_precursor_substr =
           in.substr(pos_third_caret + 2);
       const GURL url_precursor(url_precursor_substr);
       const url::SchemeHostPort tuple_precursor(url_precursor);
@@ -444,7 +445,7 @@ std::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
 
 // static
 std::optional<StorageKey> StorageKey::DeserializeForLocalStorage(
-    base::StringPiece in) {
+    std::string_view in) {
   // We have to support the local storage specific variant that lacks the
   // trailing slash.
   const url::Origin maybe_origin = url::Origin::Create(GURL(in));

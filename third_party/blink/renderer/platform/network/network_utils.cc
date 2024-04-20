@@ -47,15 +47,16 @@ namespace network_utils {
 bool IsReservedIPAddress(const String& host) {
   net::IPAddress address;
   StringUTF8Adaptor utf8(host);
-  if (!net::ParseURLHostnameToAddress(utf8.AsStringPiece(), &address))
+  if (!net::ParseURLHostnameToAddress(utf8.AsStringView(), &address)) {
     return false;
+  }
   return !address.IsPubliclyRoutable();
 }
 
 String GetDomainAndRegistry(const String& host, PrivateRegistryFilter filter) {
   StringUTF8Adaptor host_utf8(host);
   std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
-      host_utf8.AsStringPiece(), getNetPrivateRegistryFilter(filter));
+      host_utf8.AsStringView(), getNetPrivateRegistryFilter(filter));
   return String(domain.data(), domain.length());
 }
 

@@ -105,7 +105,7 @@ ProtocolResponse ParseCacheId(const String& id,
   }
 
   std::optional<StorageKey> key =
-      StorageKey::Deserialize(StringUTF8Adaptor(*storage_key).AsStringPiece());
+      StorageKey::Deserialize(StringUTF8Adaptor(*storage_key).AsStringView());
   if (!key.has_value()) {
     return ProtocolResponse::ServerError("Not able to deserialize storage key");
   }
@@ -653,7 +653,7 @@ void InspectorCacheStorageAgent::requestCacheNames(
                       ? maybe_storage_key.value()
                       : maybe_storage_bucket.value().getStorageKey();
     std::optional<StorageKey> key =
-        StorageKey::Deserialize(StringUTF8Adaptor(storage_key).AsStringPiece());
+        StorageKey::Deserialize(StringUTF8Adaptor(storage_key).AsStringView());
     if (!key.has_value()) {
       callback->sendFailure(ProtocolResponse::InvalidParams(
           "Not able to deserialize storage key"));

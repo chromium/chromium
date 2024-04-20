@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/timing/background_tracing_helper.h"
 
+#include <string_view>
+
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/hash/md5.h"
@@ -245,7 +247,7 @@ BackgroundTracingHelper::GetMarkHashSetForSiteHash(uint32_t site_hash) {
 }
 
 // static
-size_t BackgroundTracingHelper::GetSequenceNumberPos(base::StringPiece string) {
+size_t BackgroundTracingHelper::GetSequenceNumberPos(std::string_view string) {
   // Extract any trailing integers.
   size_t cursor = string.size();
   while (cursor > 0) {
@@ -273,7 +275,7 @@ size_t BackgroundTracingHelper::GetSequenceNumberPos(base::StringPiece string) {
 }
 
 // static
-uint32_t BackgroundTracingHelper::MD5Hash32(base::StringPiece string) {
+uint32_t BackgroundTracingHelper::MD5Hash32(std::string_view string) {
   base::MD5Digest digest;
   base::MD5Sum(base::as_byte_span(string), &digest);
   return base::numerics::U32FromBigEndian(base::span(digest.a).first<4u>());
@@ -281,7 +283,7 @@ uint32_t BackgroundTracingHelper::MD5Hash32(base::StringPiece string) {
 
 // static
 void BackgroundTracingHelper::GetMarkHashAndSequenceNumber(
-    base::StringPiece mark_name,
+    std::string_view mark_name,
     uint32_t sequence_number_offset,
     uint32_t* mark_hash,
     uint32_t* sequence_number) {
@@ -313,7 +315,7 @@ void BackgroundTracingHelper::GetMarkHashAndSequenceNumber(
 
 // static
 bool BackgroundTracingHelper::ParseBackgroundTracingPerformanceMarkHashes(
-    base::StringPiece allow_list,
+    std::string_view allow_list,
     SiteMarkHashMap& allow_listed_hashes) {
   // We parse into this temporary structure, and move into the output on
   // success.

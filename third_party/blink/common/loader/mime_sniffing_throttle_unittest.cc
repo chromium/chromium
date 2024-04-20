@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/loader/mime_sniffing_throttle.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -81,7 +82,7 @@ class MockDelegate : public blink::URLLoaderThrottle::Delegate {
  public:
   // Implements blink::URLLoaderThrottle::Delegate.
   void CancelWithError(int error_code,
-                       base::StringPiece custom_reason) override {
+                       std::string_view custom_reason) override {
     NOTIMPLEMENTED();
   }
   void Resume() override {

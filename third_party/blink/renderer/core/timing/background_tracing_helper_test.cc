@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/timing/background_tracing_helper.h"
 
+#include <string_view>
+
 #include "base/hash/md5_constexpr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -18,15 +20,15 @@ class BackgroundTracingHelperTest : public testing::Test {
   BackgroundTracingHelperTest() = default;
   ~BackgroundTracingHelperTest() override = default;
 
-  static size_t GetSequenceNumberPos(base::StringPiece string) {
+  static size_t GetSequenceNumberPos(std::string_view string) {
     return BackgroundTracingHelper::GetSequenceNumberPos(string);
   }
 
-  static uint32_t MD5Hash32(base::StringPiece string) {
+  static uint32_t MD5Hash32(std::string_view string) {
     return BackgroundTracingHelper::MD5Hash32(string);
   }
 
-  static void GetMarkHashAndSequenceNumber(base::StringPiece mark_name,
+  static void GetMarkHashAndSequenceNumber(std::string_view mark_name,
                                            uint32_t sequence_number_offset,
                                            uint32_t* mark_hash,
                                            uint32_t* sequence_number) {

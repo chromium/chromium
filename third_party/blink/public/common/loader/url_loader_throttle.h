@@ -6,10 +6,10 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_LOADER_URL_LOADER_THROTTLE_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -56,14 +56,13 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
     // Cancels the resource load with the specified error code and an optional,
     // application-defined reason description.
     virtual void CancelWithError(int error_code,
-                                 base::StringPiece custom_reason = "") = 0;
+                                 std::string_view custom_reason = "") = 0;
 
     // Cancels the resource load with the specified error code and an optional,
     // application-defined reason description with optional extended_reason().
     virtual void CancelWithExtendedError(int error_code,
                                          int extended_reason_code,
-                                         base::StringPiece custom_reason = "") {
-    }
+                                         std::string_view custom_reason = "") {}
 
     // Resumes the deferred resource load. It is a no-op if the resource load is
     // not deferred or has already been canceled.

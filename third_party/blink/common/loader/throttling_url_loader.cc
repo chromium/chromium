@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -11,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -142,13 +142,13 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
 
   // URLLoaderThrottle::Delegate:
   void CancelWithError(int error_code,
-                       base::StringPiece custom_reason) override {
+                       std::string_view custom_reason) override {
     CancelWithExtendedError(error_code, 0, custom_reason);
   }
 
   void CancelWithExtendedError(int error_code,
                                int extended_reason_code,
-                               base::StringPiece custom_reason) override {
+                               std::string_view custom_reason) override {
     if (!loader_)
       return;
 
@@ -874,14 +874,14 @@ void ThrottlingURLLoader::OnClientConnectionError() {
 }
 
 void ThrottlingURLLoader::CancelWithError(int error_code,
-                                          base::StringPiece custom_reason) {
+                                          std::string_view custom_reason) {
   CancelWithExtendedError(error_code, 0, custom_reason);
 }
 
 void ThrottlingURLLoader::CancelWithExtendedError(
     int error_code,
     int extended_reason_code,
-    base::StringPiece custom_reason) {
+    std::string_view custom_reason) {
   if (loader_completed_)
     return;
 
@@ -1000,7 +1000,7 @@ void ThrottlingURLLoader::InterceptResponse(
       &ThrottlingURLLoader::OnClientConnectionError, base::Unretained(this)));
 }
 
-void ThrottlingURLLoader::DisconnectClient(base::StringPiece custom_reason) {
+void ThrottlingURLLoader::DisconnectClient(std::string_view custom_reason) {
   client_receiver_.reset();
 
   if (!custom_reason.empty()) {

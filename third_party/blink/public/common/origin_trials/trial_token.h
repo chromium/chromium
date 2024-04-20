@@ -7,8 +7,8 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_public_key.h"
@@ -62,7 +62,7 @@ class BLINK_COMMON_EXPORT TrialToken {
   // correctly formatted and signed by the supplied public key, and can be
   // parsed.
   static std::unique_ptr<TrialToken> From(
-      base::StringPiece token_text,
+      std::string_view token_text,
       const OriginTrialPublicKey& public_key,
       OriginTrialTokenStatus* out_status);
 
@@ -103,7 +103,7 @@ class BLINK_COMMON_EXPORT TrialToken {
   // parameters, respectively. Otherwise,the return code indicates what was
   // wrong with the string, and |out_token_payload|, |out_token_signature| and
   // |out_token_version| are unchanged.
-  static OriginTrialTokenStatus Extract(base::StringPiece token_text,
+  static OriginTrialTokenStatus Extract(std::string_view token_text,
                                         const OriginTrialPublicKey& public_key,
                                         std::string* out_token_payload,
                                         std::string* out_token_signature,
@@ -115,10 +115,10 @@ class BLINK_COMMON_EXPORT TrialToken {
                                            const uint8_t version);
 
   bool ValidateOrigin(const url::Origin& origin) const;
-  bool ValidateFeatureName(base::StringPiece feature_name) const;
+  bool ValidateFeatureName(std::string_view feature_name) const;
   bool ValidateDate(const base::Time& now) const;
 
-  static bool ValidateSignature(base::StringPiece signature_text,
+  static bool ValidateSignature(std::string_view signature_text,
                                 const std::string& data,
                                 const OriginTrialPublicKey& public_key);
 

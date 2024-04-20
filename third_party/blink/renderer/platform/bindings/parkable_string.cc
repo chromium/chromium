@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 
 #include <array>
+#include <string_view>
 
 #include "base/allocator/partition_allocator/src/partition_alloc/oom.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc.h"
@@ -633,11 +634,11 @@ String ParkableStringImpl::UnparkInternal() {
   }
 
   TRACE_EVENT("blink", "ParkableStringImpl::Decompress");
-  base::StringPiece compressed_string_piece(
+  std::string_view compressed_string_piece(
       reinterpret_cast<const char*>(metadata_->compressed_->data()),
       metadata_->compressed_->size() * sizeof(uint8_t));
   String uncompressed;
-  base::StringPiece uncompressed_string_piece;
+  std::string_view uncompressed_string_piece;
   size_t size = CharactersSizeInBytes();
   char* char_data;
   if (is_8bit()) {
@@ -649,7 +650,7 @@ String ParkableStringImpl::UnparkInternal() {
     uncompressed = String::CreateUninitialized(length(), data);
     char_data = reinterpret_cast<char*>(data);
   }
-  uncompressed_string_piece = base::StringPiece(char_data, size);
+  uncompressed_string_piece = std::string_view(char_data, size);
 
   switch (GetCompressionAlgorithm()) {
     case CompressionAlgorithm::kZlib: {
@@ -759,8 +760,8 @@ void ParkableStringImpl::CompressInBackground(
   // Compression touches the string.
   AsanUnpoisonString(params->string->string_);
   bool ok;
-  base::StringPiece data(reinterpret_cast<const char*>(params->data.get()),
-                         params->size);
+  std::string_view data(reinterpret_cast<const char*>(params->data.get()),
+                        params->size);
   std::unique_ptr<Vector<uint8_t>> compressed;
 
   // This runs in background, making CPU starvation likely, and not an issue.

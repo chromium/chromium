@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -933,7 +934,7 @@ MediaRecorderHandler::CreateVideoEncoderMetricsProvider() {
       ->CreateVideoEncoderMetricsProvider();
 }
 
-void MediaRecorderHandler::WriteData(base::StringPiece data) {
+void MediaRecorderHandler::WriteData(std::string_view data) {
   DCHECK(IsMainThread());
   DVLOG(3) << __func__ << " " << data.length() << "B";
   if (invalidated_)

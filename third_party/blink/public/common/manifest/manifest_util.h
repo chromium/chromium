@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/strings/string_piece.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/manifest/manifest.h"

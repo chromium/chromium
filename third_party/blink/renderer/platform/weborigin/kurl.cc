@@ -200,7 +200,7 @@ bool KURL::IsAboutURL(const char* allowed_path) const {
 
   StringView path = ComponentStringView(parsed_.path);
   StringUTF8Adaptor path_utf8(path);
-  return GURL::IsAboutPath(path_utf8.AsStringPiece(), allowed_path);
+  return GURL::IsAboutPath(path_utf8.AsStringView(), allowed_path);
 }
 
 bool KURL::IsAboutBlankURL() const {
@@ -780,7 +780,7 @@ void KURL::SetPath(const String& input) {
 String DecodeURLEscapeSequences(const String& string, DecodeURLMode mode) {
   StringUTF8Adaptor string_utf8(string);
   url::RawCanonOutputT<char16_t> unescaped;
-  url::DecodeURLEscapeSequences(string_utf8.AsStringPiece(), mode, &unescaped);
+  url::DecodeURLEscapeSequences(string_utf8.AsStringView(), mode, &unescaped);
   return StringImpl::Create8BitIfPossible(
       reinterpret_cast<UChar*>(unescaped.data()),
       base::checked_cast<wtf_size_t>(unescaped.length()));
@@ -804,7 +804,7 @@ String EncodeWithURLEscapeSequences(const String& not_encoded_string) {
 
 bool HasInvalidURLEscapeSequences(const String& string) {
   StringUTF8Adaptor string_utf8(string);
-  return url::HasInvalidURLEscapeSequences(string_utf8.AsStringPiece());
+  return url::HasInvalidURLEscapeSequences(string_utf8.AsStringView());
 }
 
 bool KURL::CanSetHostOrPort() const {

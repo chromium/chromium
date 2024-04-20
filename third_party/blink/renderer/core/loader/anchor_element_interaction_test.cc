@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
-
 #include <cstddef>
+#include <string_view>
 #include <tuple>
 
 #include "base/run_loop.h"
@@ -20,6 +19,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
@@ -520,7 +520,7 @@ TEST_F(AnchorElementInteractionTest,
 
 class AnchorElementInteractionMouseMotionEstimatorFeatureFlagTest
     : public AnchorElementInteractionTest,
-      public ::testing::WithParamInterface<base::StringPiece> {
+      public ::testing::WithParamInterface<std::string_view> {
  public:
   bool IsMouseMotionEstimatorFeatureEnabled() {
     return GetParam() == "enabled";

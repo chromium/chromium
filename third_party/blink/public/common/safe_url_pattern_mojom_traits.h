@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SAFE_URL_PATTERN_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SAFE_URL_PATTERN_MOJOM_TRAITS_H_
 
+#include <string_view>
+
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
@@ -14,8 +16,8 @@
 namespace mojo {
 namespace internal {
 
-inline base::StringPiece TruncateString(const std::string& string) {
-  return base::StringPiece(string).substr(0, 4 * 1024);
+inline std::string_view TruncateString(const std::string& string) {
+  return std::string_view(string).substr(0, 4 * 1024);
 }
 
 }  // namespace internal
@@ -44,7 +46,7 @@ struct BLINK_COMMON_EXPORT
 template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::FixedPatternDataView, ::liburlpattern::Part> {
-  static base::StringPiece value(const ::liburlpattern::Part& part) {
+  static std::string_view value(const ::liburlpattern::Part& part) {
     return internal::TruncateString(part.value);
   }
 
@@ -55,16 +57,16 @@ struct BLINK_COMMON_EXPORT
 template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::WildcardPatternDataView, ::liburlpattern::Part> {
-  static base::StringPiece name(const ::liburlpattern::Part& part) {
+  static std::string_view name(const ::liburlpattern::Part& part) {
     return internal::TruncateString(part.name);
   }
-  static base::StringPiece prefix(const ::liburlpattern::Part& part) {
+  static std::string_view prefix(const ::liburlpattern::Part& part) {
     return internal::TruncateString(part.prefix);
   }
-  static base::StringPiece value(const ::liburlpattern::Part& part) {
+  static std::string_view value(const ::liburlpattern::Part& part) {
     return internal::TruncateString(part.value);
   }
-  static base::StringPiece suffix(const ::liburlpattern::Part& part) {
+  static std::string_view suffix(const ::liburlpattern::Part& part) {
     return internal::TruncateString(part.suffix);
   }
 

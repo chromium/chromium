@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/request_conversion.h"
 
+#include <string_view>
+
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -47,13 +49,13 @@ constexpr char kCorsExemptRequestedWithHeaderName[] = "X-Requested-With";
 
 // TODO(yhirano) Dedupe this and the same-name function in
 // web_url_request_util.cc.
-std::string TrimLWSAndCRLF(const base::StringPiece& input) {
-  base::StringPiece string = net::HttpUtil::TrimLWS(input);
+std::string TrimLWSAndCRLF(const std::string_view& input) {
+  std::string_view string = net::HttpUtil::TrimLWS(input);
   const char* begin = string.data();
   const char* end = string.data() + string.size();
   while (begin < end && (end[-1] == '\r' || end[-1] == '\n'))
     --end;
-  return std::string(base::StringPiece(begin, end - begin));
+  return std::string(std::string_view(begin, end - begin));
 }
 
 mojom::ResourceType RequestContextToResourceType(

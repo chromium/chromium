@@ -7,9 +7,9 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/feature_list.h"
-#include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -142,7 +142,7 @@ class MODULES_EXPORT MediaRecorderHandler final
       std::optional<media::VideoEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp,
       bool is_key_frame);
-  void WriteData(base::StringPiece data);
+  void WriteData(std::string_view data);
 
   // Updates recorded tracks live and enabled.
   void UpdateTracksLiveAndEnabled();

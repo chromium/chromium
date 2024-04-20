@@ -4,9 +4,10 @@
 
 #include "third_party/blink/public/common/loader/mime_sniffing_url_loader.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/mime_sniffer.h"
@@ -225,7 +226,7 @@ void MimeSniffingURLLoader::OnBodyReadable(MojoResult) {
   buffered_body_.resize(start_size + read_bytes);
   std::string new_type;
   bool made_final_decision = net::SniffMimeType(
-      base::StringPiece(buffered_body_.data(), buffered_body_.size()),
+      std::string_view(buffered_body_.data(), buffered_body_.size()),
       response_url_, response_head_->mime_type,
       net::ForceSniffFileUrlsForHtml::kDisabled, &new_type);
   response_head_->mime_type = new_type;

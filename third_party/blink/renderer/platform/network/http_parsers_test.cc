@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
@@ -873,7 +874,7 @@ TEST(HTTPParsersTest, ParseContentSecurityPoliciesSourceBasic) {
 
 class NoVarySearchPrefetchDisabledTest
     : public ::testing::Test,
-      public ::testing::WithParamInterface<base::StringPiece> {
+      public ::testing::WithParamInterface<std::string_view> {
  public:
   NoVarySearchPrefetchDisabledTest() {
     scoped_feature_list_.InitAndDisableFeature(
@@ -892,7 +893,7 @@ TEST_P(NoVarySearchPrefetchDisabledTest, ParsingNVSReturnsDefaultURLVariance) {
   EXPECT_FALSE(parsed_headers->no_vary_search_with_parse_error);
 }
 
-constexpr base::StringPiece no_vary_search_prefetch_disabled_data[] = {
+constexpr std::string_view no_vary_search_prefetch_disabled_data[] = {
     // No No-Vary-Search header.
     "HTTP/1.1 200 OK\r\n"
     "Set-Cookie: a\r\n"
@@ -911,7 +912,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsDefaultURLVariance) {
   base::test::ScopedFeatureList feature_list(
       network::features::kPrefetchNoVarySearch);
-  const base::StringPiece headers =
+  const std::string_view headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
       "Set-Cookie: b\r\n\r\n";

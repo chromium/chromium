@@ -5,14 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_FAKE_CONNECTION_TEST_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_FAKE_CONNECTION_TEST_BASE_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
 #include "third_party/webrtc/p2p/base/connection.h"
-
 #include "third_party/webrtc_overrides/p2p/base/fake_connection_factory.h"
 
 namespace blink {
@@ -33,7 +32,7 @@ class FakeConnectionTestBase : public ::testing::Test {
     ready.Wait();
   }
 
-  const ::cricket::Connection* GetConnection(base::StringPiece remote_ip,
+  const ::cricket::Connection* GetConnection(std::string_view remote_ip,
                                              int remote_port) {
     return connection_factory_->CreateConnection(
         webrtc::IceCandidateType::kHost, remote_ip, remote_port);

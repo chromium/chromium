@@ -7,8 +7,9 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_ORIGIN_TRIALS_ORIGIN_TRIALS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_ORIGIN_TRIALS_ORIGIN_TRIALS_H_
 
+#include <string_view>
+
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-forward.h"
 
@@ -21,28 +22,28 @@ enum class OriginTrialType { kDefault = 0, kDeprecation, kIntervention };
 namespace origin_trials {
 
 // Return true if there is a feature with the passed |trial_name|.
-BLINK_COMMON_EXPORT bool IsTrialValid(base::StringPiece trial_name);
+BLINK_COMMON_EXPORT bool IsTrialValid(std::string_view trial_name);
 
 // Return true if |trial_name| can be enabled in an insecure context.
 BLINK_COMMON_EXPORT bool IsTrialEnabledForInsecureContext(
-    base::StringPiece trial_name);
+    std::string_view trial_name);
 
 // Return true if |trial_name| can be enabled from third party origins.
 BLINK_COMMON_EXPORT bool IsTrialEnabledForThirdPartyOrigins(
-    base::StringPiece trial_name);
+    std::string_view trial_name);
 
 // Return true if |trial_name| can be enabled for read access by the browser
 // process.
 BLINK_COMMON_EXPORT bool IsTrialEnabledForBrowserProcessReadAccess(
-    base::StringPiece trial_name);
+    std::string_view trial_name);
 
 // Returns true if |trial_name| should be enabled until the next response
 // from the same origin is received.
 BLINK_COMMON_EXPORT bool IsTrialPersistentToNextResponse(
-    base::StringPiece trial_name);
+    std::string_view trial_name);
 
 // Return true if |trial_name| is a deprecation trial.
-BLINK_COMMON_EXPORT bool IsDeprecationTrial(base::StringPiece trial_name);
+BLINK_COMMON_EXPORT bool IsDeprecationTrial(std::string_view trial_name);
 
 // Returns the trial type of the given |feature|.
 BLINK_COMMON_EXPORT OriginTrialType
@@ -52,7 +53,7 @@ GetTrialType(blink::mojom::OriginTrialFeature feature);
 // The trial name MUST be valid (call IsTrialValid() before calling this
 // function).
 BLINK_COMMON_EXPORT base::span<const blink::mojom::OriginTrialFeature>
-FeaturesForTrial(base::StringPiece trial_name);
+FeaturesForTrial(std::string_view trial_name);
 
 // Return the list of features which will also be enabled if the given
 // |feature| is enabled.

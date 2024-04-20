@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_component.h"
 
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -45,7 +47,7 @@ StringView TypeToString(Component::Type type) {
 }
 
 // Utility method to get the correct encoding callback for a given type.
-liburlpattern::EncodeCallback GetEncodeCallback(base::StringPiece pattern_utf8,
+liburlpattern::EncodeCallback GetEncodeCallback(std::string_view pattern_utf8,
                                                 Component::Type type,
                                                 Component* protocol_component) {
   switch (type) {
@@ -196,7 +198,7 @@ Component* Component::Compile(v8::Isolate* isolate,
   StringUTF8Adaptor utf8(final_pattern);
   auto parse_result = liburlpattern::Parse(
       absl::string_view(utf8.data(), utf8.size()),
-      GetEncodeCallback(utf8.AsStringPiece(), type, protocol_component),
+      GetEncodeCallback(utf8.AsStringView(), type, protocol_component),
       options);
   if (!parse_result.ok()) {
     exception_state.ThrowTypeError(

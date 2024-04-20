@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -73,7 +74,7 @@ class MockTokenValidator : public TrialTokenValidator {
     const OriginInfo origin;
     Vector<OriginInfo> third_party_origin_info;
     const base::Time current_time;
-    ValidationParams(base::StringPiece token_param,
+    ValidationParams(std::string_view token_param,
                      const OriginInfo& origin_info,
                      base::span<const OriginInfo> scripts,
                      base::Time time)
@@ -88,7 +89,7 @@ class MockTokenValidator : public TrialTokenValidator {
   ~MockTokenValidator() override = default;
 
   TrialTokenResult ValidateTokenAndTrialWithOriginInfo(
-      base::StringPiece token,
+      std::string_view token,
       const OriginInfo& origin,
       base::span<const OriginInfo> third_party_origin_info,
       base::Time current_time) const override {

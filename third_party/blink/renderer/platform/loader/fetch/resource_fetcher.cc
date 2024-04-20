@@ -31,6 +31,7 @@
 #include <limits>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -2912,7 +2913,7 @@ ResourceFetcher::MainThreadFetchers() {
 // The followings should match with `ResourceType` in
 // `third_party/blink/renderer/platform/loader/fetch/resource.h`
 void ResourceFetcher::RecordResourceHistogram(
-    base::StringPiece prefix,
+    std::string_view prefix,
     ResourceType type,
     RevalidationPolicyForMetrics policy) const {
   base::UmaHistogramEnumeration(
