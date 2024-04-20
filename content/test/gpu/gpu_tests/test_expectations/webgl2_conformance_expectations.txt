@@ -850,7 +850,6 @@ crbug.com/1215698 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles
 crbug.com/1221362 [ chromeos chromeos-board-amd64-generic ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
-crbug.com/332890145 [ chromeos chromeos-board-amd64-generic ] conformance2/extensions/ext-disjoint-timer-query-webgl2.html [ Failure ]
 
 crbug.com/326755442 [ chromeos intel mesa_ge_21.0 passthrough ] conformance2/extensions/ext-render-snorm.html [ Failure ]
 
@@ -913,7 +912,6 @@ crbug.com/324952609 [ chromeos cros-chrome chromeos-board-volteer ] conformance2
 # Lacros failures #
 #####################
 
-crbug.com/angleproject/7904 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] WebglExtension_WEBGL_clip_cull_distance [ Failure ]
 crbug.com/324952609 [ chromeos lacros-chrome chromeos-board-octopus passthrough ] conformance2/extensions/oes-draw-buffers-indexed.html [ Failure ]
 
 crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] conformance/glsl/bugs/constant-precision-qualifier.html [ Failure ]
