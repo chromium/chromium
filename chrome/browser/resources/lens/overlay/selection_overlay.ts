@@ -226,6 +226,8 @@ export class SelectionOverlayElement extends PolymerElement {
         this.$.selectionOverlay.getBoundingClientRect();
     this.$.regionSelectionLayer.setCanvasSizeTo(
         selectionOverlayBounds.width, selectionOverlayBounds.height);
+    this.$.objectSelectionLayer.setCanvasSizeTo(
+        selectionOverlayBounds.width, selectionOverlayBounds.height);
   }
 
   // Updates the currentGesture to correspond with the given PointerEvent.

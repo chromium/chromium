@@ -4,7 +4,7 @@
 
 import './strings.m.js';
 
-import {assert} from '//resources/js/assert.js';
+import {assert, assertInstanceof} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -15,6 +15,7 @@ import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import type {LensPageCallbackRouter} from './lens.mojom-webui.js';
 import {getTemplate} from './object_layer.html.js';
 import type {OverlayObject} from './overlay_object.mojom-webui.js';
+import {Polygon_CoordinateType} from './polygon.mojom-webui.js';
 import type {PostSelectionBoundingBox} from './post_selection_renderer.js';
 import type {GestureEvent} from './selection_utils.js';
 
@@ -65,6 +66,7 @@ function compareArea(object1: OverlayObject, object2: OverlayObject): number {
 export interface ObjectLayerElement {
   $: {
     objectsContainer: DomRepeat,
+    objectSelectionCanvas: HTMLCanvasElement,
   };
 }
 
@@ -82,6 +84,8 @@ export class ObjectLayerElement extends PolymerElement {
 
   static get properties() {
     return {
+      canvasHeight: Number,
+      canvasWidth: Number,
       renderedObjects: {
         type: Array,
         value: () => [],
@@ -94,12 +98,21 @@ export class ObjectLayerElement extends PolymerElement {
     };
   }
 
+  private canvasHeight: number;
+  private canvasWidth: number;
+  private context: CanvasRenderingContext2D;
   // The objects rendered in this layer.
   private renderedObjects: OverlayObject[];
 
   private readonly router: LensPageCallbackRouter =
       BrowserProxyImpl.getInstance().callbackRouter;
   private objectsReceivedListenerId: number|null = null;
+
+  override ready() {
+    super.ready();
+
+    this.context = this.$.objectSelectionCanvas.getContext('2d')!;
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -139,6 +152,76 @@ export class ObjectLayerElement extends PolymerElement {
     }));
 
     return true;
+  }
+
+  private handlePointerEnter(event: PointerEvent) {
+    assertInstanceof(event.target, HTMLElement);
+    const object =
+      this.$.objectsContainer.itemForElement(event.target);
+    this.drawObject(object);
+  }
+
+  private handlePointerLeave() {
+    this.clearCanvas();
+  }
+
+  setCanvasSizeTo(width: number, height: number) {
+    // Resetting the canvas width and height also clears the canvas.
+    this.canvasWidth = width;
+    this.canvasHeight = height;
+  }
+
+  private drawObject(object: OverlayObject) {
+    const polygons = object.geometry.segmentationPolygon;
+    if (!polygons) {
+      return;
+    }
+    const objectBoundingBox = object.geometry.boundingBox;
+    // Fit a square around the bounding box to use for gradient coordinates.
+    const longestEdge =
+        Math.max(objectBoundingBox.box.width, objectBoundingBox.box.height);
+    const left = (objectBoundingBox.box.x - longestEdge / 2) * this.canvasWidth;
+    const top = (objectBoundingBox.box.y - longestEdge / 2) * this.canvasHeight;
+    const right =
+        (objectBoundingBox.box.x + longestEdge / 2) * this.canvasWidth;
+    const bottom =
+        (objectBoundingBox.box.y + longestEdge / 2) * this.canvasHeight;
+
+    this.context.beginPath();
+    for (const polygon of polygons) {
+      // TODO(b/330183480): Currently, we are assuming that polygon
+      // coordinates are normalized. We should still implement
+      // rendering in case this assumption is ever violated.
+      if (polygon.coordinateType !== Polygon_CoordinateType.kNormalized) {
+        continue;
+      }
+
+      const firstVertex = polygon.vertex[0];
+      this.context.moveTo(
+          firstVertex.x * this.canvasWidth, firstVertex.y * this.canvasHeight);
+      for (const vertex of polygon.vertex.slice(1)) {
+        this.context.lineTo(
+            vertex.x * this.canvasWidth, vertex.y * this.canvasHeight);
+      }
+    }
+
+    this.context.lineCap = 'round';
+    this.context.lineJoin = 'round';
+    this.context.lineWidth = 4;
+    const gradient = this.context.createLinearGradient(
+        left,
+        top,
+        right,
+        bottom,
+    );
+    gradient.addColorStop(0, '#0177DC');
+    gradient.addColorStop(1, '#D5E3FF');
+    this.context.strokeStyle = gradient;
+    this.context.stroke();
+  }
+
+  private clearCanvas() {
+    this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
   }
 
   private onObjectsReceived(objects: OverlayObject[]) {

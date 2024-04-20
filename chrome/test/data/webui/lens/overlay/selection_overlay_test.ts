@@ -169,7 +169,38 @@ suite('SelectionOverlay', function() {
                 .regionSelectionCanvas.height);
       });
 
-  test(
+    test(
+      'verify object selection canvas resizes when selection overlay resizes',
+      async () => {
+        selectionOverlayElement.style.display = 'block';
+        selectionOverlayElement.style.width = '50px';
+        selectionOverlayElement.style.height = '50px';
+        // Resize observer does not trigger with flushTasks(), so we need to use
+        // waitAfterNextRender() instead.
+        await waitAfterNextRender(selectionOverlayElement);
+        assertEquals(
+            50,
+            selectionOverlayElement.$.objectSelectionLayer.$
+                .objectSelectionCanvas.width);
+        assertEquals(
+            50,
+            selectionOverlayElement.$.objectSelectionLayer.$
+                .objectSelectionCanvas.height);
+
+        selectionOverlayElement.style.width = '200px';
+        selectionOverlayElement.style.height = '200px';
+        await waitAfterNextRender(selectionOverlayElement);
+        assertEquals(
+            200,
+            selectionOverlayElement.$.objectSelectionLayer.$
+                .objectSelectionCanvas.width);
+        assertEquals(
+            200,
+            selectionOverlayElement.$.objectSelectionLayer.$
+                .objectSelectionCanvas.height);
+      });
+
+    test(
       `verify that only objects respond to taps, even when text overlaps`,
       async () => {
         await Promise.all([addWords(), addObjects()]);

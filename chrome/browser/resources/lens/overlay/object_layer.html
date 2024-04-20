@@ -9,7 +9,18 @@
     border: 2px solid green;
     opacity: 50%;
   }
+
+  #objectSelectionCanvas {
+    top: 0;
+    left: 0;
+    position: absolute;
+    pointer-events: none;
+  }
 </style>
+<canvas id="objectSelectionCanvas" height="[[canvasHeight]]"
+  width="[[canvasWidth]]"></canvas>
 <template id="objectsContainer" is="dom-repeat" items="[[renderedObjects]]">
-  <div style$="[[getObjectStyle(item)]]" class="object"></div>
+  <div style$="[[getObjectStyle(item)]]" class="object"
+    on-pointerenter="handlePointerEnter" on-pointerleave="handlePointerLeave">
+  </div>
 </template>
