@@ -285,6 +285,7 @@ class TabListMediator {
                             TaskTraits.UI_DEFAULT,
                             () -> {
                                 TabGroupUtils.maybeShowIPH(
+                                        mProfile,
                                         FeatureConstants.TAB_GROUPS_YOUR_TABS_ARE_TOGETHER_FEATURE,
                                         anchor,
                                         null);

@@ -257,6 +257,7 @@ public class TabGroupUiCoordinator
                 && mBottomSheetController.getSheetState()
                         == BottomSheetController.SheetState.HIDDEN) {
             TabGroupUtils.maybeShowIPH(
+                    mTabModelSelector.getModel(false).getProfile(),
                     FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE,
                     mTabStripCoordinator.getContainerView(),
                     mBottomSheetController);
