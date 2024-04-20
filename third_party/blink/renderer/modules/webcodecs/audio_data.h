@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_AUDIO_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_AUDIO_DATA_H_
 
+#include "base/containers/span.h"
 #include "media/base/audio_buffer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_sample_format.h"
@@ -57,12 +58,22 @@ class MODULES_EXPORT AudioData final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
+  void CopyConvert(base::span<uint8_t> dest,
+                   AudioDataCopyToOptions* copy_to_options);
+
+  void CopyToInterleaved(base::span<uint8_t> dest,
+                         AudioDataCopyToOptions* copy_to_options);
+
+  void CopyToPlanar(base::span<uint8_t> dest,
+                    AudioDataCopyToOptions* copy_to_options,
+                    ExceptionState& exception_state);
+
   scoped_refptr<media::AudioBuffer> data_;
 
   std::optional<V8AudioSampleFormat> format_;
 
-  // Temporary space for converting to float32.
-  std::unique_ptr<media::AudioBus> temp_bus_;
+  // Space to convert `data_` to f32 planar, for ease of conversions.
+  std::unique_ptr<media::AudioBus> data_as_f32_bus_;
 
   int64_t timestamp_;
 };

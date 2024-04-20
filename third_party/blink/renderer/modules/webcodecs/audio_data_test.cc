@@ -6,11 +6,13 @@
 
 #include <optional>
 
+#include "media/base/audio_sample_types.h"
 #include "media/base/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_copy_to_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_sample_format.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
@@ -494,5 +496,394 @@ TEST_F(AudioDataTest, Interleaved) {
     EXPECT_EQ(copy[block_index + 2], base_value + 2 * kFrames);  // channel 2
   }
 }
+
+struct U8Traits {
+  static constexpr std::string Format = "u8";
+  static constexpr std::string PlanarFormat = "u8-planar";
+  using Traits = media::UnsignedInt8SampleTypeTraits;
+};
+
+struct S16Traits {
+  static constexpr std::string Format = "s16";
+  static constexpr std::string PlanarFormat = "s16-planar";
+  using Traits = media::SignedInt16SampleTypeTraits;
+};
+
+struct S32Traits {
+  static constexpr std::string Format = "s32";
+  static constexpr std::string PlanarFormat = "s32-planar";
+  using Traits = media::SignedInt32SampleTypeTraits;
+};
+
+struct F32Traits {
+  static constexpr std::string Format = "f32";
+  static constexpr std::string PlanarFormat = "f32-planar";
+  using Traits = media::Float32SampleTypeTraits;
+};
+
+template <typename SourceTraits, typename TargetTraits>
+struct ConversionConfig {
+  using From = SourceTraits;
+  using To = TargetTraits;
+  static std::string config_name() {
+    return From::Format + "_to_" + To::Format;
+  }
+};
+
+template <typename TestConfig>
+class AudioDataConversionTest : public testing::Test {
+ protected:
+  AudioDataInit* CreateAudioDataInit(AllowSharedBufferSource* data,
+                                     std::string format) {
+    auto* audio_data_init = AudioDataInit::Create();
+    audio_data_init->setData(data);
+    audio_data_init->setTimestamp(kTimestampInMicroSeconds);
+    audio_data_init->setNumberOfChannels(kChannels);
+    audio_data_init->setNumberOfFrames(kFrames);
+    audio_data_init->setSampleRate(kSampleRate);
+    audio_data_init->setFormat(String(format));
+    return audio_data_init;
+  }
+
+  // Creates test AudioData with kMinValue in channel 0 and kMaxValue in
+  // channel 1. If `use_offset`, the first sample of every channel will be
+  // kZeroPointValue; if `use_frame_count`, the last sample of every channel
+  // will be kZeroPointValue. This allows us to verify that we respect bounds
+  // when copying.
+  AudioData* CreateAudioData(std::string format,
+                             bool planar,
+                             bool use_offset,
+                             bool use_frame_count,
+                             ScriptState* script_state,
+                             ExceptionState& exception_state) {
+    auto* data = planar ? CreatePlanarData(use_offset, use_frame_count)
+                        : CreateInterleavedData(use_offset, use_frame_count);
+    auto* audio_data_init = CreateAudioDataInit(data, format);
+    return MakeGarbageCollected<AudioData>(script_state, audio_data_init,
+                                           exception_state);
+  }
+
+  // Creates CopyToOptions. If `use_offset` is true, we exclude the first
+  // sample. If `use_frame_count`, we exclude the last sample.
+  AudioDataCopyToOptions* CreateCopyToOptions(int plane_index,
+                                              std::string format,
+                                              bool use_offset,
+                                              bool use_frame_count) {
+    auto* copy_to_options = AudioDataCopyToOptions::Create();
+    copy_to_options->setPlaneIndex(plane_index);
+    copy_to_options->setFormat(String(format));
+    int total_frames = kFrames;
+
+    if (use_offset) {
+      copy_to_options->setFrameOffset(1);
+      --total_frames;
+    }
+
+    if (use_frame_count) {
+      copy_to_options->setFrameCount(total_frames - 1);
+    }
+
+    return copy_to_options;
+  }
+
+  // Returns planar data with the source sample type's min value in
+  // channel 0, and its max value in channel 1.
+  // If `use_offset` is true, the first sample of every channel will be 0.
+  // If `use_frame_count` is true, the last sample of every channel will be 0.
+  AllowSharedBufferSource* CreatePlanarData(bool use_offset,
+                                            bool use_frame_count) {
+    static_assert(kChannels == 2, "CreatePlanarData() assumes 2 channels");
+    using SourceTraits = TestConfig::From::Traits;
+    using ValueType = SourceTraits::ValueType;
+    auto* buffer =
+        DOMArrayBuffer::Create(kChannels * kFrames, sizeof(ValueType));
+
+    ValueType* plane_start = reinterpret_cast<ValueType*>(buffer->Data());
+    for (int i = 0; i < kFrames; ++i) {
+      plane_start[i] = SourceTraits::kMinValue;
+    }
+
+    if (use_offset) {
+      plane_start[0] = SourceTraits::kZeroPointValue;
+    }
+    if (use_frame_count) {
+      plane_start[kFrames - 1] = SourceTraits::kZeroPointValue;
+    }
+
+    plane_start += kFrames;
+
+    for (int i = 0; i < kFrames; ++i) {
+      plane_start[i] = SourceTraits::kMaxValue;
+    }
+
+    if (use_offset) {
+      plane_start[0] = SourceTraits::kZeroPointValue;
+    }
+    if (use_frame_count) {
+      plane_start[kFrames - 1] = SourceTraits::kZeroPointValue;
+    }
+
+    return MakeGarbageCollected<AllowSharedBufferSource>(buffer);
+  }
+
+  // Returns interleaved data the source sample type's min value in channel 0,
+  // and its max value in channel 1.
+  // If `use_offset` is true, the first sample of every channel will be 0.
+  // If `use_frame_count` is true, the last sample of every channel will be 0.
+  AllowSharedBufferSource* CreateInterleavedData(bool use_offset,
+                                                 bool use_frame_count) {
+    static_assert(kChannels == 2,
+                  "CreateInterleavedData() assumes 2 channels.");
+    using SourceTraits = TestConfig::From::Traits;
+    using ValueType = SourceTraits::ValueType;
+    constexpr int kTotalSamples = kChannels * kFrames;
+    auto* buffer = DOMArrayBuffer::Create(kTotalSamples, sizeof(ValueType));
+
+    ValueType* plane_start = reinterpret_cast<ValueType*>(buffer->Data());
+    for (int i = 0; i < kTotalSamples; i += 2) {
+      plane_start[i] = SourceTraits::kMinValue;
+      plane_start[i + 1] = SourceTraits::kMaxValue;
+    }
+
+    if (use_offset) {
+      plane_start[0] = SourceTraits::kZeroPointValue;
+      plane_start[1] = SourceTraits::kZeroPointValue;
+    }
+
+    if (use_frame_count) {
+      plane_start[kTotalSamples - 2] = SourceTraits::kZeroPointValue;
+      plane_start[kTotalSamples - 1] = SourceTraits::kZeroPointValue;
+    }
+
+    return MakeGarbageCollected<AllowSharedBufferSource>(buffer);
+  }
+
+  int GetFramesToCopy(bool use_offset, bool use_frame_count) {
+    int frames_to_copy = kFrames;
+    if (use_offset) {
+      --frames_to_copy;
+    }
+    if (use_frame_count) {
+      --frames_to_copy;
+    }
+    return frames_to_copy;
+  }
+
+  void TestConversionToPlanar(bool source_is_planar,
+                              bool use_offset,
+                              bool use_frame_count) {
+    using Config = TestConfig;
+    using TargetType = Config::To::Traits::ValueType;
+    constexpr int kChannelToCopy = 1;
+
+    std::string source_format =
+        source_is_planar ? Config::From::PlanarFormat : Config::From::Format;
+
+    // Create original data. The first and last frame will be zero'ed, if
+    // `use_offset` or `use_frame_count` are set, respectively.
+    V8TestingScope scope;
+    auto* audio_data = CreateAudioData(
+        source_format, source_is_planar, use_offset, use_frame_count,
+        scope.GetScriptState(), scope.GetExceptionState());
+    ASSERT_FALSE(scope.GetExceptionState().HadException())
+        << scope.GetExceptionState().Message();
+
+    // Prepare to copy.
+    auto* copy_to_options = CreateCopyToOptions(
+        kChannelToCopy, Config::To::PlanarFormat, use_offset, use_frame_count);
+
+    const int frames_to_copy = GetFramesToCopy(use_offset, use_frame_count);
+    DOMArrayBuffer* data_copy =
+        DOMArrayBuffer::Create(frames_to_copy, sizeof(TargetType));
+    AllowSharedBufferSource* dest =
+        MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
+
+    // Copy frames, potentially excluding the first and last frame if
+    // `use_offset` or `use_frame_count` are set, respectively.
+    audio_data->copyTo(dest, copy_to_options, scope.GetExceptionState());
+    EXPECT_FALSE(scope.GetExceptionState().HadException())
+        << scope.GetExceptionState().Message();
+
+    TargetType* copied_data = static_cast<TargetType*>(data_copy->Data());
+
+    // `kChannelToCopy` should only contain kMaxValue
+    for (int i = 0; i < frames_to_copy; ++i) {
+      ASSERT_EQ(copied_data[i], Config::To::Traits::kMaxValue);
+    }
+  }
+
+  void TestConversionToInterleaved(bool source_is_planar,
+                                   bool use_offset,
+                                   bool use_frame_count) {
+    using Config = TestConfig;
+    using TargetType = Config::To::Traits::ValueType;
+
+    std::string source_format =
+        source_is_planar ? Config::From::PlanarFormat : Config::From::Format;
+
+    // Create original data. The first and last frame will be zero'ed, if
+    // `use_offset` or `use_frame_count` are set, respectively.
+    V8TestingScope scope;
+    auto* audio_data = CreateAudioData(
+        source_format, source_is_planar, use_offset, use_frame_count,
+        scope.GetScriptState(), scope.GetExceptionState());
+    ASSERT_FALSE(scope.GetExceptionState().HadException())
+        << scope.GetExceptionState().Message();
+
+    // Prepare to copy.
+    auto* copy_to_options =
+        CreateCopyToOptions(0, Config::To::Format, use_offset, use_frame_count);
+
+    const int total_frames =
+        GetFramesToCopy(use_offset, use_frame_count) * kChannels;
+    DOMArrayBuffer* data_copy =
+        DOMArrayBuffer::Create(total_frames, sizeof(TargetType));
+    AllowSharedBufferSource* dest =
+        MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
+
+    // Copy frames, potentially excluding the first and last frame if
+    // `use_offset` or `use_frame_count` are set, respectively.
+    audio_data->copyTo(dest, copy_to_options, scope.GetExceptionState());
+    EXPECT_FALSE(scope.GetExceptionState().HadException())
+        << scope.GetExceptionState().Message();
+
+    TargetType* copied_data = static_cast<TargetType*>(data_copy->Data());
+
+    // The interleaved data should have kMinValue in
+    // channel 0 and kMaxValue in channel 1.
+    for (int i = 0; i < total_frames; i += 2) {
+      ASSERT_EQ(copied_data[i], Config::To::Traits::kMinValue);
+      ASSERT_EQ(copied_data[i + 1], Config::To::Traits::kMaxValue);
+    }
+  }
+
+  test::TaskEnvironment task_environment_;
+};
+
+TYPED_TEST_SUITE_P(AudioDataConversionTest);
+
+TYPED_TEST_P(AudioDataConversionTest, PlanarToPlanar) {
+  const bool source_is_planar = true;
+
+  {
+    SCOPED_TRACE(TypeParam::config_name() + "_all_frames");
+    this->TestConversionToPlanar(source_is_planar, false, false);
+  }
+
+  {
+    SCOPED_TRACE(TypeParam::config_name() + "_with_offset");
+    this->TestConversionToPlanar(source_is_planar, true, false);
+  }
+
+  {
+    SCOPED_TRACE(TypeParam::config_name() + "_with_frame_count");
+    this->TestConversionToPlanar(source_is_planar, false, true);
+  }
+
+  {
+    SCOPED_TRACE(TypeParam::config_name() + "_with_offset_and_frame_count");
+    this->TestConversionToPlanar(source_is_planar, true, true);
+  }
+}
+
+TYPED_TEST_P(AudioDataConversionTest, InterleavedToPlanar) {
+  const bool source_is_planar = false;
+
+  {
+    SCOPED_TRACE(TypeParam::config_name() + "_all_frames");
+    this->TestConversionToPlanar(source_is_planar, false, false);
+  }
+
+  {
+    SCOPED_TRACE(TypeParam::config_name() + "_with_offset");
+    this->TestConversionToPlanar(source_is_planar, true, false);
+  }
+
+  {
+    SCOPED_TRACE(TypeParam::config_name() + "_with_frame_count");
+    this->TestConversionToPlanar(source_is_planar, false, true);
+  }
+
+  {
+    SCOPED_TRACE(TypeParam::config_name() + "_with_offset_and_frame_count");
+    this->TestConversionToPlanar(source_is_planar, true, true);
+  }
+}
+
+TYPED_TEST_P(AudioDataConversionTest, PlanarToInterleaved) {
+  const bool source_is_planar = true;
+
+  {
+    SCOPED_TRACE(TypeParam::config_name() + "_all_frames");
+    this->TestConversionToInterleaved(source_is_planar, false, false);
+  }
+
+  {
+    SCOPED_TRACE(TypeParam::config_name() + "_with_offset");
+    this->TestConversionToInterleaved(source_is_planar, true, false);
+  }
+
+  {
+    SCOPED_TRACE(TypeParam::config_name() + "_with_frame_count");
+    this->TestConversionToInterleaved(source_is_planar, false, true);
+  }
+
+  {
+    SCOPED_TRACE(TypeParam::config_name() + "_with_offset_and_frame_count");
+    this->TestConversionToInterleaved(source_is_planar, true, true);
+  }
+}
+
+TYPED_TEST_P(AudioDataConversionTest, InterleavedToInterleaved) {
+  const bool source_is_planar = false;
+
+  {
+    SCOPED_TRACE(TypeParam::config_name() + "_all_frames");
+    this->TestConversionToInterleaved(source_is_planar, false, false);
+  }
+
+  {
+    SCOPED_TRACE(TypeParam::config_name() + "_with_offset");
+    this->TestConversionToInterleaved(source_is_planar, true, false);
+  }
+
+  {
+    SCOPED_TRACE(TypeParam::config_name() + "_with_frame_count");
+    this->TestConversionToInterleaved(source_is_planar, false, true);
+  }
+
+  {
+    SCOPED_TRACE(TypeParam::config_name() + "_with_offset_and_frame_count");
+    this->TestConversionToInterleaved(source_is_planar, true, true);
+  }
+}
+
+REGISTER_TYPED_TEST_SUITE_P(AudioDataConversionTest,
+                            PlanarToPlanar,
+                            InterleavedToPlanar,
+                            PlanarToInterleaved,
+                            InterleavedToInterleaved);
+
+typedef ::testing::Types<ConversionConfig<U8Traits, U8Traits>,
+                         ConversionConfig<U8Traits, S16Traits>,
+                         ConversionConfig<U8Traits, S32Traits>,
+                         ConversionConfig<U8Traits, F32Traits>,
+                         ConversionConfig<S16Traits, U8Traits>,
+                         ConversionConfig<S16Traits, S16Traits>,
+                         ConversionConfig<S16Traits, S32Traits>,
+                         ConversionConfig<S16Traits, F32Traits>,
+                         ConversionConfig<S32Traits, U8Traits>,
+                         ConversionConfig<S32Traits, S16Traits>,
+                         ConversionConfig<S32Traits, S32Traits>,
+                         ConversionConfig<S32Traits, F32Traits>,
+                         ConversionConfig<F32Traits, U8Traits>,
+                         ConversionConfig<F32Traits, S16Traits>,
+                         ConversionConfig<F32Traits, S32Traits>,
+                         ConversionConfig<F32Traits, F32Traits>>
+    TestConfigs;
+
+INSTANTIATE_TYPED_TEST_SUITE_P(CommonTypes,
+                               AudioDataConversionTest,
+                               TestConfigs);
 
 }  // namespace blink
