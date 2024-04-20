@@ -35,16 +35,13 @@ constexpr gfx::Rect kAnchorWidgetRect(50, 50, 400, 250);
 class TestBubbleView : public BubbleDialogDelegateView {
  public:
   explicit TestBubbleView(View* anchor_view)
-      : BubbleDialogDelegateView(anchor_view, BubbleBorder::TOP_LEFT) {
+      : BubbleDialogDelegateView(anchor_view,
+                                 BubbleBorder::TOP_LEFT,
+                                 BubbleBorder::DIALOG_SHADOW,
+                                 true) {
     SetButtons(ui::DIALOG_BUTTON_NONE);
     SetLayoutManager(std::make_unique<FillLayout>());
     AddChildView(std::make_unique<View>())->SetPreferredSize(kTestViewSize);
-  }
-
- protected:
-  void AddedToWidget() override {
-    BubbleDialogDelegateView::AddedToWidget();
-    SizeToContents();
   }
 };
 

@@ -53,7 +53,10 @@ class InfoBubbleFrame : public BubbleFrameView {
 InfoBubble::InfoBubble(View* anchor,
                        BubbleBorder::Arrow arrow,
                        const std::u16string& message)
-    : BubbleDialogDelegateView(anchor, arrow) {
+    : BubbleDialogDelegateView(anchor,
+                               arrow,
+                               views::BubbleBorder::DIALOG_SHADOW,
+                               true) {
   DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
 
   set_margins(LayoutProvider::Get()->GetInsetsMetric(
@@ -121,7 +124,6 @@ void InfoBubble::UpdatePosition() {
 
   if (anchor_widget()->IsVisible() &&
       !GetAnchorView()->GetVisibleBounds().IsEmpty()) {
-    SizeToContents();
     widget->SetVisibilityChangedAnimationsEnabled(true);
     widget->ShowInactive();
   } else {

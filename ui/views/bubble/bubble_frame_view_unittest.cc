@@ -1036,7 +1036,7 @@ class TestWidthSnapDelegate : public TestBubbleDialogDelegateView {
  public:
   TestWidthSnapDelegate(TestAnchor* anchor, bool should_snap) {
     DialogDelegate::SetButtons(should_snap ? ui::DIALOG_BUTTON_OK
-                                            : ui::DIALOG_BUTTON_NONE);
+                                           : ui::DIALOG_BUTTON_NONE);
     SetAnchorView(anchor->widget().GetContentsView());
     set_margins(gfx::Insets());
     BubbleDialogDelegateView::CreateBubble(this);

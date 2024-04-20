@@ -748,7 +748,10 @@ BubbleDialogModelHost::BubbleDialogModelHost(
     View* anchor_view,
     BubbleBorder::Arrow arrow,
     ui::ModalType modal_type)
-    : BubbleDialogDelegate(anchor_view, arrow),
+    : BubbleDialogDelegate(anchor_view,
+                           arrow,
+                           views::BubbleBorder::DIALOG_SHADOW,
+                           true),
       model_(std::move(model)),
       // Make sure the modal type is set before calling InitContentsView which
       // uses IsModalDialog().
@@ -969,7 +972,6 @@ void BubbleDialogModelHost::OnWidgetInitialized() {
     // The banner is supposed to be purely decorative.
     banner_view->GetViewAccessibility().SetIsIgnored(true);
     GetBubbleFrameView()->SetHeaderView(std::move(banner_view));
-    SizeToContents();
   }
 }
 
@@ -1034,18 +1036,10 @@ BubbleDialogModelHostContentsView* BubbleDialogModelHost::InitContentsView(
 
 void BubbleDialogModelHost::OnContentsViewChanged() {
   UpdateSpacingAndMargins();
-
-  if (GetBubbleFrameView()) {
-    SizeToContents();
-  }
 }
 
 void BubbleDialogModelHost::OnDialogButtonChanged() {
   UpdateDialogButtons();
-
-  // If the contents of the dialog change (text, field visitiblity, etc.), the
-  // dialog may need to be resized.
-  SizeToContents();
 }
 
 void BubbleDialogModelHost::UpdateWindowIcon() {
