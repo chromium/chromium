@@ -520,7 +520,8 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
           features::IsChromeRefresh2023() ? views::BubbleBorder::DIALOG_SHADOW
                                           : views::BubbleBorder::STANDARD_SHADOW
 #endif
-          ),
+          ,
+          true),
       delegate_(delegate) {
   if (anchor.rect.has_value()) {
     SetForceAnchorRect(anchor.rect.value());
@@ -883,7 +884,9 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
   // b/303069420).
   frame_view->bubble_border()->set_draw_border_stroke(false);
 
-  SizeToContents();
+  // TODO(crbug.com/41493925) Remove this InvalidateLayout() once the border
+  // invalidate itself when it changes.
+  InvalidateLayout();
 
   // Most help bubbles with buttons take focus when they show.
   bool show_active =

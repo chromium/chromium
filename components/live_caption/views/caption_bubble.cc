@@ -536,7 +536,11 @@ class CaptionBubbleLabelAXModeObserver : public ui::AXModeObserver {
 CaptionBubble::CaptionBubble(PrefService* profile_prefs,
                              const std::string& application_locale,
                              base::OnceClosure destroyed_callback)
-    : profile_prefs_(profile_prefs),
+    : views::BubbleDialogDelegateView(nullptr,
+                                      views::BubbleBorder::TOP_LEFT,
+                                      views::BubbleBorder::DIALOG_SHADOW,
+                                      true),
+      profile_prefs_(profile_prefs),
       destroyed_callback_(std::move(destroyed_callback)),
       application_locale_(application_locale),
       is_expanded_(
@@ -1517,7 +1521,6 @@ void CaptionBubble::UpdateContentSize() {
 void CaptionBubble::Redraw() {
   UpdateBubbleAndTitleVisibility();
   UpdateContentSize();
-  SizeToContents();
 }
 
 void CaptionBubble::ShowInactive() {
