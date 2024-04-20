@@ -2247,7 +2247,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
       _markedRange.length = length;
     }
 
-    if (fixLiveConversion) {
+    if (fixLiveConversion && newSelRange.location != NSNotFound) {
       CHECK_LE(_markedRange.location + newSelRange.location,
                std::numeric_limits<uint32_t>::max())
           << "`start` is too large; _markedRange.location="
