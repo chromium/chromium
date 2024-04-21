@@ -78,6 +78,11 @@ using SigningCallback = base::OnceCallback<void(
 // counter to be reset.
 using PINResultCallback = base::OnceCallback<void(PINValidationResult)>;
 
+// Called at the successful completion of MakeCredential to save the
+// newly-created passkey to sync data.
+using SavePasskeyCallback =
+    base::OnceCallback<void(sync_pb::WebauthnCredentialSpecifics)>;
+
 // A PIN entered by the user, after hashing and encoding.
 struct COMPONENT_EXPORT(DEVICE_FIDO) ClaimedPIN {
   explicit ClaimedPIN(std::vector<uint8_t> pin_claim,
@@ -103,6 +108,8 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CredentialRequest {
   // `pin_result_callback` is invoked when the Enclave rejects or accepts the
   // claimed PIN.
   PINResultCallback pin_result_callback;
+  // Callback for storing a newly-created passkey.
+  SavePasskeyCallback save_passkey_callback;
   // access_token contains an OAuth2 token to authenticate access to the enclave
   // at the account level.
   std::string access_token;

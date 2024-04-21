@@ -281,9 +281,6 @@ bool GPMEnclaveController::ready_for_ui() const {
 
 void GPMEnclaveController::ConfigureDiscoveries(
     device::FidoDiscoveryFactory* discovery_factory) {
-  discovery_factory->set_enclave_passkey_creation_callback(base::BindRepeating(
-      &GPMEnclaveController::OnPasskeyCreated, weak_ptr_factory_.GetWeakPtr()));
-
   using EnclaveEventStream = device::FidoDiscoveryBase::EventStream<
       std::unique_ptr<device::enclave::CredentialRequest>>;
   std::unique_ptr<EnclaveEventStream> event_stream;
@@ -746,6 +743,9 @@ void GPMEnclaveController::StartEnclaveTransaction(
         std::tie(request->key_version, request->wrapped_secret) =
             enclave_manager_->GetCurrentWrappedSecret();
       }
+      request->save_passkey_callback =
+          base::BindOnce(&GPMEnclaveController::OnPasskeyCreated,
+                         weak_ptr_factory_.GetWeakPtr());
       break;
     }
 

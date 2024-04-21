@@ -178,12 +178,6 @@ void FidoDiscoveryFactory::set_hid_ignore_list(
   hid_ignore_list_ = std::move(hid_ignore_list);
 }
 
-void FidoDiscoveryFactory::set_enclave_passkey_creation_callback(
-    base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
-        callback) {
-  enclave_passkey_creation_callback_ = callback;
-}
-
 void FidoDiscoveryFactory::set_enclave_ui_request_stream(
     std::unique_ptr<FidoDiscoveryBase::EventStream<
         std::unique_ptr<enclave::CredentialRequest>>> stream) {
@@ -265,13 +259,11 @@ void FidoDiscoveryFactory::
 void FidoDiscoveryFactory::MaybeCreateEnclaveDiscovery(
     std::vector<std::unique_ptr<FidoDiscoveryBase>>& discoveries) {
   if (!base::FeatureList::IsEnabled(kWebAuthnEnclaveAuthenticator) ||
-      !enclave_passkey_creation_callback_ || !enclave_ui_request_stream_ ||
-      !network_context_factory_) {
+      !enclave_ui_request_stream_ || !network_context_factory_) {
     return;
   }
   discoveries.emplace_back(
       std::make_unique<enclave::EnclaveAuthenticatorDiscovery>(
-          std::move(enclave_passkey_creation_callback_),
           std::move(enclave_ui_request_stream_), network_context_factory_));
 }
 #endif

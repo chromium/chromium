@@ -30,8 +30,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticatorDiscovery
   using NetworkContextFactory =
       base::RepeatingCallback<network::mojom::NetworkContext*()>;
   EnclaveAuthenticatorDiscovery(
-      base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
-          save_passkey_callback,
       std::unique_ptr<EventStream<std::unique_ptr<CredentialRequest>>>
           ui_request_stream,
       NetworkContextFactory network_context_factory);
@@ -47,8 +45,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticatorDiscovery
   std::vector<std::unique_ptr<EnclaveAuthenticator>> authenticators_;
   std::unique_ptr<EventStream<std::unique_ptr<CredentialRequest>>>
       ui_request_stream_;
-  base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
-      save_passkey_callback_;
   NetworkContextFactory network_context_factory_;
   std::unique_ptr<EventStream<std::optional<std::string_view>>>
       oauth_token_provider_;

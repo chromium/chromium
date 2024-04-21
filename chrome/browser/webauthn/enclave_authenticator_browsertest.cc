@@ -831,9 +831,12 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
    * 4.  Test selects a GPM PIN
    * 5.  Device registration with enclave succeeds
    * 6.  MakeCredential succeeds
-   * 7.  Modal GetAssertion request invoked by RP, requires UV.
-   * 9.  Test enters wrong PIN
-   * 10. PIN entry dialog appears again, test enters correct PIN.
+   * 7.  Another modal MakeCredential request is invoked by RP, requiring UV
+   * 8.  Test enters wrong PIN
+   * 9.  PIN entry dialog appears again, test enters correct PIN
+   * 10. Modal GetAssertion request invoked by RP, requires UV
+   * 11. Test enters wrong PIN
+   * 12. PIN entry dialog appears again, test enters correct PIN
    *
    * Notably, user verification is asserted without a second GPM PIN prompt.
    */
@@ -869,6 +872,39 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
 
+  // A second MakeCredential, with incorrect PIN and then correct PIN.
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvRequired);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMCreatePasskey);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMEnterPin);
+  dialog_model()->OnGPMCreatePasskey();
+  model_observer()->WaitForStep();
+
+  EXPECT_EQ(browser()->profile()->GetPrefs()->GetInteger(
+                webauthn::pref_names::kEnclaveFailedPINAttemptsCount),
+            0);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMEnterPin);
+  dialog_model()->OnGPMPinEntered(u"111111");
+  model_observer()->WaitForStep();
+
+  EXPECT_EQ(browser()->profile()->GetPrefs()->GetInteger(
+                webauthn::pref_names::kEnclaveFailedPINAttemptsCount),
+            1);
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
+
+  // GetAssertion, with incorrect and then correct PIN.
   content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
   delegate_observer()->WaitForUI();
 

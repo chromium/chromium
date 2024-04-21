@@ -101,12 +101,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 
   void set_hid_ignore_list(base::flat_set<VidPid> hid_ignore_list);
 
-  // Provides a callback that will be called when a passkey is created with
-  // the enclave authenticator in order to save the new passkey to sync data.
-  void set_enclave_passkey_creation_callback(
-      base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
-          callback);
-
   void set_enclave_ui_request_stream(
       std::unique_ptr<FidoDiscoveryBase::EventStream<
           std::unique_ptr<enclave::CredentialRequest>>> stream);
@@ -196,8 +190,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
       get_assertion_request_for_legacy_credential_check_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   base::flat_set<VidPid> hid_ignore_list_;
-  base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
-      enclave_passkey_creation_callback_;
   std::unique_ptr<FidoDiscoveryBase::EventStream<
       std::unique_ptr<enclave::CredentialRequest>>>
       enclave_ui_request_stream_;

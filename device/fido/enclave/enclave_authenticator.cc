@@ -100,13 +100,10 @@ EnclaveAuthenticator::PendingMakeCredentialRequest::
 
 EnclaveAuthenticator::EnclaveAuthenticator(
     std::unique_ptr<CredentialRequest> ui_request,
-    base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
-        save_passkey_callback,
     NetworkContextFactory network_context_factory)
     : id_(RandomId()),
       network_context_factory_(std::move(network_context_factory)),
-      ui_request_(std::move(ui_request)),
-      save_passkey_callback_(std::move(save_passkey_callback)) {}
+      ui_request_(std::move(ui_request)) {}
 
 EnclaveAuthenticator::~EnclaveAuthenticator() = default;
 
@@ -204,7 +201,8 @@ void EnclaveAuthenticator::ProcessMakeCredentialResponse(
   auto& success_result =
       absl::get<std::pair<AuthenticatorMakeCredentialResponse,
                           sync_pb::WebauthnCredentialSpecifics>>(parse_result);
-  save_passkey_callback_.Run(std::move(success_result.second));
+  std::move(ui_request_->save_passkey_callback)
+      .Run(std::move(success_result.second));
   CompleteMakeCredentialRequest(CtapDeviceResponseCode::kSuccess,
                                 std::move(success_result.first));
 }

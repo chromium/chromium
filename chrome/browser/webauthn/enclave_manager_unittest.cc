@@ -243,15 +243,14 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
     ui_request->claimed_pin = std::move(claimed_pin);
 
     std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> specifics;
+    ui_request->save_passkey_callback = base::BindLambdaForTesting(
+        [&specifics](sync_pb::WebauthnCredentialSpecifics in_specifics) {
+          specifics = std::make_unique<sync_pb::WebauthnCredentialSpecifics>(
+              std::move(in_specifics));
+        });
 
     enclave::EnclaveAuthenticator authenticator(
         std::move(ui_request), /*save_passkey_callback=*/
-        base::BindLambdaForTesting(
-            [&specifics](sync_pb::WebauthnCredentialSpecifics in_specifics) {
-              specifics =
-                  std::make_unique<sync_pb::WebauthnCredentialSpecifics>(
-                      std::move(in_specifics));
-            }),
         base::BindLambdaForTesting([&]() -> network::mojom::NetworkContext* {
           return network_context_.get();
         }));
@@ -329,11 +328,11 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
         *manager_.GetWrappedSecret(/*version=*/kSecretVersion);
     ui_request->entity = std::move(entity);
     ui_request->claimed_pin = std::move(claimed_pin);
+    ui_request->save_passkey_callback = base::BindOnce(
+        [](sync_pb::WebauthnCredentialSpecifics) { NOTREACHED(); });
 
     enclave::EnclaveAuthenticator authenticator(
         std::move(ui_request), /*save_passkey_callback=*/
-        base::BindRepeating(
-            [](sync_pb::WebauthnCredentialSpecifics) { NOTREACHED(); }),
         base::BindLambdaForTesting([&]() -> network::mojom::NetworkContext* {
           return network_context_.get();
         }));

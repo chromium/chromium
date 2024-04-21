@@ -39,8 +39,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
  public:
   EnclaveAuthenticator(
       std::unique_ptr<CredentialRequest> ui_request,
-      base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
-          save_passkey_callback,
       NetworkContextFactory network_context_factory);
   ~EnclaveAuthenticator() override;
 
@@ -106,10 +104,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) EnclaveAuthenticator
   const std::array<uint8_t, 8> id_;
   const NetworkContextFactory network_context_factory_;
   const std::unique_ptr<CredentialRequest> ui_request_;
-
-  // Callback for storing a newly-created passkey.
-  const base::RepeatingCallback<void(sync_pb::WebauthnCredentialSpecifics)>
-      save_passkey_callback_;
 
   // Caches the request while waiting for the connection to be established.
   // At most one of these can be non-null at any given time.
