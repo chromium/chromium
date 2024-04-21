@@ -790,7 +790,7 @@
 <translation id="1593926297800505364">Պահել վճարման եղանակը</translation>
 <translation id="1594703455918849716">Անցնել ստուգման էջ</translation>
 <translation id="1594781465361405478">Միացնել/անջատել ձայնը</translation>
-<translation id="1594963087419619323">Կիսված էկրանի համատեսք</translation>
+<translation id="1594963087419619323">Տրոհված էկրանի ընդհանուր կարգավորումներ</translation>
 <translation id="1595492813686795610">Լինուքսը նորացվում է</translation>
 <translation id="1596286373007273895">Հասանելի է</translation>
 <translation id="1596709061955594992">Bluetooth-ն անջատված է։ Միացրեք այն՝ հասանելի սարքերի ցանկը տեսնելու համար։</translation>
@@ -930,7 +930,7 @@
 <translation id="1689333818294560261">Կեղծանուն</translation>
 <translation id="168991973552362966">Ավելացրեք մոտակայքում գտնվող տպիչ</translation>
 <translation id="1689945336726856614">Պատճենել &amp;URL-ը</translation>
-<translation id="1690068335127678634">Կիսված էկրանը կարգավորված է</translation>
+<translation id="1690068335127678634">Տրոհված էկրանի կարգավորում</translation>
 <translation id="1692115862433274081">Օգտագործել այլ հաշիվ</translation>
 <translation id="1692118695553449118">Համաժամացումը միացված է</translation>
 <translation id="1692210323591458290">Մուգ մանուշակագույն</translation>
@@ -4400,7 +4400,7 @@
 <translation id="4334768748331667190">Ձեզ այլևս չի ցուցադրվի <ph name="MODULE_NAME" /></translation>
 <translation id="4335835283689002019">Ապահով դիտարկումն անջատված է</translation>
 <translation id="4338034474804311322">Թարմացրեք Google Play ծառայությունները, որպեսզի նորից սկսեք գաղտնաբառեր պահել Google գաղտնաբառերի կառավարիչում</translation>
-<translation id="4338363401382232853">Կիսված էկրանի ռեժիմում պատուհանի առաջարկ</translation>
+<translation id="4338363401382232853">Տրոհված էկրանի համար առաջարկվող պատուհաններ</translation>
 <translation id="4339203724549370495">Ապատեղադրել հավելվածը</translation>
 <translation id="4340125850502689798">Օգտանունն անվավեր է</translation>
 <translation id="4340515029017875942"><ph name="ORIGIN" />-ը ցանկանում է կապ հաստատել «<ph name="EXTENSION_NAME" />» հավելվածի հետ</translation>
