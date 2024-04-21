@@ -15,7 +15,6 @@
 
 ShareAudioView::ShareAudioView(const std::u16string& label_text,
                                bool audio_offered) {
-  CHECK(base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign));
   SetProperty(views::kMarginsKey, gfx::Insets::TLBR(8, 16, 16, 16));
 
   views::ImageView* audio_icon_view =

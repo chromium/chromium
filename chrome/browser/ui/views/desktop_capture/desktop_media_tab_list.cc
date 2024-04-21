@@ -200,8 +200,7 @@ void TabListViewObserver::OnKeyDown(ui::KeyboardCode virtual_keycode) {
 
 std::unique_ptr<views::ScrollView> CreateScrollViewWithTable(
     std::unique_ptr<views::TableView> table) {
-  if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) &&
-      features::IsChromeRefresh2023()) {
+  if (features::IsChromeRefresh2023()) {
     auto scroll_view = std::make_unique<views::ScrollView>(
         views::ScrollView::ScrollWithLayers::kEnabled);
     scroll_view->SetDrawOverflowIndicator(false);
@@ -294,12 +293,8 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
   scroll_view_->SetPreferredSize(gfx::Size(kListWidth, 0));
   full_panel->AddChildView(std::move(preview_sidebar));
 
-  const gfx::Insets kFullPannelInset =
-      base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)
-          ? gfx::Insets(16)
-          : gfx::Insets::TLBR(15, 0, 0, 0);
-  const int kChildSpacing =
-      base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) ? 16 : 12;
+  const gfx::Insets kFullPannelInset = gfx::Insets(16);
+  const int kChildSpacing = 16;
   views::BoxLayout* layout =
       full_panel->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal, kFullPannelInset,
@@ -336,8 +331,7 @@ gfx::Size DesktopMediaTabList::CalculatePreferredSize() const {
   // If the DisplayMediaPickerRedesign flag is active, height should be 9 rows
   // to allow space for the audio-toggle controller, otherwise default to 10
   // rows.
-  const int preferred_item_count =
-      base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) ? 9 : 10;
+  const int preferred_item_count = 9;
   return gfx::Size(0, table_->GetRowHeight() * preferred_item_count);
 }
 
@@ -363,8 +357,7 @@ void DesktopMediaTabList::OnThemeChanged() {
         color_provider->GetColor(kColorDesktopMediaTabListBorder)));
   }
 
-  if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) &&
-      features::IsChromeRefresh2023()) {
+  if (features::IsChromeRefresh2023()) {
     scroll_view_->SetBackground(views::CreateRoundedRectBackground(
         GetColorProvider()->GetColor(ui::kColorSysSurface4), 8));
     const SkColor background_color =

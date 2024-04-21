@@ -206,38 +206,6 @@ void RecordUmaSelection(DialogType dialog_type,
   }
 }
 
-std::u16string GetLabelForAudioCheckbox(DesktopMediaList::Type type,
-                                        bool local_audio_suppression,
-                                        RequestSource request_source) {
-  switch (type) {
-    case DesktopMediaList::Type::kScreen: {
-      bool show_warning = local_audio_suppression &&
-                          base::FeatureList::IsEnabled(
-                              kWarnUserOfSystemWideLocalAudioSuppression);
-      if (request_source == RequestSource::kGetDisplayMedia &&
-          !base::FeatureList::IsEnabled(
-              ::kSuppressLocalAudioPlaybackForSystemAudio)) {
-        // Suppression blocked by killswitch, so no need to show a warning.
-        show_warning = false;
-      }
-      return l10n_util::GetStringUTF16(
-          show_warning
-              ? IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_SCREEN_WITH_MUTE_WARNING
-              : IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_SCREEN);
-    }
-    case DesktopMediaList::Type::kWindow:
-      return l10n_util::GetStringUTF16(
-          IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_WINDOW);
-    case DesktopMediaList::Type::kWebContents:
-    case DesktopMediaList::Type::kCurrentTab:
-      return l10n_util::GetStringUTF16(
-          IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_TAB);
-    case DesktopMediaList::Type::kNone:
-      break;
-  }
-  NOTREACHED_NORETURN();
-}
-
 std::u16string GetLabelForReselectButton(DesktopMediaList::Type type) {
   switch (type) {
     case DesktopMediaList::Type::kScreen:
@@ -310,19 +278,15 @@ bool ShouldSelectTab(DesktopMediaList::Type type,
 }
 
 std::unique_ptr<views::ScrollView> CreateScrollView(bool audio_requested) {
-  if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)) {
-    auto scroll_view = std::make_unique<views::ScrollView>();
-    scroll_view->SetBackgroundThemeColorId(
-        features::IsChromeRefresh2023() ? ui::kColorSysSurface4
-                                        : ui::kColorSubtleEmphasisBackground);
-    // The overflow indicator is disabled to reduce clutter next to the
-    // separator to the audio control when audio is requested or the bottom of
-    // the dialog when audio is not requested.
-    scroll_view->SetDrawOverflowIndicator(false);
-    return scroll_view;
-  } else {
-    return views::ScrollView::CreateScrollViewWithBorder();
-  }
+  auto scroll_view = std::make_unique<views::ScrollView>();
+  scroll_view->SetBackgroundThemeColorId(
+      features::IsChromeRefresh2023() ? ui::kColorSysSurface4
+                                      : ui::kColorSubtleEmphasisBackground);
+  // The overflow indicator is disabled to reduce clutter next to the
+  // separator to the audio control when audio is requested or the bottom of
+  // the dialog when audio is not requested.
+  scroll_view->SetDrawOverflowIndicator(false);
+  return scroll_view;
 }
 
 }  // namespace
@@ -331,10 +295,6 @@ std::unique_ptr<views::ScrollView> CreateScrollView(bool audio_requested) {
 // preferCurrentTab constraint.
 BASE_FEATURE(kShareThisTabDialog,
              "ShareThisTabDialog",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDisplayMediaPickerRedesign,
-             "DisplayMediaPickerRedesign",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DesktopMediaPickerDialogView,
@@ -450,32 +410,16 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         NOTREACHED_NORETURN();
       case DesktopMediaList::Type::kScreen: {
         const DesktopMediaSourceViewStyle kGenericScreenStyle =
-            base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)
-                ? DesktopMediaSourceViewStyle(
-                      /*columns=*/2,
-                      /*item_size=*/gfx::Size(266, 224),
-                      /*icon_rect=*/gfx::Rect(),
-                      /*label_rect=*/gfx::Rect(8, 196, 250, 36),
-                      /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_CENTER,
-                      /*image_rect=*/gfx::Rect(8, 8, 250, 180))
-                : DesktopMediaSourceViewStyle(
-                      /*columns=*/2,
-                      /*item_size=*/gfx::Size(270, 220),
-                      /*icon_rect=*/gfx::Rect(),
-                      /*label_rect=*/gfx::Rect(15, 165, 240, 40),
-                      /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_CENTER,
-                      /*image_rect=*/gfx::Rect(15, 15, 240, 150));
+            DesktopMediaSourceViewStyle(
+                /*columns=*/2,
+                /*item_size=*/gfx::Size(266, 224),
+                /*icon_rect=*/gfx::Rect(),
+                /*label_rect=*/gfx::Rect(8, 196, 250, 36),
+                /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_CENTER,
+                /*image_rect=*/gfx::Rect(8, 8, 250, 180));
 
         const DesktopMediaSourceViewStyle kSingleScreenStyle =
-            base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)
-                ? kGenericScreenStyle
-                : DesktopMediaSourceViewStyle(
-                      /*columns=*/1,
-                      /*item_size=*/gfx::Size(360, 280),
-                      /*icon_rect=*/gfx::Rect(),
-                      /*label_rect=*/gfx::Rect(),
-                      /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_CENTER,
-                      /*image_rect=*/gfx::Rect(20, 20, 320, 240));
+            kGenericScreenStyle;
 
         std::unique_ptr<views::ScrollView> screen_scroll_view =
             CreateScrollView(audio_requested_);
@@ -491,9 +435,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         // 1.5 item heights to allow space for the audio-toggle controller.
         screen_scroll_view->ClipHeightTo(
             kGenericScreenStyle.item_size.height(),
-            base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)
-                ? kGenericScreenStyle.item_size.height() * 3 / 2
-                : kGenericScreenStyle.item_size.height() * 2);
+            kGenericScreenStyle.item_size.height() * 3 / 2);
         screen_scroll_view->SetHorizontalScrollBarMode(
             views::ScrollView::ScrollBarMode::kDisabled);
 
@@ -509,21 +451,13 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
       }
       case DesktopMediaList::Type::kWindow: {
         const DesktopMediaSourceViewStyle kWindowStyle =
-            base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)
-                ? DesktopMediaSourceViewStyle(
-                      /*columns=*/3,
-                      /*item_size=*/gfx::Size(176, 164),
-                      /*icon_rect=*/gfx::Rect(8, 136, 16, 16),
-                      /*label_rect=*/gfx::Rect(32, 136, 136, 20),
-                      /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_LEFT,
-                      /*image_rect=*/gfx::Rect(8, 8, 160, 120))
-                : DesktopMediaSourceViewStyle(
-                      /*columns=*/3,
-                      /*item_size=*/gfx::Size(180, 160),
-                      /*icon_rect=*/gfx::Rect(10, 120, 20, 20),
-                      /*label_rect=*/gfx::Rect(32, 110, 138, 40),
-                      /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_LEFT,
-                      /*image_rect=*/gfx::Rect(8, 8, 164, 104));
+            DesktopMediaSourceViewStyle(
+                /*columns=*/3,
+                /*item_size=*/gfx::Size(176, 164),
+                /*icon_rect=*/gfx::Rect(8, 136, 16, 16),
+                /*label_rect=*/gfx::Rect(32, 136, 136, 20),
+                /*text_alignment=*/gfx::HorizontalAlignment::ALIGN_LEFT,
+                /*image_rect=*/gfx::Rect(8, 8, 160, 120));
 
         std::unique_ptr<views::ScrollView> window_scroll_view =
             CreateScrollView(audio_requested_);
@@ -723,7 +657,6 @@ void DesktopMediaPickerDialogView::TabSelectedAt(int index) {
   if (previously_selected_category_ == index)
     return;
   ConfigureUIForNewPane(index);
-  MaybeSetAudioCheckboxMaxSize();
   categories_[previously_selected_category_].controller->HideView();
   categories_[index].controller->FocusView();
   DialogModelChanged();
@@ -738,7 +671,6 @@ void DesktopMediaPickerDialogView::ConfigureUIForNewPane(int index) {
 
   const DisplaySurfaceCategory& category = categories_[index];
   MaybeCreateReselectButtonForPane(category);
-  MaybeCreateAudioCheckboxForPane(category);
   if (category.pane && audio_requested_ && category.audio_offered) {
     category.pane->SetAudioSharingApprovedByUser(category.audio_checked);
   }
@@ -748,8 +680,7 @@ void DesktopMediaPickerDialogView::StoreAudioCheckboxState() {
   const DisplaySurfaceCategory& prev_category =
       categories_[previously_selected_category_];
   bool has_audio_control =
-      audio_share_checkbox_ ||
-      (prev_category.pane && prev_category.pane->AudioOffered());
+      prev_category.pane && prev_category.pane->AudioOffered();
   if (!has_audio_control || !prev_category.audio_offered) {
     return;
   }
@@ -758,9 +689,7 @@ void DesktopMediaPickerDialogView::StoreAudioCheckboxState() {
   // Note: Current-tab and and any-tab are both tab-based captures,
   // and therefore share their audio control's state.
   const bool checked =
-      (audio_share_checkbox_ && audio_share_checkbox_->GetChecked()) ||
-      (prev_category.pane &&
-       prev_category.pane->IsAudioSharingApprovedByUser());
+      prev_category.pane && prev_category.pane->IsAudioSharingApprovedByUser();
   for (auto& category : categories_) {
     if (AreEquivalentTypesForAudioCheckbox(category.type, prev_category.type)) {
       category.audio_checked = checked;
@@ -774,10 +703,6 @@ void DesktopMediaPickerDialogView::RemoveCurrentPaneUI() {
   // mean time (and in case they aren't needed), we set them invisible and drop
   // our pointer to them. Once they are replaced by a new "SetExtraView" call
   // they will be destroyed.
-  if (audio_share_checkbox_) {
-    audio_share_checkbox_->SetVisible(false);
-    audio_share_checkbox_ = nullptr;
-  }
 
   if (reselect_button_) {
     reselect_button_->SetVisible(false);
@@ -798,52 +723,6 @@ void DesktopMediaPickerDialogView::MaybeCreateReselectButtonForPane(
   reselect_button->SetVisible(true);
   reselect_button->SetEnabled(category.controller->can_reselect());
   reselect_button_ = SetExtraView(std::move(reselect_button));
-}
-
-void DesktopMediaPickerDialogView::MaybeCreateAudioCheckboxForPane(
-    const DisplaySurfaceCategory& category) {
-  // In addition to checking if we should actually create the audio button, we
-  // need to see if the reselect button will be (maybe already was) created. If
-  // it will we cannot add the audio button, as they both want to take the
-  // "ExtraView" slot. Once the audio checkbox is promoted to its own row, we
-  // can show both again. This is fine as we don't expect any categories that
-  // support the re-select button to also want to show the audio button.
-  if (category.supports_reselect_button || !audio_requested_ ||
-      !category.audio_offered ||
-      base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)) {
-    return;
-  }
-
-  // If we need the audio checkbox build and add it now.
-  std::unique_ptr<views::Checkbox> audio_share_checkbox =
-      std::make_unique<views::Checkbox>(GetLabelForAudioCheckbox(
-          category.type, suppress_local_audio_playback_, request_source_));
-  audio_share_checkbox->SetVisible(true);
-  audio_share_checkbox->SetChecked(category.audio_checked);
-  audio_share_checkbox->SetMultiLine(true);
-  audio_share_checkbox_ = SetExtraView(std::move(audio_share_checkbox));
-}
-
-void DesktopMediaPickerDialogView::MaybeSetAudioCheckboxMaxSize() {
-  if (!base::FeatureList::IsEnabled(
-          kWarnUserOfSystemWideLocalAudioSuppression) ||
-      !audio_share_checkbox_) {
-    return;
-  }
-
-  const int buttons_width = GetCancelButton()->width() +
-                            ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                views::DISTANCE_RELATED_BUTTON_HORIZONTAL) +
-                            GetOkButton()->width();
-
-  const int max_width = CalculatePreferredSize().width() - buttons_width -
-                        ChromeLayoutProvider::Get()
-                            ->GetInsetsMetric(views::INSETS_DIALOG_BUTTON_ROW)
-                            .width() -
-                        ChromeLayoutProvider::Get()->GetDistanceMetric(
-                            views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
-
-  audio_share_checkbox_->SetMaxSize(gfx::Size(max_width, 0));
 }
 
 std::u16string DesktopMediaPickerDialogView::GetLabelForAudioToggle(
@@ -893,22 +772,18 @@ std::unique_ptr<views::View> DesktopMediaPickerDialogView::SetupPane(
   DisplaySurfaceCategory& category =
       categories_.emplace_back(type, std::move(controller), audio_offered,
                                audio_checked, supports_reselect_button);
-  if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)) {
-    auto share_audio_view =
-        audio_requested_
-            ? std::make_unique<ShareAudioView>(GetLabelForAudioToggle(category),
-                                               category.audio_offered)
-            : nullptr;
-    auto pane = std::make_unique<DesktopMediaPaneView>(
-        std::move(content_view), std::move(share_audio_view));
-    if (audio_requested_ && audio_offered) {
-      pane->SetAudioSharingApprovedByUser(audio_checked);
-    }
-    category.pane = pane.get();
-    return pane;
-  } else {
-    return content_view;
+  auto share_audio_view =
+      audio_requested_
+          ? std::make_unique<ShareAudioView>(GetLabelForAudioToggle(category),
+                                             category.audio_offered)
+          : nullptr;
+  auto pane = std::make_unique<DesktopMediaPaneView>(
+      std::move(content_view), std::move(share_audio_view));
+  if (audio_requested_ && audio_offered) {
+    pane->SetAudioSharingApprovedByUser(audio_checked);
   }
+  category.pane = pane.get();
+  return pane;
 }
 
 int DesktopMediaPickerDialogView::GetSelectedTabIndex() const {
@@ -937,9 +812,8 @@ bool DesktopMediaPickerDialogView::IsAudioSharingApprovedByUser() const {
   const int index = GetSelectedTabIndex();
   CHECK_GE(index, 0);
   CHECK_LT(static_cast<size_t>(index), categories_.size());
-  return (audio_share_checkbox_ && audio_share_checkbox_->GetChecked()) ||
-         (categories_[index].pane &&
-          categories_[index].pane->IsAudioSharingApprovedByUser());
+  return categories_[index].pane &&
+         categories_[index].pane->IsAudioSharingApprovedByUser();
 }
 
 void DesktopMediaPickerDialogView::RecordSourceCountsUma() {
@@ -1069,10 +943,7 @@ bool DesktopMediaPickerDialogView::Accept() {
       accepted_source_.has_value() ? accepted_source_
                                    : GetSelectedController()->GetSelection();
   DesktopMediaID source = source_optional.value();
-  source.audio_share =
-      (audio_share_checkbox_ && audio_share_checkbox_->GetVisible() &&
-       audio_share_checkbox_->GetChecked()) ||
-      IsAudioSharingApprovedByUser();
+  source.audio_share = IsAudioSharingApprovedByUser();
   if (request_source_ == RequestSource::kGetDisplayMedia) {
     RecordUmaSelection(dialog_type_, capturer_global_id_, source,
                        GetSelectedSourceListType(), dialog_open_time_);
@@ -1102,7 +973,6 @@ bool DesktopMediaPickerDialogView::ShouldShowCloseButton() const {
 
 void DesktopMediaPickerDialogView::OnWidgetInitialized() {
   views::DialogDelegateView::OnWidgetInitialized();
-  MaybeSetAudioCheckboxMaxSize();
 }
 
 void DesktopMediaPickerDialogView::OnSelectionChanged() {

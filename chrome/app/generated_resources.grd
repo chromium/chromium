@@ -14518,15 +14518,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DESKTOP_MEDIA_PICKER_TEXT_DELEGATED" desc="Text for the window picker dialog shown when desktop capture is requested by an app to be used by a tab.">
         <ph name="APP_NAME">$1<ex>Google Hangouts</ex></ph> wants to share the contents of your screen with <ph name="TARGET_NAME">$2<ex>https://google.com</ex></ph>.
       </message>
-      <message name="IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_SCREEN" desc="Text for the checkbox on the window picker dialog which is displayed when attempting to share a screen. In that case, when checked, system audio will be shared; otherwise only video.">
-        Share system audio
-      </message>
-      <message name="IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_WINDOW" desc="Text for the checkbox on the window picker dialog which is displayed when attempting to share a window. In that case, when checked, window audio will be shared; otherwise only video.">
-        Share window audio
-      </message>
-      <message name="IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_TAB" desc="Text for the checkbox on the window picker dialog which is displayed when attempting to share a tab. In that case, when checked, tab audio will be shared; otherwise only video.">
-        Share tab audio
-      </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_SCREEN_WITH_MUTE_WARNING" desc="Text for the checkbox on the window picker dialog which is displayed when attempting to share a screen, if local audio playback will be suppressed while capturing audio. In that case, when checked, system audio will be shared, and the local audio playback suppressed; otherwise only video will be shared, and local audio playback will not be suppressed.">
         Also share system audio. This device will be muted to prevent feedback.
       </message>

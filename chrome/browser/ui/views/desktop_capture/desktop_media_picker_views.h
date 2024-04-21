@@ -21,7 +21,6 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
-class Checkbox;
 class TabbedPane;
 class MdTextButton;
 }  // namespace views
@@ -29,7 +28,6 @@ class MdTextButton;
 class DesktopMediaPickerViews;
 
 BASE_DECLARE_FEATURE(kShareThisTabDialog);
-BASE_DECLARE_FEATURE(kDisplayMediaPickerRedesign);
 
 // Dialog view used for DesktopMediaPickerViews.
 //
@@ -111,8 +109,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   void StoreAudioCheckboxState();
   void RemoveCurrentPaneUI();
   void MaybeCreateReselectButtonForPane(const DisplaySurfaceCategory& category);
-  void MaybeCreateAudioCheckboxForPane(const DisplaySurfaceCategory& category);
-  void MaybeSetAudioCheckboxMaxSize();
 
   std::u16string GetLabelForAudioToggle(
       const DisplaySurfaceCategory& category) const;
@@ -169,8 +165,6 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   raw_ptr<DesktopMediaPickerViews> parent_;
 
   raw_ptr<views::Label> description_label_ = nullptr;
-
-  raw_ptr<views::Checkbox> audio_share_checkbox_ = nullptr;
 
   raw_ptr<views::MdTextButton> reselect_button_ = nullptr;
 

@@ -55,19 +55,16 @@ DesktopMediaSourceView::DesktopMediaSourceView(
       source_id_(source_id),
       selected_(false) {
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
-  image_view_ =
-      AddChildView(base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) &&
-                           features::IsChromeRefresh2023()
-                       ? std::make_unique<RoundedCornerImageView>()
-                       : std::make_unique<views::ImageView>());
+  image_view_ = AddChildView(features::IsChromeRefresh2023()
+                                 ? std::make_unique<RoundedCornerImageView>()
+                                 : std::make_unique<views::ImageView>());
   label_ = AddChildView(std::make_unique<views::Label>());
   icon_view_->SetCanProcessEventsWithinSubtree(false);
   image_view_->SetCanProcessEventsWithinSubtree(false);
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetStyle(style);
   views::FocusRing::Install(this);
-  if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) &&
-      features::IsChromeRefresh2023()) {
+  if (features::IsChromeRefresh2023()) {
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                   kCornerRadius);
   }
@@ -105,8 +102,7 @@ void DesktopMediaSourceView::SetSelected(bool selected) {
       }
     }
 
-    if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) &&
-        features::IsChromeRefresh2023()) {
+    if (features::IsChromeRefresh2023()) {
       SetBackground(views::CreateRoundedRectBackground(
           GetColorProvider()->GetColor(ui::kColorSysTonalContainer),
           kCornerRadius));
@@ -118,8 +114,7 @@ void DesktopMediaSourceView::SetSelected(bool selected) {
                                                    gfx::Font::Weight::BOLD));
     parent_->OnSelectionChanged();
   } else {
-    if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) &&
-        features::IsChromeRefresh2023()) {
+    if (features::IsChromeRefresh2023()) {
       SetBackground(nullptr);
     } else {
       image_view_->SetBackground(nullptr);

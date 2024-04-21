@@ -44,11 +44,7 @@ bool DesktopMediaPickerViewsTestApi::AudioSupported(
 }
 
 void DesktopMediaPickerViewsTestApi::FocusAudioShareControl() {
-  if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)) {
-    GetActivePane()->RequestFocus();
-  } else {
-    picker_->dialog_->audio_share_checkbox_->RequestFocus();
-  }
+  GetActivePane()->RequestFocus();
 }
 
 void DesktopMediaPickerViewsTestApi::PressMouseOnSourceAtIndex(
@@ -138,37 +134,19 @@ DesktopMediaPickerViewsTestApi::GetSelectedController() {
 }
 
 bool DesktopMediaPickerViewsTestApi::HasAudioShareControl() const {
-  if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)) {
-    return GetActivePane() && GetActivePane()->AudioOffered();
-  } else {
-    return picker_->dialog_->audio_share_checkbox_;
-  }
+  return GetActivePane() && GetActivePane()->AudioOffered();
 }
 
 std::u16string DesktopMediaPickerViewsTestApi::GetAudioLabelText() const {
-  if (!base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)) {
-    // TODO(crbug.com/324276558): To be removed when cleaning up
-    // DisplayMediaPickerRedesign
-    return std::u16string();
-  }
-
   return GetActivePane()->GetAudioLabelText();
 }
 
 void DesktopMediaPickerViewsTestApi::SetAudioSharingApprovedByUser(bool allow) {
-  if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)) {
-    GetActivePane()->SetAudioSharingApprovedByUser(allow);
-  } else {
-    picker_->dialog_->audio_share_checkbox_->SetChecked(allow);
-  }
+  GetActivePane()->SetAudioSharingApprovedByUser(allow);
 }
 
 bool DesktopMediaPickerViewsTestApi::IsAudioSharingApprovedByUser() const {
-  if (base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)) {
-    return picker_->dialog_->IsAudioSharingApprovedByUser();
-  } else {
-    return picker_->dialog_->audio_share_checkbox_->GetChecked();
-  }
+  return picker_->dialog_->IsAudioSharingApprovedByUser();
 }
 
 views::MdTextButton* DesktopMediaPickerViewsTestApi::GetReselectButton() {
