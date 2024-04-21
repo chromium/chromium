@@ -609,7 +609,7 @@ void FormStructure::SetFieldTypesFromAutocompleteAttribute() {
   has_author_specified_upi_vpa_hint_ = false;
   std::map<FieldSignature, size_t> field_rank_map;
   for (const std::unique_ptr<AutofillField>& field : fields_) {
-    if (!field->parsed_autocomplete) {
+    if (!field->parsed_autocomplete()) {
       continue;
     }
 
@@ -618,23 +618,28 @@ void FormStructure::SetFieldTypesFromAutocompleteAttribute() {
     // attribute like autocomplete="other" on a field to disable all Autofill
     // heuristics for the form.
     has_author_specified_types_ = true;
-    if (field->parsed_autocomplete->field_type == HtmlFieldType::kUnspecified)
+    if (field->parsed_autocomplete()->field_type ==
+        HtmlFieldType::kUnspecified) {
       continue;
-
-    // TODO(crbug.com/702223): Flesh out support for UPI-VPA.
-    if (field->parsed_autocomplete->field_type == HtmlFieldType::kUpiVpa) {
-      has_author_specified_upi_vpa_hint_ = true;
-      field->parsed_autocomplete->field_type = HtmlFieldType::kUnrecognized;
     }
 
-    field->SetHtmlType(field->parsed_autocomplete->field_type,
-                       field->parsed_autocomplete->mode);
+    // TODO(crbug.com/702223): Flesh out support for UPI-VPA.
+    if (field->parsed_autocomplete()->field_type == HtmlFieldType::kUpiVpa) {
+      has_author_specified_upi_vpa_hint_ = true;
+      std::optional<AutocompleteParsingResult> parsed_autocomplete =
+          field->parsed_autocomplete();
+      parsed_autocomplete->field_type = HtmlFieldType::kUnrecognized;
+      field->set_parsed_autocomplete(std::move(parsed_autocomplete));
+    }
+
+    field->SetHtmlType(field->parsed_autocomplete()->field_type,
+                       field->parsed_autocomplete()->mode);
 
     // Log the field type predicted from autocomplete attribute.
     ++field_rank_map[field->GetFieldSignature()];
     field->AppendLogEventIfNotRepeated(AutocompleteAttributeFieldLogEvent{
-        .html_type = field->parsed_autocomplete->field_type,
-        .html_mode = field->parsed_autocomplete->mode,
+        .html_type = field->parsed_autocomplete()->field_type,
+        .html_mode = field->parsed_autocomplete()->mode,
         .rank_in_field_signature_group =
             field_rank_map[field->GetFieldSignature()],
     });
@@ -644,14 +649,14 @@ void FormStructure::SetFieldTypesFromAutocompleteAttribute() {
 bool FormStructure::SetSectionsFromAutocompleteOrReset() {
   bool has_autocomplete = false;
   for (const auto& field : fields_) {
-    if (!field->parsed_autocomplete) {
+    if (!field->parsed_autocomplete()) {
       field->set_section(Section());
       continue;
     }
 
     field->set_section(Section::FromAutocomplete(
-        {.section = field->parsed_autocomplete->section,
-         .mode = field->parsed_autocomplete->mode}));
+        {.section = field->parsed_autocomplete()->section,
+         .mode = field->parsed_autocomplete()->mode}));
     if (field->section()) {
       has_autocomplete = true;
     }

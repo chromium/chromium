@@ -99,8 +99,8 @@ FormFieldData GetFormFieldData(const FieldDescription& fd) {
   ff.is_visible = fd.is_visible;
   if (!fd.autocomplete_attribute.empty()) {
     ff.autocomplete_attribute = fd.autocomplete_attribute;
-    ff.parsed_autocomplete =
-        ParseAutocompleteAttribute(fd.autocomplete_attribute);
+    ff.set_parsed_autocomplete(
+        ParseAutocompleteAttribute(fd.autocomplete_attribute));
   }
   if (fd.host_frame) {
     ff.host_frame = *fd.host_frame;

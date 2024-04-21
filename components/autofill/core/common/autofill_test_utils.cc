@@ -155,7 +155,7 @@ FormFieldData CreateTestFormField(std::string_view label,
                                   std::string_view autocomplete) {
   FormFieldData field = CreateTestFormField(label, name, value, type);
   field.autocomplete_attribute = autocomplete;
-  field.parsed_autocomplete = ParseAutocompleteAttribute(autocomplete);
+  field.set_parsed_autocomplete(ParseAutocompleteAttribute(autocomplete));
   return field;
 }
 
@@ -170,7 +170,7 @@ FormFieldData CreateTestFormField(std::string_view label,
   // this value.
   field.set_max_length(max_length);
   field.autocomplete_attribute = autocomplete;
-  field.parsed_autocomplete = ParseAutocompleteAttribute(autocomplete);
+  field.set_parsed_autocomplete(ParseAutocompleteAttribute(autocomplete));
   return field;
 }
 
@@ -212,7 +212,7 @@ FormFieldData CreateTestSelectOrSelectListField(
         type == FormControlType::kSelectList);
   FormFieldData field = CreateTestFormField(label, name, value, type);
   field.autocomplete_attribute = autocomplete;
-  field.parsed_autocomplete = ParseAutocompleteAttribute(autocomplete);
+  field.set_parsed_autocomplete(ParseAutocompleteAttribute(autocomplete));
 
   CHECK_EQ(values.size(), contents.size());
   field.options.reserve(values.size());

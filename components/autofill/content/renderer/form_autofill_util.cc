@@ -1933,8 +1933,8 @@ void WebFormControlElementToFormField(
       ToAutofillFormControlType(element.FormControlTypeForAutofill()));
   field->set_max_length(GetMaxLength(element));
   field->autocomplete_attribute = GetAutocompleteAttribute(element);
-  field->parsed_autocomplete =
-      ParseAutocompleteAttribute(field->autocomplete_attribute);
+  field->set_parsed_autocomplete(
+      ParseAutocompleteAttribute(field->autocomplete_attribute));
 
   if (base::EqualsCaseInsensitiveASCII(GetAttribute<kRole>(element).Utf16(),
                                        "presentation")) {
@@ -1988,8 +1988,8 @@ void WebFormControlElementToFormField(
     }
     if (field->autocomplete_attribute.empty()) {
       field->autocomplete_attribute = GetAutocompleteAttribute(host);
-      field->parsed_autocomplete =
-          ParseAutocompleteAttribute(field->autocomplete_attribute);
+      field->set_parsed_autocomplete(
+          ParseAutocompleteAttribute(field->autocomplete_attribute));
     }
     if (field->css_classes.empty() && HasAttribute<kClass>(host)) {
       field->css_classes = GetAttribute<kClass>(host).Utf16();
@@ -2009,8 +2009,8 @@ void WebFormControlElementToFormField(
                           : field->is_focusable;
   field->should_autocomplete =
       element.AutoComplete() &&
-      !(field->parsed_autocomplete.has_value() &&
-        field->parsed_autocomplete.value().field_type ==
+      !(field->parsed_autocomplete().has_value() &&
+        field->parsed_autocomplete().value().field_type ==
             HtmlFieldType::kOneTimeCode);
   field->text_direction = GetTextDirectionForElement(element);
   field->is_enabled = element.IsEnabled();
@@ -2193,8 +2193,8 @@ std::optional<FormData> FindFormForContentEditable(
   field.host_form_id = GetFormRendererId(content_editable);
   field.set_form_control_type(FormControlType::kContentEditable);
   field.autocomplete_attribute = GetAutocompleteAttribute(content_editable);
-  field.parsed_autocomplete =
-      ParseAutocompleteAttribute(field.autocomplete_attribute);
+  field.set_parsed_autocomplete(
+      ParseAutocompleteAttribute(field.autocomplete_attribute));
   if (auto* local_frame = document.GetFrame()) {
     if (auto* render_frame = content::RenderFrame::FromWebFrame(local_frame)) {
       field.bounds = render_frame->ElementBoundsInWindow(content_editable);

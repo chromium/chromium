@@ -64,8 +64,8 @@ std::vector<std::unique_ptr<AutofillField>> CreateFields(
     DCHECK_EQ(f->Type().GetStorableType(), t.field_type);
     if (!t.autocomplete_section.empty() ||
         t.autocomplete_mode != HtmlFieldMode::kNone) {
-      f->parsed_autocomplete = AutocompleteParsingResult{
-          .section = t.autocomplete_section, .mode = t.autocomplete_mode};
+      f->set_parsed_autocomplete(AutocompleteParsingResult{
+          .section = t.autocomplete_section, .mode = t.autocomplete_mode});
     }
     f->is_focusable = t.is_focusable;
   }
@@ -132,7 +132,7 @@ TEST_F(FormStructureSectioningTest, ExampleFormNoSectioningMode) {
                   Section::FromFieldIdentifier(*fields[0], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[0], frame_token_ids),
                   Section::FromAutocomplete(
-                      {.section = fields[2]->parsed_autocomplete->section}),
+                      {.section = fields[2]->parsed_autocomplete()->section}),
                   Section::FromFieldIdentifier(*fields[0], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids),
@@ -204,7 +204,7 @@ TEST_F(FormStructureSectioningTest, ExampleFormSectioningModeCreateGaps) {
                   Section::FromFieldIdentifier(*fields[0], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[0], frame_token_ids),
                   Section::FromAutocomplete(
-                      {.section = fields[2]->parsed_autocomplete->section}),
+                      {.section = fields[2]->parsed_autocomplete()->section}),
                   Section::FromFieldIdentifier(*fields[3], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids),
@@ -240,7 +240,7 @@ TEST_F(FormStructureSectioningTest, ExampleFormSectioningModeExpand) {
                   Section::FromFieldIdentifier(*fields[0], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[0], frame_token_ids),
                   Section::FromAutocomplete(
-                      {.section = fields[2]->parsed_autocomplete->section}),
+                      {.section = fields[2]->parsed_autocomplete()->section}),
                   Section::FromFieldIdentifier(*fields[0], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids),
                   Section::FromFieldIdentifier(*fields[4], frame_token_ids),

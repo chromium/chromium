@@ -578,9 +578,9 @@ FormDataImporter::GetAddressObservedFieldValues(
     if (FieldTypeGroupToFormType(autofill_type.group()) ==
         FormType::kAddressForm) {
       has_address_related_fields = true;
-      if (field->parsed_autocomplete) {
+      if (field->parsed_autocomplete()) {
         import_metadata.did_import_from_unrecognized_autocomplete_field |=
-            field->parsed_autocomplete->field_type ==
+            field->parsed_autocomplete()->field_type ==
             HtmlFieldType::kUnrecognized;
       }
     }

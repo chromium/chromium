@@ -1190,7 +1190,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
     field.aria_description = ASCIIToUTF16(f.aria_description);
     field.css_classes = ASCIIToUTF16(f.css_classes);
     field.autocomplete_attribute = f.autocomplete;
-    field.parsed_autocomplete = ParseAutocompleteAttribute(f.autocomplete);
+    field.set_parsed_autocomplete(ParseAutocompleteAttribute(f.autocomplete));
     field.set_renderer_id(test::MakeFieldRendererId());
     form.fields.push_back(field);
   }

@@ -229,7 +229,7 @@ bool StructTraits<
     if (!data.ReadParsedAutocomplete(&parsed_autocomplete)) {
       return false;
     }
-    out->parsed_autocomplete = std::move(parsed_autocomplete);
+    out->set_parsed_autocomplete(std::move(parsed_autocomplete));
   }
 
   {

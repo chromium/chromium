@@ -650,8 +650,8 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field) {
             << field.value() << "' " << "control='" << field.form_control_type()
             << "' " << "autocomplete='" << field.autocomplete_attribute << "' "
             << "parsed_autocomplete='"
-            << (field.parsed_autocomplete
-                    ? field.parsed_autocomplete->ToString()
+            << (field.parsed_autocomplete()
+                    ? field.parsed_autocomplete()->ToString()
                     : "")
             << "' " << "placeholder='" << field.placeholder << "' "
             << "max_length=" << field.max_length() << " " << "css_classes='"
@@ -691,8 +691,9 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormFieldData& field) {
   buffer << Tr{} << "Form control type:" << field.form_control_type();
   buffer << Tr{} << "Autocomplete attribute:" << field.autocomplete_attribute;
   buffer << Tr{} << "Parsed autocomplete attribute:"
-         << (field.parsed_autocomplete ? field.parsed_autocomplete->ToString()
-                                       : "");
+         << (field.parsed_autocomplete()
+                 ? field.parsed_autocomplete()->ToString()
+                 : "");
   buffer << Tr{} << "Aria label:" << field.aria_label;
   buffer << Tr{} << "Aria description:" << field.aria_description;
   buffer << Tr{} << "Section:" << field.section();

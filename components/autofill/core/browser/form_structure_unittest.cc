@@ -493,8 +493,8 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test,
 
   {
     FormFieldData field;
-    field.parsed_autocomplete = AutocompleteParsingResult{
-        .section = "my-billing-section", .field_type = HtmlFieldType::kName};
+    field.set_parsed_autocomplete(AutocompleteParsingResult{
+        .section = "my-billing-section", .field_type = HtmlFieldType::kName});
     field.set_form_control_type(FormControlType::kInputText);
     AddField(field);
   }
@@ -2819,8 +2819,8 @@ TEST_F(FormStructureTestImpl, DetermineRanks) {
 TEST_F(FormStructureTestImpl, GetFormTypes_AutocompleteUnrecognized) {
   FormData form = test::CreateTestAddressFormData();
   for (FormFieldData& field : form.fields) {
-    field.parsed_autocomplete =
-        AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
+    field.set_parsed_autocomplete(
+        AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized});
   }
   FormStructure form_structure(form);
   EXPECT_THAT(form_structure.GetFormTypes(),

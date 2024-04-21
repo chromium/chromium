@@ -2790,8 +2790,8 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldAutocompletetype) {
             ? FormFieldData::kDefaultMaxLength
             : 0);
     expected.autocomplete_attribute = test_case.autocomplete_attribute;
-    expected.parsed_autocomplete =
-        ParseAutocompleteAttribute(test_case.autocomplete_attribute);
+    expected.set_parsed_autocomplete(
+        ParseAutocompleteAttribute(test_case.autocomplete_attribute));
 
     SCOPED_TRACE(test_case.element_id);
     EXPECT_FORM_FIELD_DATA_EQUALS(expected, result);

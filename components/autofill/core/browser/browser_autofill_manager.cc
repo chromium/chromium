@@ -403,9 +403,9 @@ AutofillMetrics::AutocompleteState AutocompleteStateForSubmittedField(
   if (field.autocomplete_attribute != "on" &&
       ShouldIgnoreAutocompleteAttribute(field.autocomplete_attribute)) {
     autocomplete_state = AutofillMetrics::AutocompleteState::kOff;
-  } else if (field.parsed_autocomplete) {
+  } else if (field.parsed_autocomplete()) {
     autocomplete_state =
-        field.parsed_autocomplete->field_type != HtmlFieldType::kUnrecognized
+        field.parsed_autocomplete()->field_type != HtmlFieldType::kUnrecognized
             ? AutofillMetrics::AutocompleteState::kValid
             : AutofillMetrics::AutocompleteState::kGarbage;
 

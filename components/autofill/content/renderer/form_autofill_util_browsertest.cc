@@ -1938,7 +1938,7 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableSuccess) {
   EXPECT_TRUE(form->renderer_id);
   EXPECT_EQ(*form->renderer_id, *field.renderer_id());
   EXPECT_EQ(form->renderer_id, field.host_form_id);
-  EXPECT_EQ(field.parsed_autocomplete->field_type, HtmlFieldType::kGivenName);
+  EXPECT_EQ(field.parsed_autocomplete()->field_type, HtmlFieldType::kGivenName);
   EXPECT_EQ(field.name(), u"my-id");
   EXPECT_EQ(field.id_attribute(), u"my-id");
   EXPECT_EQ(field.name_attribute(), u"my-name");
@@ -1966,7 +1966,7 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableAbridgedSuccess) {
   EXPECT_TRUE(form->renderer_id);
   EXPECT_EQ(*form->renderer_id, *field.renderer_id());
   EXPECT_EQ(form->renderer_id, field.host_form_id);
-  EXPECT_EQ(field.parsed_autocomplete->field_type, HtmlFieldType::kGivenName);
+  EXPECT_EQ(field.parsed_autocomplete()->field_type, HtmlFieldType::kGivenName);
   EXPECT_EQ(field.name(), u"my-id");
   EXPECT_EQ(field.id_attribute(), u"my-id");
   EXPECT_EQ(field.name_attribute(), u"my-name");

@@ -41,8 +41,8 @@ class AutocompleteUnrecognizedFallbackEventLoggerTest
 TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
        FillAfterSuggestion_NotFilled) {
   FormData form = test::CreateTestAddressFormData();
-  form.fields[0].parsed_autocomplete =
-      AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
+  form.fields[0].set_parsed_autocomplete(
+      AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized});
   SeeForm(form);
   ShowSuggestions(form);
 
@@ -61,8 +61,8 @@ TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
 TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
        FillAfterSuggestion_Filled) {
   FormData form = test::CreateTestAddressFormData();
-  form.fields[0].parsed_autocomplete =
-      AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
+  form.fields[0].set_parsed_autocomplete(
+      AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized});
   ShowSuggestions(form);
   // Fill the suggestion.
   autofill_manager().FillOrPreviewProfileForm(
@@ -92,8 +92,8 @@ TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
   // Dynamically change the autocomplete attribute before accepting the
   // suggestion. This causes `OnDidFillFormFillingSuggestion()` to be called,
   // even though `OnDidShowSuggestions()` was never called.
-  form.fields[0].parsed_autocomplete =
-      AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
+  form.fields[0].set_parsed_autocomplete(
+      AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized});
   SeeForm(form);
   autofill_manager().FillOrPreviewProfileForm(
       mojom::ActionPersistence::kFill, form, form.fields[0],

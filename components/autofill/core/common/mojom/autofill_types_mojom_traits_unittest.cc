@@ -342,10 +342,10 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   input.set_value(u"value");
   input.set_form_control_type(FormControlType::kInputText);
   input.autocomplete_attribute = "on";
-  input.parsed_autocomplete =
+  input.set_parsed_autocomplete(
       AutocompleteParsingResult{.section = "autocomplete_section",
                                 .mode = HtmlFieldMode::kShipping,
-                                .field_type = HtmlFieldType::kAddressLine1};
+                                .field_type = HtmlFieldType::kAddressLine1});
   input.placeholder = u"placeholder";
   input.css_classes = u"class1";
   input.aria_label = u"aria label";
@@ -384,7 +384,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassDataListFormFieldData) {
   input.set_id_attribute(u"id");
   input.set_name_attribute(u"name");
   input.autocomplete_attribute = "on";
-  input.parsed_autocomplete = std::nullopt;
+  input.set_parsed_autocomplete(std::nullopt);
   input.placeholder = u"placeholder";
   input.css_classes = u"class1";
   input.aria_label = u"aria label";

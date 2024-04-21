@@ -347,7 +347,7 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   if (const std::string* autocomplete =
           field_dict.FindString("autocomplete_attr")) {
     field.autocomplete_attribute = *autocomplete;
-    field.parsed_autocomplete = ParseAutocompleteAttribute(*autocomplete);
+    field.set_parsed_autocomplete(ParseAutocompleteAttribute(*autocomplete));
   }
   if (const std::string* placeholder =
           field_dict.FindString("placeholder_attr")) {

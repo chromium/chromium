@@ -307,7 +307,13 @@ struct FormFieldData {
     form_control_type_ = std::move(form_control_type);
   }
   std::string autocomplete_attribute;
-  std::optional<AutocompleteParsingResult> parsed_autocomplete;
+  const std::optional<AutocompleteParsingResult>& parsed_autocomplete() const {
+    return parsed_autocomplete_;
+  }
+  void set_parsed_autocomplete(
+      std::optional<AutocompleteParsingResult> parsed_autocomplete) {
+    parsed_autocomplete_ = std::move(parsed_autocomplete);
+  }
   std::u16string placeholder;
   std::u16string css_classes;
   std::u16string aria_label;
@@ -454,6 +460,7 @@ struct FormFieldData {
   std::u16string label_;
   std::u16string value_;
   FormControlType form_control_type_ = FormControlType::kInputText;
+  std::optional<AutocompleteParsingResult> parsed_autocomplete_;
   FieldRendererId renderer_id_;
   uint64_t max_length_ = std::numeric_limits<uint32_t>::max();
   Section section_;
@@ -540,7 +547,7 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field);
     EXPECT_EQ(expected.value(), actual.value());                               \
     EXPECT_EQ(expected.form_control_type(), actual.form_control_type());       \
     EXPECT_EQ(expected.autocomplete_attribute, actual.autocomplete_attribute); \
-    EXPECT_EQ(expected.parsed_autocomplete, actual.parsed_autocomplete);       \
+    EXPECT_EQ(expected.parsed_autocomplete(), actual.parsed_autocomplete());   \
     EXPECT_EQ(expected.placeholder, actual.placeholder);                       \
     EXPECT_EQ(expected.max_length(), actual.max_length());                     \
     EXPECT_EQ(expected.css_classes, actual.css_classes);                       \

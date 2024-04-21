@@ -103,7 +103,7 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
     field.set_form_control_type(field_template.form_control_type);
     field.is_focusable = field_template.is_focusable;
     field.set_max_length(field_template.max_length);
-    field.parsed_autocomplete = field_template.parsed_autocomplete;
+    field.set_parsed_autocomplete(field_template.parsed_autocomplete);
     field.role = field_template.role;
     field.origin =
         field_template.subframe_origin.value_or(form.main_frame_origin);

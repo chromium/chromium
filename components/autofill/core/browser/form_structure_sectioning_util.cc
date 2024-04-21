@@ -92,10 +92,10 @@ void AssignCreditCardSections(
 void AssignAutocompleteSections(
     base::span<const std::unique_ptr<AutofillField>> fields) {
   for (const auto& field : fields) {
-    if (field->parsed_autocomplete) {
+    if (field->parsed_autocomplete()) {
       Section autocomplete_section = Section::FromAutocomplete(
-          {.section = field->parsed_autocomplete->section,
-           .mode = field->parsed_autocomplete->mode});
+          {.section = field->parsed_autocomplete()->section,
+           .mode = field->parsed_autocomplete()->mode});
       if (autocomplete_section)
         field->set_section(autocomplete_section);
     }

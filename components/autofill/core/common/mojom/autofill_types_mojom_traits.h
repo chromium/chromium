@@ -226,7 +226,7 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
 
   static const std::optional<autofill::AutocompleteParsingResult>
   parsed_autocomplete(const autofill::FormFieldData& r) {
-    return r.parsed_autocomplete;
+    return r.parsed_autocomplete();
   }
 
   static const std::u16string& placeholder(const autofill::FormFieldData& r) {

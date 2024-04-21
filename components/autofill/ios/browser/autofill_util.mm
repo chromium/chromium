@@ -319,8 +319,8 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
   if (std::optional<int> max_length = field.FindInt("max_length")) {
     field_data->set_max_length(*max_length);
   }
-  field_data->parsed_autocomplete =
-      ParseAutocompleteAttribute(field_data->autocomplete_attribute);
+  field_data->set_parsed_autocomplete(
+      ParseAutocompleteAttribute(field_data->autocomplete_attribute));
 
   // TODO(crbug.com/427614): Extract |is_checked|.
   bool is_checkable = field.FindBool("is_checkable").value_or(false);

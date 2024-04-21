@@ -1171,8 +1171,8 @@ TEST_F(FormFillerTest, FillPhoneNumber) {
 
     field.set_max_length(default_max_length);
     field.autocomplete_attribute = test_field.autocomplete_attribute;
-    field.parsed_autocomplete =
-        ParseAutocompleteAttribute(test_field.autocomplete_attribute);
+    field.set_parsed_autocomplete(
+        ParseAutocompleteAttribute(test_field.autocomplete_attribute));
     form_with_autocompletetype.fields.push_back(field);
   }
 

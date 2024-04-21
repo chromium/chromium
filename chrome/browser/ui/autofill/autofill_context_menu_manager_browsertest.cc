@@ -272,8 +272,8 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
   FormData CreateAndAttachAutocompleteUnrecognizedForm() {
     FormData form = test::CreateTestAddressFormData();
     for (FormFieldData& field : form.fields) {
-      field.parsed_autocomplete =
-          AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
+      field.set_parsed_autocomplete(AutocompleteParsingResult{
+          .field_type = HtmlFieldType::kUnrecognized});
     }
     AttachForm(form);
     return form;

@@ -1732,7 +1732,7 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
                              &password_info);
 
   const bool show_webauthn_credentials =
-      field.parsed_autocomplete && field.parsed_autocomplete->webauthn;
+      field.parsed_autocomplete() && field.parsed_autocomplete()->webauthn;
   GetPasswordManagerDriver().ShowPasswordSuggestions(PasswordSuggestionRequest(
       field.renderer_id(), form, trigger_source,
       GetIndexOfElement(form, username_element),

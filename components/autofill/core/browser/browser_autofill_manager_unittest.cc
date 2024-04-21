@@ -1453,8 +1453,8 @@ TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_UnrecognizedAttribute_Predictions_Mobile) {
   // Create a form where the first field has ac=unrecognized.
   FormData form = CreateTestAddressFormData();
-  form.fields[0].parsed_autocomplete =
-      AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
+  form.fields[0].set_parsed_autocomplete(
+      AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized});
   FormsSeen({form});
 
   // Expect that two suggestions + footer are returned for all fields,
@@ -1500,8 +1500,8 @@ TEST_F(BrowserAutofillManagerTest,
        AutofillManualFallback_AutocompleteUnrecognized_SuggestionsShown) {
   // Create a form where the first field has ac=unrecognized.
   FormData form = CreateTestAddressFormData();
-  form.fields[0].parsed_autocomplete =
-      AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
+  form.fields[0].set_parsed_autocomplete(
+      AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized});
   FormsSeen({form});
 
   // Expect that no suggestions are returned for the first field by default.
@@ -3446,8 +3446,8 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFields_KeyMetrics) {
   // attribute.
   FormData form = CreateTestAddressFormData();
   ASSERT_GE(form.fields.size(), 2u);
-  form.fields[1].parsed_autocomplete =
-      AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized};
+  form.fields[1].set_parsed_autocomplete(
+      AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized});
 
   // Interact with an ac != unrecognized field: Expect key metrics to be
   // emitted. Note that "interacting" means querying suggestions, usually
@@ -5603,7 +5603,8 @@ TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
   // Has less than 3 fields but has autocomplete attribute.
   constexpr char autocomplete[] = "given-name";
   form.fields[0].autocomplete_attribute = autocomplete;
-  form.fields[0].parsed_autocomplete = ParseAutocompleteAttribute(autocomplete);
+  form.fields[0].set_parsed_autocomplete(
+      ParseAutocompleteAttribute(autocomplete));
 
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
@@ -5615,7 +5616,8 @@ TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
 
   // Has more than 3 fields and at least one autocomplete attribute.
   form.fields[0].autocomplete_attribute = autocomplete;
-  form.fields[0].parsed_autocomplete = ParseAutocompleteAttribute(autocomplete);
+  form.fields[0].set_parsed_autocomplete(
+      ParseAutocompleteAttribute(autocomplete));
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
   // Is off the record.
