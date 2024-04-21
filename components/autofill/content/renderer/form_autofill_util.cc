@@ -1947,8 +1947,8 @@ void WebFormControlElementToFormField(
   }
 
   if (field_data_manager && field_data_manager->HasFieldData(renderer_id)) {
-    field->properties_mask =
-        field_data_manager->GetFieldPropertiesMask(renderer_id);
+    field->set_properties_mask(
+        field_data_manager->GetFieldPropertiesMask(renderer_id));
   }
 
   field->aria_label = GetAriaLabel(element.GetDocument(), element);
@@ -2082,8 +2082,8 @@ void WebFormControlElementToFormField(
   // this is one of recognised situations when the site-modified value is more
   // useful for filling.
   if (field_data_manager &&
-      field->properties_mask & (FieldPropertiesFlags::kUserTyped |
-                                FieldPropertiesFlags::kAutofilled)) {
+      field->properties_mask() & (FieldPropertiesFlags::kUserTyped |
+                                  FieldPropertiesFlags::kAutofilled)) {
     const std::u16string user_input =
         field_data_manager->GetUserInput(GetFieldRendererId(element));
 

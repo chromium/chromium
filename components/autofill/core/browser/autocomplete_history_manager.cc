@@ -305,7 +305,7 @@ bool AutocompleteHistoryManager::IsFieldValueSaveable(
          field.form_control_type() != FormControlType::kInputNumber &&
          field.should_autocomplete && !IsValidCreditCardNumber(field.value()) &&
          !IsSSN(field.value()) &&
-         (field.properties_mask & kUserTyped || field.is_focusable) &&
+         (field.properties_mask() & kUserTyped || field.is_focusable) &&
          field.role != FormFieldData::RoleAttribute::kPresentation;
 }
 

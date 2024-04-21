@@ -728,7 +728,8 @@ void PasswordFormManager::ProvisionallySaveFieldDataManagerInfo(
     if (!field_data_manager.HasFieldData(field_id))
       continue;
     field.user_input = field_data_manager.GetUserInput(field_id);
-    field.properties_mask = field_data_manager.GetFieldPropertiesMask(field_id);
+    field.set_properties_mask(
+        field_data_manager.GetFieldPropertiesMask(field_id));
     data_found = true;
   }
 

@@ -119,22 +119,24 @@ std::string GetFormFieldDataWithPropertiesMaskLogString(
   std::string field_info =
       autofill::SavePasswordProgressLogger::GetFormFieldDataLogString(field);
 
-  if (field.properties_mask) {
+  if (field.properties_mask()) {
     field_info += ", properties=";
+    field_info += (field.properties_mask() & FieldPropertiesFlags::kUserTyped)
+                      ? "T"
+                      : "_";
     field_info +=
-        (field.properties_mask & FieldPropertiesFlags::kUserTyped) ? "T" : "_";
-    field_info +=
-        (field.properties_mask & FieldPropertiesFlags::kAutofilledOnPageLoad)
+        (field.properties_mask() & FieldPropertiesFlags::kAutofilledOnPageLoad)
             ? "Ap"
             : "__";
+    field_info += (field.properties_mask() &
+                   FieldPropertiesFlags::kAutofilledOnUserTrigger)
+                      ? "Au"
+                      : "__";
     field_info +=
-        (field.properties_mask & FieldPropertiesFlags::kAutofilledOnUserTrigger)
-            ? "Au"
-            : "__";
-    field_info +=
-        (field.properties_mask & FieldPropertiesFlags::kHadFocus) ? "F" : "_";
-    field_info +=
-        (field.properties_mask & FieldPropertiesFlags::kKnownValue) ? "K" : "_";
+        (field.properties_mask() & FieldPropertiesFlags::kHadFocus) ? "F" : "_";
+    field_info += (field.properties_mask() & FieldPropertiesFlags::kKnownValue)
+                      ? "K"
+                      : "_";
   }
 
   return field_info;

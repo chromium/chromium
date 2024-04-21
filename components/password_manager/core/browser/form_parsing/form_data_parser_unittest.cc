@@ -308,7 +308,7 @@ class FormParserTest : public testing::Test {
       field.is_focusable = field_description.is_focusable;
       field.is_enabled = field_description.is_enabled;
       field.is_readonly = field_description.is_readonly;
-      field.properties_mask = field_description.properties_mask;
+      field.set_properties_mask(field_description.properties_mask);
       if (field_description.value == kNonimportantValue) {
         field.set_value(StampUniqueSuffix(u"value"));
       } else {

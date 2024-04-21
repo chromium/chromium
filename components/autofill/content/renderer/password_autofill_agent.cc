@@ -462,14 +462,16 @@ void FillNonTypedOrFilledPropertiesMasks(std::vector<FormFieldData>* fields,
       FieldPropertiesFlags::kAutofilled | FieldPropertiesFlags::kUserTyped;
 
   for (auto& field : *fields) {
-    if (field.properties_mask & kFilledOrTyped)
+    if (field.properties_mask() & kFilledOrTyped) {
       continue;
+    }
 
     for (const auto& [field_id, field_data] : manager.field_data_map()) {
       const std::optional<std::u16string>& value = field_data.first;
       FieldPropertiesMask properties = field_data.second;
       if ((properties & kFilledOrTyped) && value == field.value()) {
-        field.properties_mask |= properties & kFilledOrTyped;
+        field.set_properties_mask(field.properties_mask() |
+                                  (properties & kFilledOrTyped));
         break;
       }
     }

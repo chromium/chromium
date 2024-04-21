@@ -1086,10 +1086,12 @@ TEST_F(FormFillerTest, FillPartlyManuallyFilledAddressForm) {
   // Michael will be overridden with Elvis because Autofill is triggered from
   // the first field.
   form.fields[0].set_value(u"Michael");
-  form.fields[0].properties_mask |= kUserTyped;
+  form.fields[0].set_properties_mask(form.fields[0].properties_mask() |
+                                     kUserTyped);
   // Jackson will be preserved.
   form.fields[2].set_value(u"Jackson");
-  form.fields[2].properties_mask |= kUserTyped;
+  form.fields[2].set_properties_mask(form.fields[2].properties_mask() |
+                                     kUserTyped);
   FormsSeen({form});
 
   AutofillProfile profile = test::GetFullProfile();
@@ -1115,10 +1117,12 @@ TEST_F(FormFillerTest, FillPartlyManuallyFilledCreditCardForm) {
   // Michael will be overridden with Elvis because Autofill is triggered from
   // the first field.
   form.fields[0].set_value(u"Michael");
-  form.fields[0].properties_mask |= kUserTyped;
+  form.fields[0].set_properties_mask(form.fields[0].properties_mask() |
+                                     kUserTyped);
   // Jackson will be preserved.
   form.fields[1].set_value(u"Jackson");
-  form.fields[1].properties_mask |= kUserTyped;
+  form.fields[1].set_properties_mask(form.fields[1].properties_mask() |
+                                     kUserTyped);
   FormsSeen({form});
 
   // First fill the address data.

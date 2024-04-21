@@ -123,11 +123,12 @@ UsernamePasswordsState CalculateUsernamePasswordsState(
     const std::u16string& value =
         field.user_input.empty() ? field.value() : field.user_input;
 
-    bool user_typed = field.properties_mask & FieldPropertiesFlags::kUserTyped;
-    bool manually_filled =
-        field.properties_mask & FieldPropertiesFlags::kAutofilledOnUserTrigger;
+    bool user_typed =
+        field.properties_mask() & FieldPropertiesFlags::kUserTyped;
+    bool manually_filled = field.properties_mask() &
+                           FieldPropertiesFlags::kAutofilledOnUserTrigger;
     bool automatically_filled =
-        field.properties_mask & FieldPropertiesFlags::kAutofilledOnPageLoad;
+        field.properties_mask() & FieldPropertiesFlags::kAutofilledOnPageLoad;
 
     // The typed `value` could appear in `saved_usernames`, `saved_passwords`,
     // or both. In the last case we use the control type of the form as a

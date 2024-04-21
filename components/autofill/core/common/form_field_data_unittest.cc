@@ -43,8 +43,8 @@ void FillVersion5Fields(FormFieldData* data) {
 }
 
 void FillVersion6Fields(FormFieldData* data) {
-  data->properties_mask =
-      FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kHadFocus;
+  data->set_properties_mask(FieldPropertiesFlags::kUserTyped |
+                            FieldPropertiesFlags::kHadFocus);
 }
 
 void FillVersion7Fields(FormFieldData* data) {
@@ -111,7 +111,7 @@ void WriteVersion5Specific(const FormFieldData& data, base::Pickle* pickle) {
 }
 
 void WriteVersion6Specific(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteUInt32(data.properties_mask);
+  pickle->WriteUInt32(data.properties_mask());
 }
 
 void WriteVersion7Specific(const FormFieldData& data, base::Pickle* pickle) {

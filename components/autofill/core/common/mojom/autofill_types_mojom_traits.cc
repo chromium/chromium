@@ -272,7 +272,7 @@ bool StructTraits<
     out->set_section(std::move(section));
   }
 
-  out->properties_mask = data.properties_mask();
+  out->set_properties_mask(data.properties_mask());
 
   {
     autofill::FieldRendererId renderer_id;

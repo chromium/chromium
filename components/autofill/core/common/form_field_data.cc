@@ -226,7 +226,7 @@ bool DeserializeSection9(base::PickleIterator* iter,
   if (!iter->ReadUInt32(&properties_mask)) {
     return false;
   }
-  field_data->properties_mask = std::move(properties_mask);
+  field_data->set_properties_mask(std::move(properties_mask));
   return true;
 }
 
@@ -393,15 +393,15 @@ bool FormFieldData::IsSelectOrSelectListElement() const {
 }
 
 bool FormFieldData::DidUserType() const {
-  return properties_mask & kUserTyped;
+  return properties_mask() & kUserTyped;
 }
 
 bool FormFieldData::HadFocus() const {
-  return properties_mask & kHadFocus;
+  return properties_mask() & kHadFocus;
 }
 
 bool FormFieldData::WasPasswordAutofilled() const {
-  return properties_mask & kAutofilled;
+  return properties_mask() & kAutofilled;
 }
 
 // static
@@ -498,7 +498,7 @@ void SerializeFormFieldData(const FormFieldData& field_data,
   WriteSelectOptionVector(field_data.options, pickle);
   pickle->WriteString16(field_data.placeholder);
   pickle->WriteString16(field_data.css_classes);
-  pickle->WriteUInt32(field_data.properties_mask);
+  pickle->WriteUInt32(field_data.properties_mask());
   pickle->WriteString16(field_data.id_attribute());
   pickle->WriteString16(field_data.name_attribute());
 }
@@ -665,7 +665,7 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field) {
             << "is_enabled=" << field.is_enabled << " "
             << "is_readonly=" << field.is_readonly << " "
             << "user_input=" << field.user_input << " "
-            << "properties_mask=" << field.properties_mask << " "
+            << "properties_mask=" << field.properties_mask() << " "
             << "label_source=" << field.label_source << " "
             << "bounds=" << field.bounds.ToString();
 }

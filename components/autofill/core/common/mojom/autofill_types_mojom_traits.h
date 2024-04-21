@@ -257,7 +257,7 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
   }
 
   static uint32_t properties_mask(const autofill::FormFieldData& r) {
-    return r.properties_mask;
+    return r.properties_mask();
   }
 
   static int32_t form_control_ax_id(const autofill::FormFieldData& r) {

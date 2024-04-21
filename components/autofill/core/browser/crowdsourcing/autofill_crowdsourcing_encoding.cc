@@ -346,8 +346,8 @@ void EncodeFormFieldsForUpload(const FormStructure& form,
 
     added_field->set_signature(field->GetFieldSignature().value());
 
-    if (field->properties_mask) {
-      added_field->set_properties_mask(field->properties_mask);
+    if (field->properties_mask()) {
+      added_field->set_properties_mask(field->properties_mask());
     }
 
     if (form.randomized_encoder().has_value()) {

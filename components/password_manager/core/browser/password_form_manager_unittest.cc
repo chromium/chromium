@@ -2257,12 +2257,12 @@ TEST_P(PasswordFormManagerTest, FillingAssistanceMetric) {
   // Simulate that the user fills the saved credentials manually.
   submitted_form_.fields[kUsernameFieldIndex].set_value(
       saved_match_.username_value);
-  submitted_form_.fields[kUsernameFieldIndex].properties_mask =
-      FieldPropertiesFlags::kAutofilledOnUserTrigger;
+  submitted_form_.fields[kUsernameFieldIndex].set_properties_mask(
+      FieldPropertiesFlags::kAutofilledOnUserTrigger);
   submitted_form_.fields[kPasswordFieldIndex].set_value(
       saved_match_.password_value);
-  submitted_form_.fields[kPasswordFieldIndex].properties_mask =
-      FieldPropertiesFlags::kAutofilledOnUserTrigger;
+  submitted_form_.fields[kPasswordFieldIndex].set_properties_mask(
+      FieldPropertiesFlags::kAutofilledOnUserTrigger);
 
   base::HistogramTester histogram_tester;
   //  Simulate successful submission.
@@ -2292,8 +2292,8 @@ TEST_P(PasswordFormManagerTest, FillingAssistanceMetric_SingleUsernameForm) {
       saved_match_.username_value);
   non_password_form_.fields[kUsernameFieldIndex].autocomplete_attribute =
       "username";
-  non_password_form_.fields[kUsernameFieldIndex].properties_mask =
-      FieldPropertiesFlags::kAutofilledOnUserTrigger;
+  non_password_form_.fields[kUsernameFieldIndex].set_properties_mask(
+      FieldPropertiesFlags::kAutofilledOnUserTrigger);
 
   base::HistogramTester histogram_tester;
 
@@ -2573,12 +2573,12 @@ TEST_P(PasswordFormManagerTest, iOSUsingFieldDataManagerData) {
 
   EXPECT_EQ(form_manager_->observed_form()->fields[1].user_input,
             u"typed_username");
-  EXPECT_EQ(form_manager_->observed_form()->fields[1].properties_mask,
+  EXPECT_EQ(form_manager_->observed_form()->fields[1].properties_mask(),
             FieldPropertiesFlags::kUserTyped);
 
   EXPECT_EQ(form_manager_->observed_form()->fields[2].user_input,
             u"autofilled_pw");
-  EXPECT_EQ(form_manager_->observed_form()->fields[2].properties_mask,
+  EXPECT_EQ(form_manager_->observed_form()->fields[2].properties_mask(),
             FieldPropertiesFlags::kAutofilledOnUserTrigger);
 }
 

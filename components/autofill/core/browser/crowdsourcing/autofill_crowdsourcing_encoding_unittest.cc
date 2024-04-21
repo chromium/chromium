@@ -449,7 +449,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
   form.fields.back().set_name_attribute(form.fields.back().name());
   form.fields.back().set_id_attribute(u"first_name");
   form.fields.back().css_classes = u"class1 class2";
-  form.fields.back().properties_mask = FieldPropertiesFlags::kHadFocus;
+  form.fields.back().set_properties_mask(FieldPropertiesFlags::kHadFocus);
   test::InitializePossibleTypes(possible_field_types, {NAME_FIRST});
 
   form.fields.push_back(CreateTestFormField(
@@ -457,8 +457,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
   form.fields.back().set_name_attribute(form.fields.back().name());
   form.fields.back().set_id_attribute(u"last_name");
   form.fields.back().css_classes = u"class1 class2";
-  form.fields.back().properties_mask =
-      FieldPropertiesFlags::kHadFocus | FieldPropertiesFlags::kUserTyped;
+  form.fields.back().set_properties_mask(FieldPropertiesFlags::kHadFocus |
+                                         FieldPropertiesFlags::kUserTyped);
   test::InitializePossibleTypes(possible_field_types, {NAME_LAST});
 
   form.fields.push_back(CreateTestFormField(
@@ -466,8 +466,8 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequestWithPropertiesMask) {
   form.fields.back().set_name_attribute(form.fields.back().name());
   form.fields.back().set_id_attribute(u"e-mail");
   form.fields.back().css_classes = u"class1 class2";
-  form.fields.back().properties_mask =
-      FieldPropertiesFlags::kHadFocus | FieldPropertiesFlags::kUserTyped;
+  form.fields.back().set_properties_mask(FieldPropertiesFlags::kHadFocus |
+                                         FieldPropertiesFlags::kUserTyped);
   test::InitializePossibleTypes(possible_field_types, {EMAIL_ADDRESS});
 
   form_structure = std::make_unique<FormStructure>(form);

@@ -359,7 +359,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   input.should_autocomplete = true;
   input.role = FormFieldData::RoleAttribute::kPresentation;
   input.text_direction = base::i18n::RIGHT_TO_LEFT;
-  input.properties_mask = FieldPropertiesFlags::kHadFocus;
+  input.set_properties_mask(FieldPropertiesFlags::kHadFocus);
   input.user_input = u"TestTypedValue";
   input.bounds = gfx::RectF(1, 2, 10, 100);
   base::flat_map<LocalFrameToken, size_t> frame_token_ids;
@@ -396,7 +396,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassDataListFormFieldData) {
   input.should_autocomplete = true;
   input.role = FormFieldData::RoleAttribute::kPresentation;
   input.text_direction = base::i18n::RIGHT_TO_LEFT;
-  input.properties_mask = FieldPropertiesFlags::kHadFocus;
+  input.set_properties_mask(FieldPropertiesFlags::kHadFocus);
   input.user_input = u"TestTypedValue";
   input.bounds = gfx::RectF(1, 2, 10, 100);
 

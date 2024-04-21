@@ -182,7 +182,7 @@ FieldFillingSkipReason FormFiller::GetFieldFillingSkipReason(
   // frequently has false negatives.
   // TODO(b/40227496): 'autofill_field.value' should be the initial value of
   // the field. `form_field.value` should be the current value.
-  if ((field.properties_mask & kUserTyped) &&
+  if ((field.properties_mask() & kUserTyped) &&
       (!field.value().empty() || !autofill_field.value().empty()) &&
       !is_trigger_field) {
     return FieldFillingSkipReason::kUserFilledFields;

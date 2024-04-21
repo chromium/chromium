@@ -410,7 +410,12 @@ struct FormFieldData {
   bool should_autocomplete = true;
   RoleAttribute role = RoleAttribute::kOther;
   base::i18n::TextDirection text_direction = base::i18n::UNKNOWN_DIRECTION;
-  FieldPropertiesMask properties_mask = 0;
+  const FieldPropertiesMask& properties_mask() const {
+    return properties_mask_;
+  }
+  void set_properties_mask(FieldPropertiesMask properties_mask) {
+    properties_mask_ = std::move(properties_mask);
+  }
 
   // Data members from the next block are used for parsing only, they are not
   // serialised for storage.
@@ -453,6 +458,7 @@ struct FormFieldData {
   uint64_t max_length_ = std::numeric_limits<uint32_t>::max();
   Section section_;
   bool is_autofilled_ = false;
+  FieldPropertiesMask properties_mask_ = 0;
 };
 
 // Structure containing necessary information to be sent from the browser to the
@@ -542,7 +548,7 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field);
     EXPECT_EQ(expected.is_user_edited, actual.is_user_edited);                 \
     EXPECT_EQ(expected.section(), actual.section());                           \
     EXPECT_EQ(expected.check_status, actual.check_status);                     \
-    EXPECT_EQ(expected.properties_mask, actual.properties_mask);               \
+    EXPECT_EQ(expected.properties_mask(), actual.properties_mask());           \
     EXPECT_EQ(expected.id_attribute(), actual.id_attribute());                 \
     EXPECT_EQ(expected.id_attribute(), actual.id_attribute());                 \
   } while (0)

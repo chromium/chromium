@@ -35,7 +35,7 @@ void CheckThatOnlyFieldByIndexHasThisPossibleType(
   for (size_t i = 0; i < form_structure.field_count(); i++) {
     if (i == field_index) {
       EXPECT_THAT(form_structure.field(i)->possible_types(), ElementsAre(type));
-      EXPECT_EQ(mask, form_structure.field(i)->properties_mask);
+      EXPECT_EQ(mask, form_structure.field(i)->properties_mask());
     } else {
       EXPECT_THAT(form_structure.field(i)->possible_types(),
                   Not(Contains(type)));

@@ -3769,11 +3769,13 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
   // Michael will be overridden with Elvis because Autofill is triggered from
   // the first field.
   form.fields[0].set_value(u"Michael");
-  form.fields[0].properties_mask |= kUserTyped;
+  form.fields[0].set_properties_mask(form.fields[0].properties_mask() |
+                                     kUserTyped);
 
   // Jackson will be preserved, only override the first field.
   form.fields[2].set_value(u"Jackson");
-  form.fields[2].properties_mask |= kUserTyped;
+  form.fields[2].set_properties_mask(form.fields[2].properties_mask() |
+                                     kUserTyped);
 
   // Fill the address data.
   TestAddressFillData address_fill_data(
@@ -6749,7 +6751,8 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_MixedFormUserTyped) {
 
   // Pretend user started typing and make sure we no longer set suggestions.
   form.fields[0].set_value(u"Michael");
-  form.fields[0].properties_mask |= kUserTyped;
+  form.fields[0].set_properties_mask(form.fields[0].properties_mask() |
+                                     kUserTyped);
   GetAutofillSuggestions(form, form.fields[0]);
   external_delegate()->CheckNoSuggestions(form.fields[0].global_id());
 }

@@ -380,8 +380,8 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
   if (field_data_manager.HasFieldData(field_data->renderer_id())) {
     field_data->user_input =
         field_data_manager.GetUserInput(field_data->renderer_id());
-    field_data->properties_mask =
-        field_data_manager.GetFieldPropertiesMask(field_data->renderer_id());
+    field_data->set_properties_mask(
+        field_data_manager.GetFieldPropertiesMask(field_data->renderer_id()));
   }
 
   return true;

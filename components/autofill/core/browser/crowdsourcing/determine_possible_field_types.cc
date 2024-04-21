@@ -110,7 +110,7 @@ AutofillField* GetBestPossibleCVCFieldForUpload(
     AutofillField* result =
         FindFirstFieldWithValue(form_structure, last_unlocked_credit_card_cvc);
     if (result) {
-      result->properties_mask = FieldPropertiesFlags::kKnownValue;
+      result->set_properties_mask(FieldPropertiesFlags::kKnownValue);
     }
     return result;
   }

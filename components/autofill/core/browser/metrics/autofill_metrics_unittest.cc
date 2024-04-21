@@ -6189,8 +6189,8 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
                           ? fill_data().credit_card.GetRawInfo(fill_type)
                           : fill_data().cvc);
       field.set_is_autofilled(is_autofilled);
-      field.properties_mask = (field.properties_mask & ~kUserTyped) |
-                              (is_user_typed ? kUserTyped : 0);
+      field.set_properties_mask((field.properties_mask() & ~kUserTyped) |
+                                (is_user_typed ? kUserTyped : 0));
     }
   }
 

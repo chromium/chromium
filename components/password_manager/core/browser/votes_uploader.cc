@@ -835,7 +835,8 @@ void VotesUploader::SetKnownValueFlag(
       continue;
     }
     if (known_username == field->value() || known_password == field->value()) {
-      field->properties_mask |= autofill::FieldPropertiesFlags::kKnownValue;
+      field->set_properties_mask(field->properties_mask() |
+                                 autofill::FieldPropertiesFlags::kKnownValue);
     }
   }
 }
