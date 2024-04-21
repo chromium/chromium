@@ -232,7 +232,8 @@ absl::variant<std::pair<AuthenticatorMakeCredentialResponse,
               std::string>
 ParseMakeCredentialResponse(cbor::Value response_value,
                             const CtapMakeCredentialRequest& request,
-                            int32_t wrapped_secret_version) {
+                            int32_t wrapped_secret_version,
+                            bool user_verified) {
   if (!response_value.is_array() || response_value.GetArray().empty()) {
     return "Command response was not a valid CBOR array.";
   }
@@ -307,13 +308,10 @@ ParseMakeCredentialResponse(cbor::Value response_value,
                                          std::move(credential_id),
                                          std::move(public_key));
 
-  // TODO(https://crbug.com/1459620): Assume UV for now, but this will be
-  // dependent on whether UV actually occurred, when that implementation is
-  // complete.
   uint8_t flags =
       static_cast<uint8_t>(AuthenticatorData::Flag::kTestOfUserPresence) |
       static_cast<uint8_t>(AuthenticatorData::Flag::kAttestation);
-  if (request.user_verification != UserVerificationRequirement::kDiscouraged) {
+  if (user_verified) {
     flags |=
         static_cast<uint8_t>(AuthenticatorData::Flag::kTestOfUserVerification);
   }

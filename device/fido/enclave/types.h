@@ -122,6 +122,8 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CredentialRequest {
   // The PIN entered by the user (wrapped for the enclave), and the correct PIN
   // (encrypted to the security domain secret). Optional, may be nullptr.
   std::unique_ptr<ClaimedPIN> claimed_pin;
+  // True when a user verification has been performed, false otherwise.
+  bool user_verified = false;
 };
 
 }  // namespace device::enclave

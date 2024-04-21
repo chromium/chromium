@@ -435,7 +435,8 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_Success) {
           std::vector<PublicKeyCredentialParams::CredentialInfo>()));
 
   auto parse_result = ParseMakeCredentialResponse(
-      std::move(response_cbor), ctap_request, kWrappedSecretVersion);
+      std::move(response_cbor), ctap_request, kWrappedSecretVersion,
+      /*user_verified=*/true);
   EXPECT_TRUE(
       (absl::holds_alternative<std::pair<AuthenticatorMakeCredentialResponse,
                                          sync_pb::WebauthnCredentialSpecifics>>(
@@ -464,6 +465,8 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_Success) {
   EXPECT_TRUE(
       register_response.transports->contains(FidoTransportProtocol::kHybrid));
   EXPECT_TRUE(register_response.is_resident_key);
+  EXPECT_TRUE(register_response.attestation_object.authenticator_data()
+                  .obtained_user_verification());
 }
 
 TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_StringFailures) {
@@ -478,7 +481,8 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_StringFailures) {
     CHECK(base::HexStringToBytes(test_case.hex_cbor, &response_serialized));
     cbor::Value response_cbor = cbor::Reader::Read(response_serialized).value();
     auto parse_result = ParseMakeCredentialResponse(
-        std::move(response_cbor), ctap_request, kWrappedSecretVersion);
+        std::move(response_cbor), ctap_request, kWrappedSecretVersion,
+        /*user_verified=*/false);
     EXPECT_TRUE(absl::holds_alternative<std::string>(parse_result))
         << "Failed MakeCredential response parsing for: " << test_case.name;
   }
@@ -507,7 +511,8 @@ TEST_F(EnclaveProtocolUtilsTest, ParseMakeCredentialResponse_IntegerFailure) {
   CHECK(base::HexStringToBytes("81A16365727202", &response_serialized));
   cbor::Value response_cbor = cbor::Reader::Read(response_serialized).value();
   auto parse_result = ParseMakeCredentialResponse(
-      std::move(response_cbor), ctap_request, kWrappedSecretVersion);
+      std::move(response_cbor), ctap_request, kWrappedSecretVersion,
+      /*user_verified=*/false);
 
   EXPECT_TRUE(absl::holds_alternative<int>(parse_result));
   EXPECT_EQ(absl::get<int>(parse_result), 2);

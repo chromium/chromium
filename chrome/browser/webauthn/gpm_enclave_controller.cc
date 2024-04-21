@@ -707,6 +707,7 @@ void GPMEnclaveController::StartEnclaveTransaction(
       request->signing_callback =
           enclave_manager_->HardwareKeySigningCallback();
       use_unwrapped_secret = true;
+      request->user_verified = true;
       break;
 
     case EnclaveUserVerificationMethod::kPIN:
@@ -717,6 +718,7 @@ void GPMEnclaveController::StartEnclaveTransaction(
       request->pin_result_callback =
           base::BindOnce(&GPMEnclaveController::HandlePINValidationResult,
                          weak_ptr_factory_.GetWeakPtr());
+      request->user_verified = true;
       break;
 
     case EnclaveUserVerificationMethod::kUVKeyWithChromeUI:
@@ -728,6 +730,7 @@ void GPMEnclaveController::StartEnclaveTransaction(
       request->signing_callback =
           enclave_manager_->UserVerifyingKeySigningCallback(
               std::move(uv_options));
+      request->user_verified = true;
       break;
     }
     case EnclaveUserVerificationMethod::kUnsatisfiable:

@@ -174,7 +174,7 @@ void EnclaveAuthenticator::ProcessMakeCredentialResponse(
   std::string error_description;
   auto parse_result = ParseMakeCredentialResponse(
       std::move(*response), pending_make_credential_request_->request,
-      *ui_request_->key_version);
+      *ui_request_->key_version, ui_request_->user_verified);
   if (absl::holds_alternative<std::string>(parse_result)) {
     FIDO_LOG(ERROR) << base::StrCat(
         {"Error in registration response from server: ",
