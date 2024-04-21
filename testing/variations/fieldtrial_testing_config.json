@@ -9927,10 +9927,8 @@
             ],
             "experiments": [
                 {
-                    "name": "enabled_proxy_a_ip_protection_phase_04_18_2024",
+                    "name": "enabled_proxy_a_ip_protection_phase_04_19_2024",
                     "params": {
-                        "IpPrivacyAuthTokenCacheBatchSize": "1",
-                        "IpPrivacyAuthTokenCacheLowWaterMark": "1",
                         "IpPrivacyBsaEnablePrivacyPass": "true",
                         "IpPrivacyDirectOnly": "false",
                         "IpPrivacyIncludeOAuthTokenInGetProxyConfig": "true",
