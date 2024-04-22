@@ -61,7 +61,7 @@ namespace blink {
 
 BASE_FEATURE(kMediaRecorderEnableMp4Muxer,
              "MediaRecorderEnableMp4Muxer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 namespace {
 
 constexpr double kDefaultVideoFrameRate = 30.0;
