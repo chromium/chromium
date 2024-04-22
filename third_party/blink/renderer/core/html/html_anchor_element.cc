@@ -102,10 +102,7 @@ bool ShouldInterveneDownloadByFramePolicy(LocalFrame* frame) {
     if (!has_gesture) {
       UseCounter::Count(document,
                         WebFeature::kDownloadInAdFrameWithoutUserGesture);
-      if (base::FeatureList::IsEnabled(
-              blink::features::
-                  kBlockingDownloadsInAdFrameWithoutUserActivation))
-        should_intervene_download = true;
+      should_intervene_download = true;
     }
   }
   if (frame->DomWindow()->IsSandboxed(

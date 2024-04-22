@@ -353,39 +353,25 @@ class SubframeSameFrameDownloadBrowserTest_AdFrame
     : public DownloadFramePolicyBrowserTest,
       public ::testing::WithParamInterface<std::tuple<
           DownloadSource,
-          bool /* block_downloads_in_ad_frame_without_user_activation */,
           bool /* is_ad_frame */,
           bool /* is_cross_origin */,
           bool /* initiate_with_gesture */>> {
  public:
-  SubframeSameFrameDownloadBrowserTest_AdFrame() {
-    bool block_downloads_in_ad_frame_without_user_activation;
-    std::tie(std::ignore, block_downloads_in_ad_frame_without_user_activation,
-             std::ignore, std::ignore, std::ignore) = GetParam();
-    scoped_feature_list_.InitWithFeatureState(
-        blink::features::kBlockingDownloadsInAdFrameWithoutUserActivation,
-        block_downloads_in_ad_frame_without_user_activation);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  SubframeSameFrameDownloadBrowserTest_AdFrame() = default;
 };
 
 // Download that's initiated from / occurs in the same subframe are handled
 // correctly. This test specifically tests ad related behaviors.
 IN_PROC_BROWSER_TEST_P(SubframeSameFrameDownloadBrowserTest_AdFrame, Download) {
-  auto [source, block_downloads_in_ad_frame_without_user_activation,
-        is_ad_frame, is_cross_origin, initiate_with_gesture] = GetParam();
+  auto [source, is_ad_frame, is_cross_origin, initiate_with_gesture] =
+      GetParam();
   SCOPED_TRACE(::testing::Message()
                << "source = " << source << ", "
                << "is_ad_frame = " << is_ad_frame << ", "
-               << "block_downloads_in_ad_frame_without_user_activation = "
-               << block_downloads_in_ad_frame_without_user_activation << ", "
                << "is_cross_origin = " << is_cross_origin << ", "
                << "initiate_with_gesture = " << initiate_with_gesture);
 
-  bool expect_download = !block_downloads_in_ad_frame_without_user_activation ||
-                         initiate_with_gesture || !is_ad_frame;
+  bool expect_download = initiate_with_gesture || !is_ad_frame;
   bool expect_download_in_ad_frame_without_user_activation =
       is_ad_frame && !initiate_with_gesture;
 
@@ -421,7 +407,6 @@ INSTANTIATE_TEST_SUITE_P(
     SubframeSameFrameDownloadBrowserTest_AdFrame,
     ::testing::Combine(::testing::Values(DownloadSource::kNavigation,
                                          DownloadSource::kAnchorAttribute),
-                       ::testing::Bool(),
                        ::testing::Bool(),
                        ::testing::Bool(),
                        ::testing::Bool()));
@@ -482,33 +467,20 @@ INSTANTIATE_TEST_SUITE_P(
 class OtherFrameNavigationDownloadBrowserTest_AdFrame
     : public DownloadFramePolicyBrowserTest,
       public ::testing::WithParamInterface<std::tuple<
-          bool /* block_downloads_in_ad_frame_without_user_activation */,
           bool /* is_cross_origin */,
           bool /* initiate_with_gesture */,
           OtherFrameNavigationType>> {
  public:
-  OtherFrameNavigationDownloadBrowserTest_AdFrame() {
-    bool block_downloads_in_ad_frame_without_user_activation;
-    std::tie(block_downloads_in_ad_frame_without_user_activation, std::ignore,
-             std::ignore, std::ignore) = GetParam();
-    scoped_feature_list_.InitWithFeatureState(
-        blink::features::kBlockingDownloadsInAdFrameWithoutUserActivation,
-        block_downloads_in_ad_frame_without_user_activation);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  OtherFrameNavigationDownloadBrowserTest_AdFrame() = default;
 };
 
 // Tests navigation download that's initiated from a different frame with
 // only one frame being ad. Also covers the remote frame navigation path.
 IN_PROC_BROWSER_TEST_P(OtherFrameNavigationDownloadBrowserTest_AdFrame,
                        Download) {
-  auto [block_downloads_in_ad_frame_without_user_activation, is_cross_origin,
-        initiate_with_gesture, other_frame_navigation_type] = GetParam();
+  auto [is_cross_origin, initiate_with_gesture, other_frame_navigation_type] =
+      GetParam();
   SCOPED_TRACE(::testing::Message()
-               << "block_downloads_in_ad_frame_without_user_activation = "
-               << block_downloads_in_ad_frame_without_user_activation << ", "
                << "is_cross_origin = " << is_cross_origin << ", "
                << "initiate_with_gesture = " << initiate_with_gesture << ", "
                << "other_frame_navigation_type = "
@@ -526,9 +498,7 @@ IN_PROC_BROWSER_TEST_P(OtherFrameNavigationDownloadBrowserTest_AdFrame,
                              is_cross_origin /* is_cross_origin */);
 
   if (!prevent_frame_busting) {
-    bool expect_download =
-        !block_downloads_in_ad_frame_without_user_activation ||
-        initiate_with_gesture;
+    bool expect_download = initiate_with_gesture;
 
     SetNumDownloadsExpectation(expect_download);
 
@@ -578,7 +548,6 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     OtherFrameNavigationDownloadBrowserTest_AdFrame,
     ::testing::Combine(
-        ::testing::Bool(),
         ::testing::Bool(),
         ::testing::Bool(),
         ::testing::Values(

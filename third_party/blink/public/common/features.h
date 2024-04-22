@@ -187,9 +187,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBiddingAndScoringDebugReportingAPI);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kBlinkSchedulerPrioritizeNavigationIPCs);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kBlockingDownloadsInAdFrameWithoutUserActivation);
-
 // Block all MIDI access with the MIDI_SYSEX permission
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBlockMidiByDefault);
 

@@ -317,12 +317,6 @@ BASE_FEATURE(kBiddingAndScoringDebugReportingAPI,
              "BiddingAndScoringDebugReportingAPI",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable intervention for download that was initiated from or occurred in an ad
-// frame without user activation.
-BASE_FEATURE(kBlockingDownloadsInAdFrameWithoutUserActivation,
-             "BlockingDownloadsInAdFrameWithoutUserActivation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Boost the priority of the first N not-small images.
 // crbug.com/1431169
 BASE_FEATURE(kBoostImagePriority,
