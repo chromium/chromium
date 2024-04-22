@@ -329,12 +329,13 @@ config("compiler") {
   # Here we enable -fno-delete-null-pointer-checks, which makes various nullptr
   # operations (e.g. dereferencing) into defined behavior. This avoids deletion
   # of some security-critical code: see https://crbug.com/1139129.
-  # Nacl does not support the flag. And, we still want UBSAN to catch undefined
-  # behavior related to nullptrs, so do not add this flag if UBSAN is enabled.
-  # GCC seems to have some bugs compiling constexpr code when this is defined,
-  # so only enable it if using_clang. See: https://gcc.gnu.org/PR97913
+  # The older NaCl toolchain does not support the flag. And, we still want UBSan
+  # to catch undefined behavior related to nullptrs, so do not add this flag if
+  # UBSan is enabled. GCC seems to have some bugs compiling constexpr code when
+  # this is defined, so only enable it if using_clang.
+  # See: https://gcc.gnu.org/PR97913
   # TODO(mpdenton): remove is_clang once GCC bug is fixed.
-  if (!is_nacl && !is_ubsan && is_clang) {
+  if ((!is_nacl || is_nacl_saigo) && !is_ubsan && is_clang) {
     cflags += [ "-fno-delete-null-pointer-checks" ]
   }
 
