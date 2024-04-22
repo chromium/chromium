@@ -1281,10 +1281,10 @@
     Energy Saver
   </message>
   <message name="IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_ON_BATTERY_LABEL" desc="Label for the energy saver mode option which is enabled when unplugged option">
-    Turn on when my computer is unplugged
+    Turn on when your computer is unplugged
   </message>
   <message name="IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_BELOW_THRESHOLD_LABEL" desc="Label for the energy saver mode enabled only when battery is low option">
-    Turn on only when my battery is at <ph name="PERCENT">$1<ex>20</ex></ph>% or lower
+    Turn on only when your battery is at <ph name="PERCENT">$1<ex>20</ex></ph>% or lower
   </message>
   <message name="IDS_SETTINGS_PERFORMANCE_BATTERY_SAVER_MODE_RADIO_GROUP_ARIA_LABEL" desc="Accessibility label which will be read by screen readers when focus enters the energy saver mode radio group. When energy saver mode is enabled, this radio group will be expanded and allow the user to choose between different triggering options.">
     Energy saver options
