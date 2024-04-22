@@ -9513,21 +9513,6 @@
             ]
         }
     ],
-    "IOSEnableViewportIntents": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableViewportIntents"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSFastApplicationWillTerminate": [
         {
             "platforms": [
@@ -9715,9 +9700,28 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20240419",
                     "enable_features": [
                         "EnableMeasurementsExperience"
+                    ]
+                },
+                {
+                    "name": "MeasurementsOnly_20240419",
+                    "enable_features": [
+                        "EnableMeasurementsExperience"
+                    ]
+                },
+                {
+                    "name": "ViewportOnly_20240419",
+                    "enable_features": [
+                        "EnableViewportIntents"
+                    ]
+                },
+                {
+                    "name": "MeasurementsAndViewport_20240419",
+                    "enable_features": [
+                        "EnableMeasurementsExperience",
+                        "EnableViewportIntents"
                     ]
                 }
             ]
