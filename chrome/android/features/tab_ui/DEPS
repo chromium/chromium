@@ -15,6 +15,7 @@ include_rules = [
  "+components/browser_ui/widget/android",
  "+components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement",
  "+components/payments/content/android/java/src/org/chromium/components/payments/CurrencyFormatter.java",
+ "+components/saved_tab_groups/android/java",
  "+components/search_engines/android/java/src/org/chromium/components/search_engines",
  "+components/module_installer",
  "+content/public/android/java/src/org/chromium/content_public/browser",

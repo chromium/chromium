@@ -25,9 +25,11 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.function.DoubleConsumer;
 
@@ -41,6 +43,7 @@ public class TabGroupsPaneUnitTest {
     @Mock private DoubleConsumer mOnToolbarAlphaChange;
     @Mock private ProfileProvider mProfileProvider;
     @Mock private Profile mProfile;
+    @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock FaviconHelper.Natives mFaviconHelperJniMock;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileSupplier =
@@ -53,6 +56,8 @@ public class TabGroupsPaneUnitTest {
         ApplicationProvider.getApplicationContext().setTheme(R.style.Theme_BrowserUI_DayNight);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         mProfileSupplier.set(mProfileProvider);
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
     }
 
     @Test
