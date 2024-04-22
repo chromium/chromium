@@ -96,7 +96,7 @@ void AttachBluetoothLogs(scoped_refptr<feedback::FeedbackData> feedback_data,
 std::string_view GetAttachmentName(debugd::FeedbackBinaryLogType log_type) {
   switch (log_type) {
     case debugd::WIFI_FIRMWARE_DUMP:
-      return "iwlwifi_firmware_dumps.tar.zst";
+      return "wifi_firmware_dumps.tar.zst";
   }
 }
 #endif
