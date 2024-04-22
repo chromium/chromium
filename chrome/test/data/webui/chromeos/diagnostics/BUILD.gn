@@ -52,7 +52,7 @@ build_webui_tests("build_webui_tests") {
     "routine_result_list_test.js",
     "routine_section_test.js",
     "system_page_test.js",
-    "test_diagnostics_browser_proxy.js",
+    "test_diagnostics_browser_proxy.ts",
     "text_badge_test.js",
     "touchpad_tester_test.js",
     "touchscreen_tester_test.js",
