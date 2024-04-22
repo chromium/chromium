@@ -60,8 +60,11 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) ClaimEvidence {
   ClaimEvidence();
   ~ClaimEvidence();
 
+  // Optional field specifying the role of this evidence within the claim.
   std::optional<std::string> role;
+  // URI uniquely identifies this evidence.
   std::string uri;
+  // Collection of cryptographic digests for the contents of this artifact.
   std::map<std::string, std::string> digest;
 };
 
@@ -76,12 +79,18 @@ struct ClaimValidity {
 // Detailed content of a claim.
 template <typename T>
 struct COMPONENT_EXPORT(DEVICE_FIDO) ClaimPredicate {
+  // URI indicating the type of the claim. It determines the meaning of
+  // `claimSpec` and `evidence`.
   std::string claim_type;
+  // A detailed description of the claim, as an optional arbitrary object.
   std::optional<T> claim_spec;
+  // Specifies which evidence field the endorsement targets.
   std::string usage;
   // The timestamp (encoded as an Epoch time) when the claim was issued.
   base::Time issued_on;
+  // Validity duration of this claim.
   std::optional<ClaimValidity> validity;
+  // A collection of artifacts that support the truth of the claim.
   std::vector<ClaimEvidence> evidence;
 };
 
@@ -98,16 +107,40 @@ base::expected<EndorsementStatement, std::string> ParseEndorsementStatement(
 // - has valid Statement and Predicate types, and
 // - has a valid validity duration.
 template <typename T>
-bool COMPONENT_EXPORT(DEVICE_FIDO)
-    ValidateClaim(const Statement<ClaimPredicate<T>>& claim);
+bool ValidateClaim(const Statement<ClaimPredicate<T>>& claim) {
+  if (claim.type != kStatementV1) {
+    return false;
+  }
+  if (claim.predicate_type != kPredicateV1 &&
+      claim.predicate_type != kPredicateV2) {
+    return false;
+  }
+  if (claim.predicate.validity.has_value()) {
+    if (claim.predicate.validity->not_before < claim.predicate.issued_on) {
+      return false;
+    }
+    if (claim.predicate.validity->not_before >
+        claim.predicate.validity->not_after) {
+      return false;
+    }
+  }
+  return true;
+}
 
 // Checks that the input claim has a validity duration, and that the specified
 // time is inside the validity period.
 template <typename T>
 bool VerifyValidityDuration(base::Time now,
-                            const Statement<ClaimPredicate<T>>& claim);
+                            const Statement<ClaimPredicate<T>>& claim) {
+  if (!claim.predicate.validity.has_value() ||
+      claim.predicate.validity->not_before > now ||
+      claim.predicate.validity->not_after < now) {
+    return false;
+  }
+  return true;
+}
 
-// Checks that the given endorsement statement is a valid and has the correct
+// Checks that the given endorsement statement is valid and has the correct
 // claim type.
 bool COMPONENT_EXPORT(DEVICE_FIDO)
     ValidateEndorsement(const EndorsementStatement& claim);

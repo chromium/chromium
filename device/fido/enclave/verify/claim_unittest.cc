@@ -90,4 +90,26 @@ TEST(ClaimTest, ValidateEndorsement_WithAllValidFields_ReturnsTrue) {
   EXPECT_TRUE(ValidateEndorsement(MakeValidEndorsementStatement()));
 }
 
+TEST(ClaimTest,
+     VerifyValidityDuration_EndorsementStatementHasNoValidity_ReturnsFalse) {
+  EndorsementStatement endorsement_statement;
+  EXPECT_FALSE(
+      VerifyValidityDuration(base::Time::Now(), endorsement_statement));
+}
+
+TEST(ClaimTest, VerifyValidityDuration_ValidityNotBeforeHasNotPassed_ReturnsFalse) {
+  EXPECT_FALSE(VerifyValidityDuration(base::Time::FromTimeT(10),
+                                      MakeValidEndorsementStatement()));
+}
+
+TEST(ClaimTest, VerifyValidityDuration_ValidityNotAfterPassed_ReturnsFalse) {
+  EXPECT_FALSE(VerifyValidityDuration(base::Time::FromTimeT(25),
+                                      MakeValidEndorsementStatement()));
+}
+
+TEST(ClaimTest, VerifyValidityDuration_ValidityIsCurrent_ReturnsTrue) {
+  EXPECT_TRUE(VerifyValidityDuration(base::Time::FromTimeT(17),
+                                     MakeValidEndorsementStatement()));
+}
+
 }  // namespace device::enclave
