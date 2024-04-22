@@ -68,6 +68,7 @@ class ScopedMouseDisabler {
         view->GetWidget()->GetNativeWindow()->GetRootWindow());
     generator.MoveMouseTo({0, 0});
     cursor_client_->DisableMouseEvents();
+    cursor_client_->LockCursor();
 #if BUILDFLAG(IS_WIN)
     // On Windows, cursor client disable isn't consistently respected, and it's
     // also used to handle touch -> mouse event translation, so use this
@@ -84,6 +85,7 @@ class ScopedMouseDisabler {
 #if BUILDFLAG(IS_WIN)
     ui::PlatformEventSource::SetIgnoreNativePlatformEvents(false);
 #endif
+    cursor_client_->UnlockCursor();
     cursor_client_->EnableMouseEvents();
   }
 
