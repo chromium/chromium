@@ -66,7 +66,6 @@ class ChromeUserManagerImpl
 
   // UserManager implementation:
   void Shutdown() override;
-  user_manager::UserList GetUsersAllowedForMultiProfile() const override;
   user_manager::UserList GetUnlockUsers() const override;
   void SaveUserOAuthStatus(
       const AccountId& account_id,

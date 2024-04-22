@@ -395,35 +395,6 @@ ChromeUserManagerImpl::GetMultiUserSignInPolicyController() {
   return &multi_user_sign_in_policy_controller_;
 }
 
-user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
-    const {
-  // Supervised users are not allowed to use multi-profiles.
-  if (GetLoggedInUsers().size() == 1 &&
-      GetPrimaryUser()->GetType() != user_manager::UserType::kRegular) {
-    return user_manager::UserList();
-  }
-
-  // No user is allowed if the primary user policy forbids it.
-  if (user_manager::GetMultiUserSignInPolicy(GetPrimaryUser()) ==
-      MultiUserSignInPolicy::kNotAllowed) {
-    return {};
-  }
-
-  user_manager::UserList result;
-  for (user_manager::User* user : GetUsers()) {
-    if (user->GetType() == user_manager::UserType::kRegular &&
-        !user->is_logged_in()) {
-      // Users with a policy that prevents them being added to a session will be
-      // shown in login UI but will be grayed out.
-      // Same applies to owner account (see http://crbug.com/385034).
-      result.push_back(user);
-    }
-  }
-
-  // Extract out users that are allowed on login screen.
-  return FindLoginAllowedUsersFrom(result);
-}
-
 user_manager::UserList ChromeUserManagerImpl::GetUnlockUsers() const {
   const user_manager::UserList& logged_in_users = GetLoggedInUsers();
   if (logged_in_users.empty()) {

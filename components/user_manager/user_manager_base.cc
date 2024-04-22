@@ -39,6 +39,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/multi_user/multi_user_sign_in_policy.h"
 #include "components/user_manager/user_directory_integrity_manager.h"
 #include "components/user_manager/user_manager_pref_names.h"
 #include "components/user_manager/user_names.h"
@@ -138,6 +139,33 @@ void UserManagerBase::Shutdown() {
 const UserList& UserManagerBase::GetUsers() const {
   const_cast<UserManagerBase*>(this)->EnsureUsersLoaded();
   return users_;
+}
+
+UserList UserManagerBase::GetUsersAllowedForMultiProfile() const {
+  // Supervised users are not allowed to use multi-profiles.
+  if (logged_in_users_.size() == 1 &&
+      primary_user_->GetType() != UserType::kRegular) {
+    return {};
+  }
+
+  // No user is allowed if the primary user policy forbids it.
+  if (GetMultiUserSignInPolicy(primary_user_) ==
+      MultiUserSignInPolicy::kNotAllowed) {
+    return {};
+  }
+
+  user_manager::UserList result;
+  for (user_manager::User* user : GetUsers()) {
+    if (user->GetType() == UserType::kRegular && !user->is_logged_in()) {
+      // Users with a policy that prevents them being added to a session will be
+      // shown in login UI but will be grayed out.
+      // Same applies to owner account (see http://crbug.com/385034).
+      result.push_back(user);
+    }
+  }
+
+  // Extract out users that are allowed on login screen.
+  return FindLoginAllowedUsersFrom(result);
 }
 
 UserList UserManagerBase::FindLoginAllowedUsersFrom(

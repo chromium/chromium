@@ -105,6 +105,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // UserManager implementation:
   void Shutdown() override;
   const UserList& GetUsers() const override;
+  UserList GetUsersAllowedForMultiProfile() const override;
   UserList FindLoginAllowedUsersFrom(const UserList& users) const final;
   const UserList& GetLoggedInUsers() const override;
   const UserList& GetLRULoggedInUsers() const override;
