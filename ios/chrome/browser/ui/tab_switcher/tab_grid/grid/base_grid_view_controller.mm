@@ -1457,21 +1457,10 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 // Makes the required changes when a new item has been inserted.
 - (void)modelAndViewUpdatesForInsertionDidCompleteForItemIdentifier:
     (GridItemIdentifier*)item {
-  NSIndexPath* index =
-      [self.diffableDataSource indexPathForItemIdentifier:item];
-  [self updateSelectedCollectionViewItemRingAndBringIntoView:YES];
+  [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
 
   NSInteger numberOfTabs = [self numberOfTabs];
   [self.delegate gridViewController:self didChangeItemCount:numberOfTabs];
-
-  if (!index) {
-    return;
-  }
-
-  [self.collectionView
-      scrollToItemAtIndexPath:index
-             atScrollPosition:UICollectionViewScrollPositionCenteredVertically
-                     animated:YES];
 }
 
 // Makes the required changes to the data source when an existing item is
