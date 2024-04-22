@@ -31,10 +31,10 @@ void SanitizeFormData(FormData* form) {
   for (FormFieldData& field : form->fields) {
     field.set_label({});
     field.set_value({});
-    field.autocomplete_attribute = {};
+    field.set_autocomplete_attribute({});
     field.set_options({});
-    field.placeholder = {};
-    field.css_classes = {};
+    field.set_placeholder({});
+    field.set_css_classes({});
     field.set_id_attribute({});
     field.set_name_attribute({});
   }

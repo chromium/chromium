@@ -834,7 +834,7 @@ TEST_F(FormFillerTest,
   // Create a form where the middle name field has autocomplete=off.
   FormData form = test::CreateTestCreditCardFormData(/*is_https=*/true,
                                                      /*use_month_type=*/false);
-  form.fields.front().autocomplete_attribute = "unrecognized";
+  form.fields.front().set_autocomplete_attribute("unrecognized");
   FormsSeen({form});
 
   CreditCard credit_card = test::GetCreditCard();
@@ -850,7 +850,7 @@ TEST_F(FormFillerTest,
 TEST_F(FormFillerTest, FillCreditCardForm_AutocompleteOffBehavior) {
   FormData form = test::CreateTestCreditCardFormData(/*is_https=*/true,
                                                      /*use_month_type=*/false);
-  form.fields.front().autocomplete_attribute = "off";
+  form.fields.front().set_autocomplete_attribute("off");
   FormsSeen({form});
 
   CreditCard credit_card = test::GetCreditCard();
@@ -927,15 +927,15 @@ TEST_F(FormFillerTest, DoNotFillUnfocusableFieldsExceptForSelect) {
       {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"},
                   {.role = ADDRESS_HOME_COUNTRY,
                    .autocomplete_attribute = "country"}}});
-  form.fields.back().is_focusable = false;
+  form.fields.back().set_is_focusable(false);
   form.fields.push_back(test::CreateTestSelectOrSelectListField(
       "Country", "country", "", "country", {"CA", "US"},
       {"Canada", "United States"}, FormControlType::kSelectList));
-  form.fields.back().is_focusable = false;
+  form.fields.back().set_is_focusable(false);
   form.fields.push_back(test::CreateTestSelectOrSelectListField(
       "Country", "country", "", "country", {"CA", "US"},
       {"Canada", "United States"}, FormControlType::kSelectOne));
-  form.fields.back().is_focusable = false;
+  form.fields.back().set_is_focusable(false);
   FormsSeen({form});
 
   AutofillProfile profile = test::GetFullProfile();
@@ -1170,7 +1170,7 @@ TEST_F(FormFillerTest, FillPhoneNumber) {
     form_with_us_number_max_length.fields.push_back(field);
 
     field.set_max_length(default_max_length);
-    field.autocomplete_attribute = test_field.autocomplete_attribute;
+    field.set_autocomplete_attribute(test_field.autocomplete_attribute);
     field.set_parsed_autocomplete(
         ParseAutocompleteAttribute(test_field.autocomplete_attribute));
     form_with_autocompletetype.fields.push_back(field);
@@ -1442,18 +1442,18 @@ TEST_F(FormFillerTest, FormWithHiddenOrPresentationalFields) {
   form.fields.push_back(
       test::CreateTestSelectField("Country", "country", "", "country",
                                   {"CA", "US"}, {"Canada", "United States"}));
-  form.fields.back().is_focusable = false;
+  form.fields.back().set_is_focusable(false);
   form.fields.push_back(
       test::CreateTestSelectField("State", "state", "", "address-level1",
                                   {"NY", "CA"}, {"New York", "California"}));
-  form.fields.back().role = FormFieldData::RoleAttribute::kPresentation;
+  form.fields.back().set_role(FormFieldData::RoleAttribute::kPresentation);
 
   form.fields.push_back(test::CreateTestFormField("City", "city", "",
                                                   FormControlType::kInputText));
-  form.fields.back().is_focusable = false;
+  form.fields.back().set_is_focusable(false);
   form.fields.push_back(test::CreateTestFormField(
       "Street Address", "address", "", FormControlType::kInputText, "address"));
-  form.fields.back().role = FormFieldData::RoleAttribute::kPresentation;
+  form.fields.back().set_role(FormFieldData::RoleAttribute::kPresentation);
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -1577,8 +1577,8 @@ TEST_F(FormFillerTest, FormChangesVisibilityOfFields) {
   // Two other fields will show up. Select the second profile. The fields that
   // were already filled, would be left unchanged, and the rest would be filled
   // with the second profile.
-  filled_form.fields[2].is_focusable = true;
-  filled_form.fields[3].is_focusable = true;
+  filled_form.fields[2].set_is_focusable(true);
+  filled_form.fields[3].set_is_focusable(true);
 
   // Reparse the form to validate the visibility changes. Fast forward so that
   // no refill is triggered automatically.
@@ -1785,7 +1785,7 @@ TEST_P(ExpirationDateRefillTest, RefillJavascriptModifiedExpirationDates) {
     EXPECT_EQ(refilled_form.fields[0].global_id(), form.fields[2].global_id());
     EXPECT_THAT(refilled_form.fields[0],
                 AutofilledWith(test_case.refilled_exp_date));
-    EXPECT_TRUE(refilled_form.fields[0].force_override);
+    EXPECT_TRUE(refilled_form.fields[0].force_override());
   }
 }
 

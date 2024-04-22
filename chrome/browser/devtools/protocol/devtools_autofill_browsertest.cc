@@ -481,11 +481,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   form.fields.push_back(test::CreateTestFormField(
       /*label=*/"", "name_1", "value_1", FormControlType::kInputText));
   form.fields.back().set_id_attribute(u"id_1");
-  form.fields.back().host_frame = form.host_frame;
+  form.fields.back().set_host_frame(form.host_frame);
   form.fields.push_back(test::CreateTestFormField(
       /*label=*/"", "name_2", "value_2", FormControlType::kInputText));
   form.fields.back().set_id_attribute(u"id_2");
-  form.fields.back().host_frame = form.host_frame;
+  form.fields.back().set_host_frame(form.host_frame);
 
   // The parsed form is queried by
   // AutofillHandler::OnFillOrPreviewDataModelForm() to obtain the type
@@ -618,7 +618,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AutofillInOOPIFs) {
   web_contents()->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
     // Call the driver of the field host iframe.
     if (rfh->GetFrameToken().ToString() ==
-        form.fields[0].host_frame->ToString()) {
+        form.fields[0].host_frame()->ToString()) {
       ASSERT_NE(rfh->GetFrameToken(), main_frame()->GetFrameToken());
       auto* driver = static_cast<mojom::AutofillDriver*>(
           autofill::ContentAutofillDriver::GetForRenderFrameHost(rfh));

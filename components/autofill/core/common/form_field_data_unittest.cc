@@ -19,27 +19,27 @@ void FillCommonFields(FormFieldData* data) {
   data->set_name(u"name");
   data->set_value(u"value");
   data->set_form_control_type(FormControlType::kInputPassword);
-  data->autocomplete_attribute = "off";
+  data->set_autocomplete_attribute("off");
   data->set_max_length(200);
   data->set_is_autofilled(true);
-  data->check_status = FormFieldData::CheckStatus::kChecked;
-  data->is_focusable = true;
-  data->should_autocomplete = false;
-  data->text_direction = base::i18n::RIGHT_TO_LEFT;
+  data->set_check_status(FormFieldData::CheckStatus::kChecked);
+  data->set_is_focusable(true);
+  data->set_should_autocomplete(false);
+  data->set_text_direction(base::i18n::RIGHT_TO_LEFT);
   data->set_options({{.value = u"First", .content = u"First"},
                      {.value = u"Second", .content = u"Second"}});
 }
 
 void FillVersion2Fields(FormFieldData* data) {
-  data->role = FormFieldData::RoleAttribute::kPresentation;
+  data->set_role(FormFieldData::RoleAttribute::kPresentation);
 }
 
 void FillVersion3Fields(FormFieldData* data) {
-  data->placeholder = u"placeholder";
+  data->set_placeholder(u"placeholder");
 }
 
 void FillVersion5Fields(FormFieldData* data) {
-  data->css_classes = u"class1 class2";
+  data->set_css_classes(u"class1 class2");
 }
 
 void FillVersion6Fields(FormFieldData* data) {
@@ -60,27 +60,27 @@ void WriteSection1(const FormFieldData& data, base::Pickle* pickle) {
   pickle->WriteString16(data.name());
   pickle->WriteString16(data.value());
   pickle->WriteString(FormControlTypeToString(data.form_control_type()));
-  pickle->WriteString(data.autocomplete_attribute);
+  pickle->WriteString(data.autocomplete_attribute());
   pickle->WriteUInt64(data.max_length());
   pickle->WriteBool(data.is_autofilled());
 }
 
 void WriteSection3(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteBool(IsChecked(data.check_status));
-  pickle->WriteBool(IsCheckable(data.check_status));
+  pickle->WriteBool(IsChecked(data.check_status()));
+  pickle->WriteBool(IsCheckable(data.check_status()));
 }
 
 void WriteSection4(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteInt(static_cast<int>(data.check_status));
+  pickle->WriteInt(static_cast<int>(data.check_status()));
 }
 
 void WriteSection5(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteBool(data.is_focusable);
-  pickle->WriteBool(data.should_autocomplete);
+  pickle->WriteBool(data.is_focusable());
+  pickle->WriteBool(data.should_autocomplete());
 }
 
 void WriteSection2(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteInt(data.text_direction);
+  pickle->WriteInt(data.text_direction());
   pickle->WriteInt(static_cast<int>(data.options().size()));
   for (const auto& option : data.options()) {
     pickle->WriteString16(option.value);
@@ -92,7 +92,7 @@ void WriteSection2(const FormFieldData& data, base::Pickle* pickle) {
 }
 
 void WriteVersion9Specific(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteInt(data.text_direction);
+  pickle->WriteInt(data.text_direction());
   pickle->WriteInt(static_cast<int>(data.options().size()));
   for (const SelectOption& option : data.options()) {
     pickle->WriteString16(option.value);
@@ -101,15 +101,15 @@ void WriteVersion9Specific(const FormFieldData& data, base::Pickle* pickle) {
 }
 
 void WriteVersion2Specific(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteInt(static_cast<int>(data.role));
+  pickle->WriteInt(static_cast<int>(data.role()));
 }
 
 void WriteVersion3Specific(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteString16(data.placeholder);
+  pickle->WriteString16(data.placeholder());
 }
 
 void WriteVersion5Specific(const FormFieldData& data, base::Pickle* pickle) {
-  pickle->WriteString16(data.css_classes);
+  pickle->WriteString16(data.css_classes());
 }
 
 void WriteVersion6Specific(const FormFieldData& data, base::Pickle* pickle) {

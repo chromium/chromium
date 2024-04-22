@@ -853,10 +853,10 @@ void GenerateTestAutofillPopup(
   FormFieldData field;
   form.host_frame = MakeLocalFrameToken();
   form.renderer_id = MakeFormRendererId();
-  field.host_frame = MakeLocalFrameToken();
+  field.set_host_frame(MakeLocalFrameToken());
   field.set_renderer_id(MakeFieldRendererId());
-  field.is_focusable = true;
-  field.should_autocomplete = true;
+  field.set_is_focusable(true);
+  field.set_should_autocomplete(true);
   autofill_external_delegate->OnQuery(
       form, field, gfx::RectF(100.f, 100.f),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);

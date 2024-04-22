@@ -160,7 +160,7 @@ class FieldFillingPaymentsUtilTest : public testing::Test {
 TEST_F(FieldFillingPaymentsUtilTest,
        FillFormField_AutocompleteOff_CreditCardField) {
   AutofillField field;
-  field.should_autocomplete = false;
+  field.set_should_autocomplete(false);
   field.set_heuristic_type(GetActiveHeuristicSource(), CREDIT_CARD_NUMBER);
 
   CreditCard credit_card;

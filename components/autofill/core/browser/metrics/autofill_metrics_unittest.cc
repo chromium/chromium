@@ -214,7 +214,7 @@ TEST_F(AutofillMetricsTest, PerfectFilling_Addresses_CreditCards) {
                    .value = u"Elvis Aaron Presley",
                    .is_autofilled = true},
                   {.role = CREDIT_CARD_NUMBER, .value = u"01230123012399"}}});
-  payments_form.fields.back().is_user_edited = true;
+  payments_form.fields.back().set_is_user_edited(true);
   autofill_manager().AddSeenForm(address_form, {NAME_FULL, ADDRESS_HOME_LINE1});
   autofill_manager().AddSeenForm(payments_form,
                                  {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER});
@@ -328,10 +328,10 @@ TEST_F(AutofillMetricsTest, LogHiddenRepresentationalFieldSkipDecision) {
                           FormControlType::kSelectOne)  // doesn't skip
   });
 
-  form.fields[1].is_focusable = false;
-  form.fields[2].role = FormFieldData::RoleAttribute::kPresentation;
-  form.fields[3].is_focusable = false;
-  form.fields[4].role = FormFieldData::RoleAttribute::kPresentation;
+  form.fields[1].set_is_focusable(false);
+  form.fields[2].set_role(FormFieldData::RoleAttribute::kPresentation);
+  form.fields[3].set_is_focusable(false);
+  form.fields[4].set_role(FormFieldData::RoleAttribute::kPresentation);
 
   std::vector<FieldType> field_types = {NAME_FULL, ADDRESS_HOME_LINE1,
                                         ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
@@ -555,7 +555,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
 
   field.set_label(u"State");
   field.set_name(u"state");
-  field.is_focusable = false;
+  field.set_is_focusable(false);
   field.set_form_control_type(FormControlType::kSelectOne);
   form.fields.push_back(field);
   // Regardless of the order of appearance, hidden fields are rationalized
@@ -5354,8 +5354,8 @@ class AutofillMetricsParseQueryResponseTest : public testing::Test {
     FormFieldData checkable_field;
     checkable_field.set_label(u"radio_button");
     checkable_field.set_form_control_type(FormControlType::kInputRadio);
-    checkable_field.check_status =
-        FormFieldData::CheckStatus::kCheckableButUnchecked;
+    checkable_field.set_check_status(
+        FormFieldData::CheckStatus::kCheckableButUnchecked);
     form.fields.push_back(checkable_field);
 
     owned_forms_.push_back(std::make_unique<FormStructure>(form));
@@ -6139,11 +6139,11 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
          .renderer_id = test::MakeFormRendererId(),
          .main_frame_origin = main_origin});
 
-    ASSERT_EQ(form_.main_frame_origin, form_.fields[0].origin);
-    ASSERT_EQ(form_.main_frame_origin, form_.fields[2].origin);
-    ASSERT_NE(form_.main_frame_origin, form_.fields[1].origin);
-    ASSERT_NE(form_.main_frame_origin, form_.fields[3].origin);
-    ASSERT_EQ(form_.fields[1].origin, form_.fields[3].origin);
+    ASSERT_EQ(form_.main_frame_origin, form_.fields[0].origin());
+    ASSERT_EQ(form_.main_frame_origin, form_.fields[2].origin());
+    ASSERT_NE(form_.main_frame_origin, form_.fields[1].origin());
+    ASSERT_NE(form_.main_frame_origin, form_.fields[3].origin());
+    ASSERT_EQ(form_.fields[1].origin(), form_.fields[3].origin());
 
     // Mock a simplified security model which allows to filter (only) fields
     // from the same origin.
@@ -6151,7 +6151,7 @@ class AutofillMetricsCrossFrameFormTest : public AutofillMetricsTest {
         [](AutofillMetricsCrossFrameFormTest* self,
            const url::Origin& triggered_origin, FieldGlobalId field,
            FieldType) {
-          return triggered_origin == self->GetFieldById(field).origin;
+          return triggered_origin == self->GetFieldById(field).origin();
         },
         this));
   }
@@ -7247,7 +7247,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   FormData form = CreateForm({CreateTestFormField(
       "Search", "Search", "", FormControlType::kInputText)});
   // The form only has one field which has a placeholder of 'Search'.
-  form.fields[0].placeholder = u"Search";
+  form.fields[0].set_placeholder(u"Search");
 
   SeeForm(form);
   SubmitForm(form);

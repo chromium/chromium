@@ -270,34 +270,34 @@ void PopulateRandomizedFieldMetadata(
                           /*include_checksum=*/false,
                           metadata->mutable_label());
   }
-  if (!field.aria_label.empty()) {
-    EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::FIELD_ARIA_LABEL, field.aria_label,
-                          /*include_checksum=*/false,
-                          metadata->mutable_aria_label());
-  }
-  if (!field.aria_description.empty()) {
-    EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::FIELD_ARIA_DESCRIPTION,
-                          field.aria_description, /*include_checksum=*/false,
-                          metadata->mutable_aria_description());
-  }
-  if (!field.css_classes.empty()) {
-    EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::FIELD_CSS_CLASS, field.css_classes,
-                          /*include_checksum=*/false,
-                          metadata->mutable_css_class());
-  }
-  if (!field.placeholder.empty()) {
-    EncodeRandomizedValue(encoder, form_signature, field_signature,
-                          RandomizedEncoder::FIELD_PLACEHOLDER,
-                          field.placeholder, /*include_checksum=*/false,
-                          metadata->mutable_placeholder());
-  }
-  if (!field.autocomplete_attribute.empty()) {
+  if (!field.aria_label().empty()) {
     EncodeRandomizedValue(
         encoder, form_signature, field_signature,
-        RandomizedEncoder::FIELD_AUTOCOMPLETE, field.autocomplete_attribute,
+        RandomizedEncoder::FIELD_ARIA_LABEL, field.aria_label(),
+        /*include_checksum=*/false, metadata->mutable_aria_label());
+  }
+  if (!field.aria_description().empty()) {
+    EncodeRandomizedValue(encoder, form_signature, field_signature,
+                          RandomizedEncoder::FIELD_ARIA_DESCRIPTION,
+                          field.aria_description(), /*include_checksum=*/false,
+                          metadata->mutable_aria_description());
+  }
+  if (!field.css_classes().empty()) {
+    EncodeRandomizedValue(
+        encoder, form_signature, field_signature,
+        RandomizedEncoder::FIELD_CSS_CLASS, field.css_classes(),
+        /*include_checksum=*/false, metadata->mutable_css_class());
+  }
+  if (!field.placeholder().empty()) {
+    EncodeRandomizedValue(encoder, form_signature, field_signature,
+                          RandomizedEncoder::FIELD_PLACEHOLDER,
+                          field.placeholder(), /*include_checksum=*/false,
+                          metadata->mutable_placeholder());
+  }
+  if (!field.autocomplete_attribute().empty()) {
+    EncodeRandomizedValue(
+        encoder, form_signature, field_signature,
+        RandomizedEncoder::FIELD_AUTOCOMPLETE, field.autocomplete_attribute(),
         /*include_checksum=*/false, metadata->mutable_autocomplete());
   }
 }
@@ -311,7 +311,7 @@ void EncodeFormFieldsForUpload(const FormStructure& form,
 
   for (AutofillField* field : upload_fields) {
     // Don't upload checkable fields.
-    if (IsCheckable(field->check_status)) {
+    if (IsCheckable(field->check_status())) {
       continue;
     }
     // Do not upload fields that were filled with a fallback type, as this would
@@ -396,7 +396,8 @@ void EncodeFormForQuery(const autofill::FormStructure& form,
         queried_form_signatures.push_back(form);
 
         for (const auto& field : fields) {
-          if (IsCheckable(field->check_status) || !necessary_condition(field)) {
+          if (IsCheckable(field->check_status()) ||
+              !necessary_condition(field)) {
             continue;
           }
 
@@ -410,10 +411,11 @@ void EncodeFormForQuery(const autofill::FormStructure& form,
             form.alternative_form_signature(), [](auto& f) { return true; });
 
   for (const auto& field : form.fields()) {
-    if (field->host_form_signature) {
-      AddFormIf(form.fields(), field->host_form_signature,
+    if (field->host_form_signature()) {
+      AddFormIf(form.fields(), field->host_form_signature(),
                 form.alternative_form_signature(), [&](const auto& f) {
-                  return f->host_form_signature == field->host_form_signature;
+                  return f->host_form_signature() ==
+                         field->host_form_signature();
                 });
     }
   }
@@ -509,7 +511,7 @@ std::optional<FieldSuggestion> GetFieldSuggestion(
   std::optional<FieldSuggestion> main_frame_field_suggestion =
       get_suggestion(form.form_signature(), field.GetFieldSignature());
   std::optional<FieldSuggestion> iframe_field_suggestion =
-      get_suggestion(field.host_form_signature, field.GetFieldSignature());
+      get_suggestion(field.host_form_signature(), field.GetFieldSignature());
   // NOTE: Suggestions from alternative form signatures are always overrides.
   std::optional<FieldSuggestion> alternative_field_suggestion = get_suggestion(
       form.alternative_form_signature(), field.GetFieldSignature());
@@ -666,8 +668,8 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
   std::erase_if(upload_fields, [&form](const AutofillField* field) {
     // Autofill on iOS and the Password Manager in general have a null
     // FormFieldData::host_form_signature.
-    return !field->host_form_signature ||
-           field->host_form_signature == form.form_signature();
+    return !field->host_form_signature() ||
+           field->host_form_signature() == form.form_signature();
   });
   // Partition `upload_fields` with respect to the forms' renderer id.
   base::ranges::stable_sort(upload_fields, /*comp=*/{},
@@ -679,7 +681,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
     upload_content.set_client_version(
         std::string(version_info::GetProductNameAndVersionForUserAgent()));
     upload_content.set_form_signature(
-        (*subform_begin)->host_form_signature.value());
+        (*subform_begin)->host_form_signature().value());
     upload_content.set_autofill_used(false);
     upload_content.set_data_present(data_present);
 

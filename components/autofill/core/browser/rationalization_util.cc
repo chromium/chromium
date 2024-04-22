@@ -45,11 +45,13 @@ void RationalizePhoneNumberFields(
   for (AutofillField* field : fields_in_section) {
     if (base::FeatureList::IsEnabled(
             features::kAutofillUseParameterizedSectioning)) {
-      if (!field->is_visible)
+      if (!field->is_visible()) {
         continue;
+      }
     } else {
-      if (!field->is_focusable)
+      if (!field->is_focusable()) {
         continue;
+      }
     }
     FieldType current_field_type = field->Type().GetStorableType();
     switch (current_field_type) {

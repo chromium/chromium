@@ -1011,7 +1011,7 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
 
     std::u16string value_view = field->value();
     std::u16string_view user_input_view =
-        base::TrimWhitespace(field->user_input, base::TRIM_ALL);
+        base::TrimWhitespace(field->user_input(), base::TRIM_ALL);
     if (base::FeatureList::IsEnabled(
             features::kAutofillUseTypedCreditCardNumber) &&
         field_type == FieldType::CREDIT_CARD_NUMBER &&
@@ -1071,7 +1071,7 @@ FormDataImporter::ExtractCreditCardFromFormRelaxed(const FormStructure& form) {
     std::u16string_view value_view =
         base::TrimWhitespace(field.value(), base::TRIM_ALL);
     std::u16string_view user_input_view =
-        base::TrimWhitespace(field.user_input, base::TRIM_ALL);
+        base::TrimWhitespace(field.user_input(), base::TRIM_ALL);
     if (!user_input_view.empty() &&
         field.Type().GetStorableType() == FieldType::CREDIT_CARD_NUMBER &&
         base::FeatureList::IsEnabled(

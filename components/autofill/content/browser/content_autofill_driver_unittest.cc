@@ -86,10 +86,10 @@ MATCHER(EqualsFillData, "") {
   FormFieldData::FillData rhs_field = std::get<1>(arg);
   return lhs_field.value() == rhs_field.value &&
          lhs_field.renderer_id() == rhs_field.renderer_id &&
-         lhs_field.host_form_id == rhs_field.host_form_id &&
+         lhs_field.host_form_id() == rhs_field.host_form_id &&
          lhs_field.section() == rhs_field.section &&
          lhs_field.is_autofilled() == rhs_field.is_autofilled &&
-         lhs_field.force_override == rhs_field.force_override;
+         lhs_field.force_override() == rhs_field.force_override;
 }
 
 class FakeAutofillAgent : public mojom::AutofillAgent {
@@ -568,14 +568,15 @@ TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm) {
   EXPECT_EQ(form.main_frame_origin,
             url::Origin::CreateFromNormalizedTuple("https", "hostname", 443));
   ASSERT_EQ(form.fields.size(), 1u);
-  EXPECT_EQ(form.fields.front().host_frame, frame_token());
+  EXPECT_EQ(form.fields.front().host_frame(), frame_token());
 
   EXPECT_EQ(form2.host_frame, form.host_frame);
   EXPECT_EQ(form2.url, form.url);
   EXPECT_EQ(form2.full_url, form.full_url);
   EXPECT_EQ(form2.main_frame_origin, form.main_frame_origin);
   ASSERT_EQ(form2.fields.size(), 1u);
-  EXPECT_EQ(form2.fields.front().host_frame, form2.fields.front().host_frame);
+  EXPECT_EQ(form2.fields.front().host_frame(),
+            form2.fields.front().host_frame());
 }
 
 // Test that forms in "about:" without parents have an empty FormData::url.
@@ -647,13 +648,14 @@ TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
   test_api(driver()).SetFrameAndFormMetaData(form, &field);
 
   EXPECT_NE(signature_without_meta_data, CalculateFormSignature(form));
-  EXPECT_EQ(field.host_frame, frame_token());
-  EXPECT_EQ(field.host_form_id, form.renderer_id);
-  EXPECT_EQ(field.host_form_signature, CalculateFormSignature(form));
+  EXPECT_EQ(field.host_frame(), frame_token());
+  EXPECT_EQ(field.host_form_id(), form.renderer_id);
+  EXPECT_EQ(field.host_form_signature(), CalculateFormSignature(form));
 
-  EXPECT_EQ(field.host_frame, form.fields.front().host_frame);
-  EXPECT_EQ(field.host_form_id, form.fields.front().host_form_id);
-  EXPECT_EQ(field.host_form_signature, form.fields.front().host_form_signature);
+  EXPECT_EQ(field.host_frame(), form.fields.front().host_frame());
+  EXPECT_EQ(field.host_form_id(), form.fields.front().host_form_id());
+  EXPECT_EQ(field.host_form_signature(),
+            form.fields.front().host_form_signature());
 }
 
 // Tests that FormsSeen() for an updated form arrives in the AutofillManager.
@@ -713,7 +715,7 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
        FormDataSentToRenderer_FillForm) {
   url::Origin triggered_origin;
   for (FormFieldData& field : address_form().fields) {
-    field.origin = triggered_origin;
+    field.set_origin(triggered_origin);
     field.set_value(u"dummy_value");
   }
   base::RunLoop run_loop;
@@ -736,7 +738,7 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
        FormDataSentToRenderer_PreviewForm) {
   url::Origin triggered_origin;
   for (FormFieldData& field : address_form().fields) {
-    field.origin = triggered_origin;
+    field.set_origin(triggered_origin);
     field.set_value(u"dummy_value");
   }
   ASSERT_TRUE(base::ranges::all_of(

@@ -94,19 +94,19 @@ FormFieldData GetFormFieldData(const FieldDescription& fd) {
   }
 
   ff.set_renderer_id(fd.renderer_id.value_or(MakeFieldRendererId()));
-  ff.host_form_id = MakeFormRendererId();
-  ff.is_focusable = fd.is_focusable;
-  ff.is_visible = fd.is_visible;
+  ff.set_host_form_id(MakeFormRendererId());
+  ff.set_is_focusable(fd.is_focusable);
+  ff.set_is_visible(fd.is_visible);
   if (!fd.autocomplete_attribute.empty()) {
-    ff.autocomplete_attribute = fd.autocomplete_attribute;
+    ff.set_autocomplete_attribute(fd.autocomplete_attribute);
     ff.set_parsed_autocomplete(
         ParseAutocompleteAttribute(fd.autocomplete_attribute));
   }
   if (fd.host_frame) {
-    ff.host_frame = *fd.host_frame;
+    ff.set_host_frame(*fd.host_frame);
   }
   if (fd.host_form_signature) {
-    ff.host_form_signature = *fd.host_form_signature;
+    ff.set_host_form_signature(*fd.host_form_signature);
   }
   if (fd.label) {
     ff.set_label(*fd.label);
@@ -118,18 +118,18 @@ FormFieldData GetFormFieldData(const FieldDescription& fd) {
     ff.set_value(*fd.value);
   }
   if (fd.placeholder) {
-    ff.placeholder = *fd.placeholder;
+    ff.set_placeholder(*fd.placeholder);
   }
   if (fd.max_length) {
     ff.set_max_length(*fd.max_length);
   }
   if (fd.origin) {
-    ff.origin = *fd.origin;
+    ff.set_origin(*fd.origin);
   }
   ff.set_is_autofilled(fd.is_autofilled.value_or(false));
-  ff.should_autocomplete = fd.should_autocomplete;
+  ff.set_should_autocomplete(fd.should_autocomplete);
   ff.set_properties_mask(fd.properties_mask);
-  ff.check_status = fd.check_status;
+  ff.set_check_status(fd.check_status);
   return ff;
 }
 
@@ -145,9 +145,9 @@ FormData GetFormData(const FormDescription& d) {
   f.fields.reserve(d.fields.size());
   for (const FieldDescription& dd : d.fields) {
     FormFieldData ff = GetFormFieldData(dd);
-    ff.host_frame = dd.host_frame.value_or(f.host_frame);
-    ff.origin = dd.origin.value_or(f.main_frame_origin);
-    ff.host_form_id = f.renderer_id;
+    ff.set_host_frame(dd.host_frame.value_or(f.host_frame));
+    ff.set_origin(dd.origin.value_or(f.main_frame_origin));
+    ff.set_host_form_id(f.renderer_id);
     f.fields.push_back(ff);
   }
   return f;

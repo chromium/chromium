@@ -78,8 +78,8 @@ void GenerateTestAutofillPopup(ContentAutofillDriver& driver,
   form.url = GURL("https://foo.com/bar");
   form.fields = {test::CreateTestFormField(
       "Full name", "name", "", FormControlType::kInputText, "name")};
-  form.fields.front().is_focusable = true;
-  form.fields.front().should_autocomplete = true;
+  form.fields.front().set_is_focusable(true);
+  form.fields.front().set_should_autocomplete(true);
 
   // Not adding a profile would result in `AskForValuesToFill()` not finding any
   // suggestions and hiding the Autofill Popup.

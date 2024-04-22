@@ -25,7 +25,7 @@ FormFieldData CreateTestField() {
   f.set_name_attribute(f.name());
   f.set_id_attribute(u"some_id");
   f.set_form_control_type(FormControlType::kInputText);
-  f.check_status = FormFieldData::CheckStatus::kChecked;
+  f.set_check_status(FormFieldData::CheckStatus::kChecked);
   return f;
 }
 
@@ -117,8 +117,8 @@ TEST_F(FormFieldDataAndroidTest, OnFormFieldDidChange) {
 // updates the underlying `FormFieldData` object.
 TEST_F(FormFieldDataAndroidTest, OnFormFieldVisibilityDidChange) {
   FormFieldData field;
-  field.is_focusable = false;
-  field.role = FormFieldData::RoleAttribute::kOther;
+  field.set_is_focusable(false);
+  field.set_role(FormFieldData::RoleAttribute::kOther);
   EXPECT_FALSE(field.IsFocusable());
 
   FormFieldDataAndroid field_android(&field);
@@ -127,13 +127,13 @@ TEST_F(FormFieldDataAndroidTest, OnFormFieldVisibilityDidChange) {
   // A field with `is_focusable=true` and a non-presentation role is focusable
   // in Autofill terms and therefore visible in Android Autofill terms.
   EXPECT_CALL(bridge(), UpdateVisible(true));
-  field_copy.is_focusable = true;
+  field_copy.set_is_focusable(true);
   field_android.OnFormFieldVisibilityDidChange(field_copy);
   EXPECT_TRUE(FormFieldData::DeepEqual(field, field_copy));
 
   // A field with a presentation role is not focusable in Autofill terms.
   EXPECT_CALL(bridge(), UpdateVisible(false));
-  field_copy.role = FormFieldData::RoleAttribute::kPresentation;
+  field_copy.set_role(FormFieldData::RoleAttribute::kPresentation);
   field_android.OnFormFieldVisibilityDidChange(field_copy);
   EXPECT_TRUE(FormFieldData::DeepEqual(field, field_copy));
 }
@@ -178,15 +178,15 @@ TEST_F(FormFieldDataAndroidTest, SimilarFieldsAs) {
 TEST_F(FormFieldDataAndroidTest, SimilarFieldsAs_Checkable) {
   FormFieldData f1 = CreateTestField();
   FormFieldData f2 = CreateTestField();
-  f1.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
+  f1.set_check_status(FormFieldData::CheckStatus::kCheckableButUnchecked);
   FormFieldDataAndroid af(&f1);
 
   // If they are both checkable, they are similar (even if one is checked and
   // the other is not).
-  f2.check_status = FormFieldData::CheckStatus::kChecked;
+  f2.set_check_status(FormFieldData::CheckStatus::kChecked);
   EXPECT_TRUE(af.SimilarFieldAs(f2));
 
-  f2.check_status = FormFieldData::CheckStatus::kNotCheckable;
+  f2.set_check_status(FormFieldData::CheckStatus::kNotCheckable);
   EXPECT_FALSE(af.SimilarFieldAs(f2));
 }
 
@@ -198,9 +198,9 @@ TEST_F(FormFieldDataAndroidTest, SimilarFieldsAs_Labels) {
   FormFieldDataAndroid af(&f1);
 
   f1.set_label(u"SomeLabel");
-  f1.label_source = FormFieldData::LabelSource::kTdTag;
+  f1.set_label_source(FormFieldData::LabelSource::kTdTag);
   f2.set_label(f1.label());
-  f2.label_source = FormFieldData::LabelSource::kAriaLabel;
+  f2.set_label_source(FormFieldData::LabelSource::kAriaLabel);
 
   EXPECT_TRUE(af.SimilarFieldAs(f2));
 
@@ -209,12 +209,12 @@ TEST_F(FormFieldDataAndroidTest, SimilarFieldsAs_Labels) {
   EXPECT_FALSE(af.SimilarFieldAs(f2));
 
   // Similar because the label source are equal not not a label tag.
-  f2.label_source = f1.label_source;
+  f2.set_label_source(f1.label_source());
   EXPECT_TRUE(af.SimilarFieldAs(f2));
 
   // Not similar because the labels differ and the label sources are label tags.
-  f1.label_source = FormFieldData::LabelSource::kLabelTag;
-  f2.label_source = FormFieldData::LabelSource::kLabelTag;
+  f1.set_label_source(FormFieldData::LabelSource::kLabelTag);
+  f2.set_label_source(FormFieldData::LabelSource::kLabelTag);
   EXPECT_FALSE(af.SimilarFieldAs(f2));
 }
 

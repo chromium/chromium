@@ -358,8 +358,9 @@ bool FormHasFieldWithValue(const autofill::FormData& form,
     if (field.value() == value) {
       return true;
     }
-    if (field.user_input == value)
+    if (field.user_input() == value) {
       return true;
+    }
   }
   return false;
 }

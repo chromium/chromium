@@ -406,14 +406,14 @@ TEST_F(AndroidAutofillProviderTest, NotifyAboutVisibilityChangeOnFocus) {
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
   // For Android Autofill, focusability is the same as visibility.
-  form.fields[0].is_focusable = false;
-  form.fields[2].is_focusable = false;
+  form.fields[0].set_is_focusable(false);
+  form.fields[2].set_is_focusable(false);
 
   // Start an Autofill session.
   android_autofill_manager().SimulateOnAskForValuesToFill(form, form.fields[1]);
 
-  form.fields[0].is_focusable = true;
-  form.fields[2].is_focusable = true;
+  form.fields[0].set_is_focusable(true);
+  form.fields[2].set_is_focusable(true);
 
   EXPECT_CALL(provider_bridge(), OnFormFieldVisibilitiesDidChange(
                                      /*indices=*/UnorderedElementsAre(0, 2)));

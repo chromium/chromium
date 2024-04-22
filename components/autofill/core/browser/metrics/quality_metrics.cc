@@ -87,7 +87,7 @@ void LogQualityMetrics(
     // The form was not perfectly filled if a field was user-edited. Notice that
     // this means that in a perfect filling, a field must either be autofilled,
     // empty, have same value as pageload or have value set by JavaScript.
-    if (field->is_user_edited && !field->is_autofilled()) {
+    if (field->is_user_edited() && !field->is_autofilled()) {
       perfect_filling = false;
     }
 
@@ -202,17 +202,17 @@ void LogQualityMetrics(
     }
 
     // Keep track of the frames of detected and autofilled (credit card) fields.
-    frames_of_detected_fields.insert(field->host_frame);
+    frames_of_detected_fields.insert(field->host_frame());
     if (group == FieldTypeGroup::kCreditCard) {
-      frames_of_detected_credit_card_fields.insert(field->host_frame);
+      frames_of_detected_credit_card_fields.insert(field->host_frame());
       if (field->is_autofilled()) {
-        frames_of_autofilled_credit_card_fields.insert(field->host_frame);
+        frames_of_autofilled_credit_card_fields.insert(field->host_frame());
       }
     }
     if (observed_submission) {
       base::UmaHistogramEnumeration(
           "Autofill.LabelInference.InferredLabelSource.AtSubmission2",
-          field->label_source);
+          field->label_source());
     }
   }
 

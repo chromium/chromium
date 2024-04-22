@@ -217,14 +217,16 @@ struct FormFieldData {
   // for details.
   //
   // Must not be leaked to renderer process. See FieldGlobalId for details.
-  FieldGlobalId global_id() const { return {host_frame, renderer_id()}; }
+  FieldGlobalId global_id() const { return {host_frame(), renderer_id()}; }
 
   // An identifier of the renderer form that contained this field.
   // This may be different from the browser form that contains this field in the
   // case of a frame-transcending form. See AutofillDriverRouter and
   // internal::FormForest for details on the distinction between renderer and
   // browser forms.
-  FormGlobalId renderer_form_id() const { return {host_frame, host_form_id}; }
+  FormGlobalId renderer_form_id() const {
+    return {host_frame(), host_form_id()};
+  }
 
   // TODO(crbug/1211834): This function is deprecated. Use
   // FormFieldData::DeepEqual() instead.
@@ -256,7 +258,7 @@ struct FormFieldData {
   // Returns true if the field is focusable to the user.
   // This is an approximation of visibility with false positives.
   bool IsFocusable() const {
-    return is_focusable && role != RoleAttribute::kPresentation;
+    return is_focusable() && role() != RoleAttribute::kPresentation;
   }
 
   bool DidUserType() const;
@@ -298,7 +300,10 @@ struct FormFieldData {
   // truncated, and because for rich-text contenteditables the selection and
   // text content differ in whitespace.
   // TODO(crbug.com/1501362): Extract on iOS.
-  std::u16string selected_text;
+  const std::u16string& selected_text() const { return selected_text_; }
+  void set_selected_text(std::u16string selected_text) {
+    selected_text_ = std::move(selected_text);
+  }
 
   const FormControlType& form_control_type() const {
     return form_control_type_;
@@ -306,7 +311,12 @@ struct FormFieldData {
   void set_form_control_type(FormControlType form_control_type) {
     form_control_type_ = std::move(form_control_type);
   }
-  std::string autocomplete_attribute;
+  const std::string& autocomplete_attribute() const {
+    return autocomplete_attribute_;
+  }
+  void set_autocomplete_attribute(std::string autocomplete_attribute) {
+    autocomplete_attribute_ = std::move(autocomplete_attribute);
+  }
   const std::optional<AutocompleteParsingResult>& parsed_autocomplete() const {
     return parsed_autocomplete_;
   }
@@ -314,16 +324,31 @@ struct FormFieldData {
       std::optional<AutocompleteParsingResult> parsed_autocomplete) {
     parsed_autocomplete_ = std::move(parsed_autocomplete);
   }
-  std::u16string placeholder;
-  std::u16string css_classes;
-  std::u16string aria_label;
-  std::u16string aria_description;
+  const std::u16string& placeholder() const { return placeholder_; }
+  void set_placeholder(std::u16string placeholder) {
+    placeholder_ = std::move(placeholder);
+  }
+  const std::u16string& css_classes() const { return css_classes_; }
+  void set_css_classes(std::u16string css_classes) {
+    css_classes_ = std::move(css_classes);
+  }
+  const std::u16string& aria_label() const { return aria_label_; }
+  void set_aria_label(std::u16string aria_label) {
+    aria_label_ = std::move(aria_label);
+  }
+  const std::u16string& aria_description() const { return aria_description_; }
+  void set_aria_description(std::u16string aria_description) {
+    aria_description_ = std::move(aria_description);
+  }
 
   // A unique identifier of the containing frame. This value is not serialized
   // because LocalFrameTokens must not be leaked to other renderer processes.
   // It is not persistent between page loads and therefore not used in
   // comparison in SameFieldAs().
-  LocalFrameToken host_frame;
+  const LocalFrameToken& host_frame() const { return host_frame_; }
+  void set_host_frame(LocalFrameToken host_frame) {
+    host_frame_ = std::move(host_frame);
+  }
 
   // Uniquely identifies the DOM element that this field represents among the
   // field DOM elements in the same frame.
@@ -335,7 +360,10 @@ struct FormFieldData {
   }
 
   // Renderer ID of the owning form in the same frame.
-  FormRendererId host_form_id;
+  const FormRendererId& host_form_id() const { return host_form_id_; }
+  void set_host_form_id(FormRendererId host_form_id) {
+    host_form_id_ = std::move(host_form_id);
+  }
 
   // The signature of the field's renderer form, that is, the signature of the
   // FormData that contained this field when it was received by the
@@ -345,13 +373,22 @@ struct FormFieldData {
   // and in the Password Manager.
   // This value is written and read only in the browser for voting of
   // cross-frame forms purposes. It is therefore not sent via mojo.
-  FormSignature host_form_signature;
+  const FormSignature& host_form_signature() const {
+    return host_form_signature_;
+  }
+  void set_host_form_signature(FormSignature host_form_signature) {
+    host_form_signature_ = std::move(host_form_signature);
+  }
 
   // The origin of the frame that hosts the field.
-  url::Origin origin;
+  const url::Origin& origin() const { return origin_; }
+  void set_origin(url::Origin origin) { origin_ = std::move(origin); }
 
   // The ax node id of the form control in the accessibility tree.
-  int32_t form_control_ax_id = 0;
+  const int32_t& form_control_ax_id() const { return form_control_ax_id_; }
+  void set_form_control_ax_id(int32_t form_control_ax_id) {
+    form_control_ax_id_ = std::move(form_control_ax_id);
+  }
 
   // The unique identifier of the section (e.g. billing vs. shipping address)
   // of this field.
@@ -408,14 +445,33 @@ struct FormFieldData {
   // when the form is reset (JavaScript's HTMLFormElement.reset()).
   // TODO(crbug.com/1501627): On iOS, also non-trusted events reset the
   // property.
-  bool is_user_edited = false;
+  const bool& is_user_edited() const { return is_user_edited_; }
+  void set_is_user_edited(bool is_user_edited) {
+    is_user_edited_ = std::move(is_user_edited);
+  }
 
-  CheckStatus check_status = CheckStatus::kNotCheckable;
-  bool is_focusable = true;
-  bool is_visible = true;  // See `features::kAutofillDetectFieldVisibility`.
-  bool should_autocomplete = true;
-  RoleAttribute role = RoleAttribute::kOther;
-  base::i18n::TextDirection text_direction = base::i18n::UNKNOWN_DIRECTION;
+  const CheckStatus& check_status() const { return check_status_; }
+  void set_check_status(CheckStatus check_status) {
+    check_status_ = std::move(check_status);
+  }
+  const bool& is_focusable() const { return is_focusable_; }
+  void set_is_focusable(bool is_focusable) {
+    is_focusable_ = std::move(is_focusable);
+  }
+  const bool& is_visible() const { return is_visible_; }
+  void set_is_visible(bool is_visible) { is_visible_ = std::move(is_visible); }
+  const bool& should_autocomplete() const { return should_autocomplete_; }
+  void set_should_autocomplete(bool should_autocomplete) {
+    should_autocomplete_ = std::move(should_autocomplete);
+  }
+  const RoleAttribute& role() const { return role_; }
+  void set_role(RoleAttribute role) { role_ = std::move(role); }
+  const base::i18n::TextDirection& text_direction() const {
+    return text_direction_;
+  }
+  void set_text_direction(base::i18n::TextDirection text_direction) {
+    text_direction_ = std::move(text_direction);
+  }
   const FieldPropertiesMask& properties_mask() const {
     return properties_mask_;
   }
@@ -425,11 +481,18 @@ struct FormFieldData {
 
   // Data members from the next block are used for parsing only, they are not
   // serialised for storage.
-  bool is_enabled = false;
-  bool is_readonly = false;
+  const bool& is_enabled() const { return is_enabled_; }
+  void set_is_enabled(bool is_enabled) { is_enabled_ = std::move(is_enabled); }
+  const bool& is_readonly() const { return is_readonly_; }
+  void set_is_readonly(bool is_readonly) {
+    is_readonly_ = std::move(is_readonly);
+  }
   // Contains password, username or credit card number value that was either
   // manually typed or autofilled on user trigger into a text-mode input field.
-  std::u16string user_input;
+  const std::u16string& user_input() const { return user_input_; }
+  void set_user_input(std::u16string user_input) {
+    user_input_ = std::move(user_input);
+  }
 
   // The options of a select box.
   const std::vector<SelectOption>& options() const { return options_; }
@@ -439,22 +502,34 @@ struct FormFieldData {
 
   // Password Manager doesn't use labels nor client side nor server side, so
   // label_source isn't in serialize methods.
-  LabelSource label_source = LabelSource::kUnknown;
+  const LabelSource& label_source() const { return label_source_; }
+  void set_label_source(LabelSource label_source) {
+    label_source_ = std::move(label_source);
+  }
 
   // The bounds of this field in current frame coordinates at the
   // form-extraction time. It is valid if not empty, will not be synced to the
   // server side or be used for field comparison and isn't in serialize methods.
-  gfx::RectF bounds;
+  const gfx::RectF& bounds() const { return bounds_; }
+  void set_bounds(gfx::RectF bounds) { bounds_ = std::move(bounds); }
 
   // The datalist is associated with this field, if any. Will not be synced to
   // the server side or be used for field comparison and aren't in serialize
   // methods.
-  std::vector<SelectOption> datalist_options;
+  const std::vector<SelectOption>& datalist_options() const {
+    return datalist_options_;
+  }
+  void set_datalist_options(std::vector<SelectOption> datalist_options) {
+    datalist_options_ = std::move(datalist_options);
+  }
 
   // When sent from browser to renderer, this bit indicates whether a field
   // should be filled even though it is already considered autofilled OR
   // user modified.
-  bool force_override = false;
+  const bool& force_override() const { return force_override_; }
+  void set_force_override(bool force_override) {
+    force_override_ = std::move(force_override);
+  }
 
  private:
   std::u16string name_;
@@ -462,14 +537,39 @@ struct FormFieldData {
   std::u16string name_attribute_;
   std::u16string label_;
   std::u16string value_;
+  std::u16string selected_text_;
   FormControlType form_control_type_ = FormControlType::kInputText;
+  std::string autocomplete_attribute_;
   std::optional<AutocompleteParsingResult> parsed_autocomplete_;
+  std::u16string placeholder_;
+  std::u16string css_classes_;
+  std::u16string aria_label_;
+  std::u16string aria_description_;
+  LocalFrameToken host_frame_;
   FieldRendererId renderer_id_;
+  FormRendererId host_form_id_;
+  FormSignature host_form_signature_;
+  url::Origin origin_;
+  int32_t form_control_ax_id_ = 0;
   uint64_t max_length_ = std::numeric_limits<uint32_t>::max();
   Section section_;
   bool is_autofilled_ = false;
+  bool is_user_edited_ = false;
+  CheckStatus check_status_ = CheckStatus::kNotCheckable;
+  bool is_focusable_ = true;
+  bool is_visible_ = true;  // See `features::kAutofillDetectFieldVisibility`.
+  bool should_autocomplete_ = true;
+  RoleAttribute role_ = RoleAttribute::kOther;
+  base::i18n::TextDirection text_direction_ = base::i18n::UNKNOWN_DIRECTION;
   FieldPropertiesMask properties_mask_ = 0;
+  bool is_enabled_ = false;
+  bool is_readonly_ = false;
+  std::u16string user_input_;
   std::vector<SelectOption> options_;
+  LabelSource label_source_ = LabelSource::kUnknown;
+  gfx::RectF bounds_;
+  std::vector<SelectOption> datalist_options_;
+  bool force_override_ = false;
 };
 
 // Structure containing necessary information to be sent from the browser to the
@@ -544,24 +644,25 @@ std::ostream& operator<<(std::ostream& os, const FormFieldData& field);
 // Prefer to use this macro in place of |EXPECT_EQ()| for comparing
 // |FormFieldData|s in test code.
 // TODO(crbug.com/40765988): Replace this with FormData::DeepEqual().
-#define EXPECT_FORM_FIELD_DATA_EQUALS(expected, actual)                        \
-  do {                                                                         \
-    EXPECT_EQ(expected.label(), actual.label());                               \
-    EXPECT_EQ(expected.name(), actual.name());                                 \
-    EXPECT_EQ(expected.value(), actual.value());                               \
-    EXPECT_EQ(expected.form_control_type(), actual.form_control_type());       \
-    EXPECT_EQ(expected.autocomplete_attribute, actual.autocomplete_attribute); \
-    EXPECT_EQ(expected.parsed_autocomplete(), actual.parsed_autocomplete());   \
-    EXPECT_EQ(expected.placeholder, actual.placeholder);                       \
-    EXPECT_EQ(expected.max_length(), actual.max_length());                     \
-    EXPECT_EQ(expected.css_classes, actual.css_classes);                       \
-    EXPECT_EQ(expected.is_autofilled(), actual.is_autofilled());               \
-    EXPECT_EQ(expected.is_user_edited, actual.is_user_edited);                 \
-    EXPECT_EQ(expected.section(), actual.section());                           \
-    EXPECT_EQ(expected.check_status, actual.check_status);                     \
-    EXPECT_EQ(expected.properties_mask(), actual.properties_mask());           \
-    EXPECT_EQ(expected.id_attribute(), actual.id_attribute());                 \
-    EXPECT_EQ(expected.id_attribute(), actual.id_attribute());                 \
+#define EXPECT_FORM_FIELD_DATA_EQUALS(expected, actual)                      \
+  do {                                                                       \
+    EXPECT_EQ(expected.label(), actual.label());                             \
+    EXPECT_EQ(expected.name(), actual.name());                               \
+    EXPECT_EQ(expected.value(), actual.value());                             \
+    EXPECT_EQ(expected.form_control_type(), actual.form_control_type());     \
+    EXPECT_EQ(expected.autocomplete_attribute(),                             \
+              actual.autocomplete_attribute());                              \
+    EXPECT_EQ(expected.parsed_autocomplete(), actual.parsed_autocomplete()); \
+    EXPECT_EQ(expected.placeholder(), actual.placeholder());                 \
+    EXPECT_EQ(expected.max_length(), actual.max_length());                   \
+    EXPECT_EQ(expected.css_classes(), actual.css_classes());                 \
+    EXPECT_EQ(expected.is_autofilled(), actual.is_autofilled());             \
+    EXPECT_EQ(expected.is_user_edited(), actual.is_user_edited());           \
+    EXPECT_EQ(expected.section(), actual.section());                         \
+    EXPECT_EQ(expected.check_status(), actual.check_status());               \
+    EXPECT_EQ(expected.properties_mask(), actual.properties_mask());         \
+    EXPECT_EQ(expected.id_attribute(), actual.id_attribute());               \
+    EXPECT_EQ(expected.name_attribute(), actual.name_attribute());           \
   } while (0)
 
 // Produces a <table> element with information about the form.

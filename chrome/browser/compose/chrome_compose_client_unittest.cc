@@ -310,13 +310,13 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   GURL GetPageUrl() { return GURL("http://foo/1"); }
 
   void SetSelection(const std::u16string& selection) {
-    field_data().selected_text = selection;
+    field_data().set_selected_text(selection);
   }
 
   // Emulate selected text truncation performed by Autofill.
   void SetSelectionWithTruncation(const std::u16string& selection,
                                   size_t max_length) {
-    field_data().selected_text = selection.substr(0, max_length);
+    field_data().set_selected_text(selection.substr(0, max_length));
   }
 
  protected:

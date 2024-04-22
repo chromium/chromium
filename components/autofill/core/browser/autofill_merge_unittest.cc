@@ -204,7 +204,7 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
       field.set_name(field_type);
       field.set_value(value);
       field.set_form_control_type(FormControlType::kInputText);
-      field.is_focusable = true;
+      field.set_is_focusable(true);
       form.fields.push_back(field);
     }
 

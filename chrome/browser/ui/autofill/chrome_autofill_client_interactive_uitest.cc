@@ -96,7 +96,7 @@ class ChromeAutofillClientBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest,
                        AutofillPopupIsShownIfOverlappingWithIph) {
   FormData form = test::CreateTestAddressFormData();
-  form.fields[0].bounds = gfx::RectF(10, 10);
+  form.fields[0].set_bounds(gfx::RectF(10, 10));
   client()->ShowAutofillFieldIphForManualFallbackFeature(form.fields[0]);
 
   auto delegate = std::make_unique<MockAutofillExternalDelegate>(

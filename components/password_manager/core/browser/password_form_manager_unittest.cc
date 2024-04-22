@@ -727,7 +727,7 @@ TEST_P(PasswordFormManagerTest, AutofillNotMoreThan5Times) {
 // the form was misclassified.
 TEST_P(PasswordFormManagerTest, AutofillSignUpForm) {
   // Make |observed_form_| to be sign-up form.
-  observed_form_.fields.back().autocomplete_attribute = "new-password";
+  observed_form_.fields.back().set_autocomplete_attribute("new-password");
 
   PasswordFormFillData fill_data;
   EXPECT_CALL(driver_, SetPasswordFillData).WillOnce(SaveArg<0>(&fill_data));
@@ -756,7 +756,7 @@ TEST_P(PasswordFormManagerTest, AutofillSignUpForm) {
 // fields are marked with autocomplete attribute.
 TEST_P(PasswordFormManagerTest, GenerationOnNewAndConfirmPasswordFields) {
   // Make |observed_form_| to be sign-up form.
-  observed_form_.fields.back().autocomplete_attribute = "new-password";
+  observed_form_.fields.back().set_autocomplete_attribute("new-password");
   const autofill::FieldRendererId new_password_render_id =
       observed_form_.fields.back().renderer_id();
   // Add a confirmation field.
@@ -765,7 +765,7 @@ TEST_P(PasswordFormManagerTest, GenerationOnNewAndConfirmPasswordFields) {
       new_password_render_id.value() + 1);
   field.set_renderer_id(confirm_password_render_id);
   field.set_form_control_type(autofill::FormControlType::kInputPassword);
-  field.autocomplete_attribute = "new-password";
+  field.set_autocomplete_attribute("new-password");
   observed_form_.fields.push_back(field);
 
   PasswordFormGenerationData generation_data;
@@ -1549,8 +1549,8 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueToUnknownValueFromPrompt) {
   // Emulate submitting form that updates the password for a known username.
   submitted_form_.fields[kUsernameFieldIndex].set_value(
       saved_match_.username_value);
-  submitted_form_.fields[kPasswordFieldIndex].autocomplete_attribute =
-      "new-password";
+  submitted_form_.fields[kPasswordFieldIndex].set_autocomplete_attribute(
+      "new-password");
   submitted_form_.fields[kPasswordFieldIndex].set_value(
       u"new_password_field_value");
   form_manager_->ProvisionallySave(submitted_form_, &driver_,
@@ -2072,7 +2072,8 @@ TEST_P(PasswordFormManagerTest, HasObservedFormChangedAutocompleteAttribute) {
   base::HistogramTester histogram_tester;
 
   FormData form = observed_form_;
-  form.fields[kUsernameFieldIndex].autocomplete_attribute += "...";
+  form.fields[kUsernameFieldIndex].set_autocomplete_attribute(
+      form.fields[kUsernameFieldIndex].autocomplete_attribute() + "...");
   EXPECT_TRUE(HasObservedFormChanged(form, *form_manager_));
   form_manager_.reset();
 
@@ -2116,7 +2117,7 @@ TEST_P(PasswordFormManagerTest, HasObservedFormChangedCssClasses) {
   base::HistogramTester histogram_tester;
 
   FormData form = observed_form_;
-  form.fields[kUsernameFieldIndex].css_classes = u"class1";
+  form.fields[kUsernameFieldIndex].set_css_classes(u"class1");
   EXPECT_FALSE(HasObservedFormChanged(form, *form_manager_));
   form_manager_.reset();
 
@@ -2290,8 +2291,8 @@ TEST_P(PasswordFormManagerTest, FillingAssistanceMetric_SingleUsernameForm) {
   // Simulate that the user fills the saved username manually.
   non_password_form_.fields[kUsernameFieldIndex].set_value(
       saved_match_.username_value);
-  non_password_form_.fields[kUsernameFieldIndex].autocomplete_attribute =
-      "username";
+  non_password_form_.fields[kUsernameFieldIndex].set_autocomplete_attribute(
+      "username");
   non_password_form_.fields[kUsernameFieldIndex].set_properties_mask(
       FieldPropertiesFlags::kAutofilledOnUserTrigger);
 
@@ -2571,12 +2572,12 @@ TEST_P(PasswordFormManagerTest, iOSUsingFieldDataManagerData) {
   form_manager_->ProvisionallySaveFieldDataManagerInfo(
       *field_data_manager, &driver_, possible_usernames);
 
-  EXPECT_EQ(form_manager_->observed_form()->fields[1].user_input,
+  EXPECT_EQ(form_manager_->observed_form()->fields[1].user_input(),
             u"typed_username");
   EXPECT_EQ(form_manager_->observed_form()->fields[1].properties_mask(),
             FieldPropertiesFlags::kUserTyped);
 
-  EXPECT_EQ(form_manager_->observed_form()->fields[2].user_input,
+  EXPECT_EQ(form_manager_->observed_form()->fields[2].user_input(),
             u"autofilled_pw");
   EXPECT_EQ(form_manager_->observed_form()->fields[2].properties_mask(),
             FieldPropertiesFlags::kAutofilledOnUserTrigger);
@@ -2746,7 +2747,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowSignupForm) {
 
   FormData submitted_form = observed_form_only_password_fields_;
   // Imitate sign-up flow: the only filled password field is a new password.
-  submitted_form.fields[0].autocomplete_attribute = "new-password";
+  submitted_form.fields[0].set_autocomplete_attribute("new-password");
   submitted_form.fields[0].set_value(u"strongpassword");
 
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,

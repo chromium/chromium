@@ -318,10 +318,10 @@ void SanitizeFormData(FormData* form) {
   for (FormFieldData& field : form->fields) {
     field.set_label({});
     field.set_value({});
-    field.autocomplete_attribute = {};
+    field.set_autocomplete_attribute({});
     field.set_options({});
-    field.placeholder = {};
-    field.css_classes = {};
+    field.set_placeholder({});
+    field.set_css_classes({});
     field.set_id_attribute({});
     field.set_name_attribute({});
   }
@@ -557,7 +557,7 @@ class PasswordManagerTestBase : public testing::Test {
 
   FormData MakeGAIAChangePasswordFormData() {
     FormData form_data(MakeSimpleFormData());
-    form_data.fields[1].autocomplete_attribute = "new-password";
+    form_data.fields[1].set_autocomplete_attribute("new-password");
     form_data.url = GURL("https://accounts.google.com");
     form_data.action = GURL("http://www.google.com/a/Login");
     form_data.name = u"the-form-name";
@@ -569,14 +569,14 @@ class PasswordManagerTestBase : public testing::Test {
     PasswordForm form = MakeSimpleForm();
     form.new_password_element.swap(form.password_element);
     form.new_password_value.swap(form.password_value);
-    form.form_data.fields[1].autocomplete_attribute = "new-password";
+    form.form_data.fields[1].set_autocomplete_attribute("new-password");
     return form;
   }
 
   // Create a sign-up FormData that has username and new password fields.
   FormData MakeSignUpFormData() {
     FormData form_data = MakeSimpleFormData();
-    form_data.fields[1].autocomplete_attribute = "new-password";
+    form_data.fields[1].set_autocomplete_attribute("new-password");
     return form_data;
   }
 
@@ -754,7 +754,7 @@ class PasswordManagerTestBase : public testing::Test {
     field.set_value(form.username_value);
     field.set_form_control_type(autofill::FormControlType::kInputText);
     field.set_renderer_id(FieldRendererId(2));
-    field.autocomplete_attribute = "cc-name";
+    field.set_autocomplete_attribute("cc-name");
     form.form_data.fields.push_back(field);
 
     field.set_name(form.password_element);
@@ -762,7 +762,7 @@ class PasswordManagerTestBase : public testing::Test {
     field.set_value(form.password_value);
     field.set_form_control_type(autofill::FormControlType::kInputPassword);
     field.set_renderer_id(FieldRendererId(3));
-    field.autocomplete_attribute = "cc-number";
+    field.set_autocomplete_attribute("cc-number");
     form.form_data.fields.push_back(field);
 
     return form;
@@ -1049,7 +1049,7 @@ TEST_P(PasswordManagerTest,
   ON_CALL(client_, IsSavingAndFillingEnabled(_)).WillByDefault(Return(true));
 
   FormData form_data = MakeSingleUsernameFormData();
-  form_data.fields[0].autocomplete_attribute = "username";
+  form_data.fields[0].set_autocomplete_attribute("username");
   FieldRendererId username_renderer_id = form_data.fields[0].renderer_id();
 
   ON_CALL(driver_, GetLastCommittedURL).WillByDefault(ReturnRef(form_data.url));
@@ -3292,7 +3292,7 @@ TEST_P(PasswordManagerTest, SubmittedGaiaFormWithoutVisiblePasswordField) {
 
   form_data.fields[0].set_value(u"username");
   form_data.fields[1].set_value(u"password");
-  form_data.fields[1].is_focusable = false;
+  form_data.fields[1].set_is_focusable(false);
 
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
   manager()->OnDynamicFormSubmission(&driver_, form_data.submission_event);
@@ -3386,7 +3386,7 @@ TEST_P(PasswordManagerTest, NoSavePromptForNotPasswordForm) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url))
       .WillRepeatedly(Return(true));
   // Make the form to be credit card form.
-  form_data.fields[1].autocomplete_attribute = "cc-csc";
+  form_data.fields[1].set_autocomplete_attribute("cc-csc");
 
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
 
@@ -3418,7 +3418,7 @@ TEST_P(PasswordManagerTest, AutofillPredictionBeforeFormParsed) {
 
   // Simulate that the form is incorrectly marked as sign-up, which means it can
   // not be filled without server predictions.
-  form.form_data.fields[1].autocomplete_attribute = "new-password";
+  form.form_data.fields[1].set_autocomplete_attribute("new-password");
 
   manager()->OnPasswordFormsParsed(&driver_, {form.form_data});
   task_environment_.RunUntilIdle();
@@ -3462,7 +3462,7 @@ TEST_P(PasswordManagerTest,
   store_->AddLogin(form);
 
   // The renderer would detect the autocomplete attribute below.
-  form.form_data.fields[0].autocomplete_attribute = "username";
+  form.form_data.fields[0].set_autocomplete_attribute("username");
 
   // No fill call is sent to the renderer during prediction processing.
   EXPECT_CALL(driver_, SetPasswordFillData).Times(0);
@@ -3548,7 +3548,7 @@ TEST_P(PasswordManagerTest, AutofillPredictionBeforeMultipleFormsParsed) {
 
   // Simulate that the form is incorrectly marked as sign-up, which means it can
   // not be filled without server predictions.
-  form2.form_data.fields[1].autocomplete_attribute = "new-password";
+  form2.form_data.fields[1].set_autocomplete_attribute("new-password");
   manager()->OnPasswordFormsParsed(&driver_,
                                    {form1.form_data, form2.form_data});
   task_environment_.RunUntilIdle();
@@ -5078,7 +5078,7 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
       autofill::FormControlType::kInputPassword);
   new_password_field.set_renderer_id(FieldRendererId(3));
   new_password_field.set_name(u"newpass");
-  new_password_field.autocomplete_attribute = "new-password";
+  new_password_field.set_autocomplete_attribute("new-password");
   form_data.fields.push_back(new_password_field);
 
   FormFieldData confirm_password_field;
@@ -5166,7 +5166,7 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNamelessForm) {
       autofill::FormControlType::kInputPassword);
   new_password_field.set_renderer_id(FieldRendererId(3));
   new_password_field.set_name(kEmptyName);
-  new_password_field.autocomplete_attribute = "new-password";
+  new_password_field.set_autocomplete_attribute("new-password");
   form_data.fields.push_back(new_password_field);
 
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
@@ -5210,7 +5210,7 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedFormlessFields) {
         autofill::FormControlType::kInputPassword);
     new_password_field.set_renderer_id(FieldRendererId(2));
     new_password_field.set_name(u"newpass");
-    new_password_field.autocomplete_attribute = "new-password";
+    new_password_field.set_autocomplete_attribute("new-password");
     form_data.fields.push_back(new_password_field);
 
     FormFieldData confirm_password_field;
@@ -5275,7 +5275,7 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNameAndFormlessFields) {
         autofill::FormControlType::kInputPassword);
     new_password_field.set_renderer_id(FieldRendererId(2));
     new_password_field.set_name(kEmptyName);
-    new_password_field.autocomplete_attribute = "new-password";
+    new_password_field.set_autocomplete_attribute("new-password");
     form_data.fields.push_back(new_password_field);
 
     manager()->OnPasswordFormsParsed(&driver_, {form_data});
@@ -5516,7 +5516,7 @@ TEST_P(PasswordManagerTest, DontStartLeakDetectionForSingleUsernameSubmission) {
 
   // User sees a single username field. The password field is hidden.
   PasswordForm username_form = MakeSimpleForm();
-  username_form.form_data.fields[1].is_focusable = false;
+  username_form.form_data.fields[1].set_is_focusable(false);
   std::vector<FormData> observed = {username_form.form_data};
   EXPECT_CALL(*weak_factory, TryCreateLeakCheck).Times(0);
   manager()->OnPasswordFormsParsed(&driver_, observed);
@@ -5528,7 +5528,7 @@ TEST_P(PasswordManagerTest, DontStartLeakDetectionForSingleUsernameSubmission) {
 
   // User sees a single password field. The username field is hidden.
   PasswordForm password_form = MakeSimpleForm();
-  password_form.form_data.fields[0].is_focusable = false;
+  password_form.form_data.fields[0].set_is_focusable(false);
   observed = {password_form.form_data};
   manager()->OnPasswordFormsParsed(&driver_, observed);
   manager()->OnPasswordFormsRendered(&driver_, observed);
@@ -5769,8 +5769,8 @@ TEST_P(PasswordManagerWithOtpVariationsTest,
       break;
     case PredictionSource::AUTOCOMPLETE:
       one_time_code_form.form_data.fields[otp_form_has_username]
-          .autocomplete_attribute =
-          base::UTF16ToUTF8(test_form_password_element_);
+          .set_autocomplete_attribute(
+              base::UTF16ToUTF8(test_form_password_element_));
       break;
     case PredictionSource::SERVER:
       manager()->ProcessAutofillPredictions(

@@ -102,7 +102,7 @@ void GetFormField(autofill::FormFieldData* field,
                   FieldRendererId fieldIdentifier) {
   for (const auto& currentField : form.fields) {
     if (currentField.renderer_id() == fieldIdentifier &&
-        currentField.is_focusable) {
+        currentField.is_focusable()) {
       *field = currentField;
       break;
     }

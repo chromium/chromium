@@ -83,7 +83,7 @@ TEST_F(AutofillFieldTest, IsFieldFillable) {
 
   // Field has autocomplete="off" set. Since autofill was able to make a
   // prediction, it is still considered a fillable field.
-  field.should_autocomplete = false;
+  field.set_should_autocomplete(false);
   EXPECT_TRUE(field.IsFieldFillable());
 }
 

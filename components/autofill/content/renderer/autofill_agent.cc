@@ -367,7 +367,7 @@ void AutofillAgent::DidChangeScrollOffsetImpl(FieldRendererId element_id) {
               MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->TextFieldDidScroll(form, field, field.bounds);
+      autofill_driver->TextFieldDidScroll(form, field, field.bounds());
     }
   }
 
@@ -444,7 +444,7 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
               MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->FocusOnFormField(form, field, field.bounds);
+      autofill_driver->FocusOnFormField(form, field, field.bounds());
     }
   }
 }
@@ -510,7 +510,7 @@ void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
           form_util::FindFormForContentEditable(element)) {
     const FormFieldData& field = form->fields.front();
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->TextFieldDidChange(*form, field, field.bounds,
+      autofill_driver->TextFieldDidChange(*form, field, field.bounds(),
                                           base::TimeTicks::Now());
     }
   }
@@ -553,7 +553,7 @@ void AutofillAgent::OnTextFieldDidChange(const WebFormControlElement& element) {
               MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
-      autofill_driver->TextFieldDidChange(form, field, field.bounds,
+      autofill_driver->TextFieldDidChange(form, field, field.bounds(),
                                           base::TimeTicks::Now());
     }
   }
@@ -1076,8 +1076,8 @@ void AutofillAgent::ShowSuggestionsForContentEditable(
   CHECK_EQ(form->fields.size(), 1u);
   if (auto* autofill_driver = unsafe_autofill_driver()) {
     is_popup_possibly_visible_ = true;
-    autofill_driver->AskForValuesToFill(*form, form->fields[0],
-                                        form->fields[0].bounds, trigger_source);
+    autofill_driver->AskForValuesToFill(
+        *form, form->fields[0], form->fields[0].bounds(), trigger_source);
   }
 }
 
@@ -1129,13 +1129,13 @@ void AutofillAgent::QueryAutofillSuggestions(
       // Find the datalist values and send them to the browser process.
       std::vector<SelectOption> datalist_options;
       form_util::GetDataListSuggestions(input_element, &datalist_options);
-      field.datalist_options = std::move(datalist_options);
+      field.set_datalist_options(std::move(datalist_options));
     }
   }
 
   is_popup_possibly_visible_ = true;
   if (auto* autofill_driver = unsafe_autofill_driver()) {
-    autofill_driver->AskForValuesToFill(form, field, field.bounds,
+    autofill_driver->AskForValuesToFill(form, field, field.bounds(),
                                         trigger_source);
   }
 }
@@ -1603,7 +1603,7 @@ void AutofillAgent::OnProvisionallySaveForm(
                   MaybeExtractDatalist({form_util::ExtractOption::kBounds}))) {
         auto& [form, field] = *form_and_field;
         if (auto* autofill_driver = unsafe_autofill_driver()) {
-          autofill_driver->SelectControlDidChange(form, field, field.bounds);
+          autofill_driver->SelectControlDidChange(form, field, field.bounds());
         }
       }
       break;

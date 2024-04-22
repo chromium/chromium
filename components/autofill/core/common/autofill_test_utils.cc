@@ -99,7 +99,7 @@ RemoteFrameToken MakeRemoteFrameToken(RandomizeFrame randomize) {
 FormData CreateFormDataForFrame(FormData form, LocalFrameToken frame_token) {
   form.host_frame = frame_token;
   for (FormFieldData& field : form.fields) {
-    field.host_frame = frame_token;
+    field.set_host_frame(frame_token);
   }
   return form;
 }
@@ -129,7 +129,7 @@ FormData WithoutUnserializedData(FormData form) {
 }
 
 FormFieldData WithoutUnserializedData(FormFieldData field) {
-  field.host_frame = {};
+  field.set_host_frame({});
   return field;
 }
 
@@ -138,13 +138,13 @@ FormFieldData CreateTestFormField(std::string_view label,
                                   std::string_view value,
                                   FormControlType type) {
   FormFieldData field;
-  field.host_frame = MakeLocalFrameToken();
+  field.set_host_frame(MakeLocalFrameToken());
   field.set_renderer_id(MakeFieldRendererId());
   field.set_label(base::UTF8ToUTF16(label));
   field.set_name(base::UTF8ToUTF16(name));
   field.set_value(base::UTF8ToUTF16(value));
   field.set_form_control_type(type);
-  field.is_focusable = true;
+  field.set_is_focusable(true);
   return field;
 }
 
@@ -154,7 +154,7 @@ FormFieldData CreateTestFormField(std::string_view label,
                                   FormControlType type,
                                   std::string_view autocomplete) {
   FormFieldData field = CreateTestFormField(label, name, value, type);
-  field.autocomplete_attribute = autocomplete;
+  field.set_autocomplete_attribute(std::string(autocomplete));
   field.set_parsed_autocomplete(ParseAutocompleteAttribute(autocomplete));
   return field;
 }
@@ -169,7 +169,7 @@ FormFieldData CreateTestFormField(std::string_view label,
   // First, set the `max_length`, as the `parsed_autocomplete` is set based on
   // this value.
   field.set_max_length(max_length);
-  field.autocomplete_attribute = autocomplete;
+  field.set_autocomplete_attribute(std::string(autocomplete));
   field.set_parsed_autocomplete(ParseAutocompleteAttribute(autocomplete));
   return field;
 }
@@ -211,7 +211,7 @@ FormFieldData CreateTestSelectOrSelectListField(
   CHECK(type == FormControlType::kSelectOne ||
         type == FormControlType::kSelectList);
   FormFieldData field = CreateTestFormField(label, name, value, type);
-  field.autocomplete_attribute = autocomplete;
+  field.set_autocomplete_attribute(std::string(autocomplete));
   field.set_parsed_autocomplete(ParseAutocompleteAttribute(autocomplete));
 
   CHECK_EQ(values.size(), contents.size());
@@ -235,12 +235,13 @@ FormFieldData CreateTestDatalistField(std::string_view label,
   // Fill the base attributes.
   FormFieldData field =
       CreateTestFormField(label, name, value, FormControlType::kInputText);
-
-  field.datalist_options.reserve(std::min(values.size(), labels.size()));
+  std::vector<SelectOption> datalist_options;
+  datalist_options.reserve(std::min(values.size(), labels.size()));
   for (size_t i = 0; i < std::min(values.size(), labels.size()); ++i) {
-    field.datalist_options.push_back({.value = base::UTF8ToUTF16(values[i]),
-                                      .content = base::UTF8ToUTF16(labels[i])});
+    datalist_options.push_back({.value = base::UTF8ToUTF16(values[i]),
+                                .content = base::UTF8ToUTF16(labels[i])});
   }
+  field.set_datalist_options(std::move(datalist_options));
   return field;
 }
 

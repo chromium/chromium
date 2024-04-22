@@ -251,9 +251,9 @@ bool ExtractFormData(const base::Value::Dict& form,
       // Some data is extracted at the form level, but also appears at the
       // field level. Reuse the extracted values.
       if (include_frame_metadata) {
-        field_data.host_frame = form_data->host_frame;
-        field_data.host_form_id = form_data->renderer_id;
-        field_data.origin = frame_origin_object;
+        field_data.set_host_frame(form_data->host_frame);
+        field_data.set_host_form_id(form_data->renderer_id);
+        field_data.set_origin(frame_origin_object);
       }
       form_data->fields.push_back(std::move(field_data));
     } else {
@@ -264,7 +264,7 @@ bool ExtractFormData(const base::Value::Dict& form,
   if (include_frame_metadata) {
     FormSignature form_signature = CalculateFormSignature(*form_data);
     for (FormFieldData& field : form_data->fields) {
-      field.host_form_signature = form_signature;
+      field.set_host_form_signature(form_signature);
     }
   }
   return true;
@@ -309,40 +309,40 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
   }
   field_data->set_is_autofilled(
       field.FindBool("is_autofilled").value_or(field_data->is_autofilled()));
-  field_data->is_user_edited =
-      field.FindBool("is_user_edited").value_or(field_data->is_user_edited);
+  field_data->set_is_user_edited(
+      field.FindBool("is_user_edited").value_or(field_data->is_user_edited()));
 
   if (const std::string* autocomplete_attribute =
           field.FindString("autocomplete_attribute")) {
-    field_data->autocomplete_attribute = *autocomplete_attribute;
+    field_data->set_autocomplete_attribute(*autocomplete_attribute);
   }
   if (std::optional<int> max_length = field.FindInt("max_length")) {
     field_data->set_max_length(*max_length);
   }
   field_data->set_parsed_autocomplete(
-      ParseAutocompleteAttribute(field_data->autocomplete_attribute));
+      ParseAutocompleteAttribute(field_data->autocomplete_attribute()));
 
   // TODO(crbug.com/427614): Extract |is_checked|.
   bool is_checkable = field.FindBool("is_checkable").value_or(false);
   autofill::SetCheckStatus(field_data, is_checkable, false);
 
-  field_data->is_focusable =
-      field.FindBool("is_focusable").value_or(field_data->is_focusable);
-  field_data->should_autocomplete =
+  field_data->set_is_focusable(
+      field.FindBool("is_focusable").value_or(field_data->is_focusable()));
+  field_data->set_should_autocomplete(
       field.FindBool("should_autocomplete")
-          .value_or(field_data->should_autocomplete);
+          .value_or(field_data->should_autocomplete()));
 
   if (const std::string* placeholder_attribute =
           field.FindString("placeholder_attribute")) {
-    field_data->placeholder = base::UTF8ToUTF16(*placeholder_attribute);
+    field_data->set_placeholder(base::UTF8ToUTF16(*placeholder_attribute));
   }
 
   if (const std::string* aria_label = field.FindString("aria_label")) {
-    field_data->aria_label = base::UTF8ToUTF16(*aria_label);
+    field_data->set_aria_label(base::UTF8ToUTF16(*aria_label));
   }
   if (const std::string* aria_description =
           field.FindString("aria_description")) {
-    field_data->aria_description = base::UTF8ToUTF16(*aria_description);
+    field_data->set_aria_description(base::UTF8ToUTF16(*aria_description));
   }
 
   // RoleAttribute::kOther is the default value. The only other value as of this
@@ -350,7 +350,7 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
   std::optional<int> role = field.FindInt("role");
   if (role &&
       *role == static_cast<int>(FormFieldData::RoleAttribute::kPresentation)) {
-    field_data->role = FormFieldData::RoleAttribute::kPresentation;
+    field_data->set_role(FormFieldData::RoleAttribute::kPresentation);
   }
 
   // TODO(crbug.com/427614): Extract |text_direction|.
@@ -380,8 +380,8 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
 
   // Fill user input and properties mask.
   if (field_data_manager.HasFieldData(field_data->renderer_id())) {
-    field_data->user_input =
-        field_data_manager.GetUserInput(field_data->renderer_id());
+    field_data->set_user_input(
+        field_data_manager.GetUserInput(field_data->renderer_id()));
     field_data->set_properties_mask(
         field_data_manager.GetFieldPropertiesMask(field_data->renderer_id()));
   }

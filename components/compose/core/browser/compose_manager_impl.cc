@@ -100,8 +100,8 @@ void ComposeManagerImpl::OpenComposeWithUpdatedSelection(
   }
 
   if (base::FeatureList::IsEnabled(compose::features::kComposeTextSelection) &&
-      IsWordCountWithinBounds(base::UTF16ToUTF8(form_field_data->selected_text),
-                              0, 1)) {
+      IsWordCountWithinBounds(
+          base::UTF16ToUTF8(form_field_data->selected_text()), 0, 1)) {
     // Select all words. Consecutive calls using the same message pipe
     // should complete in the same order it's received.
     // Therefore, we can safely assume that the text selection will complete

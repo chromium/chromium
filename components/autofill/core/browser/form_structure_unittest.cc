@@ -345,7 +345,7 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, IgnoresCheckableFields) {
   // Start with a single checkable field.
   {
     FormFieldData field;
-    field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
+    field.set_check_status(FormFieldData::CheckStatus::kCheckableButUnchecked);
     field.set_form_control_type(FormControlType::kInputRadio);
     AddField(field);
   }
@@ -356,7 +356,7 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, IgnoresCheckableFields) {
   // Add a second checkable field.
   {
     FormFieldData field;
-    field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
+    field.set_check_status(FormFieldData::CheckStatus::kCheckableButUnchecked);
     field.set_form_control_type(FormControlType::kInputCheckbox);
     AddField(field);
   }
@@ -2137,7 +2137,7 @@ TEST_F(FormStructureTestImpl, CheckFormSignature) {
   field.set_label(u"Select");
   field.set_name(u"Select");
   field.set_form_control_type(FormControlType::kInputCheckbox);
-  field.check_status = FormFieldData::CheckStatus::kCheckableButUnchecked;
+  field.set_check_status(FormFieldData::CheckStatus::kCheckableButUnchecked);
   field.set_renderer_id(test::MakeFieldRendererId());
   form.fields.push_back(field);
 
@@ -2165,7 +2165,7 @@ TEST_F(FormStructureTestImpl, CheckFormSignature) {
             form_structure->FormSignatureAsStr());
 
   // Checks how digits are removed from field names.
-  field.check_status = FormFieldData::CheckStatus::kNotCheckable;
+  field.set_check_status(FormFieldData::CheckStatus::kNotCheckable);
   field.set_label(u"Random Field label");
   field.set_name(u"random1234");
   field.set_form_control_type(FormControlType::kInputText);
@@ -2672,7 +2672,7 @@ TEST_F(FormStructureTestImpl,
                                             kFieldMaxLength));
   form.fields.push_back(CreateTestFormField(
       "Phone", "phone", "", FormControlType::kInputText, "", kFieldMaxLength));
-  form.fields.back().is_focusable = false;  // hidden
+  form.fields.back().set_is_focusable(false);  // hidden
   form.fields.push_back(CreateTestFormField("Full Name", "fullName", "",
                                             FormControlType::kInputText,
                                             "shipping name", kFieldMaxLength));
@@ -2781,8 +2781,8 @@ TEST_F(FormStructureTestImpl, DetermineRanks) {
     field.set_form_control_type(FormControlType::kInputText);
     field.set_name(name);
     field.set_renderer_id(test::MakeFieldRendererId());
-    field.host_frame = frame_token;
-    field.host_form_id = host_form_id;
+    field.set_host_frame(frame_token);
+    field.set_host_form_id(host_form_id);
     form.fields.push_back(field);
   };
 

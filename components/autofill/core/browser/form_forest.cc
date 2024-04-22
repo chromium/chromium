@@ -590,8 +590,8 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
           };
       const url::Origin& main_origin = browser_form.main_frame_origin;
       return security_options.all_origins_are_trusted() ||
-             field.origin == security_options.triggered_origin() ||
-             (field.origin == main_origin &&
+             field.origin() == security_options.triggered_origin() ||
+             (field.origin() == main_origin &&
               !IsSensitiveFieldType(
                   security_options.GetFieldType(field.global_id())) &&
               HasSharedAutofillPermission(renderer_form->host_frame)) ||

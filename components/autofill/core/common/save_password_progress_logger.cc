@@ -122,12 +122,13 @@ void SavePasswordProgressLogger::LogMessage(
 // static
 std::string SavePasswordProgressLogger::GetFormFieldDataLogString(
     const FormFieldData& field) {
-  const char* const is_visible = field.is_focusable ? "visible" : "invisible";
+  const char* const is_visible = field.is_focusable() ? "visible" : "invisible";
   const char* const is_empty = field.value().empty() ? "empty" : "non-empty";
   std::string autocomplete =
-      field.autocomplete_attribute.empty()
+      field.autocomplete_attribute().empty()
           ? std::string()
-          : (", autocomplete=" + ScrubElementID(field.autocomplete_attribute));
+          : (", autocomplete=" +
+             ScrubElementID(field.autocomplete_attribute()));
   return base::StringPrintf(
       "%s: signature=%s, type=%s, renderer_id=%s, %s, %s%s",
       ScrubElementID(field.name()).c_str(),

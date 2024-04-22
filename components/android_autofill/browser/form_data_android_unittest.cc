@@ -53,9 +53,9 @@ FormFieldData CreateTestField(std::u16string name = u"SomeName") {
   f.set_name_attribute(f.name());
   f.set_id_attribute(u"some_id");
   f.set_form_control_type(FormControlType::kInputText);
-  f.check_status = FormFieldData::CheckStatus::kChecked;
-  f.role = FormFieldData::RoleAttribute::kOther;
-  f.is_focusable = true;
+  f.set_check_status(FormFieldData::CheckStatus::kChecked);
+  f.set_role(FormFieldData::RoleAttribute::kOther);
+  f.set_is_focusable(true);
   f.set_renderer_id(FieldRendererId(renderer_id++));
   return f;
 }
@@ -395,8 +395,8 @@ TEST_F(FormDataAndroidTest, UpdateFieldTypes_ChangedForm) {
 TEST_F(FormDataAndroidTest, UpdateFieldVisibilities) {
   FormData form = CreateTestForm();
   form.fields = {CreateTestField(), CreateTestField(), CreateTestField()};
-  form.fields[0].role = FormFieldData::RoleAttribute::kPresentation;
-  form.fields[1].is_focusable = false;
+  form.fields[0].set_role(FormFieldData::RoleAttribute::kPresentation);
+  form.fields[1].set_is_focusable(false);
   EXPECT_FALSE(form.fields[0].IsFocusable());
   EXPECT_FALSE(form.fields[1].IsFocusable());
   EXPECT_TRUE(form.fields[2].IsFocusable());
@@ -409,8 +409,8 @@ TEST_F(FormDataAndroidTest, UpdateFieldVisibilities) {
 
   // `form_android` created a copy of `form` - therefore modifying the fields
   // here does not change the values inside `form_android`.
-  form.fields[0].role = FormFieldData::RoleAttribute::kOther;
-  form.fields[1].is_focusable = true;
+  form.fields[0].set_role(FormFieldData::RoleAttribute::kOther);
+  form.fields[1].set_is_focusable(true);
   EXPECT_TRUE(form.fields[0].IsFocusable());
   EXPECT_TRUE(form.fields[1].IsFocusable());
   EXPECT_TRUE(form.fields[2].IsFocusable());

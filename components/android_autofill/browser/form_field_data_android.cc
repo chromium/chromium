@@ -78,8 +78,8 @@ void FormFieldDataAndroid::OnFormFieldDidChange(std::u16string_view value) {
 
 void FormFieldDataAndroid::OnFormFieldVisibilityDidChange(
     const FormFieldData& field) {
-  field_->is_focusable = field.is_focusable;
-  field_->role = field.role;
+  field_->set_is_focusable(field.is_focusable());
+  field_->set_role(field.role());
   CHECK_EQ(field_->IsFocusable(), field.IsFocusable());
   bridge_->UpdateVisible(field_->IsFocusable());
 }
@@ -87,9 +87,9 @@ void FormFieldDataAndroid::OnFormFieldVisibilityDidChange(
 bool FormFieldDataAndroid::SimilarFieldAs(const FormFieldData& field) const {
   auto SimilarityTuple = [](const FormFieldData& f) {
     return std::tuple_cat(
-        std::tie(f.host_frame, f.renderer_id(), f.name(), f.name_attribute(),
+        std::tie(f.host_frame(), f.renderer_id(), f.name(), f.name_attribute(),
                  f.id_attribute(), f.form_control_type()),
-        std::make_tuple(IsCheckable(f.check_status)));
+        std::make_tuple(IsCheckable(f.check_status())));
   };
 
   // For Android Autofill, labels are considered similar if they meet one of the
@@ -99,8 +99,8 @@ bool FormFieldDataAndroid::SimilarFieldAs(const FormFieldData& field) const {
   //    was not `LabelSource::kLabelTag`.
   auto LabelsAreSimilar = [](const FormFieldData& f1, const FormFieldData& f2) {
     return f1.label() == f2.label() ||
-           (f1.label_source != FormFieldData::LabelSource::kLabelTag &&
-            f1.label_source == f2.label_source);
+           (f1.label_source() != FormFieldData::LabelSource::kLabelTag &&
+            f1.label_source() == f2.label_source());
   };
 
   return SimilarityTuple(*field_) == SimilarityTuple(field) &&

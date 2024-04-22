@@ -370,7 +370,7 @@ std::unique_ptr<FormStructure> ConstructDefaultEmailFormStructure() {
   FormData form =
       ConstructFormDateFromTypeValuePairs({{EMAIL_ADDRESS, kDefaultMail}});
   const char* autocomplete = "email";
-  form.fields[0].autocomplete_attribute = autocomplete;
+  form.fields[0].set_autocomplete_attribute(autocomplete);
   form.fields[0].set_parsed_autocomplete(
       ParseAutocompleteAttribute(autocomplete));
   return ConstructFormStructureFromFormData(form);
@@ -1543,7 +1543,7 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_UnfocusableFields) {
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultProfileFormStructure();
   // Set the Address line field as unfocusable.
-  form_structure->field(4)->is_focusable = false;
+  form_structure->field(4)->set_is_focusable(false);
   ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
 }
 
@@ -1600,7 +1600,7 @@ TEST_F(FormDataImporterTest,
   for (FormFieldData& field : hidden_second_form.fields) {
     // Reset the values and make the field non focusable.
     field.set_value(u"");
-    field.is_focusable = false;
+    field.set_is_focusable(false);
   }
 
   // Append the fields of the second form to the first form.
@@ -1888,13 +1888,13 @@ TEST_F(FormDataImporterTest,
 
   FormFieldData* card_number_field = form.FindFieldByName(u"card_number");
   ASSERT_TRUE(card_number_field != nullptr);
-  card_number_field->user_input = u"4444333322221111";
+  card_number_field->set_user_input(u"4444333322221111");
 
   // FormFieldData::user_input for non-credit card fields should be ignored.
   ASSERT_EQ(nullptr, form.FindFieldByName(u"cvc"));
   FormFieldData cvc_field =
       CreateTestFormField("CVC", "cvc", "001", FormControlType::kInputText);
-  cvc_field.user_input = u"002";
+  cvc_field.set_user_input(u"002");
   form.fields.push_back(cvc_field);
 
   FormStructure form_structure(form);
@@ -3343,7 +3343,7 @@ TEST_F(FormDataImporterTest, ExtractFormData_HiddenCreditCardFormAfterEntered) {
       CreateTestFormField("Exp Year:", "exp_year", "2999",
                           FormControlType::kInputText)};
   for (FormFieldData& field : form.fields) {
-    field.is_focusable = false;
+    field.set_is_focusable(false);
   }
 
   FormStructure form_structure(form);
@@ -4383,7 +4383,7 @@ class FormDataImporterTest_ExtractCreditCardFromForm
     f.set_server_predictions({test::CreateFieldPrediction(field_type)});
     f.set_value(std::move(value));
     f.set_is_autofilled(mode == Mode::kAutofilled);
-    f.is_user_edited = mode == Mode::kUserEdited;
+    f.set_is_user_edited(mode == Mode::kUserEdited);
   }
 
   FormStructure form_{/*form=*/{}};

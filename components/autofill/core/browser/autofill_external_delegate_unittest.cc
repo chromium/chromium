@@ -2295,8 +2295,8 @@ TEST_F(AutofillExternalDelegateUnitTest, FillCreditCardForm) {
 TEST_F(AutofillExternalDelegateUnitTest, IgnoreAutocompleteOffForAutofill) {
   const FormData form;
   FormFieldData field;
-  field.is_focusable = true;
-  field.should_autocomplete = false;
+  field.set_is_focusable(true);
+  field.set_should_autocomplete(false);
 
   external_delegate().OnQuery(form, field, gfx::RectF(), kDefaultTriggerSource);
 

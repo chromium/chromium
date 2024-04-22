@@ -115,7 +115,7 @@ FormData CreateFeedbackTestFormData() {
                           FormControlType::kInputText, "cc-family-name"),
       CreateTestFormField("Email", "email", "", FormControlType::kInputEmail)};
   for (FormFieldData& field : form.fields) {
-    field.host_frame = form.host_frame;
+    field.set_host_frame(form.host_frame);
   }
   return form;
 }

@@ -400,8 +400,8 @@ AutofillMetrics::AutocompleteState AutocompleteStateForSubmittedField(
   auto autocomplete_state = AutofillMetrics::AutocompleteState::kNone;
   // autocomplete=on is ignored as well. But for the purposes of metrics we care
   // about cases where the developer tries to disable autocomplete.
-  if (field.autocomplete_attribute != "on" &&
-      ShouldIgnoreAutocompleteAttribute(field.autocomplete_attribute)) {
+  if (field.autocomplete_attribute() != "on" &&
+      ShouldIgnoreAutocompleteAttribute(field.autocomplete_attribute())) {
     autocomplete_state = AutofillMetrics::AutocompleteState::kOff;
   } else if (field.parsed_autocomplete()) {
     autocomplete_state =
@@ -409,8 +409,8 @@ AutofillMetrics::AutocompleteState AutocompleteStateForSubmittedField(
             ? AutofillMetrics::AutocompleteState::kValid
             : AutofillMetrics::AutocompleteState::kGarbage;
 
-    if (field.autocomplete_attribute == "new-password" ||
-        field.autocomplete_attribute == "current-password") {
+    if (field.autocomplete_attribute() == "new-password" ||
+        field.autocomplete_attribute() == "current-password") {
       autocomplete_state = AutofillMetrics::AutocompleteState::kPassword;
     }
   }
@@ -797,7 +797,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
         CREDIT_CARD_VERIFICATION_CODE) {
       // However, if Autofill has recognized a field as CVC, that shouldn't be
       // saved.
-      form_for_autocomplete.fields[i].should_autocomplete = false;
+      form_for_autocomplete.fields[i].set_should_autocomplete(false);
     }
     if (plus_address_delegate &&
         plus_address_delegate->IsPlusAddress(
@@ -805,11 +805,11 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
       // Similarly to CVC, any plus addresses needn't be saved to autocomplete.
       // Note that the feature is experimental, and `plus_address_delegate`
       // will be null if the feature is not enabled (it's disabled by default).
-      form_for_autocomplete.fields[i].should_autocomplete = false;
+      form_for_autocomplete.fields[i].set_should_autocomplete(false);
     }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    if (autofill_field->autocomplete_attribute == "off" &&
+    if (autofill_field->autocomplete_attribute() == "off" &&
         autofill_field->did_trigger_suggestions() &&
         !autofill_field->is_autofilled() &&
         !autofill_field->previously_autofilled() &&
@@ -1088,7 +1088,7 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     client().NotifyAutofillManualFallbackUsed();
   }
 
-  external_delegate_->SetCurrentDataListValues(field.datalist_options);
+  external_delegate_->SetCurrentDataListValues(field.datalist_options());
   external_delegate_->OnQuery(form, field, transformed_box, trigger_source);
 
   std::vector<Suggestion> suggestions;
@@ -2314,7 +2314,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
         !four_digit_combinations_in_dom_.empty()) {
       base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
           virtual_card_guid_to_last_four_map =
-              GetVirtualCreditCardsForStandaloneCvcField(trigger_field.origin);
+              GetVirtualCreditCardsForStandaloneCvcField(
+                  trigger_field.origin());
       if (!virtual_card_guid_to_last_four_map.empty()) {
         suggestions =
             suggestion_generator_->GetSuggestionsForVirtualCardStandaloneCvc(
@@ -2789,13 +2790,13 @@ bool BrowserAutofillManager::ShouldUploadUkm(
   if (num_text_fields == 1) {
     auto it = base::ranges::find_if(form_structure.fields(),
                                     is_focusable_predicted_text_field);
-    if (base::ToLowerASCII((*it)->placeholder).find(u"search") !=
+    if (base::ToLowerASCII((*it)->placeholder()).find(u"search") !=
             std::string::npos ||
         base::ToLowerASCII((*it)->name()).find(u"search") !=
             std::string::npos ||
         base::ToLowerASCII((*it)->label()).find(u"search") !=
             std::string::npos ||
-        base::ToLowerASCII((*it)->aria_label).find(u"search") !=
+        base::ToLowerASCII((*it)->aria_label()).find(u"search") !=
             std::string::npos) {
       return false;
     }

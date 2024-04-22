@@ -81,7 +81,7 @@ TEST_F(AutofillUtilTest, ExtractFormFieldData_PropertiesMask) {
   autofill::FormFieldData field_data;
   autofill::ExtractFormFieldData(field, *field_data_manager, &field_data);
 
-  EXPECT_EQ(u"my@mail", field_data.user_input);
+  EXPECT_EQ(u"my@mail", field_data.user_input());
   EXPECT_EQ(autofill::FieldPropertiesFlags::kUserTyped,
             field_data.properties_mask());
 }

@@ -245,7 +245,7 @@ class BaseAutofillContextMenuManagerTest : public InProcessBrowserTest {
         LocalFrameToken(main_rfh()->GetFrameToken().value());
     form.host_frame = frame_token;
     for (FormFieldData& field : form.fields) {
-      field.host_frame = frame_token;
+      field.set_host_frame(frame_token);
     }
   }
 

@@ -227,8 +227,9 @@ bool IsSingleUsernameSubmission(const PasswordForm& submitted_form) {
     if (submitted_form.password_element_renderer_id == field.renderer_id() ||
         submitted_form.new_password_element_renderer_id ==
             field.renderer_id()) {
-      if (field.is_focusable)
+      if (field.is_focusable()) {
         return false;
+      }
     }
   }
   return true;
@@ -959,11 +960,11 @@ void PasswordManager::UpdateStateOnUserInput(
 
   bool is_likely_otp = password_manager::util::IsLikelyOtp(
       field.name_attribute(), field.id_attribute(),
-      field.autocomplete_attribute);
+      field.autocomplete_attribute());
 
   OnUserModifiedNonPasswordField(
       driver, field_id, field_value,
-      base::Contains(field.autocomplete_attribute,
+      base::Contains(field.autocomplete_attribute(),
                      password_manager::constants::kAutocompleteUsername),
       is_likely_otp);
 }

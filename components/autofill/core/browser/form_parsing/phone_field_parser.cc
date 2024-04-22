@@ -331,8 +331,8 @@ void PhoneFieldParser::AddClassifications(
             features::kAutofillDefaultToCityAndNumber)) {
       const AutofillField* field = parsed_phone_fields_[FIELD_PHONE];
       if (field->label().find(u"+") != std::u16string::npos ||
-          field->placeholder.find(u"+") != std::u16string::npos ||
-          field->aria_description.find(u"+") != std::u16string::npos) {
+          field->placeholder().find(u"+") != std::u16string::npos ||
+          field->aria_description().find(u"+") != std::u16string::npos) {
         AddClassification(field, PHONE_HOME_WHOLE_NUMBER, kBasePhoneParserScore,
                           field_candidates);
       } else {

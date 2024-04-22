@@ -75,7 +75,7 @@ TEST_F(SingleFieldFormFillRouterTest,
   for (bool test_field_should_autocomplete : {true, false}) {
     SCOPED_TRACE(testing::Message() << "test_field_should_autocomplete = "
                                     << test_field_should_autocomplete);
-    test_field_.should_autocomplete = test_field_should_autocomplete;
+    test_field_.set_should_autocomplete(test_field_should_autocomplete);
 
     // If `test_field_.should_autocomplete` is true, that means autocomplete is
     // turned on for the given test field and
@@ -85,9 +85,9 @@ TEST_F(SingleFieldFormFillRouterTest,
     // AutocompleteHistoryManager::OnGetSingleFieldSuggestions() should return
     // false.
     EXPECT_CALL(autocomplete_history_manager_, OnGetSingleFieldSuggestions)
-        .WillOnce(testing::Return(test_field_.should_autocomplete));
+        .WillOnce(testing::Return(test_field_.should_autocomplete()));
 
-    EXPECT_EQ(test_field_.should_autocomplete,
+    EXPECT_EQ(test_field_.should_autocomplete(),
               single_field_form_fill_router_.OnGetSingleFieldSuggestions(
                   test_field_, autofill_client_, base::DoNothing(),
                   /*context=*/SuggestionsContext()));
@@ -200,7 +200,7 @@ TEST_F(SingleFieldFormFillRouterTest,
   for (bool test_field_should_autocomplete : {true, false}) {
     SCOPED_TRACE(testing::Message() << "test_field_should_autocomplete = "
                                     << test_field_should_autocomplete);
-    test_field_.should_autocomplete = test_field_should_autocomplete;
+    test_field_.set_should_autocomplete(test_field_should_autocomplete);
 
     // `test_field_.should_autocomplete` should not affect merchant promo code
     // autofill, so MerchantPromoCodeManager::OnGetSingleFieldSuggestions()

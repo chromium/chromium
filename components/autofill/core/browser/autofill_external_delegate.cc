@@ -277,7 +277,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   }
 
   // Send to display.
-  if (query_field_.is_focusable && manager_->driver().CanShowAutofillUi()) {
+  if (query_field_.is_focusable() && manager_->driver().CanShowAutofillUi()) {
     if (shortcut_test_suggestion_index_ >= 0) {
       const Suggestion* test_suggestion = FindTestSuggestion(
           manager_->client(), suggestions, shortcut_test_suggestion_index_);
@@ -286,8 +286,8 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
       return;
     }
     AutofillClient::PopupOpenArgs open_args(
-        element_bounds_, query_field_.text_direction, suggestions,
-        trigger_source_, query_field_.form_control_ax_id);
+        element_bounds_, query_field_.text_direction(), suggestions,
+        trigger_source_, query_field_.form_control_ax_id());
     manager_->client().ShowAutofillPopup(open_args, GetWeakPtr());
   }
 }

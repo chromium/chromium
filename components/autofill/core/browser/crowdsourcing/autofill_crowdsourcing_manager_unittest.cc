@@ -95,7 +95,7 @@ std::vector<raw_ptr<FormStructure, VectorExperimental>> ToRawPointerVector(
 // `form_structure` to the signature of the `form_structure`.
 void SetCorrectFieldHostFormSignatures(FormStructure& form_structure) {
   for (const std::unique_ptr<AutofillField>& field : form_structure) {
-    field->host_form_signature = form_structure.form_signature();
+    field->set_host_form_signature(form_structure.form_signature());
   }
 }
 
@@ -1487,11 +1487,11 @@ TEST_P(AutofillQueryTest, Metadata) {
   field.set_name_attribute(u"field-name-attribute-1");
   field.set_name(field.name_attribute());
   field.set_label(u"field-label");
-  field.aria_label = u"field-aria-label";
-  field.aria_description = u"field-aria-description";
+  field.set_aria_label(u"field-aria-label");
+  field.set_aria_description(u"field-aria-description");
   field.set_form_control_type(FormControlType::kInputText);
-  field.css_classes = u"field-css-classes";
-  field.placeholder = u"field-placeholder";
+  field.set_css_classes(u"field-css-classes");
+  field.set_placeholder(u"field-placeholder");
   form.fields.push_back(field);
 
   // Add field 1.
@@ -1499,11 +1499,11 @@ TEST_P(AutofillQueryTest, Metadata) {
   field.set_name_attribute(u"field-name-attribute-2");
   field.set_name(field.name_attribute());
   field.set_label(u"field-label");
-  field.aria_label = u"field-aria-label";
-  field.aria_description = u"field-aria-description";
+  field.set_aria_label(u"field-aria-label");
+  field.set_aria_description(u"field-aria-description");
   field.set_form_control_type(FormControlType::kInputText);
-  field.css_classes = u"field-css-classes";
-  field.placeholder = u"field-placeholder";
+  field.set_css_classes(u"field-css-classes");
+  field.set_placeholder(u"field-placeholder");
   form.fields.push_back(field);
 
   // Add field 2.
@@ -1511,11 +1511,11 @@ TEST_P(AutofillQueryTest, Metadata) {
   field.set_name_attribute(u"field-name-attribute-3");
   field.set_name(field.name_attribute());
   field.set_label(u"field-label");
-  field.aria_label = u"field-aria-label";
-  field.aria_description = u"field-aria-description";
+  field.set_aria_label(u"field-aria-label");
+  field.set_aria_description(u"field-aria-description");
   field.set_form_control_type(FormControlType::kInputText);
-  field.css_classes = u"field-css-classes";
-  field.placeholder = u"field-placeholder";
+  field.set_css_classes(u"field-css-classes");
+  field.set_placeholder(u"field-placeholder");
   form.fields.push_back(field);
 
   // Setup the form structures to query.
@@ -1574,33 +1574,33 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   field.set_name_attribute(u"field-name-attribute-1");
   field.set_name(field.name_attribute());
   field.set_label(u"field-label");
-  field.aria_label = u"field-aria-label";
-  field.aria_description = u"field-aria-descriptionm";
+  field.set_aria_label(u"field-aria-label");
+  field.set_aria_description(u"field-aria-descriptionm");
   field.set_form_control_type(FormControlType::kInputText);
-  field.css_classes = u"field-css-classes";
-  field.placeholder = u"field-placeholder";
+  field.set_css_classes(u"field-css-classes");
+  field.set_placeholder(u"field-placeholder");
   form.fields.push_back(field);
 
   field.set_id_attribute(u"field-id-attribute-2");
   field.set_name_attribute(u"field-name-attribute-2");
   field.set_name(field.name_attribute());
   field.set_label(u"field-label");
-  field.aria_label = u"field-aria-label";
-  field.aria_description = u"field-aria-descriptionm";
+  field.set_aria_label(u"field-aria-label");
+  field.set_aria_description(u"field-aria-descriptionm");
   field.set_form_control_type(FormControlType::kInputText);
-  field.css_classes = u"field-css-classes";
-  field.placeholder = u"field-placeholder";
+  field.set_css_classes(u"field-css-classes");
+  field.set_placeholder(u"field-placeholder");
   form.fields.push_back(field);
 
   field.set_id_attribute(u"field-id-attribute-3");
   field.set_name_attribute(u"field-name-attribute-3");
   field.set_name(field.name_attribute());
   field.set_label(u"field-label");
-  field.aria_label = u"field-aria-label";
-  field.aria_description = u"field-aria-descriptionm";
+  field.set_aria_label(u"field-aria-label");
+  field.set_aria_description(u"field-aria-descriptionm");
   field.set_form_control_type(FormControlType::kInputText);
-  field.css_classes = u"field-css-classes";
-  field.placeholder = u"field-placeholder";
+  field.set_css_classes(u"field-css-classes");
+  field.set_placeholder(u"field-placeholder");
   form.fields.push_back(field);
 
   AutofillCrowdsourcingManager crowdsourcing_manager(

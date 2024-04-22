@@ -130,7 +130,7 @@ FormStructure::FormStructure(const FormData& form)
       child_frames_(form.child_frames) {
   // Copy the form fields.
   for (const FormFieldData& field : form.fields) {
-    if (!IsCheckable(field.check_status)) {
+    if (!IsCheckable(field.check_status())) {
       ++active_field_count_;
     }
 
@@ -281,7 +281,7 @@ std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
     for (const auto& field : form_structure->fields_) {
       FormFieldDataPredictions annotated_field;
       annotated_field.host_form_signature =
-          base::NumberToString(field->host_form_signature.value());
+          base::NumberToString(field->host_form_signature().value());
       annotated_field.signature = field->FieldSignatureAsStr();
       annotated_field.heuristic_type =
           FieldTypeToStringView(field->heuristic_type());
@@ -1176,13 +1176,13 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
     buffer << "\n Field " << i << ": ";
     const AutofillField* field = form.field(i);
     buffer << "\n  Identifiers:"
-           << base::StrCat({"renderer id: ",
-                            base::NumberToString(field->renderer_id().value()),
-                            ", host frame: ",
-                            field->renderer_form_id().frame_token.ToString(),
-                            " (", field->origin.Serialize(),
-                            "), host form renderer id: ",
-                            base::NumberToString(field->host_form_id.value())});
+           << base::StrCat(
+                  {"renderer id: ",
+                   base::NumberToString(field->renderer_id().value()),
+                   ", host frame: ",
+                   field->renderer_form_id().frame_token.ToString(), " (",
+                   field->origin().Serialize(), "), host form renderer id: ",
+                   base::NumberToString(field->host_form_id().value())});
     buffer << "\n  Signature: "
            << base::StrCat(
                   {base::NumberToString(field->GetFieldSignature().value()),
@@ -1190,10 +1190,10 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
                    base::NumberToString(
                        HashFieldSignature(field->GetFieldSignature())),
                    ", host form signature: ",
-                   base::NumberToString(field->host_form_signature.value()),
+                   base::NumberToString(field->host_form_signature().value()),
                    " - ",
                    base::NumberToString(
-                       HashFormSignature(field->host_form_signature))});
+                       HashFormSignature(field->host_form_signature()))});
     buffer << "\n  Name: " << field->parseable_name();
 
     auto type = field->Type().ToStringView();
@@ -1257,13 +1257,13 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tag{"td"};
     buffer << Tag{"table"};
     buffer << Tr{} << "Identifiers:"
-           << base::StrCat({"renderer id: ",
-                            base::NumberToString(field->renderer_id().value()),
-                            ", host frame: ",
-                            field->renderer_form_id().frame_token.ToString(),
-                            " (", field->origin.Serialize(),
-                            "), host form renderer id: ",
-                            base::NumberToString(field->host_form_id.value())});
+           << base::StrCat(
+                  {"renderer id: ",
+                   base::NumberToString(field->renderer_id().value()),
+                   ", host frame: ",
+                   field->renderer_form_id().frame_token.ToString(), " (",
+                   field->origin().Serialize(), "), host form renderer id: ",
+                   base::NumberToString(field->host_form_id().value())});
     buffer << Tr{} << "Signature:"
            << base::StrCat(
                   {base::NumberToString(field->GetFieldSignature().value()),
@@ -1271,12 +1271,12 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
                    base::NumberToString(
                        HashFieldSignature(field->GetFieldSignature())),
                    ", host form signature: ",
-                   base::NumberToString(field->host_form_signature.value()),
+                   base::NumberToString(field->host_form_signature().value()),
                    " - ",
                    base::NumberToString(
-                       HashFormSignature(field->host_form_signature))});
+                       HashFormSignature(field->host_form_signature()))});
     buffer << Tr{} << "Name:" << field->parseable_name();
-    buffer << Tr{} << "Placeholder:" << field->placeholder;
+    buffer << Tr{} << "Placeholder:" << field->placeholder();
 
     auto type = field->Type().ToStringView();
     auto heuristic_type = FieldTypeToStringView(field->heuristic_type());
@@ -1313,7 +1313,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tr{} << "Is focusable:"
            << (field->IsFocusable() ? "Yes (focusable)" : "No (unfocusable)");
     buffer << Tr{} << "Is visible:"
-           << (field->is_visible ? "Yes (visible)" : "No (invisible)");
+           << (field->is_visible() ? "Yes (visible)" : "No (invisible)");
     buffer << Tr{} << "Ranks: "
            << base::StringPrintf(
                   "Field rank: %zu, rank in signature group: %zu, "

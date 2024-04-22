@@ -207,7 +207,7 @@ bool StructTraits<
     if (!data.ReadSelectedText(&selected_text)) {
       return false;
     }
-    out->selected_text = std::move(selected_text);
+    out->set_selected_text(std::move(selected_text));
   }
 
   {
@@ -222,7 +222,7 @@ bool StructTraits<
     if (!data.ReadAutocompleteAttribute(&autocomplete_attribute)) {
       return false;
     }
-    out->autocomplete_attribute = std::move(autocomplete_attribute);
+    out->set_autocomplete_attribute(std::move(autocomplete_attribute));
   }
   {
     std::optional<autofill::AutocompleteParsingResult> parsed_autocomplete;
@@ -237,7 +237,7 @@ bool StructTraits<
     if (!data.ReadPlaceholder(&placeholder)) {
       return false;
     }
-    out->placeholder = std::move(placeholder);
+    out->set_placeholder(std::move(placeholder));
   }
 
   {
@@ -245,7 +245,7 @@ bool StructTraits<
     if (!data.ReadCssClasses(&css_classes)) {
       return false;
     }
-    out->css_classes = std::move(css_classes);
+    out->set_css_classes(std::move(css_classes));
   }
 
   {
@@ -253,7 +253,7 @@ bool StructTraits<
     if (!data.ReadAriaLabel(&aria_label)) {
       return false;
     }
-    out->aria_label = std::move(aria_label);
+    out->set_aria_label(std::move(aria_label));
   }
 
   {
@@ -261,7 +261,7 @@ bool StructTraits<
     if (!data.ReadAriaDescription(&aria_description)) {
       return false;
     }
-    out->aria_description = std::move(aria_description);
+    out->set_aria_description(std::move(aria_description));
   }
 
   {
@@ -287,12 +287,12 @@ bool StructTraits<
     if (!data.ReadHostFormId(&host_form_id)) {
       return false;
     }
-    out->host_form_id = std::move(host_form_id);
+    out->set_host_form_id(std::move(host_form_id));
   }
 
-  out->form_control_ax_id = data.form_control_ax_id();
+  out->set_form_control_ax_id(data.form_control_ax_id());
   out->set_max_length(data.max_length());
-  out->is_user_edited = data.is_user_edited();
+  out->set_is_user_edited(data.is_user_edited());
   out->set_is_autofilled(data.is_autofilled());
 
   {
@@ -300,19 +300,19 @@ bool StructTraits<
     if (!data.ReadCheckStatus(&check_status)) {
       return false;
     }
-    out->check_status = std::move(check_status);
+    out->set_check_status(std::move(check_status));
   }
 
-  out->is_focusable = data.is_focusable();
-  out->is_visible = data.is_visible();
-  out->should_autocomplete = data.should_autocomplete();
+  out->set_is_focusable(data.is_focusable());
+  out->set_is_visible(data.is_visible());
+  out->set_should_autocomplete(data.should_autocomplete());
 
   {
     autofill::FormFieldData::RoleAttribute role;
     if (!data.ReadRole(&role)) {
       return false;
     }
-    out->role = std::move(role);
+    out->set_role(std::move(role));
   }
 
   {
@@ -320,17 +320,17 @@ bool StructTraits<
     if (!data.ReadTextDirection(&text_direction)) {
       return false;
     }
-    out->text_direction = std::move(text_direction);
+    out->set_text_direction(std::move(text_direction));
   }
 
-  out->is_enabled = data.is_enabled();
-  out->is_readonly = data.is_readonly();
+  out->set_is_enabled(data.is_enabled());
+  out->set_is_readonly(data.is_readonly());
   {
     std::u16string user_input;
     if (!data.ReadUserInput(&user_input)) {
       return false;
     }
-    out->user_input = std::move(user_input);
+    out->set_user_input(std::move(user_input));
   }
 
   {
@@ -346,7 +346,7 @@ bool StructTraits<
     if (!data.ReadLabelSource(&label_source)) {
       return false;
     }
-    out->label_source = std::move(label_source);
+    out->set_label_source(std::move(label_source));
   }
 
   {
@@ -354,7 +354,7 @@ bool StructTraits<
     if (!data.ReadBounds(&bounds)) {
       return false;
     }
-    out->bounds = std::move(bounds);
+    out->set_bounds(std::move(bounds));
   }
 
   {
@@ -362,10 +362,10 @@ bool StructTraits<
     if (!data.ReadDatalistOptions(&datalist_options)) {
       return false;
     }
-    out->datalist_options = std::move(datalist_options);
+    out->set_datalist_options(std::move(datalist_options));
   }
 
-  out->force_override = data.force_override();
+  out->set_force_override(data.force_override());
 
   return true;
 }

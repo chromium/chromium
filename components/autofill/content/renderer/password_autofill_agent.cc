@@ -1136,7 +1136,7 @@ bool PasswordAutofillAgent::TryToShowKeyboardReplacingSurface(
                     : GetFormDataFromWebForm(form);
   // TODO(crbug.com/1465793): Use FormFieldData::parsed_autocomplete.
   auto has_webauthn_attribute = [](const FormFieldData& field) {
-    return field.autocomplete_attribute.find(
+    return field.autocomplete_attribute().find(
                password_manager::constants::kAutocompleteWebAuthn) !=
            std::string::npos;
   };
@@ -1736,7 +1736,7 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
   GetPasswordManagerDriver().ShowPasswordSuggestions(PasswordSuggestionRequest(
       field.renderer_id(), form, trigger_source,
       GetIndexOfElement(form, username_element),
-      GetIndexOfElement(form, password_element), field.text_direction,
+      GetIndexOfElement(form, password_element), field.text_direction(),
       typed_username, show_webauthn_credentials,
       render_frame()->ElementBoundsInWindow(user_input)));
 }
@@ -2113,8 +2113,8 @@ PasswordAutofillAgent::ExtractFormStructureInfo(const FormData& form_data) {
     FormFieldInfo& field_info = result.fields[i];
     field_info.renderer_id = form_field.renderer_id();
     field_info.form_control_type = form_field.form_control_type();
-    field_info.autocomplete_attribute = form_field.autocomplete_attribute;
-    field_info.is_focusable = form_field.is_focusable;
+    field_info.autocomplete_attribute = form_field.autocomplete_attribute();
+    field_info.is_focusable = form_field.is_focusable();
   }
 
   return result;

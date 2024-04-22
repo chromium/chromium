@@ -183,7 +183,7 @@ bool IsProbablyNotUsername(const std::u16string& s) {
 
 // Returns |user_input| if it is not empty, |value| otherwise.
 const std::u16string& GetFieldValue(const FormFieldData& field) {
-  return field.user_input.empty() ? field.value() : field.user_input;
+  return field.user_input().empty() ? field.value() : field.user_input();
 }
 
 // A helper struct that is used to capture significant fields to be used for
@@ -606,7 +606,7 @@ bool IsLikelyPassword(const ProcessedField& field, size_t* ignored_readonly) {
   // only temporarily, that makes it still interesting for saving. The fact
   // that a user typed or Chrome filled into that field in the past is an
   // indicator that the readonly was only temporary.
-  if (field.field->is_readonly &&
+  if (field.field->is_readonly() &&
       !(field.field->properties_mask() & (FieldPropertiesFlags::kUserTyped |
                                           FieldPropertiesFlags::kAutofilled))) {
     ++*ignored_readonly;
@@ -748,7 +748,7 @@ const FormFieldData* FindUsernameFieldBaseHeuristics(
       continue;
     if (!username)
       username = it->field;
-    if (!focusable_username && it->field->is_focusable) {
+    if (!focusable_username && it->field->is_focusable()) {
       focusable_username = it->field;
     }
     if (stored_usernames.contains(base::i18n::ToLower(it->field->value()))) {
@@ -949,7 +949,7 @@ std::vector<ProcessedField> ProcessFields(
     }
 
     const AutocompleteParsing autocomplete_parsing =
-        ParseAutocomplete(field.autocomplete_attribute);
+        ParseAutocomplete(field.autocomplete_attribute());
 
     ProcessedField processed_field = {
         .field = &field,
@@ -960,7 +960,7 @@ std::vector<ProcessedField> ProcessFields(
 
     if (field.properties_mask() & FieldPropertiesFlags::kUserTyped) {
       processed_field.interactability = Interactability::kCertain;
-    } else if (field.is_focusable) {
+    } else if (field.is_focusable()) {
       processed_field.interactability = Interactability::kPossible;
     }
 

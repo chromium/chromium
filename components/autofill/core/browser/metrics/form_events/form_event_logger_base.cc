@@ -145,7 +145,7 @@ void FormEventLoggerBase::OnDidShowSuggestions(
     OnSuggestionsShownOnce(form);
   }
 
-  has_logged_autocomplete_off_ |= field.autocomplete_attribute == "off";
+  has_logged_autocomplete_off_ |= field.autocomplete_attribute() == "off";
 
   RecordShowSuggestions();
 }

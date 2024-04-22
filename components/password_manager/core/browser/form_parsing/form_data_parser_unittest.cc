@@ -188,8 +188,9 @@ void CheckField(const std::vector<FormFieldData>& fields,
 
   EXPECT_EQ(element_name, field_it->name());
 
-  std::u16string expected_value =
-      field_it->user_input.empty() ? field_it->value() : field_it->user_input;
+  std::u16string expected_value = field_it->user_input().empty()
+                                      ? field_it->value()
+                                      : field_it->user_input();
 
   if (element_value)
     EXPECT_EQ(expected_value, *element_value);
@@ -305,9 +306,9 @@ class FormParserTest : public testing::Test {
       }
       field.set_name_attribute(field.name());
       field.set_form_control_type(field_description.form_control_type);
-      field.is_focusable = field_description.is_focusable;
-      field.is_enabled = field_description.is_enabled;
-      field.is_readonly = field_description.is_readonly;
+      field.set_is_focusable(field_description.is_focusable);
+      field.set_is_enabled(field_description.is_enabled);
+      field.set_is_readonly(field_description.is_readonly);
       field.set_properties_mask(field_description.properties_mask);
       if (field_description.value == kNonimportantValue) {
         field.set_value(StampUniqueSuffix(u"value"));
@@ -315,9 +316,10 @@ class FormParserTest : public testing::Test {
         field.set_value(field_description.value);
       }
       if (field_description.autocomplete_attribute)
-        field.autocomplete_attribute = field_description.autocomplete_attribute;
+        field.set_autocomplete_attribute(
+            field_description.autocomplete_attribute);
       if (!field_description.user_input.empty())
-        field.user_input = field_description.user_input;
+        field.set_user_input(field_description.user_input);
       form_data.fields.push_back(field);
       if (field_description.role == ElementRole::NONE) {
         UpdateResultWithIdByRole(fill_result, renderer_id,

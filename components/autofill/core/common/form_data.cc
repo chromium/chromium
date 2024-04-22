@@ -132,7 +132,7 @@ bool FormData::DeepEqual(const FormData& a, const FormData& b) {
 bool FormHasNonEmptyPasswordField(const FormData& form) {
   for (const auto& field : form.fields) {
     if (field.IsPasswordInputElement()) {
-      if (!field.value().empty() || !field.user_input.empty()) {
+      if (!field.value().empty() || !field.user_input().empty()) {
         return true;
       }
     }

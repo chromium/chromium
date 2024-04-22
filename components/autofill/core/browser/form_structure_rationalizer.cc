@@ -435,7 +435,7 @@ void FormStructureRationalizer::RationalizeMultiOriginCreditCardFields(
     const url::Origin& main_origin,
     LogManager* log_manager) {
   auto is_in_subframe = [&main_origin](const FormFieldData& field) {
-    return field.origin != main_origin;
+    return field.origin() != main_origin;
   };
   auto rationalize = [&](FieldType relevant_type) {
     auto is_relevant = [relevant_type](const AutofillField& field) {

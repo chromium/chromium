@@ -183,7 +183,7 @@ void AndroidAutofillProvider::OnAskForValuesToFill(
       .render_frame_host()
       ->ForEachRenderFrameHost([this, &field](content::RenderFrameHost* rfh) {
         LocalFrameToken frame_token(rfh->GetFrameToken().value());
-        if (frame_token == field.host_frame) {
+        if (frame_token == field.host_frame()) {
           last_queried_field_rfh_id_ = rfh->GetGlobalId();
         }
       });
@@ -197,11 +197,12 @@ void AndroidAutofillProvider::OnAskForValuesToFill(
     last_focused_field_id_ = field.global_id();
   }
 
-  if (field.datalist_options.empty()) {
+  if (field.datalist_options().empty()) {
     return;
   }
-  bridge_->ShowDatalistPopup(field.datalist_options,
-                             field.text_direction == base::i18n::RIGHT_TO_LEFT);
+  bridge_->ShowDatalistPopup(
+      field.datalist_options(),
+      field.text_direction() == base::i18n::RIGHT_TO_LEFT);
 }
 
 bool AndroidAutofillProvider::IsFormSimilarToCachedForm(
@@ -255,7 +256,7 @@ void AndroidAutofillProvider::StartNewSession(AndroidAutofillManager* manager,
 
   last_focused_field_id_ = field.global_id();
   field_type_group_ = manager->ComputeFieldTypeGroupForField(form, field);
-  triggered_origin_ = field.origin;
+  triggered_origin_ = field.origin();
   check_submission_ = false;
   manager_ = manager->GetWeakPtrToLeafClass();
 

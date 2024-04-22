@@ -101,16 +101,16 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
           {.section = std::string(field_template.section)}));
     }
     field.set_form_control_type(field_template.form_control_type);
-    field.is_focusable = field_template.is_focusable;
+    field.set_is_focusable(field_template.is_focusable);
     field.set_max_length(field_template.max_length);
     field.set_parsed_autocomplete(field_template.parsed_autocomplete);
-    field.role = field_template.role;
-    field.origin =
-        field_template.subframe_origin.value_or(form.main_frame_origin);
-    field.host_frame =
-        field_template.host_form.value_or(form.global_id()).frame_token;
-    field.host_form_id =
-        field_template.host_form.value_or(form.global_id()).renderer_id;
+    field.set_role(field_template.role);
+    field.set_origin(
+        field_template.subframe_origin.value_or(form.main_frame_origin));
+    field.set_host_frame(
+        field_template.host_form.value_or(form.global_id()).frame_token);
+    field.set_host_form_id(
+        field_template.host_form.value_or(form.global_id()).renderer_id);
     field.set_renderer_id(test::MakeFieldRendererId());
     form.fields.push_back(std::move(field));
   }

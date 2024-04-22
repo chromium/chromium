@@ -442,7 +442,7 @@ void FillAndCheckState(
     FormFieldData* value_to_fill =
         FindFieldByName(values_to_fill, checkbox_element->NameForAutofill());
     ASSERT_TRUE(value_to_fill != nullptr);
-    value_to_fill->check_status = fill_checkbox_check_status;
+    value_to_fill->set_check_status(fill_checkbox_check_status);
     value_to_fill->set_is_autofilled(true);
   }
 

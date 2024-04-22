@@ -667,11 +667,11 @@ void ContentAutofillDriver::SetFrameAndFormMetaData(
   FormSignature form_signature = CalculateFormSignature(form);
 
   auto SetFieldMetaData = [&](FormFieldData& f) {
-    f.host_frame = form.host_frame;
-    f.host_form_id = form.renderer_id;
-    f.origin = render_frame_host_->GetLastCommittedOrigin();
-    f.host_form_signature = form_signature;
-    f.bounds = TransformBoundingBoxToViewportCoordinates(f.bounds);
+    f.set_host_frame(form.host_frame);
+    f.set_host_form_id(form.renderer_id);
+    f.set_origin(render_frame_host_->GetLastCommittedOrigin());
+    f.set_host_form_signature(form_signature);
+    f.set_bounds(TransformBoundingBoxToViewportCoordinates(f.bounds()));
   };
 
   for (FormFieldData& f : form.fields) {

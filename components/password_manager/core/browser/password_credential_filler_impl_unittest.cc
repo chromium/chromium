@@ -54,9 +54,9 @@ const FormData PrepareFormData(
       focusability_vector, std::back_inserter(form.fields),
       [](FormFieldFocusabilityType type) {
         autofill::FormFieldData field;
-        field.is_focusable =
+        field.set_is_focusable(
             (type == FormFieldFocusabilityType::kFocusableInput ||
-             type == FormFieldFocusabilityType::kFocusableCheckbox);
+             type == FormFieldFocusabilityType::kFocusableCheckbox));
         field.set_form_control_type(
             (type == FormFieldFocusabilityType::kFocusableCheckbox)
                 ? autofill::FormControlType::kInputCheckbox

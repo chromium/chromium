@@ -3777,7 +3777,7 @@ class MAYBE_AutofillInteractiveFormSubmissionTest
     return AllOf(
         Property("name", &FormFieldData::name, nvu.name),
         Property("value", &FormFieldData::value, nvu.value),
-        Field("user_input", &FormFieldData::user_input, nvu.user_input));
+        Property("user_input", &FormFieldData::user_input, nvu.user_input));
   }
 
   void ExecuteScript(const std::string& script) {

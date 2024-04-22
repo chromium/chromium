@@ -66,7 +66,7 @@ FastCheckoutTriggerOutcome FastCheckoutTriggerValidatorImpl::ShouldRun(
   }
 
   // Trigger only on focusable fields.
-  if (!field.is_focusable) {
+  if (!field.is_focusable()) {
     LogAutofillInternals("not triggered because field was not focusable.");
     return FastCheckoutTriggerOutcome::kFailureFieldNotFocusable;
   }
@@ -103,16 +103,17 @@ bool FastCheckoutTriggerValidatorImpl::IsTriggerForm(
   // Check browser form's signature and renderer form's signature.
   autofill::FormSignature form_signature =
       autofill::CalculateFormSignature(form);
-  bool is_trigger_form = capabilities_fetcher_->IsTriggerFormSupported(
-                             form.main_frame_origin, form_signature) ||
-                         capabilities_fetcher_->IsTriggerFormSupported(
-                             form.main_frame_origin, field.host_form_signature);
+  bool is_trigger_form =
+      capabilities_fetcher_->IsTriggerFormSupported(form.main_frame_origin,
+                                                    form_signature) ||
+      capabilities_fetcher_->IsTriggerFormSupported(
+          form.main_frame_origin, field.host_form_signature());
   if (!is_trigger_form) {
     LogAutofillInternals(
         "not triggered because there is no Fast Checkout support for form "
         "signatures {" +
         base::NumberToString(form_signature.value()) + ", " +
-        base::NumberToString(field.host_form_signature.value()) +
+        base::NumberToString(field.host_form_signature().value()) +
         "} on origin " + form.main_frame_origin.Serialize() + ".");
   }
   return is_trigger_form;

@@ -75,14 +75,15 @@ auto Equals(const FormFieldData& exp) {
   return AllOf(
       Property("global_id", &FormFieldData::global_id, exp.global_id()),
       Property("name", &FormFieldData::name, exp.name()),
-      Field("host_form_id", &FormFieldData::host_form_id, exp.host_form_id),
-      Field("origin", &FormFieldData::origin, exp.origin),
+      Property("host_form_id", &FormFieldData::host_form_id,
+               exp.host_form_id()),
+      Property("origin", &FormFieldData::origin, exp.origin()),
       Property("form_control_type", &FormFieldData::form_control_type,
                exp.form_control_type()),
       Property("value", &FormFieldData::value, exp.value()),
       Property("label", &FormFieldData::label, exp.label()),
-      Field("host_form_signature", &FormFieldData::host_form_signature,
-            exp.host_form_signature));
+      Property("host_form_signature", &FormFieldData::host_form_signature,
+               exp.host_form_signature()));
 }
 
 // The relevant attributes are FormData::global_id(), FormData::fields.
@@ -315,9 +316,9 @@ class FakeAutofillDriver : public TestAutofillDriver {
     form.host_frame = GetFrameToken();
     form.main_frame_origin = origin_;
     for (FormFieldData& field : form.fields) {
-      field.host_frame = form.host_frame;
-      field.host_form_id = form.renderer_id;
-      field.origin = origin_;
+      field.set_host_frame(form.host_frame);
+      field.set_host_form_id(form.renderer_id);
+      field.set_origin(origin_);
     }
   }
 
@@ -1190,7 +1191,7 @@ class FormForestTestUpdateFieldMove
     size_t target_index = p.target.field_index;
 
     FormFieldData field = source_form.fields[source_index];
-    field.host_form_id = target_form.renderer_id;
+    field.set_host_form_id(target_form.renderer_id);
 
     if (source_index > target_index) {
       source_form.fields.erase(source_form.fields.begin() + source_index);

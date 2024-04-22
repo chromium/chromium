@@ -67,7 +67,7 @@ std::vector<std::unique_ptr<AutofillField>> CreateFields(
       f->set_parsed_autocomplete(AutocompleteParsingResult{
           .section = t.autocomplete_section, .mode = t.autocomplete_mode});
     }
-    f->is_focusable = t.is_focusable;
+    f->set_is_focusable(t.is_focusable);
   }
   return result;
 }

@@ -302,7 +302,7 @@ class CreditCardSaveManagerTest : public testing::Test {
     }
     form.fields.push_back(CreateTestFormField("Card Number", "cardnumber", "",
                                               FormControlType::kInputText, ""));
-    form.fields.back().is_focusable = !options.is_from_non_focusable_form;
+    form.fields.back().set_is_focusable(!options.is_from_non_focusable_form);
     form.fields.push_back(CreateTestFormField("Expiration Date", "ccmonth", "",
                                               FormControlType::kInputText));
     form.fields.push_back(
@@ -497,7 +497,7 @@ TEST_F(CreditCardSaveManagerTest, MAYBE_CreditCardSavedWhenAutocompleteOff) {
       CreditCardFormOptions().with_is_https(false));
 
   // Set "autocomplete=off" for cardnumber field.
-  form.fields[1].should_autocomplete = false;
+  form.fields[1].set_should_autocomplete(false);
 
   std::vector<FormData> forms(1, form);
   FormsSeen(forms);

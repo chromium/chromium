@@ -38,7 +38,7 @@ bool IsValidFormFieldData(const FormFieldData& field) {
              base::to_underlying(FormControlType::kMinValue) &&
          base::to_underlying(field.form_control_type()) <=
              base::to_underlying(FormControlType::kMaxValue) &&
-         IsValidString(field.autocomplete_attribute) &&
+         IsValidString(field.autocomplete_attribute()) &&
          IsValidOptionVector(field.options());
 }
 

@@ -567,8 +567,8 @@ FormFieldParser::RemoveCheckableFields(
     // interferes with correctly understanding ADDRESS_LINE2.
     // Ignore fields marked as presentational, unless for 'select' fields (for
     // synthetic fields.)
-    if (IsCheckable(field->check_status) ||
-        (field->role == FormFieldData::RoleAttribute::kPresentation &&
+    if (IsCheckable(field->check_status()) ||
+        (field->role() == FormFieldData::RoleAttribute::kPresentation &&
          !field->IsSelectElement())) {
       continue;
     }
@@ -612,7 +612,7 @@ bool FormFieldParser::Match(ParsingContext& context,
     value = name;
   } else if (match_label && pattern != kEmptyLabelRegex &&
              context.autofill_always_parse_placeholders &&
-             MatchesRegexWithCache(context, field->placeholder, pattern,
+             MatchesRegexWithCache(context, field->placeholder(), pattern,
                                    capture_destination)) {
     // Placeholders are matched against the same regexes as labels. However, to
     // prevent false positives in `ParseEmptyLabel()`, matches in placeholders
@@ -623,7 +623,7 @@ bool FormFieldParser::Match(ParsingContext& context,
     // Reorder once the change is rolled out.
     found_match = true;
     match_type_string = "Match in placeholder";
-    value = field->placeholder;
+    value = field->placeholder();
   }
 
   if (found_match && capture_destination) {

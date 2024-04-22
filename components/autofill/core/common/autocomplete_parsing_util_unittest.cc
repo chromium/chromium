@@ -88,9 +88,9 @@ TEST_P(AutocompleteAttributeProcessingUtilTest, ParseAutocompleteAttribute) {
                << "autocomplete=\"" << test.autocomplete << "\"");
 
   FormFieldData field;
-  field.autocomplete_attribute = std::string(test.autocomplete);
+  field.set_autocomplete_attribute(std::string(test.autocomplete));
 
-  auto result = ParseAutocompleteAttribute(field.autocomplete_attribute);
+  auto result = ParseAutocompleteAttribute(field.autocomplete_attribute());
   EXPECT_EQ(result, test.expected_result);
 }
 

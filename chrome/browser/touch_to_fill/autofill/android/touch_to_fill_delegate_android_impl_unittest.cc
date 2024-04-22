@@ -159,7 +159,7 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
   void ConfigureForCreditCards(const CreditCard& card) {
     form_ = test::CreateTestCreditCardFormData(/*is_https=*/true,
                                                /*use_month_type=*/false);
-    form_.fields[0].is_focusable = true;
+    form_.fields[0].set_is_focusable(true);
     autofill_client_.GetPersonalDataManager()->AddCreditCard(card);
   }
 
@@ -169,7 +169,7 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
     iban.set_value(std::u16string(test::kIbanValue16));
     autofill_client_.GetPersonalDataManager()->AddAsLocalIban(std::move(iban));
     form_ = test::CreateTestIbanFormData(/*value=*/"");
-    form_.fields[0].is_focusable = true;
+    form_.fields[0].set_is_focusable(true);
   }
 
   void OnFormsSeen() {
@@ -271,7 +271,7 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
 
 TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
        TryToShowTouchToFillFailsForPaymentMethodIfFieldIsNotFocusable) {
-  form_.fields[0].is_focusable = false;
+  form_.fields[0].set_is_focusable(false);
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
   TryToShowTouchToFill(/*expected_success=*/false);

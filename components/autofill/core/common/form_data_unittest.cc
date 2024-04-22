@@ -155,13 +155,13 @@ void FillInDummyFormData(FormData* data) {
   field_data.set_name(u"name");
   field_data.set_value(u"value");
   field_data.set_form_control_type(FormControlType::kInputPassword);
-  field_data.autocomplete_attribute = "off";
+  field_data.set_autocomplete_attribute("off");
   field_data.set_max_length(200);
   field_data.set_is_autofilled(true);
-  field_data.check_status = FormFieldData::CheckStatus::kChecked;
-  field_data.is_focusable = true;
-  field_data.should_autocomplete = false;
-  field_data.text_direction = base::i18n::RIGHT_TO_LEFT;
+  field_data.set_check_status(FormFieldData::CheckStatus::kChecked);
+  field_data.set_is_focusable(true);
+  field_data.set_should_autocomplete(false);
+  field_data.set_text_direction(base::i18n::RIGHT_TO_LEFT);
   field_data.set_options({{.value = u"First", .content = u"First"},
                           {.value = u"Second", .content = u"Second"}});
   data->fields.push_back(field_data);

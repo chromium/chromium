@@ -267,7 +267,7 @@ FormFiller::FillingContext::FillingContext(
     base::optional_ref<const std::u16string> cvc)
     : filled_field_id(field.global_id()),
       filled_field_signature(field.GetFieldSignature()),
-      filled_origin(field.origin),
+      filled_origin(field.origin()),
       original_fill_time(base::TimeTicks::Now()) {
   DCHECK(absl::holds_alternative<const CreditCard*>(profile_or_credit_card) ||
          !cvc.has_value());
@@ -595,7 +595,7 @@ void FormFiller::FillOrPreviewForm(
       LOG_AF(buffer) << Tr{} << base::StringPrintf("Field %zu", i)
                      << GetSkipFieldFillLogMessage(
                             skip_reasons[autofill_field->global_id()]);
-      if (fill_event_id && !IsCheckable(autofill_field->check_status)) {
+      if (fill_event_id && !IsCheckable(autofill_field->check_status())) {
         // This lambda calculates a hash of the value Autofill would have used
         // if the field was skipped due to being pre-filled on page load. If the
         // field was not skipped due to being pre-filled, `std::nullopt` is
@@ -684,7 +684,7 @@ void FormFiller::FillOrPreviewForm(
 
     // Log when the suggestion is selected and log on non-checkable fields that
     // have been filled.
-    if (fill_event_id && !IsCheckable(autofill_field->check_status)) {
+    if (fill_event_id && !IsCheckable(autofill_field->check_status())) {
       autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
           .fill_event_id = *fill_event_id,
           .had_value_before_filling = ToOptionalBoolean(has_value_before),
@@ -726,7 +726,7 @@ void FormFiller::FillOrPreviewForm(
   base::flat_set<FieldGlobalId> safe_fields =
       manager_->driver().ApplyFormAction(mojom::FormActionType::kFill,
                                          action_persistence, result_form,
-                                         trigger_field.origin, field_types);
+                                         trigger_field.origin(), field_types);
 
   // This will hold the fields (and autofill_fields) in the intersection of
   // safe_fields and newly_filled_fields_id.
@@ -750,7 +750,7 @@ void FormFiller::FillOrPreviewForm(
       CHECK(newly_filled_field);
       safe_newly_filled_fields.cached.push_back(newly_filled_field);
 
-      if (fill_event_id && !IsCheckable(newly_filled_field->check_status)) {
+      if (fill_event_id && !IsCheckable(newly_filled_field->check_status())) {
         // The field's last field log event should be a type of
         // FillFieldLogEvent. Record in this FillFieldLogEvent object that this
         // newly filled field was actually filled after checking the iframe
@@ -783,7 +783,7 @@ void FormFiller::FillOrPreviewForm(
       AutofillField* not_filled_field =
           form_structure->GetFieldById(it->global_id());
       CHECK(not_filled_field);
-      if (fill_event_id && !IsCheckable(not_filled_field->check_status)) {
+      if (fill_event_id && !IsCheckable(not_filled_field->check_status())) {
         base::optional_ref<AutofillField::FieldLogEventType>
             last_field_log_event = not_filled_field->last_field_log_event();
         CHECK(last_field_log_event.has_value());
@@ -897,7 +897,7 @@ void FormFiller::TriggerRefill(const FormData& form,
   auto comparison_attributes =
       [&](const std::unique_ptr<AutofillField>& field) {
         return std::make_tuple(
-            field->origin == filling_context->filled_origin,
+            field->origin() == filling_context->filled_origin,
             field->IsFocusable(),
             field->global_id() == filling_context->filled_field_id,
             field->GetFieldSignature() ==
@@ -910,7 +910,7 @@ void FormFiller::TriggerRefill(const FormData& form,
       it != form_structure->end() ? it->get() : nullptr;
   bool found_matching_element =
       autofill_field &&
-      autofill_field->origin == filling_context->filled_origin &&
+      autofill_field->origin() == filling_context->filled_origin &&
       (autofill_field->global_id() == filling_context->filled_field_id ||
        autofill_field->GetFieldSignature() ==
            filling_context->filled_field_signature);
@@ -1058,7 +1058,7 @@ bool FormFiller::FillField(
     return false;
   }
   field_data.set_value(filling_content.value_to_fill);
-  field_data.force_override = filling_content.value_is_an_override;
+  field_data.set_force_override(filling_content.value_is_an_override);
 
   if (failure_to_fill) {
     *failure_to_fill = "Decided to fill";

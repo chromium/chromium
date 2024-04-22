@@ -727,7 +727,7 @@ void PasswordFormManager::ProvisionallySaveFieldDataManagerInfo(
     FieldRendererId field_id = field.renderer_id();
     if (!field_data_manager.HasFieldData(field_id))
       continue;
-    field.user_input = field_data_manager.GetUserInput(field_id);
+    field.set_user_input(field_data_manager.GetUserInput(field_id));
     field.set_properties_mask(
         field_data_manager.GetFieldPropertiesMask(field_id));
     data_found = true;
@@ -1661,7 +1661,8 @@ bool HasObservedFormChanged(const FormData& form_data,
       differences_bitmask |= PasswordFormMetricsRecorder::kFormControlTypes;
     }
 
-    if (lhs_field.autocomplete_attribute != rhs_field.autocomplete_attribute) {
+    if (lhs_field.autocomplete_attribute() !=
+        rhs_field.autocomplete_attribute()) {
       differences_bitmask |=
           PasswordFormMetricsRecorder::kAutocompleteAttributes;
     }

@@ -70,7 +70,7 @@ class FieldFillingAddressUtilTest : public testing::Test {
 TEST_F(FieldFillingAddressUtilTest,
        FillFormField_AutocompleteOffNotRespected_AddressField) {
   AutofillField field;
-  field.should_autocomplete = false;
+  field.set_should_autocomplete(false);
   field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
 
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);

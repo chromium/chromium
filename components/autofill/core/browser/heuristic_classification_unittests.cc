@@ -346,23 +346,23 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   }
   if (const std::string* autocomplete =
           field_dict.FindString("autocomplete_attr")) {
-    field.autocomplete_attribute = *autocomplete;
+    field.set_autocomplete_attribute(*autocomplete);
     field.set_parsed_autocomplete(ParseAutocompleteAttribute(*autocomplete));
   }
   if (const std::string* placeholder =
           field_dict.FindString("placeholder_attr")) {
-    field.placeholder = base::UTF8ToUTF16(*placeholder);
+    field.set_placeholder(base::UTF8ToUTF16(*placeholder));
   }
   if (const std::string* maxlength = field_dict.FindString("maxlength_attr")) {
     uint64_t max_length = 0;
     base::StringToUint64(*maxlength, &max_length);
     field.set_max_length(max_length);
   }
-  field.is_focusable = true;
-  field.role = FormFieldData::RoleAttribute::kOther;
-  field.origin = form_data.main_frame_origin;
-  field.host_frame = form_data.host_frame;
-  field.host_form_id = form_data.renderer_id;
+  field.set_is_focusable(true);
+  field.set_role(FormFieldData::RoleAttribute::kOther);
+  field.set_origin(form_data.main_frame_origin);
+  field.set_host_frame(form_data.host_frame);
+  field.set_host_form_id(form_data.renderer_id);
   field.set_renderer_id(test::MakeFieldRendererId());
   std::vector<SelectOption> options;
   if (const base::Value::List* select_options =

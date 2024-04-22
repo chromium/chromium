@@ -23,10 +23,10 @@ bool IsRendererRecognizedCredentialForm(const autofill::FormData& form) {
   return base::ranges::any_of(
       form.fields, [](const autofill::FormFieldData& field) {
         return field.IsPasswordInputElement() ||
-               field.autocomplete_attribute.find(
+               field.autocomplete_attribute().find(
                    password_manager::constants::kAutocompleteUsername) !=
                    std::string::npos ||
-               field.autocomplete_attribute.find(
+               field.autocomplete_attribute().find(
                    password_manager::constants::kAutocompleteWebAuthn) !=
                    std::string::npos;
       });

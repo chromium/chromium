@@ -566,17 +566,17 @@ TEST_F(FormAutofillUtilsTest, IsEnabled) {
       web_frame->GetDocument(), WebFormElement(), field_data_manager(),
       /*extract_options=*/{});
   EXPECT_THAT(
-      form,
-      Optional(Field(
-          &FormData::fields,
-          ElementsAre(AllOf(Property(&FormFieldData::name, u"name1"),
-                            Field(&FormFieldData::is_enabled, IsTrue())),
-                      AllOf(Property(&FormFieldData::name, u"name2"),
-                            Field(&FormFieldData::is_enabled, IsFalse())),
-                      AllOf(Property(&FormFieldData::name, u"name3"),
-                            Field(&FormFieldData::is_enabled, IsTrue())),
-                      AllOf(Property(&FormFieldData::name, u"name4"),
-                            Field(&FormFieldData::is_enabled, IsFalse()))))));
+      form, Optional(Field(
+                &FormData::fields,
+                ElementsAre(
+                    AllOf(Property(&FormFieldData::name, u"name1"),
+                          Property(&FormFieldData::is_enabled, IsTrue())),
+                    AllOf(Property(&FormFieldData::name, u"name2"),
+                          Property(&FormFieldData::is_enabled, IsFalse())),
+                    AllOf(Property(&FormFieldData::name, u"name3"),
+                          Property(&FormFieldData::is_enabled, IsTrue())),
+                    AllOf(Property(&FormFieldData::name, u"name4"),
+                          Property(&FormFieldData::is_enabled, IsFalse()))))));
 }
 
 TEST_F(FormAutofillUtilsTest, IsReadonly) {
@@ -590,17 +590,17 @@ TEST_F(FormAutofillUtilsTest, IsReadonly) {
       web_frame->GetDocument(), WebFormElement(), field_data_manager(),
       /*extract_options=*/{});
   EXPECT_THAT(
-      form,
-      Optional(Field(
-          &FormData::fields,
-          ElementsAre(AllOf(Property(&FormFieldData::name, u"name1"),
-                            Field(&FormFieldData::is_readonly, IsFalse())),
-                      AllOf(Property(&FormFieldData::name, u"name2"),
-                            Field(&FormFieldData::is_readonly, IsTrue())),
-                      AllOf(Property(&FormFieldData::name, u"name3"),
-                            Field(&FormFieldData::is_readonly, IsFalse())),
-                      AllOf(Property(&FormFieldData::name, u"name4"),
-                            Field(&FormFieldData::is_readonly, IsTrue()))))));
+      form, Optional(Field(
+                &FormData::fields,
+                ElementsAre(
+                    AllOf(Property(&FormFieldData::name, u"name1"),
+                          Property(&FormFieldData::is_readonly, IsFalse())),
+                    AllOf(Property(&FormFieldData::name, u"name2"),
+                          Property(&FormFieldData::is_readonly, IsTrue())),
+                    AllOf(Property(&FormFieldData::name, u"name3"),
+                          Property(&FormFieldData::is_readonly, IsFalse())),
+                    AllOf(Property(&FormFieldData::name, u"name4"),
+                          Property(&FormFieldData::is_readonly, IsTrue()))))));
 }
 
 TEST_F(FormAutofillUtilsTest, IsFocusable) {
@@ -615,10 +615,11 @@ TEST_F(FormAutofillUtilsTest, IsFocusable) {
       form,
       Optional(Field(
           &FormData::fields,
-          ElementsAre(AllOf(Property(&FormFieldData::name, u"name1"),
-                            Field(&FormFieldData::is_focusable, IsTrue())),
-                      AllOf(Property(&FormFieldData::name, u"name2"),
-                            Field(&FormFieldData::is_focusable, IsFalse()))))));
+          ElementsAre(
+              AllOf(Property(&FormFieldData::name, u"name1"),
+                    Property(&FormFieldData::is_focusable, IsTrue())),
+              AllOf(Property(&FormFieldData::name, u"name2"),
+                    Property(&FormFieldData::is_focusable, IsFalse()))))));
 }
 
 TEST_F(FormAutofillUtilsTest, FindFormByUniqueId) {
@@ -852,7 +853,7 @@ TEST_F(FormAutofillUtilsTest, ExtractBounds) {
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
-  EXPECT_FALSE(form.fields.back().bounds.IsEmpty());
+  EXPECT_FALSE(form.fields.back().bounds().IsEmpty());
 }
 
 TEST_F(FormAutofillUtilsTest, NotExtractBounds) {
@@ -865,7 +866,7 @@ TEST_F(FormAutofillUtilsTest, NotExtractBounds) {
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
-  EXPECT_TRUE(form.fields.back().bounds.IsEmpty());
+  EXPECT_TRUE(form.fields.back().bounds().IsEmpty());
 }
 
 TEST_F(FormAutofillUtilsTest, ExtractUnownedBounds) {
@@ -878,7 +879,7 @@ TEST_F(FormAutofillUtilsTest, ExtractUnownedBounds) {
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
-  EXPECT_FALSE(form.fields.back().bounds.IsEmpty());
+  EXPECT_FALSE(form.fields.back().bounds().IsEmpty());
 }
 
 TEST_F(FormAutofillUtilsTest, GetDataListSuggestions) {
@@ -926,13 +927,13 @@ TEST_F(FormAutofillUtilsTest, ExtractDataList) {
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
-  auto& options = form.fields.back().datalist_options;
+  auto& options = form.fields.back().datalist_options();
   ASSERT_EQ(options.size(), 2u);
   EXPECT_EQ(options[0].value, u"1");
   EXPECT_EQ(options[1].value, u"2");
   EXPECT_EQ(options[0].content, u"one");
   EXPECT_EQ(options[1].content, u"two");
-  EXPECT_EQ(field.datalist_options.size(), options.size());
+  EXPECT_EQ(field.datalist_options().size(), options.size());
 }
 
 TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
@@ -948,7 +949,7 @@ TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
 
   ASSERT_TRUE(form_and_field);
   auto& [form, field] = *form_and_field;
-  EXPECT_TRUE(form.fields.back().datalist_options.empty());
+  EXPECT_TRUE(form.fields.back().datalist_options().empty());
 }
 
 // Tests the visibility detection of iframes.
@@ -1398,7 +1399,7 @@ TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
     WebElement element = GetElementById(doc, field.id);
     ASSERT_FALSE(element.IsNull());
     ASSERT_TRUE(element.IsFormControlElement());
-    EXPECT_EQ(form_data->fields[i].host_form_id, host_form);
+    EXPECT_EQ(form_data->fields[i].host_form_id(), host_form);
     EXPECT_TRUE(HaveSameFormControlId(element.To<WebFormControlElement>(),
                                       form_data->fields[i]));
     ++i;
@@ -1937,12 +1938,12 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableSuccess) {
   const FormFieldData& field = form->fields[0];
   EXPECT_TRUE(form->renderer_id);
   EXPECT_EQ(*form->renderer_id, *field.renderer_id());
-  EXPECT_EQ(form->renderer_id, field.host_form_id);
+  EXPECT_EQ(form->renderer_id, field.host_form_id());
   EXPECT_EQ(field.parsed_autocomplete()->field_type, HtmlFieldType::kGivenName);
   EXPECT_EQ(field.name(), u"my-id");
   EXPECT_EQ(field.id_attribute(), u"my-id");
   EXPECT_EQ(field.name_attribute(), u"my-name");
-  EXPECT_EQ(field.css_classes, u"my-class");
+  EXPECT_EQ(field.css_classes(), u"my-class");
   EXPECT_EQ(field.value(),
             u"\n            This is the textContent!\n         ");
 }
@@ -1965,12 +1966,12 @@ TEST_F(FormAutofillUtilsTest, FindFormForContentEditableAbridgedSuccess) {
   const FormFieldData& field = form->fields[0];
   EXPECT_TRUE(form->renderer_id);
   EXPECT_EQ(*form->renderer_id, *field.renderer_id());
-  EXPECT_EQ(form->renderer_id, field.host_form_id);
+  EXPECT_EQ(form->renderer_id, field.host_form_id());
   EXPECT_EQ(field.parsed_autocomplete()->field_type, HtmlFieldType::kGivenName);
   EXPECT_EQ(field.name(), u"my-id");
   EXPECT_EQ(field.id_attribute(), u"my-id");
   EXPECT_EQ(field.name_attribute(), u"my-name");
-  EXPECT_EQ(field.css_classes, u"my-class");
+  EXPECT_EQ(field.css_classes(), u"my-class");
   // Only extract 1024 characters from the div.
   EXPECT_EQ(field.value().length(), 1024u);
   EXPECT_EQ(

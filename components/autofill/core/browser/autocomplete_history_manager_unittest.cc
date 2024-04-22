@@ -291,7 +291,7 @@ TEST_F(AutocompleteHistoryManagerTest, FieldWithAutocompleteOff) {
   field.set_value(u"a truly esoteric value, I assure you");
   field.set_properties_mask(field.properties_mask() | kUserTyped);
   field.set_form_control_type(FormControlType::kInputText);
-  field.should_autocomplete = false;
+  field.set_should_autocomplete(false);
   form.fields.push_back(field);
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
@@ -341,7 +341,7 @@ TEST_F(AutocompleteHistoryManagerTest, UserInputNotFocusable) {
   search_field.set_value(u"my favorite query");
   search_field.set_form_control_type(FormControlType::kInputSearch);
   search_field.set_properties_mask(search_field.properties_mask() | kUserTyped);
-  search_field.is_focusable = false;
+  search_field.set_is_focusable(false);
   form.fields.push_back(search_field);
 
   EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_));
@@ -366,7 +366,7 @@ TEST_F(AutocompleteHistoryManagerTest, PresentationField) {
   field.set_value(u"a truly esoteric value, I assure you");
   field.set_properties_mask(field.properties_mask() | kUserTyped);
   field.set_form_control_type(FormControlType::kInputText);
-  field.role = FormFieldData::RoleAttribute::kPresentation;
+  field.set_role(FormFieldData::RoleAttribute::kPresentation);
   form.fields.push_back(field);
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
@@ -435,7 +435,7 @@ TEST_F(AutocompleteHistoryManagerTest,
 // Make sure suggestions are not returned if the field should not autocomplete.
 TEST_F(AutocompleteHistoryManagerTest,
        OnGetSingleFieldSuggestions_FieldShouldNotAutocomplete) {
-  test_field_.should_autocomplete = false;
+  test_field_.set_should_autocomplete(false);
 
   // Setting up mock to verify that call to the handler's OnSuggestionsReturned
   // is not triggered.

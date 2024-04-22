@@ -73,8 +73,9 @@ bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
     const AutofillClient& client,
     OnSuggestionsReturnedCallback on_suggestions_returned,
     const SuggestionsContext& context) {
-  if (!field.should_autocomplete)
+  if (!field.should_autocomplete()) {
     return false;
+  }
 
   CancelPendingQueries();
 
@@ -303,10 +304,10 @@ bool AutocompleteHistoryManager::IsFieldValueSaveable(
          !field.name().empty() && field.IsTextInputElement() &&
          !field.IsPasswordInputElement() &&
          field.form_control_type() != FormControlType::kInputNumber &&
-         field.should_autocomplete && !IsValidCreditCardNumber(field.value()) &&
-         !IsSSN(field.value()) &&
-         (field.properties_mask() & kUserTyped || field.is_focusable) &&
-         field.role != FormFieldData::RoleAttribute::kPresentation;
+         field.should_autocomplete() &&
+         !IsValidCreditCardNumber(field.value()) && !IsSSN(field.value()) &&
+         (field.properties_mask() & kUserTyped || field.is_focusable()) &&
+         field.role() != FormFieldData::RoleAttribute::kPresentation;
 }
 
 }  // namespace autofill

@@ -403,7 +403,7 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
           "\nfield renderer id: ",
           field_id_str,
           "\nvisible: ",
-          field_data.is_visible ? "true" : "false",
+          field_data.is_visible() ? "true" : "false",
           "\nfocusable: ",
           field_data.IsFocusable() ? "true" : "false",
           "\nfield rank: ",
@@ -456,7 +456,7 @@ void FormCache::SaveInitialValues(base::span<const FormFieldData> fields) {
     } else if (form_util::IsCheckable(field.form_control_type())) {
       initial_checked_state_.insert(
           {field.renderer_id(),
-           field.check_status == FormFieldData::CheckStatus::kChecked});
+           field.check_status() == FormFieldData::CheckStatus::kChecked});
     }
   }
 }

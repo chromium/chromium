@@ -24,7 +24,7 @@ FormFieldData CreateFormField(autofill::FormControlType form_control_type,
   // /common.
   FormFieldData field;
   field.set_form_control_type(form_control_type);
-  field.autocomplete_attribute = std::move(autocomplete_attribute);
+  field.set_autocomplete_attribute(std::move(autocomplete_attribute));
 
   return field;
 }

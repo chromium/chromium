@@ -154,7 +154,7 @@ void ChromeComposeClient::ShowComposeDialog(
   if (!skip_show_dialog_for_test_) {
     // The bounds given by autofill are relative to the top level frame. Here we
     // offset by the WebContents container to make up for that.
-    gfx::RectF bounds_in_screen = trigger_field.bounds;
+    gfx::RectF bounds_in_screen = trigger_field.bounds();
     bounds_in_screen.Offset(
         GetWebContents().GetContainerBounds().OffsetFromOrigin());
 
@@ -293,7 +293,7 @@ void ChromeComposeClient::CreateOrUpdateSession(
   // dialog if it splits a surrogate pair character. Ensure that any invalid
   // characters are removed.
   std::string selected_text =
-      base::UTF16ToUTF8(RemoveLastCharIfInvalid(trigger_field.selected_text));
+      base::UTF16ToUTF8(RemoveLastCharIfInvalid(trigger_field.selected_text()));
 
   ComposeSession* current_session;
 
@@ -502,9 +502,9 @@ bool ChromeComposeClient::ShouldTriggerPopup(
   GURL url = GetWebContents().GetPrimaryMainFrame()->GetLastCommittedURL();
 
   return compose_enabling_->ShouldTriggerPopup(
-      form_field_data.autocomplete_attribute, profile_, translate_manager,
+      form_field_data.autocomplete_attribute(), profile_, translate_manager,
       HasSession(form_field_data.global_id()),
-      top_level_frame->GetLastCommittedOrigin(), form_field_data.origin, url,
+      top_level_frame->GetLastCommittedOrigin(), form_field_data.origin(), url,
       trigger_source);
 }
 

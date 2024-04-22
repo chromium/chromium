@@ -4675,7 +4675,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
   // The first field is "Name on card", which should autocomplete.
   FormFieldData field = form.fields[0];
-  field.should_autocomplete = true;
+  field.set_should_autocomplete(true);
 
   // SingleFieldFormFillRouter is called for suggestions.
   EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions);
@@ -4705,7 +4705,7 @@ TEST_F(BrowserAutofillManagerTest,
   FormsSeen({form});
   // The second field is "Card Number", which should not autocomplete.
   FormFieldData field = form.fields[1];
-  field.should_autocomplete = true;
+  field.set_should_autocomplete(true);
 
   // SingleFieldFormFillRouter is not called for suggestions.
   EXPECT_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
@@ -4728,7 +4728,7 @@ TEST_F(
   // No suggestions matching "donkey".
   FormFieldData field = CreateTestFormField("Email", "email", "donkey",
                                             FormControlType::kInputEmail);
-  field.should_autocomplete = false;
+  field.set_should_autocomplete(false);
 
   // Autocomplete is set to off, so suggestions should not get returned from
   // single_field_form_fill_router()|.
@@ -4757,7 +4757,7 @@ TEST_F(
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
   FormFieldData& field = form.fields[0];
-  field.should_autocomplete = false;
+  field.set_should_autocomplete(false);
 
   // Autocomplete is set to off, so suggestions should not get returned from
   // |single_field_form_fill_router()|.
@@ -5513,7 +5513,7 @@ TEST_F(BrowserAutofillManagerTest, DontSaveCvcInAutocompleteHistory) {
   ASSERT_EQ(std::size(test_fields), form_seen_by_ahm.fields.size());
   for (size_t i = 0; i < std::size(test_fields); ++i) {
     EXPECT_EQ(
-        form_seen_by_ahm.fields[i].should_autocomplete,
+        form_seen_by_ahm.fields[i].should_autocomplete(),
         test_fields[i].expected_field_type != CREDIT_CARD_VERIFICATION_CODE);
   }
 }
@@ -5604,7 +5604,7 @@ TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
 
   // Has less than 3 fields but has autocomplete attribute.
   constexpr char autocomplete[] = "given-name";
-  form.fields[0].autocomplete_attribute = autocomplete;
+  form.fields[0].set_autocomplete_attribute(autocomplete);
   form.fields[0].set_parsed_autocomplete(
       ParseAutocompleteAttribute(autocomplete));
 
@@ -5617,7 +5617,7 @@ TEST_F(BrowserAutofillManagerTest, ShouldUploadForm) {
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
 
   // Has more than 3 fields and at least one autocomplete attribute.
-  form.fields[0].autocomplete_attribute = autocomplete;
+  form.fields[0].set_autocomplete_attribute(autocomplete);
   form.fields[0].set_parsed_autocomplete(
       ParseAutocompleteAttribute(autocomplete));
   EXPECT_TRUE(browser_autofill_manager_->ShouldUploadForm(FormStructure(form)));
@@ -5657,7 +5657,7 @@ TEST_F(BrowserAutofillManagerTest,
   mixed_form.action = GURL("https://myform.com/submit.html");
   mixed_form.fields.push_back(CreateTestFormField("First name", "firstname", "",
                                                   FormControlType::kInputText));
-  mixed_form.fields.back().should_autocomplete = false;
+  mixed_form.fields.back().set_should_autocomplete(false);
   mixed_form.fields.push_back(CreateTestFormField("Last name", "lastname", "",
                                                   FormControlType::kInputText));
   mixed_form.fields.push_back(CreateTestFormField("Address", "address", "",
@@ -5687,12 +5687,12 @@ TEST_F(BrowserAutofillManagerTest,
   mixed_form.action = GURL("https://myform.com/submit.html");
   mixed_form.fields = {CreateTestFormField("Name on Card", "nameoncard", "",
                                            FormControlType::kInputText)};
-  mixed_form.fields.back().should_autocomplete = false;
+  mixed_form.fields.back().set_should_autocomplete(false);
   mixed_form.fields.push_back(CreateTestFormField(
       "Card Number", "cardnumber", "", FormControlType::kInputText));
   mixed_form.fields.push_back(CreateTestFormField(
       "Expiration Month", "ccexpiresmonth", "", FormControlType::kInputText));
-  mixed_form.fields.back().should_autocomplete = false;
+  mixed_form.fields.back().set_should_autocomplete(false);
   FormsSeen({mixed_form});
 
   // Suggestions should always be displayed.
@@ -5703,7 +5703,7 @@ TEST_F(BrowserAutofillManagerTest,
     // to the field not having a type that would route to any of the other
     // single field form fillers.
     ON_CALL(single_field_form_fill_router(), OnGetSingleFieldSuggestions)
-        .WillByDefault(Return(mixed_form_field.should_autocomplete));
+        .WillByDefault(Return(mixed_form_field.should_autocomplete()));
     GetAutofillSuggestions(mixed_form, mixed_form_field);
 
     EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
@@ -5748,7 +5748,7 @@ TEST_F(BrowserAutofillManagerTest,
   }
 
   // Modify one of the fields in the original form.
-  form.fields[0].css_classes += u"a";
+  form.fields[0].set_css_classes(form.fields[0].css_classes() + u"a");
 
   // Expect the form still can be autofilled.
   for (const FormFieldData& form_field : form.fields) {
@@ -7117,7 +7117,7 @@ TEST_P(OnFocusOnFormFieldTest, AddressSuggestions_AutocompleteOffNotRespected) {
       // Set an autocomplete=off attribute for the last name.
       CreateTestFormField("Last Name", "lastname", "",
                           FormControlType::kInputText, "given-name")};
-  form.fields.back().should_autocomplete = false;
+  form.fields.back().set_should_autocomplete(false);
   FormsSeen({form});
 
   browser_autofill_manager_->OnFocusOnFormFieldImpl(form, form.fields[1],
@@ -7789,8 +7789,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   FormSubmitted(form);
 
   EXPECT_EQ(form.fields.size(), form_seen_by_autocomplete.fields.size());
-  EXPECT_FALSE(form_seen_by_autocomplete.fields[0].should_autocomplete);
-  EXPECT_TRUE(form_seen_by_autocomplete.fields[1].should_autocomplete);
+  EXPECT_FALSE(form_seen_by_autocomplete.fields[0].should_autocomplete());
+  EXPECT_TRUE(form_seen_by_autocomplete.fields[1].should_autocomplete());
 }
 
 }  // namespace autofill

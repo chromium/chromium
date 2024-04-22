@@ -92,13 +92,14 @@ void SetCheckStatus(FormFieldData* form_field_data,
                     bool isCheckable,
                     bool isChecked) {
   if (isChecked) {
-    form_field_data->check_status = FormFieldData::CheckStatus::kChecked;
+    form_field_data->set_check_status(FormFieldData::CheckStatus::kChecked);
   } else {
     if (isCheckable) {
-      form_field_data->check_status =
-          FormFieldData::CheckStatus::kCheckableButUnchecked;
+      form_field_data->set_check_status(
+          FormFieldData::CheckStatus::kCheckableButUnchecked);
     } else {
-      form_field_data->check_status = FormFieldData::CheckStatus::kNotCheckable;
+      form_field_data->set_check_status(
+          FormFieldData::CheckStatus::kNotCheckable);
     }
   }
 }

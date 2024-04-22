@@ -1177,7 +1177,7 @@ void ChromeAutofillClient::ShowAutofillFieldIphForManualFallbackFeature(
             feature_engagement::kIPHAutofillManualFallbackFeature,
             kAutofillManualFallbackElementId);
   }
-  autofill_field_promo_controller_manual_fallback_->Show(field.bounds);
+  autofill_field_promo_controller_manual_fallback_->Show(field.bounds());
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

@@ -904,14 +904,14 @@ TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
   FormFieldData name_field;
   name_field.set_value(
       profile.GetInfo(NAME_FULL, personal_data().app_locale()));
-  name_field.label_source = FormFieldData::LabelSource::kUnknown;
+  name_field.set_label_source(FormFieldData::LabelSource::kUnknown);
   FormFieldData street_field;
   street_field.set_value(u"unknown");
-  street_field.label_source = FormFieldData::LabelSource::kForId;
+  street_field.set_label_source(FormFieldData::LabelSource::kForId);
   FormFieldData country_field;
   country_field.set_value(
       profile.GetInfo(ADDRESS_HOME_COUNTRY, personal_data().app_locale()));
-  country_field.label_source = FormFieldData::LabelSource::kLabelTag;
+  country_field.set_label_source(FormFieldData::LabelSource::kLabelTag);
   const FormData form = CreateForm({name_field, street_field, country_field});
   autofill_manager().AddSeenForm(
       form, {NAME_FIRST, ADDRESS_HOME_LINE1, ADDRESS_HOME_COUNTRY});
@@ -922,8 +922,8 @@ TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
   SubmitForm(form);
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Autofill.LabelInference.InferredLabelSource.AtSubmission2"),
-              BucketsAre(Bucket(name_field.label_source, 1),
-                         Bucket(country_field.label_source, 1)));
+              BucketsAre(Bucket(name_field.label_source(), 1),
+                         Bucket(country_field.label_source(), 1)));
 }
 
 // Tests that precision metric is recorded for email field predictions.

@@ -1260,7 +1260,7 @@ void MatchLabelsAndFields(
       field_data->set_label(field_data->label() + u" ");
     }
     field_data->set_label(field_data->label() + label_text);
-    field_data->label_source = label_source;
+    field_data->set_label_source(label_source);
   }
 }
 
@@ -1462,8 +1462,9 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
         control_elements[element_index];
     FormFieldData& field = form.fields[field_index++];
     if (field.label().empty()) {
-      field.set_label(
-          InferLabelForElement(control_element, field.label_source));
+      FormFieldData::LabelSource label_source = field.label_source();
+      field.set_label(InferLabelForElement(control_element, label_source));
+      field.set_label_source(label_source);
     }
     field.set_label(std::move(field.label()).substr(0, kMaxStringLength));
   }
@@ -1927,23 +1928,23 @@ void WebFormControlElementToFormField(
   field->set_id_attribute(element.GetIdAttribute().Utf16());
   field->set_name_attribute(GetAttribute<kName>(element).Utf16());
   field->set_renderer_id(renderer_id);
-  field->host_form_id = GetFormRendererId(form_element);
-  field->form_control_ax_id = element.GetAxId();
+  field->set_host_form_id(GetFormRendererId(form_element));
+  field->set_form_control_ax_id(element.GetAxId());
   field->set_form_control_type(
       ToAutofillFormControlType(element.FormControlTypeForAutofill()));
   field->set_max_length(GetMaxLength(element));
-  field->autocomplete_attribute = GetAutocompleteAttribute(element);
+  field->set_autocomplete_attribute(GetAutocompleteAttribute(element));
   field->set_parsed_autocomplete(
-      ParseAutocompleteAttribute(field->autocomplete_attribute));
+      ParseAutocompleteAttribute(field->autocomplete_attribute()));
 
   if (base::EqualsCaseInsensitiveASCII(GetAttribute<kRole>(element).Utf16(),
                                        "presentation")) {
-    field->role = FormFieldData::RoleAttribute::kPresentation;
+    field->set_role(FormFieldData::RoleAttribute::kPresentation);
   }
 
-  field->placeholder = GetAttribute<kPlaceholder>(element).Utf16();
+  field->set_placeholder(GetAttribute<kPlaceholder>(element).Utf16());
   if (HasAttribute<kClass>(element)) {
-    field->css_classes = GetAttribute<kClass>(element).Utf16();
+    field->set_css_classes(GetAttribute<kClass>(element).Utf16());
   }
 
   if (field_data_manager && field_data_manager->HasFieldData(renderer_id)) {
@@ -1951,8 +1952,9 @@ void WebFormControlElementToFormField(
         field_data_manager->GetFieldPropertiesMask(renderer_id));
   }
 
-  field->aria_label = GetAriaLabel(element.GetDocument(), element);
-  field->aria_description = GetAriaDescription(element.GetDocument(), element);
+  field->set_aria_label(GetAriaLabel(element.GetDocument(), element));
+  field->set_aria_description(
+      GetAriaDescription(element.GetDocument(), element));
 
   const bool kAutofillDetectFieldVisibilityEnabled =
       base::FeatureList::IsEnabled(features::kAutofillDetectFieldVisibility);
@@ -1986,35 +1988,37 @@ void WebFormControlElementToFormField(
                           ? field->id_attribute()
                           : field->name_attribute());
     }
-    if (field->autocomplete_attribute.empty()) {
-      field->autocomplete_attribute = GetAutocompleteAttribute(host);
+    if (field->autocomplete_attribute().empty()) {
+      field->set_autocomplete_attribute(GetAutocompleteAttribute(host));
       field->set_parsed_autocomplete(
-          ParseAutocompleteAttribute(field->autocomplete_attribute));
+          ParseAutocompleteAttribute(field->autocomplete_attribute()));
     }
-    if (field->css_classes.empty() && HasAttribute<kClass>(host)) {
-      field->css_classes = GetAttribute<kClass>(host).Utf16();
+    if (field->css_classes().empty() && HasAttribute<kClass>(host)) {
+      field->set_css_classes(GetAttribute<kClass>(host).Utf16());
     }
-    if (field->aria_label.empty())
-      field->aria_label = GetAriaLabel(host.GetDocument(), host);
-    if (field->aria_description.empty())
-      field->aria_description = GetAriaDescription(host.GetDocument(), host);
+    if (field->aria_label().empty()) {
+      field->set_aria_label(GetAriaLabel(host.GetDocument(), host));
+    }
+    if (field->aria_description().empty()) {
+      field->set_aria_description(GetAriaDescription(host.GetDocument(), host));
+    }
   }
 
   // The browser doesn't need to differentiate between preview and autofill.
   field->set_is_autofilled(element.IsAutofilled());
-  field->is_user_edited = element.UserHasEditedTheField();
-  field->is_focusable = IsWebElementFocusableForAutofill(element);
-  field->is_visible = kAutofillDetectFieldVisibilityEnabled
-                          ? IsWebElementVisible(element)
-                          : field->is_focusable;
-  field->should_autocomplete =
+  field->set_is_user_edited(element.UserHasEditedTheField());
+  field->set_is_focusable(IsWebElementFocusableForAutofill(element));
+  field->set_is_visible(kAutofillDetectFieldVisibilityEnabled
+                            ? IsWebElementVisible(element)
+                            : field->is_focusable());
+  field->set_should_autocomplete(
       element.AutoComplete() &&
       !(field->parsed_autocomplete().has_value() &&
         field->parsed_autocomplete().value().field_type ==
-            HtmlFieldType::kOneTimeCode);
-  field->text_direction = GetTextDirectionForElement(element);
-  field->is_enabled = element.IsEnabled();
-  field->is_readonly = element.IsReadOnly();
+            HtmlFieldType::kOneTimeCode));
+  field->set_text_direction(GetTextDirectionForElement(element));
+  field->set_is_enabled(element.IsEnabled());
+  field->set_is_readonly(element.IsReadOnly());
 
   if (auto input_element = element.DynamicTo<WebInputElement>();
       IsAutofillableInputElement(input_element)) {
@@ -2035,7 +2039,7 @@ void WebFormControlElementToFormField(
     if (auto* local_frame = element.GetDocument().GetFrame()) {
       if (auto* render_frame =
               content::RenderFrame::FromWebFrame(local_frame)) {
-        field->bounds = render_frame->ElementBoundsInWindow(element);
+        field->set_bounds(render_frame->ElementBoundsInWindow(element));
       }
     }
   }
@@ -2044,7 +2048,7 @@ void WebFormControlElementToFormField(
         !input.IsNull()) {
       std::vector<SelectOption> datalist_options;
       GetDataListSuggestions(input, &datalist_options);
-      field->datalist_options = std::move(datalist_options);
+      field->set_datalist_options(std::move(datalist_options));
     }
   }
 
@@ -2072,8 +2076,8 @@ void WebFormControlElementToFormField(
   }
 
   field->set_value(std::move(value).substr(0, kMaxStringLength));
-  field->selected_text =
-      element.SelectedText().Utf16().substr(0, kMaxSelectedTextLength);
+  field->set_selected_text(
+      element.SelectedText().Utf16().substr(0, kMaxSelectedTextLength));
 
   // If the field was autofilled or the user typed into it, check the value
   // stored in |field_data_manager| against the value property of the DOM
@@ -2093,7 +2097,7 @@ void WebFormControlElementToFormField(
     if (field->form_control_type() == FormControlType::kInputPassword ||
         !ScriptModifiedUsernameOrCreditCardNumberAcceptable(
             field->value(), user_input, *field_data_manager)) {
-      field->user_input = user_input.substr(0, kMaxStringLength);
+      field->set_user_input(user_input.substr(0, kMaxStringLength));
     }
   }
 }
@@ -2190,25 +2194,25 @@ std::optional<FormData> FindFormForContentEditable(
   field.set_name(!field.id_attribute().empty() ? field.id_attribute()
                                                : field.name_attribute());
   field.set_renderer_id(GetFieldRendererId(content_editable));
-  field.host_form_id = GetFormRendererId(content_editable);
+  field.set_host_form_id(GetFormRendererId(content_editable));
   field.set_form_control_type(FormControlType::kContentEditable);
-  field.autocomplete_attribute = GetAutocompleteAttribute(content_editable);
+  field.set_autocomplete_attribute(GetAutocompleteAttribute(content_editable));
   field.set_parsed_autocomplete(
-      ParseAutocompleteAttribute(field.autocomplete_attribute));
+      ParseAutocompleteAttribute(field.autocomplete_attribute()));
   if (auto* local_frame = document.GetFrame()) {
     if (auto* render_frame = content::RenderFrame::FromWebFrame(local_frame)) {
-      field.bounds = render_frame->ElementBoundsInWindow(content_editable);
+      field.set_bounds(render_frame->ElementBoundsInWindow(content_editable));
     }
   }
   if (base::EqualsCaseInsensitiveASCII(
           GetAttribute<kRole>(content_editable).Utf16(), "presentation")) {
-    field.role = FormFieldData::RoleAttribute::kPresentation;
+    field.set_role(FormFieldData::RoleAttribute::kPresentation);
   }
   if (HasAttribute<kClass>(content_editable)) {
-    field.css_classes = GetAttribute<kClass>(content_editable).Utf16();
+    field.set_css_classes(GetAttribute<kClass>(content_editable).Utf16());
   }
-  field.aria_label = GetAriaLabel(document, content_editable);
-  field.aria_description = GetAriaDescription(document, content_editable);
+  field.set_aria_label(GetAriaLabel(document, content_editable));
+  field.set_aria_description(GetAriaDescription(document, content_editable));
   // TextContentAbridged() includes hidden elements and does not add linebreaks.
   // If this is not sufficient in the future, consider calling
   // HTMLElement::innerText(), which returns the text "as rendered" (i.e., it
@@ -2218,8 +2222,8 @@ std::optional<FormData> FindFormForContentEditable(
   field.set_value(
       content_editable.TextContentAbridged(kMaxStringLength).Utf16());
   DCHECK_LE(field.value().length(), kMaxStringLength);
-  field.selected_text =
-      content_editable.SelectedText().Utf16().substr(0, kMaxSelectedTextLength);
+  field.set_selected_text(content_editable.SelectedText().Utf16().substr(
+      0, kMaxSelectedTextLength));
   return form;
 }
 

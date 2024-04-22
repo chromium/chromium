@@ -692,12 +692,12 @@ FieldType CreditCardFieldParser::DetermineExpirationYearType(
     // If you add new languages, also update other places labeled with
     // [EXP_DATE_FORMAT].
     static constexpr char16_t kYYYYRegex[] = u"yyyy|aaaa|jjjj";
-    if (MatchesRegex<kYYYYRegex>(field.placeholder, nullptr) ||
+    if (MatchesRegex<kYYYYRegex>(field.placeholder(), nullptr) ||
         MatchesRegex<kYYYYRegex>(field.label(), nullptr)) {
       return CREDIT_CARD_EXP_4_DIGIT_YEAR;
     }
     static constexpr char16_t kYYRegex[] = u"yy|aa|jj";
-    if (MatchesRegex<kYYRegex>(field.placeholder, nullptr) ||
+    if (MatchesRegex<kYYRegex>(field.placeholder(), nullptr) ||
         MatchesRegex<kYYRegex>(field.label(), nullptr)) {
       return CREDIT_CARD_EXP_2_DIGIT_YEAR;
     }
@@ -814,13 +814,13 @@ CreditCardFieldParser::DetermineExpirationDateFormat(
     //           ^^^^^ opt separator
     //                ^^^ opt white space
     //                       ^^^^^^^^^^^^^^ year
-    matches = MatchesRegex<kFormatRegex>(field.placeholder, &groups) ||
+    matches = MatchesRegex<kFormatRegex>(field.placeholder(), &groups) ||
               MatchesRegex<kFormatRegex>(field.label(), &groups);
     // Support "--/--" and "--/----" as recognized placeholders.
     if (!matches) {
       static constexpr char16_t kFormatRegEx2[] =
           u"(?:--|__)(\\s?/\\s?)(-{2,4}|_{2,4})";
-      matches = MatchesRegex<kFormatRegEx2>(field.placeholder, &groups) ||
+      matches = MatchesRegex<kFormatRegEx2>(field.placeholder(), &groups) ||
                 MatchesRegex<kFormatRegEx2>(field.label(), &groups);
     }
   } else {
@@ -829,7 +829,7 @@ CreditCardFieldParser::DetermineExpirationDateFormat(
     //                                                  ^^^^^ opt separator
     //                                                       ^^^ opt white space
     //                                                         year ^^^^^^^
-    matches = MatchesRegex<kFormatRegEx>(field.placeholder, &groups) ||
+    matches = MatchesRegex<kFormatRegEx>(field.placeholder(), &groups) ||
               MatchesRegex<kFormatRegEx>(field.label(), &groups);
   }
 

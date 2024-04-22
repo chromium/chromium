@@ -93,7 +93,7 @@ FormSignature CalculateFormSignature(const FormData& form_data) {
   std::string form_signature_field_names;
 
   for (const FormFieldData& field : form_data.fields) {
-    if (!IsCheckable(field.check_status)) {
+    if (!IsCheckable(field.check_status())) {
       // Add all supported form fields (including with empty names) to the
       // signature.  This is a requirement for Autofill servers.
       base::StrAppend(&form_signature_field_names,
@@ -121,7 +121,7 @@ FormSignature CalculateAlternativeFormSignature(const FormData& form_data) {
 
   std::string form_signature_field_types;
   for (const FormFieldData& field : form_data.fields) {
-    if (!IsCheckable(field.check_status)) {
+    if (!IsCheckable(field.check_status())) {
       // Add all supported form fields' form control types to the signature.
       // We use the string representation of the FormControlType because
       // changing the signature algorithm is non-trivial. If and when the

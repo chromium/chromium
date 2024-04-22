@@ -1245,7 +1245,7 @@ void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
   FormType form_type = FieldTypeGroupToFormType(field.Type().group());
   if (form_type == FormType::kAddressForm ||
       form_type == FormType::kCreditCardForm) {
-    bool autocomplete_off = field.autocomplete_attribute == "off";
+    bool autocomplete_off = field.autocomplete_attribute() == "off";
     const std::string autocomplete_histogram = base::StrCat(
         {"Autofill.Autocomplete.", autocomplete_off ? "Off" : "NotOff",
          ".EditedAutofilledFieldAtSubmission2.",
@@ -1680,8 +1680,9 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
         continue;
       if (only_after_security_policy && !p.safe_fields->contains(id))
         continue;
-      if (only_visible_fields && !field->is_visible)
+      if (only_visible_fields && !field->is_visible()) {
         continue;
+      }
       autofilled_types.insert(field->Type().GetStorableType());
     }
     return CreditCardSeamlessness(autofilled_types);
@@ -1771,9 +1772,9 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
       }
     };
     const url::Origin& main_origin = p.form->main_frame_origin();
-    const url::Origin& triggered_origin = p.field->origin;
-    return field.origin != triggered_origin &&
-           (field.origin != main_origin ||
+    const url::Origin& triggered_origin = p.field->origin();
+    return field.origin() != triggered_origin &&
+           (field.origin() != main_origin ||
             IsSensitiveFieldType(field.Type().GetStorableType())) &&
            triggered_origin == main_origin;
   };
@@ -2330,7 +2331,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   SetStatusVector(AutofillStatus::kWasFocused,
                   OptionalBooleanToBool(was_focused));
   SetStatusVector(AutofillStatus::kIsInSubFrame,
-                  form.ToFormData().host_frame != field.host_frame);
+                  form.ToFormData().host_frame != field.host_frame());
 
   if (filling_prevented_by_iframe_security_policy !=
       OptionalBoolean::kUndefined) {
