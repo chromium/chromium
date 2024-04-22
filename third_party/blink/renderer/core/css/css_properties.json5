@@ -5191,7 +5191,6 @@
       getter: "GetTextAlign",
       style_builder_custom_functions: ["value"],
       valid_for_formatted_text: true,
-      valid_for_permission_element: true,
       valid_for_page_context: true,
     },
     {
@@ -5203,7 +5202,6 @@
       keywords: ["auto", "start", "end", "left", "right", "center", "justify"],
       default_value: "auto",
       typedom_types: ["Keyword"],
-      valid_for_permission_element: true,
       valid_for_page_context: true,
     },
     {
