@@ -58,7 +58,6 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
 #include "chrome/browser/ash/policy/status_collector/enterprise_activity_storage.h"
-#include "chrome/browser/ash/policy/status_collector/interval_map.h"
 #include "chrome/browser/ash/policy/status_collector/status_collector_state.h"
 #include "chrome/browser/ash/policy/status_collector/tpm_status_combiner.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"

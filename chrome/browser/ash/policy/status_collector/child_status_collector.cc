@@ -32,7 +32,6 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/status_collector/child_activity_storage.h"
-#include "chrome/browser/ash/policy/status_collector/interval_map.h"
 #include "chrome/browser/ash/policy/status_collector/status_collector_state.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"

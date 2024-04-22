@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "chrome/browser/ash/policy/status_collector/activity_storage.h"
-#include "chrome/browser/ash/policy/status_collector/interval_map.h"
 
 class PrefService;
 
