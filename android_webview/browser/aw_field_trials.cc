@@ -194,8 +194,4 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(ui::kConvertTrackpadEventsToMouse);
   aw_feature_overrides.DisableFeature(
       ::features::kMouseAndTrackpadDropdownMenu);
-
-  // This is rolling out more slowly on Android WebView, so should default to
-  // off unless a field trial turns it on.
-  aw_feature_overrides.DisableFeature(::features::kPrefetchRedirects);
 }

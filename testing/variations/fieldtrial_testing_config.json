@@ -14416,23 +14416,6 @@
             ]
         }
     ],
-    "PrefetchRedirects": [
-        {
-            "platforms": [
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrefetchRedirects"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrefetchReusable": [
         {
             "platforms": [
