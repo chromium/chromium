@@ -44,6 +44,8 @@ class LaunchWebAppCommand
 
  private:
   void FirstRunServiceCompleted(bool success);
+  void OnOsIntegrationSynchronized();
+  void DoLaunch();
   void OnAppLaunched(base::WeakPtr<Browser> browser,
                      base::WeakPtr<content::WebContents> web_contents,
                      apps::LaunchContainer container,

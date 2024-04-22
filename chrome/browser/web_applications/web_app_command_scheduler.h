@@ -423,15 +423,17 @@ class WebAppCommandScheduler {
                  LaunchWebAppCallback callback,
                  const base::Location& location = FROM_HERE);
 
-  // Launches the given app to the given url, using keep-alives to guarantee the
+  // Launches the given app to the given url if specified, or the app
+  // `start_url` if not specified. This uses keep-alives to guarantee the
   // browser and profile stay alive. Will CHECK-fail if `url` is not valid.
-  void LaunchUrlInApp(const webapps::AppId& app_id,
-                      const GURL& url,
-                      LaunchWebAppCallback callback,
-                      const base::Location& location = FROM_HERE);
+  void LaunchApp(const webapps::AppId& app_id,
+                 const std::optional<GURL>& url,
+                 LaunchWebAppCallback callback,
+                 const base::Location& location = FROM_HERE);
 
   // Used to launch apps with a custom launch params. This does not respect the
-  // configuration of the app, and will respect whatever the params say.
+  // configuration of the app, and will respect whatever the params say. If you
+  // are launching an app, you likely do NOT want to use this method.
   void LaunchAppWithCustomParams(apps::AppLaunchParams params,
                                  LaunchWebAppCallback callback,
                                  const base::Location& location = FROM_HERE);

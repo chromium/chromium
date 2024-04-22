@@ -29,6 +29,9 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -369,6 +372,85 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunch) {
   EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);
 }
 
+IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunchAppConfig) {
+  base::WeakPtr<Browser> launch_browser;
+  base::WeakPtr<content::WebContents> web_contents;
+  apps::LaunchContainer launch_container;
+  base::test::TestFuture<base::WeakPtr<Browser>,
+                         base::WeakPtr<content::WebContents>,
+                         apps::LaunchContainer>
+      launch_future;
+  provider().scheduler().LaunchApp(app_id_, std::nullopt,
+                                   launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Wait());
+  std::tie(launch_browser, web_contents, launch_container) =
+      launch_future.Get();
+
+  EXPECT_TRUE(AppBrowserController::IsWebApp(launch_browser.get()));
+  EXPECT_NE(launch_browser.get(), browser());
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2ul);
+  EXPECT_EQ(launch_browser->tab_strip_model()->count(), 1);
+  EXPECT_EQ(web_contents->GetVisibleURL(), kAppStartUrl);
+}
+
+IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, AppLaunchNoIntegration) {
+  const GURL kStartUrl =
+      https_server()->GetURL("/banners/manifest_test_page.html");
+  auto web_app_info = std::make_unique<WebAppInstallInfo>(
+      GenerateManifestIdFromStartUrlOnly(kStartUrl));
+  web_app_info->start_url = kStartUrl;
+  web_app_info->scope = kStartUrl.GetWithoutFilename();
+  web_app_info->title = u"Name";
+  web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+
+  // Install & bypass os integration.
+  base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
+      install_future;
+  WebAppInstallParams params;
+  params.bypass_os_hooks = true;
+  provider().scheduler().InstallFromInfoWithParams(
+      std::move(web_app_info), /*overwrite_existing_manifest_fields=*/false,
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+      install_future.GetCallback(), params);
+  ASSERT_TRUE(install_future.Wait());
+  webapps::AppId app_id = install_future.Get<webapps::AppId>();
+
+  bool os_integration_always_occurs = false;
+#if BUILDFLAG(IS_CHROMEOS)
+  os_integration_always_occurs = true;
+#endif
+
+  // Check that OS integration NOT has occurred on platforms where it is
+  // optional.
+  EXPECT_EQ(os_integration_always_occurs,
+            provider()
+                .registrar_unsafe()
+                .GetAppCurrentOsIntegrationState(app_id)
+                ->has_shortcut());
+
+  base::test::TestFuture<base::WeakPtr<Browser>,
+                         base::WeakPtr<content::WebContents>,
+                         apps::LaunchContainer>
+      launch_future;
+  provider().scheduler().LaunchApp(app_id, std::nullopt,
+                                   launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Wait());
+
+  // Check the state is correct.
+  EXPECT_TRUE(AppBrowserController::IsWebApp(
+      launch_future.Get<base::WeakPtr<Browser>>().get()));
+  EXPECT_EQ(BrowserList::GetInstance()->size(), 2ul);
+  EXPECT_EQ(
+      launch_future.Get<base::WeakPtr<content::WebContents>>()->GetVisibleURL(),
+      kStartUrl);
+
+  // Check that OS integration has occurred.
+  EXPECT_TRUE(provider()
+                  .registrar_unsafe()
+                  .GetAppCurrentOsIntegrationState(app_id)
+                  ->has_shortcut());
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 class LaunchWebAppCommandTest_Shortstand : public LaunchWebAppCommandTest {
  public:
@@ -392,7 +474,7 @@ class LaunchWebAppCommandTest_Shortstand : public LaunchWebAppCommandTest {
                            base::WeakPtr<content::WebContents>,
                            apps::LaunchContainer>
         future;
-    provider().scheduler().LaunchUrlInApp(app_id, url, future.GetCallback());
+    provider().scheduler().LaunchApp(app_id, url, future.GetCallback());
     return future.Get();
   }
 

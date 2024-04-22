@@ -508,11 +508,11 @@ void WebAppCommandScheduler::LaunchApp(
             std::move(callback), location);
 }
 
-void WebAppCommandScheduler::LaunchUrlInApp(const webapps::AppId& app_id,
-                                            const GURL& url,
-                                            LaunchWebAppCallback callback,
-                                            const base::Location& location) {
-  CHECK(url.is_valid());
+void WebAppCommandScheduler::LaunchApp(const webapps::AppId& app_id,
+                                       const std::optional<GURL>& url,
+                                       LaunchWebAppCallback callback,
+                                       const base::Location& location) {
+  CHECK(!url || url->is_valid());
   apps::AppLaunchParams params =
       WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
           app_id, *base::CommandLine::ForCurrentProcess(),
@@ -520,7 +520,7 @@ void WebAppCommandScheduler::LaunchUrlInApp(const webapps::AppId& app_id,
           /*url_handler_launch_url=*/std::nullopt,
           /*protocol_handler_launch_url=*/std::nullopt,
           /*file_launch_url=*/std::nullopt, /*launch_files=*/{});
-  params.override_url = url;
+  params.override_url = url.value_or(GURL());
 
   LaunchApp(std::move(params),
             LaunchWebAppWindowSetting::kOverrideWithWebAppConfig,

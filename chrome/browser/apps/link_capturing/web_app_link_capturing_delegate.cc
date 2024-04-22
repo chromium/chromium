@@ -26,7 +26,7 @@ void LaunchAppAndMaybeTriggerIPH(base::WeakPtr<Profile> profile,
     return;
   }
   WebAppProvider* provider = WebAppProvider::GetForWebApps(profile.get());
-  provider->scheduler().LaunchUrlInApp(
+  provider->scheduler().LaunchApp(
       app_id, url,
       base::BindOnce(
           [](const webapps::AppId& app_id, base::WeakPtr<Profile> profile,
