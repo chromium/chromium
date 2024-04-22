@@ -119,7 +119,8 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OpenTrayMenu) {
   EXPECT_FALSE(IsSystemTrayBubbleOpen());
 }
 
-IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OpenNewTabs) {
+// Flaky. https://crbug.com/336342347
+IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, DISABLED_OpenNewTabs) {
   // Lock the modifier key.
   SetStickyKeysEnabled(true);
   SendKeyPress(ui::VKEY_CONTROL);
