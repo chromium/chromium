@@ -115,14 +115,17 @@
 }
 
 - (void)stop {
-  if (_noInteractionAction) {
-    _noInteractionAction();
-    _noInteractionAction = nil;
-  }
+  ProceduralBlock noInteractionAction = _noInteractionAction;
+  _noInteractionAction = nil;
   [[_alertController presentingViewController]
       dismissViewControllerAnimated:NO
                          completion:nil];
   [self alertDismissed];
+  if (noInteractionAction) {
+    // This callback might deallocate `self`. Nothing should be done after
+    // calling `noInteractionAction()`.
+    noInteractionAction();
+  }
 }
 
 #pragma mark - Property Implementation.
