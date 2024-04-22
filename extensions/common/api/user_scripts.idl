@@ -110,6 +110,8 @@ namespace userScripts {
 
   callback ConfigureWorldCallback = void();
 
+  callback GetAllWorldConfigurationsCallback = void(WorldProperties[] worlds);
+
   interface Functions {
     // Registers one or more user scripts for this extension.
     // |scripts|: Contains a list of user scripts to be registered.
@@ -155,5 +157,11 @@ namespace userScripts {
     static void configureWorld(
         WorldProperties properties,
         optional ConfigureWorldCallback callback);
+
+    // Retrieves all registered world configurations.
+    // |callback|: Called with the registered world configurations.
+    // TODO(https://crbug.com/331680187): Remove nodoc.
+    [nodoc] static void getWorldConfigurations(
+        GetAllWorldConfigurationsCallback callback);
   };
 };

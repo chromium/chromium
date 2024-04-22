@@ -107,6 +107,11 @@ IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, MAYBE_ConfigureWorld) {
   ASSERT_TRUE(RunExtensionTest("user_scripts/configure_world")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, GetAndRemoveWorlds) {
+  ASSERT_TRUE(RunExtensionTest("user_scripts/get_and_remove_worlds"))
+      << message_;
+}
+
 // Tests that registered user scripts are disabled when dev mode is disabled and
 // are re-enabled if dev mode is turned back on.
 IN_PROC_BROWSER_TEST_F(UserScriptsAPITest,

@@ -607,4 +607,26 @@ ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+ExtensionFunction::ResponseAction
+UserScriptsGetWorldConfigurationsFunction::Run() {
+  EXTENSION_FUNCTION_VALIDATE(extension());
+
+  std::vector<mojom::UserScriptWorldInfoPtr> world_configurations =
+      UserScriptWorldConfigurationManager::Get(browser_context())
+          ->GetAllUserScriptWorlds(extension()->id());
+
+  std::vector<api::user_scripts::WorldProperties> result;
+  result.reserve(world_configurations.size());
+  for (const auto& world : world_configurations) {
+    api::user_scripts::WorldProperties converted;
+    converted.messaging = world->enable_messaging;
+    converted.csp = world->csp;
+    converted.world_id = world->world_id;
+    result.push_back(std::move(converted));
+  }
+
+  return RespondNow(ArgumentList(
+      api::user_scripts::GetWorldConfigurations::Results::Create(result)));
+}
+
 }  // namespace extensions

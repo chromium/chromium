@@ -2733,6 +2733,7 @@ Called by update_extension_histograms.py.-->
   <int value="1878" label="PASSWORDSPRIVATE_CHANGEPASSWORDMANAGERPIN"/>
   <int value="1879" label="PASSWORDSPRIVATE_ISPASSWORDMANAGERPINAVAILABLE"/>
   <int value="1880" label="OS_DIAGNOSTICS_REPLYTOROUTINEINQUIRY"/>
+  <int value="1881" label="USERSCRIPTS_GETWORLDCONFIGURATIONS"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">

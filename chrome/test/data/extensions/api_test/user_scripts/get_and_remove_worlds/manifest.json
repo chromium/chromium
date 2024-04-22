@@ -1,0 +1,11 @@
+{
+  "name": "User script test extension",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "Tests getting and removing configurations for user script worlds",
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "permissions": ["userScripts"]
+}
