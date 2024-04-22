@@ -372,6 +372,7 @@ void IpProtectionConfigProvider::FetchBlindSignedToken(
           : quiche::ProxyLayer::kProxyB;
   bsa_->GetTokens(
       access_token_info.token, batch_size, quiche_proxy_layer,
+      quiche::BlindSignAuthServiceType::kChromeIpBlinding,
       [weak_ptr = weak_ptr_factory_.GetWeakPtr(), bsa_get_tokens_start_time,
        callback = std::move(callback)](
           absl::StatusOr<absl::Span<quiche::BlindSignToken>> tokens) mutable {

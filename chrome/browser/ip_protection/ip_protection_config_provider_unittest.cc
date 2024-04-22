@@ -73,6 +73,7 @@ class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
   void GetTokens(std::optional<std::string> oauth_token,
                  int num_tokens,
                  quiche::ProxyLayer proxy_layer,
+                 quiche::BlindSignAuthServiceType /*service_type*/,
                  quiche::SignedTokenCallback callback) override {
     get_tokens_called_ = true;
     oauth_token_ = oauth_token ? *oauth_token : "";
