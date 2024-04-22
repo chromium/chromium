@@ -104,7 +104,7 @@ public class TabGroupUiTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_GROUPS)
-                    .setRevision(1)
+                    .setRevision(2)
                     .build();
 
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;

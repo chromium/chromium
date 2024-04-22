@@ -130,8 +130,8 @@ public class SelectableTabListEditorTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER)
-                    .setRevision(8)
-                    .setDescription("TabThumbnailView update.")
+                    .setRevision(9)
+                    .setDescription("Favicon update.")
                     .build();
 
     @Mock private Callback<RecyclerViewPosition> mSetRecyclerViewPosition;

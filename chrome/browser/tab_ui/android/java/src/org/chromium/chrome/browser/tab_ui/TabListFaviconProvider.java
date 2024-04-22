@@ -16,11 +16,11 @@ import android.graphics.drawable.LayerDrawable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -194,22 +194,22 @@ public class TabListFaviconProvider {
         }
     }
 
-    private static TabFavicon sRoundedGlobeFavicon;
+    private static LazyOneshotSupplier<TabFavicon> sRoundedGlobeFavicon;
 
     /** This icon may fail to load. See crbug.com/324996488. */
-    private static @Nullable TabFavicon sRoundedChromeFavicon;
+    private static LazyOneshotSupplier<TabFavicon> sRoundedChromeFavicon;
 
-    private static TabFavicon sRoundedComposedDefaultFavicon;
+    private static LazyOneshotSupplier<TabFavicon> sRoundedComposedDefaultFavicon;
 
-    private static TabFavicon sRoundedGlobeFaviconIncognito;
+    private static LazyOneshotSupplier<TabFavicon> sRoundedGlobeFaviconIncognito;
 
     /** This icon may fail to load. See crbug.com/324996488. */
-    private static @Nullable TabFavicon sRoundedChromeFaviconIncognito;
+    private static LazyOneshotSupplier<TabFavicon> sRoundedChromeFaviconIncognito;
 
-    private static TabFavicon sRoundedComposedDefaultFaviconIncognito;
+    private static LazyOneshotSupplier<TabFavicon> sRoundedComposedDefaultFaviconIncognito;
 
-    private static TabFavicon sRoundedGlobeFaviconForStrip;
-    private static TabFavicon sRoundedChromeFaviconForStrip;
+    private static LazyOneshotSupplier<TabFavicon> sRoundedGlobeFaviconForStrip;
+    private static LazyOneshotSupplier<TabFavicon> sRoundedChromeFaviconForStrip;
 
     private final @ColorInt int mDefaultIconColor;
     private final @ColorInt int mSelectedIconColor;
@@ -255,108 +255,142 @@ public class TabListFaviconProvider {
         mIncognitoIconColor = TabUiThemeUtils.getChromeOwnedFaviconTintColor(context, true, false);
         mIncognitoSelectedIconColor =
                 TabUiThemeUtils.getChromeOwnedFaviconTintColor(context, true, true);
-
         if (sRoundedGlobeFavicon == null) {
-            // TODO(crbug.com/40682607): From Android Developer Documentation, we should avoid
-            //  resizing vector drawable.
-            Bitmap globeBitmap =
-                    getResizedBitmapFromDrawable(
-                            AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp),
-                            mDefaultFaviconSize);
             sRoundedGlobeFavicon =
-                    createChromeOwnedResourceTabFavicon(
-                            globeBitmap,
-                            mDefaultIconColor,
-                            mSelectedIconColor,
-                            false,
-                            StaticTabFaviconType.ROUNDED_GLOBE);
+                    LazyOneshotSupplier.fromSupplier(
+                            () -> {
+                                // TODO(crbug.com/40682607): From Android Developer Documentation,
+                                // we
+                                // should avoid resizing vector drawables.
+                                Bitmap globeBitmap =
+                                        getResizedBitmapFromDrawable(
+                                                AppCompatResources.getDrawable(
+                                                        context, R.drawable.ic_globe_24dp),
+                                                mDefaultFaviconSize);
+                                return createChromeOwnedResourceTabFavicon(
+                                        globeBitmap,
+                                        mDefaultIconColor,
+                                        mSelectedIconColor,
+                                        false,
+                                        StaticTabFaviconType.ROUNDED_GLOBE);
+                            });
         }
         if (sRoundedChromeFavicon == null) {
-            Bitmap chromeBitmap =
-                    BitmapFactory.decodeResource(mContext.getResources(), R.drawable.chromelogo16);
-            if (chromeBitmap != null) {
-                sRoundedChromeFavicon =
-                        createChromeOwnedResourceTabFavicon(
-                                chromeBitmap,
-                                mDefaultIconColor,
-                                mSelectedIconColor,
-                                false,
-                                StaticTabFaviconType.ROUNDED_CHROME);
-            }
+            sRoundedChromeFavicon =
+                    LazyOneshotSupplier.fromSupplier(
+                            () -> {
+                                Bitmap chromeBitmap =
+                                        BitmapFactory.decodeResource(
+                                                context.getResources(), R.drawable.chromelogo16);
+                                if (chromeBitmap == null) return null;
+
+                                return createChromeOwnedResourceTabFavicon(
+                                        chromeBitmap,
+                                        mDefaultIconColor,
+                                        mSelectedIconColor,
+                                        false,
+                                        StaticTabFaviconType.ROUNDED_CHROME);
+                            });
         }
         if (sRoundedComposedDefaultFavicon == null) {
-            Bitmap composedBitmap =
-                    getResizedBitmapFromDrawable(
-                            AppCompatResources.getDrawable(context, R.drawable.ic_group_icon_16dp),
-                            mDefaultFaviconSize);
             sRoundedComposedDefaultFavicon =
-                    createChromeOwnedResourceTabFavicon(
-                            composedBitmap,
-                            mDefaultIconColor,
-                            mSelectedIconColor,
-                            false,
-                            StaticTabFaviconType.ROUNDED_COMPOSED_DEFAULT);
+                    LazyOneshotSupplier.fromSupplier(
+                            () -> {
+                                Bitmap composedBitmap =
+                                        getResizedBitmapFromDrawable(
+                                                AppCompatResources.getDrawable(
+                                                        context, R.drawable.ic_group_icon_16dp),
+                                                mDefaultFaviconSize);
+                                return createChromeOwnedResourceTabFavicon(
+                                        composedBitmap,
+                                        mDefaultIconColor,
+                                        mSelectedIconColor,
+                                        false,
+                                        StaticTabFaviconType.ROUNDED_COMPOSED_DEFAULT);
+                            });
         }
         if (sRoundedGlobeFaviconIncognito == null) {
-            Bitmap globeBitmap =
-                    getResizedBitmapFromDrawable(
-                            AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp),
-                            mDefaultFaviconSize);
             sRoundedGlobeFaviconIncognito =
-                    createChromeOwnedResourceTabFavicon(
-                            globeBitmap,
-                            mIncognitoIconColor,
-                            mIncognitoSelectedIconColor,
-                            false,
-                            StaticTabFaviconType.ROUNDED_GLOBE_INCOGNITO);
+                    LazyOneshotSupplier.fromSupplier(
+                            () -> {
+                                Bitmap globeBitmap =
+                                        getResizedBitmapFromDrawable(
+                                                AppCompatResources.getDrawable(
+                                                        context, R.drawable.ic_globe_24dp),
+                                                mDefaultFaviconSize);
+                                return createChromeOwnedResourceTabFavicon(
+                                        globeBitmap,
+                                        mIncognitoIconColor,
+                                        mIncognitoSelectedIconColor,
+                                        false,
+                                        StaticTabFaviconType.ROUNDED_GLOBE_INCOGNITO);
+                            });
         }
         if (sRoundedChromeFaviconIncognito == null) {
-            Bitmap chromeBitmap =
-                    BitmapFactory.decodeResource(mContext.getResources(), R.drawable.chromelogo16);
-            if (chromeBitmap != null) {
-                sRoundedChromeFaviconIncognito =
-                        createChromeOwnedResourceTabFavicon(
-                                chromeBitmap,
-                                mIncognitoIconColor,
-                                mIncognitoSelectedIconColor,
-                                false,
-                                StaticTabFaviconType.ROUNDED_CHROME_INCOGNITO);
-            }
+            sRoundedChromeFaviconIncognito =
+                    LazyOneshotSupplier.fromSupplier(
+                            () -> {
+                                Bitmap chromeBitmap =
+                                        BitmapFactory.decodeResource(
+                                                context.getResources(), R.drawable.chromelogo16);
+                                if (chromeBitmap == null) return null;
+
+                                return createChromeOwnedResourceTabFavicon(
+                                        chromeBitmap,
+                                        mIncognitoIconColor,
+                                        mIncognitoSelectedIconColor,
+                                        false,
+                                        StaticTabFaviconType.ROUNDED_CHROME_INCOGNITO);
+                            });
         }
         if (sRoundedComposedDefaultFaviconIncognito == null) {
-            Bitmap composedBitmap =
-                    getResizedBitmapFromDrawable(
-                            AppCompatResources.getDrawable(context, R.drawable.ic_group_icon_16dp),
-                            mDefaultFaviconSize);
             sRoundedComposedDefaultFaviconIncognito =
-                    createChromeOwnedResourceTabFavicon(
-                            composedBitmap,
-                            mIncognitoIconColor,
-                            mIncognitoSelectedIconColor,
-                            false,
-                            StaticTabFaviconType.ROUNDED_COMPOSED_DEFAULT_INCOGNITO);
+                    LazyOneshotSupplier.fromSupplier(
+                            () -> {
+                                Bitmap composedBitmap =
+                                        getResizedBitmapFromDrawable(
+                                                AppCompatResources.getDrawable(
+                                                        context, R.drawable.ic_group_icon_16dp),
+                                                mDefaultFaviconSize);
+                                return createChromeOwnedResourceTabFavicon(
+                                        composedBitmap,
+                                        mIncognitoIconColor,
+                                        mIncognitoSelectedIconColor,
+                                        false,
+                                        StaticTabFaviconType.ROUNDED_COMPOSED_DEFAULT_INCOGNITO);
+                            });
         }
 
         // Tab strip favicons do not recolor when selected.
         if (sRoundedGlobeFaviconForStrip == null) {
-            Drawable globeDrawable =
-                    AppCompatResources.getDrawable(context, R.drawable.ic_globe_24dp);
             sRoundedGlobeFaviconForStrip =
-                    new ResourceTabFavicon(
-                            processBitmap(
-                                    getResizedBitmapFromDrawable(globeDrawable, mStripFaviconSize),
-                                    true),
-                            StaticTabFaviconType.ROUNDED_GLOBE_FOR_STRIP);
+                    LazyOneshotSupplier.fromSupplier(
+                            () -> {
+                                Drawable globeDrawable =
+                                        AppCompatResources.getDrawable(
+                                                context, R.drawable.ic_globe_24dp);
+                                return new ResourceTabFavicon(
+                                        processBitmap(
+                                                getResizedBitmapFromDrawable(
+                                                        globeDrawable, mStripFaviconSize),
+                                                true),
+                                        StaticTabFaviconType.ROUNDED_GLOBE_FOR_STRIP);
+                            });
         }
         if (sRoundedChromeFaviconForStrip == null) {
-            Drawable chromeDrawable =
-                    AppCompatResources.getDrawable(context, R.drawable.chromelogo16);
             sRoundedChromeFaviconForStrip =
-                    new ResourceTabFavicon(
-                            processBitmap(
-                                    getResizedBitmapFromDrawable(chromeDrawable, mStripFaviconSize),
-                                    true),
-                            StaticTabFaviconType.ROUNDED_CHROME_FOR_STRIP);
+                    LazyOneshotSupplier.fromSupplier(
+                            () -> {
+                                Drawable chromeDrawable =
+                                        AppCompatResources.getDrawable(
+                                                context, R.drawable.chromelogo16);
+                                return new ResourceTabFavicon(
+                                        processBitmap(
+                                                getResizedBitmapFromDrawable(
+                                                        chromeDrawable, mStripFaviconSize),
+                                                true),
+                                        StaticTabFaviconType.ROUNDED_CHROME_FOR_STRIP);
+                            });
         }
     }
 
@@ -575,32 +609,32 @@ public class TabListFaviconProvider {
 
     private TabFavicon getDefaultComposedImageFavicon(boolean isIncognito) {
         return isIncognito
-                ? sRoundedComposedDefaultFaviconIncognito
-                : colorFaviconWithTheme(sRoundedComposedDefaultFavicon);
+                ? sRoundedComposedDefaultFaviconIncognito.get()
+                : colorFaviconWithTheme(sRoundedComposedDefaultFavicon.get());
     }
 
     private TabFavicon getRoundedChromeFavicon(boolean isIncognito) {
         if (mIsTabStrip) {
-            return sRoundedChromeFaviconForStrip;
+            return sRoundedChromeFaviconForStrip.get();
         }
         // Fallback if the bitmap decoding failed.
         if (isIncognito
-                ? (sRoundedChromeFaviconIncognito == null)
-                : (sRoundedChromeFavicon == null)) {
+                ? (sRoundedChromeFaviconIncognito.get() == null)
+                : (sRoundedChromeFavicon.get() == null)) {
             return getRoundedGlobeFavicon(isIncognito);
         }
         return isIncognito
-                ? sRoundedChromeFaviconIncognito
-                : colorFaviconWithTheme(sRoundedChromeFavicon);
+                ? sRoundedChromeFaviconIncognito.get()
+                : colorFaviconWithTheme(sRoundedChromeFavicon.get());
     }
 
     private TabFavicon getRoundedGlobeFavicon(boolean isIncognito) {
         if (mIsTabStrip) {
-            return sRoundedGlobeFaviconForStrip;
+            return sRoundedGlobeFaviconForStrip.get();
         }
         return isIncognito
-                ? sRoundedGlobeFaviconIncognito
-                : colorFaviconWithTheme(sRoundedGlobeFavicon);
+                ? sRoundedGlobeFaviconIncognito.get()
+                : colorFaviconWithTheme(sRoundedGlobeFavicon.get());
     }
 
     private TabFavicon createChromeOwnedUrlTabFavicon(
