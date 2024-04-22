@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
   <owner>huangs@google.com</owner>
   <owner>hanxi@google.com</owner>
   <summary>
-    Records the index and the configuration of a clicked tab on the Tab
+    Records the index and the configuration of a clicked tile on the Tab
     Resumption Module. Android-only.
   </summary>
 </histogram>
@@ -96,9 +96,10 @@ chromium-metrics-reviews@google.com.
   <owner>huangs@google.com</owner>
   <owner>hanxi@google.com</owner>
   <summary>
-    Records the configuration of the Tab Resumption Module if it is shown. This
-    is logged when the module is shown with non-empty suggestions that are
-    deemed stable. Android-only.
+    Records the configuration of the Tab Resumption Module if it is shown,
+    encoding data sources of each tile (e.g., Local or Foreign). This is logged
+    when the module is shown with non-empty suggestions that are deemed stable.
+    Android-only.
   </summary>
 </histogram>
 

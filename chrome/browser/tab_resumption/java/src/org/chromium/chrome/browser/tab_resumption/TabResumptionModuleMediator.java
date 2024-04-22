@@ -259,7 +259,10 @@ public class TabResumptionModuleMediator {
         }
 
         mIsStable = true;
-        if (recordStabilityDelay) {
+        if (recordStabilityDelay
+                && (moduleShowConfig == null
+                        || moduleShowConfig.intValue() != ModuleShowConfig.SINGLE_TILE_LOCAL)) {
+            // Log only if Foreign Session suggestions exist.
             TabResumptionModuleMetricsUtils.recordStabilityDelay(
                     getCurrentTimeMs() - mFirstLoadTime);
         }

@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.tab_resumption;
 
 import org.chromium.chrome.browser.tab.Tab;
 
-/** A single local tab suggestion entry in the tab resumption module. */
+/** A single Local Tab suggestion entry in the tab resumption module. */
 public class LocalTabSuggestionEntry extends SuggestionEntry {
     public final Tab tab;
 

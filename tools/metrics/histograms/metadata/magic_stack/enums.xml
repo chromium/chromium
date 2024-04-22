@@ -26,9 +26,22 @@ chromium-metrics-reviews@google.com.
 <enums>
 
 <enum name="MagicStack.Clank.TabResumption.ClickInfo">
-  <int value="0" label="Clicked on the only tile of single tile module"/>
-  <int value="1" label="Clicked on first tile of double tile module"/>
-  <int value="2" label="Clicked on second tile of double tile module"/>
+  <int value="0"
+      label="Clicked on foreign first tile of config foreign (single tile)"/>
+  <int value="1"
+      label="Clicked on foreign first tile of config foreign+foreign (double
+             tiles)"/>
+  <int value="2"
+      label="Clicked on foreign second tile of config foreign+foreign (double
+             tiles)"/>
+  <int value="3"
+      label="Clicked on local first tile of config local (single tile)"/>
+  <int value="4"
+      label="Clicked on local first tile of config local+foreign (double
+             tiles)"/>
+  <int value="5"
+      label="Clicked on foreign second tile of config local+foreign (double
+             tiles)"/>
 </enum>
 
 <enum name="MagicStack.Clank.TabResumption.ModuleNotShownReason">
@@ -39,8 +52,10 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="MagicStack.Clank.TabResumption.ModuleShowConfig">
-  <int value="0" label="Showing single foreign tile"/>
-  <int value="1" label="Showing double foreign tiles"/>
+  <int value="0" label="Showing config foreign (single tile)"/>
+  <int value="1" label="Showing config foreign+foreign (double tiles)"/>
+  <int value="2" label="Showing config local (single tile)"/>
+  <int value="3" label="Showing config local+foreign (double tiles)"/>
 </enum>
 
 <enum name="ModulePosition">

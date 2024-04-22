@@ -17,16 +17,22 @@ public class TabResumptionModuleMetricsUtils {
     // Information on the tile clicked by the user. The values must be consistent with
     // MagicStack.Clank.TabResumption.ClickInfo in enums.xml.
     @IntDef({
-        ClickInfo.SINGLE_TILE_FIRST,
-        ClickInfo.DOUBLE_TILE_FIRST,
-        ClickInfo.DOUBLE_TILE_SECOND,
+        ClickInfo.FOREIGN_SINGLE_FIRST,
+        ClickInfo.FOREIGN_FOREIGN_DOUBLE_FIRST,
+        ClickInfo.FOREIGN_FOREIGN_DOUBLE_SECOND,
+        ClickInfo.LOCAL_SINGLE_FIRST,
+        ClickInfo.LOCAL_FOREIGN_DOUBLE_FIRST,
+        ClickInfo.LOCAL_FOREIGN_DOUBLE_SECOND,
         ClickInfo.NUM_ENTRIES
     })
     @interface ClickInfo {
-        int SINGLE_TILE_FIRST = 0;
-        int DOUBLE_TILE_FIRST = 1;
-        int DOUBLE_TILE_SECOND = 2;
-        int NUM_ENTRIES = 3;
+        int FOREIGN_SINGLE_FIRST = 0;
+        int FOREIGN_FOREIGN_DOUBLE_FIRST = 1;
+        int FOREIGN_FOREIGN_DOUBLE_SECOND = 2;
+        int LOCAL_SINGLE_FIRST = 3;
+        int LOCAL_FOREIGN_DOUBLE_FIRST = 4;
+        int LOCAL_FOREIGN_DOUBLE_SECOND = 5;
+        int NUM_ENTRIES = 6;
     }
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
@@ -55,13 +61,17 @@ public class TabResumptionModuleMetricsUtils {
     // enums.xml.
     @IntDef({
         ModuleShowConfig.SINGLE_TILE_FOREIGN,
-        ModuleShowConfig.DOUBLE_TILE_FOREIGN,
+        ModuleShowConfig.DOUBLE_TILE_FOREIGN_FOREIGN,
+        ModuleShowConfig.SINGLE_TILE_LOCAL,
+        ModuleShowConfig.DOUBLE_TILE_LOCAL_FOREIGN,
         ModuleShowConfig.NUM_ENTRIES
     })
     @interface ModuleShowConfig {
         int SINGLE_TILE_FOREIGN = 0;
-        int DOUBLE_TILE_FOREIGN = 1;
-        int NUM_ENTRIES = 2;
+        int DOUBLE_TILE_FOREIGN_FOREIGN = 1;
+        int SINGLE_TILE_LOCAL = 2;
+        int DOUBLE_TILE_LOCAL_FOREIGN = 3;
+        int NUM_ENTRIES = 4;
     }
 
     static final String HISTOGRAM_CLICK_INFO = "MagicStack.Clank.TabResumption.ClickInfo";
@@ -72,14 +82,31 @@ public class TabResumptionModuleMetricsUtils {
     static final String HISTOGRAM_STABILITY_DELAY = "MagicStack.Clank.TabResumption.StabilityDelay";
 
     /** Maps specification of a clicked tile to a ClickInfo for logging. */
-    static @ClickInfo int computeClickInfo(int tileCount, int tileIndex) {
-        assert tileIndex >= 0 && tileIndex < tileCount;
-        if (tileCount == 1) {
-            return ClickInfo.SINGLE_TILE_FIRST;
+    static @ClickInfo int computeClickInfo(@ModuleShowConfig int moduleShowConfig, int tileIndex) {
+        switch (moduleShowConfig) {
+            case ModuleShowConfig.SINGLE_TILE_FOREIGN:
+                assert tileIndex == 0;
+                return ClickInfo.FOREIGN_SINGLE_FIRST;
+
+            case ModuleShowConfig.DOUBLE_TILE_FOREIGN_FOREIGN:
+                assert tileIndex == 0 || tileIndex == 1;
+                return tileIndex == 0
+                        ? ClickInfo.FOREIGN_FOREIGN_DOUBLE_FIRST
+                        : ClickInfo.FOREIGN_FOREIGN_DOUBLE_SECOND;
+
+            case ModuleShowConfig.SINGLE_TILE_LOCAL:
+                assert tileIndex == 0;
+                return ClickInfo.LOCAL_SINGLE_FIRST;
+
+            case ModuleShowConfig.DOUBLE_TILE_LOCAL_FOREIGN:
+                assert tileIndex == 0 || tileIndex == 1;
+                return tileIndex == 0
+                        ? ClickInfo.LOCAL_FOREIGN_DOUBLE_FIRST
+                        : ClickInfo.LOCAL_FOREIGN_DOUBLE_SECOND;
         }
 
-        assert tileCount == 2;
-        return tileIndex == 0 ? ClickInfo.DOUBLE_TILE_FIRST : ClickInfo.DOUBLE_TILE_SECOND;
+        assert false;
+        return ClickInfo.NUM_ENTRIES;
     }
 
     /** Maps SuggestionBundle to a ModuleShowConfig value, or null if there are no suggestions. */
@@ -87,9 +114,16 @@ public class TabResumptionModuleMetricsUtils {
             @Nullable SuggestionBundle bundle) {
         if (bundle == null || bundle.entries.size() == 0) return null;
 
-        return bundle.entries.size() == 1
-                ? ModuleShowConfig.SINGLE_TILE_FOREIGN
-                : ModuleShowConfig.DOUBLE_TILE_FOREIGN;
+        if (bundle.entries.size() == 1) {
+            return (bundle.entries.get(0) instanceof LocalTabSuggestionEntry)
+                    ? ModuleShowConfig.SINGLE_TILE_LOCAL
+                    : ModuleShowConfig.SINGLE_TILE_FOREIGN;
+        }
+
+        // If Local Tab suggestion exists, it's always at index 0.
+        return (bundle.entries.get(0) instanceof LocalTabSuggestionEntry)
+                ? ModuleShowConfig.DOUBLE_TILE_LOCAL_FOREIGN
+                : ModuleShowConfig.DOUBLE_TILE_FOREIGN_FOREIGN;
     }
 
     /** Records info (encoded tile count and index) on a clicked tile. */

@@ -13,9 +13,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ClickInfo;
-import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
-
 /**
  * The view for a tab suggestion tile. These tile comes in two variants: A larger one for the
  * "single-tile" case, and a smaller one for the "multi-tile" case.
@@ -60,28 +57,5 @@ public class TabResumptionTileView extends RelativeLayout {
     /** Assigns the main URL image. */
     public void setImageDrawable(Drawable drawable) {
         ((ImageView) findViewById(R.id.tile_icon)).setImageDrawable(drawable);
-    }
-
-    /** Binds the click handler with an associated URL. */
-    public void bindSuggestionClickCallback(
-            SuggestionClickCallbacks callbacks,
-            SuggestionEntry entry,
-            int tileCount,
-            int tileIndex) {
-        setOnClickListener(
-                v -> {
-                    @ClickInfo
-                    int clickInfo =
-                            TabResumptionModuleMetricsUtils.computeClickInfo(tileCount, tileIndex);
-                    TabResumptionModuleMetricsUtils.recordClickInfo(clickInfo);
-                    if (entry instanceof LocalTabSuggestionEntry) {
-                        callbacks.onSuggestionClickByTabId(
-                                ((LocalTabSuggestionEntry) entry).tab.getId());
-                    } else {
-                        callbacks.onSuggestionClickByUrl(entry.url);
-                    }
-                });
-        // Handle and return false to avoid obstructing long click handling of containing Views.
-        setOnLongClickListener(v -> false);
     }
 }
