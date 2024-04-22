@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// LINT.IfChange(JpOptionValues)
 export enum JapaneseInputMode {
   KANA = 'Kana',
   ROMAJI = 'Romaji',
@@ -47,3 +48,5 @@ export enum JapaneseShiftKeyModeStyle {
   ALPHANUMERIC = 'Alphanumeric',
   KATAKANA = 'Katakana',
 }
+// LINT.ThenChange(/chrome/browser/ash/input_method/japanese/japanese_prefs_constants.h:JpOptionValues)
+
