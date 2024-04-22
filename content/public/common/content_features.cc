@@ -1159,7 +1159,7 @@ BASE_FEATURE(kUserActivationSameOriginVisibility,
 // RenderFrameHostImpl::VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch.
 BASE_FEATURE(kVerifyDidCommitParams,
              "VerifyDidCommitParams",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable the viewport segments API.
 // Tracking bug for enabling viewport segments API: https://crbug.com/1039050.
