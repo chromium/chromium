@@ -83,7 +83,9 @@ class AppPreloadService : public KeyedService {
   // Processes the list of apps retrieved by the server connector.
   void OnGetAppsForFirstLoginCompleted(
       base::TimeTicks start_time,
-      std::optional<std::vector<PreloadAppDefinition>> apps);
+      std::optional<std::vector<PreloadAppDefinition>> apps,
+      LauncherOrdering launcher_ordering,
+      ShelfPinOrdering shelf_pin_ordering);
   void OnAppInstallationsCompleted(base::TimeTicks start_time,
                                    const std::vector<bool>& results);
   // Called when the installation flow started by

@@ -5,6 +5,7 @@
 #include "chrome/browser/apps/app_preload_service/app_preload_server_connector.h"
 
 #include <optional>
+#include <tuple>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -12,9 +13,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/almanac_api_client/proto/client_context.pb.h"
+#include "chrome/browser/apps/app_preload_service/app_preload_service.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
 #include "content/public/test/browser_task_environment.h"
@@ -41,13 +44,16 @@ class AppPreloadServerConnectorTest : public testing::Test {
   AppPreloadServerConnectorTest()
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &url_loader_factory_)) {}
+                &url_loader_factory_)) {
+    feature_list_.InitAndDisableFeature(kAppPreloadServiceEnableTestApps);
+  }
 
  protected:
   network::TestURLLoaderFactory url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   AppPreloadServerConnector server_connector_;
   base::HistogramTester histograms_;
+  base::test::ScopedFeatureList feature_list_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -91,22 +97,96 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginRequest) {
 }
 
 TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginSuccessfulResponse) {
+  PackageId web_app1 = *PackageId::FromString("web::http://example.com/app1");
+  PackageId android_app1 = *PackageId::FromString("android:com.example.app1");
+  PackageId web_app2 = *PackageId::FromString("web::http://example.com/app2");
+  PackageId web_app3 = *PackageId::FromString("web::http://example.com/app3");
+  PackageId web_app4 = *PackageId::FromString("web::http://example.com/app4");
+
+  auto type_app = proto::AppPreloadListResponse_LauncherType_LAUNCHER_TYPE_APP;
+  auto type_folder =
+      proto::AppPreloadListResponse_LauncherType_LAUNCHER_TYPE_FOLDER;
   proto::AppPreloadListResponse response;
   auto* app = response.add_apps_to_install();
   app->set_name("Peanut Types");
+
+  auto* launcher_config_item = response.add_launcher_config();
+  launcher_config_item->set_type(type_app);
+  launcher_config_item->set_order(1);
+  launcher_config_item->add_package_id(web_app1.ToString());
+  launcher_config_item->add_package_id(android_app1.ToString());
+
+  launcher_config_item = response.add_launcher_config();
+  launcher_config_item->set_type(type_app);
+  launcher_config_item->set_order(2);
+  launcher_config_item->set_feature_flag("unknown");
+  launcher_config_item->add_package_id(web_app2.ToString());
+
+  launcher_config_item = response.add_launcher_config();
+  launcher_config_item->set_type(type_app);
+  launcher_config_item->set_order(3);
+  launcher_config_item->set_feature_flag("AppPreloadServiceEnableTestApps");
+  launcher_config_item->add_package_id(web_app3.ToString());
+
+  // Add folder with web_app4.
+  launcher_config_item = response.add_launcher_config();
+  launcher_config_item->set_type(type_folder);
+  launcher_config_item->set_order(4);
+  launcher_config_item->set_folder_name("other-folder");
+  auto* folder_item = launcher_config_item->add_child_config();
+  folder_item->set_type(type_app);
+  folder_item->set_order(1);
+  folder_item->add_package_id(web_app4.ToString());
+
+  auto* shelf_config_item = response.add_shelf_config();
+  shelf_config_item->set_order(1);
+  shelf_config_item->add_package_id(web_app1.ToString());
+  shelf_config_item->add_package_id(android_app1.ToString());
+
+  shelf_config_item = response.add_shelf_config();
+  shelf_config_item->set_order(2);
+  shelf_config_item->set_feature_flag("unknown");
+  shelf_config_item->add_package_id(web_app2.ToString());
+
+  shelf_config_item = response.add_shelf_config();
+  shelf_config_item->set_order(3);
+  shelf_config_item->set_feature_flag("AppPreloadServiceEnableTestApps");
+  shelf_config_item->add_package_id(web_app3.ToString());
 
   url_loader_factory_.AddResponse(
       AppPreloadServerConnector::GetServerUrl().spec(),
       response.SerializeAsString());
 
-  base::test::TestFuture<std::optional<std::vector<PreloadAppDefinition>>>
+  base::test::TestFuture<std::optional<std::vector<PreloadAppDefinition>>,
+                         LauncherOrdering, ShelfPinOrdering>
       test_callback;
   server_connector_.GetAppsForFirstLogin(
       DeviceInfo(), test_shared_loader_factory_, test_callback.GetCallback());
-  auto apps = test_callback.Get();
+
+  auto apps = std::get<0>(test_callback.Get());
   EXPECT_TRUE(apps.has_value());
   EXPECT_EQ(apps->size(), 1u);
   EXPECT_EQ(apps.value()[0].GetName(), "Peanut Types");
+
+  auto launcher_ordering = std::get<1>(test_callback.Get());
+  EXPECT_EQ(launcher_ordering.size(), 2u);
+  auto root_folder = launcher_ordering[""];
+  EXPECT_EQ(root_folder.size(), 3u);
+  EXPECT_EQ(root_folder[web_app1].type, type_app);
+  EXPECT_EQ(root_folder[web_app1].order, 1u);
+  EXPECT_EQ(root_folder[android_app1].type, type_app);
+  EXPECT_EQ(root_folder[android_app1].order, 1u);
+  EXPECT_EQ(root_folder["other-folder"].type, type_folder);
+  EXPECT_EQ(root_folder["other-folder"].order, 4u);
+  auto other_folder = launcher_ordering["other-folder"];
+  EXPECT_EQ(other_folder.size(), 1u);
+  EXPECT_EQ(other_folder[web_app4].type, type_app);
+  EXPECT_EQ(other_folder[web_app4].order, 1u);
+
+  auto shelf_pin_ordering = std::get<2>(test_callback.Get());
+  EXPECT_EQ(shelf_pin_ordering.size(), 2u);
+  EXPECT_EQ(shelf_pin_ordering[web_app1], 1u);
+  EXPECT_EQ(shelf_pin_ordering[android_app1], 1u);
 
   histograms_.ExpectTotalCount(kServerRoundTripHistogram, 1);
 }
@@ -116,11 +196,12 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginServerError) {
       AppPreloadServerConnector::GetServerUrl().spec(), /*content=*/"",
       net::HTTP_INTERNAL_SERVER_ERROR);
 
-  base::test::TestFuture<std::optional<std::vector<PreloadAppDefinition>>>
+  base::test::TestFuture<std::optional<std::vector<PreloadAppDefinition>>,
+                         LauncherOrdering, ShelfPinOrdering>
       result;
   server_connector_.GetAppsForFirstLogin(
       DeviceInfo(), test_shared_loader_factory_, result.GetCallback());
-  EXPECT_FALSE(result.Get().has_value());
+  EXPECT_FALSE(std::get<0>(result.Get()).has_value());
 
   histograms_.ExpectTotalCount(kServerRoundTripHistogram, 0);
 }
@@ -131,11 +212,12 @@ TEST_F(AppPreloadServerConnectorTest, GetAppsForFirstLoginNetworkError) {
       network::mojom::URLResponseHead::New(), /*content=*/"",
       network::URLLoaderCompletionStatus(net::ERR_TIMED_OUT));
 
-  base::test::TestFuture<std::optional<std::vector<PreloadAppDefinition>>>
+  base::test::TestFuture<std::optional<std::vector<PreloadAppDefinition>>,
+                         LauncherOrdering, ShelfPinOrdering>
       result;
   server_connector_.GetAppsForFirstLogin(
       DeviceInfo(), test_shared_loader_factory_, result.GetCallback());
-  EXPECT_FALSE(result.Get().has_value());
+  EXPECT_FALSE(std::get<0>(result.Get()).has_value());
 
   histograms_.ExpectTotalCount(kServerRoundTripHistogram, 0);
 }

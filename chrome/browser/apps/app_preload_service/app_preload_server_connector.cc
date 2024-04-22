@@ -4,19 +4,23 @@
 
 #include "chrome/browser/apps/app_preload_service/app_preload_server_connector.h"
 
+#include <utility>
+
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/almanac_api_client/almanac_api_util.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/almanac_api_client/proto/client_context.pb.h"
-#include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
+#include "chrome/browser/apps/app_preload_service/app_preload_service.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
+namespace apps {
 namespace {
 
 // Endpoint for requesting app preload data on the ChromeOS Almanac API.
@@ -61,9 +65,72 @@ std::string BuildGetAppsForFirstLoginRequestBody(const apps::DeviceInfo& info) {
   return request_proto.SerializeAsString();
 }
 
-}  // namespace
+// Filters entries in LauncherConfig and ShelfConfig to ignore when the
+// specified feature is disabled.
+bool IsFeatureEnabled(const std::string& name) {
+  if (name == kAppPreloadServiceEnableTestApps.name) {
+    return base::FeatureList::IsEnabled(kAppPreloadServiceEnableTestApps);
+  } else if (!name.empty()) {
+    LOG(ERROR) << "Unrecognised feature flag considered disabled: " << name;
+    return false;
+  }
 
-namespace apps {
+  return true;
+}
+
+// Parses LauncherConfig from `in` and adds a LauncherItemMap entry
+// into `out` LauncherOrdering keyed with `folder_name`. Uses single level of
+// recursion to parse folders.
+void ParseLauncherOrdering(
+    const google::protobuf::RepeatedPtrField<
+        proto::AppPreloadListResponse_LauncherConfig>& in,
+    const std::string& folder_name,
+    LauncherOrdering* out,
+    bool allow_nested_folders = false) {
+  LauncherItemMap item_map;
+  for (const auto& item : in) {
+    if (!IsFeatureEnabled(item.feature_flag())) {
+      continue;
+    }
+    // All packages are added as keys to item_map with the same data.
+    for (const auto& package_id : item.package_id()) {
+      if (std::optional<apps::PackageId> parsed =
+              apps::PackageId::FromString(package_id)) {
+        item_map[*parsed] = LauncherItemData(item.type(), item.order());
+      }
+    }
+    // Add nested child folder.
+    if (allow_nested_folders && !item.folder_name().empty()) {
+      item_map[item.folder_name()] =
+          LauncherItemData(item.type(), item.order());
+      ParseLauncherOrdering(item.child_config(), item.folder_name(), out);
+    }
+  }
+  (*out)[folder_name] = std::move(item_map);
+}
+
+// Parses ShelfConfig from `in` and stores result in `out` ShelfPinOrdering.
+void ParseShelfPinOrdering(const google::protobuf::RepeatedPtrField<
+                               proto::AppPreloadListResponse_ShelfConfig>& in,
+                           ShelfPinOrdering* out) {
+  // ShelfConfig is parsed into a map of PackageId and uint32 order.
+  for (const auto& item : in) {
+    // Ignore any packages which specify a feature flag which is disabled on
+    // this device.
+    if (!IsFeatureEnabled(item.feature_flag())) {
+      continue;
+    }
+    // All packages are added as keys to the  map with the same order value.
+    for (const auto& package_id : item.package_id()) {
+      if (std::optional<apps::PackageId> parsed =
+              apps::PackageId::FromString(package_id)) {
+        (*out)[*parsed] = item.order();
+      }
+    }
+  }
+}
+
+}  // namespace
 
 AppPreloadServerConnector::AppPreloadServerConnector() = default;
 
@@ -101,9 +168,12 @@ void AppPreloadServerConnector::OnGetAppsForFirstLoginResponse(
   absl::Status error =
       GetDownloadError(loader->NetError(), loader->ResponseInfo(),
                        response_body.get(), kServerErrorHistogramName);
+  LauncherOrdering launcher_ordering;
+  ShelfPinOrdering shelf_pin_ordering;
   if (!error.ok()) {
     LOG(ERROR) << error.message();
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(std::nullopt, std::move(launcher_ordering),
+                            std::move(shelf_pin_ordering));
     return;
   }
 
@@ -114,7 +184,8 @@ void AppPreloadServerConnector::OnGetAppsForFirstLoginResponse(
 
   if (!response.ParseFromString(*response_body)) {
     LOG(ERROR) << "Parsing failed";
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(std::nullopt, std::move(launcher_ordering),
+                            std::move(shelf_pin_ordering));
     return;
   }
 
@@ -123,7 +194,15 @@ void AppPreloadServerConnector::OnGetAppsForFirstLoginResponse(
     apps.emplace_back(app);
   }
 
-  std::move(callback).Run(std::move(apps));
+  std::string empty_root_folder;
+  ParseLauncherOrdering(response.launcher_config(), empty_root_folder,
+                        &launcher_ordering,
+                        /*allow_nested_folders=*/true);
+
+  ParseShelfPinOrdering(response.shelf_config(), &shelf_pin_ordering);
+
+  std::move(callback).Run(std::move(apps), std::move(launcher_ordering),
+                          std::move(shelf_pin_ordering));
 }
 
 }  // namespace apps

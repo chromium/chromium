@@ -12,12 +12,13 @@
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/package_id.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;
 
 namespace apps {
 
-// A wrapper class around an App Preload Server proto to allow for easier
+// A wrapper class around an App Preload Server App proto to allow for easier
 // extraction and conversion of information.
 class PreloadAppDefinition {
  public:
@@ -63,6 +64,28 @@ class PreloadAppDefinition {
 };
 
 std::ostream& operator<<(std::ostream& os, const PreloadAppDefinition& app);
+
+// Wrapper for App Preload Server ShelfConfig proto. Map of PackageId to order.
+using ShelfPinOrdering = std::map<apps::PackageId, uint32_t>;
+
+// Wrappers for App Preload Server LauncherConfig proto:
+
+// LauncherItem is either an app represented by a PackageId, or a folder
+// represented by a string.
+using LauncherItem = absl::variant<apps::PackageId, std::string>;
+
+// LauncherItemData is the associated data for a LauncherItem.
+struct LauncherItemData {
+  proto::AppPreloadListResponse_LauncherType type;
+  uint32_t order;
+};
+
+// Map of LauncherItem to LauncherItemData.
+using LauncherItemMap = std::map<LauncherItem, LauncherItemData>;
+
+// Map of folder to LauncherItemMap.  Root folder always exists and is keyed by
+// empty string.
+using LauncherOrdering = std::map<std::string, LauncherItemMap>;
 
 }  // namespace apps
 

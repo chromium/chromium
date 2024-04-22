@@ -162,12 +162,15 @@ void AppPreloadService::StartAppInstallationForFirstLogin(
 
 void AppPreloadService::OnGetAppsForFirstLoginCompleted(
     base::TimeTicks start_time,
-    std::optional<std::vector<PreloadAppDefinition>> apps) {
+    std::optional<std::vector<PreloadAppDefinition>> apps,
+    LauncherOrdering launcher_ordering,
+    ShelfPinOrdering shelf_pin_ordering) {
   if (!apps.has_value()) {
     OnFirstLoginFlowComplete(start_time, /*success=*/false);
     return;
   }
 
+  // TODO(crbug.com/327058999): Implement launcher ordering and shelf pinning.
   std::vector<const PreloadAppDefinition*> apps_to_install;
   for (const PreloadAppDefinition& app : apps.value()) {
     if (ShouldInstallApp(app)) {

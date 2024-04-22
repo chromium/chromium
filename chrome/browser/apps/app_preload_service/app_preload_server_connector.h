@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 
 class GURL;
 
@@ -28,10 +29,11 @@ class SimpleURLLoader;
 namespace apps {
 
 struct DeviceInfo;
-class PreloadAppDefinition;
 
 using GetInitialAppsCallback =
-    base::OnceCallback<void(std::optional<std::vector<PreloadAppDefinition>>)>;
+    base::OnceCallback<void(std::optional<std::vector<PreloadAppDefinition>>,
+                            LauncherOrdering,
+                            ShelfPinOrdering)>;
 
 // The AppPreloadServerConnector is used to talk to the App Provisioning Service
 // API endpoint. Its role is to build requests and convert responses into
