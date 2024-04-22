@@ -68,6 +68,7 @@
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -5373,6 +5374,38 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
   // The success of |dns_alpn_h3_job| deletes |main_job|.
   CheckJobsStatus(/*main_job_exists=*/false, /*alternative_job_exists=*/false,
                   /*dns_alpn_h3_job_exists=*/true, "Main job must be deleted.");
+
+  request_.reset();
+  EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
+}
+
+// Test that for a proxied session no DNS APLN H3 job is created (since we don't
+// want to perform DNS resolution corresponding to requests that will be
+// proxied).
+TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
+       NoDnsAlpnH3JobForProxiedSession) {
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START);
+  quic_data_ = std::make_unique<MockQuicData>(quic::ParsedQuicVersion::RFCv1());
+  quic_data_->AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+
+  Initialize(HttpRequestInfo());
+
+  auto proxy_chain =
+      ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
+          ProxyServer::SCHEME_QUIC, "proxy", 99)});
+
+  auto* test_proxy_delegate =
+      static_cast<TestProxyDelegate*>(session_deps_.proxy_delegate.get());
+  test_proxy_delegate->set_proxy_chain(proxy_chain);
+
+  request_ = CreateJobControllerAndStart(CreateTestHttpRequestInfo());
+
+  CheckJobsStatus(/*main_job_exists=*/true, /*alternative_job_exists=*/false,
+                  /*dns_alpn_h3_job_exists=*/false,
+                  "DNS ALPN H3 job must not have been created.");
+
+  base::RunLoop().RunUntilIdle();
 
   request_.reset();
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));

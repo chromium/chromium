@@ -7,6 +7,7 @@
 #include "net/base/network_anonymization_key.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
+#include "net/base/session_usage.h"
 #include "net/cert/x509_certificate.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/mock_quic_data.h"
@@ -42,6 +43,7 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateProxiedQuicSession) {
   GURL proxy(kProxy1Url);
   auto origin = url::SchemeHostPort(url);
   auto proxy_origin = url::SchemeHostPort(proxy);
+  auto nak = NetworkAnonymizationKey();
 
   scoped_refptr<X509Certificate> cert(
       ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem"));
@@ -92,12 +94,18 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateProxiedQuicSession) {
   builder.proxy_chain = proxy_chain;
   builder.http_user_agent_settings = &http_user_agent_settings_;
   builder.url = url;
+
+  // Note: `builder` defaults to using the parameterized `version_` member,
+  // which we will assert here as a pre-condition for checking that the proxy
+  // session ignores this and uses RFCv1 instead.
+  ASSERT_EQ(builder.quic_version, version_);
+
   EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
   ASSERT_EQ(OK, callback_.WaitForResult());
   std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
   EXPECT_TRUE(stream.get());
   QuicChromiumClientSession* session =
-      GetActiveSession(origin, NetworkAnonymizationKey(), proxy_chain);
+      GetActiveSession(origin, nak, proxy_chain);
   ASSERT_TRUE(session);
 
   // The direct connection to the proxy has a max packet size 1350. The
@@ -107,6 +115,15 @@ TEST_P(QuicSessionPoolProxyJobTest, CreateProxiedQuicSession) {
   // could be sent to the endpoint, which would be 1250 - (packet header = 38) =
   // 1212 bytes.
   EXPECT_EQ(session->GetGuaranteedLargestMessagePayload(), 1212);
+
+  // Check that the session through the proxy uses the version from the request.
+  EXPECT_EQ(session->GetQuicVersion(), version_);
+
+  // Check that the session to the proxy always uses RFCv1.
+  QuicChromiumClientSession* proxy_session = GetActiveSession(
+      proxy_origin, nak, ProxyChain::ForIpProtection({}), SessionUsage::kProxy);
+  ASSERT_TRUE(proxy_session);
+  EXPECT_EQ(proxy_session->GetQuicVersion(), quic::ParsedQuicVersion::RFCv1());
 
   stream.reset();
 

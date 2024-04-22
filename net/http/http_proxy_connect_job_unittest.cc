@@ -48,6 +48,7 @@
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -95,6 +96,17 @@ MATCHER_P(QSRHasProxyChain,
   *result_listener << "where the proxy chain is "
                    << arg->session_key().proxy_chain().ToDebugString();
   return arg->session_key().proxy_chain() == proxy_chain;
+}
+
+MATCHER_P(
+    IsQuicVersion,
+    quic_version,
+    base::StringPrintf("QUIC version %s %s",
+                       negation ? "is not" : "is",
+                       quic::ParsedQuicVersionToString(quic_version).c_str())) {
+  *result_listener << "where the QUIC version is "
+                   << quic::ParsedQuicVersionToString(arg);
+  return arg == quic_version;
 }
 
 }  // namespace
@@ -2199,6 +2211,57 @@ TEST_F(HttpProxyConnectQuicJobTest, RequestQuicProxy) {
   EXPECT_CALL(mock_quic_session_pool_, CancelRequest).Times(1);
 
   EXPECT_THAT(connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+}
+
+// Test that for QUIC sessions to the proxy, version RFCv1 is used.
+TEST_F(HttpProxyConnectQuicJobTest, QuicProxyRequestUsesRfcV1) {
+  // While the default supported QUIC version is RFCv1, to test that RFCv1 is
+  // forced for proxy connections we need to specify a different default. If
+  // that ever changes and we still want to continue forcing QUIC connections to
+  // proxy servers to use RFCv1, then we won't need to modify
+  // `supported_versions` anymore (and could merge this test with
+  // RequestQuicProxy above).
+  ASSERT_EQ(DefaultSupportedQuicVersions()[0],
+            quic::ParsedQuicVersion::RFCv1());
+
+  auto supported_versions = quic::ParsedQuicVersionVector{
+      quic::ParsedQuicVersion::RFCv2(), quic::ParsedQuicVersion::RFCv1()};
+  common_connect_job_params_->quic_supported_versions = &supported_versions;
+
+  ProxyChain proxy_chain = ProxyChain::ForIpProtection({ProxyServer(
+      ProxyServer::SCHEME_QUIC, HostPortPair(kQuicProxyHost, 443))});
+  SSLConfig quic_ssl_config;
+  scoped_refptr<HttpProxySocketParams> http_proxy_socket_params =
+      base::MakeRefCounted<HttpProxySocketParams>(
+          quic_ssl_config, HostPortPair(kEndpointHost, 443), proxy_chain,
+          /*proxy_chain_index=*/0, /*tunnel=*/true,
+          TRAFFIC_ANNOTATION_FOR_TESTS, NetworkAnonymizationKey(),
+          SecureDnsPolicy::kAllow);
+
+  TestConnectJobDelegate test_delegate;
+  auto connect_job = std::make_unique<HttpProxyConnectJob>(
+      DEFAULT_PRIORITY, SocketTag(), common_connect_job_params_.get(),
+      std::move(http_proxy_socket_params), &test_delegate,
+      /*net_log=*/nullptr);
+
+  // Expect a session to be requested, and then leave it pending.
+  EXPECT_CALL(
+      mock_quic_session_pool_,
+      RequestSession(_, _, IsQuicVersion(quic::ParsedQuicVersion::RFCv1()), _,
+                     _, _, _, _, _, _, QSRHasProxyChain(proxy_chain.Prefix(0))))
+
+      .Times(1)
+      .WillRepeatedly(testing::Return(ERR_IO_PENDING));
+
+  // Expect the request to be cancelled during test tear-down.
+  EXPECT_CALL(mock_quic_session_pool_, CancelRequest).Times(1);
+
+  EXPECT_THAT(connect_job->Connect(), test::IsError(ERR_IO_PENDING));
+
+  // Since we set `common_connect_job_params_->quic_supported_versions` to the
+  // address of a local variable above, clear it here to avoid having a dangling
+  // pointer.
+  common_connect_job_params_->quic_supported_versions = nullptr;
 }
 
 // Test that a QUIC session is properly requested from the QuicSessionPool,
