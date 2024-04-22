@@ -2,6 +2,8 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
+INCLUDE PERFETTO MODULE chrome.scroll_jank.utils;
+
 -- Defines slices for all of the individual scrolls in a trace based on the
 -- LatencyInfo-based scroll definition.
 --
@@ -12,9 +14,6 @@
 -- WebView instances. Currently gesture_scroll_id unique within an instance, but
 -- is not unique across multiple instances. Switching to an EventLatency based
 -- definition of scrolls should resolve this.
-
-INCLUDE PERFETTO MODULE chrome.scroll_jank.utils;
-
 CREATE PERFETTO TABLE chrome_scrolls(
   -- The unique identifier of the scroll.
   id INT,
@@ -35,7 +34,7 @@ WITH all_scrolls AS (
     args.string_value AS name,
     S.ts AS ts,
     S.dur AS dur,
-    get_most_recent_scroll_begin_id(S.ts) AS scroll_id
+    chrome_get_most_recent_scroll_begin_id(S.ts) AS scroll_id
   FROM slice AS S JOIN args USING(arg_set_id)
   WHERE name="EventLatency"
   AND args.string_value GLOB "*GESTURE_SCROLL*"

@@ -105,7 +105,11 @@ WHERE
   AND name = $name;
 
 -- Extracts scroll id for the EventLatency slice at `ts`.
-CREATE PERFETTO FUNCTION get_most_recent_scroll_begin_id(ts INT)
+CREATE PERFETTO FUNCTION chrome_get_most_recent_scroll_begin_id(
+  -- Timestamp of the EventLatency slice to get the scroll id for.
+  ts INT)
+-- The event_latency_id of the EventLatency slice with the type
+-- GESTURE_SCROLL_BEGIN that is the closest to `ts`.
 RETURNS INT AS
 SELECT EXTRACT_ARG(arg_set_id, "event_latency.event_latency_id")
 FROM slice
