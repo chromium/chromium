@@ -6,7 +6,7 @@
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "services/data_decoder/public/mojom/cbor_parser.mojom.h"
+#include "services/data_decoder/public/cpp/test_support/fake_data_decoder_service.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,7 +54,7 @@ class ImageDecoderImpl : public data_decoder::mojom::ImageDecoder {
 // passing the given callbacks along to generate test images.
 // Everything not related to image decoding is left unimplemented.
 class TestImageDecoder::DataDecoderServiceImpl
-    : public data_decoder::mojom::DataDecoderService {
+    : public data_decoder::FakeDataDecoderService {
  public:
   DataDecoderServiceImpl(TestImageDecoder::AnimationCallback animation_callback,
                          TestImageDecoder::ImageCallback image_callback)
@@ -70,37 +70,6 @@ class TestImageDecoder::DataDecoderServiceImpl
     mojo::MakeSelfOwnedReceiver(std::make_unique<ImageDecoderImpl>(
                                     animation_callback_, image_callback_),
                                 std::move(receiver));
-  }
-  void BindJsonParser(mojo::PendingReceiver<data_decoder::mojom::JsonParser>
-                          receiver) override {
-    FAIL();
-  }
-  void BindStructuredHeadersParser(
-      mojo::PendingReceiver<data_decoder::mojom::StructuredHeadersParser>
-          receiver) override {
-    FAIL();
-  }
-  void BindXmlParser(
-      mojo::PendingReceiver<data_decoder::mojom::XmlParser> receiver) override {
-    FAIL();
-  }
-  void BindWebBundleParserFactory(
-      mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
-          receiver) override {
-    FAIL();
-  }
-  void BindGzipper(
-      mojo::PendingReceiver<data_decoder::mojom::Gzipper> receiver) override {
-    FAIL();
-  }
-  void BindCborParser(mojo::PendingReceiver<data_decoder::mojom::CborParser>
-                          receiver) override {
-    FAIL();
-  }
-  void BindBleScanParser(
-      mojo::PendingReceiver<data_decoder::mojom::BleScanParser> receiver)
-      override {
-    FAIL();
   }
 
  private:
