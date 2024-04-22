@@ -11197,7 +11197,7 @@
             ]
         }
     ],
-    "MagicStackRemoveGradientView": [
+    "MagicStackGradientView": [
         {
             "platforms": [
                 "ios"
