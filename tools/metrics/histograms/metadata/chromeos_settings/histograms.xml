@@ -190,6 +190,18 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Device.Keyboard.BrightnessSliderAdjusted"
+    units="%" expires_after="2025-04-08">
+  <owner>longbo@google.com</owner>
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records each time a user changes the keyboard brightness using slider in
+    keyboard settings. The value saved is the brightness percentage after
+    adjustment. Fires when adjustment is completed.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Device.KeyboardAutoRepeatEnabled"
     enum="BooleanEnabled" expires_after="2024-05-05">
   <owner>dmblack@google.com</owner>

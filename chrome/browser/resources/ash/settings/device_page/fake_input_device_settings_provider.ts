@@ -97,6 +97,7 @@ export class FakeInputDeviceSettingsProvider implements
   private callCounts_ = {
     setGraphicsTabletSettings: 0,
     setMouseSettings: 0,
+    recordKeyboardBrightnessChangeFromSlider: 0,
   };
 
   constructor() {
@@ -113,6 +114,7 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.register('fakeHasKeyboardBacklight');
     this.methods.register('fakeIsRgbKeyboardSupported');
     this.methods.register('fakeRecordKeyboardColorLinkClicked');
+    this.methods.register('fakeRecordKeyboardBrightnessChangeFromSlider');
   }
 
   setFakeKeyboards(keyboards: Keyboard[]): void {
@@ -429,5 +431,14 @@ export class FakeInputDeviceSettingsProvider implements
 
   getKeyboardColorLinkClicks(): number {
     return this.keyboardColorLinkClicks;
+  }
+
+  recordKeyboardBrightnessChangeFromSlider(percent: number): void {
+    assert(percent >= 0);
+    this.callCounts_.recordKeyboardBrightnessChangeFromSlider++;
+  }
+
+  getRecordKeyboardBrightnessChangeFromSliderCallCount(): number {
+    return this.callCounts_.recordKeyboardBrightnessChangeFromSlider;
   }
 }

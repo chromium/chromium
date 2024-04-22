@@ -139,6 +139,7 @@ class InputDeviceSettingsProvider
   void HasKeyboardBacklight(HasKeyboardBacklightCallback callback) override;
   void IsRgbKeyboardSupported(IsRgbKeyboardSupportedCallback callback) override;
   void RecordKeyboardColorLinkClicked() override;
+  void RecordKeyboardBrightnessChangeFromSlider(double percent) override;
 
   void SetKeyboardBrightnessControlDelegateForTesting(
       raw_ptr<KeyboardBrightnessControlDelegate> delegate) {

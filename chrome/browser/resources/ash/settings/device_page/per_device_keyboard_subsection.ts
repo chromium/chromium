@@ -261,9 +261,23 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   }
 
   private onKeyboardBrightnessSliderChanged(): void {
-    const slider = this.shadowRoot!.querySelector<SettingsSliderElement>(
-        '#keyboardBrightnessSlider');
-    this.inputDeviceSettingsProvider.setKeyboardBrightness(slider!.pref.value);
+    this.inputDeviceSettingsProvider.setKeyboardBrightness(
+        this.getKeyboardBrightnessFromSlider());
+  }
+
+  private onKeyup(event: KeyboardEvent): void {
+    // Record updated brightness if adjusted via arrow keys.
+    if (['ArrowRight', 'ArrowDown', 'ArrowLeft', 'ArrowUp'].includes(
+            event.key)) {
+      this.inputDeviceSettingsProvider.recordKeyboardBrightnessChangeFromSlider(
+          this.getKeyboardBrightnessFromSlider());
+    }
+  }
+
+  private onPointerup(): void {
+    // Record brightness after slider adjustment is completed.
+    this.inputDeviceSettingsProvider.recordKeyboardBrightnessChangeFromSlider(
+        this.getKeyboardBrightnessFromSlider());
   }
 
   private onSettingsChanged(): void {
@@ -332,6 +346,12 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   private openPersonalizationHub(): void {
     this.inputDeviceSettingsProvider.recordKeyboardColorLinkClicked();
     this.personalizationHubBrowserProxy.openPersonalizationHub();
+  }
+
+  private getKeyboardBrightnessFromSlider(): number {
+    const slider = this.shadowRoot!.querySelector<SettingsSliderElement>(
+        '#keyboardBrightnessSlider');
+    return slider!.pref.value;
   }
 
   protected getRemapKeyboardKeysClass(): string {

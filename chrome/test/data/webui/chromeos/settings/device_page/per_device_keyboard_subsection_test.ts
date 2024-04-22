@@ -494,4 +494,38 @@ suite('<settings-per-device-keyboard-subsection>', () => {
     await flushTasks();
     assertEquals(1, provider.getKeyboardColorLinkClicks());
   });
+
+  test('Record brightness change from slider', async () => {
+    await changeIsExternalState(false);
+    const slider = subsection.shadowRoot!.querySelector<SettingsSliderElement>(
+        '#keyboardBrightnessSlider');
+    assertTrue(!!slider);
+    assertEquals(
+        0, provider.getRecordKeyboardBrightnessChangeFromSliderCallCount());
+
+    // Ensure no metric is recorded on pointerdown.
+    slider.dispatchEvent(new PointerEvent('pointerdown'));
+    assertEquals(
+        0, provider.getRecordKeyboardBrightnessChangeFromSliderCallCount());
+
+    // Verify metric is recorded once on pointerup.
+    slider.dispatchEvent(new PointerEvent('pointerup'));
+    assertEquals(
+        1, provider.getRecordKeyboardBrightnessChangeFromSliderCallCount());
+
+    // Keydown events shouldn't trigger metric recording.
+    slider.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
+    assertEquals(
+        1, provider.getRecordKeyboardBrightnessChangeFromSliderCallCount());
+
+    // Verify metric records on keyup with arrow keys.
+    slider.dispatchEvent(new KeyboardEvent('keyup', {key: 'ArrowLeft'}));
+    assertEquals(
+        2, provider.getRecordKeyboardBrightnessChangeFromSliderCallCount());
+
+    // Non-arrow keyup events shouldn't record metrics.
+    slider.dispatchEvent(new KeyboardEvent('keyup', {key: 'Enter'}));
+    assertEquals(
+        2, provider.getRecordKeyboardBrightnessChangeFromSliderCallCount());
+  });
 });

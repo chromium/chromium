@@ -1184,4 +1184,14 @@ TEST_F(InputDeviceSettingsProviderTest, RecordKeyboardColorLinkClicked) {
       "ChromeOS.Settings.Device.Keyboard.ColorLinkClicked", 1);
 }
 
+TEST_F(InputDeviceSettingsProviderTest,
+       RecordKeyboardBrightnessChangeFromSlider) {
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.BrightnessSliderAdjusted", 0);
+  provider_->RecordKeyboardBrightnessChangeFromSlider(40.0);
+  base::RunLoop().RunUntilIdle();
+  histogram_tester_->ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.BrightnessSliderAdjusted", 1);
+}
+
 }  // namespace ash::settings

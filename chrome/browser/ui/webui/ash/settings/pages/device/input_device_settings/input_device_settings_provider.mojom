@@ -164,4 +164,8 @@ interface InputDeviceSettingsProvider {
   // Tracks clicks on the "Keyboard Color" link in Keyboard Settings, that
   // navigates to the RGB Control in the Personalization Hub.
   RecordKeyboardColorLinkClicked();
+
+  // Records metric each time user changes the keyboard brightness through
+  // the slider.
+  RecordKeyboardBrightnessChangeFromSlider(double percent);
 };

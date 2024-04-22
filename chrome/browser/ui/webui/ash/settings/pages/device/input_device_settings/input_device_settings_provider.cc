@@ -695,4 +695,12 @@ void InputDeviceSettingsProvider::RecordKeyboardColorLinkClicked() {
       "ChromeOS.Settings.Device.Keyboard.ColorLinkClicked", true);
 }
 
+void InputDeviceSettingsProvider::RecordKeyboardBrightnessChangeFromSlider(
+    double percent) {
+  DCHECK(features::IsKeyboardBacklightControlInSettingsEnabled());
+  DCHECK(0 <= percent && percent <= 100);
+  base::UmaHistogramPercentage(
+      "ChromeOS.Settings.Device.Keyboard.BrightnessSliderAdjusted", percent);
+}
+
 }  // namespace ash::settings

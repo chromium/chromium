@@ -38,6 +38,8 @@
           </div>
           <settings-slider id="keyboardBrightnessSlider"
               pref="{{keyboardBrightnessPercentPref}}"
+              on-pointerup="onPointerup"
+              on-keyup="onKeyup"
               on-cr-slider-value-changed="onKeyboardBrightnessSliderChanged">
           </settings-slider>
         </div>
