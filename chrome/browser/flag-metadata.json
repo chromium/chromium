@@ -6497,11 +6497,6 @@
     "expiry_milestone": 99
   },
   {
-    "name": "os-settings-deprecate-sync-metrics-toggle",
-    "owners": ["xiaohuic@chromium.org"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "os-settings-revamp-wayfinding",
     "owners": [ "wesokuhara@chromium.org", "cros-settings@google.com" ],
     "expiry_milestone": 128
