@@ -23,7 +23,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/aggregation_service/features.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
@@ -871,12 +871,11 @@ TEST_F(PrivateAggregationHostTest, ContextIdNotSet_NoNullReportSent) {
 
 TEST_F(PrivateAggregationHostTest, AggregationCoordinatorOrigin) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{::aggregation_service::kAggregationServiceMultipleCloudProviders,
-        {{"aws_cloud", "https://aws.example"}}},
-       {blink::features::kPrivateAggregationApiMultipleCloudProviders, {}}},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kPrivateAggregationApiMultipleCloudProviders);
+  ::aggregation_service::ScopedAggregationCoordinatorAllowlistForTesting
+      scoped_coordinator_allowlist(
+          {url::Origin::Create(GURL("https://a.test"))});
 
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
@@ -884,9 +883,9 @@ TEST_F(PrivateAggregationHostTest, AggregationCoordinatorOrigin) {
       url::Origin::Create(GURL("https://main_frame.com"));
 
   const url::Origin kValidCoordinatorOrigin =
-      url::Origin::Create(GURL("https://aws.example"));
+      url::Origin::Create(GURL("https://a.test"));
   const url::Origin kInvalidCoordinatorOrigin =
-      url::Origin::Create(GURL("https://unknown.example"));
+      url::Origin::Create(GURL("https://b.test"));
 
   const struct {
     const char* description;
@@ -955,12 +954,11 @@ TEST_F(PrivateAggregationHostTest, AggregationCoordinatorOrigin) {
 TEST_F(PrivateAggregationHostTest,
        AggregationCoordinatorOriginIgnoredIfFeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/{{::aggregation_service::
-                                 kAggregationServiceMultipleCloudProviders,
-                             {{"aws_cloud", "https://aws.example"}}}},
-      /*disabled_features=*/{
-          blink::features::kPrivateAggregationApiMultipleCloudProviders});
+  scoped_feature_list.InitAndDisableFeature(
+      blink::features::kPrivateAggregationApiMultipleCloudProviders);
+  ::aggregation_service::ScopedAggregationCoordinatorAllowlistForTesting
+      scoped_coordinator_allowlist(
+          {url::Origin::Create(GURL("https://a.test"))});
 
   const url::Origin kExampleOrigin =
       url::Origin::Create(GURL("https://example.com"));
@@ -968,9 +966,9 @@ TEST_F(PrivateAggregationHostTest,
       url::Origin::Create(GURL("https://main_frame.com"));
 
   const url::Origin kValidCoordinatorOrigin =
-      url::Origin::Create(GURL("https://aws.example"));
+      url::Origin::Create(GURL("https://a.test"));
   const url::Origin kInvalidCoordinatorOrigin =
-      url::Origin::Create(GURL("https://unknown.example"));
+      url::Origin::Create(GURL("https://b.test"));
 
   const std::optional<url::Origin> kTestCases[] = {
       std::nullopt,

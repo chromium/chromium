@@ -200,7 +200,7 @@
     "bases": ["wpt_internal/attribution-reporting"],
     "exclusive_tests": "ALL",
     "args": ["--attribution-reporting-debug-mode",
-             "--enable-features=AttributionReportingCrossAppWeb,AttributionReportingReportVerification,PrivacySandboxAdsAPIsOverride,AggregationServiceMultipleCloudProviders:aws_cloud/https%3A%2F%2Fweb-platform.test%3A8444/gcp_cloud/https%3A%2F%2Fwww1.web-platform.test%3A8444",
+             "--enable-features=AttributionReportingCrossAppWeb,AttributionReportingReportVerification,PrivacySandboxAdsAPIsOverride,AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform%2Etest%3A8444%2Chttps%3A%2F%2Fwww1%2Eweb-platform%2Etest%3A8444",
              "--additional-private-state-token-key-commitments={\"https://web-platform.test:8444\":{\"PrivateStateTokenV3VOPRF\":{\"protocol_version\":\"PrivateStateTokenV3VOPRF\",\"id\":1,\"batchsize\":1,\"keys\":{\"0\":{\"Y\":\"AAAAAASqh8oivosFN46xxx7zIK10bh07Younm5hZ90HgglQqOFUC8l2/VSlsOlReOHJ2CrfJ6CG1adnTkKJhZ0BtbSPWBwviQtdl64MWJc7sSg9HPvWfTjDigX5ihbzihG8V8aA=\",\"expiry\":\"253402300799000000\"}}}}}",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
     "expires": "May 30, 2024"
@@ -1845,7 +1845,7 @@
     ],
     "args": [
       "--enable-privacy-sandbox-ads-apis",
-      "--enable-features=FencedFramesDefaultMode,AggregationServiceMultipleCloudProviders:aws_cloud/https%3A%2F%2Fweb-platform.test%3A8444,FencedFramesEnforceFocus,PrivateAggregationAuctionReportBuyerDebugModeConfig",
+      "--enable-features=FencedFramesDefaultMode,AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform.test%3A8444,FencedFramesEnforceFocus,PrivateAggregationAuctionReportBuyerDebugModeConfig",
       "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 1, 2024"
@@ -1862,7 +1862,7 @@
     "args": [
       "--enable-privacy-sandbox-ads-apis",
       "--private-aggregation-developer-mode",
-      "--enable-features=FencedFramesDefaultMode,AggregationServiceMultipleCloudProviders:aws_cloud/https%3A%2F%2Fweb-platform.test%3A8444/gcp_cloud/https%3A%2F%2Fwww1.web-platform.test%3A8444,PrivateAggregationApiBundledEnhancements,PrivateAggregationApiMultipleCloudProviders,PrivateAggregationAuctionReportBuyerDebugModeConfig",
+      "--enable-features=FencedFramesDefaultMode,AggregationServiceMultipleCloudProviders:allowlist/https%3A%2F%2Fweb-platform%2Etest%3A8444%2Chttps%3A%2F%2Fwww1%2Eweb-platform%2Etest%3A8444,PrivateAggregationApiBundledEnhancements,PrivateAggregationApiMultipleCloudProviders,PrivateAggregationAuctionReportBuyerDebugModeConfig",
       "--disable-threaded-compositing", "--disable-threaded-animation"
     ],
     "expires": "Jul 1, 2024"

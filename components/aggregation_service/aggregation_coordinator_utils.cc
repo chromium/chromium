@@ -6,9 +6,14 @@
 
 #include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/check.h"
-#include "base/containers/enum_set.h"
+#include "base/containers/contains.h"
+#include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/string_split.h"
 #include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/is_origin_suitable.h"
 #include "url/gurl.h"
@@ -18,61 +23,107 @@ namespace aggregation_service {
 
 namespace {
 
-// An identifier to specify the deployment option for the aggregation service.
-enum class AggregationCoordinator {
-  kAwsCloud,
-  kGcpCloud,
-
-  kMinValue = kAwsCloud,
-  kMaxValue = kGcpCloud,
-  kDefault = kAwsCloud,
-};
-
-url::Origin GetAggregationCoordinatorOriginFromString(
-    std::string_view origin_str,
-    std::string_view default_origin_str) {
-  // Uses default origin in case of erroneous Finch params.
-  auto origin = url::Origin::Create(GURL(origin_str));
-  if (attribution_reporting::IsOriginSuitable(origin)) {
-    return origin;
-  }
-  return url::Origin::Create(GURL(default_origin_str));
+std::vector<url::Origin> DefaultOrigins() {
+  return {url::Origin::Create(GURL(kDefaultAggregationCoordinatorAwsCloud)),
+          url::Origin::Create(GURL(kDefaultAggregationCoordinatorGcpCloud))};
 }
 
-url::Origin GetAggregationCoordinatorOrigin(
-    AggregationCoordinator aggregation_coordinator) {
-  url::Origin origin;
-  switch (aggregation_coordinator) {
-    case AggregationCoordinator::kAwsCloud:
-      origin = GetAggregationCoordinatorOriginFromString(
-          kAggregationServiceCoordinatorAwsCloud.Get(),
-          kDefaultAggregationCoordinatorAwsCloud);
-      break;
-    case AggregationCoordinator::kGcpCloud:
-      origin = GetAggregationCoordinatorOriginFromString(
-          kAggregationServiceCoordinatorGcpCloud.Get(),
-          kDefaultAggregationCoordinatorGcpCloud);
-      break;
+std::vector<url::Origin> Parse(const std::string& unparsed) {
+  std::vector<url::Origin> parsed;
+
+  std::vector<std::string_view> tokens = base::SplitStringPiece(
+      unparsed, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (const std::string_view token : tokens) {
+    auto origin = url::Origin::Create(GURL(token));
+    if (!attribution_reporting::IsOriginSuitable(origin)) {
+      return DefaultOrigins();
+    }
+    parsed.push_back(std::move(origin));
   }
-  CHECK(attribution_reporting::IsOriginSuitable(origin));
-  return origin;
+
+  if (parsed.empty()) {
+    return DefaultOrigins();
+  }
+
+  return parsed;
+}
+
+class CoordinatorOrigins {
+ public:
+  CoordinatorOrigins() = default;
+  ~CoordinatorOrigins() = default;
+
+  explicit CoordinatorOrigins(const std::string& unparsed)
+      : CoordinatorOrigins(Parse(unparsed)) {}
+
+  explicit CoordinatorOrigins(std::vector<url::Origin> origins)
+      : origins_(std::move(origins)) {
+    CHECK(origins_.empty() || IsValid());
+  }
+
+  CoordinatorOrigins(const CoordinatorOrigins&) = delete;
+  CoordinatorOrigins& operator=(const CoordinatorOrigins&) = delete;
+
+  CoordinatorOrigins(CoordinatorOrigins&&) = default;
+  CoordinatorOrigins& operator=(CoordinatorOrigins&&) = default;
+
+  bool contains(const url::Origin& origin) const {
+    CHECK(IsValid());
+    return base::Contains(origins_, origin);
+  }
+
+  const url::Origin& default_origin() const {
+    CHECK(IsValid());
+    return origins_.front();
+  }
+
+  const std::vector<url::Origin>& origins() const { return origins_; }
+
+  [[nodiscard]] bool IsValid() const {
+    if (origins_.empty()) {
+      return false;
+    }
+    return base::ranges::all_of(origins_,
+                                &attribution_reporting::IsOriginSuitable);
+  }
+
+ private:
+  std::vector<url::Origin> origins_;
+};
+
+CoordinatorOrigins& GetCoordinatorOrigins() {
+  static base::NoDestructor<CoordinatorOrigins> g_origins;
+
+  if (!g_origins->origins().empty()) {
+    return *g_origins;
+  }
+
+  *g_origins =
+      CoordinatorOrigins(kAggregationServiceCoordinatorAllowlist.Get());
+
+  return *g_origins;
 }
 
 }  // namespace
 
 url::Origin GetDefaultAggregationCoordinatorOrigin() {
-  return GetAggregationCoordinatorOrigin(AggregationCoordinator::kDefault);
+  return GetCoordinatorOrigins().default_origin();
 }
 
 bool IsAggregationCoordinatorOriginAllowed(const url::Origin& origin) {
-  for (auto coordinator :
-       base::EnumSet<AggregationCoordinator, AggregationCoordinator::kMinValue,
-                     AggregationCoordinator::kMaxValue>::All()) {
-    if (origin == GetAggregationCoordinatorOrigin(coordinator)) {
-      return true;
-    }
-  }
-  return false;
+  return GetCoordinatorOrigins().contains(origin);
+}
+
+ScopedAggregationCoordinatorAllowlistForTesting::
+    ScopedAggregationCoordinatorAllowlistForTesting(
+        std::vector<url::Origin> origins)
+    : previous_(GetCoordinatorOrigins().origins()) {
+  GetCoordinatorOrigins() = CoordinatorOrigins(std::move(origins));
+}
+
+ScopedAggregationCoordinatorAllowlistForTesting::
+    ~ScopedAggregationCoordinatorAllowlistForTesting() {
+  GetCoordinatorOrigins() = CoordinatorOrigins(std::move(previous_));
 }
 
 }  // namespace aggregation_service

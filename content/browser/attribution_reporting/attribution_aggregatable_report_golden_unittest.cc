@@ -22,7 +22,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
-#include "components/aggregation_service/features.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
@@ -84,14 +84,12 @@ class AttributionAggregatableReportGoldenLatestVersionTest
     ASSERT_EQ(keyset.keys.size(), 1u);
 
     aggregation_service().SetPublicKeysForTesting(
-        GetAggregationServiceProcessingUrl(url::Origin::Create(
-            GURL(::aggregation_service::kAggregationServiceCoordinatorAwsCloud
-                     .Get()))),
+        GetAggregationServiceProcessingUrl(url::Origin::Create(GURL(
+            ::aggregation_service::kDefaultAggregationCoordinatorAwsCloud))),
         keyset);
     aggregation_service().SetPublicKeysForTesting(
-        GetAggregationServiceProcessingUrl(url::Origin::Create(
-            GURL(::aggregation_service::kAggregationServiceCoordinatorGcpCloud
-                     .Get()))),
+        GetAggregationServiceProcessingUrl(url::Origin::Create(GURL(
+            ::aggregation_service::kDefaultAggregationCoordinatorGcpCloud))),
         keyset);
 
     std::optional<std::vector<uint8_t>> private_key =
@@ -332,7 +330,7 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
        VerifyGoldenReport) {
   const auto kGcpCoordinatorOrigin =
       *attribution_reporting::SuitableOrigin::Deserialize(
-          ::aggregation_service::kAggregationServiceCoordinatorGcpCloud.Get());
+          ::aggregation_service::kDefaultAggregationCoordinatorGcpCloud);
 
   struct {
     AttributionReport report;

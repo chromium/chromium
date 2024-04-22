@@ -28,7 +28,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "components/aggregation_service/features.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
@@ -87,9 +87,8 @@ class PrivateAggregationReportGoldenLatestVersionTest : public testing::Test {
     ASSERT_EQ(keyset.keys.size(), 1u);
 
     aggregation_service().SetPublicKeysForTesting(
-        GetAggregationServiceProcessingUrl(url::Origin::Create(
-            GURL(::aggregation_service::kAggregationServiceCoordinatorAwsCloud
-                     .Get()))),
+        GetAggregationServiceProcessingUrl(
+            ::aggregation_service::GetDefaultAggregationCoordinatorOrigin()),
         std::move(keyset));
 
     std::optional<std::vector<uint8_t>> private_key =

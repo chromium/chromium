@@ -25,6 +25,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "components/aggregation_service/features.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
@@ -1301,10 +1302,9 @@ TEST_F(AggregationServiceStorageSqlTest,
 
 TEST_F(AggregationServiceStorageSqlTest,
        StoreRequestWithCoordinatorOrigin_DeserializedWithOrigin) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      ::aggregation_service::kAggregationServiceMultipleCloudProviders,
-      {{"aws_cloud", "https://coordinator.example"}});
+  ::aggregation_service::ScopedAggregationCoordinatorAllowlistForTesting
+      scoped_coordinator_allowlist(
+          {url::Origin::Create(GURL("https://coordinator.example"))});
 
   OpenDatabase();
 
@@ -1380,10 +1380,11 @@ TEST_F(AggregationServiceStorageSqlTest,
 
   // Turning the feature on should not affect the report loading.
   scoped_feature_list.Reset();
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      ::aggregation_service::kAggregationServiceMultipleCloudProviders,
-      {{"aws_cloud", "https://aws.example.test"},
-       {"gcp_cloud", "https://gcp.example.test"}});
+  scoped_feature_list.InitAndEnableFeature(
+      ::aggregation_service::kAggregationServiceMultipleCloudProviders);
+  ::aggregation_service::ScopedAggregationCoordinatorAllowlistForTesting
+      scoped_coordinator_allowlist(
+          {url::Origin::Create(GURL("https://a.test"))});
 
   ASSERT_EQ(GetRequestsReportingOnOrBefore(base::Time::Max()).size(), 1u);
   EXPECT_FALSE(GetRequestsReportingOnOrBefore(base::Time::Max())[0]
@@ -1395,7 +1396,7 @@ TEST_F(AggregationServiceStorageSqlTest,
   AggregationServicePayloadContents payload_contents =
       example_request.payload_contents();
   payload_contents.aggregation_coordinator_origin =
-      url::Origin::Create(GURL("https://aws.example.test"));
+      url::Origin::Create(GURL("https://a.test"));
 
   storage_->StoreRequest(
       AggregatableReportRequest::Create(payload_contents,
@@ -1407,7 +1408,7 @@ TEST_F(AggregationServiceStorageSqlTest,
                 .aggregation_coordinator_origin.value()
                 .GetURL()
                 .spec(),
-            "https://aws.example.test/");
+            "https://a.test/");
 
   // Turning the feature off should also not affect the report loading.
   scoped_feature_list.Reset();
@@ -1426,7 +1427,7 @@ TEST_F(AggregationServiceStorageSqlTest,
                 .aggregation_coordinator_origin.value()
                 .GetURL()
                 .spec(),
-            "https://aws.example.test/");
+            "https://a.test/");
   histograms_.ExpectTotalCount(
       "PrivacySandbox.AggregationService.Storage.Sql."
       "RequestDelayFromUpdatedReportTime2",
@@ -1435,11 +1436,13 @@ TEST_F(AggregationServiceStorageSqlTest,
 
 TEST_F(AggregationServiceStorageSqlTest,
        AggregationCoordinatorAllowlistChanges_ReportDeleted) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      ::aggregation_service::kAggregationServiceMultipleCloudProviders,
-      {{"aws_cloud", "https://aws.example.test"},
-       {"gcp_cloud", "https://gcp.example.test"}});
+  std::optional<
+      ::aggregation_service::ScopedAggregationCoordinatorAllowlistForTesting>
+      scoped_coordinator_allowlist;
+
+  scoped_coordinator_allowlist.emplace(
+      {url::Origin::Create(GURL("https://a.test"))});
+
   OpenDatabase();
 
   AggregatableReportRequest example_request =
@@ -1448,7 +1451,7 @@ TEST_F(AggregationServiceStorageSqlTest,
   AggregationServicePayloadContents payload_contents =
       example_request.payload_contents();
   payload_contents.aggregation_coordinator_origin =
-      url::Origin::Create(GURL("https://aws.example.test"));
+      url::Origin::Create(GURL("https://a.test"));
 
   storage_->StoreRequest(
       AggregatableReportRequest::Create(payload_contents,
@@ -1457,20 +1460,16 @@ TEST_F(AggregationServiceStorageSqlTest,
   EXPECT_EQ(GetRequestsReportingOnOrBefore(base::Time::Max()).size(), 1u);
 
   // If the origin is removed from the allowlist, the report is dropped.
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      ::aggregation_service::kAggregationServiceMultipleCloudProviders,
-      {{"aws_cloud", "https://aws2.example.test"},
-       {"gcp_cloud", "https://gcp.example.test"}});
+  scoped_coordinator_allowlist.reset();
+  scoped_coordinator_allowlist.emplace(
+      {url::Origin::Create(GURL("https://b.test"))});
 
   EXPECT_TRUE(GetRequestsReportingOnOrBefore(base::Time::Max()).empty());
 
   // Check that the report is not just ignored, but actually deleted.
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      ::aggregation_service::kAggregationServiceMultipleCloudProviders,
-      {{"aws_cloud", "https://aws.example.test"},
-       {"gcp_cloud", "https://gcp.example.test"}});
+  scoped_coordinator_allowlist.reset();
+  scoped_coordinator_allowlist.emplace(
+      {url::Origin::Create(GURL("https://a.test"))});
 
   EXPECT_TRUE(GetRequestsReportingOnOrBefore(base::Time::Max()).empty());
 

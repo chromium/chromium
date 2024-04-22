@@ -14,7 +14,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/aggregation_service/features.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
@@ -304,8 +304,8 @@ TEST(AggregatableAttributionUtilsTest, RoundsSourceRegistrationTime) {
 }
 
 TEST(AggregatableAttributionUtilsTest, AggregationCoordinatorSet) {
-  auto coordinator_origin = attribution_reporting::SuitableOrigin::Deserialize(
-      ::aggregation_service::kAggregationServiceCoordinatorAwsCloud.Get());
+  auto coordinator_origin = attribution_reporting::SuitableOrigin::Create(
+      ::aggregation_service::GetDefaultAggregationCoordinatorOrigin());
   AttributionReport report =
       ReportBuilder(AttributionInfoBuilder().Build(),
                     SourceBuilder().BuildStored())

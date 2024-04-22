@@ -25,7 +25,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "components/aggregation_service/features.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
@@ -226,27 +226,20 @@ class AggregatableReportTest : public ::testing::TestWithParam<bool> {
  public:
   void SetUp() override {
     if (GetParam()) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/{{kPrivacySandboxAggregationServiceReportPadding,
-                                 {}},
-                                {::aggregation_service::
-                                     kAggregationServiceMultipleCloudProviders,
-                                 {{"aws_cloud", "https://aws.example.test"},
-                                  {"gcp_cloud", "https://gcp.example.test"}}}},
-          /*disabled_features=*/{});
+      scoped_feature_list_.InitAndEnableFeature(
+          kPrivacySandboxAggregationServiceReportPadding);
     } else {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/{{::aggregation_service::
-                                     kAggregationServiceMultipleCloudProviders,
-                                 {{"aws_cloud", "https://aws.example.test"},
-                                  {"gcp_cloud", "https://gcp.example.test"}}}},
-          /*disabled_features=*/{
-              kPrivacySandboxAggregationServiceReportPadding});
+      scoped_feature_list_.InitAndDisableFeature(
+          kPrivacySandboxAggregationServiceReportPadding);
     }
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  ::aggregation_service::ScopedAggregationCoordinatorAllowlistForTesting
+      scoped_coordinator_allowlist_{
+          {url::Origin::Create(GURL("https://a.test")),
+           url::Origin::Create(GURL("https://b.test"))}};
 };
 
 TEST_P(AggregatableReportTest,
@@ -693,7 +686,7 @@ TEST_P(AggregatableReportTest, GetAsJsonOnePayload_ValidJsonReturned) {
 
   const char kExpectedJsonString[] =
       R"({)"
-      R"("aggregation_coordinator_origin":"https://aws.example.test",)"
+      R"("aggregation_coordinator_origin":"https://a.test",)"
       R"("aggregation_service_payloads":[)"
       R"({"key_id":"key_1","payload":"ABCD1234"})"
       R"(],)"
@@ -721,7 +714,7 @@ TEST_P(AggregatableReportTest, GetAsJsonTwoPayloads_ValidJsonReturned) {
 
   const char kExpectedJsonString[] =
       R"({)"
-      R"("aggregation_coordinator_origin":"https://aws.example.test",)"
+      R"("aggregation_coordinator_origin":"https://a.test",)"
       R"("aggregation_service_payloads":[)"
       R"({"key_id":"key_1","payload":"ABCD1234"},)"
       R"({"key_id":"key_2","payload":"EFGH5678"})"
@@ -748,7 +741,7 @@ TEST_P(AggregatableReportTest,
 
   const char kExpectedJsonString[] =
       R"({)"
-      R"("aggregation_coordinator_origin":"https://aws.example.test",)"
+      R"("aggregation_coordinator_origin":"https://a.test",)"
       R"("aggregation_service_payloads":[{)"
       R"("debug_cleartext_payload":"EFGH5678",)"
       R"("key_id":"key_1",)"
@@ -774,7 +767,7 @@ TEST_P(AggregatableReportTest, GetAsJsonDebugKey_ValidJsonReturned) {
 
   const char kExpectedJsonString[] =
       R"({)"
-      R"("aggregation_coordinator_origin":"https://aws.example.test",)"
+      R"("aggregation_coordinator_origin":"https://a.test",)"
       R"("aggregation_service_payloads":[{)"
       R"("debug_cleartext_payload":"EFGH5678",)"
       R"("key_id":"key_1",)"
@@ -805,7 +798,7 @@ TEST_P(AggregatableReportTest, GetAsJsonAdditionalFields_ValidJsonReturned) {
       R"({)"
       R"("":"",)"
       R"("additional_key":"example_value",)"
-      R"("aggregation_coordinator_origin":"https://aws.example.test",)"
+      R"("aggregation_coordinator_origin":"https://a.test",)"
       R"("aggregation_service_payloads":[{)"
       R"("key_id":"key_1",)"
       R"("payload":"ABCD1234")"
@@ -1009,9 +1002,8 @@ TEST_P(AggregatableReportTest, AggregationCoordinatorOrigin) {
     const char* description;
   } kTestCases[] = {
       {std::nullopt, true, "default coordinator"},
-      {url::Origin::Create(GURL("https://aws.example.test")), true,
-       "valid coordinator"},
-      {url::Origin::Create(GURL("https://a.test")), false,
+      {url::Origin::Create(GURL("https://a.test")), true, "valid coordinator"},
+      {url::Origin::Create(GURL("https://c.test")), false,
        "invalid coordinator"},
   };
 
@@ -1047,11 +1039,12 @@ TEST_P(AggregatableReportTest, AggregationCoordinatorOrigin) {
 }
 
 TEST_P(AggregatableReportTest, AggregationCoordinatorOriginAllowlistChanged) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      ::aggregation_service::kAggregationServiceMultipleCloudProviders,
-      {{"aws_cloud", "https://aws.example.test"},
-       {"gcp_cloud", "https://gcp.example.test"}});
+  std::optional<
+      ::aggregation_service::ScopedAggregationCoordinatorAllowlistForTesting>
+      scoped_coordinator_allowlist;
+
+  scoped_coordinator_allowlist.emplace(
+      {url::Origin::Create(GURL("https://a.test"))});
 
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest();
@@ -1059,7 +1052,7 @@ TEST_P(AggregatableReportTest, AggregationCoordinatorOriginAllowlistChanged) {
   AggregationServicePayloadContents payload_contents =
       example_request.payload_contents();
   payload_contents.aggregation_coordinator_origin =
-      url::Origin::Create(GURL("https://aws.example.test"));
+      url::Origin::Create(GURL("https://a.test"));
 
   AggregatableReportRequest request =
       AggregatableReportRequest::Create(payload_contents,
@@ -1069,11 +1062,9 @@ TEST_P(AggregatableReportTest, AggregationCoordinatorOriginAllowlistChanged) {
   std::vector<uint8_t> proto = request.Serialize();
 
   // Change the allowlist between serializing and deserializing
-  scoped_feature_list.Reset();
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      ::aggregation_service::kAggregationServiceMultipleCloudProviders,
-      {{"aws_cloud", "https://aws2.example.test"},
-       {"gcp_cloud", "https://gcp2.example.test"}});
+  scoped_coordinator_allowlist.reset();
+  scoped_coordinator_allowlist.emplace(
+      {url::Origin::Create(GURL("https://b.test"))});
 
   // Expect the report to fail to be recreated.
   std::optional<AggregatableReportRequest> parsed_request =
@@ -1107,7 +1098,7 @@ TEST_P(AggregatableReportTest, EmptyPayloads) {
 
   const char kExpectedJsonString[] =
       R"({)"
-      R"("aggregation_coordinator_origin":"https://aws.example.test",)"
+      R"("aggregation_coordinator_origin":"https://a.test",)"
       R"("shared_info":"example_shared_info")"
       R"(})";
   EXPECT_EQ(report_json_string, kExpectedJsonString);
@@ -1435,10 +1426,8 @@ TEST_P(AggregatableReportTest, ProcessingUrlSet) {
       aggregation_service::CreateExampleRequest();
   EXPECT_THAT(
       request.processing_urls(),
-      ::testing::ElementsAre(
-          GetAggregationServiceProcessingUrl(url::Origin::Create(
-              GURL(::aggregation_service::kAggregationServiceCoordinatorAwsCloud
-                       .Get())))));
+      ::testing::ElementsAre(GetAggregationServiceProcessingUrl(
+          ::aggregation_service::GetDefaultAggregationCoordinatorOrigin())));
 }
 
 TEST_P(AggregatableReportTest, AggregationCoordinator_ProcessingUrlSet) {
@@ -1448,21 +1437,21 @@ TEST_P(AggregatableReportTest, AggregationCoordinator_ProcessingUrlSet) {
   } kTestCases[] = {
       {
           std::nullopt,
-          {GURL("https://aws.example.test/.well-known/aggregation-service/v1/"
-                "public-keys")},
-      },
-      {
-          url::Origin::Create(GURL("https://aws.example.test")),
-          {GURL("https://aws.example.test/.well-known/aggregation-service/v1/"
-                "public-keys")},
-      },
-      {
-          url::Origin::Create(GURL("https://gcp.example.test")),
-          {GURL("https://gcp.example.test/.well-known/aggregation-service/v1/"
+          {GURL("https://a.test/.well-known/aggregation-service/v1/"
                 "public-keys")},
       },
       {
           url::Origin::Create(GURL("https://a.test")),
+          {GURL("https://a.test/.well-known/aggregation-service/v1/"
+                "public-keys")},
+      },
+      {
+          url::Origin::Create(GURL("https://b.test")),
+          {GURL("https://b.test/.well-known/aggregation-service/v1/"
+                "public-keys")},
+      },
+      {
+          url::Origin::Create(GURL("https://c.test")),
           {},
       },
   };
@@ -1502,11 +1491,6 @@ TEST_P(AggregatableReportTest, AggregationCoordinator_ProcessingUrlSet) {
 }
 
 TEST_P(AggregatableReportTest, AggregationCoordinator_SetInReport) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      ::aggregation_service::kAggregationServiceMultipleCloudProviders,
-      {{"aws_cloud", "https://aws.example.test"}});
-
   std::vector<AggregatableReport::AggregationServicePayload> payloads;
   payloads.emplace_back(/*payload=*/kABCD1234AsBytes,
                         /*key_id=*/"key_1",
@@ -1522,7 +1506,7 @@ TEST_P(AggregatableReportTest, AggregationCoordinator_SetInReport) {
 
   const char kExpectedJsonString[] =
       R"({)"
-      R"("aggregation_coordinator_origin":"https://aws.example.test",)"
+      R"("aggregation_coordinator_origin":"https://a.test",)"
       R"("aggregation_service_payloads":[)"
       R"({"key_id":"key_1","payload":"ABCD1234"})"
       R"(],)"
