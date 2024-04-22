@@ -23,6 +23,9 @@ source_set("starboard") {
     "starboard_resampler.h",
     "starboard_video_decoder.cc",
     "starboard_video_decoder.h",
+    "starboard_video_plane.cc",
+    "starboard_video_plane.h",
+    "starboard_volume_control.cc",
   ]
   deps = [
     ":starboard_api_wrapper",
@@ -123,6 +126,17 @@ test("starboard_resampler_test") {
     "//chromecast/media/cma/base",
     "//chromecast/public",
     "//media",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+test("starboard_video_plane_test") {
+  sources = [ "starboard_video_plane_test.cc" ]
+  deps = [
+    ":starboard",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]
