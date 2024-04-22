@@ -48,11 +48,6 @@ class ExtensionActionTestHelper {
   // Inspects the extension popup for the action with the given `id`.
   virtual void InspectPopup(const extensions::ExtensionId& id) = 0;
 
-  // Returns whether the extension action for the given `id` has a non-null
-  // icon. Note that the icon is loaded asynchronously, in which case you can
-  // wait for it to load by calling WaitForBrowserActionUpdated.
-  virtual bool HasIcon(const extensions::ExtensionId& id) = 0;
-
   // Returns icon for the action for the given `id`.
   virtual gfx::Image GetIcon(const extensions::ExtensionId& id) = 0;
 

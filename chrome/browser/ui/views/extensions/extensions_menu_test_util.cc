@@ -149,14 +149,6 @@ void ExtensionsMenuTestUtil::InspectPopup(const extensions::ExtensionId& id) {
   view_controller->InspectPopup();
 }
 
-bool ExtensionsMenuTestUtil::HasIcon(const extensions::ExtensionId& id) {
-  ExtensionMenuItemView* view = GetMenuItemViewForId(id);
-  DCHECK(view);
-  return !view->primary_action_button_for_testing()
-              ->GetImage(views::Button::STATE_NORMAL)
-              .isNull();
-}
-
 gfx::Image ExtensionsMenuTestUtil::GetIcon(const extensions::ExtensionId& id) {
   ExtensionMenuItemView* view = GetMenuItemViewForId(id);
   DCHECK(view);

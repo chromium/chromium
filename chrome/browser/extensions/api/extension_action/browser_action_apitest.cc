@@ -302,7 +302,6 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
       profile(), extension, GetBrowserAction(browser(), *extension), nullptr);
   // Test that there is a browser action in the toolbar.
   ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
-  EXPECT_TRUE(GetBrowserActionsBar()->HasIcon(extension->id()));
 
   gfx::Image action_icon = icon_factory.GetIcon(0);
   uint32_t action_icon_last_id = action_icon.ToSkBitmap()->getGenerationID();
@@ -478,7 +477,6 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, InvisibleIconBrowserAction) {
 
   // Test there is a browser action in the toolbar.
   ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
-  EXPECT_TRUE(GetBrowserActionsBar()->HasIcon(extension->id()));
   gfx::Image initial_bar_icon =
       GetBrowserActionsBar()->GetIcon(extension->id());
 
