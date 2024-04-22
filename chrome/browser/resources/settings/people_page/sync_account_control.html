@@ -164,23 +164,25 @@
                 '$i18nPolymer{signedInTo}', '$i18nPolymer{syncingTo}',
                 shownAccount_.email, syncStatus.hasError, syncStatus.signedIn,
                 syncStatus.disabled, syncStatus.firstSetupInProgress,
-                shownAccount_.isPrimaryAccount)]]
+                shownAccount_.isPrimaryAccount, syncStatus.signinPaused)]]
           </div>
         </div>
 <!-- Chrome OS does not allow switching users for sync. -->
 <if expr="not chromeos_ash">
         <cr-icon-button class="icon-arrow-dropdown cr-button-gap"
             hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedIn,
-                syncStatus.domain)]]"
+                syncStatus.domain, syncStatus.signinPaused)]]"
             on-click="onMenuButtonClick_" id="dropdown-arrow"
             aria-label="$i18n{useAnotherAccount}">
         </cr-icon-button>
         <div class="separator"
             hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedIn,
-                syncStatus.domain)]]"></div>
+                syncStatus.domain, syncStatus.signinPaused)]]">
+        </div>
 </if>
         <cr-button id="sync-button" class="action-button cr-button-gap"
-            hidden="[[shouldHideSyncButton_(syncStatus.signedIn)]]"
+            hidden="[[shouldHideSyncButton_(syncStatus.signedIn,
+                syncStatus.signinPaused)]]"
             on-click="onSyncButtonClick_"
             disabled="[[shouldDisableSyncButton_(showSetupButtons_,
                     syncStatus.firstSetupInProgress,
@@ -210,12 +212,23 @@
             $i18n{confirm}
           </cr-button>
         </div>
+        <div id="signin-paused-buttons"
+            hidden="[[!shouldShowSigninPausedButtons_(
+                syncStatus.signinPaused)]]">
+          <cr-button class="cr-button-gap" on-click="onSigninClick_">
+            $i18n{signinPaused}
+          </cr-button>
+          <cr-button class="cr-button-gap" on-click="onSignoutClick_">
+            $i18n{peopleSignOut}
+          </cr-button>
+        </div>
+
       </div>
 <!-- Chrome OS does not allow switching users for sync. -->
 <if expr="not chromeos_ash">
       <template is="dom-if"
           if="[[shouldAllowAccountSwitch_(syncStatus.signedIn,
-              syncStatus.domain)]]" restamp>
+              syncStatus.domain, syncStatus.signinPaused)]]" restamp>
         <cr-action-menu id="menu" auto-reposition
             role-description="$i18n{menu}">
           <template is="dom-repeat" items="[[storedAccounts_]]">

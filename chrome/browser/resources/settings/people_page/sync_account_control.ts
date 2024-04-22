@@ -227,19 +227,24 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private getAccountLabel_(
-      signedInLabel: string, syncingLabel: string, account: string): string {
+      signedInLabel: string, syncingLabel: string, email: string): string {
+    // When in sign in paused, only show the email address.
+    if (this.syncStatus.signinPaused) {
+      return email;
+    }
+
     if (this.syncStatus.firstSetupInProgress) {
-      return this.syncStatus.statusText || account;
+      return this.syncStatus.statusText || email;
     }
 
     if (this.syncStatus.signedIn && !this.syncStatus.hasError &&
         !this.syncStatus.disabled) {
-      return loadTimeData.substituteString(syncingLabel, account);
+      return loadTimeData.substituteString(syncingLabel, email);
     }
 
-    return (this.shownAccount_ && this.shownAccount_!.isPrimaryAccount) ?
-        loadTimeData.substituteString(signedInLabel, account) :
-        account;
+    return (this.shownAccount_! && this.shownAccount_!!.isPrimaryAccount) ?
+        loadTimeData.substituteString(signedInLabel, email) :
+        email;
   }
 
   private getAccountImageSrc_(image: string|null): string {
@@ -326,12 +331,13 @@ export class SettingsSyncAccountControlElement extends
 
   /**
    * Determines whether the sync button should be hidden, in the case where the
-   * user has sync enabled or if the property to hide the banner was explicitly
-   * set.
+   * user has sync enabled, is in sign in paused, or if the property to hide
+   * the banner was explicitly set.
    */
   private shouldHideSyncButton_(): boolean {
     return this.hideButtons ||
-        (!!this.syncStatus && !!this.syncStatus.signedIn);
+        (!!this.syncStatus &&
+         (!!this.syncStatus.signedIn || !!this.syncStatus.signinPaused));
   }
 
   private shouldShowTurnOffButton_(): boolean {
@@ -368,6 +374,7 @@ export class SettingsSyncAccountControlElement extends
     }
     // </if>
     return !this.syncStatus.signedIn && !this.hideButtons &&
+        !this.syncStatus.signinPaused &&
         (!loadTimeData.getBoolean('turnOffSyncAllowedForManagedProfiles') ||
          !this.syncStatus.domain);
   }
@@ -514,6 +521,10 @@ export class SettingsSyncAccountControlElement extends
   private onSetupConfirm_() {
     this.dispatchEvent(new CustomEvent(
         'sync-setup-done', {bubbles: true, composed: true, detail: true}));
+  }
+
+  private shouldShowSigninPausedButtons_() {
+    return !!this.syncStatus && !!this.syncStatus.signinPaused;
   }
 }
 

@@ -219,7 +219,16 @@ bool IsChangePrimaryAccountAllowed(Profile* profile, const std::string& email) {
       email,
       identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin).email);
 }
+
+bool IsSigninPaused(signin::IdentityManager* identity_manager) {
+  return !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
+         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+         identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+             identity_manager->GetPrimaryAccountId(
+                 signin::ConsentLevel::kSignin));
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 
 namespace settings {
@@ -395,7 +404,8 @@ void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
   // If the identity manager already has a primary account, this is a
   // re-auth scenario, and we need to ensure that the user signs in with the
   // same email address.
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) ||
+      IsSigninPaused(identity_manager)) {
     SigninErrorController* error_controller =
         SigninErrorControllerFactory::GetForProfile(profile_);
     DCHECK(error_controller->HasError());
@@ -462,11 +472,11 @@ void PeopleHandler::HandleGetStoredAccounts(const base::Value::List& args) {
 }
 
 void PeopleHandler::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
-  FireWebUIListener("stored-accounts-updated", GetStoredAccountsList());
+  UpdateStoredAccounts();
 }
 
 void PeopleHandler::OnExtendedAccountInfoRemoved(const AccountInfo& info) {
-  FireWebUIListener("stored-accounts-updated", GetStoredAccountsList());
+  UpdateStoredAccounts();
 }
 
 void PeopleHandler::OnRefreshTokenUpdatedForAccount(
@@ -482,6 +492,18 @@ void PeopleHandler::OnAccountsInCookieUpdated(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   UpdateChromeSigninUserChoiceInfo();
 #endif
+}
+
+void PeopleHandler::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  if (identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin) ==
+      account_info) {
+    UpdateSyncStatus();
+  }
 }
 
 base::Value::List PeopleHandler::GetStoredAccountsList() {
@@ -945,6 +967,8 @@ void PeopleHandler::OnPrimaryAccountChanged(
     case signin::PrimaryAccountChangeEvent::Type::kSet:
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       UpdateChromeSigninUserChoiceInfo();
+      UpdateStoredAccounts();
+      UpdateSyncStatus();
       break;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
@@ -1045,6 +1069,9 @@ base::Value::Dict PeopleHandler::GetSyncStatusDictionary() const {
                   signin_ui_util::GetAuthenticatedUsername(profile_));
   sync_status.Set("hasUnrecoverableError",
                   service && service->HasUnrecoverableError());
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  sync_status.Set("signinPaused", IsSigninPaused(identity_manager));
+#endif
   return sync_status;
 }
 
@@ -1135,6 +1162,10 @@ LoginUIService* PeopleHandler::GetLoginUIService() const {
 
 void PeopleHandler::UpdateSyncStatus() {
   FireWebUIListener("sync-status-changed", GetSyncStatusDictionary());
+}
+
+void PeopleHandler::UpdateStoredAccounts() {
+  FireWebUIListener("stored-accounts-updated", GetStoredAccountsList());
 }
 
 void PeopleHandler::MarkFirstSetupComplete() {

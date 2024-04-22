@@ -5,8 +5,9 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // <if expr="not chromeos_ash">
-import type {CrActionMenuElement} from 'chrome://settings/settings.js';
+import type {CrActionMenuElement, StoredAccount} from 'chrome://settings/settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 // </if>
 
 import type {SettingsSyncAccountControlElement} from 'chrome://settings/settings.js';
@@ -619,4 +620,55 @@ suite('SyncAccountControl', function() {
     flush();
     assertTrue(testElement.$.signIn.disabled);
   });
+
+  // <if expr="not chromeos_ash">
+  test('signinPaused effects', function() {
+    // <if expr="chromeos_lacros">
+    // For Lacros, force the page to be loaded as if it was a secondary user so
+    // that it is similar to other platforms. E.g. the drowdown menu would not
+    // show on lacros main user.
+    loadTimeData.overrideValues({isSecondaryUser: true});
+    // </if>
+
+    const signedInAccount: StoredAccount = {
+      fullName: 'fooName',
+      givenName: 'foo',
+      email: 'foo@foo.com',
+      isPrimaryAccount: true,
+    };
+    // Set primary account.
+    simulateStoredAccounts([signedInAccount]);
+
+    // Signed in but not syncing.
+    testElement.syncStatus = {
+      statusAction: StatusAction.NO_ACTION,
+      signedIn: false,
+      signinPaused: false,
+    };
+
+    assertTrue(isChildVisible(testElement, '#avatar-row'));
+    const userInfo =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#user-info')!;
+    const secondaryContentSignedIn = userInfo.children[1]!.textContent!;
+    assertNotEquals(secondaryContentSignedIn.trim(), signedInAccount.email);
+    assertFalse(isChildVisible(testElement, '#signin-paused-buttons'));
+    assertTrue(isChildVisible(testElement, '#dropdown-arrow'));
+    assertTrue(isChildVisible(testElement, '#sync-button'));
+
+    // Set Signed in Paused state.
+    testElement.syncStatus = {
+      statusAction: StatusAction.NO_ACTION,
+      signedIn: false,
+      signinPaused: true,
+    };
+
+    assertTrue(isChildVisible(testElement, '#avatar-row'));
+    const secondaryContentSigninPaused = userInfo.children[1]!.textContent!;
+    assertNotEquals(secondaryContentSignedIn, secondaryContentSigninPaused);
+    assertEquals(secondaryContentSigninPaused.trim(), signedInAccount.email);
+    assertTrue(isChildVisible(testElement, '#signin-paused-buttons'));
+    assertFalse(isChildVisible(testElement, '#dropdown-arrow'));
+    assertFalse(isChildVisible(testElement, '#sync-button'));
+  });
+  // </if>
 });

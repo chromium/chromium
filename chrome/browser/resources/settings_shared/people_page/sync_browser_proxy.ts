@@ -39,6 +39,7 @@ export interface SyncStatus {
   statusText?: string;
   supervisedUser?: boolean;
   syncSystemEnabled?: boolean;
+  signinPaused?: boolean;
 }
 
 /**
