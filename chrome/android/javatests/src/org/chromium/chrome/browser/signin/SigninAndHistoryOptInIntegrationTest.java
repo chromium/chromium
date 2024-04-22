@@ -128,7 +128,7 @@ public class SigninAndHistoryOptInIntegrationTest {
                 HistoryOptInMode.REQUIRED);
 
         verifyCollapsedBottomSheetAndSignin(accountInfo);
-        acceptHistorySyncAndVerifyFlowCompletion();
+        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ false);
     }
 
     @Test
@@ -158,20 +158,8 @@ public class SigninAndHistoryOptInIntegrationTest {
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.REQUIRED);
 
-        // Verify that the history opt-in dialog is shown and accept.
-        onViewWaiting(withId(R.id.history_sync_illustration), /* checkRootDialog= */ true)
-                .check(matches(isDisplayed()));
-        onViewWaiting(
-                        allOf(withId(R.id.button_primary), isCompletelyDisplayed()),
-                        /* checkRootDialog= */ true)
-                .perform(click());
-
-        // Verify signin and history sync state.
+        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
         assertNotNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
-        SyncTestUtil.waitForHistorySyncEnabled();
-
-        // Verify that the flow completion callback, which finishes the activity, is called.
-        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
     }
 
     @Test
@@ -210,7 +198,7 @@ public class SigninAndHistoryOptInIntegrationTest {
                 HistoryOptInMode.OPTIONAL);
 
         verifyCollapsedBottomSheetAndSignin(accountInfo);
-        acceptHistorySyncAndVerifyFlowCompletion();
+        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ false);
     }
 
     @Test
@@ -384,12 +372,11 @@ public class SigninAndHistoryOptInIntegrationTest {
                 HistoryOptInMode.REQUIRED);
 
         verifyNoAccountBottomSheetAndSignin();
-        acceptHistorySyncAndVerifyFlowCompletion();
+        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ false);
     }
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/335867572")
     public void testWithNoAccount_instantSignin_requiredHistorySync() {
         CoreAccountInfo accountInfo = AccountManagerTestRule.TEST_ACCOUNT_1;
         mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, accountInfo.getEmail());
@@ -399,7 +386,7 @@ public class SigninAndHistoryOptInIntegrationTest {
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.REQUIRED);
 
-        acceptHistorySyncAndVerifyFlowCompletion();
+        acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
     }
 
     @Test
@@ -461,10 +448,23 @@ public class SigninAndHistoryOptInIntegrationTest {
         mSigninTestRule.waitForSignin(accountInfo);
     }
 
-    private void acceptHistorySyncAndVerifyFlowCompletion() {
+    // `checkDialogRoot` should be set to true for tests that fail due to Espresso using the wrong
+    // root view for dialogs on API30+ (Mostly when the dialog appears without the bottom sheet
+    // being shown before).
+    // See https://crbug.com/332025155.
+    private void acceptHistorySyncAndVerifyFlowCompletion(boolean checkDialogRoot) {
         // Verify that the history opt-in dialog is shown and accept.
-        onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
-        onView(allOf(withId(R.id.button_primary), isCompletelyDisplayed())).perform(click());
+        if (checkDialogRoot) {
+            onViewWaiting(withId(R.id.history_sync_illustration), /* checkRootDialog= */ true)
+                    .check(matches(isDisplayed()));
+            onViewWaiting(
+                            allOf(withId(R.id.button_primary), isCompletelyDisplayed()),
+                            /* checkRootDialog= */ true)
+                    .perform(click());
+        } else {
+            onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
+            onView(allOf(withId(R.id.button_primary), isCompletelyDisplayed())).perform(click());
+        }
 
         // Verify history sync state.
         SyncTestUtil.waitForHistorySyncEnabled();
