@@ -5,21 +5,15 @@
 package org.chromium.chrome.test.transit;
 
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
 
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.StationFacility;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.ViewElement;
-import org.chromium.chrome.test.R;
 
-public class PopupBlockedMessageFacility extends StationFacility<PageStation> {
+/** Represents a "Pop-up blocked" message. */
+public class PopupBlockedMessageFacility extends MessageFacility {
 
-    public static final ViewElement ICON = sharedViewElement(withId(R.id.message_icon));
-    public static final ViewElement ALWAYS_SHOW_BUTTON = sharedViewElement(withText("Always show"));
+    public static final ViewElement ALWAYS_SHOW_BUTTON = primaryButtonViewElement("Always show");
 
     private final int mCount;
 
@@ -30,13 +24,16 @@ public class PopupBlockedMessageFacility extends StationFacility<PageStation> {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        elements.declareView(ICON);
+        super.declareElements(elements);
+
+        String title;
         if (mCount == 1) {
-            elements.declareView(sharedViewElement(withText("Pop-up blocked")));
+            title = "Pop-up blocked";
         } else {
-            elements.declareView(
-                    sharedViewElement(withText(String.format("%s pop-ups blocked", mCount))));
+            title = String.format("%s pop-ups blocked", mCount);
         }
+        elements.declareView(titleViewElement(title));
+
         elements.declareView(ALWAYS_SHOW_BUTTON);
     }
 

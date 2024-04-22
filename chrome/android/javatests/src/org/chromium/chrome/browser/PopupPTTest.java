@@ -87,6 +87,15 @@ public class PopupPTTest {
         PopupBlockedMessageFacility popupBlockedMessage = pair.second;
 
         assertEquals(1, sActivityTestRule.tabsCount(/* incognito= */ false));
+
+        popupBlockedMessage.dismiss();
+
+        // Test that dismissing does not allow the popups and they get blocked again
+        pair = PopupOnLoadPageStation.loadInCurrentTabExpectBlocked(sActivityTestRule, page);
+        page = pair.first;
+        popupBlockedMessage = pair.second;
+
+        assertEquals(1, sActivityTestRule.tabsCount(/* incognito= */ false));
         assertFinalDestination(page, popupBlockedMessage);
     }
 

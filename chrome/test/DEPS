@@ -52,6 +52,7 @@ include_rules = [
   "+components/manta",
   "+components/memory_system",
   "+components/media_router/browser",
+  "+components/messages",
   "+components/metrics",
   "+components/nacl/browser",
   "+components/nacl/common",
