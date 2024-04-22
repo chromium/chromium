@@ -57,7 +57,8 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorDownloadBubbleRowHover] = {ui::kColorSysStateHoverOnSubtle};
   mixer[kColorDownloadBubbleShowAllDownloadsIcon] = {
       ui::kColorSysOnSurfaceSubtle};
-  mixer[kColorDownloadBubbleInfoBackground] = {ui::kColorSysSurface};
+  mixer[kColorDownloadBubbleInfoBackground] = {
+      ui::kColorSubtleEmphasisBackground};
   mixer[kColorDownloadBubbleInfoIcon] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorDownloadBubbleShowAllDownloadsIcon] = {ui::kColorIconSecondary};
   mixer[kColorDownloadBubblePrimaryIcon] = {ui::kColorSysPrimary};
