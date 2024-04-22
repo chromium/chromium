@@ -38,8 +38,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
@@ -115,6 +115,8 @@ public class HistoryManager
      *     the main Chrome activity.
      * @param snackbarManager The {@link SnackbarManager} used to display snackbars.
      * @param profile The profile launching History.
+     * @param bottomSheetController Supplier of {@link BottomSheetController} to show app filter
+     *     sheet in.
      * @param tabSupplier Supplies the current tab, null if the history UI will be shown in a
      *     separate activity.
      * @param historyProvider Provider of methods for querying and managing browsing history.
@@ -122,6 +124,7 @@ public class HistoryManager
      * @param clientPackageName Package name of the client the history UI is launched on top of.
      * @param shouldShowClearData Whether the 'Clear browsing data' button should be shown.
      * @param launchedForApp Whether history UI is launched for app-specific history.
+     * @param showAppFilter Whether history page will show app filter UI.
      */
     @SuppressWarnings("unchecked") // mSelectableListLayout
     public HistoryManager(
@@ -129,12 +132,14 @@ public class HistoryManager
             boolean isSeparateActivity,
             @NonNull SnackbarManager snackbarManager,
             @NonNull Profile profile,
+            @Nullable Supplier<BottomSheetController> bottomSheetController,
             @Nullable Supplier<Tab> tabSupplier,
             HistoryProvider historyProvider,
             @NonNull HistoryUmaRecorder umaRecorder,
             @Nullable String clientPackageName,
             boolean shouldShowClearData,
-            boolean launchedForApp) {
+            boolean launchedForApp,
+            boolean showAppFilter) {
         mActivity = activity;
         mIsSeparateActivity = isSeparateActivity;
         mSnackbarManager = snackbarManager;
@@ -179,10 +184,13 @@ public class HistoryManager
                         shouldShowClearData,
                         /* hostName= */ null,
                         mSelectionDelegate,
+                        bottomSheetController,
                         tabSupplier,
+                        () -> mToolbar.hideKeyboard(),
                         historyProvider,
                         clientPackageName,
-                        launchedForApp);
+                        launchedForApp,
+                        showAppFilter);
         mSelectableListLayout.initializeRecyclerView(
                 mContentManager.getAdapter(), mContentManager.getRecyclerView());
 
@@ -228,11 +236,12 @@ public class HistoryManager
                 .addObserver((x) -> onBackPressStateChanged());
 
         onBackPressStateChanged(); // Initialize back press State.
+        mContentManager.maybeQueryApps();
     }
 
     /**
      * @return Whether the history manager UI is displayed in a separate activity than the main
-     *         Chrome activity.
+     *     Chrome activity.
      */
     public boolean isDisplayedInSeparateActivity() {
         return mIsSeparateActivity;
@@ -525,13 +534,6 @@ public class HistoryManager
         IntentUtils.addTrustedIntentExtras(fullHistoryIntent);
         mActivity.startActivity(fullHistoryIntent);
         mUmaRecorder.recordOpenFullHistory();
-    }
-
-    @Override
-    public void onAppFilterClicked() {
-        ChipView chip = (ChipView) mActivity.findViewById(R.id.app_history_filter_chip);
-        chip.setSelected(true);
-        chip.setIcon(R.drawable.ic_check_googblue_24dp, true);
     }
 
     // HistoryContentManager.Observer

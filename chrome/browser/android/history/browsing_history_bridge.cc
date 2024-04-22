@@ -94,8 +94,8 @@ void BrowsingHistoryBridge::OnGetAllAppIds(
         env, j_app_ids_result_obj_,
         base::android::ConvertUTF8ToJavaString(env, id));
   }
-  Java_BrowsingHistoryBridge_onQueryAppIdComplete(env, j_history_service_obj_,
-                                                  j_app_ids_result_obj_);
+  Java_BrowsingHistoryBridge_onQueryAppsComplete(env, j_history_service_obj_,
+                                                 j_app_ids_result_obj_);
 }
 
 void BrowsingHistoryBridge::GetLastVisitToHostBeforeRecentNavigations(

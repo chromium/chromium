@@ -11,6 +11,8 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.provider.Browser;
 import android.view.ContextThemeWrapper;
@@ -31,7 +33,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar.PrefObserver;
@@ -42,6 +44,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewHolder;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -87,9 +90,6 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         /** Called after a user clicks the open full Chrome history button. */
         void onOpenFullChromeHistoryClicked();
 
-        /** Called after a user clicks the filter by app button. */
-        default void onAppFilterClicked() {}
-
         /** Called to notify when the user's sign in or pref state has changed. */
         void onUserAccountStateChanged();
 
@@ -116,6 +116,10 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private final boolean mIsScrollToLoadDisabled;
     private final boolean mShouldShowClearDataIfAvailable;
     private final String mHostName;
+    private final Runnable mHideSoftKeyboard;
+    private final boolean mShowAppFilter;
+    private final List<AppInfo> mAppInfoList = new ArrayList<>();
+    private final Supplier<BottomSheetController> mBottomSheetController;
     private final Supplier<Tab> mTabSupplier;
     private HistoryAdapter mHistoryAdapter;
     private RecyclerView mRecyclerView;
@@ -125,6 +129,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private boolean mLaunchedForApp;
     private PrefChangeRegistrar mPrefChangeRegistrar;
     private String mAppId;
+    private AppFilterCoordinator mAppFilterSheet;
+    private AppInfo mCurrentApp;
 
     /**
      * Creates a new HistoryContentManager.
@@ -157,15 +163,21 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
             boolean shouldShowClearDataIfAvailable,
             @Nullable String hostName,
             @Nullable SelectionDelegate<HistoryItem> selectionDelegate,
+            @Nullable Supplier<BottomSheetController> bottomSheetController,
             @Nullable Supplier<Tab> tabSupplier,
+            @Nullable Runnable hideSoftKeyboard,
             HistoryProvider historyProvider,
             String appId,
-            boolean launchedForApp) {
+            boolean launchedForApp,
+            boolean showAppFilter) {
         mActivity = activity;
         mObserver = observer;
         mIsSeparateActivity = isSeparateActivity;
         mIsIncognito = profile.isOffTheRecord();
         mProfile = profile;
+        mBottomSheetController = bottomSheetController;
+        mHideSoftKeyboard = hideSoftKeyboard;
+        mShowAppFilter = showAppFilter;
         mShouldShowPrivacyDisclaimers = shouldShowPrivacyDisclaimers;
         mShouldShowClearDataIfAvailable = shouldShowClearDataIfAvailable;
         mHostName = hostName;
@@ -265,7 +277,49 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mHistoryAdapter.startLoadingItems();
     }
 
-    /** @return The RecyclerView for this HistoryContentManager. */
+    /** Query all app IDs from the history database if required. */
+    void maybeQueryApps() {
+        if (!showAppFilter()) return;
+
+        // TODO: Measure the time to get the query result.
+        mHistoryAdapter.queryApps();
+    }
+
+    /**
+     * Build a list of {@link AppInfo} using the app query result.
+     *
+     * @param appIds List of app IDs found from the history database.
+     * @return {@code true} if we have non-empty list of the apps to show.
+     */
+    boolean buildAppInfoList(List<String> appIds) {
+        mAppInfoList.clear();
+        PackageManager pm = mActivity.getPackageManager();
+        for (String appId : appIds) {
+            try {
+                var icon = pm.getApplicationIcon(appId);
+                var appInfo = pm.getApplicationInfo(appId, PackageManager.GET_META_DATA);
+                var label = pm.getApplicationLabel(appInfo);
+                mAppInfoList.add(new AppInfo(appId, icon, label));
+            } catch (NameNotFoundException e) {
+                // Can happen if the corresponding app was uninstalled, or unavailable for any
+                // reason. Filter it out for now. TODO: Consider keeping it with a default app
+                // icon + label.
+            }
+        }
+        return hasFilterList();
+    }
+
+    /**
+     * @return Whether there is apps to show in the filter UI. Could be false if the query is not
+     *     completed or the result indeed is empty.
+     */
+    boolean hasFilterList() {
+        return !mAppInfoList.isEmpty();
+    }
+
+    /**
+     * @return The RecyclerView for this HistoryContentManager.
+     */
     public RecyclerView getRecyclerView() {
         return mRecyclerView;
     }
@@ -370,7 +424,14 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      * @return True if history UI was launched for the app-specific mode.
      */
     boolean launchedForApp() {
-        return ChromeFeatureList.sAppSpecificHistory.isEnabled() && mLaunchedForApp;
+        return HistoryManager.isAppSpecificHistoryEnabled() && mLaunchedForApp;
+    }
+
+    /**
+     * @return True if history page needs to show app filter UI.
+     */
+    boolean showAppFilter() {
+        return HistoryManager.isAppSpecificHistoryEnabled() && mShowAppFilter;
     }
 
     /** returns whether the info header will be available for user upon request. */
@@ -543,7 +604,11 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
     /** Called after a user clicks the filter by app button. */
     void onAppFilterClicked() {
-        mObserver.onAppFilterClicked();
+        // Search mode starts with the soft keyboard open. Hide it first for the sheet
+        // to appear at the bottom as expected.
+        mHideSoftKeyboard.run();
+
+        // TODO: Open app filter sheet.
     }
 
     /** Removes the list header. */

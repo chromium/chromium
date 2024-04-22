@@ -33,6 +33,9 @@ public class TestBrowsingHistoryObserver implements BrowsingHistoryObserver {
     @Override
     public void hasOtherFormsOfBrowsingData(boolean hasOtherForms) {}
 
+    @Override
+    public void onQueryAppsComplete(List<String> items) {}
+
     /**
      * Simple accessor to the internal CallbackHelper.
      *

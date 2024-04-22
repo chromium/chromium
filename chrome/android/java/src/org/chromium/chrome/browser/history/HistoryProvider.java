@@ -32,9 +32,17 @@ public interface HistoryProvider {
         /**
          * Called after querying history to indicate whether other forms of browsing history were
          * found.
+         *
          * @param hasOtherForms Whether other forms of browsing history were found.
          */
         void hasOtherFormsOfBrowsingData(boolean hasOtherForms);
+
+        /**
+         * Called after {@link BrowsingHistoryBridge#getAllAppIds()} is complete.
+         *
+         * @param items The list of app IDs.
+         */
+        void onQueryAppsComplete(List<String> items);
     }
 
     /** Sets the {@link BrowsingHistoryObserver} to be notified of browsing history events. */
@@ -65,7 +73,7 @@ public interface HistoryProvider {
     void queryHistoryContinuation();
 
     /** Fetches all the app IDs used in the database. */
-    void getAllAppIds();
+    void queryApps();
 
     /**
      * Gets the last time any webpage on the given host was visited, excluding the last navigation

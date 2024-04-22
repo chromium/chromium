@@ -86,6 +86,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -108,6 +109,7 @@ public class HistoryUITest {
     private StubbedHistoryProvider mHistoryProvider;
     private HistoryAdapter mAdapter;
     private HistoryManager mHistoryManager;
+    private HistoryContentManager mContentManager;
     private RecyclerView mRecyclerView;
     private Activity mActivity;
 
@@ -166,14 +168,17 @@ public class HistoryUITest {
                         true,
                         mSnackbarManager,
                         mProfile,
+                        /* bottomSheetController= */ null,
                         /* Supplier<Tab>= */ null,
                         mHistoryProvider,
                         new HistoryUmaRecorder(),
                         null,
                         true,
-                        false);
-        mAdapter = mHistoryManager.getContentManagerForTests().getAdapter();
-        mRecyclerView = mHistoryManager.getContentManagerForTests().getRecyclerView();
+                        false,
+                        ChromeFeatureList.isEnabled(ChromeFeatureList.APP_SPECIFIC_HISTORY));
+        mContentManager = mHistoryManager.getContentManagerForTests();
+        mAdapter = mContentManager.getAdapter();
+        mRecyclerView = mContentManager.getRecyclerView();
 
         // Layout the recycler view with ample height so that we can measure how much height it
         // needs to fully display its initial set of items.
@@ -445,6 +450,32 @@ public class HistoryUITest {
         Assert.assertTrue(mAdapter.hasListHeader());
     }
 
+    @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
+    @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Test
+    @SmallTest
+    public void testSearch_AppFilterChipEnabledWithNonEmptyAppResult() {
+        Assert.assertTrue(mHistoryProvider.isQueryAppsTriggered());
+        mAdapter.setClearBrowsingDataButtonVisibilityForTest(false);
+        mAdapter.setPrivacyDisclaimer();
+        Assert.assertFalse(mAdapter.hasListHeader());
+        performMenuAction(R.id.search_menu_id);
+
+        // Verify the button starts disabled.
+        Assert.assertFalse(mAdapter.getAppFilterButtonForTest().isEnabled());
+
+        // Verify the button remains disabled if the query app result is empty.
+        var result = new ArrayList<String>();
+        mAdapter.onQueryAppsComplete(result);
+        Assert.assertFalse(mAdapter.getAppFilterButtonForTest().isEnabled());
+
+        // Verify the button becomes enabled if the app result is non-empty.
+        result.add("org.chromium.chrome.ernie");
+        result.add("org.chromium.chrome.bert");
+        mAdapter.onQueryAppsComplete(result);
+        Assert.assertFalse(mAdapter.getAppFilterButtonForTest().isEnabled());
+    }
+
     @Test
     @SmallTest
     public void testSearchViewDismissedByBackPress() {
@@ -606,12 +637,14 @@ public class HistoryUITest {
                         true,
                         mSnackbarManager,
                         mProfile,
+                        /* bottomSheetController= */ null,
                         /* Supplier<Tab>= */ null,
                         mHistoryProvider,
                         new HistoryUmaRecorder(),
                         null,
                         true,
-                        true);
+                        true,
+                        false);
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         Assert.assertNull(toolbar.getItemById(R.id.close_menu_id));
         Assert.assertEquals(
@@ -627,12 +660,14 @@ public class HistoryUITest {
                         true,
                         mSnackbarManager,
                         mProfile,
+                        /* bottomSheetController= */ null,
                         /* Supplier<Tab>= */ null,
                         mHistoryProvider,
                         new HistoryUmaRecorder(),
                         null,
                         true,
-                        true);
+                        true,
+                        false);
         InfoHeaderPref headerPref = mHistoryManager.getInfoHeaderPrefForTests();
         Assert.assertFalse(headerPref.isVisible());
         HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();

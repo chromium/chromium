@@ -77,7 +77,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     }
 
     @Override
-    public void getAllAppIds() {
+    public void queryApps() {
         BrowsingHistoryBridgeJni.get()
                 .getAllAppIds(
                         mNativeHistoryBridge, BrowsingHistoryBridge.this, new ArrayList<String>());
@@ -86,11 +86,6 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     @CalledByNative
     public static void addAppIdToList(List<String> items, String appId) {
         items.add(appId);
-    }
-
-    @CalledByNative
-    public void onQueryAppIdComplete(List<String> items) {
-        // TODO: Notify the app ID query complete event.
     }
 
     @Override
@@ -156,6 +151,11 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     @CalledByNative
     public void onQueryHistoryComplete(List<HistoryItem> items, boolean hasMorePotentialMatches) {
         if (mObserver != null) mObserver.onQueryHistoryComplete(items, hasMorePotentialMatches);
+    }
+
+    @CalledByNative
+    public void onQueryAppsComplete(List<String> items) {
+        if (mObserver != null) mObserver.onQueryAppsComplete(items);
     }
 
     @CalledByNative

@@ -251,6 +251,7 @@ public class NativePageFactory {
                     new TabShim(tab, mBrowserControlsManager, mTabModelSelector),
                     mSnackbarManagerSupplier.get(),
                     tab.getProfile(),
+                    mBottomSheetController,
                     mCurrentTabSupplier,
                     url);
         }

@@ -92,10 +92,13 @@ public class PageInfoHistoryController
                         /* shouldShowClearDataIfAvailable= */ false,
                         mHost,
                         /* selectionDelegate= */ null,
+                        /* bottomSheetController= */ null,
                         mTabSupplier,
+                        /* hideSoftKeyboard= */ null,
                         new BrowsingHistoryBridge(profile),
                         null,
-                        /* launchedForApp= */ false);
+                        /* launchedForApp= */ false,
+                        /* showAppFilter= */ false);
         mContentManager.startLoadingItems();
         return mContentManager.getRecyclerView();
     }

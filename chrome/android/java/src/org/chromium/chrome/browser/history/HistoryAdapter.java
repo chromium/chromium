@@ -50,6 +50,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private HeaderItem mClearBrowsingDataButtonHeaderItem;
     private HeaderItem mHistoryOpenInChromeHeaderItem;
     private HeaderItem mAppFilterHeaderItem;
+    private ChipView mAppFilterChip;
 
     // Footers
     private MoreProgressButton mMoreProgressButton;
@@ -66,8 +67,9 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private boolean mClearBrowsingDataButtonVisible;
     private String mQueryText = EMPTY_QUERY;
     private String mHostName;
-    private String mAppId; // Not used if null i.e. query all entries regardless of app ID
 
+    // ID of the App currently chosen for app filtering. If null, ignored when querying history.
+    private String mAppId;
     private boolean mDisableScrollToLoadForTest;
 
     public HistoryAdapter(HistoryContentManager manager, HistoryProvider provider) {
@@ -105,6 +107,10 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     void onSearchStart() {
         mIsSearching = true;
         setHeaders();
+    }
+
+    void queryApps() {
+        mHistoryProvider.queryApps();
     }
 
     @Override
@@ -151,9 +157,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         onSearchStart();
         mClearOnNextQueryComplete = true;
         mHistoryProvider.queryHistory(mQueryText, mAppId);
-        // TODO: Query all the app IDs to initialize app filter button.
-        //       mHistoryProvider.getAllAppIds()
-
     }
 
     /** Called when a search is ended. */
@@ -243,8 +246,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
             clear(true);
             mClearOnNextQueryComplete = false;
         }
-
-        if (!mAreHeadersInitialized && items.size() > 0 && !mIsSearching) {
+        if (!mAreHeadersInitialized && items.size() > 0 && !mIsSearching
+                || mIsSearching && mManager.showAppFilter()) {
             setHeaders();
             mAreHeadersInitialized = true;
         }
@@ -276,6 +279,13 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         updatePrivacyDisclaimerText();
         setPrivacyDisclaimer();
         mManager.onPrivacyDisclaimerHasChanged();
+    }
+
+    @Override
+    public void onQueryAppsComplete(List<String> items) {
+        // Querying apps was completed after the search mode is entered. Enable the filter button.
+        boolean hasAppToShow = mManager.buildAppInfoList(items);
+        if (hasAppToShow && mIsSearching) mAppFilterChip.setEnabled(true);
     }
 
     @Override
@@ -381,12 +391,11 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                 (ViewGroup)
                         LayoutInflater.from(mManager.getContext())
                                 .inflate(R.layout.app_history_filter, parent, true);
-        ChipView appFilterChip =
+        mAppFilterChip =
                 (ChipView) historyAppFilterContainer.findViewById(R.id.app_history_filter_chip);
-        appFilterChip.setOnClickListener(v -> mManager.onAppFilterClicked());
-        // TODO(jinsukkim) the button text should become the app label when a filter is selected.
-        appFilterChip.getPrimaryTextView().setText(R.string.history_filter_by_app);
-        appFilterChip.addDropdownIcon();
+        mAppFilterChip.setOnClickListener(v -> mManager.onAppFilterClicked());
+        mAppFilterChip.getPrimaryTextView().setText(R.string.history_filter_by_app);
+        mAppFilterChip.addDropdownIcon();
         return historyAppFilterContainer;
     }
 
@@ -431,11 +440,14 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     }
 
     /** Pass header items to {@link #setHeaders(HeaderItem...)} as parameters. */
-    void setHeaders() {
+    private void setHeaders() {
         ArrayList<HeaderItem> args = new ArrayList<>();
         if (mIsSearching) {
-            if (HistoryManager.isAppSpecificHistoryEnabled()) {
+            if (mManager.showAppFilter()) {
                 args.add(mAppFilterHeaderItem);
+                // Query for apps list could be still pending. Keep the button disabled until
+                // the result is ready.
+                mAppFilterChip.setEnabled(mManager.hasFilterList());
             }
         } else {
             if (mPrivacyDisclaimersVisible) {
@@ -550,5 +562,9 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     MoreProgressButton getMoreProgressButtonForTest() {
         return mMoreProgressButton;
+    }
+
+    ChipView getAppFilterButtonForTest() {
+        return mAppFilterChip;
     }
 }

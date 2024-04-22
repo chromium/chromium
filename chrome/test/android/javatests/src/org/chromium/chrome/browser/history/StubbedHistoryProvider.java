@@ -33,6 +33,8 @@ public class StubbedHistoryProvider implements HistoryProvider {
     private int mPaging = 5;
     private boolean mHostOnly;
 
+    private boolean mQueryAppsTriggered;
+
     @Override
     public void setObserver(BrowsingHistoryObserver observer) {
         mObserver = observer;
@@ -99,7 +101,13 @@ public class StubbedHistoryProvider implements HistoryProvider {
     }
 
     @Override
-    public void getAllAppIds() {}
+    public void queryApps() {
+        mQueryAppsTriggered = true;
+    }
+
+    public boolean isQueryAppsTriggered() {
+        return mQueryAppsTriggered;
+    }
 
     @Override
     public void getLastVisitToHostBeforeRecentNavigations(
