@@ -154,16 +154,10 @@ bool AXFuchsiaSemanticProviderImpl::Update(
     // Convert to fuchsia's transform type.
     std::array<float, 16> mat = {};
     transform.GetColMajorF(mat.data());
-    fuchsia_ui_gfx::Matrix4Value fuchsia_transform{{
-        .value = {{
-            .matrix = std::move(mat),
-        }},
-        .variable_id = 0,
-    }};
-
+    fuchsia_ui_gfx::Mat4 mat4{std::move(mat)};
     // The root node will never have an offset container, so its transform will
     // always be the identity matrix. Thus, we can safely overwrite it here.
-    node.node_to_container_transform(std::move(fuchsia_transform.value()));
+    node.node_to_container_transform(std::move(mat4));
   } else {
     auto found_not_reachable = not_reachable_.find(node.node_id().value());
     const bool is_not_reachable = found_not_reachable != not_reachable_.end();

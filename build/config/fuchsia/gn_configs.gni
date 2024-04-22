@@ -9,7 +9,7 @@ declare_args() {
   # value to specify the API level the packages produced from this repository
   # should be targeting, e.g. in their top-level //.gn file. A value of -1
   # means that no API level will be passed to the tools that consumes it.
-  fuchsia_target_api_level = 16
+  fuchsia_target_api_level = 18
 
   # Path to the fuchsia SDK. This is intended for use in other templates &
   # rules to reference the contents of the fuchsia SDK.
