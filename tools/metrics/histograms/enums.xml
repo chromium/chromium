@@ -4948,6 +4948,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="56" label="Google Maps"/>
   <int value="57" label="Google Messages"/>
   <int value="58" label="Container"/>
+  <int value="59" label="Mall"/>
 </enum>
 
 <enum name="DefaultBrowserInfoBarUserInteraction">
