@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_POLICY_ANNOTATIONS_BLOCKLIST_HANDLER_H_
 #define CHROME_BROWSER_POLICY_ANNOTATIONS_BLOCKLIST_HANDLER_H_
 
+#include "chrome/browser/policy/annotations/annotation_control.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -37,7 +38,7 @@ class NetworkAnnotationBlocklistHandler : public ConfigurationPolicyHandler {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
-  bool IsPolicyDisabled(const PolicyMap& policies, std::string policy_name);
+  std::map<std::string, AnnotationControl> annotation_controls_;
 };
 
 }  // namespace policy
