@@ -10,6 +10,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
+#include "components/prefs/pref_service.h"
 #include "components/tpcd/metadata/common/manager_base.h"
 #include "components/tpcd/metadata/parser.h"
 #include "net/base/features.h"
@@ -31,8 +32,12 @@ namespace tpcd::metadata {
 // and will affect cookie access decisions.
 class Manager : public common::ManagerBase, public Parser::Observer {
  public:
-  static Manager* GetInstance(Parser* parser, GrantsSyncCallback callback);
-  Manager(Parser* parser, GrantsSyncCallback callback);
+  static Manager* GetInstance(Parser* parser,
+                              GrantsSyncCallback callback,
+                              PrefService* local_state = nullptr);
+  Manager(Parser* parser,
+          GrantsSyncCallback callback,
+          PrefService* local_state);
   virtual ~Manager();
 
   Manager(const Manager&) = delete;
@@ -59,6 +64,8 @@ class Manager : public common::ManagerBase, public Parser::Observer {
   // Generates a random number between (`Parser::kMinDtrp`, `Parser::kMaxDtrp`].
   virtual uint32_t GenerateRand() const;
 
+  std::string GenerateKeyHash(const MetadataEntry& metadata_entry) const;
+
  private:
   friend base::NoDestructor<Manager>;
 
@@ -74,6 +81,10 @@ class Manager : public common::ManagerBase, public Parser::Observer {
   // `IsHostIndexedMetadataGrantsEnabled()` returns true, otherwise, it holds a
   // `ContentSettingsForOneType`.
   common::Grants grants_ GUARDED_BY(grants_lock_);
+
+  // TODO(b/333529481): Get rid of this dangling pointer during re-architecture
+  // of the code
+  raw_ptr<PrefService, DisableDanglingPtrDetection> local_state_;
 };
 
 }  // namespace tpcd::metadata

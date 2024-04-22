@@ -2505,6 +2505,7 @@ static_library("browser") {
     "//components/sync_sessions",
     "//components/tab_groups",
     "//components/tpcd/metadata",
+    "//components/tpcd/metadata:prefs",
     "//components/tracing:background_tracing_metrics_provider",
     "//components/tracing:background_tracing_utils",
     "//components/tracing:startup_tracing",

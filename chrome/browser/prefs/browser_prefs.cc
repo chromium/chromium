@@ -177,6 +177,7 @@
 #include "components/sync_device_info/device_info_prefs.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_sessions/session_sync_prefs.h"
+#include "components/tpcd/metadata/prefs.h"
 #include "components/tracing/common/pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/update_client/update_client.h"
@@ -1567,6 +1568,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
           .filter_tag);
   SystemNetworkContextManager::RegisterPrefs(registry);
   tpcd::experiment::RegisterLocalStatePrefs(registry);
+  tpcd::metadata::RegisterLocalStatePrefs(registry);
   tracing::RegisterPrefs(registry);
   update_client::RegisterPrefs(registry);
   variations::VariationsService::RegisterPrefs(registry);
