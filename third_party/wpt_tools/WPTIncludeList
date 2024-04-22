@@ -197,7 +197,6 @@
 ./tools/third_party/webencodings/webencodings/mklabels.py
 ./tools/third_party/webencodings/webencodings/tests.py
 ./tools/third_party/webencodings/webencodings/x_user_defined.py
-./tools/third_party/websockets/.appveyor.yml
 ./tools/third_party/websockets/.gitignore
 ./tools/third_party/websockets/LICENSE
 ./tools/third_party/websockets/MANIFEST.in
@@ -208,8 +207,6 @@
 ./tools/third_party/websockets/compliance/fuzzingserver.json
 ./tools/third_party/websockets/compliance/test_client.py
 ./tools/third_party/websockets/compliance/test_server.py
-./tools/third_party/websockets/performance/mem_client.py
-./tools/third_party/websockets/performance/mem_server.py
 ./tools/third_party/websockets/setup.cfg
 ./tools/third_party/websockets/setup.py
 ./tools/third_party/websockets/src/websockets/__init__.py
@@ -228,6 +225,7 @@
 ./tools/third_party/websockets/src/websockets/http11.py
 ./tools/third_party/websockets/src/websockets/imports.py
 ./tools/third_party/websockets/src/websockets/legacy/__init__.py
+./tools/third_party/websockets/src/websockets/legacy/async_timeout.py
 ./tools/third_party/websockets/src/websockets/legacy/auth.py
 ./tools/third_party/websockets/src/websockets/legacy/client.py
 ./tools/third_party/websockets/src/websockets/legacy/compatibility.py
@@ -237,9 +235,17 @@
 ./tools/third_party/websockets/src/websockets/legacy/protocol.py
 ./tools/third_party/websockets/src/websockets/legacy/server.py
 ./tools/third_party/websockets/src/websockets/py.typed
+./tools/third_party/websockets/src/websockets/protocol.py
 ./tools/third_party/websockets/src/websockets/server.py
 ./tools/third_party/websockets/src/websockets/speedups.c
+./tools/third_party/websockets/src/websockets/speedups.pyi
 ./tools/third_party/websockets/src/websockets/streams.py
+./tools/third_party/websockets/src/websockets/sync/__init__.py
+./tools/third_party/websockets/src/websockets/sync/client.py
+./tools/third_party/websockets/src/websockets/sync/connection.py
+./tools/third_party/websockets/src/websockets/sync/messages.py
+./tools/third_party/websockets/src/websockets/sync/server.py
+./tools/third_party/websockets/src/websockets/sync/utils.py
 ./tools/third_party/websockets/src/websockets/typing.py
 ./tools/third_party/websockets/src/websockets/uri.py
 ./tools/third_party/websockets/src/websockets/utils.py
