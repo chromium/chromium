@@ -41,7 +41,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -74,6 +73,8 @@ import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxActionJni;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -214,8 +215,15 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "b/333905073")
-    public void testManagePasswords() throws InterruptedException {
+    public void testManagePasswordsNoUpmFlow() throws InterruptedException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PrefService prefService = UserPrefs.get(sActivityTestRule.getProfile(false));
+                    prefService.setInteger(
+                            "passwords_use_upm_local_and_separate_stores",
+                            /*UseUpmLocalAndSeparateStoresState = Off*/ 0);
+                });
+
         setSuggestions(createPedalSuggestion(OmniboxPedalId.MANAGE_PASSWORDS));
         clickOnPedalToSettings(() -> mOmniboxUtils.clickOnAction(0, 0), PasswordSettings.class);
         verify(mOmniboxActionJni, times(1))
