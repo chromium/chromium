@@ -316,12 +316,24 @@ BaseRenderingContext2D::SaveLayerForState(
   const int initial_save_count = canvas.getSaveCount();
   bool needs_compositing = state.GlobalComposite() != SkBlendMode::kSrcOver;
 
-  // Global states must be applied on the result of the layer's filter.
-  // For alpha + shadows or compositing, we must use two nested layers. The
+  // The "copy" globalCompositeOperation replaces everything that was in the
+  // canvas. We therefore have to clear the canvas before proceeding. Since the
+  // shadow and foreground are composited one after the other, the foreground
+  // gets composited over the shadow itself. This means that in "copy"
+  // compositing mode, drawing the foreground will clear the shadow. There's
+  // therefore no need to draw the shadow at all.
+  //
+  // Global states must be applied on the result of the layer's filter, so the
+  // filter has to go in a nested layer.
+  //
+  // For alpha + (shadows or compositing), we must use two nested layers. The
   // inner one applies the alpha and the outer one applies the shadow and/or
   // compositing. This is needed to to get a transparent foreground, as the
   // alpha would otherwise be applied to the result of foreground+background.
-  if (state.ShouldDrawShadows()) {
+  if (state.GlobalComposite() == SkBlendMode::kSrc) {
+    canvas.clear(HasAlpha() ? SkColors::kTransparent : SkColors::kBlack);
+    needs_compositing = false;
+  } else if (state.ShouldDrawShadows()) {
     ScopedResetCtm scoped_reset_ctm(state, canvas);
     cc::PaintFlags flags;
     flags.setImageFilter(state.ShadowAndForegroundImageFilter());

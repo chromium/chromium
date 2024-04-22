@@ -50,6 +50,7 @@ using ::blink_testing::RecordedOpsAre;
 using ::blink_testing::RecordedOpsView;
 using ::cc::ClipPathOp;
 using ::cc::ClipRectOp;
+using ::cc::DrawColorOp;
 using ::cc::DrawRecordOp;
 using ::cc::DrawRectOp;
 using ::cc::DrawVerticesOp;
@@ -1049,6 +1050,54 @@ TEST(BaseRenderingContextLayerGlobalStateTests, TransformsWithShadow) {
                                                0, 0, 1, 0,  //
                                                0, 0, 0, 1)),
                   PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>())));
+}
+
+TEST(BaseRenderingContextLayerGlobalStateTests, CopyCompositeOp) {
+  test::TaskEnvironment task_environment;
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  NonThrowableExceptionState exception_state;
+
+  context->setGlobalCompositeOperation("copy");
+  context->beginLayer(scope.GetScriptState(), BeginLayerOptions::Create(),
+                      exception_state);
+  context->endLayer(exception_state);
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(DrawRecordOpEq(
+                  PaintOpEq<DrawColorOp>(SkColors::kBlack, SkBlendMode::kSrc),
+                  PaintOpEq<SaveLayerAlphaOp>(1.0f), PaintOpEq<RestoreOp>())));
+}
+
+TEST(BaseRenderingContextLayerGlobalStateTests,
+     CopyCompositeOpWithOtherStates) {
+  test::TaskEnvironment task_environment;
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  NonThrowableExceptionState exception_state;
+
+  context->setGlobalAlpha(0.4);
+  context->setGlobalCompositeOperation("copy");
+  context->setShadowBlur(2.0);
+  context->setShadowColor("red");
+  context->beginLayer(
+      scope.GetScriptState(),
+      FilterOption(scope, "({name: 'gaussianBlur', stdDeviation: 20})"),
+      exception_state);
+  context->endLayer(exception_state);
+
+  cc::PaintFlags filter_flags;
+  filter_flags.setAlphaf(0.4f);
+  filter_flags.setImageFilter(
+      sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(DrawRecordOpEq(
+                  PaintOpEq<DrawColorOp>(SkColors::kBlack, SkBlendMode::kSrc),
+                  PaintOpEq<SaveLayerOp>(filter_flags),
+                  PaintOpEq<RestoreOp>())));
 }
 
 TEST(BaseRenderingContextRestoreStackTests, RestoresSaves) {
