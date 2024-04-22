@@ -138,6 +138,8 @@ void NetworkScreen::ShowImpl() {
           base::BindOnce(&NetworkScreen::SetQuickStartButtonVisibility,
                          weak_ptr_factory_.GetWeakPtr()));
 
+  // The network screen is reused during QuickStart. Here we determine which
+  // strings are shown on the screen accordingly.
   if (context()->quick_start_setup_ongoing) {
     ShowStepsWhenQuickStartOngoing();
   } else {
@@ -227,9 +229,11 @@ void NetworkScreen::OnUiUpdateRequested(
       return;
     }
 
-    // Show the standard 'Network List'
+    // Show the standard 'Network List', but with custom strings notifying the
+    // user that WiFi transfer has failed and that they should try again.
     if (view_) {
-      view_->ShowScreenWithData({});
+      view_->ShowScreenWithData(
+          base::Value::Dict().Set("useQuickStartWiFiErrorStrings", true));
     }
   }
 }
@@ -438,6 +442,19 @@ void NetworkScreen::ExitQuickStartFlow(
   // the UI.
   if (waiting_for_quickstart_stabilization_period_) {
     quick_start::QS_LOG(INFO) << "Waiting for network to stabilize.";
+    return;
+  }
+
+  // If an error occurred, we show the network list with special strings telling
+  // the user about the error, regardless of the entry point. If the user did
+  // cancel the flow by themselves, no error messages are shown and the flow
+  // goes back to the screen where it started.
+  if (reason == quick_start::QuickStartController::AbortFlowReason::ERROR) {
+    if (view_) {
+      SetQuickStartButtonVisibility(/*visible=*/true);
+      view_->ShowScreenWithData(
+          base::Value::Dict().Set("useQuickStartWiFiErrorStrings", true));
+    }
     return;
   }
 

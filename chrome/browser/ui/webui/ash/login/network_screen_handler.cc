@@ -49,6 +49,10 @@ void NetworkScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_QUICK_START_WIFI_TRANSFER_TITLE);
   builder->Add("networkScreenQuickStartTransferWifiSubtitle",
                IDS_LOGIN_QUICK_START_WIFI_TRANSFER_SUBTITLE);
+  builder->Add("networkScreenQuickStartWiFiErrorTitle",
+               IDS_LOGIN_QUICK_START_WIFI_ERROR_TITLE);
+  builder->Add("networkScreenQuickStartWiFiErrorSubtitle",
+               IDS_LOGIN_QUICK_START_WIFI_ERROR_SUBTITLE);
   builder->AddF("quickStartNetworkNeededSubtitle",
                 IDS_LOGIN_QUICK_START_NETWORK_NEEDED_SUBTITLE,
                 ui::GetChromeOSDeviceName());

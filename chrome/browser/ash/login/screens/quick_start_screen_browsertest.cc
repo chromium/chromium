@@ -83,6 +83,10 @@ constexpr test::UIPath kQuickStartEntryPointPath = {
 constexpr test::UIPath kQuickStartButtonPath = {
     WelcomeView::kScreenId.name, kWelcomeScreen, kQuickStartEntryPoint,
     kQuickStartButton};
+constexpr test::UIPath kNetworkBackButtonPath = {
+    NetworkScreenView::kScreenId.name, "backButton"};
+constexpr test::UIPath kWelcomeScreenNextButton = {
+    WelcomeView::kScreenId.name, kWelcomeScreen, "getStarted"};
 constexpr test::UIPath kQuickStartBluetoothDialogPath = {
     QuickStartView::kScreenId.name, kQuickStartBluetoothDialog};
 constexpr test::UIPath kQuickStartBluetoothCancelButtonPath = {
@@ -237,6 +241,25 @@ class QuickStartBrowserTest : public OobeBaseTest {
             expected_subtitle_text,
             {NetworkScreenView::kScreenId.name /*"network-selection"*/,
              "subtitleText"})
+        ->Wait();
+  }
+
+  void WaitForNetworkListWifiErrorTitleAndSubtitle() {
+    auto expected_title =
+        l10n_util::GetStringUTF8(IDS_LOGIN_QUICK_START_WIFI_ERROR_TITLE);
+    auto expected_subtitle =
+        l10n_util::GetStringUTF8(IDS_LOGIN_QUICK_START_WIFI_ERROR_SUBTITLE);
+    test::OobeJS()
+        .CreateElementTextContentWaiter(
+            expected_subtitle,
+            {NetworkScreenView::kScreenId.name /*"network-selection"*/,
+             "subtitleText"})
+        ->Wait();
+    test::OobeJS()
+        .CreateElementTextContentWaiter(
+            expected_title,
+            {NetworkScreenView::kScreenId.name /*"network-selection"*/,
+             "titleText"})
         ->Wait();
   }
 
@@ -843,8 +866,21 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, PhoneAbortOnManualNetworkNeeded) {
   AbortFlowFromPhoneSide();
   EnsureFlowNotActive();
 
-  // Once QuickStart is no longer active, the subtitle on the network list must
-  // show its default state.
+  // When the flow is aborted from the phone side on the network screen, there
+  // should be custom strings informing the user about the error.
+  WaitForNetworkListWifiErrorTitleAndSubtitle();
+
+  // Clicking on 'Back' should bring us back to the Welcome screen, and entering
+  // it again should show the default strings.
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true, kNetworkBackButtonPath)
+      ->Wait();
+  test::OobeJS().ClickOnPath(kNetworkBackButtonPath);
+  test::WaitForWelcomeScreen();
+  test::OobeJS()
+      .CreateVisibilityWaiter(/*visibility=*/true, kWelcomeScreenNextButton)
+      ->Wait();
+  test::OobeJS().ClickOnPath(kWelcomeScreenNextButton);
   WaitForDefaultNetworkSubtitle();
 
   // Manually connect to a network.

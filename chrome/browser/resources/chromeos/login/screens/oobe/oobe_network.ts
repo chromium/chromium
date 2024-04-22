@@ -52,6 +52,7 @@ const NetworkScreenBase = mixinBehaviors(
 interface NetworkScreenData {
   ssid: string|undefined;
   useQuickStartSubtitle: boolean|undefined;
+  useQuickStartWiFiErrorStrings: boolean | undefined;
 }
 
 /**
@@ -117,6 +118,14 @@ class NetworkScreen extends NetworkScreenBase {
         value: false,
       },
 
+      // Whether to use a title and subtitle telling the user that there was
+      // an error during QuickStart. This is only true when the QuickStart flow
+      // is aborted while showing the network screen.
+      useQuickStartWiFiErrorStrings: {
+        type: Boolean,
+        value: false,
+      },
+
       // Whether the QuickStart 'Cancel' button is visible.
       quickStartCancelButtonVisible: {
         type: Boolean,
@@ -139,6 +148,7 @@ class NetworkScreen extends NetworkScreenBase {
   private enableWifiScans: boolean;
   private isQuickStartVisible: boolean;
   private useQuickStartSubtitle: boolean;
+  private useQuickStartWiFiErrorStrings: boolean;
   private quickStartCancelButtonVisible: boolean;
 
   constructor() {
@@ -179,12 +189,9 @@ class NetworkScreen extends NetworkScreenBase {
       return;
     }
 
-    if (data && 'useQuickStartSubtitle' in data &&
-        data['useQuickStartSubtitle']) {
-      this.useQuickStartSubtitle = data['useQuickStartSubtitle'];
-    } else {
-      this.useQuickStartSubtitle = false;
-    }
+    this.useQuickStartSubtitle = data?.useQuickStartSubtitle ?? false;
+    this.useQuickStartWiFiErrorStrings =
+      data?.useQuickStartWiFiErrorStrings ?? false;
 
     this.setUIStep(NetworkScreenStates.DEFAULT);
     this.enableWifiScans = true;
@@ -231,13 +238,18 @@ class NetworkScreen extends NetworkScreenBase {
    */
   private getSubtitleMessage(
       locale: string, errorMessage: string,
-      useQuickStartSubtitle: string): string {
+    useQuickStartSubtitle: string,
+    useQuickStartWiFiErrorStrings: string): string {
     if (errorMessage) {
       return errorMessage;
     }
 
     if (useQuickStartSubtitle) {
       return this.i18nDynamic(locale, 'quickStartNetworkNeededSubtitle');
+    }
+
+    if (useQuickStartWiFiErrorStrings) {
+      return this.i18nDynamic(locale, 'networkScreenQuickStartWiFiErrorSubtitle');
     }
 
     return this.i18nDynamic(locale, 'networkSectionSubtitle');
@@ -249,6 +261,8 @@ class NetworkScreen extends NetworkScreenBase {
    */
   setError(message: string) {
     this.errorMessage = message;
+    // Reset QuickStart WiFi error message
+    this.useQuickStartWiFiErrorStrings = false;
   }
 
   setQuickStartVisible() {

@@ -1544,6 +1544,12 @@
   <message name="IDS_LOGIN_QUICK_START_NETWORK_NEEDED_SUBTITLE" desc="A subtitle used on OOBE's Quick Start flow prompting the user to connect to a WiFi network in order to continue the Chromebook setup using the Android device.">
     To continue setup with your Android device, connect your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> to a network
   </message>
+  <message name="IDS_LOGIN_QUICK_START_WIFI_ERROR_TITLE" desc="A title used on the Network Screen when QuickStart fails during the WiFi transfer step.">
+    Can't transfer Wi-Fi
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_WIFI_ERROR_SUBTITLE" desc="A subtitle used on the Network Screen when QuickStart fails during the WiFi transfer step.">
+    Try again or connect to a network manually
+  </message>
   <message name="IDS_LOGIN_QUICK_START_RESUME_AFTER_REBOOT_TITLE" desc="A title used on OOBE's Quick Start flow when the device reboots after applying an update and tries to continue the setup by connecting to the Android device.">
     Connecting to your Android phone...
   </message>
