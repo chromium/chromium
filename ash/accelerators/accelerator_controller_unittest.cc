@@ -253,6 +253,8 @@ class DummyKeyboardBrightnessControlDelegate
     std::move(callback).Run(100.0);
   }
 
+  void HandleSetKeyboardAmbientLightSensorEnabled(bool enabled) override {}
+
   int handle_keyboard_brightness_down_count() const {
     return handle_keyboard_brightness_down_count_;
   }

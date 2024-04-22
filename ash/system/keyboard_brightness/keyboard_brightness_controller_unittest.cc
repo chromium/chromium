@@ -9,6 +9,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 
 namespace ash {
 
@@ -29,6 +30,7 @@ class FakeKeyboardBrightnessControlDelegate
   void HandleSetKeyboardBrightness(double percent, bool gradual) override {
     keyboard_brightness_ = percent;
   }
+  void HandleSetKeyboardAmbientLightSensorEnabled(bool enabled) override {}
 
   double keyboard_brightness() { return keyboard_brightness_; }
 
@@ -59,6 +61,10 @@ class KeyboardBrightnessControllerTest : public AshTestBase {
     delegate_.reset();
   }
 
+  KeyboardBrightnessControlDelegate* keyboard_brightness_control_delegate() {
+    return Shell::Get()->keyboard_brightness_control_delegate();
+  }
+
  protected:
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   std::unique_ptr<FakeKeyboardBrightnessControlDelegate> delegate_;
@@ -68,6 +74,21 @@ TEST_F(KeyboardBrightnessControllerTest, RecordHasKeyboardBrightness) {
   histogram_tester_->ExpectTotalCount("ChromeOS.Keyboard.HasBacklight", 0);
   delegate_->OnReceiveHasKeyboardBacklight(std::optional<bool>(true));
   histogram_tester_->ExpectTotalCount("ChromeOS.Keyboard.HasBacklight", 1);
+}
+
+TEST_F(KeyboardBrightnessControllerTest, SetKeyboardAmbientLightSensorEnabled) {
+  // Ambient light sensor is enabled by default.
+  EXPECT_TRUE(power_manager_client()->keyboard_ambient_light_sensor_enabled());
+  // Disable the ambient light sensor.
+  keyboard_brightness_control_delegate()
+      ->HandleSetKeyboardAmbientLightSensorEnabled(false);
+  // Verify that the ambient light sensor is now disabled.
+  EXPECT_FALSE(power_manager_client()->keyboard_ambient_light_sensor_enabled());
+  // Re-enabled the ambient light sensor
+  keyboard_brightness_control_delegate()
+      ->HandleSetKeyboardAmbientLightSensorEnabled(true);
+  // Verify that the ambient light sensor is enabled.
+  EXPECT_TRUE(power_manager_client()->keyboard_ambient_light_sensor_enabled());
 }
 
 }  // namespace ash

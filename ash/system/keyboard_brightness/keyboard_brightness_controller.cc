@@ -54,6 +54,12 @@ void KeyboardBrightnessController::HandleGetKeyboardBrightness(
       std::move(callback));
 }
 
+void KeyboardBrightnessController::HandleSetKeyboardAmbientLightSensorEnabled(
+    bool enabled) {
+  chromeos::PowerManagerClient::Get()->SetKeyboardAmbientLightSensorEnabled(
+      enabled);
+}
+
 void KeyboardBrightnessController::OnReceiveHasKeyboardBacklight(
     std::optional<bool> has_keyboard_backlight) {
   if (has_keyboard_backlight.has_value()) {

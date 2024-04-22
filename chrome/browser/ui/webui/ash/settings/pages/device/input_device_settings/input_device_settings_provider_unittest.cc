@@ -321,6 +321,7 @@ class FakeKeyboardBrightnessControlDelegate
       base::OnceCallback<void(std::optional<double>)> callback) override {
     std::move(callback).Run(keyboard_brightness_);
   }
+  void HandleSetKeyboardAmbientLightSensorEnabled(bool enabled) override {}
 
   double keyboard_brightness() { return keyboard_brightness_; }
 
