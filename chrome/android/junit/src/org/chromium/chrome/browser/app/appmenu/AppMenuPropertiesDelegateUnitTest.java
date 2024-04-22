@@ -254,8 +254,6 @@ public class AppMenuPropertiesDelegateUnitTest {
         setShoppingListEligible(false);
         setShoppingListEligible(false);
         mTestValues.addFeatureFlagOverride(ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI, false);
-        mTestValues.addFeatureFlagOverride(
-                ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS, false);
         FeatureList.setTestValues(mTestValues);
     }
 

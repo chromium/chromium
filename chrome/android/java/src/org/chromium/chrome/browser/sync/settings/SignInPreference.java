@@ -229,9 +229,8 @@ public class SignInPreference extends Preference
         setIcon(profileData.getImage());
         setViewEnabledAndShowAlertIcon(
                 /* enabled= */ true,
-                /* alertIconVisible= */ ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
-                        && SyncSettingsUtils.getIdentityError(mProfile) != SyncError.NO_ERROR);
+                /* alertIconVisible= */ SyncSettingsUtils.getIdentityError(mProfile)
+                        != SyncError.NO_ERROR);
         setOnPreferenceClickListener(null);
 
         mWasGenericSigninPromoDisplayed = false;

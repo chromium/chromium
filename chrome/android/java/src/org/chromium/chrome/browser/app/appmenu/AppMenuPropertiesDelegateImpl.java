@@ -1050,10 +1050,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     /** Returns true if a badge (i.e. a red-dot) should be shown on the menu item icon. */
     protected boolean shouldShowBadgeOnMenuItemIcon(MenuItem item) {
         if (item.getItemId() == R.id.preferences_id) {
-            if (!ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)) {
-                return false;
-            }
             // Theoretically mTabModelSelector could return a stub model.
             Profile profile = mTabModelSelector.getCurrentModel().getProfile();
             if (profile == null) {
@@ -1075,10 +1071,6 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      */
     protected String getContentDescription(MenuItem item) {
         if (item.getItemId() == R.id.preferences_id) {
-            if (!ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)) {
-                return null;
-            }
             // Theoretically mTabModelSelector could return a stub model.
             Profile profile = mTabModelSelector.getCurrentModel().getProfile();
             if (profile == null) {

@@ -379,7 +379,6 @@ public class MainSettingsFragmentTest {
     // Tests that no alert icon is visible if there are no identity errors.
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSigninRowShowsNoAlertWhenNoIdentityErrors() {
         // Sign-in and open settings.
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -393,7 +392,6 @@ public class MainSettingsFragmentTest {
     // an identity error.
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSigninRowShowsNoAlertForIdentityErrorsForSyncingUsers() {
         FakeSyncServiceImpl fakeSyncService =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
@@ -416,7 +414,6 @@ public class MainSettingsFragmentTest {
     // signed-in non-syncing user.
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSigninRowShowsAlertForIdentityErrors() {
         FakeSyncServiceImpl fakeSyncService =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
@@ -438,7 +435,6 @@ public class MainSettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testRenderOnIdentityErrorForSignedInUsers() throws IOException {
         FakeSyncServiceImpl fakeSyncService =
                 TestThreadUtils.runOnUiThreadBlockingNoException(

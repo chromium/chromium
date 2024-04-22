@@ -449,8 +449,6 @@ public abstract class ChromeFeatureList {
             "SyncAndroidLimitNTPPromoImpressions";
     public static final String SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE =
             "SyncEnableContactInfoDataTypeInTransportMode";
-    public static final String SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS =
-            "SyncShowIdentityErrorsForSignedInUsers";
     public static final String TAB_DRAG_DROP_ANDROID = "TabDragDropAndroid";
     public static final String TAB_GROUP_PANE_ANDROID = "TabGroupPaneAndroid";
     public static final String TAB_GROUP_PARITY_ANDROID = "TabGroupParityAndroid";

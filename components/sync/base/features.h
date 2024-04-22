@@ -194,11 +194,6 @@ inline constexpr base::FeatureParam<double>
 BASE_DECLARE_FEATURE(kSyncSchedulerUseWallClockTimer);
 
 #if BUILDFLAG(IS_ANDROID)
-// If enabled, shows identity errors for signed-in non-syncing users.
-BASE_DECLARE_FEATURE(kSyncShowIdentityErrorsForSignedInUsers);
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
 // If enabled, WebAPK data will be synced for Backup&Restore purposes.
 BASE_DECLARE_FEATURE(kWebApkBackupAndRestoreBackend);
 #endif  // BUILDFLAG(IS_ANDROID)

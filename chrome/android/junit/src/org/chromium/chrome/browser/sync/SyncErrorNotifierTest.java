@@ -31,10 +31,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -250,7 +247,6 @@ public class SyncErrorNotifierTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testPassphraseNotificationForSignedInUsers() {
         when(mSyncService.getAccountInfo())
                 .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId("a@b.com", "gaiaId"));
@@ -292,28 +288,6 @@ public class SyncErrorNotifierTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
-    public void testNoNotificationForSignedInUsersIfFeatureDisabled() {
-        when(mSyncService.getAccountInfo())
-                .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId("a@b.com", "gaiaId"));
-        when(mSyncService.isSyncFeatureEnabled()).thenReturn(false);
-        when(mSyncService.isEngineInitialized()).thenReturn(true);
-        when(mSyncService.isEncryptEverythingEnabled()).thenReturn(true);
-        when(mSyncService.isPassphraseRequiredForPreferredDataTypes()).thenReturn(true);
-        when(mSyncService.isPassphrasePromptMutedForCurrentProductVersion()).thenReturn(false);
-        when(mSyncService.isTrustedVaultKeyRequiredForPreferredDataTypes()).thenReturn(false);
-
-        SyncErrorNotifier notifier =
-                new SyncErrorNotifier(mNotificationManagerProxy, mSyncService, mTrustedVaultClient);
-        notifier.syncStateChanged();
-
-        verify(mNotificationManagerProxy, Mockito.times(0)).cancel(anyInt());
-        verify(mNotificationManagerProxy, Mockito.times(0)).notify(any());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testTrustedVaultNotificationForPasswordsForSignedInUsers() {
         when(mSyncService.getAccountInfo())
                 .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId("a@b.com", "gaiaId"));
@@ -374,7 +348,6 @@ public class SyncErrorNotifierTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testTrustedVaultNotificationForEverythingForSignedInUsers() {
         when(mSyncService.getAccountInfo())
                 .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId("a@b.com", "gaiaId"));

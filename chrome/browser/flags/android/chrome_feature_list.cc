@@ -363,7 +363,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &syncer::kReplaceSyncPromosWithSignInPromos,
     &syncer::kSyncAndroidLimitNTPPromoImpressions,
     &syncer::kSyncEnableContactInfoDataTypeInTransportMode,
-    &syncer::kSyncShowIdentityErrorsForSignedInUsers,
     &syncer::kWebApkBackupAndRestoreBackend,
     &tab_groups::kTabGroupSyncAndroid,
     &webapps::features::kPwaUniversalInstallUi,

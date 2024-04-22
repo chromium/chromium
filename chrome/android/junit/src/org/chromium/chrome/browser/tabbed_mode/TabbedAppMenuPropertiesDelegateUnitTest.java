@@ -97,13 +97,8 @@ import java.util.List;
 
 /** Unit tests for {@link TabbedAppMenuPropertiesDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({
-    UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK
-})
-@DisableFeatures({
-    ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS,
-    ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI
-})
+@EnableFeatures({UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK})
+@DisableFeatures({ChromeFeatureList.PWA_UNIVERSAL_INSTALL_UI})
 public class TabbedAppMenuPropertiesDelegateUnitTest {
     // Constants defining flags that determines multi-window menu items visibility.
     private static final boolean TAB_M = true; // multiple tabs

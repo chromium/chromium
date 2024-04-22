@@ -50,8 +50,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -324,7 +322,6 @@ public class AccountManagementFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testIdentityErrorCardShownForSignedInUsers() {
         // Fake an identity error.
         overrideSyncService().setRequiresClientUpgrade(true);
@@ -345,29 +342,6 @@ public class AccountManagementFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
-    public void testIdentityErrorCardNotShownIfFeatureDisabled() {
-        // Fake an identity error.
-        overrideSyncService().setRequiresClientUpgrade(true);
-
-        // Expect no records.
-        HistogramWatcher watchIdentityErrorCardShownHistogram =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords("Sync.IdentityErrorCard.ClientOutOfDate")
-                        .build();
-
-        // Sign in and open settings.
-        mSyncTestRule.setUpAccountAndSignInForTesting();
-        mSettingsActivityTestRule.startSettingsActivity();
-
-        onViewWaiting(allOf(is(mSettingsActivityTestRule.getFragment().getView()), isDisplayed()));
-        onView(withId(R.id.identity_error_card)).check(doesNotExist());
-        watchIdentityErrorCardShownHistogram.assertExpected();
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testIdentityErrorCardNotShownIfNoError() {
         // Sign in and open settings.
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -379,7 +353,6 @@ public class AccountManagementFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testIdentityErrorCardNotShownForSyncingUsers() {
         // Fake an identity error.
         overrideSyncService().setRequiresClientUpgrade(true);
@@ -401,7 +374,6 @@ public class AccountManagementFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testIdentityErrorCardDynamicallyShownOnError() {
         FakeSyncServiceImpl fakeSyncService = overrideSyncService();
 
@@ -435,7 +407,6 @@ public class AccountManagementFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testIdentityErrorCardDynamicallyHidden() {
         FakeSyncServiceImpl fakeSyncService = overrideSyncService();
         // Fake an identity error.
@@ -471,7 +442,6 @@ public class AccountManagementFragmentTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testActionForAuthError() throws Exception {
         FakeSyncServiceImpl fakeSyncService = overrideSyncService();
         fakeSyncService.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
@@ -506,7 +476,6 @@ public class AccountManagementFragmentTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testActionForPassphraseRequired() throws Exception {
         mSyncTestRule.getFakeServerHelper().setCustomPassphraseNigori("passphrase");
 
@@ -553,7 +522,6 @@ public class AccountManagementFragmentTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testActionForClientOutdatedError() throws Exception {
         overrideSyncService().setRequiresClientUpgrade(true);
 

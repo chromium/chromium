@@ -23,7 +23,6 @@ import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -454,17 +453,11 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     }
 
     private static @SyncError int getError(Profile profile) {
-        // Check if there is an identity error.
-        final boolean hasSyncConsent =
-                IdentityServicesProvider.get()
+        return IdentityServicesProvider.get()
                         .getIdentityManager(profile)
-                        .hasPrimaryAccount(ConsentLevel.SYNC);
-        if (!hasSyncConsent
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)) {
-            return SyncSettingsUtils.getIdentityError(profile);
-        }
-        return SyncSettingsUtils.getSyncError(profile);
+                        .hasPrimaryAccount(ConsentLevel.SYNC)
+                ? SyncSettingsUtils.getSyncError(profile)
+                : SyncSettingsUtils.getIdentityError(profile);
     }
 
     @VisibleForTesting

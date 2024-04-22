@@ -445,7 +445,6 @@ public class TabbedAppMenuTest {
     @Test
     @LargeTest
     @Feature({"Browser", "Main", "RenderTest"})
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSettingsMenuItem_NoBadgeShownForNotSignedInUsers() throws IOException {
         View view = getSettingsMenuItemView();
         Assert.assertNull(view.findViewById(R.id.menu_item_text).getContentDescription());
@@ -455,7 +454,6 @@ public class TabbedAppMenuTest {
     @Test
     @LargeTest
     @Feature({"Browser", "Main", "RenderTest"})
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSettingsMenuItem_BadgeShownForSignedInUsersOnIdentityError()
             throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
@@ -484,7 +482,6 @@ public class TabbedAppMenuTest {
     @Test
     @LargeTest
     @Feature({"Browser", "Main", "RenderTest"})
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSettingsMenuItem_NoBadgeShownForSignedInUsersIfNoError() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
         // Sign in and wait for sync machinery to be active.
@@ -499,7 +496,6 @@ public class TabbedAppMenuTest {
     @Test
     @LargeTest
     @Feature({"Browser", "Main", "RenderTest"})
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSettingsMenuItem_BadgeShownForSyncingUsersOnSyncError() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
         FakeSyncServiceImpl fakeSyncService =
@@ -526,7 +522,6 @@ public class TabbedAppMenuTest {
     @Test
     @LargeTest
     @Feature({"Browser", "Main", "RenderTest"})
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSettingsMenuItem_NoBadgeShownForSyncingUsersIfNoError() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
         // Sign in and wait for sync machinery to be active.

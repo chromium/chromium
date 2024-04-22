@@ -30,12 +30,9 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncTestRule;
@@ -266,7 +263,6 @@ public class SyncErrorMessageTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSyncErrorMessageShownForAuthErrorForSignedInUsers() throws Exception {
         HistogramWatcher watchIdentityErrorMessageShownHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -287,7 +283,6 @@ public class SyncErrorMessageTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSyncErrorMessageShownForPassphraseRequiredForSignedInUsers() throws Exception {
         HistogramWatcher watchIdentityErrorMessageShownHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -309,7 +304,6 @@ public class SyncErrorMessageTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSyncErrorMessageShownForClientOutOfDateForSignedInUsers() throws Exception {
         HistogramWatcher watchIdentityErrorMessageShownHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -329,7 +323,6 @@ public class SyncErrorMessageTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSyncErrorMessageShownForTrustedVaultKeyRequiredForSignedInUsers()
             throws Exception {
         HistogramWatcher watchIdentityErrorMessageShownHistogram =
@@ -352,7 +345,6 @@ public class SyncErrorMessageTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSyncErrorMessageShownForTrustedVaultRecoverabilityDegradedForSignedInUsers()
             throws Exception {
         HistogramWatcher watchIdentityErrorMessageShownHistogram =
@@ -375,7 +367,6 @@ public class SyncErrorMessageTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSyncErrorMessageNotShownWhenNoErrorForSignedInUsers() throws Exception {
         // Sign in.
         mSyncTestRule.setUpAccountAndSignInForTesting();
@@ -390,27 +381,7 @@ public class SyncErrorMessageTest {
 
     @Test
     @LargeTest
-    @DisableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
-    public void testSyncErrorMessageNotShownForAuthErrorForSignedInUsersIfFeatureDisabled()
-            throws Exception {
-        HistogramWatcher watchIdentityErrorMessageShownHistogram =
-                HistogramWatcher.newBuilder()
-                        .expectNoRecords("Sync.IdentityErrorMessage.AuthError")
-                        .build();
-
-        // Sign in.
-        mSyncTestRule.setUpAccountAndSignInForTesting();
-        mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
-
-        mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
-        verifyHasNeverShownMessage();
-        watchIdentityErrorMessageShownHistogram.assertExpected();
-    }
-
-    @Test
-    @LargeTest
     @Feature("RenderTest")
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSyncErrorMessageForAuthErrorViewForSignedInUsers() throws IOException {
         SyncErrorMessage.setMessageDispatcherForTesting(null);
         // Sign in.
@@ -426,7 +397,6 @@ public class SyncErrorMessageTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSyncErrorMessageForPassphraseRequiredViewForSignedInUsers() throws IOException {
         SyncErrorMessage.setMessageDispatcherForTesting(null);
         // Sign in.
@@ -443,7 +413,6 @@ public class SyncErrorMessageTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @EnableFeatures(ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)
     public void testSyncErrorMessageForClientOutOfDateViewForSignedInUsers() throws IOException {
         SyncErrorMessage.setMessageDispatcherForTesting(null);
         // Sign in.
