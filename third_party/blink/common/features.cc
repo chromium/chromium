@@ -1623,7 +1623,7 @@ BASE_FEATURE(kResourceFetcherStoresStrongReferences,
 
 BASE_FEATURE(kMemoryCacheStrongReferenceFilterImages,
              "MemoryCacheStrongReferenceFilterImages",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMemoryCacheStrongReferenceFilterScripts,
              "MemoryCacheStrongReferenceFilterScripts",
@@ -1635,11 +1635,18 @@ BASE_FEATURE(kMemoryCacheStrongReferenceFilterCrossOriginScripts,
 
 BASE_FEATURE(kMemoryCacheStrongReference,
              "MemoryCacheStrongReference",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// Finch study showed no improvement on Android for strong memory cache.
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
+
 const base::FeatureParam<int>
     kMemoryCacheStrongReferenceTotalSizeThresholdParam{
         &kMemoryCacheStrongReference,
-        "memory_cache_strong_ref_total_size_threshold", 10 * 1024 * 1024};
+        "memory_cache_strong_ref_total_size_threshold", 15 * 1024 * 1024};
 const base::FeatureParam<int>
     kMemoryCacheStrongReferenceResourceSizeThresholdParam{
         &kMemoryCacheStrongReference,
