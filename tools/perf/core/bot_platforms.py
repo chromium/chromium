@@ -464,6 +464,14 @@ _MAC_M1_MINI_2020_EXECUTABLE_CONFIGS = frozenset([
     _performance_browser_tests(190),
     _views_perftests(),
 ])
+_MAC_M2_PRO_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
+    'blink_perf.display_locking',
+    'v8.runtime_stats.top_25',
+]).Add([
+    'jetstream2-nominorms',
+    'speedometer2-nominorms',
+    'speedometer3-nominorms',
+])
 
 _WIN_10_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.display_locking',
@@ -673,6 +681,8 @@ MAC_M1_PRO = PerfPlatform(
     _MAC_M1_PRO_BENCHMARK_CONFIGS,
     1,
     'mac')
+MAC_M2_PRO = PerfPlatform('mac-m2-pro-perf', 'Mac M2 PRO Baremetal ARM',
+                          _MAC_M2_PRO_BENCHMARK_CONFIGS, 20, 'mac')
 MAC_14_M1_PRO = PerfPlatform(
     'mac-14-m1-pro-perf',
     'Mac M1 PRO 2020 running MacOS 14',

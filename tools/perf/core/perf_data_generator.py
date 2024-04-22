@@ -1080,6 +1080,24 @@ BUILDERS = {
             'pool': 'chrome.tests.perf',
         },
     },
+    'mac-m2-pro-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'mac',
+        'dimension': {
+            'cpu': 'arm',
+            'mac_model': 'Mac14,7',
+            'os': 'Mac',
+            'pool': 'chrome.tests.perf',
+        },
+    },
     'linux-perf': {
         'tests': [
             {

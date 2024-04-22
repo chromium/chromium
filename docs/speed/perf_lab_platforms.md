@@ -37,6 +37,7 @@
  * [mac-m1-pro-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-m1-pro-perf): Mac M1 PRO 2020.
  * [mac-m1_mini_2020-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-m1_mini_2020-perf): Mac M1 Mini 2020.
  * [mac-m1_mini_2020-perf-pgo](https://ci.chromium.org/p/chrome/builders/ci/mac-m1_mini_2020-perf-pgo): Mac M1 Mini 2020.
+ * [mac-m2-pro-perf](https://ci.chromium.org/p/chrome/builders/ci/mac-m2-pro-perf): Mac M2 PRO Baremetal ARM.
 
 ### Win
 
