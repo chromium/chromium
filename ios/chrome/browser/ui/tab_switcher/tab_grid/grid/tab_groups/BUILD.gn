@@ -8,9 +8,9 @@ source_set("tab_groups") {
     "tab_group_coordinator.mm",
     "tab_group_mediator.h",
     "tab_group_mediator.mm",
+    "tab_group_positioner.h",
   ]
   deps = [
-    ":presentation",
     ":tab_group_consumer",
     ":tab_group_mutator",
     ":tab_groups_commands",
@@ -146,21 +146,6 @@ source_set("snapshots_view") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
-  ]
-}
-
-source_set("presentation") {
-  sources = [
-    "tab_group_presentation_controller.h",
-    "tab_group_presentation_controller.mm",
-    "tab_group_transition_animator.h",
-    "tab_group_transition_animator.mm",
-    "tab_group_transition_delegate.h",
-    "tab_group_transition_delegate.mm",
-  ]
-  deps = [
-    ":tab_groups_constant",
-    ":tab_groups_ui",
   ]
 }
 

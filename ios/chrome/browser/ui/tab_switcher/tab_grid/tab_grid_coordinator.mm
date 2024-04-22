@@ -91,6 +91,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_positioner.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_coordinator_delegate.h"
@@ -150,6 +151,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                   SnackbarCoordinatorDelegate,
                                   TabContextMenuDelegate,
                                   TabGridViewControllerDelegate,
+                                  TabGroupPositioner,
                                   TabPresentationDelegate> {
   // Use an explicit ivar instead of synthesizing as the setter isn't using the
   // ivar.
@@ -760,6 +762,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
             gridMediatorDelegate:self];
   _regularGridCoordinator.disabledTabViewControllerDelegate =
       self.baseViewController;
+  _regularGridCoordinator.tabGroupPositioner = self;
   _regularGridCoordinator.tabContextMenuDelegate = self;
 
   [_regularGridCoordinator start];
@@ -805,6 +808,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
             gridMediatorDelegate:self];
   _incognitoGridCoordinator.disabledTabViewControllerDelegate =
       self.baseViewController;
+  _incognitoGridCoordinator.tabGroupPositioner = self;
   _incognitoGridCoordinator.audience = self;
   _incognitoGridCoordinator.tabContextMenuDelegate = self;
 
@@ -1567,6 +1571,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [_historySyncPopupCoordinator stop];
   _historySyncPopupCoordinator = nil;
   [self.remoteTabsMediator refreshSessionsView];
+}
+
+#pragma mark - TabGroupPositioner
+
+- (UIView*)viewAboveTabGroup {
+  return self.bvcContainer.view;
 }
 
 @end

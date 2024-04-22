@@ -43,9 +43,7 @@ constexpr CGFloat kBackgroundAlpha = 0.6;
 constexpr CGFloat kPlusImageSize = 20;
 
 // Animation.
-constexpr CGFloat kSmallMotionTranslationCompletion = 0.8;
 constexpr CGFloat kTranslationCompletion = 0;
-constexpr CGFloat kSmallMotionOriginScale = 0.8;
 constexpr CGFloat kOriginScale = 0.1;
 }  // namespace
 
@@ -98,7 +96,9 @@ constexpr CGFloat kOriginScale = 0.1;
   return self;
 }
 
-- (void)prepareForPresentationWithSmallMotions:(BOOL)smallMotions {
+- (void)prepareForPresentation {
+  [self fadeBlurOut];
+
   [self.view layoutIfNeeded];
   CGAffineTransform scaleDown =
       CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
@@ -110,12 +110,9 @@ constexpr CGFloat kOriginScale = 0.1;
   _gridViewController.view.alpha = 0;
   CGPoint center = [_gridViewController.view convertPoint:self.view.center
                                                  fromView:self.view];
-  CGFloat translationCompletion =
-      smallMotions ? kSmallMotionTranslationCompletion : kTranslationCompletion;
-  CGFloat scale = smallMotions ? kSmallMotionOriginScale : kOriginScale;
   [_gridViewController centerVisibleCellsToPoint:center
-                           translationCompletion:translationCompletion
-                                       withScale:scale];
+                           translationCompletion:kTranslationCompletion
+                                       withScale:kOriginScale];
 }
 
 - (void)animateTopElementsPresentation {
@@ -152,10 +149,15 @@ constexpr CGFloat kOriginScale = 0.1;
   [_gridViewController centerVisibleCellsToPoint:center
                            translationCompletion:kTranslationCompletion
                                        withScale:kOriginScale];
+  self.view.alpha = 0;
 }
 
 - (void)fadeBlurOut {
-  _blurView.effect = nil;
+  if (UIAccessibilityIsReduceTransparencyEnabled()) {
+    self.view.backgroundColor = UIColor.clearColor;
+  } else {
+    _blurView.effect = nil;
+  }
 }
 
 #pragma mark - UIViewController
@@ -169,6 +171,8 @@ constexpr CGFloat kOriginScale = 0.1;
     [self.view addSubview:_blurView];
     AddSameConstraints(self.view, _blurView);
   }
+
+  [self fadeBlurIn];
 
   [self configureNavigationBar];
   UIView* primaryTitle = [self configuredPrimaryTitle];

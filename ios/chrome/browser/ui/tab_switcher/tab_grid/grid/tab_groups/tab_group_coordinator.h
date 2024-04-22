@@ -10,6 +10,7 @@
 @protocol TabContextMenuDelegate;
 @protocol TabGridIdleStatusHandler;
 class TabGroup;
+@protocol TabGroupPositioner;
 @class TabGroupViewController;
 
 // Coordinator to display the given tab group.
@@ -18,9 +19,8 @@ class TabGroup;
 // View controller for tab groups.
 @property(nonatomic, weak, readonly) TabGroupViewController* viewController;
 
-// Whether this coordinator should be presented with smaller motions. Default is
-// NO.
-@property(nonatomic, assign) BOOL smallerMotions;
+// Whether this coordinator should be presented with animations. Default YES.
+@property(nonatomic, assign) BOOL animatedPresentation;
 
 // Handler that trackes and updates the idle status of the tab grid.
 @property(nonatomic, weak) id<TabGridIdleStatusHandler>
@@ -28,6 +28,9 @@ class TabGroup;
 
 // Tab Context Menu delegate.
 @property(nonatomic, weak) id<TabContextMenuDelegate> tabContextMenuDelegate;
+
+// Positioner providing layer information for Tab Group.
+@property(nonatomic, weak) id<TabGroupPositioner> tabGroupPositioner;
 
 // Init the coordinator with the tab group to display.
 // - `tabGroup` should not be nil.

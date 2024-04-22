@@ -17,9 +17,5 @@ extern NSString* const kCreateTabGroupCancelButtonIdentifier;
 extern NSString* const kTabGroupNewTabButtonIdentifier;
 extern NSString* const kTabGroupOverflowMenuButtonIdentifier;
 
-// Timing constants for the animations of the TabGroup presentation/dismissal.
-extern const CGFloat kTabGroupPresentationDuration;
-extern const CGFloat kTabGroupDismissalDuration;
-extern const CGFloat kTabGroupBackgroundElementDurationFactor;
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_TAB_GROUPS_CONSTANTS_H_

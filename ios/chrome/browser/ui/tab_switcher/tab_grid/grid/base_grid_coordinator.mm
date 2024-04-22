@@ -171,7 +171,8 @@
                          browser:self.browser
                         tabGroup:tabGroup];
   _tabGroupCoordinator.tabContextMenuDelegate = self.tabContextMenuDelegate;
-  _tabGroupCoordinator.smallerMotions = tabGridOpening;
+  _tabGroupCoordinator.animatedPresentation = !tabGridOpening;
+  _tabGroupCoordinator.tabGroupPositioner = self.tabGroupPositioner;
   _tabGroupCoordinator.tabGridIdleStatusHandler =
       self.mediator.tabGridIdleStatusHandler;
   [_tabGroupCoordinator start];

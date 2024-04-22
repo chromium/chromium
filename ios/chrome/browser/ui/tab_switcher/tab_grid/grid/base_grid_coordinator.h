@@ -14,6 +14,7 @@ class Browser;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsMutator;
 @protocol TabContextMenuDelegate;
+@protocol TabGroupPositioner;
 
 @interface BaseGridCoordinator : ChromeCoordinator <TabGroupsCommands>
 
@@ -30,6 +31,9 @@ class Browser;
 // Delegate for the context menu.
 // TODO(crbug.com/1457146): Make it private.
 @property(nonatomic, weak) id<TabContextMenuDelegate> tabContextMenuDelegate;
+
+// Positioner providing layer information for Tab Group.
+@property(nonatomic, weak) id<TabGroupPositioner> tabGroupPositioner;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
