@@ -424,15 +424,25 @@ mojolpm_fuzzer_test("clipboard_host_mojolpm_fuzzer") {
   proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
 }
 
+proto_library("ad_auction_service_mojolpm_fuzzer_stringifiers_proto") {
+  proto_in_dir = "//"
+
+  sources = [ "../../browser/interest_group/ad_auction_service_mojolpm_fuzzer_stringifiers.proto" ]
+}
+
 mojolpm_fuzzer_test("ad_auction_service_mojolpm_fuzzer") {
-  sources =
-      [ "../../browser/interest_group/ad_auction_service_mojolpm_fuzzer.cc" ]
+  sources = [
+    "../../browser/interest_group/ad_auction_service_mojolpm_fuzzer.cc",
+    "../../browser/interest_group/ad_auction_service_mojolpm_fuzzer_stringifiers.cc",
+    "../../browser/interest_group/ad_auction_service_mojolpm_fuzzer_stringifiers.h",
+  ]
 
   proto_source =
       "../../browser/interest_group/ad_auction_service_mojolpm_fuzzer.proto"
   testcase_proto_kind = "content.fuzzing.ad_auction_service.proto.Testcase"
 
   deps = [
+    ":ad_auction_service_mojolpm_fuzzer_stringifiers_proto",
     ":mojolpm_fuzzer_support",
     "//content/browser:browser",
     "//content/browser:for_content_tests",
@@ -441,7 +451,10 @@ mojolpm_fuzzer_test("ad_auction_service_mojolpm_fuzzer") {
     "//services/data_decoder/public/cpp:test_support",
   ]
 
-  proto_deps = [ "//third_party/blink/public/mojom:mojom_platform_mojolpm" ]
+  proto_deps = [
+    ":ad_auction_service_mojolpm_fuzzer_stringifiers_proto",
+    "//third_party/blink/public/mojom:mojom_platform_mojolpm",
+  ]
 
   seed_corpus_sources = [
     "//content/test/data/fuzzer_corpus/ad_auction_service_mojolpm_fuzzer/basic_auction.textproto",

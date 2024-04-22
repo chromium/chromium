@@ -19,11 +19,15 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/thread_annotations.h"
 #include "components/aggregation_service/features.h"
 #include "content/browser/interest_group/ad_auction_service_impl.h"
 #include "content/browser/interest_group/ad_auction_service_mojolpm_fuzzer.pb.h"
+#include "content/browser/interest_group/ad_auction_service_mojolpm_fuzzer_stringifiers.h"
+#include "content/browser/interest_group/ad_auction_service_mojolpm_fuzzer_stringifiers.pb.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
@@ -51,9 +55,9 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace content {
+namespace content::ad_auction_service_mojolpm_fuzzer {
+
 class SiteInstance;
-}  // namespace content
 
 class AllowInterestGroupContentBrowserClient
     : public content::TestContentBrowserClient {
@@ -111,21 +115,37 @@ function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                 'allowComponentAuction': true};
 }
 
+function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
+    browserSignals, directFromSellerSignals) {
+}
+
 function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                  browserSignals) {
   return {desirability: bid,
           allowComponentAuction: true};
+}
+
+function reportResult(auctionConfig, browserSignals) {
+    return {};
 }
 )";
 
 // For handling network requests made by the Protected Audience API -- also
 // prevents those requests from being made to real servers.
 class NetworkResponder {
+ public:
+  void SetScript(content::fuzzing::ad_auction_service::proto::Script script) {
+    base::AutoLock auto_lock(lock_);
+    script_ = Stringify(script);
+  }
+
  private:
   bool RequestHandler(content::URLLoaderInterceptor::RequestParams* params) {
+    base::AutoLock auto_lock(lock_);
     if (params->url_request.url.path().find(".js") != std::string::npos) {
       content::URLLoaderInterceptor::WriteResponse(
-          kFledgeScriptHeaders, kBasicScript, params->client.get());
+          kFledgeScriptHeaders, script_ ? *script_ : kBasicScript,
+          params->client.get());
     } else {
       content::URLLoaderInterceptor::WriteResponse(
           kFledgeUpdateHeaders, kInterestGroupUpdate, params->client.get());
@@ -133,10 +153,14 @@ class NetworkResponder {
     return true;
   }
 
+  mutable base::Lock lock_;
+
   // Handles network requests for interest group updates.
   content::URLLoaderInterceptor network_interceptor_{
       base::BindRepeating(&NetworkResponder::RequestHandler,
                           base::Unretained(this))};
+
+  std::optional<std::string> script_ GUARDED_BY(lock_);
 };
 
 // AuctionProcessManager that allows running auctions in-proc.
@@ -326,11 +350,14 @@ void AdAuctionServiceTestcase::RunAction(const ProtoAction& action,
                          base::Unretained(this)),
           std::move(run_closure));
       return;
+    case ProtoAction::kNetResponseAction:
+      network_responder_->SetScript(action.net_response_action().script());
+      break;
     case ProtoAction::kAdAuctionServiceRemoteAction:
       // Invoke one of the service methods on AdAuctionService, with parameters
       // specified in the ad_auction_service_remote_action() proto, on the
       // remote given by the id in the proto.
-      mojolpm::HandleRemoteAction(action.ad_auction_service_remote_action());
+      ::mojolpm::HandleRemoteAction(action.ad_auction_service_remote_action());
       break;
     case ProtoAction::ACTION_NOT_SET:
       break;
@@ -388,7 +415,7 @@ void AdAuctionServiceTestcase::AddAdAuctionService(
   DCHECK_CALLED_ON_VALID_SEQUENCE(this->sequence_checker_);
   mojo::Remote<blink::mojom::AdAuctionService> remote;
   auto receiver = remote.BindNewPipeAndPassReceiver();
-  mojolpm::GetContext()->AddInstance(id, std::move(remote));
+  ::mojolpm::GetContext()->AddInstance(id, std::move(remote));
   content::GetUIThreadTaskRunner({})->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(
@@ -423,8 +450,10 @@ DEFINE_BINARY_PROTO_FUZZER(
   base::RunLoop main_run_loop;
   GetFuzzerTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&mojolpm::RunTestcase<AdAuctionServiceTestcase>,
+      base::BindOnce(&::mojolpm::RunTestcase<AdAuctionServiceTestcase>,
                      base::Unretained(&testcase), GetFuzzerTaskRunner(),
                      main_run_loop.QuitClosure()));
   main_run_loop.Run();
 }
+
+}  // namespace content::ad_auction_service_mojolpm_fuzzer

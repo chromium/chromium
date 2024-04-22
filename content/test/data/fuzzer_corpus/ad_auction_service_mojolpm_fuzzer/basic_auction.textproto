@@ -4,6 +4,62 @@ actions {
   }
 }
 actions {
+  net_response_action {
+    script {
+      constructed_script {
+        generate_bid_function {
+          generate_bid_return {
+            generate_bid_return_value {
+              generate_bid_return_dict {
+                ad {
+                  param_value {
+                    interest_group {
+                      ads {
+                        ad {
+                          index: 0
+                        }
+                      }
+                    }
+                  }
+                }
+                bid {
+                  raw_value: "1"
+                }
+                render {
+                  value {
+                    param_value {
+                      interest_group {
+                        ads {
+                          ad {
+                            index: 0
+                            ad_field {
+                              render_url {
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+                allow_component_auction {
+                  raw_value: "true"
+                }
+              }
+            }
+          }
+        }
+        score_ad_function {
+        }
+        report_win_function {
+        }
+        report_result_function {
+        }
+      }
+    }
+  }
+}
+actions {
   ad_auction_service_remote_action {
     id: 1
     m_join_interest_group {
@@ -172,5 +228,6 @@ sequences {
   action_indexes: 1
   action_indexes: 2
   action_indexes: 3
+  action_indexes: 4
 }
 sequence_indexes: 0

@@ -1,0 +1,283 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Support file for ad_auction_service_mojolpm_fuzzer.proto; contains
+// definitions used to generate network responses such as scripts.
+
+syntax = "proto2";
+
+package content.fuzzing.ad_auction_service.proto;
+
+message Script {
+  oneof script {
+    string raw_script = 1;
+    ConstructedScript constructed_script = 2;
+  }
+}
+
+message ConstructedScript {
+  // Note that none of these are required -- the script could be empty!
+  optional GenerateBidFunction generate_bid_function = 1;
+  optional ScoreAdFunction score_ad_function = 2;
+  optional ReportWinFunction report_win_function = 3;
+  optional ReportResultFunction report_result_function = 4;
+}
+
+message GenerateBidFunction {
+  repeated CallSetBid call_set_bid = 1;
+  repeated CallDebugOnlyReportWin call_debug_only_report_win = 2;
+  repeated CallDebugOnlyReportLoss call_debug_only_report_loss = 3;
+  optional GenerateBidReturn generate_bid_return = 4;
+}
+
+message ScoreAdFunction {
+  // TODO(crbug.com/41490389): Flush out.
+}
+
+message ReportWinFunction {
+  // TODO(crbug.com/41490389): Flush out.
+}
+
+message ReportResultFunction {
+  // TODO(crbug.com/41490389): Flush out.
+}
+
+message CallSetBid {
+  required GenerateBidReturnValue generate_bid_return_value = 1;
+}
+
+message CallDebugOnlyReportWin {
+  required Value url = 1;
+}
+
+message CallDebugOnlyReportLoss {
+  required Value url = 1;
+}
+
+message GenerateBidReturn {
+  required GenerateBidReturnValue generate_bid_return_value = 1;
+}
+
+message GenerateBidReturnValue {
+  oneof generate_bid_return {
+    Value raw_return = 1;
+    GenerateBidReturnDict generate_bid_return_dict = 2;
+    GenerateBidReturnDictArray generate_bid_return_dict_array = 3;
+  }
+}
+
+message GenerateBidReturnDict {
+  optional Value ad = 1;
+  optional Value ad_cost = 2;
+  optional Value bid = 3;
+  optional Value bid_currency = 4;
+  optional Render render = 5;
+  repeated Render ad_components = 6;
+  optional Value allow_component_auction = 7;
+  optional Value modeling_signals = 8;
+}
+
+message GenerateBidReturnDictArray {
+  repeated GenerateBidReturnDict generate_bid_return_dict = 1;
+}
+
+message Render {
+  oneof render {
+    Value value = 1;
+    StructuredRender structured_render = 2;
+  }
+}
+
+message StructuredRender {
+  optional Value url = 1;
+  optional Dimension width = 2;
+  optional Dimension height = 3;
+}
+
+message Dimension {
+  oneof dimension {
+    Value value = 1;
+    StructuredDimension structured_dimension = 2;
+  }
+}
+
+message StructuredDimension {
+  required Value value = 1;
+  oneof unit {
+    UnitSw unit_sw = 2;
+    UnitPx unit_px = 3;
+  }
+}
+
+message UnitSw {}
+
+message UnitPx {}
+
+message Value {
+  oneof value {
+    string raw_value = 1;
+    ParamValue param_value = 2;
+  }
+}
+
+message ParamValue {
+  oneof param_value {
+    InterestGroup interest_group = 1;
+    AuctionSignals auction_signals = 2;
+    PerBuyerSignals per_buyer_signals = 3;
+    TrustedBiddingSignals trusted_bidding_signals = 4;
+    GenerateBidBrowserSignals browser_signals = 5;
+    DirectFromSellerSignals direct_from_seller_signals = 6;
+  }
+}
+
+message InterestGroup {
+  oneof interest_group {
+    Owner owner = 1;
+    Name name = 2;
+    EnableBiddingSignalsPrioritization enable_bidding_signals_prioritization =
+        3;
+    ExecutionMode execution_mode = 4;
+    TrustedBiddingSignalsSlotSizeMode trusted_bidding_signals_slot_size_mode =
+        5;
+    UserBiddingSignals user_bidding_signals = 6;
+    BiddingLogicURL bidding_logic_url = 7;
+    BiddingLogicUrl bidding_logic_url_deprecated = 8;
+    BiddingWasmHelperURL bidding_wasm_helper_url = 9;
+    BiddingWasmHelperUrl bidding_wasm_helper_url_deprecated = 10;
+    UpdateURL update_url = 11;
+    UpdateUrl update_url_deprecated = 12;
+    DailyUpdateUrl daily_update_url = 13;
+    TrustedBiddingSignalsURL trusted_bidding_signals_url = 14;
+    TrustedBiddingSignalsUrl trusted_bidding_signals_url_deprecated = 15;
+    TrustedBiddingSignalsKeys trusted_bidding_signals_keys = 16;
+    PriorityVector priority_vector = 17;
+    UseBiddingSignalsPrioritization use_bidding_signals_prioritization = 18;
+    Ads ads = 19;
+    AdComponents ad_components = 20;
+  }
+}
+
+message Owner {}
+
+message Name {}
+
+message EnableBiddingSignalsPrioritization {}
+
+message ExecutionMode {}
+
+message TrustedBiddingSignalsSlotSizeMode {}
+
+message UserBiddingSignals {}
+
+message BiddingLogicURL {}
+
+message BiddingLogicUrl {}
+
+message BiddingWasmHelperURL {}
+
+message BiddingWasmHelperUrl {}
+
+message UpdateURL {}
+
+message UpdateUrl {}
+
+message DailyUpdateUrl {}
+
+message TrustedBiddingSignalsURL {}
+
+message TrustedBiddingSignalsUrl {}
+
+message TrustedBiddingSignalsKeys {}
+
+message PriorityVector {}
+
+message UseBiddingSignalsPrioritization {}
+
+message Ads {
+  optional AdOrAdComponent ad = 1;
+}
+
+message AdOrAdComponent {
+  required int32 index = 1;
+  optional AdField ad_field = 2;
+}
+
+message AdField {
+  oneof ad_field {
+    RenderURL render_url = 1;
+    RenderUrl render_url_deprecated = 2;
+    Metadata metadata = 3;
+  }
+}
+
+message RenderURL {}
+
+message RenderUrl {}
+
+message Metadata {}
+
+message AdComponents {
+  optional AdOrAdComponent ad = 1;
+}
+
+message AuctionSignals {}
+
+message PerBuyerSignals {}
+
+message SellerSignals {}
+
+message TrustedBiddingSignals {}
+
+message GenerateBidBrowserSignals {
+  oneof browser_signals {
+    TopWindowHostname top_window_hostname = 1;
+    Seller seller = 2;
+    TopLevelSeller top_level_seller = 3;
+    RequestedSize requested_size = 4;
+    JoinCount join_count = 5;
+    Recency recency = 6;
+    BidCount bid_count = 7;
+    PrevWins prev_wins = 8;
+    PrevWinsMs prev_wins_ms = 9;
+    WasmHelper wasm_helper = 10;
+    DataVersion data_version = 11;
+    AdComponentsLimit ad_components_limit = 12;
+    MultiBidLimit multi_bid_limit = 13;
+  }
+}
+
+message TopWindowHostname {}
+
+message Seller {}
+
+message TopLevelSeller {}
+
+message RequestedSize {}
+
+message JoinCount {}
+
+message Recency {}
+
+message BidCount {}
+
+message PrevWins {}
+
+message PrevWinsMs {}
+
+message WasmHelper {}
+
+message DataVersion {}
+
+message AdComponentsLimit {}
+
+message MultiBidLimit {}
+
+message DirectFromSellerSignals {
+  oneof direct_from_seller_signals {
+    AuctionSignals auction_signals = 1;
+    PerBuyerSignals per_buyer_signals = 2;
+    SellerSignals seller_signals = 3;
+  }
+}
