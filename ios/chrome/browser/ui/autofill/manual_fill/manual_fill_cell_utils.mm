@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/chip_button.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_labeled_chip.h"
@@ -44,6 +45,9 @@ constexpr CGFloat kSmallVerticalSpacingBetweenViews = 4;
 
 // Vertical spacing between two labeled chip buttons.
 constexpr CGFloat kVerticalSpacingBetweenLabeledChips = 8;
+
+// Height and width of the 3-dot menu button displayed in the cell's header.
+constexpr CGFloat kThreeDotMenuButtonSize = 24;
 
 // Adds all baseline anchor constraints for the given `views` to match the first
 // one. Constraints are not activated.
@@ -105,6 +109,33 @@ void LayViewsHorizontally(NSArray<UIView*>* views,
       AppendConstraintsHorizontalSyncBaselines |
           AppendConstraintsHorizontalEqualOrSmallerThanGuide);
   [vertical_lead_views addObject:views.firstObject];
+}
+
+// Creates and configures the 3-dot menu button that's displayed in the cell's
+// header.
+ExtendedTouchTargetButton* CreateThreeDotMenuButton() {
+  ExtendedTouchTargetButton* menu_button =
+      [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
+
+  UIImage* menu_image =
+      SymbolWithPalette(DefaultSymbolWithPointSize(kEllipsisCircleFillSymbol,
+                                                   kThreeDotMenuButtonSize),
+                        @[
+                          [UIColor colorNamed:kBlue600Color],
+                          [UIColor colorNamed:kGroupedPrimaryBackgroundColor]
+                        ]);
+  [menu_button setImage:menu_image forState:UIControlStateNormal];
+
+  [menu_button setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                                 forAxis:UILayoutConstraintAxisHorizontal];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [menu_button.heightAnchor
+        constraintEqualToConstant:kThreeDotMenuButtonSize],
+    [menu_button.widthAnchor constraintEqualToConstant:kThreeDotMenuButtonSize],
+  ]];
+
+  return menu_button;
 }
 
 }  // namespace
@@ -349,8 +380,12 @@ NSMutableAttributedString* CreateHeaderAttributedString(NSString* title,
 }
 
 UIStackView* CreateHeaderView(UIView* icon, UILabel* label) {
+  NSArray<UIView*>* subviews =
+      IsKeyboardAccessoryUpgradeEnabled()
+          ? @[ icon, label, CreateThreeDotMenuButton() ]
+          : @[ icon, label ];
   UIStackView* header_view =
-      [[UIStackView alloc] initWithArrangedSubviews:@[ icon, label ]];
+      [[UIStackView alloc] initWithArrangedSubviews:subviews];
   header_view.translatesAutoresizingMaskIntoConstraints = NO;
   header_view.spacing = UIStackViewSpacingUseSystem;  // Spacing of 8px.
   header_view.alignment = UIStackViewAlignmentCenter;
