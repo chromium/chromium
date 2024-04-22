@@ -12,9 +12,3 @@ UIFont* LocationBarSteadyViewFont(UIContentSizeCategory currentCategory) {
       UIFontTextStyleBody, currentCategory,
       UIContentSizeCategoryAccessibilityExtraLarge);
 }
-
-UIFont* SmallLocationBarSteadyViewFont(UIContentSizeCategory currentCategory) {
-  return PreferredFontForTextStyleWithMaxCategory(
-      UIFontTextStyleFootnote, currentCategory,
-      UIContentSizeCategoryAccessibilityExtraLarge);
-}

@@ -39,6 +39,9 @@ const CGFloat kbadgeViewAnimationDuration = 0.2;
 const CGFloat kLocationLabelVerticalOffset = -1;
 // The margin from the leading side when not centered.
 const CGFloat kLeadingMargin = 20;
+// The multiplier for the smaller location label font, used when animating in
+// the large Contextual Panel entrypoint.
+const CGFloat kSmallerLocationLabelFontMultiplier = 0.75;
 }  // namespace
 
 @interface LocationBarSteadyView ()
@@ -536,7 +539,7 @@ const CGFloat kLeadingMargin = 20;
 
   // Call this in case the font was previously made smaller by the large
   // Contextual Panel entrypoint.
-  _locationLabel.font = [self locationLabelFont];
+  _locationContainerView.transform = CGAffineTransformIdentity;
 }
 
 - (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered {
@@ -544,18 +547,28 @@ const CGFloat kLeadingMargin = 20;
   // the Contextual Panel entrypoint is not being shown.
   if (_xStickToLeadingSideConstraint.active ||
       (centered && _contextualPanelEntrypointView.hidden)) {
+    _locationContainerView.transform = CGAffineTransformIdentity;
     return;
   }
 
   if (centered) {
     _xAbsoluteCenteredConstraint.active = NO;
     _xRelativeToContentCenteredConstraint.active = YES;
-    _locationLabel.font = [self locationLabelSmallerFont];
+
+    // Make the location container smaller via transform to 1. allow animating
+    // the "font" change and 2. make the entire location label container package
+    // (label + image) become smaller momentarily.
+    _locationContainerView.transform =
+        CGAffineTransformMakeScale(kSmallerLocationLabelFontMultiplier,
+                                   kSmallerLocationLabelFontMultiplier);
   } else {
     _xRelativeToContentCenteredConstraint.active = NO;
     _xAbsoluteCenteredConstraint.active = YES;
-    _locationLabel.font = [self locationLabelFont];
+    _locationContainerView.transform = CGAffineTransformIdentity;
   }
+
+  // This method is called as part of an animation, so layout here if needed.
+  [self layoutIfNeeded];
 }
 
 #pragma mark - UIResponder
@@ -632,13 +645,6 @@ const CGFloat kLeadingMargin = 20;
 // Returns the normal font size for the location label.
 - (UIFont*)locationLabelFont {
   return LocationBarSteadyViewFont(
-      self.traitCollection.preferredContentSizeCategory);
-}
-
-// Returns the smaller font size for the location label, used when a large
-// Contextual Panel entrypoint is present.
-- (UIFont*)locationLabelSmallerFont {
-  return SmallLocationBarSteadyViewFont(
       self.traitCollection.preferredContentSizeCategory);
 }
 

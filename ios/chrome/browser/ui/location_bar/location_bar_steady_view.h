@@ -55,7 +55,10 @@
 
 // Sets the location label of the location bar centered relative to the content
 // around it when centered is passed as YES. Otherwise, resets it to the
-// "absolute" center.
+// "absolute" center. This is called as part of an animation (therefore
+// `layoutIfNeeded` is called) for the Contextual Panel entrypoint when an
+// infoblock returns some high-confidence data, which makes the entrypoint
+// display a label, momentarily using significant portion of the location bar.
 - (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered;
 
 // The tappable button representing the location bar.
