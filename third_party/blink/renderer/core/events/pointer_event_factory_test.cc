@@ -761,7 +761,7 @@ TEST_F(PointerEventFactoryDevicePropertiesTest, DeviceIdForMousePointerType) {
       /* Device id */ kBrowserDeviceId0);
   // Id is the same for the same pen.
   ASSERT_EQ(blink_device_id_1, blink_device_id_2);
-  ASSERT_EQ(blink_device_id_1, 0);
+  ASSERT_EQ(blink_device_id_1, 1);
 
   int32_t blink_device_id_3 = CreatePointerEventAndGetUniqueId(
       WebPointerProperties::PointerType::kPen, /* Raw pointer id */ 2,
@@ -779,13 +779,13 @@ TEST_F(PointerEventFactoryDevicePropertiesTest, DeviceIdForMousePointerType) {
   int32_t blink_device_id_5 = CreatePointerEventAndGetUniqueId(
       WebPointerProperties::PointerType::kEraser, /* Raw pointer id */ 2,
       /* Device id */ -1);
-  ASSERT_EQ(-1, blink_device_id_5);
+  ASSERT_EQ(0, blink_device_id_5);
 
   // Mouse (device id of the web pointer event does not matter).
   int32_t blink_device_id_6 = CreatePointerEventAndGetUniqueId(
       WebPointerProperties::PointerType::kMouse, /* Raw pointer id */ 2,
       /* Device id */ -1);
-  ASSERT_EQ(2, blink_device_id_6);
+  ASSERT_EQ(3, blink_device_id_6);
   pointer_event_factory_.Clear();
 }
 }  // namespace blink

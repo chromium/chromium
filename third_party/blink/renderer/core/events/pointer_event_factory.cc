@@ -573,8 +573,8 @@ void PointerEventFactory::Clear() {
   pointer_id_to_attributes_.insert(kMouseId, attributes);
 
   current_id_ = PointerEventFactory::kMouseId + 1;
-  current_device_id_ = 0;
-  device_id_for_mouse_ = -1;
+  current_device_id_ = 1;
+  device_id_for_mouse_ = 0;
 }
 
 PointerId PointerEventFactory::AddOrUpdateIdAndActiveButtons(
@@ -762,18 +762,20 @@ int32_t PointerEventFactory::GetBlinkDeviceId(
     const WebPointerEvent& web_pointer_event) {
   if (web_pointer_event.pointer_type ==
       WebPointerProperties::PointerType::kMouse) {
-    if (device_id_for_mouse_ == -1) {
+    if (device_id_for_mouse_ == 0) {
       device_id_for_mouse_ = current_device_id_++;
     }
     return device_id_for_mouse_;
   }
 
   const int32_t incoming_id = web_pointer_event.device_id;
+  // Invalid device id in browser is -1, however, an invalid uniqueId
+  // is 0 as per the PointerEvent specification.
   if (incoming_id == -1) {
-    return -1;
+    return 0;
   }
 
-  auto result = device_id_browser_to_blink_mapping_.insert(incoming_id, -1);
+  auto result = device_id_browser_to_blink_mapping_.insert(incoming_id, 0);
   if (result.is_new_entry) {
     result.stored_value->value = current_device_id_++;
   }

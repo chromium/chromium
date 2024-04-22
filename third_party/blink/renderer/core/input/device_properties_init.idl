@@ -5,5 +5,5 @@
 // https://w3c.github.io/pointerevents/#pointerevent-interface
 
 dictionary DevicePropertiesInit {
-    long uniqueId = -1;
+    long uniqueId = 0;
 };
