@@ -633,7 +633,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SafeBrowsing.Daily.SecuritySensitiveCountLast28Days.{UserState}.AllEvents"
-    units="events" expires_after="2024-03-23">
+    units="events" expires_after="2025-04-19">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -2289,7 +2289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SafeBrowsing.RT.IsLookupServiceFound" enum="BooleanFound"
-    expires_after="2024-04-28">
+    expires_after="2025-04-19">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

@@ -4214,7 +4214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordProtection.ModalWarningDialogLifetime" units="ms"
-    expires_after="2024-04-18">
+    expires_after="2025-04-19">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
