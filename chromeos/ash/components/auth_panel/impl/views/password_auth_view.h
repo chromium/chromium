@@ -96,7 +96,7 @@ class PasswordAuthView : public FactorAuthView,
   void OnDisplayPasswordButtonPressed();
   void SetCapsLockIconHighlighted(bool highlight);
 
-  raw_ptr<AuthPanelEventDispatcher> dispatcher_ = nullptr;
+  raw_ptr<AuthPanelEventDispatcher, DanglingUntriaged> dispatcher_ = nullptr;
 
   raw_ptr<LoginPasswordRow> password_row_ = nullptr;
 

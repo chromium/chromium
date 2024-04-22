@@ -39,7 +39,7 @@ class LoginTextfield : public SystemTextfield {
       const AuthFactorStore::State::PasswordViewState& password_view_state);
 
  private:
-  raw_ptr<AuthPanelEventDispatcher> dispatcher_;
+  raw_ptr<AuthPanelEventDispatcher, DanglingUntriaged> dispatcher_;
 };
 
 }  // namespace ash
