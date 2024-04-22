@@ -704,12 +704,17 @@
             {
               'cipd_package': 'infra/3pp/tools/cpython3/linux-amd64',
               'location': 'vpython_dir_linux_amd64',
-              'revision': 'version:2@3.8.10.chromium.21',
+              'revision': 'version:2@3.8.10.chromium.34',
             },
             {
-              'cipd_package': 'infra/tools/luci/vpython/linux-amd64',
+              'cipd_package': 'infra/tools/luci/vpython3/linux-amd64',
               'location': 'vpython_dir_linux_amd64',
-              'revision': 'git_revision:0f694cdc06ba054b9960aa1ae9766e45b53d02c1',
+              'revision': 'git_revision:6ee2ba6ba03b09d8d8763f524aa77edf1945ca92',
+            },
+            {
+              'cipd_package': 'infra/tools/cipd/linux-amd64',
+              'location': 'vpython_dir_linux_amd64',
+              'revision': 'git_revision:200dbdf0e967e81388359d3f85f095d39b35db67',
             },
           ],
         },
