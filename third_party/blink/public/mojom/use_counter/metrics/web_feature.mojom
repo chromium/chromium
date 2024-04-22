@@ -4335,6 +4335,9 @@ enum WebFeature {
 
   kIdentityDigitalCredentialsDeepLink = 4948,
 
+  kV8WebView_GetExperimentalMediaIntegrityTokenProvider_Method = 4949,
+  kV8MediaIntegrityTokenProvider_RequestToken_Method = 4950,
+
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
   // Also, run update_use_counter_feature_enum.py in

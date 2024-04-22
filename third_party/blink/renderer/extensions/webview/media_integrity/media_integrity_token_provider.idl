@@ -15,5 +15,6 @@
     // device, which includes the pased-in contentBinding as a defense against
     // replay attacks.
     // Throws MediaIntegrityError.
-    [CallWith=ScriptState, HighEntropy, RaisesException] Promise<DOMString> requestToken(optional DOMString? contentBinding = null);
+    [CallWith=ScriptState, HighEntropy, RaisesException, Measure]
+    Promise<DOMString> requestToken(optional DOMString? contentBinding = null);
 };

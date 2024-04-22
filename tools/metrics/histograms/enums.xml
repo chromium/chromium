@@ -11516,6 +11516,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4946" label="V8Translation_CanTranslate_Method"/>
   <int value="4947" label="V8Translation_CreateTranslator_Method"/>
   <int value="4948" label="IdentityDigitalCredentialsDeepLink"/>
+  <int value="4949"
+      label="V8WebView_GetExperimentalMediaIntegrityTokenProvider_Method"/>
+  <int value="4950" label="V8MediaIntegrityTokenProvider_RequestToken_Method"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
