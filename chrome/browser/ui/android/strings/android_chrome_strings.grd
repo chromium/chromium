@@ -3266,7 +3266,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Opening Chrome without a profile lock will remove your saved passwords and payment methods from the car. Using a profile lock keeps this data secure.
       </message>
       <message name="IDS_MISSING_DEVICE_LOCK_REMOVE_LOCAL_DATA" desc="Option given to the user to delete all Chrome profile data, particularly mentioning bookmarks and history.">
-        Also clear bookmarks, history, and more from this car
+        Also delete bookmarks, history, and more from this car
       </message>
       <message name="IDS_DELETE_AND_CONTINUE" desc="Text for the button that will delete any sensitive data and then navigate the user back to Chrome.">
         Delete &amp; continue
