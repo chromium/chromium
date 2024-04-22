@@ -31,6 +31,13 @@ from test_helpers import ANY_SHARED_ID, execute_command, goto_url
         'type': 'xpath',
         'value': '//div'
     },
+    {
+        'type': 'accessibility',
+        'value': {
+            'role': 'button',
+            'name': 'test'
+        }
+    },
 ])
 @pytest.mark.asyncio
 async def test_locate_nodes_locator_found(websocket, context_id, html,
@@ -38,7 +45,7 @@ async def test_locate_nodes_locator_found(websocket, context_id, html,
     await goto_url(
         websocket, context_id,
         html(
-            '<div data-class="one">foobarBARbaz</div><div data-class="two">foobarBAR<span>baz</span></div>'
+            '<div data-class="one" aria-label="test" role="button">foobarBARbaz</div><div data-class="two" aria-label="test" role="button">foobarBAR<span>baz</span></div>'
         ))
     resp = await execute_command(
         websocket, {
@@ -57,6 +64,8 @@ async def test_locate_nodes_locator_found(websocket, context_id, html,
                 'value': {
                     'attributes': {
                         'data-class': 'one',
+                        'aria-label': 'test',
+                        'role': 'button',
                     },
                     'childNodeCount': 1,
                     'localName': 'div',
@@ -71,6 +80,8 @@ async def test_locate_nodes_locator_found(websocket, context_id, html,
                 'value': {
                     'attributes': {
                         'data-class': 'two',
+                        'aria-label': 'test',
+                        'role': 'button',
                     },
                     'childNodeCount': 2,
                     'localName': 'div',

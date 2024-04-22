@@ -198,7 +198,8 @@ export class WindowRealm extends Realm {
     awaitPromise: boolean,
     resultOwnership: Script.ResultOwnership,
     serializationOptions: Script.SerializationOptions,
-    userActivation?: boolean
+    userActivation?: boolean,
+    includeCommandLineApi?: boolean
   ): Promise<Script.EvaluateResult> {
     await this.#browsingContextStorage
       .getContext(this.#browsingContextId)
@@ -209,7 +210,8 @@ export class WindowRealm extends Realm {
       awaitPromise,
       resultOwnership,
       serializationOptions,
-      userActivation
+      userActivation,
+      includeCommandLineApi
     );
   }
 

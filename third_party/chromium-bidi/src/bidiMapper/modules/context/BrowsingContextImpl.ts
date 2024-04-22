@@ -1036,14 +1036,15 @@ export class BrowsingContextImpl {
     );
   }
 
-  #getLocatorDelegate(
+  async #getLocatorDelegate(
+    realm: Realm,
     locator: BrowsingContext.Locator,
     maxNodeCount: number | undefined,
     startNodes: Script.SharedReference[]
-  ): {
+  ): Promise<{
     functionDeclaration: string;
     argumentsLocalValues: Script.LocalValue[];
-  } {
+  }> {
     switch (locator.type) {
       case 'css':
         return {
@@ -1226,10 +1227,111 @@ export class BrowsingContextImpl {
             ...startNodes,
           ],
         };
-      case 'accessibility':
-        throw new UnsupportedOperationException(
-          'accessibility locator is not supported yet'
+      case 'accessibility': {
+        // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-accessibility-attributes
+        if (!locator.value.name && !locator.value.role) {
+          throw new InvalidSelectorException(
+            'Either name or role has to be specified'
+          );
+        }
+        const bindings = await realm.evaluate(
+          /* expression=*/ '({getAccessibleName, getAccessibleRole})',
+          /* awaitPromise=*/ false,
+          /* resultOwnership=*/ Script.ResultOwnership.Root,
+          /* serializationOptions= */ undefined,
+          /* userActivation=*/ false,
+          /* includeCommandLineApi=*/ true
         );
+
+        if (bindings.type !== 'success') {
+          throw new Error('Could not get bindings');
+        }
+
+        if (bindings.result.type !== 'object') {
+          throw new Error('Could not get bindings');
+        }
+        return {
+          functionDeclaration: String(
+            (
+              name: string,
+              role: string,
+              bindings: any,
+              maxNodeCount: number,
+              ...startNodes: Element[]
+            ) => {
+              const returnedNodes: Element[] = [];
+
+              let aborted = false;
+
+              function collect(
+                contextNodes: Element[],
+                selector: {role: string; name: string}
+              ) {
+                if (aborted) {
+                  return;
+                }
+                for (const contextNode of contextNodes) {
+                  let match = true;
+
+                  if (selector.role) {
+                    const role = bindings.getAccessibleRole(contextNode);
+                    if (selector.role !== role) {
+                      match = false;
+                    }
+                  }
+
+                  if (selector.name) {
+                    const name = bindings.getAccessibleName(contextNode);
+                    if (selector.name !== name) {
+                      match = false;
+                    }
+                  }
+
+                  if (match) {
+                    if (
+                      maxNodeCount !== 0 &&
+                      returnedNodes.length === maxNodeCount
+                    ) {
+                      aborted = true;
+                      break;
+                    }
+
+                    returnedNodes.push(contextNode);
+                  }
+
+                  const childNodes: Element[] = [];
+                  for (const child of contextNode.children) {
+                    if (child instanceof HTMLElement) {
+                      childNodes.push(child);
+                    }
+                  }
+
+                  collect(childNodes, selector);
+                }
+              }
+
+              startNodes = startNodes.length > 0 ? startNodes : [document.body];
+              collect(startNodes, {
+                role,
+                name,
+              });
+              return returnedNodes;
+            }
+          ),
+          argumentsLocalValues: [
+            // `name`
+            {type: 'string', value: locator.value.name || ''},
+            // `role`
+            {type: 'string', value: locator.value.role || ''},
+            // `bindings`.
+            {handle: bindings.result.handle!},
+            // `maxNodeCount` with `0` means no limit.
+            {type: 'number', value: maxNodeCount ?? 0},
+            // `startNodes`
+            ...startNodes,
+          ],
+        };
+      }
     }
   }
 
@@ -1240,7 +1342,8 @@ export class BrowsingContextImpl {
     maxNodeCount: number | undefined,
     serializationOptions: Script.SerializationOptions | undefined
   ): Promise<BrowsingContext.LocateNodesResult> {
-    const locatorDelegate = this.#getLocatorDelegate(
+    const locatorDelegate = await this.#getLocatorDelegate(
+      realm,
       locator,
       maxNodeCount,
       startNodes

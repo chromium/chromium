@@ -191,7 +191,8 @@ export abstract class Realm {
     awaitPromise: boolean,
     resultOwnership: Script.ResultOwnership = Script.ResultOwnership.None,
     serializationOptions: Script.SerializationOptions = {},
-    userActivation = false
+    userActivation = false,
+    includeCommandLineApi = false
   ): Promise<Script.EvaluateResult> {
     const cdpEvaluateResult = await this.cdpClient.sendCommand(
       'Runtime.evaluate',
@@ -204,6 +205,7 @@ export abstract class Realm {
           serializationOptions
         ),
         userGesture: userActivation,
+        includeCommandLineAPI: includeCommandLineApi,
       }
     );
 
