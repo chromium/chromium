@@ -1707,7 +1707,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Record how long it took to select an item.
   [self reportTabSelectionTime];
 
-  [self.regularGridHandler selectItemWithID:itemID pinned:YES];
+  [self.regularGridHandler selectItemWithID:itemID
+                                     pinned:YES
+                     isFirstActionOnTabGrid:_idleTabGrid];
 
   self.activePage = self.currentPage;
   [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
@@ -1815,11 +1817,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   // Check if the tab being selected is already selected.
   BOOL alreadySelected = [tabsDelegate isItemWithIDSelected:itemID];
+
+  [tabsDelegate selectItemWithID:itemID
+                          pinned:NO
+          isFirstActionOnTabGrid:_idleTabGrid];
+
   if (!alreadySelected) {
     [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
   }
-
-  [tabsDelegate selectItemWithID:itemID pinned:NO];
 
   if (self.tabGridMode == TabGridModeSearch) {
     if (![tabsDelegate isItemWithIDSelected:itemID]) {

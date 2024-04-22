@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
+#import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/main/model/browser_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
@@ -733,7 +734,9 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   return YES;
 }
 
-- (void)selectItemWithID:(web::WebStateID)itemID pinned:(BOOL)pinned {
+- (void)selectItemWithID:(web::WebStateID)itemID
+                    pinned:(BOOL)pinned
+    isFirstActionOnTabGrid:(BOOL)isFirstActionOnTabGrid {
   WebStateSearchCriteria searchCriteria{
       .identifier = itemID,
       .pinned_state = pinned ? PinnedState::kPinned : PinnedState::kNonPinned,
@@ -813,6 +816,16 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   } else {
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridMoveToExistingTab"));
+    if (isFirstActionOnTabGrid) {
+      int activeWebStateIndex = itemWebStateList->active_index();
+      BOOL adjacentTabSelected =
+          std::abs(index - activeWebStateIndex) == 1 &&
+          index != WebStateList::kInvalidIndex &&
+          activeWebStateIndex != WebStateList::kInvalidIndex;
+      if (adjacentTabSelected) {
+        self.tabBasedIPHBrowserAgent->NotifySwitchToAdjacentTabFromTabGrid();
+      }
+    }
   }
 
   // Avoid a reentrant activation. This is a fix for crbug.com/1134663, although

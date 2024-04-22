@@ -43,6 +43,12 @@ class TabBasedIPHBrowserAgent : public BrowserUserData<TabBasedIPHBrowserAgent>,
   // so that the related in-product help would be attempted.
   void NotifyBackForwardButtonTap();
 
+  // Notifies that the user has used the tab grid solely to switch to an
+  // adjacent tab.
+  void NotifySwitchToAdjacentTabFromTabGrid() {
+    // TODO(crbug.com/40276959): implement in implementation file.
+  }
+
 #pragma mark - Observer headers
 
   // BrowserObserver
