@@ -6,8 +6,6 @@
 
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_functions.h"
-#import "base/metrics/user_metrics.h"
-#import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/download/model/mime_type_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
@@ -156,17 +154,14 @@ UIEdgeInsets FullscreenControllerImpl::GetCurrentViewportInsets() const {
 }
 
 void FullscreenControllerImpl::EnterFullscreen() {
-  base::RecordAction(base::UserMetricsAction("MobileFullscreenEntered"));
   mediator_.EnterFullscreen();
 }
 
 void FullscreenControllerImpl::ExitFullscreen() {
-  base::RecordAction(base::UserMetricsAction("MobileFullscreenExited"));
   mediator_.ExitFullscreen();
 }
 
 void FullscreenControllerImpl::ExitFullscreenWithoutAnimation() {
-  base::RecordAction(base::UserMetricsAction("MobileFullscreenExited"));
   mediator_.ExitFullscreenWithoutAnimation();
 }
 

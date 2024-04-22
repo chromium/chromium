@@ -21449,6 +21449,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileFullscreenExitedBottomReached">
+  <owner>ajuma@chromium.org</owner>
+  <owner>alionadangla@chromium.org</owner>
+  <description>
+    Reported when user reached the bottom of the page and fullscreen mode is
+    exited. iOS only.
+  </description>
+</action>
+
 <action name="MobileFullscreenExitedManually">
   <owner>ajuma@chromium.org</owner>
   <owner>alionadangla@chromium.org</owner>

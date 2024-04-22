@@ -90,6 +90,8 @@ class FullscreenMediator : public FullscreenModelObserver {
 
   // Progress value when scroll event started.
   float start_progress_;
+  // True if metrics as not been recorded and should be.
+  bool should_record_metrics_;
   // The controller.
   raw_ptr<FullscreenController> controller_ = nullptr;
   // The model.
