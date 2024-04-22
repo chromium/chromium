@@ -44,6 +44,7 @@ bool IsRichAutocompletionEnabled() {
 const char kRichAutocompletionParam[] = "RichAutocompletionParam";
 const char kRichAutocompletionParamLabel[] = "Label";
 const char kRichAutocompletionParamTextField[] = "TextField";
+const char kRichAutocompletionParamNoAdditionalText[] = "NoAdditionalText";
 
 bool IsRichAutocompletionEnabled(RichAutocompletionImplementation type) {
   if (!IsRichAutocompletionEnabled()) {
@@ -58,6 +59,8 @@ bool IsRichAutocompletionEnabled(RichAutocompletionImplementation type) {
       omnibox::kRichAutocompletion, kRichAutocompletionParam);
   if (type == RichAutocompletionImplementation::kLabel) {
     return featureParam == kRichAutocompletionParamLabel;
+  } else if (type == RichAutocompletionImplementation::kNoAdditionalText) {
+    return featureParam == kRichAutocompletionParamNoAdditionalText;
   }
 
   // TextField is the default.

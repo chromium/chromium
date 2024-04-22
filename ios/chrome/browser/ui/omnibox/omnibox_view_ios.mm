@@ -262,7 +262,9 @@ void OmniboxViewIOS::OnInlineAutocompleteTextMaybeChanged(
 }
 
 void OmniboxViewIOS::SetAdditionalText(const std::u16string& text) {
-  if (!IsRichAutocompletionEnabled()) {
+  if (!IsRichAutocompletionEnabled() ||
+      IsRichAutocompletionEnabled(
+          RichAutocompletionImplementation::kNoAdditionalText)) {
     return;
   }
 

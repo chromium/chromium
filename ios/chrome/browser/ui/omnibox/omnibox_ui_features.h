@@ -37,6 +37,8 @@ enum class RichAutocompletionImplementation {
   kLabel,
   // kRichAutocompletionParamTextField.
   kTextField,
+  // kRichAutocompletionParamNoAdditionalText.
+  kNoAdditionalText,
   // Any implementation type.
   kAny,
 };
@@ -53,5 +55,7 @@ extern const char kRichAutocompletionParam[];
 extern const char kRichAutocompletionParamLabel[];
 // Rich autocompletion is shown inside of the text field.
 extern const char kRichAutocompletionParamTextField[];
+// Rich autocompletion with no additional text.
+extern const char kRichAutocompletionParamNoAdditionalText[];
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_UI_FEATURES_H_

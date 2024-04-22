@@ -563,12 +563,18 @@ const FeatureEntry::FeatureParam kRichAutocompletionImplementationLabel[] = {
     {kRichAutocompletionParam, kRichAutocompletionParamLabel}};
 const FeatureEntry::FeatureParam kRichAutocompletionImplementationTextField[] =
     {{kRichAutocompletionParam, kRichAutocompletionParamTextField}};
+const FeatureEntry::FeatureParam
+    kRichAutocompletionImplementationNoAdditionalText[] = {
+        {kRichAutocompletionParam, kRichAutocompletionParamNoAdditionalText}};
 const FeatureEntry::FeatureVariation
     kRichAutocompletionImplementationVariations[] = {
         {"In Label", kRichAutocompletionImplementationLabel,
          std::size(kRichAutocompletionImplementationLabel), nullptr},
         {"In TextField", kRichAutocompletionImplementationTextField,
          std::size(kRichAutocompletionImplementationTextField), nullptr},
+        {"No Additional Text",
+         kRichAutocompletionImplementationNoAdditionalText,
+         std::size(kRichAutocompletionImplementationNoAdditionalText), nullptr},
 };
 
 const FeatureEntry::FeatureParam kOneTapForMapsConsentModeDefault[] = {

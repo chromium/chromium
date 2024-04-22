@@ -279,7 +279,8 @@ const CGFloat kClearButtonSize = 28.5f;
                   range:NSMakeRange(0, addditionalAttributedText.length)];
       _textField.additionalText = addditionalAttributedText;
     }
-  } else {
+  } else if (IsRichAutocompletionEnabled(
+                 RichAutocompletionImplementation::kLabel)) {
     // Additional text in Label.
     _additionalTextLabel.text = additionalText;
     _additionalTextLabel.hidden = !additionalText.length;
