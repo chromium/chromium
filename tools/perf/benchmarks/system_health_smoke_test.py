@@ -182,7 +182,6 @@ def _GenerateSmokeTestCase(benchmark_class, story_to_smoke_test):
 def GenerateBenchmarkOptions(output_dir, benchmark_cls):
   options = testing.GetRunOptions(
       output_dir=output_dir, benchmark_cls=benchmark_cls,
-      overrides={'run_full_story_set': True},
       environment=chromium_config.GetDefaultChromiumConfig())
   options.pageset_repeat = 1  # For smoke testing only run each page once.
   options.output_formats = ['histograms']
