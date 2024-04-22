@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
+#include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 
 namespace content {
 

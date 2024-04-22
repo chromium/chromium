@@ -5,9 +5,9 @@
 #include "content/browser/renderer_host/origin_trial_state_host_impl.h"
 
 #include "content/browser/bad_message.h"
-#include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
+#include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"

@@ -369,6 +369,8 @@ source_set("browser_sources") {
     "resource_coordinator_service.h",
     "responsiveness_calculator_delegate.h",
     "restore_type.h",
+    "runtime_feature_state/runtime_feature_state_document_data.cc",
+    "runtime_feature_state/runtime_feature_state_document_data.h",
     "save_page_type.h",
     "scoped_accessibility_mode.h",
     "scoped_authenticator_environment_for_testing.h",

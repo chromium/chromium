@@ -5,8 +5,8 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_ORIGIN_TRIAL_STATE_HOST_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_ORIGIN_TRIAL_STATE_HOST_IMPL_H_
 
-#include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/document_service.h"
+#include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/origin_trial_state/origin_trial_state_host.mojom.h"

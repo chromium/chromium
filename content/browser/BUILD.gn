@@ -1909,8 +1909,6 @@ source_set("browser") {
     "resource_context_impl.cc",
     "resource_context_impl.h",
     "resource_coordinator_service.cc",
-    "runtime_feature_state/runtime_feature_state_document_data.cc",
-    "runtime_feature_state/runtime_feature_state_document_data.h",
     "scheduler/browser_io_thread_delegate.cc",
     "scheduler/browser_io_thread_delegate.h",
     "scheduler/browser_task_executor.cc",

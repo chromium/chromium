@@ -5,7 +5,7 @@
 #include "content/public/test/render_frame_host_test_support.h"
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
+#include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 
 namespace content {
 
