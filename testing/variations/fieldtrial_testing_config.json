@@ -16333,6 +16333,21 @@
             ]
         }
     ],
+    "RestoreSignedInAccountAndSettingsFromBackupAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RestoreSignedInAccountAndSettingsFromBackup"
+                    ]
+                }
+            ]
+        }
+    ],
     "RetryGetVideoCaptureDeviceInfos": [
         {
             "platforms": [
