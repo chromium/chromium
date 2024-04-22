@@ -108,17 +108,26 @@ TEST_F(SqlStorageTest, GetFileInfo) {
   EXPECT_EQ(-1, storage_->GetFileInfo(foo_url_, &got_file_info));
 
   FileInfo put_file_info(foo_url_, 100, base::Time());
+  EXPECT_FALSE(put_file_info.remote_id.has_value());
   EXPECT_EQ(1, storage_->GetOrCreateUrlId(foo_url_));
   EXPECT_EQ(1, storage_->PutFileInfo(put_file_info));
   EXPECT_EQ(1, storage_->GetFileInfo(foo_url_, &got_file_info));
   EXPECT_EQ(put_file_info.file_url, got_file_info.file_url);
   EXPECT_EQ(put_file_info.last_modified, got_file_info.last_modified);
   EXPECT_EQ(put_file_info.size, got_file_info.size);
+  EXPECT_FALSE(got_file_info.remote_id.has_value());
 
   put_file_info.size = put_file_info.size + 100;
   EXPECT_EQ(1, storage_->PutFileInfo(put_file_info));
   EXPECT_EQ(1, storage_->GetFileInfo(foo_url_, &got_file_info));
   EXPECT_EQ(put_file_info.size, got_file_info.size);
+
+  const std::string remote_id = "i-am-a-remote-id";
+  put_file_info.remote_id = remote_id;
+  EXPECT_EQ(1, storage_->PutFileInfo(put_file_info));
+  EXPECT_EQ(1, storage_->GetFileInfo(foo_url_, &got_file_info));
+  EXPECT_EQ(put_file_info.remote_id, got_file_info.remote_id);
+  EXPECT_EQ(remote_id, got_file_info.remote_id);
 }
 
 TEST_F(SqlStorageTest, PutFileInfo) {

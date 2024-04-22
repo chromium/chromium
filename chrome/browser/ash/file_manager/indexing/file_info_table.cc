@@ -16,14 +16,15 @@ static constexpr char kCreateFileInfoTableQuery[] =
     "CREATE TABLE IF NOT EXISTS file_info_table("
       "url_id INTEGER PRIMARY KEY NOT NULL REFERENCES url_table(url_id),"
       "last_modified INTEGER NOT NULL,"
-      "size INTEGER NOT NULL)";
+      "size INTEGER NOT NULL,"
+      "remote_id TEXT)";
 // clang-format on
 
 // The statement used to insert a new term into the table.
 static constexpr char kInsertFileInfoQuery[] =
     // clang-format off
-    "INSERT OR REPLACE INTO file_info_table(url_id, last_modified, size) "
-    "VALUES (?, ?, ?)";
+    "INSERT OR REPLACE INTO file_info_table(url_id, last_modified, "
+    "size, remote_id) VALUES (?, ?, ?, ?)";
 // clang-format on
 
 // The statement used to delete a FileInfo from the database by URL ID.
@@ -35,7 +36,8 @@ static constexpr char kDeleteFileInfoQuery[] =
 // The statement used fetch the file info by the URL ID.
 static constexpr char kGetFileInfoQuery[] =
     // clang-format off
-    "SELECT last_modified, size FROM file_info_table WHERE url_id = ?";
+    "SELECT last_modified, size, remote_id FROM file_info_table "
+    "WHERE url_id = ?";
 // clang-format on
 
 }  // namespace
@@ -68,10 +70,15 @@ int64_t FileInfoTable::GetFileInfo(int64_t url_id, FileInfo* info) {
                                    << get_file_info.GetSQLStatement() << "\"";
   get_file_info.BindInt64(0, url_id);
   if (!get_file_info.Step()) {
-    return false;
+    return -1;
   }
   info->last_modified = get_file_info.ColumnTime(0);
   info->size = get_file_info.ColumnInt64(1);
+  if (get_file_info.GetColumnType(2) == sql::ColumnType::kNull) {
+    info->remote_id.reset();
+  } else {
+    info->remote_id = get_file_info.ColumnString(2);
+  }
   return url_id;
 }
 
@@ -97,6 +104,11 @@ int64_t FileInfoTable::PutFileInfo(int64_t url_id, const FileInfo& info) {
   insert_file_info.BindInt64(0, url_id);
   insert_file_info.BindTime(1, info.last_modified);
   insert_file_info.BindInt64(2, info.size);
+  if (info.remote_id.has_value()) {
+    insert_file_info.BindString(3, info.remote_id.value());
+  } else {
+    insert_file_info.BindNull(3);
+  }
   if (!insert_file_info.Run()) {
     LOG(ERROR) << "Failed to insert file_info";
     return -1;

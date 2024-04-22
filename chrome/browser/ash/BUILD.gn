@@ -5623,6 +5623,7 @@ source_set("unit_tests") {
     "file_manager/file_watcher_unittest.cc",
     "file_manager/fileapi_util_unittest.cc",
     "file_manager/indexing/file_index_service_unittest.cc",
+    "file_manager/indexing/file_info_unittest.cc",
     "file_manager/indexing/sql_storage_unittest.cc",
     "file_manager/indexing/term_table_unittest.cc",
     "file_manager/io_task_controller_unittest.cc",

@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_FILE_INFO_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_INDEXING_FILE_INFO_H_
 
+#include <optional>
 #include <ostream>
+#include <string>
 
 #include "base/time/time.h"
 #include "url/gurl.h"
@@ -30,11 +32,7 @@ struct FileInfo {
 
   // Returns whether this file info is equal to `other`. For two files to
   // be equal all fields must be equal.
-  bool operator==(const FileInfo& other) const {
-    return file_url.is_valid() && other.file_url.is_valid() &&
-           file_url == other.file_url && size == other.size &&
-           last_modified == other.last_modified;
-  }
+  bool operator==(const FileInfo& other) const;
 
   // Human readable output of this structure.
   friend std::ostream& operator<<(std::ostream& stream,
@@ -52,6 +50,9 @@ struct FileInfo {
 
   // The modification time of the file.
   base::Time last_modified;
+
+  // A remote ID; used only for files located in the cloud, otherwise empty.
+  std::optional<std::string> remote_id;
 };
 
 }  // namespace file_manager
