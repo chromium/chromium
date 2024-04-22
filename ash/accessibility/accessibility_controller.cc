@@ -2713,12 +2713,12 @@ void AccessibilityController::UpdateCaretBlinkIntervalFromPrefs() const {
       active_user_prefs_->GetInteger(prefs::kAccessibilityCaretBlinkInterval));
   auto* native_theme_dark = ui::NativeTheme::GetInstanceForDarkUI();
   native_theme_dark->set_caret_blink_interval(caret_blink_interval);
-  native_theme_dark->NotifyOnNativeThemeUpdated();
   auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
   native_theme_web->set_caret_blink_interval(caret_blink_interval);
-  native_theme_web->NotifyOnNativeThemeUpdated();
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   native_theme->set_caret_blink_interval(caret_blink_interval);
+  native_theme_dark->NotifyOnNativeThemeUpdated();
+  native_theme_web->NotifyOnNativeThemeUpdated();
   native_theme->NotifyOnNativeThemeUpdated();
 }
 

@@ -17,6 +17,7 @@
 #include "components/live_caption/pref_names.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "ui/native_theme/native_theme.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_pref_names.h"
@@ -84,6 +85,7 @@ PrefWatcher::PrefWatcher(Profile* profile)
   CHECK(tracking_protection_settings_);
   tracking_protection_settings_observation_.Observe(
       tracking_protection_settings_);
+  native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForWeb());
 
   profile_pref_change_registrar_.Init(profile_->GetPrefs());
 
@@ -147,6 +149,11 @@ void PrefWatcher::RegisterRendererPreferenceWatcher(
 void PrefWatcher::Shutdown() {
   profile_pref_change_registrar_.RemoveAll();
   local_state_pref_change_registrar_.RemoveAll();
+}
+
+void PrefWatcher::OnNativeThemeUpdated(
+    ui::NativeTheme* observed_theme) {
+  UpdateRendererPreferences();
 }
 
 void PrefWatcher::OnDoNotTrackEnabledChanged() {
