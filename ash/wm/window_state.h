@@ -524,24 +524,25 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   void NotifyPostStateTypeChange(
       chromeos::WindowStateType old_window_state_type);
 
-  // Sets `bounds` as is and ensure the layer is aligned with pixel boundary.
-  void SetBoundsDirect(const gfx::Rect& bounds);
+  // Sets `bounds_in_parent` as is and ensure the layer is aligned with pixel
+  // boundary.
+  void SetBoundsDirect(const gfx::Rect& bounds_in_parent);
 
-  // Sets the window's |bounds| with constraint where the size of the
+  // Sets the window's `bounds_in_parent` with constraint where the size of the
   // new bounds will not exceeds the size of the work area.
-  void SetBoundsConstrained(const gfx::Rect& bounds);
+  void SetBoundsConstrained(const gfx::Rect& bounds_in_parent);
 
-  // Sets the wndow's |bounds| and transitions to the new bounds with
-  // a scale animation, with duration specified by |duration|.
+  // Sets the window's `bounds_in_parent` and transitions to the new bounds with
+  // a scale animation, with duration specified by `duration`.
   void SetBoundsDirectAnimated(
-      const gfx::Rect& bounds,
+      const gfx::Rect& bounds_in_parent,
       base::TimeDelta duration = kBoundsChangeSlideDuration,
       gfx::Tween::Type animation_type = gfx::Tween::LINEAR);
 
-  // Sets the window's `bounds` and transition to the new bounds with
+  // Sets the window's `bounds_in_parent` and transition to the new bounds with
   // a cross fade animation. If `float_state` has a value, sets a custom
   // float/unfloat cross fade animation.
-  void SetBoundsDirectCrossFade(const gfx::Rect& bounds,
+  void SetBoundsDirectCrossFade(const gfx::Rect& bounds_in_parent,
                                 std::optional<bool> float_state = std::nullopt);
 
   // Called before the state change and update PIP related state, such as next

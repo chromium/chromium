@@ -898,7 +898,7 @@ void WindowState::AdjustSnappedBoundsForDisplayWorkspaceChange(
 
   // For snapped window, `GetSnappedWindowBounds` computes bounds position
   // from snap type and size from |snap_ratio|.
-  gfx::Rect snapped_bounds =
+  const gfx::Rect snapped_bounds =
       snap_ratio_ ? GetSnappedWindowBounds(
                         maximized_bounds, display, window_,
                         GetStateType() == WindowStateType::kPrimarySnapped
@@ -978,8 +978,8 @@ void WindowState::SetBoundsDirectForTesting(const gfx::Rect& bounds) {
   SetBoundsDirect(bounds);
 }
 
-void WindowState::SetBoundsDirect(const gfx::Rect& bounds) {
-  gfx::Rect actual_new_bounds(bounds);
+void WindowState::SetBoundsDirect(const gfx::Rect& bounds_in_parent) {
+  gfx::Rect actual_new_bounds(bounds_in_parent);
   // Ensure we don't go smaller than our minimum bounds in "normal" window
   // modes
   if (window_->delegate() && !IsMaximized() && !IsFullscreen()) {
@@ -1022,30 +1022,29 @@ void WindowState::SetBoundsDirect(const gfx::Rect& bounds) {
   BoundsSetter().SetBounds(window_, actual_new_bounds);
 }
 
-void WindowState::SetBoundsConstrained(const gfx::Rect& bounds) {
-  gfx::Rect work_area_in_parent =
+void WindowState::SetBoundsConstrained(const gfx::Rect& bounds_in_parent) {
+  const gfx::Rect work_area_in_parent =
       screen_util::GetDisplayWorkAreaBoundsInParent(window_);
-  gfx::Rect child_bounds(bounds);
+  gfx::Rect child_bounds_in_parent(bounds_in_parent);
 
-  if (window_->GetType() == aura::client::WINDOW_TYPE_NORMAL) {
-    // Normal windows should have the top of the bounds visible.
-    AdjustBoundsToEnsureWindowVisibility(work_area_in_parent, 0, 0,
-                                         &child_bounds);
-  } else {
-    // Other types of window can have the top of the bounds outside
-    // of the screen, but we still require their size to be smaller
-    // than the screen.
-    AdjustBoundsSmallerThan(work_area_in_parent.size(), &child_bounds);
+  // The window's size should be smaller than the work area.
+  AdjustBoundsSmallerThan(work_area_in_parent.size(), &child_bounds_in_parent);
+  // Normal windows should have the top of the bounds visible.
+  // TODO(minch): Adjust the x position as well to match the functionality of
+  // this function.
+  if (window_->GetType() == aura::client::WINDOW_TYPE_NORMAL &&
+      child_bounds_in_parent.y() < work_area_in_parent.y()) {
+    child_bounds_in_parent.set_y(work_area_in_parent.y());
   }
 
-  SetBoundsDirect(child_bounds);
+  SetBoundsDirect(child_bounds_in_parent);
 }
 
-void WindowState::SetBoundsDirectAnimated(const gfx::Rect& bounds,
+void WindowState::SetBoundsDirectAnimated(const gfx::Rect& bounds_in_parent,
                                           base::TimeDelta duration,
                                           gfx::Tween::Type tween_type) {
   if (wm::WindowAnimationsDisabled(window_)) {
-    SetBoundsDirect(bounds);
+    SetBoundsDirect(bounds_in_parent);
     return;
   }
   ui::Layer* layer = window_->layer();
@@ -1054,16 +1053,16 @@ void WindowState::SetBoundsDirectAnimated(const gfx::Rect& bounds,
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
   slide_settings.SetTweenType(tween_type);
   slide_settings.SetTransitionDuration(duration);
-  SetBoundsDirect(bounds);
+  SetBoundsDirect(bounds_in_parent);
 }
 
-void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& new_bounds,
+void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& bounds_in_parent,
                                            std::optional<bool> float_state) {
   // Some test results in invoking CrossFadeToBounds when window is not visible.
   // No animation is necessary in that case, thus just change the bounds and
   // quit.
   if (!window_->TargetVisibility()) {
-    SetBoundsConstrained(new_bounds);
+    SetBoundsConstrained(bounds_in_parent);
     return;
   }
 
@@ -1071,7 +1070,7 @@ void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& new_bounds,
   // animation, set the bounds directly instead, or animation is disabled.
   if (!window_->layer()->GetTargetTransform().IsIdentity() ||
       wm::WindowAnimationsDisabled(window_)) {
-    SetBoundsDirect(new_bounds);
+    SetBoundsDirect(bounds_in_parent);
     return;
   }
 
@@ -1084,7 +1083,7 @@ void WindowState::SetBoundsDirectCrossFade(const gfx::Rect& new_bounds,
       wm::RecreateLayers(window_);
 
   // Resize the window to the new size, which will force a layout and paint.
-  SetBoundsDirect(new_bounds);
+  SetBoundsDirect(bounds_in_parent);
 
   if (float_state) {
     CrossFadeAnimationForFloatUnfloat(window_, std::move(old_layer_owner),
