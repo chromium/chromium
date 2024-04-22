@@ -30,6 +30,9 @@ SKIP_GN_ISOLATE_MAP_TARGETS = {
     'remoting/client:client',
     'remoting/host:host',
 
+    # These targets are used by builders setting their tests in starlark
+    'android_lint',
+
     # These targets are listed only in build-side recipes.
     'captured_sites_interactive_tests',
     'chrome_official_builder_no_unittests',

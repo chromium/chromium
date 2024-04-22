@@ -213,7 +213,8 @@
           "project": "chromium"
         }
       ],
-      "is_compile_only": true
+      "is_compile_only": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android_arm64_dbg_recipe/targets"
     }
   },
   "$build/reclient": {

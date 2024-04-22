@@ -440,6 +440,7 @@ def register_builder_config(
         mirrors,
         settings,
         targets,
+        targets_settings,
         additional_exclusions):
     """Registers the builder config so the properties can be computed.
 
@@ -455,6 +456,8 @@ def register_builder_config(
         settings: The object determining the additional settings applied to
             builder_config.
         targets: The targets to be built/run by the builder.
+        targets_settings: The settings to use when expanding the targets for the
+            builder.
         additional_exclusions: A list of paths that are excluded when analyzing
             the change to determine affected targets. The paths should be
             relative to the per-builder output root dir.
@@ -510,6 +513,7 @@ def register_builder_config(
         register_targets(
             name = "{}/{}".format(bucket, name),
             targets = targets,
+            settings = targets_settings,
             parent_key = builder_config_key,
         )
 

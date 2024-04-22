@@ -1400,6 +1400,7 @@ targets.mixin(
 
 targets.mixin(
     name = "oreo_mr1_fleet",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "device_os": "OPM4.171019.021.P2",

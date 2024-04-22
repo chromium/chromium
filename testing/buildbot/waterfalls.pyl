@@ -412,6 +412,14 @@
     },
   },
   {
+    # The following builders in this group have been migrated to set their
+    # targets in the builders' declarations in
+    # //infra/config/subprojects/ci/chromium.android.star
+    #   Android WebView O (dbg)
+    #   Android WebView P (dbg)
+    #   Android arm64 Builder (dbg)
+    #   Oreo Phone Tester
+    #   android-pie-arm64-dbg
     'name': 'chromium.android',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
@@ -420,31 +428,6 @@
           'all',
         ],
       },
-      'Android WebView O (dbg)': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'oreo_mr1_fleet',
-          'walleye',
-        ],
-        'test_suites': {
-          'gtest_tests': 'webview_bot_all_gtests',
-        },
-        'swarming': {
-          'expiration': 10800,
-        },
-        'os_type': 'android',
-      },
-      'Android WebView P (dbg)': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'pie_fleet',
-          'walleye',
-        ],
-        'test_suites': {
-          'gtest_tests': 'webview_bot_all_gtests',
-        },
-        'os_type': 'android',
-      },
       'Android arm Builder (dbg)': {
         'additional_compile_targets': [
           'all',
@@ -452,11 +435,6 @@
         'test_suites': {
           'isolated_scripts': 'chromium_junit_tests_scripts',
         },
-      },
-      'Android arm64 Builder (dbg)': {
-        'additional_compile_targets': [
-          'android_lint',
-        ],
       },
       'Android arm64 Builder All Targets (dbg)': {
         'additional_compile_targets': [
@@ -482,17 +460,6 @@
         'test_suites': {
           'isolated_scripts': 'cast_junit_tests',
         },
-      },
-      'Oreo Phone Tester': {
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_oreo_gtests',
-        },
-        'mixins': [
-          'has_native_resultdb_integration',
-          'oreo_mr1_fleet',
-          'walleye',
-        ],
       },
       'android-10-arm64-rel': {
         'swarming': {
@@ -1015,17 +982,6 @@
           'isolated_scripts': 'oreo_isolated_scripts',
           'scripts': 'chromium_android_scripts',
         },
-      },
-      'android-pie-arm64-dbg': {
-        'mixins': [
-          'has_native_resultdb_integration',
-          'pie_fleet',
-          'walleye',
-        ],
-        'os_type': 'android',
-        'test_suites': {
-          'gtest_tests': 'android_pie_gtests',
-        }
       },
       'android-pie-arm64-rel': {
         'mixins': [

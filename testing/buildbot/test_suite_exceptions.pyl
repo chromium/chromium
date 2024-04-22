@@ -1357,11 +1357,6 @@
       'android-code-coverage-native', # Does not generate profraw data.
     ],
     'modifications': {
-      'Oreo Phone Tester': {
-        # TODO(https://crbug.com/884413): Re-enable this once the tests are
-        # either passing or there is more capacity.
-        'experiment_percentage': 0,
-      },
       'android-11-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter',
@@ -5309,12 +5304,6 @@
       'android-asan',  # https://crbug.com/964562
     ],
     'modifications': {
-      'Oreo Phone Tester': {
-        # TODO(crbug.com/40641956): Enable this once it's passing.
-        # TODO(https://crbug.com/884413): Re-enable this once the tests are
-        # either passing or there is more capacity.
-        'experiment_percentage': 0,
-      },
       'android-11-x86-rel': {
         'args': [
           # TODO(crbug.com/40173842) Enable this test once the issue is fixed.

@@ -84,28 +84,6 @@
       'monochrome_public_smoke_test': {},
     },
 
-    'android_oreo_standard_gtests': {
-      'chrome_public_test_apk': {
-        'mixins': [
-          'skia_gold_test',
-        ],
-        'swarming': {
-          'shards': 5,
-        },
-      },
-      'chrome_public_unit_test_apk': {
-        'mixins': [
-          'skia_gold_test',
-        ],
-      },
-      'webview_instrumentation_test_apk': {
-        'swarming': {
-          'shards': 5,
-          'expiration': 10800,
-        },
-      },
-    },
-
     'android_pie_rel_reduced_capacity_gtests': {
       'android_browsertests': {},
       'blink_platform_unittests': {
@@ -453,7 +431,6 @@
           'marshmallow',
           'mdarcy',
           'oreo_fleet',
-          'oreo_mr1_fleet',
           'pie_fleet',
           'walleye',
         ],
@@ -1371,10 +1348,6 @@
       },
     },
 
-    'chromium_tracing_gtests': {
-      'services_unittests': {},
-    },
-
     'chromium_web_tests_brfetch_isolated_scripts': {
       'brfetch_blink_web_tests': {
         'test': 'blink_web_tests',
@@ -1779,7 +1752,6 @@
           'marshmallow',
           'mdarcy',
           'oreo_fleet',
-          'oreo_mr1_fleet',
           'pie_fleet',
           'walleye',
         ],
@@ -4673,7 +4645,6 @@
           'marshmallow',
           'mdarcy',
           'oreo_fleet',
-          'oreo_mr1_fleet',
           'pie_fleet',
           'walleye',
         ],
@@ -5951,28 +5922,12 @@
       'webview_ui_instrumentation_tests',
     ],
 
-    'android_oreo_gtests': [
-      'android_ar_gtests',
-      'android_monochrome_smoke_tests',
-      'android_oreo_standard_gtests',
-      'android_smoke_tests',
-      'vr_android_specific_chromium_tests',
-    ],
-
     'android_pie_coverage_instrumentation_tests': [
       'android_smoke_tests',
       'android_specific_coverage_java_tests',
       'chrome_public_tests',
       'vr_android_specific_chromium_tests',
       'webview_ui_instrumentation_tests',
-    ],
-
-    'android_pie_gtests': [
-      'android_ar_gtests',
-      'android_monochrome_smoke_tests',
-      'android_smoke_tests',
-      'chromium_tracing_gtests',
-      'vr_android_specific_chromium_tests',
     ],
 
     'android_pie_rel_emulator_gtests': [
@@ -6762,17 +6717,6 @@
 
     'rust_host_gtests': [
       'rust_common_gtests',
-    ],
-
-    'webview_bot_all_gtests': [
-      'system_webview_shell_instrumentation_tests',
-      'webview_bot_instrumentation_test_apk_gtest',
-      'webview_bot_instrumentation_test_apk_no_field_trial_gtest',
-      'webview_bot_unittests_gtest',
-      'webview_cts_tests_gtest',
-      'webview_cts_tests_gtest_no_field_trial',
-      'webview_ui_instrumentation_tests',
-      'webview_ui_instrumentation_tests_no_field_trial',
     ],
 
     'webview_fyi_bot_all_gtests': [

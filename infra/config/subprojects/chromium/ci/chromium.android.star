@@ -11,6 +11,7 @@ load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/targets.star", "targets")
 
 ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
@@ -27,6 +28,10 @@ ci.defaults.set(
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
     siso_enabled = True,
     siso_remote_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+)
+
+targets.builder_defaults.set(
+    mixins = ["chromium-tester-service-account"],
 )
 
 consoles.console_view(
@@ -125,6 +130,22 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-android-archive",
     ),
+    targets = targets.bundle(
+        targets = "webview_bot_all_gtests",
+        mixins = [
+            "has_native_resultdb_integration",
+            "oreo_mr1_fleet",
+            "walleye",
+            targets.mixin(
+                swarming = targets.swarming(
+                    expiration_sec = 10800,
+                ),
+            ),
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "tester|webview",
         short_name = "O",
@@ -161,6 +182,17 @@ ci.thin_tester(
             ],
         ),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    targets = targets.bundle(
+        targets = "webview_bot_all_gtests",
+        mixins = [
+            "has_native_resultdb_integration",
+            "pie_fleet",
+            "walleye",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "tester|webview",
@@ -245,6 +277,9 @@ ci.builder(
             "arm64",
             "webview_google",
         ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = "android_lint",
     ),
     # The 'All' version of this builder below provides the same build coverage
     # but cycles much faster due to beefier machine resources. So any regression
@@ -614,6 +649,30 @@ ci.thin_tester(
             config = "main_builder_mb",
         ),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    targets = targets.bundle(
+        targets = "android_oreo_gtests",
+        mixins = [
+            "has_native_resultdb_integration",
+            "oreo_mr1_fleet",
+            "walleye",
+        ],
+        per_test_modifications = {
+            "chrome_public_test_apk": targets.mixin(
+                # TODO(https://crbug.com/884413): Re-enable this once the test
+                # are either passing or there is more capacity.
+                experiment_percentage = 0,
+            ),
+            "webview_instrumentation_test_apk": targets.mixin(
+                # TODO(crbug.com/40641956): Enable this once it's passing.
+                # TODO(https://crbug.com/884413): Re-enable this once the tests
+                # are either passing or there is more capacity.
+                experiment_percentage = 0,
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
     ),
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
@@ -1977,6 +2036,17 @@ ci.thin_tester(
             config = "main_builder_mb",
         ),
         build_gs_bucket = "chromium-android-archive",
+    ),
+    targets = targets.bundle(
+        targets = "android_pie_gtests",
+        mixins = [
+            "has_native_resultdb_integration",
+            "pie_fleet",
+            "walleye",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "tester|phone",

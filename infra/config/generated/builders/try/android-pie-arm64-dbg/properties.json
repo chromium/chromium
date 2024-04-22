@@ -86,7 +86,8 @@
           "builder": "android-pie-arm64-dbg",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-pie-arm64-dbg/targets"
     }
   },
   "$build/flakiness": {

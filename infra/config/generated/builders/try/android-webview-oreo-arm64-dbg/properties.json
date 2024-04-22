@@ -89,7 +89,8 @@
           "builder": "Android WebView O (dbg)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-webview-oreo-arm64-dbg/targets"
     }
   },
   "$build/reclient": {

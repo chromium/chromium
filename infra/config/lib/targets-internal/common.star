@@ -113,6 +113,7 @@ def _create_bundle(
         additional_compile_targets = [],
         targets = [],
         builder_group = None,
+        settings = None,
         mixins = [],
         per_test_modifications = {}):
     tests_to_remove = []
@@ -123,6 +124,7 @@ def _create_bundle(
 
     bundle_key = _targets_nodes.BUNDLE.add(name, props = dict(
         builder_group = builder_group,
+        settings = settings,
         tests_to_remove = tests_to_remove,
         # Record the stacktrace so that failures actually point out the failing
         # definition (this is especially important for unnamed bundles since
@@ -213,8 +215,8 @@ def _spec_handler_for_unimplemented_target_type(type_name):
 
     return _spec_handler(
         type_name = type_name,
-        init = (lambda node: unimplemented()),
-        finalize = (lambda name, spec: unimplemented()),
+        init = (lambda node, settings: unimplemented()),
+        finalize = (lambda name, settings, spec: unimplemented()),
     )
 
 def _merge(
@@ -307,10 +309,38 @@ def _swarming(
         named_caches = named_caches,
     )
 
+def _finalize_cipd_package(cipd_package):
+    d = {a: getattr(cipd_package, a) for a in dir(cipd_package)}
+    d["cipd_package"] = d.pop("package")
+    return d
+
+def _merge_swarming(swarming1, swarming2):
+    if not swarming1 and swarming2:
+        return swarming1 or swarming2
+
+    d = {a: getattr(swarming1, a) for a in dir(swarming1)}
+    to_merge = {a: getattr(swarming2, a) for a in dir(swarming2)}
+
+    d["dimensions"] = ((d["dimensions"] or {}) | (to_merge.pop("dimensions") or {})) or None
+    d["named_caches"] = args_lib.listify(d["named_caches"], to_merge.pop("named_caches")) or None
+    for k, v in to_merge.items():
+        if v != None:
+            d[k] = v
+    return _swarming(**d)
+
 def _finalize_swarming(swarming):
     if not swarming or not swarming.enable:
         return None
     d = {a: getattr(swarming, a) for a in dir(swarming) if a != "enable"}
+    for dst, src in (
+        ("expiration", "expiration_sec"),
+        ("hard_timeout", "hard_timeout_sec"),
+        ("io_timeout", "io_timeout_sec"),
+    ):
+        d[dst] = d.pop(src)
+    cipd_packages = d["cipd_packages"]
+    if cipd_packages:
+        d["cipd_packages"] = [_finalize_cipd_package(p) for p in cipd_packages]
     return {k: v for k, v in d.items() if v != None}
 
 def _finalize_resultdb(resultdb):
@@ -319,7 +349,7 @@ def _finalize_resultdb(resultdb):
     d = {a: getattr(resultdb, a) for a in dir(resultdb)}
     return {k: v for k, v in d.items() if v != None}
 
-def _spec_init(node, **kwargs):
+def _spec_init(node, settings, **kwargs):
     """Init for gtest and isolated script test specs."""
     binary_node = _get_test_binary_node(node)
     binary_test_config = binary_node.props.test_config or _binary_test_config()
@@ -327,23 +357,37 @@ def _spec_init(node, **kwargs):
         name = node.key.id,
         test = binary_node.key.id,
         test_id_prefix = binary_node.props.test_id_prefix,
-        args = node.props.details.args,
+        args = list(node.props.details.args or []),
         ci_only = None,
+        experiment_percentage = None,
         precommit_args = [],
         isolate_profile_data = None,
-        # Tests will be swarmed by default, builders that don't want tests
-        # swarmed will use a mixin to disable it
-        swarming = _swarming(enable = True),
+        swarming = _swarming(enable = settings.use_swarming),
         merge = binary_test_config.merge,
         resultdb = binary_test_config.resultdb,
         results_handler = binary_test_config.results_handler,
         **kwargs
     )
 
-def _spec_finalize(spec_value, default_merge_script):
-    spec_value = dict(spec_value)
+def _update_spec_for_android_presentation(spec_value):
+    results_bucket = "chromium-result-details"
+    spec_value["args"] = args_lib.listify(spec_value["args"], "--gs-results-bucket={}".format(results_bucket))
+    if spec_value["swarming"].enable and not spec_value["merge"]:
+        spec_value["merge"] = _merge(
+            script = "//build/android/pylib/results/presentation/test_results_presentation.py",
+            args = ["--bucket", results_bucket, "--test-name", spec_value["name"]],
+        )
+
+def _spec_finalize(settings, spec_value, default_merge_script):
     swarming = _finalize_swarming(spec_value["swarming"])
     spec_value["swarming"] = swarming
+
+    # Ensure all Android Swarming tests run only on userdebug builds if another
+    # build type was not specified.
+    if swarming and settings.is_android:
+        dimensions = swarming.get("dimensions", {})
+        if dimensions.get("os") == "Android" and "device_type_os" not in dimensions:
+            swarming["dimensions"] = dimensions | {"device_os_type": "userdebug"}
     if swarming and not spec_value["merge"]:
         spec_value["merge"] = _merge(
             script = "//testing/merge_scripts/{}.py".format(default_merge_script),
@@ -358,6 +402,9 @@ common = struct(
     merge = _merge,
     remove = _remove,
     swarming = _swarming,
+
+    # Functions for performing common operations
+    merge_swarming = _merge_swarming,
 
     # Functions used for creating nodes by functions that define targets
     binary_test_config = _binary_test_config,
@@ -374,5 +421,6 @@ common = struct(
 
     # Functions for implementing spec handlers
     spec_init = _spec_init,
+    update_spec_for_android_presentation = _update_spec_for_android_presentation,
     spec_finalize = _spec_finalize,
 )

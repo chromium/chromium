@@ -234,7 +234,8 @@
           "builder": "android_arm64_dbg_recipe",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Android arm64 Builder (dbg)/targets"
     }
   },
   "$build/reclient": {

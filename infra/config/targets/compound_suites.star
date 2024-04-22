@@ -68,17 +68,6 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
-    name = "android_oreo_gtests",
-    basic_suites = [
-        "android_ar_gtests",
-        "vr_android_specific_chromium_tests",
-        "android_monochrome_smoke_tests",
-        "android_oreo_standard_gtests",
-        "android_smoke_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "android_pie_coverage_instrumentation_tests",
     basic_suites = [
         "android_smoke_tests",
@@ -86,19 +75,6 @@ targets.legacy_compound_suite(
         "chrome_public_tests",
         "vr_android_specific_chromium_tests",
         "webview_ui_instrumentation_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "android_pie_gtests",
-    basic_suites = [
-        "android_ar_gtests",
-        "vr_android_specific_chromium_tests",
-        "android_monochrome_smoke_tests",
-        "android_smoke_tests",
-        "chromium_tracing_gtests",
-        # No standard tests due to capacity, no Vega tests since it's currently
-        # O only.
     ],
 )
 
@@ -1289,20 +1265,6 @@ targets.legacy_compound_suite(
     name = "rust_host_gtests",
     basic_suites = [
         "rust_common_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "webview_bot_all_gtests",
-    basic_suites = [
-        "system_webview_shell_instrumentation_tests",
-        "webview_bot_instrumentation_test_apk_gtest",
-        "webview_bot_instrumentation_test_apk_no_field_trial_gtest",
-        "webview_bot_unittests_gtest",
-        "webview_cts_tests_gtest",
-        "webview_cts_tests_gtest_no_field_trial",
-        "webview_ui_instrumentation_tests",
-        "webview_ui_instrumentation_tests_no_field_trial",
     ],
 )
 

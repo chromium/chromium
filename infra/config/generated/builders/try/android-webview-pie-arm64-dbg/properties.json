@@ -89,7 +89,8 @@
           "builder": "Android WebView P (dbg)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-webview-pie-arm64-dbg/targets"
     }
   },
   "$build/reclient": {

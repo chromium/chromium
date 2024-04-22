@@ -447,6 +447,7 @@ def builder(
         shadow_reclient_instance = args.DEFAULT,
         gn_args = None,
         targets = None,
+        targets_settings = None,
         contact_team_email = args.DEFAULT,
         **kwargs):
     """Define a builder.
@@ -671,6 +672,8 @@ def builder(
             define a bundle with the same name containing only that target), a
             targets.bundle instance or a list where each element is the name of
             a targets bundle or a targets.bundle instance.
+        targets_settings: The settings to use when expanding the targets for the
+            builder.
         contact_team_email: The e-mail of the team responsible for the health of
             the builder.
         **kwargs: Additional keyword arguments to forward on to `luci.builder`.
@@ -952,6 +955,7 @@ def builder(
         mirrors,
         builder_config_settings,
         targets,
+        targets_settings,
         additional_exclusions,
     )
 

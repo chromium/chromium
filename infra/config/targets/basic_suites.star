@@ -83,24 +83,6 @@ targets.legacy_basic_suite(
     },
 )
 
-targets.legacy_basic_suite(
-    name = "android_oreo_standard_gtests",
-    tests = {
-        "chrome_public_test_apk": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 5,
-            ),
-        ),
-        "chrome_public_unit_test_apk": targets.legacy_test_config(),
-        "webview_instrumentation_test_apk": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 5,
-                expiration_sec = 10800,
-            ),
-        ),
-    },
-)
-
 # TODO(crbug.com/1111436): Deprecate this group in favor of
 # android_pie_rel_gtests if/when android Pie capacity is fully restored.
 targets.legacy_basic_suite(
@@ -1433,16 +1415,6 @@ targets.legacy_basic_suite(
         "check_static_initializers": targets.legacy_test_config(),
         "metrics_python_tests": targets.legacy_test_config(),
         "webkit_lint": targets.legacy_test_config(),
-    },
-)
-
-# On some bots we don't have capacity to run all standard tests (for example
-# Android Pie), however there are tracing integration tests we want to
-# ensure are still working.
-targets.legacy_basic_suite(
-    name = "chromium_tracing_gtests",
-    tests = {
-        "services_unittests": targets.legacy_test_config(),
     },
 )
 

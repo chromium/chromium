@@ -138,17 +138,17 @@ conditions:
 * Cannot rely on any fields being set on the builder's waterfall in
   waterfalls.pyl except mixins
 * Cannot rely on any fields besides additional_compile_targets, test_suites,
-  mixins and use_swarming being set for the builder in waterfalls.pyl (fields
-  that are present in targets.mixin can be specified by specifying an in-place
-  mixin in the mixins field instead)
+  mixins, os_type and use_swarming being set for the builder in waterfalls.pyl
+  (fields that are present in targets.mixin can be specified by specifying an
+  in-place mixin in the mixins field instead)
   * Under test_suites, test can only be specified for the scripts,
     gtest_tests and isolated_scripts keys
     * Only the following fields can be set on gtests & isolated scripts either
       directly or via mixins:
       * args
-      * android_args (setting the os type isn't supported yet, so this won't
-        take effect, but won't be rejected)
-      * android_swarming (setting the os type isn't supported yet, so this won't
+      * android_args (expanding these isn't supported yet, so this won't take
+        effect, but won't be rejected)
+      * android_swarming (expanding these isn't supported yet, so this won't
         take effect, but won't be rejected)
       * ci_only
       * isolate_profile_data

@@ -7,6 +7,7 @@
 load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys")
 load("./args.star", "args")
+load("./enums.star", "enums")
 load("./structs.star", "structs")
 load("./targets-internal/common.star", _targets_common = "common")
 load("./targets-internal/nodes.star", _targets_nodes = "nodes")
@@ -498,7 +499,7 @@ def _mixin_values(
     )
     return {k: v for k, v in mixin_values.items() if v != None}
 
-def _mixin(*, name = None, **kwargs):
+def _mixin(*, name = None, generate_pyl_entry = True, **kwargs):
     """Define a mixin used for defining tests.
 
     //infra/config/generated/testing/mixins.pyl will be generated from
@@ -507,13 +508,16 @@ def _mixin(*, name = None, **kwargs):
 
     Args:
         name: The name of the mixin.
+        generate_pyl_entry: If true and name is provided, then the
+            generated mixin.pyl file will contain an entry allowing this
+            mixin to be used by generate_buildbot_json.py.
         **kwargs: The mixin values, see _mixin_values for allowed
             keywords and their meanings.
     """
     key = _targets_nodes.MIXIN.add(name, props = dict(
         mixin_values = _mixin_values(**kwargs),
     ))
-    if name != None:
+    if generate_pyl_entry and name != None:
         graph.add_edge(keys.project(), key)
     return graph.keyset(key)
 
@@ -750,6 +754,44 @@ def _legacy_matrix_config(*, mixins = [], variants = []):
         variants = variants,
     )
 
+# TODO: crbug.com/40258588 - Add support for remaining OS types
+_os_type = enums.enum(
+    ANDROID = "android",
+)
+
+_settings_defaults = args.defaults(
+    os_type = None,
+    use_swarming = True,
+)
+
+def _settings(
+        *,
+        os_type = args.DEFAULT,
+        use_swarming = args.DEFAULT):
+    """Settings that control the expansions of tests for a builder.
+
+    Args:
+      os_type - One of the values from targets.os_type that indicates the OS
+        type that the tests target. Supports a module-level default.
+      use_swarming - Whether tests for the builder should be swarmed. Supports a
+        module-level default.
+
+    Returns:
+        A struct that can be passed to the targets_setting argument of the
+        builder to control the expansion of tests for the builder.
+    """
+    os_type = _settings_defaults.get_value("os_type", os_type)
+    if os_type and os_type not in _os_type.values:
+        fail("unknown os_type: {}".format(os_type))
+    use_swarming = _settings_defaults.get_value("use_swarming", use_swarming)
+    return struct(
+        os_type = os_type,
+        use_swarming = use_swarming,
+
+        # Computed properties
+        is_android = os_type == _os_type.ANDROID,
+    )
+
 targets = struct(
     # Functions for declaring binaries, which can be referred to by gtests and
     # isolated script tests
@@ -775,6 +817,9 @@ targets = struct(
     # Functions for declaring bundles
     bundle = _bundle,
     builder_defaults = _builder_defaults,
+    settings = _settings,
+    settings_defaults = _settings_defaults,
+    os_type = _os_type,
     legacy_basic_suite = _legacy_basic_suite,
     legacy_test_config = _legacy_test_config,
     legacy_compound_suite = _legacy_compound_suite,
@@ -794,7 +839,7 @@ targets = struct(
 # Code for generating targets spec files                                       #
 ################################################################################
 
-def register_targets(*, parent_key, name, targets):
+def register_targets(*, parent_key, name, targets, settings):
     """Register the targets for a builder.
 
     This will create the necessary nodes and edges so that the targets spec for
@@ -807,28 +852,18 @@ def register_targets(*, parent_key, name, targets):
       targets - The targets for the builder. Can take the form of the name of a
         separately-declared bundle, an unnamed targets.bundle instance or a list
         of such elements.
+      settings - The targets.settings instance to use for expanding the tests
+        for the builder. If None, then a default targets.setting instance will
+        be used.
     """
     targets_key = _targets_common.create_bundle(
         name = name,
         targets = args.listify(targets),
         mixins = _builder_defaults.mixins.get(),
+        settings = settings or _settings(),
     )
 
     graph.add_edge(parent_key, targets_key)
-
-def _merge_swarming(swarming1, swarming2):
-    if not swarming1 and swarming2:
-        return swarming1 or swarming2
-
-    d = {a: getattr(swarming1, a) for a in dir(swarming1)}
-    to_merge = {a: getattr(swarming2, a) for a in dir(swarming2)}
-
-    d["dimensions"] = ((d["dimensions"] or {}) | (to_merge.pop("dimensions") or {})) or None
-    d["named_caches"] = args.listify(d["named_caches"], to_merge.pop("named_caches")) or None
-    for k, v in to_merge.items():
-        if v != None:
-            d[k] = v
-    return _targets_common.swarming(**d)
 
 _OS_SPECIFIC_ARGS = set([
     "android_args",
@@ -862,7 +897,7 @@ def _apply_mixin(spec, mixin_values):
 
     swarming_mixin = mixin_values.pop("swarming", None)
     if swarming_mixin:
-        spec_value["swarming"] = _merge_swarming(spec_value["swarming"], swarming_mixin)
+        spec_value["swarming"] = _targets_common.merge_swarming(spec_value["swarming"], swarming_mixin)
 
     spec_value.update(mixin_values)
 
@@ -878,9 +913,10 @@ def _get_bundle_resolver():
     def visitor(_, children):
         return [c for c in children if c.key.kind == _targets_nodes.BUNDLE.kind]
 
-    resolved_bundle_by_bundle_node = {}
+    resolved_bundle_by_bundle_node_by_settings = {}
 
-    def resolve(bundle_node):
+    def resolve(bundle_node, settings):
+        resolved_bundle_by_bundle_node = resolved_bundle_by_bundle_node_by_settings.setdefault(settings, {})
         for n in graph.descendants(bundle_node.key, visitor = visitor, topology = graph.DEPTH_FIRST):
             if n in resolved_bundle_by_bundle_node:
                 continue
@@ -893,7 +929,7 @@ def _get_bundle_resolver():
             test_spec_and_source_by_name = {}
             for test in graph.children(n.key, kind = _targets_nodes.TEST.kind):
                 spec_handler = test.props.spec_handler
-                spec_value = spec_handler.init(test)
+                spec_value = spec_handler.init(test, settings)
                 spec = struct(handler = spec_handler, value = spec_value)
 
                 # The order that mixins are declared is significant,
@@ -996,10 +1032,15 @@ def get_targets_spec_generator():
             fail("internal error: there should be at most 1 targets_spec")
         bundle_node = bundle_nodes[0]
 
-        additional_compile_targets, test_spec_by_name = bundle_resolver(bundle_node)
+        settings = bundle_node.props.settings
+        if not settings:
+            fail("internal error: settings should be set for bundle_node")
+
+        additional_compile_targets, test_spec_by_name = bundle_resolver(bundle_node, settings)
         sort_key_and_specs_by_type_key = {}
         for name, spec in test_spec_by_name.items():
-            type_key, sort_key, spec_value = spec.handler.finalize(name, spec.value)
+            spec_value = dict(spec.value)
+            type_key, sort_key, spec_value = spec.handler.finalize(name, settings, spec_value)
             finalized_spec = {k: v for k, v in spec_value.items() if v not in ([], None)}
             sort_key_and_specs_by_type_key.setdefault(type_key, []).append((sort_key, finalized_spec))
 
@@ -1323,6 +1364,20 @@ lucicfg.generator(_generate_variants_pyl)
 def _generate_test_suites_pyl(ctx):
     formatter = _formatter()
 
+    # Some tests indicate mixins to remove (sizes tests check the sizes of
+    # binaries rather than running them, so they should always run on linux
+    # machines). As builders are migrated, some of the mixins will be switched
+    # to not generate pyl entries since they would cause an error for not being
+    # referenced. However, if the mixins don't exist then an error will be
+    # raised if they are present in remove_mixins. To avoid the error while
+    # still preserving the intention of removing them in case modifications are
+    # made to the configuration that require them to be re-added to mixins.pyl,
+    # we won't generate remove_mixins lines for mixins that aren't being
+    # generated. We don't have to worry about some non-existent mixin being
+    # referenced in the starlark because edges are added for each element in
+    # remove_mixins.
+    generated_mixins = set(graph.children(keys.project(), _targets_nodes.MIXIN.kind))
+
     formatter.open_scope("'basic_suites': {")
 
     for suite in graph.children(keys.project(), _targets_nodes.LEGACY_BASIC_SUITE.kind, graph.KEY_ORDER):
@@ -1379,7 +1434,11 @@ def _generate_test_suites_pyl(ctx):
                 for m in mixins:
                     test_formatter.add_line("'{}',".format(m))
                 test_formatter.close_scope("],")
-            remove_mixins = [n.key.id for n in _targets_nodes.LEGACY_BASIC_SUITE_REMOVE_MIXIN.children(test_config_node.key)]
+            remove_mixins = [
+                n.key.id
+                for n in _targets_nodes.LEGACY_BASIC_SUITE_REMOVE_MIXIN.children(test_config_node.key)
+                if n in generated_mixins
+            ]
             if remove_mixins:
                 test_formatter.open_scope("'remove_mixins': [")
                 for m in remove_mixins:

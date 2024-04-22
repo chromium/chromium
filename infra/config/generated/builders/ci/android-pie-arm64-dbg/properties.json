@@ -86,7 +86,8 @@
           "builder": "android_arm64_dbg_recipe",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-pie-arm64-dbg/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

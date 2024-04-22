@@ -86,7 +86,8 @@
           "builder": "android_arm64_dbg_recipe",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Oreo Phone Tester/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

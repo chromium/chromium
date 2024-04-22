@@ -6,7 +6,8 @@
 
 load("../common.star", _targets_common = "common")
 
-def _script_test_spec_init(node):
+def _script_test_spec_init(node, settings):
+    settings = settings  # Shut linter up
     return dict(
         name = node.key.id,
         script = node.props.details.script,
@@ -15,7 +16,7 @@ def _script_test_spec_init(node):
 _script_test_spec_handler = _targets_common.spec_handler(
     type_name = "script test",
     init = _script_test_spec_init,
-    finalize = (lambda name, spec_value: ("scripts", name, spec_value)),
+    finalize = (lambda name, settings, spec_value: ("scripts", name, spec_value)),
 )
 
 def script_test(*, name, script):
