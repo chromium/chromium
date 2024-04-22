@@ -633,23 +633,41 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupInNewWindow) {
       gfx::Range(0, 1));
 }
 
-// https://crbug.com/1196530: Test is flaky on Linux, disabled for
-// investigation.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_RestoreGroupWithUnloadHandlerRejected \
-  DISABLED_RestoreGroupWithUnloadHandlerRejected
-#else
-#define MAYBE_RestoreGroupWithUnloadHandlerRejected \
-  RestoreGroupWithUnloadHandlerRejected
-#endif
-
 // Close a group that contains a tab with an unload handler. Reject the
 // unload handler, resulting in the tab not closing while the group does. Then
 // restore the group. The group should restore intact and duplicate the
 // still-open tab.
 // TODO(crbug.com/40750891): Run unload handlers before the group is closed.
-IN_PROC_BROWSER_TEST_F(TabRestoreTest,
-                       MAYBE_RestoreGroupWithUnloadHandlerRejected) {
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupWithUnloadHandlerRejected) {
+  class OnceGroupDeletionWaiter : public TabStripModelObserver {
+   public:
+    explicit OnceGroupDeletionWaiter(TabStripModel* tab_strip_model)
+        : tab_strip_model_(tab_strip_model) {
+      tab_strip_model_->AddObserver(this);
+    }
+
+    ~OnceGroupDeletionWaiter() override {
+      tab_strip_model_->RemoveObserver(this);
+    }
+
+    void Wait() {
+      if (!called_) {
+        run_loop_.Run();
+      }
+    }
+    void OnTabGroupChanged(const TabGroupChange& change) override {
+      if (change.type == TabGroupChange::Type::kClosed) {
+        called_ = true;
+        run_loop_.Quit();
+      }
+    }
+
+   private:
+    bool called_ = false;
+    base::RunLoop run_loop_;
+    raw_ptr<TabStripModel> tab_strip_model_;
+  };
+
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   const char kUnloadHTML[] =
@@ -677,34 +695,44 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
             gfx::Range(1, 3));
   ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
 
-  // Close the group, but don't close the tab with the unload handler. Then
-  // check that the tab with an unload handler is still there and still grouped.
+  // Attempt to close the group. Group close is not going to be possible due
+  // to the tab that has the unload handler, and will therefore leave that tab
+  // in the tabstrip. The group will then be ungrouped. The tab that had the
+  // unload handler will no longer have a group.
   content::PrepContentsForBeforeUnloadTest(
       browser()->tab_strip_model()->GetWebContentsAt(2));
+  ASSERT_EQ(browser()->tab_strip_model()->group_model()->ListTabGroups().size(),
+            1u);
+
+  OnceGroupDeletionWaiter group_deletion_waiter(browser()->tab_strip_model());
   CloseGroup(group);
+
   javascript_dialogs::AppModalDialogController* dialog =
       ui_test_utils::WaitForAppModalDialog();
   dialog->view()->CancelAppModalDialog();
 
-  EXPECT_EQ(browser()
-                ->tab_strip_model()
-                ->group_model()
-                ->GetTabGroup(group)
-                ->ListTabs(),
-            gfx::Range(1, 2));
+  // Group deletion should be called on the group.
+  group_deletion_waiter.Wait();
+
+  // The group should have ungrouped.
+  EXPECT_FALSE(
+      browser()->tab_strip_model()->group_model()->ContainsTabGroup(group));
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+  EXPECT_EQ(browser()->tab_strip_model()->group_model()->ListTabGroups().size(),
+            0u);
 
   // Restore the group, which will restore all tabs, including one that is now
-  // a duplicate of the unclosed tab. Then check that the group is now one
-  // bigger than before.
+  // a duplicate of the unclosed tab.
   RestoreMostRecentlyClosed(browser());
+  EXPECT_EQ(browser()->tab_strip_model()->group_model()->ListTabGroups().size(),
+            1u);
 
   EXPECT_EQ(browser()
                 ->tab_strip_model()
                 ->group_model()
                 ->GetTabGroup(group)
                 ->ListTabs(),
-            gfx::Range(1, 4));
+            gfx::Range(1, 3));
   EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
 
   // Close the tab with the unload handler, otherwise it will prevent test

@@ -222,8 +222,6 @@ void BrowserTabStripModelDelegate::WillCloseGroup(
 
 void BrowserTabStripModelDelegate::GroupCloseStopped(
     const tab_groups::TabGroupId& group) {
-  // TODO(dpenning), this is only called from UnloadController, handle this in a
-  // better way. Ungroup the remaining tabs, dont destroy the entry.
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser_->profile());
   if (service)

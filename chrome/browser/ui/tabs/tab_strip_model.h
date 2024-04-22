@@ -626,6 +626,11 @@ class TabStripModel : public TabGroupController {
   // transition and foreground flag to figure out how it was opened.
   int DetermineInsertionIndex(ui::PageTransition transition, bool foreground);
 
+  // If a tab is in a group and the tab failed to close, this method will be
+  // called from the unload_controller. Ungroup the group to maintain
+  // consistency with the user's intended action (to get rid of the group).
+  void GroupCloseStopped(const tab_groups::TabGroupId& group);
+
   // Serialise this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;
 

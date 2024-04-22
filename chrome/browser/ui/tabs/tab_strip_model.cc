@@ -2999,6 +2999,18 @@ int TabStripModel::DetermineInsertionIndex(ui::PageTransition transition,
   return count();
 }
 
+void TabStripModel::GroupCloseStopped(const tab_groups::TabGroupId& group) {
+  delegate_->GroupCloseStopped(group);
+
+  gfx::Range tabs_in_group = group_model_->GetTabGroup(group)->ListTabs();
+  std::vector<int> ungrouping_tabs_indices;
+  ungrouping_tabs_indices.reserve(tabs_in_group.length());
+  for (uint32_t i = tabs_in_group.start(); i < tabs_in_group.end(); i++) {
+    ungrouping_tabs_indices.push_back(i);
+  }
+  RemoveFromGroup(ungrouping_tabs_indices);
+}
+
 std::optional<int> TabStripModel::DetermineNewSelectedIndex(
     int removing_index) const {
   DCHECK(ContainsIndex(removing_index));

@@ -121,7 +121,7 @@ bool UnloadController::BeforeUnloadFired(content::WebContents* contents,
         browser_->tab_strip_model()->GetTabGroupForTab(
             browser_->tab_strip_model()->GetIndexOfWebContents(contents));
     if (group.has_value())
-      browser_->tab_strip_model()->delegate()->GroupCloseStopped(group.value());
+      browser_->tab_strip_model()->GroupCloseStopped(group.value());
   }
 
   if (!is_attempting_to_close_browser_) {
