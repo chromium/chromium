@@ -58,6 +58,12 @@ class EssentialSearchManager : public ash::SessionObserver,
   // EssentialSearchEnabled policy set.
   bool ShouldDisableSearchSuggest() const;
 
+  void set_cookie_insertion_closure_for_test(
+      base::OnceClosure cookie_insertion_closure_for_test) {
+    cookie_insertion_closure_for_test_ =
+        std::move(cookie_insertion_closure_for_test);
+  }
+
  private:
   void MaybeFetchSocsCookie();
 
@@ -88,6 +94,9 @@ class EssentialSearchManager : public ash::SessionObserver,
 
   // Observer for EssentialSearch-related prefs.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  // Used to notify the test that the cookie was inserted in the user's profile.
+  base::OnceClosure cookie_insertion_closure_for_test_;
 
   const raw_ptr<Profile> primary_profile_;
 
