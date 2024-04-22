@@ -92,7 +92,7 @@ class ChangePinControllerImpl
 
  private:
   void OnGpmPinChanged(bool success);
-  void Reset();
+  void Reset(bool success);
 
   const bool enclave_enabled_;
   std::unique_ptr<AuthenticatorRequestDialogModel> model_;

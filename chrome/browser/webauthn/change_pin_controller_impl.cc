@@ -84,10 +84,7 @@ void ChangePinControllerImpl::StartChangePin(SuccessCallback callback) {
 
 void ChangePinControllerImpl::CancelAuthenticatorRequest() {
   // User clicked "Cancel" in the GPM dialog.
-  if (!notify_pin_change_callback_.is_null()) {
-    std::move(notify_pin_change_callback_).Run(false);
-  }
-  Reset();
+  Reset(/*success=*/false);
 }
 
 void ChangePinControllerImpl::OnReauthComplete(std::string rapt) {
@@ -97,10 +94,7 @@ void ChangePinControllerImpl::OnReauthComplete(std::string rapt) {
 
 void ChangePinControllerImpl::OnRecoverSecurityDomainClosed() {
   // User closed the reauth window.
-  if (!notify_pin_change_callback_.is_null()) {
-    std::move(notify_pin_change_callback_).Run(false);
-  }
-  Reset();
+  Reset(/*success=*/false);
 }
 
 void ChangePinControllerImpl::OnGPMPinEntered(const std::u16string& pin) {
@@ -119,8 +113,11 @@ void ChangePinControllerImpl::OnGPMPinOptionChanged(bool is_arbitrary) {
                                : Step::kGPMCreatePin);
 }
 
-void ChangePinControllerImpl::Reset() {
-  model_observation_.Reset();
+void ChangePinControllerImpl::Reset(bool success) {
+  if (!notify_pin_change_callback_.is_null()) {
+    std::move(notify_pin_change_callback_).Run(success);
+  }
+
   model_->SetStep(Step::kNotStarted);
   rapt_.reset();
 }
@@ -130,8 +127,5 @@ void ChangePinControllerImpl::OnGpmPinChanged(bool success) {
     model_->SetStep(Step::kGPMError);
     return;
   }
-  Reset();
-  if (!notify_pin_change_callback_.is_null()) {
-    std::move(notify_pin_change_callback_).Run(success);
-  }
+  Reset(/*success=*/true);
 }
