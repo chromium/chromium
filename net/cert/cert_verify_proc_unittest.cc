@@ -1120,7 +1120,7 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
 
  private:
   // Overwrites the AlgorithmIdentifier pointed to by |algorithm_sequence| with
-  // |algorithm|. Note this violates the constness of StringPiece.
+  // |algorithm|. Note this violates the constness of std::string_view.
   [[nodiscard]] static bool SetAlgorithmSequence(
       bssl::DigestAlgorithm algorithm,
       std::string_view* algorithm_sequence) {

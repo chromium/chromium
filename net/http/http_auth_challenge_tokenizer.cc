@@ -4,7 +4,8 @@
 
 #include "net/http/http_auth_challenge_tokenizer.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 

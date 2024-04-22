@@ -205,8 +205,9 @@ std::string_view GetDomainAndRegistryImpl(
 }
 
 // Same as GetDomainAndRegistry, but returns the domain and registry as a
-// StringPiece that references the underlying string of the passed-in |gurl|.
-// TODO(pkalinnikov): Eliminate this helper by exposing StringPiece as the
+// std::string_view that references the underlying string of the passed-in
+// |gurl|.
+// TODO(pkalinnikov): Eliminate this helper by exposing std::string_view as the
 // interface type for all the APIs.
 std::string_view GetDomainAndRegistryAsStringPiece(
     std::string_view host,

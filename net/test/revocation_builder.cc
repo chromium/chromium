@@ -31,7 +31,7 @@ std::string Sha1() {
   return std::string(std::begin(kSHA1), std::end(kSHA1));
 }
 
-// Adds bytes (specified as a StringPiece) to the given CBB.
+// Adds bytes (specified as a std::string_view) to the given CBB.
 // The argument ordering follows the boringssl CBB_* api style.
 bool CBBAddBytes(CBB* cbb, std::string_view bytes) {
   return CBB_add_bytes(cbb, reinterpret_cast<const uint8_t*>(bytes.data()),

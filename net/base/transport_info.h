@@ -28,7 +28,7 @@ enum class TransportType {
 };
 
 // Returns a string representation of the given transport type.
-// The returned StringPiece is static, has no lifetime restrictions.
+// The returned std::string_view is static, has no lifetime restrictions.
 NET_EXPORT std::string_view TransportTypeToString(TransportType type);
 
 // Describes a network transport.

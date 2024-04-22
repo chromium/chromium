@@ -39,9 +39,9 @@ MATCHER(IsOk,
   return arg == net::OK;
 }
 
-// A gMock matcher for base::StringPiece arguments.
+// A gMock matcher for std::string_view arguments.
 // gMock's built-in HasSubstrMatcher does not work,
-// because base::StringPiece cannot be implicitly converted to std::string.
+// because std::string_view cannot be implicitly converted to std::string.
 class StringPieceHasSubstrMatcher {
  public:
   explicit StringPieceHasSubstrMatcher(const std::string& substring)

@@ -307,8 +307,8 @@ HostResolverCache::LookupInternal(
                                &host_info);
 
   // For performance, when canonicalization can't canonicalize, minimize string
-  // copies and just reuse the input StringPiece. This optimization prevents
-  // easily reusing a MaybeCanoncalize util with similar code.
+  // copies and just reuse the input std::string_view. This optimization
+  // prevents easily reusing a MaybeCanoncalize util with similar code.
   std::string_view lookup_name = domain_name;
   if (host_info.family == url::CanonHostInfo::Family::NEUTRAL) {
     output.Complete();

@@ -429,7 +429,7 @@ bool HttpUtil::IsNonCoalescingHeader(std::string_view name) {
       // one.
       "strict-transport-security"};
 
-  for (const std::string_view& header : kNonCoalescingHeaders) {
+  for (std::string_view header : kNonCoalescingHeaders) {
     if (base::EqualsCaseInsensitiveASCII(name, header)) {
       return true;
     }

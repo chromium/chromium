@@ -41,7 +41,7 @@ enum HttpMethod {
 // examine a HTTP request.
 struct HttpRequest {
   struct CaseInsensitiveStringComparator {
-    // Allow using StringPiece instead of string for `find()`.
+    // Allow using std::string_view instead of string for `find()`.
     using is_transparent = void;
 
     bool operator()(std::string_view left, std::string_view right) const {

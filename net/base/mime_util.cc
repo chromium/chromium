@@ -244,7 +244,7 @@ static const char* FindMimeType(const MimeInfo (&mappings)[num_mappings],
     const char* extensions = mapping.extensions;
     for (;;) {
       size_t end_pos = strcspn(extensions, ",");
-      // The length check is required to prevent the StringPiece below from
+      // The length check is required to prevent the std::string_view below from
       // including uninitialized memory if ext is longer than extensions.
       if (end_pos == ext.size() &&
           base::EqualsCaseInsensitiveASCII(

@@ -57,7 +57,7 @@ TEST(OptRecordRdataTest, ParseOptRecord) {
 
   // Check elements
 
-  // Note: When passing string or StringPiece as argument, make sure to
+  // Note: When passing string or std::string_view as argument, make sure to
   // construct arguments with length. Otherwise, strings containing a '\0'
   // character will be truncated.
   // https://crbug.com/1348679

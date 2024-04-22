@@ -142,7 +142,7 @@ NET_EXPORT bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
     std::string_view data);
 
 // Overload with no definition, to disallow creating a CRYPTO_BUFFER from a
-// char* due to StringPiece implicit ctor.
+// char* due to std::string_view implicit ctor.
 NET_EXPORT bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
     const char* invalid_data);
 
@@ -156,7 +156,7 @@ CreateCryptoBufferFromStaticDataUnsafe(base::span<const uint8_t> data);
 NET_EXPORT bool CryptoBufferEqual(const CRYPTO_BUFFER* a,
                                   const CRYPTO_BUFFER* b);
 
-// Returns a StringPiece pointing to the data in |buffer|.
+// Returns a std::string_view pointing to the data in |buffer|.
 NET_EXPORT std::string_view CryptoBufferAsStringPiece(
     const CRYPTO_BUFFER* buffer);
 
