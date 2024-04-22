@@ -12,6 +12,15 @@
 
 namespace ash {
 
+namespace {
+
+// Caches the result of `switches::IsForestSecretKeyMatched()` which not only
+// has to fetch and compare strings, but will log an error everytime if they do
+// not match.
+std::optional<bool> g_cache_secret_key_matched;
+
+}
+
 bool IsForestFeatureFlagEnabled() {
   return base::FeatureList::IsEnabled(features::kForestFeature);
 }
@@ -32,7 +41,11 @@ bool IsForestFeatureEnabled() {
     return true;
   }
 
-  return switches::IsForestSecretKeyMatched();
+  if (!g_cache_secret_key_matched) {
+    g_cache_secret_key_matched = switches::IsForestSecretKeyMatched();
+  }
+
+  return *g_cache_secret_key_matched;
 }
 
 }  // namespace ash
