@@ -154,6 +154,10 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     type: PrefType.NUMBER,
   },
   // os_a11y_page/keyboard_and_text_input_page.ts
+  'settings.a11y.caret.blink_interval': {
+    setting: Setting.kCaretBlinkInterval,
+    type: PrefType.NUMBER,
+  },
   'settings.a11y.caret_highlight': {
     setting: Setting.kHighlightTextCaret,
     type: PrefType.BOOLEAN,

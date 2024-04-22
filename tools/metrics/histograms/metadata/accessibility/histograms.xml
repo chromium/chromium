@@ -611,6 +611,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.CrosCaretBlinkInterval" units="ms"
+    expires_after="2024-08-18">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The caret blink interval rate, in milliseconds, chosen by the user, from 12
+    possible values in chrome os settings. 0ms means &quot;do not blink&quot;,
+    and the default value is 500ms. Logged once, 45 seconds after startup. For
+    how users adjust the setting from settings, see
+    ChromeOS.Settings.Accessibility.CaretBlinkInterval, which logs each time the
+    setting changes.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.CrosColorCorrection.FilterAmount" units="%"
     expires_after="2024-08-18">
   <owner>katie@chromium.org</owner>

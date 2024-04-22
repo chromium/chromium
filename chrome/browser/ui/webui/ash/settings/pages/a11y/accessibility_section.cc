@@ -1366,6 +1366,10 @@ bool AccessibilitySection::LogMetric(mojom::Setting setting,
           "ChromeOS.Settings.Accessibility.ColorCorrection.FilterAmount",
           value.GetInt());
       return true;
+    case mojom::Setting::kCaretBlinkInterval:
+      base::UmaHistogramSparse(
+          "ChromeOS.Settings.Accessibility.CaretBlinkInterval", value.GetInt());
+      return true;
     case mojom::Setting::kLiveCaption:
       base::UmaHistogramBoolean(
           "ChromeOS.Settings.Accessibility.LiveCaption.Enabled",

@@ -33,6 +33,18 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Accessibility.CaretBlinkInterval" units="ms"
+    expires_after="2024-10-16">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The text caret blink interval in ms chosen by the user. Logged on change
+    from settings, from 12 possible values in a slider. The default value in
+    settings is 100% which corresponds to 500 ms. 0 ms means &quot;do not
+    blink&quot;.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.Accessibility.ColorCorrection.FilterAmount"
     units="%" expires_after="2024-10-16">
   <owner>katie@chromium.org</owner>

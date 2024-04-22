@@ -1809,6 +1809,13 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
                                 reduced_animations_enabled);
     }
 
+    if (::features::IsAccessibilityCaretBlinkIntervalSettingEnabled()) {
+      int caret_blink_interval_ms =
+          prefs->GetInteger(prefs::kAccessibilityCaretBlinkInterval);
+      base::UmaHistogramSparse("Accessibility.CrosCaretBlinkInterval",
+                               caret_blink_interval_ms);
+    }
+
     base::UmaHistogramBoolean(
         "Accessibility.CrosCursorColor",
         prefs->GetBoolean(prefs::kAccessibilityCursorColorEnabled));
