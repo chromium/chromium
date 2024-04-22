@@ -41,7 +41,7 @@ is_high_end_android = is_high_end_android && is_android
 declare_args() {
   # Whether to apply size->speed trade-offs to the secondary toolchain.
   # Relevant only for 64-bit target_cpu.
-  is_high_end_android_secondary_toolchain = is_high_end_android
+  is_high_end_android_secondary_toolchain = false
 }
 
 assert(!is_chrome_for_testing || !is_chrome_branded,
