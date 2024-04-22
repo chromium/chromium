@@ -15,6 +15,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
+#include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
 
 namespace ash {
@@ -211,6 +212,36 @@ TEST_F(AshNotificationViewPixelTest, InlineReply) {
   // Verify with a pixel test that the inline reply field is correctly drawn.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "inline_reply_focused", /*revision_number=*/0, notification_view));
+}
+
+TEST_F(AshNotificationViewPixelTest, NotificationViewFocusRing) {
+  const std::string id = test_api()->AddNotification();
+  test_api()->ToggleBubble();
+
+  PressAndReleaseKey(ui::VKEY_TAB);
+  auto* notification_view = test_api()->GetNotificationViewForId(id);
+  ASSERT_TRUE(notification_view->HasFocus());
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "notification_view_focus_ring", /*revision_number=*/0,
+      notification_view));
+}
+
+TEST_F(AshNotificationViewPixelTest, NotificationPopupFocusRing) {
+  const std::string id = test_api()->AddNotification();
+
+  // Wait until the notification popup shows.
+  MessagePopupAnimationWaiter(
+      GetPrimaryNotificationCenterTray()->popup_collection())
+      .Wait();
+
+  auto* notification_view = test_api()->GetPopupViewForId(id);
+  notification_view->message_view()->RequestFocus();
+  ASSERT_TRUE(notification_view->message_view()->HasFocus());
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "notification_popup_focus_ring", /*revision_number=*/0,
+      notification_view));
 }
 
 // Tests that a notification's icon is sized and positioned correctly at
