@@ -17,15 +17,18 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
@@ -36,12 +39,12 @@ namespace {
 const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
 
 // Whether `web_state` shows the NTP.
-bool IsNTP(web::WebState* web_state) {
+bool IsNTP(const web::WebState* web_state) {
   return IsUrlNtp(web_state->GetVisibleURL());
 }
 
 // Whether `web_state` shows the NTP and never had a navigation.
-bool IsEmptyNTP(web::WebState* web_state) {
+bool IsEmptyNTP(const web::WebState* web_state) {
   return IsNTP(web_state) && web_state->GetNavigationItemCount() <= 1;
 }
 
@@ -191,74 +194,82 @@ bool IsEmptyNTP(web::WebState* web_state) {
 // Removes empty NTP tabs (i.e. NTPs with no further navigation) in `browser`'s
 // WebStateList.
 //
-// NTPs with navigations are all preserved. If there are none, an empty NTP is
+// NTPs with navigation are all preserved. If there are none, an empty NTP is
 // preserved.
-// TODO(crbug.com/330328126): NTPs in tab groups are currently all preserved.
-// Instead, preserve only NTPs with navigations or at most one empty NTP per
-// group.
 - (void)removeExcessNTPsInBrowser:(Browser*)browser {
   WebStateList* webStateList = browser->GetWebStateList();
 
-  // Find all empty NTPs, i.e. NTPs with no navigation. Also keep track of the
-  // last NTP with a navigation, if any, and whether the active tab is amongst
-  // the candidates for removal.
-  std::vector<int> indicesToRemove;
-  web::WebState* lastNTPWithNavigation = nullptr;
-  for (int i = 0; i < webStateList->count(); i++) {
-    if (webStateList->GetGroupOfWebStateAt(i) != nullptr) {
-      // The tab is grouped. Preserve it unconditionally for now.
-      // TODO(crbug.com/330328126): Remove empty NTPs.
-      continue;
-    }
-    web::WebState* webState = webStateList->GetWebStateAt(i);
+  // Map groups to the indices of its empty NTPs, and whether the group contains
+  // at least one non-empty NTP (an NTP with navigation), which will be kept.
+  // Ungrouped tabs correspond to the `nullptr` entry in the map.
+  std::map<const TabGroup*, std::pair<std::vector<int>, bool>> groupsToNTPs;
+  for (int index = 0; index < webStateList->count(); ++index) {
+    const web::WebState* webState = webStateList->GetWebStateAt(index);
+    const TabGroup* tabGroup = webStateList->GetGroupOfWebStateAt(index);
     if (IsEmptyNTP(webState)) {
-      indicesToRemove.push_back(i);
+      groupsToNTPs[tabGroup].first.push_back(index);
     } else if (IsNTP(webState)) {
-      lastNTPWithNavigation = webState;
+      groupsToNTPs[tabGroup].second = true;
     }
   }
 
-  // Find whether the active tab is currently scheduled to be removed.
-  const int activeWebStateIndex =
-      webStateList->GetIndexOfWebState(webStateList->GetActiveWebState());
-  bool activeWebStateRemoved =
-      base::Contains(indicesToRemove, activeWebStateIndex);
+  // For each group (respectively the ungrouped tabs case), if there are only
+  // empty NTPs, preserve one NTP by removing it from the list of indices to
+  // close for the group (respectively the ungrouped tabs case).
+  for (auto& [group, NTPs] : groupsToNTPs) {
+    auto& indicesToRemoveInGroup = NTPs.first;
+    const bool groupHasNonEmptyNTP = NTPs.second;
+    if (indicesToRemoveInGroup.empty() || groupHasNonEmptyNTP) {
+      continue;
+    }
+    // Remove the last empty NTP from the list of tabs to close.
+    indicesToRemoveInGroup.pop_back();
+  }
 
-  // If there are only empty NTPs, preserve one NTP by removing
-  // it from the list of indices to close.
-  if (!lastNTPWithNavigation && !indicesToRemove.empty()) {
-    // Preserve the last empty NTP (i.e. the most recent)…
-    auto indexToPreserveIter = indicesToRemove.end() - 1;
-    // … or preserve the active tab, if it was in the list of empty NTPs.
-    if (activeWebStateRemoved) {
-      indexToPreserveIter =
-          std::find(indicesToRemove.begin(), indicesToRemove.end(),
-                    activeWebStateIndex);
-      CHECK(indexToPreserveIter != indicesToRemove.end());
+  // Flatten the list of indices to remove.
+  std::vector<int> indicesToRemove;
+  for (const auto& [group, NTPs] : groupsToNTPs) {
+    const auto& indicesToRemoveInGroup = NTPs.first;
+    indicesToRemove.insert(indicesToRemove.end(),
+                           indicesToRemoveInGroup.begin(),
+                           indicesToRemoveInGroup.end());
+  }
+
+  // Perform the operations on the WebStateList.
+  const WebStateList::ScopedBatchOperation batch =
+      webStateList->StartBatchOperation();
+
+  // If the active tab is going to be closed, pick the last ungrouped
+  // NTP as the new active tab, otherwise insert a new NTP.
+  if (base::Contains(indicesToRemove, webStateList->active_index())) {
+    int lastUngroupedNTPIndex = WebStateList::kInvalidIndex;
+    for (int index = webStateList->count() - 1; index >= 0; --index) {
+      const web::WebState* webState = webStateList->GetWebStateAt(index);
+      const TabGroup* tabGroup = webStateList->GetGroupOfWebStateAt(index);
+      if (IsNTP(webState) && !tabGroup &&
+          !base::Contains(indicesToRemove, index)) {
+        lastUngroupedNTPIndex = index;
+        break;
+      }
     }
-    // Update `activeWebStateRemoved` if the active tab ends up preserved.
-    if (*indexToPreserveIter == activeWebStateIndex) {
-      activeWebStateRemoved = NO;
+    if (lastUngroupedNTPIndex != WebStateList::kInvalidIndex) {
+      webStateList->ActivateWebStateAt(lastUngroupedNTPIndex);
+    } else {
+      // Insert a new NTP at the very end (this won't invalidate other indices).
+      web::NavigationManager::WebLoadParams webLoadParams =
+          web::NavigationManager::WebLoadParams(GURL(kChromeUINewTabURL));
+      TabInsertion::Params tabInsertionParams;
+      tabInsertionParams.should_skip_new_tab_animation = true;
+      TabInsertionBrowserAgent::FromBrowser(browser)->InsertWebState(
+          webLoadParams, tabInsertionParams);
     }
-    indicesToRemove.erase(indexToPreserveIter);
   }
 
   // Close the excessive NTPs.
   UMA_HISTOGRAM_COUNTS_100(kExcessNTPTabsRemoved, indicesToRemove.size());
-  const WebStateList::ScopedBatchOperation batch =
-      webStateList->StartBatchOperation();
   webStateList->CloseWebStatesAtIndices(
       WebStateList::CLOSE_NO_FLAGS,
       RemovingIndexes(std::move(indicesToRemove)));
-
-  // If the active WebState was removed because it was empty,
-  // switch to another NTP: the most recent NTP with navigation. It exists,
-  // otherwise the active WebState would have been kept.
-  if (activeWebStateRemoved) {
-    DCHECK(lastNTPWithNavigation);
-    int newActiveIndex = webStateList->GetIndexOfWebState(lastNTPWithNavigation);
-    webStateList->ActivateWebStateAt(newActiveIndex);
-  }
 }
 
 - (void)logBackgroundDurationMetricForActivationLevel:
