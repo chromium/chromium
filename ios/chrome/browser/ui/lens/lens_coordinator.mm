@@ -244,7 +244,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
   UIViewController* viewController =
       [lensController inputSelectionViewController];
 
-  // TODO(crbug.com/1353430): the returned UIViewController
+  // TODO(crbug.com/40235185): the returned UIViewController
   // must not be nil, remove this check once the internal
   // implementation of the method is complete.
   if (!viewController) {

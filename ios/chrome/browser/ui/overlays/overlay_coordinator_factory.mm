@@ -61,7 +61,7 @@
 
 // Returns the OverlayRequestCoordinator subclass responsible for showing
 // `request`'s overlay UI.
-// TODO(crbug.com/1447483): Clean the switch when the default flow is added.
+// TODO(crbug.com/40268990): Clean the switch when the default flow is added.
 - (Class)coordinatorClassForRequest:(OverlayRequest*)request {
   if (DefaultInfobarOverlayRequestConfig::RequestSupport()->IsRequestSupported(
           request)) {

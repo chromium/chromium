@@ -41,7 +41,7 @@ class PrefsInternalsSource : public web::URLDataSourceIOS {
   void StartDataRequest(
       const std::string& path,
       web::URLDataSourceIOS::GotDataCallback callback) override {
-    // TODO(crbug.com/1006711): Properly disable this webui provider for
+    // TODO(crbug.com/40099982): Properly disable this webui provider for
     // incognito browser states.
     if (browser_state_->IsOffTheRecord()) {
       std::move(callback).Run(nullptr);

@@ -10613,7 +10613,8 @@ class CommitMessageOrderReverser : public DidCommitNavigationInterceptor {
 // Create an out-of-process iframe that causes itself to be detached during
 // its layout/animate phase. See https://crbug.com/802932.
 //
-// TODO(809580): Disabled on Android, Mac, and ChromeOS due to flakiness.
+// TODO(crbug.com/40561636): Disabled on Android, Mac, and ChromeOS due to
+// flakiness.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_OOPIFDetachDuringAnimation DISABLED_OOPIFDetachDuringAnimation
 #else

@@ -891,7 +891,7 @@ const char kDisableWebRtcEncryption[]      = "disable-webrtc-encryption";
 // Enables negotiation of encrypted header extensions from RFC 6904 for SRTP
 // in WebRTC.
 // See https://tools.ietf.org/html/rfc6904 for further information.
-// TODO(https://crbug.com/954201): Remove this.
+// TODO(crbug.com/40623740): Remove this.
 const char kEnableWebRtcSrtpEncryptedHeaders[] =
     "enable-webrtc-srtp-encrypted-headers";
 

@@ -916,7 +916,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 
 // TODO(crbug.com/1327652): disabled on UIA
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
-                       // TODO(crbug.com/1446550): Re-enable this test
+                       // TODO(crbug.com/40913066): Re-enable this test
                        DISABLED_AccessibilityEventsMenuListNext) {
   RunEventTest(FILE_PATH_LITERAL("menulist-next.html"));
 }

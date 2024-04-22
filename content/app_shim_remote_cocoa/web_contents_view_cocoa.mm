@@ -125,7 +125,7 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
 
   gfx::Rect _windowControlsOverlayRect;
 
-  // TODO(https://crbug.com/883031): Remove this when kMacWebContentsOcclusion
+  // TODO(crbug.com/40593221): Remove this when kMacWebContentsOcclusion
   // is enabled by default.
   BOOL _inFullScreenTransition;
   BOOL _willSetWebContentsOccludedAfterDelay;

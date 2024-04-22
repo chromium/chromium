@@ -95,7 +95,7 @@ class KeepAliveURLLoaderCSPContext final : public network::CSPContext {
 // Checks if `url` is allowed by the set of Content-Security-Policy `policies`.
 // Violation will not be reported back to renderer, as this function must be
 // called after renderer is gone.
-// TODO(crbug.com/1431165): Isolated world's CSP is not handled.
+// TODO(crbug.com/40263403): Isolated world's CSP is not handled.
 bool IsRedirectAllowedByCSP(
     const std::vector<network::mojom::ContentSecurityPolicyPtr>& policies,
     const GURL& url,

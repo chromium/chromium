@@ -249,7 +249,7 @@ const CGFloat kSeparatorHeight = 0.5;
   _seeMoreButton.hidden = !config.shouldShowSeeMore;
 
   if ([self shouldShowSubtitle]) {
-    // TODO(crbug.com/1474992): Update MagicStackModuleContainer to take an id
+    // TODO(crbug.com/40279482): Update MagicStackModuleContainer to take an id
     // config in its initializer so the container can build itself from a
     // passed config/state object.
     NSString* subtitle = [self subtitleStringForConfig:config];
@@ -325,7 +325,7 @@ const CGFloat kSeparatorHeight = 0.5;
       return kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier;
 
     default:
-      // TODO(crbug.com/1506038): the code should use constants for
+      // TODO(crbug.com/40946679): the code should use constants for
       // accessibility identifiers, and not localized strings.
       return [self titleStringForModule:type];
   }

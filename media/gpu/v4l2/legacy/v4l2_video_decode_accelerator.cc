@@ -2592,7 +2592,7 @@ void V4L2VideoDecodeAccelerator::FrameProcessed(
   DVLOGF(4) << "ip_buffer_index=" << ip_buffer_index
             << ", bitstream_buffer_id=" << bitstream_buffer_id;
   DCHECK(decoder_thread_.task_runner()->BelongsToCurrentThread());
-  // TODO(crbug.com/921825): Remove this workaround once reset callback is
+  // TODO(crbug.com/40609453): Remove this workaround once reset callback is
   // implemented.
   if (buffers_at_ip_.empty() ||
       buffers_at_ip_.front().first != bitstream_buffer_id ||

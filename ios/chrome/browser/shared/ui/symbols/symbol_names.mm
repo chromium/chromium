@@ -12,7 +12,7 @@ NSString* const kMulticolorChromeballSymbol = @"multicolor_chromeball";
 NSString* const kGoogleMapsSymbol = @"google_maps";
 NSString* const kGooglePhotosSymbol = @"google_photos";
 NSString* const kPageInsightsSymbol = @"page_insights";
-// TODO(crbug.com/1489185): Move PNG images out of this file.
+// TODO(crbug.com/40934931): Move PNG images out of this file.
 NSString* const kFedexCarrierImage = @"parcel_tracking_carrier_fedex";
 NSString* const kUPSCarrierImage = @"parcel_tracking_carrier_ups";
 NSString* const kUSPSCarrierImage = @"parcel_tracking_carrier_usps";

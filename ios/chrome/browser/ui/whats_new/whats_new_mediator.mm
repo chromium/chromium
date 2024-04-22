@@ -72,7 +72,7 @@
       break;
     case WhatsNewPrimaryAction::kLens:
       // Handles actions that open Lens.
-      // TODO(crbug.com/1502927): Add the Lens promo that contains the
+      // TODO(crbug.com/40943329): Add the Lens promo that contains the
       // button that triggers the Lens action.
       [self openLens];
       break;

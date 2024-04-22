@@ -5139,7 +5139,7 @@
           'x86-64',
         ],
         'test_suites': {
-          # TODO(crbug.com/1071693): Use the main 'linux_chromeos_gtests' suite
+          # TODO(crbug.com/40126889): Use the main 'linux_chromeos_gtests' suite
           # when OOBE tests no longer fail on MSAN.
           'gtest_tests': 'linux_chromeos_gtests_oobe',
         },

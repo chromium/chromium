@@ -604,7 +604,7 @@ class HeadlessWebContentsBeginFrameControlViewportTest
   }
 };
 
-// TODO(crbug.com/1459385): Turning this off since it's flaking regularly.
+// TODO(crbug.com/40274291): Turning this off since it's flaking regularly.
 DISABLED_HEADLESS_DEVTOOLED_TEST_F(
     HeadlessWebContentsBeginFrameControlViewportTest);
 

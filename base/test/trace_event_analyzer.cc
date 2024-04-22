@@ -173,7 +173,7 @@ bool TraceEvent::SetFromJSON(const base::Value* event_value) {
   }
 
   // For each argument, copy the type and create a trace_analyzer::TraceValue.
-  // TODO(crbug.com/1303874): Add BINARY and LIST arg types if needed.
+  // TODO(crbug.com/40826205): Add BINARY and LIST arg types if needed.
   if (maybe_args) {
     for (auto pair : *maybe_args) {
       switch (pair.second.type()) {

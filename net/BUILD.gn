@@ -3235,7 +3235,7 @@ test("net_unittests") {
 
 # !is_android && !is_win && !is_mac
 if (!is_ios) {
-  # TODO(crbug.com/594965): this should be converted to "app" template and
+  # TODO(crbug.com/40460932): this should be converted to "app" template and
   # enabled on iOS too.
   test("net_perftests") {
     sources = [

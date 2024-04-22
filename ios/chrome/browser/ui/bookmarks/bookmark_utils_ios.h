@@ -130,7 +130,7 @@ bool UpdateBookmark(const bookmarks::BookmarkNode* node,
 // undo the performed action. Returns nil if there's nothing to undo.
 // Note: This function might invalidate `node` if `folder` and `node` belong to
 // different `BookmarkModel` instances.
-// TODO(crbug.com/1099901): Refactor to include position and replace two
+// TODO(crbug.com/40137712): Refactor to include position and replace two
 // functions below.
 MDCSnackbarMessage* UpdateBookmarkWithUndoToast(
     const bookmarks::BookmarkNode* node,

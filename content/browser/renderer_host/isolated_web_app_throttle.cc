@@ -157,7 +157,7 @@ bool IsolatedWebAppThrottle::OpenUrlExternal(const GURL& url) {
 #if BUILDFLAG(IS_CHROMEOS)
   // The default browser can't be changed in ChromeOS, so just open the URL
   // directly.
-  // TODO(crbug.com/1310207): Should we set the referrer?
+  // TODO(crbug.com/40830234): Should we set the referrer?
   OpenURLParams params(url, Referrer(),
                        WindowOpenDisposition::NEW_FOREGROUND_TAB, transition,
                        /*is_renderer_initiated=*/false);

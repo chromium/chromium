@@ -2268,7 +2268,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("iframe-with-region-role.html"));
 }
 
-// TODO(crbug.com/1475950): Fix and reenable the test.
+// TODO(crbug.com/40070579): Fix and reenable the test.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, DISABLED_AccessibilityImg) {
   RunHtmlTest(FILE_PATH_LITERAL("img.html"));
 }

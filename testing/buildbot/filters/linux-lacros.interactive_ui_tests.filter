@@ -33,7 +33,7 @@
 # TODO(crbug.com/1195712): Implement the feature for Wayland.
 -GlobalCommandsApiTest.GlobalCommand
 
-# TODO(crbug.com/1208111): Was flaky with weston-test, fails consistently with
+# TODO(crbug.com/40765889): Was flaky with weston-test, fails consistently with
 # ui-controls.
 -MenuControllerUITest.TestMouseOverShownMenu
 

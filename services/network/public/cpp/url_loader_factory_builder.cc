@@ -44,7 +44,7 @@ bool URLLoaderFactoryBuilder::IsEmpty() const {
 // because theoretically the `URLLoaderFactoryBuilder` interface can't ensure
 // that `terminal_factory` is fuseable.
 //
-// TODO(crbug.com/1506871): Consider removing the `Clone()` calls for
+// TODO(crbug.com/40947547): Consider removing the `Clone()` calls for
 // performance. Probably the `terminal_factory` is actually fusable for the
 // actual `URLLoaderFactoryBuilder` callers reaching here (e.g.
 // `non_network_factories` in `RenderFrameHostImpl::CommitNavigation()` and

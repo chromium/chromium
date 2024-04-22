@@ -223,7 +223,7 @@ TEST_F(SceneControllerTest, UpdatesIncognitoContentVisibility) {
 
 // Tests that scene controller correctly handles an external intent to
 // OpenIncognitoSearch.
-// TODO(crbug.com/1506950): re-enabled the test.
+// TODO(crbug.com/40947630): re-enabled the test.
 TEST_F(SceneControllerTest, DISABLED_TestOpenIncognitoSearchForShortcutItem) {
   UIApplicationShortcutItem* shortcut = [[UIApplicationShortcutItem alloc]
         initWithType:kShortcutNewIncognitoSearch

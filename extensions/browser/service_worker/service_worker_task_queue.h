@@ -304,7 +304,7 @@ class ServiceWorkerTaskQueue : public KeyedService,
   // A map of Service Worker registrations if this instance is for an
   // off-the-record BrowserContext. These are stored in the ExtensionPrefs
   // for a regular profile.
-  // TODO(crbug.com/939664): Make this better by passing in something that
+  // TODO(crbug.com/40617251): Make this better by passing in something that
   // will manage storing and retrieving this data.
   base::flat_map<ExtensionId, base::Version> off_the_record_registrations_;
 

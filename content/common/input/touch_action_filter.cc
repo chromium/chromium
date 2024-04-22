@@ -334,7 +334,7 @@ void TouchActionFilter::OnSetTouchAction(cc::TouchAction touch_action) {
                (allowed_touch_action_.has_value()
                     ? cc::TouchActionToString(allowed_touch_action_.value())
                     : "n/a"));
-  // TODO(https://crbug.com/849819): add a DCHECK for
+  // TODO(crbug.com/40579429): add a DCHECK for
   // |has_touch_event_handler_|.
   // For multiple fingers, we take the intersection of the touch actions for
   // all fingers that have gone down during this action.  In the majority of

@@ -846,7 +846,7 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
   // ProxyRunTestOnMainThreadLoop() happens later as part of SetUp()).
   std::optional<base::test::ScopedRunLoopTimeout> scoped_run_timeout;
   if (!base::test::ScopedRunLoopTimeout::ExistsForCurrentThread()) {
-    // TODO(https://crbug.com/918724): determine whether the timeout can be
+    // TODO(crbug.com/40608077): determine whether the timeout can be
     // reduced from action_max_timeout() to action_timeout().
     scoped_run_timeout.emplace(FROM_HERE, TestTimeouts::action_max_timeout());
   }

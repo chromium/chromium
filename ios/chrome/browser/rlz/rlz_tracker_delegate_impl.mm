@@ -86,7 +86,7 @@ bool RLZTrackerDelegateImpl::ShouldEnableZeroDelayForTesting() {
 }
 
 bool RLZTrackerDelegateImpl::GetLanguage(std::u16string* language) {
-  // TODO(crbug.com/1288100): Implement.
+  // TODO(crbug.com/40816693): Implement.
   NOTIMPLEMENTED();
   return false;
 }

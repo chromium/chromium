@@ -3836,7 +3836,7 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
   if (((shader_spec == SH_WEBGL_SPEC || shader_spec == SH_WEBGL2_SPEC) &&
        features().enable_shader_name_hashing) ||
       force_shader_name_hashing_for_test) {
-    // TODO(https://crbug.com/902789): In theory, it should be OK to change this
+    // TODO(crbug.com/40601370): In theory, it should be OK to change this
     // hash. However, in practice, this seems to cause some tests to fail. See
     // https://crbug.com/963889.
     resources.HashFunction = +[](const char* data, size_t size) {

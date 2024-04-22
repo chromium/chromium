@@ -1568,8 +1568,8 @@ interface NetworkContext {
   // its destruction. If there is no corresponding LoadHttpAuthCache call, the
   // saved HttpAuthCache data will leak.
   //
-  // TODO(crbug.com/914082): Return a scoped handle that can automatically free
-  // the cache when it goes out of scope.
+  // TODO(crbug.com/40606065): Return a scoped handle that can automatically
+  // free the cache when it goes out of scope.
   SaveHttpAuthCacheProxyEntries()
       => (mojo_base.mojom.UnguessableToken cache_key);
 

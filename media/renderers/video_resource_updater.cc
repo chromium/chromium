@@ -245,7 +245,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
         DCHECK_EQ(num_textures, 2u);
         // TODO(mcasas): Support other formats such as e.g. P012.
         si_formats[0] = viz::SinglePlaneFormat::kR_16;
-        // TODO(https://crbug.com/1233228): This needs to be
+        // TODO(crbug.com/40191425): This needs to be
         // gfx::BufferFormat::RG_1616.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
         si_formats[1] = viz::SinglePlaneFormat::kRG_1616;

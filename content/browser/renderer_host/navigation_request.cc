@@ -3571,7 +3571,7 @@ void NavigationRequest::AddOriginAgentClusterStateIfNecessary(
   // opt-out, which would trigger a normal global walk and record that the
   // origin has already been implicitly isolated in some BrowsingInstances.
 
-  // TODO(crbug.com/1442972): investigate using one of NavigationRequest's
+  // TODO(crbug.com/40910871): investigate using one of NavigationRequest's
   // Get*Origin*() functions to compute this, instead of assuming we can just
   // convert directly from GetURL().
   url::Origin origin = url::Origin::Create(GetURL());

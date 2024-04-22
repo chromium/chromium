@@ -849,7 +849,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 }
 
 // Returns whether the tab can present a bubble tip.
-// TODO(crbug.com/1448656): make most callsites pass NO for
+// TODO(crbug.com/40914423): make most callsites pass NO for
 // `CheckTabScrolledToTop` as it's error-prone.
 - (BOOL)canPresentBubble {
   return [self canPresentBubbleWithCheckTabScrolledToTop:YES];

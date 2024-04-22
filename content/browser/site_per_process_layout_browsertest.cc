@@ -806,7 +806,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_NEAR(expected.y(), viewport_offset.y(), tolerance);
 }
 
-// TODO(crbug.com/1168036): Flaky test.
+// TODO(crbug.com/40743132): Flaky test.
 IN_PROC_BROWSER_TEST_P(
     SitePerProcessBrowserTest,
     DISABLED_NestedIframeTransformedIntoViewViewportIntersection) {
@@ -858,7 +858,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Verify that OOPIF select element popup menu coordinates account for scroll
 // offset in containers embedding frame.
-// TODO(crbug.com/859552): Reenable this.
+// TODO(crbug.com/40583339): Reenable this.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        DISABLED_PopupMenuInTallIframeTest) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -2131,7 +2131,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
 // Test that the compositing scale factor for an out-of-process iframe are set
 // and updated correctly, including accounting for all intermediate transforms.
-// TODO(crbug.com/1164391): Flaky test.
+// TODO(crbug.com/40163506): Flaky test.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        DISABLED_CompositingScaleFactorInNestedFrameTest) {
   GURL main_url(embedded_test_server()->GetURL(

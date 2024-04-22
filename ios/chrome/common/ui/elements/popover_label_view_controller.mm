@@ -110,7 +110,7 @@ constexpr CGFloat kIconSize = 16;
 
   AddSameConstraints(self.view.safeAreaLayoutGuide, _scrollView);
 
-  // TODO(crbug.com/1100884): Remove the following workaround:
+  // TODO(crbug.com/40138105): Remove the following workaround:
   // Using a UIView instead of UILayoutGuide as the later behaves weirdly with
   // the scroll view.
   UIView* textContainerView = [[UIView alloc] init];

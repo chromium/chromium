@@ -157,7 +157,7 @@ class CC_PAINT_EXPORT PaintOpBuffer : public SkRefCnt {
     // e.g. in the case of UI.
     bool is_privileged = false;
     // The HDR headroom to apply when deserializing.
-    // TODO(https://crbug.com/1483235): Move this to playback instead of
+    // TODO(crbug.com/40281980): Move this to playback instead of
     // deserialization.
     float hdr_headroom = 1.f;
     SharedImageProvider* shared_image_provider = nullptr;

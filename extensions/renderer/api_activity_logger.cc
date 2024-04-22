@@ -162,7 +162,7 @@ void APIActivityLogger::LogForJS(
     converter->SetFunctionAllowed(true);
     converter->SetStrategy(&strategy);
     for (size_t i = 0; i < arg_array->Length(); ++i) {
-      // TODO(crbug.com/913942): Possibly replace ToLocalChecked here with
+      // TODO(crbug.com/40605992): Possibly replace ToLocalChecked here with
       // actual error handling.
       std::unique_ptr<base::Value> converted_arg = converter->FromV8Value(
           arg_array->Get(context, i).ToLocalChecked(), context);

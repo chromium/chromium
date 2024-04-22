@@ -285,7 +285,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that the passwords view controller contains the "Manage Passwords..."
 // and "Manage Settings..." actions.
 - (void)testPasswordsViewControllerContainsManageActions {
-  // TODO(crbug.com/1352059): Re-enable when flake fixed.
+  // TODO(crbug.com/40857537): Re-enable when flake fixed.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
   }

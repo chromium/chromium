@@ -624,7 +624,7 @@ id<GREYMatcher> PasswordPickerViewMatcher() {
 }
 
 - (void)testTappingLearnMoreInFirstRunExperienceView {
-  // TODO(crbug.com/1488977): Test fails on iPad simulator.
+  // TODO(crbug.com/40283859): Test fails on iPad simulator.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Failing on iPad Simulator");
   }

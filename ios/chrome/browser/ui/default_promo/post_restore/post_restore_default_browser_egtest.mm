@@ -80,7 +80,7 @@ id<GREYMatcher> SecondaryActionMatcher() {
 #pragma mark - Tests
 
 // Verifies that the secondary action button opens dismisses the promo.
-// TODO(crbug.com/1477791): re-enable once test is no longer flaky.
+// TODO(crbug.com/40929054): re-enable once test is no longer flaky.
 - (void)DISABLED_testDismiss {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TitleMatcher()
                                               timeout:kPromoAppearanceTimeout];

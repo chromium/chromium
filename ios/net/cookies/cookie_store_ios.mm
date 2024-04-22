@@ -298,8 +298,8 @@ void CookieStoreIOS::GetAllCookiesAsync(GetAllCookiesCallback callback) {
   // instead.
   DCHECK(SystemCookiesAllowed());
 
-  // TODO(crbug.com/459154): If/when iOS supports Same-Site cookies, we'll need
-  // to pass options in here as well.
+  // TODO(crbug.com/40406003): If/when iOS supports Same-Site cookies, we'll
+  // need to pass options in here as well.
   system_store_->GetAllCookiesAsync(
       base::BindOnce(&CookieStoreIOS::RunGetAllCookiesCallbackOnSystemCookies,
                      weak_factory_.GetWeakPtr(), std::move(callback)));

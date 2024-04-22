@@ -32,7 +32,8 @@ const char kHtmlFile[] = "/context_menu.html";
 @implementation ContextMenuTestCase
 
 // Tests context menu appears on a regular link.
-// TODO(crbug.com/1421691): Test is flaky on iPad simulator. Re-enable the test.
+// TODO(crbug.com/40896394): Test is flaky on iPad simulator. Re-enable the
+// test.
 #if TARGET_OS_SIMULATOR
 #define MAYBE_testContextMenu FLAKY_testContextMenu
 #else

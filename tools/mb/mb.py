@@ -1759,7 +1759,7 @@ class MetaBuildWrapper:
           # supported.
           # TODO(https://crbug.com/1320449): Enable on Mac inside asan once
           # things pass.
-          # TODO(https://crbug.com/974478): Enable on ChromeOS once things pass.
+          # TODO(crbug.com/40632267): Enable on ChromeOS once things pass.
           '--lsan=%d' % lsan
           or (asan and not is_mac and not is_win and not is_cros),
           '--msan=%d' % msan,

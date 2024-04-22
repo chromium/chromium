@@ -77,7 +77,7 @@ base::File OpenProfilingFile() {
 
   // sajjadm@ and liaoyuke@ experimentally determined that a size 4 pool works
   // well for the coverage builder.
-  // TODO(https://crbug.com/1059335): Check if this is an appropriate value for
+  // TODO(crbug.com/40121559): Check if this is an appropriate value for
   // the PGO builds.
   int pool_index = base::RandInt(0, 3);
   std::string filename = base::StrCat(

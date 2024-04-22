@@ -1251,7 +1251,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   background_tracing_helper.WaitForScenarioIdle();
 }
 
-// TODO(crbug.com/1227164): Test is flaky on Linux and Windows.
+// TODO(crbug.com/40776884): Test is flaky on Linux and Windows.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_CustomConfig DISABLED_CustomConfig
 #else
@@ -1314,7 +1314,7 @@ void DummyFunc() {}
 
 // Test that the tracing sampler profiler running in background tracing mode,
 // produces stack frames in the expected JSON format.
-// TODO(https://crbug.com/1062581) Disabled for being flaky.
+// TODO(crbug.com/40680210) Disabled for being flaky.
 IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
                        DISABLED_EndToEndStackSampling) {
   // In the browser process, the tracing sampler profiler gets constructed by

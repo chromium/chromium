@@ -103,7 +103,7 @@ NSArray* multitaskingTests() {
   ]];
 
   if (base::ios::IsRunningOnIOS17OrLater()) {
-    // TODO(crbug.com/1469233): Test is failing on iOS17.
+    // TODO(crbug.com/40925281): Test is failing on iOS17.
     [tests removeObject:@"testQRScannerUIIsShown"];
   }
   return tests;

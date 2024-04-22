@@ -380,7 +380,7 @@ IN_PROC_BROWSER_TEST_P(MediaTest, VideoBearHighBitDepthMp4) {
 
 // Android can't reliably load lots of videos on a page.
 // See http://crbug.com/749265
-// TODO(crbug.com/1222852): Flaky on Mac.
+// TODO(crbug.com/40774322): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_LoadManyVideos DISABLED_LoadManyVideos
 #else

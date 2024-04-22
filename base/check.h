@@ -185,7 +185,7 @@ class BASE_EXPORT NotReachedNoreturnError : public CheckError {
 // if (a == 1)
 //   CHECK(Foo());
 //
-// TODO(crbug.com/1380930): Remove the const bool when the blink-gc plugin has
+// TODO(crbug.com/40244950): Remove the const bool when the blink-gc plugin has
 // been updated to accept `if (LIKELY(!field_))` as well as `if (!field_)`.
 #define LOGGING_CHECK_FUNCTION_IMPL(check_stream, condition)              \
   switch (0)                                                              \

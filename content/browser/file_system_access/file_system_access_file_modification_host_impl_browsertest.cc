@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileModificationHostImplBrowserTest,
 }
 
 // TODO(crbug.com/1304977): Failing on Mac, Linux, and ChromeOS builders.
-// TODO(crbug.com/1459385): Re-enable this test
+// TODO(crbug.com/40274291): Re-enable this test
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileModificationHostImplBrowserTest,
                        DISABLED_QuotaUsageShrinks) {
   const GURL& test_url =

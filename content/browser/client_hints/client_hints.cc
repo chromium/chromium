@@ -643,7 +643,7 @@ bool IsJavascriptEnabled(FrameTreeNode* frame_tree_node) {
 // The permissions policy the browser side has for the frame was set in stone
 // before HTML parsing began, so any updates must be sent via
 // `container_policy`.
-// TODO(crbug.com/1278127): Replace w/ generic HTML policy modification.
+// TODO(crbug.com/40208054): Replace w/ generic HTML policy modification.
 void UpdateIFramePermissionsPolicyWithDelegationSupportForClientHints(
     ClientHintsExtendedData& data,
     const blink::ParsedPermissionsPolicy& container_policy) {

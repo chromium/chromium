@@ -178,7 +178,7 @@ CredentialProviderService::CredentialProviderService(
   // Make sure the initial value of the pref is stored.
   OnSavingPasswordsEnabledChanged();
 
-  // TODO(crbug.com/1441012): Remove after 04/2024.
+  // TODO(crbug.com/40909655): Remove after 04/2024.
   NSArray<NSString*>* obsolete_keys = @[
     @"UserDefaultsCredentialProviderASIdentityStoreSyncCompleted.V1",
     @"UserDefaultsCredentialProviderFirstTimeSyncCompleted.V1"

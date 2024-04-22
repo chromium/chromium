@@ -39,7 +39,7 @@ interface LayerContextClient {
 
 // Parameters needed to bind a LayerContext endpoint via a CompositorFrameSink.
 struct PendingLayerContext {
-  // TODO(https://crbug.com/1431762): De-associate these interfaces from
+  // TODO(crbug.com/40902503): De-associate these interfaces from
   // CompositorFrameSink.
   pending_associated_receiver<LayerContext> receiver;
   pending_associated_remote<LayerContextClient> client;

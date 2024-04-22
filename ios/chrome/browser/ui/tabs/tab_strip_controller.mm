@@ -950,7 +950,7 @@ const CGFloat kSymbolSize = 18;
   _fullscreenDisabler = nullptr;
 
   int fromIndex = [self webStateListIndexForTabView:_draggedTab];
-  // TODO(crbug.com/1049882): We're seeing crashes where fromIndex is
+  // TODO(crbug.com/40117861): We're seeing crashes where fromIndex is
   // kInvalidIndex, indicating that the dragged tab is no longer in the
   // WebStateList. This could happen if a tab closed itself during a drag.
   // Investigate this further, but for now, simply test `fromIndex` before

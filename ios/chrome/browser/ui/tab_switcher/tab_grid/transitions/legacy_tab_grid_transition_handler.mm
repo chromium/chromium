@@ -225,7 +225,7 @@ const CGFloat kToTabGroupAnimationDuration = 0.25;
   // the view controller that contains the BVC. Unfortunatley, the layout guide
   // needed here is attached to the BVC's view, which is the first (and only)
   // subview of the BVCContainerViewController's view.
-  // TODO(crbug.com/860234) Clean up this arrangement.
+  // TODO(crbug.com/40583629) Clean up this arrangement.
   UIView* tabContentView = viewControllerForTab.view.subviews[0];
 
   CGRect contentArea = [NamedGuide guideWithName:kContentAreaGuide

@@ -150,7 +150,7 @@ base::apple::ScopedCFTypeRef<CFArrayRef> CertificateChainFromSecTrust(
         SecTrustCopyCertificateChain(trust));
   }
 
-// TODO(crbug.com/1426476): Remove code when it is no longer needed.
+// TODO(crbug.com/40899365): Remove code when it is no longer needed.
 #if (BUILDFLAG(IS_MAC) &&                                    \
      MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_12_0) || \
     (BUILDFLAG(IS_IOS) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_15_0)

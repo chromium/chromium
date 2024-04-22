@@ -123,8 +123,8 @@ class FrameFocusRules : public wm::BaseFocusRules {
 };
 
 bool FrameFocusRules::SupportsChildActivation(const aura::Window*) const {
-  // TODO(crbug.com/878439): Return a result based on window properties such as
-  // visibility.
+  // TODO(crbug.com/40591214): Return a result based on window properties such
+  // as visibility.
   return true;
 }
 

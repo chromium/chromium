@@ -236,7 +236,7 @@ void ShoppingPersistedDataTabHelper::ParseProto(
   if (!price_metadata) {
     return;
   }
-  // TODO(crbug.com/1270473) Change PriceDrop to PriceData.
+  // TODO(crbug.com/40205382) Change PriceDrop to PriceData.
   price_drop_ = std::make_unique<PriceDrop>();
   if (price_metadata->has_buyable_product() &&
       price_metadata->buyable_product().has_offer_id()) {

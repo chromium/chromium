@@ -71,7 +71,7 @@ const CGFloat kFlashDuration = 0.5;
 
 #pragma mark - UIView
 
-// TODO(crbug.com/633577): Replace the preview overlay with a UIView which is
+// TODO(crbug.com/40478852): Replace the preview overlay with a UIView which is
 // not resized.
 - (void)layoutSubviews {
   [super layoutSubviews];

@@ -578,7 +578,7 @@ void TestSuite::Initialize() {
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
   // Default the configurable DCHECK level to FATAL when running death tests'
   // child process, so that they behave as expected.
-  // TODO(crbug.com/1057995): Remove this in favor of the codepath in
+  // TODO(crbug.com/40120934): Remove this in favor of the codepath in
   // FeatureList::SetInstance() when/if OnTestStart() TestEventListeners
   // are fixed to be invoked in the child process as expected.
   if (command_line->HasSwitch("gtest_internal_run_death_test"))

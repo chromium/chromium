@@ -138,7 +138,7 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
 
 #pragma mark - Private
 
-// TODO(crbug.com/1318432): rafactor long method.
+// TODO(crbug.com/40835387): rafactor long method.
 - (UIContextMenuActionProvider)
     contextMenuActionProviderForWebState:(web::WebState*)webState
                                   params:(web::ContextMenuParams)params {

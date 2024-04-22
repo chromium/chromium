@@ -33,7 +33,7 @@ public class MemoryPurgeManager implements ApplicationStatus.ApplicationStateLis
 
     // Arbitrary delay, a few minutes is what is used for background renderer purge, and 5 minutes
     // for freezing.
-    // TODO(crbug.com/1356242): Should ideally be tuned according to the distribution of background
+    // TODO(crbug.com/40860286): Should ideally be tuned according to the distribution of background
     // time residency.
     @VisibleForTesting static final long PURGE_DELAY_MS = 4 * 60 * 1000;
     private static final long NEVER = -1;

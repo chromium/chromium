@@ -154,7 +154,7 @@ const CGFloat kIpadTabSwipeDistance = 100;
 }
 
 - (void)dealloc {
-  // TODO(crbug.com/1466454);
+  // TODO(crbug.com/40276402);
   DUMP_WILL_BE_CHECK(!_fullscreenController);
 }
 

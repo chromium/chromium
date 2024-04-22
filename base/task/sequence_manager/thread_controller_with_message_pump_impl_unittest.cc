@@ -97,7 +97,7 @@ class MockMessagePump : public MessagePump {
   }
 };
 
-// TODO(crbug.com/901373): Deduplicate FakeTaskRunners.
+// TODO(crbug.com/40600768): Deduplicate FakeTaskRunners.
 class FakeTaskRunner : public SingleThreadTaskRunner {
  public:
   bool PostDelayedTask(const Location& from_here,

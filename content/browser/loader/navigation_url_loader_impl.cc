@@ -412,7 +412,7 @@ void CheckParsedHeadersEquals(const network::mojom::ParsedHeadersPtr& lhs,
     return;
   }
 
-  // TODO(https://crbug.com/1362779) Remove this instrumentation once fixed.
+  // TODO(crbug.com/40864513) Remove this instrumentation once fixed.
   auto to_string = [](const auto& policies) {
     std::string out;
     for (const auto& csp : policies) {

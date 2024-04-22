@@ -97,7 +97,7 @@ def launch_dbus(env): # pylint: disable=inconsistent-return-statements
     print('Exception while running dbus_launch: %s' % e)
 
 
-# TODO(crbug.com/949194): Encourage setting flags to False.
+# TODO(crbug.com/40621504): Encourage setting flags to False.
 def run_executable(
     cmd, env, stdoutfile=None, use_openbox=True, use_xcompmgr=True,
     xvfb_whd=None, cwd=None):

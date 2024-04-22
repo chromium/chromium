@@ -160,7 +160,7 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
   [self.baseViewController.presentedViewController
       dismissViewControllerAnimated:NO
                          completion:^{
-                           // TODO(crbug.com/1422344): Add metric for when the
+                           // TODO(crbug.com/40896839): Add metric for when the
                            // credential is nil.
                            if (credential.has_value()) {
                              [weakSelf

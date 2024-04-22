@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(PageLifecycleStateManagerBrowserTest, SetVisibility) {
             EvalJs(rfh, "window.performanceObserverEntries"));
 }
 
-// TODO(crbug.com/1241814): Test is flaky on Win and Lacros
+// TODO(crbug.com/40786254): Test is flaky on Win and Lacros
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_CrossProcessIframeHiddenAnFrozen \
   DISABLED_CrossProcessIframeHiddenAnFrozen

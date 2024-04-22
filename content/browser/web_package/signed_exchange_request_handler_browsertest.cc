@@ -925,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeRequestHandlerRealCertVerifierBrowserTest,
   // This signed exchange should pass CertVerifier::Verify() and then fail at
   // SignedExchangeHandler::CheckOCSPStatus() because of the dummy OCSP
   // response.
-  // TODO(https://crbug.com/815024): Make this test pass the OCSP check. We'll
+  // TODO(crbug.com/40564303): Make this test pass the OCSP check. We'll
   // need to either generate an OCSP response on the fly, or override the OCSP
   // verification time.
   std::u16string title = u"Fallback URL response";

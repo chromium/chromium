@@ -33,7 +33,7 @@ class QRGeneratorUtilTest : public PlatformTest {
 };
 
 // Tests that the GenerateQRCode utility function creates a valid QR code image.
-// TODO(crbug.com/1214776): reenable this test.
+// TODO(crbug.com/40769543): reenable this test.
 TEST_F(QRGeneratorUtilTest, DISABLED_GenerateQRCode_ValidData) {
   NSData* qrData = [sampleUrl_ dataUsingEncoding:NSUTF8StringEncoding];
 

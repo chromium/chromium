@@ -384,7 +384,7 @@ std::optional<base::Value::Dict> TracingControllerImpl::GenerateMetadataDict() {
       base::UnlocalizedTimeFormatWithPattern(TRACE_TIME_NOW(), "y-M-d H:m:s",
                                              icu::TimeZone::getGMT()));
 
-  // TODO(crbug.com/737049): The central controller doesn't know about
+  // TODO(crbug.com/40527661): The central controller doesn't know about
   // metadata filters, so we temporarily filter here as the controller is
   // what assembles the full trace data.
   base::trace_event::MetadataFilterPredicate metadata_filter;

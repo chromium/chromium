@@ -370,7 +370,7 @@ TEST_F(ES3MapBufferRangeTest, TexImageAndSubImage2D) {
   GLTestHelper::CheckGLError("no errors", __LINE__);
 }
 
-// TODO(crbug.com/1435122): Fix flakiness and re-enable the test.
+// TODO(crbug.com/40904610): Fix flakiness and re-enable the test.
 #if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
 #define MAYBE_TexImageAndSubImage3D DISABLED_TexImageAndSubImage3D
 #else

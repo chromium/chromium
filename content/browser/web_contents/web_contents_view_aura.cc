@@ -1671,7 +1671,7 @@ void WebContentsViewAura::PerformDropCallback(
 void WebContentsViewAura::MaybeLetDelegateProcessDrop(
     OnPerformingDropContext drop_context) {
   // |delegate_| may be null in unit tests.
-  // TODO(crbug.com/1459352): Tests should use a delegate.
+  // TODO(crbug.com/40274271): Tests should use a delegate.
   if (delegate_) {
     auto* drop_data_ptr = drop_context.drop_data.get();
     delegate_->OnPerformingDrop(

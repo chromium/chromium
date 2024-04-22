@@ -52,7 +52,7 @@ struct MagicStackOrderChange {
 
 // Indicates to the consumer to update the Magic Stack module order for a given
 // module `type` with the latest `status` change.
-// TODO(crbug.com/1477962) Also pass the view configs through this API instead
+// TODO(crbug.com/40280443) Also pass the view configs through this API instead
 // of having to call the feature-specific calls in this protocol.
 - (void)updateMagicStackOrder:(MagicStackOrderChange)change;
 

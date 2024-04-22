@@ -596,7 +596,7 @@ enum class ToolbarKind {
   [self updateViewControllerDependencies];
 
   // Force the view load at a specific time.
-  // TODO(crbug.com/1431971): This should ideally go in createViewController,
+  // TODO(crbug.com/40263730): This should ideally go in createViewController,
   // but part of creating the view controller involves setting up a dispatch to
   // a command that isn't handled until updateViewControllerDependencies
   // (OmniboxCommands).

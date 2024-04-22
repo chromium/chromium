@@ -1481,7 +1481,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     // accurate.
     // NOTE: The direct upload path is not supported on Android (see comment on
     // UploadVideoFrameToGLTexture()).
-    // TODO(crbug.com/1494365): Enable on Android.
+    // TODO(crbug.com/40075313): Enable on Android.
 #if !BUILDFLAG(IS_ANDROID)
     if ((media::IsOpaque(video_frame->format()) || premultiply_alpha) &&
         level == 0 &&

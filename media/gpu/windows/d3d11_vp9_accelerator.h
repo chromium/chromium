@@ -42,7 +42,7 @@ class D3D11VP9Accelerator : public D3DAccelerator,
   // Helper methods for SubmitDecode
   bool BeginFrame(const D3D11VP9Picture& pic);
 
-  // TODO(crbug/890054): Use constref instead of scoped_refptr.
+  // TODO(crbug.com/40595783): Use constref instead of scoped_refptr.
   void CopyFrameParams(const D3D11VP9Picture& pic,
                        DXVA_PicParams_VP9* pic_params);
   void CopyReferenceFrames(const D3D11VP9Picture& pic,

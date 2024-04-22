@@ -147,7 +147,7 @@ struct PartialNetworkTrafficAnnotationTag {
 //
 // An empty and a sample template for the text-encoded protobuf can be found in
 // tools/traffic_annotation/sample_traffic_annotation.cc.
-// TODO(crbug.com/690323): Add tools to check annotation text's format during
+// TODO(crbug.com/40505662): Add tools to check annotation text's format during
 // presubmit checks.
 template <size_t N1, size_t N2>
 constexpr NetworkTrafficAnnotationTag DefineNetworkTrafficAnnotation(

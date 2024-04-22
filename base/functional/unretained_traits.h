@@ -89,7 +89,7 @@ struct SupportsUnretainedImpl {
 //
 // to make this easier to land without potentially breaking the tree.
 //
-// TODO(https://crbug.com/1392872): Enable this on all platforms, then in
+// TODO(crbug.com/40247956): Enable this on all platforms, then in
 // official builds, and then in non-test code as well.
 #if defined(FORCE_UNRETAINED_COMPLETENESS_CHECKS_FOR_TESTS) || \
     (!defined(UNIT_TEST) && !defined(OFFICIAL_BUILD) &&        \

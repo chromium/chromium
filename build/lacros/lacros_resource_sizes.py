@@ -310,7 +310,7 @@ def _run_resource_sizes(args):
     tracked_groups.append(
         _Group(paths=['nacl_helper_bootstrap'],
                title='File: nacl_helper_bootstrap'))
-  # TODO(https://crbug.com/1356761): remove the following part once nacl files
+  # TODO(crbug.com/40236427): remove the following part once nacl files
   # are available.
   elif args.arch == 'arm64':
     tracked_groups.remove(

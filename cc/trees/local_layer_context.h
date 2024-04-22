@@ -89,7 +89,7 @@ class CC_EXPORT LocalLayerContext : public LayerContext,
   const raw_ptr<MutatorHost> mutator_host_;
 
   // The concrete LayerTreeHost which the client is controlling.
-  // TODO(https://crbug.com/1431762): Own and manage a LayerTreeHostImpl
+  // TODO(crbug.com/40902503): Own and manage a LayerTreeHostImpl
   // directly instead of proxying through a single-threaded LayerTreeHost.
   const LayerListSettings layer_list_settings_;
   std::unique_ptr<LayerTreeHost> host_;

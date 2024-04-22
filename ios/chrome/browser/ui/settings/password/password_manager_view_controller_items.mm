@@ -225,7 +225,7 @@
   cell.titleLabel.lineBreakMode = NSLineBreakByTruncatingHead;
   cell.detailLabel.text = self.detailText;
   cell.detailLabel.hidden = !cell.detailLabel.text.length;
-  // TODO(crbug.com/1355956): Use AffiliationGroup::GetIconURL() instead.
+  // TODO(crbug.com/40860113): Use AffiliationGroup::GetIconURL() instead.
   cell.faviconPageURL = self.affiliatedGroup.GetCredentials().begin()->GetURL();
   cell.localOnlyIcon.hidden = !self.showLocalOnlyIcon;
   if (styler.cellTitleColor) {

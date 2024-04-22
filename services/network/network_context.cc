@@ -1569,7 +1569,7 @@ int NetworkContext::CheckCTRequirementsForSignedExchange(
       // For old certificates (issued before 2018-05-01),
       // CheckCTRequirements() may return CT_NOT_REQUIRED, so we check the
       // compliance status here.
-      // TODO(https://crbug.com/851778): Remove this condition once we require
+      // TODO(crbug.com/40580363): Remove this condition once we require
       // signing certificates to have CanSignHttpExchanges extension, because
       // such certificates should be naturally after 2018-05-01.
       if (cert_verify_result.policy_compliance ==

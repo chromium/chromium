@@ -880,7 +880,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
 // TODO(crbug.com/40157725) Android has a problem with changing scale.
 // TODO(crbug.com/1147911) Android Lollipop has a problem with capturing
 // screenshot.
-// TODO(crbug.com/1156767) Flaky on linux-lacros-tester-rel
+// TODO(crbug.com/40736077) Flaky on linux-lacros-tester-rel
 // TODO(crbug.com/1286261): Failing on MacOS.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || \
     BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
@@ -1098,7 +1098,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshotsViewport) {
 }
 
 IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
-// TODO(crbug.com/1381597): Fix this failing test
+// TODO(crbug.com/40876878): Fix this failing test
 #if BUILDFLAG(IS_ANDROID)
                        DISABLED_TransparentScreenshotsBeyondViewport) {
 #else

@@ -274,7 +274,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     // Editing mode will be exited only if user confirms saving.
     if ([self passwordsDidChange]) {
       DCHECK(self.handler);
-      // TODO(crbug.com/1401035): Show Password Edit Dialog when Password
+      // TODO(crbug.com/40884045): Show Password Edit Dialog when Password
       // Grouping is enabled.
       [self.handler showPasswordEditDialogWithOrigin:self.pageTitle];
     } else {
@@ -647,7 +647,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   }
 #if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
   else {
-    // TODO(crbug.com/1481223): Replace UIMenuController with
+    // TODO(crbug.com/40930648): Replace UIMenuController with
     // UIEditMenuInteraction in iOS 16+.
     UIMenuController* menu = [UIMenuController sharedMenuController];
     if (![menu isMenuVisible]) {

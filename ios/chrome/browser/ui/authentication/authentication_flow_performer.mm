@@ -232,7 +232,7 @@ NSString* const kAuthenticationSnackbarCategory =
     if (!strongSelf)
       return;
 
-    // TODO(crbug.com/1326767): Nullify the browser object in the
+    // TODO(crbug.com/40225944): Nullify the browser object in the
     // AlertCoordinator when the coordinator is stopped to avoid using the
     // browser object at that moment, in which case the browser object may have
     // been deleted before the callback block is called. This is to avoid

@@ -270,7 +270,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   Browser* browser =
       _mainController.browserProviderInterface.mainBrowserProvider.browser;
   if (!browser) {
-    // TODO(crbug.com/1368617): We should store the completionHandler and wait
+    // TODO(crbug.com/40240359): We should store the completionHandler and wait
     // for mainBrowserProvider creation.
     completionHandler();
     return;

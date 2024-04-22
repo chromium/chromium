@@ -69,7 +69,7 @@ class SitePerProcessBrowserTestWithoutSadFrameTabReload
 };
 
 // This test is flaky on all platforms.
-// TODO(crbug.com/1179074): Deflake it and enable this test back.
+// TODO(crbug.com/40749527): Deflake it and enable this test back.
 IN_PROC_BROWSER_TEST_P(
     SitePerProcessBrowserTestWithoutSadFrameTabReload,
     DISABLED_ChildFrameCrashMetrics_KilledWhileHiddenThenShown) {

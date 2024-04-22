@@ -281,7 +281,7 @@ WebRequestAPI::WebRequestAPI(content::BrowserContext* context)
       proxies_(std::make_unique<ProxySet>()),
       may_have_proxies_(MayHaveProxies()) {
   EventRouter* event_router = EventRouter::Get(browser_context_);
-  // TODO(crbug.com/433136): Once ExtensionWebRequestEventRouter is a per-
+  // TODO(crbug.com/40393861): Once ExtensionWebRequestEventRouter is a per-
   // BrowserContext instance, it can observe these events itself. That's a
   // bit tricky right now because the singleton instance would need to
   // observe the EventRouter for each BrowserContext that has webRequest

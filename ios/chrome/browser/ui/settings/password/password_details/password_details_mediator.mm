@@ -439,7 +439,7 @@ bool ShouldDisplayCredentialAsMuted(
 - (NSMutableDictionary<NSString*, NSMutableSet<NSString*>*>*)
     usernamesWithSameDomainDict {
   if (!_usernamesWithSameDomainDict) {
-    // TODO(crbug.com/1400692): Improve saved passwords logic when helper is
+    // TODO(crbug.com/40883869): Improve saved passwords logic when helper is
     // available in SavedPasswordsPresenter.
     _usernamesWithSameDomainDict = [[NSMutableDictionary alloc] init];
     NSMutableSet<NSString*>* signonRealms = [[NSMutableSet alloc] init];

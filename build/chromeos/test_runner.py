@@ -837,7 +837,7 @@ def setup_env():
   # certain libraries need to be pushed to the device. It looks for the args via
   # an env var. To trigger the default deploying behavior, give it a dummy set
   # of args.
-  # TODO(crbug.com/823996): Make the GN-dependent deps controllable via cmd
+  # TODO(crbug.com/40567963): Make the GN-dependent deps controllable via cmd
   # line args.
   if not env.get('GN_ARGS'):
     env['GN_ARGS'] = 'enable_nacl = true'

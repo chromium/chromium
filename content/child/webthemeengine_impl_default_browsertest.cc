@@ -24,7 +24,7 @@ IN_PROC_BROWSER_TEST_F(WebThemeEngineImplDefaultBrowserTest, GetSystemColor) {
   // The test non-deterministically fails on Windows-2008ServerR2 builders due
   // to a difference in the default theme. As a result, only run the test on
   // non-server versions.
-  // TODO(https://crbug.com/1385856): Remove this, and the windows_version.h
+  // TODO(crbug.com/40246975): Remove this, and the windows_version.h
   // include, if the failure turns out to be specific to Windows-2008ServerR2
   // and not any Windows server.
   if (base::win::OSInfo::GetInstance()->version_type() ==

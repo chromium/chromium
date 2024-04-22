@@ -1284,7 +1284,7 @@ void OnListFamilyMembersResponse(
   _mainWebStateObserver.reset();
   _policyWatcherObserver.reset();
 
-  // TODO(crbug.com/1229306): Consider moving this at the beginning of
+  // TODO(crbug.com/40778288): Consider moving this at the beginning of
   // teardownUI to indicate that the UI is about to be torn down and that the
   // dependencies depending on the browser UI models has to be cleaned up
   // agent).

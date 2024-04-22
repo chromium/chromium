@@ -592,7 +592,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Tests that a new dialog replaces an old dialog if the camera state changes.
-// TODO(crbug.com/1019211): Re-enable test on iOS12.
+// TODO(crbug.com/40105250): Re-enable test on iOS12.
 #if TARGET_IPHONE_SIMULATOR
 #define MAYBE_testDialogIsReplacedIfCameraStateChanges \
   testDialogIsReplacedIfCameraStateChanges

@@ -31,7 +31,7 @@ def running_unattended() -> bool:
     When running unattended, confirmation prompts and the like are suppressed.
     """
 
-    # TODO(crbug/1401387): Change to mixin based approach.
+    # TODO(crbug.com/40884247): Change to mixin based approach.
     return 'SWARMING_SERVER' in os.environ
 
 

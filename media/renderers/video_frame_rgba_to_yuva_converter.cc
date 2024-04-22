@@ -189,7 +189,7 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
       // `unpack_flip_y` should be set if the surface origin of the source
       // doesn't match that of the destination, which is created with
       // kTopLeft_GrSurfaceOrigin.
-      // TODO(crbug.com/1453515): If this codepath is used with destinations
+      // TODO(crbug.com/40271944): If this codepath is used with destinations
       // that are created with other surface origins, will need to generalize
       // this.
       bool unpack_flip_y = (src_surface_origin != kTopLeft_GrSurfaceOrigin);

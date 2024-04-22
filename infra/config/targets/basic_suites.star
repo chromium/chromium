@@ -4124,7 +4124,7 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "linux_chromeos_oobe_specific_tests",
     tests = {
-        # TODO(crbug.com/1071693): Merge this suite back in to the main
+        # TODO(crbug.com/40126889): Merge this suite back in to the main
         # browser_tests when the tests no longer fail on MSAN.
         "oobe_only_browser_tests": targets.legacy_test_config(
             swarming = targets.swarming(
@@ -4140,7 +4140,7 @@ targets.legacy_basic_suite(
     tests = {
         # Chrome OS only.
         "ash_components_unittests": targets.legacy_test_config(),
-        # TODO(crbug.com/1351793) Enable on CQ when stable.
+        # TODO(crbug.com/40234627) Enable on CQ when stable.
         "ash_crosapi_tests": targets.legacy_test_config(
             ci_only = True,
         ),

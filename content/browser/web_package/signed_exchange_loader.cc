@@ -290,7 +290,7 @@ void SignedExchangeLoader::OnHTTPExchangeFound(
       outer_response_head_->was_fetched_via_cache;
 
   // Currently we always assume that we have body.
-  // TODO(https://crbug.com/80374): Add error handling and bail out
+  // TODO(crbug.com/40558879): Add error handling and bail out
   // earlier if there's an error.
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;

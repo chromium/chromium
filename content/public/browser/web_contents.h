@@ -843,7 +843,7 @@ class WebContents : public PageNavigator,
   // Sets the visibility of the WebContents' view and notifies the WebContents
   // observers about Visibility change. Call UpdateWebContentsVisibility instead
   // of WasShown() if you are setting Visibility to VISIBLE for the first time.
-  // TODO(crbug.com/1444248): Make updating Visibility more robust.
+  // TODO(crbug.com/40911760): Make updating Visibility more robust.
   virtual void UpdateWebContentsVisibility(Visibility visibility) = 0;
 
   // This function checks *all* frames in this WebContents (not just the main

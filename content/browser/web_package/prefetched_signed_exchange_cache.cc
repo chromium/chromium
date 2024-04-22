@@ -566,7 +566,7 @@ class PrefetchedNavigationLoaderInterceptor
       ResponseHeadUpdateParams head_update_params;
       head_update_params.load_timing_info =
           this->exchange_->outer_response()->load_timing;
-      // TODO(crbug.com/1441384) test workerStart in SXG scenarios
+      // TODO(crbug.com/40266535) test workerStart in SXG scenarios
       std::move(callback).Run(NavigationLoaderInterceptor::Result(
           /*factory=*/nullptr, /*subresource_loader_params=*/{},
           std::move(head_update_params)));

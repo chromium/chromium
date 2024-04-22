@@ -101,7 +101,7 @@ bool IsEmptyNTP(web::WebState* web_state) {
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (level != SceneActivationLevelForegroundActive &&
       self.previousActivationLevel == SceneActivationLevelForegroundActive) {
-    // TODO(crbug.com/1173160): Consider when to clear the session object since
+    // TODO(crbug.com/40167003): Consider when to clear the session object since
     // Chrome may be closed without transiting to inactive, e.g. device power
     // off, then the previous session object is staled.
     SetStartSurfaceSessionObjectForSceneState(sceneState);

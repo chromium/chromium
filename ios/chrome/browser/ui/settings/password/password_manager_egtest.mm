@@ -1621,7 +1621,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // storing just about enough passwords to ensure filling more than one page on
 // any device. To limit the effect of (2), custom large scrolling steps are
 // added to the usual scrolling actions.
-// TODO(crbug.com/1442985): This test is flaky.
+// TODO(crbug.com/40910877): This test is flaky.
 - (void)FLAKY_testManyPasswords {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // TODO(crbug.com/40602996): Enable the test on iPad once the bug is fixed.
@@ -2349,7 +2349,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // Tests that when a new credential is saved or an existing one is updated via
 // the add credential flow, the VC auto scrolls to the newly created or the
 // updated entry.
-// TODO(crbug.com/1377079): Flaky, please re-enable once fixed.
+// TODO(crbug.com/40874087): Flaky, please re-enable once fixed.
 - (void)testAutoScroll {
   for (int i = 0; i < 20; i++) {
     NSString* username = [NSString stringWithFormat:@"username %d", i];

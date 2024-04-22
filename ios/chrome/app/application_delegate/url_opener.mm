@@ -74,7 +74,7 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
       // _startupParameters will not include the command from openURL.
       // Pass the startup parameters from here.
 
-      // TODO(crbug.com/1496951): Investigate why
+      // TODO(crbug.com/40938699): Investigate why
       // connectionInformation.startupParamters can be not nil and what to do in
       // that case.
       [connectionInformation setStartupParameters:params];

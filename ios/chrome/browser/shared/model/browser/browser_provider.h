@@ -24,7 +24,7 @@ class Browser;
 
 /*
  Properties that should be removed.
-  TODO(crbug.com/914306): The long-term goal is to reduce the size of this
+  TODO(crbug.com/40606165): The long-term goal is to reduce the size of this
   interface; this protocol allows for easy encapsulation of that process.
  */
 

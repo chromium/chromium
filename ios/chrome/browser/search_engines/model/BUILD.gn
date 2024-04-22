@@ -113,7 +113,7 @@ source_set("unit_tests") {
 }
 
 source_set("template_url_service_factory") {
-  # TODO(crbug.com/1382864): This target was added to prevent dependency
+  # TODO(crbug.com/40245854): This target was added to prevent dependency
   # cycles for Lens navigation.
   # Remove this target after fixing the Lens / Web dependency cycle.
   sources = [ "template_url_service_factory.h" ]

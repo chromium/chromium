@@ -33,7 +33,7 @@ void VizLayerContext::SetVisible(bool visible) {
 }
 
 void VizLayerContext::Commit(const CommitState& state) {
-  // TODO(https://crbug.com/1431762): Push actual commit data. For now we only
+  // TODO(crbug.com/40902503): Push actual commit data. For now we only
   // update basic parameters required for any LayerTreeHost drawing.
   auto update = viz::mojom::LayerTreeUpdate::New();
   update->device_viewport = state.device_viewport_rect;

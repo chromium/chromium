@@ -1337,7 +1337,7 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
   bool always_uses_gpu = true;
   bool established_gpu_channel = false;
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/439322): This should be set to |true|.
+  // TODO(crbug.com/40396955): This should be set to |true|.
   established_gpu_channel = false;
   always_uses_gpu = ShouldStartGpuProcessOnBrowserStartup();
   BrowserGpuChannelHostFactory::Initialize(established_gpu_channel);

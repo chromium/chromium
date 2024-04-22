@@ -481,9 +481,9 @@ GLuint GLES2Implementation::CreateGpuFenceCHROMIUM() {
                          ->AllocateIDAtOrAbove(last_gpu_fence_id_ + 1);
   // Out of paranoia, don't allow IDs to wrap around to avoid potential
   // collisions on reuse. The space of 2^32 IDs is enough for over a year of
-  // allocating two per frame at 60fps. TODO(crbug.com/790550): Revisit if this
-  // is an issue, for example by deferring ID release if they would be reissued
-  // too soon.
+  // allocating two per frame at 60fps. TODO(crbug.com/40552536): Revisit if
+  // this is an issue, for example by deferring ID release if they would be
+  // reissued too soon.
   CHECK(client_id > last_gpu_fence_id_) << "ID wrap prevented";
   last_gpu_fence_id_ = client_id;
   helper_->CreateGpuFenceINTERNAL(client_id);

@@ -190,7 +190,7 @@ def main_run(args):
         allow_coverage_initializer = '--allow-coverage-initializer' in \
           args.args)
   elif sys.platform.startswith('linux'):
-    # TODO(crbug.com/1492865): Delete this assert if it's not seen to fail
+    # TODO(crbug.com/40285648): Delete this assert if it's not seen to fail
     # anywhere.
     assert not check_if_chromeos(args), (
         "This script is no longer supported for CrOS")

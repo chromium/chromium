@@ -262,7 +262,7 @@ void IOSChromeMainParts::PreCreateThreads() {
 
   metrics::EnableExpiryChecker(::kExpiredHistogramsHashes);
 
-  // TODO(crbug.com/1164533): Remove code below some time after February 2021.
+  // TODO(crbug.com/40163579): Remove code below some time after February 2021.
   NSString* const kRemoveProtectionFromPrefFileKey =
       @"RemoveProtectionFromPrefKey";
   if ([NSUserDefaults.standardUserDefaults

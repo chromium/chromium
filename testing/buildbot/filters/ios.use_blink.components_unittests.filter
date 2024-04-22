@@ -9,7 +9,7 @@
 -AutofillAcrossIframesTest.SetAndGetParent
 -AutofillAcrossIframesTest.TriggerExtractionInFrame
 
-# TODO(crbug.com/1505321): Test currently fails on iOS blink.
+# TODO(crbug.com/40945935): Test currently fails on iOS blink.
 -AutofillAgentTests.OnFormDataFilledTestWithFrameMessagingUsingRendererIDs
 -AutofillAgentTests.CheckIfSuggestionsAvailable_NonUserInitiatedActivity
 -AutofillAgentTests.DriverFillSpecificFormField
@@ -40,7 +40,7 @@
 -PageContentAnnotationsModelManagerTest.NotifyWhenModelAvailable_VisibilityOnly
 -PageContentAnnotationsModelManagerTest.PageVisibility
 
-# TODO(crbug.com/1505322): Test currently fails on iOS blink.
+# TODO(crbug.com/40945936): Test currently fails on iOS blink.
 -FillJsTest.GetCanonicalActionForForm
 -FillJsTest.GetAriaDescriptionInvalid
 -FillJsTest.GetAriaDescriptionMulti
@@ -53,7 +53,7 @@
 -FillJsTest.GetAriaLabelledByTakesPrecedence
 -FillJsTest.ShouldAutocompleteOneTimeCode
 
-# TODO(crbug.com/1505327): Test currently fails on iOS blink.
+# TODO(crbug.com/40945941): Test currently fails on iOS blink.
 -FormActivityTabHelperTest.AddCustomElement
 -FormActivityTabHelperTest.FocusMainFrame
 -FormActivityTabHelperTest.FocusSameOriginIFrame
@@ -132,10 +132,10 @@
 -FormMutationTest.RemovedAndAddedFormsRegistered_WithDroppedMessages/2
 -FormMutationTest.RemovedAndAddedFormsRegistered_WithDroppedMessages/3
 
-# TODO(crbug.com/1505328): Test currently fails on iOS blink.
+# TODO(crbug.com/40945942): Test currently fails on iOS blink.
 -FormJsTest.GetIframeElements
 
-# TODO(crbug.com/1505332): Test currently fails on iOS blink.
+# TODO(crbug.com/40945946): Test currently fails on iOS blink.
 -PasswordFormHelperTest.FindPasswordFormsInView
 -PasswordFormHelperTest.ExtractPasswordFormData
 -PasswordFormHelperTest.FillPasswordFormWithFillData
@@ -148,7 +148,7 @@
 -PasswordFormHelperTest.HandleFormSubmittedMessage_NoTrustedUrl
 -PasswordFormHelperTest.HandleFormSubmittedMessage_NoWebState
 
-# TODO(crbug.com/1481427): Test currently fails on iOS blink.
+# TODO(crbug.com/40281649): Test currently fails on iOS blink.
 -SharedPasswordControllerTest.PasswordManagerIsNotNotifiedAboutHeuristicsPredictions
 -SharedPasswordControllerTest.CheckIfSuggestionsAvailableForFormCrossOriginIframe
 -SharedPasswordControllerTest.CheckNoSuggestionsAreAvailableForNonPasswordForm
@@ -174,11 +174,11 @@
 -SharedPasswordControllerTest.SuggestsGeneratedPassword
 -SharedPasswordControllerTest.TriggerPasswordGeneration
 
-# TODO(crbug.com/1505334): Test currently fails on iOS blink.
+# TODO(crbug.com/40945948): Test currently fails on iOS blink.
 -SecurityStateUtilsTest.GetMaliciousContentStatus
 -SecurityStateUtilsTest.GetSecurityLevelForWebStateMaliciousContent
 
-# TODO(crbug.com/1505338): Test currently fails on iOS blink.
+# TODO(crbug.com/40945952): Test currently fails on iOS blink.
 -AccountConsistencyServiceTest.SigninAddCookieOnMainDomains
 -AccountConsistencyServiceTest.AddChromeConnectedCookiesOnCookiesRemoved
 -AccountConsistencyServiceTest.ChromeManageAccountsDefault
@@ -201,18 +201,18 @@
 -AccountConsistencyServiceTest.SignInSignOut
 -AccountConsistencyServiceTest.SignOutWithoutDomains
 
-# TODO(crbug.com/1505345): Test currently fails on iOS blink.
+# TODO(crbug.com/40945960): Test currently fails on iOS blink.
 -JsTranslateWebFrameManagerTest.Inject
 -JsTranslateWebFrameManagerTest.Reinject
 -JsTranslateWebFrameManagerTest.Revert
 -JsTranslateWebFrameManagerTest.Translate
 
-# TODO(crbug.com/1505346): Test currently fails on iOS blink.
+# TODO(crbug.com/40945961): Test currently fails on iOS blink.
 -TranslateControllerTest.OnTranslateSendRequestWithValidCommand
 -TranslateControllerTest.OnTranslateSendRequestWithBadURL
 -TranslateControllerTest.OnTranslateSendRequestWithBadMethod
 
-# TODO(crbug.com/1505348): Test currently fails on iOS blink.
+# TODO(crbug.com/40945963): Test currently fails on iOS blink.
 -UkmUrlRecorderTest.Basic
 -UkmUrlRecorderTest.IgnoreDownloadUrl
 -UkmUrlRecorderTest.IgnoreUrlInSubframe

@@ -259,7 +259,7 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
 }
 
 - (void)testSwipeToDismiss {
-  // TODO(crbug.com/1508365): Test fails on iPad.
+  // TODO(crbug.com/40949085): Test fails on iPad.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
   }

@@ -295,7 +295,7 @@ void WebStateDelegateBrowserAgent::ShowRepostFormWarningDialog(
 
   switch (warning_type) {
     case web::FormWarningType::kRepost:
-      // TODO(crbug.com/1266052) : Clean up this API.
+      // TODO(crbug.com/40203973) : Clean up this API.
       RepostFormTabHelper::FromWebState(source)->PresentDialog(
           [container_view_provider_ dialogLocation], std::move(callback));
       return;

@@ -484,7 +484,7 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
   _webStateImpl = nullptr;
 
   DCHECK(!self.webView);
-  // TODO(crbug.com/662860): Don't set the delegate to nil.
+  // TODO(crbug.com/41284914): Don't set the delegate to nil.
   [_containerView setDelegate:nil];
   _touchTrackingRecognizer.touchTrackingDelegate = nil;
   [[_webViewProxy scrollViewProxy] removeObserver:self];

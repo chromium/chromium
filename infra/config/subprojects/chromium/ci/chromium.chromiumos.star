@@ -1016,7 +1016,7 @@ ci.builder(
             "release",
         ],
     ),
-    # TODO(https://crbug.com/1342761): enable sheriff rotation and tree_closing
+    # TODO(crbug.com/40231151): enable sheriff rotation and tree_closing
     # when the builder is stable.
     sheriff_rotations = args.ignore_default(None),
     tree_closing = False,

@@ -52,7 +52,7 @@ void SwizzleUIImageImageNamed() {
   [exceptions addObject:@"card_close_button_pressed_incognito"];
   // TODO(crbug.com/720355): Add missing image.
   [exceptions addObject:@"find_close_pressed_incognito"];
-  // TODO(crbug.com/720338): Add missing images.
+  // TODO(crbug.com/40519792): Add missing images.
   [exceptions addObject:@"glif-mic-to-dots-small_37"];
   [exceptions addObject:@"glif-mic-to-dots-large_37"];
   [exceptions addObject:@"glif-google-to-dots_28"];
@@ -72,7 +72,7 @@ void SwizzleUIImageImageNamed() {
 
     if (![exceptions containsObject:imageName] &&
         ![imageName containsString:@".FAUXBUNDLEID."]) {
-// TODO(crbug.com/1325334): Temporarily turn off DCHECK while bootstrapping
+// TODO(crbug.com/40225445): Temporarily turn off DCHECK while bootstrapping
 // Catalyst. Log the error to the console instead.
 #if BUILDFLAG(IS_IOS_MACCATALYST)
       DLOG(ERROR) << "Missing image: " << base::SysNSStringToUTF8(imageName);

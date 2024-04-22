@@ -6674,7 +6674,7 @@ WebView* RenderFrameImpl::CreateNewWindow(
     pip_mojom_opts->height = pip_options->height;
     // TODO(crbug.com/40911987): Remove this from mojom and the browser side.
     pip_mojom_opts->initial_aspect_ratio = 0.0;
-    // TODO(crbug.com/1410379): Remove this from mojom and the browser side.
+    // TODO(crbug.com/40889673): Remove this from mojom and the browser side.
     pip_mojom_opts->lock_aspect_ratio = false;
     pip_mojom_opts->disallow_return_to_opener =
         pip_options->disallow_return_to_opener;

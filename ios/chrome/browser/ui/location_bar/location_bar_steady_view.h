@@ -63,7 +63,7 @@
 // The label displaying the current location URL.
 @property(nonatomic, strong) UILabel* locationLabel;
 // The view displaying badges in the leading corner of the view.
-// TODO(crbug.com/991241): Pass into init as parameter.
+// TODO(crbug.com/40639170): Pass into init as parameter.
 @property(nonatomic, strong) UIView* badgeView;
 // The view displaying the Contextual Panel's entrypoint.
 @property(nonatomic, strong) UIView* contextualPanelEntrypointView;

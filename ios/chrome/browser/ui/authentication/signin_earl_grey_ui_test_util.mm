@@ -208,7 +208,7 @@ void MaybeTapSigninBottomSheetAndHistoryConfirmationDialog(
           assertWithMatcher:grey_nil()];
       break;
     case SigninPromoViewModeSigninWithAccount:
-      // TODO(crbug.com/1210846): Determine when the SecondarySignInButton
+      // TODO(crbug.com/40182627): Determine when the SecondarySignInButton
       // should be present and assert that.
       break;
   }

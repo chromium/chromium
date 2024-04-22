@@ -49,7 +49,7 @@ config("find_bad_constructs") {
       "-Xclang",
       "disable-check-raw-ptr-to-stack-allocated-error",
 
-      # TODO(https://crbug.com/1504043): Remove when raw_ptr check has been
+      # TODO(crbug.com/40944547): Remove when raw_ptr check has been
       # enabled for the dawn repo.
       "-Xclang",
       "-plugin-arg-find-bad-constructs",

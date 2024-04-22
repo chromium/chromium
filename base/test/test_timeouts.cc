@@ -24,7 +24,7 @@ namespace {
      defined(ADDRESS_SANITIZER)) &&                   \
     BUILDFLAG(IS_CHROMEOS_ASH)
 // History of this value:
-// 1) TODO(crbug.com/1058022): reduce the multiplier back to 2x.
+// 1) TODO(crbug.com/40120948): reduce the multiplier back to 2x.
 // 2) A number of tests on ChromeOS run very close to the base limit, so
 // ChromeOS gets 3x. TODO(b:318608561) Reduce back to 3x once OOBE load time is
 // lower.

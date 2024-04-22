@@ -128,9 +128,9 @@ bool LocationBarModelDelegateIOS::IsNewTabPage() const {
   // This is currently only called by the OmniboxEditModel to determine if the
   // Google landing page is showing.
   //
-  // TODO(crbug.com/315563)(lliabraa): This should also check the user's default
-  // search engine because if they're not using Google the Google landing page
-  // is not shown.
+  // TODO(crbug.com/40340113)(lliabraa): This should also check the user's
+  // default search engine because if they're not using Google the Google
+  // landing page is not shown.
   GURL currentURL;
   if (!GetURL(&currentURL))
     return false;

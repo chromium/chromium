@@ -1712,7 +1712,7 @@ void BrowserAccessibilityManager::UseCustomDeviceScaleFactorForTesting(
 
 BrowserAccessibility* BrowserAccessibilityManager::CachingAsyncHitTest(
     const gfx::Point& physical_pixel_point) const {
-  // TODO(crbug.com/1061323): By starting the hit test on the root frame,
+  // TODO(crbug.com/40679532): By starting the hit test on the root frame,
   // it allows for the possibility that we don't return a descendant as the
   // hit test result, but AXPlatformNodeDelegate says that it's only supposed
   // to return a descendant, so this isn't correctly fulfilling the contract.

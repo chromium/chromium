@@ -66,7 +66,7 @@ using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
 using ::testing::Return;
 
-// TODO(crbug.com/1324555): Remove this double and uses TestSyncUserSettings
+// TODO(crbug.com/40839348): Remove this double and uses TestSyncUserSettings
 @interface TestPasswordsMediator : PasswordsMediator
 
 @property(nonatomic) OnDeviceEncryptionState encryptionState;

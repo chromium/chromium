@@ -432,7 +432,7 @@ public abstract class CommandLine {
 
         @Override
         protected void destroy() {
-            // TODO(https://crbug.com/771205): Downgrade this to an assert once we have eliminated
+            // TODO(crbug.com/40542965): Downgrade this to an assert once we have eliminated
             // tests that do this.
             throw new IllegalStateException("Can't destroy native command line after startup");
         }

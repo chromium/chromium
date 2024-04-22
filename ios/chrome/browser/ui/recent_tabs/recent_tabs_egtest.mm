@@ -647,7 +647,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests no promo to sync is shown to a signed-in non-syncing user if sync is
 // disabled by policy.
-// TODO(crbug.com/1487984): Test fails on official builds.
+// TODO(crbug.com/40073777): Test fails on official builds.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #define MAYBE_testNoPromoIfSignedInAndSyncDisabledByPolicy \
   DISABLED_testNoPromoIfSignedInAndSyncDisabledByPolicy
@@ -942,7 +942,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Tests the Open in New Window action on a recent tab's context menu.
-// TODO(crbug.com/1273942) Test is flaky.
+// TODO(crbug.com/40807242) Test is flaky.
 - (void)FLAKY_testContextMenuOpenInNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");

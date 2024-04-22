@@ -253,7 +253,8 @@ TEST_RANDOM_BIT(48)
 #undef TEST_RANDOM_BIT
 
 // Checks that we can actually map memory in the requested range.
-// TODO(crbug.com/1318466): Extend to all operating systems once they are fixed.
+// TODO(crbug.com/40222892): Extend to all operating systems once they are
+// fixed.
 #if BUILDFLAG(IS_MAC)
 TEST(PartitionAllocAddressSpaceRandomizationTest, CanMapInAslrRange) {
   int tries = 0;

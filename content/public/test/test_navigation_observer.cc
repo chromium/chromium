@@ -251,7 +251,7 @@ void TestNavigationObserver::OnDidFinishNavigation(
   WebContentsState* web_contents_state =
       GetWebContentsState(navigation_handle->GetWebContents());
 
-  // TODO(crbug.com/1233764): It is generally the case that we've received load
+  // TODO(crbug.com/40191691): It is generally the case that we've received load
   // started events by this point, but we don't send load events for prerendered
   // pages (by design). It's also the case that frame tree nodes don't report
   // load start if the tree is already loading. For all of prerendering,

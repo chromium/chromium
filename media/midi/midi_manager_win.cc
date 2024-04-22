@@ -253,7 +253,7 @@ std::string GetManufacturerName(uint16_t id, const GUID& guid) {
   if (id == MM_MICROSOFT)
     return "Microsoft Corporation";
 
-  // TODO(crbug.com/472341): Support other manufacture IDs.
+  // TODO(crbug.com/41165639): Support other manufacture IDs.
   return "";
 }
 

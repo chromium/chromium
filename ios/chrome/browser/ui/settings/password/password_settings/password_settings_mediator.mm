@@ -178,7 +178,7 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
   _syncService->TriggerLocalDataMigration(
       syncer::ModelTypeSet{syncer::ModelType::PASSWORDS});
 
-  // TODO(crbug.com/1482293): Remove this histogram enumeration when using
+  // TODO(crbug.com/40281800): Remove this histogram enumeration when using
   // `MoveCredentialsToAccount`.
   base::UmaHistogramEnumeration(
       "PasswordManager.AccountStorage.MoveToAccountStoreFlowAccepted2",

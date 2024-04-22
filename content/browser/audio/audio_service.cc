@@ -94,7 +94,7 @@ void LaunchAudioServiceInProcess(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && defined(USE_CRAS)
 
-  // TODO(https://crbug.com/853254): Remove
+  // TODO(crbug.com/40580951): Remove
   // BrowserMainLoop::GetAudioManager().
   audio::Service::GetInProcessTaskRunner()->PostTask(
       FROM_HERE,

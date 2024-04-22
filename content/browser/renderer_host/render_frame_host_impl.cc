@@ -3992,7 +3992,7 @@ void RenderFrameHostImpl::CreateChildFrame(
     return;
   }
 
-  // TODO(crbug.com/1145708). The interface exposed to tests should
+  // TODO(crbug.com/40155982). The interface exposed to tests should
   // match the mojo interface.
   OnCreateChildFrame(new_routing_id, std::move(frame_remote),
                      std::move(browser_interface_broker_receiver),
@@ -4926,7 +4926,7 @@ RenderFrameHostImpl::RegisterBackForwardCacheDisablingNonStickyFeature(
 }
 
 bool RenderFrameHostImpl::IsFrozen() {
-  // TODO(crbug.com/1081920): Account for non-bfcache freezing here as well.
+  // TODO(crbug.com/40691610): Account for non-bfcache freezing here as well.
   return lifecycle_state() == LifecycleStateImpl::kInBackForwardCache;
 }
 
@@ -7327,7 +7327,7 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivation(uint64_t reason) {
           GetProcess(), bad_message::RFH_INACTIVE_CHECK_FROM_SPECULATIVE_RFH);
       return false;
     case LifecycleStateImpl::kPendingCommit:
-      // TODO(https://crbug.com/1191469): Understand the expected behaviour to
+      // TODO(crbug.com/40174540): Understand the expected behaviour to
       // disallow activation for kPendingCommit RenderFrameHosts and update
       // accordingly.
       bad_message::ReceivedBadMessage(
@@ -15840,7 +15840,7 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl new_state) {
       "navigation",
       perfetto::StaticString{LifecycleStateImplToString(new_state)},
       perfetto::Track::FromPointer(this));
-// TODO(crbug.com/1256898): Consider associating expectations with each
+// TODO(crbug.com/40200417): Consider associating expectations with each
 // transitions.
 #if DCHECK_IS_ON()
   static const base::NoDestructor<base::StateTransitions<LifecycleStateImpl>>
@@ -15884,7 +15884,7 @@ void RenderFrameHostImpl::SetLifecycleState(LifecycleStateImpl new_state) {
                           /*new_state=*/new_state);
 #endif  // DCHECK_IS_ON()
 
-  // TODO(crbug.com/1256896): Use switch-case to make this more readable.
+  // TODO(crbug.com/40200416): Use switch-case to make this more readable.
   // If the RenderFrameHost is restored from BackForwardCache or is part of a
   // prerender activation, update states of all the children to kActive.
   if (new_state == LifecycleStateImpl::kActive) {

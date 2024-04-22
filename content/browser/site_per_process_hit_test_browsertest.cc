@@ -3050,7 +3050,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
 // Verify that an event is properly retargeted to the main frame when an
 // asynchronous hit test to the child frame times out.
-// TODO(crbug.com/1272137) Flaky on all platforms
+// TODO(crbug.com/40806028) Flaky on all platforms
 IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
                        DISABLED_AsynchronousHitTestChildTimeout) {
   GURL main_url(embedded_test_server()->GetURL(

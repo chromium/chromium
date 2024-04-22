@@ -824,7 +824,7 @@ targets.mixin(
     ),
 )
 
-# TODO(crbug.com/1260217): Remove the xenial mixin once the MSAN bots have
+# TODO(crbug.com/40201775): Remove the xenial mixin once the MSAN bots have
 # migrated to focal.
 targets.mixin(
     name = "linux-xenial",

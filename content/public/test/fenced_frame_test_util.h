@@ -59,7 +59,7 @@ class FencedFrameTestHelper {
   // (which may be different from the one that navigation started in), and
   // `nullptr` otherwise. It takes an `expected_error_code` in case the
   // navigation to `url` fails, which can be detected on a per-error-code basis.
-  // TODO(crbug.com/1294189): Directly use TestFrameNavigationObserver instead
+  // TODO(crbug.com/40820418): Directly use TestFrameNavigationObserver instead
   // of relying on this method.
   RenderFrameHost* NavigateFrameInFencedFrameTree(
       RenderFrameHost* rfh,

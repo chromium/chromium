@@ -539,7 +539,7 @@ std::string UnescapeBinaryURLComponent(StringPiece escaped_text,
   // before FeatureList initialization. In that case, fallback to the feature's
   // default state.
   //
-  // TODO(crbug.com/1321924): Cleanup this feature.
+  // TODO(crbug.com/40224104): Cleanup this feature.
   const bool optimize_data_urls_feature_is_enabled =
       base::FeatureList::GetInstance()
           ? base::FeatureList::IsEnabled(features::kOptimizeDataUrls)

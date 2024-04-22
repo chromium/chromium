@@ -389,7 +389,7 @@ void ChildProcessHostImpl::OnChannelConnected(int32_t peer_pid) {
   // really no need to get this information from the child process when we
   // already have it.
   //
-  // TODO(crbug.com/616980): Remove the peer_pid argument altogether from
+  // TODO(crbug.com/41256971): Remove the peer_pid argument altogether from
   // IPC::Listener::OnChannelConnected.
   const base::Process& peer_process = GetPeerProcess();
   base::ProcessId pid =

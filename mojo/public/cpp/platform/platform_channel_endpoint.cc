@@ -37,7 +37,7 @@ namespace {
 
 #if BUILDFLAG(IS_ANDROID)
 // Leave room for any other descriptors defined in content for example.
-// TODO(https://crbug.com/676442): Consider changing base::GlobalDescriptors to
+// TODO(crbug.com/40499227): Consider changing base::GlobalDescriptors to
 // generate a key when setting the file descriptor.
 constexpr int kAndroidClientHandleDescriptor =
     base::GlobalDescriptors::kBaseDescriptor + 10000;

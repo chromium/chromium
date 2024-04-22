@@ -5004,7 +5004,7 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
 
   // Note that we don't know yet what the next state will be, so it is
   // temporarily marked with SetHasPendingLifecycleStateUpdate().
-  // TODO(https://crbug.com/1182237): Determine the next state earlier and
+  // TODO(crbug.com/40170710): Determine the next state earlier and
   // remove SetHasPendingLifecycleStateUpdate().
   if (old_render_frame_host && !old_render_frame_host->IsPendingDeletion()) {
     // After the old RenderFrameHost is no longer the current one, set the value

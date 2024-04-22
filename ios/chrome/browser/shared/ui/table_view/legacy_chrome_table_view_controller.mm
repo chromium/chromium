@@ -277,7 +277,7 @@ const CGFloat kTableViewSeparatorInsetWithIcon = 60;
   // there's a need for `exclusiveTouch` to be disabled for some cells,
   // `exclusiveTouch` can be overridden for those cells in the
   // LegacyChromeTableViewController subclass that implments them.
-  // TODO(crbug.com/1471527): Make Chrome Coordinators robust against the
+  // TODO(crbug.com/40926228): Make Chrome Coordinators robust against the
   // launch of multiple child coordinators.
   cell.exclusiveTouch = YES;
 

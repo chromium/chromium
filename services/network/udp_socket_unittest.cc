@@ -288,7 +288,7 @@ TEST_F(UDPSocketTest, TestSendToWithConnect) {
   EXPECT_EQ(net::ERR_UNEXPECTED, result);
 }
 
-// TODO(crbug.com/1014916): These two tests are very flaky on Fuchsia.
+// TODO(crbug.com/40653437): These two tests are very flaky on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_TestReadSendTo DISABLED_TestReadSendTo
 #define MAYBE_TestUnexpectedSequences DISABLED_TestUnexpectedSequences

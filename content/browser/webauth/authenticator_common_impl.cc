@@ -1099,7 +1099,7 @@ void AuthenticatorCommonImpl::GetAssertion(
     // These are magic values that a site can set to experiment with different
     // conditional UI behaviours.
     //
-    // TODO(crbug.com/1456525): remove this and everything else from
+    // TODO(crbug.com/40066138): remove this and everything else from
     // the CL that added it if this is unused by June 2024.
     switch (options->timeout->InMilliseconds()) {
       case 324441:

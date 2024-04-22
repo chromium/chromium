@@ -27,7 +27,7 @@ enum NotificationType {
   //
   // DEPRECATED:
   // Use RenderWidgetHostObserver::RenderWidgetHostVisibilityChanged()
-  // TODO(https://crbug.com/1174771): Remove.
+  // TODO(crbug.com/40746966): Remove.
   NOTIFICATION_RENDER_WIDGET_VISIBILITY_CHANGED,
 };
 

@@ -5235,7 +5235,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       3, injector.GetObjectHost().GetMockObject()->get_num_elements_received());
 }
 
-// TODO(crbug.com/1459205): This test is flaky.
+// TODO(crbug.com/40274210): This test is flaky.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        DISABLED_RemoteObjectInvokeMethodReturningObject) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));

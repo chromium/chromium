@@ -610,7 +610,7 @@ extern const char kMetrickitNonCrashReportDescription[];
 extern const char kMigrateSyncingUserToSignedInName[];
 extern const char kMigrateSyncingUserToSignedInDescription[];
 
-// TODO(crbug.com/1128242): Remove this flag after the refactoring work is
+// TODO(crbug.com/40148908): Remove this flag after the refactoring work is
 // finished.
 // Title and description for the flag used to test the newly
 // implemented tabstrip.

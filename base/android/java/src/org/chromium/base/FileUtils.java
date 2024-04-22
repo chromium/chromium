@@ -150,11 +150,12 @@ public class FileUtils {
 
     /**
      * Returns a URI that points at the file.
+     *
      * @param file File to get a URI for.
      * @return URI that points at that file, either as a content:// URI or a file:// URI.
      */
     public static Uri getUriForFile(File file) {
-        // TODO(crbug/709584): Uncomment this when http://crbug.com/709584 has been fixed.
+        // TODO(crbug.com/40514633): Uncomment this when http://crbug.com/709584 has been fixed.
         // assert !ThreadUtils.runningOnUiThread();
         Uri uri = null;
 

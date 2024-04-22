@@ -166,7 +166,7 @@ class NET_EXPORT SchemefulSite {
   friend class SiteForCookies;
 
   // Needed to create a bogus origin from a site.
-  // TODO(https://crbug.com/1148927): Give IsolationInfos empty origins instead,
+  // TODO(crbug.com/40157262): Give IsolationInfos empty origins instead,
   // in this case, and unfriend IsolationInfo.
   friend class IsolationInfo;
 

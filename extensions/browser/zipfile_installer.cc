@@ -258,7 +258,7 @@ void ZipFileInstaller::ManifestParsed(const base::FilePath& unzip_dir,
       },
       manifest_type == Manifest::TYPE_THEME);
 
-  // TODO(crbug.com/645263): This silently ignores blocked file types.
+  // TODO(crbug.com/41274425): This silently ignores blocked file types.
   //                         Add install warnings.
   unzip::UnzipWithFilter(
       unzip::LaunchUnzipper(), zip_file_, unzip_dir, filter,

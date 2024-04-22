@@ -691,7 +691,8 @@ void PipelineImpl::RendererWrapper::OnEnded() {
   CheckPlaybackEnded();
 }
 
-// TODO(crbug/817089): Combine this functionality into renderer->GetMediaTime().
+// TODO(crbug.com/40564930): Combine this functionality into
+// renderer->GetMediaTime().
 base::TimeDelta PipelineImpl::RendererWrapper::GetCurrentTimestamp() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(demuxer_);

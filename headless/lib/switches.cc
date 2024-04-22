@@ -83,7 +83,7 @@ const char kNoSystemProxyConfigService[] = "no-system-proxy-config-service";
 // Specifies which encryption storage backend to use. Possible values are
 // kwallet, kwallet5, gnome-libsecret, basic. Any other value will lead to
 // Chrome detecting the best backend automatically.
-// TODO(crbug.com/571003): Once PasswordStore no longer uses KWallet for
+// TODO(crbug.com/40449930): Once PasswordStore no longer uses KWallet for
 // storing passwords, rename this flag to stop referencing passwords. Do not
 // rename it sooner, though; developers and testers might rely on it keeping
 // large amounts of testing passwords out of their KWallets.

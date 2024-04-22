@@ -4778,7 +4778,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebLocksNotCached) {
                     {}, {}, {}, FROM_HERE);
 }
 
-// TODO(https://crbug.com/1495476): Reenable. This is flaky because we block on
+// TODO(crbug.com/40937711): Reenable. This is flaky because we block on
 // the permission request, not on API usage.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DISABLED_WebMidiNotCached) {
   ASSERT_TRUE(embedded_test_server()->Start());

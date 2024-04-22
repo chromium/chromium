@@ -314,7 +314,7 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
                  request_url_)) {
       version_->set_policy_container_host(
           base::MakeRefCounted<PolicyContainerHost>(
-              // TODO(crbug.com/1352929): Add DCHECK to parsed_headers
+              // TODO(crbug.com/40235036): Add DCHECK to parsed_headers
               response_head->parsed_headers
                   // This does not parse the referrer policy, which will be
                   // updated in ServiceWorkerGlobalScope::Initialize

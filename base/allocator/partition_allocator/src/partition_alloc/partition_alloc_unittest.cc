@@ -509,7 +509,7 @@ class PartitionAllocTest
   };
 
   void DoReturnNullTest(size_t alloc_size, ReturnNullTestMode mode) {
-    // TODO(crbug.com/678782): Where necessary and possible, disable the
+    // TODO(crbug.com/41293809): Where necessary and possible, disable the
     // platform's OOM-killing behavior. OOM-killing makes this test flaky on
     // low-memory devices.
     if (!IsLargeMemoryDevice()) {

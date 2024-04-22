@@ -1172,7 +1172,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests dragging incognito tab grid item between windows.
-// TODO(crbug.com/1325246): Re-enable this test.
+// TODO(crbug.com/40839724): Re-enable this test.
 - (void)FLAKY_testDragAndDropIncognitoBetweenWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");

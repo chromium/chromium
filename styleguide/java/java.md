@@ -272,7 +272,7 @@ Values of `Integer` type are also supported, which allows using a sentinel
 
 * TODO should follow chromium convention. Examples:
   * `TODO(username): Some sentence here.`
-  * `TODO(crbug.com/123456): Even better to use a bug for context.`
+  * `TODO(crbug.com/40192027): Even better to use a bug for context.`
 
 ### Parameter Comments
 

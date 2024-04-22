@@ -1419,9 +1419,8 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
 
     /**
      * Extracts NetID of Network on Lollipop and NetworkHandle (which is munged NetID) on
-     * Marshmallow and newer releases.
-     * TODO(crbug.com/1489183): Rename networkToNetId to something meaningful and update
-     * javadoc comment.
+     * Marshmallow and newer releases. TODO(crbug.com/40283930): Rename networkToNetId to something
+     * meaningful and update javadoc comment.
      */
     public static long networkToNetId(Network network) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

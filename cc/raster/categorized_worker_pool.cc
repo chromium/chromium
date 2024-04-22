@@ -219,7 +219,7 @@ void CategorizedWorkerPoolImpl::Start(int max_concurrency_foreground) {
       std::end(kBackgroundThreadPriorityCategories)};
 
   base::SimpleThread::Options thread_options;
-// TODO(1326996): Figure out whether !IS_MAC can be lifted here.
+// TODO(crbug.com/40226019): Figure out whether !IS_MAC can be lifted here.
 #if !BUILDFLAG(IS_MAC)
   thread_options.thread_type = base::ThreadType::kBackground;
 #endif

@@ -1870,7 +1870,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 // Returns YES if the History Sync Opt-In should be shown when the promo action
 // button is tapped.
-// TODO(crbug.com/1462326): This logic should be moved outside of the
+// TODO(crbug.com/40921836): This logic should be moved outside of the
 // ViewController.
 - (BOOL)shouldShowHistorySyncOnPromoAction {
   AuthenticationService* authenticationService =

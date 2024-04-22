@@ -137,7 +137,7 @@ std::unique_ptr<HttpResponse> HandleEchoCookieWithStatus(
   return http_response;
 }
 
-// TODO(https://crbug.com/1138913): Remove when request handlers are
+// TODO(crbug.com/40153192): Remove when request handlers are
 // implementable in Android's embedded test server implementation
 std::unique_ptr<HttpResponse> HandleEchoCriticalHeader(
     const HttpRequest& request) {

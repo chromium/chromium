@@ -61,7 +61,7 @@ public class GURL {
     private static final int DEBUG_REPORT_PERCENTAGE = 10;
     private static ReportDebugThrowableCallback sReportCallback;
 
-    // TODO(https://crbug.com/1039841): Right now we return a new String with each request for a
+    // TODO(crbug.com/40113773): Right now we return a new String with each request for a
     //      GURL component other than the spec itself. Should we cache return Strings (as
     //      WeakReference?) so that callers can share String memory?
     private String mSpec;

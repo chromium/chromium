@@ -183,7 +183,7 @@ std::tuple<bool, bool> GetIsNavigationAndDownload(
 
     // The following cases are not reached just because `devtools_params` is
     // always `std::nullopt` for the current `Create*` callers.
-    // TODO(crbug.com/1506871): Return proper values once non-nullopt
+    // TODO(crbug.com/40947547): Return proper values once non-nullopt
     // `devtools_params` is given.
     case ContentBrowserClient::URLLoaderFactoryType::kPrefetch:
     case ContentBrowserClient::URLLoaderFactoryType::kDevTools:

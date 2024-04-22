@@ -794,7 +794,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostSitePerProcessTest,
   FrameTreeNode* root = contents->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* root_frame_host = root->current_frame_host();
 
-  // TODO(crbug.com/1181150): Crash when we attempt to use a mock prompt here.
+  // TODO(crbug.com/40750695): Crash when we attempt to use a mock prompt here.
   // After the ticket is fixed, remove the shortcut of getting bounds and use
   // the `MockPermissionPromptFactory` instead.
   // Create a popup widget and wait for the RenderWidgetHost to be shown.

@@ -189,6 +189,6 @@ id<GREYMatcher> TabGridButton() {
                   @"should stay in regular mode");
 }
 
-// TODO(crbug.com/1165655): Add test to new tab long-press menu.
+// TODO(crbug.com/40163908): Add test to new tab long-press menu.
 
 @end
