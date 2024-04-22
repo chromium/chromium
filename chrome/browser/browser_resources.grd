@@ -203,7 +203,8 @@
 
       <if expr="enable_hangout_services_extension">
         <!-- Hangout Services extension, included in Google Chrome builds only. -->
-        <include name="IDR_HANGOUT_SERVICES_MANIFEST" file="resources\hangout_services\manifest.json" type="BINDATA" />
+        <include name="IDR_HANGOUT_SERVICES_MANIFEST_V2" file="resources\hangout_services\manifest_v2.json" type="BINDATA" />
+        <include name="IDR_HANGOUT_SERVICES_MANIFEST_V3" file="resources\hangout_services\manifest_v3.json" type="BINDATA" />
       </if>
 
       <!-- Desk API extension, enabled on managed ChromeOS devices -->

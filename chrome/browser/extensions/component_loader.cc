@@ -92,6 +92,12 @@ namespace extensions {
 
 namespace {
 
+#if BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
+BASE_FEATURE(kHangoutsExtensionV3,
+             "HangoutsExtensionV3",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
+
 bool g_enable_background_extensions_during_testing = false;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -356,8 +362,14 @@ std::vector<ExtensionId> ComponentLoader::GetRegisteredComponentExtensionsIds()
 
 #if BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
 void ComponentLoader::AddHangoutServicesExtension() {
-  Add(IDR_HANGOUT_SERVICES_MANIFEST,
-      base::FilePath(FILE_PATH_LITERAL("hangout_services")));
+  // Finch controlled migration to a v3 Manifest - see crbug.com/326877912.
+  if (base::FeatureList::IsEnabled(kHangoutsExtensionV3)) {
+    Add(IDR_HANGOUT_SERVICES_MANIFEST_V3,
+        base::FilePath(FILE_PATH_LITERAL("hangout_services")));
+  } else {
+    Add(IDR_HANGOUT_SERVICES_MANIFEST_V2,
+        base::FilePath(FILE_PATH_LITERAL("hangout_services")));
+  }
 }
 #endif  // BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
 

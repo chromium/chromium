@@ -89,7 +89,8 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
   switch (manifest_resource_id) {
     // Please keep the list in alphabetical order.
 #if BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
-    case IDR_HANGOUT_SERVICES_MANIFEST:
+    case IDR_HANGOUT_SERVICES_MANIFEST_V2:
+    case IDR_HANGOUT_SERVICES_MANIFEST_V3:
 #endif
     case IDR_NETWORK_SPEECH_SYNTHESIS_MANIFEST:
     case IDR_WEBSTORE_MANIFEST:
