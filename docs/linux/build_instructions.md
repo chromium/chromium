@@ -366,10 +366,6 @@ compiles `obj/base/base/logging.o`.
 In addition to `foo.cc^`, Siso also supports `foo.h^` syntax to compile
 the corresponding `foo.o` if it exists.
 
-*** note
-On Windows, `autoninja` requires `^^` to preserve training `^`.
-***
-
 ## Run Chromium
 
 Once it is built, you can simply run the browser:
