@@ -919,14 +919,6 @@ void NoStatePrefetchManager::SetPrefetchFinalStatusForUrl(
   }
 }
 
-bool NoStatePrefetchManager::HasRecentlyPrefetchedUrlForTesting(
-    const GURL& url) {
-  return base::ranges::any_of(prefetches_, [url](const NavigationRecord& r) {
-    return r.url == url &&
-           r.final_status == FINAL_STATUS_NOSTATE_PREFETCH_FINISHED;
-  });
-}
-
 void NoStatePrefetchManager::OnPrefetchUsed(const GURL& url) {
   // Loading a prefetched URL resets the revalidation bypass. Remove all
   // matching urls from the prefetch list for more accurate metrics.

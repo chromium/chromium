@@ -235,9 +235,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // the same URL in tests, without running into FINAL_STATUS_DUPLICATE.
   void ClearPrefetchInformationForTesting();
 
-  // Returns true iff the |url| is found in the list of recent prefetches.
-  bool HasRecentlyPrefetchedUrlForTesting(const GURL& url);
-
   // Starts a prefetch for |url| from |initiator_origin|. The |origin| specifies
   // how the prefetch was started. Returns a NoStatePrefetchHandle or nullptr.
   // Only for testing.
