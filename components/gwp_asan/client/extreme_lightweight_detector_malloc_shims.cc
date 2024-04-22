@@ -7,6 +7,7 @@
 #include <atomic>
 
 #include "base/no_destructor.h"
+#include "base/trace_event/malloc_dump_provider.h"
 #include "components/gwp_asan/client/sampling_state.h"
 #include "components/gwp_asan/common/extreme_lightweight_detector_util.h"
 #include "partition_alloc/lightweight_quarantine.h"
@@ -310,6 +311,18 @@ AllocatorDispatch allocator_dispatch = {
     nullptr,  // next
 };
 
+[[maybe_unused]] base::trace_event::MallocDumpProvider::ExtremeLUDStats
+GetStats() {
+  if (!lightweight_quarantine_branch) {  // Not yet initialized.
+    return {};
+  }
+
+  base::trace_event::MallocDumpProvider::ExtremeLUDStats stats{
+      .capacity_in_bytes = lightweight_quarantine_branch->GetCapacityInBytes()};
+  lightweight_quarantine_branch->GetRoot().AccumulateStats(stats.lq_stats);
+  return stats;
+}
+
 }  // namespace
 
 void InstallExtremeLightweightDetectorHooks(
@@ -321,6 +334,11 @@ void InstallExtremeLightweightDetectorHooks(
 
   sampling_state.Init(init_options.sampling_frequency);
   allocator_shim::InsertAllocatorDispatch(&allocator_dispatch);
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  base::trace_event::MallocDumpProvider::SetExtremeLUDGetStatsCallback(
+      GetStats);
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 partition_alloc::internal::LightweightQuarantineBranch&

@@ -14,14 +14,11 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
 #include "partition_alloc/partition_alloc_buildflags.h"
+#include "partition_alloc/partition_stats.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MALLOC_MEMORY_TRACING_SUPPORTED
-#endif
-
-#if BUILDFLAG(USE_PARTITION_ALLOC)
-#include "partition_alloc/partition_stats.h"
 #endif
 
 namespace base {
@@ -37,6 +34,20 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
   static const char kAllocatedObjects[];
 
   static MallocDumpProvider* GetInstance();
+
+  // The Extreme LUD is implemented in //components/gwp_asan, which //base
+  // cannot depend on. The following API allows an injection of stats-report
+  // function of the Extreme LUD.
+  struct ExtremeLUDStats {
+    // This default-constructs to be zero'ed.
+    partition_alloc::LightweightQuarantineStats lq_stats{0};
+    size_t capacity_in_bytes = 0;
+  };
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  using ExtremeLUDGetStatsCallback = ExtremeLUDStats (*)();
+  static void SetExtremeLUDGetStatsCallback(
+      ExtremeLUDGetStatsCallback callback);
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   MallocDumpProvider(const MallocDumpProvider&) = delete;
   MallocDumpProvider& operator=(const MallocDumpProvider&) = delete;
@@ -54,14 +65,19 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
   void ReportPerMinuteStats(uint64_t syscall_count,
                             size_t cumulative_brp_quarantined_bytes,
                             size_t cumulative_brp_quarantined_count,
+                            const ExtremeLUDStats& elud_stats,
                             MemoryAllocatorDump* malloc_dump,
-                            MemoryAllocatorDump* partition_alloc_dump);
+                            MemoryAllocatorDump* partition_alloc_dump,
+                            MemoryAllocatorDump* elud_dump);
 
   bool emit_metrics_on_memory_dump_
       GUARDED_BY(emit_metrics_on_memory_dump_lock_) = true;
   base::Lock emit_metrics_on_memory_dump_lock_;
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // The injected stats-report function of the Extreme LUD. Non-null iff the
+  // Extreme LUD is enabled.
+  static ExtremeLUDGetStatsCallback extreme_lud_get_stats_callback_;
   // To be accurate, this requires the dump provider to be created very early,
   // which is the case. The alternative would be to drop the first data point,
   // which is not desirable as early process activity is highly relevant.
@@ -69,6 +85,9 @@ class BASE_EXPORT MallocDumpProvider : public MemoryDumpProvider {
   uint64_t last_syscall_count_ = 0;
   size_t last_cumulative_brp_quarantined_bytes_ = 0;
   size_t last_cumulative_brp_quarantined_count_ = 0;
+  size_t last_cumulative_elud_quarantined_bytes_ = 0;
+  size_t last_cumulative_elud_quarantined_count_ = 0;
+  size_t last_cumulative_elud_miss_count_ = 0;
 #endif
 };
 

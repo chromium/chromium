@@ -311,6 +311,20 @@ MallocDumpProvider* MallocDumpProvider::GetInstance() {
                    LeakySingletonTraits<MallocDumpProvider>>::get();
 }
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+// static
+MallocDumpProvider::ExtremeLUDGetStatsCallback
+    MallocDumpProvider::extreme_lud_get_stats_callback_ = nullptr;
+
+// static
+void MallocDumpProvider::SetExtremeLUDGetStatsCallback(
+    ExtremeLUDGetStatsCallback callback) {
+  DCHECK(callback);
+  DCHECK(!extreme_lud_get_stats_callback_);
+  extreme_lud_get_stats_callback_ = callback;
+}
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
 MallocDumpProvider::MallocDumpProvider() = default;
 MallocDumpProvider::~MallocDumpProvider() = default;
 
@@ -387,12 +401,6 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
                           allocated_objects_count);
   }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  base::trace_event::MemoryAllocatorDump* partitions_dump =
-      pmd->CreateAllocatorDump("malloc/partitions");
-  pmd->AddOwnershipEdge(inner_dump->guid(), partitions_dump->guid());
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-
   int64_t waste = static_cast<int64_t>(resident_size - allocated_objects_size);
 
   // With PartitionAlloc, reported size under malloc/partitions is the resident
@@ -418,14 +426,24 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
                           static_cast<uint64_t>(waste));
   }
 
-  ReportPerMinuteStats(syscall_count, cumulative_brp_quarantined_size,
-                       cumulative_brp_quarantined_count, outer_dump,
+  base::trace_event::MemoryAllocatorDump* partitions_dump = nullptr;
+  base::trace_event::MemoryAllocatorDump* elud_dump = nullptr;
+  ExtremeLUDStats elud_stats;
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-                       partitions_dump
-#else
-                       nullptr
-#endif
-  );
+  partitions_dump = pmd->CreateAllocatorDump("malloc/partitions");
+  pmd->AddOwnershipEdge(inner_dump->guid(), partitions_dump->guid());
+
+  if (extreme_lud_get_stats_callback_) {  // The Extreme LUD is enabled.
+    elud_dump = pmd->CreateAllocatorDump("malloc/extreme_lud");
+    elud_stats = extreme_lud_get_stats_callback_();
+    ReportPartitionAllocLightweightQuarantineStats(elud_dump,
+                                                   elud_stats.lq_stats);
+  }
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+  ReportPerMinuteStats(syscall_count, cumulative_brp_quarantined_size,
+                       cumulative_brp_quarantined_count, elud_stats, outer_dump,
+                       partitions_dump, elud_dump);
 
   return true;
 }
@@ -434,8 +452,10 @@ void MallocDumpProvider::ReportPerMinuteStats(
     uint64_t syscall_count,
     size_t cumulative_brp_quarantined_bytes,
     size_t cumulative_brp_quarantined_count,
+    const ExtremeLUDStats& elud_stats,
     MemoryAllocatorDump* malloc_dump,
-    MemoryAllocatorDump* partition_alloc_dump) {
+    MemoryAllocatorDump* partition_alloc_dump,
+    MemoryAllocatorDump* elud_dump) {
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   uint64_t new_syscalls = syscall_count - last_syscall_count_;
   size_t new_brp_quarantined_bytes =
@@ -444,20 +464,67 @@ void MallocDumpProvider::ReportPerMinuteStats(
       cumulative_brp_quarantined_count - last_cumulative_brp_quarantined_count_;
   base::TimeDelta time_since_last_dump =
       base::TimeTicks::Now() - last_memory_dump_time_;
-  uint64_t syscalls_per_minute = static_cast<uint64_t>(
-      (60 * new_syscalls) / time_since_last_dump.InSecondsF());
+  auto seconds_since_last_dump = time_since_last_dump.InSecondsF();
+  uint64_t syscalls_per_minute =
+      static_cast<uint64_t>((60 * new_syscalls) / seconds_since_last_dump);
   malloc_dump->AddScalar("syscalls_per_minute", "count", syscalls_per_minute);
   if (partition_alloc_dump) {
     size_t brp_quarantined_bytes_per_minute =
-        (60 * new_brp_quarantined_bytes) / time_since_last_dump.InSecondsF();
+        (60 * new_brp_quarantined_bytes) / seconds_since_last_dump;
     size_t brp_quarantined_count_per_minute =
-        (60 * new_brp_quarantined_count) / time_since_last_dump.InSecondsF();
+        (60 * new_brp_quarantined_count) / seconds_since_last_dump;
     partition_alloc_dump->AddScalar("brp_quarantined_bytes_per_minute",
                                     MemoryAllocatorDump::kUnitsBytes,
                                     brp_quarantined_bytes_per_minute);
     partition_alloc_dump->AddScalar("brp_quarantined_count_per_minute",
                                     MemoryAllocatorDump::kNameObjectCount,
                                     brp_quarantined_count_per_minute);
+  }
+  if (elud_dump) {
+    size_t bytes = elud_stats.lq_stats.cumulative_size_in_bytes -
+                   last_cumulative_elud_quarantined_bytes_;
+    size_t count = elud_stats.lq_stats.cumulative_count -
+                   last_cumulative_elud_quarantined_count_;
+    size_t miss_count = elud_stats.lq_stats.quarantine_miss_count -
+                        last_cumulative_elud_miss_count_;
+    elud_dump->AddScalar("bytes_per_minute", MemoryAllocatorDump::kUnitsBytes,
+                         60ull * bytes / seconds_since_last_dump);
+    elud_dump->AddScalar("count_per_minute",
+                         MemoryAllocatorDump::kNameObjectCount,
+                         60ull * count / seconds_since_last_dump);
+    elud_dump->AddScalar("miss_count_per_minute",
+                         MemoryAllocatorDump::kNameObjectCount,
+                         60ull * miss_count / seconds_since_last_dump);
+    // Given the following three:
+    //   capacity := the quarantine storage space
+    //   time     := the elapsed time since the last dump
+    //   bytes    := the consumed/used bytes since the last dump
+    // We can define/calculate the following.
+    //   speed    := the consuming speed of the quarantine
+    //            = bytes / time
+    //   quarantined_time
+    //            := the time to use up the capacity
+    //               (near to how long an object may be quarantined)
+    //            = capacity / speed
+    //            = capacity / (bytes / time)
+    //            = time * capacity / bytes
+    //
+    // Note that objects in the quarantine are randomly evicted. So objects may
+    // stay in the qurantine longer or shorter depending on object sizes,
+    // allocation/deallocation patterns, etc. in addition to pure randomness.
+    // So, this is just a rough estimation, not necessarily to be the average.
+    if (bytes > 0) {
+      elud_dump->AddScalar(
+          "quarantined_time", "msec",
+          static_cast<uint64_t>(time_since_last_dump.InMilliseconds()) *
+              elud_stats.capacity_in_bytes / bytes);
+    }
+    last_cumulative_elud_quarantined_bytes_ =
+        elud_stats.lq_stats.cumulative_size_in_bytes;
+    last_cumulative_elud_quarantined_count_ =
+        elud_stats.lq_stats.cumulative_count;
+    last_cumulative_elud_miss_count_ =
+        elud_stats.lq_stats.quarantine_miss_count;
   }
 
   last_memory_dump_time_ = base::TimeTicks::Now();

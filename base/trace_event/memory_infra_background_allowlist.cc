@@ -186,6 +186,9 @@ constexpr auto kAllocatorDumpNameAllowlist =
         "leveldatabase/memenv_0x?",
         "malloc",
         "malloc/allocated_objects",
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+        "malloc/extreme_lud",
+#endif
         "malloc/metadata_fragmentation_caches",
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
         "malloc/partitions",
@@ -199,7 +202,7 @@ constexpr auto kAllocatorDumpNameAllowlist =
         "malloc/partitions/nonquarantinable",
         "malloc/sys_malloc",
         "malloc/win_heap",
-#endif
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
         "media/webmediaplayer/audio/player_0x?",
         "media/webmediaplayer/data_source/player_0x?",
         "media/webmediaplayer/demuxer/player_0x?",
