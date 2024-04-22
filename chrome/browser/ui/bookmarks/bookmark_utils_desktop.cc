@@ -145,7 +145,8 @@ OpenedWebContentsSet OpenAllHelper(
     Browser* browser,
     std::vector<UrlAndId> bookmark_urls,
     WindowOpenDisposition initial_disposition,
-    NavigationHandleUserData::InitiatorLocation navigation_type,
+    page_load_metrics::NavigationHandleUserData::InitiatorLocation
+        navigation_type,
     std::optional<BookmarkLaunchAction> launch_action) {
   OpenedWebContentsSet::container_type opened_tabs;
   WindowOpenDisposition disposition = initial_disposition;
@@ -195,8 +196,8 @@ OpenedWebContentsSet OpenAllHelper(
     base::WeakPtr<content::NavigationHandle> handle =
         nav_wrapper.NavigateTo(&params);
     if (handle) {
-      NavigationHandleUserData::CreateForNavigationHandle(*handle,
-                                                          navigation_type);
+      page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
+          *handle, navigation_type);
     }
     content::WebContents* opened_tab =
         handle ? handle->GetWebContents() : nullptr;
@@ -262,7 +263,8 @@ void OpenAllIfAllowed(
         raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
     WindowOpenDisposition initial_disposition,
     bool add_to_group,
-    NavigationHandleUserData::InitiatorLocation navigation_type,
+    page_load_metrics::NavigationHandleUserData::InitiatorLocation
+        navigation_type,
     std::optional<BookmarkLaunchAction> launch_action) {
   std::vector<UrlAndId> url_and_ids = GetURLsToOpen(
       nodes, browser->profile(),
@@ -270,7 +272,8 @@ void OpenAllIfAllowed(
   auto do_open = [](Browser* browser, std::vector<UrlAndId> url_and_ids_to_open,
                     WindowOpenDisposition initial_disposition,
                     std::optional<std::u16string> folder_title,
-                    NavigationHandleUserData::InitiatorLocation navigation_type,
+                    page_load_metrics::NavigationHandleUserData::
+                        InitiatorLocation navigation_type,
                     std::optional<BookmarkLaunchAction> launch_action,
                     chrome::MessageBoxResult result) {
     if (result != chrome::MESSAGE_BOX_RESULT_YES)

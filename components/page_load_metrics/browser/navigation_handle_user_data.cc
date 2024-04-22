@@ -2,13 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/observers/navigation_handle_user_data.h"
+#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
+
+namespace page_load_metrics {
 
 NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(NavigationHandleUserData);
 
+// static
 void NavigationHandleUserData::AttachNewTabPageNavigationHandleUserData(
     content::NavigationHandle& navigation_handle) {
-  NavigationHandleUserData::CreateForNavigationHandle(
+  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
       navigation_handle,
-      NavigationHandleUserData::InitiatorLocation::kNewTabPage);
+      page_load_metrics::NavigationHandleUserData::InitiatorLocation::
+      kNewTabPage);
 }
+
+}  // namespace page_load_metrics

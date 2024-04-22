@@ -20,6 +20,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/common/content_features.h"
@@ -692,7 +693,8 @@ class PrerenderNewTabPageBrowserTest
             url, content::Referrer(), WindowOpenDisposition::CURRENT_TAB,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
             /*is_renderer_initiated=*/false),
-        /*navigation_handle_callback=*/{});
+        base::BindRepeating(&page_load_metrics::NavigationHandleUserData::
+                                AttachNewTabPageNavigationHandleUserData));
   }
 
   ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
@@ -747,6 +749,28 @@ IN_PROC_BROWSER_TEST_P(PrerenderNewTabPageBrowserTest,
       kFinalStatusActivated, 1);
   histogram_tester.ExpectTotalCount(
       "NewTabPage.PrerenderNavigationToActivation", 1);
+
+  auto entries =
+      test_ukm_recorder()->GetMergedEntriesByName("PrerenderPageLoad");
+  bool witness_new_tab_page_ukm = false;
+  for (auto& kv : entries) {
+    const ukm::mojom::UkmEntry* entry = kv.second.get();
+    const ukm::UkmSource* source =
+        test_ukm_recorder()->GetSourceForSourceId(entry->source_id);
+    if (!source) {
+      continue;
+    }
+    EXPECT_TRUE(source->url().is_valid());
+    if (source->url() == prerender_url) {
+      test_ukm_recorder()->ExpectEntryMetric(
+          entry,
+          ukm::builders::PrerenderPageLoad::kNavigation_InitiatorLocationName,
+          static_cast<int>(page_load_metrics::NavigationHandleUserData::
+                               InitiatorLocation::kNewTabPage));
+      witness_new_tab_page_ukm = true;
+    }
+  }
+  EXPECT_TRUE(witness_new_tab_page_ukm);
 }
 
 // Verify that NewTabPage prerender rejects non https url.

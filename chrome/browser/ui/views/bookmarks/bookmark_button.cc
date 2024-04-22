@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_button.h"
+
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_features.h"
-#include "chrome/browser/page_load_metrics/observers/navigation_handle_user_data.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/event_utils.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/widget/tooltip_manager.h"

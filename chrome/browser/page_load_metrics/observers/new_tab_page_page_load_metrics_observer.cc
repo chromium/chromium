@@ -6,8 +6,8 @@
 
 #include <algorithm>
 
-#include "chrome/browser/page_load_metrics/observers/navigation_handle_user_data.h"
 #include "chrome/browser/search/search.h"
+#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -68,14 +68,16 @@ page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 NewTabPagePageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
   // NavigationHandleUserData is set to be
-  // NavigationHandleUserData::InitiatorLocation::kNewTabPage for all NewTabPage
-  // triggered prerender and non-prerender navigation. The value is checked here
-  // to keep on monitoring only NewTabPage triggered cases.
+  // page_load_metrics::NavigationHandleUserData::InitiatorLocation::kNewTabPage
+  // for all NewTabPage triggered prerender and non-prerender navigation. The
+  // value is checked here to keep on monitoring only NewTabPage triggered
+  // cases.
   auto* navigation_userdata =
-      NavigationHandleUserData::GetForNavigationHandle(*navigation_handle);
-  if (navigation_userdata &&
-      navigation_userdata->navigation_type() ==
-          NavigationHandleUserData::InitiatorLocation::kNewTabPage) {
+      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
+          *navigation_handle);
+  if (navigation_userdata && navigation_userdata->navigation_type() ==
+                                 page_load_metrics::NavigationHandleUserData::
+                                     InitiatorLocation::kNewTabPage) {
     return CONTINUE_OBSERVING;
   }
 

@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/ntp_tiles/chrome_most_visited_sites_factory.h"
-#include "chrome/browser/page_load_metrics/observers/navigation_handle_user_data.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
@@ -25,6 +24,7 @@
 #include "components/history/core/browser/features.h"
 #include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/most_visited_sites.h"
+#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/web_contents.h"
@@ -196,8 +196,9 @@ void MostVisitedHandler::OnMostVisitedTileNavigation(
   // |is_query_tile| can be true only when history::kOrganicRepeatableQueries
   // is enabled.
   base::OnceCallback<void(content::NavigationHandle&)>
-      navigation_handle_callback = base::BindRepeating(
-          &NavigationHandleUserData::AttachNewTabPageNavigationHandleUserData);
+      navigation_handle_callback =
+          base::BindRepeating(&page_load_metrics::NavigationHandleUserData::
+                                  AttachNewTabPageNavigationHandleUserData);
   web_contents_->OpenURL(
       content::OpenURLParams(tile->url, content::Referrer(), disposition,
                              tile->is_query_tile

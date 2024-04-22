@@ -1342,7 +1342,8 @@ void BookmarkBarView::OnButtonPressed(const bookmarks::BookmarkNode* node,
   chrome::OpenAllIfAllowed(
       browser_, {node}, ui::DispositionFromEventFlags(event.flags()),
       /*add_to_group=*/false,
-      NavigationHandleUserData::InitiatorLocation::kBookmarkBar,
+      page_load_metrics::NavigationHandleUserData::InitiatorLocation::
+          kBookmarkBar,
       {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
   RecordBookmarkLaunch(
       BookmarkLaunchLocation::kAttachedBar,
@@ -1359,7 +1360,8 @@ void BookmarkBarView::OnMenuButtonPressed(const bookmarks::BookmarkNode* node,
     chrome::OpenAllIfAllowed(
         browser_, {node}, ui::DispositionFromEventFlags(event.flags()),
         /*add_to_group=*/false,
-        NavigationHandleUserData::InitiatorLocation::kBookmarkBar,
+        page_load_metrics::NavigationHandleUserData::InitiatorLocation::
+            kBookmarkBar,
         {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});
   } else {
     RecordBookmarkFolderOpen(BookmarkLaunchLocation::kAttachedBar);

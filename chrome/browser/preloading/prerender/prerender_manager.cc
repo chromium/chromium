@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_features.h"
-#include "chrome/browser/page_load_metrics/observers/navigation_handle_user_data.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading.h"
@@ -60,9 +60,9 @@ content::PreloadingFailureReason ToPreloadingFailureReason(
 
 void AttachBookmarkBarNavigationHandleUserData(
     content::NavigationHandle& navigation_handle) {
-  NavigationHandleUserData::CreateForNavigationHandle(
-      navigation_handle,
-      NavigationHandleUserData::InitiatorLocation::kBookmarkBar);
+  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
+      navigation_handle, page_load_metrics::NavigationHandleUserData::
+                             InitiatorLocation::kBookmarkBar);
 }
 
 }  // namespace
@@ -323,8 +323,9 @@ PrerenderManager::StartPrerenderNewTabPage(
   }
 
   base::RepeatingCallback<void(content::NavigationHandle&)>
-      prerender_navigation_handle_callback = base::BindRepeating(
-          &NavigationHandleUserData::AttachNewTabPageNavigationHandleUserData);
+      prerender_navigation_handle_callback =
+          base::BindRepeating(&page_load_metrics::NavigationHandleUserData::
+                                  AttachNewTabPageNavigationHandleUserData);
 
   new_tab_page_prerender_handle_ = web_contents()->StartPrerendering(
       prerendering_url, content::PreloadingTriggerType::kEmbedder,

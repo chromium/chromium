@@ -22723,6 +22723,12 @@ be describing additional metrics about the same event.
       for main frame request.
     </summary>
   </metric>
+  <metric name="Navigation.InitiatorLocation">
+    <summary>
+      page_load_metrics::NavigationHandleUserData::InitiatorLocation enum value.
+      This field is used for identifying the types of prerender trigger.
+    </summary>
+  </metric>
   <metric name="Navigation.PageTransition">
     <summary>
       The |ui::PageTransition| for the main frame navigation that this activated

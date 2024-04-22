@@ -9,11 +9,11 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/page_load_metrics/observers/navigation_handle_user_data.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
+#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -69,8 +69,9 @@ void OpenAllIfAllowed(
         raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
     WindowOpenDisposition initial_disposition,
     bool add_to_group,
-    NavigationHandleUserData::InitiatorLocation navigation_type =
-        NavigationHandleUserData::InitiatorLocation::kOther,
+    page_load_metrics::NavigationHandleUserData::InitiatorLocation
+        navigation_type = page_load_metrics::NavigationHandleUserData::
+            InitiatorLocation::kOther,
     std::optional<BookmarkLaunchAction> launch_action = std::nullopt);
 
 // Returns the count of bookmarks that would be opened by OpenAll. If
