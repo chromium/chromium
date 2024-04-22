@@ -66,9 +66,8 @@ void PersonalDataManagerTestBase::TearDownTest() {
   OSCryptMocker::TearDown();
 }
 
-void PersonalDataManagerTestBase::ResetPersonalDataManager(
-    bool use_sync_transport_mode,
-    PersonalDataManager* personal_data) {
+void PersonalDataManagerTestBase::MakePrimaryAccountAvailable(
+    bool use_sync_transport_mode) {
   std::string email = use_sync_transport_mode ? kSyncTransportAccountEmail
                                               : kPrimaryAccountEmail;
   // Set the account in both IdentityManager and SyncService.
@@ -94,7 +93,12 @@ void PersonalDataManagerTestBase::ResetPersonalDataManager(
 #endif
   sync_service_.SetAccountInfo(account_info);
   sync_service_.SetHasSyncConsent(!use_sync_transport_mode);
+}
 
+void PersonalDataManagerTestBase::ResetPersonalDataManager(
+    bool use_sync_transport_mode,
+    PersonalDataManager* personal_data) {
+  MakePrimaryAccountAvailable(use_sync_transport_mode);
   PersonalDataChangedWaiter waiter(*personal_data);
   personal_data->Init(
       profile_database_service_, account_database_service_, prefs_.get(),

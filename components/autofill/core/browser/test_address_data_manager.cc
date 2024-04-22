@@ -33,14 +33,14 @@ void TestAddressDataManager::AddProfile(const AutofillProfile& profile) {
       std::make_unique<AutofillProfile>(profile);
   profile_ptr->FinalizeAfterImport();
   GetProfileStorage(profile.source()).push_back(std::move(profile_ptr));
-  notify_pdm_observers_.Run();
+  NotifyObservers();
 }
 
 void TestAddressDataManager::UpdateProfile(const AutofillProfile& profile) {
   AutofillProfile* existing_profile = GetProfileByGUID(profile.guid());
   if (existing_profile) {
     *existing_profile = profile;
-    notify_pdm_observers_.Run();
+    NotifyObservers();
   }
 }
 
@@ -50,7 +50,7 @@ void TestAddressDataManager::RemoveProfile(const std::string& guid) {
       GetProfileStorage(profile->source());
   profiles.erase(base::ranges::find(profiles, profile,
                                     &std::unique_ptr<AutofillProfile>::get));
-  notify_pdm_observers_.Run();
+  NotifyObservers();
 }
 
 void TestAddressDataManager::LoadProfiles() {

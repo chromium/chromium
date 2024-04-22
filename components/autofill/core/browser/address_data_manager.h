@@ -322,8 +322,7 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   virtual const AddressSuggestionStrikeDatabase*
   GetAddressSuggestionStrikeDatabase() const;
 
-  // TODO(b/322170538): Remove once the PDM observer is split.
-  base::RepeatingClosure notify_pdm_observers_;
+  void NotifyObservers();
 
   // Tracks whether the first `LoadProfiles()` call has already finished.
   bool has_initial_load_finished_ = false;
@@ -424,6 +423,9 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // field.
   std::unique_ptr<AddressSuggestionStrikeDatabase>
       address_suggestion_strike_database_;
+
+  // TODO(b/322170538): Remove once the PDM observer is split.
+  base::RepeatingClosure notify_pdm_observers_;
 
   const std::string app_locale_;
 

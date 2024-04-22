@@ -34,6 +34,13 @@ class PersonalDataManagerTestBase {
   void SetUpTest();
   void TearDownTest();
 
+  // Signs in through the `identity_test_env_` and makes the primary account
+  // info available to the `sync_service_`. Depending on
+  // `use_sync_transport_mode`, sync-the-feature is either activated or not.
+  void MakePrimaryAccountAvailable(bool use_sync_transport_mode);
+
+  // Calls `MakePrimaryAccountAvailable()` and initializes the `personal_data`,
+  // waiting for the `Refresh()` to complete.
   void ResetPersonalDataManager(bool use_sync_transport_mode,
                                 PersonalDataManager* personal_data);
 

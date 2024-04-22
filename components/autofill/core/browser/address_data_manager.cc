@@ -71,10 +71,10 @@ AddressDataManager::AddressDataManager(
     base::RepeatingClosure notify_pdm_observers,
     GeoIpCountryCode variation_country_code,
     const std::string& app_locale)
-    : notify_pdm_observers_(notify_pdm_observers),
-      variation_country_code_(std::move(variation_country_code)),
+    : variation_country_code_(std::move(variation_country_code)),
       webdata_service_(webdata_service),
       sync_service_(sync_service),
+      notify_pdm_observers_(std::move(notify_pdm_observers)),
       app_locale_(app_locale) {
   if (webdata_service_) {
     // The `webdata_service_` is null when the TestPDM is used.
@@ -147,7 +147,7 @@ void AddressDataManager::OnWebDataServiceRequestDone(
     has_initial_load_finished_ = true;
     LogStoredDataMetrics();
   }
-  notify_pdm_observers_.Run();
+  NotifyObservers();
 }
 
 std::vector<AutofillProfile*> AddressDataManager::GetProfiles(
@@ -204,7 +204,7 @@ void AddressDataManager::AddProfile(const AutofillProfile& profile) {
     // TODO(crbug.com/1007974): This call is only used to notify tests to stop
     // waiting. Since no profile is added, this case shouldn't trigger
     // `OnPersonalDataChanged()`.
-    notify_pdm_observers_.Run();
+    NotifyObservers();
     return;
   }
   ongoing_profile_changes_[profile.guid()].emplace_back(
@@ -265,7 +265,7 @@ void AddressDataManager::RemoveProfile(const std::string& guid) {
           ? &ongoing_profile_changes_[guid].back().first.data_model()
           : GetProfileByGUID(guid);
   if (!profile) {
-    notify_pdm_observers_.Run();
+    NotifyObservers();
     return;
   }
 
@@ -544,6 +544,12 @@ AddressDataManager::GetAddressSuggestionStrikeDatabase() const {
   return address_suggestion_strike_database_.get();
 }
 
+void AddressDataManager::NotifyObservers() {
+  if (!IsAwaitingPendingAddressChanges()) {
+    notify_pdm_observers_.Run();
+  }
+}
+
 bool AddressDataManager::IsAutofillProfileEnabled() const {
   return prefs::IsAutofillProfileEnabled(pref_service_);
 }
@@ -652,7 +658,7 @@ void AddressDataManager::UpdateProfileInDB(const AutofillProfile& profile) {
     const AutofillProfile* existing_profile = GetProfileByGUID(profile.guid());
     if (!existing_profile ||
         existing_profile->EqualsForUpdatePurposes(profile)) {
-      notify_pdm_observers_.Run();
+      NotifyObservers();
       return;
     }
   }
@@ -739,7 +745,7 @@ bool AddressDataManager::ProfileChangesAreOngoing() const {
 
 void AddressDataManager::OnProfileChangeDone(const std::string& guid) {
   ongoing_profile_changes_[guid].pop_front();
-  notify_pdm_observers_.Run();
+  NotifyObservers();
   HandleNextProfileChange(guid);
 }
 
