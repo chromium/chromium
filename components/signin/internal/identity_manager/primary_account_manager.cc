@@ -38,6 +38,15 @@ BASE_FEATURE(kRestorePrimaryAccountInfo,
              base::FEATURE_ENABLED_BY_DEFAULT);
 namespace {
 
+// Registers that the sign in occurred with an explicit user action.
+// Affected by all signin sources except when signing in to Chrome caused by a
+// web sign in or by an unknown source.
+// Note: This value is potentially set before the
+// `switches::kExplicitBrowserSigninUIOnDesktop` is enabled. It is currently not
+// expected to be used and is logged for potential usages in the future.
+const char kExplicitBrowserSigninWithoutFeatureEnabled[] =
+    "signin.explicit_browser_signin";
+
 enum class InitializePrefState {
   kWithPrimaryAccountId_NotConsentedForSync = 0,
   kWithPrimaryAccountId_ConsentedForSync = 1,
@@ -205,6 +214,13 @@ PrimaryAccountManager::PrimaryAccountManager(
       account_tracker_service_(account_tracker_service) {
   DCHECK(client_);
   DCHECK(account_tracker_service_);
+
+  // Clear the pref it is was set and the feature is now off.
+  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kExperimental)) {
+    ScopedPrefCommit(client_->GetPrefs(), /*commit_on_destroy=*/false)
+        .ClearPref(prefs::kExplicitBrowserSignin);
+  }
 }
 
 PrimaryAccountManager::~PrimaryAccountManager() {
@@ -229,6 +245,8 @@ void PrimaryAccountManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kReverseAutologinRejectedEmailList);
   registry->RegisterBooleanPref(prefs::kSigninAllowed, true);
   registry->RegisterBooleanPref(prefs::kSignedInWithCredentialProvider, false);
+  registry->RegisterBooleanPref(kExplicitBrowserSigninWithoutFeatureEnabled,
+                                false);
   registry->RegisterBooleanPref(prefs::kExplicitBrowserSignin, false);
 }
 
@@ -692,7 +710,11 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
     case PrimaryAccountChangeEvent::Type::kNone:
       return;
     case PrimaryAccountChangeEvent::Type::kCleared:
-      scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
+      scoped_pref_commit.ClearPref(kExplicitBrowserSigninWithoutFeatureEnabled);
+      if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+              switches::ExplicitBrowserSigninPhase::kExperimental)) {
+        scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
+      }
       return;
     case PrimaryAccountChangeEvent::Type::kSet:
       CHECK(event_details.GetAccessPoint().has_value());
@@ -702,11 +724,21 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
       if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN ||
           access_point ==
               signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
-        scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
+        scoped_pref_commit.ClearPref(
+            kExplicitBrowserSigninWithoutFeatureEnabled);
+        if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+                switches::ExplicitBrowserSigninPhase::kExperimental)) {
+          scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
+        }
       } else {
         // All others access points are explicit sign ins except the Web
         // Signin event.
-        scoped_pref_commit.SetBoolean(prefs::kExplicitBrowserSignin, true);
+        scoped_pref_commit.SetBoolean(
+            kExplicitBrowserSigninWithoutFeatureEnabled, true);
+        if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+                switches::ExplicitBrowserSigninPhase::kExperimental)) {
+          scoped_pref_commit.SetBoolean(prefs::kExplicitBrowserSignin, true);
+        }
       }
   }
 }

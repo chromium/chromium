@@ -1386,8 +1386,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
       switches::ExplicitBrowserSigninPhase::kExperimental));
 
-  // Disabling `switches::kUnoDesktop` should not reset the pref.
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+  // Disabling `switches::kUnoDesktop` should reset the pref.
+  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kExplicitBrowserSignin));
   // Disabling `switches::kUnoDesktop` feature should revert back to the
   // previous default state, since there were no interactions, defaults to

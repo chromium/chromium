@@ -146,7 +146,10 @@ const char kUserCloudSigninPolicyResponseFromPolicyTestPage[] =
 // Registers that the sign in occurred with an explicit user action.
 // Affected by all signin sources except when signing in to Chrome caused by a
 // web sign in or by an unknown source.
-const char kExplicitBrowserSignin[] = "signin.explicit_browser_signin";
+// Note: this pref is only recorded when the
+// `switches::kExplicitBrowserSigninUIOnDesktop` is enabled.
+const char kExplicitBrowserSignin[] =
+    "signin.signin_with_explicit_browser_signin_on";
 
 // Boolean indicating whether the Device Bound Session Credentials should be
 // enabled. Takes precedence over the "EnableBoundSessionCredentials" feature

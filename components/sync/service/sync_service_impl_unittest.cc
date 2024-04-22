@@ -687,7 +687,9 @@ TEST_F(
 
   // Sign-in.
   SignInWithoutSyncConsent();
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   ASSERT_TRUE(prefs()->GetBoolean(::prefs::kExplicitBrowserSignin));
+#endif
 
   // Registering CONTACT_INFO which includes addresses.
   InitializeService({{CONTACT_INFO, true}});

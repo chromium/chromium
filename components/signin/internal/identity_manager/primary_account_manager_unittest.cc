@@ -44,6 +44,13 @@ using signin_metrics::ProfileSignout;
 using testing::ElementsAreArray;
 
 namespace {
+
+// Equivalent to the content of `kExplicitBrowserSigninWithoutFeatureEnabled`
+// defined in primary_account_manager.cc that is internal. Recreating it here
+// for testing purposes.
+const char kExplicitBrowserSigninWithoutFeatureEnabledForTesting[] =
+    "signin.explicit_browser_signin";
+
 struct ExpectedAccessPoints {
   std::optional<AccessPoint> sign_in = std::nullopt;
   std::optional<AccessPoint> sync_opt_in = std::nullopt;
@@ -847,11 +854,16 @@ TEST_F(PrimaryAccountManagerTest, RestoreFailedFeatureNotEnabled) {
 }
 
 TEST_F(PrimaryAccountManagerTest, ExplicitSigninPref) {
+  base::test::ScopedFeatureList feature{
+      switches::kExplicitBrowserSigninUIOnDesktop};
+
   CreatePrimaryAccountManager();
   CoreAccountId account_id =
       AddToAccountTracker("account_id", "user@gmail.com");
 
   ASSERT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  ASSERT_FALSE(prefs()->GetBoolean(
+      kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
 
   // Simulate an explicit signin through the Chrome Signin Intercept bubble.
   manager_->SetPrimaryAccountInfo(
@@ -860,21 +872,30 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninPref) {
       signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
 
   EXPECT_TRUE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  EXPECT_TRUE(prefs()->GetBoolean(
+      kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Clearing signin.
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::kTest);
 
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  EXPECT_FALSE(prefs()->GetBoolean(
+      kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
 #endif
 }
 
 TEST_F(PrimaryAccountManagerTest, ImplicitSigninDoesNotSetExplicitSigninPref) {
+  base::test::ScopedFeatureList feature{
+      switches::kExplicitBrowserSigninUIOnDesktop};
+
   CreatePrimaryAccountManager();
   CoreAccountId account_id =
       AddToAccountTracker("account_id", "user@gmail.com");
 
   ASSERT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  ASSERT_FALSE(prefs()->GetBoolean(
+      kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
 
   // Simulate an implicit signin through a web signin event.
   manager_->SetPrimaryAccountInfo(
@@ -883,14 +904,21 @@ TEST_F(PrimaryAccountManagerTest, ImplicitSigninDoesNotSetExplicitSigninPref) {
       signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
 
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  EXPECT_FALSE(prefs()->GetBoolean(
+      kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
 }
 
 TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByUnknownSignin) {
+  base::test::ScopedFeatureList feature{
+      switches::kExplicitBrowserSigninUIOnDesktop};
+
   CreatePrimaryAccountManager();
   CoreAccountId account_id =
       AddToAccountTracker("account_id", "user@gmail.com");
 
   ASSERT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  ASSERT_FALSE(prefs()->GetBoolean(
+      kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
 
   // Simulate an explicit signin through the Chrome Signin Intercept bubble.
   manager_->SetPrimaryAccountInfo(
@@ -899,6 +927,8 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByUnknownSignin) {
       signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
 
   EXPECT_TRUE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  EXPECT_TRUE(prefs()->GetBoolean(
+      kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
 
   // Creating a second account.
   CoreAccountId account_id2 =
@@ -912,6 +942,8 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByUnknownSignin) {
 
   // The explicit sign in pref should be cleared.
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  EXPECT_FALSE(prefs()->GetBoolean(
+      kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
 }
 
 TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByWebSignin) {
@@ -926,6 +958,8 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByWebSignin) {
       AddToAccountTracker("account_id", "user@gmail.com");
 
   ASSERT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  ASSERT_FALSE(prefs()->GetBoolean(
+      kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
 
   // Simulate an explicit signin through the Chrome Signin Intercept bubble.
   manager_->SetPrimaryAccountInfo(
@@ -934,6 +968,8 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByWebSignin) {
       signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
 
   EXPECT_TRUE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  EXPECT_TRUE(prefs()->GetBoolean(
+      kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
 
   // Creating a second account.
   CoreAccountId account_id2 =
@@ -948,4 +984,82 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByWebSignin) {
 
   // The explicit sign in pref should be reset.
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  EXPECT_FALSE(prefs()->GetBoolean(
+      kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
+}
+
+TEST_F(
+    PrimaryAccountManagerTest,
+    ExplicitBrowserSigninDoesNotSetPrefWithExplicitBrowserSigninFeatureDisabled) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(switches::kExplicitBrowserSigninUIOnDesktop);
+
+  CreatePrimaryAccountManager();
+  CoreAccountId account_id =
+      AddToAccountTracker("account_id", "user@gmail.com");
+
+  ASSERT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  ASSERT_FALSE(prefs()->GetBoolean(
+      kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
+
+  // Simulate an explicit signin through the Chrome Signin Intercept bubble.
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id),
+      signin::ConsentLevel::kSignin,
+      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
+
+  // Explicit pref is not set.
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  // Internal version of the pref is set though.
+  EXPECT_TRUE(prefs()->GetBoolean(
+      kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
+}
+
+TEST_F(PrimaryAccountManagerTest,
+       RollingBackUsersOfExplicitBrowserSigninPrefCheck) {
+  ASSERT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+  ASSERT_FALSE(prefs()->GetBoolean(
+      kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
+
+  // Explicit sign in with `switches::kExplicitBrowserSigninUIOnDesktop` on.
+  {
+    base::test::ScopedFeatureList feature{
+        switches::kExplicitBrowserSigninUIOnDesktop};
+
+    CreatePrimaryAccountManager();
+    CoreAccountId account_id =
+        AddToAccountTracker("account_id", "user@gmail.com");
+
+    // Simulate an explicit signin through the Chrome Signin Intercept bubble.
+    manager_->SetPrimaryAccountInfo(
+        account_tracker()->GetAccountInfo(account_id),
+        signin::ConsentLevel::kSignin,
+        signin_metrics::AccessPoint::
+            ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
+
+    // The explicit sign in pref should be reset.
+    EXPECT_TRUE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+    EXPECT_TRUE(prefs()->GetBoolean(
+        kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
+  }
+
+  // Simulate a restart by shutting down the manager and creating a new one with
+  // `switches::kExplicitBrowserSigninUIOnDesktop` off.
+  ShutDownManager();
+  {
+    ASSERT_TRUE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+    ASSERT_TRUE(prefs()->GetBoolean(
+        kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
+
+    base::test::ScopedFeatureList feature;
+    feature.InitAndDisableFeature(switches::kExplicitBrowserSigninUIOnDesktop);
+
+    CreatePrimaryAccountManager();
+
+    // Explicit pref is cleared.
+    EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+    // Internal version of the pref is still set though.
+    EXPECT_TRUE(prefs()->GetBoolean(
+        kExplicitBrowserSigninWithoutFeatureEnabledForTesting));
+  }
 }
