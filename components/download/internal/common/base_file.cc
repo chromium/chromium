@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -226,12 +227,12 @@ bool BaseFile::ValidateDataInFile(int64_t offset,
   if (data_len <= 0)
     return true;
 
-  std::unique_ptr<char[]> buffer(new char[data_len]);
-  int bytes_read = file_.Read(offset, buffer.get(), data_len);
+  auto buffer = base::HeapArray<char>::Uninit(data_len);
+  int bytes_read = file_.Read(offset, buffer.data(), buffer.size());
   if (bytes_read < 0 || static_cast<size_t>(bytes_read) < data_len)
     return false;
 
-  return memcmp(data, buffer.get(), data_len) == 0;
+  return memcmp(data, buffer.data(), buffer.size()) == 0;
 }
 
 DownloadInterruptReason BaseFile::Rename(const base::FilePath& new_path) {
