@@ -125769,6 +125769,19 @@
        {}
       ]
      ],
+     "variation-sequences.html": [
+      "91e46a84d71cc873e006bd59c328d54c8c614b52",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/variation-sequences-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "variations": {
       "font-descriptor-range-reversed.html": [
        "14d426245d3bdb56e67007edde5e9a49473e5694",
@@ -142734,12 +142747,25 @@
      },
      "text-box-trim": {
       "text-box-trim-half-leading-block-box-001.html": [
-       "2cbf1c26dbfa97b92a8e1a2739dae24b2042d4e3",
+       "14429b10022448c155c3723f9798e3e66d4022bc",
        [
         null,
         [
          [
           "/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-box-trim-half-leading-block-box-002.html": [
+       "fdf5b71d4345f8254d8542b9f66d1f43d1b5710f",
+       [
+        null,
+        [
+         [
+          "/css/css-inline/text-box-trim/text-box-trim-half-leading-block-box-002-ref.html",
           "=="
          ]
         ],
@@ -166570,19 +166596,6 @@
        {}
       ]
      ],
-     "highlight-cascade-002.html": [
-      "c01d3c796e5ec88c16dae4c1819908a03cba4078",
-      [
-       null,
-       [
-        [
-         "/css/css-pseudo/highlight-cascade-002-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
      "highlight-cascade-003.html": [
       "61bc46d4c50feab4f275e6d0785bf729c4239b27",
       [
@@ -166636,7 +166649,7 @@
       ]
      ],
      "highlight-cascade-008.html": [
-      "10ca924b8fd1d24089011c71584071a6e84423e4",
+      "d6f07439801b8aedad942e227bb5e5fee621aa4b",
       [
        null,
        [
@@ -166794,6 +166807,19 @@
        [
         [
          "/css/css-pseudo/highlight-currentcolor-root-implicit-default-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "highlight-custom-properties-dynamic-001.html": [
+      "836ef546fa60509b98e43429ec42cb05293fb562",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/highlight-custom-properties-dynamic-001-ref.html",
          "=="
         ]
        ],
@@ -166997,7 +167023,7 @@
       ]
      ],
      "highlight-styling-001.html": [
-      "63d8ee1eda47dec0eeaf30f56316e4203e49f182",
+      "7fe76d19380caff7ed1efe3e5023d629dcb0f96a",
       [
        null,
        [
@@ -167010,7 +167036,7 @@
       ]
      ],
      "highlight-styling-002.html": [
-      "2f7cc29128e4dc8de7922922f33cab8451c0eaf1",
+      "351eacac8852f8bd6d982e30f07d8f3f269e85cc",
       [
        null,
        [
@@ -168490,7 +168516,7 @@
       ]
      ],
      "target-text-dynamic-004.html": [
-      "279ec674b402e6b2bc47aea07487dda8ca10f0dd",
+      "35f2542c766735f3de82f4e43492b1874c60437d",
       [
        null,
        [
@@ -312310,7 +312336,37 @@
       "separator-test-font.ttf": [
        "26cc99783d079f91ae9c1627a6af0c56d72d324a",
        []
-      ]
+      ],
+      "vs": {
+       "MPLUS1-Regular_without-cmap14-subset.ttf": [
+        "b77096690df1b4136cb7907708c778d716433c59",
+        []
+       ],
+       "NotoColorEmoji-Regular_subset.ttf": [
+        "24ab79fd05295151de61a16be460b4f8e7892f7c",
+        []
+       ],
+       "NotoEmoji-Regular_subset.ttf": [
+        "0b054c7c8d597e6d600817ec05543d7612e79351",
+        []
+       ],
+       "NotoEmoji-Regular_without-cmap14-subset.ttf": [
+        "3d00ef81dea38d7de7b95538a1217126b897f8c9",
+        []
+       ],
+       "NotoSansJP-Regular_with-cmap14-subset.ttf": [
+        "edcb98e37458b23ba6bf4ebdff01b19e0ad8b6c3",
+        []
+       ],
+       "NotoSansMath-Regular_without-cmap14-subset.ttf": [
+        "5436d06dae52733c018bb01371dfca0bb2bc6afd",
+        []
+       ],
+       "STIXTwoMath-Regular_with-cmap14-subset.ttf": [
+        "c9720cf9ce712da3631a327e1ee00d399e28613b",
+        []
+       ]
+      }
      },
      "rex-in-monospace-ref.html": [
       "27972869e6cf3b8c5cd57670b9b7c3533353a01e",
@@ -312508,6 +312564,10 @@
       "css": {
        "font-variant-features.css": [
         "fbe701918dc2739cd381d2c32f310bdc3f56848d",
+        []
+       ],
+       "variation-sequences.css": [
+        "5977f17b678c286556b45983ed8212a6cce33e9b",
         []
        ]
       },
@@ -318405,6 +318465,10 @@
        "font-variant-features.js": [
         "4b56fee193956710b847ba79c5f9c3a5a7d15a33",
         []
+       ],
+       "variation-sequences.js": [
+        "84c5a1a9c77932b9b4aedc2be24a38e148bae00d",
+        []
        ]
       },
       "margin-collapse-2em-space.png": [
@@ -318558,6 +318622,10 @@
      ],
      "test_font_feature_values_parsing-expected.txt": [
       "75e35b5a19eef0d80c7be75d74d83da4385b2bc2",
+      []
+     ],
+     "variation-sequences-ref.html": [
+      "a44f18bb3e1f3584aa9b3407a0b7033dddd234aa",
       []
      ],
      "variations": {
@@ -321983,6 +322051,10 @@
       ],
       "text-box-trim-half-leading-block-box-001-ref.html": [
        "2dfe344ce35f59888337a34f1ae864925f9a35e4",
+       []
+      ],
+      "text-box-trim-half-leading-block-box-002-ref.html": [
+       "8c10a8037064a09d8a0c04357315ad8498e3a31d",
        []
       ]
      }
@@ -326994,10 +327066,6 @@
       "a18690962fcd4e73d5832f76e7afb8ee681ae24e",
       []
      ],
-     "highlight-cascade-002-ref.html": [
-      "17629a6dbad7fb5700b35b8bd0ea5280dba69140",
-      []
-     ],
      "highlight-cascade-003-ref.html": [
       "256c28ba0c068630cf675698e019b656a6c56da7",
       []
@@ -327044,6 +327112,10 @@
      ],
      "highlight-currentcolor-root-implicit-default-ref.html": [
       "67ecb8df640f72e1725e42a648f2c6e1f33490e2",
+      []
+     ],
+     "highlight-custom-properties-dynamic-001-ref.html": [
+      "836874df056a8a934c38aeebd7ace9d404b312b1",
       []
      ],
      "highlight-painting-001-ref.html": [
@@ -396539,11 +396611,11 @@
       []
      ],
      "elu.https.any-expected.txt": [
-      "4e44422b63cf51e81ff32ccd4ed93404b6c4051c",
+      "3e47719fd623076cbc4041c65a11dd3f47d60825",
       []
      ],
      "elu.https.any.worker-expected.txt": [
-      "4e44422b63cf51e81ff32ccd4ed93404b6c4051c",
+      "3e47719fd623076cbc4041c65a11dd3f47d60825",
       []
      ],
      "expand.https.any-expected.txt": [
@@ -459114,7 +459186,7 @@
       ]
      ],
      "highlight-cascade-009.html": [
-      "acc48c7c3642cd267bf6e33c475d5b59c6d58fed",
+      "ccc917b08c8e3fd56fbe294c9a52ecdca891e398",
       [
        null,
        {}
@@ -676179,7 +676251,7 @@
       ]
      ],
      "clamp.https.any.js": [
-      "85cd19a566add513e528adc8e5c2d51014ffa71b",
+      "126fa90e167fb344d2b41f71d85f1c3f4ed8addd",
       [
        "webnn/validation_tests/clamp.https.any.html",
        {
@@ -676343,7 +676415,7 @@
       ]
      ],
      "conv2d.https.any.js": [
-      "ffc9c2c65dff541da38886067febd4c4850ec9d8",
+      "c38174e6169fcbf590784137ce4b3c76a5da5b76",
       [
        "webnn/validation_tests/conv2d.https.any.html",
        {
@@ -676507,7 +676579,7 @@
       ]
      ],
      "elu.https.any.js": [
-      "6e842cb691a3f62b0d0b5b0a85d351fdd495ead6",
+      "53ec5e54ae2dc2d790f493b0669c8ca35dc34737",
       [
        "webnn/validation_tests/elu.https.any.html",
        {
@@ -676753,7 +676825,7 @@
       ]
      ],
      "hardSigmoid.https.any.js": [
-      "01b24dbc7c60b51ae6f614c2b2a1246af3051074",
+      "2c55d0eb9dfe21b69e88049d2570751eb2b23fb7",
       [
        "webnn/validation_tests/hardSigmoid.https.any.html",
        {
@@ -676917,7 +676989,7 @@
       ]
      ],
      "layerNormalization.https.any.js": [
-      "e9e9141aa6c2fcf482f28ebb4ec4c5dda1f9ee30",
+      "63f9c0dbc5855a10ae574bdcb4fddda346124497",
       [
        "webnn/validation_tests/layerNormalization.https.any.html",
        {
@@ -676958,7 +677030,7 @@
       ]
      ],
      "leakyRelu.https.any.js": [
-      "6fc19b1f0d727eea0b1da11986e840527e8bed93",
+      "f250b0eda66c883af5f715fe7d24d086eec3631a",
       [
        "webnn/validation_tests/leakyRelu.https.any.html",
        {
@@ -676999,7 +677071,7 @@
       ]
      ],
      "linear.https.any.js": [
-      "99c1daad3f1369dceffbd0879c43c6933033596f",
+      "6ec0389fc362c2aea490f5e990968144ead2d5df",
       [
        "webnn/validation_tests/linear.https.any.html",
        {
@@ -677632,7 +677704,7 @@
       ]
      ],
      "softplus.https.any.js": [
-      "347dfcd9385b2376c851a4f60271b3848b274e09",
+      "c13ea8213c3634e6c64aa9a3e19202681a92ce46",
       [
        "webnn/validation_tests/softplus.https.any.html",
        {
