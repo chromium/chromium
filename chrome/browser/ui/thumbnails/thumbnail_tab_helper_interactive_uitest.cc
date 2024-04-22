@@ -155,9 +155,11 @@ class ThumbnailTabHelperInteractiveTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS) || defined(THREAD_SANITIZER) || \
-    defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 // TODO(crbug.com/1399402) flakes on ChromeOS and MSAN/TSAN/ASAN builders.
+// TODO(crbug.com/335997050) timeout on ARM64 debug builder.
+#if BUILDFLAG(IS_CHROMEOS) || defined(THREAD_SANITIZER) || \
+    defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
+    (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64) && !defined(NDEBUG))
 #define MAYBE_TabLoadTriggersScreenshot DISABLED_TabLoadTriggersScreenshot
 #else
 #define MAYBE_TabLoadTriggersScreenshot TabLoadTriggersScreenshot
@@ -174,8 +176,10 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
 }
 
 // TODO(crbug.com/1399402) flakes on ChromeOS and MSAN/TSAN/ASAN builders.
+// TODO(crbug.com/335997050) timeout on ARM64 debug builder.
 #if BUILDFLAG(IS_CHROMEOS) || defined(THREAD_SANITIZER) || \
-    defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
+    defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
+    (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64) && !defined(NDEBUG))
 #define MAYBE_TabDiscardPreservesScreenshot \
   DISABLED_TabDiscardPreservesScreenshot
 #else
