@@ -2,29 +2,29 @@ Tests that evaluating V8-embedder callbacks allows side-effect-free methods. Sho
 Expression `document.querySelector('div').x = "foo"`
 has side effect: true, expected: true
 Expression `$('div')`
-has side effect: true, expected: true
+has side effect: false, expected: false
 Expression `$$('div')`
-has side effect: true, expected: true
+has side effect: false, expected: false
 Expression `$x('//div')`
-has side effect: true, expected: true
+has side effect: false, expected: false
 Expression `getEventListeners(document)`
-has side effect: true, expected: true
+has side effect: false, expected: false
 Expression `$.toString()`
-has side effect: true, expected: true
+has side effect: false, expected: false
 Expression `$$.toString()`
-has side effect: true, expected: true
+has side effect: false, expected: false
 Expression `$x.toString()`
-has side effect: true, expected: true
+has side effect: false, expected: false
 Expression `getEventListeners.toString()`
-has side effect: true, expected: true
+has side effect: false, expected: false
 Expression `monitorEvents()`
 has side effect: true, expected: true
 Expression `unmonitorEvents()`
 has side effect: true, expected: true
 Expression `monitorEvents.toString()`
-has side effect: true, expected: true
+has side effect: false, expected: false
 Expression `unmonitorEvents.toString()`
-has side effect: true, expected: true
+has side effect: false, expected: false
 Expression `document.getElementsByTagName('div')`
 has side effect: false, expected: false
 Expression `document.getElementsByTagNameNS(namespace, 'div')`

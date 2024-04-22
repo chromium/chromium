@@ -37,20 +37,20 @@
   await checkHasSideEffect(`document.querySelector('div').x = "foo"`);
 
   // Command Line API
-  await checkHasSideEffect(`$('div')`);
-  await checkHasSideEffect(`$$('div')`);
-  await checkHasSideEffect(`$x('//div')`);
-  await checkHasSideEffect(`getEventListeners(document)`);
-  await checkHasSideEffect(`$.toString()`);
-  await checkHasSideEffect(`$$.toString()`);
-  await checkHasSideEffect(`$x.toString()`);
-  await checkHasSideEffect(`getEventListeners.toString()`);
+  await checkHasNoSideEffect(`$('div')`);
+  await checkHasNoSideEffect(`$$('div')`);
+  await checkHasNoSideEffect(`$x('//div')`);
+  await checkHasNoSideEffect(`getEventListeners(document)`);
+  await checkHasNoSideEffect(`$.toString()`);
+  await checkHasNoSideEffect(`$$.toString()`);
+  await checkHasNoSideEffect(`$x.toString()`);
+  await checkHasNoSideEffect(`getEventListeners.toString()`);
 
   // Unsafe Command Line API
   await checkHasSideEffect(`monitorEvents()`);
   await checkHasSideEffect(`unmonitorEvents()`);
-  await checkHasSideEffect(`monitorEvents.toString()`);
-  await checkHasSideEffect(`unmonitorEvents.toString()`);
+  await checkHasNoSideEffect(`monitorEvents.toString()`);
+  await checkHasNoSideEffect(`unmonitorEvents.toString()`);
 
   // Document
   await checkHasNoSideEffect(`document.getElementsByTagName('div')`);

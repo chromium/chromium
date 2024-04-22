@@ -6736,9 +6736,6 @@ crbug.com/1503086 external/wpt/html/semantics/invokers/invoketarget-on-audio-beh
 # Tentative allow to fail to roll SwiftShader changes.
 crbug.com/726075 [ Linux ] virtual/gpu/fast/canvas/canvas-imageSmoothing-disabled-scaling-down.html [ Failure ]
 
-# Temporary for V8 roll
-crbug.com/329409675 http/tests/inspector-protocol/side-effects/evaluate-embedder-side-effect-free-methods.js [ Failure Pass ]
-
 # Gardener 2023-12-01
 crbug.com/1506782 fast/dom/HTMLImageElement/image-sizes-1x.html [ Failure Pass ]
 
