@@ -6,7 +6,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
@@ -671,76 +670,6 @@ TEST_P(MLGraphTest, ReluTest) {
 }
 
 template <typename T>
-struct LeakyReluTester {
-  OperandInfo<T> input;
-  Vector<T> expected;
-
-  void Test(MLGraphTest& helper,
-            V8TestingScope& scope,
-            MLLeakyReluOptions* options = MLLeakyReluOptions::Create()) {
-    // Build the graph.
-    auto* builder =
-        CreateMLGraphBuilder(scope.GetExecutionContext(),
-                             scope.GetScriptState(), scope.GetExceptionState());
-    auto* input_operand =
-        BuildInput(builder, "input", input.dimensions, input.data_type,
-                   scope.GetExceptionState());
-    auto* output_operand =
-        BuildLeakyRelu(scope, builder, input_operand, options);
-    auto [graph, error_name, error_message] =
-        helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_THAT(graph, testing::NotNull());
-
-    // Compute the graph.
-    MLNamedArrayBufferViews inputs(
-        {{"input",
-          CreateArrayBufferViewForOperand(input_operand, input.values)}});
-    MLNamedArrayBufferViews outputs(
-        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
-    std::tie(error_name, error_message) =
-        helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_TRUE(error_name.IsNull());
-    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
-    EXPECT_EQ(results, expected);
-  }
-};
-
-TEST_P(MLGraphTest, LeakyReluTest) {
-  V8TestingScope scope;
-  {
-    // Test leakyRelu operator with default options.
-    auto* options = MLLeakyReluOptions::Create();
-    LeakyReluTester<float>{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 2, 2, 1},
-                  .values = {10, 5, -100, 0}},
-        .expected = {10, 5, -1, 0}}
-        .Test(*this, scope, options);
-  }
-  {
-    // Test leakyRelu operator with alpha = 0.2.
-    auto* options = MLLeakyReluOptions::Create();
-    options->setAlpha(0.2);
-    LeakyReluTester<float>{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 2, 2, 1},
-                  .values = {10, 5, -100, 0}},
-        .expected = {10, 5, -20, 0}}
-        .Test(*this, scope, options);
-  }
-  {
-    // Test leakyRelu operator for scalar input.
-    auto* options = MLLeakyReluOptions::Create();
-    LeakyReluTester<float>{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {},
-                  .values = {-100}},
-        .expected = {-1}}
-        .Test(*this, scope, options);
-  }
-}
-
-template <typename T>
 struct ReduceTester {
   webnn::mojom::blink::Reduce::Kind kind;
   OperandInfo<T> input;
@@ -830,113 +759,6 @@ TEST_P(MLGraphTest, ReduceTest) {
         .keep_dimensions = true,
         .expected = {1.5, 3.5},
         .expected_output_shape = {2, 1}}
-        .Test(*this, scope, options);
-  }
-}
-
-template <typename T>
-struct ClampTester {
-  OperandInfo<T> input;
-  Vector<T> expected;
-
-  void Test(MLGraphTest& helper,
-            V8TestingScope& scope,
-            MLClampOptions* options = MLClampOptions::Create()) {
-    // Build the graph.
-    auto* builder =
-        CreateMLGraphBuilder(scope.GetExecutionContext(),
-                             scope.GetScriptState(), scope.GetExceptionState());
-    auto* input_operand =
-        BuildInput(builder, "input", input.dimensions, input.data_type,
-                   scope.GetExceptionState());
-    auto* output_operand =
-        builder->clamp(input_operand, options, scope.GetExceptionState());
-    auto [graph, error_name, error_message] =
-        helper.BuildGraph(scope, builder, {{"output", output_operand}});
-    ASSERT_THAT(graph, testing::NotNull());
-
-    // Compute the graph.
-    MLNamedArrayBufferViews inputs(
-        {{"input",
-          CreateArrayBufferViewForOperand(input_operand, input.values)}});
-    MLNamedArrayBufferViews outputs(
-        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
-    std::tie(error_name, error_message) =
-        helper.ComputeGraph(scope, graph, inputs, outputs);
-    EXPECT_TRUE(error_name.IsNull());
-    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
-    EXPECT_EQ(results, expected);
-  }
-};
-
-TEST_P(MLGraphTest, ClampTest) {
-  V8TestingScope scope;
-  {
-    // Test clamp operator with the minimum value defined.
-    MLClampOptions* options = MLClampOptions::Create();
-    options->setMinValue(0.0);
-    ClampTester<float>{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 2, 2, 1},
-                  .values = {-10.0, -0.5, 0.5, 10.0}},
-        .expected = {0.0, 0.0, 0.5, 10.0}}
-        .Test(*this, scope, options);
-  }
-  {
-    // Test clamp operator with the minimum = 0 and maximum = 6.
-    MLClampOptions* options = MLClampOptions::Create();
-    options->setMinValue(0.0);
-    options->setMaxValue(6.0);
-    ClampTester<float>{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 2, 2, 1},
-                  .values = {-10.0, -0.5, 0.5, 10.0}},
-        .expected = {0.0, 0.0, 0.5, 6.0}}
-        .Test(*this, scope, options);
-  }
-  {
-    // Test clamp operator with the minimum = -1 and maximum = 1.
-    MLClampOptions* options = MLClampOptions::Create();
-    options->setMinValue(-1.0);
-    options->setMaxValue(1.0);
-    ClampTester<float>{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 2, 2, 1},
-                  .values = {-10.0, -0.5, 0.5, 10.0}},
-        .expected = {-1, -0.5, 0.5, 1}}
-        .Test(*this, scope, options);
-  }
-  {
-    // Test clamp operator for scalar input.
-    MLClampOptions* options = MLClampOptions::Create();
-    options->setMinValue(0.0);
-    options->setMaxValue(6.0);
-    ClampTester<float>{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {},
-                  .values = {10.0}},
-        .expected = {6.0}}
-        .Test(*this, scope, options);
-  }
-  {
-    // Test clamp operator with default options that no minimum and maximum
-    // values are defined.
-    ClampTester<float>{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 2, 2, 1},
-                  .values = {-10.0, -0.5, 0.5, 10.0}},
-        .expected = {-10.0, -0.5, 0.5, 10.0}}
-        .Test(*this, scope);
-  }
-  {
-    // Test clamp operator with the maximum value defined.
-    MLClampOptions* options = MLClampOptions::Create();
-    options->setMaxValue(6.0);
-    ClampTester<float>{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {1, 2, 2, 1},
-                  .values = {-10.0, -0.5, 0.5, 10.0}},
-        .expected = {-10.0, -0.5, 0.5, 6.0}}
         .Test(*this, scope, options);
   }
 }

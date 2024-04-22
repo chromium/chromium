@@ -532,8 +532,7 @@ bool ValidateClampOptions(const MLClampOptions* options,
   // non-finite values.
   if (options->hasMinValue() && options->hasMaxValue()) {
     if (options->minValue() > options->maxValue()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
+      exception_state.ThrowTypeError(
           String::Format("The min value (%f) should be less than or equal to "
                          "the max value (%f).",
                          options->minValue(), options->maxValue()));
@@ -1140,8 +1139,7 @@ MLOperand* MLGraphBuilder::elu(const MLOperand* input,
   // The current spec doesn't restrict the value of alpha. An issue has been
   // filed to track it: https://github.com/webmachinelearning/webnn/issues/383
   if (options->alpha() <= 0.0f) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
+    exception_state.ThrowTypeError(
         "The value of alpha must be greater than 0.");
     return nullptr;
   }
@@ -1162,8 +1160,7 @@ MLActivation* MLGraphBuilder::elu(const MLEluOptions* options,
   // The current spec doesn't restrict the value of alpha. An issue has been
   // filed to track it: https://github.com/webmachinelearning/webnn/issues/383
   if (options->alpha() <= 0.0f) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
+    exception_state.ThrowTypeError(
         "The value of alpha must be greater than 0.");
     return nullptr;
   }
