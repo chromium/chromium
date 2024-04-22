@@ -12,12 +12,15 @@ import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
 import androidx.core.util.ObjectsCompat;
 
+import com.google.protobuf.InvalidProtocolBufferException;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.components.omnibox.GroupsProto.GroupId;
+import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.url.GURL;
 
@@ -69,7 +72,7 @@ public class AutocompleteMatch {
     private String mDescription;
     private List<MatchClassification> mDescriptionClassifications;
     private SuggestionAnswer mAnswer;
-    private byte[] mSerializedAnswerTemplate;
+    private @Nullable RichAnswerTemplate mAnswerTemplate;
     private final String mFillIntoEdit;
     private GURL mUrl;
     private final GURL mImageUrl;
@@ -121,7 +124,13 @@ public class AutocompleteMatch {
         mDescription = description;
         mDescriptionClassifications = descriptionClassifications;
         mAnswer = answer;
-        mSerializedAnswerTemplate = serializedAnswerTemplate;
+        if (serializedAnswerTemplate != null) {
+            try {
+                mAnswerTemplate = RichAnswerTemplate.parseFrom(serializedAnswerTemplate);
+            } catch (InvalidProtocolBufferException e) {
+                // When parsing error occurs, leave template as null.
+            }
+        }
         mFillIntoEdit = TextUtils.isEmpty(fillIntoEdit) ? displayText : fillIntoEdit;
         assert url != null;
         mUrl = url;
@@ -310,8 +319,8 @@ public class AutocompleteMatch {
         return mAnswer != null;
     }
 
-    public byte[] getSerializedAnswerTemplate() {
-        return mSerializedAnswerTemplate;
+    public @Nullable RichAnswerTemplate getAnswerTemplate() {
+        return mAnswerTemplate;
     }
 
     public @NonNull String getFillIntoEdit() {
