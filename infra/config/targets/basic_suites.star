@@ -2440,6 +2440,9 @@ targets.legacy_basic_suite(
             swarming = targets.swarming(
                 shards = 1,
             ),
+            android_swarming = targets.swarming(
+                shards = 2,
+            ),
         ),
         "webgpu_cts_dedicated_worker_tests": targets.legacy_test_config(
             mixins = [
@@ -2449,6 +2452,9 @@ targets.legacy_basic_suite(
             swarming = targets.swarming(
                 shards = 1,
             ),
+            android_swarming = targets.swarming(
+                shards = 2,
+            ),
         ),
         "webgpu_cts_shared_worker_tests": targets.legacy_test_config(
             mixins = [
@@ -2457,6 +2463,9 @@ targets.legacy_basic_suite(
             ],
             swarming = targets.swarming(
                 shards = 1,
+            ),
+            android_swarming = targets.swarming(
+                shards = 2,
             ),
         ),
         "webgpu_cts_with_validation_tests": targets.legacy_test_config(

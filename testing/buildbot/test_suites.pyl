@@ -2591,6 +2591,9 @@
         'swarming': {
           'shards': 1,
         },
+        'android_swarming': {
+          'shards': 2,
+        },
       },
       'webgpu_cts_service_worker_tests': {
         'telemetry_test_name': 'webgpu_cts',
@@ -2605,6 +2608,9 @@
         'swarming': {
           'shards': 1,
         },
+        'android_swarming': {
+          'shards': 2,
+        },
       },
       'webgpu_cts_shared_worker_tests': {
         'telemetry_test_name': 'webgpu_cts',
@@ -2618,6 +2624,9 @@
         ],
         'swarming': {
           'shards': 1,
+        },
+        'android_swarming': {
+          'shards': 2,
         },
       },
       'webgpu_cts_tests': {
