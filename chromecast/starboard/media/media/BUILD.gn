@@ -11,6 +11,31 @@ if (!remove_starboard_headers) {
       "//chromecast/starboard/third_party/starboard/sabi/base_configuration.gni")
 }
 
+source_set("starboard") {
+  sources = [
+    "drm_util.cc",
+    "drm_util.h",
+    "starboard_audio_decoder.cc",
+    "starboard_audio_decoder.h",
+    "starboard_decoder.cc",
+    "starboard_decoder.h",
+    "starboard_resampler.cc",
+    "starboard_resampler.h",
+    "starboard_video_decoder.cc",
+    "starboard_video_decoder.h",
+  ]
+  deps = [
+    ":starboard_api_wrapper",
+    "//base",
+    "//chromecast/public",
+    "//chromecast/public/media",
+    "//chromecast/starboard/chromecast/starboard_adapter",
+    "//chromecast/starboard/chromecast/starboard_cast_api:cast_starboard_api_types",
+    "//ui/display",
+    "//ui/gfx/geometry",
+  ]
+}
+
 source_set("mock_starboard_api_wrapper") {
   testonly = true
   sources = [
@@ -53,4 +78,52 @@ cast_source_set("starboard_api_wrapper") {
       "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
     ]
   }
+}
+
+test("starboard_audio_decoder_test") {
+  sources = [ "starboard_audio_decoder_test.cc" ]
+  deps = [
+    ":mock_starboard_api_wrapper",
+    ":starboard",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//chromecast/media/base",
+    "//chromecast/media/cma/base",
+    "//chromecast/public",
+    "//media",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+test("starboard_video_decoder_test") {
+  sources = [ "starboard_video_decoder_test.cc" ]
+  deps = [
+    ":mock_starboard_api_wrapper",
+    ":starboard",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//chromecast/media/base",
+    "//chromecast/media/cma/base",
+    "//chromecast/public",
+    "//media",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+test("starboard_resampler_test") {
+  sources = [ "starboard_resampler_test.cc" ]
+  deps = [
+    ":mock_starboard_api_wrapper",
+    ":starboard",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//chromecast/media/base",
+    "//chromecast/media/cma/base",
+    "//chromecast/public",
+    "//media",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }
