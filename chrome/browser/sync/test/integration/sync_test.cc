@@ -805,10 +805,25 @@ void SyncTest::TearDownOnMainThread() {
     fake_server_.reset();
   }
 
-  for (Profile* profile : profiles_) {
+  for (size_t index = 0; index < profiles_.size(); ++index) {
     // Profile could be removed earlier.
-    if (profile) {
-      profile->RemoveObserver(this);
+    if (profiles_[index]) {
+      profiles_[index]->RemoveObserver(this);
+
+#if BUILDFLAG(IS_ANDROID)
+      if (server_type_ == EXTERNAL_LIVE_SERVER) {
+        // A profile could have backend tasks from the associate sync engine.
+        // In browser tests, on non-Android platforms, these tasks are cancelled
+        // during the browser process shutdown.
+        // On Android, however, browser process is not shutdown after test run.
+        // As a result, these backend tasks could keep running and cause timeout
+        // error during test shutdown.
+        // To fix this issue, we explicitly call SyncServiceImpl::StopAndClear
+        // to cancel any ongoing sync engine's backend tasks.
+        GetSyncService(index)->StopAndClear();
+      }
+#endif  // BUILDFLAG(IS_ANDROID)
+
     }
   }
 
