@@ -472,8 +472,7 @@ class UkmBrowserTestWithDemographics
 
 // Make sure that UKM is disabled while an incognito window is open.
 // Keep in sync with testRegularPlusIncognito in ios/chrome/browser/metrics/
-// ukm_egtest.mm and with RegularPlusIncognitoCheck in
-// weblayer/browser/ukm_browsertest.cc.
+// ukm_egtest.mm.
 IN_PROC_BROWSER_TEST_F(UkmBrowserTest, RegularPlusIncognitoCheck) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
   MetricsConsentOverride metrics_consent(true);
@@ -516,8 +515,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, RegularPlusIncognitoCheck) {
 
 // Make sure opening a real window after Incognito doesn't enable UKM.
 // Keep in sync with testIncognitoPlusRegular in ios/chrome/browser/metrics/
-// ukm_egtest.mm and with IncognitoPlusRegularCheck in
-// weblayer/browser/ukm_browsertest.cc.
+// ukm_egtest.mm.
 IN_PROC_BROWSER_TEST_F(UkmBrowserTest, IncognitoPlusRegularCheck) {
   ukm::UkmTestHelper ukm_test_helper(GetUkmService());
   MetricsConsentOverride metrics_consent(true);
