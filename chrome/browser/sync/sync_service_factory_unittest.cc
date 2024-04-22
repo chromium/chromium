@@ -19,7 +19,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/data_sharing/public/features.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/saved_tab_groups/features.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
@@ -137,8 +136,11 @@ class SyncServiceFactoryTest : public testing::Test {
     datatypes.Put(syncer::WORKSPACE_DESK);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    // Common types. This excludes PASSWORDS because the password store factory
-    // is null for testing and hence no controller gets instantiated.
+    // Common types. This excludes PASSWORDS,
+    // INCOMING_PASSWORD_SHARING_INVITATION and
+    // INCOMING_PASSWORD_SHARING_INVITATION, because the password store factory
+    // is null for testing and hence no controller gets instantiated for those
+    // types.
     datatypes.Put(syncer::AUTOFILL);
     datatypes.Put(syncer::AUTOFILL_PROFILE);
     if (base::FeatureList::IsEnabled(
@@ -168,15 +170,6 @@ class SyncServiceFactoryTest : public testing::Test {
       datatypes.Put(syncer::WEBAUTHN_CREDENTIAL);
     }
 #endif  // !BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::
-                kPasswordManagerEnableReceiverService)) {
-      datatypes.Put(syncer::INCOMING_PASSWORD_SHARING_INVITATION);
-    }
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kPasswordManagerEnableSenderService)) {
-      datatypes.Put(syncer::OUTGOING_PASSWORD_SHARING_INVITATION);
-    }
     if (base::FeatureList::IsEnabled(
             data_sharing::features::kDataSharingFeature)) {
       datatypes.Put(syncer::COLLABORATION_GROUP);
