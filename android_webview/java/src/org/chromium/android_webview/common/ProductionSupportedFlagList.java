@@ -656,6 +656,8 @@ public final class ProductionSupportedFlagList {
                 "Enables new optimized implementation of SpdyHeadersToHttpResponse. No behavior"
                         + " change."),
         Flag.baseFeature(
+                NetFeatures.ENABLE_IP_PROTECTION_PROXY, "Enables IP Protection on WebView."),
+        Flag.baseFeature(
                 "MojoFixAssociatedHandleLeak",
                 "Holdback for a bugfix which may have improved WebView stability."),
         Flag.baseFeature("MojoIpcz"),
