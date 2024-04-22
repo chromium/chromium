@@ -615,14 +615,16 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
                       WebFeature::kEventTimingExplicitlyRequested);
     NotifyObserversOfEntry(*entry);
   }
+
   // TODO(npm): is 104 a reasonable buffering threshold or should it be
   // relaxed?
-  if (entry->duration() >= PerformanceObserver::kDefaultDurationThreshold &&
-      !IsEventTimingBufferFull()) {
+  if (entry->duration() >= PerformanceObserver::kDefaultDurationThreshold) {
     AddEventTimingBuffer(*entry);
   }
+
   bool tracing_enabled;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("devtools.timeline", &tracing_enabled);
+
   if (tracing_enabled) {
     base::TimeTicks unsafe_start_time =
         GetTimeOriginInternal() + base::Milliseconds(entry->startTime());
