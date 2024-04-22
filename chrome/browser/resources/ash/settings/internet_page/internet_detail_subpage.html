@@ -322,12 +322,9 @@
               deviceState_)]]"
           disabled="[[disabled_]]">
         <template is="dom-if" if="[[isApnManaged_(globalPolicy)]]">
-          <!-- TODO(b/335486874): Fix tooltip in RTL. -->
-          <cr-tooltip-icon id="apnManagedIcon"
-              tooltip-text="$i18n{controlledSettingPolicy}"
-              icon-class="cr20:domain"
-              tooltip-position="left">
-          </cr-tooltip-icon>
+          <cr-policy-indicator id="apnManagedIcon"
+              indicator-type="devicePolicy">
+          </cr-policy-indicator>
         </template>
       </cr-link-row>
     </template>

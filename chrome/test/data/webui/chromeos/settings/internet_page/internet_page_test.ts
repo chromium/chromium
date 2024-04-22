@@ -5,7 +5,7 @@
 import 'chrome://os-settings/os_settings.js';
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrActionMenuElement, CrExpandButtonElement, CrIconButtonElement, CrToggleElement, EsimRemoveProfileDialogElement, EsimRenameDialogElement, NetworkSummaryElement, NetworkSummaryItemElement, OsSettingsCellularSetupDialogElement, OsSettingsSubpageElement, Router, routes, settingMojom, SettingsInternetPageElement} from 'chrome://os-settings/os_settings.js';
+import {CrActionMenuElement, CrExpandButtonElement, CrIconButtonElement, CrToggleElement, EsimRemoveProfileDialogElement, EsimRenameDialogElement, NetworkSummaryElement, NetworkSummaryItemElement, OsSettingsCellularSetupDialogElement, OsSettingsSubpageElement, PaperTooltipElement, Router, routes, settingMojom, SettingsInternetPageElement} from 'chrome://os-settings/os_settings.js';
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
@@ -1101,58 +1101,67 @@ suite('<settings-internet-page>', () => {
         assertNotEquals(routes.APN, Router.getInstance().currentRoute);
       });
 
-  test(
-      'Disable and show tooltip for APN buttons when custom APNs limit is' +
-          'reached',
-      async () => {
-        loadTimeData.overrideValues({isApnRevampEnabled: true});
-        await navigateToApnSubpage();
-        const getCreateCustomApnTooltip = () =>
-            internetPage.shadowRoot!.querySelector('#createCustomApnTooltip');
-        const getDiscoverMoreApnsTooltip = () =>
-            internetPage.shadowRoot!.querySelector('#discoverMoreApnsTooltip');
+  ['ltr', 'rtl'].forEach(languageDirection => {
+    test(
+        'Disable and show tooltip for APN buttons when custom APNs limit is' +
+            'reached',
+        async () => {
+          document.body.style.direction = languageDirection;
+          loadTimeData.overrideValues({isApnRevampEnabled: true});
+          await navigateToApnSubpage();
+          const getCreateCustomApnTooltip = () =>
+              internetPage.shadowRoot!.querySelector<PaperTooltipElement>(
+                  '#createCustomApnTooltip');
+          const getDiscoverMoreApnsTooltip = () =>
+              internetPage.shadowRoot!.querySelector<PaperTooltipElement>(
+                  '#discoverMoreApnsTooltip');
 
-        const createCustomApnButton = queryCreateCustomApnButton();
-        assertTrue(!!createCustomApnButton);
-        assertFalse(createCustomApnButton.disabled);
-        const discoverMoreApnsButton = queryDiscoverMoreApnsButton();
-        assertTrue(!!discoverMoreApnsButton);
-        assertFalse(discoverMoreApnsButton.disabled);
-        assertNull(getCreateCustomApnTooltip());
-        assertNull(getDiscoverMoreApnsTooltip());
+          const createCustomApnButton = queryCreateCustomApnButton();
+          assertTrue(!!createCustomApnButton);
+          assertFalse(createCustomApnButton.disabled);
+          const discoverMoreApnsButton = queryDiscoverMoreApnsButton();
+          assertTrue(!!discoverMoreApnsButton);
+          assertFalse(discoverMoreApnsButton.disabled);
+          assertNull(getCreateCustomApnTooltip());
+          assertNull(getDiscoverMoreApnsTooltip());
 
-        let properties = OncMojo.getDefaultManagedProperties(
-            NetworkType.kCellular, 'cellular1', 'cellular');
+          let properties = OncMojo.getDefaultManagedProperties(
+              NetworkType.kCellular, 'cellular1', 'cellular');
 
-        // We're setting the list of APNs to the max number
-        const customApn = {accessPointName: 'apn'} as ApnProperties;
-        properties.typeProperties.cellular!.customApnList =
-            Array(MAX_NUM_CUSTOM_APNS).fill({...customApn});
-        mojoApi.setManagedPropertiesForTest(properties);
-        await flushTasks();
+          // We're setting the list of APNs to the max number
+          const customApn = {accessPointName: 'apn'} as ApnProperties;
+          properties.typeProperties.cellular!.customApnList =
+              Array(MAX_NUM_CUSTOM_APNS).fill({...customApn});
+          mojoApi.setManagedPropertiesForTest(properties);
+          await flushTasks();
 
-        assertTrue(createCustomApnButton.disabled);
-        assertTrue(discoverMoreApnsButton.disabled);
-        const createCustomApnTooltip = getCreateCustomApnTooltip();
-        assertTrue(!!createCustomApnTooltip);
-        assertTrue(createCustomApnTooltip.innerHTML.includes(
-            internetPage.i18n('customApnLimitReached')));
-        const discoverMoreApnsTooltip = getDiscoverMoreApnsTooltip();
-        assertTrue(!!discoverMoreApnsTooltip);
-        assertTrue(discoverMoreApnsTooltip.innerHTML.includes(
-            internetPage.i18n('customApnLimitReached')));
+          assertTrue(createCustomApnButton.disabled);
+          assertTrue(discoverMoreApnsButton.disabled);
+          const createCustomApnTooltip = getCreateCustomApnTooltip();
+          assertTrue(!!createCustomApnTooltip);
+          assertTrue(createCustomApnTooltip.innerHTML.includes(
+              internetPage.i18n('customApnLimitReached')));
+          const toolTipPosition =
+              languageDirection === 'ltr' ? 'left' : 'right';
+          assertEquals(toolTipPosition, createCustomApnTooltip.position);
+          const discoverMoreApnsTooltip = getDiscoverMoreApnsTooltip();
+          assertTrue(!!discoverMoreApnsTooltip);
+          assertTrue(discoverMoreApnsTooltip.innerHTML.includes(
+              internetPage.i18n('customApnLimitReached')));
+          assertEquals(toolTipPosition, discoverMoreApnsTooltip.position);
 
-        properties = OncMojo.getDefaultManagedProperties(
-            NetworkType.kCellular, 'cellular1', 'cellular');
-        properties.typeProperties.cellular!.customApnList = [];
-        mojoApi.setManagedPropertiesForTest(properties);
-        await flushTasks();
+          properties = OncMojo.getDefaultManagedProperties(
+              NetworkType.kCellular, 'cellular1', 'cellular');
+          properties.typeProperties.cellular!.customApnList = [];
+          mojoApi.setManagedPropertiesForTest(properties);
+          await flushTasks();
 
-        assertFalse(createCustomApnButton.disabled);
-        assertFalse(discoverMoreApnsButton.disabled);
-        assertNull(getCreateCustomApnTooltip());
-        assertNull(getDiscoverMoreApnsTooltip());
-      });
+          assertFalse(createCustomApnButton.disabled);
+          assertFalse(discoverMoreApnsButton.disabled);
+          assertNull(getCreateCustomApnTooltip());
+          assertNull(getDiscoverMoreApnsTooltip());
+        });
+  });
 
   [true, false].forEach(isApnPoliciesEnabled => {
     test(

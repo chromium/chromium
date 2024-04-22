@@ -372,6 +372,16 @@ export class SettingsInternetPageElement extends
         type: Object,
         notify: true,
       },
+
+      /**
+       * The position of the tooltips displayed by the APN menu. This can be
+       * 'right' if the language is RTL. This ensures the tooltip doesn't get
+       * cut off in RTL languages (b/335486874).
+       */
+      apnMenuTooltipsPosition_: {
+        type: String,
+        value: 'left',
+      },
     };
   }
 
@@ -413,6 +423,7 @@ export class SettingsInternetPageElement extends
   private subpageType_: NetworkType;
   private vpnIsProhibited_: boolean;
   private vpnProviders_: VpnProvider[];
+  private apnMenuTooltipsPosition_: string;
 
   constructor() {
     super();
@@ -505,6 +516,9 @@ export class SettingsInternetPageElement extends
     this.onPoliciesApplied(/*userhash=*/ '');
     this.onVpnProvidersChanged();
     this.onNetworkStateListChanged();
+
+    const isRTL = window.getComputedStyle(this).direction === 'rtl';
+    this.apnMenuTooltipsPosition_ = isRTL ? 'right' : 'left';
   }
 
   /**

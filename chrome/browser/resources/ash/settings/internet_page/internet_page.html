@@ -139,11 +139,10 @@
     <os-settings-subpage page-title="$i18n{internetApnPageTitle}">
       <div id="apnSubpageTitleExtra" slot="subpage-title-extra">
         <template is="dom-if" if="[[isApnManaged_(globalPolicy_)]]">
-          <!-- TODO(b/335486874): Fix tooltip in RTL. -->
           <cr-tooltip-icon id="apnManagedIcon"
               tooltip-text="$i18n{controlledSettingPolicy}"
               icon-class="cr20:domain"
-              tooltip-position="left">
+              tooltip-position="bottom">
           </cr-tooltip-icon>
         </template>
         <cr-icon-button id="apnActionMenuButton" class="icon-more-vert"
@@ -278,12 +277,12 @@
   <!-- TODO(b/162365553) Add a11y support-->
   <paper-tooltip id="discoverMoreApnsTooltip"
       for="discoverMoreApnsButton"
-      position="left">
+      position="[[apnMenuTooltipsPosition_]]">
     $i18n{customApnLimitReached}
   </paper-tooltip>
   <paper-tooltip id="createCustomApnTooltip"
       for="createCustomApnButton"
-      position="left">
+      position="[[apnMenuTooltipsPosition_]]">
     $i18n{customApnLimitReached}
   </paper-tooltip>
 </template>
