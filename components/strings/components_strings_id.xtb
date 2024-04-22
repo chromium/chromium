@@ -2113,6 +2113,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="5040262127954254034">Privasi</translation>
 <translation id="5043480802608081735">Link yang Anda Salin</translation>
 <translation id="5045550434625856497">Sandi salah</translation>
+<translation id="5048293684454354469">Topik iklan hanyalah salah satu dari banyak hal yang dapat digunakan situs untuk mempersonalisasi iklan. Bahkan tanpa topik iklan, situs tetap dapat menampilkan iklan kepada Anda, tetapi iklan tersebut mungkin kurang dipersonalisasi. Pelajari lebih lanjut cara <ph name="BEGIN_LINK" />mengelola privasi iklan<ph name="LINK_END" />.</translation>
 <translation id="5052517576853118371">Topik aktif</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Untuk mengirim file ini menggunakan Berbagi Langsung, kosongkan ruang penyimpanan (<ph name="DISK_SPACE_SIZE" />) di perangkat Anda}other{Untuk mengirim file ini menggunakan Berbagi Langsung, kosongkan ruang penyimpanan (<ph name="DISK_SPACE_SIZE" />) di perangkat Anda}}</translation>
 <translation id="505757197798929356">Berikan alasan membuka (wajib)</translation>
@@ -2332,6 +2333,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
     <ph name="LINE_BREAK" />
     Coba hubungi administrator sistem Anda.</translation>
 <translation id="549333378215107354">Ukuran 3</translation>
+<translation id="5496804587179176046">Simpan kode keamanan, tidak ada kode keamanan yang disimpan saat ini</translation>
 <translation id="550365051221576010">Isi semua</translation>
 <translation id="5508443345185481044">Kamera &amp; Perekam Video</translation>
 <translation id="5509762909502811065">B0</translation>
