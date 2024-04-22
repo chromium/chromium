@@ -17,6 +17,7 @@ import {getTemplate} from './sea_pen_chip_text_element.html.js';
 
 export interface SeaPenChipTextElement {
   $: {
+    underline: HTMLDivElement,
     chipText: HTMLDivElement,
   };
 }
@@ -76,6 +77,22 @@ export class SeaPenChipTextElement extends PolymerElement {
     }
   }
 
+  // animates the underline width from `oldWidth` value to `newWidth` value in
+  // `duration` ms.
+  private animateUnderlineWidthChange_(
+      oldWidth: number, newWidth: number, duration: number) {
+    const underline = this.$.underline;
+    assert(!!underline, 'underline element should be available');
+    underline.animate(
+        {
+          width: [`${oldWidth}px`, `${newWidth}px`],
+        },
+        {
+          duration: duration,
+          easing: 'cubic-bezier(0.00, 0.00, 0.00, 1.00)',
+        });
+  }
+
   private animateLetterOut_(letterElements: HTMLElement[], i: number) {
     // The delay the animation between letters is 17ms.
     setTimeout(() => {
@@ -92,6 +109,7 @@ export class SeaPenChipTextElement extends PolymerElement {
 
   private changeChipText_(chipElement: HTMLElement, newText: string) {
     assert(!!chipElement);
+    const currentChipWidth = chipElement.clientWidth;
     const currentLetterElements = this.getLettersAsElements_(chipElement!);
     // Animates the letters of old chip text out.
     for (let i = 0; i < currentLetterElements.length; i++) {
@@ -104,6 +122,13 @@ export class SeaPenChipTextElement extends PolymerElement {
       this.removeLetterElementsFromChip_(currentLetterElements.length);
       chipElement!.innerHTML = sanitizeInnerHtml(newText);
       const newLetterElements = this.getLettersAsElements_(chipElement);
+      const newChipWidth = chipElement.clientWidth;
+
+      // Width transition of the underline from the width value of the old chip
+      // text to the width value of the new chip text.
+      this.animateUnderlineWidthChange_(
+          currentChipWidth, newChipWidth, 250 + newLetterElements.length * 17);
+
       for (let i = 0; i < newLetterElements.length; i++) {
         this.animateLetterIn_(newLetterElements, i);
       }

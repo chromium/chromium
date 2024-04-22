@@ -62,17 +62,6 @@
     outline: 2px solid var(--cros-sys-focus_ring);
   }
 
-  .underline {
-    border-bottom: 2px dotted;
-    grid-area: chip;
-    /* Add one pixel to move the underline below the border. */
-    height: calc(100% + 1px);
-    justify-self: center;
-    /* Subtract 8 pixels so as to not underline the padding from .chip-text. */
-    width: calc(100% - 8px);
-    z-index: -1;
-  }
-
   #searchButtons {
     align-items: center;
     box-sizing: border-box;
@@ -139,7 +128,6 @@
         <div class$="chip-container [[getChipClassName_(token, selectedChip_)]]"
             disabled$="[[thumbnailsLoading_]]">
           <template is="dom-if" if="[[!thumbnailsLoading_]]" restamp>
-            <div class="underline"></div>
             <sea-pen-chip-text
                 aria-label$="[[token.translation]]"
                 aria-description$="[[getTemplateAriaLabel_(templateTokens_)]]"
