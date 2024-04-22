@@ -29,7 +29,8 @@ public interface FeedLaunchReliabilityLogger {
         StreamType.UNSPECIFIED,
         StreamType.FOR_YOU,
         StreamType.WEB_FEED,
-        StreamType.SINGLE_WEB_FEED
+        StreamType.SINGLE_WEB_FEED,
+        StreamType.SUPERVISED_USER_FEED
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface StreamType {
@@ -37,13 +38,15 @@ public interface FeedLaunchReliabilityLogger {
         int FOR_YOU = 1;
         int WEB_FEED = 2;
         int SINGLE_WEB_FEED = 3;
+        int SUPERVISED_USER_FEED = 4;
     }
 
     /**
      * Set details about the stream being launched and send any pending events.
-     * @param streamType Feed type (e.g. "for you" or "following").
+     *
+     * @param streamType Feed type (e.g. "for you", "following" or "supervised user").
      * @param streamId Identifier for the stream used to disambiguate events from concurrent
-     *         streams.
+     *     streams.
      */
     default void sendPendingEvents(
             @org.chromium.chrome.browser.xsurface.feed.StreamType int streamType, int streamId) {}

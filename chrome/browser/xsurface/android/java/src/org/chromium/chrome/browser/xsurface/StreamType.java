@@ -15,7 +15,8 @@ import java.lang.annotation.RetentionPolicy;
     StreamType.UNSPECIFIED,
     StreamType.FOR_YOU,
     StreamType.WEB_FEED,
-    StreamType.SINGLE_WEB_FEED
+    StreamType.SINGLE_WEB_FEED,
+    StreamType.SUPERVISED_USER_FEED
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface StreamType {
@@ -23,4 +24,5 @@ public @interface StreamType {
     int FOR_YOU = 1;
     int WEB_FEED = 2;
     int SINGLE_WEB_FEED = 3;
+    int SUPERVISED_USER_FEED = 4;
 }
