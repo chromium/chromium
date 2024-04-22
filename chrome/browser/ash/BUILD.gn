@@ -5144,6 +5144,7 @@ static_library("test_support") {
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/policy/test_support",
+    "//components/privacy_sandbox:features",
     "//components/services/app_service/public/cpp:test_support",
     "//components/services/filesystem/public/mojom",
     "//components/sync/base",

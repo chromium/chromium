@@ -90,9 +90,3 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.TouchExploreSecondaryDisplay*
 -TouchExplorationTest
 -SelectToSpeakMouseSelectionTest.VoiceSwitching
-# TODO(crbug.com/333055971): Permanently failing due to ads privacy popup.
--ChromeVoxSettingsPagesTest.TtsRateCommandOnSettingsPage
--AccessibilityHighlightsBrowserTest.CaretHighlightWebContents
--AccessibilityHighlightsBrowserTest.FocusHighlight
-# TODO(crbug.com/333055971): Flaky due to ads privacy popup.
--ChromeVox*

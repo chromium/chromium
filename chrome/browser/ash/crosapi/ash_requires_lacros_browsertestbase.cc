@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/crosapi/ash_requires_lacros_browsertestbase.h"
 
 #include "base/command_line.h"
-#include "base/containers/to_vector.h"
 #include "base/location.h"
 #include "base/one_shot_event.h"
 #include "base/test/test_future.h"
@@ -49,18 +48,7 @@ void AshRequiresLacrosBrowserTestBase::SetUpOnMainThread() {
 
 void AshRequiresLacrosBrowserTestBase::EnableFeaturesInLacros(
     const std::vector<base::test::FeatureRef>& features) {
-  CHECK(ash_starter_.HasLacrosArgument());
-
-  std::vector<std::string> feature_strings = base::ToVector(  // IN-TEST
-      features, [](base::test::FeatureRef feature) -> std::string {
-        return feature->name;
-      });
-
-  std::string features_arg =
-      "--enable-features=" + base::JoinString(feature_strings, ",");
-  std::vector<std::string> lacros_args = {features_arg};
-  ash::standalone_browser::AddLacrosArguments(
-      lacros_args, base::CommandLine::ForCurrentProcess());
+  ash_starter_.EnableFeaturesInLacros(features);
 }
 
 mojom::StandaloneBrowserTestController*

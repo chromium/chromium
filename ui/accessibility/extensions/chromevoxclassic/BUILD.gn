@@ -540,6 +540,7 @@ if (is_chromeos_ash) {
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
       "//chrome/test/data/webui/chromeos:web_ui_test_bindings",
+      "//components/privacy_sandbox:features",
       "//components/webapps/browser",
       "//content/test:test_support",
       "//extensions/browser:test_support",

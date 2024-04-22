@@ -10629,6 +10629,7 @@ if (!is_android) {
       "//components/password_manager/core/browser/features:password_features",
       "//components/permissions",
       "//components/prefs",
+      "//components/privacy_sandbox:features",
       "//components/search_engines",
       "//components/security_interstitials/content:security_interstitial_page",
       "//components/services/app_service",

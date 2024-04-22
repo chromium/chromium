@@ -13,6 +13,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ash/js_test_api.h"
 #include "components/nacl/common/buildflags.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/browser/web_ui.h"
 #include "net/base/filename_util.h"
 
@@ -27,8 +28,11 @@ JavaScriptBrowserTest::~JavaScriptBrowserTest() {
 
 void JavaScriptBrowserTest::SetUpInProcessBrowserTestFixture() {
   ash_starter_ = std::make_unique<test::AshBrowserTestStarter>();
-  if (ash_starter_->HasLacrosArgument())
+  if (ash_starter_->HasLacrosArgument()) {
     ASSERT_TRUE(ash_starter_->PrepareEnvironmentForLacros());
+    ash_starter_->EnableFeaturesInLacros(
+        {privacy_sandbox::kDisablePrivacySandboxPrompts});
+  }
 }
 
 void JavaScriptBrowserTest::TearDownInProcessBrowserTestFixture() {

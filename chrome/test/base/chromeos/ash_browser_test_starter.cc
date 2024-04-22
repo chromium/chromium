@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/rand_util.h"
@@ -209,6 +210,22 @@ bool AshBrowserTestStarter::PrepareEnvironmentForLacros() {
   ash::standalone_browser::AddLacrosArguments(lacros_args, command_line);
 
   return true;
+}
+
+void AshBrowserTestStarter::EnableFeaturesInLacros(
+    const std::vector<base::test::FeatureRef>& features) {
+  CHECK(HasLacrosArgument());
+
+  std::vector<std::string> feature_strings = base::ToVector(  // IN-TEST
+      features, [](base::test::FeatureRef feature) -> std::string {
+        return feature->name;
+      });
+
+  std::string features_arg =
+      "--enable-features=" + base::JoinString(feature_strings, ",");
+  std::vector<std::string> lacros_args = {features_arg};
+  ash::standalone_browser::AddLacrosArguments(
+      lacros_args, base::CommandLine::ForCurrentProcess());
 }
 
 void AshBrowserTestStarter::StartLacros(InProcessBrowserTest* test_class_obj) {

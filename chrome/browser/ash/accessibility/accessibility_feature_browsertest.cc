@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 
 namespace ash {
 
@@ -20,6 +21,8 @@ void AccessibilityFeatureBrowserTest::SetUpInProcessBrowserTestFixture() {
   ash_starter_ = std::make_unique<::test::AshBrowserTestStarter>();
   if (ash_starter_->HasLacrosArgument()) {
     ASSERT_TRUE(ash_starter_->PrepareEnvironmentForLacros());
+    ash_starter_->EnableFeaturesInLacros(
+        {privacy_sandbox::kDisablePrivacySandboxPrompts});
   }
 }
 
