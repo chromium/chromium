@@ -9,6 +9,7 @@
 
 class ChromeBrowserState;
 class LegacyBookmarkModel;
+class PrefService;
 
 namespace favicon {
 class LargeIconService;
@@ -33,7 +34,8 @@ class BookmarkNode;
         (LegacyBookmarkModel*)localOrSyncableBookmarkModel
             accountBookmarkModel:(LegacyBookmarkModel*)accountBookmarkModel
               spotlightInterface:(SpotlightInterface*)spotlightInterface
-           searchableItemFactory:(SearchableItemFactory*)searchableItemFactory;
+           searchableItemFactory:(SearchableItemFactory*)searchableItemFactory
+                     prefService:(PrefService*)prefService;
 
 /// Number of pending large icon tasks.
 @property(nonatomic, assign) NSUInteger pendingLargeIconTasksCount;

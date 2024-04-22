@@ -70,6 +70,7 @@
 #import "components/update_client/update_client.h"
 #import "components/variations/service/variations_service.h"
 #import "components/web_resource/web_resource_pref_names.h"
+#import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/app/variations_app_state_agent.h"
 #import "ios/chrome/browser/drive/model/drive_policy.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
@@ -785,6 +786,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterTimePref(prefs::kLastApplicationStorageMetricsLogTime,
                              base::Time());
+
+  registry->RegisterIntegerPref(spotlight::kSpotlightLastIndexingVersionKey, 0);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -992,6 +995,10 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
 
   // Added 04/2024.
   prefs->ClearPref(prefs::kMixedContentAutoupgradeEnabled);
+
+  // Added 04/2024.
+  MigrateIntegerPreferenceFromUserDefaults(
+      spotlight::kSpotlightLastIndexingVersionKey, prefs, defaults);
 }
 
 void MigrateObsoleteUserDefault() {

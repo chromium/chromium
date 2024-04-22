@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
+
 #import <memory>
 
 #import "base/feature_list.h"
@@ -79,6 +80,9 @@ void BookmarkIOSUnitTestSupport::SetUp() {
     // that the merged view is also loaded.
     EXPECT_TRUE(bookmark_model_->loaded());
   }
+
+  pref_service_ = chrome_browser_state_->GetPrefs();
+  EXPECT_TRUE(pref_service_);
 
   if (wait_for_initialization_ &&
       base::FeatureList::IsEnabled(

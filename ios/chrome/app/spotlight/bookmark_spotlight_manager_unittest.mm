@@ -111,7 +111,8 @@ TEST_F(BookmarkSpotlightManagerTest, testClearAndReindexModel) {
       localOrSyncableBookmarkModel:local_or_syncable_bookmark_model_
               accountBookmarkModel:account_bookmark_model_
                 spotlightInterface:fakeSpotlightInterface
-             searchableItemFactory:searchableItemFactory_];
+             searchableItemFactory:searchableItemFactory_
+                       prefService:pref_service_];
 
   NSUInteger initialIndexedItemCount =
       fakeSpotlightInterface.indexSearchableItemsCallsCount;
@@ -144,7 +145,8 @@ TEST_F(BookmarkSpotlightManagerTest, testParentFolderNamesForNode) {
       localOrSyncableBookmarkModel:local_or_syncable_bookmark_model_
               accountBookmarkModel:account_bookmark_model_
                 spotlightInterface:spotlightInterface_
-             searchableItemFactory:searchableItemFactory_];
+             searchableItemFactory:searchableItemFactory_
+                       prefService:pref_service_];
 
   const bookmarks::BookmarkNode* root =
       local_or_syncable_bookmark_model_->mobile_node();
@@ -173,7 +175,8 @@ TEST_F(BookmarkSpotlightManagerTest, testRefreshItemWithURL) {
       localOrSyncableBookmarkModel:local_or_syncable_bookmark_model_
               accountBookmarkModel:account_bookmark_model_
                 spotlightInterface:fakeSpotlightInterface
-             searchableItemFactory:searchableItemFactory_];
+             searchableItemFactory:searchableItemFactory_
+                       prefService:pref_service_];
 
   NSUInteger initialIndexedItemCount =
       fakeSpotlightInterface.indexSearchableItemsCallsCount;
@@ -202,7 +205,8 @@ TEST_F(BookmarkSpotlightManagerTest, testUpdateBookmarkItem) {
       localOrSyncableBookmarkModel:local_or_syncable_bookmark_model_
               accountBookmarkModel:account_bookmark_model_
                 spotlightInterface:fakeSpotlightInterface
-             searchableItemFactory:searchableItemFactory_];
+             searchableItemFactory:searchableItemFactory_
+                       prefService:pref_service_];
 
   NSUInteger currentIndexedItemCount =
       fakeSpotlightInterface.indexSearchableItemsCallsCount;
@@ -253,7 +257,8 @@ TEST_F(BookmarkSpotlightManagerTest, testIndexAllBookmarksWithNoBookmarkModel) {
       localOrSyncableBookmarkModel:nullptr
               accountBookmarkModel:nullptr
                 spotlightInterface:fakeSpotlightInterface
-             searchableItemFactory:searchableItemFactory_];
+             searchableItemFactory:searchableItemFactory_
+                       prefService:pref_service_];
 
   NSUInteger initialIndexedItemCount =
       fakeSpotlightInterface.indexSearchableItemsCallsCount;
@@ -287,7 +292,8 @@ TEST_F(BookmarkSpotlightManagerTest, testUpdatesInBackgroundCauseFullReindex) {
       localOrSyncableBookmarkModel:local_or_syncable_bookmark_model_
               accountBookmarkModel:account_bookmark_model_
                 spotlightInterface:fakeSpotlightInterface
-             searchableItemFactory:searchableItemFactory_];
+             searchableItemFactory:searchableItemFactory_
+                       prefService:pref_service_];
 
   const bookmarks::BookmarkNode* addedNode1 =
       AddBookmark(local_or_syncable_bookmark_model_->mobile_node(), u"foo1",

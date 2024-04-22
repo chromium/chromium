@@ -79,6 +79,7 @@ source_set("browser_prefs") {
     "//components/variations/service",
     "//components/web_resource",
     "//ios/chrome/app:variations_app_state_agent",
+    "//ios/chrome/app/spotlight",
     "//ios/chrome/browser/drive/model:policy",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/geolocation/model",

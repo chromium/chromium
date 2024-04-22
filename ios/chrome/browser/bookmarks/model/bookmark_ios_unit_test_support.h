@@ -18,6 +18,7 @@ class Browser;
 class GURL;
 class LegacyBookmarkModel;
 class TestChromeBrowserState;
+class PrefService;
 
 namespace bookmarks {
 class BookmarkNode;
@@ -66,6 +67,7 @@ class BookmarkIOSUnitTestSupport : public PlatformTest {
   // Bookmark model providing a merged view.
   raw_ptr<bookmarks::CoreBookmarkModel> bookmark_model_;
   raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
+  raw_ptr<PrefService> pref_service_;
 };
 
 #endif  // IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_IOS_UNIT_TEST_SUPPORT_H_

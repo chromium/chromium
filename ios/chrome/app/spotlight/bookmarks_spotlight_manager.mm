@@ -4,10 +4,10 @@
 
 #import "ios/chrome/app/spotlight/bookmarks_spotlight_manager.h"
 
+#import <CoreSpotlight/CoreSpotlight.h>
+
 #import <memory>
 #import <stack>
-
-#import <CoreSpotlight/CoreSpotlight.h>
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
@@ -18,6 +18,7 @@
 #import "base/version.h"
 #import "components/bookmarks/browser/base_bookmark_model_observer.h"
 #import "components/bookmarks/browser/bookmark_node.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/app/spotlight/searchable_item_factory.h"
 #import "ios/chrome/app/spotlight/spotlight_interface.h"
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
@@ -27,6 +28,7 @@
 #import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 namespace {
 // Limit the size of the initial indexing. This will not limit the size of the
@@ -91,6 +93,9 @@ class SpotlightBookmarkModelBridge;
 
   // Number of times the indexing was interrupted by model updates.
   NSInteger _reindexInterruptionCount;
+
+  // PrefService per a browser state.
+  PrefService* _prefService;
 }
 
 + (BookmarksSpotlightManager*)bookmarksSpotlightManagerWithBrowserState:
@@ -109,7 +114,8 @@ class SpotlightBookmarkModelBridge;
                  [[SearchableItemFactory alloc]
                      initWithLargeIconService:largeIconService
                                        domain:spotlight::DOMAIN_BOOKMARKS
-                        useTitleInIdentifiers:YES]];
+                        useTitleInIdentifiers:YES]
+                       prefService:browserState->GetPrefs()];
 }
 
 - (instancetype)
@@ -118,13 +124,15 @@ class SpotlightBookmarkModelBridge;
         (LegacyBookmarkModel*)localOrSyncableBookmarkModel
             accountBookmarkModel:(LegacyBookmarkModel*)accountBookmarkModel
               spotlightInterface:(SpotlightInterface*)spotlightInterface
-           searchableItemFactory:(SearchableItemFactory*)searchableItemFactory {
+           searchableItemFactory:(SearchableItemFactory*)searchableItemFactory
+                     prefService:(PrefService*)prefService {
   self = [super initWithSpotlightInterface:spotlightInterface
                      searchableItemFactory:searchableItemFactory];
   if (self) {
     _pendingLargeIconTasksCount = 0;
     _localOrSyncableBookmarkModel = localOrSyncableBookmarkModel;
     _accountBookmarkModel = accountBookmarkModel;
+    _prefService = prefService;
     [self attachBookmarkModel];
   }
   return self;
@@ -221,6 +229,7 @@ class SpotlightBookmarkModelBridge;
 - (BOOL)shouldReindex {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
 
+  // TODO(crbug.com/324534520): Use PrefService instead.
   NSDate* date = base::apple::ObjCCast<NSDate>(
       [userDefaults objectForKey:@(spotlight::kSpotlightLastIndexingDateKey)]);
   if (!date) {
@@ -231,14 +240,10 @@ class SpotlightBookmarkModelBridge;
   if (timeSinceLastIndexing >= kDelayBetweenTwoIndexing) {
     return YES;
   }
-  NSNumber* lastIndexedVersion = base::apple::ObjCCast<NSNumber>([userDefaults
-      objectForKey:@(spotlight::kSpotlightLastIndexingVersionKey)]);
-  if (!lastIndexedVersion) {
-    return YES;
-  }
-
-  if ([lastIndexedVersion integerValue] <
-      spotlight::kCurrentSpotlightIndexVersion) {
+  // The default value is 0 if the value isn't set up yet.
+  const int lastIndexedVersion =
+      _prefService->GetInteger(spotlight::kSpotlightLastIndexingVersionKey);
+  if (lastIndexedVersion < spotlight::kCurrentSpotlightIndexVersion) {
     return YES;
   }
   return NO;
@@ -559,13 +564,14 @@ class SpotlightBookmarkModelBridge;
   UMA_HISTOGRAM_TIMES("IOS.Spotlight.BookmarksIndexingDuration",
                       _initialIndexTimer->Elapsed());
   _initialIndexTimer.reset();
+
+  // TODO(crbug.com/324534520): Use PrefService instead.
   [[NSUserDefaults standardUserDefaults]
       setObject:base::Time::Now().ToNSDate()
          forKey:@(spotlight::kSpotlightLastIndexingDateKey)];
 
-  [[NSUserDefaults standardUserDefaults]
-      setObject:@(spotlight::kCurrentSpotlightIndexVersion)
-         forKey:@(spotlight::kSpotlightLastIndexingVersionKey)];
+  _prefService->SetInteger(spotlight::kSpotlightLastIndexingVersionKey,
+                           spotlight::kCurrentSpotlightIndexVersion);
 }
 
 - (void)logIndexingInterruption {
