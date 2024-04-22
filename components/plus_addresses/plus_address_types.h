@@ -85,6 +85,25 @@ class PlusAddressRequestError {
   std::optional<int> http_response_code_;
 };
 
+class PlusAddressDataChange {
+ public:
+  enum class Type { kAdd = 0, kRemove = 1 };
+
+  PlusAddressDataChange(Type type, PlusProfile profile);
+  PlusAddressDataChange(const PlusAddressDataChange& other);
+  PlusAddressDataChange& operator=(const PlusAddressDataChange& change);
+  ~PlusAddressDataChange();
+
+  Type type() const { return type_; }
+  const PlusProfile& profile() const { return profile_; }
+
+  bool operator==(const PlusAddressDataChange& other) const = default;
+
+ private:
+  Type type_;
+  PlusProfile profile_;
+};
+
 // Only used by Autofill.
 using autofill::PlusAddressCallback;
 

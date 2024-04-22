@@ -26,7 +26,7 @@ class ModelTypeControllerDelegate;
 namespace plus_addresses {
 
 class PlusAddressSyncBridge;
-class PlusAddressSyncDataChange;
+class PlusAddressDataChange;
 
 // `PlusAddressWebDataService` acts as the bridge between code on the UI
 // sequence (`PlusAddressService`) and code on the DB sequence (
@@ -49,7 +49,7 @@ class PlusAddressWebDataService : public WebDataServiceBase {
     // operations are emulated as a remove operation of the old value followed
     // by an addition of the updated value.
     virtual void OnWebDataChangedBySync(
-        const PlusAddressSyncDataChange& change) = 0;
+        const PlusAddressDataChange& change) = 0;
   };
 
   PlusAddressWebDataService(
@@ -96,8 +96,7 @@ class PlusAddressWebDataService : public WebDataServiceBase {
   };
 
   // Notifies all `observers_` about `OnWebDataChangedBySync()`.
-  void NotifyOnWebDataChangedBySync(
-      std::vector<PlusAddressSyncDataChange> changes);
+  void NotifyOnWebDataChangedBySync(std::vector<PlusAddressDataChange> changes);
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;

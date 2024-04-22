@@ -78,7 +78,7 @@ PlusAddressSyncBridge::ApplyIncrementalSyncChanges(
     return syncer::ModelError(FROM_HERE, "Failed to begin transaction.");
   }
 
-  std::vector<PlusAddressSyncDataChange> profile_changes;
+  std::vector<PlusAddressDataChange> profile_changes;
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     switch (change->type()) {
       case syncer::EntityChange::ACTION_ADD:
@@ -94,10 +94,10 @@ PlusAddressSyncBridge::ApplyIncrementalSyncChanges(
         // both a REMOVE and ADD change for the old and new profiles
         // respectively.
         if (existing_profile) {
-          profile_changes.emplace_back(PlusAddressSyncDataChange::Type::kRemove,
+          profile_changes.emplace_back(PlusAddressDataChange::Type::kRemove,
                                        std::move(*existing_profile));
         }
-        profile_changes.emplace_back(PlusAddressSyncDataChange::Type::kAdd,
+        profile_changes.emplace_back(PlusAddressDataChange::Type::kAdd,
                                      std::move(profile));
         break;
       }
@@ -109,7 +109,7 @@ PlusAddressSyncBridge::ApplyIncrementalSyncChanges(
                                     "Failed to remove profile in database.");
         }
         if (profile) {
-          profile_changes.emplace_back(PlusAddressSyncDataChange::Type::kRemove,
+          profile_changes.emplace_back(PlusAddressDataChange::Type::kRemove,
                                        std::move(*profile));
         }
         break;
@@ -136,9 +136,9 @@ void PlusAddressSyncBridge::ApplyDisableSyncChanges(
         {FROM_HERE, "Failed to begin transaction."});
   }
 
-  std::vector<PlusAddressSyncDataChange> profile_changes;
+  std::vector<PlusAddressDataChange> profile_changes;
   for (PlusProfile& profile : GetPlusAddressTable()->GetPlusProfiles()) {
-    profile_changes.emplace_back(PlusAddressSyncDataChange::Type::kRemove,
+    profile_changes.emplace_back(PlusAddressDataChange::Type::kRemove,
                                  std::move(profile));
   }
 

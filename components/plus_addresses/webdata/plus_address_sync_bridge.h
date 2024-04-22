@@ -15,13 +15,13 @@ class WebDatabaseBackend;
 
 namespace plus_addresses {
 
-class PlusAddressSyncDataChange;
+class PlusAddressDataChange;
 class PlusAddressTable;
 
 class PlusAddressSyncBridge : public syncer::ModelTypeSyncBridge {
  public:
   using DataChangedBySyncCallback = base::RepeatingCallback<void(
-      std::vector<PlusAddressSyncDataChange> /*changes*/)>;
+      std::vector<PlusAddressDataChange> /*changes*/)>;
   PlusAddressSyncBridge(
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       scoped_refptr<WebDatabaseBackend> db_backend,

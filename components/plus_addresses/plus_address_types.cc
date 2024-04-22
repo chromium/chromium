@@ -20,4 +20,12 @@ PlusProfile::PlusProfile(const PlusProfile&) = default;
 PlusProfile::PlusProfile(PlusProfile&&) = default;
 PlusProfile::~PlusProfile() = default;
 
+PlusAddressDataChange::PlusAddressDataChange(Type type, PlusProfile profile)
+    : type_(type), profile_(std::move(profile)) {}
+PlusAddressDataChange::PlusAddressDataChange(
+    const PlusAddressDataChange& other) = default;
+PlusAddressDataChange& PlusAddressDataChange::operator=(
+    const PlusAddressDataChange& change) = default;
+PlusAddressDataChange::~PlusAddressDataChange() = default;
+
 }  // namespace plus_addresses

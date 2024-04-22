@@ -352,16 +352,16 @@ void PlusAddressService::UpdatePlusAddressMap(const PlusAddressMap& map) {
 }
 
 void PlusAddressService::OnWebDataChangedBySync(
-    const PlusAddressSyncDataChange& change) {
+    const PlusAddressDataChange& change) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   switch (change.type()) {
-    case PlusAddressSyncDataChange::Type::kAdd: {
+    case PlusAddressDataChange::Type::kAdd: {
       plus_profiles_.insert(change.profile());
       plus_addresses_.insert(change.profile().plus_address);
       break;
     }
-    case PlusAddressSyncDataChange::Type::kRemove: {
+    case PlusAddressDataChange::Type::kRemove: {
       plus_profiles_.erase(change.profile());
       plus_addresses_.erase(change.profile().plus_address);
       break;

@@ -773,16 +773,16 @@ TEST_F(PlusAddressServiceWebDataTest, OnWebDataChangedBySync) {
   table().AddOrUpdatePlusProfile(profile1);
   table().AddOrUpdatePlusProfile(profile2);
   EXPECT_THAT(service().GetPlusProfiles(), testing::IsEmpty());
-  service().OnWebDataChangedBySync(PlusAddressSyncDataChange(
-      PlusAddressSyncDataChange::Type::kAdd, profile1));
-  service().OnWebDataChangedBySync(PlusAddressSyncDataChange(
-      PlusAddressSyncDataChange::Type::kAdd, profile2));
+  service().OnWebDataChangedBySync(
+      PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile1));
+  service().OnWebDataChangedBySync(
+      PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile2));
   EXPECT_THAT(service().GetPlusProfiles(),
               testing::UnorderedElementsAre(profile1, profile2));
 
   table().RemovePlusProfile(profile1.profile_id);
-  service().OnWebDataChangedBySync(PlusAddressSyncDataChange(
-      PlusAddressSyncDataChange::Type::kRemove, profile1));
+  service().OnWebDataChangedBySync(
+      PlusAddressDataChange(PlusAddressDataChange::Type::kRemove, profile1));
   EXPECT_THAT(service().GetPlusProfiles(),
               testing::UnorderedElementsAre(profile2));
 }

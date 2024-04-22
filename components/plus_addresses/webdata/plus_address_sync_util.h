@@ -9,26 +9,6 @@
 #include "components/sync/protocol/entity_data.h"
 
 namespace plus_addresses {
-
-class PlusAddressSyncDataChange {
- public:
-  enum class Type { kAdd = 0, kRemove = 1 };
-
-  PlusAddressSyncDataChange(Type type, PlusProfile profile);
-  PlusAddressSyncDataChange(const PlusAddressSyncDataChange& other);
-  PlusAddressSyncDataChange& operator=(const PlusAddressSyncDataChange& change);
-  ~PlusAddressSyncDataChange();
-
-  Type type() const { return type_; }
-  const PlusProfile& profile() const { return profile_; }
-
-  bool operator==(const PlusAddressSyncDataChange& other) const = default;
-
- private:
-  Type type_;
-  PlusProfile profile_;
-};
-
 // Utils to convert a `EntityData` containing `PlusAddressSpecifics` to a
 // `PlusProfile` and back.
 // Since the PLUS_ADDRESS model type is read-only on the client, it is not
