@@ -229,19 +229,12 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
     // initiate the actual change and will update to SUCCESS at the end.
     if (state.currentDirectory?.status === PropStatus.STARTED) {
       const fileData = getFileData(state, newURL);
-      if (!fileData) {
-        console.error(
-            `Failed to find in the store the new directory key ${newURL}`);
-        this.store_.dispatch(
-            changeDirectory({toKey: newURL, status: PropStatus.ERROR}));
-        return;
-      }
-      if (fileData.type === EntryType.MATERIALIZED_VIEW) {
+      if (fileData?.type === EntryType.MATERIALIZED_VIEW) {
         this.changeDirectoryFileData(fileData);
         return;
       }
 
-      const entry = fileData.entry;
+      const entry = fileData?.entry;
       if (!entry) {
         // TODO(lucmult): Fix potential race condition in this await/then.
         urlToEntry(newURL)
@@ -254,7 +247,7 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
               this.changeDirectoryEntry(entry as DirectoryEntry);
             })
             .catch((error) => {
-              console.error(error);
+              console.warn(error);
               this.store_.dispatch(
                   changeDirectory({toKey: newURL, status: PropStatus.ERROR}));
             });
