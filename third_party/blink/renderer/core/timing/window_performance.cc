@@ -158,12 +158,15 @@ const AtomicString& SameOriginKeyword() {
 AtomicString SameOriginAttribution(Frame* observer_frame,
                                    Frame* culprit_frame) {
   DCHECK(IsMainThread());
-  if (observer_frame == culprit_frame)
+  if (observer_frame == culprit_frame) {
     return SelfKeyword();
-  if (observer_frame->Tree().IsDescendantOf(culprit_frame))
+  }
+  if (observer_frame->Tree().IsDescendantOf(culprit_frame)) {
     return SameOriginAncestorKeyword();
-  if (culprit_frame->Tree().IsDescendantOf(observer_frame))
+  }
+  if (culprit_frame->Tree().IsDescendantOf(observer_frame)) {
     return SameOriginDescendantKeyword();
+  }
   return SameOriginKeyword();
 }
 
@@ -224,8 +227,9 @@ ExecutionContext* WindowPerformance::GetExecutionContext() const {
 }
 
 PerformanceTiming* WindowPerformance::timing() const {
-  if (!timing_)
+  if (!timing_) {
     timing_ = MakeGarbageCollected<PerformanceTiming>(DomWindow());
+  }
 
   return timing_.Get();
 }
@@ -240,8 +244,9 @@ PerformanceTimingForReporting* WindowPerformance::timingForReporting() const {
 }
 
 PerformanceNavigation* WindowPerformance::navigation() const {
-  if (!navigation_)
+  if (!navigation_) {
     navigation_ = MakeGarbageCollected<PerformanceNavigation>(DomWindow());
+  }
 
   return navigation_.Get();
 }
@@ -375,8 +380,9 @@ void WindowPerformance::ReportLongTask(base::TimeTicks start_time,
                                        base::TimeTicks end_time,
                                        ExecutionContext* task_context,
                                        bool has_multiple_contexts) {
-  if (!DomWindow())
+  if (!DomWindow()) {
     return;
+  }
   std::pair<AtomicString, DOMWindow*> attribution =
       WindowPerformance::SanitizedAttribution(
           task_context, has_multiple_contexts, DomWindow()->GetFrame());
@@ -619,7 +625,7 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
   // TODO(npm): is 104 a reasonable buffering threshold or should it be
   // relaxed?
   if (entry->duration() >= PerformanceObserver::kDefaultDurationThreshold) {
-    AddEventTimingBuffer(*entry);
+    AddToEventTimingBuffer(*entry);
   }
 
   bool tracing_enabled;
@@ -709,8 +715,9 @@ bool WindowPerformance::SetInteractionIdAndRecordLatency(
     std::optional<int> key_code,
     std::optional<PointerId> pointer_id,
     ResponsivenessMetrics::EventTimestamps event_timestamps) {
-  if (!IsEventTypeForInteractionId(entry->name()))
+  if (!IsEventTypeForInteractionId(entry->name())) {
     return true;
+  }
   // We set the interactionId and record the metric in the
   // same logic, so we need to ignore the return value when InteractionId is
   // disabled.
@@ -750,8 +757,9 @@ void WindowPerformance::AddElementTiming(const AtomicString& name,
                                          const gfx::Size& intrinsic_size,
                                          const AtomicString& id,
                                          Element* element) {
-  if (!DomWindow())
+  if (!DomWindow()) {
     return;
+  }
   PerformanceElementTiming* entry = PerformanceElementTiming::Create(
       name, url, rect, MonotonicTimeToDOMHighResTimeStamp(start_time),
       MonotonicTimeToDOMHighResTimeStamp(load_time), identifier,
@@ -760,16 +768,19 @@ void WindowPerformance::AddElementTiming(const AtomicString& name,
   TRACE_EVENT2("loading", "PerformanceElementTiming", "data",
                entry->ToTracedValue(), "frame",
                GetFrameIdForTracing(DomWindow()->GetFrame()));
-  if (HasObserverFor(PerformanceEntry::kElement))
+  if (HasObserverFor(PerformanceEntry::kElement)) {
     NotifyObserversOfEntry(*entry);
-  if (!IsElementTimingBufferFull())
-    AddElementTimingBuffer(*entry);
+  }
+  if (!IsElementTimingBufferFull()) {
+    AddToElementTimingBuffer(*entry);
+  }
 }
 
 void WindowPerformance::DispatchFirstInputTiming(
     PerformanceEventTiming* entry) {
-  if (!entry)
+  if (!entry) {
     return;
+  }
   DCHECK_EQ("first-input", entry->entryType());
   if (HasObserverFor(PerformanceEntry::kFirstInput)) {
     UseCounter::Count(GetExecutionContext(),
@@ -784,9 +795,10 @@ void WindowPerformance::DispatchFirstInputTiming(
 }
 
 void WindowPerformance::AddLayoutShiftEntry(LayoutShift* entry) {
-  if (HasObserverFor(PerformanceEntry::kLayoutShift))
+  if (HasObserverFor(PerformanceEntry::kLayoutShift)) {
     NotifyObserversOfEntry(*entry);
-  AddLayoutShiftBuffer(*entry);
+  }
+  AddToLayoutShiftBuffer(*entry);
 }
 
 void WindowPerformance::AddVisibilityStateEntry(bool is_visible,
@@ -795,11 +807,13 @@ void WindowPerformance::AddVisibilityStateEntry(bool is_visible,
       PageHiddenStateString(!is_visible),
       MonotonicTimeToDOMHighResTimeStamp(timestamp), DomWindow());
 
-  if (HasObserverFor(PerformanceEntry::kVisibilityState))
+  if (HasObserverFor(PerformanceEntry::kVisibilityState)) {
     NotifyObserversOfEntry(*entry);
+  }
 
-  if (visibility_state_buffer_.size() < kDefaultVisibilityStateEntrySize)
+  if (visibility_state_buffer_.size() < kDefaultVisibilityStateEntrySize) {
     visibility_state_buffer_.push_back(entry);
+  }
 }
 
 void WindowPerformance::AddSoftNavigationEntry(const AtomicString& name,
@@ -831,8 +845,9 @@ void WindowPerformance::WillShowModalDialog() {
 }
 
 EventCounts* WindowPerformance::eventCounts() {
-  if (!event_counts_)
+  if (!event_counts_) {
     event_counts_ = MakeGarbageCollected<EventCounts>();
+  }
   return event_counts_.Get();
 }
 

@@ -88,7 +88,7 @@ TEST_F(PerformanceObserverTest, ObserveWithBufferedFlag) {
   auto* entry =
       LayoutShift::Create(0.0, 1234, true, 5678, LayoutShift::AttributionList(),
                           LocalDOMWindow::From(scope.GetScriptState()));
-  base_->AddLayoutShiftBuffer(*entry);
+  base_->AddToLayoutShiftBuffer(*entry);
 
   // call observe with the buffered flag
   observer_->observe(scope.GetScriptState(), options, exception_state);

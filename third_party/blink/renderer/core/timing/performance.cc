@@ -780,7 +780,7 @@ void Performance::FireResourceTimingBufferFull(TimerBase*) {
   resource_timing_buffer_full_event_pending_ = false;
 }
 
-void Performance::AddElementTimingBuffer(PerformanceElementTiming& entry) {
+void Performance::AddToElementTimingBuffer(PerformanceElementTiming& entry) {
   if (!IsElementTimingBufferFull()) {
     InsertEntryIntoSortedBuffer(element_timing_buffer_, entry, kRecordSwaps);
   } else {
@@ -788,7 +788,7 @@ void Performance::AddElementTimingBuffer(PerformanceElementTiming& entry) {
   }
 }
 
-void Performance::AddEventTimingBuffer(PerformanceEventTiming& entry) {
+void Performance::AddToEventTimingBuffer(PerformanceEventTiming& entry) {
   if (!IsEventTimingBufferFull()) {
     InsertEntryIntoSortedBuffer(event_timing_buffer_, entry, kRecordSwaps);
   } else {
@@ -796,7 +796,7 @@ void Performance::AddEventTimingBuffer(PerformanceEventTiming& entry) {
   }
 }
 
-void Performance::AddLayoutShiftBuffer(LayoutShift& entry) {
+void Performance::AddToLayoutShiftBuffer(LayoutShift& entry) {
   probe::PerformanceEntryAdded(GetExecutionContext(), &entry);
   if (layout_shift_buffer_.size() < kDefaultLayoutShiftBufferSize) {
     InsertEntryIntoSortedBuffer(layout_shift_buffer_, entry, kRecordSwaps);

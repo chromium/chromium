@@ -197,14 +197,14 @@ class CORE_EXPORT Performance : public EventTarget {
                                      bool is_triggered_by_soft_navigation);
 
   bool IsElementTimingBufferFull() const;
-  void AddElementTimingBuffer(PerformanceElementTiming&);
+  void AddToElementTimingBuffer(PerformanceElementTiming&);
 
   bool IsEventTimingBufferFull() const;
-  void AddEventTimingBuffer(PerformanceEventTiming&);
+  void AddToEventTimingBuffer(PerformanceEventTiming&);
 
   bool IsLongAnimationFrameBufferFull() const;
 
-  void AddLayoutShiftBuffer(LayoutShift&);
+  void AddToLayoutShiftBuffer(LayoutShift&);
 
   void AddLargestContentfulPaint(LargestContentfulPaint*);
 
