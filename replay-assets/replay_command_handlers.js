@@ -25,6 +25,8 @@ const {
   fromJsGetArgumentsInFrame,
   fromJsGetObjectByCdpId,
   fromJsIsBlinkObject,
+  fromJsHasReturnValue,
+  fromJsGetReturnValue,
   fromJsGetNodeIdByCpdId,
   fromJsGetBoxModel,
   fromJsGetMatchedStylesForElement,
@@ -646,7 +648,8 @@ function Pause_getAllFrames() {
   const frames = getStackFrames().map((frame, index) => {
     // Use our own IDs for frames.
     const id = (index++).toString();
-    return createProtocolFrame(id, frame);
+    const topmost = id == 0;
+    return createProtocolFrame(id, frame, topmost);
   });
   return {
     frames: frames.map(f => f.frameId),
@@ -2023,9 +2026,14 @@ function createProtocolLocation(location) {
   }];
 }
 
-function createProtocolFrame(frameId, cdpFrame) {
+function createProtocolFrame(frameId, cdpFrame, topmost) {
   // CDP call frames don't provide detailed type information.
   const type = cdpFrame.functionName ? "call" : "global";
+
+  let returnValue;
+  if (topmost && fromJsHasReturnValue()) {
+    returnValue = createRrpValueRaw(fromJsGetReturnValue());
+  }
 
   return {
     frameId,
@@ -2035,6 +2043,7 @@ function createProtocolFrame(frameId, cdpFrame) {
     location: createProtocolLocation(cdpFrame.location),
     scopeChain: cdpFrame.scopeChain.map(registerCdpScope),
     this: buildRrpObjectFromCdpObject(cdpFrame.this),
+    returnValue,
   };
 }
 

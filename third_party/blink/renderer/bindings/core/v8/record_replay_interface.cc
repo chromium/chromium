@@ -97,6 +97,7 @@ extern "C" void V8RecordReplaySetAPIObjectIdCallback(int (*callback)(v8::Local<v
 extern "C" void V8RecordReplayRegisterBrowserEventCallback(
   void (*callback)(const char* name, const char* payload)
 );
+extern "C" bool V8RecordReplayCurrentReturnValue(v8::Local<v8::Value>* object);
 
 static const char REPLAY_CDT_PAUSE_OBJECT_GROUP[] =
     "REPLAY_CDT_PAUSE_OBJECT_GROUP";
@@ -1638,6 +1639,32 @@ static void fromJsIsBlinkObject(
   args.GetReturnValue().Set(result);
 }
 
+/**
+ * Return whether there is a return value available for the topmost frame,
+ * when stopped at an "exit" return site.
+ */
+static void fromJsHasReturnValue(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  v8::Local<v8::Value> return_value;
+  bool has_return_value = V8RecordReplayCurrentReturnValue(&return_value);
+
+  args.GetReturnValue().Set(has_return_value);
+}
+
+/**
+ * When stopped at an "exit" return site, returns the topmost frame's
+ * pending return value.
+ */
+static void fromJsGetReturnValue(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  v8::Local<v8::Value> return_value;
+  bool has_return_value = V8RecordReplayCurrentReturnValue(&return_value);
+
+  if (has_return_value) {
+    args.GetReturnValue().Set(return_value);
+  }
+}
+
 /** ###########################################################################
  * Networking
  * ##########################################################################*/
@@ -2552,6 +2579,10 @@ static void InitializeRecordReplayApiObjects(v8::Isolate* isolate, LocalFrame* l
                       fromJsGetObjectByCdpId);
   SetFunctionProperty(isolate, args, "fromJsIsBlinkObject",
                       fromJsIsBlinkObject);
+  SetFunctionProperty(isolate, args, "fromJsHasReturnValue",
+                      fromJsHasReturnValue);
+  SetFunctionProperty(isolate, args, "fromJsGetReturnValue",
+                      fromJsGetReturnValue);
 
   // networking
   SetFunctionProperty(isolate, args, "getCurrentNetworkRequestEvent",
