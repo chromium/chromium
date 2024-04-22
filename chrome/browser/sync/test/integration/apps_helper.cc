@@ -21,6 +21,7 @@
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_extension_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -247,28 +248,10 @@ bool AwaitWebAppQuiescence(
 webapps::AppId InstallWebApp(Profile* profile,
                              const web_app::WebAppInstallInfo& info) {
   DCHECK(info.start_url.is_valid());
-  base::RunLoop run_loop;
-  webapps::AppId app_id;
-  auto* provider = web_app::WebAppProvider::GetForTest(profile);
-  provider->scheduler().InstallFromInfoNoIntegrationForTesting(
-      std::make_unique<web_app::WebAppInstallInfo>(info.Clone()),
-      /*overwrite_existing_manifest_fields=*/true,
-      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-      base::BindLambdaForTesting(
-          [&run_loop, &app_id](const webapps::AppId& new_app_id,
-                               webapps::InstallResultCode code) {
-            DCHECK_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
-            app_id = new_app_id;
-            run_loop.Quit();
-          }));
 
-  run_loop.Run();
-
-  const web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
-  DCHECK_EQ(base::UTF8ToUTF16(registrar.GetAppShortName(app_id)), info.title);
-  DCHECK_EQ(registrar.GetAppStartUrl(app_id), info.start_url);
-
-  return app_id;
+  return web_app::test::InstallWebApp(
+      profile, std::make_unique<web_app::WebAppInstallInfo>(info.Clone()),
+      /*overwrite_existing_manifest_fields=*/true);
 }
 
 }  // namespace apps_helper
