@@ -74,11 +74,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   enum class SurveyType {
     kGeneral,
     kBluetooth,
+    kOutputProc,
   };
 
   static constexpr char kSurveyNameKey[] = "SurveyName";
   static constexpr char kSurveyNameGeneral[] = "GENERAL";
   static constexpr char kSurveyNameBluetooth[] = "BLUETOOTH";
+  static constexpr char kSurveyNameOutputProc[] = "OUTPUTPROC";
 
   // Key-value mapping type for audio survey specific data.
   // For audio satisfaction survey, it contains

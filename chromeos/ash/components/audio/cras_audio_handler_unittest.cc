@@ -6686,4 +6686,22 @@ TEST_P(CrasAudioHandlerTest,
       /*expected_count=*/1);
 }
 
+TEST_P(CrasAudioHandlerTest, AudioSurveyOutputProc) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList(
+      {kInternalSpeaker, kHeadphone, kInternalMic, kUSBMic1});
+  base::flat_map<std::string, std::string> survey_specific_data = {
+      {CrasAudioHandler::kSurveyNameKey,
+       CrasAudioHandler::kSurveyNameOutputProc}};
+
+  SetUpCrasAudioHandler(audio_nodes);
+
+  // Simulate an audio survey gets triggered.
+  fake_cras_audio_client()->NotifySurveyTriggered(survey_specific_data);
+
+  EXPECT_EQ(test_observer_->survey_triggerd_count(), 1);
+  EXPECT_EQ(test_observer_->survey_triggerd_recv().type(),
+            CrasAudioHandler::SurveyType::kOutputProc);
+  EXPECT_EQ(test_observer_->survey_triggerd_recv().data().size(), 0u);
+}
+
 }  // namespace ash

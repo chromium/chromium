@@ -1436,6 +1436,8 @@ CrasAudioHandler::AbstractAudioSurvey(
         survey->set_type(SurveyType::kGeneral);
       } else if (it.second == CrasAudioHandler::kSurveyNameBluetooth) {
         survey->set_type(SurveyType::kBluetooth);
+      } else if (it.second == CrasAudioHandler::kSurveyNameOutputProc) {
+        survey->set_type(SurveyType::kOutputProc);
       }
     } else {
       survey->AddData(it.first, it.second);
