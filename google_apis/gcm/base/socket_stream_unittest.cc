@@ -428,7 +428,7 @@ TEST_F(GCMSocketStreamTest, WritePartialWithLengthChecking) {
 
   // Prepopulate |producer_handle| of |prefix_data|, now the pipe's capacity is
   // less than |kWriteDataSize|.
-  uint32_t num_bytes = prefix_data.size();
+  size_t num_bytes = prefix_data.size();
   MojoResult r = producer_handle->WriteData(prefix_data.data(), &num_bytes,
                                             MOJO_WRITE_DATA_FLAG_NONE);
   ASSERT_EQ(MOJO_RESULT_OK, r);
@@ -451,7 +451,7 @@ TEST_F(GCMSocketStreamTest, WritePartialWithLengthChecking) {
   std::string contents;
   // Read prefix.
   char buffer[kPrefixDataSize];
-  uint32_t read_size = sizeof(buffer);
+  size_t read_size = sizeof(buffer);
   ASSERT_EQ(MOJO_RESULT_OK, consumer_handle->ReadData(
                                 buffer, &read_size, MOJO_READ_DATA_FLAG_NONE));
   ASSERT_EQ(kPrefixDataSize, read_size);

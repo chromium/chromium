@@ -115,7 +115,7 @@ class GCM_EXPORT SocketInputStream
   // Internal net components.
   mojo::ScopedDataPipeConsumerHandle stream_;
   mojo::SimpleWatcher stream_watcher_;
-  uint32_t read_size_;
+  size_t read_size_;
   const scoped_refptr<net::IOBuffer> io_buffer_;
   base::OnceClosure read_callback_;
   // IOBuffer implementation that wraps the data within |io_buffer_| that hasn't

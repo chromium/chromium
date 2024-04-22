@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/numerics/safe_conversions.h"
 #include "net/base/io_buffer.h"
 #include "net/socket/stream_socket.h"
 
@@ -108,7 +109,7 @@ net::Error SocketInputStream::Refresh(base::OnceClosure callback,
     return net::OK;
   }
 
-  read_size_ = byte_limit;
+  read_size_ = base::checked_cast<size_t>(byte_limit);
   read_callback_ = std::move(callback);
   stream_watcher_.ArmOrNotify();
   last_error_ = net::ERR_IO_PENDING;
@@ -121,7 +122,7 @@ void SocketInputStream::ReadMore(
   DCHECK(read_callback_);
   DCHECK_NE(0u, read_size_);
 
-  uint32_t num_bytes = read_size_;
+  size_t num_bytes = read_size_;
   if (result == MOJO_RESULT_OK) {
     DVLOG(1) << "Refreshing input stream, limit of " << num_bytes << " bytes.";
     result = stream_->ReadData(read_buffer_->data(), &num_bytes,
@@ -154,7 +155,7 @@ void SocketInputStream::ReadMore(
     return;
 
   last_error_ = net::OK;
-  read_buffer_->DidConsume(num_bytes);
+  read_buffer_->DidConsume(base::checked_cast<uint32_t>(num_bytes));
   // TODO(zea): investigating crbug.com/409985
   CHECK_GT(UnreadByteCount(), 0);
 
@@ -288,7 +289,8 @@ void SocketOutputStream::WriteMore(MojoResult result,
   DCHECK(write_callback_);
   DCHECK(write_buffer_);
 
-  uint32_t num_bytes = write_buffer_->BytesRemaining();
+  size_t num_bytes =
+      base::checked_cast<size_t>(write_buffer_->BytesRemaining());
   DVLOG(1) << "Flushing " << num_bytes << " bytes into socket.";
   if (result == MOJO_RESULT_OK) {
     result = stream_->WriteData(write_buffer_->data(), &num_bytes,
@@ -312,7 +314,7 @@ void SocketOutputStream::WriteMore(MojoResult result,
 
   DCHECK_GE(num_bytes, 0u);
   last_error_ = net::OK;
-  write_buffer_->DidConsume(num_bytes);
+  write_buffer_->DidConsume(base::checked_cast<uint32_t>(num_bytes));
   if (write_buffer_->BytesRemaining() > 0) {
     DVLOG(1) << "Partial flush complete. Retrying.";
     // Only a partial write was completed. Flush again to finish the write.
