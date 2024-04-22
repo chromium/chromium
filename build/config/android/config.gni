@@ -28,6 +28,7 @@ if (is_android || is_chromeos) {
   import("//build/config/android/channel.gni")
   import("//build/config/clang/clang.gni")
   import("//build/config/dcheck_always_on.gni")
+  import("//build/config/sanitizers/sanitizers.gni")
   import("//build/toolchain/siso.gni")
   import("//build_overrides/build.gni")
   import("abi.gni")
@@ -67,6 +68,9 @@ if (is_android || is_chromeos) {
     # The default to use for android:minSdkVersion for targets that do
     # not explicitly set it.
     default_min_sdk_version = 26
+    if (is_asan) {
+      default_min_sdk_version = 27
+    }
 
     # Static analysis can be either "on" or "off" or "build_server". This
     # controls how android lint, error-prone, bytecode checks are run. This
@@ -88,6 +92,12 @@ if (is_android || is_chromeos) {
 
   # Our build system no longer supports legacy multidex.
   min_supported_sdk_version = 21
+
+  # ASAN requireds O MR1.
+  # https://github.com/google/sanitizers/wiki/AddressSanitizerOnAndroid/01f8df1ac1a447a8475cdfcb03e8b13140042dbd#running-with-wrapsh-recommended
+  if (is_asan) {
+    min_supported_sdk_version = 27
+  }
 
   assert(
       default_min_sdk_version >= min_supported_sdk_version,
