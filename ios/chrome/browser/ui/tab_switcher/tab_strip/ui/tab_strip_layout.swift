@@ -232,7 +232,6 @@ class TabStripLayout: UICollectionViewFlowLayout {
     let leftBounds: CGFloat = contentOffset.x + sectionInset.left
     let rightBounds: CGFloat = collectionViewWidth + contentOffset.x - sectionInset.right
     let isScrollable: Bool = collectionView.contentSize.width > collectionView.frame.width
-    let isRTL: Bool = collectionView.effectiveUserInterfaceLayoutDirection == .rightToLeft
 
     /// Hide the `trailingSeparator`if the next cell is selected.
     let isNextCellSelected = (indexPath.item + 1) == selectedIndexPath?.item
