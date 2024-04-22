@@ -1013,7 +1013,6 @@ TEST_F(StructTraitsTest, QuadListBasic) {
 
   const gfx::Rect rect5(123, 567, 91011, 13141);
   const ResourceId resource_id5(1337);
-  const float vertex_opacity[4] = {1.f, 2.f, 3.f, 4.f};
   const bool premultiplied_alpha = true;
 
   const gfx::PointF uv_top_left(12.1f, 34.2f);
@@ -1031,7 +1030,6 @@ TEST_F(StructTraitsTest, QuadListBasic) {
       sqs, rect5, rect5, needs_blending, resource_id5, resource_size_in_pixels5,
       premultiplied_alpha, uv_top_left, uv_bottom_right, background_color,
       y_flipped, nearest_neighbor, secure_output_only, protected_video_type);
-  texture_draw_quad->set_vertex_opacity(vertex_opacity);
   // Create a stream video TextureDrawQuad.
   const gfx::Rect rect6(321, 765, 11109, 151413);
   const bool needs_blending6 = false;
@@ -1131,10 +1129,6 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(uv_top_left, out_texture_draw_quad->uv_top_left);
   EXPECT_EQ(uv_bottom_right, out_texture_draw_quad->uv_bottom_right);
   EXPECT_EQ(background_color, out_texture_draw_quad->background_color);
-  EXPECT_EQ(vertex_opacity[0], out_texture_draw_quad->vertex_opacity[0]);
-  EXPECT_EQ(vertex_opacity[1], out_texture_draw_quad->vertex_opacity[1]);
-  EXPECT_EQ(vertex_opacity[2], out_texture_draw_quad->vertex_opacity[2]);
-  EXPECT_EQ(vertex_opacity[3], out_texture_draw_quad->vertex_opacity[3]);
   EXPECT_EQ(y_flipped, out_texture_draw_quad->y_flipped);
   EXPECT_EQ(nearest_neighbor, out_texture_draw_quad->nearest_neighbor);
   EXPECT_EQ(secure_output_only, out_texture_draw_quad->secure_output_only);

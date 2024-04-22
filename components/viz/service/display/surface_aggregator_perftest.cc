@@ -129,7 +129,6 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
         const gfx::PointF uv_top_left;
         const gfx::PointF uv_bottom_right;
         SkColor4f background_color = SkColors::kGreen;
-        const float vertex_opacity[4] = {0.f, 0.f, 1.f, 1.f};
         bool flipped = false;
         bool nearest_neighbor = false;
         quad->SetAll(sqs, rect, visible_rect, needs_blending, ResourceId(j),
@@ -137,8 +136,6 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
                      uv_bottom_right, background_color, flipped,
                      nearest_neighbor, /*secure_output_only=*/false,
                      gfx::ProtectedVideoType::kClear);
-
-        quad->set_vertex_opacity(vertex_opacity);
       }
       sqs = pass->CreateAndAppendSharedQuadState();
       sqs->opacity = opacity;

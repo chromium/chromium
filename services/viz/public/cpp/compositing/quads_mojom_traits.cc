@@ -174,9 +174,6 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
   quad->overlay_priority_hint = overlay_priority_hint;
   if (!data.ReadBackgroundColor(&quad->background_color))
     return false;
-  base::span<float> vertex_opacity_array(quad->vertex_opacity);
-  if (!data.ReadVertexOpacity(&vertex_opacity_array))
-    return false;
 
   quad->y_flipped = data.y_flipped();
   quad->nearest_neighbor = data.nearest_neighbor();

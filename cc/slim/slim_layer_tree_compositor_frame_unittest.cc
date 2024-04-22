@@ -767,10 +767,6 @@ TEST_F(SlimLayerTreeCompositorFrameTest, NinePatchLayerAppendQuads) {
     EXPECT_TRUE(texture_quad->nearest_neighbor);
     EXPECT_EQ(expected_uv_top_left[i], texture_quad->uv_top_left);
     EXPECT_EQ(expected_uv_bottom_right[i], texture_quad->uv_bottom_right);
-    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[0]);
-    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[1]);
-    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[2]);
-    EXPECT_EQ(1.0f, texture_quad->vertex_opacity[3]);
 
     EXPECT_EQ(frame.resource_list[0].id, texture_quad->resource_id());
     EXPECT_EQ(frame_sink_->uploaded_resources().begin()->second.viz_resource_id,

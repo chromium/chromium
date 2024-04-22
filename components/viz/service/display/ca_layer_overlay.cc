@@ -160,11 +160,6 @@ gfx::CALayerResult FromTextureQuad(
   ca_layer_overlay->uv_rect =
       BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
   ca_layer_overlay->color = quad->background_color;
-  for (int i = 1; i < 4; ++i) {
-    if (quad->vertex_opacity[i] != quad->vertex_opacity[0])
-      return gfx::kCALayerFailedDifferentVertexOpacities;
-  }
-  ca_layer_overlay->opacity *= quad->vertex_opacity[0];
   ca_layer_overlay->nearest_neighbor_filter = quad->nearest_neighbor;
   ca_layer_overlay->hdr_metadata =
       resource_provider->GetHDRMetadata(resource_id);

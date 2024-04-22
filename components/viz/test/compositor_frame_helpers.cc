@@ -211,7 +211,6 @@ RenderPassBuilder& RenderPassBuilder::AddTextureQuad(
                gfx::PointF(1.0f, 1.0f), params.background_color, params.flipped,
                params.nearest_neighbor, params.secure_output_only,
                params.protected_video_type);
-  quad->set_vertex_opacity(params.vertex_opacity);
 
   return *this;
 }

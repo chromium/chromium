@@ -248,7 +248,7 @@ void CreateTestRenderPassDrawQuad(const SharedQuadState* shared_state,
 //   if false, a 1/2 width and height rectangle in the middle of the quad will
 //   be filled with texel_color_two, other part of the texture is filled with
 //   texel_color_one,
-// TODO(crbug.com/1308932): Make this function use SkColor4f
+// TODO(crbug.com/40219248): Make this function use SkColor4f
 void CreateTestTwoColoredTextureDrawQuad(
     bool gpu_resource,
     const gfx::Rect& rect,
@@ -335,11 +335,11 @@ void CreateTestTwoColoredTextureDrawQuad(
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
 }
 
+// TODO(crbug.com/40219248): Make this function use SkColor4f
 void CreateTestTextureDrawQuad(
     bool gpu_resource,
     const gfx::Rect& rect,
     SkColor4f texel_color,
-    base::span<float, 4> vertex_opacity,
     SkColor4f background_color,
     bool premultiplied_alpha,
     const SharedQuadState* shared_state,
@@ -396,29 +396,8 @@ void CreateTestTextureDrawQuad(
                premultiplied_alpha, uv_top_left, uv_bottom_right,
                background_color, flipped, nearest_neighbor,
                /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
-  quad->set_vertex_opacity(vertex_opacity);
 }
 
-// TODO(crbug.com/1308932): Make this function use SkColor4f
-void CreateTestTextureDrawQuad(
-    bool gpu_resource,
-    const gfx::Rect& rect,
-    SkColor4f texel_color,
-    SkColor4f background_color,
-    bool premultiplied_alpha,
-    const SharedQuadState* shared_state,
-    DisplayResourceProvider* resource_provider,
-    ClientResourceProvider* child_resource_provider,
-    SharedBitmapManager* shared_bitmap_manager,
-    scoped_refptr<RasterContextProvider> child_context_provider,
-    AggregatedRenderPass* render_pass) {
-  float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-  CreateTestTextureDrawQuad(gpu_resource, rect, texel_color, vertex_opacity,
-                            background_color, premultiplied_alpha, shared_state,
-                            resource_provider, child_resource_provider,
-                            shared_bitmap_manager,
-                            std::move(child_context_provider), render_pass);
-}
 
 void CreateTestMultiplanarVideoDrawQuad_FromVideoFrame(
     scoped_refptr<media::VideoFrame> video_frame,
@@ -901,7 +880,7 @@ INSTANTIATE_TEST_SUITE_P(,
 using GPURendererPixelTest = VizPixelTestWithParam;
 INSTANTIATE_TEST_SUITE_P(,
                          GPURendererPixelTest,
-                         // TODO(crbug.com/1021566): Enable these tests for
+                         // TODO(crbug.com/40106226): Enable these tests for
                          // SkiaRenderer Dawn once video is supported.
                          testing::ValuesIn(GetGpuRendererTypes()),
                          testing::PrintToStringParamName());
@@ -1735,42 +1714,6 @@ TEST_P(GPURendererPixelTest, SolidColorWithTemperatureNonRootRenderPass) {
       cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
 }
 
-TEST_P(GPURendererPixelTest,
-       PremultipliedTextureWithBackgroundAndVertexOpacity) {
-  gfx::Rect rect(this->device_viewport_size_);
-
-  AggregatedRenderPassId id{1};
-  auto pass = CreateTestRootRenderPass(id, rect);
-
-  SharedQuadState* texture_quad_state = CreateTestSharedQuadState(
-      gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
-  texture_quad_state->opacity = 0.8f;
-
-  float vertex_opacity[4] = {1.f, 1.f, 0.f, 0.f};
-  CreateTestTextureDrawQuad(
-      !is_software_renderer(), gfx::Rect(this->device_viewport_size_),
-      SkColor4f::FromColor(SkColorSetARGB(204, 120, 255, 120)),  // SK_ColorT
-      vertex_opacity,
-      SkColors::kGreen,  // Background color.
-      true,              // Premultiplied alpha.
-      texture_quad_state, this->resource_provider_.get(),
-      this->child_resource_provider_.get(), this->shared_bitmap_manager_.get(),
-      this->child_context_provider_, pass.get());
-
-  SharedQuadState* color_quad_state = CreateTestSharedQuadState(
-      gfx::Transform(), rect, pass.get(), gfx::MaskFilterInfo());
-  auto* color_quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  color_quad->SetNew(color_quad_state, rect, rect, SkColors::kWhite, false);
-
-  AggregatedRenderPassList pass_list;
-  pass_list.push_back(std::move(pass));
-
-  EXPECT_TRUE(this->RunPixelTest(
-      &pass_list,
-      base::FilePath(FILE_PATH_LITERAL("green_alpha_vertex_opacity.png")),
-      cc::AlphaDiscardingFuzzyPixelOffByOneComparator()));
-}
-
 // Check that the renderer draws a fallback quad for quads that require overlay.
 TEST_P(GPURendererPixelTest, OverlayHintRequiredFallback) {
   gfx::Rect rect(this->device_viewport_size_);
@@ -2035,7 +1978,7 @@ class IntersectingMultiplanarVideoQuadPixelTest : public VizPixelTestWithParam {
 
 INSTANTIATE_TEST_SUITE_P(,
                          IntersectingMultiplanarVideoQuadPixelTest,
-                         // TODO(crbug.com/1021566): Enable these tests for
+                         // TODO(crbug.com/40106224): Enable these tests for
                          // SkiaRenderer Dawn once video is supported.
                          testing::ValuesIn(GetGpuRendererTypes()),
                          testing::PrintToStringParamName());
@@ -2268,7 +2211,7 @@ TEST_P(IntersectingMultiplanarVideoQuadPixelTest, YUVVideoQuads) {
     baseline = baseline.InsertBeforeExtensionASCII(kANGLEMetalStr);
   }
 
-  // TODO(crbug.com/1465939): Remove error relaxations once software pixel
+  // TODO(crbug.com/40276184): Remove error relaxations once software pixel
   // upload support lands for Windows for multiplanar SI.
   this->AppendBackgroundAndRunTest(cc::FuzzyPixelComparator()
                                        .DiscardAlpha()
@@ -2479,7 +2422,7 @@ TEST_P(VideoRendererPixelHiLoTest, SimpleYUVRect) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
 
-  // TODO(crbug.com/1465939): Remove error relaxations once software pixel
+  // TODO(crbug.com/40276184): Remove error relaxations once software pixel
   // upload support lands for Windows for multiplanar SI.
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("yuv_stripes.png")),
@@ -2572,7 +2515,7 @@ TEST_P(VideoRendererPixelHiLoColorSpaceTest, SimpleYUVRect) {
   base::FilePath expected_result =
       base::FilePath(FILE_PATH_LITERAL("yuv_stripes.png"));
   expected_result = expected_result.InsertBeforeExtensionASCII(GetName());
-  // TODO(crbug.com/1465939): Remove error relaxations once software pixel
+  // TODO(crbug.com/40276184): Remove error relaxations once software pixel
   // upload support lands for Windows for multiplanar SI.
   EXPECT_TRUE(this->RunPixelTest(&pass_list, expected_result,
                                  cc::FuzzyPixelComparator()
@@ -2583,7 +2526,7 @@ TEST_P(VideoRendererPixelHiLoColorSpaceTest, SimpleYUVRect) {
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1421171): currently failing on iOS.
+// TODO(crbug.com/40259140): currently failing on iOS.
 #define MAYBE_ClippedYUVRect DISABLED_ClippedYUVRect
 #else
 #define MAYBE_ClippedYUVRect ClippedYUVRect
@@ -2612,7 +2555,7 @@ TEST_P(VideoRendererPixelHiLoTest, MAYBE_ClippedYUVRect) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
 
-  // TODO(crbug.com/1465939): Remove error relaxations once software pixel
+  // TODO(crbug.com/40276184): Remove error relaxations once software pixel
   // upload support lands for Windows for multiplanar SI.
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("yuv_stripes_clipped.png")),
@@ -2633,7 +2576,7 @@ class VideoRendererPixelTest
 
 INSTANTIATE_TEST_SUITE_P(,
                          VideoRendererPixelTest,
-                         // TODO(crbug.com/1021566): Enable these tests for
+                         // TODO(crbug.com/40106226): Enable these tests for
                          // SkiaRenderer Dawn once video is supported.
                          testing::ValuesIn(GetGpuRendererTypes()),
                          testing::PrintToStringParamName());
@@ -2669,7 +2612,7 @@ TEST_P(VideoRendererPixelTest, OffsetYUVRect) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(copy_pass));
 
-  // TODO(crbug.com/1465939): Remove error relaxations once software pixel
+  // TODO(crbug.com/40276184): Remove error relaxations once software pixel
   // upload support lands for Windows for multiplanar SI.
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list, base::FilePath(FILE_PATH_LITERAL("yuv_stripes_offset.png")),
@@ -5423,7 +5366,7 @@ TEST_P(RendererPixelTest, RoundedCornerOnRenderPass) {
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1421171): currently failing on iOS.
+// TODO(crbug.com/40259140): currently failing on iOS.
 #define MAYBE_LinearGradientOnRenderPass DISABLED_LinearGradientOnRenderPass
 #else
 #define MAYBE_LinearGradientOnRenderPass LinearGradientOnRenderPass
@@ -5474,7 +5417,7 @@ TEST_P(GPURendererPixelTest, MAYBE_LinearGradientOnRenderPass) {
 }
 
 #if BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1421171): currently failing on iOS.
+// TODO(crbug.com/40259140): currently failing on iOS.
 #define MAYBE_MultiLinearGradientOnRenderPass \
   DISABLED_MultiLinearGradientOnRenderPass
 #else
@@ -5967,7 +5910,7 @@ class ColorTransformPixelTest
   bool premultiplied_alpha_ = false;
 };
 
-// TODO(https://crbug.com/1462855): use-of-uninitialized-value
+// TODO(https://crbug.com/40922049): use-of-uninitialized-value
 #if defined(MEMORY_SANITIZER)
 #define MAYBE_Basic DISABLED_Basic
 #else

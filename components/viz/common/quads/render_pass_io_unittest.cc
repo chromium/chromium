@@ -275,8 +275,6 @@ TEST(RenderPassIOTest, QuadList) {
                    SkColors::kBlue, false, true, false,
                    gfx::ProtectedVideoType::kHardwareProtected);
 
-      float vertex_opacity[4] = {1.f, 0.5f, 0.6f, 1.f};
-      quad->set_vertex_opacity(vertex_opacity);
       ++sqs_index;
       ++quad_count;
     }

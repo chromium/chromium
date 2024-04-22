@@ -308,7 +308,6 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
                   premultiplied_alpha, uv_top_left, uv_bottom_right,
                   SkColors::kTransparent, y_flipped, nearest_neighbor,
                   secure_output_only, protected_video_type);
-  const float vertex_opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
   EXPECT_EQ(DrawQuad::Material::kTextureContent, copy_quad->material);
   EXPECT_EQ(visible_rect, copy_quad->visible_rect);
   EXPECT_EQ(blending, copy_quad->needs_blending);
@@ -316,7 +315,6 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
   EXPECT_EQ(premultiplied_alpha, copy_quad->premultiplied_alpha);
   EXPECT_EQ(uv_top_left, copy_quad->uv_top_left);
   EXPECT_EQ(uv_bottom_right, copy_quad->uv_bottom_right);
-  EXPECT_THAT(copy_quad->vertex_opacity, ElementsAreArray(vertex_opacity));
   EXPECT_EQ(y_flipped, copy_quad->y_flipped);
   EXPECT_EQ(nearest_neighbor, copy_quad->nearest_neighbor);
   EXPECT_EQ(secure_output_only, copy_quad->secure_output_only);
@@ -333,7 +331,6 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
   EXPECT_EQ(premultiplied_alpha, copy_quad->premultiplied_alpha);
   EXPECT_EQ(uv_top_left, copy_quad->uv_top_left);
   EXPECT_EQ(uv_bottom_right, copy_quad->uv_bottom_right);
-  EXPECT_THAT(copy_quad->vertex_opacity, ElementsAreArray(vertex_opacity));
   EXPECT_EQ(y_flipped, copy_quad->y_flipped);
   EXPECT_EQ(nearest_neighbor, copy_quad->nearest_neighbor);
   EXPECT_EQ(secure_output_only, copy_quad->secure_output_only);

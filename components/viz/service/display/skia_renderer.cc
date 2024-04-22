@@ -112,38 +112,6 @@ BASE_FEATURE(kAddSharedImageRasterReadUsage,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-enum VertexOpacityUsage {
-  kNone = 0,
-  kConstant = 1,
-  kLeftRight = 2,
-  kTopBottom = 3,
-  kMaxValue = kTopBottom,
-  kCount,
-};
-
-// TODO(crbug.com/40946720): If histograms were significantly cheaper we would
-// not need to write custom submitting code like the accumulator below.
-void SubmitOrAccumulateVertexUsageUMA(VertexOpacityUsage usage) {
-  static uint32_t vertex_usage_counter = 0;
-  static std::array<bool, VertexOpacityUsage::kCount> vertex_usage = {};
-  constexpr uint32_t kMaxNumberAccumulations = 1000;
-  vertex_usage_counter++;
-  vertex_usage[usage] = true;
-
-  if (vertex_usage_counter > kMaxNumberAccumulations) {
-    for (int i = VertexOpacityUsage::kNone; i < VertexOpacityUsage::kCount;
-         i++) {
-      if (vertex_usage[i]) {
-        UMA_HISTOGRAM_ENUMERATION("Compositing.SkiaRenderer.VertexOpacityUsage",
-                                  static_cast<VertexOpacityUsage>(i));
-        vertex_usage[i] = false;
-      }
-    }
-
-    vertex_usage_counter = 0;
-  }
-}
-
 // Smallest unit that impacts anti-aliasing output. We use this to determine
 // when an exterior edge (with AA) has been clipped (no AA). The specific value
 // was chosen to match that used by gl_renderer.
@@ -2075,15 +2043,6 @@ const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(
   if (UseNearestNeighborSampling(quad))
     return nullptr;
 
-  if (const auto* tex = quad->DynamicCast<TextureDrawQuad>()) {
-    // Per-vertex opacities complicate bypassing the RP and alpha blending the
-    // texture with image filters, so punt under that rare circumstance.
-    if (tex->vertex_opacity[0] < 1.f || tex->vertex_opacity[1] < 1.f ||
-        tex->vertex_opacity[2] < 1.f || tex->vertex_opacity[3] < 1.f) {
-      return nullptr;
-    }
-  }
-
   // In order to concatenate the bypass'ed quads transform with RP itself, it
   // needs to be invertible.
   // TODO(michaelludwig) - See crbug.com/1175981 and crbug.com/1186657;
@@ -2759,20 +2718,14 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
 
   // There are three scenarios where a texture quad cannot be put into a batch:
   // 1. It needs to be blended with a constant background color.
-  // 2. The vertex opacities are not all 1s.
-  // 3. The quad contains video which might need special white level adjustment.
+  // 2. The quad contains video which might need special white level adjustment.
   const bool blend_background =
       quad->background_color != SkColors::kTransparent && !image->isOpaque();
-  const bool vertex_alpha =
-      quad->vertex_opacity[0] < 1.f || quad->vertex_opacity[1] < 1.f ||
-      quad->vertex_opacity[2] < 1.f || quad->vertex_opacity[3] < 1.f;
 
-  if (!blend_background && !vertex_alpha && !needs_color_conversion_filter &&
-      !rpdq_params) {
+  if (!blend_background && !needs_color_conversion_filter && !rpdq_params) {
     // This is a simple texture draw and can go into the batching system
     DCHECK(!MustFlushBatchedQuads(quad, rpdq_params, *params));
     AddQuadToBatch(image, valid_texel_bounds, params);
-    SubmitOrAccumulateVertexUsageUMA(VertexOpacityUsage::kNone);
     return;
   }
 
@@ -2787,10 +2740,6 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
 
   float quad_alpha;
   if (rpdq_params) {
-    // The added color filters for background blending will not apply the
-    // layer's opacity, but make sure there's no vertex_alpha since
-    // CanPassBeDrawnDirectly() should have caught that case.
-    DCHECK(!vertex_alpha);
     quad_alpha = 1.f;
   } else {
     // We will entirely handle the quad's opacity with the mask or color filter
@@ -2800,62 +2749,6 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
 
   // Auto-restore canvas state after applying clipShader and draw.
   SkAutoCanvasRestore acr(current_canvas_, /*do_save=*/true);
-  if (vertex_alpha) {
-    // If they are all the same value, combine it with the overall opacity,
-    // otherwise use a mask filter to emulate vertex opacity interpolation
-    if (quad->vertex_opacity[0] == quad->vertex_opacity[1] &&
-        quad->vertex_opacity[0] == quad->vertex_opacity[2] &&
-        quad->vertex_opacity[0] == quad->vertex_opacity[3]) {
-      quad_alpha *= quad->vertex_opacity[0];
-      SubmitOrAccumulateVertexUsageUMA(VertexOpacityUsage::kConstant);
-    } else {
-      // The only occurrences of non-constant vertex opacities come from unit
-      // tests and src/chrome/browser/android/compositor/decoration_title.cc,
-      // but they always produce the effect of a linear alpha gradient.
-      // All signs indicate point order is [BL, TL, TR, BR]
-      SkPoint gradient_pts[2];
-      if (quad->vertex_opacity[0] == quad->vertex_opacity[1] &&
-          quad->vertex_opacity[2] == quad->vertex_opacity[3]) {
-        // Left to right gradient
-        float y =
-            params->visible_rect.y() + 0.5f * params->visible_rect.height();
-        gradient_pts[0] = {params->visible_rect.x(), y};
-        gradient_pts[1] = {params->visible_rect.right(), y};
-
-        SubmitOrAccumulateVertexUsageUMA(VertexOpacityUsage::kLeftRight);
-      } else if (quad->vertex_opacity[0] == quad->vertex_opacity[3] &&
-                 quad->vertex_opacity[1] == quad->vertex_opacity[2]) {
-        // Top to bottom gradient
-        float x =
-            params->visible_rect.x() + 0.5f * params->visible_rect.width();
-        gradient_pts[0] = {x, params->visible_rect.y()};
-        gradient_pts[1] = {x, params->visible_rect.bottom()};
-        SubmitOrAccumulateVertexUsageUMA(VertexOpacityUsage::kTopBottom);
-
-      } else {
-        // Not sure how to emulate
-        NOTIMPLEMENTED();
-        return;
-      }
-
-      float a1 = quad->vertex_opacity[0] * quad_alpha;
-      float a2 = quad->vertex_opacity[2] * quad_alpha;
-      SkColor4f gradient_colors[2] = {SkColor4f({a1, a1, a1, a1}),
-                                      SkColor4f({a2, a2, a2, a2})};
-      SkMatrix matrix =
-          gfx::TransformToFlattenedSkMatrix(params->content_device_transform);
-      sk_sp<SkShader> gradient = SkGradientShader::MakeLinear(
-          gradient_pts, gradient_colors, /*colorSpace=*/nullptr,
-          /*pos=*/nullptr, /*count=*/2, SkTileMode::kClamp, /*flags=*/0,
-          /*localMatrix=*/&matrix);
-      current_canvas_->clipShader(std::move(gradient));
-      // shared quad opacity was folded into the gradient, so this will shorten
-      // any color filter chain needed for background blending
-      quad_alpha = 1.f;
-    }
-  } else {
-    SubmitOrAccumulateVertexUsageUMA(VertexOpacityUsage::kNone);
-  }
 
   if (needs_color_conversion_filter) {
     // Skia won't perform color conversion.
@@ -2869,8 +2762,7 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
   }
 
   // From gl_renderer, the final src color will be
-  // vertexAlpha * (textureColor + backgroundColor * (1 - textureAlpha)), where
-  // vertexAlpha is the quad's alpha * interpolated per-vertex alpha
+  // (textureColor + backgroundColor * (1 - textureAlpha))
   if (blend_background) {
     // Add a color filter that does DstOver blending between texture and the
     // background color. Then, modulate by quad's opacity *after* blending.

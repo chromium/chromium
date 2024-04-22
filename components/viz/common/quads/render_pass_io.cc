@@ -1247,7 +1247,11 @@ void TextureDrawQuadToDict(const TextureDrawQuad* draw_quad,
   dict->Set("uv_top_left", PointFToDict(draw_quad->uv_top_left));
   dict->Set("uv_bottom_right", PointFToDict(draw_quad->uv_bottom_right));
   dict->Set("background_color", SkColor4fToDict(draw_quad->background_color));
-  dict->Set("vertex_opacity", FloatArrayToList(draw_quad->vertex_opacity));
+  // TODO(crbug.com/40942150): Update
+  // "components/test/data/viz/render_pass_data/" to reflect the deprecation of
+  // vertex opacity.
+  float vertex_opacity[4] = {1.f, 1.0f, 1.0f, 1.f};
+  dict->Set("vertex_opacity", FloatArrayToList(vertex_opacity));
   dict->Set("y_flipped", draw_quad->y_flipped);
   dict->Set("nearest_neighbor", draw_quad->nearest_neighbor);
   dict->Set("secure_output_only", draw_quad->secure_output_only);
@@ -1463,6 +1467,9 @@ bool TextureDrawQuadFromDict(const base::Value::Dict& dict,
       dict.FindBool("premultiplied_alpha");
   const base::Value::Dict* uv_top_left = dict.FindDict("uv_top_left");
   const base::Value::Dict* uv_bottom_right = dict.FindDict("uv_bottom_right");
+  // TODO(crbug.com/40942150): Update
+  // "components/test/data/viz/render_pass_data/" to reflect the deprecation of
+  // vertex opacity.
   const base::Value::List* vertex_opacity = dict.FindList("vertex_opacity");
   const base::Value::Dict* damage_rect = dict.FindDict("damage_rect");
   std::optional<bool> y_flipped = dict.FindBool("y_flipped");
@@ -1492,9 +1499,7 @@ bool TextureDrawQuadFromDict(const base::Value::Dict& dict,
       !ColorFromDict(dict, "background_color", &t_background_color)) {
     return false;
   }
-  float t_vertex_opacity[4];
-  if (!FloatArrayFromList(*vertex_opacity, 4u, t_vertex_opacity))
-    return false;
+
   const size_t kIndex = TextureDrawQuad::kResourceIdIndex;
   ResourceId resource_id = common.resources.ids[kIndex];
   draw_quad->SetAll(
@@ -1504,7 +1509,6 @@ bool TextureDrawQuadFromDict(const base::Value::Dict& dict,
       t_background_color, y_flipped.value(), nearest_neighbor.value(),
       secure_output_only.value(),
       static_cast<gfx::ProtectedVideoType>(protected_video_type_index));
-  draw_quad->set_vertex_opacity(t_vertex_opacity);
 
   draw_quad->is_stream_video = dict.FindBool("is_stream_video").value_or(false);
 
