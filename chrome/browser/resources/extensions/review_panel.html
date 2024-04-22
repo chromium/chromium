@@ -9,6 +9,7 @@
     border-radius: var(--cr-card-border-radius);
     box-shadow: var(--cr-card-shadow);
     padding: 12px 20px;
+    container-type: inline-size;
   }
 
   .header-with-icon {
@@ -100,10 +101,10 @@
     padding-top: 5px;
   }
 
-  /* 946px is the min width for two extension cards to display. Under
-   * 946px and the layout will shift, and the review panel will shift
-   * with it. */
-  @media (max-width:946px) {
+  /* When the panel is the width of one extension card, it will reformat
+     itself. */
+  /* clean-css ignore:start */
+  @container (max-width:450px) {
     .header-with-icon {
       display: grid;
       grid-template-columns: auto auto;
@@ -120,6 +121,7 @@
       margin-top: 40px;
     }
   }
+  /* clean-css ignore:end */
 
 </style>
 <h2 id="safetyHubTitleContainer"
