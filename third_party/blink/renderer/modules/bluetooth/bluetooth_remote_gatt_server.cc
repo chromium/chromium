@@ -199,10 +199,18 @@ BluetoothRemoteGATTServer::getPrimaryService(
   if (exception_state.HadException())
     return ScriptPromise<BluetoothRemoteGATTService>();
 
+  if (!connected_ || !device_->GetBluetooth()->IsServiceBound()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNetworkError,
+        BluetoothError::CreateNotConnectedExceptionMessage(
+            BluetoothOperation::kServicesRetrieval));
+    return ScriptPromise<BluetoothRemoteGATTService>();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<BluetoothRemoteGATTService>>(
           script_state, exception_state.GetContext());
-  GetPrimaryServicesImpl(resolver, exception_state,
+  GetPrimaryServicesImpl(resolver,
                          mojom::blink::WebBluetoothGATTQueryQuantity::SINGLE,
                          service_uuid);
   return resolver->Promise();
@@ -217,10 +225,18 @@ BluetoothRemoteGATTServer::getPrimaryServices(
   if (exception_state.HadException())
     return ScriptPromise<IDLSequence<BluetoothRemoteGATTService>>();
 
+  if (!connected_ || !device_->GetBluetooth()->IsServiceBound()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNetworkError,
+        BluetoothError::CreateNotConnectedExceptionMessage(
+            BluetoothOperation::kServicesRetrieval));
+    return ScriptPromise<IDLSequence<BluetoothRemoteGATTService>>();
+  }
+
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolver<IDLSequence<BluetoothRemoteGATTService>>>(
       script_state, exception_state.GetContext());
-  GetPrimaryServicesImpl(resolver, exception_state,
+  GetPrimaryServicesImpl(resolver,
                          mojom::blink::WebBluetoothGATTQueryQuantity::MULTIPLE,
                          service_uuid);
   return resolver->Promise();
@@ -229,26 +245,26 @@ BluetoothRemoteGATTServer::getPrimaryServices(
 ScriptPromise<IDLSequence<BluetoothRemoteGATTService>>
 BluetoothRemoteGATTServer::getPrimaryServices(ScriptState* script_state,
                                               ExceptionState& exception_state) {
+  if (!connected_ || !device_->GetBluetooth()->IsServiceBound()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNetworkError,
+        BluetoothError::CreateNotConnectedExceptionMessage(
+            BluetoothOperation::kServicesRetrieval));
+    return ScriptPromise<IDLSequence<BluetoothRemoteGATTService>>();
+  }
+
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolver<IDLSequence<BluetoothRemoteGATTService>>>(
       script_state, exception_state.GetContext());
-  GetPrimaryServicesImpl(resolver, exception_state,
+  GetPrimaryServicesImpl(resolver,
                          mojom::blink::WebBluetoothGATTQueryQuantity::MULTIPLE);
   return resolver->Promise();
 }
 
 void BluetoothRemoteGATTServer::GetPrimaryServicesImpl(
     ScriptPromiseResolverBase* resolver,
-    ExceptionState& exception_state,
     mojom::blink::WebBluetoothGATTQueryQuantity quantity,
     String services_uuid) {
-  if (!connected_ || !device_->GetBluetooth()->IsServiceBound()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNetworkError,
-        BluetoothError::CreateNotConnectedExceptionMessage(
-            BluetoothOperation::kServicesRetrieval));
-    return;
-  }
 
   AddToActiveAlgorithms(resolver);
 

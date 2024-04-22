@@ -86,7 +86,6 @@ class BluetoothRemoteGATTServer
 
  private:
   void GetPrimaryServicesImpl(ScriptPromiseResolverBase*,
-                              ExceptionState&,
                               mojom::blink::WebBluetoothGATTQueryQuantity,
                               String service_uuid = String());
 
