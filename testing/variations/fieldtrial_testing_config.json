@@ -4977,6 +4977,21 @@
             ]
         }
     ],
+    "CrOSLateBootDynamicEPP": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootDynamicEPP"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSLateBootEEVDF": [
         {
             "platforms": [
