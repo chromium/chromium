@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/views/editor_menu/editor_menu_chip_view.h"
 
 #include "chrome/browser/ui/views/editor_menu/editor_menu_strings.h"
-#include "chrome/browser/ui/views/editor_menu/utils/icon.h"
-#include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
+#include "chromeos/components/editor_menu/public/cpp/icon.h"
+#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"

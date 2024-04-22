@@ -20,7 +20,7 @@
 #include "chrome/browser/ui/views/editor_menu/editor_menu_promo_card_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view.h"
 #include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
-#include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
+#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_utils.h"

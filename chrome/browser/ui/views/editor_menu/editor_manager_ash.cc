@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
 #include "chrome/browser/ui/views/editor_menu/utils/mojo.h"
-#include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
+#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 #include "content/public/browser/browser_context.h"
 

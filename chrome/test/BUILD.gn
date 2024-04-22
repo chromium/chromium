@@ -8810,6 +8810,7 @@ test("unit_tests") {
       "//chromeos/ash/services/network_config",
       "//chromeos/ash/services/network_config:in_process_instance",
       "//chromeos/ash/services/secure_channel/public/cpp/client:test_support",
+      "//chromeos/components/editor_menu/public/cpp",
       "//chromeos/components/kiosk:kiosk",
       "//chromeos/components/onc",
       "//chromeos/components/quick_answers:quick_answers",

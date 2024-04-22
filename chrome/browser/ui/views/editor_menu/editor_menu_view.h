@@ -10,7 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler_view.h"
-#include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
+#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
