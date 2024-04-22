@@ -385,7 +385,6 @@
 <translation id="1280965841156951489">אישור לערוך קבצים</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{לא ניתן לפתוח את הקובץ}one{לא ניתן לפתוח את הקבצים}two{לא ניתן לפתוח את הקבצים}other{לא ניתן לפתוח את הקבצים}}</translation>
 <translation id="1282311502488501110">אני לא רוצה להיכנס</translation>
-<translation id="1282465000333679776">שיתוף האודיו של המערכת</translation>
 <translation id="1283126956823499975">משהו השתבש בהגדרת המכשיר</translation>
 <translation id="1284277788676816155">אין לאפשר שמירת נתונים</translation>
 <translation id="1285320974508926690">איני רוצה לקבל תרגום של אתר זה</translation>
@@ -1059,7 +1058,6 @@
 <translation id="1781502536226964113">ייפתח דף 'כרטיסייה חדשה'</translation>
 <translation id="1781553166608855614">שפה מדוברת</translation>
 <translation id="1781771911845953849">חשבונות וסנכרון</translation>
-<translation id="1781979858217752599">שיתוף האודיו מהחלון</translation>
 <translation id="1782101999402987960">העדכונים חסומים על ידי מנהל המערכת</translation>
 <translation id="1782196717298160133">מתבצע חיפוש של הטלפון שלך</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{הערה אחת}one{# הערות}two{# הערות}other{# הערות}}</translation>
@@ -1624,7 +1622,6 @@
 <translation id="2187895286714876935">שגיאת ייבוא של אישור שרת</translation>
 <translation id="2187906491731510095">התוספים עודכנו</translation>
 <translation id="2188881192257509750">פתיחת <ph name="APPLICATION" /></translation>
-<translation id="2189787291884708275">שיתוף האודיו מהכרטיסייה</translation>
 <translation id="2190069059097339078">‏מאחזר פרטי כניסה ל-Wi-Fi</translation>
 <translation id="219008588003277019">‏Native Client מודול: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(ריק)</translation>
@@ -5299,6 +5296,7 @@
 <translation id="4998430619171209993">מופעל</translation>
 <translation id="4999804342505941663">הפעלת המצב 'נא לא להפריע'</translation>
 <translation id="5001526427543320409">‏קובצי cookie של צד שלישי</translation>
+<translation id="5003993274120026347">המשפט הבא</translation>
 <translation id="5005498671520578047">העתקת הסיסמה</translation>
 <translation id="5006118752738286774">לפני שנתיים</translation>
 <translation id="5006218871145547804">‏ADB עבור אפליקציות ל-Android ב-Crostini</translation>
@@ -9222,6 +9220,7 @@
 <translation id="8033958968890501070">הזמן שהוקצב תם</translation>
 <translation id="8035059678007243127">הדף האנונימי השמור במטמון לדף הקודם/הבא: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">עזרה בשיפור של המילוי האוטומטי</translation>
+<translation id="8036504271468642248">המשפט הקודם</translation>
 <translation id="8037117027592400564">קריאת כל הטקסט הנאמר באמצעות דיבור מסונתז</translation>
 <translation id="8037357227543935929">לשאול (ברירת מחדל)</translation>
 <translation id="803771048473350947">קובץ</translation>

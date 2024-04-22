@@ -1,7 +1,25 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
+<translation id="1533488253335887280">يمكنك الوصول بسهولة وأمان إلى كلمات المرور من الشاشة الرئيسية.</translation>
+<translation id="1590550141045148182">افتح أو أغلِق علامات التبويب حسبما تريد.</translation>
+<translation id="2036020471903443693">ستظهر أسفل الشاشة علامة التبويب مثبَّتة.</translation>
+<translation id="2984477737332162971">انتقِل إلى علامات التبويب المفتوحة.</translation>
+<translation id="3595188309555410362">‏إذا كانت لديك علامات تبويب لم يتم استخدامها منذ فترة، فسيتم نقلها الآن إلى قسم "علامات التبويب غير النشطة" (Inactive Tabs).</translation>
+<translation id="3941788408634637840">‏انقر على "علامات التبويب غير النشطة" (Inactive Tabs) (في حال توفُّرها).</translation>
+<translation id="3942215673032261195">يمكنك تثبيت مواقعك الإلكترونية المفضّلة للوصول إليها بسهولة لاحقًا.</translation>
+<translation id="4196935312151003338">‏اختَر "تثبيت علامة التبويب" (Pin Tab) من القائمة.</translation>
+<translation id="4497631794981705027">انقر مع الاستمرار على الشاشة الرئيسية.</translation>
+<translation id="463279609093232564">في أعلى يمين الشاشة، انقر على رمز الإضافة.</translation>
+<translation id="5604467549230434026">‏أدخِل كلمة Chrome في مربّع "البحث في التطبيقات المصغّرة" (Search Widgets).</translation>
+<translation id="5639067007765618198">‏تطبيق "مدير كلمات المرور في Google" المصغّر</translation>
 <translation id="5922999516621365983">اسحب علامة التبويب هنا لتثبيتها.</translation>
 <translation id="5979837087407522202">البحث عن كلمات المرور</translation>
+<translation id="6109989197058801417">اضغط مع الاستمرار على علامة التبويب التي تريد تثبيتها.</translation>
+<translation id="639614003069108254">‏اختَر "مدير كلمات المرور" (Password Manager)، ثم انقر على "إضافة تطبيق مصغّر" (Add Widget).</translation>
+<translation id="6905308710260460250">علامات التبويب المثبَّتة</translation>
+<translation id="720206380500582061">‏يمكنك إدارة إعدادات "علامات التبويب غير النشطة" (Inactive Tabs) ضِمن "الإعدادات" (Settings) &gt; "علامات التبويب" (Tabs).</translation>
 <translation id="8077675488769462025">علامات التبويب غير النشطة</translation>
+<translation id="8602952180069641300">‏انتقِل إلى أعلى "علامات التبويب" (Tabs).</translation>
+<translation id="979990360845983227">لم يتم استخدامها منذ 14 يومًا أو أكثر</translation>
 </translationbundle>

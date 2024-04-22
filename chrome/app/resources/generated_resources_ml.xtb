@@ -384,7 +384,6 @@
 <translation id="1280965841156951489">ഫയലുകൾ എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{ഫയൽ തുറക്കാനാകുന്നില്ല}other{ഫയലുകൾ തുറക്കാനാകുന്നില്ല}}</translation>
 <translation id="1282311502488501110">സൈൻ ഇൻ ചെയ്യരുത്</translation>
-<translation id="1282465000333679776">സിസ്റ്റം ഓഡിയോ പങ്കിടുക</translation>
 <translation id="1283126956823499975">ഉപകരണം സജ്ജീകരിക്കുന്നതിൽ എന്തോ പിശകുണ്ടായി</translation>
 <translation id="1284277788676816155">ഡാറ്റ സംരക്ഷിക്കാൻ അനുവദിക്കരുത്</translation>
 <translation id="1285320974508926690">ഈ സൈറ്റ് ഒരിക്കലും വിവര്‍‌ത്തനം ചെയ്യരുത്</translation>
@@ -1050,7 +1049,6 @@
 <translation id="1781502536226964113">പുതിയ ടാബ് പേജ് തുറക്കുക</translation>
 <translation id="1781553166608855614">സംഭാഷണ ഭാഷ</translation>
 <translation id="1781771911845953849">അക്കൗണ്ടുകളും സമന്വയവും</translation>
-<translation id="1781979858217752599">വിൻഡോ ഓഡിയോ പങ്കിടുക</translation>
 <translation id="1782101999402987960">അപ്ഡേറ്റുകൾ നിങ്ങളുടെ അഡ്‌മിൻ ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="1782196717298160133">നിങ്ങളുടെ ഫോൺ കണ്ടെത്തുന്നു</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{ഒരു കുറിപ്പ്}other{# കുറിപ്പുകള്‍}}</translation>
@@ -1614,7 +1612,6 @@
 <translation id="2187895286714876935">സെര്‍വര്‍ സാക്ഷ്യപത്ര ഇറക്കുമതി പിശക്</translation>
 <translation id="2187906491731510095">വിപുലീകരണങ്ങൾ അപ്‌ഡേറ്റ് ചെയ്‌തു</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> തുറക്കുക</translation>
-<translation id="2189787291884708275">ടാബ് ഓഡിയോ പങ്കിടുക</translation>
 <translation id="2190069059097339078">WiFi ക്രെഡൻഷ്യലുകൾ ലഭ്യമാക്കൽ</translation>
 <translation id="219008588003277019">നേറ്റീവ് ക്ലയന്‍റ് മൊഡ്യൂള്‍‌: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(ശൂന്യം)</translation>
@@ -5283,6 +5280,7 @@
 <translation id="4998430619171209993">ഓണാണ്</translation>
 <translation id="4999804342505941663">'ശല്യപ്പെടുത്തരുത്' ഓണാക്കുക</translation>
 <translation id="5001526427543320409">മൂന്നാം-കക്ഷി കുക്കികൾ</translation>
+<translation id="5003993274120026347">അടുത്ത വാചകം</translation>
 <translation id="5005498671520578047">പാസ്‌വേഡ് പകർത്തുക</translation>
 <translation id="5006118752738286774">2 വർഷം മുമ്പ്</translation>
 <translation id="5006218871145547804">Crostini Android ആപ്പ് ADB</translation>
@@ -9208,6 +9206,7 @@
 <translation id="8033958968890501070">കാലഹരണപ്പെട്ടു</translation>
 <translation id="8035059678007243127">അദൃശ്യ ബാക്ക്-ഫോർവേഡ് കാഷെ പേജ്: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">സ്വയമേവ പൂരിപ്പിക്കൽ മെച്ചപ്പെടുത്താൻ സഹായിക്കുക</translation>
+<translation id="8036504271468642248">മുമ്പത്തെ വാചകം</translation>
 <translation id="8037117027592400564">സംശ്ലേഷിച്ച സംഭാഷണം ഉപയോഗിക്കുന്ന എല്ലാ ടെക്സ്റ്റ് സംഭാഷണവും റീഡുചെയ്യുക</translation>
 <translation id="8037357227543935929">ചോദിക്കുക (ഡിഫോൾട്ട്)</translation>
 <translation id="803771048473350947">ഫയല്‍</translation>

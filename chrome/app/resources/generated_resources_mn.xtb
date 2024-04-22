@@ -384,7 +384,6 @@
 <translation id="1280965841156951489">Файлуудыг засах</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Файлыг нээх боломжгүй}other{Файлуудыг нээх боломжгүй}}</translation>
 <translation id="1282311502488501110">Бүү нэвтэр</translation>
-<translation id="1282465000333679776">Системийн аудиог хуваалцах</translation>
 <translation id="1283126956823499975">Төхөөрөмжийг тохируулах үед ямар нэг алдаа гарлаа</translation>
 <translation id="1284277788676816155">Өгөгдөл хадгалахыг зөвшөөрөхгүй</translation>
 <translation id="1285320974508926690">Энэ сайтыг хэзээ ч бүү хөрвүүл</translation>
@@ -1058,7 +1057,6 @@
 <translation id="1781502536226964113">Шинэ цонхыг нээ</translation>
 <translation id="1781553166608855614">Текстээс яриа</translation>
 <translation id="1781771911845953849">Бүртгэл болон синк</translation>
-<translation id="1781979858217752599">Цонхны аудиог хуваалцах</translation>
 <translation id="1782101999402987960">Шинэчлэлтийг танай администратор блоклосон байна</translation>
 <translation id="1782196717298160133">Таны утсыг олж байна</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 тэмдэглэл}other{# тэмдэглэл}}</translation>
@@ -1623,7 +1621,6 @@
 <translation id="2187895286714876935">Серверийн Гэрчилгээг Импортлох үеийн алдаа</translation>
 <translation id="2187906491731510095">Өргөтгөлийг шинэчилсэн</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" />-г нээх</translation>
-<translation id="2189787291884708275">Табын аудио хуваалцах</translation>
 <translation id="2190069059097339078">WiFi үнэмлэх авагч</translation>
 <translation id="219008588003277019">Байнгын Үйлчлүүлэгчийн модуль: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(Хоосон)</translation>
@@ -5296,6 +5293,7 @@
 <translation id="4998430619171209993">Асаалттай</translation>
 <translation id="4999804342505941663">Бүү саад бол онцлогийг асаах</translation>
 <translation id="5001526427543320409">Гуравдагч талын күүки</translation>
+<translation id="5003993274120026347">Дараагийн өгүүлбэр</translation>
 <translation id="5005498671520578047">Нууц үг хуулах</translation>
 <translation id="5006118752738286774">2 жилийн өмнө</translation>
 <translation id="5006218871145547804">Crostini-н Андройд аппын ADB</translation>
@@ -9217,6 +9215,7 @@
 <translation id="8033958968890501070">Хугацаа хэтэрсэн</translation>
 <translation id="8035059678007243127">Нууцлалтай Back/Forward Cache хийсэн хуудас: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Автоматаар бөглөх хэсгийг сайжруулахад тусална уу</translation>
+<translation id="8036504271468642248">Өмнөх өгүүлбэр</translation>
 <translation id="8037117027592400564">Нэгтгэсэн яриаг ашиглан яригдсан бүх текстийг унш</translation>
 <translation id="8037357227543935929">Асуух (өгөгдмөл)</translation>
 <translation id="803771048473350947">Файл</translation>

@@ -385,7 +385,6 @@
 <translation id="1280965841156951489">Змяніць файлы</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Не ўдаецца адкрыць файл}one{Не ўдаецца адкрыць файлы}few{Не ўдаецца адкрыць файлы}many{Не ўдаецца адкрыць файлы}other{Не ўдаецца адкрыць файлы}}</translation>
 <translation id="1282311502488501110">Не ўваходзіць</translation>
-<translation id="1282465000333679776">Абагульваць аўдыя сістэмы</translation>
 <translation id="1283126956823499975">Пры наладжванні прылады адбылася памылка</translation>
 <translation id="1284277788676816155">Не дазваляць захоўваць даныя</translation>
 <translation id="1285320974508926690">Ніколі не перакладаць гэты сайт</translation>
@@ -1054,7 +1053,6 @@
 <translation id="1781502536226964113">Адкрыць старонку новай укладкі</translation>
 <translation id="1781553166608855614">Мова вуснага маўлення</translation>
 <translation id="1781771911845953849">Уліковыя запісы і сінхранізацыя</translation>
-<translation id="1781979858217752599">Абагульваць аўдыя з акна</translation>
 <translation id="1782101999402987960">Абнаўленні заблакіраваны вашым адміністратарам</translation>
 <translation id="1782196717298160133">Ідзе пошук тэлефона</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 нататка}one{# нататка}few{# нататкі}many{# нататак}other{# нататкі}}</translation>
@@ -1616,7 +1614,6 @@
 <translation id="2187895286714876935">Памылка імпарту сертыфіката сервера</translation>
 <translation id="2187906491731510095">Пашырэнні абноўлены</translation>
 <translation id="2188881192257509750">Адкрыць <ph name="APPLICATION" /></translation>
-<translation id="2189787291884708275">Абагульваць аўдыя з укладкі</translation>
 <translation id="2190069059097339078">Сродак атрымання ўліковых даных Wi-Fi</translation>
 <translation id="219008588003277019">Модуль Native Client: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(пуста)</translation>
@@ -5284,6 +5281,7 @@
 <translation id="4998430619171209993">Уключана</translation>
 <translation id="4999804342505941663">Уключыць рэжым "Не турбаваць"</translation>
 <translation id="5001526427543320409">Староннія файлы cookie</translation>
+<translation id="5003993274120026347">Наступны сказ</translation>
 <translation id="5005498671520578047">Капіраваць пароль</translation>
 <translation id="5006118752738286774">2 гады таму</translation>
 <translation id="5006218871145547804">ADB у праграмах для Android у Crostini</translation>
@@ -9212,6 +9210,7 @@
 <translation id="8033958968890501070">Час скончыўся</translation>
 <translation id="8035059678007243127">Старонка ў рэжыме інкогніта, захаваная ў кэшы пераходу назад і наперад: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Дапамагчы палепшыць функцыю аўтазапаўнення</translation>
+<translation id="8036504271468642248">Папярэдні сказ</translation>
 <translation id="8037117027592400564">Чытаць увесь тэкст, выкарыстоўваючы сінтэзатар маўлення</translation>
 <translation id="8037357227543935929">Запытаць (стандартна)</translation>
 <translation id="803771048473350947">Файл</translation>

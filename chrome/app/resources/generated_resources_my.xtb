@@ -384,7 +384,6 @@
 <translation id="1280965841156951489">ဖိုင်များတည်းဖြတ်ရန်</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{ဖိုင်ကို ဖွင့်၍မရပါ}other{ဖိုင်များကို ဖွင့်၍မရပါ}}</translation>
 <translation id="1282311502488501110">လက်မှတ်ထိုး မဝင်ပါနှင့်</translation>
-<translation id="1282465000333679776">စနစ်အသံကို မျှဝေရန်</translation>
 <translation id="1283126956823499975">စက်ပစ္စည်း စနစ်ထည့်သွင်းမှုတွင် တစ်ခုခုမှားသွားသည်</translation>
 <translation id="1284277788676816155">ဒေတာသိမ်းခွင့်မပြုရန်</translation>
 <translation id="1285320974508926690">ဒီဆိုက်ကို ဘယ်တော့မှ ဘာသာမပြန်ပါနှင့်</translation>
@@ -1061,7 +1060,6 @@
 <translation id="1781502536226964113">တဲပ်စာမျက်နှာ အသစ်ဖွင့်ရန်</translation>
 <translation id="1781553166608855614">ပြောဆိုသည့် ဘာသာစကား</translation>
 <translation id="1781771911845953849">အကောင့်များနှင့် စင့်ခ်လုပ်ခြင်းများ</translation>
-<translation id="1781979858217752599">ဝင်းဒိုးအသံကို မျှဝေရန်</translation>
 <translation id="1782101999402987960">အပ်ဒိတ်များကို သင်၏စီမံခန့်ခွဲသူက ပိတ်ထားသည်</translation>
 <translation id="1782196717298160133">သင်၏ ဖုန်းကို ရှာကြည့်ခြင်း</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{မှတ်စု ၁ ခု}other{မှတ်စု # ခု}}</translation>
@@ -1625,7 +1623,6 @@
 <translation id="2187895286714876935">ဆာဗာ လက်မှတ် တင်သွင်းမှု အမှား</translation>
 <translation id="2187906491731510095">နောက်ဆက်တွဲများ အပ်ဒိတ်လုပ်ပြီးပါပြီ</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> ကို ဖွင့်ရန်</translation>
-<translation id="2189787291884708275">တဘ်အသံကို မျှဝေရန်</translation>
 <translation id="2190069059097339078">WiFi Credentials Getter</translation>
 <translation id="219008588003277019">ဇာတိဖောက်သည် သင်ရိုး: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(ဗလာ)</translation>
@@ -5299,6 +5296,7 @@
 <translation id="4998430619171209993">ဖွင့်</translation>
 <translation id="4999804342505941663">'မနှောင့်ယှက်ရ' ကို ဖွင့်ရန်</translation>
 <translation id="5001526427543320409">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီး</translation>
+<translation id="5003993274120026347">နောက် ဝါကျ</translation>
 <translation id="5005498671520578047">စကားဝှက်ကို ကူးယူပါ</translation>
 <translation id="5006118752738286774">ပြီးခဲ့သော 2 နှစ်</translation>
 <translation id="5006218871145547804">Crostini Android အက်ပ် ADB</translation>
@@ -9220,6 +9218,7 @@
 <translation id="8033958968890501070">အချိန်ကုန်သွားသည်</translation>
 <translation id="8035059678007243127">ရှေ့/နောက် ကက်ရှ်သိမ်းထားသော ရုပ်ဖျက်စာမျက်နှာ- <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">‘အော်တိုဖြည့်’ ပိုကောင်းလာအောင် ကူညီရန်</translation>
+<translation id="8036504271468642248">ယခင် ဝါကျ</translation>
 <translation id="8037117027592400564">ဖန်တီး နှုတ်စကားကို အသုံးပြုပြီး ပြောကြားခဲ့သည့် စာသား အားလုံးကို ဖတ်ရန်</translation>
 <translation id="8037357227543935929">မေးရန် (မူရင်း)</translation>
 <translation id="803771048473350947">ဖိုင်</translation>

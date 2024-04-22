@@ -382,7 +382,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1280965841156951489">Editar archivos</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{No se puede abrir el archivo}other{No se pueden abrir los archivos}}</translation>
 <translation id="1282311502488501110">No iniciar sesión</translation>
-<translation id="1282465000333679776">Compartir audio del sistema</translation>
 <translation id="1283126956823499975">Se ha producido un error al configurar el dispositivo</translation>
 <translation id="1284277788676816155">No permitir que guarde datos</translation>
 <translation id="1285320974508926690">No traducir nunca este sitio</translation>
@@ -1051,7 +1050,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1781502536226964113">Abrir la página Nueva pestaña</translation>
 <translation id="1781553166608855614">Idioma hablado</translation>
 <translation id="1781771911845953849">Cuentas y sincronización</translation>
-<translation id="1781979858217752599">Compartir audio de la ventana</translation>
 <translation id="1782101999402987960">Tu administrador ha bloqueado las actualizaciones</translation>
 <translation id="1782196717298160133">Buscando teléfono</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 nota}other{# notas}}</translation>
@@ -1615,7 +1613,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2187895286714876935">Error de importación del certificado de servidor</translation>
 <translation id="2187906491731510095">Se han actualizado las extensiones</translation>
 <translation id="2188881192257509750">Abrir <ph name="APPLICATION" /></translation>
-<translation id="2189787291884708275">Compartir audio de la pestaña</translation>
 <translation id="2190069059097339078">Aplicación para obtener credenciales Wi-Fi</translation>
 <translation id="219008588003277019">Módulo cliente nativo: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(vacío)</translation>
@@ -5284,6 +5281,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4998430619171209993">Activado</translation>
 <translation id="4999804342505941663">Activar No molestar</translation>
 <translation id="5001526427543320409">Cookies de terceros</translation>
+<translation id="5003993274120026347">Siguiente frase</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
 <translation id="5006118752738286774">Hace 2 años</translation>
 <translation id="5006218871145547804">ADB de aplicaciones Android en Crostini</translation>
@@ -9209,6 +9207,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8033958968890501070">Tiempo de espera agotado</translation>
 <translation id="8035059678007243127">Página de incógnito almacenada en la caché de páginas completas: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Ayuda a mejorar Autocompletar</translation>
+<translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8037117027592400564">Leer todo el texto hablado con la conversión de texto a voz</translation>
 <translation id="8037357227543935929">Preguntar (predeterminado)</translation>
 <translation id="803771048473350947">Archivo</translation>

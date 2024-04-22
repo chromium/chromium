@@ -384,7 +384,6 @@
 <translation id="1280965841156951489">Փոփոխել ֆայլերը</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Հնարավոր չէ բացել ֆայլը}one{Հնարավոր չէ բացել ֆայլը}other{Հնարավոր չէ բացել ֆայլերը}}</translation>
 <translation id="1282311502488501110">Մուտք չգործել</translation>
-<translation id="1282465000333679776">Հասանելի դարձնել համակարգի աուդիո բովանդակությունը</translation>
 <translation id="1283126956823499975">Սարքը կարգավորելիս սխալ առաջացավ</translation>
 <translation id="1284277788676816155">Չթույլատրել տվյալներ պահել</translation>
 <translation id="1285320974508926690">Երբեք չթարգմանել այս կայքը</translation>
@@ -1053,7 +1052,6 @@
 <translation id="1781502536226964113">Բացել նոր ներդիրի էջով</translation>
 <translation id="1781553166608855614">Հնչեցման լեզուն</translation>
 <translation id="1781771911845953849">Հաշիվներ և համաժամացում</translation>
-<translation id="1781979858217752599">Հասանելի դարձնել պատուհանի աուդիո բովանդակությունը</translation>
 <translation id="1782101999402987960">Ադմինիստրատորն արգելափակում է թարմացումները</translation>
 <translation id="1782196717298160133">Ձեր հեռախոսը որոնվում է</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 նշում}one{# նշում}other{# նշում}}</translation>
@@ -1617,7 +1615,6 @@
 <translation id="2187895286714876935">Սերվերի վկայագրի ներմուծման սխալ</translation>
 <translation id="2187906491731510095">Ընդլայնումները թարմացվել են</translation>
 <translation id="2188881192257509750">Բացել <ph name="APPLICATION" /> հավելվածը</translation>
-<translation id="2189787291884708275">Հասանելի դարձնել ներդիրի աուդիո բովանդակությունը</translation>
 <translation id="2190069059097339078">WiFi հավատարմագրերի կորզիչ</translation>
 <translation id="219008588003277019">Native Client մոդուլ` <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(դատարկ)</translation>
@@ -5284,6 +5281,7 @@
 <translation id="4998430619171209993">Միացված է</translation>
 <translation id="4999804342505941663">Միացնել «Չանհանգստացնել» ռեժիմը</translation>
 <translation id="5001526427543320409">Երրորդ կողմի քուքիներ</translation>
+<translation id="5003993274120026347">Հաջորդ նախադասությունը</translation>
 <translation id="5005498671520578047">Պատճենել գաղտնաբառը</translation>
 <translation id="5006118752738286774">2 տարի առաջ</translation>
 <translation id="5006218871145547804">Android-ի համար հավելվածների ADB գործիք Crostini-ում</translation>
@@ -9205,6 +9203,7 @@
 <translation id="8033958968890501070">Ժամանակը սպառվել է</translation>
 <translation id="8035059678007243127">Հետադարձ քեշի էջ ինկոգնիտո ռեժիմում՝ <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Օգնեք բարելավել ինքնալրացման գործառույթը</translation>
+<translation id="8036504271468642248">Նախորդ նախադասությունը</translation>
 <translation id="8037117027592400564">Տեքստի ընթերցում սինթեզված խոսքի միջոցով</translation>
 <translation id="8037357227543935929">Հարցնել (կանխադրված)</translation>
 <translation id="803771048473350947">Ֆայլ</translation>

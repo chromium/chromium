@@ -384,7 +384,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1280965841156951489">Izmeni datoteke</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Otvaranje fajla nije uspelo}one{Otvaranje fajlova nije uspelo}few{Otvaranje fajlova nije uspelo}other{Otvaranje fajlova nije uspelo}}</translation>
 <translation id="1282311502488501110">Ne prijavljuj me</translation>
-<translation id="1282465000333679776">Deli zvuk sistema</translation>
 <translation id="1283126956823499975">Došlo je do greške pri podešavanju uređaja</translation>
 <translation id="1284277788676816155">Ne dozvoli čuvanje podataka</translation>
 <translation id="1285320974508926690">Nikad ne prevodi ovaj sajt</translation>
@@ -1050,7 +1049,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1781502536226964113">Otvori novu karticu</translation>
 <translation id="1781553166608855614">Govorni jezik</translation>
 <translation id="1781771911845953849">Nalozi i sinhronizacija</translation>
-<translation id="1781979858217752599">Deli zvuk prozora</translation>
 <translation id="1782101999402987960">Administrator je blokirao ažuriranja</translation>
 <translation id="1782196717298160133">Tražimo telefon</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 beleška}one{# beleška}few{# beleške}other{# beleški}}</translation>
@@ -1613,7 +1611,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2187895286714876935">Greška pri uvozu serverskog sertifikata</translation>
 <translation id="2187906491731510095">Dodaci su ažurirani</translation>
 <translation id="2188881192257509750">Otvori <ph name="APPLICATION" /></translation>
-<translation id="2189787291884708275">Deli zvuk kartice</translation>
 <translation id="2190069059097339078">Dobijanje akreditiva za WiFi</translation>
 <translation id="219008588003277019">Modul originalnog klijenta: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(prazno)</translation>
@@ -5283,6 +5280,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4998430619171209993">Uključeno</translation>
 <translation id="4999804342505941663">Uključite režim Ne uznemiravaj</translation>
 <translation id="5001526427543320409">Kolačići treće strane</translation>
+<translation id="5003993274120026347">Sledeća rečenica</translation>
 <translation id="5005498671520578047">Kopiranje lozinke</translation>
 <translation id="5006118752738286774">pre 2 godine</translation>
 <translation id="5006218871145547804">ADB za Android aplikacije za Crostini</translation>
@@ -9212,6 +9210,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8033958968890501070">Vreme je isteklo</translation>
 <translation id="8035059678007243127">Cela keširana stranice bez arhiviranja: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Pomozite nam da poboljšamo automatsko popunjavanje</translation>
+<translation id="8036504271468642248">Prethodna rečenica</translation>
 <translation id="8037117027592400564">Čitanje svog teksta izgovorenog pomoću sintetizovanog govora</translation>
 <translation id="8037357227543935929">Pitaj (podrazumevano)</translation>
 <translation id="803771048473350947">Datoteka</translation>

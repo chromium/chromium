@@ -382,7 +382,6 @@
 <translation id="1280965841156951489">編輯檔案</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{無法開啟檔案}other{無法開啟檔案}}</translation>
 <translation id="1282311502488501110">不登入</translation>
-<translation id="1282465000333679776">分享系統音訊</translation>
 <translation id="1283126956823499975">設定裝置時發生錯誤</translation>
 <translation id="1284277788676816155">不允許儲存資料</translation>
 <translation id="1285320974508926690">一律不翻譯此網站</translation>
@@ -1051,7 +1050,6 @@
 <translation id="1781502536226964113">開啟新分頁</translation>
 <translation id="1781553166608855614">使用的語言</translation>
 <translation id="1781771911845953849">帳戶與同步處理</translation>
-<translation id="1781979858217752599">分享視窗音訊</translation>
 <translation id="1782101999402987960">管理員已禁止更新作業</translation>
 <translation id="1782196717298160133">搜尋你的手機</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 則記事}other{# 則記事}}</translation>
@@ -1615,7 +1613,6 @@
 <translation id="2187895286714876935">伺服器憑證匯入錯誤</translation>
 <translation id="2187906491731510095">擴充功能已更新</translation>
 <translation id="2188881192257509750">開啟「<ph name="APPLICATION" />」</translation>
-<translation id="2189787291884708275">分享分頁音訊</translation>
 <translation id="2190069059097339078">WiFi 憑證擷取工具</translation>
 <translation id="219008588003277019">Native Client 模組：<ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(空白)</translation>
@@ -5284,6 +5281,7 @@
 <translation id="4998430619171209993">開啟</translation>
 <translation id="4999804342505941663">開啟「零打擾」模式</translation>
 <translation id="5001526427543320409">第三方 Cookie</translation>
+<translation id="5003993274120026347">下一句</translation>
 <translation id="5005498671520578047">複製密碼</translation>
 <translation id="5006118752738286774">2 年前</translation>
 <translation id="5006218871145547804">Crostini Android 應用程式 ADB</translation>
@@ -9205,6 +9203,7 @@
 <translation id="8033958968890501070">逾時</translation>
 <translation id="8035059678007243127">無痕模式往返快取頁面：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">協助改善自動填入功能</translation>
+<translation id="8036504271468642248">上一句</translation>
 <translation id="8037117027592400564">讀取使用合成語音朗讀的所有文字</translation>
 <translation id="8037357227543935929">詢問 (預設)</translation>
 <translation id="803771048473350947">檔案</translation>

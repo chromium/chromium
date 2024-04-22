@@ -382,7 +382,6 @@
 <translation id="1280965841156951489">修改文件</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{无法打开文件}other{无法打开文件}}</translation>
 <translation id="1282311502488501110">不登录</translation>
-<translation id="1282465000333679776">分享系统中的音频</translation>
 <translation id="1283126956823499975">设置设备时出了点问题</translation>
 <translation id="1284277788676816155">不允许保存数据</translation>
 <translation id="1285320974508926690">一律不翻译此网站</translation>
@@ -1046,7 +1045,6 @@
 <translation id="1781502536226964113">打开新标签页</translation>
 <translation id="1781553166608855614">语音采用的语言</translation>
 <translation id="1781771911845953849">账号和同步</translation>
-<translation id="1781979858217752599">分享窗口中的音频</translation>
 <translation id="1782101999402987960">您的管理员已禁止进行更新</translation>
 <translation id="1782196717298160133">正在查找您的手机</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 条记事}other{# 条记事}}</translation>
@@ -1608,7 +1606,6 @@
 <translation id="2187895286714876935">服务器证书导入错误</translation>
 <translation id="2187906491731510095">扩展程序已更新</translation>
 <translation id="2188881192257509750">打开<ph name="APPLICATION" /></translation>
-<translation id="2189787291884708275">分享标签页中的音频</translation>
 <translation id="2190069059097339078">WiFi 凭据获取工具</translation>
 <translation id="219008588003277019">Native Client 模块：<ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">（空）</translation>
@@ -5276,6 +5273,7 @@
 <translation id="4998430619171209993">已开启</translation>
 <translation id="4999804342505941663">开启“勿扰”模式</translation>
 <translation id="5001526427543320409">第三方 Cookie</translation>
+<translation id="5003993274120026347">下一句</translation>
 <translation id="5005498671520578047">复制密码</translation>
 <translation id="5006118752738286774">2 年前</translation>
 <translation id="5006218871145547804">Crostini Android 应用 ADB</translation>
@@ -9198,6 +9196,7 @@
 <translation id="8033958968890501070">已超时</translation>
 <translation id="8035059678007243127">无痕式往返缓存版页面：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">帮助改进自动填充功能</translation>
+<translation id="8036504271468642248">上一句</translation>
 <translation id="8037117027592400564">读取使用合成语音说出的所有文字</translation>
 <translation id="8037357227543935929">询问（默认）</translation>
 <translation id="803771048473350947">文件</translation>

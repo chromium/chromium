@@ -384,7 +384,6 @@
 <translation id="1280965841156951489">फाइल संपादित करा</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{फाइल उघडू शकत नाही}other{फाइल उघडू शकत नाही}}</translation>
 <translation id="1282311502488501110">साइन इन करू नका</translation>
-<translation id="1282465000333679776">सिस्टम ऑडिओ शेअर करा</translation>
 <translation id="1283126956823499975">डिव्हाइस सेट करताना काहीतरी चुकले</translation>
 <translation id="1284277788676816155">डेटा सेव्ह करण्याची अनुमती देऊ नका</translation>
 <translation id="1285320974508926690">या साइटचा कधीही भाषांतर करु नका</translation>
@@ -1061,7 +1060,6 @@
 <translation id="1781502536226964113">नवे टॅब पेज उघडा</translation>
 <translation id="1781553166608855614">बोली भाषा</translation>
 <translation id="1781771911845953849">खाती आणि सिंक</translation>
-<translation id="1781979858217752599">विंडो ऑडिओ शेअर करा</translation>
 <translation id="1782101999402987960">तुमच्या अ‍ॅडमिनिस्ट्रेटरने अपडेट ब्लॉक केले आहेत</translation>
 <translation id="1782196717298160133">तुमचा फोन शोधणे</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{एक टीप}other{# टिपा}}</translation>
@@ -1626,7 +1624,6 @@
 <translation id="2187895286714876935">सर्व्हर सर्टिफिकेट आयात एरर</translation>
 <translation id="2187906491731510095">विस्तार अपडेट केले</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> उघडा</translation>
-<translation id="2189787291884708275">टॅब ऑडिओ शेअर करा</translation>
 <translation id="2190069059097339078">WiFi क्रेडेंशियल मिळविणारा</translation>
 <translation id="219008588003277019">नेटिव्ह क्लायंट मॉड्युल: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(रिक्त)</translation>
@@ -5298,6 +5295,7 @@
 <translation id="4998430619171209993">सुरू</translation>
 <translation id="4999804342505941663">व्यत्यय आणू नका सुरू करा</translation>
 <translation id="5001526427543320409">तृतीय पक्ष कुकी</translation>
+<translation id="5003993274120026347">पुढील वाक्य</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करा</translation>
 <translation id="5006118752738286774">दोन वर्षांपूर्वी</translation>
 <translation id="5006218871145547804">Crostini Android अ‍ॅप ADB</translation>
@@ -9222,6 +9220,7 @@
 <translation id="8033958968890501070">वेळ संपली</translation>
 <translation id="8035059678007243127">बॅक/फॉरवर्ड कॅशे केलेले गुप्त पेज: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">ऑटोफिल यामध्ये सुधारणा करण्यात मदत करा</translation>
+<translation id="8036504271468642248">मागील वाक्य</translation>
 <translation id="8037117027592400564">संकालित भाषण वापरून बोललेला सर्व मजकूर वाचा</translation>
 <translation id="8037357227543935929">विचारा (डीफॉल्ट)</translation>
 <translation id="803771048473350947">फाइल</translation>

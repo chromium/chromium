@@ -384,7 +384,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1280965841156951489">Wysig lêers</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Kan nie lêer oopmaak nie}other{Kan nie lêers oopmaak nie}}</translation>
 <translation id="1282311502488501110">Moenie aanmeld nie</translation>
-<translation id="1282465000333679776">Deel stelseloudio</translation>
 <translation id="1283126956823499975">Iets het skeefgeloop met die opstel van die toestel</translation>
 <translation id="1284277788676816155">Moenie toelaat om data te stoor nie</translation>
 <translation id="1285320974508926690">Moet nooit hierdie werf vertaal nie</translation>
@@ -1062,7 +1061,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1781502536226964113">Maak nuwe oortjie-bladsy oop</translation>
 <translation id="1781553166608855614">Gesproke taal</translation>
 <translation id="1781771911845953849">Rekeninge en sinkronisering</translation>
-<translation id="1781979858217752599">Deel vensteroudio</translation>
 <translation id="1782101999402987960">Jou administrateur blokkeer opdaterings</translation>
 <translation id="1782196717298160133">Vind tans jou foon</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 nota}other{# notas}}</translation>
@@ -1627,7 +1625,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2187895286714876935">Bedienersertifikaat-invoerfout</translation>
 <translation id="2187906491731510095">Uitbreidings is opgedateer</translation>
 <translation id="2188881192257509750">Maak <ph name="APPLICATION" /> oop</translation>
-<translation id="2189787291884708275">Deel oortjie-oudio</translation>
 <translation id="2190069059097339078">Wi-Fi-eiebewyshaler</translation>
 <translation id="219008588003277019">Plaaslike kliënt-module: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(leeg)</translation>
@@ -5301,6 +5298,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4998430619171209993">Aan</translation>
 <translation id="4999804342505941663">Skakel Moenie Steur Nie aan</translation>
 <translation id="5001526427543320409">Derdepartywebkoekies</translation>
+<translation id="5003993274120026347">Volgende sin</translation>
 <translation id="5005498671520578047">Kopieer wagwoord</translation>
 <translation id="5006118752738286774">2 jaar gelede</translation>
 <translation id="5006218871145547804">Android-program-ADB in Crostini</translation>
@@ -9225,6 +9223,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8033958968890501070">Uittelling</translation>
 <translation id="8035059678007243127">Incognito-terug-vorentoe-kasgegeue-bladsy: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Help om outovul te verbeter</translation>
+<translation id="8036504271468642248">Vorige sin</translation>
 <translation id="8037117027592400564">Lees alle teks uitgespreek met gesintetiseerde spraak</translation>
 <translation id="8037357227543935929">Vra (verstek)</translation>
 <translation id="803771048473350947">Lêer</translation>

@@ -385,7 +385,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1280965841156951489">Breyta skrám</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Ekki er hægt að opna skrána}one{Ekki er hægt að opna skrárnar}other{Ekki er hægt að opna skrárnar}}</translation>
 <translation id="1282311502488501110">Ekki skrá inn</translation>
-<translation id="1282465000333679776">Deila hljóði kerfis</translation>
 <translation id="1283126956823499975">Eitthvað fór úrskeiðis við uppsetningu tækisins</translation>
 <translation id="1284277788676816155">Ekki leyfa vistun gagna</translation>
 <translation id="1285320974508926690">Aldrei þýða þetta vefsvæði</translation>
@@ -1063,7 +1062,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1781502536226964113">Opna síðu nýrra flipa</translation>
 <translation id="1781553166608855614">Talað tungumál</translation>
 <translation id="1781771911845953849">Reikningar og samstilling</translation>
-<translation id="1781979858217752599">Deila hljóði glugga</translation>
 <translation id="1782101999402987960">Stjórnandi hefur lokað á uppfærslur</translation>
 <translation id="1782196717298160133">Leit að síma</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 glósa}one{# glósa}other{# glósur}}</translation>
@@ -1628,7 +1626,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2187895286714876935">Villa við innflutning á vottorði þjóns</translation>
 <translation id="2187906491731510095">Viðbætur uppfærðar</translation>
 <translation id="2188881192257509750">Opna <ph name="APPLICATION" /></translation>
-<translation id="2189787291884708275">Deila hljóði flipa</translation>
 <translation id="2190069059097339078">Niðurhal Wi-Fi skilríkja</translation>
 <translation id="219008588003277019">Eining sérforritaðs biðlara: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(autt)</translation>
@@ -5302,6 +5299,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="4998430619171209993">Kveikt</translation>
 <translation id="4999804342505941663">Kveikja á „Ónáðið ekki“</translation>
 <translation id="5001526427543320409">Fótspor þriðju aðila</translation>
+<translation id="5003993274120026347">Næsta setning</translation>
 <translation id="5005498671520578047">Afrita aðgangsorð</translation>
 <translation id="5006118752738286774">fyrir 2 árum</translation>
 <translation id="5006218871145547804">ADB Android forrita í Crostini</translation>
@@ -9227,6 +9225,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8033958968890501070">Tímamörk</translation>
 <translation id="8035059678007243127">Huliðssíða í skyndiminni til baka / áfram: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Hjálpaðu til við að bæta sjálfvirka útfyllingu</translation>
+<translation id="8036504271468642248">Fyrri setning</translation>
 <translation id="8037117027592400564">Lesa allan talaðan texta með talgervli</translation>
 <translation id="8037357227543935929">Spyrja (sjálfgefið)</translation>
 <translation id="803771048473350947">Skrá</translation>

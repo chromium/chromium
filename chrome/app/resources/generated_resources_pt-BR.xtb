@@ -385,7 +385,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1280965841156951489">Editar arquivos</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Não é possível abrir o arquivo}one{Não é possível abrir o arquivo}other{Não é possível abrir os arquivos}}</translation>
 <translation id="1282311502488501110">Não fazer login</translation>
-<translation id="1282465000333679776">Compartilhar áudio do sistema</translation>
 <translation id="1283126956823499975">Algo deu errado ao configurar o dispositivo</translation>
 <translation id="1284277788676816155">Não permitir que dados sejam salvos</translation>
 <translation id="1285320974508926690">Nunca traduzir este site</translation>
@@ -1063,7 +1062,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1781502536226964113">Abrir Nova guia</translation>
 <translation id="1781553166608855614">Idioma falado</translation>
 <translation id="1781771911845953849">Contas e sincronização</translation>
-<translation id="1781979858217752599">Compartilhar áudio da janela</translation>
 <translation id="1782101999402987960">As atualizações estão bloqueadas pelo administrador</translation>
 <translation id="1782196717298160133">Como encontrar seu smartphone</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 anotação}one{# anotação}other{# anotações}}</translation>
@@ -1628,7 +1626,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2187895286714876935">Erro de importação do certificado de servidor</translation>
 <translation id="2187906491731510095">Extensões atualizadas</translation>
 <translation id="2188881192257509750">Abrir <ph name="APPLICATION" /></translation>
-<translation id="2189787291884708275">Compartilhar áudio da guia</translation>
 <translation id="2190069059097339078">Getter de credenciais de Wi-Fi</translation>
 <translation id="219008588003277019">Módulo do cliente nativo: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(vazio)</translation>
@@ -5302,6 +5299,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4998430619171209993">Ativado</translation>
 <translation id="4999804342505941663">Ativar o Não perturbe</translation>
 <translation id="5001526427543320409">Cookies de terceiros</translation>
+<translation id="5003993274120026347">Próxima frase</translation>
 <translation id="5005498671520578047">Copiar senha</translation>
 <translation id="5006118752738286774">2 anos atrás</translation>
 <translation id="5006218871145547804">ADB de apps Android no Crostini</translation>
@@ -9230,6 +9228,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8033958968890501070">Expirada</translation>
 <translation id="8035059678007243127">Página de navegação anônima salva em cache de avanço e retorno: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Ajude a melhorar o preenchimento automático</translation>
+<translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8037117027592400564">Ler todo texto falado usando voz sintetizada</translation>
 <translation id="8037357227543935929">Perguntar (padrão)</translation>
 <translation id="803771048473350947">Arquivo</translation>

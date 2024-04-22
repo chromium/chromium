@@ -382,7 +382,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1280965841156951489">Dateien bearbeiten</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Datei kann nicht geöffnet werden}other{Dateien können nicht geöffnet werden}}</translation>
 <translation id="1282311502488501110">Nicht anmelden</translation>
-<translation id="1282465000333679776">Audio des Systems teilen</translation>
 <translation id="1283126956823499975">Bei der Einrichtung des Geräts ist ein Fehler aufgetreten</translation>
 <translation id="1284277788676816155">Speichern von Daten nicht genehmigen</translation>
 <translation id="1285320974508926690">Diese Website nie übersetzen</translation>
@@ -1048,7 +1047,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1781502536226964113">„Neuer Tab“-Seite öffnen</translation>
 <translation id="1781553166608855614">Gesprochene Sprache</translation>
 <translation id="1781771911845953849">Konten und Synchronisierung</translation>
-<translation id="1781979858217752599">Audio des Fensters teilen</translation>
 <translation id="1782101999402987960">Updates werden von deinem Administrator blockiert</translation>
 <translation id="1782196717298160133">Mein Telefon finden</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 Hinweis}other{# Hinweise}}</translation>
@@ -1612,7 +1610,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2187895286714876935">Fehler beim Importieren des Serverzertifikats</translation>
 <translation id="2187906491731510095">Erweiterungen wurden aktualisiert</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> öffnen</translation>
-<translation id="2189787291884708275">Audio des Tabs teilen</translation>
 <translation id="2190069059097339078">WLAN-Anmeldedaten-Abruf</translation>
 <translation id="219008588003277019">Natives Client-Modul: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(leer)</translation>
@@ -5282,6 +5279,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4998430619171209993">An</translation>
 <translation id="4999804342505941663">„Bitte nicht stören“ aktivieren</translation>
 <translation id="5001526427543320409">Drittanbieter-Cookies</translation>
+<translation id="5003993274120026347">Nächster Satz</translation>
 <translation id="5005498671520578047">Passwort kopieren</translation>
 <translation id="5006118752738286774">Vor 2 Jahren</translation>
 <translation id="5006218871145547804">Android-App-ADB für Crostini</translation>
@@ -9204,6 +9202,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8033958968890501070">Zeitüberschreitung</translation>
 <translation id="8035059678007243127">Inkognito-Seite im Back-Forward-Cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Hilf mit, Autofill zu verbessern</translation>
+<translation id="8036504271468642248">Vorheriger Satz</translation>
 <translation id="8037117027592400564">Alle mit künstlicher Sprachausgabe gesprochenen Texte lesen</translation>
 <translation id="8037357227543935929">Nachfragen (Standard)</translation>
 <translation id="803771048473350947">Datei</translation>

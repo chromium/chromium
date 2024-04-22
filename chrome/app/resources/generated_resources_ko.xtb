@@ -384,7 +384,6 @@
 <translation id="1280965841156951489">파일 수정</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{파일을 열 수 없음}other{파일을 열 수 없음}}</translation>
 <translation id="1282311502488501110">로그인 안함</translation>
-<translation id="1282465000333679776">시스템 오디오 공유</translation>
 <translation id="1283126956823499975">기기를 설정하는 중에 문제가 발생했습니다</translation>
 <translation id="1284277788676816155">데이터 저장 허용 안 함</translation>
 <translation id="1285320974508926690">이 사이트 번역 안함</translation>
@@ -1062,7 +1061,6 @@
 <translation id="1781502536226964113">새 탭 페이지 열기</translation>
 <translation id="1781553166608855614">음성 언어</translation>
 <translation id="1781771911845953849">계정 및 동기화</translation>
-<translation id="1781979858217752599">창 오디오 공유</translation>
 <translation id="1782101999402987960">관리자가 업데이트를 차단했습니다.</translation>
 <translation id="1782196717298160133">휴대전화 찾는 중</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{메모 1개}other{매모 #개}}</translation>
@@ -1628,7 +1626,6 @@
 <translation id="2187895286714876935">서버 인증서 가져오기 오류</translation>
 <translation id="2187906491731510095">확장 프로그램 업데이트됨</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> 열기</translation>
-<translation id="2189787291884708275">탭 오디오 공유</translation>
 <translation id="2190069059097339078">WiFi 사용자 인증 정보 Getter</translation>
 <translation id="219008588003277019">네이티브 클라이언트 모듈: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(비어있음)</translation>
@@ -5301,6 +5298,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4998430619171209993">사용</translation>
 <translation id="4999804342505941663">방해 금지 모드 사용 설정</translation>
 <translation id="5001526427543320409">서드 파티 쿠키</translation>
+<translation id="5003993274120026347">다음 문장</translation>
 <translation id="5005498671520578047">비밀번호 복사</translation>
 <translation id="5006118752738286774">2년 전</translation>
 <translation id="5006218871145547804">Crostini Android 앱 ADB</translation>
@@ -9226,6 +9224,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8033958968890501070">시간 초과</translation>
 <translation id="8035059678007243127">시크릿 모드 뒤로-앞으로 캐시 페이지: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">자동 완성 개선에 참여하기</translation>
+<translation id="8036504271468642248">이전 문장</translation>
 <translation id="8037117027592400564">음성 출력 기능을 사용한 모든 음성 텍스트 조회</translation>
 <translation id="8037357227543935929">요청(기본값)</translation>
 <translation id="803771048473350947">파일</translation>

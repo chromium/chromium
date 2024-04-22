@@ -384,7 +384,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1280965841156951489">Fájlok szerkesztése</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Nem lehet megnyitni a fájlt}other{Nem lehet megnyitni a fájlokat}}</translation>
 <translation id="1282311502488501110">Bejelentkezés leállítása</translation>
-<translation id="1282465000333679776">A rendszer hangjának megosztása</translation>
 <translation id="1283126956823499975">Hiba történt az eszköz beállítása során</translation>
 <translation id="1284277788676816155">Az adatok mentésének tiltása</translation>
 <translation id="1285320974508926690">Ezt a webhelyet soha ne fordítsa le</translation>
@@ -1062,7 +1061,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1781502536226964113">Új lap oldal megnyitása</translation>
 <translation id="1781553166608855614">Beszélt nyelv</translation>
 <translation id="1781771911845953849">Fiókok és szinkronizálás</translation>
-<translation id="1781979858217752599">Az ablak hangjának megosztása</translation>
 <translation id="1782101999402987960">A frissítéseket tiltja a rendszergazda</translation>
 <translation id="1782196717298160133">Telefon megtalálása</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 jegyzet}other{# jegyzet}}</translation>
@@ -1626,7 +1624,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2187895286714876935">Hiba a szervertanúsítvány importálásánál</translation>
 <translation id="2187906491731510095">Bővítmények frissítve</translation>
 <translation id="2188881192257509750">A(z) <ph name="APPLICATION" /> megnyitása</translation>
-<translation id="2189787291884708275">A lap hangjának megosztása</translation>
 <translation id="2190069059097339078">Wi-Fi hitelesítési adatok lekérője</translation>
 <translation id="219008588003277019">Natív kliensmodul: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(üres)</translation>
@@ -5299,6 +5296,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4998430619171209993">Be</translation>
 <translation id="4999804342505941663">A Ne zavarjanak mód bekapcsolása</translation>
 <translation id="5001526427543320409">Harmadik felektől származó cookie-k</translation>
+<translation id="5003993274120026347">Következő mondat</translation>
 <translation id="5005498671520578047">Jelszó másolása</translation>
 <translation id="5006118752738286774">2 éve</translation>
 <translation id="5006218871145547804">ADB crostinis Android-alkalmazáshoz</translation>
@@ -9224,6 +9222,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8033958968890501070">Időtúllépés</translation>
 <translation id="8035059678007243127">Előre-vissza gyorsítótárazott inkognitóoldal: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Segítsen az Automatikus kitöltés fejlesztésében</translation>
+<translation id="8036504271468642248">Előző mondat</translation>
 <translation id="8037117027592400564">Az összes szöveg felolvasása szintetizált beszéddel kimondva</translation>
 <translation id="8037357227543935929">Kérdezzen rá (alapértelmezés szerint)</translation>
 <translation id="803771048473350947">Fájl</translation>

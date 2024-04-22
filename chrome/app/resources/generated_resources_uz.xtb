@@ -382,7 +382,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1280965841156951489">Fayllarni tahrirlash</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Fayl ochilmadi}other{Fayllar ochilmadi}}</translation>
 <translation id="1282311502488501110">Kirilmasin</translation>
-<translation id="1282465000333679776">Tizim audiosini ulashish</translation>
 <translation id="1283126956823499975">Qurilmani sozlashda nimadir xato ketdi</translation>
 <translation id="1284277788676816155">Maʼlumotlarni saqlashni taqiqlash</translation>
 <translation id="1285320974508926690">Bu sayt hech qachon tarjima qilinmasin</translation>
@@ -1049,7 +1048,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1781502536226964113">Yangi varaq sahifasini ochish</translation>
 <translation id="1781553166608855614">Nutq tili</translation>
 <translation id="1781771911845953849">Hisoblar va sinxronizatsiya</translation>
-<translation id="1781979858217752599">Oyna audiosini ulashish</translation>
 <translation id="1782101999402987960">Yangilanishlar administrator tomonidan bloklangan</translation>
 <translation id="1782196717298160133">Telefon qidiruvi</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 ta qayd}other{# ta qayd}}</translation>
@@ -1614,7 +1612,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2187895286714876935">Server sertifikatini import qilishda xatolik yuz berdi</translation>
 <translation id="2187906491731510095">Kengaytmalar yangilandi</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> ilovasini ochish</translation>
-<translation id="2189787291884708275">Varaq audiosini ulashish</translation>
 <translation id="2190069059097339078">Wi-Fi ruxsat parametrlarini qabul qilish</translation>
 <translation id="219008588003277019">Native Client moduli: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(bo‘sh)</translation>
@@ -5288,6 +5285,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4998430619171209993">Yoniq</translation>
 <translation id="4999804342505941663">Bezovta qilinmasin rejimini yoqing</translation>
 <translation id="5001526427543320409">Tashqi cookie fayllar</translation>
+<translation id="5003993274120026347">Keyingi gap</translation>
 <translation id="5005498671520578047">Parolni nusxalash</translation>
 <translation id="5006118752738286774">2 yil oldin</translation>
 <translation id="5006218871145547804">Crostini tizimida Android ilovalar uchun ADB vositasi</translation>
@@ -9210,6 +9208,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8033958968890501070">Vaqt tugadi</translation>
 <translation id="8035059678007243127">Inkognito rejimida orqaga qaytarilgan kesh sahifasi: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Avtomatik kiritishni yaxshilashga yordam bering</translation>
+<translation id="8036504271468642248">Avvalgi gap</translation>
 <translation id="8037117027592400564">Nutq sintezatori orqali barcha matnni ovozli o‘qish</translation>
 <translation id="8037357227543935929">So‘ralsin (standart sozlama)</translation>
 <translation id="803771048473350947">Fayl</translation>

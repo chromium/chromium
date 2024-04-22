@@ -385,7 +385,6 @@
 <translation id="1280965841156951489">Разрешить</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Не удалось открыть файл.}one{Не удалось открыть файлы.}few{Не удалось открыть файлы.}many{Не удалось открыть файлы.}other{Не удалось открыть файлы.}}</translation>
 <translation id="1282311502488501110">Отмена</translation>
-<translation id="1282465000333679776">Предоставить доступ к аудио в системе</translation>
 <translation id="1283126956823499975">При настройке устройства что-то пошло не так</translation>
 <translation id="1284277788676816155">Запретить сохранять данные</translation>
 <translation id="1285320974508926690">Никогда не переводить этот сайт</translation>
@@ -1052,7 +1051,6 @@
 <translation id="1781502536226964113">Новая вкладка</translation>
 <translation id="1781553166608855614">Язык озвучивания</translation>
 <translation id="1781771911845953849">Аккаунты и синхронизация</translation>
-<translation id="1781979858217752599">Предоставить доступ к аудио в окне</translation>
 <translation id="1782101999402987960">Администратор заблокировал обновления.</translation>
 <translation id="1782196717298160133">Поиск телефона</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 заметка}one{# заметка}few{# заметки}many{# заметок}other{# заметки}}</translation>
@@ -1614,7 +1612,6 @@
 <translation id="2187895286714876935">Ошибка при импорте сертификата сервера</translation>
 <translation id="2187906491731510095">Расширения обновлены</translation>
 <translation id="2188881192257509750">Открыть приложение "<ph name="APPLICATION" />"</translation>
-<translation id="2189787291884708275">Предоставить доступ к аудио на вкладке</translation>
 <translation id="2190069059097339078">Получение параметров доступа по Wi-Fi</translation>
 <translation id="219008588003277019">Модуль Native Client: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(пусто)</translation>
@@ -5078,7 +5075,7 @@
 <translation id="4842976633412754305">Страница пытается загрузить скрипты из непроверенных источников.</translation>
 <translation id="4844333629810439236">Другие раскладки</translation>
 <translation id="4844347226195896707">Просматривайте пароли, даже если не используете Chrome или Android. Для этого войдите в систему на сайте &lt;a target='_blank' href='<ph name="LINK" />'&gt;passwords.google.com&lt;/a&gt;.</translation>
-<translation id="484462545196658690">Выбрать автоматически</translation>
+<translation id="484462545196658690">Авто</translation>
 <translation id="4846628405149428620">Укажите, где этот сайт может сохранять изменения</translation>
 <translation id="4846680374085650406">Параметр настроен в соответствии с рекомендациями администратора.</translation>
 <translation id="4847242508757499006">Выберите "Повторить". Если вам достаточно ограниченных возможностей просмотра и редактирования, нажмите "Открыть в базовом редакторе".</translation>
@@ -5279,6 +5276,7 @@
 <translation id="4998430619171209993">Включено</translation>
 <translation id="4999804342505941663">Включить режим "Не беспокоить"</translation>
 <translation id="5001526427543320409">Сторонние файлы cookie</translation>
+<translation id="5003993274120026347">К следующему предложению</translation>
 <translation id="5005498671520578047">Копировать пароль</translation>
 <translation id="5006118752738286774">2 года назад</translation>
 <translation id="5006218871145547804">Инструмент adb для Android-приложений в Crostini</translation>
@@ -9200,6 +9198,7 @@
 <translation id="8033958968890501070">Время истекло</translation>
 <translation id="8035059678007243127">Страница возвратного кеша в режиме инкогнито: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Помочь в улучшении автозаполнения</translation>
+<translation id="8036504271468642248">К предыдущему предложению</translation>
 <translation id="8037117027592400564">Доступ к тексту, произнесенному синтезатором речи</translation>
 <translation id="8037357227543935929">Спрашивать (по умолчанию)</translation>
 <translation id="803771048473350947">Файл</translation>

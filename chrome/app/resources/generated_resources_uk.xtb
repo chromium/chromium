@@ -387,7 +387,6 @@
 <translation id="1280965841156951489">Змінити файли</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Не вдалося відкрити файл}one{Не вдалося відкрити файли}few{Не вдалося відкрити файли}many{Не вдалося відкрити файли}other{Не вдалося відкрити файли}}</translation>
 <translation id="1282311502488501110">Не входити</translation>
-<translation id="1282465000333679776">Надати доступ до системного аудіо</translation>
 <translation id="1283126956823499975">Не вдалося налаштувати пристрій</translation>
 <translation id="1284277788676816155">Не дозволяти зберігати дані</translation>
 <translation id="1285320974508926690">Ніколи не перекладати цей сайт</translation>
@@ -1065,7 +1064,6 @@
 <translation id="1781502536226964113">Відкрити сторінку нової вкладки</translation>
 <translation id="1781553166608855614">Синтез мовлення</translation>
 <translation id="1781771911845953849">Облікові записи та синхронізація</translation>
-<translation id="1781979858217752599">Надати доступ до аудіо у вікні</translation>
 <translation id="1782101999402987960">Адміністратор заблокував оновлення</translation>
 <translation id="1782196717298160133">Пошук вашого телефона</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 нотатка}one{# нотатка}few{# нотатки}many{# нотаток}other{# нотатки}}</translation>
@@ -1630,7 +1628,6 @@
 <translation id="2187895286714876935">Помилка імпортування сертифіката сервера</translation>
 <translation id="2187906491731510095">Розширення оновлено</translation>
 <translation id="2188881192257509750">Відкрити <ph name="APPLICATION" /></translation>
-<translation id="2189787291884708275">Надати доступ до аудіо на вкладці</translation>
 <translation id="2190069059097339078">Засіб отримання облікових даних Wi-Fi</translation>
 <translation id="219008588003277019">Модуль Native Client: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(пусто)</translation>
@@ -5304,6 +5301,7 @@
 <translation id="4998430619171209993">Увімкнено</translation>
 <translation id="4999804342505941663">Увімкнути режим "Не турбувати"</translation>
 <translation id="5001526427543320409">Сторонні файли cookie</translation>
+<translation id="5003993274120026347">Наступне речення</translation>
 <translation id="5005498671520578047">Копіювати пароль</translation>
 <translation id="5006118752738286774">2 роки тому</translation>
 <translation id="5006218871145547804">ADB в додатках для Android у Crostini</translation>
@@ -9231,6 +9229,7 @@
 <translation id="8033958968890501070">Час очікування минув</translation>
 <translation id="8035059678007243127">Сторінка зворотного кешу в анонімному режимі: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Допоможіть покращити функцію автозаповнення</translation>
+<translation id="8036504271468642248">Попереднє речення</translation>
 <translation id="8037117027592400564">Читати весь текст, відтворений за допомогою синтезованого мовлення</translation>
 <translation id="8037357227543935929">Запитувати (за умовчанням)</translation>
 <translation id="803771048473350947">Файл</translation>

@@ -384,7 +384,6 @@
 <translation id="1280965841156951489">ஃபைல்களைத் திருத்து</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{ஃபைலைத் திறக்க முடியவில்லை}other{ஃபைல்களைத் திறக்க முடியவில்லை}}</translation>
 <translation id="1282311502488501110">உள்நுழைய வேண்டாம்</translation>
-<translation id="1282465000333679776">சிஸ்டத்தின் ஆடியோவைப் பகிர்</translation>
 <translation id="1283126956823499975">சாதனத்தை அமைக்கும்போது ஏதோ தவறாகிவிட்டது</translation>
 <translation id="1284277788676816155">டேட்டாச் சேமிக்க அனுமதிக்காதே</translation>
 <translation id="1285320974508926690">இந்த தளத்தை எப்போதும் மொழிபெயர்க்க வேண்டாம்</translation>
@@ -1062,7 +1061,6 @@
 <translation id="1781502536226964113">புதிய தாவல் பக்கத்தைத் திற</translation>
 <translation id="1781553166608855614">பேசும் மொழி</translation>
 <translation id="1781771911845953849">கணக்குகளும் ஒத்திசைவும்</translation>
-<translation id="1781979858217752599">சாளரத்தின் ஆடியோவைப் பகிர்</translation>
 <translation id="1782101999402987960">புதுப்பிப்புகளை உங்கள் நிர்வாகி தடுத்துள்ளார்</translation>
 <translation id="1782196717298160133">ஃபோனைக் கண்டறிகிறது</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 குறிப்பு}other{# குறிப்புகள்}}</translation>
@@ -1627,7 +1625,6 @@
 <translation id="2187895286714876935">சேவையக சான்றிதழ் இறக்குமதி பிழை</translation>
 <translation id="2187906491731510095">நீட்டிப்புகள் புதுப்பிக்கப்பட்டன</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" />ஐத் திற</translation>
-<translation id="2189787291884708275">உலாவிப் பக்கத்தின் ஆடியோவைப் பகிர்</translation>
 <translation id="2190069059097339078">வைஃபை கிரெடென்ஷியல் கெட்டர்</translation>
 <translation id="219008588003277019">நேட்டிவ் கிளையன்ட் மாடியூல்: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(காலி)</translation>
@@ -5301,6 +5298,7 @@
 <translation id="4998430619171209993">ஆன் செய்யப்பட்டுள்ளது</translation>
 <translation id="4999804342505941663">‘தொந்தரவு செய்ய வேண்டாம்’ அம்சத்தை இயக்குதல்</translation>
 <translation id="5001526427543320409">மூன்றாம் தரப்புக் குக்கீகள்</translation>
+<translation id="5003993274120026347">அடுத்த வாக்கியம்</translation>
 <translation id="5005498671520578047">கடவுச்சொல்லை நகலெடு</translation>
 <translation id="5006118752738286774">2 ஆண்டுகளுக்கு முன்பு</translation>
 <translation id="5006218871145547804">Crostini Android ஆப்ஸ் ADB</translation>
@@ -9227,6 +9225,7 @@
 <translation id="8033958968890501070">நேரம் முடிந்தது</translation>
 <translation id="8035059678007243127">‘முன் பின் பக்கங்களைத் தற்காலிகமாகச் சேமித்தல்’ அம்சத்தில் சேமிக்கப்பட்ட மறைநிலைப் பக்கம்: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">தன்னிரப்பியை மேம்படுத்த உதவுங்கள்</translation>
+<translation id="8036504271468642248">முந்தைய வாக்கியம்</translation>
 <translation id="8037117027592400564">தொகுக்கப்பட்ட பேச்சைப் பயன்படுத்திப் பேசப்படும் எல்லா உரையையும் படிக்கலாம்</translation>
 <translation id="8037357227543935929">கேள் (இயல்பு)</translation>
 <translation id="803771048473350947">ஃபைல்</translation>

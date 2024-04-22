@@ -15,6 +15,7 @@
 <translation id="1006873397406093306">ამ გაფართოებას შეუძლია საიტებზე თქვენი მონაცემების წაკითხვა და შეცვლა. თქვენ შეგიძლიათ გააკონტროლოთ, თუ რომელ საიტებზე ექნება მას წვდომა.</translation>
 <translation id="1007057452468855774">Google Play Store-ის ჩართვა</translation>
 <translation id="1008186147501209563">სანიშნეების ექსპორტი</translation>
+<translation id="1008209036711323236">ამიტომაც Chrome გეგმავს, გამოყენებიდან ამოიღოს „მესამე მხარის“ ქუქი-ჩანაწერები, როგორც კი დაამუშავებს კონკურენტთა საკითხებს <ph name="BEGIN_LINK" />გაერთიანებული სამეფოს კონკურენციისა და ბაზრების უწყება (CMA)<ph name="END_LINK" />.</translation>
 <translation id="1008261151167010035"><ph name="BRAND" /> დაიმახსოვრებს სისტემაში შესვლის ხერხს და ავტომატურად შეგიყვანთ სისტემაში, როცა ეს შესაძლებელია. გამორთვის შემთხვევაში, ყოველ ჯერზე საჭირო იქნება თქვენი დასტური.</translation>
 <translation id="1008544602823861396">ვერ გამოიყენებს თქვენს ინფორმაციას შემდეგ საიტზე:</translation>
 <translation id="1008557486741366299">ახლა არა</translation>
@@ -382,7 +383,6 @@
 <translation id="1280965841156951489">ფაილების რედაქტირება</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{ფაილის გახსნა ვერ ხერხდება}other{ფაილების გახსნა ვერ ხერხდება}}</translation>
 <translation id="1282311502488501110">არ მსურს შესვლა</translation>
-<translation id="1282465000333679776">სისტემის აუდიოს გაზიარება</translation>
 <translation id="1283126956823499975">ამ მოწყობილობის დაყენებისას წარმოიქმნა შეფერხება</translation>
 <translation id="1284277788676816155">მონაცემთა შენახვის აკრძალვა</translation>
 <translation id="1285320974508926690">არასდროს გადათარგმნო ეს საიტი</translation>
@@ -866,6 +866,7 @@
     <ph name="BEGIN_PARAGRAPH2" />ამ სერვისის გამორთვა შეგიძლიათ პარამეტრებიდან.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1637224376458524414">მიიღეთ ეს სანიშნე თქვენს iPhone-ზე</translation>
 <translation id="1637765355341780467">თქვენი პროფილის გახსნისას შეფერხება წარმოიქმნა. ზოგიერთი ფუნქცია შეიძლება მიუწვდომელი იყოს.</translation>
+<translation id="1637830036924985819">ზოგჯერ საიტები ქუქი-ჩანაწერებს არამიზნობრივად იყენებს</translation>
 <translation id="1639239467298939599">იტვირთება</translation>
 <translation id="1640235262200048077"><ph name="IME_NAME" /> ჯერ არ მუშაობს Linux აპებში</translation>
 <translation id="1640283014264083726">PKCS #1 MD4 RSA დაშიფვრით</translation>
@@ -1029,6 +1030,7 @@
 <translation id="1767508543310534319">პუნქტუაციის ექო</translation>
 <translation id="1768212860412467516">გამოგვეხმაურეთ, როგორია <ph name="EXPERIMENT_NAME" />.</translation>
 <translation id="1769104665586091481">გახსენით ბმულები ახალ &amp;ფანჯარაში</translation>
+<translation id="1769157454356586138">სკანირება ვერ მოხერხდა. ეს ფაილი დაბლოკილია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="1770407692401984718">ჩავლებით გადმოიტანეთ სურათი აქ ან</translation>
 <translation id="177053719077591686">Android აპების სარეზერვო ასლების შექმნა Google Drive-ზე.</translation>
 <translation id="1771075623623424448">ბრაუზერის მოწყობილობის ჟურნალის გვერდს ეძებთ? მოინახულეთ<ph name="BEGIN_LINK" /><ph name="CHROME_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -1051,7 +1053,6 @@
 <translation id="1781502536226964113">ახალი ჩანართის გვერდის გახსნა</translation>
 <translation id="1781553166608855614">გახმოვანების ენა</translation>
 <translation id="1781771911845953849">ანგარიშები და სინქრონიზაცია</translation>
-<translation id="1781979858217752599">ფანჯრის აუდიოს გაზიარება</translation>
 <translation id="1782101999402987960">განახლებები დაბლოკილია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="1782196717298160133">თქვენი ტელეფონის ძებნა</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 ჩანიშვნა}other{# ჩანიშვნა}}</translation>
@@ -1615,7 +1616,6 @@
 <translation id="2187895286714876935">სერვერის სერტიფიკატის იმპორტის შეცდომა</translation>
 <translation id="2187906491731510095">გაფართოებები განახლდა</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" />-ის გახსნა</translation>
-<translation id="2189787291884708275">ჩანართის აუდიოს გაზიარება</translation>
 <translation id="2190069059097339078">WiFi-ს ავტორიზაციის მონაცემების მიმღები</translation>
 <translation id="219008588003277019">საკუთარი კლიენტის მოდული: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(ცარიელი)</translation>
@@ -2116,6 +2116,7 @@
 <translation id="2542050502251273923">დააყენებს ქსელთან კავშირის მენეჯერისა და სხვა სერვისების შეცდომების გამართვის დონეს ff_debug-ის მეშვეობით.</translation>
 <translation id="2543780089903485983">{NUM_SUB_APP_INSTALLS,plural, =1{ნებართვები, რომლებსაც „<ph name="APP_NAME" />“-ისთვის დაუშვებთ, დაშვებული იქნება ამ აპისთვისაც. <ph name="MANAGE_LINK" />}other{ნებართვები, რომლებსაც „<ph name="APP_NAME" />“-ისთვის დაუშვებთ, დაშვებული იქნება ამ აპებისთვისაც. <ph name="MANAGE_LINK" />}}</translation>
 <translation id="2544352060595557290">ეს ჩანართი</translation>
+<translation id="2545743249923338554">ახალი ჩანართები</translation>
 <translation id="2546302722632337735">ვებსაიტებისთვის იდენტიფიკატორების გამოყენების აკრძალვა დაცული კონტენტის დაკვრის მიზნით</translation>
 <translation id="2546991196809436099">გაადიდეთ მასშტაბი, ეკრანზე არსებული ერთეულები რომ გაადიდოთ. ლუპის ჩასართავად ან გამოსართავად გამოიყენეთ კლავიშთა კომბინაცია Search + Ctrl + M.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> დაშვებულია</translation>
@@ -2670,6 +2671,7 @@
 <translation id="2967926928600500959">ამ წესების შესატყვისი URL-ები იძულებით გაიხსნება კონკრეტულ ბრაუზერში.</translation>
 <translation id="2969411787010981955">მონაცემები ექსპორტირებულია არჩეულ მდებარეობაზე</translation>
 <translation id="2970766364519518369">არჩეული კონტაქტები შეძლებენ კონტენტის თქვენთვის გაზიარებას, როცა ისინი ახლოს იქნებიან. ამ ტიპის მოთხოვნები უნდა დაამტკიცოთ, თუმცა <ph name="USER_EMAIL" />-ში შესული მოწყობილობების დამტკიცება არ დაგჭირდებათ.</translation>
+<translation id="2971514543824815520">კურსორის ცვლილება რომ ამოქმედდეს, შეიძლება აპების გადატვირთვა დაგჭირდეთ</translation>
 <translation id="2972557485845626008">მიკროპროგრამა</translation>
 <translation id="2972581237482394796">&amp;გამეორება</translation>
 <translation id="2973324205039581528">საიტის დადუმება</translation>
@@ -2786,6 +2788,7 @@
 <translation id="3046910703532196514">ვებგვერდო, მთლიანი</translation>
 <translation id="304747341537320566">მეტყველების მოდულები</translation>
 <translation id="3048336643003835855">HID მოწყობილობები, რომელთა მომწოდებელია <ph name="VENDOR_ID" /></translation>
+<translation id="3048742847101793553">თქვენმა ორგანიზაციამ დაბლოკა ეს ფაილი, რადგან სკანირება ვერ მოხერხდა.</translation>
 <translation id="3048917188684939573">ტრანსლირებისა და მოწყობილობათა ჟურნალები</translation>
 <translation id="3051250416341590778">ჩვენების ზომა</translation>
 <translation id="3053013834507634016">სერტიფიკატის გასაღების გამოყენება</translation>
@@ -2866,6 +2869,7 @@
 <translation id="3117791853215125017">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" />-ს ვერ გაეგზავნა}other{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" />-ს ვერ გაეგზავნა}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> დახმარება</translation>
 <translation id="3118748462829336648">გვერდითი პანელის გახსნა</translation>
+<translation id="3119743309973425629">ტექსტის კურსორის ციმციმის სიხშირე</translation>
 <translation id="3119948370277171654">რა ტიპის კონტენტის/URL-ის ტრანსლირებას ახორციელებდით?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">მონაცემების დირექტორია ვერ შეიქმნა</translation>
@@ -3720,6 +3724,7 @@
 <translation id="3783889407390048282">თქვენს Android-ზე წვდომა რომ არ დაკარგოთ, გაათავისუფლეთ მეხსიერება.</translation>
 <translation id="3785308913036335955">პროგრამების მალსახმობის ჩვენება</translation>
 <translation id="3785727820640310185">ამ საიტისთვის შენახული პაროლები</translation>
+<translation id="3785748905555897481">PIN წარმატებით შეიცვალა</translation>
 <translation id="3786224729726357296">საიტის მონაცემებისა და ნებართვების წაშლა <ph name="SITE" />-ისთვის</translation>
 <translation id="3786834302860277193">ხაზგასმის ჩვენება შედგენილი ტექსტისთვის</translation>
 <translation id="3787434344076711519">ველოდებით თარგმნის დასრულებას</translation>
@@ -4381,6 +4386,7 @@
 <translation id="428963538941819373">ამ საიტებს შეუძლია გამოიყენონ მათ მიერ თქვენ შესახებ შენახული ინფორმაცია, როცა <ph name="HOST" />-ს ათვალიერებთ</translation>
 <translation id="4289732974614035569">აირჩიეთ PIN-კოდი</translation>
 <translation id="4290791284969893584">გვერდის დახურვის შემდეგ, თქვენ მიერ დაყენებული ამოცანები, შესაძლოა, არ დასრულდეს</translation>
+<translation id="4290898381118933198">გადაფურცლეთ გვერდებს შორის ნავიგაციისთვის</translation>
 <translation id="4291265871880246274">სისტემაში შესვლის დიალოგი</translation>
 <translation id="429234155571566255">ბოლო დროს ნანახი ეს რეცეპტები</translation>
 <translation id="429312253194641664">საიტზე გაშვებულია მედია-კონტენტი</translation>
@@ -5285,6 +5291,7 @@
 <translation id="4998430619171209993">ჩართული</translation>
 <translation id="4999804342505941663">„არ შემაწუხოთ“ რეჟიმის ჩართვა</translation>
 <translation id="5001526427543320409">მესამე მხარის ქუქი-ჩანაწერები</translation>
+<translation id="5003993274120026347">შემდეგი წინადადება</translation>
 <translation id="5005498671520578047">პაროლის კოპირება</translation>
 <translation id="5006118752738286774">2 წლის წინ</translation>
 <translation id="5006218871145547804">Crostini-ს Android აპის ADB</translation>
@@ -5359,6 +5366,7 @@
 <translation id="5063480226653192405">გამოყენება</translation>
 <translation id="5065775832226780415">Smart Lock</translation>
 <translation id="5066100345385738837">მართეთ დაცული DNS ChromeOS-ის პარამეტრებიდან</translation>
+<translation id="5066534201484101197">საზღვრის მიღმა გადაადგილდით გვერდებს შორის ნავიგაციისთვის</translation>
 <translation id="5067399438976153555">ყოველთვის ჩართული</translation>
 <translation id="5067867186035333991">იკითხეთ, თუ <ph name="HOST" />-ს სურს თქვენს მიკროფონზე წვდომა</translation>
 <translation id="5068553687099139861">პაროლების ჩვენება</translation>
@@ -9207,6 +9215,7 @@
 <translation id="8033958968890501070">დრო ამოიწურა</translation>
 <translation id="8035059678007243127">ქეშირებული ინკოგნიტო გვერდი უკან-წინ გადასვლის შესაძლებლობით: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">დაგვეხმარეთ, გავაუმჯობესოთ ავტომატური შევსება</translation>
+<translation id="8036504271468642248">წინა წინადადება</translation>
 <translation id="8037117027592400564">წარმოთქმული ტექსტის წაკითხვა სინთეზირებული მეტყველების გამოყენებით</translation>
 <translation id="8037357227543935929">შეკითხვა (ნაგულისხმევი)</translation>
 <translation id="803771048473350947">ფაილი</translation>
@@ -9522,6 +9531,12 @@
 <translation id="826905130698769948">კლიენტის სერტიფიკატი არასწორია</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="82706708334564640">ბოლოდროინდელი ჩამოტვირთვის ისტორია</translation>
+<translation id="8270946420566049889">Chrome შეგიძლიათ მოირგოთ ისე, როგორც გსურთ:
+      &lt;ul&gt;
+        &lt;li&gt;&lt;em&gt;ყველაფერი საუკეთესო Google-ისგან&lt;/em&gt; მათთვის, ვისაც ეს სურს. მაგალითად, Chrome-ის ნაგულისხმევ საძიებო სისტემად შეგიძლიათ დააყენოთ Google Search, ასევე, ისარგებლოთ Google პაროლების მმართველით, რომ თქვენი ყველა პაროლი ხელმისაწვდომი გქონდეთ ნებისმიერ მოწყობილობაზე. &lt;/li&gt;
+        &lt;li&gt;&lt;em&gt;გააზრებული არჩევანი&lt;/em&gt;: Chrome პარამეტრებთან დაკავშირებით გთავაზობთ არჩევანსა და მართვის საშუალებებს, ასევე, ინფორმაციას, რომელიც აწონ-დაწონილი გადაწყვეტილებების მიღებაში დაგეხმარებათ.&lt;/li&gt;
+        &lt;li&gt;&lt;em&gt;გაფართოებები&lt;/em&gt;: Chrome-ის ფუნქციური შესაძლებლობების გავრცობა შეგიძლიათ 100 000-ზე მეტი გაფართოების მეშვეობით <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />-იდან.&lt;/li&gt;
+      &lt;/ul&gt;</translation>
 <translation id="827097179112817503">მთავარი გვერდის ღილაკის ჩვენება</translation>
 <translation id="8271268254812352141">მიიღეთ განმარტებები, თარგმნეთ ან გადაიყვანეთ საზომი ერთეულები ტექსტზე მარჯვენა დაწკაპუნების ან ხანგრძლივად შეხების მეშვეობით. სათარგმნი ენების მორგება <ph name="LINK_BEGIN" />ვებსაიტების ენების<ph name="LINK_END" /> სექციიდან შეგიძლიათ.</translation>
 <translation id="8271379370373330993">მშობლებო, მომდევნო რამდენიმე ნაბიჯი თქვენთვისაა. <ph name="DEVICE_TYPE" /> ბავშვს შეგიძლიათ დაუბრუნოთ ანგარიშის დაყენების შემდეგ.</translation>
@@ -10018,6 +10033,7 @@
 <translation id="8655972064210167941">შესვლა ვერ მოხერხდა, რადგან თქვენი პაროლის დადასტურება შეუძლებელია. გთხოვთ, დაუკავშირდეთ ადმინისტრატორს ან სცადოთ ხელახლა.</translation>
 <translation id="8656888282555543604">ბრაილის ჟურნალირების ჩართვა</translation>
 <translation id="8657393004602556571">გსურთ გამოხმაურების გაუქმება?</translation>
+<translation id="8657542881463614516">გამოიყენეთ გადაფურცვლის ჟესტი გვერდებს შორის ნავიგაციისთვის</translation>
 <translation id="8659608856364348875">კონტაქტები ფუნქციიდან „<ph name="FEATURE_NAME" />“</translation>
 <translation id="8661290697478713397">ბმულის გახსნა ინკო&amp;გნიტო ფანჯარაში</translation>
 <translation id="8662671328352114214">„<ph name="TYPE" />“ ქსელში გაწევრიანება</translation>
@@ -10393,6 +10409,7 @@
 <translation id="8931713990831679796">ეს პრინტერები დაკავშირებულია და გამოსაყენებლად მზად არის. მარტივი წვდომისთვის შეინახეთ თქვენს პროფილში.</translation>
 <translation id="8932654652795262306">მყისიერი ტეტერინგის დეტალები</translation>
 <translation id="893298445929867520">კალათები დამალულია. ისინი გამოჩნდება, როცა ცვლილებებს შეიტანთ.</translation>
+<translation id="8933314208895863334">ქუქი-ჩანაწერებია გაამდიდრებს თქვენს ონლაინ გამოცდილებას, ნებას დართავს რა ვებსაიტებს, შემოგთავაზონ სასარგებლო ფუნქციები</translation>
 <translation id="8933960630081805351">ჩ&amp;ვენება მაძიებელში</translation>
 <translation id="8934585454328207858">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" />-ს წვდომა აქვს USB მოწყობილობებზე}=2{შემდეგ გაფართოებებს წვდომა აქვს მოწყობილობებზე: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{შემდეგ გაფართოებებს წვდომა აქვს მოწყობილობებზე: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> და {3} სხვა}}</translation>
 <translation id="8934732568177537184">გაგრძელება</translation>

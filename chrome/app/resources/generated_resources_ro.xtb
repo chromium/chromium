@@ -383,7 +383,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1280965841156951489">Editează fișierele</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Fișierul nu se poate deschide}few{Fișierele nu se pot deschide}other{Fișierele nu se pot deschide}}</translation>
 <translation id="1282311502488501110">Nu mă conectez</translation>
-<translation id="1282465000333679776">Trimite conținutul audio de pe sistem</translation>
 <translation id="1283126956823499975">A apărut o eroare la configurarea dispozitivului</translation>
 <translation id="1284277788676816155">Nu permite salvarea datelor</translation>
 <translation id="1285320974508926690">Nu traduce niciodată acest site</translation>
@@ -1052,7 +1051,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1781502536226964113">Deschideți pagina Filă nouă</translation>
 <translation id="1781553166608855614">Limba vorbită</translation>
 <translation id="1781771911845953849">Conturi și sincronizare</translation>
-<translation id="1781979858217752599">Trimite conținutul audio din fereastră</translation>
 <translation id="1782101999402987960">Actualizările au fost blocate de administrator</translation>
 <translation id="1782196717298160133">Se găsește telefonul</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{O notă}few{# note}other{# de note}}</translation>
@@ -1616,7 +1614,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2187895286714876935">Eroare de import a certificatului serverului</translation>
 <translation id="2187906491731510095">Extensiile au fost actualizate</translation>
 <translation id="2188881192257509750">Deschide <ph name="APPLICATION" /></translation>
-<translation id="2189787291884708275">Trimite conținutul audio din filă</translation>
 <translation id="2190069059097339078">Instrument de obținere a datelor de conectare WiFi</translation>
 <translation id="219008588003277019">Modul Client nativ: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(gol)</translation>
@@ -5286,6 +5283,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4998430619171209993">Activat</translation>
 <translation id="4999804342505941663">Activează funcția Nu deranja</translation>
 <translation id="5001526427543320409">Cookie-uri terță parte</translation>
+<translation id="5003993274120026347">Propoziția următoare</translation>
 <translation id="5005498671520578047">Copiază parola</translation>
 <translation id="5006118752738286774">Acum 2 ani</translation>
 <translation id="5006218871145547804">ADB în aplicațiile pentru Android în Crostini</translation>
@@ -9213,6 +9211,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8033958968890501070">Expirare</translation>
 <translation id="8035059678007243127">Pagină incognito din memoria cache înainte-înapoi: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Ajută la îmbunătățirea completării automate</translation>
+<translation id="8036504271468642248">Propoziția anterioară</translation>
 <translation id="8037117027592400564">Citește tot textul rostit folosind vorbirea sintetizată</translation>
 <translation id="8037357227543935929">Solicită (în mod prestabilit)</translation>
 <translation id="803771048473350947">Fișier</translation>

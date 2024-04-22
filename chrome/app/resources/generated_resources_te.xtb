@@ -384,7 +384,6 @@
 <translation id="1280965841156951489">ఎడిటింగ్‌ను అనుమతించండి</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{ఫైల్‌ను తెరవడం సాధ్యపడదు}other{ఫైల్స్‌ను తెరవడం సాధ్యపడదు}}</translation>
 <translation id="1282311502488501110">సైన్ ఇన్ చేయవద్దు</translation>
-<translation id="1282465000333679776">సిస్టమ్ ఆడియోను షేర్ చేయండి</translation>
 <translation id="1283126956823499975">పరికరాన్ని సెటప్ చేయడంలో ఏదో పొరపాటు జరిగింది</translation>
 <translation id="1284277788676816155">డేటాను సేవ్ చేయడానికి సైట్‌ను అనుమతించవద్దు</translation>
 <translation id="1285320974508926690">ఈ సైట్‌ను ఎప్పటికీ అనువదించవద్దు</translation>
@@ -1060,7 +1059,6 @@
 <translation id="1781502536226964113">కొత్త‌ ట్యాబ్ పేజీని తెరవండి</translation>
 <translation id="1781553166608855614">మాట్లాడే భాష</translation>
 <translation id="1781771911845953849">ఖాతాలు మరియు సింక్‌</translation>
-<translation id="1781979858217752599">విండో ఆడియోను షేర్ చేయండి</translation>
 <translation id="1782101999402987960">మీ అడ్మినిస్ట్రేటర్ ద్వారా అప్‌డేట్‌లు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="1782196717298160133">మీ ఫోన్‌ను కనుగొంటోంది</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 గమనిక}other{# గమనికలు}}</translation>
@@ -1625,7 +1623,6 @@
 <translation id="2187895286714876935">సర్వర్ ప్రమాణపత్రం దిగుమతి ఎర్రర్</translation>
 <translation id="2187906491731510095">ఎక్స్‌టెన్షన్‌లు అప్‌డేట్ చేయబడ్డాయి</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" />ని తెరువు</translation>
-<translation id="2189787291884708275">ట్యాబ్ ఆడియోను షేర్ చేయండి</translation>
 <translation id="2190069059097339078">WiFi క్రెడెన్షియల్స్ గెట్టర్</translation>
 <translation id="219008588003277019">స్థానిక క్లయింట్ మాడ్యూల్: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(ఖాళీ)</translation>
@@ -5299,6 +5296,7 @@
 <translation id="4998430619171209993">ఆన్‌లో ఉంది</translation>
 <translation id="4999804342505941663">'అంతరాయం కలిగించవద్దు'ను ఆన్ చేయండి</translation>
 <translation id="5001526427543320409">థర్డ్-పార్టీ కుక్కీలు</translation>
+<translation id="5003993274120026347">తర్వాతి వాక్యం</translation>
 <translation id="5005498671520578047">పాస్‌వర్డ్ కాపీచేయడం</translation>
 <translation id="5006118752738286774">2 సంవత్సరాల క్రితం</translation>
 <translation id="5006218871145547804">Crostini Android యాప్ ADB</translation>
@@ -9220,6 +9218,7 @@
 <translation id="8033958968890501070">సమయం ముగిసింది</translation>
 <translation id="8035059678007243127">అజ్ఞాత వెనుకకు-ముందుకు కాష్ పేజీ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">ఆటోఫిల్‌ను మెరుగుపరచడంలో సహాయపడండి</translation>
+<translation id="8036504271468642248">మునుపటి వాక్యం</translation>
 <translation id="8037117027592400564">సంశ్లేషణ ప్రసంగాన్ని ఉపయోగించి మాట్లాడిన మొత్తం వచనాన్ని చదవడం</translation>
 <translation id="8037357227543935929">అడగాలి (డిఫాల్ట్)</translation>
 <translation id="803771048473350947">ఫైల్</translation>

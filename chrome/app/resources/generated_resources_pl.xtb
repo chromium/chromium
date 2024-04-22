@@ -384,7 +384,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1280965841156951489">Edytuj pliki</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Nie można otworzyć pliku}few{Nie można otworzyć plików}many{Nie można otworzyć plików}other{Nie można otworzyć plików}}</translation>
 <translation id="1282311502488501110">Nie loguj się</translation>
-<translation id="1282465000333679776">Udostępnij dźwięk z komputera</translation>
 <translation id="1283126956823499975">Podczas konfigurowania urządzenia coś poszło nie tak</translation>
 <translation id="1284277788676816155">Nie zezwalaj na zapisywanie danych</translation>
 <translation id="1285320974508926690">Nigdy nie tłumacz tej witryny</translation>
@@ -1053,7 +1052,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1781502536226964113">Otwórz stronę nowej karty</translation>
 <translation id="1781553166608855614">Język wypowiedzi</translation>
 <translation id="1781771911845953849">Konta i synchronizacja</translation>
-<translation id="1781979858217752599">Udostępnij dźwięk z okna</translation>
 <translation id="1782101999402987960">Administrator zablokował aktualizacje</translation>
 <translation id="1782196717298160133">Znajdowanie Twojego telefonu</translation>
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{1 uwaga}few{# uwagi}many{# uwag}other{# uwagi}}</translation>
@@ -1612,7 +1610,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2187895286714876935">Błąd importowania certyfikatu serwera</translation>
 <translation id="2187906491731510095">Rozszerzenia zaktualizowane</translation>
 <translation id="2188881192257509750">Otwórz <ph name="APPLICATION" /></translation>
-<translation id="2189787291884708275">Udostępnij dźwięk z karty</translation>
 <translation id="2190069059097339078">Program do pobierania danych logowania do Wi-Fi</translation>
 <translation id="219008588003277019">Moduł klienta natywnego: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(puste)</translation>
@@ -5267,6 +5264,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4998430619171209993">Włączono</translation>
 <translation id="4999804342505941663">Włącz tryb Nie przeszkadzać</translation>
 <translation id="5001526427543320409">Pliki cookie innych firm</translation>
+<translation id="5003993274120026347">Następne zdanie</translation>
 <translation id="5005498671520578047">Skopiuj hasło</translation>
 <translation id="5006118752738286774">2 lata temu</translation>
 <translation id="5006218871145547804">ADB aplikacji Crostini na Androida</translation>
@@ -9191,6 +9189,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8033958968890501070">Przekroczono limit czasu</translation>
 <translation id="8035059678007243127">Strona w trybie incognito w pamięci podręcznej stanu strony internetowej: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
 <translation id="8036193484521570992">Pomóż nam ulepszać autouzupełnianie</translation>
+<translation id="8036504271468642248">Poprzednie zdanie</translation>
 <translation id="8037117027592400564">Odczyt całego tekstu mówionego przez syntezator mowy</translation>
 <translation id="8037357227543935929">Pytaj (domyślnie)</translation>
 <translation id="803771048473350947">Plik</translation>
