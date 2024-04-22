@@ -129,7 +129,8 @@ AssistantOnboardingView::~AssistantOnboardingView() {
     AssistantSuggestionsController::Get()->GetModel()->RemoveObserver(this);
 }
 
-gfx::Size AssistantOnboardingView::CalculatePreferredSize() const {
+gfx::Size AssistantOnboardingView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(INT_MAX, GetHeightForWidth(INT_MAX));
 }
 

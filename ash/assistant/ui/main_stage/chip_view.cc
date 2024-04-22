@@ -102,8 +102,10 @@ ChipView::ChipView(Type type) : type_(type) {
 
 ChipView::~ChipView() = default;
 
-gfx::Size ChipView::CalculatePreferredSize() const {
-  const int preferred_width = views::View::CalculatePreferredSize().width();
+gfx::Size ChipView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  const int preferred_width =
+      views::View::CalculatePreferredSize(available_size).width();
   return gfx::Size(preferred_width, GetHeightForWidth(preferred_width));
 }
 

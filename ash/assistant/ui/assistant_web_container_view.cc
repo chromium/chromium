@@ -81,7 +81,8 @@ AssistantWebContainerView::AssistantWebContainerView(
 
 AssistantWebContainerView::~AssistantWebContainerView() = default;
 
-gfx::Size AssistantWebContainerView::CalculatePreferredSize() const {
+gfx::Size AssistantWebContainerView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int non_client_frame_view_height =
       views::GetCaptionButtonLayoutSize(
           views::CaptionButtonLayoutSize::kNonBrowserCaption)

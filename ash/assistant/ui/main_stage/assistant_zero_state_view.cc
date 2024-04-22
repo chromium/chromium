@@ -74,8 +74,10 @@ AssistantZeroStateView::~AssistantZeroStateView() {
     AssistantUiController::Get()->GetModel()->RemoveObserver(this);
 }
 
-gfx::Size AssistantZeroStateView::CalculatePreferredSize() const {
-  return gfx::Size(INT_MAX, GetHeightForWidth(INT_MAX));
+gfx::Size AssistantZeroStateView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return gfx::Size(
+      INT_MAX, GetLayoutManager()->GetPreferredHeightForWidth(this, INT_MAX));
 }
 
 void AssistantZeroStateView::ChildPreferredSizeChanged(views::View* child) {

@@ -27,7 +27,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) ChipView : public views::Button {
   ~ChipView() override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   int GetHeightForWidth(int width) const override;
   void ChildVisibilityChanged(views::View* child) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;

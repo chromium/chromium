@@ -53,7 +53,8 @@ AssistantFooterView::~AssistantFooterView() {
   AssistantState::Get()->RemoveObserver(this);
 }
 
-gfx::Size AssistantFooterView::CalculatePreferredSize() const {
+gfx::Size AssistantFooterView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(INT_MAX, GetHeightForWidth(INT_MAX));
 }
 

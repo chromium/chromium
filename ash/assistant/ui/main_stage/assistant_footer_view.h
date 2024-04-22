@@ -38,7 +38,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantFooterView
   ~AssistantFooterView() override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   int GetHeightForWidth(int width) const override;
 
   // AssistantStateObserver:

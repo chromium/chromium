@@ -41,7 +41,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantWebContainerView
   }
 
   // views::WidgetDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void ChildPreferredSizeChanged(views::View* child) override;
   views::ClientView* CreateClientView(views::Widget* widget) override;
   void OnThemeChanged() override;

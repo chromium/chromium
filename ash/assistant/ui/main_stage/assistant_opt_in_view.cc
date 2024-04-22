@@ -68,7 +68,8 @@ class AssistantOptInContainer : public views::Button {
   ~AssistantOptInContainer() override = default;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     const int preferred_width = views::View::CalculatePreferredSize().width();
     return gfx::Size(preferred_width, GetHeightForWidth(preferred_width));
   }
