@@ -50,6 +50,12 @@ class CORE_EXPORT PhysicalLineBoxFragment final : public PhysicalFragment {
 
   const FontHeight& Metrics() const { return metrics_; }
 
+  // Different from `Metrics()`, which can be affected by properties such as
+  // `line-height`, `IntrinsicMetrics()` describes content's inherent size.
+  // Properties such as `text-box-edge` contribute to the determination of
+  // inherent size.
+  const FontHeight& IntrinsicMetrics() const { return intrinsic_metrics_; }
+
   // The base direction of this line. Also known as the paragraph direction.
   // This may be different from the direction of the container box when
   // first-line style is used, or when 'unicode-bidi: plaintext' is used.
@@ -75,6 +81,10 @@ class CORE_EXPORT PhysicalLineBoxFragment final : public PhysicalFragment {
 
  private:
   FontHeight metrics_;
+
+  // The intrinsic content size. It might be affected by `text-box-edge`
+  // property.
+  FontHeight intrinsic_metrics_;
 };
 
 template <>

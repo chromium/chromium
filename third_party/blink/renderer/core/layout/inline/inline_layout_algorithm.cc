@@ -555,6 +555,18 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
     // TODO(crbug.com/40254880): Just flags, trimming data isn't implemented.
     if (space.ShouldTextBoxTrimStart() && line_info->IsFirstFormattedLine()) {
       // Apply `text-box-trim: start` if this is the first formatted line.
+      // TODO(crbug.com/40254880): The edge should be determined by
+      // `text-box-edge` property.
+      FontHeight intrinsic_metrics =
+          Node().Style().GetFontHeight(baseline_type_);
+      LayoutUnit offset_for_trimming_box =
+          intrinsic_metrics.ascent - line_box_metrics.ascent;
+      container_builder_.SetIntrinsicMetrics(intrinsic_metrics);
+      container_builder_.SetLineBoxBfcBlockOffset(
+          container_builder_.LineBoxBfcBlockOffset()
+              ? offset_for_trimming_box +
+                    container_builder_.LineBoxBfcBlockOffset().value()
+              : offset_for_trimming_box);
       container_builder_.SetIsTextBoxTrimApplied();
     }
     if (space.ShouldTextBoxTrimEnd() && !line_info->GetBreakToken()) {
