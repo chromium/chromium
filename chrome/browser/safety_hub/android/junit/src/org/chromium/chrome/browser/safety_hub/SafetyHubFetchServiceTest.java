@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -49,6 +50,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
+import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
@@ -142,7 +144,7 @@ public class SafetyHubFetchServiceTest {
         setPasswordSync(false);
         TaskParameters params = TaskParameters.create(TaskIds.SAFETY_HUB_JOB_ID).build();
 
-        new SafetyHubFetchService().onStartTask(mContext, params, mTaskFinishedCallback);
+        new SafetyHubFetchService().onStartTaskWithNative(mContext, params, mTaskFinishedCallback);
 
         verify(mPrefService, never()).setInteger(eq(Pref.BREACHED_CREDENTIALS_COUNT), anyInt());
         verify(mTaskFinishedCallback, times(1)).taskFinished(eq(/* needsReschedule= */ true));
@@ -153,7 +155,7 @@ public class SafetyHubFetchServiceTest {
         setUPMStatus(false);
         TaskParameters params = TaskParameters.create(TaskIds.SAFETY_HUB_JOB_ID).build();
 
-        new SafetyHubFetchService().onStartTask(mContext, params, mTaskFinishedCallback);
+        new SafetyHubFetchService().onStartTaskWithNative(mContext, params, mTaskFinishedCallback);
 
         verify(mPrefService, never()).setInteger(eq(Pref.BREACHED_CREDENTIALS_COUNT), anyInt());
         verify(mTaskFinishedCallback, times(1)).taskFinished(eq(/* needsReschedule= */ true));
@@ -164,7 +166,7 @@ public class SafetyHubFetchServiceTest {
         TaskParameters params = TaskParameters.create(TaskIds.SAFETY_HUB_JOB_ID).build();
         mPasswordCheckupClientHelper.setError(new Exception());
 
-        new SafetyHubFetchService().onStartTask(mContext, params, mTaskFinishedCallback);
+        new SafetyHubFetchService().onStartTaskWithNative(mContext, params, mTaskFinishedCallback);
 
         verify(mPrefService, never()).setInteger(eq(Pref.BREACHED_CREDENTIALS_COUNT), anyInt());
         verify(mTaskFinishedCallback, times(1)).taskFinished(eq(/* needsReschedule= */ true));
@@ -176,11 +178,24 @@ public class SafetyHubFetchServiceTest {
         TaskParameters params = TaskParameters.create(TaskIds.SAFETY_HUB_JOB_ID).build();
         mPasswordCheckupClientHelper.setBreachedCredentialsCount(breachedCredentialsCount);
 
-        new SafetyHubFetchService().onStartTask(mContext, params, mTaskFinishedCallback);
+        new SafetyHubFetchService().onStartTaskWithNative(mContext, params, mTaskFinishedCallback);
 
         verify(mPrefService, times(1))
                 .setInteger(Pref.BREACHED_CREDENTIALS_COUNT, breachedCredentialsCount);
         verify(mTaskFinishedCallback, times(1)).taskFinished(eq(/* needsReschedule= */ false));
+    }
+
+    @Test
+    public void testStartTask_BeforeNativeLoaded() {
+        TaskParameters params = TaskParameters.create(TaskIds.SAFETY_HUB_JOB_ID).build();
+
+        int result =
+                new SafetyHubFetchService()
+                        .onStartTaskBeforeNativeLoaded(mContext, params, mTaskFinishedCallback);
+
+        assertEquals(NativeBackgroundTask.StartBeforeNativeResult.LOAD_NATIVE, result);
+        // Task finished can only gets called from the native part, when async processing starts.
+        verify(mTaskFinishedCallback, times(0)).taskFinished(anyBoolean());
     }
 
     @Test

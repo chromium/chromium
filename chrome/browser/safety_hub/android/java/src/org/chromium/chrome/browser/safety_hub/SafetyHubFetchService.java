@@ -14,8 +14,8 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
+import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
@@ -27,7 +27,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import java.util.concurrent.TimeUnit;
 
 /** Manages the scheduling of Safety Hub fetch jobs. */
-public class SafetyHubFetchService implements BackgroundTask {
+public class SafetyHubFetchService extends NativeBackgroundTask {
     private static final int SAFETY_HUB_JOB_INTERVAL_IN_DAYS = 1;
 
     /** See {@link ChromeActivitySessionTracker#onForegroundSessionStart()}. */
@@ -62,14 +62,26 @@ public class SafetyHubFetchService implements BackgroundTask {
     }
 
     @Override
-    public boolean onStartTask(
-            Context context, TaskParameters parameters, final TaskFinishedCallback callback) {
-        fetchBreachedCredentialsCount(callback);
-        return false;
+    protected int onStartTaskBeforeNativeLoaded(
+            Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
+        return StartBeforeNativeResult.LOAD_NATIVE;
     }
 
     @Override
-    public boolean onStopTask(Context context, TaskParameters taskParameters) {
+    protected void onStartTaskWithNative(
+            Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
+        fetchBreachedCredentialsCount(callback);
+    }
+
+    @Override
+    protected boolean onStopTaskBeforeNativeLoaded(Context context, TaskParameters taskParameters) {
+        // Reschedule task if native didn't complete loading, the call to GMSCore wouldn't have been
+        // made at this point.
+        return true;
+    }
+
+    @Override
+    protected boolean onStopTaskWithNative(Context context, TaskParameters taskParameters) {
         // GMSCore has no mechanism to abort dispatched tasks.
         return false;
     }
