@@ -22,7 +22,6 @@
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/mojom/render_accessibility.mojom.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_language_detection.h"
 #include "ui/accessibility/ax_tree_data.h"
@@ -670,20 +669,20 @@ void BrowserAccessibilityManager::BeforeAccessibilityEvents() {}
 void BrowserAccessibilityManager::FinalizeAccessibilityEvents() {}
 
 void BrowserAccessibilityManager::OnLocationChanges(
-    const std::vector<blink::mojom::LocationChangesPtr>& changes) {
+    const std::vector<ui::AXLocationChanges>& changes) {
   TRACE_EVENT0("accessibility",
                "BrowserAccessibilityManager::OnLocationChanges");
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Accessibility.Performance.BrowserAccessibilityManager::"
       "OnLocationChanges");
   for (auto& change : changes) {
-    BrowserAccessibility* obj = GetFromID(change->id);
+    BrowserAccessibility* obj = GetFromID(change.id);
     if (!obj)
       continue;
     ui::AXNode* node = obj->node();
-    node->SetLocation(change->new_location.offset_container_id,
-                      change->new_location.bounds,
-                      change->new_location.transform.get());
+    node->SetLocation(change.new_location.offset_container_id,
+                      change.new_location.bounds,
+                      change.new_location.transform.get());
   }
   // Only send location change events when the page is not in back/forward
   // cache.
@@ -695,9 +694,9 @@ void BrowserAccessibilityManager::OnLocationChanges(
 }
 
 void BrowserAccessibilityManager::SendLocationChangeEvents(
-    const std::vector<blink::mojom::LocationChangesPtr>& changes) {
+    const std::vector<ui::AXLocationChanges>& changes) {
   for (auto& change : changes) {
-    BrowserAccessibility* obj = GetFromID(change->id);
+    BrowserAccessibility* obj = GetFromID(change.id);
     if (obj)
       obj->OnLocationChanged();
   }

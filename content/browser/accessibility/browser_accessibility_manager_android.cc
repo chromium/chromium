@@ -10,7 +10,6 @@
 #include "base/i18n/char_iterator.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #include "content/browser/accessibility/web_contents_accessibility_android.h"
-#include "third_party/blink/public/mojom/render_accessibility.mojom.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
@@ -421,7 +420,7 @@ void BrowserAccessibilityManagerAndroid::FireAriaNotificationEvent(
 }
 
 void BrowserAccessibilityManagerAndroid::SendLocationChangeEvents(
-    const std::vector<blink::mojom::LocationChangesPtr>& changes) {
+    const std::vector<ui::AXLocationChanges>& changes) {
   // Android is not very efficient at handling notifications, and location
   // changes in particular are frequent and not time-critical. If a lot of
   // nodes changed location, just send a single notification after a short

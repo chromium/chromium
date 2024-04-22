@@ -9817,11 +9817,6 @@ void RenderFrameHostImpl::HandleAXLocationChanges(
     }
   }
 
-  BrowserAccessibilityManager* manager =
-      GetOrCreateBrowserAccessibilityManager();
-  if (manager)
-    manager->OnLocationChanges(changes);
-
   // Send the updates to the automation extension API.
   std::vector<ui::AXLocationChanges> details;
   details.reserve(changes.size());
@@ -9832,6 +9827,12 @@ void RenderFrameHostImpl::HandleAXLocationChanges(
     detail.new_location = change->new_location;
     details.push_back(detail);
   }
+  BrowserAccessibilityManager* manager =
+      GetOrCreateBrowserAccessibilityManager();
+  if (manager) {
+    manager->OnLocationChanges(details);
+  }
+
   delegate_->AccessibilityLocationChangesReceived(details);
 }
 

@@ -12,7 +12,6 @@
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/render_accessibility.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
@@ -293,11 +292,15 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestLocationChange) {
   }
 
   // Send location update for node 2.
-  std::vector<blink::mojom::LocationChangesPtr> changes;
+  std::vector<ui::AXLocationChanges> changes;
   ui::AXRelativeBounds relative_bounds;
   relative_bounds.bounds =
       gfx::RectF(/*x=*/1, /*y=*/2, /*width=*/3, /*height=*/4);
-  changes.push_back(blink::mojom::LocationChanges::New(2, relative_bounds));
+  ui::AXLocationChanges change;
+  change.id = 2;
+  change.ax_tree_id = tree_id;
+  change.new_location = relative_bounds;
+  changes.push_back(change);
   manager_->OnLocationChanges(std::move(changes));
 
   {
