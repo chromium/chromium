@@ -135,10 +135,13 @@ WASAPIAudioOutputStream::WASAPIAudioOutputStream(
       params.hardware_capabilities().value_or(
           AudioParameters::HardwareCapabilities());
 
-  // Only request an explicit buffer size if we are requesting the minimum
-  // supported by the hardware, everything else uses the older IAudioClient API.
-  if (params.frames_per_buffer() ==
-      hardware_capabilities.min_frames_per_buffer) {
+  // Only request an explicit buffer size if we are requesting the non-default
+  // and the minimum supported by the hardware, everything else uses the older
+  // IAudioClient API.
+  if (params.frames_per_buffer() !=
+          hardware_capabilities.default_frames_per_buffer &&
+      params.frames_per_buffer() ==
+          hardware_capabilities.min_frames_per_buffer) {
     requested_iaudioclient3_buffer_size_ =
         hardware_capabilities.min_frames_per_buffer;
   }

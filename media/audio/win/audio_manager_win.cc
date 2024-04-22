@@ -334,6 +334,7 @@ AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
   int effects = AudioParameters::NO_EFFECTS;
   int min_buffer_size = 0;
   int max_buffer_size = 0;
+  int default_buffer_size = 0;
   bool attempt_audio_offload = CoreAudioUtil::IsAudioOffloadSupported(nullptr);
 
   if (cmd_line->HasSwitch(switches::kEnableExclusiveAudio)) {
@@ -376,6 +377,7 @@ AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
             AudioParameters::HardwareCapabilities());
     min_buffer_size = hardware_capabilities.min_frames_per_buffer;
     max_buffer_size = hardware_capabilities.max_frames_per_buffer;
+    default_buffer_size = hardware_capabilities.default_frames_per_buffer;
   }
 
   if (input_params.IsValid()) {
@@ -423,7 +425,8 @@ AudioParameters AudioManagerWin::GetPreferredOutputStreamParameters(
     buffer_size = user_buffer_size;
 
   AudioParameters::HardwareCapabilities hardware_capabilities(
-      min_buffer_size, max_buffer_size, attempt_audio_offload);
+      min_buffer_size, max_buffer_size, default_buffer_size,
+      attempt_audio_offload);
 #if BUILDFLAG(ENABLE_PASSTHROUGH_AUDIO_CODECS)
   hardware_capabilities.bitstream_formats = 0;
   hardware_capabilities.require_encapsulation = false;

@@ -475,6 +475,7 @@ HRESULT GetPreferredAudioParametersInternal(IAudioClient* client,
 
   int min_frames_per_buffer = 0;
   int max_frames_per_buffer = 0;
+  int default_frames_per_buffer = 0;
   int frames_per_buffer = 0;
 
   const bool supports_iac3 = IAudioClient3IsSupported();
@@ -519,6 +520,7 @@ HRESULT GetPreferredAudioParametersInternal(IAudioClient* client,
         if (SUCCEEDED(hr)) {
           min_frames_per_buffer = min_period_frames;
           max_frames_per_buffer = max_period_frames;
+          default_frames_per_buffer = default_period_frames;
           frames_per_buffer = default_period_frames;
         }
         DVLOG(1) << "IAudioClient3 => min_period_frames: " << min_period_frames;
@@ -576,7 +578,8 @@ HRESULT GetPreferredAudioParametersInternal(IAudioClient* client,
       AudioParameters::AUDIO_PCM_LOW_LATENCY, {channel_layout, channels},
       sample_rate, frames_per_buffer,
       AudioParameters::HardwareCapabilities(
-          min_frames_per_buffer, max_frames_per_buffer, is_offload_stream));
+          min_frames_per_buffer, max_frames_per_buffer,
+          default_frames_per_buffer, is_offload_stream));
 
   DVLOG(1) << audio_params.AsHumanReadableString();
   DCHECK(audio_params.IsValid());

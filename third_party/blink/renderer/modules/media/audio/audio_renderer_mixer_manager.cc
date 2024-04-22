@@ -102,7 +102,7 @@ media::AudioParameters GetMixerOutputParams(
 #if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(media::kAudioOffload)) {
     if (params.latency_tag() == media::AudioLatency::Type::kPlayback) {
-      media::AudioParameters::HardwareCapabilities hardware_caps(0, 0, true);
+      media::AudioParameters::HardwareCapabilities hardware_caps(0, 0, 0, true);
       params.set_hardware_capabilities(hardware_caps);
     }
   }

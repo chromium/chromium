@@ -228,9 +228,11 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
   struct HardwareCapabilities {
     HardwareCapabilities(int min_frames_per_buffer,
                          int max_frames_per_buffer,
+                         int default_frames_per_buffer,
                          bool require_offload)
         : min_frames_per_buffer(min_frames_per_buffer),
           max_frames_per_buffer(max_frames_per_buffer),
+          default_frames_per_buffer(default_frames_per_buffer),
           require_audio_offload(require_offload) {}
     HardwareCapabilities(int min_frames_per_buffer, int max_frames_per_buffer)
         : min_frames_per_buffer(min_frames_per_buffer),
@@ -247,6 +249,11 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     // Either value can be 0 and means that the min or max is not known.
     int min_frames_per_buffer = 0;
     int max_frames_per_buffer = 0;
+    // The default buffer size that the device will use when frames_per_buffer
+    // is not specified.  Can be `min_frames_per_buffer`,
+    // `max_frames_per_buffer`, or a value in between.  Can be 0 when the
+    // default is unknown.
+    int default_frames_per_buffer = 0;
     // Bitstream formats (OR'ed) supported by audio hardware.
     int bitstream_formats = 0;
     // Bitstream will need to be encapsulated in IEC61937 to be
