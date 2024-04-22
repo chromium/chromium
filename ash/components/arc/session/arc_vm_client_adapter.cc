@@ -530,6 +530,8 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     default:
       NOTREACHED_NORETURN();
   }
+
+  request.set_use_gki(base::FeatureList::IsEnabled(kArcVmGki));
   return request;
 }
 

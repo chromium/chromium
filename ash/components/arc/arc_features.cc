@@ -14,6 +14,11 @@ BASE_FEATURE(kArcOnDemandFeature,
              "ArcOnDemand",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether to start ARC with the GKI kernel.
+BASE_FEATURE(kArcVmGki,
+             "ArcVmGki",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls ACTION_BOOT_COMPLETED broadcast for third party applications on ARC.
 // When disabled, third party apps will not receive this broadcast.
 BASE_FEATURE(kBootCompletedBroadcastFeature,
