@@ -43,6 +43,9 @@ ParseCertificateFromStaticStorage(const uint8_t (&data)[N]) {
 // Returns the cast developer certificate path command line switch if it is
 // set. Otherwise, returns an empty file path.
 base::FilePath GetDeveloperCertificatePathFromCommandLine() {
+  if (!base::CommandLine::InitializedForCurrentProcess()) {
+    return base::FilePath();
+  }
   auto* command_line = base::CommandLine::ForCurrentProcess();
   return command_line->GetSwitchValuePath(
       switches::kCastDeveloperCertificatePath);
