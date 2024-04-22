@@ -39,15 +39,12 @@ AddNewAddressBubbleView::AddNewAddressBubbleView(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       views::LayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
   AddChildView(views::Builder<views::Label>()
                    .SetText(controller_->GetBodyText())
                    .SetTextStyle(views::style::STYLE_SECONDARY)
-                   .SetPreferredSize(gfx::Size(
-                       views::LayoutProvider::Get()->GetDistanceMetric(
-                           views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                           margins().width(),
-                       0))
                    .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
                    .SetMultiLine(true)
                    .Build());

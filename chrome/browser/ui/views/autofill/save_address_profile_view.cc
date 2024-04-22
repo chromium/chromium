@@ -186,6 +186,10 @@ SaveAddressProfileView::SaveAddressProfileView(
         views::Builder<views::Label>()
             .SetText(description)
             .SetTextStyle(views::style::STYLE_SECONDARY)
+            // The preferred size is set to prevent the long description text
+            // from affecting the bubble width. Using `set_fixed_width()` for
+            // the popup doesn't work as the popup should accommodate
+            // potentially long user input nicely.
             .SetPreferredSize(
                 gfx::Size(views::LayoutProvider::Get()->GetDistanceMetric(
                               views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
