@@ -59,6 +59,13 @@ BASE_FEATURE(kBlockInsecurePrivateNetworkRequestsFromUnknown,
              "BlockInsecurePrivateNetworkRequestsFromUnknown",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// Whether to hide paste popup on GestureScrollBegin or GestureScrollUpdate.
+BASE_FEATURE(kHidePastePopupOnGSB,
+             "HidePastePopupOnGSB",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // The fix to crbug.com/1248529 will be behind this default-enabled flag, in
 // case it breaks any applications in the wild.
 BASE_FEATURE(kHistoryInterventionSameDocumentFix,

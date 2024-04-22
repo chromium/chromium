@@ -26,6 +26,8 @@ import org.chromium.content.browser.input.ImeAdapterImpl;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.ViewEventSink.InternalAccessDelegate;
@@ -62,6 +64,7 @@ public class GestureListenerManagerImpl
     private SelectionPopupControllerImpl mSelectionPopupController;
     private ViewAndroidDelegate mViewDelegate;
     private InternalAccessDelegate mScrollDelegate;
+    private final boolean mHidePastePopupOnGSB;
 
     private long mNativeGestureListenerManager;
 
@@ -109,6 +112,8 @@ public class GestureListenerManagerImpl
         mNativeGestureListenerManager =
                 GestureListenerManagerImplJni.get()
                         .init(GestureListenerManagerImpl.this, mWebContents);
+        mHidePastePopupOnGSB =
+                ContentFeatureMap.isEnabled(ContentFeatureList.HIDE_PASTE_POPUP_ON_GSB);
     }
 
     public void resetGestureDetection() {
@@ -302,7 +307,9 @@ public class GestureListenerManagerImpl
                 break;
             case EventType.GESTURE_SCROLL_UPDATE:
                 if (!consumed) break;
-                destroyPastePopup();
+                if (!mHidePastePopupOnGSB) {
+                    destroyPastePopup();
+                }
                 for (mIterator.rewind(); mIterator.hasNext(); ) {
                     mIterator.next().onScrollUpdateGestureConsumed();
                 }
@@ -338,6 +345,9 @@ public class GestureListenerManagerImpl
     @VisibleForTesting
     void onScrollBegin(boolean isDirectionUp) {
         setGestureScrollInProgress(true);
+        if (mHidePastePopupOnGSB) {
+            destroyPastePopup();
+        }
         for (mIterator.rewind(); mIterator.hasNext(); ) {
             mIterator
                     .next()

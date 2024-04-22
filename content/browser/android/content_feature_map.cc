@@ -30,6 +30,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kAccessibilityUnifiedSnapshots,
     &features::kAndroidOpenPdfInline,
     &features::kFedCm,
+    &features::kHidePastePopupOnGSB,
     &features::kMouseAndTrackpadDropdownMenu,
     &features::kOptimizeImmHideCalls,
     &features::kProcessSharingWithStrictSiteInstances,
