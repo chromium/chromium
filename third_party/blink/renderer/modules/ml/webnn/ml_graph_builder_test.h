@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gru_options.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_layer_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
@@ -75,12 +74,6 @@ MLOperand* BuildGemm(V8TestingScope& scope,
                      const MLOperand* a,
                      const MLOperand* b,
                      const MLGemmOptions* options = MLGemmOptions::Create());
-
-MLOperand* BuildLayerNormalization(V8TestingScope& scope,
-                                   MLGraphBuilder* builder,
-                                   const MLOperand* input,
-                                   const MLLayerNormalizationOptions* options =
-                                       MLLayerNormalizationOptions::Create());
 
 MLOperand* BuildReduce(
     V8TestingScope& scope,
