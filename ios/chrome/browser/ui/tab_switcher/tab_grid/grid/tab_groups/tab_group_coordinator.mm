@@ -6,7 +6,6 @@
 
 #import "base/check.h"
 #import "base/metrics/user_metrics.h"
-#import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -76,8 +75,6 @@
               gridConsumer:_viewController.gridViewController];
   _mediator.browser = self.browser;
   _mediator.tabGroupsHandler = handler;
-  _mediator.tabBasedIPHBrowserAgent =
-      TabBasedIPHBrowserAgent::FromBrowser(self.browser);
   _mediator.tabGridIdleStatusHandler = self.tabGridIdleStatusHandler;
 
   _tabContextMenuHelper = [[TabContextMenuHelper alloc]
@@ -128,9 +125,7 @@
       base::RecordAction(
           base::UserMetricsAction("MobileTabRegularGridTabGroupOpenTab"));
     }
-    [_mediator selectItemWithID:itemID
-                         pinned:NO
-         isFirstActionOnTabGrid:[self.tabGridIdleStatusHandler status]];
+    [_mediator selectItemWithID:itemID pinned:NO];
   }
 
   id<TabGroupsCommands> handler = HandlerForProtocol(
