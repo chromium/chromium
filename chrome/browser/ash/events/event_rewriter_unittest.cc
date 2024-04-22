@@ -4593,6 +4593,30 @@ TEST_P(EventRewriterTest, AltgrLatch) {
       SendKeyEvent(KeyLatvianQuote::Released()));
 }
 
+TEST_P(EventRewriterTest, SixPackRemappingsFnBased) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kModifierSplit);
+  auto reset = switches::SetIgnoreModifierSplitSecretKeyForTest();
+
+  SetUpKeyboard(kInternalChromeSplitModifierLayoutKeyboard);
+
+  // Test each case while applying additional flags to confirm flags get
+  // properly applied to rewritten events.
+  for (const auto flag : {ui::EF_NONE, ui::EF_COMMAND_DOWN, ui::EF_CONTROL_DOWN,
+                          ui::EF_ALT_DOWN, ui::EF_SHIFT_DOWN}) {
+    EXPECT_EQ(KeyDelete::Typed(flag),
+              RunRewriter(KeyBackspace::Typed(), ui::EF_FUNCTION_DOWN | flag));
+    EXPECT_EQ(KeyHome::Typed(flag),
+              RunRewriter(KeyArrowLeft::Typed(), ui::EF_FUNCTION_DOWN | flag));
+    EXPECT_EQ(KeyEnd::Typed(flag),
+              RunRewriter(KeyArrowRight::Typed(), ui::EF_FUNCTION_DOWN | flag));
+    EXPECT_EQ(KeyPageUp::Typed(flag),
+              RunRewriter(KeyArrowUp::Typed(), ui::EF_FUNCTION_DOWN | flag));
+    EXPECT_EQ(KeyPageDown::Typed(flag),
+              RunRewriter(KeyArrowDown::Typed(), ui::EF_FUNCTION_DOWN | flag));
+  }
+}
+
 class ModifierPressedMetricsTest
     : public EventRewriterTestBase,
       public testing::WithParamInterface<

@@ -982,6 +982,40 @@ void MaybeRewriteKeyEventToSixPackKeyAction(
   }
 }
 
+// Rewrites the incoming key event to a Six Pack (PageUp, PageDown, Home, End,
+// Insert, Delete) key action when a matching Function based rewrite is found.
+void MaybeRewriteFunctionBasedShortcutToSixPackKeyAction(
+    const KeyEvent& key_event,
+    EventRewriterAsh::MutableKeyState* state) {
+  EventRewriterAsh::MutableKeyState incoming = *state;
+  static const KeyboardRemapping kFunctionSixPackRemappings[] = {
+      {// Fn+BackSpace -> Delete
+       {EF_FUNCTION_DOWN, VKEY_BACK},
+       {EF_NONE, DomCode::DEL, DomKey::DEL, VKEY_DELETE}},
+      {// Fn+Left -> Home
+       {EF_FUNCTION_DOWN, VKEY_LEFT},
+       {EF_NONE, DomCode::HOME, DomKey::HOME, VKEY_HOME}},
+      {// Fn+Up -> Prior (aka PageUp)
+       {EF_FUNCTION_DOWN, VKEY_UP},
+       {EF_NONE, DomCode::PAGE_UP, DomKey::PAGE_UP, VKEY_PRIOR}},
+      {// Fn+Right -> End
+       {EF_FUNCTION_DOWN, VKEY_RIGHT},
+       {EF_NONE, DomCode::END, DomKey::END, VKEY_END}},
+      {// Fn+Down -> Next (aka PageDown)
+       {EF_FUNCTION_DOWN, VKEY_DOWN},
+       {EF_NONE, DomCode::PAGE_DOWN, DomKey::PAGE_DOWN, VKEY_NEXT}}};
+
+  for (const auto& map : kFunctionSixPackRemappings) {
+    if (!MatchKeyboardRemapping(incoming, map.condition)) {
+      continue;
+    }
+
+    state->flags = (incoming.flags & ~map.condition.flags);
+    ApplyRemapping(map.result, state);
+    return;
+  }
+}
+
 bool ExtendedFkeyModifiersMatch(
     int flags,
     ui::mojom::ExtendedFkeysModifier modifier_flag) {
@@ -1823,6 +1857,15 @@ void EventRewriterAsh::RewriteExtendedKeys(const KeyEvent& key_event,
         return;
       }
     }
+  }
+
+  if (keyboard_capability_->HasFunctionKey(key_event.source_device_id())) {
+    if (incoming.flags & (EF_FUNCTION_DOWN)) {
+      MaybeRewriteFunctionBasedShortcutToSixPackKeyAction(key_event, state);
+    } else if (incoming.flags & (EF_COMMAND_DOWN | EF_ALT_DOWN)) {
+      // TODO(dpad): Fire notification for old rewriting combinations.
+    }
+    return;
   }
 
   if (ash::features::IsAltClickAndSixPackCustomizationEnabled() &&
