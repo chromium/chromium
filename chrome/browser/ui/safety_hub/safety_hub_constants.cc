@@ -27,4 +27,8 @@ const char kSafetyHubChooserPermissionsData[] = "chooserPermissionsData";
 
 const base::TimeDelta kMinTimeBetweenPasswordChecks = base::Hours(1);
 
+const char kRevokedStatusDictKeyStr[] = "revoked_status";
+const char kIgnoreStr[] = "ignore";
+const char kRevokeStr[] = "revoke";
+
 }  // namespace safety_hub
