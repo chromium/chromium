@@ -226,7 +226,6 @@ if (use_qt6) {
 group("linux") {
   deps = [
     ":beta",
-    ":canary",
     ":stable",
     ":unstable",
   ]
@@ -301,7 +300,6 @@ copy("theme_files") {
     "$branding_dir_100/linux/product_logo_32.png",
   ]
   if (is_chrome_branded) {
-    # TODO(crbug.com/335306207): Add product logo for canary channel.
     sources += [
       "$branding_dir/linux/product_logo_128_beta.png",
       "$branding_dir/linux/product_logo_128_dev.png",
@@ -547,7 +545,4 @@ linux_package("beta") {
 }
 linux_package("unstable") {
   channel = "unstable"
-}
-linux_package("canary") {
-  channel = "canary"
 }

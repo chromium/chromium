@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/environment.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -47,9 +48,6 @@ ChannelState GetChannelImpl() {
     return {version_info::Channel::BETA, /*is_extended_stable=*/false};
   if (env_str == "unstable")  // linux version of "dev"
     return {version_info::Channel::DEV, /*is_extended_stable=*/false};
-  if (env_str == "canary") {
-    return {version_info::Channel::CANARY, /*is_extended_stable=*/false};
-  }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   return {version_info::Channel::UNKNOWN, /*is_extended_stable=*/false};
@@ -64,7 +62,8 @@ std::string GetChannelName(WithExtendedStable with_extended_stable) {
     case version_info::Channel::UNKNOWN:
       return "unknown";
     case version_info::Channel::CANARY:
-      return "canary";
+      NOTREACHED();
+      return "unknown";
     case version_info::Channel::DEV:
       return "dev";
     case version_info::Channel::BETA:
@@ -98,8 +97,6 @@ std::string GetChannelSuffixForExtraFlagsEnvVarName() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   const auto channel_state = GetChannelImpl();
   switch (channel_state.channel) {
-    case version_info::Channel::CANARY:
-      return "_CANARY";
     case version_info::Channel::DEV:
       return "_DEV";
     case version_info::Channel::BETA:
