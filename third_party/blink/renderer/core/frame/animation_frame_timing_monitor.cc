@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/third_party_script_detector.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -295,6 +296,8 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
   base::TimeDelta script_type_duration_event_listener;
   base::TimeDelta script_type_duration_promise_handler;
   base::TimeDelta script_type_duration_script_block;
+  int64_t third_party_script_callback_contributors = 0;
+  int64_t third_party_script_execution_contributors = 0;
   for (const Member<ScriptTimingInfo>& script : info.Scripts()) {
     total_compilation_duration +=
         (script->ExecutionStartTime() - script->StartTime());
@@ -303,20 +306,31 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
     total_execution_duration += execution_duration;
     total_forced_style_and_layout_duration += script->StyleDuration();
     total_forced_style_and_layout_duration += script->LayoutDuration();
+    ThirdPartyScriptDetector::Technology third_party_technology =
+        ThirdPartyScriptDetector::From(*(script->Window()))
+            .Detect(script->GetSourceLocation().url);
     switch (script->GetInvokerType()) {
       case ScriptTimingInfo::InvokerType::kClassicScript:
       case ScriptTimingInfo::InvokerType::kModuleScript:
         script_type_duration_script_block += execution_duration;
+        third_party_script_execution_contributors |=
+            static_cast<int64_t>(third_party_technology);
         break;
       case ScriptTimingInfo::InvokerType::kEventHandler:
         script_type_duration_event_listener += execution_duration;
+        third_party_script_callback_contributors |=
+            static_cast<int64_t>(third_party_technology);
         break;
       case ScriptTimingInfo::InvokerType::kPromiseResolve:
       case ScriptTimingInfo::InvokerType::kPromiseReject:
         script_type_duration_promise_handler += execution_duration;
+        third_party_script_callback_contributors |=
+            static_cast<int64_t>(third_party_technology);
         break;
       case ScriptTimingInfo::InvokerType::kUserCallback:
         script_type_duration_user_callback += execution_duration;
+        third_party_script_callback_contributors |=
+            static_cast<int64_t>(third_party_technology);
         break;
     }
   }
@@ -335,6 +349,10 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
   builder.SetDuration_StyleAndLayout_Forced(
       total_forced_style_and_layout_duration.InMilliseconds());
   builder.SetDidPause(info.DidPause());
+  builder.SetCategorized3PScriptLongAnimationFrameCallbackContributors(
+      third_party_script_callback_contributors);
+  builder.SetCategorized3PScriptLongAnimationFrameScriptExecutionContributors(
+      third_party_script_execution_contributors);
   builder.Record(recorder);
 }
 

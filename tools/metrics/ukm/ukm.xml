@@ -20732,11 +20732,29 @@ be describing additional metrics about the same event.
 
 <event name="PerformanceAPI.LongAnimationFrame">
   <owner>nrosenthal@chromium.org</owner>
+  <owner>zuoaoyuan@chromium.org</owner>
   <summary>
     This event is associated with the LongAnimationFrame Web Platform API. The
     metrics are recorded when a long animation frame is detected and reported to
     the page. For more details see https://crbug.com/1392685.
   </summary>
+  <metric name="Categorized3PScriptLongAnimationFrameCallbackContributors">
+    <summary>
+      A bitfield representation of third party technologies who have contributed
+      at least one event/callback script that blocked the long animation frame
+      for more than 5ms. The bitwise fields are defined by ThirdPartyTechnology
+      enum in third_party/blink_renderer/core/timing/third_party_script_info.h.
+    </summary>
+  </metric>
+  <metric
+      name="Categorized3PScriptLongAnimationFrameScriptExecutionContributors">
+    <summary>
+      A bitfield representation of third party technologies who have contributed
+      at least one script execution block that blocked the long animation frame
+      for more than 5ms. The bitwise fields are defined by ThirdPartyTechnology
+      enum in third_party/blink_renderer/core/timing/third_party_script_info.h.
+    </summary>
+  </metric>
   <metric name="DidPause" enum="Boolean">
     <summary>
       True if there was a pause (sync XHR, dialog) during the long frame.

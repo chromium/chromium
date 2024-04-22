@@ -88,6 +88,8 @@ blink_core_sources_timing = [
   "soft_navigation_entry.h",
   "task_attribution_timing.cc",
   "task_attribution_timing.h",
+  "third_party_script_detector.cc",
+  "third_party_script_detector.h",
   "time_clamper.cc",
   "time_clamper.h",
   "visibility_state_entry.cc",
