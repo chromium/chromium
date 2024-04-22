@@ -35,7 +35,7 @@ class NetworkTraversalIceConfigFetcherTest : public testing::Test {
   }
 
   void CheckSuccessResponse(
-      const std::vector<sharing::mojom::IceServerPtr>& ice_servers) {
+      const std::vector<::sharing::mojom::IceServerPtr>& ice_servers) {
     ASSERT_EQ(2u, ice_servers.size());
 
     // First response doesnt have credentials.
@@ -69,7 +69,7 @@ class NetworkTraversalIceConfigFetcherTest : public testing::Test {
 TEST_F(NetworkTraversalIceConfigFetcherTest, ResponseSuccessful) {
   base::RunLoop run_loop;
   ice_config_fetcher_.GetIceServers(base::BindLambdaForTesting(
-      [&](std::vector<sharing::mojom::IceServerPtr> ice_servers) {
+      [&](std::vector<::sharing::mojom::IceServerPtr> ice_servers) {
         CheckSuccessResponse(ice_servers);
         run_loop.Quit();
       }));
@@ -92,7 +92,7 @@ TEST_F(NetworkTraversalIceConfigFetcherTest, ResponseSuccessful) {
 TEST_F(NetworkTraversalIceConfigFetcherTest, ResponseError) {
   base::RunLoop run_loop;
   ice_config_fetcher_.GetIceServers(base::BindLambdaForTesting(
-      [&](std::vector<sharing::mojom::IceServerPtr> ice_servers) {
+      [&](std::vector<::sharing::mojom::IceServerPtr> ice_servers) {
         // Makes sure that we at least return default servers in case of an
         // error.
         EXPECT_FALSE(ice_servers.empty());
@@ -114,7 +114,7 @@ TEST_F(NetworkTraversalIceConfigFetcherTest, ResponseError) {
 TEST_F(NetworkTraversalIceConfigFetcherTest, OverlappingCalls) {
   base::RunLoop run_loop;
   int counter = 2;
-  auto callback = [&](std::vector<sharing::mojom::IceServerPtr> ice_servers) {
+  auto callback = [&](std::vector<::sharing::mojom::IceServerPtr> ice_servers) {
     CheckSuccessResponse(ice_servers);
     counter -= 1;
     if (counter == 0) {

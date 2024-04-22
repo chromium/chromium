@@ -134,33 +134,33 @@ enum class UpgradedMedium {
 };
 
 AttachmentType FileMetadataTypeToAttachmentType(
-    sharing::mojom::FileMetadata::Type type) {
+    ::sharing::mojom::FileMetadata::Type type) {
   switch (type) {
-    case sharing::mojom::FileMetadata::Type::kUnknown:
+    case ::sharing::mojom::FileMetadata::Type::kUnknown:
       return AttachmentType::kUnknownFileType;
-    case sharing::mojom::FileMetadata::Type::kImage:
+    case ::sharing::mojom::FileMetadata::Type::kImage:
       return AttachmentType::kImage;
-    case sharing::mojom::FileMetadata::Type::kVideo:
+    case ::sharing::mojom::FileMetadata::Type::kVideo:
       return AttachmentType::kVideo;
-    case sharing::mojom::FileMetadata::Type::kApp:
+    case ::sharing::mojom::FileMetadata::Type::kApp:
       return AttachmentType::kApp;
-    case sharing::mojom::FileMetadata::Type::kAudio:
+    case ::sharing::mojom::FileMetadata::Type::kAudio:
       return AttachmentType::kAudio;
   }
 }
 
 AttachmentType TextMetadataTypeToAttachmentType(
-    sharing::mojom::TextMetadata::Type type) {
+    ::sharing::mojom::TextMetadata::Type type) {
   switch (type) {
-    case sharing::mojom::TextMetadata::Type::kUnknown:
+    case ::sharing::mojom::TextMetadata::Type::kUnknown:
       return AttachmentType::kUnknownTextType;
-    case sharing::mojom::TextMetadata::Type::kText:
+    case ::sharing::mojom::TextMetadata::Type::kText:
       return AttachmentType::kText;
-    case sharing::mojom::TextMetadata::Type::kUrl:
+    case ::sharing::mojom::TextMetadata::Type::kUrl:
       return AttachmentType::kUrl;
-    case sharing::mojom::TextMetadata::Type::kAddress:
+    case ::sharing::mojom::TextMetadata::Type::kAddress:
       return AttachmentType::kAddress;
-    case sharing::mojom::TextMetadata::Type::kPhoneNumber:
+    case ::sharing::mojom::TextMetadata::Type::kPhoneNumber:
       return AttachmentType::kPhoneNumber;
   }
 }
@@ -499,7 +499,7 @@ void RecordNearbyShareTimeFromLocalAcceptToTransferStartMetric(
 }
 
 void RecordNearbySharePayloadFileAttachmentTypeMetric(
-    sharing::mojom::FileMetadata::Type type,
+    ::sharing::mojom::FileMetadata::Type type,
     bool is_incoming,
     bool is_contact,
     bool for_self_share,
@@ -510,7 +510,7 @@ void RecordNearbySharePayloadFileAttachmentTypeMetric(
 }
 
 void RecordNearbySharePayloadTextAttachmentTypeMetric(
-    sharing::mojom::TextMetadata::Type type,
+    ::sharing::mojom::TextMetadata::Type type,
     bool is_incoming,
     bool is_contact,
     bool for_self_share,

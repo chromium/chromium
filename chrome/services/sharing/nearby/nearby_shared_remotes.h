@@ -31,15 +31,16 @@ struct NearbySharedRemotes {
 
   mojo::SharedRemote<bluetooth::mojom::Adapter> bluetooth_adapter;
   mojo::SharedRemote<network::mojom::P2PSocketManager> socket_manager;
-  mojo::SharedRemote<sharing::mojom::MdnsResponderFactory>
+  mojo::SharedRemote<::sharing::mojom::MdnsResponderFactory>
       mdns_responder_factory;
-  mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>
+  mojo::SharedRemote<::sharing::mojom::WebRtcSignalingMessenger>
       webrtc_signaling_messenger;
-  mojo::SharedRemote<sharing::mojom::IceConfigFetcher> ice_config_fetcher;
+  mojo::SharedRemote<::sharing::mojom::IceConfigFetcher> ice_config_fetcher;
   mojo::SharedRemote<chromeos::network_config::mojom::CrosNetworkConfig>
       cros_network_config;
-  mojo::SharedRemote<sharing::mojom::FirewallHoleFactory> firewall_hole_factory;
-  mojo::SharedRemote<sharing::mojom::TcpSocketFactory> tcp_socket_factory;
+  mojo::SharedRemote<::sharing::mojom::FirewallHoleFactory>
+      firewall_hole_factory;
+  mojo::SharedRemote<::sharing::mojom::TcpSocketFactory> tcp_socket_factory;
   mojo::SharedRemote<
       ash::nearby::presence::mojom::NearbyPresenceCredentialStorage>
       nearby_presence_credential_storage;

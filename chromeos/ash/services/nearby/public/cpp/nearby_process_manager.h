@@ -29,7 +29,7 @@ class NearbyProcessManager : public KeyedService {
     virtual const mojo::SharedRemote<
         ::ash::nearby::presence::mojom::NearbyPresence>&
     GetNearbyPresence() const = 0;
-    virtual const mojo::SharedRemote<sharing::mojom::NearbySharingDecoder>&
+    virtual const mojo::SharedRemote<::sharing::mojom::NearbySharingDecoder>&
     GetNearbySharingDecoder() const = 0;
     virtual const mojo::SharedRemote<quick_start::mojom::QuickStartDecoder>&
     GetQuickStartDecoder() const = 0;

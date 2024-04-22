@@ -275,7 +275,7 @@ std::unique_ptr<WifiLanMedium> ImplementationPlatform::CreateWifiLanMedium() {
 
   // TODO(https://crbug.com/1261238): This should always be bound when the
   // WifiLan feature flag is enabled. Update logging to ERROR after launch.
-  const mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>&
+  const mojo::SharedRemote<::sharing::mojom::FirewallHoleFactory>&
       firewall_hole_factory = nearby_shared_remotes->firewall_hole_factory;
   if (!firewall_hole_factory.is_bound()) {
     VLOG(1) << "FirewallHoleFactory not bound. Returning null WifiLan medium";
@@ -284,7 +284,7 @@ std::unique_ptr<WifiLanMedium> ImplementationPlatform::CreateWifiLanMedium() {
 
   // TODO(https://crbug.com/1261238): This should always be bound when the
   // WifiLan feature flag is enabled. Update logging to ERROR after launch.
-  const mojo::SharedRemote<sharing::mojom::TcpSocketFactory>&
+  const mojo::SharedRemote<::sharing::mojom::TcpSocketFactory>&
       tcp_socket_factory = nearby_shared_remotes->tcp_socket_factory;
   if (!tcp_socket_factory.is_bound()) {
     VLOG(1) << "TcpSocketFactory not bound. Returning null WifiLan medium";
@@ -306,11 +306,11 @@ std::unique_ptr<WebRtcMedium> ImplementationPlatform::CreateWebRtcMedium() {
 
   const mojo::SharedRemote<network::mojom::P2PSocketManager>& socket_manager =
       nearby_shared_remotes->socket_manager;
-  const mojo::SharedRemote<sharing::mojom::MdnsResponderFactory>&
+  const mojo::SharedRemote<::sharing::mojom::MdnsResponderFactory>&
       mdns_responder_factory = nearby_shared_remotes->mdns_responder_factory;
-  const mojo::SharedRemote<sharing::mojom::IceConfigFetcher>&
+  const mojo::SharedRemote<::sharing::mojom::IceConfigFetcher>&
       ice_config_fetcher = nearby_shared_remotes->ice_config_fetcher;
-  const mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>&
+  const mojo::SharedRemote<::sharing::mojom::WebRtcSignalingMessenger>&
       messenger = nearby_shared_remotes->webrtc_signaling_messenger;
 
   auto log_error = [](std::string dependency_name) {

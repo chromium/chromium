@@ -16,7 +16,7 @@ class FirewallHole;
 // An implementation of the mojo interface representing a firewall hole for
 // Nearby Connections WifiLan TCP sockets. This implementation is essentially a
 // wrapper around a ash::FirewallHole.
-class NearbyConnectionsFirewallHole : public sharing::mojom::FirewallHole {
+class NearbyConnectionsFirewallHole : public ::sharing::mojom::FirewallHole {
  public:
   explicit NearbyConnectionsFirewallHole(
       std::unique_ptr<chromeos::FirewallHole> firewall_hole);

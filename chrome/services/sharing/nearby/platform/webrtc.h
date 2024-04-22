@@ -37,11 +37,11 @@ class WebRtcMedium : public api::WebRtcMedium {
   WebRtcMedium(
       const mojo::SharedRemote<network::mojom::P2PSocketManager>&
           socket_manager,
-      const mojo::SharedRemote<sharing::mojom::MdnsResponderFactory>&
+      const mojo::SharedRemote<::sharing::mojom::MdnsResponderFactory>&
           mdns_responder_factory,
-      const mojo::SharedRemote<sharing::mojom::IceConfigFetcher>&
+      const mojo::SharedRemote<::sharing::mojom::IceConfigFetcher>&
           ice_config_fetcher,
-      const mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>&
+      const mojo::SharedRemote<::sharing::mojom::WebRtcSignalingMessenger>&
           webrtc_signaling_messenger,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~WebRtcMedium() override;
@@ -60,7 +60,7 @@ class WebRtcMedium : public api::WebRtcMedium {
   void OnIceServersFetched(
       webrtc::PeerConnectionObserver* observer,
       PeerConnectionCallback callback,
-      std::vector<sharing::mojom::IceServerPtr> ice_servers)
+      std::vector<::sharing::mojom::IceServerPtr> ice_servers)
       LOCKS_EXCLUDED(peer_connection_factory_lock_);
 
   void InitWebRTCThread(rtc::Thread** thread_to_set);
@@ -98,13 +98,13 @@ class WebRtcMedium : public api::WebRtcMedium {
       peer_connection_factory_ GUARDED_BY(peer_connection_factory_lock_);
 
   mojo::SharedRemote<network::mojom::P2PSocketManager> p2p_socket_manager_;
-  mojo::SharedRemote<sharing::mojom::MdnsResponderFactory>
+  mojo::SharedRemote<::sharing::mojom::MdnsResponderFactory>
       mdns_responder_factory_;
-  mojo::SharedRemote<sharing::mojom::IceConfigFetcher> ice_config_fetcher_;
-  mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>
+  mojo::SharedRemote<::sharing::mojom::IceConfigFetcher> ice_config_fetcher_;
+  mojo::SharedRemote<::sharing::mojom::WebRtcSignalingMessenger>
       webrtc_signaling_messenger_;
 
-  std::unique_ptr<sharing::IpcPacketSocketFactory> socket_factory_;
+  std::unique_ptr<::sharing::IpcPacketSocketFactory> socket_factory_;
   std::unique_ptr<rtc::NetworkManager> network_manager_;
 
   // This task runner is used to fetch ice servers and initialize the peer

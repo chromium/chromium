@@ -46,14 +46,14 @@ class WifiLanServerSocket : public api::WifiLanServerSocket {
     ServerSocketParameters(
         const net::IPEndPoint& local_end_point,
         mojo::PendingRemote<network::mojom::TCPServerSocket> tcp_server_socket,
-        mojo::PendingRemote<sharing::mojom::FirewallHole> firewall_hole);
+        mojo::PendingRemote<::sharing::mojom::FirewallHole> firewall_hole);
     ~ServerSocketParameters();
     ServerSocketParameters(ServerSocketParameters&&);
     ServerSocketParameters& operator=(ServerSocketParameters&&);
 
     net::IPEndPoint local_end_point;
     mojo::PendingRemote<network::mojom::TCPServerSocket> tcp_server_socket;
-    mojo::PendingRemote<sharing::mojom::FirewallHole> firewall_hole;
+    mojo::PendingRemote<::sharing::mojom::FirewallHole> firewall_hole;
   };
 
   explicit WifiLanServerSocket(ServerSocketParameters server_socket_parameters);
@@ -110,7 +110,7 @@ class WifiLanServerSocket : public api::WifiLanServerSocket {
   // corresponding remote endpoint, |tcp_server_socket_|/|firewall_hole_|, is
   // destroyed.
   mojo::SharedRemote<network::mojom::TCPServerSocket> tcp_server_socket_;
-  mojo::SharedRemote<sharing::mojom::FirewallHole> firewall_hole_;
+  mojo::SharedRemote<::sharing::mojom::FirewallHole> firewall_hole_;
 
   // Track all pending accept tasks in case Close() is called while waiting.
   base::flat_set<raw_ptr<base::WaitableEvent, CtnExperimental>>

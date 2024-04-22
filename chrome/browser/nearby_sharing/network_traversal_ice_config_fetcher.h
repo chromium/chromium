@@ -15,7 +15,7 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 class NetworkTraversalIceConfigFetcher
-    : public sharing::mojom::IceConfigFetcher {
+    : public ::sharing::mojom::IceConfigFetcher {
  public:
   explicit NetworkTraversalIceConfigFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);

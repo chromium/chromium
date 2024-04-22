@@ -34,7 +34,7 @@ void SharingImpl::Connect(
     NearbyDependenciesPtr deps,
     mojo::PendingReceiver<NearbyConnectionsMojom> connections_receiver,
     mojo::PendingReceiver<NearbyPresenceMojom> presence_receiver,
-    mojo::PendingReceiver<sharing::mojom::NearbySharingDecoder>
+    mojo::PendingReceiver<::sharing::mojom::NearbySharingDecoder>
         decoder_receiver,
     mojo::PendingReceiver<ash::quick_start::mojom::QuickStartDecoder>
         quick_start_decoder_receiver) {

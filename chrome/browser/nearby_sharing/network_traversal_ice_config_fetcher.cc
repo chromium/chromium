@@ -80,21 +80,22 @@ bool IsLoaderSuccessful(const network::SimpleURLLoader* loader) {
   return is_successful_response_code;
 }
 
-std::vector<sharing::mojom::IceServerPtr> GetDefaultIceServers() {
-  sharing::mojom::IceServerPtr ice_server(sharing::mojom::IceServer::New());
+std::vector<::sharing::mojom::IceServerPtr> GetDefaultIceServers() {
+  ::sharing::mojom::IceServerPtr ice_server(::sharing::mojom::IceServer::New());
   ice_server->urls.emplace_back("stun:stun.l.google.com:19302");
   ice_server->urls.emplace_back("stun:stun1.l.google.com:19302");
   ice_server->urls.emplace_back("stun:stun2.l.google.com:19302");
   ice_server->urls.emplace_back("stun:stun3.l.google.com:19302");
   ice_server->urls.emplace_back("stun:stun4.l.google.com:19302");
 
-  std::vector<sharing::mojom::IceServerPtr> default_servers;
+  std::vector<::sharing::mojom::IceServerPtr> default_servers;
   default_servers.push_back(std::move(ice_server));
   return default_servers;
 }
 
-std::vector<sharing::mojom::IceServerPtr> ParseIceConfigJson(std::string json) {
-  std::vector<sharing::mojom::IceServerPtr> ice_servers;
+std::vector<::sharing::mojom::IceServerPtr> ParseIceConfigJson(
+    std::string json) {
+  std::vector<::sharing::mojom::IceServerPtr> ice_servers;
   std::optional<base::Value> response = base::JSONReader::Read(json);
   if (!response)
     return ice_servers;
@@ -122,7 +123,8 @@ std::vector<sharing::mojom::IceServerPtr> ParseIceConfigJson(std::string json) {
     if (urls.empty())
       continue;
 
-    sharing::mojom::IceServerPtr ice_server(sharing::mojom::IceServer::New());
+    ::sharing::mojom::IceServerPtr ice_server(
+        ::sharing::mojom::IceServer::New());
     ice_server->urls = std::move(urls);
 
     std::string* retrieved_username = server_dict.FindString("username");
@@ -140,10 +142,10 @@ std::vector<sharing::mojom::IceServerPtr> ParseIceConfigJson(std::string json) {
 }
 
 void OnIceServersResponse(
-    sharing::mojom::IceConfigFetcher::GetIceServersCallback callback,
+    ::sharing::mojom::IceConfigFetcher::GetIceServersCallback callback,
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     std::unique_ptr<std::string> response_body) {
-  std::vector<sharing::mojom::IceServerPtr> ice_servers;
+  std::vector<::sharing::mojom::IceServerPtr> ice_servers;
 
   if (IsLoaderSuccessful(url_loader.get()) && response_body)
     ice_servers = ParseIceConfigJson(*response_body);

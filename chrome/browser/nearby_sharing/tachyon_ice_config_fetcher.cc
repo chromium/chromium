@@ -168,24 +168,24 @@ bool IsLoaderSuccessful(const network::SimpleURLLoader* loader,
   return true;
 }
 
-std::vector<sharing::mojom::IceServerPtr> GetDefaultIceServers() {
-  sharing::mojom::IceServerPtr ice_server(sharing::mojom::IceServer::New());
+std::vector<::sharing::mojom::IceServerPtr> GetDefaultIceServers() {
+  ::sharing::mojom::IceServerPtr ice_server(::sharing::mojom::IceServer::New());
   ice_server->urls.emplace_back("stun:stun.l.google.com:19302");
   ice_server->urls.emplace_back("stun:stun1.l.google.com:19302");
   ice_server->urls.emplace_back("stun:stun2.l.google.com:19302");
   ice_server->urls.emplace_back("stun:stun3.l.google.com:19302");
   ice_server->urls.emplace_back("stun:stun4.l.google.com:19302");
 
-  std::vector<sharing::mojom::IceServerPtr> default_servers;
+  std::vector<::sharing::mojom::IceServerPtr> default_servers;
   default_servers.push_back(std::move(ice_server));
   return default_servers;
 }
 
-std::vector<sharing::mojom::IceServerPtr> CloneIceServerList(
-    const std::vector<sharing::mojom::IceServerPtr>& server_list) {
+std::vector<::sharing::mojom::IceServerPtr> CloneIceServerList(
+    const std::vector<::sharing::mojom::IceServerPtr>& server_list) {
   // Cannot use vector's default copy operation because IceServerPtr is move
   // only and has to be cloned.
-  std::vector<sharing::mojom::IceServerPtr> new_list;
+  std::vector<::sharing::mojom::IceServerPtr> new_list;
   for (const auto& server : server_list) {
     new_list.push_back(server.Clone());
   }
@@ -288,11 +288,11 @@ void TachyonIceConfigFetcher::GetIceServersWithToken(
 }
 
 void TachyonIceConfigFetcher::OnIceServersResponse(
-    sharing::mojom::IceConfigFetcher::GetIceServersCallback callback,
+    ::sharing::mojom::IceConfigFetcher::GetIceServersCallback callback,
     const std::string& request_id,
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     std::unique_ptr<std::string> response_body) {
-  std::vector<sharing::mojom::IceServerPtr> ice_servers;
+  std::vector<::sharing::mojom::IceServerPtr> ice_servers;
 
   if (IsLoaderSuccessful(url_loader.get(), request_id) && response_body)
     ice_servers = ParseIceServersResponse(*response_body, request_id);
@@ -309,11 +309,11 @@ void TachyonIceConfigFetcher::OnIceServersResponse(
   std::move(callback).Run(std::move(ice_servers));
 }
 
-std::vector<sharing::mojom::IceServerPtr>
+std::vector<::sharing::mojom::IceServerPtr>
 TachyonIceConfigFetcher::ParseIceServersResponse(
     const std::string& serialized_proto,
     const std::string& request_id) {
-  std::vector<sharing::mojom::IceServerPtr> servers_mojo;
+  std::vector<::sharing::mojom::IceServerPtr> servers_mojo;
   tachyon_proto::GetICEServerResponse response;
   if (!response.ParseFromString(serialized_proto)) {
     CD_LOG(ERROR, Feature::NEARBY_INFRA)
@@ -328,7 +328,8 @@ TachyonIceConfigFetcher::ParseIceServersResponse(
     if (!server.urls_size())
       continue;
 
-    sharing::mojom::IceServerPtr server_mojo(sharing::mojom::IceServer::New());
+    ::sharing::mojom::IceServerPtr server_mojo(
+        ::sharing::mojom::IceServer::New());
     for (const std::string& url : server.urls()) {
       server_mojo->urls.emplace_back(url);
     }

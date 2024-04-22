@@ -42,7 +42,7 @@ namespace chrome {
 
 // An implementation of the abstract Nearby Connections's class
 // api::WifiLanMedium. The implementation uses the
-// sharing::mojom::TcpSocketFactory mojo interface to 1) connect to remote
+// ::sharing::mojom::TcpSocketFactory mojo interface to 1) connect to remote
 // server sockets, and 2) open local server sockets to listen for incoming
 // connection requests from remote devices. We block while 1) trying to connect,
 // 2) creating a server socket, and 3) cancelling pending tasks in the
@@ -50,12 +50,12 @@ namespace chrome {
 // connection and listening attempts return before destruction.
 class WifiLanMedium : public api::WifiLanMedium {
  public:
-  WifiLanMedium(const mojo::SharedRemote<sharing::mojom::TcpSocketFactory>&
+  WifiLanMedium(const mojo::SharedRemote<::sharing::mojom::TcpSocketFactory>&
                     socket_factory,
                 const mojo::SharedRemote<
                     chromeos::network_config::mojom::CrosNetworkConfig>&
                     cros_network_config,
-                const mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>&
+                const mojo::SharedRemote<::sharing::mojom::FirewallHoleFactory>&
                     firewall_hole_factory);
   WifiLanMedium(const WifiLanMedium&) = delete;
   WifiLanMedium& operator=(const WifiLanMedium&) = delete;
@@ -157,7 +157,7 @@ class WifiLanMedium : public api::WifiLanMedium {
       base::WaitableEvent* listen_waitable_event,
       mojo::PendingRemote<network::mojom::TCPServerSocket> tcp_server_socket,
       const net::IPEndPoint& local_addr,
-      mojo::PendingRemote<sharing::mojom::FirewallHole> firewall_hole);
+      mojo::PendingRemote<::sharing::mojom::FirewallHole> firewall_hole);
   /*==========================================================================*/
 
   /*==========================================================================*/
@@ -180,10 +180,10 @@ class WifiLanMedium : public api::WifiLanMedium {
   void Shutdown(base::WaitableEvent* shutdown_waitable_event);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  mojo::SharedRemote<sharing::mojom::TcpSocketFactory> socket_factory_;
+  mojo::SharedRemote<::sharing::mojom::TcpSocketFactory> socket_factory_;
   mojo::SharedRemote<chromeos::network_config::mojom::CrosNetworkConfig>
       cros_network_config_;
-  mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>
+  mojo::SharedRemote<::sharing::mojom::FirewallHoleFactory>
       firewall_hole_factory_;
 
   // Track all pending connect/listen tasks in case Close() is called while

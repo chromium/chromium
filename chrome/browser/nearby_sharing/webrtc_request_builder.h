@@ -19,10 +19,10 @@ class ReceiveMessagesExpressRequest;
 chrome_browser_nearby_sharing_instantmessaging::SendMessageExpressRequest
 BuildSendRequest(const std::string& self_id,
                  const std::string& peer_id,
-                 sharing::mojom::LocationHintPtr hint);
+                 ::sharing::mojom::LocationHintPtr hint);
 
 chrome_browser_nearby_sharing_instantmessaging::ReceiveMessagesExpressRequest
 BuildReceiveRequest(const std::string& self_id,
-                    sharing::mojom::LocationHintPtr hint);
+                    ::sharing::mojom::LocationHintPtr hint);
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_WEBRTC_REQUEST_BUILDER_H_

@@ -26,7 +26,7 @@ const char kTestAccount[] = "test@test.test";
 const char kCountryCode[] = "ZZ";
 
 class FakeIncomingMessagesListener
-    : public sharing::mojom::IncomingMessagesListener {
+    : public ::sharing::mojom::IncomingMessagesListener {
  public:
   ~FakeIncomingMessagesListener() override = default;
 
@@ -70,13 +70,13 @@ class WebRtcSignalingMessengerTest : public testing::Test {
     return test_url_loader_factory_;
   }
 
-  sharing::mojom::LocationHintPtr CountryCodeLocationHint(
+  ::sharing::mojom::LocationHintPtr CountryCodeLocationHint(
       std::string country_code) {
-    sharing::mojom::LocationHintPtr location_hint_ptr =
-        sharing::mojom::LocationHint::New();
+    ::sharing::mojom::LocationHintPtr location_hint_ptr =
+        ::sharing::mojom::LocationHint::New();
     location_hint_ptr->location = country_code;
     location_hint_ptr->format =
-        sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2;
+        ::sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2;
     return location_hint_ptr;
   }
 

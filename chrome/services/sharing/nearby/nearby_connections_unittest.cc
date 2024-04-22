@@ -725,12 +725,12 @@ class NearbyConnectionsTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   mojo::Remote<mojom::NearbyConnections> remote_;
   bluetooth::FakeAdapter bluetooth_adapter_;
-  sharing::MockWebRtcDependencies webrtc_dependencies_;
+  ::sharing::MockWebRtcDependencies webrtc_dependencies_;
   std::unique_ptr<ash::network_config::CrosNetworkConfigTestHelper>
       cros_network_config_test_helper_;
-  mojo::SelfOwnedReceiverRef<sharing::mojom::FirewallHoleFactory>
+  mojo::SelfOwnedReceiverRef<::sharing::mojom::FirewallHoleFactory>
       firewall_hole_factory_self_owned_receiver_ref_;
-  mojo::SelfOwnedReceiverRef<sharing::mojom::TcpSocketFactory>
+  mojo::SelfOwnedReceiverRef<::sharing::mojom::TcpSocketFactory>
       tcp_socket_factory_self_owned_receiver_ref_;
   std::unique_ptr<NearbyConnections> nearby_connections_;
   raw_ptr<testing::NiceMock<MockServiceControllerRouter>>

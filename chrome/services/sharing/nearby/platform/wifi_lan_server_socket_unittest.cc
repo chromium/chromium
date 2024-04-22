@@ -54,7 +54,7 @@ class WifiLanServerSocketTest : public testing::Test {
         std::move(fake_tcp_server_socket),
         tcp_server_socket.InitWithNewPipeAndPassReceiver());
 
-    mojo::PendingRemote<sharing::mojom::FirewallHole> firewall_hole;
+    mojo::PendingRemote<::sharing::mojom::FirewallHole> firewall_hole;
     firewall_hole_self_owned_receiver_ref_ = mojo::MakeSelfOwnedReceiver(
         std::make_unique<ash::nearby::FakeFirewallHole>(),
         firewall_hole.InitWithNewPipeAndPassReceiver());
@@ -115,7 +115,7 @@ class WifiLanServerSocketTest : public testing::Test {
       fake_tcp_server_socket_;
   mojo::SelfOwnedReceiverRef<network::mojom::TCPServerSocket>
       tcp_server_socket_self_owned_receiver_ref_;
-  mojo::SelfOwnedReceiverRef<sharing::mojom::FirewallHole>
+  mojo::SelfOwnedReceiverRef<::sharing::mojom::FirewallHole>
       firewall_hole_self_owned_receiver_ref_;
   std::unique_ptr<WifiLanServerSocket> wifi_lan_server_socket_;
 };

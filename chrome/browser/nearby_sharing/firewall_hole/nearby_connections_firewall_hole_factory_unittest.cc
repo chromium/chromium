@@ -21,8 +21,8 @@ uint16_t kPort = ash::nearby::TcpServerSocketPort::kMin + 1;
 
 void MoveFirewallHole(
     base::RunLoop* run_loop,
-    mojo::PendingRemote<sharing::mojom::FirewallHole>* out_hole,
-    mojo::PendingRemote<sharing::mojom::FirewallHole> hole) {
+    mojo::PendingRemote<::sharing::mojom::FirewallHole>* out_hole,
+    mojo::PendingRemote<::sharing::mojom::FirewallHole> hole) {
   *out_hole = std::move(hole);
   run_loop->Quit();
 }
@@ -48,7 +48,7 @@ class NearbyConnectionsFirewallHoleFactoryTest : public testing::Test {
 
 TEST_F(NearbyConnectionsFirewallHoleFactoryTest, Success) {
   base::RunLoop run_loop;
-  mojo::PendingRemote<sharing::mojom::FirewallHole> hole;
+  mojo::PendingRemote<::sharing::mojom::FirewallHole> hole;
   factory_.OpenFirewallHole(
       port_, base::BindOnce(&MoveFirewallHole, &run_loop, &hole));
   run_loop.Run();
@@ -70,7 +70,7 @@ TEST_F(NearbyConnectionsFirewallHoleFactoryTest, Failure) {
       /*interface=*/std::string());
 
   base::RunLoop run_loop;
-  mojo::PendingRemote<sharing::mojom::FirewallHole> hole;
+  mojo::PendingRemote<::sharing::mojom::FirewallHole> hole;
   factory_.OpenFirewallHole(
       port_, base::BindOnce(&MoveFirewallHole, &run_loop, &hole));
   run_loop.Run();

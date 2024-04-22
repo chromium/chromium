@@ -80,14 +80,14 @@ void RecordNearbyShareTimeFromLocalAcceptToTransferStartMetric(
     base::TimeDelta time);
 
 void RecordNearbySharePayloadFileAttachmentTypeMetric(
-    sharing::mojom::FileMetadata::Type type,
+    ::sharing::mojom::FileMetadata::Type type,
     bool is_incoming,
     bool is_contact,
     bool for_self_share,
     nearby::connections::mojom::PayloadStatus status);
 
 void RecordNearbySharePayloadTextAttachmentTypeMetric(
-    sharing::mojom::TextMetadata::Type type,
+    ::sharing::mojom::TextMetadata::Type type,
     bool is_incoming,
     bool is_contact,
     bool for_self_share,

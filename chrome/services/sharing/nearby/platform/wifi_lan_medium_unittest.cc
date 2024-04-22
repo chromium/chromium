@@ -326,7 +326,7 @@ class WifiLanMediumTest : public ::testing::Test {
 
   // TCP socket factory:
   raw_ptr<ash::nearby::FakeTcpSocketFactory> fake_socket_factory_;
-  mojo::SharedRemote<sharing::mojom::TcpSocketFactory>
+  mojo::SharedRemote<::sharing::mojom::TcpSocketFactory>
       socket_factory_shared_remote_;
 
   // Local IP fetching:
@@ -347,7 +347,7 @@ class WifiLanMediumTest : public ::testing::Test {
 
   // Firewall hole factory:
   raw_ptr<ash::nearby::FakeFirewallHoleFactory> fake_firewall_hole_factory_;
-  mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>
+  mojo::SharedRemote<::sharing::mojom::FirewallHoleFactory>
       firewall_hole_factory_shared_remote_;
 
   std::unique_ptr<WifiLanMedium> wifi_lan_medium_;

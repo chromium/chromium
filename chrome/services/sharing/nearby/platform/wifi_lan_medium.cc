@@ -73,11 +73,12 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 }  // namespace
 
 WifiLanMedium::WifiLanMedium(
-    const mojo::SharedRemote<sharing::mojom::TcpSocketFactory>& socket_factory,
+    const mojo::SharedRemote<::sharing::mojom::TcpSocketFactory>&
+        socket_factory,
     const mojo::SharedRemote<
         chromeos::network_config::mojom::CrosNetworkConfig>&
         cros_network_config,
-    const mojo::SharedRemote<sharing::mojom::FirewallHoleFactory>&
+    const mojo::SharedRemote<::sharing::mojom::FirewallHoleFactory>&
         firewall_hole_factory)
     : task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
@@ -431,7 +432,7 @@ void WifiLanMedium::OnFirewallHoleCreated(
     base::WaitableEvent* listen_waitable_event,
     mojo::PendingRemote<network::mojom::TCPServerSocket> tcp_server_socket,
     const net::IPEndPoint& local_addr,
-    mojo::PendingRemote<sharing::mojom::FirewallHole> firewall_hole) {
+    mojo::PendingRemote<::sharing::mojom::FirewallHole> firewall_hole) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (!firewall_hole) {

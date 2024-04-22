@@ -93,7 +93,7 @@ class NearbyDependenciesProviderShutdownNotifierFactory
   ~NearbyDependenciesProviderShutdownNotifierFactory() override = default;
 };
 
-class MdnsResponderFactory : public sharing::mojom::MdnsResponderFactory {
+class MdnsResponderFactory : public ::sharing::mojom::MdnsResponderFactory {
  public:
   explicit MdnsResponderFactory(Profile* profile) : profile_(profile) {
     // Subscribe to be notified when NearbyDependenciesProvider shuts down.
@@ -157,13 +157,13 @@ NearbyDependenciesProvider::NearbyDependenciesProvider() = default;
 
 NearbyDependenciesProvider::~NearbyDependenciesProvider() = default;
 
-sharing::mojom::NearbyDependenciesPtr
+::sharing::mojom::NearbyDependenciesPtr
 NearbyDependenciesProvider::GetDependencies() {
   if (shut_down_) {
     return nullptr;
   }
 
-  auto dependencies = sharing::mojom::NearbyDependencies::New();
+  auto dependencies = ::sharing::mojom::NearbyDependencies::New();
 
   if (device::BluetoothAdapterFactory::IsBluetoothSupported()) {
     dependencies->bluetooth_adapter = GetBluetoothAdapterPendingRemote();
@@ -230,7 +230,7 @@ NearbyDependenciesProvider::GetNearbyPresenceCredentialStoragePendingRemote() {
   return pending_remote;
 }
 
-sharing::mojom::WebRtcDependenciesPtr
+::sharing::mojom::WebRtcDependenciesPtr
 NearbyDependenciesProvider::GetWebRtcDependencies() {
   MojoPipe<network::mojom::P2PTrustedSocketManagerClient> socket_manager_client;
   MojoPipe<network::mojom::P2PTrustedSocketManager> trusted_socket_manager;
@@ -248,29 +248,29 @@ NearbyDependenciesProvider::GetWebRtcDependencies() {
       std::move(trusted_socket_manager.receiver),
       std::move(socket_manager.receiver));
 
-  MojoPipe<sharing::mojom::MdnsResponderFactory> mdns_responder_factory_pipe;
+  MojoPipe<::sharing::mojom::MdnsResponderFactory> mdns_responder_factory_pipe;
   mojo::MakeSelfOwnedReceiver(std::make_unique<MdnsResponderFactory>(profile_),
                               std::move(mdns_responder_factory_pipe.receiver));
 
   // Create ice config fetcher.
   auto url_loader_factory = profile_->GetURLLoaderFactory();
-  MojoPipe<sharing::mojom::IceConfigFetcher> ice_config_fetcher;
+  MojoPipe<::sharing::mojom::IceConfigFetcher> ice_config_fetcher;
   mojo::MakeSelfOwnedReceiver(std::make_unique<TachyonIceConfigFetcher>(
                                   identity_manager_, url_loader_factory),
                               std::move(ice_config_fetcher.receiver));
 
-  MojoPipe<sharing::mojom::WebRtcSignalingMessenger> messenger;
+  MojoPipe<::sharing::mojom::WebRtcSignalingMessenger> messenger;
   mojo::MakeSelfOwnedReceiver(std::make_unique<WebRtcSignalingMessenger>(
                                   identity_manager_, url_loader_factory),
                               std::move(messenger.receiver));
 
-  return sharing::mojom::WebRtcDependencies::New(
+  return ::sharing::mojom::WebRtcDependencies::New(
       std::move(socket_manager.remote),
       std::move(mdns_responder_factory_pipe.remote),
       std::move(ice_config_fetcher.remote), std::move(messenger.remote));
 }
 
-sharing::mojom::WifiLanDependenciesPtr
+::sharing::mojom::WifiLanDependenciesPtr
 NearbyDependenciesProvider::GetWifiLanDependencies() {
   if (!base::FeatureList::IsEnabled(::features::kNearbySharingWifiLan)) {
     return nullptr;
@@ -280,19 +280,19 @@ NearbyDependenciesProvider::GetWifiLanDependencies() {
       cros_network_config;
   ash::GetNetworkConfigService(std::move(cros_network_config.receiver));
 
-  MojoPipe<sharing::mojom::FirewallHoleFactory> firewall_hole_factory;
+  MojoPipe<::sharing::mojom::FirewallHoleFactory> firewall_hole_factory;
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<NearbyConnectionsFirewallHoleFactory>(),
       std::move(firewall_hole_factory.receiver));
 
-  MojoPipe<sharing::mojom::TcpSocketFactory> tcp_socket_factory;
+  MojoPipe<::sharing::mojom::TcpSocketFactory> tcp_socket_factory;
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<NearbyConnectionsTcpSocketFactory>(
           base::BindRepeating(&NearbyDependenciesProvider::GetNetworkContext,
                               base::Unretained(this))),
       std::move(tcp_socket_factory.receiver));
 
-  return sharing::mojom::WifiLanDependencies::New(
+  return ::sharing::mojom::WifiLanDependencies::New(
       std::move(cros_network_config.remote),
       std::move(firewall_hole_factory.remote),
       std::move(tcp_socket_factory.remote));

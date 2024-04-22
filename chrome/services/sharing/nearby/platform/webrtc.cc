@@ -133,7 +133,7 @@ class ProxyAsyncDnsResolverFactory final
 // connection goes down. This is necessary to keep it pumping messages while the
 // the main WebRtc thread is blocked on a future.
 class IncomingMessageListener
-    : public sharing::mojom::IncomingMessagesListener {
+    : public ::sharing::mojom::IncomingMessagesListener {
  public:
   explicit IncomingMessageListener(
       api::WebRtcSignalingMessenger::OnSignalingMessageCallback
@@ -173,7 +173,7 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
   WebRtcSignalingMessengerImpl(
       const std::string& self_id,
       const location::nearby::connections::LocationHint& location_hint,
-      const mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>&
+      const mojo::SharedRemote<::sharing::mojom::WebRtcSignalingMessenger>&
           messenger)
       : self_id_(self_id),
         location_hint_(location_hint),
@@ -188,27 +188,27 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
   WebRtcSignalingMessengerImpl& operator=(
       const WebRtcSignalingMessengerImpl& other) = delete;
 
-  sharing::mojom::LocationHintPtr CreateLocationHint() {
-    sharing::mojom::LocationHintPtr location_hint_ptr =
-        sharing::mojom::LocationHint::New();
+  ::sharing::mojom::LocationHintPtr CreateLocationHint() {
+    ::sharing::mojom::LocationHintPtr location_hint_ptr =
+        ::sharing::mojom::LocationHint::New();
     location_hint_ptr->location = location_hint_.location();
     switch (location_hint_.format()) {
       case location::nearby::connections::LocationStandard_Format::
           LocationStandard_Format_E164_CALLING:
         location_hint_ptr->format =
-            sharing::mojom::LocationStandardFormat::E164_CALLING;
+            ::sharing::mojom::LocationStandardFormat::E164_CALLING;
         break;
       case location::nearby::connections::LocationStandard_Format::
           LocationStandard_Format_ISO_3166_1_ALPHA_2:
         location_hint_ptr->format =
-            sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2;
+            ::sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2;
         break;
       case location::nearby::connections::LocationStandard_Format::
           LocationStandard_Format_UNKNOWN:
         // Here we default to the current default country code before sending.
         location_hint_ptr->location = GetCurrentCountryCode();
         location_hint_ptr->format =
-            sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2;
+            ::sharing::mojom::LocationStandardFormat::ISO_3166_1_ALPHA_2;
         break;
     }
     return location_hint_ptr;
@@ -228,7 +228,7 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
   }
 
   void BindIncomingReceiver(
-      mojo::PendingReceiver<sharing::mojom::IncomingMessagesListener>
+      mojo::PendingReceiver<::sharing::mojom::IncomingMessagesListener>
           pending_receiver,
       api::WebRtcSignalingMessenger::OnSignalingMessageCallback
           message_callback,
@@ -245,9 +245,9 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
       OnSignalingMessageCallback message_callback,
       OnSignalingCompleteCallback complete_callback) override {
     bool success = false;
-    mojo::PendingRemote<sharing::mojom::IncomingMessagesListener>
+    mojo::PendingRemote<::sharing::mojom::IncomingMessagesListener>
         pending_remote;
-    mojo::PendingReceiver<sharing::mojom::IncomingMessagesListener>
+    mojo::PendingReceiver<::sharing::mojom::IncomingMessagesListener>
         pending_receiver = pending_remote.InitWithNewPipeAndPassReceiver();
     // NOTE: this is a Sync mojo call that waits until Fast-Path ready is
     // received on the Instant Messaging (Tachyon) stream before returning.
@@ -278,7 +278,7 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
     if (receiving_messages_) {
       receiving_messages_ = false;
       if (pending_session_remote_) {
-        mojo::Remote<sharing::mojom::ReceiveMessagesSession> session(
+        mojo::Remote<::sharing::mojom::ReceiveMessagesSession> session(
             std::move(pending_session_remote_));
         // This is a one-way message so it is safe to bind, send, and forget.
         // When the Remote goes out of scope it will close the pipe and cause
@@ -299,10 +299,10 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
   // of NearbyConnections. We need to ensure the thread that
   // binds/calls/destroys the remote is the same sequence, so we do all three at
   // once in StopReceivingMessages(). If the other side of the pipe is already
-  // down, binding, calling, and destorying will be a no-op.
-  mojo::PendingRemote<sharing::mojom::ReceiveMessagesSession>
+  // down, binding, calling, and destroying will be a no-op.
+  mojo::PendingRemote<::sharing::mojom::ReceiveMessagesSession>
       pending_session_remote_;
-  mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger> messenger_;
+  mojo::SharedRemote<::sharing::mojom::WebRtcSignalingMessenger> messenger_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<WebRtcSignalingMessengerImpl> weak_ptr_factory_{this};
 };
@@ -311,11 +311,11 @@ class WebRtcSignalingMessengerImpl : public api::WebRtcSignalingMessenger {
 
 WebRtcMedium::WebRtcMedium(
     const mojo::SharedRemote<network::mojom::P2PSocketManager>& socket_manager,
-    const mojo::SharedRemote<sharing::mojom::MdnsResponderFactory>&
+    const mojo::SharedRemote<::sharing::mojom::MdnsResponderFactory>&
         mdns_responder_factory,
-    const mojo::SharedRemote<sharing::mojom::IceConfigFetcher>&
+    const mojo::SharedRemote<::sharing::mojom::IceConfigFetcher>&
         ice_config_fetcher,
-    const mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>&
+    const mojo::SharedRemote<::sharing::mojom::WebRtcSignalingMessenger>&
         webrtc_signaling_messenger,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : chrome_network_thread_(/*name=*/"WebRtc Network Thread"),
@@ -506,7 +506,7 @@ void WebRtcMedium::InitWorkerThread(base::OnceClosure complete_callback) {
 void WebRtcMedium::OnIceServersFetched(
     webrtc::PeerConnectionObserver* observer,
     PeerConnectionCallback callback,
-    std::vector<sharing::mojom::IceServerPtr> ice_servers) {
+    std::vector<::sharing::mojom::IceServerPtr> ice_servers) {
   base::AutoLock peer_connection_factory_auto_lock(
       peer_connection_factory_lock_);
   if (!peer_connection_factory_) {

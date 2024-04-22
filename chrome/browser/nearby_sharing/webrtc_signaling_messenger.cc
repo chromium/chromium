@@ -21,7 +21,7 @@ WebRtcSignalingMessenger::~WebRtcSignalingMessenger() = default;
 void WebRtcSignalingMessenger::SendMessage(
     const std::string& self_id,
     const std::string& peer_id,
-    sharing::mojom::LocationHintPtr location_hint,
+    ::sharing::mojom::LocationHintPtr location_hint,
     const std::string& message,
     SendMessageCallback callback) {
   chrome_browser_nearby_sharing_instantmessaging::SendMessageExpressRequest
@@ -64,8 +64,8 @@ void WebRtcSignalingMessenger::SendMessage(
 
 void WebRtcSignalingMessenger::StartReceivingMessages(
     const std::string& self_id,
-    sharing::mojom::LocationHintPtr location_hint,
-    mojo::PendingRemote<sharing::mojom::IncomingMessagesListener>
+    ::sharing::mojom::LocationHintPtr location_hint,
+    mojo::PendingRemote<::sharing::mojom::IncomingMessagesListener>
         incoming_messages_listener,
     StartReceivingMessagesCallback callback) {
   // Starts a self owned mojo pipe for the receive session that can be stopped

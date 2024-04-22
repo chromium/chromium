@@ -17,10 +17,11 @@
 namespace sharing {
 
 // Mimics browser process and network service implementations.
-class MockWebRtcDependencies : public network::mojom::P2PSocketManager,
-                               public sharing::mojom::MdnsResponderFactory,
-                               public sharing::mojom::IceConfigFetcher,
-                               public sharing::mojom::WebRtcSignalingMessenger {
+class MockWebRtcDependencies
+    : public network::mojom::P2PSocketManager,
+      public ::sharing::mojom::MdnsResponderFactory,
+      public ::sharing::mojom::IceConfigFetcher,
+      public ::sharing::mojom::WebRtcSignalingMessenger {
  public:
   MockWebRtcDependencies();
   ~MockWebRtcDependencies() override;
@@ -60,25 +61,25 @@ class MockWebRtcDependencies : public network::mojom::P2PSocketManager,
        mojo::PendingReceiver<network::mojom::P2PSocket> receiver),
       (override));
 
-  // sharing::mojom::MdnsResponderFactory overrides:
+  // ::sharing::mojom::MdnsResponderFactory overrides:
   MOCK_METHOD(
       void,
       CreateMdnsResponder,
       (mojo::PendingReceiver<network::mojom::MdnsResponder> responder_receiver),
       (override));
 
-  // sharing::mojom::IceConfigFetcher overrides:
+  // ::sharing::mojom::IceConfigFetcher overrides:
   MOCK_METHOD(void,
               GetIceServers,
               (GetIceServersCallback callback),
               (override));
 
-  // sharing::mojom::WebRtcSignalingMessenger overrides:
+  // ::sharing::mojom::WebRtcSignalingMessenger overrides:
   MOCK_METHOD(void,
               SendMessage,
               (const std::string& self_id,
                const std::string& peer_id,
-               sharing::mojom::LocationHintPtr location_hint,
+               ::sharing::mojom::LocationHintPtr location_hint,
                const std::string& message,
                SendMessageCallback callback),
               (override));
@@ -86,17 +87,17 @@ class MockWebRtcDependencies : public network::mojom::P2PSocketManager,
   MOCK_METHOD(void,
               StartReceivingMessages,
               (const std::string& self_id,
-               sharing::mojom::LocationHintPtr location_hint,
-               mojo::PendingRemote<sharing::mojom::IncomingMessagesListener>
+               ::sharing::mojom::LocationHintPtr location_hint,
+               mojo::PendingRemote<::sharing::mojom::IncomingMessagesListener>
                    incoming_messages_listener,
                StartReceivingMessagesCallback callback),
               (override));
 
   mojo::Receiver<network::mojom::P2PSocketManager> socket_manager_{this};
-  mojo::Receiver<sharing::mojom::MdnsResponderFactory> mdns_responder_factory_{
-      this};
-  mojo::Receiver<sharing::mojom::IceConfigFetcher> ice_config_fetcher_{this};
-  mojo::Receiver<sharing::mojom::WebRtcSignalingMessenger> messenger_{this};
+  mojo::Receiver<::sharing::mojom::MdnsResponderFactory>
+      mdns_responder_factory_{this};
+  mojo::Receiver<::sharing::mojom::IceConfigFetcher> ice_config_fetcher_{this};
+  mojo::Receiver<::sharing::mojom::WebRtcSignalingMessenger> messenger_{this};
 };
 
 }  // namespace sharing

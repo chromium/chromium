@@ -40,7 +40,7 @@ class NearbyDependenciesProvider : public KeyedService {
   ~NearbyDependenciesProvider() override;
 
   // Note: Returns null during session shutdown.
-  virtual sharing::mojom::NearbyDependenciesPtr GetDependencies();
+  virtual ::sharing::mojom::NearbyDependenciesPtr GetDependencies();
 
   virtual void PrepareForShutdown();
 
@@ -61,9 +61,9 @@ class NearbyDependenciesProvider : public KeyedService {
   mojo::PendingRemote<presence::mojom::NearbyPresenceCredentialStorage>
   GetNearbyPresenceCredentialStoragePendingRemote();
 
-  sharing::mojom::WebRtcDependenciesPtr GetWebRtcDependencies();
+  ::sharing::mojom::WebRtcDependenciesPtr GetWebRtcDependencies();
 
-  sharing::mojom::WifiLanDependenciesPtr GetWifiLanDependencies();
+  ::sharing::mojom::WifiLanDependenciesPtr GetWifiLanDependencies();
 
   network::mojom::NetworkContext* GetNetworkContext();
 

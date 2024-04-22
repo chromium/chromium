@@ -42,7 +42,7 @@ const char kTokenFetchSuccessMetric[] =
 const int kLifetimeDurationSeconds = 86400;
 
 void CheckSuccessResponse(
-    const std::vector<sharing::mojom::IceServerPtr>& ice_servers) {
+    const std::vector<::sharing::mojom::IceServerPtr>& ice_servers) {
   ASSERT_EQ(2u, ice_servers.size());
 
   // First response doesnt have credentials.
@@ -108,7 +108,7 @@ class TachyonIceConfigFetcherTest : public testing::Test {
 TEST_F(TachyonIceConfigFetcherTest, ResponseSuccessful) {
   base::RunLoop run_loop;
   ice_config_fetcher_.GetIceServers(base::BindLambdaForTesting(
-      [&](std::vector<sharing::mojom::IceServerPtr> ice_servers) {
+      [&](std::vector<::sharing::mojom::IceServerPtr> ice_servers) {
         CheckSuccessResponse(ice_servers);
         run_loop.Quit();
       }));
@@ -135,7 +135,7 @@ TEST_F(TachyonIceConfigFetcherTest, ResponseSuccessful) {
 TEST_F(TachyonIceConfigFetcherTest, ResponseError) {
   base::RunLoop run_loop;
   ice_config_fetcher_.GetIceServers(base::BindLambdaForTesting(
-      [&](std::vector<sharing::mojom::IceServerPtr> ice_servers) {
+      [&](std::vector<::sharing::mojom::IceServerPtr> ice_servers) {
         // Makes sure that we at least return default servers in case of an
         // error.
         EXPECT_FALSE(ice_servers.empty());
@@ -164,7 +164,7 @@ TEST_F(TachyonIceConfigFetcherTest, ResponseError) {
 TEST_F(TachyonIceConfigFetcherTest, OverlappingCalls) {
   base::RunLoop run_loop;
   int counter = 2;
-  auto callback = [&](std::vector<sharing::mojom::IceServerPtr> ice_servers) {
+  auto callback = [&](std::vector<::sharing::mojom::IceServerPtr> ice_servers) {
     CheckSuccessResponse(ice_servers);
     counter -= 1;
     if (counter == 0) {
@@ -199,7 +199,7 @@ TEST_F(TachyonIceConfigFetcherTest, OverlappingCalls) {
 
 TEST_F(TachyonIceConfigFetcherTest, IceServersCached) {
   auto callback = [](base::RunLoop* run_loop,
-                     std::vector<sharing::mojom::IceServerPtr> ice_servers) {
+                     std::vector<::sharing::mojom::IceServerPtr> ice_servers) {
     CheckSuccessResponse(ice_servers);
     run_loop->Quit();
   };
@@ -246,7 +246,7 @@ TEST_F(TachyonIceConfigFetcherTest, IceServersCached) {
 TEST_F(TachyonIceConfigFetcherTest, OAuthTokenFailed) {
   base::RunLoop run_loop;
   ice_config_fetcher_.GetIceServers(base::BindLambdaForTesting(
-      [&](std::vector<sharing::mojom::IceServerPtr> ice_servers) {
+      [&](std::vector<::sharing::mojom::IceServerPtr> ice_servers) {
         // Makes sure that we at least return default servers in case of an
         // error.
         EXPECT_FALSE(ice_servers.empty());
@@ -268,7 +268,7 @@ TEST_F(TachyonIceConfigFetcherTest, OAuthTokenFailed) {
 TEST_F(TachyonIceConfigFetcherTest, OverlappingTokenFetch) {
   base::RunLoop run_loop;
   int counter = 2;
-  auto callback = [&](std::vector<sharing::mojom::IceServerPtr> ice_servers) {
+  auto callback = [&](std::vector<::sharing::mojom::IceServerPtr> ice_servers) {
     CheckSuccessResponse(ice_servers);
     counter -= 1;
     if (counter == 0) {

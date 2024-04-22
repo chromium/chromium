@@ -54,7 +54,7 @@ class SharingImplTest : public testing::Test {
         cros_network_config_remote.InitWithNewPipeAndPassReceiver());
 
     // Set up firewall hole factory mojo service.
-    mojo::PendingRemote<sharing::mojom::FirewallHoleFactory>
+    mojo::PendingRemote<::sharing::mojom::FirewallHoleFactory>
         firewall_hole_factory_remote;
     firewall_hole_factory_self_owned_receiver_ref_ =
         mojo::MakeSelfOwnedReceiver(
@@ -62,7 +62,7 @@ class SharingImplTest : public testing::Test {
             firewall_hole_factory_remote.InitWithNewPipeAndPassReceiver());
 
     // Set up TCP socket factory mojo service.
-    mojo::PendingRemote<sharing::mojom::TcpSocketFactory>
+    mojo::PendingRemote<::sharing::mojom::TcpSocketFactory>
         tcp_socket_factory_remote;
     tcp_socket_factory_self_owned_receiver_ref_ = mojo::MakeSelfOwnedReceiver(
         std::make_unique<ash::nearby::FakeTcpSocketFactory>(
@@ -98,7 +98,7 @@ class SharingImplTest : public testing::Test {
           connections_receiver,
       mojo::PendingReceiver<ash::nearby::presence::mojom::NearbyPresence>
           presence_receiver,
-      mojo::PendingReceiver<sharing::mojom::NearbySharingDecoder>
+      mojo::PendingReceiver<::sharing::mojom::NearbySharingDecoder>
           decoder_receiver,
       mojo::PendingReceiver<ash::quick_start::mojom::QuickStartDecoder>
           quick_start_decoder_receiver,
@@ -107,24 +107,25 @@ class SharingImplTest : public testing::Test {
           ash::nearby::presence::mojom::NearbyPresenceCredentialStorage>
           nearby_presence_credential_storage,
       mojo::PendingRemote<network::mojom::P2PSocketManager> socket_manager,
-      mojo::PendingRemote<sharing::mojom::MdnsResponderFactory>
+      mojo::PendingRemote<::sharing::mojom::MdnsResponderFactory>
           mdns_responder_factory,
-      mojo::PendingRemote<sharing::mojom::IceConfigFetcher> ice_config_fetcher,
-      mojo::PendingRemote<sharing::mojom::WebRtcSignalingMessenger>
+      mojo::PendingRemote<::sharing::mojom::IceConfigFetcher>
+          ice_config_fetcher,
+      mojo::PendingRemote<::sharing::mojom::WebRtcSignalingMessenger>
           webrtc_signaling_messenger,
       mojo::PendingRemote<chromeos::network_config::mojom::CrosNetworkConfig>
           cros_network_config,
-      mojo::PendingRemote<sharing::mojom::FirewallHoleFactory>
+      mojo::PendingRemote<::sharing::mojom::FirewallHoleFactory>
           firewall_hole_factory,
-      mojo::PendingRemote<sharing::mojom::TcpSocketFactory>
+      mojo::PendingRemote<::sharing::mojom::TcpSocketFactory>
           tcp_socket_factory) {
-    auto webrtc_dependencies = sharing::mojom::WebRtcDependencies::New(
+    auto webrtc_dependencies = ::sharing::mojom::WebRtcDependencies::New(
         std::move(socket_manager), std::move(mdns_responder_factory),
         std::move(ice_config_fetcher), std::move(webrtc_signaling_messenger));
-    auto wifilan_dependencies = sharing::mojom::WifiLanDependencies::New(
+    auto wifilan_dependencies = ::sharing::mojom::WifiLanDependencies::New(
         std::move(cros_network_config), std::move(firewall_hole_factory),
         std::move(tcp_socket_factory));
-    auto dependencies = sharing::mojom::NearbyDependencies::New(
+    auto dependencies = ::sharing::mojom::NearbyDependencies::New(
         std::move(bluetooth_adapter), std::move(webrtc_dependencies),
         std::move(wifilan_dependencies),
         std::move(nearby_presence_credential_storage),
@@ -164,7 +165,7 @@ class SharingImplTest : public testing::Test {
 
   mojo::Remote<nearby::connections::mojom::NearbyConnections> connections_;
   mojo::Remote<ash::nearby::presence::mojom::NearbyPresence> presence_;
-  mojo::Remote<sharing::mojom::NearbySharingDecoder> decoder_;
+  mojo::Remote<::sharing::mojom::NearbySharingDecoder> decoder_;
   mojo::Remote<ash::quick_start::mojom::QuickStartDecoder> quick_start_decoder_;
   bluetooth::FakeAdapter bluetooth_adapter_;
   ash::nearby::presence::FakeNearbyPresenceCredentialStorage
@@ -172,9 +173,9 @@ class SharingImplTest : public testing::Test {
   sharing::MockWebRtcDependencies webrtc_dependencies_;
   std::unique_ptr<ash::network_config::CrosNetworkConfigTestHelper>
       cros_network_config_test_helper_;
-  mojo::SelfOwnedReceiverRef<sharing::mojom::FirewallHoleFactory>
+  mojo::SelfOwnedReceiverRef<::sharing::mojom::FirewallHoleFactory>
       firewall_hole_factory_self_owned_receiver_ref_;
-  mojo::SelfOwnedReceiverRef<sharing::mojom::TcpSocketFactory>
+  mojo::SelfOwnedReceiverRef<::sharing::mojom::TcpSocketFactory>
       tcp_socket_factory_self_owned_receiver_ref_;
 };
 
