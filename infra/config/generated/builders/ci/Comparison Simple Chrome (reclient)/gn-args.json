@@ -8,7 +8,8 @@
         "is_chromeos_device": true,
         "ozone_platform_headless": true,
         "use_real_dbus_clients": false,
-        "use_remoteexec": true
+        "use_remoteexec": true,
+        "use_siso": true
       }
     },
     "build2": {
@@ -19,7 +20,8 @@
         "is_chromeos_device": true,
         "ozone_platform_headless": true,
         "use_real_dbus_clients": false,
-        "use_remoteexec": true
+        "use_remoteexec": true,
+        "use_siso": true
       }
     }
   }

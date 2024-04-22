@@ -25,6 +25,8 @@ ci.defaults.set(
     reclient_jobs = reclient.jobs.DEFAULT,
     service_account = ci.DEFAULT_SERVICE_ACCOUNT,
     shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
+    siso_enabled = True,
+    siso_remote_jobs = reclient.jobs.DEFAULT,
 )
 
 consoles.console_view(
