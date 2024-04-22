@@ -14478,6 +14478,28 @@
             ]
         }
     ],
+    "PreloadingHeuristicsMLModel": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20240422_NoEnact",
+                    "params": {
+                        "enact_candidates": "false"
+                    },
+                    "enable_features": [
+                        "PreloadingHeuristicsMLModel"
+                    ]
+                }
+            ]
+        }
+    ],
     "Prerender2EmbedderBlockedHosts": [
         {
             "platforms": [
