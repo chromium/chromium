@@ -14,17 +14,24 @@ namespace blink {
 // Tests do not require that tasks can actually run, just that they can posted.
 class HeapTestingMockTaskRunner final : public v8::TaskRunner {
  public:
-  void PostTask(std::unique_ptr<v8::Task> task) override {}
-  void PostNonNestableTask(std::unique_ptr<v8::Task> task) override {}
-  void PostDelayedTask(std::unique_ptr<v8::Task> task,
-                       double delay_in_seconds) override {}
-  void PostNonNestableDelayedTask(std::unique_ptr<v8::Task> task,
-                                  double delay_in_seconds) override {}
-  void PostIdleTask(std::unique_ptr<v8::IdleTask> task) override {}
-
   bool IdleTasksEnabled() override { return false; }
   bool NonNestableTasksEnabled() const override { return false; }
   bool NonNestableDelayedTasksEnabled() const override { return false; }
+
+ private:
+  void PostTaskImpl(std::unique_ptr<v8::Task> task,
+                    const v8::SourceLocation& location) override {}
+  void PostNonNestableTaskImpl(std::unique_ptr<v8::Task> task,
+                               const v8::SourceLocation& location) override {}
+  void PostDelayedTaskImpl(std::unique_ptr<v8::Task> task,
+                           double delay_in_seconds,
+                           const v8::SourceLocation& location) override {}
+  void PostNonNestableDelayedTaskImpl(
+      std::unique_ptr<v8::Task> task,
+      double delay_in_seconds,
+      const v8::SourceLocation& location) override {}
+  void PostIdleTaskImpl(std::unique_ptr<v8::IdleTask> task,
+                        const v8::SourceLocation& location) override {}
 };
 
 class HeapTestingPlatformAdapter final : public v8::Platform {
