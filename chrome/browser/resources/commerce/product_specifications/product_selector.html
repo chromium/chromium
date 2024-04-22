@@ -67,7 +67,7 @@
     tabindex="0">
   <cr-url-list-item id="currentProduct" size="medium"
     url="[[selectedItem.url]]" title="[[selectedItem.title]]"
-    description="[[selectedItem.url]]" tabindex="-1">
+    description="[[getAbbreviatedUrl_(selectedItem.url)]]" tabindex="-1">
   </cr-url-list-item>
   <iron-icon icon="cr:expand-more"></iron-icon>
   <div id="hoverLayer"></div>
@@ -85,7 +85,7 @@
             <template is="dom-repeat" items="[[openTabs]]">
               <cr-url-list-item class="dropdown-item" size="medium"
                   url="[[item.url]]" title="[[item.title]]"
-                  description="[[item.url]]" no-hover>
+                  description="[[getAbbreviatedUrl_(item.url)]]" no-hover>
               </cr-url-list-item>
             </template>
           </iron-collapse>

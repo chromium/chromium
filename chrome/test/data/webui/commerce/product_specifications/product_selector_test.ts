@@ -101,4 +101,38 @@ suite('ProductSelectorTest', () => {
     assertFalse(selector.$.currentProductContainer.classList.contains(
         showingMenuClass));
   });
+
+  test('AbbreviatesUrls', async () => {
+    const titleString = 'title';
+    const openTabs = [
+      {
+        title: stringToMojoString16(titleString),
+        url: stringToMojoUrl('https://example.com'),
+      },
+      {
+        title: stringToMojoString16(titleString),
+        url: stringToMojoUrl('chrome://settings'),
+      },
+    ];
+    shoppingServiceApi.setResultFor(
+        'getUrlInfosForOpenTabs', Promise.resolve({urlInfos: openTabs}));
+
+    const selector = await createSelector();
+    selector.$.currentProductContainer.click();
+    await flushTasks();
+
+    const menu = selector.$.productSelectionMenu.get();
+    const listElements = menu.querySelectorAll<HTMLElement>('.dropdown-item');
+    assertEquals(2, listElements.length);
+
+    const tab1Url = listElements[0]!.shadowRoot!.querySelector<HTMLElement>(
+        '.description-text');
+    assertTrue(!!tab1Url);
+    assertEquals('example.com', tab1Url.textContent);
+
+    const tab2Url = listElements[1]!.shadowRoot!.querySelector<HTMLElement>(
+        '.description-text');
+    assertTrue(!!tab2Url);
+    assertEquals('chrome://settings', tab2Url.textContent);
+  });
 });

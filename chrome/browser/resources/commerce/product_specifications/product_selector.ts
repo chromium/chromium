@@ -82,6 +82,14 @@ export class ProductSelectorElement extends PolymerElement {
     this.$.currentProductContainer.classList.add('showing-menu');
   }
 
+  private getAbbreviatedUrl_(urlString: string) {
+    const url = new URL(urlString);
+    if (url.protocol === 'chrome:') {
+      return 'chrome://' + url.hostname;
+    }
+    return url.hostname;
+  }
+
   private onCloseMenu_() {
     this.$.currentProductContainer.classList.remove('showing-menu');
   }
