@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest,
   frame_observer->WaitForAnyFrameSubmission();
 
   EXPECT_TRUE(VerifyRecordedSamplesForHistogram(
-      0, "EventLatency.GestureScrollUpdate.TotalLatency"));
+      0, "EventLatency.GestureScrollUpdate.TotalLatency2"));
 }
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)

@@ -22,16 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="EventLatencyVersion">
-  <variant name=""
-      summary="This histogram will eventually be replaced by its
-               TotalLatency2 equivalent which uses an improved bucketing"/>
-  <variant name="2"
-      summary="This histogram is similar to its TotalLatency (non-v2)
-               equivalent except that it uses an improved bucketing. We will
-               eventually remove the non-v2 version"/>
-</variants>
-
 <variants name="ScrollEventType">
   <variant name="FirstGestureScrollUpdate"
       summary="gesture-scroll-update events that are the first one in a
@@ -1002,7 +992,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="EventLatency.GestureScrollUpdate.{NonTouchscreenScrollInputType}.TotalLatency{Version}"
+    name="EventLatency.GestureScrollUpdate.{NonTouchscreenScrollInputType}.TotalLatency2"
     units="microseconds" expires_after="2024-09-22">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -1014,8 +1004,6 @@ chromium-metrics-reviews@google.com.
     event is submitted by the GPU service and presented successfully on the
     screen.
 
-    {Version}.
-
     This histogram only records metrics on machines with high-resolution clocks.
   </summary>
   <token key="NonTouchscreenScrollInputType">
@@ -1023,7 +1011,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Scrollbar" summary="scrollbar"/>
     <variant name="Wheel" summary="mouse wheel or touchpad"/>
   </token>
-  <token key="Version" variants="EventLatencyVersion"/>
 </histogram>
 
 <histogram name="EventLatency.TotalLatency" units="microseconds"
@@ -1040,7 +1027,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="EventLatency.{NonGsuScrollEventType}.{ScrollInputType}.TotalLatency{Version}"
+    name="EventLatency.{NonGsuScrollEventType}.{ScrollInputType}.TotalLatency2"
     units="microseconds" expires_after="2024-09-22">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -1049,8 +1036,6 @@ chromium-metrics-reviews@google.com.
     the user input causing the event is performed until the frame caused by the
     event is submitted by the GPU service and presented successfully on the
     screen.
-
-    {Version}.
 
     This histogram only records metrics on machines with high-resolution clocks.
   </summary>
@@ -1076,7 +1061,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Touchscreen" summary="touchscreen"/>
     <variant name="Wheel" summary="mouse wheel or touchpad"/>
   </token>
-  <token key="Version" variants="EventLatencyVersion"/>
 </histogram>
 
 <histogram name="EventLatency.{NonScrollPinchEventType}.TotalLatency"
@@ -1153,7 +1137,7 @@ chromium-metrics-reviews@google.com.
   <token key="ScrollEventType" variants="ScrollEventType"/>
 </histogram>
 
-<histogram name="EventLatency.{ScrollEventType}.TotalLatency{Version}"
+<histogram name="EventLatency.{ScrollEventType}.TotalLatency2"
     units="microseconds" expires_after="2024-09-22">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -1162,12 +1146,9 @@ chromium-metrics-reviews@google.com.
     the event is performed generated until the frame caused by the event is
     submitted by the GPU service and presented successfully on the screen.
 
-    {Version}.
-
     This histogram only records metrics on machines with high-resolution clocks.
   </summary>
   <token key="ScrollEventType" variants="ScrollEventType"/>
-  <token key="Version" variants="EventLatencyVersion"/>
 </histogram>
 
 <histogram name="EventLatency.{ScrollEventType}.{DispatchStage}.{RatioType}"

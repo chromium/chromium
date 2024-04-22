@@ -1337,31 +1337,21 @@ TEST_F(CompositorFrameReportingControllerTest,
     const char* name;
     const base::HistogramBase::Count count;
   } expected_counts[] = {
-      {"EventLatency.GestureScrollBegin.Wheel.TotalLatency", 1},
       {"EventLatency.GestureScrollBegin.Wheel.TotalLatency2", 1},
-      {"EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency", 1},
       {"EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency2", 1},
-      {"EventLatency.GestureScrollUpdate.Wheel.TotalLatency", 1},
       {"EventLatency.GestureScrollUpdate.Wheel.TotalLatency2", 1},
-      {"EventLatency.InertialGestureScrollUpdate.Wheel.TotalLatency", 1},
-      {"EventLatency.InertialGestureScrollUpdate.Wheel.TotalLatency", 1},
+      {"EventLatency.InertialGestureScrollUpdate.Wheel.TotalLatency2", 1},
       {"EventLatency.GestureScrollBegin.Touchscreen.TotalLatency2", 1},
-      {"EventLatency.FirstGestureScrollUpdate.Touchscreen.TotalLatency", 1},
       {"EventLatency.FirstGestureScrollUpdate.Touchscreen.TotalLatency2", 1},
       {"EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency", 1},
       {"EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency2", 1},
-      {"EventLatency.InertialGestureScrollUpdate.Touchscreen.TotalLatency", 1},
       {"EventLatency.InertialGestureScrollUpdate.Touchscreen.TotalLatency2", 1},
-      {"EventLatency.GestureScrollBegin.TotalLatency", 2},
       {"EventLatency.GestureScrollBegin.TotalLatency2", 2},
       {"EventLatency.GestureScrollBegin.GenerationToBrowserMain", 2},
-      {"EventLatency.FirstGestureScrollUpdate.TotalLatency", 2},
       {"EventLatency.FirstGestureScrollUpdate.TotalLatency2", 2},
       {"EventLatency.FirstGestureScrollUpdate.GenerationToBrowserMain", 2},
-      {"EventLatency.GestureScrollUpdate.TotalLatency", 2},
       {"EventLatency.GestureScrollUpdate.TotalLatency2", 2},
       {"EventLatency.GestureScrollUpdate.GenerationToBrowserMain", 2},
-      {"EventLatency.InertialGestureScrollUpdate.TotalLatency", 2},
       {"EventLatency.InertialGestureScrollUpdate.TotalLatency2", 2},
       {"EventLatency.InertialGestureScrollUpdate.GenerationToBrowserMain", 2},
       {"EventLatency.TotalLatency", 8},
@@ -1377,39 +1367,21 @@ TEST_F(CompositorFrameReportingControllerTest,
     const char* name;
     const base::HistogramBase::Sample latency_ms;
   } expected_latencies[] = {
-      {"EventLatency.GestureScrollBegin.Wheel.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
-           (presentation_time - event_times[0]).InMicroseconds())},
       {"EventLatency.GestureScrollBegin.Wheel.TotalLatency2",
        static_cast<base::HistogramBase::Sample>(
            (presentation_time - event_times[0]).InMicroseconds())},
-      {"EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
-           (presentation_time - event_times[1]).InMicroseconds())},
       {"EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency2",
        static_cast<base::HistogramBase::Sample>(
            (presentation_time - event_times[1]).InMicroseconds())},
-      {"EventLatency.GestureScrollUpdate.Wheel.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
-           (presentation_time - event_times[2]).InMicroseconds())},
       {"EventLatency.GestureScrollUpdate.Wheel.TotalLatency2",
        static_cast<base::HistogramBase::Sample>(
            (presentation_time - event_times[2]).InMicroseconds())},
-      {"EventLatency.InertialGestureScrollUpdate.Wheel.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
-           (presentation_time - event_times[3]).InMicroseconds())},
       {"EventLatency.InertialGestureScrollUpdate.Wheel.TotalLatency2",
        static_cast<base::HistogramBase::Sample>(
            (presentation_time - event_times[3]).InMicroseconds())},
-      {"EventLatency.GestureScrollBegin.Touchscreen.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
-           (presentation_time - event_times[4]).InMicroseconds())},
       {"EventLatency.GestureScrollBegin.Touchscreen.TotalLatency2",
        static_cast<base::HistogramBase::Sample>(
            (presentation_time - event_times[4]).InMicroseconds())},
-      {"EventLatency.FirstGestureScrollUpdate.Touchscreen.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
-           (presentation_time - event_times[5]).InMicroseconds())},
       {"EventLatency.FirstGestureScrollUpdate.Touchscreen.TotalLatency2",
        static_cast<base::HistogramBase::Sample>(
            (presentation_time - event_times[5]).InMicroseconds())},
@@ -1419,9 +1391,6 @@ TEST_F(CompositorFrameReportingControllerTest,
       {"EventLatency.GestureScrollUpdate.Touchscreen.TotalLatency2",
        static_cast<base::HistogramBase::Sample>(
            (presentation_time - event_times[6]).InMicroseconds())},
-      {"EventLatency.InertialGestureScrollUpdate.Touchscreen.TotalLatency",
-       static_cast<base::HistogramBase::Sample>(
-           (presentation_time - event_times[7]).InMicroseconds())},
       {"EventLatency.InertialGestureScrollUpdate.Touchscreen.TotalLatency2",
        static_cast<base::HistogramBase::Sample>(
            (presentation_time - event_times[7]).InMicroseconds())},
@@ -1491,9 +1460,6 @@ TEST_F(CompositorFrameReportingControllerTest,
   base::TimeDelta expected_latency_1 =
       details_1.presentation_feedback.timestamp - start_time_1;
   histogram_tester.ExpectBucketCount(
-      "EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency",
-      expected_latency_1.InMicroseconds(), 1);
-  histogram_tester.ExpectBucketCount(
       "EventLatency.FirstGestureScrollUpdate.Wheel.TotalLatency2",
       expected_latency_1.InMicroseconds(), 1);
 
@@ -1501,9 +1467,6 @@ TEST_F(CompositorFrameReportingControllerTest,
   // final-update presentation (details_2).
   base::TimeDelta expected_latency_2 =
       details_2.presentation_feedback.timestamp - start_time_2;
-  histogram_tester.ExpectBucketCount(
-      "EventLatency.GestureScrollUpdate.Wheel.TotalLatency",
-      expected_latency_2.InMicroseconds(), 1);
   histogram_tester.ExpectBucketCount(
       "EventLatency.GestureScrollUpdate.Wheel.TotalLatency2",
       expected_latency_2.InMicroseconds(), 1);
