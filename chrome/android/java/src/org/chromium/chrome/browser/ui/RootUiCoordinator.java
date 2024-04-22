@@ -31,6 +31,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -100,7 +101,6 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingButtonController;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteDelegateImpl;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
@@ -566,7 +566,7 @@ public class RootUiCoordinator
 
                             @Override
                             public BrowserContextHandle getBrowserContextHandle() {
-                                return ProfileManager.getLastUsedRegularProfile();
+                                return mProfileSupplier.get().getOriginalProfile();
                             }
                         });
         mFoldTransitionController =
@@ -896,16 +896,15 @@ public class RootUiCoordinator
             initIncognitoReauthController();
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)) {
-            mTabGroupSyncController =
-                    new TabGroupSyncController(
-                            mTabModelSelectorSupplier.get(),
-                            mTabCreatorManagerSupplier.get(),
-                            TabGroupSyncServiceFactory.getForProfile(mProfileSupplier.get()));
+        if (mProfileSupplier.hasValue()) {
+            initProfileDependentFeatures(mProfileSupplier.get());
+        } else {
+            new OneShotCallback<>(
+                    mProfileSupplier,
+                    mCallbackController.makeCancelable(this::initProfileDependentFeatures));
         }
 
         initMessagesInfra();
-        initMerchantTrustSignals();
         initScrollCapture();
         initializeEdgeToEdgeController(
                 mActivity,
@@ -913,22 +912,6 @@ public class RootUiCoordinator
                 mEdgeToEdgeControllerSupplier,
                 mBrowserControlsManager);
         initBoardingPassDetector();
-
-        if (DeviceFormFactor.isWindowOnTablet(mWindowAndroid)
-                && (RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
-                        getPrimaryDisplaySizeInInches(),
-                        ProfileManager.getLastUsedRegularProfile(),
-                        mActivity))) {
-            // TODO(crbug.com/40856393): Remove this explicit load when this bug is addressed.
-            if (mActivityTabProvider != null && mActivityTabProvider.get() != null) {
-                mActivityTabProvider
-                        .get()
-                        .loadIfNeeded(TabLoadIfNeededCaller.ON_FINISH_NATIVE_INITIALIZATION);
-            }
-        }
-
-        RequestDesktopUtils.maybeDefaultEnableWindowSetting(
-                mActivity, ProfileManager.getLastUsedRegularProfile());
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)) {
             TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
@@ -974,6 +957,34 @@ public class RootUiCoordinator
                 contextualSearchManager.addObserver(mContextualSearchSelectionObserver);
             }
         }
+    }
+
+    /** Handle post native initialization of features that require the Profile to be available. */
+    @CallSuper
+    protected void initProfileDependentFeatures(Profile currentlySelectedProfile) {
+        Profile originalProfile = currentlySelectedProfile.getOriginalProfile();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)) {
+            mTabGroupSyncController =
+                    new TabGroupSyncController(
+                            mTabModelSelectorSupplier.get(),
+                            mTabCreatorManagerSupplier.get(),
+                            TabGroupSyncServiceFactory.getForProfile(currentlySelectedProfile));
+        }
+
+        if (DeviceFormFactor.isWindowOnTablet(mWindowAndroid)
+                && (RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
+                        getPrimaryDisplaySizeInInches(), originalProfile, mActivity))) {
+            // TODO(crbug.com/40856393): Remove this explicit load when this bug is addressed.
+            if (mActivityTabProvider != null && mActivityTabProvider.get() != null) {
+                mActivityTabProvider
+                        .get()
+                        .loadIfNeeded(TabLoadIfNeededCaller.ON_FINISH_NATIVE_INITIALIZATION);
+            }
+        }
+
+        RequestDesktopUtils.maybeDefaultEnableWindowSetting(mActivity, originalProfile);
+
+        initMerchantTrustSignals(originalProfile);
     }
 
     private void initMessagesInfra() {
@@ -1054,9 +1065,8 @@ public class RootUiCoordinator
         return null;
     }
 
-    private void initMerchantTrustSignals() {
-        if (ShoppingServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile())
-                        .isMerchantViewerEnabled()
+    private void initMerchantTrustSignals(Profile profile) {
+        if (ShoppingServiceFactory.getForProfile(profile).isMerchantViewerEnabled()
                 && shouldInitializeMerchantTrustSignals()) {
             MerchantTrustSignalsCoordinator merchantTrustSignalsCoordinator =
                     new MerchantTrustSignalsCoordinator(
