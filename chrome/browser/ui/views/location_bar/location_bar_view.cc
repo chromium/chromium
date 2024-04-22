@@ -917,9 +917,7 @@ void LocationBarView::OnThemeChanged() {
 }
 
 void LocationBarView::ChildPreferredSizeChanged(views::View* child) {
-  // TODO(crbug.com/40234181): More investigation needs to be made here since
-  // migrating this to InvalidateLayout() is causing crbug.com/334361214.
-  DeprecatedLayoutImmediately();
+  InvalidateLayout();
   SchedulePaint();
 }
 
