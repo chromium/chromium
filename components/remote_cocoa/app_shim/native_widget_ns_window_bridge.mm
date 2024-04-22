@@ -763,17 +763,6 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
     pending_restoration_data_.clear();
 
     session_restore_in_progress = true;
-
-    // During an immersive fullscreen restore the key view loop can become
-    // corrupted. In certain situation this can cause an infinite loop when
-    // looking for the next valid key view, leading to an OOM. Recalculate the
-    // loop after the restore to prevent this. See https://crbug.com/324812653
-    // for details.
-    // TODO(http://crbug.com/40261565): Remove when FB12010731 is fixed in
-    // AppKit.
-    if ([window_ immersiveFullscreen]) {
-      [window_ recalculateKeyViewLoop];
-    }
   }
 
   // Ensure that:
