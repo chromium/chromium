@@ -858,6 +858,9 @@ bool ShoppingService::IsDiscountInfoApiEnabled() {
 const std::vector<UrlInfo> ShoppingService::GetUrlInfosForActiveWebWrappers() {
   std::vector<UrlInfo> urls;
   for (auto web : open_web_wrappers_) {
+    if (!web->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
+      continue;
+    }
     UrlInfo url;
     url.url = web->GetLastCommittedURL();
     url.title = web->GetTitle();

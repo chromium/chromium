@@ -161,7 +161,8 @@ interface ShoppingServiceHandler {
   GetProductSpecificationsForUrls(array<url.mojom.Url> urls)
       => (ProductSpecifications productSpecs);
 
-  // Returns a list of URL infos for each tab open in the user's tabs.
+  // Returns a list of URL infos for each tab open in the user's tabs. Excludes
+  // non-HTTP/HTTPS URLs.
   GetUrlInfosForOpenTabs() => (array<UrlInfo> url_infos);
 
   // Returns a list of URL infos for recently viewed tabs. Each of these does

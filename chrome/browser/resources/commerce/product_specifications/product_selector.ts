@@ -17,6 +17,7 @@ import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './product_selector.html.js';
@@ -51,7 +52,7 @@ export class ProductSelectorElement extends PolymerElement {
         type: Array,
         value: () => [],
       },
-      openTabsExpanded: {
+      openTabsExpanded_: {
         type: Boolean,
         value: true,
       },
@@ -63,15 +64,18 @@ export class ProductSelectorElement extends PolymerElement {
   selectedItem: UrlListEntry;
   openTabs: UrlListEntry[];
 
-  private openTabsExpanded: boolean;
+  private openTabsExpanded_: boolean;
 
   private async onShowMenu_() {
     const {urlInfos} = await this.shoppingApi_.getUrlInfosForOpenTabs();
-    this.openTabs = urlInfos.map(({title, url}) => ({
-                                   title: title,
-                                   url: url.url,
-                                   imageUrl: url.url,
-                                 }));
+    // Filter out URLs that match the selected item.
+    const filteredUrlInfos =
+        urlInfos.filter((urlInfo) => urlInfo.url.url !== this.selectedItem.url);
+    this.openTabs = filteredUrlInfos.map(({title, url}) => ({
+                                           title: title,
+                                           url: url.url,
+                                           imageUrl: url.url,
+                                         }));
 
     const rect = this.$.currentProductContainer.getBoundingClientRect();
     this.$.productSelectionMenu.get().showAt(this.$.currentProductContainer, {
@@ -84,9 +88,8 @@ export class ProductSelectorElement extends PolymerElement {
 
   private getAbbreviatedUrl_(urlString: string) {
     const url = new URL(urlString);
-    if (url.protocol === 'chrome:') {
-      return 'chrome://' + url.hostname;
-    }
+    // Chrome URLs should all have been filtered out.
+    assert(url.protocol !== 'chrome:');
     return url.hostname;
   }
 

@@ -96,11 +96,11 @@
     <cr-action-menu on-close="onCloseMenu_">
       <div id="selectionContainer">
         <template is="dom-if" if="[[openTabs.length]]" restamp>
-          <cr-expand-button expanded="{{openTabsExpanded}}" no-hover
+          <cr-expand-button expanded="{{openTabsExpanded_}}" no-hover
               expand-icon="cr:arrow-drop-down" collapse-icon="cr:arrow-drop-up">
             <div class="section-title">$i18n{openTabsSectionTitle}</div>
           </cr-expand-button>
-          <iron-collapse opened="[[openTabsExpanded]]">
+          <iron-collapse opened="[[openTabsExpanded_]]">
             <template is="dom-repeat" items="[[openTabs]]">
               <cr-url-list-item class="dropdown-item" size="medium"
                   url="[[item.url]]" title="[[item.title]]"

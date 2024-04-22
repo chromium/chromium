@@ -16,6 +16,11 @@ suite('ProductSelectorTest', () => {
 
   async function createSelector(): Promise<ProductSelectorElement> {
     const selector = document.createElement('product-selector');
+    selector.selectedItem = {
+      title: 'title',
+      url: 'https://current-selection.com',
+      imageUrl: 'https://current-selection-image.com',
+    };
     document.body.appendChild(selector);
     await flushTasks();
     return selector;
@@ -103,6 +108,22 @@ suite('ProductSelectorTest', () => {
   });
 
   test('AbbreviatesUrls', async () => {
+    initUrlInfos();
+    const selector = await createSelector();
+    selector.$.currentProductContainer.click();
+    await flushTasks();
+
+    const menu = selector.$.productSelectionMenu.get();
+    const listElement = menu.querySelector<HTMLElement>('.dropdown-item');
+    assertTrue(!!listElement);
+
+    const tabUrl = listElement.shadowRoot!.querySelector<HTMLElement>(
+        '.description-text');
+    assertTrue(!!tabUrl);
+    assertEquals('example.com', tabUrl.textContent);
+  });
+
+  test('ExcludesCurrentSelection', async () => {
     const titleString = 'title';
     const openTabs = [
       {
@@ -111,7 +132,7 @@ suite('ProductSelectorTest', () => {
       },
       {
         title: stringToMojoString16(titleString),
-        url: stringToMojoUrl('chrome://settings'),
+        url: stringToMojoUrl('https://current-selection.com'),
       },
     ];
     shoppingServiceApi.setResultFor(
@@ -123,16 +144,11 @@ suite('ProductSelectorTest', () => {
 
     const menu = selector.$.productSelectionMenu.get();
     const listElements = menu.querySelectorAll<HTMLElement>('.dropdown-item');
-    assertEquals(2, listElements.length);
+    assertEquals(1, listElements.length);
 
-    const tab1Url = listElements[0]!.shadowRoot!.querySelector<HTMLElement>(
+    const tabUrl = listElements[0]!.shadowRoot!.querySelector<HTMLElement>(
         '.description-text');
-    assertTrue(!!tab1Url);
-    assertEquals('example.com', tab1Url.textContent);
-
-    const tab2Url = listElements[1]!.shadowRoot!.querySelector<HTMLElement>(
-        '.description-text');
-    assertTrue(!!tab2Url);
-    assertEquals('chrome://settings', tab2Url.textContent);
+    assertTrue(!!tabUrl);
+    assertEquals('example.com', tabUrl.textContent);
   });
 });
