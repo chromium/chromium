@@ -32,6 +32,8 @@ group("deployment_resources") {
     "//third_party/fuchsia-sdk/sdk/meta/manifest.json",
     "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx",
     "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx-meta.json",
+    # The following folder contains standalone binaries running as ffx plugins.
+    "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx_tools/",
     "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/fvm",
     "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/fvm-meta.json",
     "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/merkleroot",
@@ -53,11 +55,6 @@ group("deployment_resources") {
   }
 
   if (test_isolate_uses_emulator) {
-    data += [
-      "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx_tools/ffx-emu",
-      "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx_tools/ffx-emu.json",
-      "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx_tools/ffx-emu-meta.json",
-    ]
     if (test_host_cpu == "x64") {
       data += [
         "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/aemu_internal",
