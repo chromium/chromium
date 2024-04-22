@@ -18,6 +18,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSamplingOptions.h"
+#include "ui/gfx/animation/animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -239,9 +240,15 @@ void Animation::Start(std::optional<PlaybackConfig> playback_config) {
   // Reset the |timer_control_| object for a new animation play.
   timer_control_.reset(nullptr);
 
-  // Schedule a play for the animation and store the necessary information
-  // needed to start playing.
-  state_ = PlayState::kSchedulePlay;
+  if (gfx::Animation::PrefersReducedMotion()) {
+    // Start in a paused state if "prefers reduced motion" is enabled on the
+    // system.
+    state_ = PlayState::kPaused;
+  } else {
+    // Schedule a play for the animation and store the necessary information
+    // needed to start playing.
+    state_ = PlayState::kSchedulePlay;
+  }
   playback_config_ = std::move(*playback_config);
 }
 
