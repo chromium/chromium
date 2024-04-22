@@ -71,7 +71,6 @@ SystemInfoCardProvider::SystemInfoCardProvider(Profile* profile)
       my_files_size_calculator_(profile),
       drive_offline_size_calculator_(profile),
       browsing_data_size_calculator_(profile),
-      apps_size_calculator_(profile),
       crostini_size_calculator_(profile),
       profile_(profile),
       keywords_(GetSystemInfoKeywordVector()) {
@@ -439,7 +438,6 @@ void SystemInfoCardProvider::UpdateStorageInfo() {
   my_files_size_calculator_.StartCalculation();
   drive_offline_size_calculator_.StartCalculation();
   browsing_data_size_calculator_.StartCalculation();
-  apps_size_calculator_.StartCalculation();
   crostini_size_calculator_.StartCalculation();
   other_users_size_calculator_.StartCalculation();
 }
@@ -450,7 +448,14 @@ void SystemInfoCardProvider::StartObservingCalculators() {
   my_files_size_calculator_.AddObserver(this);
   drive_offline_size_calculator_.AddObserver(this);
   browsing_data_size_calculator_.AddObserver(this);
-  apps_size_calculator_.AddObserver(this);
+  // TODO(b/324478253): Currently, observing `apps_size_calculator_` at
+  // construction causes deterministic failure of ArcIntegrationTest on
+  // betty-pi-arc (b/329337572) . As apps size is not currently in use, we
+  // remove it from the code. If we are interested in the apps size at some
+  // point, consider delaying the observing to the first time launcher search is
+  // used.
+  calculation_state_.set(
+      static_cast<int>(SizeCalculator::CalculationType::kAppsExtensions));
   crostini_size_calculator_.AddObserver(this);
   other_users_size_calculator_.AddObserver(this);
 }
@@ -461,7 +466,6 @@ void SystemInfoCardProvider::StopObservingCalculators() {
   my_files_size_calculator_.RemoveObserver(this);
   drive_offline_size_calculator_.RemoveObserver(this);
   browsing_data_size_calculator_.RemoveObserver(this);
-  apps_size_calculator_.RemoveObserver(this);
   crostini_size_calculator_.RemoveObserver(this);
   other_users_size_calculator_.RemoveObserver(this);
 }
