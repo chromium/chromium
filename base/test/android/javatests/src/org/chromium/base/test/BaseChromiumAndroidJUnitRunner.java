@@ -5,17 +5,13 @@
 package org.chromium.base.test;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.Application;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
 import android.system.Os;
 
 import androidx.core.content.ContextCompat;
@@ -31,7 +27,6 @@ import dalvik.system.DexFile;
 import org.junit.runner.Request;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLineInitUtil;
 import org.chromium.base.ContextUtils;
@@ -44,7 +39,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.InMemorySharedPreferencesContext;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.build.BuildConfig;
 import org.chromium.testing.TestListInstrumentationRunListener;
 
@@ -70,10 +64,10 @@ import java.util.concurrent.TimeoutException;
  * </pre>
  */
 public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
-    private static final String IS_UNIT_TEST_FLAG =
-            "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.IsUnitTest";
+    private static final String IS_UNIT_TEST_FLAG = "BaseChromiumAndroidJUnitRunner.IsUnitTest";
     private static final String EXTRA_CLANG_COVERAGE_DEVICE_FILE =
-            "org.chromium.base.test.BaseChromiumAndroidJUnitRunner.ClangCoverageDeviceFile";
+            "BaseChromiumAndroidJUnitRunner.ClangCoverageDeviceFile";
+    private static final String EXTRA_TRACE_FILE = "BaseChromiumAndroidJUnitRunner.TraceFile";
 
     private static final String ARGUMENT_LOG_ONLY = "log";
 
@@ -87,14 +81,17 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
 
     private static final long WAIT_FOR_IDLE_TIMEOUT_MS = 10000L;
 
-    private static final long FINISH_APP_TASKS_TIMEOUT_MS = 3000L;
-    private static final long FINISH_APP_TASKS_POLL_INTERVAL_MS = 100;
-
+    static BaseChromiumAndroidJUnitRunner sInstance;
+    static Application sApplication;
     static InMemorySharedPreferencesContext sInMemorySharedPreferencesContext;
     private static boolean sTestListMode;
 
     static {
         CommandLineInitUtil.setFilenameOverrideForTesting(CommandLineFlags.getTestCmdLineFile());
+    }
+
+    public BaseChromiumAndroidJUnitRunner() {
+        sInstance = this;
     }
 
     @Override
@@ -104,6 +101,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         // attachBaseContext() will hit our InMemorySharedPreferencesContext.
         sInMemorySharedPreferencesContext = new InMemorySharedPreferencesContext(context);
         Application ret = super.newApplication(cl, className, sInMemorySharedPreferencesContext);
+        sApplication = ret;
         try {
             // There is framework code that assumes Application.getBaseContext() can be casted to
             // ContextImpl (on KitKat for broadcast receivers, refer to ActivityThread.java), so
@@ -144,18 +142,13 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
     /**
      * Add TestListInstrumentationRunListener when argument ask the runner to list tests info.
      *
-     * The running mechanism when argument has "listAllTests" is equivalent to that of
-     * {@link androidx.test.runner.AndroidJUnitRunner#onStart()} except it adds
-     * only TestListInstrumentationRunListener to monitor the tests.
+     * <p>The running mechanism when argument has "listAllTests" is equivalent to that of {@link
+     * androidx.test.runner.AndroidJUnitRunner#onStart()} except it adds only
+     * TestListInstrumentationRunListener to monitor the tests.
      */
     @Override
     public void onStart() {
         Bundle arguments = InstrumentationRegistry.getArguments();
-        ResettersForTesting.enable();
-        if (arguments.getString(IS_UNIT_TEST_FLAG) != null) {
-            LibraryLoader.setBrowserProcessStartupBlockedForTesting();
-        }
-
         if (sTestListMode) {
             Log.w(
                     TAG,
@@ -165,27 +158,38 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
                             arguments.toString()));
             listTests(); // Intentionally not calling super.onStart() to avoid additional work.
         } else {
-            if (arguments != null && arguments.getString(ARGUMENT_LOG_ONLY) != null) {
-                Log.e(
-                        TAG,
-                        String.format(
-                                "Runner will log the tests without running tests."
-                                        + " If this cause a test run to fail, please report to"
-                                        + " crbug.com/754015. Arguments: %s",
-                                arguments.toString()));
-            }
-            finishAllAppTasks(getTargetContext());
-            BaseJUnit4TestRule.clearJobSchedulerJobs();
-            clearDataDirectory(sInMemorySharedPreferencesContext);
-            InstrumentationRegistry.getInstrumentation().setInTouchMode(true);
-            // //third_party/mockito is looking for android.support.test.InstrumentationRegistry.
-            // Manually set target to override. We can remove this once we roll mockito to support
-            // androidx.test.
-            System.setProperty(
-                    "org.mockito.android.target",
-                    InstrumentationRegistry.getTargetContext().getCacheDir().getPath());
-            setClangCoverageEnvIfEnabled();
+            initTestRunner(arguments);
             super.onStart();
+        }
+    }
+
+    private void initTestRunner(Bundle arguments) {
+        org.chromium.base.test.ActivityFinisher.finishAll();
+        BaseJUnit4TestRule.clearJobSchedulerJobs();
+        clearDataDirectory(sInMemorySharedPreferencesContext);
+        setInTouchMode(true);
+        // //third_party/mockito is looking for android.support.test.InstrumentationRegistry.
+        // Manually set target to override. We can remove this once we roll mockito to support
+        // androidx.test.
+        System.setProperty(
+                "org.mockito.android.target",
+                sInMemorySharedPreferencesContext.getCacheDir().getPath());
+        setClangCoverageEnvIfEnabled();
+        if (arguments.getString(IS_UNIT_TEST_FLAG) != null) {
+            LibraryLoader.setBrowserProcessStartupBlockedForTesting();
+        }
+        ResettersForTesting.enable();
+
+        String traceOutput = arguments.getString(EXTRA_TRACE_FILE);
+        if (traceOutput != null) {
+            File traceOutputFile = new File(traceOutput);
+            File traceOutputDir = traceOutputFile.getParentFile();
+
+            if (traceOutputDir != null) {
+                if (traceOutputDir.exists() || traceOutputDir.mkdirs()) {
+                    TestTraceEvent.enable(traceOutputFile);
+                }
+            }
         }
     }
 
@@ -469,16 +473,7 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
         }
 
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                finishAllAppTasks(getTargetContext());
-            }
-            finishAllActivities();
-        } catch (Exception e) {
-            // Ignore any errors finishing Activities so that otherwise passing tests don't fail
-            // during tear down due to framework issues. See crbug.com/653731.
-        }
-
-        try {
+            org.chromium.base.test.ActivityFinisher.finishAll();
             writeClangCoverageProfileIfEnabled();
 
             // There is a bug on L and below that DestroyActivitiesRule does not cause onStop and
@@ -500,91 +495,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
 
         // This will end up force stopping the package, so code after this line will not run.
         super.finish(resultCode, results);
-    }
-
-    /** Finishes all tasks Chrome has listed in Android's Overview. */
-    private void finishAllAppTasks(final Context context) {
-        // Close all of the tasks one by one.
-        ActivityManager activityManager =
-                (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.AppTask task : activityManager.getAppTasks()) {
-            task.finishAndRemoveTask();
-        }
-        long endTime =
-                SystemClock.uptimeMillis()
-                        + ScalableTimeout.scaleTimeout(FINISH_APP_TASKS_TIMEOUT_MS);
-        while (activityManager.getAppTasks().size() != 0 && SystemClock.uptimeMillis() < endTime) {
-            try {
-                Thread.sleep(FINISH_APP_TASKS_POLL_INTERVAL_MS);
-            } catch (InterruptedException e) {
-            }
-        }
-    }
-
-    private void finishAllActivities() {
-        // This mirrors the default logic of the test runner for finishing Activities when
-        // ApplicationStatus isn't initialized. However, we keep Chromium's logic for finishing
-        // Activities below both because it's worked historically and we don't want to risk breaking
-        // things, and because the ActivityFinisher does some filtering on which Activities it
-        // chooses to finish which could potentially cause issues.
-        if (!ApplicationStatus.isInitialized()) {
-            runOnMainSync(() -> new ActivityFinisher().run());
-            super.waitForActivitiesToComplete();
-            return;
-        }
-        Handler mainHandler = new Handler(Looper.getMainLooper());
-        CallbackHelper allDestroyedCalledback = new CallbackHelper();
-        ApplicationStatus.ActivityStateListener activityStateListener =
-                new ApplicationStatus.ActivityStateListener() {
-                    @Override
-                    public void onActivityStateChange(Activity activity, int newState) {
-                        switch (newState) {
-                            case ActivityState.DESTROYED:
-                                if (ApplicationStatus.isEveryActivityDestroyed()) {
-                                    // Allow onDestroy to finish running before we notify.
-                                    mainHandler.post(
-                                            () -> {
-                                                allDestroyedCalledback.notifyCalled();
-                                            });
-                                    ApplicationStatus.unregisterActivityStateListener(this);
-                                }
-                                break;
-                            case ActivityState.CREATED:
-                                if (!activity.isFinishing()) {
-                                    // This is required to ensure we finish any activities created
-                                    // after doing the bulk finish operation below.
-                                    activity.finishAndRemoveTask();
-                                }
-                                break;
-                        }
-                    }
-                };
-
-        mainHandler.post(
-                () -> {
-                    if (ApplicationStatus.isEveryActivityDestroyed()) {
-                        allDestroyedCalledback.notifyCalled();
-                    } else {
-                        ApplicationStatus.registerStateListenerForAllActivities(
-                                activityStateListener);
-                    }
-                    for (Activity a : ApplicationStatus.getRunningActivities()) {
-                        if (!a.isFinishing()) a.finishAndRemoveTask();
-                    }
-                });
-        try {
-            allDestroyedCalledback.waitForFirst();
-        } catch (TimeoutException e) {
-            // There appears to be a framework bug on K and L where onStop and onDestroy are not
-            // called for a handful of tests. We ignore these exceptions.
-            Log.w(TAG, "Activity failed to be destroyed after a test");
-
-            runOnMainSync(
-                    () -> {
-                        // Make sure subsequent tests don't have these notifications firing.
-                        ApplicationStatus.unregisterActivityStateListener(activityStateListener);
-                    });
-        }
     }
 
     // This method clears the data directory for the test apk, but device_utils.py clears the data

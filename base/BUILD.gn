@@ -4484,6 +4484,7 @@ if (is_android) {
     ]
 
     sources = [
+      "android/java/src/org/chromium/base/ActivityLifecycleCallbacksAdapter.java",
       "android/java/src/org/chromium/base/ActivityState.java",
       "android/java/src/org/chromium/base/ApiCompatibilityUtils.java",
       "android/java/src/org/chromium/base/ApkAssets.java",
@@ -4812,6 +4813,7 @@ if (is_android) {
 
     sources = [
       "test/android/java/src/org/chromium/base/multidex/ChromiumMultiDexInstaller.java",
+      "test/android/javatests/src/org/chromium/base/test/ActivityFinisher.java",
       "test/android/javatests/src/org/chromium/base/test/BaseActivityTestRule.java",
       "test/android/javatests/src/org/chromium/base/test/BaseChromiumAndroidJUnitRunner.java",
       "test/android/javatests/src/org/chromium/base/test/BaseJUnit4ClassRunner.java",
