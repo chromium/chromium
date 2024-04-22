@@ -12,6 +12,7 @@ import android.os.UserManager;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -75,12 +76,12 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
     private static final int REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL = 1;
     private static final int REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED = 2;
 
-    private static final String FRAGMENT_ENTER_PASSPHRASE = "enter_passphrase";
+    @VisibleForTesting public static final String FRAGMENT_ENTER_PASSPHRASE = "enter_passphase";
 
     /**
-     * The key for an integer value in arguments bundle to
-     * specify the correct GAIA service that has triggered the dialog.
-     * If the argument is not set, GAIA_SERVICE_TYPE_NONE is used as the origin of the dialog.
+     * The key for an integer value in arguments bundle to specify the correct GAIA service that has
+     * triggered the dialog. If the argument is not set, GAIA_SERVICE_TYPE_NONE is used as the
+     * origin of the dialog.
      */
     private static final String SHOW_GAIA_SERVICE_TYPE_EXTRA = "ShowGAIAServiceType";
 
