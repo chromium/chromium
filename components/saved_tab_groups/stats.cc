@@ -20,6 +20,8 @@ void RecordSavedTabGroupMetrics(SavedTabGroupModel* model) {
 
   const base::Time current_time = base::Time::Now();
 
+  int pinned_group_count = 0;
+
   for (const SavedTabGroup& group : model->saved_tab_groups()) {
     base::UmaHistogramCounts10000("TabGroups.SavedTabGroupTabCount",
                                   group.saved_tabs().size());
@@ -49,7 +51,14 @@ void RecordSavedTabGroupMetrics(SavedTabGroupModel* model) {
           "TabGroups.SavedTabGroupTabTimeSinceModification",
           duration_since_tab_modification.InMinutes());
     }
+
+    if (group.is_pinned()) {
+      ++pinned_group_count;
+    }
   }
+
+  base::UmaHistogramCounts10000("TabGroups.SavedTabGroupPinnedCount",
+                                pinned_group_count);
 }
 
 void RecordTabCountMismatchOnConnect(size_t tabs_in_saved_group,

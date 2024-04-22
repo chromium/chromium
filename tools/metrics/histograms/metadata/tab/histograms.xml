@@ -636,6 +636,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.SavedTabGroupPinnedCount" units="groups"
+    expires_after="2024-09-15">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records per hour once the SavedTabGroupKeyedService is instantiated upon
+    profile open. Tracks the total number of pinned groups saved in the profile.
+    Nothing is recorded for sessions shorter than one hour.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.SavedTabGroups.TabCountDifference.Negative"
     units="tabs" expires_after="2024-12-15">
   <owner>shaktisahu@chromium.org</owner>

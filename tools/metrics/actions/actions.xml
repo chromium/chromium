@@ -39404,6 +39404,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroups_SavedTabGroups_Pinned">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User pinned a saved tab group that is previously unpinned.
+  </description>
+</action>
+
 <action name="TabGroups_SavedTabGroups_TabAdded">
   <owner>dljames@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
@@ -39429,6 +39437,14 @@ should be able to be added at any place in this file.
     User removed a tab from a SavedTabGroup. This is emitted whenever a user
     performs an action that would remove a tab from the group (for example,
     click the x on a tab, ctrl + w, drag a tab out of the group).
+  </description>
+</action>
+
+<action name="TabGroups_SavedTabGroups_Unpinned">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <description>
+    User unpinned a saved tab group that is previously pinned.
   </description>
 </action>
 
