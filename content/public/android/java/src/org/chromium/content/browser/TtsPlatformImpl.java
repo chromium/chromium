@@ -397,6 +397,11 @@ class TtsPlatformImpl {
 
     /** Post a task to the UI thread to send the TTS "error" event. */
     private void sendErrorEventOnUiThread(final String utteranceId) {
+        if (TextUtils.isEmpty(utteranceId)) {
+            // An empty string here is not supposed to happen, but crashes dictate that it does.
+            // https://crbug.com/40922353
+            return;
+        }
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
