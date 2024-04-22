@@ -5,7 +5,6 @@
 #include "gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.h"
 
 #include <optional>
-#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_sizes.h"
@@ -37,29 +36,11 @@
 namespace gpu {
 
 namespace {
-BASE_FEATURE(kCorrectFramebufferAttachmentComputationInAppleBacking,
-             "CorrectFramebufferAttachmentComputationInAppleBacking",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool UsageWillResultInGLWrite(uint32_t usage, GrContextType gr_context_type) {
-  bool will_write_to_gl = false;
-  // NOTE: We are in the process of computing writes to GL without using
-  // GLES2_FRAMEBUFFER_HINT as part of eliminating the latter. Here we make the
-  // change guarded by a killswitch.
-  // TODO(b/41491709): Remove this killswitch post safe rollout.
-  if (base::FeatureList::IsEnabled(
-          kCorrectFramebufferAttachmentComputationInAppleBacking)) {
-    will_write_to_gl = (usage & SHARED_IMAGE_USAGE_GLES2_WRITE) ||
-                       ((gr_context_type == GrContextType::kGL) &&
-                        (usage & (SHARED_IMAGE_USAGE_RASTER_WRITE |
-                                  SHARED_IMAGE_USAGE_DISPLAY_WRITE)));
-  } else {
-    will_write_to_gl =
-        (usage &
-         (SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
-          SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
-  }
-  return will_write_to_gl;
+  return (usage & SHARED_IMAGE_USAGE_GLES2_WRITE) ||
+         ((gr_context_type == GrContextType::kGL) &&
+          (usage & (SHARED_IMAGE_USAGE_RASTER_WRITE |
+                    SHARED_IMAGE_USAGE_DISPLAY_WRITE)));
 }
 
 bool IsFormatSupported(viz::SharedImageFormat format) {
