@@ -387,7 +387,7 @@ const base::FeatureParam<double> kSnapshotEvictedRootSurfaceScale{
 // inserting a separate color conversion pass during surface aggregation.
 BASE_FEATURE(kColorConversionInRenderer,
              "ColorConversionInRenderer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDelegatedCompositingEnabled() {
   return base::FeatureList::IsEnabled(kDelegatedCompositing);
