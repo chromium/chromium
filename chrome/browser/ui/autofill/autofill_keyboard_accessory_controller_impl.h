@@ -28,7 +28,7 @@ class Profile;
 namespace autofill {
 
 class AutofillPopupDelegate;
-class AutofillPopupView;
+class AutofillKeyboardAccessoryView;
 struct Suggestion;
 
 class AutofillKeyboardAccessoryControllerImpl
@@ -79,7 +79,6 @@ class AutofillKeyboardAccessoryControllerImpl
             AutoselectFirstSuggestion autoselect_first_suggestion) override;
   void DisableThresholdForTesting(bool disable_threshold) override;
   void KeepPopupOpenForTesting() override;
-  void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;
   void PinView() override;
 
@@ -91,7 +90,10 @@ class AutofillKeyboardAccessoryControllerImpl
                                   std::u16string* body) override;
   base::WeakPtr<AutofillKeyboardAccessoryController> GetWeakPtrToController()
       override;
+  void SetViewForTesting(
+      std::unique_ptr<AutofillKeyboardAccessoryView> view) override;
 
+  AutofillKeyboardAccessoryView* view() { return view_.get(); }
   base::WeakPtr<AutofillKeyboardAccessoryControllerImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -106,13 +108,20 @@ class AutofillKeyboardAccessoryControllerImpl
   // of `suggestions_`.
   void OrderSuggestionsAndCreateLabels();
 
+  // Reacts to the result of a deletion dialog by attempting to delete the
+  // suggestion at `index` if the dialog `confirmed` deletion and by emitting
+  // metrics.
+  void OnDeletionDialogClosed(int index, bool confirmed);
+
   // Hides the view and asynchronously deletes itself.
   void HideViewAndDie();
 
   base::WeakPtr<AutofillPopupDelegate> delegate_;
   base::WeakPtr<content::WebContents> web_contents_;
   PopupControllerCommon controller_common_;
-  base::WeakPtr<AutofillPopupView> view_;
+
+  // The C++ wrapper around the Java bridge to the actual native view.
+  std::unique_ptr<AutofillKeyboardAccessoryView> view_;
 
   // A helper that detects events that should hide the popup.
   std::optional<AutofillPopupHideHelper> popup_hide_helper_;

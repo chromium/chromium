@@ -717,12 +717,6 @@ void AutofillPopupControllerImpl::KeyPressObserver::Reset() {
   handler_ = content::RenderWidgetHost::KeyPressEventCallback();
 }
 
-void AutofillPopupControllerImpl::SetViewForTesting(
-    base::WeakPtr<AutofillPopupView> view) {
-  view_ = std::move(view);
-  time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicks();
-}
-
 // AutofillPopupController implementation.
 
 base::WeakPtr<AutofillSuggestionController>
@@ -775,6 +769,12 @@ void AutofillPopupControllerImpl::SetFilter(
     std::optional<SuggestionFilter> filter) {
   filter_ = std::move(filter);
   UpdateFilteredSuggestions(/*notify_suggestions_changed=*/true);
+}
+
+void AutofillPopupControllerImpl::SetViewForTesting(
+    base::WeakPtr<AutofillPopupView> view) {
+  view_ = std::move(view);
+  time_view_shown_ = NextIdleTimeTicks::CaptureNextIdleTimeTicks();
 }
 
 }  // namespace autofill

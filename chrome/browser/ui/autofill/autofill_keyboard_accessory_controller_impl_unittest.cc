@@ -7,9 +7,11 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
 #include "chrome/browser/ui/autofill/test_autofill_keyboard_accessory_controller_autofill_client.h"
+#include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,10 +24,9 @@ namespace {
 
 using ::testing::_;
 using ::testing::ElementsAre;
-
-using AutofillKeyboardAccessoryControllerImplTest =
-    AutofillSuggestionControllerTestBase<
-        TestAutofillKeyboardAccessoryControllerAutofillClient<>>;
+using ::testing::Eq;
+using ::testing::Mock;
+using ::testing::Return;
 
 std::vector<Suggestion> CreateSuggestionsWithClearFormEntry(
     size_t clear_form_offset) {
@@ -46,7 +47,53 @@ std::vector<Suggestion> CreateSuggestionsWithClearFormEntry(
   return suggestions;
 }
 
+class AutofillKeyboardAccessoryControllerImplTest
+    : public AutofillSuggestionControllerTestBase<
+          TestAutofillKeyboardAccessoryControllerAutofillClient<>> {
+ protected:
+  AutofillProfile ShowAutofillProfileSuggestion() {
+    AutofillProfile complete_profile = test::GetFullProfile();
+    personal_data().AddProfile(complete_profile);
+    ShowSuggestions(
+        manager(), {test::CreateAutofillSuggestion(
+                       PopupItemId::kAddressEntry, u"Complete autofill profile",
+                       Suggestion::Guid(complete_profile.guid()))});
+    return complete_profile;
+  }
+
+  CreditCard ShowLocalCardSuggestion() {
+    CreditCard local_card = test::GetCreditCard();
+    personal_data().AddCreditCard(local_card);
+    ShowSuggestions(manager(),
+                    {test::CreateAutofillSuggestion(
+                        PopupItemId::kCreditCardEntry, u"Local credit card",
+                        Suggestion::Guid(local_card.guid()))});
+    return local_card;
+  }
+};
+
 }  // namespace
+
+// Tests that calling `Show()` on the controller shows the view.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest, ShowCallsView) {
+  // Ensure that controller and view have been created.
+  client().popup_controller(manager());
+
+  EXPECT_CALL(*client().popup_view(), Show());
+  ShowSuggestions(manager(), {Suggestion(u"Autocomplete entry",
+                                         PopupItemId::kAutocompleteEntry)});
+}
+
+// Tests that calling `Hide()` on the controller hides and destroys the view.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest, HideDestroysView) {
+  ShowSuggestions(manager(), {Suggestion(u"Autocomplete entry",
+                                         PopupItemId::kAutocompleteEntry)});
+
+  EXPECT_CALL(*client().popup_view(), Hide);
+  client().popup_controller(manager()).Hide(PopupHidingReason::kTabGone);
+  // The keyboard accessory view is destroyed synchronously.
+  EXPECT_FALSE(client().popup_view());
+}
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        GetRemovalConfirmationText_UnrelatedPopupItemId) {
@@ -89,16 +136,10 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        GetRemovalConfirmationText_LocalCreditCard) {
-  CreditCard local_card = test::GetCreditCard();
-  personal_data().AddCreditCard(local_card);
+  CreditCard local_card = ShowLocalCardSuggestion();
 
   std::u16string title;
   std::u16string body;
-  ShowSuggestions(manager(),
-                  {test::CreateAutofillSuggestion(
-                      PopupItemId::kCreditCardEntry, u"Local credit card",
-                      Suggestion::Guid(local_card.guid()))});
-
   EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
       0, &title, &body));
   EXPECT_EQ(title, local_card.CardNameAndLastFourDigits());
@@ -125,16 +166,10 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        GetRemovalConfirmationText_CompleteAutofillProfile) {
-  AutofillProfile complete_profile = test::GetFullProfile();
-  personal_data().AddProfile(complete_profile);
+  AutofillProfile complete_profile = ShowAutofillProfileSuggestion();
 
   std::u16string title;
   std::u16string body;
-  ShowSuggestions(manager(),
-                  {test::CreateAutofillSuggestion(
-                      PopupItemId::kAddressEntry, u"Complete autofill profile",
-                      Suggestion::Guid(complete_profile.guid()))});
-
   EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
       0, &title, &body));
   EXPECT_EQ(title, complete_profile.GetRawInfo(ADDRESS_HOME_CITY));
@@ -162,6 +197,67 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   EXPECT_EQ(body,
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
+}
+
+// Tests that a call to `RemoveSuggestion()` leads to a deletion confirmation
+// dialog and, on accepting that dialog, to the deletion of the suggestion and
+// the a11y announcement that it was deleted.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest, RemoveAfterConfirmation) {
+  const auto suggestion =
+      Suggestion(u"Autocomplete entry", PopupItemId::kAutocompleteEntry);
+  ShowSuggestions(manager(), {suggestion});
+  ASSERT_TRUE(client().popup_view());
+
+  EXPECT_CALL(*client().popup_view(), ConfirmDeletion)
+      .WillOnce(base::test::RunOnceCallback<2>(/*confirmed=*/true));
+  EXPECT_CALL(manager().external_delegate(), RemoveSuggestion(suggestion))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*client().popup_view(),
+              AxAnnounce(Eq(u"Entry Autocomplete entry has been deleted")));
+
+  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
+      /*index=*/0,
+      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
+}
+
+// Tests that the correct metrics are logged when the confirmation dialog for
+// deleting an Autofill profile is cancelled.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       MetricsAfterAddressDeletionDeclined) {
+  ShowAutofillProfileSuggestion();
+  ASSERT_TRUE(client().popup_view());
+
+  base::HistogramTester histogram;
+  EXPECT_CALL(*client().popup_view(), ConfirmDeletion)
+      .WillOnce(base::test::RunOnceCallback<2>(/*confirmed=*/false));
+  EXPECT_CALL(manager().external_delegate(), RemoveSuggestion).Times(0);
+
+  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
+      /*index=*/0,
+      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
+  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.ExtendedMenu", false,
+                               1);
+  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.Any", false, 1);
+}
+
+// Tests that no metrics are logged when the confirmation dialog for deleting a
+// credit card is cancelled.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       MetricsAfterCreditCardDeletionDeclined) {
+  ShowLocalCardSuggestion();
+  ASSERT_TRUE(client().popup_view());
+
+  base::HistogramTester histogram;
+  EXPECT_CALL(*client().popup_view(), ConfirmDeletion)
+      .WillOnce(base::test::RunOnceCallback<2>(/*confirmed=*/false));
+  EXPECT_CALL(manager().external_delegate(), RemoveSuggestion).Times(0);
+
+  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
+      /*index=*/0,
+      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory));
+  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.ExtendedMenu", false,
+                               0);
+  histogram.ExpectUniqueSample("Autofill.ProfileDeleted.Any", false, 0);
 }
 
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
@@ -246,9 +342,11 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 TEST_F(AutofillKeyboardAccessoryControllerImplTest, ReorderUpdatedSuggestions) {
   const std::vector<Suggestion> suggestions =
       CreateSuggestionsWithClearFormEntry(/*clear_form_offset=*/2);
+  // Force creation of controller and view.
+  client().popup_controller(manager());
+  EXPECT_CALL(*client().popup_view(), Show);
   ShowSuggestions(manager(), suggestions);
 
-  // TODO(crbug.com/333316034): Add expectation for the view.
   EXPECT_THAT(client().popup_controller(manager()).GetSuggestions(),
               ElementsAre(suggestions[2], suggestions[0], suggestions[1],
                           suggestions[3]));

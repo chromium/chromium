@@ -28,8 +28,8 @@ class TestAutofillPopupControllerAutofillClient
   explicit TestAutofillPopupControllerAutofillClient(
       content::WebContents* web_contents)
       : TestContentAutofillClient(web_contents) {
-    ON_CALL(popup_view(), CreateSubPopupView)
-        .WillByDefault(::testing::Return(sub_popup_view().GetWeakPtr()));
+    ON_CALL(*popup_view(), CreateSubPopupView)
+        .WillByDefault(::testing::Return(sub_popup_view()->GetWeakPtr()));
   }
 
   ~TestAutofillPopupControllerAutofillClient() override { DoHide(); }
@@ -56,9 +56,9 @@ class TestAutofillPopupControllerAutofillClient
     return cast_popup_controller();
   }
 
-  MockAutofillPopupView& popup_view() { return *popup_view_; }
+  MockAutofillPopupView* popup_view() { return popup_view_.get(); }
 
-  MockAutofillPopupView& sub_popup_view() { return *sub_popup_view_; }
+  MockAutofillPopupView* sub_popup_view() { return sub_popup_view_.get(); }
 
  private:
   void DoHide(PopupHidingReason reason) {

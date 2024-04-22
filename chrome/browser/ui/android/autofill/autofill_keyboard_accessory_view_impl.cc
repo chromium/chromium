@@ -19,12 +19,9 @@
 #include "chrome/android/features/keyboard_accessory/internal/jni/AutofillKeyboardAccessoryViewBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
-#include "chrome/browser/ui/autofill/autofill_keyboard_accessory_adapter.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -39,9 +36,8 @@ using base::android::ScopedJavaLocalRef;
 namespace autofill {
 
 AutofillKeyboardAccessoryViewImpl::AutofillKeyboardAccessoryViewImpl(
-    base::WeakPtr<AutofillKeyboardAccessoryController> adapter,
     base::WeakPtr<AutofillKeyboardAccessoryController> controller)
-    : adapter_(adapter), controller_(controller) {
+    : controller_(controller) {
   java_object_.Reset(Java_AutofillKeyboardAccessoryViewBridge_create(
       base::android::AttachCurrentThread()));
 }
@@ -150,9 +146,11 @@ void AutofillKeyboardAccessoryViewImpl::DeletionRequested(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jint list_index) {
-  adapter_->RemoveSuggestion(
-      list_index,
-      AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
+  if (controller_) {
+    controller_->RemoveSuggestion(
+        list_index,
+        AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
+  }
 }
 
 void AutofillKeyboardAccessoryViewImpl::OnDeletionDialogClosed(
@@ -169,29 +167,17 @@ void AutofillKeyboardAccessoryViewImpl::OnDeletionDialogClosed(
 void AutofillKeyboardAccessoryViewImpl::ViewDismissed(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  adapter_->ViewDestroyed();
+  if (controller_) {
+    controller_->ViewDestroyed();
+  }
 }
 
 // static
-base::WeakPtr<AutofillPopupView> AutofillPopupView::Create(
-    base::WeakPtr<AutofillSuggestionController> controller) {
-  if (!controller) {
-    return nullptr;
-  }
-
-  base::WeakPtr<AutofillKeyboardAccessoryController> controller_weak =
-      static_cast<AutofillKeyboardAccessoryController&>(*controller)
-          .GetWeakPtrToController();
-  auto adapter =
-      std::make_unique<AutofillKeyboardAccessoryAdapter>(controller_weak);
-  auto accessory_view = std::make_unique<AutofillKeyboardAccessoryViewImpl>(
-      adapter->GetWeakPtrToAdapter(), controller_weak);
-  if (!accessory_view->Initialize()) {
-    return nullptr;  // Don't create an adapter without initialized view.
-  }
-
-  adapter->SetAccessoryView(std::move(accessory_view));
-  return adapter.release()->GetWeakPtr();
+std::unique_ptr<AutofillKeyboardAccessoryView>
+AutofillKeyboardAccessoryView::Create(
+    base::WeakPtr<AutofillKeyboardAccessoryController> controller) {
+  auto view = std::make_unique<AutofillKeyboardAccessoryViewImpl>(controller);
+  return view->Initialize() ? std::move(view) : nullptr;
 }
 
 }  // namespace autofill

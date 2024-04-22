@@ -100,7 +100,6 @@ class AutofillPopupControllerImpl
   void KeepPopupOpenForTesting() override;
   void UpdateDataListValues(base::span<const SelectOption> options) override;
   void PinView() override;
-  void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) override;
 
   // AutofillPopupController:
   base::WeakPtr<AutofillSuggestionController> OpenSubPopup(
@@ -114,6 +113,7 @@ class AutofillPopupControllerImpl
       const override;
   void SetFilter(std::optional<SuggestionFilter> filter) override;
   base::WeakPtr<AutofillPopupController> GetWeakPtr() override;
+  void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) override;
 
  protected:
   AutofillPopupControllerImpl(

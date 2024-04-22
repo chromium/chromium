@@ -5,11 +5,24 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_VIEW_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_VIEW_H_
 
+#include <memory>
+#include <string>
+
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
+
 namespace autofill {
+
+class AutofillKeyboardAccessoryController;
 
 // The interface that the native view for the Keyboard Accessory implements.
 class AutofillKeyboardAccessoryView {
  public:
+  // Creates an `AutofillKeyboardAccessoryView`. Returns `nullptr` if the
+  // initialization is unsuccessful.
+  static std::unique_ptr<AutofillKeyboardAccessoryView> Create(
+      base::WeakPtr<AutofillKeyboardAccessoryController> controller);
+
   virtual ~AutofillKeyboardAccessoryView() = default;
 
   // Initializes the Java-side of this bridge. Returns true after a successful

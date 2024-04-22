@@ -94,8 +94,6 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
 
   virtual void KeepPopupOpenForTesting() = 0;
 
-  virtual void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) = 0;
-
   // Updates the data list values currently shown with the popup.
   virtual void UpdateDataListValues(base::span<const SelectOption> options) = 0;
 

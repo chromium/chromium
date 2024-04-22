@@ -953,8 +953,6 @@ static_library("ui") {
       "autofill/autofill_bubble_base.h",
       "autofill/autofill_bubble_controller_base.cc",
       "autofill/autofill_bubble_controller_base.h",
-      "autofill/autofill_keyboard_accessory_adapter.cc",
-      "autofill/autofill_keyboard_accessory_adapter.h",
       "autofill/autofill_keyboard_accessory_controller.h",
       "autofill/autofill_keyboard_accessory_controller_impl.cc",
       "autofill/autofill_keyboard_accessory_controller_impl.h",

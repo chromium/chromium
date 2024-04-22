@@ -11,7 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
-#include "chrome/browser/ui/autofill/mock_autofill_popup_view.h"
+#include "chrome/browser/ui/autofill/mock_autofill_keyboard_accessory_view.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -47,7 +47,8 @@ class TestAutofillKeyboardAccessoryControllerAutofillClient
                           &GetWebContents(), gfx::RectF(),
                           show_pwd_migration_warning_callback_.Get()))
               ->GetWeakPtr();
-      cast_popup_controller().SetViewForTesting(popup_view_->GetWeakPtr());
+      cast_popup_controller().SetViewForTesting(
+          std::make_unique<MockAutofillKeyboardAccessoryView>());
       manager_of_last_controller_ = manager.GetWeakPtr();
       ON_CALL(cast_popup_controller(), Hide)
           .WillByDefault([this](PopupHidingReason reason) { DoHide(reason); });
@@ -55,7 +56,11 @@ class TestAutofillKeyboardAccessoryControllerAutofillClient
     return cast_popup_controller();
   }
 
-  MockAutofillPopupView& popup_view() { return *popup_view_; }
+  MockAutofillKeyboardAccessoryView* popup_view() {
+    return popup_controller_ ? static_cast<MockAutofillKeyboardAccessoryView*>(
+                                   cast_popup_controller().view())
+                             : nullptr;
+  }
 
   base::MockCallback<typename Controller::ShowPasswordMigrationWarningCallback>&
   show_pwd_migration_warning_callback() {
@@ -82,8 +87,6 @@ class TestAutofillKeyboardAccessoryControllerAutofillClient
   base::WeakPtr<AutofillSuggestionController> popup_controller_;
   base::WeakPtr<AutofillManager> manager_of_last_controller_;
 
-  std::unique_ptr<MockAutofillPopupView> popup_view_ =
-      std::make_unique<::testing::NiceMock<MockAutofillPopupView>>();
   base::MockCallback<typename Controller::ShowPasswordMigrationWarningCallback>
       show_pwd_migration_warning_callback_;
 };

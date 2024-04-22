@@ -7584,7 +7584,6 @@ test("unit_tests") {
       "../browser/ui/android/plus_addresses/plus_address_creation_controller_android_unittest.cc",
       "../browser/ui/android/tab_model/tab_model_list_unittest.cc",
       "../browser/ui/android/toolbar/location_bar_model_android_unittest.cc",
-      "../browser/ui/autofill/autofill_keyboard_accessory_adapter_unittest.cc",
       "../browser/ui/autofill/autofill_keyboard_accessory_controller_impl_unittest.cc",
       "../browser/ui/autofill/payments/autofill_snackbar_controller_impl_unittest.cc",
       "../browser/ui/fast_checkout/fast_checkout_controller_impl_unittest.cc",
@@ -10439,7 +10438,11 @@ static_library("test_support_unit") {
   }
 
   if (is_android) {
-    sources += [ "../browser/ui/autofill/test_autofill_keyboard_accessory_controller_autofill_client.h" ]
+    sources += [
+      "../browser/ui/autofill/mock_autofill_keyboard_accessory_view.cc",
+      "../browser/ui/autofill/mock_autofill_keyboard_accessory_view.h",
+      "../browser/ui/autofill/test_autofill_keyboard_accessory_controller_autofill_client.h",
+    ]
 
     deps += [ "//chrome/browser/keyboard_accessory/test_utils/android" ]
   } else {

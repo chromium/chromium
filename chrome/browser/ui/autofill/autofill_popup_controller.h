@@ -70,6 +70,8 @@ class AutofillPopupController : public AutofillSuggestionController {
   virtual void SetFilter(std::optional<SuggestionFilter> filter) = 0;
 
   virtual base::WeakPtr<AutofillPopupController> GetWeakPtr() = 0;
+
+  virtual void SetViewForTesting(base::WeakPtr<AutofillPopupView> view) = 0;
 };
 
 }  // namespace autofill

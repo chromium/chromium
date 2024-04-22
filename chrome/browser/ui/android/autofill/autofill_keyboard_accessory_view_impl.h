@@ -14,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/autofill/autofill_keyboard_accessory_adapter.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_view.h"
 
 namespace autofill {
@@ -27,8 +26,7 @@ class AutofillKeyboardAccessoryController;
 class AutofillKeyboardAccessoryViewImpl
     : public AutofillKeyboardAccessoryView {
  public:
-  AutofillKeyboardAccessoryViewImpl(
-      base::WeakPtr<AutofillKeyboardAccessoryController> adapter,
+  explicit AutofillKeyboardAccessoryViewImpl(
       base::WeakPtr<AutofillKeyboardAccessoryController> controller);
 
   AutofillKeyboardAccessoryViewImpl(const AutofillKeyboardAccessoryViewImpl&) = delete;
@@ -71,10 +69,6 @@ class AutofillKeyboardAccessoryViewImpl
                      const base::android::JavaParamRef<jobject>& obj);
 
  private:
-  // Weak reference to owner of this class. Always outlives this view.
-  // TODO(crbug.com/333316034): Eliminate this reference.
-  base::WeakPtr<AutofillKeyboardAccessoryController> adapter_;
-
   // Weak reference to the controller of this view. It can be null if the
   // controller has started hiding before this view is destroyed.
   base::WeakPtr<AutofillKeyboardAccessoryController> controller_;

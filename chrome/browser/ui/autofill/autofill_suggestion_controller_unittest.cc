@@ -18,7 +18,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
-#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
@@ -37,7 +36,6 @@
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -72,7 +70,6 @@ using base::ASCIIToUTF16;
 using base::WeakPtr;
 using ::testing::_;
 using ::testing::AtLeast;
-using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Invoke;
 using ::testing::Mock;
@@ -118,15 +115,6 @@ content::RenderFrameHost* CreateAndNavigateChildFrame(
   return simulator->GetFinalRenderFrameHost();
 }
 
-// Returns an `AutofillMetrics::SingleEntryRemovalMethod` that is appropriate
-// for the OS this test is run on.
-AutofillMetrics::SingleEntryRemovalMethod GetDefaultRemovalMethod() {
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    return AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory;
-  }
-  return AutofillMetrics::SingleEntryRemovalMethod::kKeyboardShiftDeletePressed;
-}
-
 content::RenderFrameHost* NavigateAndCommitFrame(content::RenderFrameHost* rfh,
                                                  const GURL& url) {
   std::unique_ptr<content::NavigationSimulator> simulator =
@@ -140,35 +128,6 @@ content::RenderFrameHost* NavigateAndCommitFrame(content::RenderFrameHost* rfh,
 using AutofillSuggestionControllerTest = AutofillSuggestionControllerTestBase<
     TestAutofillSuggestionControllerAutofillClient>;
 
-TEST_F(AutofillSuggestionControllerTest, RemoveSuggestion) {
-  ShowSuggestions(manager(),
-                  {PopupItemId::kAddressEntry, PopupItemId::kAddressEntry,
-                   PopupItemId::kAutofillOptions});
-
-  // Generate a popup, so it can be hidden later. It doesn't matter what the
-  // external_delegate thinks is being shown in the process, since we are just
-  // testing the popup here.
-  test::GenerateTestAutofillPopup(&manager().external_delegate());
-  EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(Field(&Suggestion::popup_item_id,
-                                     PopupItemId::kAddressEntry)))
-      .WillRepeatedly(Return(true));
-
-  // Remove the first entry. The popup should be redrawn since its size has
-  // changed.
-  EXPECT_CALL(client().popup_view(), OnSuggestionsChanged());
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
-      0, GetDefaultRemovalMethod()));
-  Mock::VerifyAndClearExpectations(&client().popup_view());
-
-  // Remove the next entry. The popup should then be hidden since there are
-  // no Autofill entries left.
-  EXPECT_CALL(client().popup_controller(manager()),
-              Hide(PopupHidingReason::kNoSuggestions));
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
-      0, GetDefaultRemovalMethod()));
-}
-
 // Regression test for (crbug.com/1513574): Showing an Autofill Compose
 // suggestion twice does not crash.
 TEST_F(AutofillSuggestionControllerTest, ShowTwice) {
@@ -176,139 +135,6 @@ TEST_F(AutofillSuggestionControllerTest, ShowTwice) {
                   {Suggestion(u"Help me write", PopupItemId::kCompose)});
   ShowSuggestions(manager(),
                   {Suggestion(u"Help me write", PopupItemId::kCompose)});
-}
-
-TEST_F(AutofillSuggestionControllerTest, RemoveAutocompleteSuggestion_AnnounceText) {
-  ShowSuggestions(manager(),
-                  {Suggestion(u"main text", PopupItemId::kAutocompleteEntry)});
-  test::GenerateTestAutofillPopup(&manager().external_delegate());
-
-  EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(Field(&Suggestion::popup_item_id,
-                                     PopupItemId::kAutocompleteEntry)))
-      .WillOnce(Return(true));
-  EXPECT_CALL(client().popup_view(),
-              AxAnnounce(Eq(u"Entry main text has been deleted")));
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
-      0, GetDefaultRemovalMethod()));
-}
-
-TEST_F(AutofillSuggestionControllerTest,
-       RemoveAutocompleteSuggestion_NoMetricsEmittedOnFail) {
-  base::HistogramTester histogram_tester;
-  ShowSuggestions(manager(), {PopupItemId::kAutocompleteEntry});
-  test::GenerateTestAutofillPopup(&manager().external_delegate());
-  EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(Field(&Suggestion::popup_item_id,
-                                     PopupItemId::kAutocompleteEntry)))
-      .WillOnce(Return(false));
-
-  EXPECT_FALSE(client().popup_controller(manager()).RemoveSuggestion(
-      0, GetDefaultRemovalMethod()));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Autocomplete.SingleEntryRemovalMethod",
-      GetDefaultRemovalMethod(), 0);
-  histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events2",
-      AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
-}
-
-TEST_F(AutofillSuggestionControllerTest,
-       RemoveAutocompleteSuggestion_MetricsEmittedOnSuccess) {
-  base::HistogramTester histogram_tester;
-  ShowSuggestions(manager(), {PopupItemId::kAutocompleteEntry});
-  test::GenerateTestAutofillPopup(&manager().external_delegate());
-  EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(Field(&Suggestion::popup_item_id,
-                                     PopupItemId::kAutocompleteEntry)))
-      .WillOnce(Return(true));
-
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
-      0, GetDefaultRemovalMethod()));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Autocomplete.SingleEntryRemovalMethod",
-      GetDefaultRemovalMethod(), 1);
-  histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events2",
-      AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 1);
-  // Also no autofill metrics are emitted.
-  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 0);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.ProfileDeleted.KeyboardAccessory", 1, 0);
-  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 0);
-}
-
-TEST_F(AutofillSuggestionControllerTest,
-       RemoveAddressSuggestion_NoMetricsEmittedOnFail) {
-  base::HistogramTester histogram_tester;
-  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
-  test::GenerateTestAutofillPopup(&manager().external_delegate());
-  EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(Field(&Suggestion::popup_item_id,
-                                     PopupItemId::kAddressEntry)))
-      .WillOnce(Return(false));
-
-  EXPECT_FALSE(client().popup_controller(manager()).RemoveSuggestion(
-      0, GetDefaultRemovalMethod()));
-  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 0);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.ProfileDeleted.KeyboardAccessory", 1, 0);
-  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 0);
-}
-
-TEST_F(AutofillSuggestionControllerTest,
-       RemoveAddressSuggestion_MetricsEmittedOnSuccess) {
-  base::HistogramTester histogram_tester;
-  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
-  test::GenerateTestAutofillPopup(&manager().external_delegate());
-  EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(Field(&Suggestion::popup_item_id,
-                                     PopupItemId::kAddressEntry)))
-      .WillOnce(Return(true));
-
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
-      0, GetDefaultRemovalMethod()));
-  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 1);
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 0);
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.ProfileDeleted.KeyboardAccessory", 1, 1);
-  } else {
-    histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 1);
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.ProfileDeleted.KeyboardAccessory", 1, 0);
-  }
-  // No autocomplete deletion metrics are emitted.
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Autocomplete.SingleEntryRemovalMethod",
-      GetDefaultRemovalMethod(), 0);
-  histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events2",
-      AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
-}
-
-TEST_F(AutofillSuggestionControllerTest,
-       RemoveCreditCardSuggestion_NoMetricsEmitted) {
-  base::HistogramTester histogram_tester;
-  ShowSuggestions(manager(), {PopupItemId::kCreditCardEntry});
-  test::GenerateTestAutofillPopup(&manager().external_delegate());
-  EXPECT_CALL(manager().external_delegate(),
-              RemoveSuggestion(Field(&Suggestion::popup_item_id,
-                                     PopupItemId::kCreditCardEntry)))
-      .WillOnce(Return(true));
-
-  EXPECT_TRUE(client().popup_controller(manager()).RemoveSuggestion(
-      0, GetDefaultRemovalMethod()));
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.Autocomplete.SingleEntryRemovalMethod",
-      GetDefaultRemovalMethod(), 0);
-  histogram_tester.ExpectUniqueSample(
-      "Autocomplete.Events2",
-      AutofillMetrics::AutocompleteEvent::AUTOCOMPLETE_SUGGESTION_DELETED, 0);
-  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Popup", 1, 0);
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.ProfileDeleted.KeyboardAccessory", 1, 0);
-  histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 0);
 }
 
 TEST_F(AutofillSuggestionControllerTest, UpdateDataListValues) {
@@ -521,8 +347,8 @@ TEST_F(AutofillSuggestionControllerTest, HidingClearsPreview) {
 }
 
 TEST_F(AutofillSuggestionControllerTest, DontHideWhenWaitingForData) {
-  EXPECT_CALL(client().popup_view(), Hide).Times(0);
   client().popup_controller(manager()).PinView();
+  EXPECT_CALL(*client().popup_view(), Hide).Times(0);
 
   // Hide() will not work for stale data or when focusing native UI.
   client().popup_controller(manager()).DoHide(PopupHidingReason::kStaleData);
@@ -530,7 +356,7 @@ TEST_F(AutofillSuggestionControllerTest, DontHideWhenWaitingForData) {
 
   // Check the expectations now since TearDown will perform a successful hide.
   Mock::VerifyAndClearExpectations(&manager().external_delegate());
-  Mock::VerifyAndClearExpectations(&client().popup_view());
+  Mock::VerifyAndClearExpectations(client().popup_view());
 }
 
 TEST_F(AutofillSuggestionControllerTest, ShouldReportHidingPopupReason) {
@@ -605,13 +431,16 @@ TEST_F(AutofillSuggestionControllerTest,
 // Tests that when a picture-in-picture window is initialized, there is a call
 // to the popup view to check if the autofill popup bounds overlap with the
 // picture-in-picture window.
+// TODO(crbug.com/40280362): Implement PIP overlap checks on Android.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(AutofillSuggestionControllerTest, CheckBoundsOverlapWithPictureInPicture) {
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
   PictureInPictureWindowManager* picture_in_picture_window_manager =
       PictureInPictureWindowManager::GetInstance();
-  EXPECT_CALL(client().popup_view(), OverlapsWithPictureInPictureWindow);
+  EXPECT_CALL(*client().popup_view(), OverlapsWithPictureInPictureWindow);
   picture_in_picture_window_manager->NotifyObserversOnEnterPictureInPicture();
 }
+#endif
 
 // Tests that a change to a text field does not hide a popup with an
 // Autocomplete suggestion.

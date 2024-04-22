@@ -5,10 +5,14 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_KEYBOARD_ACCESSORY_CONTROLLER_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 
 namespace autofill {
+
+class AutofillKeyboardAccessoryView;
 
 // The interface implemented by Android implementations of the
 // `AutofillSuggestionController` - that is, the methods found below are
@@ -35,6 +39,9 @@ class AutofillKeyboardAccessoryController
   // nameclashes with `AutofillPopupView`'s methods.
   virtual base::WeakPtr<AutofillKeyboardAccessoryController>
   GetWeakPtrToController() = 0;
+
+  virtual void SetViewForTesting(
+      std::unique_ptr<AutofillKeyboardAccessoryView> view) = 0;
 };
 
 }  // namespace autofill
