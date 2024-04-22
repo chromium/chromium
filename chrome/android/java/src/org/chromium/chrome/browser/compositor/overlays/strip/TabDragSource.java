@@ -144,6 +144,12 @@ public class TabDragSource implements View.OnDragListener {
                 || mManufacturerAllowlist.contains(getCurrManufacturer());
     }
 
+    // Determine if a tab drag initiated to create a new window is valid.
+    private boolean shouldAllowTabTearing() {
+        return MultiWindowUtils.getInstanceCount() < MultiWindowUtils.getMaxInstances()
+                && ChromeDragDropUtils.shouldAllowTabTearing(mTabModelSelector);
+    }
+
     /**
      * Starts the tab drag action by initiating the process by calling @{link
      * View.startDragAndDrop}.
@@ -188,8 +194,7 @@ public class TabDragSource implements View.OnDragListener {
         ChromeDropDataAndroid dropData =
                 new ChromeDropDataAndroid.Builder()
                         .withTab(tabBeingDragged)
-                        .withAllowTabTearing(
-                                ChromeDragDropUtils.shouldAllowTabTearing(mTabModelSelector))
+                        .withAllowTabTearing(shouldAllowTabTearing())
                         .build();
         updateShadowView(tabBeingDragged, dragSourceView, (int) (tabWidthDp / mPxToDp));
         DragShadowBuilder builder =
@@ -460,6 +465,13 @@ public class TabDragSource implements View.OnDragListener {
         // Only record for source strip to avoid duplicate.
         if (dropHandled) {
             DragDropMetricUtils.recordTabDragDropResult(DragDropTabResult.SUCCESS);
+        } else if (MultiWindowUtils.getInstanceCount() == MultiWindowUtils.getMaxInstances()) {
+            Toast.makeText(
+                            mWindowAndroid.getContext().get(),
+                            R.string.max_number_of_windows,
+                            Toast.LENGTH_LONG)
+                    .show();
+            DragDropMetricUtils.recordTabDragDropResult(DragDropTabResult.IGNORED_MAX_INSTANCES);
         }
 
         // Close the source instance window if it has no tabs.

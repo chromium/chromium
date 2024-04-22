@@ -941,6 +941,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="IGNORED_TAB_SWITCHER"/>
   <int value="4" label="IGNORED_SAME_INSTANCE"/>
   <int value="5" label="ERROR_TAB_NOT_FOUND"/>
+  <int value="6" label="IGNORED_MAX_INSTANCES"/>
 </enum>
 
 <enum name="DragDropType">
