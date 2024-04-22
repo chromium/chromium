@@ -6,7 +6,8 @@
         "is_component_build": false,
         "is_debug": false,
         "symbol_level": 1,
-        "target_cpu": "x86"
+        "target_cpu": "x86",
+        "use_siso": true
       }
     },
     "reclient": {
@@ -16,7 +17,8 @@
         "is_debug": false,
         "symbol_level": 1,
         "target_cpu": "x86",
-        "use_remoteexec": true
+        "use_remoteexec": true,
+        "use_siso": true
       }
     }
   }
