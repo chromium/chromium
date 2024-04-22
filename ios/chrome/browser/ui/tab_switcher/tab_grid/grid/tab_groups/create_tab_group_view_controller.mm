@@ -48,7 +48,7 @@ const CGFloat kSnapshotViewRatio = 0.83;
 const CGFloat kSnapshotViewMaxHeight = 190;
 const CGFloat kSnapshotViewCornerRadius = 18;
 const CGFloat kSnapshotViewVerticalMargin = 25;
-const CGFloat kSingleSnapshotRatio = 0.75;
+const CGFloat kSingleSnapshotRatio = 0.7;
 const CGFloat kMultipleSnapshotsRatio = 0.90;
 
 // Group title constants
