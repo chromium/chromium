@@ -779,6 +779,13 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="The migration has finished"/>
 </enum>
 
+<enum name="ArcWallpaperApi">
+  <summary>Defines the Wallpaper APIs called from Android.</summary>
+  <int value="0" label="Set"/>
+  <int value="1" label="SetDefault"/>
+  <int value="2" label="Get"/>
+</enum>
+
 <enum name="BooleanIsCustomNotification">
   <int value="0" label="Not Custom Notification"/>
   <int value="1" label="Is Custom Notification"/>

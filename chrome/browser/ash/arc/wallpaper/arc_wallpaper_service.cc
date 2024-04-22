@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "components/account_id/account_id.h"
@@ -34,6 +35,18 @@ namespace arc {
 namespace {
 
 constexpr char kAndroidWallpaperFilename[] = "android.jpg";
+
+// This enum is used for UMA. Do not reuse or modify values.
+enum class ArcWallpaperApi {
+  kSet = 0,
+  kSetDefault = 1,
+  kGet = 2,
+  kMaxValue = kGet,
+};
+
+void RecordApiUsage(const ArcWallpaperApi api) {
+  base::UmaHistogramEnumeration("Arc.WallpaperApiUsage", api);
+}
 
 std::vector<uint8_t> EncodeImagePng(const gfx::ImageSkia& image) {
   std::vector<uint8_t> result;
@@ -136,6 +149,8 @@ ArcWallpaperService::~ArcWallpaperService() {
 void ArcWallpaperService::SetWallpaper(const std::vector<uint8_t>& data,
                                        int32_t wallpaper_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  RecordApiUsage(ArcWallpaperApi::kSet);
+
   if (wallpaper_id == 0)
     wallpaper_id = -1;
 
@@ -148,6 +163,8 @@ void ArcWallpaperService::SetWallpaper(const std::vector<uint8_t>& data,
 
 void ArcWallpaperService::SetDefaultWallpaper() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  RecordApiUsage(ArcWallpaperApi::kSetDefault);
+
   // Previous request will be cancelled at destructor of
   // ImageDecoder::ImageRequest.
   decode_request_.reset();
@@ -160,6 +177,8 @@ void ArcWallpaperService::SetDefaultWallpaper() {
 
 void ArcWallpaperService::GetWallpaper(GetWallpaperCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  RecordApiUsage(ArcWallpaperApi::kGet);
+
   gfx::ImageSkia image = ash::WallpaperController::Get()->GetWallpaperImage();
   if (!image.isNull())
     image.SetReadOnly();

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/arc/wallpaper/arc_wallpaper_service.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -17,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
@@ -139,8 +141,13 @@ class ArcWallpaperServiceTest : public testing::Test {
 
 TEST_F(ArcWallpaperServiceTest, SetDefaultWallpaper) {
   test_wallpaper_controller_.ClearCounts();
+  base::HistogramTester histogram_tester;
+
   service_->SetDefaultWallpaper();
+
   EXPECT_EQ(1, test_wallpaper_controller_.set_default_wallpaper_count());
+  histogram_tester.ExpectUniqueSample("Arc.WallpaperApiUsage", 1,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST_F(ArcWallpaperServiceTest, SetAndGetWallpaper) {
@@ -148,17 +155,25 @@ TEST_F(ArcWallpaperServiceTest, SetAndGetWallpaper) {
       std::make_unique<SuccessDecodeRequestSender>());
   std::vector<uint8_t> bytes;
   test_wallpaper_controller_.SetCurrentUser(user_manager::StubAccountId());
+  base::HistogramTester histogram_tester;
+
   service_->SetWallpaper(bytes, 10 /*wallpaper_id=*/);
+
   ASSERT_EQ(1u, wallpaper_instance_->changed_ids().size());
   EXPECT_EQ(10, wallpaper_instance_->changed_ids()[0]);
   ASSERT_EQ(1, test_wallpaper_controller_.get_third_party_wallpaper_count());
+  histogram_tester.ExpectUniqueSample("Arc.WallpaperApiUsage", 0,
+                                      /*expected_bucket_count=*/1);
 
   service_->GetWallpaper(
       base::BindOnce([](std::vector<uint8_t>* out,
                         const std::vector<uint8_t>& bytes) { *out = bytes; },
                      &bytes));
   content::RunAllTasksUntilIdle();
+
   ASSERT_NE(0u, bytes.size());
+  histogram_tester.ExpectBucketCount("Arc.WallpaperApiUsage", 2,
+                                     /*expected_count=*/1);
 }
 
 TEST_F(ArcWallpaperServiceTest, SetWallpaperFailure) {

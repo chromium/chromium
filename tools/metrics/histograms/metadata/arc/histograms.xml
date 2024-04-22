@@ -2738,6 +2738,16 @@ chromium-metrics-reviews@google.com.
   <token key="DeviceType" variants="DeviceType"/>
 </histogram>
 
+<histogram name="Arc.WallpaperApiUsage" enum="ArcWallpaperApi"
+    expires_after="2024-12-31">
+  <owner>hirokisato@google.com</owner>
+  <owner>arc-framework@google.com</owner>
+  <summary>
+    Records the number of times an API for getting / setting wallpaper from
+    Android is called.
+  </summary>
+</histogram>
+
 <histogram name="Arc.Wayland.LateTiming.Duration{WaylandEventType}" units="ms"
     expires_after="2024-08-16">
   <owner>alanding@google.com</owner>
