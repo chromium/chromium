@@ -66,7 +66,6 @@ class ChromeUserManagerImpl
 
   // UserManager implementation:
   void Shutdown() override;
-  user_manager::UserList GetUnlockUsers() const override;
   void SaveUserOAuthStatus(
       const AccountId& account_id,
       user_manager::User::OAuthTokenStatus oauth_token_status) override;

@@ -109,6 +109,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   UserList FindLoginAllowedUsersFrom(const UserList& users) const final;
   const UserList& GetLoggedInUsers() const override;
   const UserList& GetLRULoggedInUsers() const override;
+  UserList GetUnlockUsers() const override;
   const AccountId& GetOwnerAccountId() const override;
   void GetOwnerAccountIdAsync(
       base::OnceCallback<void(const AccountId&)> callback) const override;

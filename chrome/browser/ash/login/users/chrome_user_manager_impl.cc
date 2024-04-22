@@ -395,49 +395,6 @@ ChromeUserManagerImpl::GetMultiUserSignInPolicyController() {
   return &multi_user_sign_in_policy_controller_;
 }
 
-user_manager::UserList ChromeUserManagerImpl::GetUnlockUsers() const {
-  const user_manager::UserList& logged_in_users = GetLoggedInUsers();
-  if (logged_in_users.empty()) {
-    return user_manager::UserList();
-  }
-
-  auto* primary_user = GetPrimaryUser();
-  std::optional<MultiUserSignInPolicy> primary_policy =
-      user_manager::GetMultiUserSignInPolicy(primary_user);
-  if (!primary_policy.has_value()) {
-    // Locking is not allowed until the primary user profile is created.
-    return user_manager::UserList();
-  }
-
-  user_manager::UserList unlock_users;
-
-  // Specific case: only one logged in user or
-  // primary user has primary-only multi-user policy.
-  if (logged_in_users.size() == 1 ||
-      primary_policy == MultiUserSignInPolicy::kPrimaryOnly) {
-    if (primary_user->CanLock()) {
-      unlock_users.push_back(primary_user_.get());
-    }
-  } else {
-    // Fill list of potential unlock users based on multi-user policy state.
-    for (user_manager::User* user : logged_in_users) {
-      std::optional<MultiUserSignInPolicy> policy =
-          user_manager::GetMultiUserSignInPolicy(user);
-      if (!policy.has_value()) {
-        continue;
-      }
-      if (policy == MultiUserSignInPolicy::kUnrestricted && user->CanLock()) {
-        unlock_users.push_back(user);
-      } else if (policy == MultiUserSignInPolicy::kPrimaryOnly) {
-        NOTREACHED()
-            << "Spotted primary-only multi-user policy for non-primary user";
-      }
-    }
-  }
-
-  return unlock_users;
-}
-
 void ChromeUserManagerImpl::RemoveUserInternal(
     const AccountId& account_id,
     user_manager::UserRemovalReason reason) {

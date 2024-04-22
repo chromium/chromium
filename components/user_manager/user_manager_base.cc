@@ -201,6 +201,41 @@ const UserList& UserManagerBase::GetLRULoggedInUsers() const {
   return lru_logged_in_users_;
 }
 
+UserList UserManagerBase::GetUnlockUsers() const {
+  std::optional<MultiUserSignInPolicy> primary_policy =
+      GetMultiUserSignInPolicy(primary_user_);
+  if (!primary_policy.has_value()) {
+    // Locking is not allowed until the primary user profile is created.
+    return {};
+  }
+
+  // Specific case: only one logged in user or
+  // primary user has primary-only multi-user policy.
+  if (logged_in_users_.size() == 1 ||
+      primary_policy == MultiUserSignInPolicy::kPrimaryOnly) {
+    return primary_user_->CanLock() ? UserList{{primary_user_.get()}}
+                                    : UserList{};
+  }
+
+  // Fill list of potential unlock users based on multi-user policy state.
+  UserList unlock_users;
+  for (User* user : logged_in_users_) {
+    std::optional<MultiUserSignInPolicy> policy =
+        GetMultiUserSignInPolicy(user);
+    if (!policy.has_value()) {
+      continue;
+    }
+    if (policy == MultiUserSignInPolicy::kUnrestricted && user->CanLock()) {
+      unlock_users.push_back(user);
+    } else if (policy == MultiUserSignInPolicy::kPrimaryOnly) {
+      NOTREACHED()
+          << "Spotted primary-only multi-user policy for non-primary user";
+    }
+  }
+
+  return unlock_users;
+}
+
 const AccountId& UserManagerBase::GetOwnerAccountId() const {
   if (!owner_account_id_.has_value()) {
     return EmptyAccountId();
