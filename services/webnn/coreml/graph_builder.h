@@ -168,6 +168,21 @@ class GraphBuilder {
       std::string_view op_name,
       const T& operation,
       CoreML::Specification::MILSpec::Block& block);
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddUnaryFloatsOperationWithEpsilon(
+      std::string_view op_name,
+      std::string_view input_name,
+      CoreML::Specification::MILSpec::DataType input_mil_data_type,
+      uint64_t output_operand_id,
+      float epsilon,
+      CoreML::Specification::MILSpec::Block& block);
+  template <typename T>
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr>
+  AddUnaryFloatsOperationWithEpsilon(
+      std::string_view op_name,
+      const T& operation,
+      float epsilon,
+      CoreML::Specification::MILSpec::Block& block);
 
   // Serialization functions for members of the mojom::Operation union. Keep
   // these functions in the same order as in webnn_graph.mojom.

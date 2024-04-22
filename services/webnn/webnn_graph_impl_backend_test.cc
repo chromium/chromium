@@ -2892,6 +2892,8 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = Float16FromFloat32({0, 1, 0, 1, 1, -1})}}
         .Test(*this);
   }
+#endif  // !BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(WEBNN_USE_TFLITE)
   {
     ElementWiseUnaryTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -2904,6 +2906,8 @@ TEST_F(WebNNGraphImplBackendTest,
                               std::numeric_limits<float>::infinity()}}}
         .Test(*this);
   }
+#endif  // !BUILDFLAG(WEBNN_USE_TFLITE)
+#if !BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_MAC)
   {
     ElementWiseUnaryTester<float16>{
         .input = {.type = mojom::Operand::DataType::kFloat16,
@@ -2980,7 +2984,6 @@ TEST_F(WebNNGraphImplBackendTest,
         .Test(*this);
   }
 #endif  // !BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_MAC)
-#if !BUILDFLAG(IS_MAC)
   {
     ElementWiseUnaryTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -2992,6 +2995,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {log(0.f), log(3.f), log(10.f)}}}
         .Test(*this);
   }
+#if !BUILDFLAG(IS_MAC)
   {
     ElementWiseUnaryTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,

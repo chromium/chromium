@@ -46,6 +46,9 @@ namespace webnn::coreml {
 // For the supported OS versions for any OP, the translation between iOS version
 // numbers and macOS version numbers is documented here:
 // https://github.com/apple/coremltools/blob/bba83f43859e087d50c7d764cb132e7d4b427611/coremltools/converters/mil/_deployment_compatibility.py#L25
+// With regards to parameters annotated as optional, when building the MIL ops
+// graph directly in protobuf as is the case here, all parameters are required.
+// The optional annotations is intended for the Python API.
 
 namespace {
 
@@ -130,6 +133,8 @@ constexpr char kOpSinTypeName[] = "sin";
 constexpr char kOpTanTypeName[] = "tan";
 constexpr char kOpErfTypeName[] = "erf";
 constexpr char kOpSqrtTypeName[] = "sqrt";
+constexpr char kOpReciprocalTypeName[] = "inverse";
+constexpr char kOpLogTypeName[] = "log";
 
 // Pooling operators.
 constexpr char kOpAvgPoolTypeName[] = "avg_pool";
@@ -156,6 +161,7 @@ constexpr char kOpParamY[] = "y";
 constexpr char kOpDataTypeName[] = "dtype";
 constexpr char kOpParamAlpha[] = "alpha";
 constexpr char kOpParamBeta[] = "beta";
+constexpr char kOpParamEpsilon[] = "epsilon";
 
 // Hard coded path used in the model file to point at the weight path.
 constexpr char kWeightsRelativeFilePath[] = "@model_path/weights/weights.bin";
@@ -865,6 +871,44 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddUnaryFloatsOperation(
                                  operation.output_operand_id, block);
 }
 
+base::expected<void, mojom::ErrorPtr>
+GraphBuilder::AddUnaryFloatsOperationWithEpsilon(
+    std::string_view op_name,
+    std::string_view input_name,
+    CoreML::Specification::MILSpec::DataType input_mil_data_type,
+    uint64_t output_operand_id,
+    float epsilon,
+    CoreML::Specification::MILSpec::Block& block) {
+  if (!kFloatDataTypes.contains(input_mil_data_type)) {
+    return NewNotSupportedError("Unsupported input datatype.");
+  }
+
+  CoreML::Specification::MILSpec::Operation* op = block.add_operations();
+  op->set_type(std::string(op_name));
+
+  SetInputWithName(*op->mutable_inputs(), kOpParamX, input_name);
+
+  SetInputWithValue(*op->mutable_inputs(), kOpParamEpsilon,
+                    CreateScalarImmediateValue(epsilon));
+
+  PopulateNamedValueType(output_operand_id, *op->add_outputs());
+  return base::ok();
+}
+
+template <typename T>
+base::expected<void, mojom::ErrorPtr>
+GraphBuilder::AddUnaryFloatsOperationWithEpsilon(
+    std::string_view op_name,
+    const T& operation,
+    float epsilon,
+    CoreML::Specification::MILSpec::Block& block) {
+  const OperandInfo& input_operand_info =
+      GetOperandInfo(operation.input_operand_id);
+  return AddUnaryFloatsOperationWithEpsilon(
+      op_name, input_operand_info.coreml_name, input_operand_info.mil_data_type,
+      operation.output_operand_id, epsilon, block);
+}
+
 base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForCast(
     const std::string& input_name,
     uint64_t output_operand_id,
@@ -1238,8 +1282,24 @@ GraphBuilder::AddOperationForElementwiseUnary(
     case mojom::ElementWiseUnary::Kind::kSqrt: {
       return AddUnaryFloatsOperation(kOpSqrtTypeName, operation, block);
     }
-    case mojom::ElementWiseUnary::Kind::kReciprocal:
-    case mojom::ElementWiseUnary::Kind::kLog:
+    case mojom::ElementWiseUnary::Kind::kReciprocal: {
+      // CoreML's reciprocal operator requires an epsilon value, the default
+      // value as per the documentation 1e-4 results in expressions like
+      // reciprocal(4) returning  0.24999 rather than 0.25.
+      // In order to return expected results similar to other platforms,
+      // set epsilon to 0.
+      return AddUnaryFloatsOperationWithEpsilon(
+          kOpReciprocalTypeName, operation, /*epsilon=*/0, block);
+    }
+    case mojom::ElementWiseUnary::Kind::kLog: {
+      // CoreML's log operator requires an epsilon value, the default
+      // value as per the documentation 1e-45 potentially could result
+      // in different result compared to other platforms.
+      // In order to return expected results compatible with other
+      // platforms, set epsilon to 0.
+      return AddUnaryFloatsOperationWithEpsilon(kOpLogTypeName, operation,
+                                                /*epsilon=*/0, block);
+    }
     case mojom::ElementWiseUnary::Kind::kNeg:
     case mojom::ElementWiseUnary::Kind::kAbs:
     case mojom::ElementWiseUnary::Kind::kIdentity:

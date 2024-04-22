@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 19 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] abs float32 1D constant tensor
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
 [FAIL] abs float32 1D tensor
@@ -26,18 +26,6 @@ Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
 [FAIL] identity float32 5D tensor
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] log float32 positive 1D constant tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] log float32 positive 1D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] log float32 positive 2D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] log float32 positive 3D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] log float32 positive 4D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] log float32 positive 5D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
 [FAIL] neg float32 1D constant tensor
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
 [FAIL] neg float32 1D tensor
@@ -49,20 +37,6 @@ Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] neg float32 4D tensor
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
 [FAIL] neg float32 5D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] reciprocal float32 0D scalar
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] reciprocal float32 1D constant tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] reciprocal float32 1D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] reciprocal float32 2D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] reciprocal float32 3D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] reciprocal float32 4D tensor
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
-[FAIL] reciprocal float32 5D tensor
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unimplemented Unary Operator."
 Harness: the test ran to completion.
 
