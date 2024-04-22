@@ -912,7 +912,8 @@ ResourcePriority ImageLoader::ComputeResourcePriority() const {
 
   ResourcePriority priority = image_resource->ComputeResourcePriority();
   priority.source = ResourcePriority::Source::kImageLoader;
-  if (features::
+  if (base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor) &&
+      features::
           kLCPCriticalPathPredictorImageLoadPriorityEnabledForHTMLImageElement
               .Get()) {
     auto* html_image_element = DynamicTo<HTMLImageElement>(element_.Get());

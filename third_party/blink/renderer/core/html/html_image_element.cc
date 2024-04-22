@@ -574,7 +574,8 @@ Node::InsertionNotificationRequest HTMLImageElement::InsertedInto(
     }
   }
 
-  if (features::
+  if (base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor) &&
+      features::
           kLCPCriticalPathPredictorImageLoadPriorityEnabledForHTMLImageElement
               .Get()) {
     if (LocalFrame* frame = GetDocument().GetFrame()) {
