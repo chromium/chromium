@@ -47940,6 +47940,7 @@
         "test_id_prefix": "ninja://:chrome_wpt_tests/"
       },
       {
+        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"

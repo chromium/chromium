@@ -2971,6 +2971,13 @@
       },
     },
   },
+  'headless_shell_wpt_tests': {
+    'modifications': {
+      'linux-wpt-chromium-rel': {
+        'experiment_percentage': 100,
+      },
+    },
+  },
   'info_collection_tests': {
     'remove_from': [
       'Android V8 FYI Release (Nexus 5X)',
