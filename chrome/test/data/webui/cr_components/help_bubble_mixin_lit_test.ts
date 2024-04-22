@@ -4,7 +4,6 @@
 
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 
-import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import type {HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 import type {HelpBubbleClientRemote, HelpBubbleHandlerInterface, HelpBubbleParams} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {HelpBubbleArrowPosition, HelpBubbleClientCallbackRouter, HelpBubbleClosedReason} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
@@ -393,7 +392,7 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
     assertEquals(bubble.bodyIconName, defaultParams.bodyIconName);
     const bodyIcon = bubble.shadowRoot!.querySelector<HTMLElement>('#bodyIcon');
     assertTrue(!!bodyIcon);
-    const ironIcon = bodyIcon!.querySelector<IronIconElement>('iron-icon');
+    const ironIcon = bodyIcon.querySelector('cr-icon');
     assertTrue(!!ironIcon);
     assertEquals(`iph:${defaultParams.bodyIconName}`, ironIcon.icon);
   });

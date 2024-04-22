@@ -5,7 +5,6 @@
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
-import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import type {HelpBubbleDismissedEvent, HelpBubbleTimedOutEvent} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 import {HELP_BUBBLE_DISMISSED_EVENT, HELP_BUBBLE_TIMED_OUT_EVENT, HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 import type {HelpBubbleButtonParams} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
@@ -233,9 +232,9 @@ suite('CrComponentsHelpBubbleTest', () => {
     assertFalse(bodyIcon.hidden, 'body icon element should not be hidden');
     assertTrue(isVisible(bodyIcon), 'body icon element should be visible');
     assertEquals(
-        bodyIcon.querySelector<IronIconElement>('iron-icon')!.icon,
+        bodyIcon.querySelector('cr-icon')!.icon,
         'iph:icon_name',
-        'bodyIcon passes icon name to iron-icon with iph namespace');
+        'bodyIcon passes icon name to cr-icon with iph namespace');
   });
 
   test('help bubble body icon is hidden when null', () => {

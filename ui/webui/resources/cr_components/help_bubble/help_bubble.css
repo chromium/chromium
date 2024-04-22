@@ -279,7 +279,7 @@ cr-icon-button:focus-visible:focus {
   width: var(--help-bubble-body-icon-size);
 }
 
-#bodyIcon iron-icon {
+#bodyIcon cr-icon {
   display: block;
 }
 

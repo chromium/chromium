@@ -15,7 +15,7 @@ export function getHtml(this: HelpBubbleElement) {
   <div id="topContainer">
     <div id="bodyIcon" ?hidden="${!this.shouldShowBodyIcon_()}"
         aria-label="${this.bodyIconAltText}">
-      <iron-icon icon="iph:${this.bodyIconName}"></iron-icon>
+      <cr-icon icon="iph:${this.bodyIconName}"></cr-icon>
     </div>
     <div id="progress" ?hidden="${!this.progress}" role="progressbar"
         aria-valuenow="${this.progress ? this.progress.current : nothing}"
