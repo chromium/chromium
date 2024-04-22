@@ -175,12 +175,14 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   }
 
   override focus() {
-    // This component itself is not focusable, so override its focus method
-    // to focus its main focusable child, the title button.
+    this.getFocusableElement().focus();
+  }
+
+  getFocusableElement() {
     if (this.asAnchor) {
-      this.$.anchor.focus();
+      return this.$.anchor;
     } else {
-      this.$.button.focus();
+      return this.$.button;
     }
   }
 

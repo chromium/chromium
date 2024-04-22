@@ -1,5 +1,6 @@
 <style include="cr-shared-style">
   :host {
+    --cr-action-menu-padding: 0;
     --cr-url-list-item-padding: 0;
     --iron-icon-gap: 8px;
     --iron-icon-width: 24px;
@@ -11,6 +12,10 @@
 
   cr-action-menu {
     --cr-menu-border-radius: 10px;
+  }
+
+  cr-expand-button {
+    padding: 6px 16px;
   }
 
   #currentProduct {
@@ -55,9 +60,22 @@
     width: var(--product-selector-width);
   }
 
-  #selectionContainer {
-    display: block;
-    padding: 0 8px;
+  .dropdown-item {
+    padding: 0 16px;
+  }
+
+  .dropdown-spacer {
+    height: 10px;
+  }
+
+  .expand-icon {
+    padding: var(--iron-icon-padding);
+  }
+
+  .section-title {
+    line-height: 16px;
+    font-size: 12px;
+    font-weight: 500;
   }
 </style>
 
@@ -78,8 +96,9 @@
     <cr-action-menu on-close="onCloseMenu_">
       <div id="selectionContainer">
         <template is="dom-if" if="[[openTabs.length]]" restamp>
-          <cr-expand-button expanded="{{openTabsExpanded}}" no-hover>
-            $i18n{openTabsSectionTitle}
+          <cr-expand-button expanded="{{openTabsExpanded}}" no-hover
+              expand-icon="cr:arrow-drop-down" collapse-icon="cr:arrow-drop-up">
+            <div class="section-title">$i18n{openTabsSectionTitle}</div>
           </cr-expand-button>
           <iron-collapse opened="[[openTabsExpanded]]">
             <template is="dom-repeat" items="[[openTabs]]">
@@ -88,6 +107,9 @@
                   description="[[getAbbreviatedUrl_(item.url)]]" no-hover>
               </cr-url-list-item>
             </template>
+            <!-- Add spacer instead of adding margin or padding to the -->
+            <!-- parent for smooth expand/collapse transitions -->
+            <div class="dropdown-spacer"></div>
           </iron-collapse>
         </template>
       </div>
