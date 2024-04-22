@@ -32,7 +32,8 @@ enum class SeedRejectionReason {
 
 // Converts a probability value (represented by numerator/denominator) to an
 // entropy value. Callers should ensure that both arguments are strictly
-// positive and that `numerator` <= `denominator`.
+// positive and that `numerator` <= `denominator`. This always returns a
+// non-negative number.
 double ConvertToBitsOfEntropy(uint64_t numerator, uint64_t denominator) {
   CHECK_GT(numerator, 0u);
   CHECK_LE(numerator, denominator);
@@ -117,6 +118,7 @@ double GetEntropyUsedByLimitedLayer(const Layer& limited_layer,
         ConvertToBitsOfEntropy(num_slots_in_member, limited_layer.num_slots());
   }
 
+  bool includes_entropy_used_by_study = false;
   for (const Study& study : seed.study()) {
     if (study.has_layer() && study.layer().layer_id() == limited_layer.id()) {
       auto layer_member_id = study.layer().layer_member_id();
@@ -129,9 +131,22 @@ double GetEntropyUsedByLimitedLayer(const Layer& limited_layer,
       if (entropy != entropy_used.end()) {
         // TODO(b/319681288): Consider mutual exclusivity among studies
         // referencing the same layer member from the study's filter values.
-        entropy->second += GetEntropyUsedByStudy(study);
+        double entropy_used_by_study = GetEntropyUsedByStudy(study);
+        if (entropy_used_by_study > 0) {
+          entropy->second += entropy_used_by_study;
+          includes_entropy_used_by_study = true;
+        }
       }
     }
+  }
+
+  // The entropy used is zero when none of the studies constrained to the
+  // limited layer use any entropy. The results stored in `entropy_used` is
+  // not applicable here because they include entropy used from layer members.
+  // Those entropy usage only applies when studies that use entropy are
+  // constrained to these layer members.
+  if (!includes_entropy_used_by_study) {
+    return 0.0;
   }
 
   double max_entropy_used = 0.0;

@@ -289,6 +289,24 @@ TEST_F(LimitedEntropyRandomizationTest,
   auto test_layer =
       CreateLayer(kTestLayerId, /*num_slots=*/100, Layer::LIMITED,
                   {CreateLayerMember(kTestLayerMemberId, {{0, 49}})});
+  auto test_study_1 = CreateTestStudy(
+      CreateExperimentsWithTwoBitsOfEntropy(),
+      CreateLayerMemberReference(kTestLayerId, kTestLayerMemberId));
+  auto test_study_2 = CreateTestStudy(
+      {CreateExperiment(50)},
+      CreateLayerMemberReference(kTestLayerId, kTestLayerMemberId));
+  auto test_seed = CreateTestSeed({test_layer}, {test_study_1, test_study_2});
+
+  // Expecting 3 bits of total usage with 2 bits from `test_study_1`, 0 bit from
+  // `test_study_2`, and 1 bit from the layer member.
+  EXPECT_EQ(3, GetEntropyUsedByLimitedLayerForTesting(test_layer, test_seed));
+}
+
+TEST_F(LimitedEntropyRandomizationTest,
+       TestEntropyUsedByLimitedLayer_StudiesOfDifferentEntropyInLayerMember) {
+  auto test_layer =
+      CreateLayer(kTestLayerId, /*num_slots=*/100, Layer::LIMITED,
+                  {CreateLayerMember(kTestLayerMemberId, {{0, 49}})});
   auto test_seed = CreateTestSeed(
       {test_layer}, {CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
                                      CreateLayerMemberReference(
@@ -368,8 +386,8 @@ TEST_F(LimitedEntropyRandomizationTest,
   int default_layer_id = kTestLayerId + 1;
   auto test_limited_layer =
       CreateLayer(limited_layer_id, /*num_slots=*/100, Layer::LIMITED,
-                  {CreateLayerMember(kTestLayerMemberId, {{0, 49}}),
-                   CreateLayerMember(kTestLayerMemberId, {{50, 74}}),
+                  {CreateLayerMember(kTestLayerMemberId + 2, {{0, 49}}),
+                   CreateLayerMember(kTestLayerMemberId + 1, {{50, 74}}),
                    CreateLayerMember(kTestLayerMemberId, {{75, 99}})});
   auto test_default_layer =
       CreateLayer(default_layer_id, /*num_slots=*/100, Layer::DEFAULT,
@@ -383,9 +401,31 @@ TEST_F(LimitedEntropyRandomizationTest,
            CreateExperimentsWithTwoBitsOfEntropy(),
            CreateLayerMemberReference(default_layer_id, kTestLayerMemberId))});
 
-  // 2 bits from the layer member, although it's unused.
+  // Entropy used is zero since the layer members in the limited layer is
+  // unused (the studies in `test_seed` is not constrained to a limited layer).
   EXPECT_EQ(
-      2, GetEntropyUsedByLimitedLayerForTesting(test_limited_layer, test_seed));
+      0, GetEntropyUsedByLimitedLayerForTesting(test_limited_layer, test_seed));
+}
+
+TEST_F(
+    LimitedEntropyRandomizationTest,
+    TestEntropyUsedByLimitedLayer_NoReferencingStudiesWithGoogleExperimentID) {
+  auto test_limited_layer =
+      CreateLayer(kTestLayerId, /*num_slots=*/100, Layer::LIMITED,
+                  {CreateLayerMember(kTestLayerMemberId + 2, {{0, 49}}),
+                   CreateLayerMember(kTestLayerMemberId + 1, {{50, 74}}),
+                   CreateLayerMember(kTestLayerMemberId, {{75, 99}})});
+  auto test_seed = CreateTestSeed(
+      {test_limited_layer},
+      {CreateTestStudy(
+          {CreateExperiment(1), CreateExperiment(1)},
+          CreateLayerMemberReference(kTestLayerId, kTestLayerMemberId))});
+
+  // Without Google experiment IDs, a study that is constrained to a limited
+  // layer does not use entropy. Entropy usage is zero if none of the studies in
+  // any layer members use entropy.
+  EXPECT_EQ(
+      0, GetEntropyUsedByLimitedLayerForTesting(test_limited_layer, test_seed));
 }
 
 TEST_F(LimitedEntropyRandomizationTest,
