@@ -2169,10 +2169,6 @@ BASE_FEATURE(kSharedStorageAPIEnableWALForDatabase,
              "SharedStorageAPIEnableWALForDatabase",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSimulateClickOnAXFocus,
-             "SimulateClickOnAXFocus",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 const char kSkipTouchEventFilterTypeParamName[] = "type";
 const char kSkipTouchEventFilterTypeParamValueDiscrete[] = "discrete";
 const char kSkipTouchEventFilterTypeParamValueAll[] = "all";

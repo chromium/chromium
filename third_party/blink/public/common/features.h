@@ -1422,16 +1422,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPIM125);
 // database backend.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSharedStorageAPIEnableWALForDatabase);
 
-// TODO(accessibility): This flag is set to accommodate JAWS on Windows so they
-// can adjust to us not simulating click events on a focus action. It is in the
-// process of being removed completely and is currently disabled by default on
-// all platforms. We want to allow users to manually re-enable this behavior for
-// the next few months in case their users discover issues they still have to
-// fix. It should be removed by 9/17/2023.
-//
-// See https://crbug.com/1326622 for more info.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSimulateClickOnAXFocus);
-
 // Parameters for blink::features::kSkipTouchEventFilter.
 // Which event types will be always forwarded is controlled by the "type"
 // FeatureParam, which can be either "discrete" (default) or "all".
