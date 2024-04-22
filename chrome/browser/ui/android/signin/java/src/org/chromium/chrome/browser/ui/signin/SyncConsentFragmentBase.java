@@ -667,6 +667,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
     }
 
     private void onRefuseButtonClicked(View button) {
+        mSigninView.refuseButtonClicked();
         refuseSignIn();
     }
 

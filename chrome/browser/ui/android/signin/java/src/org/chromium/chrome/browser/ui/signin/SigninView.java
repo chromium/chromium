@@ -168,7 +168,7 @@ class SigninView extends LinearLayout {
         this.mAcceptOnClickListener.onClick(view);
     }
 
-    private void refuseOnClickListener(View view) {
+    void refuseButtonClicked() {
         if (this.mAcceptButtonType == ButtonType.PRIMARY_FILLED) {
             MinorModeHelper.recordButtonClicked(
                     MinorModeHelper.SyncButtonClicked.SYNC_CANCEL_NOT_EQUAL_WEIGHTED);
@@ -212,10 +212,7 @@ class SigninView extends LinearLayout {
     private void createButtons() {
         mRefuseButton =
                 DualControlLayout.createButtonForLayout(
-                        getContext(),
-                        DualControlLayout.ButtonType.SECONDARY,
-                        "",
-                        this::refuseOnClickListener);
+                        getContext(), DualControlLayout.ButtonType.SECONDARY, "", null);
         mRefuseButton.setLayoutParams(
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
