@@ -97,7 +97,7 @@ void OSCryptAsync::HandleKey(ProviderIterator current,
     }
   } else {
     // TODO(crbug.com/40241934): Return errors back via a callback.
-    LOG(WARNING) << "Provider " << tag << " failed to return a key.";
+    DVLOG(1) << "Provider " << tag << " failed to return a key.";
   }
 
   if (++current == providers_.end()) {
