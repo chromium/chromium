@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.h"
-#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.h"
 
 #include <atomic>
 #include <memory>
@@ -29,11 +27,15 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/chrome_fatal_crash_events_observer.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_settings_for_test.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_test_util.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -140,9 +142,13 @@ class FatalCrashEventsObserverTestBase : public ::ash::NoSessionAshTestBase {
   // optionally sets the OnEventObserved callback if test_event is provided.
   std::unique_ptr<FatalCrashEventsObserver>
   CreateAndEnableFatalCrashEventsObserver(
-      base::test::TestFuture<MetricData>* test_event = nullptr) const {
+      base::test::TestFuture<MetricData>* test_event = nullptr,
+      CrashEventInfo::CrashType crash_type =
+          CrashEventInfo::CrashType::kDefaultValue) const {
     auto observer =
-        fatal_crash_test_environment_.CreateFatalCrashEventsObserver();
+        fatal_crash_test_environment_.CreateFatalCrashEventsObserver(
+            /*reported_local_id_io_task_runner=*/nullptr,
+            /*uploaded_crash_info_io_task_runner=*/nullptr, crash_type);
     observer->SetReportingEnabled(true);
     if (test_event) {
       observer->SetOnEventObservedCallback(test_event->GetRepeatingCallback());
@@ -282,9 +288,13 @@ class FatalCrashEventsObserverTypeFieldTest
 TEST_P(FatalCrashEventsObserverTypeFieldTest, FieldTypePassedThrough) {
   auto crash_event_info = NewCrashEventInfo(is_uploaded());
   crash_event_info->crash_type = type();
+  auto observer = CreateAndEnableFatalCrashEventsObserver(
+      /*test_event=*/nullptr, crash_event_info->crash_type);
 
   const auto fatal_crash_telemetry =
-      WaitForFatalCrashTelemetry(std::move(crash_event_info));
+      WaitForFatalCrashTelemetry(std::move(crash_event_info), observer.get(),
+                                 /*result_metric_data=*/nullptr);
+
   ASSERT_TRUE(fatal_crash_telemetry.has_type());
   FatalCrashTelemetry::CrashType expected_crash_type;
   switch (type()) {
@@ -293,6 +303,9 @@ TEST_P(FatalCrashEventsObserverTypeFieldTest, FieldTypePassedThrough) {
       break;
     case CrashEventInfo::CrashType::kEmbeddedController:
       expected_crash_type = FatalCrashTelemetry::CRASH_TYPE_EMBEDDED_CONTROLLER;
+      break;
+    case CrashEventInfo::CrashType::kChrome:
+      expected_crash_type = FatalCrashTelemetry::CRASH_TYPE_CHROME;
       break;
     default:  // Crash types that are not tested but should be tested.
       NOTREACHED_NORETURN() << "Encountered untested crash type " << type();

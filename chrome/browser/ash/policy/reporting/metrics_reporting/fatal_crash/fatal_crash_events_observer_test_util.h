@@ -16,13 +16,14 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.h"
 
+using ash::cros_healthd::mojom::CrashEventInfo;
+
 namespace reporting {
 
 class FatalCrashEventsObserver::TestEnvironment {
  public:
   using ShouldReportResult =
       FatalCrashEventsObserver::ReportedLocalIdManager::ShouldReportResult;
-
 
   // Posts a task that blocks a sequence, and unblocks when requested. User must
   // ensure that the blocking task is cleared when this object is destroyed.
@@ -53,7 +54,6 @@ class FatalCrashEventsObserver::TestEnvironment {
   TestEnvironment& operator=(const TestEnvironment&) = delete;
   ~TestEnvironment();
 
-
   // Creates a `FatalCrashEventsObserver` object that uses `save_file_path_` as
   // the save file and returns the pointer. If
   // `reported_local_id_io_task_runner` is not null, use it as the io task
@@ -63,7 +63,9 @@ class FatalCrashEventsObserver::TestEnvironment {
       scoped_refptr<base::SequencedTaskRunner>
           reported_local_id_io_task_runner = nullptr,
       scoped_refptr<base::SequencedTaskRunner>
-          uploaded_crash_info_io_task_runner = nullptr) const;
+          uploaded_crash_info_io_task_runner = nullptr,
+      CrashEventInfo::CrashType crash_type =
+          CrashEventInfo::CrashType::kDefaultValue) const;
 
   // Get the mutable test settings of the observer.
   static SettingsForTest& GetTestSettings(FatalCrashEventsObserver& observer);

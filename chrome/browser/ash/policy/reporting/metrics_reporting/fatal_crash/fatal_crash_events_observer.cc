@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_settings_for_test.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/user_manager/user_type.h"
 
@@ -144,9 +145,8 @@ int64_t FatalCrashEventsObserver::ConvertTimeToMicroseconds(base::Time t) {
          base::Time::kMicrosecondsPerMillisecond;
 }
 
-// static
 const base::flat_set<CrashEventInfo::CrashType>&
-FatalCrashEventsObserver::GetAllowedCrashTypes() {
+FatalCrashEventsObserver::GetAllowedCrashTypes() const {
   // This may appear to be overkilling for only 2 crash types, but it provides
   // more robustness for future crash type additions.
   static const base::NoDestructor<base::flat_set<CrashEventInfo::CrashType>>
@@ -312,6 +312,22 @@ void FatalCrashEventsObserver::ProcessEventsBeforeSaveFilesLoaded() {
           weak_factory_.GetWeakPtr()));
 }
 
+FatalCrashTelemetry::CrashType
+FatalCrashEventsObserver::GetFatalCrashTelemetryCrashType(
+    CrashEventInfo::CrashType crash_type) const {
+  switch (crash_type) {
+    case CrashEventInfo::CrashType::kKernel:
+      return FatalCrashTelemetry::CRASH_TYPE_KERNEL;
+    case CrashEventInfo::CrashType::kEmbeddedController:
+      return FatalCrashTelemetry::CRASH_TYPE_EMBEDDED_CONTROLLER;
+    case CrashEventInfo::CrashType::kUnknown:
+      [[fallthrough]];
+    default:  // Other types added by healthD that are unknown here yet.
+      NOTREACHED_NORETURN()
+          << "Encountered unhandled or unknown crash type " << crash_type;
+  }
+}
+
 MetricData FatalCrashEventsObserver::FillFatalCrashTelemetry(
     const CrashEventInfoPtr& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -321,19 +337,7 @@ MetricData FatalCrashEventsObserver::FillFatalCrashTelemetry(
   FatalCrashTelemetry& data =
       *metric_data.mutable_telemetry_data()->mutable_fatal_crash_telemetry();
 
-  switch (info->crash_type) {
-    case CrashEventInfo::CrashType::kKernel:
-      data.set_type(FatalCrashTelemetry::CRASH_TYPE_KERNEL);
-      break;
-    case CrashEventInfo::CrashType::kEmbeddedController:
-      data.set_type(FatalCrashTelemetry::CRASH_TYPE_EMBEDDED_CONTROLLER);
-      break;
-    case CrashEventInfo::CrashType::kUnknown:
-      [[fallthrough]];
-    default:  // Other types added by healthD that are unknown here yet.
-      NOTREACHED_NORETURN()
-          << "Encountered unhandled or unknown crash type " << info->crash_type;
-  }
+  data.set_type(GetFatalCrashTelemetryCrashType(info->crash_type));
 
   const auto* const user_session = GetCurrentUserSession();
   if (!user_session) {

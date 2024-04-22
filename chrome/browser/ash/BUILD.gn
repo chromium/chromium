@@ -2836,6 +2836,8 @@ source_set("ash") {
     "policy/reporting/metrics_reporting/cros_reporting_settings.h",
     "policy/reporting/metrics_reporting/device_activity/device_activity_sampler.cc",
     "policy/reporting/metrics_reporting/device_activity/device_activity_sampler.h",
+    "policy/reporting/metrics_reporting/fatal_crash/chrome_fatal_crash_events_observer.cc",
+    "policy/reporting/metrics_reporting/fatal_crash/chrome_fatal_crash_events_observer.h",
     "policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.cc",
     "policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h",
     "policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.cc",

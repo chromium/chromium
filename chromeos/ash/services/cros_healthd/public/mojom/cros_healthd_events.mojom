@@ -523,11 +523,13 @@ struct CrashUploadInfo {
 // NextMinVersion: 1, NextIndex: 4
 [Stable]
 struct CrashEventInfo {
+  // NextMinVersion: 2, NextIndex: 4
   [Stable, Extensible]
   enum CrashType {
-      [Default] kUnknown = 0,
-      kKernel,
-      kEmbeddedController,
+    [Default] kUnknown = 0,
+    kKernel,
+    kEmbeddedController,
+    [MinVersion=1] kChrome,
   };
   // Type of the crash. Corresponding to "fatal_crash_type" in uploads.log.
   CrashType crash_type@0;

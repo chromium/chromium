@@ -623,7 +623,8 @@ message FatalCrashTelemetry {
     CRASH_TYPE_KERNEL = 1;
     // EC crashes.
     CRASH_TYPE_EMBEDDED_CONTROLLER = 2;
-    // More is expected to be added in the future.
+    // Chrome crashes.
+    CRASH_TYPE_CHROME = 3;
   }
   // The session types follow user_manager::UserType. The server side will
   // translate to the types described below.
