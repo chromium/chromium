@@ -955,9 +955,6 @@ void ExpectAppTag(UpdaterScope scope,
 
 void Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
   base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait_process;
-  command_line.AppendSwitch(kEnableLoggingSwitch);
-  command_line.AppendSwitchASCII(kLoggingModuleSwitch,
-                                 kLoggingModuleSwitchValue);
   if (IsSystemInstall(scope)) {
     command_line.AppendSwitch(kSystemSwitch);
     command_line = MakeElevated(command_line);
@@ -1033,10 +1030,8 @@ void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server) {
       GetUpdateResponse(
           kUpdaterAppId, "", test_server->download_url().spec(),
           base::Version(kUpdaterVersion), crx_path, kSelfUpdateCRXRun,
-          base::StrCat({"--update", IsSystemInstall(scope) ? " --system" : "",
-                        " --", kEnableLoggingSwitch, " --",
-                        kLoggingModuleSwitch, "=",
-                        kLoggingModuleSwitchValue})));
+          base::StrCat(
+              {"--update", IsSystemInstall(scope) ? " --system" : ""})));
 
   // Second request: update download.
   std::string crx_bytes;

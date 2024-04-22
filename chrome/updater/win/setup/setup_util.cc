@@ -351,9 +351,6 @@ void AddInstallServerWorkItems(HKEY root,
       kServerServiceSwitch, internal_service
                                 ? kServerUpdateServiceInternalSwitchValue
                                 : kServerUpdateServiceSwitchValue);
-  run_com_server_command.AppendSwitch(kEnableLoggingSwitch);
-  run_com_server_command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                           kLoggingModuleSwitchValue);
   list->AddSetRegValueWorkItem(
       root, local_server32_reg_path, WorkItem::kWow64Default, L"",
       run_com_server_command.GetCommandLineString(), true);
@@ -400,9 +397,6 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
       kServerServiceSwitch, internal_service
                                 ? kServerUpdateServiceInternalSwitchValue
                                 : kServerUpdateServiceSwitchValue);
-  com_service_command.AppendSwitch(kEnableLoggingSwitch);
-  com_service_command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                        kLoggingModuleSwitchValue);
 
   base::CommandLine com_switch(base::CommandLine::NO_PROGRAM);
   com_switch.AppendSwitch(kComServiceSwitch);

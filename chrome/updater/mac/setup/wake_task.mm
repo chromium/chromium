@@ -57,6 +57,10 @@ NSDictionary* CreateWakeLaunchdPlist(UpdaterScope scope) {
   }
 
   // See the man page for launchd.plist.
+  // Explicitly logging switches are no longer necessary but are not removed
+  // because updating the plist file could cause a popup on newer macOS. We
+  // can remove the logging switches the next time when we have to change the
+  // plist file.
   NSMutableArray<NSString*>* program_arguments =
       [NSMutableArray<NSString*> array];
   [program_arguments addObjectsFromArray:@[

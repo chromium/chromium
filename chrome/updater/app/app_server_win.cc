@@ -160,9 +160,6 @@ bool SwapGoogleUpdate(UpdaterScope scope,
         if (IsSystemInstall(scope)) {
           uninstall_if_unused_command.AppendSwitch(kSystemSwitch);
         }
-        uninstall_if_unused_command.AppendSwitch(kEnableLoggingSwitch);
-        uninstall_if_unused_command.AppendSwitchASCII(
-            kLoggingModuleSwitch, kLoggingModuleSwitchValue);
         return uninstall_if_unused_command.GetCommandLineString();
       }(),
       true);

@@ -153,9 +153,6 @@ std::string GetLauncherCommandLine(UpdaterScope scope,
   if (scope == UpdaterScope::kSystem) {
     command.AppendSwitch(kSystemSwitch);
   }
-  command.AppendSwitch(kEnableLoggingSwitch);
-  command.AppendSwitchASCII(kLoggingModuleSwitch, kLoggingModuleSwitchValue);
-
   return command.GetCommandLineString();
 }
 

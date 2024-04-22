@@ -292,6 +292,17 @@ base::CommandLine::StringType GetCommandLineString() {
 #endif
 }
 
+void EnableLoggingByDefault() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(kEnableLoggingSwitch)) {
+    command_line->AppendSwitch(kEnableLoggingSwitch);
+  }
+  if (!command_line->HasSwitch(kLoggingModuleSwitch)) {
+    command_line->AppendSwitchASCII(kLoggingModuleSwitch,
+                                    kLoggingModuleSwitchValue);
+  }
+}
+
 }  // namespace
 
 int UpdaterMain(int argc, const char* const* argv) {
@@ -308,6 +319,7 @@ int UpdaterMain(int argc, const char* const* argv) {
 #if BUILDFLAG(IS_WIN)
   *command_line = GetCommandLineLegacyCompatible();
 #endif
+  EnableLoggingByDefault();
   InitializeCrashKeys(*command_line);
   const UpdaterScope updater_scope = GetUpdaterScope();
   InitLogging(updater_scope);

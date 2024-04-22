@@ -36,9 +36,6 @@ HRESULT RunWakeTask() {
       base::CommandLine::ForCurrentProcess()->GetProgram());
   run_updater_wake_command.AppendSwitch(kWakeSwitch);
   run_updater_wake_command.AppendSwitch(kSystemSwitch);
-  run_updater_wake_command.AppendSwitch(kEnableLoggingSwitch);
-  run_updater_wake_command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                             kLoggingModuleSwitchValue);
   VLOG(2) << "Launching Wake command: "
           << run_updater_wake_command.GetCommandLineString();
 

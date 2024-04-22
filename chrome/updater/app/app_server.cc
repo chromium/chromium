@@ -199,9 +199,6 @@ void AppServer::MaybeUninstall() {
       if (IsSystemInstall(updater_scope())) {
         command_line.AppendSwitch(kSystemSwitch);
       }
-      command_line.AppendSwitch(kEnableLoggingSwitch);
-      command_line.AppendSwitchASCII(kLoggingModuleSwitch,
-                                     kLoggingModuleSwitchValue);
       VLOG(2) << "Launching uninstall command: "
               << command_line.GetCommandLineString();
 

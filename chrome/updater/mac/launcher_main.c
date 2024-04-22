@@ -530,8 +530,6 @@ static void Launch(
       (char*)kExecutableName,  // posix_spawn will not overwrite the argv.
       is_qualifying ? "--test" : "--server",
       is_internal ? "--service=update-internal" : "--service=update",
-      "--enable-logging",
-      "--vmodule=*/components/update_client/*=2,*/chrome/updater/*=2",
       is_system ? "--system" : NULL,
       NULL};
   static char* const env[] = {"PWD=/", "PATH=/usr/bin:/bin:/usr/sbin:/sbin",

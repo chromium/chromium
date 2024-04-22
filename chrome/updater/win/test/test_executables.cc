@@ -69,9 +69,6 @@ base::CommandLine GetTestProcessCommandLine(UpdaterScope scope,
     command_line.AppendSwitch(kSystemSwitch);
   }
 
-  command_line.AppendSwitch(kEnableLoggingSwitch);
-  command_line.AppendSwitchASCII(kLoggingModuleSwitch,
-                                 kLoggingModuleSwitchValue);
   command_line.AppendSwitchASCII(kTestName, test_name);
   return command_line;
 }

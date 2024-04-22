@@ -216,8 +216,7 @@ TEST(KSAdminTest, Register) {
             RunKSAdmin(&out, {"--register", "--version", "1.2.3.4", "--xcpath",
                               "/xc_path", "--tag-key", "tag_key", "--tag-path",
                               "tag_path", "--version-key", "version_key",
-                              "--version-path", "version_path",
-                              "--enable-logging", "--vmodule", "*=2", "-P",
+                              "--version-path", "version_path", "-P",
                               "org.chromium.KSAdminTest.Register"}),
             0);
       }),

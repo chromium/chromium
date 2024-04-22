@@ -217,9 +217,6 @@ void MaybeInstallUpdater(UpdaterScope scope) {
 
   base::CommandLine install_command(setup_path.value());
   install_command.AppendSwitch(kInstallSwitch);
-  install_command.AppendSwitch(kEnableLoggingSwitch);
-  install_command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                    kLoggingModuleSwitchValue);
   if (IsSystemInstall(scope)) {
     install_command.AppendSwitch(kSystemSwitch);
   }

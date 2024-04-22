@@ -137,9 +137,6 @@ int AppRecover::ReinstallUpdater() const {
   int exit_code = -1;
   base::CommandLine uninstall_command(setup_path);
   uninstall_command.AppendSwitch(kUninstallSwitch);
-  uninstall_command.AppendSwitch(kEnableLoggingSwitch);
-  uninstall_command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                      kLoggingModuleSwitchValue);
   if (IsSystemInstall(updater_scope())) {
     uninstall_command.AppendSwitch(kSystemSwitch);
   }
@@ -154,9 +151,6 @@ int AppRecover::ReinstallUpdater() const {
   base::CommandLine install_command(setup_path);
   install_command.AppendSwitch(kInstallSwitch);
   install_command.AppendSwitch(kSilentSwitch);
-  install_command.AppendSwitch(kEnableLoggingSwitch);
-  install_command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                    kLoggingModuleSwitchValue);
   if (IsSystemInstall(updater_scope())) {
     install_command.AppendSwitch(kSystemSwitch);
   }

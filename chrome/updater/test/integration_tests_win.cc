@@ -328,11 +328,7 @@ void CheckInstallation(UpdaterScope scope,
     ASSERT_EQ(task_info.exec_actions.size(), 1u);
     EXPECT_EQ(
         task_info.exec_actions[0].arguments,
-        base::StrCat({L"--wake ", IsSystemInstall(scope) ? L"--system " : L"",
-                      L"--enable-logging "
-                      L"--vmodule=*/components/winhttp/*=1,"
-                      L"*/components/update_client/*=2,"
-                      L"*/chrome/updater/*=2"}));
+        base::StrCat({L"--wake", IsSystemInstall(scope) ? L" --system" : L""}));
 
     EXPECT_EQ(task_info.trigger_types,
               TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY |
@@ -406,13 +402,6 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
     std::vector<std::wstring> install_cmd_args = {
         base::CommandLine::QuoteForCommandLineToArgvW(exe_path.value()),
 
-        build_legacy_switch(updater::kEnableLoggingSwitch),
-
-        // This switch and its value must be connected by '=' because logging
-        // switch does not support legacy format.
-        base::StrCat({build_legacy_switch(updater::kLoggingModuleSwitch), L"=",
-                      base::ASCIIToWide(updater::kLoggingModuleSwitchValue)}),
-
         IsSystemInstall(install_scope)
             ? build_legacy_switch(updater::kSystemSwitch)
             : L"",
@@ -434,10 +423,6 @@ base::Process LaunchOfflineInstallProcess(bool is_legacy_install,
 
   auto launch_offline_install = [&] {
     base::CommandLine install_cmd(exe_path);
-
-    install_cmd.AppendSwitch(kEnableLoggingSwitch);
-    install_cmd.AppendSwitchASCII(kLoggingModuleSwitch,
-                                  kLoggingModuleSwitchValue);
     if (IsSystemInstall(install_scope)) {
       install_cmd.AppendSwitch(kSystemSwitch);
     }

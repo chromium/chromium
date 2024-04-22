@@ -92,9 +92,6 @@ base::CommandLine GetUninstallSelfCommandLine(
   if (IsSystemInstall(scope)) {
     command_line.AppendSwitch(kSystemSwitch);
   }
-  command_line.AppendSwitch(kEnableLoggingSwitch);
-  command_line.AppendSwitchASCII(kLoggingModuleSwitch,
-                                 kLoggingModuleSwitchValue);
   return command_line;
 }
 

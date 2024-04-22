@@ -197,8 +197,6 @@ void KSAgentApp::Wake() {
     if (scope == UpdaterScope::kSystem) {
       command.AppendSwitch(kSystemSwitch);
     }
-    command.AppendSwitch(kEnableLoggingSwitch);
-    command.AppendSwitchNative(kLoggingModuleSwitch, kLoggingModuleSwitchValue);
     VLOG(0) << "Launching " << command.GetCommandLineString();
     base::Process process = base::LaunchProcess(command, {});
     if (process.IsValid()) {

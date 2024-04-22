@@ -61,9 +61,6 @@ void AppWakeAll::FirstTaskRun() {
                   if (IsSystemInstall(scope)) {
                     command.AppendSwitch(kSystemSwitch);
                   }
-                  command.AppendSwitch(kEnableLoggingSwitch);
-                  command.AppendSwitchASCII(kLoggingModuleSwitch,
-                                            kLoggingModuleSwitchValue);
                   VLOG(1) << "Launching `" << command.GetCommandLineString()
                           << "`";
                   int exit = 0;
