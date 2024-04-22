@@ -14,14 +14,10 @@ import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_E
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.moveActivityToFront;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForSecondChromeTabbedActivity;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstTabInDialog;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.leaveTabSwitcher;
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllIncognitoTabsToAGroup;
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllNormalTabsToAGroup;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.switchTabModel;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabModelTabCount;
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabStripFaviconCount;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 
 import android.os.Build;
@@ -151,118 +147,9 @@ public class TabSwitcherMultiWindowTest {
         switchTabModel(mCta1, false);
         assertFalse(mCta1.getTabModelSelector().getCurrentModel().isIncognito());
 
-        // Move 3 normal tabs to mCta2.
+        // Reset back nav so clean up is able to exit the tab switcher.
         clickFirstCardFromTabSwitcher(mCta1);
-        moveTabsToOtherWindow(mCta1, 3);
-
-        // After move, there are 1 normal tab in mCta1 and 3 normal tabs in mCta2.
         enterTabSwitcher(mCta1);
-        verifyTabSwitcherCardCount(mCta1, 1);
-        clickFirstCardFromTabSwitcher(mCta1);
-        moveActivityToFront(mCta2);
-        enterTabSwitcher(mCta2);
-        verifyTabSwitcherCardCount(mCta2, 3);
-        verifyTabModelTabCount(mCta1, 1, 2);
-        verifyTabModelTabCount(mCta2, 3, 1);
-
-        // Move 2 normal tabs back to mCta1.
-        clickFirstCardFromTabSwitcher(mCta2);
-        moveTabsToOtherWindow(mCta2, 2);
-
-        // After move, there are 3 normal tabs in mCta1 and 1 normal tab in mCta2.
-        enterTabSwitcher(mCta2);
-        verifyTabSwitcherCardCount(mCta2, 1);
-        clickFirstCardFromTabSwitcher(mCta2);
-        moveActivityToFront(mCta1);
-        enterTabSwitcher(mCta1);
-        verifyTabSwitcherCardCount(mCta1, 3);
-        verifyTabModelTabCount(mCta1, 3, 2);
-        verifyTabModelTabCount(mCta2, 1, 1);
-    }
-
-    @Test
-    @LargeTest
-    public void testMoveTabsAcrossWindow_GTS_WithGroup() {
-        // Initially, we have 5 normal tabs (including the one created at activity start) and 5
-        // incognito tabs in mCta1.
-        TabUiTestHelper.addBlankTabs(mCta1, false, 4);
-        TabUiTestHelper.addBlankTabs(mCta1, true, 5);
-        verifyTabModelTabCount(mCta1, 5, 5);
-
-        // Enter tab switcher in mCta1 in incognito mode.
-        enterTabSwitcher(mCta1);
-        assertTrue(mCta1.getTabModelSelector().getCurrentModel().isIncognito());
-
-        // Merge all incognito tabs into one group.
-        mergeAllIncognitoTabsToAGroup(mCta1);
-        verifyTabSwitcherCardCount(mCta1, 1);
-
-        // Enter group and verify there are 5 favicons in tab strip.
-        clickFirstCardFromTabSwitcher(mCta1);
-        clickFirstTabInDialog(mCta1);
-        verifyTabStripFaviconCount(mCta1, 5);
-
-        // Move 3 incognito tabs in this group to mCta2.
-        MenuUtils.invokeCustomMenuActionSync(
-                InstrumentationRegistry.getInstrumentation(),
-                mCta1,
-                R.id.move_to_other_window_menu_id);
-        mCta2 = waitForSecondChromeTabbedActivity();
-        CriteriaHelper.pollUiThread(mCta2.getTabModelSelector()::isTabStateInitialized);
-        moveActivityToFront(mCta1);
-        moveTabsToOtherWindow(mCta1, 2);
-
-        // After move, there is a group of 2 incognito tabs in mCta1 and a group of 3 incognito tabs
-        // in mCta2.
-        verifyTabStripFaviconCount(mCta1, 2);
-        moveActivityToFront(mCta2);
-        verifyTabStripFaviconCount(mCta2, 3);
-        verifyTabModelTabCount(mCta1, 5, 2);
-        verifyTabModelTabCount(mCta2, 0, 3);
-
-        // Move one incognito tab in group back to mCta1.
-        moveTabsToOtherWindow(mCta2, 1);
-
-        // After move, there is group of 3 incognito tabs in mCta1 and a group of 2 incognito tabs
-        // in mCta2.
-        verifyTabStripFaviconCount(mCta2, 2);
-        moveActivityToFront(mCta1);
-        verifyTabStripFaviconCount(mCta1, 3);
-        verifyTabModelTabCount(mCta1, 5, 3);
-        verifyTabModelTabCount(mCta2, 0, 2);
-
-        // Switch to normal tab model in mCta1 and create a tab group with 5 normal tabs.
-        enterTabSwitcher(mCta1);
-        switchTabModel(mCta1, false);
-        mergeAllNormalTabsToAGroup(mCta1);
-        verifyTabSwitcherCardCount(mCta1, 1);
-
-        // Enter group and verify there are 5 favicons in tab strip.
-        clickFirstCardFromTabSwitcher(mCta1);
-        clickFirstTabInDialog(mCta1);
-        verifyTabStripFaviconCount(mCta1, 5);
-
-        // Move 3 normal tabs in this group to mCta2.
-        moveTabsToOtherWindow(mCta1, 3);
-
-        // After move, there is a group of 2 normal tabs in mCta1 and a group of 3 normal tabs in
-        // mCta2.
-        verifyTabStripFaviconCount(mCta1, 2);
-        moveActivityToFront(mCta2);
-        verifyTabStripFaviconCount(mCta2, 3);
-        verifyTabModelTabCount(mCta1, 2, 3);
-        verifyTabModelTabCount(mCta2, 3, 2);
-
-        // Move one normal tab in group back to mCta1.
-        moveTabsToOtherWindow(mCta2, 1);
-
-        // After move, there is a group of 3 normal tabs in mCta1 and a group of 2 normal tabs in
-        // mCta2.
-        verifyTabStripFaviconCount(mCta2, 2);
-        moveActivityToFront(mCta1);
-        verifyTabStripFaviconCount(mCta1, 3);
-        verifyTabModelTabCount(mCta1, 3, 3);
-        verifyTabModelTabCount(mCta2, 2, 2);
     }
 
     @Test

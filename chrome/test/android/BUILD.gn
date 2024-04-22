@@ -472,6 +472,7 @@ android_library("chrome_java_test_support_common") {
     "//services/device/public/mojom:mojom_java",
     "//third_party/android_deps:chromium_play_services_availability_java",
     "//third_party/android_deps:espresso_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:org_mockito_mockito_core_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",

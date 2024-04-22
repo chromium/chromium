@@ -6,10 +6,14 @@ package org.chromium.chrome.browser.tab;
 
 import androidx.annotation.Nullable;
 
+import com.google.common.collect.Lists;
+
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
+
+import java.util.List;
 
 /** Tab used for various testing purposes. */
 public class MockTab extends TabImpl {
@@ -203,5 +207,9 @@ public class MockTab extends TabImpl {
     @Override
     public void setTitle(String title) {
         super.setTitle(title);
+    }
+
+    public List<TabObserver> getObservers() {
+        return Lists.newArrayList(mObservers);
     }
 }

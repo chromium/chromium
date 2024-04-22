@@ -797,10 +797,6 @@ public class TabGroupModelFilter extends TabModelFilter {
 
     @Override
     protected void closeTab(Tab tab) {
-        closeTabInternal(tab, /* fixRootIds= */ true);
-    }
-
-    private void closeTabInternal(Tab tab, boolean fixRootIds) {
         int rootId = tab.getRootId();
         if (tab.isIncognito() != isIncognito()
                 || mRootIdToGroupMap.get(rootId) == null
@@ -812,7 +808,7 @@ public class TabGroupModelFilter extends TabModelFilter {
         group.removeTab(tab.getId());
 
         // If the removed tab's id was the root id, we need to select a new root id.
-        if (fixRootIds && tab.getRootId() == tab.getId()) {
+        if (tab.getRootId() == tab.getId()) {
             int nextRootId = group.getLastShownTabId();
             if (nextRootId != INVALID_TAB_INDEX && nextRootId != rootId) {
                 // Use the comprehensive model to ensure undoable closures that happened before our
@@ -912,9 +908,7 @@ public class TabGroupModelFilter extends TabModelFilter {
 
     @Override
     protected void removeTab(Tab tab) {
-        // The tab is being reparented. Do not adjust the root id otherwise it will be lost on the
-        // other side.
-        closeTabInternal(tab, /* fixRootIds= */ false);
+        closeTab(tab);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
