@@ -12,9 +12,10 @@
 
 // NetworkAnnotationMonitor monitors network calls reported via the `Report`
 // method. Network calls are identified by their Network Annotation hash_code.
-// It also maintains a set of network annotations that are expected to be
-// disabled. When a network annotation that matches an expected disabled
-// annotation is reported, then an UMA metric is emitted for that hash_code.
+// It reads from profile prefs containing a set of network annotations that
+// are expected to be disabled based on policy values. When a network annotation
+// that matches an expected disabled annotation is reported, then an UMA metric
+// is emitted for that hash_code.
 class NetworkAnnotationMonitor
     : public network::mojom::NetworkAnnotationMonitor {
  public:
@@ -25,16 +26,12 @@ class NetworkAnnotationMonitor
 
   mojo::PendingRemote<network::mojom::NetworkAnnotationMonitor> GetClient();
 
-  void SetDisabledAnnotationsForTesting(
-      base::flat_set<int32_t> disabled_annotations);
-
   void FlushForTesting();
 
  private:
   void Report(int32_t hash_code) override;
 
   mojo::Receiver<network::mojom::NetworkAnnotationMonitor> receiver_{this};
-  base::flat_set<int32_t> disabled_annotations_;
 };
 
 #endif  // CHROME_BROWSER_NET_NETWORK_ANNOTATION_MONITOR_H_

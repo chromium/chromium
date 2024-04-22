@@ -2482,7 +2482,6 @@ if (!is_android) {
       "../browser/net/log_net_log_browsertest.cc",
       "../browser/net/net_error_tab_helper_browsertest.cc",
       "../browser/net/netinfo_network_quality_estimator_holdback_browsertest.cc",
-      "../browser/net/network_annotation_monitor_browsertest.cc",
       "../browser/net/network_connection_tracker_browsertest.cc",
       "../browser/net/network_context_configuration_browsertest.cc",
       "../browser/net/network_quality_estimator_browsertest.cc",
@@ -3260,6 +3259,7 @@ if (!is_android) {
         "../browser/chromeos/video_conference/video_conference_media_listener_browsertest.cc",
         "../browser/download/notification/download_notification_browsertest.cc",
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_cros_browsertest.cc",
+        "../browser/net/network_annotation_monitor_browsertest.cc",
       ]
     }
 
@@ -6302,7 +6302,6 @@ test("unit_tests") {
     "../browser/net/dns_probe_service_factory_unittest.cc",
     "../browser/net/explicitly_allowed_network_ports_policy_handler_unittest.cc",
     "../browser/net/net_error_tab_helper_unittest.cc",
-    "../browser/net/network_annotation_monitor_unittest.cc",
     "../browser/net/probe_message_unittest.cc",
     "../browser/net/secure_dns_config_unittest.cc",
     "../browser/net/secure_dns_policy_handler_unittest.cc",
@@ -8465,8 +8464,10 @@ test("unit_tests") {
       "../browser/extensions/api/document_scan/fake_document_scan_ash.h",
       "../browser/hid/hid_pinned_notification_unittest.cc",
       "../browser/media/platform_verification_chromeos_unittest.cc",
+      "../browser/net/network_annotation_monitor_unittest.cc",
       "../browser/performance_manager/policies/oom_score_policy_chromeos_unittest.cc",
       "../browser/performance_manager/policies/report_page_processes_policy_unittest.cc",
+      "../browser/policy/annotations/blocklist_handler_unittest.cc",
       "../browser/policy/system_features_disable_list_policy_handler_unittest.cc",
       "../browser/renderer_context_menu/read_write_card_observer_unittest.cc",
       "../browser/speech/tts_crosapi_util_unittest.cc",

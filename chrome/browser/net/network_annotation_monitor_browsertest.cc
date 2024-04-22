@@ -8,9 +8,11 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/policy/policy_constants.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
@@ -26,15 +28,15 @@ enum class TestCase {
   kDisabled,
 };
 
-// Network annotation that will trigger a violation. Note: This annotation is
-// currently hard-coded as a "disabled" annotation in the feature itself. In the
-// future, this test should set specific policy values to disable this
-// annotation.
+// Network annotation that can trigger a violation.
 constexpr net::NetworkTrafficAnnotationTag kTestDisabledAnnotation =
     net::DefineNetworkTrafficAnnotation("autofill_query", "");
+// Policy that controls the above annotation. When set to false, any occurrences
+// of the above annotation should trigger a violation.
+constexpr char kTestPolicy[] = "PasswordManagerEnabled";
 
 class NetworkAnnotationMonitorBrowserTest
-    : public InProcessBrowserTest,
+    : public policy::PolicyTest,
       public ::testing::WithParamInterface<TestCase> {
  public:
   NetworkAnnotationMonitorBrowserTest() {
@@ -66,6 +68,14 @@ class NetworkAnnotationMonitorBrowserTest
 
 IN_PROC_BROWSER_TEST_P(NetworkAnnotationMonitorBrowserTest, FeatureTest) {
   base::HistogramTester histogram_tester;
+
+  policy::PolicyMap policies;
+  SetPolicy(&policies, kTestPolicy, base::Value(false));
+  // Disable secondary profiles policy since we skip reporting on lacros when
+  // this is enabled.
+  SetPolicy(&policies, policy::key::kLacrosSecondaryProfilesAllowed,
+            base::Value(false));
+  provider_.UpdateChromePolicy(policies);
 
   // Send network request with arbitrary network annotation that will never
   // trigger a violation.

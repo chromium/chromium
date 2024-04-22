@@ -167,8 +167,10 @@ class SystemNetworkContextManager {
   // use only.
   void FlushNetworkInterfaceForTesting();
 
+#if BUILDFLAG(IS_CHROMEOS)
   // Call |FlushForTesting()| on NetworkAnnotationMonitor. For test use only.
   void FlushNetworkAnnotationMonitorForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   static network::mojom::HttpAuthStaticParamsPtr
   GetHttpAuthStaticParamsForTesting();
@@ -284,7 +286,9 @@ class SystemNetworkContextManager {
 
   static std::optional<bool> certificate_transparency_enabled_for_testing_;
 
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<NetworkAnnotationMonitor> network_annotation_monitor_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX)
   GssapiLibraryLoadObserver gssapi_library_loader_observer_{this};

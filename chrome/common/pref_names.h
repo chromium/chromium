@@ -1905,6 +1905,11 @@ inline constexpr char kPrefHasCompletedComposeFRE[] =
 inline constexpr char kChromeDataRegionSetting[] = "chrome_data_region_setting";
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
+// Network annotations that are expected to be disabled based on policy values.
+// Stored as a dict with annotation hash codes as keys.
+inline constexpr char kNetworkAnnotationBlocklist[] =
+    "network_annotation_blocklist";
+
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
 
