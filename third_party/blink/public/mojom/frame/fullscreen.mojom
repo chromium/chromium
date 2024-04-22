@@ -13,8 +13,8 @@ struct FullscreenOptions {
   // overlay navigation bars.
   bool prefers_status_bar = false;
 
-  // If the Window Placement experiment is enabled, fullscreen may be requested
-  // on a particular display. In that case, this is the requested display's id.
+  // The display's id, when fullscreen is requested on a particular display.
+  // See the Window Management API: https://w3c.github.io/window-management/
   int64 display_id = -1;
 
   // True if this should be treated as a "webkit"-prefixed fullscreen request.
