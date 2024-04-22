@@ -588,6 +588,11 @@ PopupViewViews::GetPopupScreenLocation() const {
           static_cast<views::BubbleBorder*>(border)->arrow())};
 }
 
+bool PopupViewViews::HasFocus() const {
+  // TODO(b/325246516): Add checking whether the search bar has focus.
+  return false;
+}
+
 void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,
                                                bool visible) {
   if (!visible || !controller_) {

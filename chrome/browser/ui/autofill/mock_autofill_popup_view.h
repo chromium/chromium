@@ -41,6 +41,7 @@ class MockAutofillPopupView : public AutofillPopupView {
               GetPopupScreenLocation,
               (),
               (const override));
+  MOCK_METHOD(bool, HasFocus, (), (const override));
 
   base::WeakPtr<AutofillPopupView> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();

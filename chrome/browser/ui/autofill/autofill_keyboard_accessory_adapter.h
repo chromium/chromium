@@ -67,6 +67,7 @@ class AutofillKeyboardAccessoryAdapter
   std::optional<int32_t> GetAxUniqueId() override;
   base::WeakPtr<AutofillPopupView> CreateSubPopupView(
       base::WeakPtr<AutofillSuggestionController> controller) override;
+  bool HasFocus() const override;
 
   // AutofillSuggestionController:
   // Hidden: void OnSuggestionsChanged() override;

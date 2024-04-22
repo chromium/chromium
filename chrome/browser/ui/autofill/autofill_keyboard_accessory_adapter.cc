@@ -81,6 +81,11 @@ AutofillKeyboardAccessoryAdapter::CreateSubPopupView(
   NOTREACHED_NORETURN();
 }
 
+bool AutofillKeyboardAccessoryAdapter::HasFocus() const {
+  // Having focus on view is relevant for the desktop implementation only.
+  NOTREACHED_NORETURN();
+}
+
 // AutofillSuggestionController implementation.
 
 void AutofillKeyboardAccessoryAdapter::AcceptSuggestion(int index) {

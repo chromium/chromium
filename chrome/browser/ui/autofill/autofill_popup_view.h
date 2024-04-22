@@ -64,6 +64,9 @@ class AutofillPopupView {
   virtual std::optional<AutofillClient::PopupScreenLocation>
   GetPopupScreenLocation() const = 0;
 
+  // Indicates whether any of the view elements currently has focus.
+  virtual bool HasFocus() const = 0;
+
   // Returns a weak pointer to itself.
   virtual base::WeakPtr<AutofillPopupView> GetWeakPtr() = 0;
 

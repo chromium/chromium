@@ -175,6 +175,28 @@ TEST_F(AutofillPopupControllerImplTest,
 }
 
 TEST_F(AutofillPopupControllerImplTest,
+       PopupHidesOnWebContentsFocusLossIfViewIsNotFocused) {
+  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
+
+  EXPECT_CALL(client().popup_view(), HasFocus).WillOnce(Return(false));
+  EXPECT_CALL(client().popup_view(), Hide);
+  client().popup_controller(manager()).Hide(PopupHidingReason::kFocusChanged);
+
+  Mock::VerifyAndClearExpectations(&client().popup_view());
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       PopupDoesntHideOnWebContentsFocusLossIfViewIsFocused) {
+  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
+
+  EXPECT_CALL(client().popup_view(), HasFocus).WillOnce(Return(true));
+  EXPECT_CALL(client().popup_view(), Hide).Times(0);
+  client().popup_controller(manager()).Hide(PopupHidingReason::kFocusChanged);
+
+  Mock::VerifyAndClearExpectations(&client().popup_view());
+}
+
+TEST_F(AutofillPopupControllerImplTest,
        RemoveAutocompleteSuggestion_IgnoresClickOutsideCheck) {
   ShowSuggestions(manager(), {PopupItemId::kAutocompleteEntry,
                               PopupItemId::kAutocompleteEntry});

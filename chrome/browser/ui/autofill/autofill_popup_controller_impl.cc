@@ -272,6 +272,12 @@ void AutofillPopupControllerImpl::Hide(PopupHidingReason reason) {
                           reason == PopupHidingReason::kEndEditing)) {
     return;  // Don't close the popup while waiting for an update.
   }
+
+  if (reason == PopupHidingReason::kFocusChanged && view_ &&
+      view_->HasFocus()) {
+    return;
+  }
+
   // For tests, keep open when hiding is due to external stimuli.
   if (keep_popup_open_for_testing_ &&
       (reason == PopupHidingReason::kWidgetChanged ||
