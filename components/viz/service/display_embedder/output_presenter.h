@@ -111,11 +111,6 @@ class VIZ_SERVICE_EXPORT OutputPresenter {
       gfx::ColorSpace color_space,
       gfx::Size image_size,
       size_t num_images) = 0;
-  // This function exists because the Fuchsia call to 'AllocateImages' does not
-  // support single image allocation.
-  virtual std::unique_ptr<Image> AllocateSingleImage(
-      gfx::ColorSpace color_space,
-      gfx::Size image_size);
   virtual void Present(SwapCompletionCallback completion_callback,
                        BufferPresentedCallback presentation_callback,
                        gfx::FrameData data) = 0;

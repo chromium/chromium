@@ -115,23 +115,15 @@ gl::OverlayImage PresenterImageGL::GetOverlayImage(
 
 }  // namespace
 
-// static
-const uint32_t OutputPresenterGL::kDefaultSharedImageUsage =
-    gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-    gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
-    gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
-
 OutputPresenterGL::OutputPresenterGL(
     scoped_refptr<gl::Presenter> presenter,
     SkiaOutputSurfaceDependency* deps,
     gpu::SharedImageFactory* factory,
-    gpu::SharedImageRepresentationFactory* representation_factory,
-    uint32_t shared_image_usage)
+    gpu::SharedImageRepresentationFactory* representation_factory)
     : presenter_(presenter),
       dependency_(deps),
       shared_image_factory_(factory),
-      shared_image_representation_factory_(representation_factory),
-      shared_image_usage_(shared_image_usage) {}
+      shared_image_representation_factory_(representation_factory) {}
 
 OutputPresenterGL::~OutputPresenterGL() = default;
 
@@ -203,13 +195,17 @@ std::vector<std::unique_ptr<OutputPresenter::Image>>
 OutputPresenterGL::AllocateImages(gfx::ColorSpace color_space,
                                   gfx::Size image_size,
                                   size_t num_images) {
+  const uint32_t usage = gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                         gpu::SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+                         gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT;
+
   std::vector<std::unique_ptr<Image>> images;
   for (size_t i = 0; i < num_images; ++i) {
     auto image = std::make_unique<PresenterImageGL>(
         shared_image_factory_, shared_image_representation_factory_,
         dependency_);
-    if (!image->Initialize(image_size, color_space, image_format_,
-                           shared_image_usage_)) {
+    if (!image->Initialize(image_size, color_space, image_format_, usage)) {
       DLOG(ERROR) << "Failed to initialize image.";
       return {};
     }
@@ -217,19 +213,6 @@ OutputPresenterGL::AllocateImages(gfx::ColorSpace color_space,
   }
 
   return images;
-}
-
-std::unique_ptr<OutputPresenter::Image> OutputPresenterGL::AllocateSingleImage(
-    gfx::ColorSpace color_space,
-    gfx::Size image_size) {
-  auto image = std::make_unique<PresenterImageGL>(
-      shared_image_factory_, shared_image_representation_factory_, dependency_);
-  if (!image->Initialize(image_size, color_space, image_format_,
-                         shared_image_usage_)) {
-    DLOG(ERROR) << "Failed to initialize image.";
-    return nullptr;
-  }
-  return image;
 }
 
 void OutputPresenterGL::Present(SwapCompletionCallback completion_callback,

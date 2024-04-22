@@ -154,10 +154,4 @@ void OutputPresenter::Image::SetNotPurgeable() {
   deps_->GetSharedImageManager()->SetPurgeable(mailbox_, false);
 }
 
-std::unique_ptr<OutputPresenter::Image> OutputPresenter::AllocateSingleImage(
-    gfx::ColorSpace color_space,
-    gfx::Size image_size) {
-  return nullptr;
-}
-
 }  // namespace viz
