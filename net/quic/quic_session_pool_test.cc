@@ -2667,9 +2667,13 @@ TEST_P(QuicSessionPoolTest, MigratedToBlockedSocketAfterProbing) {
   quic_data2.AddWrite(ASYNC,
                       client_maker_.MakeCombinedRetransmissionPacket(
                           /*original_packet_numbers=*/{1, 2}, packet_num++));
-  quic_data2.AddWrite(
-      SYNCHRONOUS,
-      client_maker_.MakeAckAndRetireConnectionIdPacket(packet_num++, 2, 1, 0u));
+  quic_data2.AddWrite(SYNCHRONOUS,
+                      client_maker_.Packet(packet_num++)
+                          .AddAckFrame(/*first_received=*/1,
+                                       /*largest_received=*/2,
+                                       /*smallest_received=*/1)
+                          .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                          .Build());
   quic_data2.AddWrite(SYNCHRONOUS,
                       client_maker_.MakeDataPacket(
                           packet_num++, GetQpackDecoderStreamId(), false,
@@ -4228,10 +4232,12 @@ TEST_P(QuicSessionPoolTest, MultiPortSessionWithMigration) {
       ASYNC, ConstructOkResponsePacket(
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false));
   quic_data2.AddReadPause();
-  quic_data2.AddWrite(
-      ASYNC, client_maker_.MakeAckAndPingPacket(4,
-                                                /*largest_received=*/2,
-                                                /*smallest_received=*/1));
+  quic_data2.AddWrite(ASYNC, client_maker_.Packet(4)
+                                 .AddAckFrame(/*first_received=*/1,
+                                              /*largest_received=*/2,
+                                              /*smallest_received=*/1)
+                                 .AddPingFrame()
+                                 .Build());
   quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
                                        5, /*sequence_number=*/0u));
   quic_data2.AddRead(ASYNC, server_maker_.MakeAckPacket(3, 5, 1));
@@ -5473,10 +5479,12 @@ void QuicSessionPoolTest::TestSimplePortMigrationOnPathDegrading() {
                  2, GetNthClientInitiatedBidirectionalStreamId(0), false));
   quic_data2.AddReadPauseForever();
   quic_data2.AddWrite(SYNCHRONOUS,
-                      client_maker_.MakeAckAndRetireConnectionIdPacket(
-                          packet_number++,
-                          /*largest_received=*/2,
-                          /*smallest_received=*/1, /*sequence_number=*/0u));
+                      client_maker_.Packet(packet_number++)
+                          .AddAckFrame(/*first_received=*/1,
+                                       /*largest_received=*/2,
+                                       /*smallest_received=*/1)
+                          .AddRetireConnectionIdFrame(/*sequence_number=*/0u)
+                          .Build());
   quic_data2.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakeDataPacket(
@@ -5680,8 +5688,12 @@ TEST_P(QuicSessionPoolTest, MultiplePortMigrationsExceedsMaxLimit_iQUICStyle) {
                           client_maker_.MakePingPacket(packet_number++));
     } else if (i != 4) {
       quic_data2.AddWrite(SYNCHRONOUS,
-                          client_maker_.MakeAckAndRetireConnectionIdPacket(
-                              packet_number++, 1 + 2 * i, 1 + 2 * i, i));
+                          client_maker_.Packet(packet_number++)
+                              .AddAckFrame(/*first_received=*/1,
+                                           /*largest_received=*/1 + 2 * i,
+                                           /*smallest_received=*/1 + 2 * i)
+                              .AddRetireConnectionIdFrame(/*sequence_number=*/i)
+                              .Build());
       quic_data2.AddWrite(SYNCHRONOUS,
                           client_maker_.MakePingPacket(packet_number++));
     }
@@ -5822,8 +5834,12 @@ TEST_P(QuicSessionPoolTest,
   quic_data2.AddRead(ASYNC, server_maker_.MakeConnectivityProbingPacket(2));
   quic_data2.AddReadPauseForever();
   // Ping packet to send after migration is completed.
-  quic_data2.AddWrite(
-      ASYNC, client_maker_.MakeAckAndPingPacket(packet_number++, 2, 1));
+  quic_data2.AddWrite(ASYNC, client_maker_.Packet(packet_number++)
+                                 .AddAckFrame(/*first_received=*/1,
+                                              /*largest_received=*/2,
+                                              /*smallest_received=*/1)
+                                 .AddPingFrame()
+                                 .Build());
 
   quic_data2.AddWrite(SYNCHRONOUS,
                       client_maker_.MakeRetireConnectionIdPacket(
@@ -6960,10 +6976,15 @@ TEST_P(QuicSessionPoolTest, MigrateBackToDefaultPostMigrationOnWriteError) {
   quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeRetireConnectionIdPacket(
                                        packet_num++,
                                        /*sequence_number=*/0u));
-  quic_data2.AddRead(ASYNC, server_maker_.MakeAckAndNewConnectionIdPacket(
-                                peer_packet_num++, packet_num - 1, 1u, cid2,
-                                /*sequence_number=*/2u,
-                                /*retire_prior_to=*/1u));
+  quic_data2.AddRead(ASYNC,
+                     server_maker_.Packet(peer_packet_num++)
+                         .AddAckFrame(1, packet_num - 1, 1u)
+                         .AddNewConnectionIdFrame(
+                             cid2,
+                             /*sequence_number=*/2u,
+                             /*retire_prior_to=*/1u,
+                             quic::QuicUtils::GenerateStatelessResetToken(cid2))
+                         .Build());
   quic_data2.AddRead(ASYNC,
                      ConstructOkResponsePacket(
                          peer_packet_num++,
@@ -10527,11 +10548,12 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
                                                      /*retire_prior_to=*/1u));
   ++packet_num;  // Probing packet on default network encounters write error.
   alternate_socket_data.AddWrite(
-      ASYNC, client_maker_.MakeAckAndRetireConnectionIdPacket(
-                 packet_num++,
-                 /*largest_received=*/peer_packet_num - 1,
-                 /*smallest_received=*/1,
-                 /*sequence_number=*/2u));
+      ASYNC, client_maker_.Packet(packet_num++)
+                 .AddAckFrame(/*first_received=*/1,
+                              /*largest_received=*/peer_packet_num - 1,
+                              /*smallest_received=*/1)
+                 .AddRetireConnectionIdFrame(/*sequence_number=*/2u)
+                 .Build());
   alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
       ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid3,
@@ -10539,11 +10561,12 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
                                                      /*retire_prior_to=*/1u));
   ++packet_num;  // Probing packet on default network encounters write error.
   alternate_socket_data.AddWrite(
-      ASYNC, client_maker_.MakeAckAndRetireConnectionIdPacket(
-                 packet_num++,
-                 /*largest_received=*/peer_packet_num - 1,
-                 /*smallest_received=*/1,
-                 /*sequence_number=*/3u));
+      ASYNC, client_maker_.Packet(packet_num++)
+                 .AddAckFrame(/*first_received=*/1,
+                              /*largest_received=*/peer_packet_num - 1,
+                              /*smallest_received=*/1)
+                 .AddRetireConnectionIdFrame(/*sequence_number=*/3u)
+                 .Build());
   alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
       ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid4,
@@ -10551,11 +10574,12 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
                                                      /*retire_prior_to=*/1u));
   ++packet_num;  // Probing packet on default network encounters write error.
   alternate_socket_data.AddWrite(
-      ASYNC, client_maker_.MakeAckAndRetireConnectionIdPacket(
-                 packet_num++,
-                 /*largest_received=*/peer_packet_num - 1,
-                 /*smallest_received=*/1,
-                 /*sequence_number=*/4u));
+      ASYNC, client_maker_.Packet(packet_num++)
+                 .AddAckFrame(/*first_received=*/1,
+                              /*largest_received=*/peer_packet_num - 1,
+                              /*smallest_received=*/1)
+                 .AddRetireConnectionIdFrame(/*sequence_number=*/4u)
+                 .Build());
   alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
       ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid5,
@@ -10563,11 +10587,12 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
                                                      /*retire_prior_to=*/1u));
   ++packet_num;  // Probing packet on default network encounters write error.
   alternate_socket_data.AddWrite(
-      ASYNC, client_maker_.MakeAckAndRetireConnectionIdPacket(
-                 packet_num++,
-                 /*largest_received=*/peer_packet_num - 1,
-                 /*smallest_received=*/1,
-                 /*sequence_number=*/5u));
+      ASYNC, client_maker_.Packet(packet_num++)
+                 .AddAckFrame(/*first_received=*/1,
+                              /*largest_received=*/peer_packet_num - 1,
+                              /*smallest_received=*/1)
+                 .AddRetireConnectionIdFrame(/*sequence_number=*/5u)
+                 .Build());
   alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
       ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid6,
@@ -10575,11 +10600,12 @@ TEST_P(QuicSessionPoolTest, DefaultIdleMigrationPeriod) {
                                                      /*retire_prior_to=*/1u));
   ++packet_num;  // Probing packet on default network encounters write error.
   alternate_socket_data.AddWrite(
-      ASYNC, client_maker_.MakeAckAndRetireConnectionIdPacket(
-                 packet_num++,
-                 /*largest_received=*/peer_packet_num - 1,
-                 /*smallest_received=*/1,
-                 /*sequence_number=*/6u));
+      ASYNC, client_maker_.Packet(packet_num++)
+                 .AddAckFrame(/*first_received=*/1,
+                              /*largest_received=*/peer_packet_num - 1,
+                              /*smallest_received=*/1)
+                 .AddRetireConnectionIdFrame(/*sequence_number=*/6u)
+                 .Build());
   alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
       ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid7,
@@ -10736,11 +10762,12 @@ TEST_P(QuicSessionPoolTest, CustomIdleMigrationPeriod) {
                                                      /*retire_prior_to=*/1u));
   ++packet_num;  // Probing packet on default network encounters write error.
   alternate_socket_data.AddWrite(
-      ASYNC, client_maker_.MakeAckAndRetireConnectionIdPacket(
-                 packet_num++,
-                 /*largest_received=*/peer_packet_num - 1,
-                 /*smallest_received=*/1,
-                 /*sequence_number=*/2u));
+      ASYNC, client_maker_.Packet(packet_num++)
+                 .AddAckFrame(/*first_received=*/1,
+                              /*largest_received=*/peer_packet_num - 1,
+                              /*smallest_received=*/1)
+                 .AddRetireConnectionIdFrame(/*sequence_number=*/2u)
+                 .Build());
   alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
       ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid3,
@@ -10748,11 +10775,12 @@ TEST_P(QuicSessionPoolTest, CustomIdleMigrationPeriod) {
                                                      /*retire_prior_to=*/1u));
   ++packet_num;  // Probing packet on default network encounters write error.
   alternate_socket_data.AddWrite(
-      ASYNC, client_maker_.MakeAckAndRetireConnectionIdPacket(
-                 packet_num++,
-                 /*largest_received=*/peer_packet_num - 1,
-                 /*smallest_received=*/1,
-                 /*sequence_number=*/3u));
+      ASYNC, client_maker_.Packet(packet_num++)
+                 .AddAckFrame(/*first_received=*/1,
+                              /*largest_received=*/peer_packet_num - 1,
+                              /*smallest_received=*/1)
+                 .AddRetireConnectionIdFrame(/*sequence_number=*/3u)
+                 .Build());
   alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
       ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid4,
@@ -10760,11 +10788,12 @@ TEST_P(QuicSessionPoolTest, CustomIdleMigrationPeriod) {
                                                      /*retire_prior_to=*/1u));
   ++packet_num;  // Probing packet on default network encounters write error.
   alternate_socket_data.AddWrite(
-      ASYNC, client_maker_.MakeAckAndRetireConnectionIdPacket(
-                 packet_num++,
-                 /*largest_received=*/peer_packet_num - 1,
-                 /*smallest_received=*/1,
-                 /*sequence_number=*/4u));
+      ASYNC, client_maker_.Packet(packet_num++)
+                 .AddAckFrame(/*first_received=*/1,
+                              /*largest_received=*/peer_packet_num - 1,
+                              /*smallest_received=*/1)
+                 .AddRetireConnectionIdFrame(/*sequence_number=*/4u)
+                 .Build());
   alternate_socket_data.AddReadPause();
   alternate_socket_data.AddRead(
       ASYNC, server_maker_.MakeNewConnectionIdPacket(peer_packet_num++, cid5,

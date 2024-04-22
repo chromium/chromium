@@ -159,8 +159,9 @@ class QuicChromiumClientSessionTest
 
  protected:
   void Initialize() {
-    if (socket_data_)
+    if (socket_data_) {
       socket_factory_.AddSocketDataProvider(socket_data_.get());
+    }
     std::unique_ptr<DatagramClientSocket> socket =
         socket_factory_.CreateDatagramClientSocket(
             DatagramSocket::DEFAULT_BIND, NetLog::Get(), NetLogSource());
@@ -215,8 +216,9 @@ class QuicChromiumClientSessionTest
 
   void TearDown() override {
     if (session_) {
-      if (connectivity_monitor_)
+      if (connectivity_monitor_) {
         session_->RemoveConnectivityObserver(connectivity_monitor_.get());
+      }
       session_->CloseSessionOnError(
           ERR_ABORTED, quic::QUIC_INTERNAL_ERROR,
           quic::ConnectionCloseBehavior::SILENT_CLOSE);
@@ -1522,10 +1524,13 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
   MockQuicData quic_data2(version_);
   client_maker_.set_connection_id(cid_on_new_path);
   quic_data2.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
-  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeAckAndPingPacket(
-                                       packet_num++,
+  quic_data2.AddWrite(SYNCHRONOUS,
+                      client_maker_.Packet(packet_num++)
+                          .AddAckFrame(/*first_received=*/1,
                                        /*largest_received=*/peer_packet_num - 1,
-                                       /*smallest_received=*/1));
+                                       /*smallest_received=*/1)
+                          .AddPingFrame()
+                          .Build());
   quic_data2.AddWrite(
       SYNCHRONOUS,
       client_maker_.MakeDataPacket(
@@ -1601,11 +1606,13 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
   for (size_t i = 0; i < kMaxReadersPerQuicSession - 1; ++i) {
     MockQuicData quic_data2(version_);
     client_maker_.set_connection_id(next_cid);
-    quic_data2.AddWrite(SYNCHRONOUS,
-                        client_maker_.MakeAckAndPingPacket(
-                            packet_num++,
-                            /*largest_received=*/peer_packet_num - 1,
-                            /*smallest_received=*/1));
+    quic_data2.AddWrite(
+        SYNCHRONOUS, client_maker_.Packet(packet_num++)
+                         .AddAckFrame(/*first_received=*/1,
+                                      /*largest_received=*/peer_packet_num - 1,
+                                      /*smallest_received=*/1)
+                         .AddPingFrame()
+                         .Build());
     quic_data2.AddRead(ASYNC, ERR_IO_PENDING);
     quic_data2.AddWrite(ASYNC,
                         client_maker_.MakeRetireConnectionIdPacket(
@@ -1718,11 +1725,13 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketReadError) {
 
   MockQuicData quic_data2(version_);
   client_maker_.set_connection_id(cid_on_new_path);
-  quic_data2.AddWrite(SYNCHRONOUS, client_maker_.MakeAckAndPingPacket(
-                                       packet_num++,
-
+  quic_data2.AddWrite(SYNCHRONOUS,
+                      client_maker_.Packet(packet_num++)
+                          .AddAckFrame(/*first_received=*/1,
                                        /*largest_received=*/peer_packet_num - 1,
-                                       /*smallest_received=*/1));
+                                       /*smallest_received=*/1)
+                          .AddPingFrame()
+                          .Build());
   quic_data2.AddRead(ASYNC, ERR_IO_PENDING);
   quic_data2.AddRead(ASYNC, server_maker_.MakePingPacket(1));
   quic_data2.AddRead(ASYNC, ERR_IO_PENDING);

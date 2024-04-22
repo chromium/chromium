@@ -10,9 +10,11 @@
 #include <stddef.h>
 #include <sys/types.h>
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -30,8 +32,34 @@
 
 namespace net::test {
 
+class QuicTestPacketBuilder;
+
 class QuicTestPacketMaker {
  public:
+  // A container for the state of a connection, tracking stream offsets,
+  // frames already sent, and so on.
+  struct ConnectionState {
+    ConnectionState();
+    ~ConnectionState();
+
+    // Save the given stream data to last for the duration of this packet build.
+    std::string_view SaveStreamData(std::string_view data);
+
+    void Reset();
+
+    // Current offset of each QUIC stream on this connection.
+    std::map<quic::QuicStreamId, quic::QuicStreamOffset> stream_offsets;
+
+    // Save a copy of stream frame data that QuicStreamFrame objects can refer
+    // to.
+    std::vector<std::unique_ptr<std::string>> saved_stream_data;
+
+    // If `save_packet_frames_` is true, save generated packets in
+    // `saved_frames_`, allowing retransmission packets to be built.
+    bool save_packet_frames = false;
+    std::map<quic::QuicPacketNumber, quic::QuicFrames> saved_frames;
+  };
+
   // |client_priority_uses_incremental| affects the output of any method that
   // includes HTTP3 priority data. The protocol default is to omit the
   // incremental flag in the priority data but HTTP streams may enable it
@@ -43,11 +71,10 @@ class QuicTestPacketMaker {
                       quic::Perspective perspective,
                       bool client_priority_uses_incremental = false,
                       bool use_priority_header = false);
+  ~QuicTestPacketMaker();
 
   QuicTestPacketMaker(const QuicTestPacketMaker&) = delete;
   QuicTestPacketMaker& operator=(const QuicTestPacketMaker&) = delete;
-
-  ~QuicTestPacketMaker();
 
   void set_hostname(const std::string& host);
 
@@ -59,72 +86,53 @@ class QuicTestPacketMaker {
     connection_id_ = connection_id;
   }
 
-  std::unique_ptr<quic::QuicReceivedPacket> MakeConnectivityProbingPacket(
-      uint64_t num);
+  // Begin building a packet. Call methods on the returned builder to
+  // define the frames in the packet, and finish with its `Build` method.
+  QuicTestPacketBuilder& Packet(uint64_t packet_number);
 
-  std::unique_ptr<quic::QuicReceivedPacket> MakePingPacket(uint64_t num);
+  std::unique_ptr<quic::QuicReceivedPacket> MakeConnectivityProbingPacket(
+      uint64_t packet_number);
+
+  std::unique_ptr<quic::QuicReceivedPacket> MakePingPacket(
+      uint64_t packet_number);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeRetireConnectionIdPacket(
-      uint64_t num,
+      uint64_t packet_number,
       uint64_t sequence_number);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeNewConnectionIdPacket(
-      uint64_t num,
-      const quic::QuicConnectionId& cid,
-      uint64_t sequence_number,
-      uint64_t retire_prior_to);
-
-  std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndNewConnectionIdPacket(
-      uint64_t num,
-      uint64_t largest_received,
-      uint64_t smallest_received,
+      uint64_t packet_number,
       const quic::QuicConnectionId& cid,
       uint64_t sequence_number,
       uint64_t retire_prior_to);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeDummyCHLOPacket(
-      uint64_t packet_num);
-
-  std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndPingPacket(
-      uint64_t num,
-      uint64_t largest_received,
-      uint64_t smallest_received);
-
-  std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndRetireConnectionIdPacket(
-      uint64_t num,
-      uint64_t largest_received,
-      uint64_t smallest_received,
-      uint64_t sequence_number);
+      uint64_t packet_number);
 
   std::unique_ptr<quic::QuicReceivedPacket>
   MakeRetransmissionAndRetireConnectionIdPacket(
-      uint64_t num,
+      uint64_t packet_number,
       const std::vector<uint64_t>& original_packet_numbers,
       uint64_t sequence_number);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeStreamsBlockedPacket(
-      uint64_t num,
+      uint64_t packet_number,
       quic::QuicStreamCount stream_count,
       bool unidirectional);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeMaxStreamsPacket(
-      uint64_t num,
+      uint64_t packet_number,
       quic::QuicStreamCount stream_count,
       bool unidirectional);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeRstPacket(
-      uint64_t num,
-      quic::QuicStreamId stream_id,
-      quic::QuicRstStreamErrorCode error_code);
-
-  std::unique_ptr<quic::QuicReceivedPacket> MakeRstPacket(
-      uint64_t num,
+      uint64_t packet_number,
       quic::QuicStreamId stream_id,
       quic::QuicRstStreamErrorCode error_code,
-      bool include_stop_sending_if_v99);
+      bool include_stop_sending_if_v99 = true);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeRstAndDataPacket(
-      uint64_t num,
+      uint64_t packet_number,
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode rst_error_code,
       quic::QuicStreamId data_stream_id,
@@ -132,7 +140,7 @@ class QuicTestPacketMaker {
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeRetransmissionRstAndDataPacket(
       const std::vector<uint64_t>& original_packet_numbers,
-      uint64_t num,
+      uint64_t packet_number,
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode rst_error_code,
       quic::QuicStreamId data_stream_id,
@@ -140,14 +148,14 @@ class QuicTestPacketMaker {
       uint64_t retransmit_frame_count = 0);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeDataAndRstPacket(
-      uint64_t num,
+      uint64_t packet_number,
       quic::QuicStreamId data_stream_id,
       std::string_view data,
       quic::QuicStreamId rst_stream_id,
       quic::QuicRstStreamErrorCode rst_error_code);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeDataRstAndAckPacket(
-      uint64_t num,
+      uint64_t packet_number,
       quic::QuicStreamId data_stream_id,
       std::string_view data,
       quic::QuicStreamId rst_stream_id,
@@ -156,22 +164,15 @@ class QuicTestPacketMaker {
       uint64_t smallest_received);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndRstPacket(
-      uint64_t num,
-      quic::QuicStreamId stream_id,
-      quic::QuicRstStreamErrorCode error_code,
-      uint64_t largest_received,
-      uint64_t smallest_received);
-
-  std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndRstPacket(
-      uint64_t num,
+      uint64_t packet_number,
       quic::QuicStreamId stream_id,
       quic::QuicRstStreamErrorCode error_code,
       uint64_t largest_received,
       uint64_t smallest_received,
-      bool include_stop_sending_if_v99);
+      bool include_stop_sending_if_v99 = true);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeRstAckAndConnectionClosePacket(
-      uint64_t num,
+      uint64_t packet_number,
       quic::QuicStreamId stream_id,
       quic::QuicRstStreamErrorCode error_code,
       uint64_t largest_received,
@@ -180,7 +181,7 @@ class QuicTestPacketMaker {
       const std::string& quic_error_details);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeRstAckAndDataPacket(
-      uint64_t num,
+      uint64_t packet_number,
       quic::QuicStreamId stream_id,
       quic::QuicRstStreamErrorCode error_code,
       uint64_t largest_received,
@@ -190,7 +191,7 @@ class QuicTestPacketMaker {
       std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckDataAndRst(
-      uint64_t num,
+      uint64_t packet_number,
       quic::QuicStreamId stream_id,
       quic::QuicRstStreamErrorCode error_code,
       uint64_t largest_received,
@@ -200,7 +201,7 @@ class QuicTestPacketMaker {
       std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckRstAndDataPacket(
-      uint64_t num,
+      uint64_t packet_number,
       quic::QuicStreamId stream_id,
       quic::QuicRstStreamErrorCode error_code,
       uint64_t largest_received,
@@ -210,14 +211,14 @@ class QuicTestPacketMaker {
       std::string_view data);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeRstAndConnectionClosePacket(
-      uint64_t num,
+      uint64_t packet_number,
       quic::QuicStreamId stream_id,
       quic::QuicRstStreamErrorCode error_code,
       quic::QuicErrorCode quic_error,
       const std::string& quic_error_details);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeDataRstAndConnectionClosePacket(
-      uint64_t num,
+      uint64_t packet_number,
       quic::QuicStreamId data_stream_id,
       std::string_view data,
       quic::QuicStreamId rst_stream_id,
@@ -227,7 +228,7 @@ class QuicTestPacketMaker {
 
   std::unique_ptr<quic::QuicReceivedPacket>
   MakeDataRstAckAndConnectionClosePacket(
-      uint64_t num,
+      uint64_t packet_number,
       quic::QuicStreamId data_stream_id,
       std::string_view data,
       quic::QuicStreamId rst_stream_id,
@@ -239,7 +240,7 @@ class QuicTestPacketMaker {
 
   std::unique_ptr<quic::QuicReceivedPacket>
   MakeDataRstAckAndConnectionClosePacket(
-      uint64_t num,
+      uint64_t packet_number,
       quic::QuicStreamId data_stream_id,
       std::string_view data,
       quic::QuicStreamId rst_stream_id,
@@ -251,12 +252,12 @@ class QuicTestPacketMaker {
       uint64_t frame_type);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeStopSendingPacket(
-      uint64_t num,
+      uint64_t packet_number,
       quic::QuicStreamId stream_id,
       quic::QuicRstStreamErrorCode error_code);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeAckAndConnectionClosePacket(
-      uint64_t num,
+      uint64_t packet_number,
       uint64_t largest_received,
       uint64_t smallest_received,
       quic::QuicErrorCode quic_error,
@@ -264,12 +265,12 @@ class QuicTestPacketMaker {
       uint64_t frame_type);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeConnectionClosePacket(
-      uint64_t num,
+      uint64_t packet_number,
       quic::QuicErrorCode quic_error,
       const std::string& quic_error_details);
 
   std::unique_ptr<quic::QuicReceivedPacket> MakeGoAwayPacket(
-      uint64_t num,
+      uint64_t packet_number,
       quic::QuicErrorCode error_code,
       std::string reason_phrase);
 
@@ -429,14 +430,19 @@ class QuicTestPacketMaker {
   spdy::Http2HeaderBlock GetResponseHeaders(const std::string& status,
                                             const std::string& alt_svc) const;
 
+  // Reset some of the state in the packet maker.
+  // TODO(https://issues.chromium.org/u/1/issues/335279177): reset all state.
   void Reset();
 
-  quic::QuicStreamOffset stream_offset(quic::QuicStreamId stream_id) {
-    return stream_offsets_[stream_id];
-  }
+  quic::ParsedQuicVersion version() { return version_; }
+  quic::Perspective perspective() { return perspective_; }
+  const quic::QuicClock* clock() { return clock_.get(); }
+  quic::EncryptionLevel encryption_level() { return encryption_level_; }
+  quic::QuicLongHeaderType long_header_type() { return long_header_type_; }
+  quic::QuicConnectionId connection_id() { return connection_id_; }
 
   void set_save_packet_frames(bool save_packet_frames) {
-    save_packet_frames_ = save_packet_frames;
+    connection_state_.save_packet_frames = save_packet_frames;
   }
 
   std::string QpackEncodeHeaders(quic::QuicStreamId stream_id,
@@ -445,92 +451,31 @@ class QuicTestPacketMaker {
 
   void set_ecn_codepoint(quic::QuicEcnCodepoint ecn) { ecn_codepoint_ = ecn; }
 
- private:
-  // Initialize header of next packet to build.
-  void InitializeHeader(uint64_t packet_number);
+ protected:
+  friend class QuicTestPacketBuilder;
+  std::unique_ptr<quic::QuicReceivedPacket> FinishPacket(
+      quic::QuicPacketHeader header,
+      quic::QuicFrames frames,
+      std::unique_ptr<quic::QuicStreamFrameDataProducer> data_producer);
 
-  // Add frames to current packet.
-  void AddQuicPaddingFrame();
-  void AddQuicPingFrame();
-  void AddQuicRetireConnectionIdFrame(uint64_t sequence_number);
-  void AddQuicNewConnectionIdFrame(const quic::QuicConnectionId& cid,
-                                   uint64_t sequence_number,
-                                   uint64_t retire_prior_to,
-                                   quic::StatelessResetToken reset_token);
-  void AddQuicMaxStreamsFrame(quic::QuicControlFrameId control_frame_id,
-                              quic::QuicStreamCount stream_count,
-                              bool unidirectional);
-  void AddQuicStreamsBlockedFrame(quic::QuicControlFrameId control_frame_id,
-                                  quic::QuicStreamCount stream_count,
-                                  bool unidirectional);
-  // Use and increase stream's current offset.
-  void AddQuicStreamFrame(quic::QuicStreamId stream_id,
-                          bool fin,
-                          std::string_view data);
-  // Use |offset| and do not change stream's current offset.
-  void AddQuicStreamFrameWithOffset(quic::QuicStreamId stream_id,
-                                    bool fin,
-                                    quic::QuicStreamOffset offset,
-                                    std::string_view data);
-  void AddQuicAckFrame(uint64_t largest_received, uint64_t smallest_received);
-  void AddQuicAckFrame(uint64_t first_received,
-                       uint64_t largest_received,
-                       uint64_t smallest_received,
-                       std::optional<quic::QuicEcnCounts> ecn = std::nullopt);
-  void AddQuicMessageFrame(std::string_view data);
-  void AddQuicRstStreamFrame(quic::QuicStreamId stream_id,
-                             quic::QuicRstStreamErrorCode error_code);
-  void AddQuicConnectionCloseFrame(quic::QuicErrorCode quic_error,
-                                   const std::string& quic_error_details);
-  void AddQuicConnectionCloseFrame(quic::QuicErrorCode quic_error,
-                                   const std::string& quic_error_details,
-                                   uint64_t frame_type);
-  void AddQuicGoAwayFrame(quic::QuicErrorCode error_code,
-                          std::string reason_phrase);
-  void AddQuicPathResponseFrame();
-  void AddQuicPathChallengeFrame();
-  void AddQuicStopSendingFrame(quic::QuicStreamId stream_id,
-                               quic::QuicRstStreamErrorCode error_code);
-  void AddQuicCryptoFrame(quic::EncryptionLevel level,
-                          quic::QuicStreamOffset offset,
-                          quic::QuicPacketLength data_length);
+ private:
   void AddPriorityHeader(spdy::SpdyPriority spdy_priority,
                          spdy::Http2HeaderBlock* headers);
 
-  // Build packet using |header_|, |frames_|, and |data_producer_|,
-  // and clear |frames_| and |data_producer_| afterwards.
-  std::unique_ptr<quic::QuicReceivedPacket> BuildPacket();
-
-  // Build packet using |header_|, |frames|, and |data_producer|.
-  std::unique_ptr<quic::QuicReceivedPacket> BuildPacketImpl(
-      const quic::QuicFrames& frames,
-      quic::QuicStreamFrameDataProducer* data_producer);
-
-  bool ShouldIncludeVersion() const;
-
-  quic::QuicConnectionId DestinationConnectionId() const;
-  quic::QuicConnectionId SourceConnectionId() const;
-
   quic::QuicStreamId GetFirstBidirectionalStreamId() const;
 
-  std::string GenerateHttp3SettingsData();
   std::string GenerateHttp3PriorityData(spdy::SpdyPriority spdy_priority,
                                         quic::QuicStreamId stream_id);
-  std::string GenerateHttp3GreaseData();
-
-  void MaybeAddHttp3SettingsFrames();
-  bool MaybeCoalesceStreamFrame(const quic::QuicFrame& frame);
 
   // Parameters used throughout the lifetime of the class.
-  quic::ParsedQuicVersion version_;
   quic::QuicConnectionId connection_id_;
+  quic::ParsedQuicVersion version_;
   raw_ptr<const quic::QuicClock> clock_;  // Not owned.
   std::string host_;
   quic::NoopDecoderStreamErrorDelegate decoder_stream_error_delegate_;
   quic::test::NoopQpackStreamSenderDelegate encoder_stream_sender_delegate_;
   quic::QpackEncoder qpack_encoder_;
   quic::test::MockRandom random_generator_;
-  std::map<quic::QuicStreamId, quic::QuicStreamOffset> stream_offsets_;
   quic::Perspective perspective_;
   quic::EncryptionLevel encryption_level_ = quic::ENCRYPTION_FORWARD_SECURE;
   quic::QuicLongHeaderType long_header_type_ = quic::INVALID_PACKET_TYPE;
@@ -541,21 +486,126 @@ class QuicTestPacketMaker {
   // Add the priority header to outbound requests
   bool use_priority_header_;
 
-  // Save a copy of stream frame data that QuicStreamFrame objects can refer to.
-  std::vector<std::unique_ptr<std::string>> saved_stream_data_;
-  // If |save_packet_frames_| is true, save generated packets in
-  // |saved_frames_|, allowing retransmission packets to be built.
-  bool save_packet_frames_ = false;
-  std::map<quic::QuicPacketNumber, quic::QuicFrames> saved_frames_;
+  ConnectionState connection_state_;
+
+  // The current packet builder, if one is in progress.
+  std::unique_ptr<QuicTestPacketBuilder> builder_;
+
+  // Explicit Congestion Notification (ECN) codepoint to use when making
+  // packets.
+  quic::QuicEcnCodepoint ecn_codepoint_ = quic::ECN_NOT_ECT;
+};
+
+// A packet builder provides methods for building a new packet, usable via
+// `QuicTestPacketMaker::Packet`. Finish building the packet with the `Build`
+// method.
+//
+// This implements a "builder" pattern, and method calls can be chained:
+//
+//   auto packet = maker.Packet(num)
+//     ->AddFooFrame(..)
+//     ->AddBarFrame(..)
+//     ->Build();
+//
+//  Methods may also be called individually:
+//
+//  auto* builder = maker.Packet(num);
+//  builder->AddFooFrame(..);
+//  builder->AddBarFrame(..);
+//  auto packet = builder->Build();
+class QuicTestPacketBuilder {
+ public:
+  QuicTestPacketBuilder(uint64_t packet_number,
+                        QuicTestPacketMaker* maker,
+                        QuicTestPacketMaker::ConnectionState* connection_state);
+  ~QuicTestPacketBuilder();
+
+  QuicTestPacketBuilder& AddPaddingFrame();
+  QuicTestPacketBuilder& AddPingFrame();
+  QuicTestPacketBuilder& AddRetireConnectionIdFrame(uint64_t sequence_number);
+  QuicTestPacketBuilder& AddNewConnectionIdFrame(
+      const quic::QuicConnectionId& cid,
+      uint64_t sequence_number,
+      uint64_t retire_prior_to,
+      quic::StatelessResetToken reset_token);
+  QuicTestPacketBuilder& AddMaxStreamsFrame(
+      quic::QuicControlFrameId control_frame_id,
+      quic::QuicStreamCount stream_count,
+      bool unidirectional);
+  QuicTestPacketBuilder& AddStreamsBlockedFrame(
+      quic::QuicControlFrameId control_frame_id,
+      quic::QuicStreamCount stream_count,
+      bool unidirectional);
+  // Add a stream frame, using an offset calculated from any previous stream
+  // frames with this stream_id. The given data is copied and may be deallocated
+  // after this call.
+  QuicTestPacketBuilder& AddStreamFrame(quic::QuicStreamId stream_id,
+                                        bool fin,
+                                        std::string_view data);
+  QuicTestPacketBuilder& AddAckFrame(
+      uint64_t first_received,
+      uint64_t largest_received,
+      uint64_t smallest_received,
+      std::optional<quic::QuicEcnCounts> ecn = std::nullopt);
+  // Add a DATAGRAM frame. The given data is copied and may be deallocated after
+  // this call.
+  QuicTestPacketBuilder& AddMessageFrame(std::string_view data);
+  QuicTestPacketBuilder& AddRstStreamFrame(
+      quic::QuicStreamId stream_id,
+      quic::QuicRstStreamErrorCode error_code);
+  QuicTestPacketBuilder& AddConnectionCloseFrame(
+      quic::QuicErrorCode quic_error,
+      const std::string& quic_error_details,
+      uint64_t frame_type = 0);
+  QuicTestPacketBuilder& AddGoAwayFrame(quic::QuicErrorCode error_code,
+                                        std::string reason_phrase);
+  QuicTestPacketBuilder& AddPathResponseFrame();
+  QuicTestPacketBuilder& AddPathChallengeFrame();
+  QuicTestPacketBuilder& AddStopSendingFrame(
+      quic::QuicStreamId stream_id,
+      quic::QuicRstStreamErrorCode error_code);
+  QuicTestPacketBuilder& AddCryptoFrame(quic::EncryptionLevel level,
+                                        quic::QuicStreamOffset offset,
+                                        const quic::QuicData& data);
+
+  // Add a frame to the packet.
+  QuicTestPacketBuilder& AddFrame(quic::QuicFrame frame);
+
+  // Add a frame to the packet, coalescing adjacent stream frames for the same
+  // stream ID into a single frame.
+  QuicTestPacketBuilder& AddFrameWithCoalescing(const quic::QuicFrame& frame);
+
+  // Complete the building process and return the resulting packet.
+  std::unique_ptr<quic::QuicReceivedPacket> Build();
+
+  // Add an H/3 SETTINGS frame on the control stream if one has not already been
+  // sent.
+  QuicTestPacketBuilder& MaybeAddHttp3SettingsFrames();
+
+ private:
+  std::string GenerateHttp3SettingsData() const;
+  std::string GenerateHttp3GreaseData() const;
+
+  void InitializeHeader(uint64_t packet_number);
+
+  quic::QuicConnectionId DestinationConnectionId() const;
+  quic::QuicConnectionId SourceConnectionId() const;
+
+  bool ShouldIncludeVersion() const;
 
   // State necessary for building the current packet.
   quic::QuicPacketHeader header_;
   quic::QuicFrames frames_;
   std::unique_ptr<quic::test::SimpleDataProducer> data_producer_;
 
-  // Explicit Congestion Notification (ECN) codepoint to use when making
-  // packets.
-  quic::QuicEcnCodepoint ecn_codepoint_ = quic::ECN_NOT_ECT;
+  // The `QuicTestPacketMaker` for which we are building this packet.Reset some
+  // of the state in the packet maker.
+  // TODO(https://issues.chromium.org/u/1/issues/335279177): reset all state.
+  raw_ptr<QuicTestPacketMaker> maker_;
+
+  // The connection state. This is owned by `maker_` but borrowed for
+  // the lifetime of this builder.
+  raw_ptr<QuicTestPacketMaker::ConnectionState> connection_state_;
 };
 
 }  // namespace net::test
