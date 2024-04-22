@@ -140,9 +140,7 @@ void MdTextButton::SetCornerRadius(std::optional<float> radius) {
   if (corner_radius_ == radius)
     return;
   corner_radius_ = radius;
-  LabelButton::SetFocusRingCornerRadius(GetCornerRadiusValue());
-  // UpdateColors also updates the background border radius.
-  UpdateColors();
+  OnCornerRadiusValueChanged();
   OnPropertyChanged(&corner_radius_, kPropertyEffectsNone);
 }
 
@@ -151,7 +149,8 @@ std::optional<float> MdTextButton::GetCornerRadius() const {
 }
 
 float MdTextButton::GetCornerRadiusValue() const {
-  return corner_radius_.value_or(0);
+  return corner_radius_.value_or(LayoutProvider::Get()->GetCornerRadiusMetric(
+      ShapeContextTokens::kButtonRadius, size()));
 }
 
 void MdTextButton::OnThemeChanged() {
@@ -184,13 +183,8 @@ void MdTextButton::OnBlur() {
 void MdTextButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   LabelButton::OnBoundsChanged(previous_bounds);
 
-  // A fully rounded corner radius is calculated based on the size of the
-  // button. To avoid overriding a custom corner radius, make sure the default
-  // radius is only called once by checking if the value already exists.
-  if (!corner_radius_) {
-    SetCornerRadius(LayoutProvider::Get()->GetCornerRadiusMetric(
-        ShapeContextTokens::kButtonRadius, size()));
-  }
+  // A fully rounded corner radius is calculated based on the button size.
+  OnCornerRadiusValueChanged();
 }
 
 void MdTextButton::SetEnabledTextColors(std::optional<SkColor> color) {
@@ -365,6 +359,12 @@ SkColor MdTextButton::GetHoverColor(ui::ButtonStyle button_style) {
     default:
       return GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
   }
+}
+
+void MdTextButton::OnCornerRadiusValueChanged() {
+  LabelButton::SetFocusRingCornerRadius(GetCornerRadiusValue());
+  // UpdateColors also updates the background border radius.
+  UpdateColors();
 }
 
 std::unique_ptr<ActionViewInterface> MdTextButton::GetActionViewInterface() {

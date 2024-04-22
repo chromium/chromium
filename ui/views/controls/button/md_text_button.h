@@ -56,7 +56,8 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
   void SetBgColorOverrideDeprecated(const std::optional<SkColor>& color);
   std::optional<SkColor> GetBgColorOverrideDeprecated() const;
 
-  // Override the default corner radius of the round rect used for the
+  // Override the default corner radius (received from the `LayoutProvider` for
+  // `ShapeContextTokens::kButtonRadius`) of the round rect used for the
   // background and ink drop effects.
   void SetCornerRadius(std::optional<float> radius);
   std::optional<float> GetCornerRadius() const;
@@ -93,6 +94,9 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
 
   // Returns the hover color depending on the button style.
   SkColor GetHoverColor(ui::ButtonStyle button_style);
+
+  // Updates button attributes that depend on the corner radius.
+  void OnCornerRadiusValueChanged();
 
   ui::ButtonStyle style_ = ui::ButtonStyle::kDefault;
 
