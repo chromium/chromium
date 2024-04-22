@@ -526,6 +526,7 @@ struct MinMaxData {
     // `text-indent` with hyphenations.
     // The "hy-" with the indent should be longest.
     {"hyphenation a", {60, 160}, "hyphens: auto; text-indent: 3em", "", "en"},
+    {"hhhhh a", {80, 100}, "hyphens: auto; text-indent: 3em", "", "en"},
     // Negative `text-indent`.
     {"43210123 1234 12", {40, 110}, "text-indent: -5em"},
     {"4321012345 1234 12", {50, 130}, "text-indent: -5em"},

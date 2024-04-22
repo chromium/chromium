@@ -188,6 +188,10 @@ class CORE_EXPORT LineBreaker {
                                    const InlineItem&,
                                    const ShapeResult&,
                                    LineInfo*);
+  bool HandleTextForFastMinContentOld(InlineItemResult*,
+                                      const InlineItem&,
+                                      const ShapeResult&,
+                                      LineInfo*);
   void HandleEmptyText(const InlineItem& item, LineInfo*);
 
   const ShapeResultView* TruncateLineEndResult(const LineInfo&,
@@ -432,6 +436,7 @@ class CORE_EXPORT LineBreaker {
 
   // Keep the last item |HandleTextForFastMinContent()| has handled. This is
   // used to fallback the last word to |HandleText()|.
+  // TODO(crbug.com/333630754): Remove when `FasterMinContent` is stabilized.
   const InlineItem* fast_min_content_item_ = nullptr;
 
   // The current base direction for the bidi algorithm.

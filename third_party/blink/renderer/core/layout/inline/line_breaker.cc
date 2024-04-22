@@ -1720,10 +1720,11 @@ bool LineBreaker::BreakTextAtPreviousBreakOpportunity(
 // The first word and the last word, "1" and "6" in the example above, are
 // handled in normal |HandleText()| because they may form a word with the
 // previous/next item.
-bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
-                                              const InlineItem& item,
-                                              const ShapeResult& shape_result,
-                                              LineInfo* line_info) {
+bool LineBreaker::HandleTextForFastMinContentOld(
+    InlineItemResult* item_result,
+    const InlineItem& item,
+    const ShapeResult& shape_result,
+    LineInfo* line_info) {
   DCHECK_EQ(mode_, LineBreakerMode::kMinContent);
   DCHECK(auto_wrap_);
   DCHECK(item.Type() == InlineItem::kText ||
@@ -1825,6 +1826,193 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
   state_ = LineBreakState::kTrailing;
   fast_min_content_item_ = &item;
   MoveToNextOf(*item_result);
+  return true;
+}
+
+bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
+                                              const InlineItem& item,
+                                              const ShapeResult& shape_result,
+                                              LineInfo* line_info) {
+  if (UNLIKELY(!use_faster_min_content_)) {
+    return HandleTextForFastMinContentOld(item_result, item, shape_result,
+                                          line_info);
+  }
+
+  DCHECK_EQ(mode_, LineBreakerMode::kMinContent);
+  DCHECK(auto_wrap_);
+  DCHECK(item.Type() == InlineItem::kText ||
+         (item.Type() == InlineItem::kControl &&
+          Text()[item.StartOffset()] == kTabulationCharacter));
+  DCHECK(&shape_result);
+
+  // Break the text at every break opportunity and measure each word.
+  unsigned start_offset = item_result->StartOffset();
+  DCHECK_LT(start_offset, item.EndOffset());
+  DCHECK_EQ(shape_result.StartIndex(), item.StartOffset());
+  DCHECK_GE(start_offset, shape_result.StartIndex());
+  const unsigned item_end_offset = item.EndOffset();
+  unsigned end_offset = item_end_offset;
+
+  bool should_break_at_first_opportunity = false;
+  const LayoutUnit indent = line_info->TextIndent();
+  if (UNLIKELY(indent)) {
+    if (UNLIKELY(indent < 0)) {
+      // A negative `text-indent` can make this line not wrap at the first
+      // break opportunity if it's in the indent. Use `HandleText()`.
+      return false;
+    }
+    should_break_at_first_opportunity = true;
+    end_offset = start_offset + 1;
+  } else if (UNLIKELY(position_ < indent)) {
+    // A negative margin can move the position before the initial position.
+    // This line may not wrap at the first break opportunity if it appears
+    // before the initial position. Fall back to `HandleText()`.
+    return false;
+  } else {
+    if (UNLIKELY(position_ != indent)) {
+      // Break at the first opportunity if there were previous items.
+      should_break_at_first_opportunity = true;
+      end_offset = start_offset + 1;
+    }
+#if EXPENSIVE_DCHECKS_ARE_ON()
+    // Whether the start offset is at middle of a word or not can also be
+    // determined by `line_info->Results()`. Check if they match.
+    auto results = base::make_span(line_info->Results());
+    DCHECK_EQ(item_result, &results.back());
+    results = results.subspan(0, results.size() - 1);
+    bool is_at_mid_word = false;
+    for (const InlineItemResult& result : base::Reversed(results)) {
+      DCHECK(!result.can_break_after);
+      if (result.inline_size) {
+        is_at_mid_word = true;
+        break;
+      }
+    }
+    DCHECK_EQ(should_break_at_first_opportunity,
+              is_at_mid_word || has_cloned_box_decorations_);
+#endif  // EXPENSIVE_DCHECKS_ARE_ON()
+  }
+
+  shape_result.EnsurePositionData();
+  const unsigned saved_start_offset = break_iterator_.StartOffset();
+  FastMinTextContext context;
+  const String& text = Text();
+  const ComputedStyle& item_style = *item.Style();
+  const bool should_break_spaces = item_style.ShouldBreakSpaces();
+  unsigned next_break = 0;
+  unsigned non_hangable_run_end = 0;
+  bool can_break_after = false;
+  while (start_offset < end_offset) {
+    // TODO(crbug.com/332328872): `following()` scans back to the start of the
+    // string. Resetting the ICU `BreakIterator` is faster than the scanning.
+    break_iterator_.SetStartOffset(start_offset);
+    next_break = break_iterator_.NextBreakOpportunity(
+        start_offset + 1, std::min(item_end_offset + 1, text.length()));
+
+    if (UNLIKELY(next_break > item_end_offset)) {
+      // The `item.EndOffset()` is not breakable; e.g., middle of a word.
+      DCHECK_EQ(next_break, item_end_offset + 1);
+      if (start_offset == item_result->StartOffset()) {
+        // If this is the first word of this line, create an `InlineItemResult`
+        // of this word with `!can_break_after`, so that it can create a line
+        // with following items.
+        next_break = item_end_offset;
+        can_break_after = false;
+      } else {
+        const UChar next_ch = text[next_break - 1];
+        if (next_ch == kNewlineCharacter) {
+          // Optimize to avoid splitting `InlineItemResult`. If the next is a
+          // forced break, this line ends without additional widths.
+          next_break = item_end_offset;
+          can_break_after = false;
+        } else {
+          // If the end of `item` is middle of a word, spilt before the last
+          // word. The last word should create a line with following items.
+          next_break = start_offset;
+          DCHECK(can_break_after);
+          break;
+        }
+      }
+    } else {
+      can_break_after = true;
+    }
+    DCHECK_LE(next_break, item_end_offset);
+
+    // Remove trailing spaces.
+    non_hangable_run_end = next_break;
+    if (!should_break_spaces) {
+      while (non_hangable_run_end > start_offset &&
+             IsBreakableSpace(text[non_hangable_run_end - 1])) {
+        --non_hangable_run_end;
+      }
+    }
+
+    // `word_len` may be zero if `start_offset` is at a breakable space.
+    DCHECK_GE(non_hangable_run_end, start_offset);
+    if (const wtf_size_t word_len = non_hangable_run_end - start_offset) {
+      bool has_hyphen = can_break_after &&
+                        text[non_hangable_run_end - 1] == kSoftHyphenCharacter;
+      if (UNLIKELY(hyphenation_)) {
+        const StringView word(text, start_offset, word_len);
+        if (UNLIKELY(should_break_at_first_opportunity)) {
+          if (const wtf_size_t location =
+                  hyphenation_->FirstHyphenLocation(word, 0)) {
+            next_break = non_hangable_run_end = start_offset + location;
+            has_hyphen = can_break_after = true;
+          }
+          context.Add(shape_result, start_offset, non_hangable_run_end,
+                      has_hyphen, *item_result);
+        } else {
+          context.AddHyphenated(shape_result, start_offset,
+                                non_hangable_run_end, has_hyphen, *item_result,
+                                *hyphenation_, word);
+        }
+      } else {
+        context.Add(shape_result, start_offset, non_hangable_run_end,
+                    has_hyphen, *item_result);
+      }
+    }
+
+    DCHECK_GT(next_break, start_offset);
+    start_offset = next_break;
+  }
+
+  break_iterator_.SetStartOffset(saved_start_offset);
+
+  // Create an `InlineItemResult` that has the max of widths of all words.
+  DCHECK_GE(non_hangable_run_end, item_result->StartOffset());
+  DCHECK_LE(non_hangable_run_end, item_end_offset);
+  if (item_style.ShouldCollapseWhiteSpaces()) {
+    item_result->text_offset.end = non_hangable_run_end;
+    trailing_whitespace_ = non_hangable_run_end != next_break
+                               ? WhitespaceState::kCollapsed
+                               : WhitespaceState::kNone;
+  } else {
+    item_result->text_offset.end = next_break;
+    trailing_whitespace_ = non_hangable_run_end != next_break
+                               ? WhitespaceState::kPreserved
+                               : WhitespaceState::kNone;
+  }
+  item_result->text_offset.AssertValid();
+  item_result->inline_size = context.MinInlineSize();
+  position_ += item_result->inline_size;
+  item_result->can_break_after = can_break_after;
+  if (can_break_after) {
+    state_ = LineBreakState::kTrailing;
+  } else {
+    state_ = LineBreakState::kOverflow;
+  }
+
+  DCHECK_GE(next_break, non_hangable_run_end);
+  DCHECK_LE(next_break, item_end_offset);
+  if (next_break >= item_end_offset) {
+    MoveToNextOf(item);
+  } else {
+    // It's critical to move forward to avoid an infinite loop.
+    DCHECK_EQ(current_.text_offset, item_result->StartOffset());
+    CHECK_GT(next_break, current_.text_offset);
+    current_.text_offset = next_break;
+  }
   return true;
 }
 
