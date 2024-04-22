@@ -2236,6 +2236,16 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.LockScreenReauth.LockScreenReauthReason"
+    enum="LoginReauthReasons" expires_after="2024-10-01">
+  <owner>ayag@chromium.org</owner>
+  <owner>cros-3pidp@google.com</owner>
+  <summary>
+    Record the reason(s) why a user is required to reauthenticate online on the
+    lock screen. Recorded after successful online authentication.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.MachineIdRegen.AgeSeconds" units="seconds"
     expires_after="2022-02-02">
   <owner>ahassani@chromium.org</owner>

@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager.h"
+
 #include <memory>
 
+#include "ash/public/cpp/reauth_reason.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
@@ -32,6 +35,9 @@ const char kSAMLUserId2[] = "67891";
 const char kSAMLUserEmail2[] = "bob@corp.example.com";
 
 constexpr base::TimeDelta kSamlOnlineShortDelay = base::Seconds(10);
+
+constexpr char kLockScreenReauthHistogram[] =
+    "ChromeOS.LockScreenReauth.LockScreenReauthReason";
 }  // namespace
 
 class LockScreenReauthManagerTest : public testing::Test {
@@ -46,6 +52,7 @@ class LockScreenReauthManagerTest : public testing::Test {
   void CreateLockScreenReauthManager();
   void DestroyLockScreenReauthManager();
 
+  void SetReauthRequiredBySamlTokenMismatch();
   bool IsReauthRequiredBySamlTokenMismatch();
   bool IsReauthRequiredBySamlTimeLimitPolicy();
 
@@ -70,6 +77,7 @@ class LockScreenReauthManagerTest : public testing::Test {
   std::unique_ptr<LockScreenReauthManager> manager_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<user_manager::KnownUser> known_user_;
+  const base::HistogramTester histogram_tester_;
 };
 
 LockScreenReauthManagerTest::LockScreenReauthManagerTest() : manager_(nullptr) {
@@ -122,6 +130,10 @@ void LockScreenReauthManagerTest::DestroyLockScreenReauthManager() {
 void LockScreenReauthManagerTest::LockScreen() {
   lock_handler_ = std::make_unique<MockLockHandler>();
   proximity_auth::ScreenlockBridge::Get()->SetLockHandler(lock_handler_.get());
+}
+
+void LockScreenReauthManagerTest::SetReauthRequiredBySamlTokenMismatch() {
+  manager_->is_reauth_required_by_saml_token_mismatch_ = true;
 }
 
 bool LockScreenReauthManagerTest::IsReauthRequiredBySamlTokenMismatch() {
@@ -189,6 +201,13 @@ TEST_F(LockScreenReauthManagerTest, AuthenticateWithIncorrectUser) {
 
   EXPECT_TRUE(IsReauthRequiredBySamlTimeLimitPolicy());
   EXPECT_TRUE(proximity_auth::ScreenlockBridge::Get()->IsLocked());
+  histogram_tester_.ExpectBucketCount(
+      kLockScreenReauthHistogram, ReauthReason::kGaiaLockScreenReauthPolicy, 0);
+  histogram_tester_.ExpectBucketCount(
+      kLockScreenReauthHistogram, ReauthReason::kSamlLockScreenReauthPolicy, 0);
+  histogram_tester_.ExpectBucketCount(
+      kLockScreenReauthHistogram,
+      ReauthReason::kSamlPasswordSyncTokenValidationFailed, 0);
 }
 
 TEST_F(LockScreenReauthManagerTest, AuthenticateWithCorrectUser) {
@@ -217,6 +236,49 @@ TEST_F(LockScreenReauthManagerTest, AuthenticateWithCorrectUser) {
   EXPECT_FALSE(IsReauthRequiredBySamlTimeLimitPolicy());
   now = known_user_->GetLastOnlineSignin(saml_login_account_id1_);
   EXPECT_EQ(now, expected_signin_time);
+  histogram_tester_.ExpectBucketCount(
+      kLockScreenReauthHistogram, ReauthReason::kGaiaLockScreenReauthPolicy, 0);
+  histogram_tester_.ExpectBucketCount(
+      kLockScreenReauthHistogram, ReauthReason::kSamlLockScreenReauthPolicy, 1);
+  histogram_tester_.ExpectBucketCount(
+      kLockScreenReauthHistogram,
+      ReauthReason::kSamlPasswordSyncTokenValidationFailed, 0);
+}
+
+TEST_F(LockScreenReauthManagerTest, FlowTriggeredByPolicyAndInvalidToken) {
+  base::Time now = test_environment_.GetMockClock()->Now();
+  known_user_->SetLastOnlineSignin(saml_login_account_id1_, now);
+  known_user_->SetOfflineSigninLimit(saml_login_account_id1_,
+                                     kSamlOnlineShortDelay);
+  base::Time expected_signin_time = now + kSamlOnlineShortDelay;
+
+  CreateLockScreenReauthManager();
+  LockScreen();
+  EXPECT_CALL(*lock_handler_,
+              SetAuthType(saml_login_account_id1_,
+                          proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
+                          std::u16string()))
+      .Times(1);
+  EXPECT_CALL(*lock_handler_, Unlock(saml_login_account_id1_)).Times(1);
+  fake_user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
+  SetReauthRequiredBySamlTokenMismatch();
+  test_environment_.FastForwardBy(kSamlOnlineShortDelay);
+  manager_->MaybeForceReauthOnLockScreen(
+      ReauthReason::kSamlLockScreenReauthPolicy);
+  EXPECT_TRUE(IsReauthRequiredBySamlTimeLimitPolicy());
+  UserContext user_context(user_manager::UserType::kRegular,
+                           saml_login_account_id1_);
+  manager_->OnAuthSuccess(user_context);
+  EXPECT_FALSE(IsReauthRequiredBySamlTimeLimitPolicy());
+  now = known_user_->GetLastOnlineSignin(saml_login_account_id1_);
+  EXPECT_EQ(now, expected_signin_time);
+  histogram_tester_.ExpectBucketCount(
+      kLockScreenReauthHistogram, ReauthReason::kGaiaLockScreenReauthPolicy, 0);
+  histogram_tester_.ExpectBucketCount(
+      kLockScreenReauthHistogram, ReauthReason::kSamlLockScreenReauthPolicy, 1);
+  histogram_tester_.ExpectBucketCount(
+      kLockScreenReauthHistogram,
+      ReauthReason::kSamlPasswordSyncTokenValidationFailed, 1);
 }
 
 TEST_F(LockScreenReauthManagerTest, PolicySetToFalse) {

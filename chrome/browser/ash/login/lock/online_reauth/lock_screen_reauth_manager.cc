@@ -9,6 +9,7 @@
 #include "ash/public/cpp/reauth_reason.h"
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/default_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/login/auth/chrome_safe_mode_delegate.h"
@@ -33,6 +34,10 @@
 #include "content/public/browser/storage_partition.h"
 
 namespace ash {
+namespace {
+constexpr char kLockScreenReauthHistogram[] =
+    "ChromeOS.LockScreenReauth.LockScreenReauthReason";
+}  // namespace
 
 LockScreenReauthManager::LockScreenReauthManager(Profile* primary_profile)
     : primary_profile_(primary_profile),
@@ -205,6 +210,7 @@ void LockScreenReauthManager::OnAuthSuccess(const UserContext& user_context) {
   }
 
   ResetOnlineReauth();
+  SendLockscreenReauthReason();
   if (is_reauth_required_by_saml_token_mismatch_) {
     in_session_password_sync_manager_.FetchTokenAsync();
   }
@@ -218,6 +224,27 @@ void LockScreenReauthManager::OnAuthSuccess(const UserContext& user_context) {
     screenlock_bridge_->lock_handler()->Unlock(user_context.GetAccountId());
   }
   LockScreenStartReauthDialog::Dismiss();
+}
+
+void LockScreenReauthManager::SendLockscreenReauthReason() {
+  if (is_reauth_required_by_gaia_time_limit_policy_) {
+    base::UmaHistogramEnumeration(kLockScreenReauthHistogram,
+                                  ReauthReason::kGaiaLockScreenReauthPolicy,
+                                  ReauthReason::kNumReauthFlowReasons);
+  }
+
+  if (is_reauth_required_by_saml_time_limit_policy_) {
+    base::UmaHistogramEnumeration(kLockScreenReauthHistogram,
+                                  ReauthReason::kSamlLockScreenReauthPolicy,
+                                  ReauthReason::kNumReauthFlowReasons);
+  }
+
+  if (is_reauth_required_by_saml_token_mismatch_) {
+    base::UmaHistogramEnumeration(
+        kLockScreenReauthHistogram,
+        ReauthReason::kSamlPasswordSyncTokenValidationFailed,
+        ReauthReason::kNumReauthFlowReasons);
+  }
 }
 
 void LockScreenReauthManager::OnPasswordUpdateSuccess(

@@ -103,6 +103,10 @@ class LockScreenReauthManager : public KeyedService,
   void OnPasswordUpdateFailure(std::unique_ptr<UserContext> user_context,
                                AuthenticationError error);
 
+  // Send the reason(s) why a user is required to reauthenticate online in the
+  // lock screen to UMA.
+  void SendLockscreenReauthReason();
+
   const raw_ptr<Profile> primary_profile_;
   const raw_ptr<const user_manager::User, DanglingUntriaged> primary_user_;
   UserContext user_context_;
