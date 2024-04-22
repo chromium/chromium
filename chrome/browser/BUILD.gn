@@ -5258,6 +5258,8 @@ static_library("browser") {
       "task_manager/providers/vm/vm_process_task_provider.h",
       "task_manager/sampling/arc_shared_sampler.cc",
       "task_manager/sampling/arc_shared_sampler.h",
+      "ui/ash/shelf/chrome_shelf_metrics_provider.cc",
+      "ui/ash/shelf/chrome_shelf_metrics_provider.h",
       "upgrade_detector/installed_version_updater_chromeos.cc",
       "upgrade_detector/installed_version_updater_chromeos.h",
       "upgrade_detector/upgrade_detector_chromeos.cc",

@@ -92,6 +92,10 @@ enum class BuiltInAppName {
   kMaxValue = kReleaseNotes,
 };
 
+// Converts an app ID to the corresponding `DefaultAppName`, or nullopt if
+// it doesn't match a known ID.
+std::optional<apps::DefaultAppName> AppIdToName(const std::string& app_id);
+
 void RecordAppLaunch(const std::string& app_id,
                      apps::LaunchSource launch_source);
 
