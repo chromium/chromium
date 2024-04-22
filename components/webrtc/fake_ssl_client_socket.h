@@ -111,8 +111,8 @@ class FakeSSLClientSocket : public net::StreamSocket {
   // The callback passed to Connect().
   net::CompletionOnceCallback user_connect_callback_;
 
-  scoped_refptr<net::DrainableIOBuffer> write_buf_;
-  scoped_refptr<net::DrainableIOBuffer> read_buf_;
+  ::scoped_refptr<net::DrainableIOBuffer> write_buf_;
+  ::scoped_refptr<net::DrainableIOBuffer> read_buf_;
 };
 
 }  // namespace webrtc
