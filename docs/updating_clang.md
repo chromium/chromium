@@ -63,10 +63,24 @@ criteria:
   compiler, a linker, sanitizer runtimes)
 - things needed for doing official builds
 
-If you want to add something to the clang package that doesn't (yet?) meet
-these criteria, you can make package.py upload it to a separate zip file
-and then download it on an opt-in basis by using update.py's --package option.
+# Adding a New Package
 
-If you're adding a new feature that you expect will meet the inclusion criteria
-eventually but doesn't yet, start by having your things in a separate zip
-and move it to the main zip once the criteria are met.
+If you want to make artifacts available that do not meet the criteria for
+being included in the "clang" package, you can make package.py upload it to
+a separate zip file and then download it on an opt-in basis by using
+update.py's --package option.  Here is [an example of adding a new package].
+
+To test changes to `package.py`, change `CLANG_SUB_REVISION` in `update.py` to
+a random number above 2000 and run the `*_upload_clang` trybots.
+
+Once the change to `package.py` is in, file a bug under `Tools > LLVM`
+requesting that a new package be created ([example bug]).
+
+Once it's been uploaded and rolled, you can download it via:
+
+```
+tools/clang/scripts/update.py --package your-package-name
+```
+
+[an example of adding a new package](https://chromium-review.googlesource.com/c/chromium/src/+/5463029)
+[example bug]: https://crbug.com/335730441
