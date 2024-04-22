@@ -48,9 +48,14 @@ class PlusAddressService : public KeyedService,
  public:
   class Observer : public base::CheckedObserver {
    public:
-    // Called whenever the set of `PlusProfile`s returned by `GetPlusProfiles()`
-    // changes, e.g. because a new plus addresses arrived via Sync.
-    virtual void OnPlusAddressesChanged() = 0;
+    // Called whenever the set of plus addresses cached in the service
+    // gets modified (e.g. `SavePlusProfile` calls, sync updates, etc).
+    // `changes` represents a sequence of addition or removal operations
+    // triggered on the local cache. Notably, update operations are emulated as
+    // a remove operation of the old value followed by an addition of the
+    // updated value.
+    virtual void OnPlusAddressesChanged(
+        const std::vector<PlusAddressDataChange>& changes) = 0;
   };
 
   // The number of `HTTP_FORBIDDEN` responses that the user may receive before
@@ -79,7 +84,8 @@ class PlusAddressService : public KeyedService,
   void RecordAutofillSuggestionEvent(SuggestionEvent suggestion_event) override;
 
   // PlusAddressWebDataService::Observer:
-  void OnWebDataChangedBySync(const PlusAddressDataChange& change) override;
+  void OnWebDataChangedBySync(
+      const std::vector<PlusAddressDataChange>& changes) override;
 
   // WebDataServiceConsumer:
   void OnWebDataServiceRequestDone(

@@ -56,7 +56,11 @@ class PlusProfileChecker : public StatusChangeChecker,
   }
 
   // PlusAddressService::Observer:
-  void OnPlusAddressesChanged() override { CheckExitCondition(); }
+  void OnPlusAddressesChanged(
+      const std::vector<plus_addresses::PlusAddressDataChange>& changes)
+      override {
+    CheckExitCondition();
+  }
 
  private:
   const raw_ptr<PlusAddressService> service_;

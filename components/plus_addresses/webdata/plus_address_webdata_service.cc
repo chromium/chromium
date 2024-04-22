@@ -141,9 +141,7 @@ void PlusAddressWebDataService::NotifyOnWebDataChangedBySync(
     std::vector<PlusAddressDataChange> changes) {
   CHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   for (Observer& o : observers_) {
-    for (const PlusAddressDataChange& change : changes) {
-      o.OnWebDataChangedBySync(change);
-    }
+    o.OnWebDataChangedBySync(changes);
   }
 }
 

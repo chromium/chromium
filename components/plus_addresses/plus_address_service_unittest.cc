@@ -80,6 +80,16 @@ url::Origin OriginFromFacet(const std::string& facet) {
 
 namespace plus_addresses {
 
+class MockPlusAddressServiceObserver : public PlusAddressService::Observer {
+ public:
+  MockPlusAddressServiceObserver() = default;
+  ~MockPlusAddressServiceObserver() override = default;
+  MOCK_METHOD(void,
+              OnPlusAddressesChanged,
+              (const std::vector<PlusAddressDataChange>&),
+              (override));
+};
+
 class PlusAddressServiceTest : public ::testing::Test {
  public:
   PlusAddressServiceTest()
@@ -126,7 +136,6 @@ class PlusAddressServiceTest : public ::testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   data_decoder::test::InProcessDataDecoder decoder_;
-
   std::optional<PlusAddressService> service_;
 };
 
@@ -309,6 +318,11 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_Fails) {
 
 TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
   const PlusProfile& profile = test::CreatePlusProfile();
+  MockPlusAddressServiceObserver mock_service_observer;
+  service().AddObserver(&mock_service_observer);
+  EXPECT_CALL(mock_service_observer,
+              OnPlusAddressesChanged(testing::ElementsAre(PlusAddressDataChange(
+                  PlusAddressDataChange::Type::kAdd, profile))));
   base::test::TestFuture<const PlusProfileOrError&> future;
   service().ConfirmPlusAddress(OriginFromFacet(profile.facet),
                                profile.plus_address, future.GetCallback());
@@ -772,17 +786,30 @@ TEST_F(PlusAddressServiceWebDataTest, OnWebDataChangedBySync) {
   // `service()` has no way of knowing about this data.
   table().AddOrUpdatePlusProfile(profile1);
   table().AddOrUpdatePlusProfile(profile2);
-  EXPECT_THAT(service().GetPlusProfiles(), testing::IsEmpty());
+
+  service().SavePlusProfile(url::Origin::Create(GURL("https://foo.com")),
+                            profile1);
+  EXPECT_THAT(service().GetPlusProfiles(), testing::ElementsAre(profile1));
+
+  MockPlusAddressServiceObserver observer;
+  service().AddObserver(&observer);
+  // Simulate incoming changes from sync. Note that `profile1` already exists in
+  // the service and therefore should not be included as part of the updates
+  // sent to the `observer`.
+  EXPECT_CALL(observer,
+              OnPlusAddressesChanged(testing::ElementsAre(PlusAddressDataChange(
+                  PlusAddressDataChange::Type::kAdd, profile2))));
   service().OnWebDataChangedBySync(
-      PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile1));
-  service().OnWebDataChangedBySync(
-      PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile2));
+      {PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile1),
+       PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile2)});
   EXPECT_THAT(service().GetPlusProfiles(),
               testing::UnorderedElementsAre(profile1, profile2));
 
   table().RemovePlusProfile(profile1.profile_id);
-  service().OnWebDataChangedBySync(
-      PlusAddressDataChange(PlusAddressDataChange::Type::kRemove, profile1));
+  std::vector<PlusAddressDataChange> remove_changes = {
+      PlusAddressDataChange(PlusAddressDataChange::Type::kRemove, profile1)};
+  EXPECT_CALL(observer, OnPlusAddressesChanged(remove_changes));
+  service().OnWebDataChangedBySync(remove_changes);
   EXPECT_THAT(service().GetPlusProfiles(),
               testing::UnorderedElementsAre(profile2));
 }

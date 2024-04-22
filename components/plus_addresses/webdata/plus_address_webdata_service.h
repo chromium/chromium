@@ -49,7 +49,7 @@ class PlusAddressWebDataService : public WebDataServiceBase {
     // operations are emulated as a remove operation of the old value followed
     // by an addition of the updated value.
     virtual void OnWebDataChangedBySync(
-        const PlusAddressDataChange& change) = 0;
+        const std::vector<PlusAddressDataChange>& changes) = 0;
   };
 
   PlusAddressWebDataService(

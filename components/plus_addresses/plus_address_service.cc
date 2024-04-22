@@ -155,7 +155,8 @@ void PlusAddressService::SavePlusProfile(url::Origin origin,
   plus_profiles_.insert(profile_to_save);
   plus_addresses_.insert(profile_to_save.plus_address);
   for (Observer& o : observers_) {
-    o.OnPlusAddressesChanged();
+    o.OnPlusAddressesChanged({PlusAddressDataChange(
+        PlusAddressDataChange::Type::kAdd, profile_to_save)});
   }
 }
 
@@ -351,30 +352,40 @@ void PlusAddressService::UpdatePlusAddressMap(const PlusAddressMap& map) {
         PlusProfile(/*profile_id=*/"", facet, address, /*is_confirmed=*/true));
     plus_addresses_.insert(address);
   }
-  for (Observer& o : observers_) {
-    o.OnPlusAddressesChanged();
-  }
 }
 
 void PlusAddressService::OnWebDataChangedBySync(
-    const PlusAddressDataChange& change) {
+    const std::vector<PlusAddressDataChange>& changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  switch (change.type()) {
-    case PlusAddressDataChange::Type::kAdd: {
-      plus_profiles_.insert(change.profile());
-      plus_addresses_.insert(change.profile().plus_address);
-      break;
-    }
-    case PlusAddressDataChange::Type::kRemove: {
-      plus_profiles_.erase(change.profile());
-      plus_addresses_.erase(change.profile().plus_address);
-      break;
+  std::vector<PlusAddressDataChange> applied_changes;
+  for (const PlusAddressDataChange& change : changes) {
+    const PlusProfile& profile = change.profile();
+    switch (change.type()) {
+      // Sync updates affect the local cache only if they introduce changes
+      // (e.g., an added plus address that wasn't previously confirmed via
+      // ConfirmPlusAddress).
+      case PlusAddressDataChange::Type::kAdd: {
+        const auto [it, inserted] = plus_profiles_.insert(profile);
+        if (inserted) {
+          plus_addresses_.insert(profile.plus_address);
+          applied_changes.emplace_back(PlusAddressDataChange::Type::kAdd,
+                                       profile);
+        }
+        break;
+      }
+      case PlusAddressDataChange::Type::kRemove: {
+        if (plus_profiles_.erase(profile)) {
+          plus_addresses_.erase(profile.plus_address);
+          applied_changes.emplace_back(PlusAddressDataChange::Type::kRemove,
+                                       profile);
+        }
+        break;
+      }
     }
   }
 
   for (Observer& o : observers_) {
-    o.OnPlusAddressesChanged();
+    o.OnPlusAddressesChanged(applied_changes);
   }
 }
 
@@ -390,14 +401,19 @@ void PlusAddressService::OnWebDataServiceRequestDone(
 void PlusAddressService::ReplacePlusProfiles(
     const std::vector<PlusProfile>& profiles) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  plus_profiles_.clear();
-  plus_addresses_.clear();
+  CHECK(plus_profiles_.empty());
+  CHECK(plus_addresses_.empty());
+  std::vector<PlusAddressDataChange> applied_changes;
+  applied_changes.reserve(profiles.size());
   for (const PlusProfile& plus_profile : profiles) {
     plus_profiles_.insert(plus_profile);
     plus_addresses_.insert(plus_profile.plus_address);
+    applied_changes.emplace_back(PlusAddressDataChange::Type::kAdd,
+                                 plus_profile);
   }
+
   for (Observer& o : observers_) {
-    o.OnPlusAddressesChanged();
+    o.OnPlusAddressesChanged(applied_changes);
   }
 }
 
@@ -450,9 +466,6 @@ void PlusAddressService::HandleSignout() {
   plus_addresses_.clear();
   polling_timer_.Stop();
   plus_address_http_client_->Reset();
-  for (Observer& o : observers_) {
-    o.OnPlusAddressesChanged();
-  }
 }
 
 std::set<std::string> PlusAddressService::GetAndParseExcludedSites() {
