@@ -77,6 +77,7 @@ public class HistoryManager
     private final Activity mActivity;
     private final boolean mIsIncognito;
     private final boolean mIsSeparateActivity;
+    private final boolean mLaunchedForApp;
     private final HistoryUmaRecorder mUmaRecorder;
     private final InfoHeaderPref mHeaderPref;
     private ViewGroup mRootView;
@@ -147,6 +148,7 @@ public class HistoryManager
         mProfile = profile;
         mIsIncognito = profile.isOffTheRecord();
         mUmaRecorder = umaRecorder;
+        mLaunchedForApp = launchedForApp;
 
         mPrefService = UserPrefs.get(mProfile);
         mBackPressStateSupplier.set(false);
@@ -220,11 +222,7 @@ public class HistoryManager
         mSelectableListLayout.configureWideDisplayStyle();
 
         // 5. Initialize empty view.
-        mEmptyView =
-                mSelectableListLayout.initializeEmptyStateView(
-                        R.drawable.history_empty_state_illustration,
-                        R.string.history_manager_empty_state,
-                        R.string.history_manager_empty_state_view_or_clear_page_visited);
+        initializeEmptyView();
 
         // 6. Load items.
         mContentManager.startLoadingItems();
@@ -237,6 +235,22 @@ public class HistoryManager
 
         onBackPressStateChanged(); // Initialize back press State.
         mContentManager.maybeQueryApps();
+    }
+
+    private void initializeEmptyView() {
+        int imgResId =
+                mLaunchedForApp
+                        ? R.drawable.history_app_empty_state_illustration
+                        : R.drawable.history_empty_state_illustration;
+        int subjResId =
+                mLaunchedForApp
+                        ? R.string.history_manager_app_specific_history_no_results
+                        : R.string.history_manager_empty_state;
+        int descResId =
+                mLaunchedForApp
+                        ? R.string.history_manager_empty_state_view_or_open_more_history
+                        : R.string.history_manager_empty_state_view_or_clear_page_visited;
+        mEmptyView = mSelectableListLayout.initializeEmptyStateView(imgResId, subjResId, descResId);
     }
 
     /**
@@ -324,6 +338,9 @@ public class HistoryManager
     }
 
     private String getSearchEmptyString() {
+        if (mLaunchedForApp) {
+            return mActivity.getString(R.string.history_manager_app_specific_history_no_results);
+        }
         String defaultSearchEngineName = null;
         TemplateUrl dseTemplateUrl =
                 TemplateUrlServiceFactory.getForProfile(mProfile)

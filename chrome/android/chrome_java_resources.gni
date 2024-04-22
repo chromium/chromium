@@ -329,6 +329,7 @@ chrome_java_resources = [
   "java/res/drawable/down_arrow_on_circular_background.xml",
   "java/res/drawable/google_pay_with_divider.xml",
   "java/res/drawable/gray_shield.xml",
+  "java/res/drawable/history_app_empty_state_illustration.xml",
   "java/res/drawable/history_empty_state_illustration.xml",
   "java/res/drawable/home_surface_background.xml",
   "java/res/drawable/ic_add_box_rounded_corner.xml",
