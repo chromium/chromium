@@ -7,7 +7,6 @@
 #include <list>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -19,10 +18,6 @@
 
 namespace gpu {
 namespace {
-
-BASE_FEATURE(kCorrectFramebufferAttachmentComputationInGLTexture,
-             "CorrectFramebufferAttachmentComputationInGLTexture",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr uint32_t kWebGPUUsages =
     SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
@@ -255,26 +250,13 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
     base::span<const uint8_t> pixel_data) {
   DCHECK(CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D));
 
-  bool for_framebuffer_attachment = false;
-  // NOTE: We are in the process of computing writes to GL without using
-  // GLES2_FRAMEBUFFER_HINT as part of eliminating the latter. Here we make the
-  // change guarded by a killswitch.
-  // TODO(b/41491709): Remove this killswitch post safe rollout.
-  if (base::FeatureList::IsEnabled(
-          kCorrectFramebufferAttachmentComputationInGLTexture)) {
-    // GLTextureImageBackingFactory supports raster and display usage only for
-    // Ganesh-GL, meaning that raster/display write usage implies GL writes
-    // within Skia.
-    for_framebuffer_attachment = usage & (SHARED_IMAGE_USAGE_GLES2_WRITE |
-                                          SHARED_IMAGE_USAGE_RASTER_WRITE |
-                                          SHARED_IMAGE_USAGE_DISPLAY_WRITE);
-  } else {
-    for_framebuffer_attachment =
-        (usage &
-         (SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
-          SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT)) != 0;
-  }
-
+  // GLTextureImageBackingFactory supports raster and display usage only for
+  // Ganesh-GL, meaning that raster/display write usage implies GL writes
+  // within Skia.
+  const bool for_framebuffer_attachment =
+      usage &
+      (SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER_WRITE |
+       SHARED_IMAGE_USAGE_DISPLAY_WRITE);
   const bool framebuffer_attachment_angle =
       for_framebuffer_attachment && texture_usage_angle_;
 
