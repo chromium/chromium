@@ -161,11 +161,6 @@
   transform: translate(var(--cr-toggle-knob-position-end_), -50%);
 }
 
-:host-context([dir=rtl]):host([checked]) #knob {
-  transform: translate3d(-18px, 0, 0);
-}
-
-
 :host-context([dir=rtl]) #knob {
   left: 0;
   /* Flip the knob's on/off direction for RTL */
