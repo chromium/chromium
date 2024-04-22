@@ -132,7 +132,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
     options1.scope = GURL("https://www.example.com/");
     const blink::StorageKey key1 = blink::StorageKey::CreateFirstParty(
         url::Origin::Create(options1.scope));
-    registration1_ = new ServiceWorkerRegistration(
+    registration1_ = ServiceWorkerRegistration::Create(
         options1, key1, 1L, context_,
         blink::mojom::AncestorFrameType::kNormalFrame);
 
@@ -140,7 +140,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
     options2.scope = GURL("https://www.example.com/example");
     const blink::StorageKey key2 = blink::StorageKey::CreateFirstParty(
         url::Origin::Create(options2.scope));
-    registration2_ = new ServiceWorkerRegistration(
+    registration2_ = ServiceWorkerRegistration::Create(
         options2, key2, 2L, context_,
         blink::mojom::AncestorFrameType::kNormalFrame);
 
@@ -148,7 +148,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
     options3.scope = GURL("https://other.example.com/");
     const blink::StorageKey key3 = blink::StorageKey::CreateFirstParty(
         url::Origin::Create(options3.scope));
-    registration3_ = new ServiceWorkerRegistration(
+    registration3_ = ServiceWorkerRegistration::Create(
         options3, key3, 3L, context_,
         blink::mojom::AncestorFrameType::kNormalFrame);
   }

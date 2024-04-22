@@ -464,7 +464,7 @@ TEST_F(ServiceWorkerContextTest, Observer_ControlleeEvents) {
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = scope;
 
-  auto registration = base::MakeRefCounted<ServiceWorkerRegistration>(
+  auto registration = ServiceWorkerRegistration::Create(
       options, key, 1l /* dummy registration id */, context()->AsWeakPtr(),
       blink::mojom::AncestorFrameType::kNormalFrame);
 
@@ -521,7 +521,7 @@ TEST_F(ServiceWorkerContextTest, VersionActivatedObserver) {
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = scope;
 
-  auto registration = base::MakeRefCounted<ServiceWorkerRegistration>(
+  auto registration = ServiceWorkerRegistration::Create(
       options, key, 1l /* dummy registration id */, context()->AsWeakPtr(),
       blink::mojom::AncestorFrameType::kNormalFrame);
 
@@ -553,7 +553,7 @@ TEST_F(ServiceWorkerContextTest, VersionRedundantObserver) {
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = scope;
 
-  auto registration = base::MakeRefCounted<ServiceWorkerRegistration>(
+  auto registration = ServiceWorkerRegistration::Create(
       options, key, 1l /* dummy registration id */, context()->AsWeakPtr(),
       blink::mojom::AncestorFrameType::kNormalFrame);
 
@@ -1155,7 +1155,7 @@ TEST_F(ServiceWorkerContextTest, ContainerHostIterator) {
   const blink::StorageKey key_other = blink::StorageKey::CreateFirstParty(
       url::Origin::Create(registration_opt.scope));
   scoped_refptr<ServiceWorkerRegistration> registration =
-      base::MakeRefCounted<ServiceWorkerRegistration>(
+      ServiceWorkerRegistration::Create(
           registration_opt, key_other, 1L /* registration_id */,
           helper_->context()->AsWeakPtr(),
           blink::mojom::AncestorFrameType::kNormalFrame);

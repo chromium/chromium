@@ -40,7 +40,7 @@ class ServiceWorkerScriptLoaderFactoryTest : public testing::Test {
 
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = scope_;
-    registration_ = base::MakeRefCounted<ServiceWorkerRegistration>(
+    registration_ = ServiceWorkerRegistration::Create(
         options,
         blink::StorageKey::CreateFirstParty(url::Origin::Create(scope_)),
         1L /* registration_id */, context->AsWeakPtr(),

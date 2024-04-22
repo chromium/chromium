@@ -1087,7 +1087,7 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
 
   blink::mojom::ServiceWorkerRegistrationOptions options(
       data.scope, data.script_type, data.update_via_cache);
-  registration = base::MakeRefCounted<ServiceWorkerRegistration>(
+  registration = ServiceWorkerRegistration::Create(
       options, data.key, data.registration_id, context_->AsWeakPtr(),
       data.ancestor_frame_type);
   registration->SetStored();
@@ -1778,7 +1778,7 @@ void ServiceWorkerRegistry::DidGetNewRegistrationId(
     std::move(callback).Run(nullptr);
     return;
   }
-  std::move(callback).Run(base::MakeRefCounted<ServiceWorkerRegistration>(
+  std::move(callback).Run(ServiceWorkerRegistration::Create(
       std::move(options), key, registration_id, context_->AsWeakPtr(),
       ancestor_frame_type));
 }

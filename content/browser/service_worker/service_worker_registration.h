@@ -71,9 +71,8 @@ class CONTENT_EXPORT ServiceWorkerRegistration
     kUninstalled,
   };
 
-  // The constructor should be called only from ServiceWorkerRegistry other than
-  // tests.
-  ServiceWorkerRegistration(
+  // This is a factory method and should be used instead of the constructor.
+  static scoped_refptr<ServiceWorkerRegistration> Create(
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
       const blink::StorageKey& key,
       int64_t registration_id,
@@ -229,6 +228,15 @@ class CONTENT_EXPORT ServiceWorkerRegistration
  private:
   friend class base::RefCounted<ServiceWorkerRegistration>;
   friend class ServiceWorkerActivationTest;
+
+  // Callers should use `ServiceWorkerRegistration` factory `Create()` method
+  // instead.
+  ServiceWorkerRegistration(
+      const blink::mojom::ServiceWorkerRegistrationOptions& options,
+      const blink::StorageKey& key,
+      int64_t registration_id,
+      base::WeakPtr<ServiceWorkerContextCore> context,
+      blink::mojom::AncestorFrameType ancestor_frame_type);
 
   void UnsetVersionInternal(
       ServiceWorkerVersion* version,

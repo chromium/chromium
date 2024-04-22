@@ -44,6 +44,28 @@ ServiceWorkerVersionInfo GetVersionInfo(ServiceWorkerVersion* version) {
 
 }  // namespace
 
+// static
+scoped_refptr<ServiceWorkerRegistration> ServiceWorkerRegistration::Create(
+    const blink::mojom::ServiceWorkerRegistrationOptions& options,
+    const blink::StorageKey& key,
+    int64_t registration_id,
+    base::WeakPtr<ServiceWorkerContextCore> context,
+    blink::mojom::AncestorFrameType ancestor_frame_type) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_NE(blink::mojom::kInvalidServiceWorkerRegistrationId, registration_id);
+  DCHECK(context);
+
+  // A scoped ref pointer of `ServiceWorkerRegistration` is explicitly created
+  // here so that the instance won't be unexpectedly destroyed due to a
+  // scoped_refptr operation on the registration inside `AddLiveRegistration()`.
+  auto registration_ref =
+      base::WrapRefCounted(std::move(new ServiceWorkerRegistration(
+          options, key, registration_id, context, ancestor_frame_type)));
+
+  registration_ref->context_->AddLiveRegistration(registration_ref.get());
+  return registration_ref;
+}
+
 ServiceWorkerRegistration::ServiceWorkerRegistration(
     const blink::mojom::ServiceWorkerRegistrationOptions& options,
     const blink::StorageKey& key,
@@ -61,10 +83,6 @@ ServiceWorkerRegistration::ServiceWorkerRegistration(
       context_(context),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       ancestor_frame_type_(ancestor_frame_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_NE(blink::mojom::kInvalidServiceWorkerRegistrationId, registration_id);
-  DCHECK(context_);
-  context_->AddLiveRegistration(this);
 }
 
 ServiceWorkerRegistration::~ServiceWorkerRegistration() {
