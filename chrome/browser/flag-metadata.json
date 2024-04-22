@@ -5335,7 +5335,7 @@
   },
   {
     "name": "language-packs-in-settings",
-    "owners": ["mlcui@chromium.org", "claudiomagni@chromium.org", "cros-borders-eng@google.com"],
+    "owners": ["mlcui@google.com", "claudiomagni@chromium.org", "cros-borders-eng@google.com"],
     "expiry_milestone": 126
   },
   {
