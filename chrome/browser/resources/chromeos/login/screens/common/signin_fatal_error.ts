@@ -14,7 +14,6 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/buttons/oobe_text_button.js';
 
-import {assert} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -161,11 +160,10 @@ export class SigninFatalScreen extends SigninFatalErrorBase {
         return this.i18nDynamic(locale, 'fatalErrorMessageNoAccountDetails');
       case OobeTypes.FatalErrorCode.INSECURE_CONTENT_BLOCKED:
         const url = params.url;
-        assert(url);
-        return this.i18nDynamic(locale, 'fatalErrorMessageInsecureURL', url);
+        return this.i18nDynamic(
+            locale, 'fatalErrorMessageInsecureURL', url || '');
       case OobeTypes.FatalErrorCode.CUSTOM:
-        assert(params.errorText);
-        return params.errorText;
+        return params.errorText || '';
       default:
         return '';
     }
