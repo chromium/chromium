@@ -80,6 +80,14 @@ def main():
         help='Only run benchmarks that do not require any special access. See '
         'https://www.chromium.org/developers/telemetry/upload_to_cloud_storage/#request-access-for-google-partners '
         'for more information.')
+    parser.add_argument('--skip-jetstream',
+                        action='store_true',
+                        help='Jetstream2 is very flaky (60% pass rate), so it '
+                        'is helpful to skip it when iterating fast locally.')
+    parser.add_argument(
+        '--temporal-trace-length',
+        type=int,
+        help='Add flags necessary for temporal PGO (experimental).')
     parser.add_argument('-v',
                         '--verbose',
                         action='count',
@@ -165,7 +173,9 @@ def main():
 
     # Run the shortest benchmarks first to fail early if anything is wrong.
     run_benchmark(['speedometer3'])
-    run_benchmark(['jetstream2'])
+
+    if not args.skip_jetstream:
+        run_benchmark(['jetstream2'])
 
     # These benchmarks require special access permissions:
     # https://www.chromium.org/developers/telemetry/upload_to_cloud_storage/#request-access-for-google-partners
@@ -188,10 +198,24 @@ def main():
             ])
 
     if not args.skip_profdata:
-        subprocess.run(
-            [PROFDATA, 'merge', '-o', f'{builddir}/profile.profdata'] +
-            glob.glob(f'{profiledir}/*.profdata'),
-            check=True)
+        merge_cmd = [PROFDATA, 'merge']
+        if args.temporal_trace_length:
+            merge_cmd += [
+                '--temporal-profile-max-trace-length',
+                str(args.temporal_trace_length)
+            ]
+        profile_output_path = f'{builddir}/profile.profdata'
+        merge_cmd += ['-o', profile_output_path]
+        subprocess.run(merge_cmd + glob.glob(f'{profiledir}/*.profdata'),
+                       check=True)
+
+        if args.temporal_trace_length:
+            orderfile_cmd = [
+                PROFDATA, 'order', profile_output_path, '-o',
+                f'{builddir}/orderfile.txt'
+            ]
+            subprocess.run(orderfile_cmd, check=True)
+
 
     if not args.keep_temps:
         shutil.rmtree(profiledir)

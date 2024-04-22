@@ -17,6 +17,12 @@ config("pgo_instrumentation_flags") {
   # are not required to be defined when we're not actually using PGO.
   if (chrome_pgo_phase == 1 && is_clang && !is_nacl && is_a_target_toolchain) {
     cflags = [ "-fprofile-generate" ]
+    if (temporal_pgo_profile) {
+      cflags += [
+        "-mllvm",
+        "-pgo-temporal-instrumentation",
+      ]
+    }
     if (!is_win) {
       # Windows directly calls link.exe instead of the compiler driver when
       # linking, and embeds the path to the profile runtime library as

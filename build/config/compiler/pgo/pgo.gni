@@ -34,4 +34,7 @@ declare_args() {
 
   # When using chrome_pgo_phase = 2, read profile data from this path.
   pgo_data_path = ""
+
+  # Whether to enable temporal pgo or not (experimental).
+  temporal_pgo_profile = false
 }
