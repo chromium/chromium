@@ -23,18 +23,17 @@ import org.chromium.ui.DropdownItem;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
-/**
- * JNI call glue for AutofillExternalDelagate C++ and Java objects.
- * This provides an alternative UI for Autofill suggestions, and replaces AutofillPopupBridge when
- * --enable-autofill-keyboard-accessory-view is passed on the command line.
- */
+import java.util.Arrays;
+import java.util.List;
+
+/** JNI call glue between C++ (AutofillKeyboardAccessoryViewImpl) and Java objects. */
 @JNINamespace("autofill")
 public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     private long mNativeAutofillKeyboardAccessory;
     private @Nullable ObservableSupplier<ManualFillingComponent> mManualFillingComponentSupplier;
     private @Nullable ManualFillingComponent mManualFillingComponent;
     private @Nullable Context mContext;
-    private final PropertyProvider<AutofillSuggestion[]> mChipProvider =
+    private final PropertyProvider<List<AutofillSuggestion>> mChipProvider =
             new PropertyProvider<>(AccessoryAction.AUTOFILL_SUGGESTION);
     private final Callback<ManualFillingComponent> mFillingComponentObserver =
             this::connectToFillingComponent;
@@ -118,7 +117,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     @CalledByNative
     private void dismiss() {
         if (mManualFillingComponentSupplier != null) {
-            mChipProvider.notifyObservers(new AutofillSuggestion[0]);
+            mChipProvider.notifyObservers(List.of());
             mManualFillingComponentSupplier.removeObserver(mFillingComponentObserver);
         }
         dismissed();
@@ -127,11 +126,13 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
 
     /**
      * Shows an Autofill view with specified suggestions.
+     *
      * @param suggestions Autofill suggestions to be displayed.
      */
     @CalledByNative
-    private void show(AutofillSuggestion[] suggestions) {
-        mChipProvider.notifyObservers(suggestions);
+    private void show(@JniType("std::vector") Object[] suggestions) {
+        mChipProvider.notifyObservers(
+                (List<AutofillSuggestion>) (List<?>) Arrays.asList(suggestions));
     }
 
     @CalledByNative
@@ -145,14 +146,9 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
                 () -> this.onDeletionDialogClosed(/* confirmed= */ false));
     }
 
-    @CalledByNative
-    private static AutofillSuggestion[] createAutofillSuggestionArray(int size) {
-        return new AutofillSuggestion[size];
-    }
-
     /**
-     * @param array AutofillSuggestion array that should get a new suggestion added.
-     * @param index Index in the array where to place a new suggestion.
+     * Creates an Autofill suggestion.
+     *
      * @param label Suggested text. The text that's going to be filled in the focused field, with a
      *     few exceptions:
      *     <ul>
@@ -171,11 +167,10 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      *     suggestion.
      * @param customIconUrl The url used to fetch the custom icon to be displayed in the autofill
      *     suggestion chip.
+     * @return an AutofillSuggestion containing the above information.
      */
     @CalledByNative
-    private static void addToAutofillSuggestionArray(
-            AutofillSuggestion[] array,
-            int index,
+    private static AutofillSuggestion createAutofillSuggestion(
             @JniType("std::u16string") String label,
             @JniType("std::u16string") String sublabel,
             int iconId,
@@ -184,24 +179,24 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
             @JniType("std::string") String featureForIPH,
             GURL customIconUrl) {
         int drawableId = iconId == 0 ? DropdownItem.NO_ICON : iconId;
-        array[index] =
-                new AutofillSuggestion.Builder()
-                        .setLabel(label)
-                        .setSubLabel(sublabel)
-                        .setIconId(drawableId)
-                        .setIsIconAtStart(false)
-                        .setPopupItemId(popupItemId)
-                        .setIsDeletable(isDeletable)
-                        .setIsMultiLineLabel(false)
-                        .setIsBoldLabel(false)
-                        .setFeatureForIPH(featureForIPH)
-                        .setCustomIconUrl(customIconUrl)
-                        .build();
+        return new AutofillSuggestion.Builder()
+                .setLabel(label)
+                .setSubLabel(sublabel)
+                .setIconId(drawableId)
+                .setIsIconAtStart(false)
+                .setPopupItemId(popupItemId)
+                .setIsDeletable(isDeletable)
+                .setIsMultiLineLabel(false)
+                .setIsBoldLabel(false)
+                .setFeatureForIPH(featureForIPH)
+                .setCustomIconUrl(customIconUrl)
+                .build();
     }
 
     /**
      * Used to register the filling component that receives and renders the autofill suggestions.
      * Noop if the component hasn't changed or became null.
+     *
      * @param fillingComponent The {@link ManualFillingComponent} displaying suggestions as chips.
      */
     private void connectToFillingComponent(@Nullable ManualFillingComponent fillingComponent) {

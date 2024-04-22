@@ -86,12 +86,13 @@ class KeyboardAccessoryMediator
      * Creates an observer object that refreshes the accessory bar items when a connected provider
      * notifies it about new {@link AutofillSuggestion}s. It ensures the delegate receives
      * interactions with the view representing a suggestion.
+     *
      * @param delegate A {@link AutofillDelegate}.
      * @return A {@link Provider.Observer} accepting only {@link AutofillSuggestion}s.
      */
-    Provider.Observer<AutofillSuggestion[]> createAutofillSuggestionsObserver(
+    Provider.Observer<List<AutofillSuggestion>> createAutofillSuggestionsObserver(
             AutofillDelegate delegate) {
-        return (@AccessoryAction int typeId, AutofillSuggestion[] suggestions) -> {
+        return (@AccessoryAction int typeId, List<AutofillSuggestion> suggestions) -> {
             assert typeId == AccessoryAction.AUTOFILL_SUGGESTION
                     : "Autofill suggestions observer received wrong data: " + typeId;
             List<BarItem> retainedItems = collectItemsToRetain(AccessoryAction.AUTOFILL_SUGGESTION);
@@ -167,10 +168,10 @@ class KeyboardAccessoryMediator
     }
 
     private List<AutofillBarItem> toBarItems(
-            AutofillSuggestion[] suggestions, AutofillDelegate delegate) {
-        List<AutofillBarItem> barItems = new ArrayList<>(suggestions.length);
-        for (int position = 0; position < suggestions.length; ++position) {
-            AutofillSuggestion suggestion = suggestions[position];
+            List<AutofillSuggestion> suggestions, AutofillDelegate delegate) {
+        List<AutofillBarItem> barItems = new ArrayList<>(suggestions.size());
+        for (int position = 0; position < suggestions.size(); ++position) {
+            AutofillSuggestion suggestion = suggestions.get(position);
             if (!shouldShowSuggestion(suggestion)) continue;
             barItems.add(new AutofillBarItem(suggestion, createAutofillAction(delegate, position)));
         }

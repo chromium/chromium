@@ -63,6 +63,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyObservable.PropertyObserver;
 import org.chromium.ui.test.util.modelutil.FakeViewProvider;
 
+import java.util.List;
+
 /** Controller tests for the keyboard accessory component. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
@@ -195,7 +197,7 @@ public class KeyboardAccessoryControllerTest {
     public void testSortsActionsBasedOnType() {
         PropertyProvider<Action[]> generationProvider =
                 new PropertyProvider<>(GENERATE_PASSWORD_AUTOMATIC);
-        PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
+        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
                 new PropertyProvider<>(AUTOFILL_SUGGESTION);
         PropertyProvider<Action[]> credManProvider =
                 new PropertyProvider<>(CREDMAN_CONDITIONAL_UI_REENTRY);
@@ -222,8 +224,7 @@ public class KeyboardAccessoryControllerTest {
                         .build();
         Action generationAction = new Action(GENERATE_PASSWORD_AUTOMATIC, (a) -> {});
         Action credManAction = new Action(CREDMAN_CONDITIONAL_UI_REENTRY, (a) -> {});
-        autofillSuggestionProvider.notifyObservers(
-                new AutofillSuggestion[] {suggestion1, suggestion2});
+        autofillSuggestionProvider.notifyObservers(List.of(suggestion1, suggestion2));
         generationProvider.notifyObservers(new Action[] {generationAction});
         credManProvider.notifyObservers(new Action[] {credManAction});
 
@@ -246,7 +247,7 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testChangesCaptionIdForCredManEntry() {
-        PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
+        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
                 new PropertyProvider<>(AUTOFILL_SUGGESTION);
         PropertyProvider<Action[]> credManProvider =
                 new PropertyProvider<>(CREDMAN_CONDITIONAL_UI_REENTRY);
@@ -261,7 +262,7 @@ public class KeyboardAccessoryControllerTest {
                         .setPopupItemId(PopupItemId.WEBAUTHN_CREDENTIAL)
                         .build();
         Action credManAction = new Action(CREDMAN_CONDITIONAL_UI_REENTRY, (a) -> {});
-        autofillSuggestionProvider.notifyObservers(new AutofillSuggestion[] {suggestion});
+        autofillSuggestionProvider.notifyObservers(List.of(suggestion));
         credManProvider.notifyObservers(new Action[] {credManAction});
 
         assertThat(mModel.get(BAR_ITEMS).size(), is(3));
@@ -276,7 +277,7 @@ public class KeyboardAccessoryControllerTest {
     public void testMovesTabSwitcherToEnd() {
         PropertyProvider<Action[]> generationProvider =
                 new PropertyProvider<>(GENERATE_PASSWORD_AUTOMATIC);
-        PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
+        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
                 new PropertyProvider<>(AUTOFILL_SUGGESTION);
 
         mCoordinator.registerActionProvider(generationProvider);
@@ -286,8 +287,7 @@ public class KeyboardAccessoryControllerTest {
         AutofillSuggestion suggestion1 = builder.setLabel("kayseri").build();
         AutofillSuggestion suggestion2 = builder.setLabel("spor").build();
         Action generationAction = new Action(GENERATE_PASSWORD_AUTOMATIC, (a) -> {});
-        autofillSuggestionProvider.notifyObservers(
-                new AutofillSuggestion[] {suggestion1, suggestion2});
+        autofillSuggestionProvider.notifyObservers(List.of(suggestion1, suggestion2));
         generationProvider.notifyObservers(new Action[] {generationAction});
 
         // Autofill suggestions should always come last, independent of when they were added.
@@ -306,7 +306,7 @@ public class KeyboardAccessoryControllerTest {
     public void testDeletingActionsAffectsOnlyOneType() {
         PropertyProvider<Action[]> generationProvider =
                 new PropertyProvider<>(GENERATE_PASSWORD_AUTOMATIC);
-        PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
+        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
                 new PropertyProvider<>(AUTOFILL_SUGGESTION);
 
         mCoordinator.registerActionProvider(generationProvider);
@@ -321,18 +321,17 @@ public class KeyboardAccessoryControllerTest {
                         .setFeatureForIPH("")
                         .build();
         Action generationAction = new Action(GENERATE_PASSWORD_AUTOMATIC, (a) -> {});
-        autofillSuggestionProvider.notifyObservers(
-                new AutofillSuggestion[] {suggestion, suggestion});
+        autofillSuggestionProvider.notifyObservers(List.of(suggestion, suggestion));
         generationProvider.notifyObservers(new Action[] {generationAction});
         assertThat(mModel.get(BAR_ITEMS).size(), is(4));
 
         // Drop all Autofill suggestions. Only the generation action should remain.
-        autofillSuggestionProvider.notifyObservers(new AutofillSuggestion[0]);
+        autofillSuggestionProvider.notifyObservers(List.of());
         assertThat(mModel.get(BAR_ITEMS).size(), is(2));
         assertThat(mModel.get(BAR_ITEMS).get(0).getAction(), is(generationAction));
 
         // Readd an Autofill suggestion and drop the generation. Only the suggestion should remain.
-        autofillSuggestionProvider.notifyObservers(new AutofillSuggestion[] {suggestion});
+        autofillSuggestionProvider.notifyObservers(List.of(suggestion));
         generationProvider.notifyObservers(new Action[0]);
         assertThat(mModel.get(BAR_ITEMS).size(), is(2));
         assertThat(mModel.get(BAR_ITEMS).get(0), instanceOf(AutofillBarItem.class));
@@ -361,7 +360,7 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testCreatesAddressItemWithIPH() {
-        PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
+        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
                 new PropertyProvider<>(AUTOFILL_SUGGESTION);
         AutofillSuggestion addressSuggestion =
                 new AutofillSuggestion.Builder()
@@ -373,7 +372,7 @@ public class KeyboardAccessoryControllerTest {
                         .build();
         mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
         autofillSuggestionProvider.notifyObservers(
-                new AutofillSuggestion[] {addressSuggestion, addressSuggestion, addressSuggestion});
+                List.of(addressSuggestion, addressSuggestion, addressSuggestion));
 
         // assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
         // mCoordinator.prepareUserEducation();
@@ -386,7 +385,7 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testCreatesPaymentItemWithIPH() {
-        PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
+        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
                 new PropertyProvider<>(AUTOFILL_SUGGESTION);
         AutofillSuggestion paymentSuggestion =
                 new AutofillSuggestion.Builder()
@@ -398,7 +397,7 @@ public class KeyboardAccessoryControllerTest {
                         .build();
         mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
         autofillSuggestionProvider.notifyObservers(
-                new AutofillSuggestion[] {paymentSuggestion, paymentSuggestion, paymentSuggestion});
+                List.of(paymentSuggestion, paymentSuggestion, paymentSuggestion));
 
         // assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
         // mCoordinator.prepareUserEducation();
@@ -411,7 +410,7 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testIPHFeatureSetForAutofillSuggestion() {
-        PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
+        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
                 new PropertyProvider<>(AUTOFILL_SUGGESTION);
         AutofillSuggestion paymentSuggestion =
                 new AutofillSuggestion.Builder()
@@ -424,7 +423,7 @@ public class KeyboardAccessoryControllerTest {
                         .build();
         mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
         autofillSuggestionProvider.notifyObservers(
-                new AutofillSuggestion[] {paymentSuggestion, paymentSuggestion, paymentSuggestion});
+                List.of(paymentSuggestion, paymentSuggestion, paymentSuggestion));
 
         // assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
         // mCoordinator.prepareUserEducation();
@@ -439,7 +438,7 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testCreatesIPHForSecondPasswordItem() {
-        PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
+        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
                 new PropertyProvider<>(AUTOFILL_SUGGESTION);
         AutofillSuggestion passwordSuggestion1 =
                 new AutofillSuggestion.Builder()
@@ -459,9 +458,7 @@ public class KeyboardAccessoryControllerTest {
                         .build();
         mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
         autofillSuggestionProvider.notifyObservers(
-                new AutofillSuggestion[] {
-                    passwordSuggestion1, passwordSuggestion2, passwordSuggestion2
-                });
+                List.of(passwordSuggestion1, passwordSuggestion2, passwordSuggestion2));
 
         // assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
         // mCoordinator.prepareUserEducation();
@@ -474,7 +471,7 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testCreatesAddressItemWithExternallyProvidedIPH() {
-        PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
+        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
                 new PropertyProvider<>(AUTOFILL_SUGGESTION);
         AutofillSuggestion addressSuggestion =
                 new AutofillSuggestion.Builder()
@@ -489,7 +486,7 @@ public class KeyboardAccessoryControllerTest {
 
         mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
         autofillSuggestionProvider.notifyObservers(
-                new AutofillSuggestion[] {addressSuggestion, addressSuggestion, addressSuggestion});
+                List.of(addressSuggestion, addressSuggestion, addressSuggestion));
 
         // assertThat(getAutofillItemAt(0).getFeatureForIPH(), is(nullValue()));
         // mCoordinator.prepareUserEducation();
@@ -568,16 +565,15 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testModelChangesUpdatesTheContentDescription() {
-        PropertyProvider<AutofillSuggestion[]> autofillSuggestionProvider =
+        PropertyProvider<List<AutofillSuggestion>> autofillSuggestionProvider =
                 new PropertyProvider<>(AUTOFILL_SUGGESTION);
 
         mCoordinator.registerAutofillProvider(autofillSuggestionProvider, mMockAutofillDelegate);
-        autofillSuggestionProvider.notifyObservers(
-                new AutofillSuggestion[] {mock(AutofillSuggestion.class)});
+        autofillSuggestionProvider.notifyObservers(List.of(mock(AutofillSuggestion.class)));
 
         assertThat(mModel.get(HAS_SUGGESTIONS), is(true));
 
-        autofillSuggestionProvider.notifyObservers(new AutofillSuggestion[] {});
+        autofillSuggestionProvider.notifyObservers(List.of());
         assertThat(mModel.get(HAS_SUGGESTIONS), is(false));
     }
 

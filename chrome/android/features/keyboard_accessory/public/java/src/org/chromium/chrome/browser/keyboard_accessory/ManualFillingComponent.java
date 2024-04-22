@@ -26,11 +26,13 @@ import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.List;
+
 /** This component handles the new, non-popup filling UI. */
 public interface ManualFillingComponent extends BackPressHandler {
     /**
-     * Observers are added with {@link #addObserver} and removed with {@link #removeObserver}.
-     * They are notified when the {@link ManualFillingComponent} is destroyed.
+     * Observers are added with {@link #addObserver} and removed with {@link #removeObserver}. They
+     * are notified when the {@link ManualFillingComponent} is destroyed.
      */
     interface Observer {
         /** Called if the ManualFillingComponent is destroyed. */
@@ -160,14 +162,16 @@ public interface ManualFillingComponent extends BackPressHandler {
     /**
      * Registers a provider, to provide autofill suggestions for the keyboard accessory bar. Call
      * {@link PropertyProvider#notifyObservers(Object)} to fill or update the suggestions.
+     *
      * @param autofillProvider The {@link PropertyProvider} providing autofill suggestions.
      * @param delegate The {@link AutofillDelegate} to call for interaction with the suggestions.
      */
     void registerAutofillProvider(
-            PropertyProvider<AutofillSuggestion[]> autofillProvider, AutofillDelegate delegate);
+            PropertyProvider<List<AutofillSuggestion>> autofillProvider, AutofillDelegate delegate);
 
     /**
      * Signals that the accessory has permission to show.
+     *
      * @param waitForKeyboard signals if the keyboard is requested.
      */
     void show(boolean waitForKeyboard);

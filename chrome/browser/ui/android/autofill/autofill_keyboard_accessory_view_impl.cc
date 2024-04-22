@@ -10,6 +10,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -77,12 +78,11 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
   if (!controller_) {
     return;
   }
-  const int line_count = controller_->GetLineCount();
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobjectArray> data_array =
-      Java_AutofillKeyboardAccessoryViewBridge_createAutofillSuggestionArray(
-          env, line_count);
 
+  JNIEnv* env = base::android::AttachCurrentThread();
+  const int line_count = controller_->GetLineCount();
+  std::vector<ScopedJavaLocalRef<jobject>> java_suggestions;
+  java_suggestions.reserve(line_count);
   for (int i = 0; i < line_count; ++i) {
     const Suggestion& suggestion = controller_->GetSuggestionAt(i);
     int android_icon_id = 0;
@@ -111,14 +111,16 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
       }
     }
 
-    Java_AutofillKeyboardAccessoryViewBridge_addToAutofillSuggestionArray(
-        env, data_array, i, label, sublabel, android_icon_id,
-        base::to_underlying(suggestion.popup_item_id),
-        controller_->GetRemovalConfirmationText(i, nullptr, nullptr),
-        suggestion.feature_for_iph ? suggestion.feature_for_iph->name : "",
-        url::GURLAndroid::FromNativeGURL(env, suggestion.custom_icon_url));
+    java_suggestions.push_back(
+        Java_AutofillKeyboardAccessoryViewBridge_createAutofillSuggestion(
+            env, label, sublabel, android_icon_id,
+            base::to_underlying(suggestion.popup_item_id),
+            controller_->GetRemovalConfirmationText(i, nullptr, nullptr),
+            suggestion.feature_for_iph ? suggestion.feature_for_iph->name : "",
+            url::GURLAndroid::FromNativeGURL(env, suggestion.custom_icon_url)));
   }
-  Java_AutofillKeyboardAccessoryViewBridge_show(env, java_object_, data_array);
+  Java_AutofillKeyboardAccessoryViewBridge_show(env, java_object_,
+                                                std::move(java_suggestions));
 }
 
 void AutofillKeyboardAccessoryViewImpl::AxAnnounce(const std::u16string& text) {

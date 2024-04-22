@@ -80,6 +80,7 @@ import org.chromium.ui.modelutil.PropertyObservable;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 
 import java.util.HashSet;
+import java.util.List;
 
 /**
  * This part of the manual filling component manages the state of the manual filling flow depending
@@ -321,7 +322,8 @@ class ManualFillingMediator
     }
 
     void registerAutofillProvider(
-            PropertyProvider<AutofillSuggestion[]> autofillProvider, AutofillDelegate delegate) {
+            PropertyProvider<List<AutofillSuggestion>> autofillProvider,
+            AutofillDelegate delegate) {
         if (!isInitialized()) return;
         if (mKeyboardAccessory == null) return;
         mKeyboardAccessory.registerAutofillProvider(autofillProvider, delegate);
