@@ -154,7 +154,8 @@ void InputDataProvider::GetConnectedDevices(
   bool has_internal_keyboard = false;
   for (const ui::KeyboardDevice& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
-    if (keyboard.type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL) {
+    if (keyboard.type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL &&
+        !Shell::Get()->keyboard_capability()->HasFunctionKey(keyboard.id)) {
       has_internal_keyboard = true;
       break;
     }
@@ -585,6 +586,12 @@ void InputDataProvider::AddKeyboard(const InputDeviceInformation* device_info) {
       keyboard_helper_.ConstructKeyboard(device_info, aux_data.get());
   const bool is_internal_keyboard =
       keyboard->connection_type == mojom::ConnectionType::kInternal;
+  // Don't add keyboard if internal keyboard has function key.
+  if (is_internal_keyboard &&
+      Shell::Get()->keyboard_capability()->HasFunctionKey(
+          device_info->input_device.id)) {
+    return;
+  }
   if (!features::IsExternalKeyboardInDiagnosticsAppEnabled() &&
       !is_internal_keyboard) {
     return;
