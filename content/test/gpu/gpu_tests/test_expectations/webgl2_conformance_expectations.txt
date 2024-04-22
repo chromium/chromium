@@ -1062,6 +1062,7 @@ crbug.com/335203259 [ chromeos chromeos-board-amd64-generic ] conformance2/wasm/
 crbug.com/335203259 [ chromeos chromeos-board-amd64-generic ] conformance2/wasm/readpixels-16gb-wasm-memory.html [ Failure ]
 crbug.com/335203259 [ chromeos chromeos-board-amd64-generic ] conformance2/wasm/teximage2d-16gb-wasm-memory.html [ Failure ]
 crbug.com/335203259 [ chromeos chromeos-board-amd64-generic ] conformance2/wasm/texsubimage2d-16gb-wasm-memory.html [ Failure ]
+crbug.com/335203259 [ chromeos chromeos-board-amd64-generic ] conformance2/wasm/texsubimage2d-4gb-wasm-memory.html [ Failure ]
 crbug.com/335203259 [ chromeos chromeos-board-jacuzzi ] conformance2/wasm/bufferdata-16gb-wasm-memory.html [ Failure ]
 crbug.com/335203259 [ chromeos chromeos-board-jacuzzi ] conformance2/wasm/buffersubdata-16gb-wasm-memory.html [ Failure ]
 crbug.com/335203259 [ chromeos chromeos-board-jacuzzi ] conformance2/wasm/getbuffersubdata-16gb-wasm-memory.html [ Failure ]
