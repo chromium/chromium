@@ -70,7 +70,7 @@ bool Mailbox::IsSharedImage() const {
   return name[kSharedImageFlagIndex] & kSharedImageFlag;
 }
 
-Mailbox Mailbox::GenerateLegacyMailbox() {
+Mailbox Mailbox::GenerateLegacySharedBitmapMailbox() {
   return GenerateMailbox(false /* is_shared_image */);
 }
 

@@ -17,19 +17,11 @@
 #define GL_MAILBOX_SIZE_CHROMIUM 16
 #endif
 
-namespace content {
-class PPB_Graphics3D_Impl;
-}
-
-namespace media {
-class GLES2DecoderHelperImpl;
+namespace viz {
+class SharedBitmap;
 }
 
 namespace gpu {
-
-namespace gles2 {
-class GLES2Implementation;
-}
 
 // Importance to use in tracing. Higher values get the memory cost attributed,
 // and equal values share the cost. We want the client to "win" over the
@@ -68,12 +60,6 @@ struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
   // system.
   static Mailbox GenerateForSharedImage();
 
-  // A temporary solution until when kSharedBitmapToSharedImage is enabled by
-  // default and the legacy ShareBitmap path is removed.
-  static Mailbox GenerateLegacyMailboxForSharedBitmap() {
-    return GenerateLegacyMailbox();
-  }
-
   // Verify that the mailbox was created through Mailbox::Generate. This only
   // works in Debug (always returns true in Release). This is not a secure
   // check, only to catch bugs where clients forgot to call Mailbox::Generate.
@@ -87,22 +73,19 @@ struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
   Name name;
 
  private:
-  // Generate a unique unguessable mailbox name for use with the legacy mailbox
-  // system.
-  // NOTE: We are in the process of eliminating this method. DO NOT ADD ANY NEW
-  // USAGES - instead, reach out to shared-image-team@ with your use case. See
-  // crbug.com/1273084.
-  static Mailbox GenerateLegacyMailbox();
+  // A temporary solution until when kSharedBitmapToSharedImage is enabled by
+  // default and the legacy ShareBitmap path is removed.
+  static Mailbox GenerateLegacySharedBitmapMailbox();
 
-  friend class content::PPB_Graphics3D_Impl;
-  friend class gles2::GLES2Implementation;
-  friend class media::GLES2DecoderHelperImpl;
+  friend class viz::SharedBitmap;
 
  public:
   // Generate a legacy mailbox for usage in tests of production code that
   // still interacts with the legacy mailbox system.
+  // TODO(crbug.com/40057997): Remove all tests that use this functionality, as
+  // they are testing codepaths no longer used in production.
   static Mailbox GenerateLegacyMailboxForTesting() {
-    return GenerateLegacyMailbox();
+    return GenerateLegacySharedBitmapMailbox();
   }
 };
 
