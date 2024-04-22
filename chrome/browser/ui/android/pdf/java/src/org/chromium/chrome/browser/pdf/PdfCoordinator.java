@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.pdf;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -13,6 +12,10 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.fakepdf.PdfDocument;
+import org.chromium.chrome.browser.fakepdf.PdfDocumentListener;
+import org.chromium.chrome.browser.fakepdf.PdfDocumentRequest;
+import org.chromium.chrome.browser.fakepdf.PdfViewerFragment;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 
@@ -25,6 +28,8 @@ public class PdfCoordinator {
     private String mPdfFilePath;
     private boolean mPdfIsDownloaded;
     private boolean mIsPdfLoaded;
+    private PdfViewerFragment mPdfViewerFragment;
+    private PdfDocument mPdfDocument;
 
     /**
      * Creates a PdfCoordinator for the PdfPage.
@@ -57,18 +62,32 @@ public class PdfCoordinator {
         setPdfIsDownloaded(isPdfDownloaded());
     }
 
+    class ChromePdfDocumentListener implements PdfDocumentListener {
+        @Override
+        public void onDocumentLoaded(PdfDocument document) {
+            mPdfDocument = document;
+            // TODO: capture metrics
+        }
+
+        @Override
+        public void onDocumentLoadFailed(RuntimeException throwable) {
+            // TODO: capture metrics
+        }
+    }
+
     /** Returns the intended view for PdfPage tab. */
     View getView() {
         return mView;
     }
 
     boolean findInPage() {
-        // TODO: Invoke PdfViewer#setFindinfileView.
+        // TODO: Invoke PdfDocument.setIsSearchVisible.
         return false;
     }
 
     void destroy() {
         // TODO: stop download if still in progress.
+        // TODO: removePdfEventsListener
     }
 
     void onDownloadComplete(String pdfFilePath) {
@@ -99,12 +118,19 @@ public class PdfCoordinator {
         if (mView.getParent() == null) {
             return;
         }
-        Uri pdfUri = PdfUtils.getContentUri(mPdfFilePath);
-        if (pdfUri != null) {
-            // TODO: load file with PdfViewer.
+        PdfDocumentRequest pdfDocumentRequest = PdfUtils.getPdfDocumentRequest(mPdfFilePath);
+        if (pdfDocumentRequest != null) {
+            mPdfViewerFragment = new PdfViewerFragment();
+            PdfDocumentListener documentListener = new ChromePdfDocumentListener();
+            PdfUtils.loadPdf(
+                    mPdfViewerFragment,
+                    pdfDocumentRequest,
+                    documentListener,
+                    mFragmentManager,
+                    mFragmentContainerViewId);
             mIsPdfLoaded = true;
         } else {
-            Log.e(TAG, "Pdf uri is null.");
+            Log.e(TAG, "PdfDocumentRequest is null.");
         }
     }
 

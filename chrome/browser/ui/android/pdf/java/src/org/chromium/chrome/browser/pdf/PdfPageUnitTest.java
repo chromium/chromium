@@ -70,6 +70,7 @@ public class PdfPageUnitTest {
         PdfUtils.setShouldOpenPdfInlineForTesting(true);
         mPdfInfo = new PdfInfo();
         ChromeFileProvider.setGeneratedUriForTesting(Uri.parse(CONTENT_URL));
+        PdfUtils.skipLoadPdfForTesting(true);
     }
 
     @After
@@ -77,6 +78,7 @@ public class PdfPageUnitTest {
         PdfUtils.setShouldOpenPdfInlineForTesting(false);
         mCloseableMocks.close();
         ChromeFileProvider.setGeneratedUriForTesting(null);
+        PdfUtils.skipLoadPdfForTesting(false);
     }
 
     @Test
