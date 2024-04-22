@@ -461,7 +461,7 @@ void DoTestFillAugmentedPhoneCountryCodeField(
   AutofillField field(test::CreateTestSelectOrSelectListField(
       /*label=*/"", /*name=*/"", /*value=*/"", /*autocomplete=*/"",
       /*values=*/{}, /*contents=*/{}, field_type));
-  field.options = test_case.phone_country_code_selection_options;
+  field.set_options(test_case.phone_country_code_selection_options);
   field.set_heuristic_type(GetActiveHeuristicSource(), PHONE_HOME_COUNTRY_CODE);
 
   AutofillProfile profile(AddressCountryCode("US"));

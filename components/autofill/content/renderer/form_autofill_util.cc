@@ -2029,7 +2029,7 @@ void WebFormControlElementToFormField(
         GetListItemsForSelectOrSelectList(element);
     std::vector<SelectOption> options;
     FilterOptionElementsAndGetOptionStrings(element_list_items, &options);
-    field->options = std::move(options);
+    field->set_options(std::move(options));
   }
   if (extract_options.contains(ExtractOption::kBounds)) {
     if (auto* local_frame = element.GetDocument().GetFrame()) {

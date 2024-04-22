@@ -255,10 +255,10 @@ TEST_F(FormAutofillUtilsTest, TruncateLargeOptionValuesAndContents) {
                                         {ExtractOption::kOptions});
 
   ASSERT_EQ(form_data.fields.size(), 1u);
-  ASSERT_EQ(form_data.fields[0].options.size(), 1u);
-  EXPECT_EQ(form_data.fields[0].options[0].value, trimmed_option);
-  EXPECT_EQ(form_data.fields[0].options[0].content, trimmed_option);
-  EXPECT_TRUE(IsValidOption(form_data.fields[0].options[0]));
+  ASSERT_EQ(form_data.fields[0].options().size(), 1u);
+  EXPECT_EQ(form_data.fields[0].options()[0].value, trimmed_option);
+  EXPECT_EQ(form_data.fields[0].options()[0].content, trimmed_option);
+  EXPECT_TRUE(IsValidOption(form_data.fields[0].options()[0]));
 }
 
 TEST_F(FormAutofillUtilsTest, FindChildTextTest) {

@@ -338,7 +338,7 @@ bool StructTraits<
     if (!data.ReadOptions(&options)) {
       return false;
     }
-    out->options = std::move(options);
+    out->set_options(std::move(options));
   }
 
   {

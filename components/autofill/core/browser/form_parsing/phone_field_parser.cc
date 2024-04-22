@@ -173,18 +173,19 @@ bool PhoneFieldParser::LikelyAugmentedPhoneCountryCode(
 
   // If the number of the options is less than the minimum limit or more than
   // the maximum limit, return false.
-  if (field->options.size() < kMinSelectOptionsForCountryCode ||
-      field->options.size() >= kMaxSelectOptionsForCountryCode)
+  if (field->options().size() < kMinSelectOptionsForCountryCode ||
+      field->options().size() >= kMaxSelectOptionsForCountryCode) {
     return false;
+  }
 
   // |total_covered_options| stores the count of the options that are
   // compared with the regex.
-  int total_num_options = static_cast<int>(field->options.size());
+  int total_num_options = static_cast<int>(field->options().size());
 
   // |total_positive_options| stores the count of the options that match the
   // regex.
   int total_positive_options =
-      base::ranges::count_if(field->options, [](const SelectOption& option) {
+      base::ranges::count_if(field->options(), [](const SelectOption& option) {
         return MatchesRegex<kAugmentedPhoneCountryCodeRe>(option.content);
       });
 

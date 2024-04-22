@@ -90,7 +90,7 @@ FormFieldData GetFormFieldData(const FieldDescription& fd) {
   ff.set_form_control_type(fd.form_control_type);
   if (ff.form_control_type() == FormControlType::kSelectOne &&
       !fd.select_options.empty()) {
-    ff.options = fd.select_options;
+    ff.set_options(fd.select_options);
   }
 
   ff.set_renderer_id(fd.renderer_id.value_or(MakeFieldRendererId()));

@@ -319,7 +319,7 @@ void SanitizeFormData(FormData* form) {
     field.set_label({});
     field.set_value({});
     field.autocomplete_attribute = {};
-    field.options.clear();
+    field.set_options({});
     field.placeholder = {};
     field.css_classes = {};
     field.set_id_attribute({});

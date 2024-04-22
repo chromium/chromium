@@ -122,10 +122,11 @@ autofill::FieldGlobalId PhoneFieldParserTest::AppendField(
   field.set_label(field_data.label);
   field.set_name(field_data.name);
   field.set_max_length(field_data.max_length);
+  std::vector<SelectOption> options;
   for (auto* const element : field_data.options) {
-    field.options.push_back(
-        {.value = u"", .content = base::UTF8ToUTF16(element)});
+    options.push_back({.value = u"", .content = base::UTF8ToUTF16(element)});
   }
+  field.set_options(std::move(options));
   field.set_renderer_id(MakeFieldRendererId());
   list_.push_back(std::make_unique<AutofillField>(field));
   return list_.back()->global_id();

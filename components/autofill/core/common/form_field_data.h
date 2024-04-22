@@ -432,7 +432,10 @@ struct FormFieldData {
   std::u16string user_input;
 
   // The options of a select box.
-  std::vector<SelectOption> options;
+  const std::vector<SelectOption>& options() const { return options_; }
+  void set_options(std::vector<SelectOption> options) {
+    options_ = std::move(options);
+  }
 
   // Password Manager doesn't use labels nor client side nor server side, so
   // label_source isn't in serialize methods.
@@ -466,6 +469,7 @@ struct FormFieldData {
   Section section_;
   bool is_autofilled_ = false;
   FieldPropertiesMask properties_mask_ = 0;
+  std::vector<SelectOption> options_;
 };
 
 // Structure containing necessary information to be sent from the browser to the

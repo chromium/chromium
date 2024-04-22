@@ -2531,11 +2531,11 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelect) {
   expected.set_value({});
   EXPECT_FORM_FIELD_DATA_EQUALS(expected, result3);
 
-  ASSERT_EQ(2U, result3.options.size());
-  EXPECT_EQ(u"CA", result3.options[0].value);
-  EXPECT_EQ(u"California", result3.options[0].content);
-  EXPECT_EQ(u"TX", result3.options[1].value);
-  EXPECT_EQ(u"Texas", result3.options[1].content);
+  ASSERT_EQ(2U, result3.options().size());
+  EXPECT_EQ(u"CA", result3.options()[0].value);
+  EXPECT_EQ(u"California", result3.options()[0].content);
+  EXPECT_EQ(u"TX", result3.options()[1].value);
+  EXPECT_EQ(u"Texas", result3.options()[1].content);
 }
 
 // We copy extra attributes for the select field.
@@ -2594,7 +2594,7 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldLongSelect) {
   WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    {ExtractOption::kOptions}, &result);
 
-  EXPECT_TRUE(result.options.empty());
+  EXPECT_TRUE(result.options().empty());
 }
 
 // Test that we use the aria-label as the content if the <option> has no text.
@@ -2612,9 +2612,9 @@ TEST_F(FormAutofillTest, WebFormControlElementToFormFieldSelectListAriaLabel) {
   FormFieldData result;
   WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    {ExtractOption::kOptions}, &result);
-  ASSERT_EQ(2u, result.options.size());
-  EXPECT_EQ(u"usa", result.options[0].content);
-  EXPECT_EQ(u"uk", result.options[1].content);
+  ASSERT_EQ(2u, result.options().size());
+  EXPECT_EQ(u"usa", result.options()[0].content);
+  EXPECT_EQ(u"uk", result.options()[1].content);
 }
 
 // Test that the content for the <option> can be computed when the <option>s
@@ -2633,8 +2633,8 @@ TEST_F(FormAutofillTest,
   FormFieldData result;
   WebFormControlElementToFormField(WebFormElement(), element, nullptr,
                                    {ExtractOption::kOptions}, &result);
-  ASSERT_EQ(1u, result.options.size());
-  EXPECT_EQ(u"+1 (Canada)", result.options[0].content);
+  ASSERT_EQ(1u, result.options().size());
+  EXPECT_EQ(u"+1 (Canada)", result.options()[0].content);
 }
 
 // We should be able to extract a <textarea> field.

@@ -26,8 +26,8 @@ void FillCommonFields(FormFieldData* data) {
   data->is_focusable = true;
   data->should_autocomplete = false;
   data->text_direction = base::i18n::RIGHT_TO_LEFT;
-  data->options = {{.value = u"First", .content = u"First"},
-                   {.value = u"Second", .content = u"Second"}};
+  data->set_options({{.value = u"First", .content = u"First"},
+                     {.value = u"Second", .content = u"Second"}});
 }
 
 void FillVersion2Fields(FormFieldData* data) {
@@ -81,18 +81,20 @@ void WriteSection5(const FormFieldData& data, base::Pickle* pickle) {
 
 void WriteSection2(const FormFieldData& data, base::Pickle* pickle) {
   pickle->WriteInt(data.text_direction);
-  pickle->WriteInt(static_cast<int>(data.options.size()));
-  for (const auto& option : data.options)
+  pickle->WriteInt(static_cast<int>(data.options().size()));
+  for (const auto& option : data.options()) {
     pickle->WriteString16(option.value);
-  pickle->WriteInt(static_cast<int>(data.options.size()));
-  for (const auto& option : data.options)
+  }
+  pickle->WriteInt(static_cast<int>(data.options().size()));
+  for (const auto& option : data.options()) {
     pickle->WriteString16(option.content);
+  }
 }
 
 void WriteVersion9Specific(const FormFieldData& data, base::Pickle* pickle) {
   pickle->WriteInt(data.text_direction);
-  pickle->WriteInt(static_cast<int>(data.options.size()));
-  for (const SelectOption& option : data.options) {
+  pickle->WriteInt(static_cast<int>(data.options().size()));
+  for (const SelectOption& option : data.options()) {
     pickle->WriteString16(option.value);
     pickle->WriteString16(option.content);
   }

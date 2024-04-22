@@ -1378,7 +1378,7 @@ void AutofillAgent::BatchSelectOrSelectListOptionChange(
               /*extract_options=*/{})) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver();
-        autofill_driver && !field.options.empty()) {
+        autofill_driver && !field.options().empty()) {
       autofill_driver->SelectOrSelectListFieldOptionsDidChange(form);
     }
   }

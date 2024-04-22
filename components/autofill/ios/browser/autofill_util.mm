@@ -362,18 +362,20 @@ bool ExtractFormFieldData(const base::Value::Dict& field,
     if (option_values->size() != option_contents->size()) {
       return false;
     }
+    std::vector<SelectOption> options;
     auto value_it = option_values->begin();
     auto content_it = option_contents->begin();
     while (value_it != option_values->end() &&
            content_it != option_contents->end()) {
       if (value_it->is_string() && content_it->is_string()) {
-        field_data->options.push_back(
+        options.push_back(
             {.value = base::UTF8ToUTF16(value_it->GetString()),
              .content = base::UTF8ToUTF16(content_it->GetString())});
       }
       ++value_it;
       ++content_it;
     }
+    field_data->set_options(std::move(options));
   }
 
   // Fill user input and properties mask.

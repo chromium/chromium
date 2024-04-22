@@ -449,15 +449,15 @@ std::u16string GetFillingValueForCreditCardSelectControl(
   switch (field.Type().GetStorableType()) {
     case CREDIT_CARD_EXP_MONTH:
       return GetExpirationMonthSelectControlValue(
-          value, app_locale, field.options, failure_to_fill);
+          value, app_locale, field.options(), failure_to_fill);
     case CREDIT_CARD_EXP_2_DIGIT_YEAR:
     case CREDIT_CARD_EXP_4_DIGIT_YEAR:
-      return GetYearSelectControlValue(value, field.options, failure_to_fill);
+      return GetYearSelectControlValue(value, field.options(), failure_to_fill);
     case CREDIT_CARD_TYPE:
-      return GetCreditCardTypeSelectControlValue(value, field.options,
+      return GetCreditCardTypeSelectControlValue(value, field.options(),
                                                  failure_to_fill);
     default:
-      return GetSelectControlValue(value, field.options, failure_to_fill)
+      return GetSelectControlValue(value, field.options(), failure_to_fill)
           .value_or(u"");
   }
 }

@@ -321,7 +321,7 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
 
   static const std::vector<autofill::SelectOption>& options(
       const autofill::FormFieldData& r) {
-    return r.options;
+    return r.options();
   }
 
   static autofill::FormFieldData::LabelSource label_source(

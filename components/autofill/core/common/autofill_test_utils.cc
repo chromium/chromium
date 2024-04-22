@@ -215,13 +215,15 @@ FormFieldData CreateTestSelectOrSelectListField(
   field.set_parsed_autocomplete(ParseAutocompleteAttribute(autocomplete));
 
   CHECK_EQ(values.size(), contents.size());
-  field.options.reserve(values.size());
+  std::vector<SelectOption> options;
+  options.reserve(values.size());
   for (size_t i = 0; i < values.size(); ++i) {
-    field.options.push_back({
+    options.push_back({
         .value = base::UTF8ToUTF16(values[i]),
         .content = base::UTF8ToUTF16(contents[i]),
     });
   }
+  field.set_options(std::move(options));
   return field;
 }
 

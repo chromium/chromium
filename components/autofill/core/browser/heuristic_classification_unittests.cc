@@ -364,15 +364,17 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
   field.host_frame = form_data.host_frame;
   field.host_form_id = form_data.renderer_id;
   field.set_renderer_id(test::MakeFieldRendererId());
-  if (const base::Value::List* options =
+  std::vector<SelectOption> options;
+  if (const base::Value::List* select_options =
           field_dict.FindList("select_options")) {
-    for (const base::Value& option : *options) {
+    for (const base::Value& option : *select_options) {
       const base::Value::Dict& option_dict = option.GetDict();
-      field.options.push_back(SelectOption{
+      options.push_back(SelectOption{
           .value = base::UTF8ToUTF16(*option_dict.FindString("value")),
           .content = base::UTF8ToUTF16(*option_dict.FindString("label"))});
     }
   }
+  field.set_options(std::move(options));
   return field;
 }
 

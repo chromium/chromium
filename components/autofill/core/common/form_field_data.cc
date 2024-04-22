@@ -170,10 +170,12 @@ bool DeserializeSection3(base::PickleIterator* iter,
     return false;
   }
   field_data->text_direction = text_direction;
+  std::vector<SelectOption> options;
   for (size_t i = 0; i < option_values.size(); ++i) {
-    field_data->options.push_back({.value = std::move(option_values[i]),
-                                   .content = std::move(option_contents[i])});
+    options.push_back({.value = std::move(option_values[i]),
+                       .content = std::move(option_contents[i])});
   }
+  field_data->set_options(std::move(options));
   return true;
 }
 
@@ -186,7 +188,7 @@ bool DeserializeSection12(base::PickleIterator* iter,
     return false;
   }
   field_data->text_direction = std::move(text_direction);
-  field_data->options = std::move(options);
+  field_data->set_options(std::move(options));
   return true;
 }
 
@@ -255,7 +257,7 @@ auto IdentityTuple(const FormFieldData& f) {
       std::tie(f.label(), f.name(), f.name_attribute(), f.id_attribute(),
                f.form_control_type(), f.autocomplete_attribute, f.placeholder,
                f.max_length(), f.css_classes, f.is_focusable,
-               f.should_autocomplete, f.role, f.text_direction, f.options),
+               f.should_autocomplete, f.role, f.text_direction, f.options()),
       std::make_tuple(IsCheckable(f.check_status)));
 }
 
@@ -495,7 +497,7 @@ void SerializeFormFieldData(const FormFieldData& field_data,
   pickle->WriteBool(field_data.should_autocomplete);
   pickle->WriteInt(static_cast<int>(field_data.role));
   pickle->WriteInt(field_data.text_direction);
-  WriteSelectOptionVector(field_data.options, pickle);
+  WriteSelectOptionVector(field_data.options(), pickle);
   pickle->WriteString16(field_data.placeholder);
   pickle->WriteString16(field_data.css_classes);
   pickle->WriteUInt32(field_data.properties_mask());

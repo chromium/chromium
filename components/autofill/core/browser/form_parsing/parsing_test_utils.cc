@@ -82,7 +82,7 @@ void FormFieldParserTestBase::AddSelectOneFormFieldData(
     FieldType expected_type) {
   AddFormFieldData(FormControlType::kSelectOne, name, label, expected_type);
   FormFieldData* field_data = fields_.back().get();
-  field_data->options = options;
+  field_data->set_options(options);
 }
 
 // Convenience wrapper for text control elements.

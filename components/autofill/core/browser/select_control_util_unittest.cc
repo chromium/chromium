@@ -34,31 +34,33 @@ TEST_F(FieldFillingUtilTest, FindShortestSubstringMatchInSelect) {
   AutofillField field{test::CreateTestSelectField({"États-Unis", "Canada"})};
 
   // Case 1: Exact match
-  int ret = FindShortestSubstringMatchInSelect(u"Canada", false, field.options);
+  int ret =
+      FindShortestSubstringMatchInSelect(u"Canada", false, field.options());
   EXPECT_EQ(1, ret);
 
   // Case 2: Case-insensitive
-  ret = FindShortestSubstringMatchInSelect(u"CANADA", false, field.options);
+  ret = FindShortestSubstringMatchInSelect(u"CANADA", false, field.options());
   EXPECT_EQ(1, ret);
 
   // Case 3: Proper substring
-  ret = FindShortestSubstringMatchInSelect(u"États", false, field.options);
+  ret = FindShortestSubstringMatchInSelect(u"États", false, field.options());
   EXPECT_EQ(0, ret);
 
   // Case 4: Accent-insensitive
-  ret = FindShortestSubstringMatchInSelect(u"Etats-Unis", false, field.options);
+  ret =
+      FindShortestSubstringMatchInSelect(u"Etats-Unis", false, field.options());
   EXPECT_EQ(0, ret);
 
   // Case 5: Whitespace-insensitive
-  ret = FindShortestSubstringMatchInSelect(u"Ca na da", true, field.options);
+  ret = FindShortestSubstringMatchInSelect(u"Ca na da", true, field.options());
   EXPECT_EQ(1, ret);
 
   // Case 6: No match (whitespace-sensitive)
-  ret = FindShortestSubstringMatchInSelect(u"Ca Na Da", false, field.options);
+  ret = FindShortestSubstringMatchInSelect(u"Ca Na Da", false, field.options());
   EXPECT_EQ(-1, ret);
 
   // Case 7: No match (not present)
-  ret = FindShortestSubstringMatchInSelect(u"Canadia", true, field.options);
+  ret = FindShortestSubstringMatchInSelect(u"Canadia", true, field.options());
   EXPECT_EQ(-1, ret);
 }
 
@@ -74,12 +76,14 @@ TEST_F(FieldFillingUtilTest, GetSelectControlByValue) {
 
   // Set semantically empty contents for each option, so that only the values
   // can be used for matching.
-  for (size_t i = 0; i < field.options.size(); ++i) {
-    field.options[i].content = base::NumberToString16(i);
+  std::vector<SelectOption> options = field.options();
+  for (size_t i = 0; i < field.options().size(); ++i) {
+    options[i].content = base::NumberToString16(i);
   }
+  field.set_options(std::move(options));
 
   std::u16string match_value =
-      GetSelectControlValue(u"Meenie", field.options,
+      GetSelectControlValue(u"Meenie", field.options(),
                             /*failure_to_fill=*/nullptr)
           .value_or(u"");
   EXPECT_EQ(u"Meenie", match_value);
@@ -96,12 +100,14 @@ TEST_F(FieldFillingUtilTest, GetSelectControlByContents) {
 
   // Set semantically empty values for each option, so that only the contents
   // can be used for matching.
-  for (size_t i = 0; i < field.options.size(); ++i) {
-    field.options[i].value = base::NumberToString16(i);
+  std::vector<SelectOption> options = field.options();
+  for (size_t i = 0; i < field.options().size(); ++i) {
+    options[i].value = base::NumberToString16(i);
   }
+  field.set_options(std::move(options));
 
   std::u16string match_value =
-      GetSelectControlValue(u"Miney", field.options,
+      GetSelectControlValue(u"Miney", field.options(),
                             /*failure_to_fill=*/nullptr)
           .value_or(u"");
   EXPECT_EQ(u"2", match_value);
