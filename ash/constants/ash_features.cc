@@ -2808,13 +2808,6 @@ BASE_FEATURE(kTilingWindowResize,
              "TilingWindowResize",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Forces the time of day wallpaper to change on an automatic sunset-to-sunrise
-// schedule, regardless of what dark/light mode settings are active.
-// Not used if time of day wallpaper is not enabled.
-BASE_FEATURE(kTimeOfDayWallpaperForcedAutoSchedule,
-             "TimeOfDayWallpaperForcedAutoSchedule",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables retrieving time of day screen saver assets from DLC, rather than from
 // rootfs.
 BASE_FEATURE(kTimeOfDayDlc, "TimeOfDayDlc", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -4454,11 +4447,6 @@ bool IsTimeOfDayScreenSaverEnabled() {
 
 bool IsTimeOfDayWallpaperEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagementTimeOfDayWallpaper);
-}
-
-bool IsTimeOfDayWallpaperForcedAutoScheduleEnabled() {
-  return IsTimeOfDayWallpaperEnabled() &&
-         base::FeatureList::IsEnabled(kTimeOfDayWallpaperForcedAutoSchedule);
 }
 
 bool IsTimeOfDayDlcEnabled() {

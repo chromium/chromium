@@ -5,7 +5,6 @@
 import 'chrome://personalization/strings.m.js';
 
 import {OnlineImageType, PersonalizationRouterElement, TimeOfDayWallpaperDialogElement, WallpaperGridItemElement, WallpaperImagesElement} from 'chrome://personalization/js/personalization_app.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -342,9 +341,6 @@ suite('WallpaperImagesElementTest', function() {
   });
 
   test('shows dialog when clicking on a time of day wallpaper', async () => {
-    loadTimeData.overrideValues({
-      isTimeOfDayWallpaperForcedAutoScheduleEnabled: true,
-    });
     personalizationStore.setReducersEnabled(true);
     personalizationStore.data.theme.colorModeAutoScheduleEnabled = false;
     wallpaperImagesElement =
@@ -361,9 +357,6 @@ suite('WallpaperImagesElementTest', function() {
   test(
       'clicking cancel dismisses the time of day wallpaper dialog',
       async () => {
-        loadTimeData.overrideValues({
-          isTimeOfDayWallpaperForcedAutoScheduleEnabled: true,
-        });
         personalizationStore.setReducersEnabled(true);
         personalizationStore.data.theme.colorModeAutoScheduleEnabled = false;
         wallpaperImagesElement = await createWithDefaultData(
@@ -388,9 +381,6 @@ suite('WallpaperImagesElementTest', function() {
       });
 
   test('clicking confirm on the time of day wallpaper dialog', async () => {
-    loadTimeData.overrideValues({
-      isTimeOfDayWallpaperForcedAutoScheduleEnabled: true,
-    });
     personalizationStore.setReducersEnabled(true);
     personalizationStore.data.theme.colorModeAutoScheduleEnabled = false;
     wallpaperImagesElement =
@@ -415,9 +405,6 @@ suite('WallpaperImagesElementTest', function() {
   });
 
   test('do not show time of day dialog with proper settings', async () => {
-    loadTimeData.overrideValues({
-      isTimeOfDayWallpaperForcedAutoScheduleEnabled: true,
-    });
     personalizationStore.setReducersEnabled(true);
     wallpaperProvider.shouldShowTimeOfDayWallpaperDialogResponse = false;
     wallpaperImagesElement =

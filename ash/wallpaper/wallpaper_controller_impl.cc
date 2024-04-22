@@ -3159,7 +3159,7 @@ bool WallpaperControllerImpl::IsOobeState() const {
 const ScheduledFeature& WallpaperControllerImpl::GetScheduleForOnlineWallpaper(
     const std::string& collection_id) const {
   if (::ash::IsTimeOfDayWallpaper(collection_id) &&
-      features::IsTimeOfDayWallpaperForcedAutoScheduleEnabled()) {
+      features::IsTimeOfDayWallpaperEnabled()) {
     return *time_of_day_scheduler_;
   } else {
     return *Shell::Get()->dark_light_mode_controller();
