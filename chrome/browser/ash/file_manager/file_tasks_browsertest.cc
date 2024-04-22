@@ -287,6 +287,16 @@ class TestControllerLacros : public TestController {
 
     lacros_waiter_.emplace(crosapi::TestControllerAsh::Get()
                                ->GetStandaloneBrowserTestController());
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    // QuickOffice loads from rootfs at /usr/share/chromeos-assets/quickoffce
+    // which does not exist on bots for tests, so load test version.
+    base::FilePath data_dir;
+    CHECK(base::PathService::Get(chrome::DIR_TEST_DATA, &data_dir));
+    lacros_waiter_->InstallComponentExtension(
+        data_dir.Append("chromeos/file_manager/quickoffice").value(),
+        extension_misc::kQuickOfficeComponentExtensionId);
+#endif
   }
 
   std::string InstallExtension(const char* path) override {

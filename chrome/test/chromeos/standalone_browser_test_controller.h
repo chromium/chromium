@@ -61,6 +61,11 @@ class StandaloneBrowserTestController
       const std::string& path,
       InstallUnpackedExtensionCallback callback) override;
 
+  void InstallComponentExtension(
+      const std::string& path,
+      const std::string& extension_id,
+      InstallComponentExtensionCallback callback) override;
+
   void RemoveComponentExtension(
       const std::string& extension_id,
       RemoveComponentExtensionCallback callback) override;

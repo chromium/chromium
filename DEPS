@@ -3906,12 +3906,6 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
-  'src/chrome/browser/resources/chromeos/quickoffice': {
-      'url': Var('chrome_git') + '/quickoffice/crx.git' + '@' +
-        'cf37f7d861973f9f7f3e937358a452406b16093a',
-      'condition': '(checkout_chromeos or checkout_linux) and checkout_src_internal',
-  },
-
   'src/chrome/browser/resources/settings/internal': {
       'url': Var('chrome_git') + '/chrome/browser/resources/settings_internal.git' + '@' +
         'c8a62277e90b0e4cea284f3ba188d5e1cbfc07ab', # from svn revision 41419

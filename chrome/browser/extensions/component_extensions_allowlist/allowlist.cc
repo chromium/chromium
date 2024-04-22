@@ -52,6 +52,9 @@ bool IsComponentExtensionAllowlisted(const std::string& extension_id) {
 #if BUILDFLAG(IS_CHROMEOS)
     extension_misc::kContactCenterInsightsExtensionId,
     extension_misc::kDeskApiExtensionId,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    extension_misc::kQuickOfficeComponentExtensionId,
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif
   };
 
@@ -103,9 +106,6 @@ bool IsComponentExtensionAllowlisted(int manifest_resource_id) {
     case IDR_CONTACT_CENTER_INSIGHTS_MANIFEST:
     case IDR_DESK_API_MANIFEST:
     case IDR_ECHO_MANIFEST:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    case IDR_QUICKOFFICE_MANIFEST:
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // BUILDFLAG(IS_CHROMEOS)
       return true;
   }
