@@ -87,6 +87,7 @@ chrome/install_static 1 1
 chromeos/ash/components/carrier_lock 3 1
 chromeos/ash/components/network/onc 1 1
 chromeos/ash/services/ime/public/cpp/shared_lib/proto 1 1
+chromeos/ash/services/ime/public/mojom/user_data 1 1
 chromeos/crosapi 2 1
 chromeos/lacros 2 1
 chromeos/process_proxy 7 5
@@ -544,7 +545,6 @@ third_party/hyphenation-patterns/src/am 1 1
 third_party/inspector_protocol 4 1
 third_party/jsoncpp 1 1
 third_party/libpng/contrib/oss-fuzz 1 1
-third_party/libpng/patches 1 1
 third_party/liburlpattern 1 1
 third_party/libusb/src/libusb 1 1
 third_party/libusb/src/libusb/os 1 1
@@ -566,7 +566,7 @@ third_party/markdown 5 2
 third_party/markdown/extensions 1 1
 third_party/material_web_components/components-chromium/node_modules/lit-html 1 1
 third_party/material_web_components/components-chromium/node_modules/@types/trusted-types 1 1
-third_party/mediapipe/src 7 3
+third_party/mediapipe/src 6 3
 third_party/mediapipe/src/.github/ISSUE_TEMPLATE 2 1
 third_party/mediapipe/src/mediapipe/calculators/core 1 1
 third_party/mediapipe/src/mediapipe/framework/api2 2 1
@@ -806,6 +806,7 @@ tools/android/touch_replay_benchmark 1 1
 tools/binary_size 1 1
 tools/binary_size/libsupersize 17 6
 tools/binary_size/libsupersize/testdata 4 1
+tools/bisect 3 1
 tools/checkperms 1 1
 tools/crates/gnrt 1 1
 tools/cygprofile 1 1
