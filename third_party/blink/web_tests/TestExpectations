@@ -377,13 +377,6 @@ crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-stat
 crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.copy.shadow.no-transform.html [ Failure ]
 crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.copy.shadow.no-transform.w.html [ Failure ]
 crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.copy.shadow.no-transform.w.html [ Failure ]
-# Rotation + shadow.
-crbug.com/1418141 external/wpt/html/canvas/element/layers/2d.layer.global-states.filter.no-composite-op.shadow.rotation.html [ Failure ]
-crbug.com/1418141 external/wpt/html/canvas/element/layers/2d.layer.global-states.no-composite-op.shadow.rotation.html [ Failure ]
-crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-composite-op.shadow.rotation.html [ Failure ]
-crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.no-composite-op.shadow.rotation.html [ Failure ]
-crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.filter.no-composite-op.shadow.rotation.w.html [ Failure ]
-crbug.com/1418141 external/wpt/html/canvas/offscreen/layers/2d.layer.global-states.no-composite-op.shadow.rotation.w.html [ Failure ]
 # Rotation + shadow + composite operations.
 crbug.com/1418141 external/wpt/html/canvas/element/layers/2d.layer.global-states.filter.composite.shadow.rotation.html [ Failure ]
 crbug.com/1418141 external/wpt/html/canvas/element/layers/2d.layer.global-states.composite.shadow.rotation.html [ Failure ]

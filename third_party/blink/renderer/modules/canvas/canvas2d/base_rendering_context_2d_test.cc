@@ -995,6 +995,62 @@ TEST(BaseRenderingContextLayerGlobalStateTests, BeginLayerIgnoresGlobalFilter) {
                                             PaintOpEq<RestoreOp>())));
 }
 
+TEST(BaseRenderingContextLayerGlobalStateTests, TransformsWithoutShadow) {
+  test::TaskEnvironment task_environment;
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  NonThrowableExceptionState exception_state;
+
+  context->translate(4, 5);
+  context->beginLayer(
+      scope.GetScriptState(), BeginLayerOptions::Create(), exception_state);
+  context->endLayer(exception_state);
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(
+                PaintOpEq<TranslateOp>(4, 5),
+                DrawRecordOpEq(
+                  PaintOpEq<SaveLayerAlphaOp>(1.0f),
+                  PaintOpEq<RestoreOp>())));
+}
+
+TEST(BaseRenderingContextLayerGlobalStateTests, TransformsWithShadow) {
+  test::TaskEnvironment task_environment;
+  ScopedCanvas2dLayersForTest layer_feature(/*enabled=*/true);
+  V8TestingScope scope;
+  auto* context = MakeGarbageCollected<TestRenderingContext2D>(scope);
+  NonThrowableExceptionState exception_state;
+
+  context->translate(4, 5);
+  context->setShadowBlur(2.0);
+  context->setShadowColor("red");
+  context->beginLayer(
+      scope.GetScriptState(), BeginLayerOptions::Create(), exception_state);
+  context->endLayer(exception_state);
+
+  cc::PaintFlags shadow_flags;
+  shadow_flags.setImageFilter(sk_make_sp<DropShadowPaintFilter>(
+      0.0f, 0.0f, 1.0f, 1.0f, SkColors::kRed,
+      DropShadowPaintFilter::ShadowMode::kDrawShadowAndForeground, nullptr));
+
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(
+                PaintOpEq<TranslateOp>(4, 5),
+                DrawRecordOpEq(
+                  PaintOpEq<SaveOp>(),
+                  PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                               0, 1, 0, 0,  //
+                                               0, 0, 1, 0,  //
+                                               0, 0, 0, 1)),
+                  PaintOpEq<SaveLayerOp>(shadow_flags),
+                  PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                               0, 1, 0, 5,  //
+                                               0, 0, 1, 0,  //
+                                               0, 0, 0, 1)),
+                  PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>())));
+}
+
 TEST(BaseRenderingContextRestoreStackTests, RestoresSaves) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
@@ -1249,12 +1305,22 @@ TEST(BaseRenderingContextRestoreStackTests, UnclosedLayersAreNotFlushed) {
                                        0, 0, 1, 0,  //
                                        0, 0, 0, 1)),
           DrawRecordOpEq(
+              PaintOpEq<SaveOp>(),
+              PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 0,  //
+                                           0, 1, 0, 0,  //
+                                           0, 0, 1, 0,  //
+                                           0, 0, 0, 1)),
               PaintOpEq<SaveLayerOp>(shadow_flags),
+              PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
+                                           0, 1, 0, 6,  //
+                                           0, 0, 1, 0,  //
+                                           0, 0, 0, 1)),
               PaintOpEq<SaveLayerOp>(filter_flags),
               PaintOpEq<TranslateOp>(5.0f, 6.0f),
               PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(2, 2, 6, 6), rect_flags),
               PaintOpEq<DrawRectOp>(SkRect::MakeXYWH(3, 3, 7, 7), rect_flags),
-              PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()),
+              PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>(),
+              PaintOpEq<RestoreOp>()),
 
           PaintOpEq<RestoreOp>(), PaintOpEq<RestoreOp>()));
 }

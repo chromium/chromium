@@ -8,6 +8,7 @@
 #include <cmath>
 #include <cstring>
 #include <memory>
+#include <optional>
 #include <type_traits>
 
 #include "base/check_deref.h"
@@ -285,6 +286,28 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
   setGlobalCompositeOperation("source-over");
 }
 
+class ScopedResetCtm {
+ public:
+  ScopedResetCtm(const CanvasRenderingContext2DState& state,
+                 cc::PaintCanvas& canvas) : canvas_(canvas) {
+    if (!state.GetTransform().IsIdentity()) {
+      ctm_to_restore_ = canvas_.getLocalToDevice();
+      ctm_to_restore_->dump();
+      canvas_.save();
+      canvas_.setMatrix(SkM44());
+    }
+  }
+  ~ScopedResetCtm() {
+    if (ctm_to_restore_.has_value()) {
+      canvas_.setMatrix(*ctm_to_restore_);
+    }
+  }
+
+ private:
+  cc::PaintCanvas& canvas_;
+  std::optional<SkM44> ctm_to_restore_;
+};
+
 CanvasRenderingContext2DState::SaveType
 BaseRenderingContext2D::SaveLayerForState(
     const CanvasRenderingContext2DState& state,
@@ -298,13 +321,17 @@ BaseRenderingContext2D::SaveLayerForState(
   // inner one applies the alpha and the outer one applies the shadow and/or
   // compositing. This is needed to to get a transparent foreground, as the
   // alpha would otherwise be applied to the result of foreground+background.
-  if (state.ShouldDrawShadows() || BlendModeRequiresCompositedDraw(state)) {
+  if (state.ShouldDrawShadows()) {
+    ScopedResetCtm scoped_reset_ctm(state, canvas);
+    cc::PaintFlags flags;
+    flags.setImageFilter(state.ShadowAndForegroundImageFilter());
+    flags.setBlendMode(state.GlobalComposite());
+    needs_compositing = false;
+    canvas.saveLayer(flags);
+  } else if (BlendModeRequiresCompositedDraw(state)) {
     cc::PaintFlags flags;
     flags.setBlendMode(state.GlobalComposite());
     needs_compositing = false;
-    if (state.ShouldDrawShadows()) {
-      flags.setImageFilter(state.ShadowAndForegroundImageFilter());
-    }
     canvas.saveLayer(flags);
   }
 
@@ -322,10 +349,7 @@ BaseRenderingContext2D::SaveLayerForState(
   }
 
   const int save_diff = canvas.getSaveCount() - initial_save_count;
-  CHECK(save_diff == 1 || save_diff == 2);
-  using SaveType = CanvasRenderingContext2DState::SaveType;
-  return save_diff == 2 ? SaveType::kBeginEndLayerTwoSaves
-                        : SaveType::kBeginEndLayerOneSave;
+  return CanvasRenderingContext2DState::LayerSaveCountToSaveType(save_diff);
 }
 
 void BaseRenderingContext2D::endLayer(ExceptionState& exception_state) {
@@ -388,8 +412,8 @@ void BaseRenderingContext2D::PopAndRestore(cc::PaintCanvas& canvas) {
     GetModifiablePath().Transform(GetState().GetTransform());
   }
 
-  if (state_stack_.back()->GetSaveType() ==
-      CanvasRenderingContext2DState::SaveType::kBeginEndLayerTwoSaves) {
+  for (int i = 0, to_restore = state_stack_.back()->LayerSaveCount() - 1;
+       i < to_restore; ++i) {
     canvas.restore();
   }
 
@@ -424,9 +448,7 @@ void BaseRenderingContext2D::ValidateStateStackImpl(
 
     if (state_stack_[i]->IsLayerSaveType()) {
       ++actual_layer_count;
-    }
-    if (state_stack_[i]->GetSaveType() == SaveType::kBeginEndLayerTwoSaves) {
-      ++extra_layer_saves;
+      extra_layer_saves += state_stack_[i]->LayerSaveCount() - 1;
     }
   }
   DCHECK_EQ(layer_count_, actual_layer_count);
