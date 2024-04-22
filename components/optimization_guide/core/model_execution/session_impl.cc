@@ -426,12 +426,33 @@ void SessionImpl::RunNextRequestSafetyCheckOrBeginExecution(
         ExecuteModelResult::kFailedConstructingMessage);
     return;
   }
-  on_device_state_->opts.model_client->GetModelRemote()->ClassifyTextSafety(
-      check_input->input_string,
-      base::BindOnce(&SessionImpl::OnRequestSafetyResult,
-                     on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
-                     std::move(options), request_check_idx,
-                     check_input->input_string));
+  if (on_device_state_->opts.safety_cfg.IsRequestCheckLanguageOnly(
+          request_check_idx)) {
+    on_device_state_->opts.model_client->GetModelRemote()->DetectLanguage(
+        check_input->input_string,
+        base::BindOnce(&SessionImpl::OnRequestDetectLanguageResult,
+                       on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
+                       std::move(options), request_check_idx,
+                       check_input->input_string));
+  } else {
+    on_device_state_->opts.model_client->GetModelRemote()->ClassifyTextSafety(
+        check_input->input_string,
+        base::BindOnce(&SessionImpl::OnRequestSafetyResult,
+                       on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
+                       std::move(options), request_check_idx,
+                       check_input->input_string));
+  }
+}
+
+void SessionImpl::OnRequestDetectLanguageResult(
+    on_device_model::mojom::InputOptionsPtr options,
+    int request_check_idx,
+    std::string check_input_text,
+    on_device_model::mojom::LanguageDetectionResultPtr result) {
+  auto safety_info = on_device_model::mojom::SafetyInfo::New();
+  safety_info->language = std::move(result);
+  OnRequestSafetyResult(std::move(options), request_check_idx, check_input_text,
+                        std::move(safety_info));
 }
 
 void SessionImpl::OnRequestSafetyResult(
@@ -962,10 +983,17 @@ std::optional<SubstitutionResult> SafetyConfig::GetRequestCheckInput(
                              proto_->request_check(check_idx).input_template());
 }
 
+bool SafetyConfig::IsRequestCheckLanguageOnly(int check_idx) const {
+  return proto_->request_check(check_idx).check_language_only();
+}
+
 bool SafetyConfig::IsRequestUnsafe(
     int check_idx,
     const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
   const auto& check = proto_->request_check(check_idx);
+  if (check.check_language_only()) {
+    return false;
+  }
   const auto& thresholds = check.safety_category_thresholds().empty()
                                ? proto_->safety_category_thresholds()
                                : check.safety_category_thresholds();

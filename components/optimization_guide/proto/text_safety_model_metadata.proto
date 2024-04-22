@@ -40,6 +40,9 @@ message RequestSafetyCheck {
   // The set of thresholds to apply per category, overriding those in the
   // parent.
   repeated SafetyCategoryThreshold safety_category_thresholds = 2;
+
+  // Whether to only perform the allowed language check.
+  optional bool check_language_only = 3;
 }
 
 message RawOutputCheck {

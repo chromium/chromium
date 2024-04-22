@@ -86,6 +86,11 @@ class OnDeviceModelImpl : public OnDeviceModel {
     return nullptr;
   }
 
+  mojom::LanguageDetectionResultPtr DetectLanguage(
+      const std::string& text) override {
+    return nullptr;
+  }
+
   base::expected<uint32_t, mojom::LoadModelResult> LoadAdaptation(
       mojom::LoadAdaptationParamsPtr params) override {
     return base::ok(++next_adaptation_id_);

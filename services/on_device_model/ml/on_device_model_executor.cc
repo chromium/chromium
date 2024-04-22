@@ -416,6 +416,15 @@ OnDeviceModelExecutor::CreateSession(std::optional<uint32_t> adaptation_id) {
                                        language_detector_, adaptation_id);
 }
 
+on_device_model::mojom::LanguageDetectionResultPtr
+OnDeviceModelExecutor::DetectLanguage(const std::string& text) {
+  if (!language_detector_) {
+    return nullptr;
+  }
+  return language_detector_->DetectLanguage(text);
+}
+
+DISABLE_CFI_DLSYM
 on_device_model::mojom::SafetyInfoPtr OnDeviceModelExecutor::ClassifyTextSafety(
     const std::string& text) {
   if (!chrome_ml_->api().ClassifyTextSafety) {
