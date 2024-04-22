@@ -130,6 +130,9 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   // Sets the UI to the correct PIN prompt for the type of PIN configured.
   void PromptForPin();
 
+  // Called when the user completes forgot pin flow.
+  void OnGpmPinChanged(bool success);
+
   // AuthenticatorRequestDialogModel::Observer:
   void OnTrustThisComputer() override;
   void OnGPMOnboardingAccepted() override;
@@ -137,6 +140,8 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   void OnGPMCreatePasskey() override;
   void OnGPMPinEntered(const std::u16string& pin) override;
   void OnTouchIDComplete(bool success) override;
+  void OnForgotGPMPinPressed() override;
+  void OnReauthComplete(std::string rapt) override;
 
   // Starts a create() or get() action with the enclave.
   void StartTransaction();
@@ -220,6 +225,13 @@ class GPMEnclaveController : AuthenticatorRequestDialogModel::Observer,
   // Whether showing the UI was delayed because the result from the security
   // domain service is needed.
   bool waiting_for_account_state_to_start_enclave_ = false;
+
+  // If changing a GPM PIN, this holds a ReAuthentication Proof Token (RAPT), if
+  // the user is authenticating the request via doing a GAIA reauth.
+  std::optional<std::string> rapt_ = std::nullopt;
+
+  // Set to true when the user initiates reset GPM pin flow during UV.
+  bool changing_gpm_pin_ = false;
 
   base::WeakPtrFactory<GPMEnclaveController> weak_ptr_factory_{this};
 };

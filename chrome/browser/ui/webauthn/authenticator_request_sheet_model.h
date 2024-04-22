@@ -68,7 +68,7 @@ class AuthenticatorRequestSheetModel {
   virtual void OnAccept() = 0;
   virtual void OnCancel() = 0;
   virtual void OnManageDevices();
-  virtual void OnForgotGPMPin();
+  virtual void OnForgotGPMPin() const;
   virtual void OnGPMPinOptionChosen(bool is_arbitrary) const;
 
   // Lottie illustrations are represented by their resource ID.

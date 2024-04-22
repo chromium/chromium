@@ -1794,6 +1794,10 @@ void AuthenticatorGPMPinSheetModel::OnGPMPinOptionChosen(
   dialog_model()->OnGPMPinOptionChanged(is_arbitrary);
 }
 
+void AuthenticatorGPMPinSheetModel::OnForgotGPMPin() const {
+  dialog_model()->OnForgotGPMPinPressed();
+}
+
 // AuthenticatorGPMArbitraryPinSheetModel ------------------------------------
 
 AuthenticatorGPMArbitraryPinSheetModel::AuthenticatorGPMArbitraryPinSheetModel(
@@ -1895,6 +1899,10 @@ void AuthenticatorGPMArbitraryPinSheetModel::OnGPMPinOptionChosen(
   }
 
   dialog_model()->OnGPMPinOptionChanged(is_arbitrary);
+}
+
+void AuthenticatorGPMArbitraryPinSheetModel::OnForgotGPMPin() const {
+  dialog_model()->OnForgotGPMPinPressed();
 }
 
 // AuthenticatorTrustThisComputerAssertionSheetModel -------------------------

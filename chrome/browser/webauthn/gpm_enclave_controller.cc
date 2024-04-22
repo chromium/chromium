@@ -576,6 +576,20 @@ void GPMEnclaveController::PromptForPin() {
                                     : Step::kGPMEnterPin);
 }
 
+void GPMEnclaveController::OnGpmPinChanged(bool success) {
+  changing_gpm_pin_ = false;
+
+  if (!success) {
+    model_->SetStep(Step::kGPMError);
+    return;
+  }
+
+  SetFailedPINAttemptCount(0);
+  // Changing GPM Pin required reauth, hence we can just proceed with the
+  // get/create passkey transaction.
+  StartTransaction();
+}
+
 void GPMEnclaveController::OnTrustThisComputer() {
   CHECK(model_->step() == Step::kTrustThisComputerAssertion ||
         model_->step() == Step::kTrustThisComputerCreation);
@@ -632,6 +646,13 @@ void GPMEnclaveController::OnGPMPinEntered(const std::u16string& pin) {
     enclave_manager_->SetupWithPIN(
         *pin_, base::BindOnce(&GPMEnclaveController::OnDeviceAdded,
                               weak_ptr_factory_.GetWeakPtr()));
+  } else if (changing_gpm_pin_) {
+    DCHECK(model_->step() == Step::kGPMCreatePin ||
+           model_->step() == Step::kGPMCreateArbitraryPin);
+    enclave_manager_->ChangePIN(
+        base::UTF16ToUTF8(pin), std::move(rapt_),
+        base::BindOnce(&GPMEnclaveController::OnGpmPinChanged,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     StartTransaction();
   }
@@ -641,6 +662,17 @@ void GPMEnclaveController::OnTouchIDComplete(bool success) {
   // On error no LAContext will be provided and macOS will show the system UI
   // for user verification.
   StartTransaction();
+}
+
+void GPMEnclaveController::OnForgotGPMPinPressed() {
+  changing_gpm_pin_ = true;
+  // TODO(enclave): Use biometrics instead of GAIA reauth (if available).
+  model_->SetStep(Step::kGPMReauthAccount);
+}
+
+void GPMEnclaveController::OnReauthComplete(std::string rapt) {
+  rapt_ = std::move(rapt);
+  model_->SetStep(Step::kGPMCreatePin);
 }
 
 void GPMEnclaveController::StartTransaction() {

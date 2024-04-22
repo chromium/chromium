@@ -119,6 +119,8 @@ class AuthenticatorRequestDialogController;
   /* Called when the user accepts a bubble confirming that they want to */    \
   /* start using passkeys. */                                                 \
   AUTHENTICATOR_REQUEST_EVENT_0(OnGPMOnboardingAccepted)                      \
+  /* Called when the user clicks "Forgot PIN" during UV. */                   \
+  AUTHENTICATOR_REQUEST_EVENT_0(OnForgotGPMPinPressed)                        \
   /* Called when the user clicks “Manage Devices” to manage their */      \
   /* phones. */                                                               \
   AUTHENTICATOR_REQUEST_EVENT_0(OnManageDevicesClicked)                       \

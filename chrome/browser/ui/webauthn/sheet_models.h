@@ -759,6 +759,7 @@ class AuthenticatorGPMPinSheetModel : public AuthenticatorSheetModelBase {
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
   void OnGPMPinOptionChosen(bool is_arbitrary) const override;
+  void OnForgotGPMPin() const override;
 
   std::u16string pin_;
   const int pin_digits_count_;
@@ -800,6 +801,7 @@ class AuthenticatorGPMArbitraryPinSheetModel
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
   void OnGPMPinOptionChosen(bool is_arbitrary) const override;
+  void OnForgotGPMPin() const override;
 
   std::u16string pin_;
   const Mode mode_;
