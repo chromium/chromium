@@ -1,10 +1,10 @@
 {
     "0": {
         "benchmarks": {
-            "speedometer2": {
+            "speedometer2-nominorms": {
                 "abridged": false
             },
-            "speedometer2-nominorms": {
+            "speedometer2": {
                 "abridged": false
             }
         }
