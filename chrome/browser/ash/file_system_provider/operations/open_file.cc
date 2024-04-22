@@ -11,19 +11,21 @@ namespace ash::file_system_provider::operations {
 
 namespace {
 
-// Extracts out the `cloud_file_info` from the `OpenFile` success params. The
-// params contain the full metadata so this ensures the required values are
-// present before creating the `CloudFileInfo`.
-std::unique_ptr<CloudFileInfo> GetCloudFileInfoFromParams(
+// Extracts out the `cloud_file_info` from the `OpenFile` success
+// params. Currently only the downstream `CloudFileSystem` cares about the
+// `cloud_file_info` so only extract that information in (if it exists).
+std::unique_ptr<EntryMetadata> GetEntryMetadataFromParams(
     const extensions::api::file_system_provider_internal::
         OpenFileRequestedSuccess::Params* params) {
-  if (params && params->metadata.has_value() &&
-      params->metadata->cloud_file_info.has_value() &&
-      params->metadata->cloud_file_info->version_tag.has_value()) {
-    return std::make_unique<CloudFileInfo>(
-        params->metadata->cloud_file_info->version_tag.value());
+  std::unique_ptr<EntryMetadata> metadata = std::make_unique<EntryMetadata>();
+  if (params && params->metadata.has_value()) {
+    if (params->metadata->cloud_file_info.has_value() &&
+        params->metadata->cloud_file_info->version_tag.has_value()) {
+      metadata->cloud_file_info = std::make_unique<CloudFileInfo>(
+          params->metadata->cloud_file_info->version_tag.value());
+    }
   }
-  return nullptr;
+  return metadata;
 }
 
 }  // namespace
@@ -78,7 +80,7 @@ void OpenFile::OnSuccess(int request_id,
 
   std::move(callback_).Run(
       request_id, base::File::FILE_OK,
-      GetCloudFileInfoFromParams(result.open_file_success_params()));
+      GetEntryMetadataFromParams(result.open_file_success_params()));
 }
 
 void OpenFile::OnError(/*request_id=*/int,

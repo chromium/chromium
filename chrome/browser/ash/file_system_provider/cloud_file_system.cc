@@ -70,11 +70,21 @@ std::ostream& operator<<(std::ostream& out,
   NOTREACHED_NORETURN() << "Unknown ChangeType: " << type;
 }
 
-std::ostream& operator<<(std::ostream& out, CloudFileInfo* cloud_file_info) {
-  if (!cloud_file_info) {
+std::ostream& operator<<(std::ostream& out, EntryMetadata* metadata) {
+  if (!metadata) {
     return out << "none";
   }
-  return out << "{version_tag = '" << cloud_file_info->version_tag << "'}";
+  out << "{";
+  if (metadata->cloud_file_info) {
+    out << "version_tag = '" << metadata->cloud_file_info->version_tag << "'";
+    if (metadata->size) {
+      out << ", ";
+    }
+  }
+  if (metadata->size) {
+    out << "size = '" << *metadata->size << "'";
+  }
+  return out << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -93,8 +103,10 @@ std::ostream& operator<<(std::ostream& out,
   return out;
 }
 
-const std::string GetVersionTag(CloudFileInfo* cloud_file_info) {
-  return (cloud_file_info) ? cloud_file_info->version_tag : "";
+const std::string GetVersionTag(EntryMetadata* metadata) {
+  return (metadata && metadata->cloud_file_info)
+             ? metadata->cloud_file_info->version_tag
+             : "";
 }
 
 }  // namespace
@@ -514,17 +526,17 @@ void CloudFileSystem::OnOpenFileCompleted(
     OpenFileCallback callback,
     int file_handle,
     base::File::Error result,
-    std::unique_ptr<CloudFileInfo> cloud_file_info) {
+    std::unique_ptr<EntryMetadata> metadata) {
   VLOG(1) << "OnOpenFileCompleted {fsid = " << GetFileSystemId()
           << ", file_handle = '" << file_handle << "', result = '" << result
-          << "', cloud_file_info = " << cloud_file_info.get() << "}";
+          << "', metadata = " << metadata.get() << "}";
 
   if (result == base::File::FILE_OK) {
     opened_files_.try_emplace(
         file_handle,
-        OpenedCloudFile(file_path, mode, GetVersionTag(cloud_file_info.get())));
+        OpenedCloudFile(file_path, mode, GetVersionTag(metadata.get())));
   }
-  std::move(callback).Run(file_handle, result, std::move(cloud_file_info));
+  std::move(callback).Run(file_handle, result, std::move(metadata));
 }
 
 void CloudFileSystem::OnCloseFileCompleted(

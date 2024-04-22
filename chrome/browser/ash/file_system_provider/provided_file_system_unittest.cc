@@ -183,7 +183,7 @@ void LogNotification(NotificationLog* notification_log,
 void LogOpenFile(OpenFileLog* open_file_log,
                  int file_handle,
                  base::File::Error result,
-                 std::unique_ptr<CloudFileInfo> cloud_file_info) {
+                 std::unique_ptr<EntryMetadata> metadata) {
   open_file_log->emplace_back(file_handle, result);
 }
 

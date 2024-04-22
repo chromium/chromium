@@ -257,17 +257,22 @@ AbortCallback FakeProvidedFileSystem::OpenFile(const base::FilePath& entry_path,
     entry.write_buffer = entry.contents;
   }
 
-  // Make a copy of the `CloudFileInfo` to pass to the callback.
-  auto cloud_file_info = (entry.metadata && entry.metadata->cloud_file_info)
-                             ? std::make_unique<CloudFileInfo>(
-                                   entry.metadata->cloud_file_info->version_tag)
-                             : nullptr;
+  // Make a copy of the `EntryMetadata` to pass to the callback.
+  std::unique_ptr<EntryMetadata> metadata =
+      (entry.metadata) ? std::make_unique<EntryMetadata>() : nullptr;
+  if (entry.metadata && entry.metadata->cloud_file_info) {
+    metadata->cloud_file_info = std::make_unique<CloudFileInfo>(
+        entry.metadata->cloud_file_info->version_tag);
+  }
+  if (entry.metadata && entry.metadata->size) {
+    metadata->size = std::make_unique<int64_t>(*entry.metadata->size);
+  }
 
   const int file_handle = ++last_file_handle_;
   opened_files_[file_handle] = OpenedFile(entry_path, mode);
   return PostAbortableTask(base::BindOnce(std::move(callback), file_handle,
                                           base::File::FILE_OK,
-                                          std::move(cloud_file_info)));
+                                          std::move(metadata)));
 }
 
 AbortCallback FakeProvidedFileSystem::CloseFile(

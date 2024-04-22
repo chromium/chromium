@@ -126,10 +126,9 @@ class ProvidedFileSystemInterface {
 
   // Callback for OpenFile(). In case of an error, file_handle is equal to 0
   // and result is set to an error code.
-  typedef base::OnceCallback<void(
-      int file_handle,
-      base::File::Error result,
-      std::unique_ptr<CloudFileInfo> cloud_file_info)>
+  typedef base::OnceCallback<void(int file_handle,
+                                  base::File::Error result,
+                                  std::unique_ptr<EntryMetadata> metadata)>
       OpenFileCallback;
 
   typedef base::RepeatingCallback<

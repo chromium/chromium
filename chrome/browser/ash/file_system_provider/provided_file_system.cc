@@ -928,15 +928,15 @@ void ProvidedFileSystem::OnOpenFileCompleted(
     OpenFileCallback callback,
     int file_handle,
     base::File::Error result,
-    std::unique_ptr<CloudFileInfo> cloud_file_info) {
+    std::unique_ptr<EntryMetadata> metadata) {
   if (result != base::File::FILE_OK) {
-    std::move(callback).Run(file_handle, result, std::move(cloud_file_info));
+    std::move(callback).Run(file_handle, result, std::move(metadata));
     return;
   }
 
   opened_files_[file_handle] = OpenedFile(file_path, mode);
   std::move(callback).Run(file_handle, base::File::FILE_OK,
-                          std::move(cloud_file_info));
+                          std::move(metadata));
 }
 
 void ProvidedFileSystem::OnCloseFileCompleted(

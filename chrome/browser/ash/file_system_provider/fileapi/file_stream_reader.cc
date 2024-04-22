@@ -140,7 +140,7 @@ class FileStreamReader::OperationRunner
       storage::AsyncFileUtil::StatusCallback callback,
       int file_handle,
       base::File::Error result,
-      std::unique_ptr<CloudFileInfo> cloud_file_info) {
+      std::unique_ptr<EntryMetadata> metadata) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     abort_callback_.Reset();
 

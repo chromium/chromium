@@ -55,14 +55,13 @@ class TestingProvidedFileSystem : public FakeProvidedFileSystem {
 
   void CompleteOpen(int file_handle,
                     base::File::Error result,
-                    std::unique_ptr<CloudFileInfo> cloud_file_info) {
-    std::move(open_callback_)
-        .Run(file_handle, result, std::move(cloud_file_info));
+                    std::unique_ptr<EntryMetadata> metadata) {
+    std::move(open_callback_).Run(file_handle, result, std::move(metadata));
   }
 
   void AbortOpen() {
     std::move(open_callback_)
-        .Run(0, base::File::FILE_ERROR_ABORT, /*cloud_file_info=*/nullptr);
+        .Run(0, base::File::FILE_ERROR_ABORT, /*metadata=*/nullptr);
   }
 };
 
@@ -71,7 +70,7 @@ typedef std::vector<std::pair<int, base::File::Error>> OpenLog;
 void LogOpen(OpenLog* log,
              int file_handle,
              base::File::Error result,
-             std::unique_ptr<CloudFileInfo> cloud_file_info) {
+             std::unique_ptr<EntryMetadata> metadata) {
   log->emplace_back(file_handle, result);
 }
 

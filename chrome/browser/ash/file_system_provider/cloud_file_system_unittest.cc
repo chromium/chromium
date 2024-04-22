@@ -36,7 +36,7 @@ using testing::IsFalse;
 using testing::Return;
 
 using OpenFileFuture =
-    TestFuture<int, base::File::Error, std::unique_ptr<CloudFileInfo>>;
+    TestFuture<int, base::File::Error, std::unique_ptr<EntryMetadata>>;
 using ReadFileFuture = TestFuture<int, bool, base::File::Error>;
 using FileErrorFuture = TestFuture<base::File::Error>;
 

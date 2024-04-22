@@ -69,7 +69,7 @@ class ScopedFileOpener::Runner
   // Called when opening is completed with either a success or an error.
   void OnOpenFileCompleted(int file_handle,
                            base::File::Error result,
-                           std::unique_ptr<CloudFileInfo> cloud_file_info) {
+                           std::unique_ptr<EntryMetadata> metadata) {
     open_completed_ = true;
 
     if (result != base::File::FILE_OK) {

@@ -39,7 +39,7 @@ void LogStatus(StatusLog* log, base::File::Error result) {
 void LogOpen(OpenLog* log,
              int handle,
              base::File::Error result,
-             std::unique_ptr<CloudFileInfo> cloud_file_info) {
+             std::unique_ptr<EntryMetadata> metadata) {
   log->emplace_back(handle, result);
 }
 

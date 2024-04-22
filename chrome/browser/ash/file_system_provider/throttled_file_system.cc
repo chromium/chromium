@@ -231,7 +231,7 @@ void ThrottledFileSystem::OnOpenFileCompleted(
     OpenFileCallback callback,
     int file_handle,
     base::File::Error result,
-    std::unique_ptr<CloudFileInfo> cloud_file_info) {
+    std::unique_ptr<EntryMetadata> metadata) {
   // If the file is opened successfully then hold the queue token until the file
   // is closed.
   if (result == base::File::FILE_OK)
@@ -239,7 +239,7 @@ void ThrottledFileSystem::OnOpenFileCompleted(
   else
     open_queue_->Complete(queue_token);
 
-  std::move(callback).Run(file_handle, result, std::move(cloud_file_info));
+  std::move(callback).Run(file_handle, result, std::move(metadata));
 }
 
 void ThrottledFileSystem::OnCloseFileCompleted(
