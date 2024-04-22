@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/input_method/autocorrect_prefs.h"
 #include "chrome/browser/ash/input_method/input_method_quick_settings_helpers.h"
 #include "chrome/browser/ash/input_method/input_method_settings.h"
+#include "chrome/browser/ash/input_method/japanese/japanese_legacy_config.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
 #include "chrome/browser/ash/input_method/ui/input_method_menu_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -775,21 +776,14 @@ void NativeInputMethodEngineObserver::OnFocusAck(
 
 void NativeInputMethodEngineObserver::SetJapanesePrefsFromLegacyConfig(
     mojom::JapaneseLegacyConfigResponsePtr response) {
-  // TODO(b/333041130): Add remaining values.
-  // Move this setting prefs logic to its own separate file.
-  base::Value::Dict values;
-
-  mojom::JapaneseLegacyConfig::PreeditMethod preedit =
-      response->get_response()->preedit_method;
-  if (preedit == mojom::JapaneseLegacyConfig::PreeditMethod::kKana) {
-    values.Set("JapaneseInputMode", "Kana");
-  }
-  if (preedit == mojom::JapaneseLegacyConfig::PreeditMethod::kRomaji) {
-    values.Set("JapaneseInputMode", "Romaji");
+  if (!response->is_response()) {
+    return;
   }
 
-  SetLanguageInputMethodSpecificSetting(*prefs_, kJapanesePrefsEngineId,
-                                        values);
+  SetLanguageInputMethodSpecificSetting(
+      *prefs_, kJapanesePrefsEngineId,
+      CreatePrefsDictFromJapaneseLegacyConfig(
+          std::move(response->get_response())));
 }
 
 void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
