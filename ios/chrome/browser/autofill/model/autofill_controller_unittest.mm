@@ -15,6 +15,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/uuid.h"
+#import "components/autofill/core/browser/address_data_manager_test_api.h"
 #import "components/autofill/core/browser/browser_autofill_manager.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -453,7 +454,8 @@ TEST_F(AutofillControllerTest, ProfileImport) {
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForBrowserState(
           ChromeBrowserState::FromBrowserState(browser_state_.get()));
-  personal_data_manager->set_auto_accept_address_imports_for_testing(true);
+  test_api(personal_data_manager->address_data_manager())
+      .set_auto_accept_address_imports(true);
   // Check there are no registered profiles already.
   EXPECT_EQ(0U, personal_data_manager->GetProfiles().size());
   ASSERT_TRUE(LoadHtmlAndWaitForFormFetched(kProfileFormHtml, 1));

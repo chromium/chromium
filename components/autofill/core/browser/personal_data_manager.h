@@ -240,16 +240,6 @@ class PersonalDataManager : public KeyedService,
   // Returns true if either Profile or CreditCard Autofill is enabled.
   bool IsAutofillEnabled() const;
 
-  // Used to automatically import addresses without a prompt. Should only be
-  // set to true in tests.
-  // TODO(b/322170538): Move to `address_data_manager()`.
-  void set_auto_accept_address_imports_for_testing(bool auto_accept) {
-    auto_accept_address_imports_for_testing_ = auto_accept;
-  }
-  bool auto_accept_address_imports_for_testing() {
-    return auto_accept_address_imports_for_testing_;
-  }
-
   AlternativeStateNameMapUpdater*
   get_alternative_state_name_map_updater_for_testing() {
     return alternative_state_name_map_updater_.get();
@@ -291,10 +281,6 @@ class PersonalDataManager : public KeyedService,
   // Stores the country code that was provided from the variations service
   // during construction.
   const GeoIpCountryCode variations_country_code_;
-
-  // If true, new addresses imports are automatically accepted without a prompt.
-  // Only to be used for testing.
-  bool auto_accept_address_imports_for_testing_ = false;
 
   // The HistoryService to be observed by the personal data manager. Must
   // outlive this instance. This unowned pointer is retained so the PDM can

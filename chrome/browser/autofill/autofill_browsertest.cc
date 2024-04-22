@@ -36,6 +36,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
+#include "components/autofill/core/browser/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -184,7 +185,8 @@ class AutofillTest : public InProcessBrowserTest {
     ASSERT_TRUE(
         autofill_manager_injector_[web_contents()]->WaitForFormsSeen(1));
     // Shortcut explicit save prompts and automatically accept.
-    personal_data_manager()->set_auto_accept_address_imports_for_testing(true);
+    test_api(personal_data_manager()->address_data_manager())
+        .set_auto_accept_address_imports(true);
     TestAutofillManagerWaiter waiter(*autofill_manager(),
                                      {AutofillManagerEvent::kFormSubmitted});
     ASSERT_TRUE(

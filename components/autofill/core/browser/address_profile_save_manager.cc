@@ -87,7 +87,8 @@ void AddressProfileSaveManager::MaybeOfferSavePrompt(
     case AutofillProfileImportType::kConfirmableMergeAndSilentUpdate:
     case AutofillProfileImportType::kProfileMigration:
     case AutofillProfileImportType::kProfileMigrationAndSilentUpdate:
-      if (personal_data_manager_->auto_accept_address_imports_for_testing()) {
+      if (personal_data_manager_->address_data_manager()
+              .auto_accept_address_imports_for_testing()) {
         import_process->AcceptWithoutEdits();
         FinalizeProfileImport(std::move(import_process));
         return;

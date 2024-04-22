@@ -32,6 +32,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/autofill/core/browser/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
@@ -676,7 +677,8 @@ class BrowserAutofillManagerTest : public testing::Test {
     task_environment_.FastForwardBy(year2020 - AutofillClock::Now());
 
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
-    personal_data().set_auto_accept_address_imports_for_testing(true);
+    test_api(personal_data().address_data_manager())
+        .set_auto_accept_address_imports(true);
     personal_data().SetPrefService(autofill_client_.GetPrefs());
     personal_data().SetSyncServiceForTest(&sync_service_);
 

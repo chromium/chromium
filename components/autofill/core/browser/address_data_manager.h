@@ -278,7 +278,13 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
     sync_service_ = sync_service;
   }
 
+  bool auto_accept_address_imports_for_testing() const {
+    return auto_accept_address_imports_for_testing_;
+  }
+
  protected:
+  friend class AddressDataManagerTestApi;
+
   // Profiles of different sources are stored in different vectors.
   // Several function need to read/write from the correct vector, depending
   // on the source of the profile they are dealing with. This helper function
@@ -426,6 +432,10 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // TODO(b/322170538): Remove once the PDM observer is split.
   base::RepeatingClosure notify_pdm_observers_;
+
+  // If true, new addresses imports are automatically accepted without a prompt.
+  // Only to be used for testing.
+  bool auto_accept_address_imports_for_testing_ = false;
 
   const std::string app_locale_;
 

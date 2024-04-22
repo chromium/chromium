@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_data_importer.h"
@@ -154,7 +155,8 @@ AutofillMergeTest::~AutofillMergeTest() = default;
 
 void AutofillMergeTest::SetUp() {
   test::DisableSystemServices(nullptr);
-  personal_data_.set_auto_accept_address_imports_for_testing(true);
+  test_api(personal_data_.address_data_manager())
+      .set_auto_accept_address_imports(true);
   form_data_importer_ = std::make_unique<FormDataImporter>(
       &autofill_client_, &personal_data_, /*history_service=*/nullptr, "en");
 }

@@ -23,6 +23,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -202,7 +203,8 @@ class CreditCardSaveManagerTest : public testing::Test {
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     autofill_client_.set_test_strike_database(
         std::make_unique<TestStrikeDatabase>());
-    personal_data().set_auto_accept_address_imports_for_testing(true);
+    test_api(personal_data().address_data_manager())
+        .set_auto_accept_address_imports(true);
     personal_data().SetPrefService(autofill_client_.GetPrefs());
     personal_data().SetSyncServiceForTest(&sync_service_);
     autofill_driver_ = std::make_unique<TestAutofillDriver>(&autofill_client_);

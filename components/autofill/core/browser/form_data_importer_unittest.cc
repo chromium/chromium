@@ -30,6 +30,7 @@
 #include "base/test/task_environment.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
@@ -550,7 +551,8 @@ class FormDataImporterTest : public testing::Test {
     test::DisableSystemServices(prefs_.get());
 
     personal_data_manager_ = autofill_client_->GetPersonalDataManager();
-    personal_data_manager_->set_auto_accept_address_imports_for_testing(true);
+    test_api(personal_data_manager_->address_data_manager())
+        .set_auto_accept_address_imports(true);
     personal_data_manager_->SetPrefService(prefs_.get());
     personal_data_manager_->SetSyncServiceForTest(&sync_service_);
 

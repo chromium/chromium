@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 
+#include "components/autofill/core/browser/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -51,7 +52,8 @@ void AutofillMetricsBaseTest::SetUpHelper() {
   autofill_client_ = std::make_unique<MockAutofillClient>();
   autofill_client_->SetPrefs(test::PrefServiceForTesting());
 
-  personal_data().set_auto_accept_address_imports_for_testing(true);
+  test_api(personal_data().address_data_manager())
+      .set_auto_accept_address_imports(true);
   personal_data().SetPrefService(autofill_client_->GetPrefs());
   personal_data().SetSyncServiceForTest(&sync_service_);
 
