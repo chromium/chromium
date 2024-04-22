@@ -1271,10 +1271,8 @@ bool AppMenu::GetAccelerator(int command_id,
 
 void AppMenu::WillShowMenu(MenuItemView* menu) {
   if (menu == saved_tab_groups_menu_) {
-    if (!stg_everything_menu_) {
-      stg_everything_menu_ =
+    stg_everything_menu_ =
           std::make_unique<tab_groups::STGEverythingMenu>(nullptr, browser_);
-    }
     stg_everything_menu_->PopulateMenu(menu);
   } else if (menu == bookmark_menu_) {
     CreateBookmarkMenu();
