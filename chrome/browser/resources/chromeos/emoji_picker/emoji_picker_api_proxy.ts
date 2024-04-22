@@ -11,10 +11,10 @@ import {EmojiVariants, GifSubcategoryData, VisualContent} from './types.js';
 const HELP_CENTRE_URL = 'https://support.google.com/chrome?p=palette';
 
 export class EmojiPickerApiProxy {
-  handler = new PageHandlerRemote();
-  newWindowProxy = NewWindowProxy.getRemote();
+  private handler = new PageHandlerRemote();
+  private newWindowProxy = NewWindowProxy.getRemote();
   // TODO(b/309343774): Once search is always on, remove function wrapper.
-  searchProxy = () => EmojiSearch.getRemote();
+  private searchProxy = () => EmojiSearch.getRemote();
   static instance: EmojiPickerApiProxy|null = null;
   constructor() {
     const factory = PageHandlerFactory.getRemote();
