@@ -17,19 +17,37 @@
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-// This header defines following macros:
-// - ADVANCED_MEMORY_SAFETY_CHECKS()
+// This header defines `ADVANCED_MEMORY_SAFETY_CHECKS()` macro.
 // They can be used to specify a class/struct that is targeted to perform
 // additional CHECKS across variety of memory safety mechanisms such as
 // PartitionAllocator.
-//
+//   ```
 //   class Foo {
 //     ADVANCED_MEMORY_SAFETY_CHECKS();
 //   }
-//
+//   ```
 // Checks here are disabled by default because of their performance cost.
 // Currently, the macro is managed by the memory safety team internally and
 // you should not add / remove it manually.
+//
+// Additional checks here are categorized into either one of enum
+// `MemorySafetyCheck`. Some of them are too costly and disabled even for
+// `ADVANCED_MEMORY_SAFETY_CHECKS()` annotated types. These checks can be
+// enabled by passing optional arguments to the macro.
+//   ```
+//   class Foo {
+//     ADVANCED_MEMORY_SAFETY_CHECKS(
+//       /*enable=*/ kFoo | kBar);
+//   }
+//   ```
+// It is also possible to disable default checks for annotated types.
+//   ```
+//   class Foo {
+//     ADVANCED_MEMORY_SAFETY_CHECKS(
+//       /*enable=*/  kFoo,
+//       /*disable=*/ kBaz);
+//   }
+//   ```
 
 // We cannot hide things behind anonymous namespace because they are referenced
 // via macro, which can be defined anywhere.
@@ -37,6 +55,7 @@
 namespace base::internal {
 
 enum class MemorySafetyCheck : uint32_t {
+  kNone = 0,
   kForcePartitionAlloc = (1u << 0),
   // Enables |FreeFlags::kSchedulerLoopQuarantine|.
   // Requires PA-E.
@@ -57,6 +76,10 @@ constexpr MemorySafetyCheck operator&(MemorySafetyCheck a,
                                       MemorySafetyCheck b) {
   return static_cast<MemorySafetyCheck>(static_cast<uint32_t>(a) &
                                         static_cast<uint32_t>(b));
+}
+
+constexpr MemorySafetyCheck operator~(MemorySafetyCheck a) {
+  return static_cast<MemorySafetyCheck>(~static_cast<uint32_t>(a));
 }
 
 // Set of checks for ADVANCED_MEMORY_SAFETY_CHECKS() annotated objects.
@@ -187,10 +210,13 @@ NOINLINE void HandleMemorySafetyCheckedOperatorDelete(
 //   public:
 //     int public_field;
 //   };
-#define ADVANCED_MEMORY_SAFETY_CHECKS_INTERNAL(SPECIFIER)                      \
+#define MEMORY_SAFETY_CHECKS_INTERNAL(SPECIFIER, DEFAULT_CHECKS,               \
+                                      ENABLED_CHECKS, DISABLED_CHECKS, ...)    \
  public:                                                                       \
-  static constexpr auto kMemorySafetyChecks =                                  \
-      base::internal::kAdvancedMemorySafetyChecks;                             \
+  static constexpr auto kMemorySafetyChecks = []() {                           \
+    using enum base::internal::MemorySafetyCheck;                              \
+    return (DEFAULT_CHECKS | ENABLED_CHECKS) & ~(DISABLED_CHECKS);             \
+  }();                                                                         \
   SPECIFIER static void* operator new(std::size_t count) {                     \
     return base::internal::HandleMemorySafetyCheckedOperatorNew<               \
         kMemorySafetyChecks>(count);                                           \
@@ -220,11 +246,23 @@ NOINLINE void HandleMemorySafetyCheckedOperatorDelete(
 
 #if DCHECK_IS_ON()
 // Specify NOINLINE to display the operator on a stack trace.
-#define ADVANCED_MEMORY_SAFETY_CHECKS() \
-  ADVANCED_MEMORY_SAFETY_CHECKS_INTERNAL(NOINLINE NOT_TAIL_CALLED)
+// When 2 args provided, these two are passed to `ENABLED_CHECKS` and
+// `DISABLED_CHECKS`. A couple of `MemorySafetyCheck::kNone` is ignored.
+// When 1 arg provided, the one is passed to `ENABLED_CHECKS` and the first
+// `MemorySafetyCheck::kNone` serves a default value for `DISABLED_CHECKS`.
+// When 0 arg provided, both of `MemorySafetyCheck::kNone`s serve as default
+// values for `ENABLED_CHECKS` and `DISABLED_CHECKS` accordingly.
+#define ADVANCED_MEMORY_SAFETY_CHECKS(...)                                    \
+  MEMORY_SAFETY_CHECKS_INTERNAL(                                              \
+      NOINLINE NOT_TAIL_CALLED,                                               \
+      base::internal::kAdvancedMemorySafetyChecks __VA_OPT__(, ) __VA_ARGS__, \
+      kNone, kNone)
 #else
-#define ADVANCED_MEMORY_SAFETY_CHECKS() \
-  ADVANCED_MEMORY_SAFETY_CHECKS_INTERNAL(ALWAYS_INLINE)
+#define ADVANCED_MEMORY_SAFETY_CHECKS(...)                                    \
+  MEMORY_SAFETY_CHECKS_INTERNAL(                                              \
+      ALWAYS_INLINE,                                                          \
+      base::internal::kAdvancedMemorySafetyChecks __VA_OPT__(, ) __VA_ARGS__, \
+      kNone, kNone)
 #endif  // DCHECK_IS_ON()
 
 // When a struct/class with `ADVANCED_MEMORY_SAFETY_CHECKS()` is inherited, a
@@ -238,44 +276,33 @@ NOINLINE void HandleMemorySafetyCheckedOperatorDelete(
 //       Explicitly exports operators from given `BaseClass` to re-apply
 //       checks specified in the parent class. This is the recommended option as
 //       a derived class is likely to have the same characteristics to its baes
-//       class.
+//       class. This macro accepts additional arguments to overwrite
+//       `BaseClass`'s opted-in checks.
+//         ```
+//         INHERIT_MEMORY_SAFETY_CHECKS(BaseClass,
+//           /*enable=*/  kFoo | kBar,
+//           /*disable=*/ kBaz);
+//         ```
 // - `DEFAULT_MEMORY_SAFETY_CHECKS()`
 //       Re-define default `operator new()` and `operator delete()` using
-//       global operators that comes with default checks.
+//       global operators that comes with default checks. This macro accepts
+//       additional arguments to enable some checks manually.
+//         ```
+//         DEFAULT_MEMORY_SAFETY_CHECKS(BaseClass,
+//           /*enable=*/ kFoo | kBar);
+//         ```
 //
 // Note that if you use these macros at the top of struct declaration, the
 // declaration context would be left as |private|. Please switch it back to
 // |public| manually if needed.
-#define INHERIT_MEMORY_SAFETY_CHECKS(BASE_CLASS) \
- public:                                         \
-  using BASE_CLASS::kMemorySafetyChecks;         \
-  using BASE_CLASS::operator new;                \
-  using BASE_CLASS::operator delete;             \
-                                                 \
- private:                                        \
-  static_assert(true) /* semicolon here */
+#define INHERIT_MEMORY_SAFETY_CHECKS(BASE_CLASS, ...)                          \
+  MEMORY_SAFETY_CHECKS_INTERNAL(ALWAYS_INLINE,                                 \
+                                BASE_CLASS::kMemorySafetyChecks __VA_OPT__(, ) \
+                                    __VA_ARGS__,                               \
+                                kNone, kNone)
 
-#define DEFAULT_MEMORY_SAFETY_CHECKS()                                    \
- public:                                                                  \
-  ALWAYS_INLINE static void* operator new(std::size_t count) {            \
-    return ::operator new(count);                                         \
-  }                                                                       \
-  ALWAYS_INLINE static void* operator new(std::size_t count,              \
-                                          std::align_val_t alignment) {   \
-    return ::operator new(count, alignment);                              \
-  }                                                                       \
-  ALWAYS_INLINE static void* operator new(std::size_t count, void* ptr) { \
-    return ::operator new(count, ptr);                                    \
-  }                                                                       \
-  ALWAYS_INLINE static void operator delete(void* ptr) noexcept {         \
-    return ::operator delete(ptr);                                        \
-  }                                                                       \
-  ALWAYS_INLINE static void operator delete(                              \
-      void* ptr, std::align_val_t alignment) noexcept {                   \
-    return ::operator delete(ptr, alignment);                             \
-  }                                                                       \
-                                                                          \
- private:                                                                 \
-  static_assert(true) /* semicolon here */
+#define DEFAULT_MEMORY_SAFETY_CHECKS(...) \
+  MEMORY_SAFETY_CHECKS_INTERNAL(          \
+      ALWAYS_INLINE, kNone __VA_OPT__(, ) __VA_ARGS__, kNone, kNone)
 
 #endif  // BASE_MEMORY_SAFETY_CHECKS_H_

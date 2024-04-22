@@ -75,6 +75,23 @@ static_assert(
     !is_memory_safety_checked<MultipleInheritanceWithDefaultMacro,
                               MemorySafetyCheck::kForcePartitionAlloc>);
 
+struct AdvancedChecksWithPartialOverwrite {
+  ADVANCED_MEMORY_SAFETY_CHECKS(kNone, kForcePartitionAlloc);
+
+ public:
+  char data[16];
+};
+static_assert(
+    !is_memory_safety_checked<AdvancedChecksWithPartialOverwrite,
+                              MemorySafetyCheck::kForcePartitionAlloc>);
+
+struct InheritanceWithPartialOverwrite : private AdvancedChecks {
+  INHERIT_MEMORY_SAFETY_CHECKS(AdvancedChecks, kNone, kForcePartitionAlloc);
+};
+static_assert(
+    !is_memory_safety_checked<InheritanceWithPartialOverwrite,
+                              MemorySafetyCheck::kForcePartitionAlloc>);
+
 // The macro may hook memory allocation/deallocation but should forward the
 // request to PA or any other allocator via
 // |HandleMemorySafetyCheckedOperator***|.
