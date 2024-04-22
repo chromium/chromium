@@ -769,7 +769,7 @@ bool PrivacySandboxSettingsImpl::IsSubjectToM1NoticeRestricted() const {
 }
 
 bool PrivacySandboxSettingsImpl::IsRestrictedNoticeEnabled() const {
-  return privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get();
+  return delegate_->IsRestrictedNoticeEnabled();
 }
 
 void PrivacySandboxSettingsImpl::OnCookiesCleared() {

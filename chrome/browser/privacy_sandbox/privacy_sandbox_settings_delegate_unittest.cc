@@ -148,7 +148,7 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
        RestrictedNoticeRequiredForSignedInUser) {
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
-      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
         "true"}});
   // Sign the user in.
   identity_test_env()->MakePrimaryAccountAvailable(
@@ -173,7 +173,7 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
        RestrictedNoticeRequiredWithoutAccountToken) {
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
-      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
         "true"}});
   // Sign the user in.
   identity_test_env()->MakePrimaryAccountAvailable(
@@ -197,7 +197,7 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
        RestrictedNoticeRequiredForSignedOutUser) {
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
-      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
         "true"}});
   // If the user is not signed in to Chrome then we don't use any age signal and
   // don't restrict the feature.
@@ -208,7 +208,7 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
        RestrictedNoticeRequiredFeatureDisabled) {
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
-      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
         "false"}});
   identity_test_env()->MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);

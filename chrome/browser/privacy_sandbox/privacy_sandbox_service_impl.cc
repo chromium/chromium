@@ -286,7 +286,7 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
     // notice feature is enabled.
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, false);
-    if (!privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get()) {
+    if (!privacy_sandbox::IsRestrictedNoticeRequired()) {
       pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
                                 false);
     }
@@ -302,7 +302,7 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
 
   // kRestricted prompt suppression reason must be cleared at startup when
   // restricted notice feature is enabled.
-  if (privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get() &&
+  if (privacy_sandbox::IsRestrictedNoticeRequired() &&
       static_cast<PromptSuppressedReason>(
           pref_service->GetInteger(prefs::kPrivacySandboxM1PromptSuppressed)) ==
           PromptSuppressedReason::kRestricted) {
@@ -375,7 +375,7 @@ void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action) {
         privacy_sandbox::TopicsConsentUpdateSource::kConfirmation, false);
   } else if (PromptAction::kRestrictedNoticeAcknowledge == action ||
              PromptAction::kRestrictedNoticeOpenSettings == action) {
-    CHECK(privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get());
+    CHECK(privacy_sandbox::IsRestrictedNoticeRequired());
     pref_service_->SetBoolean(
         prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged, true);
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled,
@@ -1051,14 +1051,14 @@ PrivacySandboxServiceImpl::GetRequiredPromptTypeInternal(
   // If the Privacy Sandbox is restricted, set the suppression reason as such,
   // and do not show a prompt.
   if (privacy_sandbox_settings->IsPrivacySandboxRestricted() &&
-      !privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get()) {
+      !privacy_sandbox::IsRestrictedNoticeRequired()) {
     pref_service->SetInteger(
         prefs::kPrivacySandboxM1PromptSuppressed,
         static_cast<int>(PromptSuppressedReason::kRestricted));
     return PromptType::kNone;
   }
 
-  if (privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get()) {
+  if (privacy_sandbox::IsRestrictedNoticeRequired()) {
     CHECK(privacy_sandbox::IsConsentRequired() ||
           privacy_sandbox::IsNoticeRequired());
     if (!pref_service->GetBoolean(

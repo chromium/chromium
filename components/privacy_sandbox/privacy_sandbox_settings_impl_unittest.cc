@@ -1448,16 +1448,14 @@ TEST_F(PrivacySandboxSettingsM1Test, TopicsConsentStatus) {
 class PrivacySandboxSettingsM1RestrictedNotice
     : public PrivacySandboxSettingsM1Test {
   void InitializeFeaturesBeforeStart() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        privacy_sandbox::kPrivacySandboxSettings4,
-        {{"notice-required", "true"},
-         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
-          "true"}});
+    // Do not set default handlers so each call must be mocked.
   }
 };
 
 TEST_F(PrivacySandboxSettingsM1RestrictedNotice,
        AllApisAreOffExceptMeasurementForRestrictedAccounts) {
+  ON_CALL(*mock_delegate(), IsRestrictedNoticeEnabled())
+      .WillByDefault(testing::Return(true));
   RunTestCase(
       TestState{{MultipleStateKeys{kM1TopicsEnabledUserPrefValue,
                                    kM1FledgeEnabledUserPrefValue,

@@ -87,6 +87,10 @@ class PrivacySandboxSettings : public KeyedService {
     // the standard set of Privacy Sandbox APIs.
     virtual bool IsSubjectToM1NoticeRestricted() const = 0;
 
+    // Whether the Privacy Sandbox is partially enabled based on
+    // restrictions.
+    virtual bool IsRestrictedNoticeEnabled() const = 0;
+
     // Whether the profile is eligible for 3PCD experiment. The eligibility
     // applies for both mode A and mode B experiments.
     virtual bool IsCookieDeprecationExperimentEligible() const = 0;
@@ -314,7 +318,8 @@ class PrivacySandboxSettings : public KeyedService {
   virtual bool IsSubjectToM1NoticeRestricted() const = 0;
 
   // Returns whether the Privacy Sandbox is partially enabled based on
-  // restrictions.
+  // restrictions. Forwards to the delegate. Virtual for
+  // mocking in tests.
   virtual bool IsRestrictedNoticeEnabled() const = 0;
 
   // Called when there's a broad cookies clearing action. For example, this

@@ -75,6 +75,10 @@ PrivacySandboxSettingsDelegate::PrivacySandboxSettingsDelegate(
 
 PrivacySandboxSettingsDelegate::~PrivacySandboxSettingsDelegate() = default;
 
+bool PrivacySandboxSettingsDelegate::IsRestrictedNoticeEnabled() const {
+  return privacy_sandbox::IsRestrictedNoticeRequired();
+}
+
 bool PrivacySandboxSettingsDelegate::IsPrivacySandboxRestricted() const {
   if (privacy_sandbox::kPrivacySandboxSettings4ForceRestrictedUserForTesting
           .Get()) {
@@ -133,7 +137,7 @@ bool PrivacySandboxSettingsDelegate::IsPrivacySandboxCurrentlyUnrestricted()
 
 bool PrivacySandboxSettingsDelegate::IsSubjectToM1NoticeRestricted() const {
   // If the feature is deactivated, the notice shouldn't be shown.
-  if (!privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get()) {
+  if (!privacy_sandbox::IsRestrictedNoticeRequired()) {
     return false;
   }
   return PrivacySandboxRestrictedNoticeRequired();

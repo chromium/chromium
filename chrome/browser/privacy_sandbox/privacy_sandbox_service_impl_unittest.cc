@@ -579,7 +579,8 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
 
   feature_list()->Reset();
   feature_list()->InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxSettings4, {{"notice-required", "true"}});
+      privacy_sandbox::kPrivacySandboxSettings4,
+      {{privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"}});
   privacy_sandbox_service()->PromptActionOccurred(PromptAction::kNoticeShown);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Settings.PrivacySandbox.Notice.Shown"));
@@ -631,7 +632,7 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
   feature_list()->Reset();
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
-      {{"consent-required", "true"}});
+      {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"}});
 
   privacy_sandbox_service()->PromptActionOccurred(PromptAction::kConsentShown);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -665,7 +666,9 @@ TEST_F(PrivacySandboxServiceTest, PromptActionsUMAActions) {
   feature_list()->Reset();
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
-      {{"consent-required", "true"}, {"restricted-notice", "true"}});
+      {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"},
+       {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
+        "true"}});
 
   privacy_sandbox_service()->PromptActionOccurred(
       PromptAction::kRestrictedNoticeOpenSettings);
@@ -1819,7 +1822,9 @@ class PrivacySandboxServiceM1RestrictedNoticeTest
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
         privacy_sandbox::kPrivacySandboxSettings4,
-        {{"notice-required", "true"}, {"restricted-notice", "true"}});
+        {{privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"},
+         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
+          "true"}});
   }
 };
 
@@ -1888,7 +1893,8 @@ TEST_F(PrivacySandboxServiceM1DelayCreation,
        PromptSuppressReasonClearedWhenRestrictedNoticeEnabled) {
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
-      {{"restricted-notice", "true"}});
+      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
+        "true"}});
 
   prefs()->SetInteger(prefs::kPrivacySandboxM1PromptSuppressed,
                       static_cast<int>(PromptSuppressedReason::kRestricted));
@@ -1903,7 +1909,8 @@ TEST_F(PrivacySandboxServiceM1DelayCreation,
        PromptSuppressReasonNotClearedWhenRestrictedNoticeDisabled) {
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
-      {{"restricted-notice", "false"}});
+      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
+        "false"}});
 
   prefs()->SetInteger(prefs::kPrivacySandboxM1PromptSuppressed,
                       static_cast<int>(PromptSuppressedReason::kRestricted));
@@ -1964,7 +1971,8 @@ TEST_F(PrivacySandboxServiceM1DelayCreationRestricted,
        RestrictedEnabledDoesntClearAdMeasurementPref) {
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
-      {{"restricted-notice", "true"}});
+      {{privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
+        "true"}});
 
   prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
   prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
@@ -1983,7 +1991,9 @@ class PrivacySandboxServiceM1PromptTest : public PrivacySandboxServiceTest {
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
         privacy_sandbox::kPrivacySandboxSettings4,
-        {{"consent-required", "true"}, {"notice-required", "false"}});
+        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"},
+         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName,
+          "false"}});
   }
 };
 
@@ -2088,9 +2098,10 @@ TEST_F(PrivacySandboxServiceM1PromptTest, PromptActionsSentimentService) {
   feature_list()->Reset();
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxSettings4,
-      {{"consent-required", "true"},
-       {"notice-required", "true"},
-       {"restricted-notice", "true"}});
+      {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"},
+       {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"},
+       {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
+        "true"}});
 
   std::map<PromptAction, TrustSafetySentimentService::FeatureArea>
       expected_feature_areas;
@@ -2306,7 +2317,10 @@ class PrivacySandboxServiceM1NoticePromptTest
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
         privacy_sandbox::kPrivacySandboxSettings4,
-        {{"consent-required", "false"}, {"notice-required", "true"}});
+        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
+          "false"},
+         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName,
+          "true"}});
   }
 };
 
@@ -2493,9 +2507,10 @@ class PrivacySandboxServiceM1RestrictedNoticePromptTest
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
         privacy_sandbox::kPrivacySandboxSettings4,
-        {{"consent-required", "false"},
-         {"notice-required", "true"},
-         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
+          "false"},
+         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"},
+         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
           "true"}});
   }
 };
@@ -2641,9 +2656,10 @@ class PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyUnrestricted
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
         privacy_sandbox::kPrivacySandboxSettings4,
-        {{"consent-required", "false"},
-         {"notice-required", "true"},
-         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
+          "false"},
+         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"},
+         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
           "true"}});
   }
 };
@@ -2734,9 +2750,10 @@ class PrivacySandboxServiceM1RestrictedNoticeUserCurrentlyRestricted
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
         privacy_sandbox::kPrivacySandboxSettings4,
-        {{"consent-required", "false"},
-         {"notice-required", "true"},
-         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
+          "false"},
+         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"},
+         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
           "true"}});
   }
 };
@@ -2812,9 +2829,10 @@ class PrivacySandboxServiceM1RestrictedNoticeShownToGuardianTest
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
         privacy_sandbox::kPrivacySandboxSettings4,
-        {{"consent-required", "false"},
-         {"notice-required", "true"},
-         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
+          "false"},
+         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"},
+         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
           "true"}});
   }
 };
@@ -2869,9 +2887,10 @@ class PrivacySandboxServiceM1RestrictedNoticeEnabledNoRestrictionsTest
   void InitializeFeaturesBeforeStart() override {
     feature_list()->InitAndEnableFeatureWithParameters(
         privacy_sandbox::kPrivacySandboxSettings4,
-        {{"consent-required", "false"},
-         {"notice-required", "true"},
-         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.name,
+        {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName,
+          "false"},
+         {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"},
+         {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
           "true"}});
   }
 };
