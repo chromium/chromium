@@ -17,8 +17,11 @@ namespace video_capture {
 
 DeviceFactoryAdapterLacros::DeviceFactoryAdapterLacros(
     mojo::PendingRemote<crosapi::mojom::VideoCaptureDeviceFactory>
-        device_factory_ash)
-    : device_factory_ash_(std::move(device_factory_ash)) {}
+        device_factory_ash,
+    base::OnceClosure cleanup_callback)
+    : device_factory_ash_(std::move(device_factory_ash)) {
+  device_factory_ash_.set_disconnect_handler(std::move(cleanup_callback));
+}
 
 DeviceFactoryAdapterLacros::~DeviceFactoryAdapterLacros() = default;
 

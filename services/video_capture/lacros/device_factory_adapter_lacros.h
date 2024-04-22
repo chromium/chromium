@@ -23,9 +23,10 @@ class DeviceProxyLacros;
 // video_capture::DeviceFactory in Ash-Chrome.
 class DeviceFactoryAdapterLacros : public DeviceFactory {
  public:
-  explicit DeviceFactoryAdapterLacros(
+  DeviceFactoryAdapterLacros(
       mojo::PendingRemote<crosapi::mojom::VideoCaptureDeviceFactory>
-          device_factory_ash);
+          device_factory_ash,
+      base::OnceClosure cleanup_callback);
   DeviceFactoryAdapterLacros(const DeviceFactoryAdapterLacros&) = delete;
   DeviceFactoryAdapterLacros& operator=(const DeviceFactoryAdapterLacros&) =
       delete;
