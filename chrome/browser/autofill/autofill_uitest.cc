@@ -90,7 +90,6 @@ void BrowserAutofillManagerTestDelegateImpl::SetIgnoreBackToBackMessages(
 }
 
 void BrowserAutofillManagerTestDelegateImpl::FireEvent(ObservedUiEvents event) {
-  DCHECK(event_waiter_);
   if (event_waiter_ && (!ignore_back_to_back_event_types_.contains(event) ||
                         last_event_ != event)) {
     event_waiter_->OnEvent(event);
