@@ -28,6 +28,7 @@ constexpr const char* const kSeparateRepositoryPaths[] = {
     "chrome/browser/internal/",
     "chrome/browser/media/engagement_internal/",
     "chrome/browser/resources/chromeos/quickoffice/",
+    "chrome/browser/resources/downloads/internal/",
     "chrome/browser/resources/preinstalled_web_apps/internal/",
     "chrome/browser/resources/settings/internal/",
     "chrome/browser/spellchecker/internal/",

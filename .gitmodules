@@ -628,6 +628,10 @@
 	path = chrome/browser/platform_experience/win
 	url = https://chrome-internal.googlesource.com/chrome/browser/platform_experience/win
 	gclient-condition = checkout_src_internal
+[submodule "chrome/browser/resources/downloads/internal"]
+	path = chrome/browser/resources/downloads/internal
+	url = https://chrome-internal.googlesource.com/chrome/browser/resources/downloads_internal
+	gclient-condition = checkout_src_internal
 [submodule "chrome/browser/resources/settings/internal"]
 	path = chrome/browser/resources/settings/internal
 	url = https://chrome-internal.googlesource.com/chrome/browser/resources/settings_internal

@@ -3961,6 +3961,12 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
+  'src/chrome/browser/resources/downloads/internal': {
+      'url': Var('chrome_git') + '/chrome/browser/resources/downloads_internal.git' + '@' +
+        'f74a255015c49bcce777fd4775307895a5d4ca54',
+      'condition': 'checkout_src_internal',
+  },
+
   'src/chrome/browser/resources/settings/internal': {
       'url': Var('chrome_git') + '/chrome/browser/resources/settings_internal.git' + '@' +
         'c8a62277e90b0e4cea284f3ba188d5e1cbfc07ab', # from svn revision 41419
