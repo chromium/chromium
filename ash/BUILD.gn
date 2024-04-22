@@ -825,6 +825,8 @@ component("ash") {
     "login/ui/auth_factor_model.h",
     "login/ui/auth_icon_view.cc",
     "login/ui/auth_icon_view.h",
+    "login/ui/auth_panel_debug_view.cc",
+    "login/ui/auth_panel_debug_view.h",
     "login/ui/bottom_status_indicator.cc",
     "login/ui/bottom_status_indicator.h",
     "login/ui/disabled_auth_message_view.cc",

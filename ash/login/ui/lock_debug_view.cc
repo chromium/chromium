@@ -16,6 +16,7 @@
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/login/login_screen_controller.h"
+#include "ash/login/ui/auth_panel_debug_view.h"
 #include "ash/login/ui/local_authentication_request_controller_impl.h"
 #include "ash/login/ui/lock_contents_view.h"
 #include "ash/login/ui/lock_contents_view_test_api.h"
@@ -27,6 +28,7 @@
 #include "ash/public/cpp/kiosk_app_menu.h"
 #include "ash/public/cpp/login/local_authentication_request_controller.h"
 #include "ash/public/cpp/login_types.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/shelf/login_shelf_view.h"
@@ -52,6 +54,7 @@
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
@@ -216,6 +219,7 @@ class LockDebugView::DebugDataDispatcherTransformer
       const DebugDataDispatcherTransformer&) = delete;
 
   ~DebugDataDispatcherTransformer() override {
+    auth_panel_debug_widget_ = nullptr;
     root_dispatcher_->RemoveObserver(this);
   }
 
@@ -399,6 +403,35 @@ class LockDebugView::DebugDataDispatcherTransformer
     Shell::Get()->local_authentication_request_controller()->ShowWidget(
         base::BindOnce([](bool bla, std::unique_ptr<UserContext> ctx) {}),
         std::move(user_context));
+  }
+
+  // Activates AuthPanel for the user at |user_index|.
+  void AuthPanelRequestForUserIndex(size_t user_index) {
+    if (auth_panel_debug_widget_) {
+      LOG(ERROR) << "AuthPanelDebugWidget still exists.";
+      return;
+    }
+    auto delegate = std::make_unique<views::DialogDelegate>();
+    delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
+    delegate->SetModalType(ui::MODAL_TYPE_SYSTEM);
+    delegate->SetOwnedByWidget(true);
+    delegate->SetCloseCallback(
+        base::BindOnce(&LockDebugView::DebugDataDispatcherTransformer::
+                           OnAuthPanelDebugWidgetClose,
+                       base::Unretained(this)));
+
+    DCHECK(user_index >= 0 && user_index < debug_users_.size());
+    UserMetadata* debug_user = &debug_users_[user_index];
+    const AccountId account_id = debug_user->account_id;
+    delegate->SetContentsView(std::make_unique<AuthPanelDebugView>(account_id));
+
+    auth_panel_debug_widget_ = views::DialogDelegate::CreateDialogWidget(
+        std::move(delegate),
+        /*context=*/nullptr,
+        /*parent=*/
+        Shell::GetPrimaryRootWindow()->GetChildById(
+            kShellWindowId_LockSystemModalContainer));
+    auth_panel_debug_widget_->Show();
   }
 
   // Cycles fingerprint state for the user at |user_index|.
@@ -632,6 +665,8 @@ class LockDebugView::DebugDataDispatcherTransformer
         show_full_management_disclosure);
   }
 
+  void OnAuthPanelDebugWidgetClose() { auth_panel_debug_widget_ = nullptr; }
+
  private:
   // The debug overlay UI takes ground-truth data from |root_dispatcher_|,
   // applies a series of transformations to it, and exposes it to the UI via
@@ -653,6 +688,8 @@ class LockDebugView::DebugDataDispatcherTransformer
 
   // Called when a new user list has been received.
   base::RepeatingClosure on_users_received_;
+
+  raw_ptr<views::Widget> auth_panel_debug_widget_ = nullptr;
 
   // Called for testing functions not belonging to the login data dispatcher.
   // In such a case, we want to bypass the event handling mechanism and do
@@ -1248,6 +1285,12 @@ void LockDebugView::UpdatePerUserActionContainer() {
                                 CycleDisabledAuthMessageForUserIndex,
                             base::Unretained(debug_data_dispatcher_.get()), i),
         row);
+
+    AddButton("Show AuthPanel",
+              base::BindRepeating(
+                  &DebugDataDispatcherTransformer::AuthPanelRequestForUserIndex,
+                  base::Unretained(debug_data_dispatcher_.get()), i),
+              row);
 
     AddButton("Show local authentication request",
               base::BindRepeating(

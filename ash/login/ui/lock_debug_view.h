@@ -103,7 +103,7 @@ class LockDebugView : public views::View {
                                 views::Button::PressedCallback callback,
                                 views::View* container);
 
-  raw_ptr<LockContentsView> lock_ = nullptr;
+  raw_ptr<LockContentsView, DanglingUntriaged> lock_ = nullptr;
 
   // Debug container which holds the entire debug UI.
   raw_ptr<views::View> container_ = nullptr;
@@ -129,7 +129,8 @@ class LockDebugView : public views::View {
   // Debug dispatcher and cached data for the UI.
   std::unique_ptr<DebugDataDispatcherTransformer> const debug_data_dispatcher_;
   // Reference to the detachable base model passed to (and owned by) lock_.
-  raw_ptr<DebugLoginDetachableBaseModel> debug_detachable_base_model_ = nullptr;
+  raw_ptr<DebugLoginDetachableBaseModel, DanglingUntriaged>
+      debug_detachable_base_model_ = nullptr;
   size_t num_system_info_clicks_ = 0u;
   LoginScreenController::ForceFailAuth force_fail_auth_ =
       LoginScreenController::ForceFailAuth::kOff;

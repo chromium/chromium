@@ -61,6 +61,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/auth/public/auth_types.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/public/auth_hub.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/account_id/account_id.h"
 #include "components/startup_metric_utils/common/startup_metric_utils.h"
@@ -488,6 +489,8 @@ void LoginDisplayHostMojo::OnStartSignInScreen() {
   signin_screen_started_ = true;
 
   CreateExistingUserController();
+
+  AuthHub::Get()->InitializeForMode(AuthHubMode::kLoginScreen);
 
   // Load the UI.
   existing_user_controller_->Init(user_manager::UserManager::Get()->GetUsers());
