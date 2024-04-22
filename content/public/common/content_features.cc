@@ -1143,7 +1143,7 @@ BASE_FEATURE(kAccessibilityPageZoom,
 
 // Controls whether the OS-level font setting is adjusted for.
 const base::FeatureParam<bool> kAccessibilityPageZoomOSLevelAdjustment{
-    &kAccessibilityPageZoom, "AdjustForOSLevel", true};
+    &kAccessibilityPageZoom, "AdjustForOSLevel", false};
 
 // Enables the use of enhancements to the Page Zoom feature based on user
 // feedback from the v1 version (e.g. reset button, better IPH, etc).
