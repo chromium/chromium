@@ -133,7 +133,7 @@ bool IsBlocklistUpdateUrl(const GURL& url) {
 
 bool IsSafeBrowsingUrl(const GURL& url) {
   url::Origin origin = url::Origin::Create(url);
-  base::StringPiece path = url.path_piece();
+  std::string_view path = url.path_piece();
   return origin.DomainIs("sb-ssl.google.com") ||
          origin.DomainIs("safebrowsing.googleapis.com") ||
          (origin.DomainIs("safebrowsing.google.com") &&
