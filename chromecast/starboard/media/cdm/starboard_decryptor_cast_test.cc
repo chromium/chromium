@@ -4,8 +4,6 @@
 
 #include "chromecast/starboard/media/cdm/starboard_decryptor_cast.h"
 
-#include <starboard_api_wrapper.h>
-
 #include <algorithm>
 #include <memory>
 #include <string>
@@ -14,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromecast/starboard/media/media/mock_starboard_api_wrapper.h"
+#include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 #include "media/base/cdm_callback_promise.h"
 #include "media/base/provision_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -131,7 +130,9 @@ class StarboardDecryptorCastTest : public ::testing::Test {
                     CdmMessageType message_type,
                     const std::vector<uint8_t>& message)>
       session_message_cb_;
-  MockFunction<void(const std::string& session_id)> session_closed_cb_;
+  MockFunction<void(const std::string& session_id,
+                    ::media::CdmSessionClosedReason reason)>
+      session_closed_cb_;
   MockFunction<void(const std::string& session_id,
                     bool has_additional_usable_key,
                     CdmKeysInfo keys_info)>
@@ -395,7 +396,7 @@ TEST_F(StarboardDecryptorCastTest, CreatesSessionAndGeneratesLicenseRequest) {
 
   // Trigger the session creation.
   decryptor->CreateSessionAndGenerateRequest(
-      ::media::CdmSessionType::kPersistentLicense, init_type, init_data,
+      ::media::CdmSessionType::kTemporary, init_type, init_data,
       std::make_unique<::media::CdmCallbackPromise<std::string>>(
           /*resolve_cb=*/base::BindOnce(
               +[](bool* b, std::string* out_session_id,
@@ -486,7 +487,7 @@ TEST_F(StarboardDecryptorCastTest, CreatesSessionAndGeneratesLicenseRenewal) {
 
   // Trigger the session creation.
   decryptor->CreateSessionAndGenerateRequest(
-      ::media::CdmSessionType::kPersistentLicense, init_type, init_data,
+      ::media::CdmSessionType::kTemporary, init_type, init_data,
       std::make_unique<::media::CdmCallbackPromise<std::string>>(
           /*resolve_cb=*/base::BindOnce(
               +[](bool* b, std::string* out_session_id,

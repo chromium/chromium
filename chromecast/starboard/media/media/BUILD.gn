@@ -13,8 +13,11 @@ if (!remove_starboard_headers) {
 
 source_set("starboard") {
   sources = [
+    "cast_media_starboard.cc",
     "drm_util.cc",
     "drm_util.h",
+    "media_pipeline_backend_starboard.cc",
+    "media_pipeline_backend_starboard.h",
     "starboard_audio_decoder.cc",
     "starboard_audio_decoder.h",
     "starboard_decoder.cc",
@@ -44,10 +47,11 @@ source_set("mock_starboard_api_wrapper") {
   sources = [
     "mock_starboard_api_wrapper.cc",
     "mock_starboard_api_wrapper.h",
-    "starboard_api_wrapper.cc",
-    "starboard_api_wrapper.h",
   ]
-  deps = [ "//testing/gmock" ]
+  deps = [
+    ":starboard_api_wrapper",
+    "//testing/gmock",
+  ]
 }
 
 cast_source_set("starboard_api_wrapper") {
@@ -81,6 +85,19 @@ cast_source_set("starboard_api_wrapper") {
       "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
     ]
   }
+}
+
+test("media_pipeline_backend_starboard_test") {
+  sources = [ "media_pipeline_backend_starboard_test.cc" ]
+  deps = [
+    ":mock_starboard_api_wrapper",
+    ":starboard",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//chromecast/public",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }
 
 test("starboard_audio_decoder_test") {

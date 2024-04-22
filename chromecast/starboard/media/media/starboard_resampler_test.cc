@@ -25,7 +25,8 @@ using ::testing::Pointwise;
 TEST(StarboardResamplerTest, PCM8ToS16) {
   size_t out_size;
   const std::vector<uint8_t> buffer_data = {0, 0x80, 0xFF};
-  const std::vector<int16_t> expected_s16_data = {0x8000, 0, 0x7FFF};
+  const std::vector<int16_t> expected_s16_data = {static_cast<int16_t>(0x8000),
+                                                  0, 0x7FFF};
 
   scoped_refptr<CastDecoderBufferImpl> buffer(
       new CastDecoderBufferImpl(sizeof(uint8_t) * buffer_data.size()));
@@ -45,7 +46,8 @@ TEST(StarboardResamplerTest, PCM8ToS16) {
 TEST(StarboardResamplerTest, PCM8ToS32) {
   size_t out_size;
   const std::vector<uint8_t> buffer_data = {0, 0x80, 0xFF};
-  const std::vector<int32_t> expected_s32_data = {0x80000000, 0, 0x7FFFFFFF};
+  const std::vector<int32_t> expected_s32_data = {
+      static_cast<int32_t>(0x80000000), 0, 0x7FFFFFFF};
 
   scoped_refptr<CastDecoderBufferImpl> buffer(
       new CastDecoderBufferImpl(sizeof(uint8_t) * buffer_data.size()));
@@ -108,8 +110,10 @@ TEST(StarboardResamplerTest, PCMS16ToS16) {
 
 TEST(StarboardResamplerTest, PCMS16ToS32) {
   size_t out_size;
-  const std::vector<int16_t> buffer_data = {0x8000, 0, 0x7FFF};
-  const std::vector<int32_t> expected_s32_data = {0x80000000, 0, 0x7FFFFFFF};
+  const std::vector<int16_t> buffer_data = {static_cast<int16_t>(0x8000), 0,
+                                            0x7FFF};
+  const std::vector<int32_t> expected_s32_data = {
+      static_cast<int32_t>(0x80000000), 0, 0x7FFFFFFF};
 
   scoped_refptr<CastDecoderBufferImpl> buffer(
       new CastDecoderBufferImpl(sizeof(int16_t) * buffer_data.size()));
@@ -128,7 +132,9 @@ TEST(StarboardResamplerTest, PCMS16ToS32) {
 
 TEST(StarboardResamplerTest, PCMS16ToFloat) {
   size_t out_size;
-  const std::vector<int16_t> buffer_data = {0x8000, 0xC000, 0, 0x3FFF, 0x7FFF};
+  const std::vector<int16_t> buffer_data = {static_cast<int16_t>(0x8000),
+                                            static_cast<int16_t>(0xC000), 0,
+                                            0x3FFF, 0x7FFF};
   const std::vector<float> expected_f32_data = {-1.0f, -0.5f, 0.0f,
                                                 0.499984741f, 1.0f};
 
@@ -176,7 +182,8 @@ TEST(StarboardResamplerTest, PCMS24ToS32) {
   // order.
   const std::vector<uint8_t> buffer_data = {0, 0,    0x80, 0,   0,
                                             0, 0xFF, 0xFF, 0x7F};
-  const std::vector<int32_t> expected_s32_data = {0x80000000, 0, 0x7FFFFFFF};
+  const std::vector<int32_t> expected_s32_data = {
+      static_cast<int32_t>(0x80000000), 0, 0x7FFFFFFF};
 
   scoped_refptr<CastDecoderBufferImpl> buffer(
       new CastDecoderBufferImpl(buffer_data.size()));
@@ -259,7 +266,8 @@ TEST(StarboardResamplerTest, PCMS32ToS32) {
 
 TEST(StarboardResamplerTest, PCMS32ToFloat) {
   size_t out_size;
-  const std::vector<int32_t> buffer_data = {0x80000000, 0, 0x7FFFFFFF};
+  const std::vector<int32_t> buffer_data = {static_cast<int32_t>(0x80000000), 0,
+                                            0x7FFFFFFF};
   const std::vector<float> expected_f32_data = {-1.0f, 0.0f, 1.0f};
 
   scoped_refptr<CastDecoderBufferImpl> buffer(
@@ -414,12 +422,28 @@ TEST(StarboardResamplerTest, PushesBufferToStarboardPlanarPCMF32) {
 TEST(StarboardResamplerTest, PushesBufferToStarboardPlanarPCM32Mono) {
   size_t out_size;
   // Everything should be shifted down by 16 bits.
-  const std::vector<int32_t> buffer_data = {
-      0x80000000, 0x1000000, 0x2000000, 0x3000000, 0x4000000, 0x5000000,
-      0x6000000,  0x7000000, 0x8000000, 0x9000000, 0x7FFFFFFF};
-  const std::vector<int16_t> expected_s16_data = {0x8000, 0x100, 0x200, 0x300,
-                                                  0x400,  0x500, 0x600, 0x700,
-                                                  0x800,  0x900, 0x7FFF};
+  const std::vector<int32_t> buffer_data = {static_cast<int32_t>(0x80000000),
+                                            0x1000000,
+                                            0x2000000,
+                                            0x3000000,
+                                            0x4000000,
+                                            0x5000000,
+                                            0x6000000,
+                                            0x7000000,
+                                            0x8000000,
+                                            0x9000000,
+                                            0x7FFFFFFF};
+  const std::vector<int16_t> expected_s16_data = {static_cast<int16_t>(0x8000),
+                                                  0x100,
+                                                  0x200,
+                                                  0x300,
+                                                  0x400,
+                                                  0x500,
+                                                  0x600,
+                                                  0x700,
+                                                  0x800,
+                                                  0x900,
+                                                  0x7FFF};
 
   scoped_refptr<CastDecoderBufferImpl> buffer(
       new CastDecoderBufferImpl(sizeof(int32_t) * buffer_data.size()));

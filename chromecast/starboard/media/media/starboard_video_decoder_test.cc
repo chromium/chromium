@@ -4,13 +4,12 @@
 
 #include "chromecast/starboard/media/media/starboard_video_decoder.h"
 
-#include <starboard_api_wrapper.h>
-
 #include "base/test/task_environment.h"
 #include "chromecast/media/base/cast_decoder_buffer_impl.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 #include "chromecast/public/graphics_types.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
+#include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/encryption_scheme.h"
@@ -318,8 +317,7 @@ TEST_F(StarboardVideoDecoderTest, PopulatesHdrInfo) {
   config.hdr_metadata.max_content_light_level = 1;
   config.hdr_metadata.max_frame_average_light_level = 2;
 
-  MasteringMetadata& color_volume_metadata =
-      config.hdr_metadata.mastering_metadata;
+  auto& color_volume_metadata = config.hdr_metadata.color_volume_metadata;
   color_volume_metadata.primary_r_chromaticity_x = 1;
   color_volume_metadata.primary_r_chromaticity_y = 2;
   color_volume_metadata.primary_g_chromaticity_x = 3;
