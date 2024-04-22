@@ -338,6 +338,7 @@ crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphi
 # Doesn't hit heartbeat timeouts, but can time out when trying to execute
 # JavaScript after the SVG is loaded.
 [ mac intel release no-asan graphite-disabled ] Pixel_SVGHuge [ Slow ]
+[ mac apple release no-asan graphite-disabled ] Pixel_SVGHuge [ Slow ]
 
 # Context recovery can be slow on these devices.
 [ win11 qualcomm-0x41333430 ] Pixel_Video_Context_Loss_MP4 [ Slow ]
