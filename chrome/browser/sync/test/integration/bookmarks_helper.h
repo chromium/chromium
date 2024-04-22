@@ -308,6 +308,7 @@ class AnyBookmarkChangeObserver : public bookmarks::BaseBookmarkModelObserver {
 
   // BaseBookmarkModelObserver overrides.
   void BookmarkModelChanged() override;
+  void BookmarkNodeFaviconChanged(const bookmarks::BookmarkNode* node) override;
 
  private:
   const base::RepeatingClosure cb_;

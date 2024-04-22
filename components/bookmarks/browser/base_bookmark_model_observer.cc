@@ -49,7 +49,7 @@ void BaseBookmarkModelObserver::BookmarkNodeChanged(const BookmarkNode* node) {
 
 void BaseBookmarkModelObserver::BookmarkNodeFaviconChanged(
     const BookmarkNode* node) {
-  BookmarkModelChanged();
+  // Report no change, as observers typically don't care as much about favicons.
 }
 
 void BaseBookmarkModelObserver::BookmarkNodeChildrenReordered(

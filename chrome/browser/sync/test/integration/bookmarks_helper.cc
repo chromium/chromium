@@ -911,6 +911,11 @@ void AnyBookmarkChangeObserver::BookmarkModelChanged() {
   cb_.Run();
 }
 
+void AnyBookmarkChangeObserver::BookmarkNodeFaviconChanged(
+    const bookmarks::BookmarkNode* node) {
+  cb_.Run();
+}
+
 BookmarkModelStatusChangeChecker::BookmarkModelStatusChangeChecker() = default;
 
 BookmarkModelStatusChangeChecker::~BookmarkModelStatusChangeChecker() {
