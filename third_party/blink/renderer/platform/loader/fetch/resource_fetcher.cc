@@ -672,10 +672,12 @@ ResourceLoadPriority ResourceFetcher::AdjustImagePriority(
   // function is that we want to record UMA with following
   // MaybeRecordBoostImagePriorityReason() function even when we disables
   // AdjustImagePriority.
-  if (base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor) &&
+  static const bool kOverrideFirstNBoost =
+      base::FeatureList::IsEnabled(features::kLCPCriticalPathPredictor) &&
       features::kLCPCriticalPathAdjustImageLoadPriority.Get() &&
       features::kLCPCriticalPathAdjustImageLoadPriorityOverrideFirstNBoost
-          .Get() &&
+          .Get();
+  if (kOverrideFirstNBoost &&
       context_->DoesLCPPHaveLcpElementLocatorHintData()) {
     new_priority = priority_so_far;
   }
