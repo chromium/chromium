@@ -12,6 +12,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/md_select.css.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
