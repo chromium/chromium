@@ -508,11 +508,6 @@ BASE_FEATURE(kCanvasCompressHibernatedImage,
              "CanvasCompressHibernatedImage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Whether to aggressively free resources for canvases in background pages.
-BASE_FEATURE(kCanvasFreeMemoryWhenHidden,
-             "CanvasFreeMemoryWhenHidden",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When hibernating, make sure that the just-used transfer memory (to transfer
 // the snapshot) is freed.
 BASE_FEATURE(kCanvas2DHibernationReleaseTransferMemory,

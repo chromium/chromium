@@ -336,10 +336,9 @@ void DrawingBuffer::SetIsInHiddenPage(bool hidden) {
   // Make sure to interrupt pixel local storage.
   ScopedStateRestorer scoped_state_restorer(this);
 
-  if (base::FeatureList::IsEnabled(features::kCanvasFreeMemoryWhenHidden)) {
-    auto* context_support = ContextProvider()->ContextSupport();
-    if (context_support)
-      context_support->SetAggressivelyFreeResources(hidden);
+  auto* context_support = ContextProvider()->ContextSupport();
+  if (context_support) {
+    context_support->SetAggressivelyFreeResources(hidden);
   }
 
   gl_->ContextVisibilityHintCHROMIUM(is_hidden_ ? GL_FALSE : GL_TRUE);

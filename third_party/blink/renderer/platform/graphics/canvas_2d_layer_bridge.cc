@@ -297,8 +297,7 @@ void Canvas2DLayerBridge::PageVisibilityChanged() {
     ResourceProvider()->SetResourceRecyclingEnabled(page_is_visible);
 
   // Conserve memory.
-  if (base::FeatureList::IsEnabled(features::kCanvasFreeMemoryWhenHidden) &&
-      resource_host_->GetRasterMode() == RasterMode::kGPU) {
+  if (resource_host_->GetRasterMode() == RasterMode::kGPU) {
     if (auto* context_support = GetContextSupport()) {
       context_support->SetAggressivelyFreeResources(!page_is_visible);
     }
