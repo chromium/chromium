@@ -122,10 +122,10 @@ std::vector<PlusProfile> PlusAddressService::GetPlusProfiles() const {
 std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
     const url::Origin& origin) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::string etld_plus_one = GetEtldPlusOne(origin);
+  const std::string facet = IsSyncingPlusAddresses() ? origin.GetURL().spec()
+                                                     : GetEtldPlusOne(origin);
   // `facet` is used as the comparator, so the other fields don't matter.
-  auto it =
-      plus_profiles_.find(PlusProfile("", /*facet=*/etld_plus_one, "", false));
+  auto it = plus_profiles_.find(PlusProfile("", facet, "", false));
   if (it == plus_profiles_.end()) {
     return std::nullopt;
   }
@@ -135,9 +135,14 @@ std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
 void PlusAddressService::SavePlusProfile(url::Origin origin,
                                          const PlusProfile& profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const PlusProfile profile_to_save(profile.profile_id, GetEtldPlusOne(origin),
-                                    profile.plus_address,
-                                    /*is_confirmed=*/true);
+  CHECK(profile.is_confirmed);
+  // TODO(b/322147254): Once sync support is launched, and the client has thus
+  // migrated from eTLD+1 to origin, remove `profile_to_save` and simply store
+  // `profile`.
+  PlusProfile profile_to_save = profile;
+  if (!IsSyncingPlusAddresses()) {
+    profile_to_save.facet = GetEtldPlusOne(origin);
+  }
   // New plus addresses are requested directly from the PlusAddress backend. If
   // `IsSyncingPlusAddresses()`, these addresses become later available through
   // sync. Until the address shows up in sync, it should still be available

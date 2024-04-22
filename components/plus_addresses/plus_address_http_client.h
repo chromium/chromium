@@ -24,18 +24,24 @@ class PlusAddressHttpClient {
   // `on_completed` when the request is completed. If `refresh` is true, then
   // the server receives a flag that indicates that the address should be a new
   // one and not one that the user has previously seen.
+  // On success, the facet of the returned `PlusProfile` is set to the `origin`
+  // by the server.
   virtual void ReservePlusAddress(const url::Origin& origin,
                                   bool refresh,
                                   PlusAddressRequestCallback on_completed) = 0;
 
   // Initiates a request to confirm `plus_address` for use on `origin` and runs
   // `on_completed` when the request is completed.
+  // On success, the facet of the returned `PlusProfile` is set to the `origin`
+  // by the server.
   virtual void ConfirmPlusAddress(const url::Origin& origin,
                                   const std::string& plus_address,
                                   PlusAddressRequestCallback on_completed) = 0;
 
   // Initiates a request to get all plus addresses from the remote enterprise-
   // specified server and runs `on_completed` when the request is completed.
+  // On success, the facets of the returned `PlusProfile` are set to eTLD+1s.
+  // TODO(b/322147254): Remove once sync support is launched.
   virtual void GetAllPlusAddresses(
       PlusAddressMapRequestCallback on_completed) = 0;
 

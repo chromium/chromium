@@ -29,6 +29,8 @@ struct PlusProfile {
   friend bool operator==(const PlusProfile&, const PlusProfile&) = default;
 
   std::string profile_id;
+  // TODO(b/322147254): Make this an `affiliations::FacetURI` when sync support
+  // is launched. Right now, this represents an eTLD+1.
   std::string facet;
   std::string plus_address;
   bool is_confirmed;
