@@ -1494,12 +1494,10 @@ crbug.com/40275672 external/wpt/css/css-contain/contain-style-counters-002.html 
 # css-pseudo
 crbug.com/1500288 external/wpt/css/css-pseudo/grammar-spelling-errors-001.html [ Failure ]
 crbug.com/1500288 external/wpt/css/css-pseudo/grammar-spelling-errors-002.html [ Failure ]
-crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-001.html [ Failure ]
-crbug.com/1147859 external/wpt/css/css-pseudo/highlight-painting-002.html [ Failure ]
+crbug.com/40856519 external/wpt/css/css-pseudo/highlight-painting-001.html [ Failure ]
+crbug.com/40856519 external/wpt/css/css-pseudo/highlight-painting-002.html [ Failure ]
 crbug.com/1172333 external/wpt/css/css-pseudo/first-letter-hi-001.html [ Failure ]
 crbug.com/1172333 external/wpt/css/css-pseudo/first-letter-digraph.html [ Failure ]
-crbug.com/1147859 external/wpt/css/css-pseudo/target-text-004.html [ Failure ]
-crbug.com/1179938 external/wpt/css/css-pseudo/target-text-dynamic-004.html [ Failure ]
 crbug.com/1353352 [ Mac ] fast/css3-text/css3-text-decoration/text-decoration-line-grammar-error.html [ Failure ]
 crbug.com/1353352 [ Release Win11-arm64 ] fast/css3-text/css3-text-decoration/text-decoration-line-grammar-error.html [ Failure ]
 crbug.com/1353352 [ Release Win11-arm64 ] fast/css3-text/css3-text-decoration/text-decoration-line-spelling-error.html [ Failure ]
@@ -4806,7 +4804,6 @@ crbug.com/1216139 http/tests/devtools/bfcache/bfcache-elements-update.js [ Failu
 # CSS Highlight API painting issues related to general CSS highlight
 # pseudo-elements painting
 crbug.com/1163437 external/wpt/css/css-highlight-api/painting/custom-highlight-painting-below-grammar.html [ Failure ]
-crbug.com/1147859 external/wpt/css/css-highlight-api/painting/custom-highlight-painting-below-target-text.html [ Failure ]
 crbug.com/1521187 external/wpt/css/css-highlight-api/painting/custom-highlight-painting-staticrange-005.html [ Failure Pass ]
 
 crbug.com/1455239 http/tests/security/drag-drop-different-origin.html [ Failure Pass ]
