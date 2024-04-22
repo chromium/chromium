@@ -256,53 +256,32 @@ void RunThreadCachePeriodicPurge() {
       FROM_HERE, BindOnce(RunThreadCachePeriodicPurge), delay);
 }
 
-void RunMemoryReclaimer(scoped_refptr<SequencedTaskRunner> task_runner) {
-  TRACE_EVENT0("base", "partition_alloc::MemoryReclaimer::Reclaim()");
-  auto* instance = ::partition_alloc::MemoryReclaimer::Instance();
-
-  {
-    // Micros, since memory reclaiming should typically take at most a few ms.
-    SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Memory.PartitionAlloc.MemoryReclaim");
-    instance->ReclaimNormal();
-  }
-
-  TimeDelta delay = features::kPartitionAllocMemoryReclaimerInterval.Get();
-  if (!delay.is_positive()) {
-    delay =
-        Microseconds(instance->GetRecommendedReclaimIntervalInMicroseconds());
-  }
-
-  task_runner->PostDelayedTask(
-      FROM_HERE, BindOnce(RunMemoryReclaimer, task_runner), delay);
-}
-
 }  // namespace
 
-void StartThreadCachePeriodicPurge() {
-  auto& instance = ::partition_alloc::ThreadCacheRegistry::Instance();
-  TimeDelta delay =
-      Microseconds(instance.GetPeriodicPurgeNextIntervalInMicroseconds());
+// When enabled, disable the memory reclaimer in background.
+BASE_FEATURE(kDisableMemoryReclaimerInBackground,
+             "DisableMemoryReclaimerInBackground",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-  if (base::FeatureList::IsEnabled(kDelayFirstPeriodicPAPurgeOrReclaim)) {
-    delay = std::max(delay, kFirstPAPurgeOrReclaimDelay);
-  }
-
-  SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, BindOnce(RunThreadCachePeriodicPurge), delay);
+// static
+MemoryReclaimerSupport& MemoryReclaimerSupport::Instance() {
+  static base::NoDestructor<MemoryReclaimerSupport> instance;
+  return *instance.get();
 }
+MemoryReclaimerSupport::~MemoryReclaimerSupport() = default;
 
-void StartMemoryReclaimer(scoped_refptr<SequencedTaskRunner> task_runner) {
+MemoryReclaimerSupport::MemoryReclaimerSupport() = default;
+
+void MemoryReclaimerSupport::Start(scoped_refptr<TaskRunner> task_runner) {
   if (!base::FeatureList::IsEnabled(
           base::features::kPartitionAllocMemoryReclaimer)) {
     return;
   }
 
   // Can be called several times.
-  static bool is_memory_reclaimer_running = false;
-  if (is_memory_reclaimer_running) {
+  if (has_pending_task_) {
     return;
   }
-  is_memory_reclaimer_running = true;
 
   // The caller of the API fully controls where running the reclaim.
   // However there are a few reasons to recommend that the caller runs
@@ -319,18 +298,82 @@ void StartMemoryReclaimer(scoped_refptr<SequencedTaskRunner> task_runner) {
   // seconds is useful. Since this is meant to run during idle time only, it is
   // a reasonable starting point balancing effectivenes vs cost. See
   // crbug.com/942512 for details and experimental results.
-  TimeDelta delay = features::kPartitionAllocMemoryReclaimerInterval.Get();
-  if (!delay.is_positive()) {
-    delay = Microseconds(::partition_alloc::MemoryReclaimer::Instance()
-                             ->GetRecommendedReclaimIntervalInMicroseconds());
+  TimeDelta delay;
+  if (base::FeatureList::IsEnabled(kDelayFirstPeriodicPAPurgeOrReclaim)) {
+    delay = std::max(delay, kFirstPAPurgeOrReclaimDelay);
   }
+
+  task_runner_ = task_runner;
+  MaybeScheduleTask(delay);
+}
+
+void MemoryReclaimerSupport::SetForegrounded(bool in_foreground) {
+  in_foreground_ = in_foreground;
+  if (in_foreground_) {
+    MaybeScheduleTask();
+  }
+}
+
+void MemoryReclaimerSupport::ResetForTesting() {
+  task_runner_ = nullptr;
+  has_pending_task_ = false;
+  in_foreground_ = true;
+}
+
+void MemoryReclaimerSupport::Run() {
+  TRACE_EVENT0("base", "partition_alloc::MemoryReclaimer::Reclaim()");
+  has_pending_task_ = false;
+
+  {
+    // Micros, since memory reclaiming should typically take at most a few ms.
+    SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Memory.PartitionAlloc.MemoryReclaim");
+    ::partition_alloc::MemoryReclaimer::Instance()->ReclaimNormal();
+  }
+
+  MaybeScheduleTask();
+}
+
+// static
+TimeDelta MemoryReclaimerSupport::GetInterval() {
+  TimeDelta delay = features::kPartitionAllocMemoryReclaimerInterval.Get();
+  if (delay.is_positive()) {
+    return delay;
+  }
+
+  return Microseconds(::partition_alloc::MemoryReclaimer::Instance()
+                          ->GetRecommendedReclaimIntervalInMicroseconds());
+}
+
+void MemoryReclaimerSupport::MaybeScheduleTask(TimeDelta delay) {
+  if (has_pending_task_ ||
+      (base::FeatureList::IsEnabled(kDisableMemoryReclaimerInBackground) &&
+       !in_foreground_) ||
+      !task_runner_) {
+    return;
+  }
+
+  has_pending_task_ = true;
+  TimeDelta actual_delay = std::max(delay, GetInterval());
+  task_runner_->PostDelayedTask(
+      FROM_HERE, BindOnce(&MemoryReclaimerSupport::Run, base::Unretained(this)),
+      actual_delay);
+}
+
+void StartThreadCachePeriodicPurge() {
+  auto& instance = ::partition_alloc::ThreadCacheRegistry::Instance();
+  TimeDelta delay =
+      Microseconds(instance.GetPeriodicPurgeNextIntervalInMicroseconds());
 
   if (base::FeatureList::IsEnabled(kDelayFirstPeriodicPAPurgeOrReclaim)) {
     delay = std::max(delay, kFirstPAPurgeOrReclaimDelay);
   }
 
-  task_runner->PostDelayedTask(
-      FROM_HERE, BindOnce(RunMemoryReclaimer, task_runner), delay);
+  SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, BindOnce(RunThreadCachePeriodicPurge), delay);
+}
+
+void StartMemoryReclaimer(scoped_refptr<SequencedTaskRunner> task_runner) {
+  MemoryReclaimerSupport::Instance().Start(task_runner);
 }
 
 std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
@@ -1417,6 +1460,8 @@ void PartitionAllocSupport::OnForegrounded(bool has_main_frame) {
     allocator_shim::AdjustDefaultAllocatorForForeground();
   }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+  MemoryReclaimerSupport::Instance().SetForegrounded(true);
 }
 
 void PartitionAllocSupport::OnBackgrounded() {
@@ -1454,6 +1499,8 @@ void PartitionAllocSupport::OnBackgrounded() {
     allocator_shim::AdjustDefaultAllocatorForBackground();
   }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+  MemoryReclaimerSupport::Instance().SetForegrounded(false);
 }
 
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)

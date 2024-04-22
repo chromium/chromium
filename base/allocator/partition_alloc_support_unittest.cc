@@ -285,4 +285,79 @@ TEST(PartitionAllocSupportTest,
 }
 #endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
+class MemoryReclaimerSupportTest : public ::testing::Test {
+ public:
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        {base::features::kPartitionAllocMemoryReclaimer,
+         base::allocator::kDisableMemoryReclaimerInBackground},
+        {});
+    MemoryReclaimerSupport::Instance().ResetForTesting();
+  }
+
+ protected:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(MemoryReclaimerSupportTest, StartSeveralTimes) {
+  test::ScopedFeatureList feature_list{
+      base::features::kPartitionAllocMemoryReclaimer};
+  auto& instance = MemoryReclaimerSupport::Instance();
+  EXPECT_FALSE(instance.has_pending_task_for_testing());
+  instance.Start(task_environment_.GetMainThreadTaskRunner());
+  instance.Start(task_environment_.GetMainThreadTaskRunner());
+  instance.Start(task_environment_.GetMainThreadTaskRunner());
+  // Only one task.
+  EXPECT_TRUE(instance.has_pending_task_for_testing());
+  EXPECT_EQ(1u, task_environment_.GetPendingMainThreadTaskCount());
+}
+
+TEST_F(MemoryReclaimerSupportTest, ForegroundToBackground) {
+  test::ScopedFeatureList feature_list{
+      base::features::kPartitionAllocMemoryReclaimer};
+  auto& instance = MemoryReclaimerSupport::Instance();
+  EXPECT_FALSE(instance.has_pending_task_for_testing());
+  instance.Start(task_environment_.GetMainThreadTaskRunner());
+  EXPECT_TRUE(instance.has_pending_task_for_testing());
+  EXPECT_EQ(1u, task_environment_.GetPendingMainThreadTaskCount());
+
+  task_environment_.FastForwardBy(
+      MemoryReclaimerSupport::kFirstPAPurgeOrReclaimDelay);
+  // Task gets reposted.
+  EXPECT_TRUE(instance.has_pending_task_for_testing());
+  EXPECT_EQ(1u, task_environment_.GetPendingMainThreadTaskCount());
+
+  instance.SetForegrounded(false);
+  task_environment_.FastForwardBy(MemoryReclaimerSupport::GetInterval());
+  // But not once in background.
+  EXPECT_FALSE(instance.has_pending_task_for_testing());
+  EXPECT_EQ(0u, task_environment_.GetPendingMainThreadTaskCount());
+}
+
+TEST_F(MemoryReclaimerSupportTest, ForegroundToBackgroundAndBack) {
+  test::ScopedFeatureList feature_list{
+      base::features::kPartitionAllocMemoryReclaimer};
+  auto& instance = MemoryReclaimerSupport::Instance();
+  instance.Start(task_environment_.GetMainThreadTaskRunner());
+  task_environment_.FastForwardBy(
+      MemoryReclaimerSupport::kFirstPAPurgeOrReclaimDelay);
+
+  // Task gets reposted.
+  EXPECT_TRUE(instance.has_pending_task_for_testing());
+  EXPECT_EQ(1u, task_environment_.GetPendingMainThreadTaskCount());
+
+  instance.SetForegrounded(false);
+  task_environment_.FastForwardBy(MemoryReclaimerSupport::GetInterval());
+  // But not once in background.
+  EXPECT_FALSE(instance.has_pending_task_for_testing());
+  EXPECT_EQ(0u, task_environment_.GetPendingMainThreadTaskCount());
+
+  // Until we go to foreground again.
+  instance.SetForegrounded(true);
+  EXPECT_TRUE(instance.has_pending_task_for_testing());
+  EXPECT_EQ(1u, task_environment_.GetPendingMainThreadTaskCount());
+}
+
 }  // namespace base::allocator

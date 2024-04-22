@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -115,6 +116,34 @@ class BASE_EXPORT PartitionAllocSupport {
   size_t largest_cached_size_ =
       ::partition_alloc::ThreadCacheLimits::kDefaultSizeThreshold;
 #endif
+};
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kDisableMemoryReclaimerInBackground);
+
+// Visible in header for testing.
+class BASE_EXPORT MemoryReclaimerSupport {
+ public:
+  static MemoryReclaimerSupport& Instance();
+  MemoryReclaimerSupport();
+  ~MemoryReclaimerSupport();
+  void Start(scoped_refptr<TaskRunner> task_runner);
+  void SetForegrounded(bool in_foreground);
+
+  void ResetForTesting();
+  bool has_pending_task_for_testing() const { return has_pending_task_; }
+  static TimeDelta GetInterval();
+
+  // Visible for testing
+  static constexpr base::TimeDelta kFirstPAPurgeOrReclaimDelay =
+      base::Minutes(1);
+
+ private:
+  void Run();
+  void MaybeScheduleTask(TimeDelta delay = TimeDelta());
+
+  scoped_refptr<TaskRunner> task_runner_;
+  bool in_foreground_ = true;
+  bool has_pending_task_ = false;
 };
 
 }  // namespace base::allocator
