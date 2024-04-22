@@ -16,10 +16,12 @@
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/display_features.h"
 #include "ui/display/types/display_color_management.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
@@ -1033,6 +1035,10 @@ TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_Temperature) {
       fake_drm_->crtc_property(0).id, cta);
 
   if (use_atomic_) {
+    // The color temperature adjustment will get its own commit.
+    EXPECT_EQ(1, fake_drm_->get_commit_count());
+    EXPECT_NE(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "CTM"));
+
     HardwareDisplayPlaneList state;
     PerformPageFlip(/*crtc_idx=*/0, &state);
     EXPECT_EQ(2, fake_drm_->get_commit_count());
@@ -1084,6 +1090,49 @@ TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_Profile) {
   }
 }
 
+TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_CtmColorManagement) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({display::features::kCtmColorManagement},
+                                       {});
+
+  auto drm_state = MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
+      /*crtc_count=*/1, /*planes_per_crtc=*/1);
+
+  // This test has full CTM, DEGAMMA, and GAMMA.
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kCtmPropId, .value = 0});
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kDegammaLutSizePropId, .value = 1});
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kDegammaLutPropId, .value = 0});
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kGammaLutSizePropId, .value = 1});
+  drm_state.crtc_properties[0].properties.push_back(
+      {.id = kGammaLutPropId, .value = 0});
+
+  // Color profile change will set all properties.
+  fake_drm_->InitializeState(drm_state, use_atomic_);
+
+  fake_drm_->plane_manager()->SetOutputColorSpace(
+      fake_drm_->crtc_property(0).id, SkNamedPrimariesExt::kP3);
+  fake_drm_->plane_manager()->SetColorSpaceForAllPlanes(
+      fake_drm_->crtc_property(0).id, SkNamedPrimariesExt::kRec2020);
+
+  if (use_atomic_) {
+    // We should not have committed the CTM yet.
+    EXPECT_EQ(0, fake_drm_->get_commit_count());
+    EXPECT_EQ(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "CTM"));
+
+    // The CTM commit should happen at flip time.
+    HardwareDisplayPlaneList state;
+    PerformPageFlip(/*crtc_idx=*/0, &state);
+    EXPECT_EQ(1, fake_drm_->get_commit_count());
+    EXPECT_NE(0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "CTM"));
+  } else {
+    EXPECT_EQ(0, fake_drm_->get_set_object_property_count());
+  }
+}
+
 TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_GammaAdjustment) {
   auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
       /*crtc_count=*/1, /*planes_per_crtc=*/1);
@@ -1108,6 +1157,11 @@ TEST_P(HardwareDisplayPlaneManagerTest, ColorManagement_GammaAdjustment) {
                                                  gamma_adjustment);
 
   if (use_atomic_) {
+    // The gamma adjustment will get its own commit.
+    EXPECT_EQ(1, fake_drm_->get_commit_count());
+    EXPECT_NE(
+        0u, GetCrtcPropertyValue(fake_drm_->crtc_property(0).id, "GAMMA_LUT"));
+
     HardwareDisplayPlaneList state;
     PerformPageFlip(/*crtc_idx=*/0, &state);
     EXPECT_EQ(2, fake_drm_->get_commit_count());

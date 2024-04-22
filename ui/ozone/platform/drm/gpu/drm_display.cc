@@ -143,6 +143,9 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
   hdr_static_metadata_ = display_snapshot.hdr_static_metadata();
   privacy_screen_property_ =
       std::make_unique<PrivacyScreenProperty>(drm_, connector_.get());
+
+  SkColorSpacePrimaries output_primaries =
+      display_snapshot.color_info().edid_primaries;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   is_hdr_capable_ =
       is_hdr_capable_ &&
@@ -151,10 +154,12 @@ DrmDisplay::DrmDisplay(const scoped_refptr<DrmDevice>& drm,
   if (is_hdr_capable_ &&
       base::FeatureList::IsEnabled(
           display::features::kEnableExternalDisplayHDR10Mode)) {
+    output_primaries = SkNamedPrimariesExt::kRec2020;
     SetColorspaceProperty(display_snapshot.color_space());
     SetHdrOutputMetadata(display_snapshot.color_space());
   }
 #endif
+  drm_->plane_manager()->SetOutputColorSpace(crtc_, output_primaries);
 }
 
 DrmDisplay::~DrmDisplay() = default;

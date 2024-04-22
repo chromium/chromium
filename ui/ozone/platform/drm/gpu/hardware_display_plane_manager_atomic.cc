@@ -245,9 +245,11 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(CommitRequest commit_request,
   // should all be handled in Set{Crtc,Connector,Plane}Props() modulo some state
   // tracking changes that should be done post commit. Break it apart when both
   // Commit() are consolidated.
+  std::vector<ScopedDrmPropertyBlob> pending_blobs;
   for (HardwareDisplayPlaneList* list : enable_planes_lists) {
     SetAtomicPropsForCommit(atomic_request.get(), list,
-                            GetCrtcIdsOfPlanes(*list), is_testing);
+                            GetCrtcIdsOfPlanes(*list), pending_blobs,
+                            is_testing);
   }
 
   // TODO(markyacoub): failed |status|'s should be made as DCHECKs. The only
@@ -282,6 +284,7 @@ void HardwareDisplayPlaneManagerAtomic::SetAtomicPropsForCommit(
     drmModeAtomicReq* atomic_request,
     HardwareDisplayPlaneList* plane_list,
     const std::vector<uint32_t>& crtcs,
+    std::vector<ScopedDrmPropertyBlob>& pending_blobs,
     bool test_only) {
   for (HardwareDisplayPlane* plane : plane_list->plane_list) {
     HardwareDisplayPlaneAtomic* atomic_plane =
@@ -322,6 +325,10 @@ void HardwareDisplayPlaneManagerAtomic::SetAtomicPropsForCommit(
 
     AddPropertyIfValid(atomic_request, crtc,
                        crtc_state_[*idx].properties.background_color);
+    if (base::FeatureList::IsEnabled(display::features::kCtmColorManagement)) {
+      AddAllPendingCrtcProperties(atomic_request, crtc_state_[*idx],
+                                  pending_blobs);
+    }
   }
 
   if (test_only) {
@@ -342,8 +349,9 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(
 
   std::vector<uint32_t> crtcs = GetCrtcIdsOfPlanes(*plane_list);
 
+  std::vector<ScopedDrmPropertyBlob> pending_blobs;
   SetAtomicPropsForCommit(plane_list->atomic_property_set.get(), plane_list,
-                          crtcs, test_only);
+                          crtcs, pending_blobs, test_only);
 
   // After we perform the atomic commit, and if the caller has requested an
   // out-fence, the out_fence_fds vector will contain any provided out-fence

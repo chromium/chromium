@@ -50,10 +50,12 @@ class HardwareDisplayPlaneManagerAtomic : public HardwareDisplayPlaneManager {
  private:
   bool InitializePlanes() override;
   std::unique_ptr<HardwareDisplayPlane> CreatePlane(uint32_t plane_id) override;
-  void SetAtomicPropsForCommit(drmModeAtomicReq* atomic_request,
-                               HardwareDisplayPlaneList* plane_list,
-                               const std::vector<uint32_t>& crtcs,
-                               bool test_only);
+  void SetAtomicPropsForCommit(
+      drmModeAtomicReq* atomic_request,
+      HardwareDisplayPlaneList* plane_list,
+      const std::vector<uint32_t>& crtcs,
+      std::vector<ScopedDrmPropertyBlob>& pending_blobs,
+      bool test_only);
 
   bool SetCrtcProps(drmModeAtomicReq* atomic_request,
                     uint32_t crtc_id,
