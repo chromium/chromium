@@ -546,6 +546,113 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Bool(),
     OSSettingsRevampFilesTestCrosComponentsAndJellyEnabled::DescribeParams);
 
+class OSSettingsRevampPrivacyTestPrivacyHubV0AndPermissionsEnabled
+    : public OSSettingsRevampMochaTest {
+ protected:
+  OSSettingsRevampPrivacyTestPrivacyHubV0AndPermissionsEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kCrosPrivacyHubAppPermissions,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampPrivacyTestPrivacyHubV0AndPermissionsEnabled,
+    testing::Bool(),
+    OSSettingsRevampPrivacyTestPrivacyHubV0AndPermissionsEnabled::
+        DescribeParams);
+
+class OSSettingsRevampPrivacyTestPrivacyHubAndV0Enabled
+    : public OSSettingsRevampMochaTest {
+ protected:
+  OSSettingsRevampPrivacyTestPrivacyHubAndV0Enabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kCrosPrivacyHub,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampPrivacyTestPrivacyHubAndV0Enabled,
+    testing::Bool(),
+    OSSettingsRevampPrivacyTestPrivacyHubAndV0Enabled::DescribeParams);
+
+class OSSettingsRevampPrivacyTestDeprecateDnsDialogEnabled
+    : public OSSettingsRevampMochaTest {
+ protected:
+  OSSettingsRevampPrivacyTestDeprecateDnsDialogEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kOsSettingsDeprecateDnsDialog);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampPrivacyTestDeprecateDnsDialogEnabled,
+    testing::Bool(),
+    OSSettingsRevampPrivacyTestDeprecateDnsDialogEnabled::DescribeParams);
+
+using OSSettingsRevampPrivacyPageTestPrivacyHubSubpage =
+    OSSettingsRevampMochaTest;
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampPrivacyPageTestPrivacyHubSubpage,
+    testing::Bool(),
+    OSSettingsRevampPrivacyPageTestPrivacyHubSubpage::DescribeParams);
+
+class OSSettingsResetTestSanitizeEnabledRevampDisabled
+    : public OSSettingsMochaTest {
+ protected:
+  OSSettingsResetTestSanitizeEnabledRevampDisabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kSanitize,
+        },
+        /*disabled=*/{
+            ash::features::kOsSettingsRevampWayfinding,
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class OSSettingsResetTestSanitizeAndRevampDisabled
+    : public OSSettingsMochaTest {
+ protected:
+  OSSettingsResetTestSanitizeAndRevampDisabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {},
+        /*disabled=*/{
+            ash::features::kSanitize,
+            ash::features::kOsSettingsRevampWayfinding,
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 /* End Test Classes */
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, AppLanguageSelectionDialog) {
@@ -1561,134 +1668,85 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsPrintingPagePrinterStatus) {
 }
 
 //  TODO(https://crbug.com/329315636): test is flaky.
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DISABLED_OsPrivacyPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, DISABLED_OsPrivacyPage) {
   RunSettingsTest("os_privacy_page/os_privacy_page_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrivacyPageManageUsersSubpage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       OsPrivacyPageManageUsersSubpage) {
   RunSettingsTest("os_privacy_page/manage_users_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsPrivacyPagePrivacyHubAppPermissionRow) {
   RunSettingsTest("os_privacy_page/privacy_hub_app_permission_row_test.js");
 }
 
-class OSSettingsPrivacyTestPrivacyHubV0AndPermissionsEnabled
-    : public OSSettingsMochaTest {
- protected:
-  OSSettingsPrivacyTestPrivacyHubV0AndPermissionsEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {
-            ash::features::kCrosPrivacyHubAppPermissions,
-        },
-        /*disabled=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyTestPrivacyHubV0AndPermissionsEnabled,
-                       OsPrivacyPagePrivacyHubCameraSubpage) {
+IN_PROC_BROWSER_TEST_P(
+    OSSettingsRevampPrivacyTestPrivacyHubV0AndPermissionsEnabled,
+    OsPrivacyPagePrivacyHubCameraSubpage) {
   RunSettingsTest("os_privacy_page/privacy_hub_camera_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyTestPrivacyHubV0AndPermissionsEnabled,
-                       OsPrivacyPagePrivacyHubMicrophoneSubpage) {
+IN_PROC_BROWSER_TEST_P(
+    OSSettingsRevampPrivacyTestPrivacyHubV0AndPermissionsEnabled,
+    OsPrivacyPagePrivacyHubMicrophoneSubpage) {
   RunSettingsTest("os_privacy_page/privacy_hub_microphone_subpage_test.js");
 }
 
-class OSSettingsPrivacyTestPrivacyHubAndV0Enabled : public OSSettingsMochaTest {
- protected:
-  OSSettingsPrivacyTestPrivacyHubAndV0Enabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {
-            ash::features::kCrosPrivacyHub,
-        },
-        /*disabled=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyTestPrivacyHubAndV0Enabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampPrivacyTestPrivacyHubAndV0Enabled,
                        OsPrivacyPagePrivacyHubGeolocationSubpage) {
   RunSettingsTest("os_privacy_page/privacy_hub_geolocation_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyTestPrivacyHubAndV0Enabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampPrivacyTestPrivacyHubAndV0Enabled,
                        OsPrivacyPagePrivacyHubGeolocationAdvancedSubpage) {
   RunSettingsTest(
       "os_privacy_page/privacy_hub_geolocation_advanced_subpage_test.js");
 }
 
-class OSSettingsPrivacyTestPrivacyHubV0Enabled : public OSSettingsMochaTest {};
-
-using OSSettingsPrivacyPageTestPrivacyHubSubpage =
-    OSSettingsPrivacyTestPrivacyHubV0Enabled;
-
-IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyPageTestPrivacyHubSubpage, AllBuilds) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampPrivacyPageTestPrivacyHubSubpage,
+                       AllBuilds) {
   RunSettingsTest("os_privacy_page/privacy_hub_subpage_test.js",
                   "runMochaSuite('<settings-privacy-hub-subpage> AllBuilds')");
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyPageTestPrivacyHubSubpage,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampPrivacyPageTestPrivacyHubSubpage,
                        OfficialBuild) {
   RunSettingsTest("os_privacy_page/privacy_hub_subpage_test.js",
                   "runMochaSuite('<os-settings-privacy-page> OfficialBuild')");
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrivacyPageSecureDnsInput) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsPrivacyPageSecureDnsInput) {
   RunSettingsTest("os_privacy_page/secure_dns_test.js",
                   "runMochaSuite('SettingsSecureDnsInput')");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrivacyPageSecureDns) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsPrivacyPageSecureDns) {
   RunSettingsTest("os_privacy_page/secure_dns_test.js",
                   "runMochaSuite('SettingsSecureDns')");
 }
 
-class OSSettingsPrivacyTestDeprecateDnsDialogEnabled
-    : public OSSettingsMochaTest {
- protected:
-  OSSettingsPrivacyTestDeprecateDnsDialogEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kOsSettingsDeprecateDnsDialog);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(OSSettingsPrivacyTestDeprecateDnsDialogEnabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampPrivacyTestDeprecateDnsDialogEnabled,
                        OsPrivacyPageDeprecateDnsDialog) {
   RunSettingsTest("os_privacy_page/secure_dns_test.js",
                   "runMochaSuite('SecureDnsDialog')");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsPrivacyPageSecureDnsDialog) {
   RunSettingsTest("os_privacy_page/secure_dns_test.js",
                   "runMochaSuite('SecureDnsDialog')");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
-                       OsPrivacyPageSecureDnsDialog) {
-  RunSettingsTest("os_privacy_page/secure_dns_test.js",
-                  "runMochaSuite('SecureDnsDialog')");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsPrivacyPageSmartPrivacySubpage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       OsPrivacyPageSmartPrivacySubpage) {
   RunSettingsTest("os_privacy_page/smart_privacy_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, OsResetPage) {
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsResetPage) {
   RunSettingsTest("os_reset_page/os_reset_page_test.js");
 }
 
@@ -1697,45 +1755,10 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
   RunSettingsTest("os_reset_page/reset_settings_card_test.js");
 }
 
-class OSSettingsResetTestSanitizeEnabledRevampDisabled
-    : public OSSettingsMochaTest {
- protected:
-  OSSettingsResetTestSanitizeEnabledRevampDisabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {
-            ash::features::kSanitize,
-        },
-        /*disabled=*/{
-            ash::features::kOsSettingsRevampWayfinding,
-        });
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 IN_PROC_BROWSER_TEST_F(OSSettingsResetTestSanitizeEnabledRevampDisabled,
                        OsResetPageResetSettingsCardWithSanitize) {
   RunSettingsTest("os_reset_page/reset_settings_card_test.js");
 }
-
-class OSSettingsResetTestSanitizeAndRevampDisabled
-    : public OSSettingsMochaTest {
- protected:
-  OSSettingsResetTestSanitizeAndRevampDisabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {},
-        /*disabled=*/{
-            ash::features::kSanitize,
-            ash::features::kOsSettingsRevampWayfinding,
-        });
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
 
 IN_PROC_BROWSER_TEST_F(OSSettingsResetTestSanitizeAndRevampDisabled,
                        OsResetPageResetSettingsCardWithoutSanitize) {
