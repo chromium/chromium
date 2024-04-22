@@ -5329,7 +5329,12 @@ TEST_F(BidderWorkletTest, GenerateBidBrowserSignalJoinCountBidCount) {
 TEST_F(BidderWorkletTest,
        GenerateBidBrowserSignalForDebuggingOnlyInCooldownOrLockout) {
   RunGenerateBidExpectingExpressionIsTrue(R"(
-    !browserSignals.hasOwnProperty('forDebuggingOnlyInCooldownOrLockout');
+    browserSignals.forDebuggingOnlyInCooldownOrLockout === false;
+  )");
+
+  browser_signal_for_debugging_only_in_cooldown_or_lockout_ = true;
+  RunGenerateBidExpectingExpressionIsTrue(R"(
+    browserSignals.forDebuggingOnlyInCooldownOrLockout === true;
   )");
 }
 
@@ -9204,16 +9209,6 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       GURL("https://loss.url1"));
 }
 
-// forDebuggingOnlyInCooldownOrLockout is not passed to generateBid's browser
-// signals if feature kBiddingAndScoringDebugReportingAPI is disabled, even if
-// kFledgeSampleDebugReports is enabled.
-TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
-       GenerateBidBrowserSignalForDebuggingOnlyInCooldownOrLockout) {
-  RunGenerateBidExpectingExpressionIsTrue(R"(
-    !browserSignals.hasOwnProperty('forDebuggingOnlyInCooldownOrLockout');
-  )");
-}
-
 TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
   base::flat_map<std::string, GURL> expected_ad_beacon_map = {
       {"click", GURL("https://click.example.test/")},
@@ -11827,29 +11822,21 @@ TEST_F(BidderWorkletAdMacroReportingEnabledTest,
   }
 }
 
-class BidderWorkletSampleDebugReportsEnabledTest : public BidderWorkletTest {
+class BidderWorkletSampleDebugReportsDisabledTest : public BidderWorkletTest {
  public:
-  BidderWorkletSampleDebugReportsEnabledTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::
-                                  kBiddingAndScoringDebugReportingAPI,
-                              blink::features::kFledgeSampleDebugReports},
-        /*disabled_features=*/{});
+  BidderWorkletSampleDebugReportsDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::kFledgeSampleDebugReports);
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(BidderWorkletSampleDebugReportsEnabledTest,
+TEST_F(BidderWorkletSampleDebugReportsDisabledTest,
        GenerateBidBrowserSignalForDebuggingOnlyInCooldownOrLockout) {
   RunGenerateBidExpectingExpressionIsTrue(R"(
-    browserSignals.forDebuggingOnlyInCooldownOrLockout === false;
-  )");
-
-  browser_signal_for_debugging_only_in_cooldown_or_lockout_ = true;
-  RunGenerateBidExpectingExpressionIsTrue(R"(
-    browserSignals.forDebuggingOnlyInCooldownOrLockout === true;
+    !browserSignals.hasOwnProperty('forDebuggingOnlyInCooldownOrLockout');
   )");
 }
 

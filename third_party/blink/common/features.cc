@@ -1021,12 +1021,7 @@ BASE_FEATURE(kFledgePassRecencyToGenerateBid,
 
 BASE_FEATURE(kFledgeSampleDebugReports,
              "FledgeSampleDebugReports",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFledgeSplitTrustedSignalsFetchingURL,
-             "FledgeSplitTrustedSignalsFetchingURL",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<base::TimeDelta> kFledgeDebugReportLockout{
     &kFledgeSampleDebugReports, "fledge_debug_report_lockout",
     base::Days(365 * 3)};
@@ -1048,6 +1043,10 @@ const base::FeatureParam<base::TimeDelta>
         &kFledgeSampleDebugReports,
         "fledge_enable_filtering_debug_report_starting_from",
         base::Milliseconds(0)};
+
+BASE_FEATURE(kFledgeSplitTrustedSignalsFetchingURL,
+             "FledgeSplitTrustedSignalsFetchingURL",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kFledgeCustomMaxAuctionAdComponentsValue{
     &kFledgeCustomMaxAuctionAdComponents, "FledgeAdComponentLimit",

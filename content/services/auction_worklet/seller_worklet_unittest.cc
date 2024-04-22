@@ -4867,9 +4867,13 @@ TEST_F(SellerWorkletTest,
 TEST_F(SellerWorkletTest,
        ScoreAdBrowserSignalForDebuggingOnlyInCooldownOrLockout) {
   RunScoreAdWithReturnValueExpectingResult(
-      R"(browserSignals.hasOwnProperty('forDebuggingOnlyInCooldownOrLockout') ?
-            3 : 0)",
-      0);
+      R"(browserSignals.forDebuggingOnlyInCooldownOrLockout === false ? 3 : 0)",
+      3);
+
+  browser_signal_for_debugging_only_in_cooldown_or_lockout_ = true;
+  RunScoreAdWithReturnValueExpectingResult(
+      R"(browserSignals.forDebuggingOnlyInCooldownOrLockout === true ? 3 : 0)",
+      3);
 }
 
 class SellerWorkletSharedStorageAPIDisabledTest : public SellerWorkletTest {
@@ -5520,38 +5524,23 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
   }
 }
 
-TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
-       ScoreAdBrowserSignalForDebuggingOnlyInCooldownOrLockout) {
-  RunScoreAdWithReturnValueExpectingResult(
-      R"(browserSignals.hasOwnProperty('forDebuggingOnlyInCooldownOrLockout') ?
-            3 : 0)",
-      0);
-}
-
-class SellerWorkletSampleDebugReportsEnabledTest : public SellerWorkletTest {
+class SellerWorkletSampleDebugReportsDisabledTest : public SellerWorkletTest {
  public:
-  SellerWorkletSampleDebugReportsEnabledTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::
-                                  kBiddingAndScoringDebugReportingAPI,
-                              blink::features::kFledgeSampleDebugReports},
-        /*disabled_features=*/{});
+  SellerWorkletSampleDebugReportsDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        blink::features::kFledgeSampleDebugReports);
   }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(SellerWorkletSampleDebugReportsEnabledTest,
+TEST_F(SellerWorkletSampleDebugReportsDisabledTest,
        ScoreAdBrowserSignalForDebuggingOnlyInCooldownOrLockout) {
   RunScoreAdWithReturnValueExpectingResult(
-      R"(browserSignals.forDebuggingOnlyInCooldownOrLockout === false ? 3 : 0)",
-      3);
-
-  browser_signal_for_debugging_only_in_cooldown_or_lockout_ = true;
-  RunScoreAdWithReturnValueExpectingResult(
-      R"(browserSignals.forDebuggingOnlyInCooldownOrLockout === true ? 3 : 0)",
-      3);
+      R"(browserSignals.hasOwnProperty('forDebuggingOnlyInCooldownOrLockout') ?
+            3 : 0)",
+      0);
 }
 
 class SellerWorkletPrivateAggregationEnabledTest : public SellerWorkletTest {
