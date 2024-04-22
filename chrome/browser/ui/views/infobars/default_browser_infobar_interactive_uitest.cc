@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/startup/default_browser_prompt.h"
 #include "chrome/browser/ui/startup/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/startup/infobar_utils.h"
+#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
@@ -80,7 +81,8 @@ class DefaultBrowserInfobarWithRefreshInteractiveTest
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kDefaultBrowserPromptRefresh,
-        {{features::kShowDefaultBrowserInfoBar.name, "true"}});
+        {{features::kShowDefaultBrowserInfoBar.name, "true"},
+         {features::kShowDefaultBrowserAppMenuItem.name, "true"}});
 
     InteractiveBrowserTest::SetUp();
   }
@@ -130,6 +132,24 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
       InAnyContext(
           WaitForShow(kBrowserViewElementId).SetTransitionOnlyOnEvent(true)),
       InSameContext(EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId)));
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
+                       DoesNotShowAppMenuItemOnIncognitoTab) {
+  ui::Accelerator incognito_accelerator;
+  chrome::AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
+      IDC_NEW_INCOGNITO_WINDOW, &incognito_accelerator);
+
+  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
+  RunTestSequence(
+      PressButton(kToolbarAppMenuButtonElementId),
+
+      WaitForShow(AppMenuModel::kSetBrowserAsDefaultMenuItem),
+      SendAccelerator(kBrowserViewElementId, incognito_accelerator),
+      InAnyContext(
+          WaitForShow(kBrowserViewElementId).SetTransitionOnlyOnEvent(true)),
+      InSameContext(
+          EnsureNotPresent(AppMenuModel::kSetBrowserAsDefaultMenuItem)));
 }
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,

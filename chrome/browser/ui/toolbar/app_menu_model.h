@@ -178,6 +178,7 @@ class AppMenuModel : public ui::SimpleMenuModel,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSaveAndShareMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCastTitleItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInstallAppItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSetBrowserAsDefaultMenuItem);
 
   // Number of menus within the app menu with an arbitrarily high (variable)
   // number of menu items. For example, the number of bookmarks menu items

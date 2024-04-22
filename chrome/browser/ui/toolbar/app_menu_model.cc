@@ -160,6 +160,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kSaveAndShareMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kCastTitleItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPerformanceMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kInstallAppItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
+                                      kSetBrowserAsDefaultMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kPerformanceMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kChromeLabsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kReadingModeMenuItem);
@@ -2028,6 +2030,11 @@ bool AppMenuModel::AddGlobalErrorMenuItems() {
 
 bool AppMenuModel::AddDefaultBrowserMenuItems() {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  if (browser_->profile()->IsIncognitoProfile() ||
+      browser_->profile()->IsGuestSession()) {
+    return false;
+  }
+
   if ((app_menu_icon_controller_ &&
        app_menu_icon_controller_->GetTypeAndSeverity().type ==
            AppMenuIconController::IconType::DEFAULT_BROWSER_PROMPT) ||
@@ -2039,6 +2046,8 @@ bool AppMenuModel::AddDefaultBrowserMenuItems() {
         IDC_SET_BROWSER_AS_DEFAULT,
         l10n_util::GetStringUTF16(IDS_SET_BROWSER_AS_DEFAULT_MENU_ITEM),
         update_icon);
+    SetElementIdentifierAt(GetItemCount() - 1,
+                           AppMenuModel::kSetBrowserAsDefaultMenuItem);
     return true;
   }
 #endif
