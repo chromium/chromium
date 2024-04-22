@@ -179,20 +179,6 @@ void FCMInvalidationListener::DoSubscriptionUpdate() {
   }
 }
 
-void FCMInvalidationListener::EmitStateChangeForTest(InvalidatorState state) {
-  delegate_->OnInvalidatorStateChange(state);
-}
-
-void FCMInvalidationListener::EmitSavedInvalidationForTest(
-    const Invalidation& invalidation) {
-  EmitSavedInvalidation(invalidation);
-}
-
-void FCMInvalidationListener::EmitSuccessfullySubscribedForTest(
-    const Topic& topic) {
-  delegate_->OnSuccessfullySubscribed(topic);
-}
-
 void FCMInvalidationListener::Stop() {
   delegate_ = nullptr;
 

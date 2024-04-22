@@ -198,17 +198,17 @@ class FCMInvalidationServiceTest : public testing::Test {
   }
 
   void TriggerOnInvalidatorStateChange(InvalidatorState state) {
-    listener_->EmitStateChangeForTest(state);
+    invalidation_service_->OnInvalidatorStateChange(state);
   }
 
   template <class... TopicType>
   void TriggerSuccessfullySubscribed(TopicType... topics) {
-    (listener_->EmitSuccessfullySubscribedForTest(topics), ...);
+    (invalidation_service_->OnSuccessfullySubscribed(topics), ...);
   }
 
   template <class... Inv>
   void TriggerOnIncomingInvalidation(Inv... inv) {
-    (listener_->EmitSavedInvalidationForTest(inv), ...);
+    (invalidation_service_->OnInvalidate(inv), ...);
   }
 
   base::test::TaskEnvironment task_environment_;

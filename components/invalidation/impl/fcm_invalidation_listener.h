@@ -84,10 +84,6 @@ class FCMInvalidationListener
       PerUserTopicSubscriptionManager::RequestType request_type,
       Status code) override;
 
-  void EmitStateChangeForTest(InvalidatorState state);
-  void EmitSavedInvalidationForTest(const Invalidation& invalidation);
-  void EmitSuccessfullySubscribedForTest(const Topic& topic);
-
  private:
   // Callbacks for the |network_channel_|.
   void InvalidationReceived(const std::string& payload,
