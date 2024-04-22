@@ -1487,17 +1487,9 @@ void WaylandWindow::LatchStateRequest(const StateRequest& req) {
   auto old_state = latched_state_;
   latched_state_ = req.state;
 
-  // Update the geometry if the bounds are different or the window scale has
-  // been changed or if the insets have changed since the last latched request.
-  // If geometry is not updated on window scale update, the insets are set in a
-  // wrong way. That is, aura provides insets in pixels, which are converted by
-  // the device scale factor known from the display. It can be different from
-  // the one that the |latch_state_.window_scale| has. As a result, the geometry
-  // is set with wrong values as Wayland requires them to be in DIP.
-  // TODO(crbug.com/328011220): Investigate whether we can remove
-  // `window_scale` check from here.
+  // Update the geometry if the bounds or the insets are changed since the last
+  // latched request.
   if (req.state.bounds_dip.size() != old_state.bounds_dip.size() ||
-      req.state.window_scale != old_state.window_scale ||
       delegate()->CalculateInsetsInDIP(req.state.window_state) !=
           delegate()->CalculateInsetsInDIP(old_state.window_state)) {
     SetWindowGeometry(req.state);
