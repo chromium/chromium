@@ -8,6 +8,7 @@
 
 #include "ash/accelerators/accelerator_encoding.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
@@ -269,6 +270,70 @@ TEST_F(InputDeviceSettingsMetricsManagerTest, RecordsKeyboardSettings) {
   histogram_tester.ExpectTotalCount(
       "ChromeOS.Settings.Device.Keyboard.Internal.F12.Changed",
       /*expected_count=*/1u);
+}
+
+TEST_F(InputDeviceSettingsMetricsManagerTest,
+       RecordMetricForSplitModifierKeyboard) {
+  // Enable the modifier split feature flag.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kModifierSplit);
+  auto ignore_modifier_split_secret_key =
+      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
+  mojom::Keyboard split_modifier_keyboard;
+
+  split_modifier_keyboard.device_key = kInternalKeyboardDeviceKey;
+  split_modifier_keyboard.is_external = false;
+  split_modifier_keyboard.id = kKeyboardInternalId;
+  split_modifier_keyboard.modifier_keys = {
+      ui::mojom::ModifierKey::kFunction,
+  };
+  AddFakeKeyboard(ui::KeyboardDevice(kKeyboardInternalId,
+                                     ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
+                                     "split_modifier_keyboard"));
+  split_modifier_keyboard.settings = CreateNewKeyboardSettings();
+  auto& settings = *split_modifier_keyboard.settings;
+  settings.top_row_are_fkeys = true;
+  settings.six_pack_key_remappings = mojom::SixPackKeyInfo::New();
+  settings.six_pack_key_remappings->del =
+      ui::mojom::SixPackShortcutModifier::kAlt;
+  settings.f11 = ui::mojom::ExtendedFkeysModifier::kAlt;
+  settings.f12 = ui::mojom::ExtendedFkeysModifier::kShift;
+
+  base::HistogramTester histogram_tester;
+  manager_.get()->RecordKeyboardInitialMetrics(split_modifier_keyboard);
+
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.TopRowAreFKeys.Initial",
+      /*expected_count=*/1u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.SixPackKeys.Delete.Initial",
+      /*expected_count=*/0u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.F11.Initial",
+      /*expected_count=*/0u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.F12.Initial",
+      /*expected_count=*/0u);
+
+  const mojom::KeyboardSettingsPtr old_settings =
+      split_modifier_keyboard.settings.Clone();
+  split_modifier_keyboard.settings->six_pack_key_remappings->del =
+      ui::mojom::SixPackShortcutModifier::kSearch;
+  split_modifier_keyboard.settings->f11 =
+      ui::mojom::ExtendedFkeysModifier::kShift;
+  split_modifier_keyboard.settings->f12 =
+      ui::mojom::ExtendedFkeysModifier::kAlt;
+  manager_.get()->RecordKeyboardChangedMetrics(split_modifier_keyboard,
+                                               *old_settings);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.SixPackKeys.Delete.Changed",
+      /*expected_count=*/0u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.F11.Changed",
+      /*expected_count=*/0u);
+  histogram_tester.ExpectTotalCount(
+      "ChromeOS.Settings.Device.Keyboard.Internal.F12.Changed",
+      /*expected_count=*/0u);
 }
 
 TEST_F(InputDeviceSettingsMetricsManagerTest, RecordMetricOncePerKeyboard) {
