@@ -117,6 +117,19 @@ class WebContentsState {
       const base::android::JavaParamRef<jobject>& initiator_origin,
       jboolean is_off_the_record);
 
+  // Appends a single-navigation state to a WebContentsState to be later loaded
+  // lazily.
+  static base::android::ScopedJavaLocalRef<jobject> AppendPendingNavigation(
+      JNIEnv* env,
+      base::span<const uint8_t> buffer,
+      int saved_state_version,
+      jstring title,
+      jstring url,
+      jstring referrer_url,
+      jint referrer_policy,
+      const base::android::JavaParamRef<jobject>& initiator_origin,
+      jboolean is_off_the_record);
+
  private:
   static std::unique_ptr<content::WebContents>
   RestoreContentsFromByteBufferImpl(base::span<const uint8_t> buffer,

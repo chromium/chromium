@@ -385,6 +385,15 @@ public class TabStateAttributesTest {
                 TabStateAttributes.from(mTab).getDirtinessState());
         verify(mAttributesObserver)
                 .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.DIRTY);
+
+        TabStateAttributes.from(mTab).setStateForTesting(TabStateAttributes.DirtinessState.CLEAN);
+        observers = TabTestUtils.getTabObservers(mTab);
+        while (observers.hasNext()) observers.next().onNavigationEntriesAppended(mTab);
+        assertEquals(
+                TabStateAttributes.DirtinessState.DIRTY,
+                TabStateAttributes.from(mTab).getDirtinessState());
+        verify(mAttributesObserver, times(2))
+                .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.DIRTY);
     }
 
     @Test

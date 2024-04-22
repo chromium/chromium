@@ -133,6 +133,9 @@ public class EmptyTabObserver implements TabObserver {
     public void onRendererResponsiveStateChanged(Tab tab, boolean isResponsive) {}
 
     @Override
+    public void onNavigationEntriesAppended(Tab tab) {}
+
+    @Override
     public void onNavigationEntriesDeleted(Tab tab) {}
 
     @Override

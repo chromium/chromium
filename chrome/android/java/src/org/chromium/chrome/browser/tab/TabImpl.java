@@ -78,6 +78,7 @@ import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
+import org.chromium.content_public.common.Referrer;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -649,6 +650,44 @@ class TabImpl implements Tab {
         params.setUrl(fixedUrl.getSpec());
         NavigationHandle handle = mWebContents.getNavigationController().loadUrl(params);
         return new LoadUrlResult(TabLoadStatus.DEFAULT_PAGE_LOAD, handle);
+    }
+
+    @Override
+    public void freezeAndAppendPendingNavigation(LoadUrlParams params, @Nullable String title) {
+        assert isHidden();
+        WebContentsState oldWebContentsState = TabStateExtractor.getWebContentsState(this);
+        WebContents oldWebContents = mWebContents;
+        destroyWebContents(false);
+        mWebContents = null;
+        RewindableIterator<TabObserver> observers = getTabObservers();
+        if (oldWebContents != null) {
+            while (observers.hasNext()) {
+                observers.next().onContentChanged(this);
+            }
+            observers.rewind();
+            oldWebContents.destroy();
+        }
+        Referrer referrer = params.getReferrer();
+        mWebContentsState =
+                WebContentsStateBridge.appendPendingNavigation(
+                        oldWebContentsState,
+                        title,
+                        params.getUrl(),
+                        referrer != null ? referrer.getUrl() : null,
+                        // Policy will be ignored for null referrer url, 0 is just a placeholder.
+                        referrer != null ? referrer.getPolicy() : 0,
+                        params.getInitiatorOrigin(),
+                        isIncognito());
+        mUrl = new GURL(mWebContentsState.getVirtualUrlFromState());
+        while (observers.hasNext()) {
+            observers.next().onUrlUpdated(this);
+        }
+        observers.rewind();
+        updateTitle(title);
+
+        while (observers.hasNext()) {
+            observers.next().onNavigationEntriesAppended(this);
+        }
     }
 
     @Override

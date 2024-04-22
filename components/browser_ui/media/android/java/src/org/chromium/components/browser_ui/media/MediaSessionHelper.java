@@ -283,12 +283,19 @@ public class MediaSessionHelper implements MediaImageCallback {
         };
     }
 
-    public void setWebContents(@NonNull WebContents webContents) {
+    public void setWebContents(@Nullable WebContents webContents) {
         if (mWebContents == webContents) return;
 
         mWebContents = webContents;
 
         if (mWebContentsObserver != null) mWebContentsObserver.destroy();
+
+        if (webContents == null) {
+            mWebContentsObserver = null;
+            cleanupMediaSessionObserver();
+            mMediaImageManager.setWebContents(webContents);
+            return;
+        }
         mWebContentsObserver =
                 new WebContentsObserver(webContents) {
                     @Override

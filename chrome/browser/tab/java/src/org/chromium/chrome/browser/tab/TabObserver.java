@@ -293,13 +293,22 @@ public interface TabObserver {
 
     /**
      * Called when renderer changes its state about being responsive to requests.
+     *
      * @param tab The notifying {@link Tab}.
      * @param {@code true} if the renderer becomes responsive, otherwise {@code false}.
      */
     void onRendererResponsiveStateChanged(Tab tab, boolean isResponsive);
 
     /**
+     * Called when navigation entries of a tab have been appended while the tab is frozen.
+     *
+     * @param tab The notifying {@link Tab}.
+     */
+    void onNavigationEntriesAppended(Tab tab);
+
+    /**
      * Called when navigation entries of a tab have been deleted.
+     *
      * @param tab The notifying {@link Tab}.
      */
     void onNavigationEntriesDeleted(Tab tab);

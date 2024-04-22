@@ -126,6 +126,11 @@ public class TabStateAttributes extends TabWebContentsUserData {
                     }
 
                     @Override
+                    public void onNavigationEntriesAppended(Tab tab) {
+                        updateIsDirty(DirtinessState.DIRTY);
+                    }
+
+                    @Override
                     public void onNavigationEntriesDeleted(Tab tab) {
                         updateIsDirty(DirtinessState.DIRTY);
                     }
