@@ -253,7 +253,6 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
   // These values are only set and read on the compositor thread.
   raw_ptr<cc::VideoFrameProvider::Client, DanglingUntriaged> client_ = nullptr;
   bool rendering_ = false;
-  bool rendered_last_frame_ = false;
   bool is_background_rendering_ = false;
   bool new_background_frame_ = false;
 
@@ -275,6 +274,7 @@ class BLINK_PLATFORM_EXPORT VideoFrameCompositor
   base::TimeTicks last_presentation_time_ GUARDED_BY(current_frame_lock_);
   base::TimeTicks last_expected_display_time_ GUARDED_BY(current_frame_lock_);
   uint32_t presentation_counter_ GUARDED_BY(current_frame_lock_) = 0u;
+  bool rendered_last_frame_ GUARDED_BY(current_frame_lock_) = false;
 
   // These values are updated and read from the media and compositor threads.
   base::Lock callback_lock_;

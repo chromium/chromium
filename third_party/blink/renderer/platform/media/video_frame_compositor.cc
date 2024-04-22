@@ -167,6 +167,12 @@ scoped_refptr<media::VideoFrame> VideoFrameCompositor::GetCurrentFrame() {
 scoped_refptr<media::VideoFrame>
 VideoFrameCompositor::GetCurrentFrameOnAnyThread() {
   base::AutoLock lock(current_frame_lock_);
+
+  // Treat frames vended to external consumers as being rendered. This ensures
+  // that hidden elements that are being driven by WebGL/WebGPU/Canvas rendering
+  // don't mark all frames as dropped.
+  rendered_last_frame_ = true;
+
   return current_frame_;
 }
 
@@ -185,6 +191,7 @@ void VideoFrameCompositor::SetCurrentFrame_Locked(
 
 void VideoFrameCompositor::PutCurrentFrame() {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  base::AutoLock lock(current_frame_lock_);
   rendered_last_frame_ = true;
 }
 
@@ -362,10 +369,6 @@ bool VideoFrameCompositor::ProcessNewFrame(
     return false;
   }
 
-  // Set the flag indicating that the current frame is unrendered, if we get a
-  // subsequent PutCurrentFrame() call it will mark it as rendered.
-  rendered_last_frame_ = false;
-
   // TODO(crbug.com/1447318): Add other cases where the frame is not readable.
   bool is_frame_readable = !frame->metadata().dcomp_surface;
 
@@ -374,6 +377,11 @@ bool VideoFrameCompositor::ProcessNewFrame(
   OnNewFramePresentedCB frame_presented_cb;
   {
     base::AutoLock lock(current_frame_lock_);
+
+    // Set the flag indicating that the current frame is unrendered, if we get a
+    // subsequent PutCurrentFrame() call it will mark it as rendered.
+    rendered_last_frame_ = false;
+
     SetCurrentFrame_Locked(std::move(frame), presentation_time);
     frame_presented_cb = std::move(new_presented_frame_cb_);
   }
@@ -424,12 +432,19 @@ bool VideoFrameCompositor::CallRender(base::TimeTicks deadline_min,
                                       base::TimeTicks deadline_max,
                                       RenderingMode mode) {
   DCHECK(task_runner_->BelongsToCurrentThread());
+
+  bool have_unseen_frame;
+  {
+    base::AutoLock lock(current_frame_lock_);
+    have_unseen_frame = !rendered_last_frame_ && HasCurrentFrame();
+  }
+
   base::AutoLock lock(callback_lock_);
 
   if (!callback_) {
     // Even if we no longer have a callback, return true if we have a frame
     // which |client_| hasn't seen before.
-    return !rendered_last_frame_ && GetCurrentFrame();
+    return have_unseen_frame;
   }
 
   DCHECK(rendering_);
@@ -441,8 +456,8 @@ bool VideoFrameCompositor::CallRender(base::TimeTicks deadline_min,
   // also don't signal for mode == kStartup since UpdateCurrentFrame() may occur
   // before the PutCurrentFrame() for the kStartup induced CallRender().
   const bool was_background_rendering = is_background_rendering_;
-  if (!rendered_last_frame_ && GetCurrentFrame() &&
-      mode == RenderingMode::kNormal && !was_background_rendering) {
+  if (have_unseen_frame && mode == RenderingMode::kNormal &&
+      !was_background_rendering) {
     callback_->OnFrameDropped();
   }
 

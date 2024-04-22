@@ -332,6 +332,22 @@ TEST_F(VideoFrameCompositorTest, VideoRendererSinkFrameDropped) {
   StopVideoRendererSink(true);
 }
 
+TEST_F(VideoFrameCompositorTest, VideoRendererSinkGetCurrentFrameNoDrops) {
+  scoped_refptr<media::VideoFrame> opaque_frame = CreateOpaqueFrame();
+
+  EXPECT_CALL(*this, Render(_, _, _)).WillRepeatedly(Return(opaque_frame));
+  StartVideoRendererSink();
+
+  EXPECT_TRUE(
+      compositor()->UpdateCurrentFrame(base::TimeTicks(), base::TimeTicks()));
+
+  auto frame = compositor()->GetCurrentFrameOnAnyThread();
+  EXPECT_FALSE(
+      compositor()->UpdateCurrentFrame(base::TimeTicks(), base::TimeTicks()));
+
+  StopVideoRendererSink(true);
+}
+
 TEST_F(VideoFrameCompositorTest, StartFiresBackgroundRender) {
   scoped_refptr<media::VideoFrame> opaque_frame = CreateOpaqueFrame();
   EXPECT_CALL(*this, Render(_, _, RenderingMode::kStartup))
