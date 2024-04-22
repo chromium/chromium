@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller.h"
+#import "ios/chrome/browser/voice/ui_bundled/text_to_speech_playback_controller.h"
 
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/ui/voice/text_to_speech_notification_handler.h"
+#import "ios/chrome/browser/voice/ui_bundled/text_to_speech_notification_handler.h"
 #import "ios/web/public/web_state.h"
 
 TextToSpeechPlaybackController::TextToSpeechPlaybackController()

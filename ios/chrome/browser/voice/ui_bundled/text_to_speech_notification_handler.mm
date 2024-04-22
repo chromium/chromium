@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/voice/text_to_speech_notification_handler.h"
+#import "ios/chrome/browser/voice/ui_bundled/text_to_speech_notification_handler.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/ui/voice/text_to_speech_player.h"
-#import "ios/chrome/browser/ui/voice/voice_search_notification_names.h"
+#import "ios/chrome/browser/voice/ui_bundled/text_to_speech_player.h"
+#import "ios/chrome/browser/voice/ui_bundled/voice_search_notification_names.h"
 
 @interface TextToSpeechNotificationHandler ()
 // The TextToSpeechPlayer handling playback.

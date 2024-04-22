@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/voice/text_to_speech_player.h"
+#import "ios/chrome/browser/voice/ui_bundled/text_to_speech_player.h"
 
 #import <UIKit/UIKit.h>
 
@@ -10,7 +10,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/ui/voice/voice_search_notification_names.h"
+#import "ios/chrome/browser/voice/ui_bundled/voice_search_notification_names.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -119,8 +119,8 @@ TEST_F(TextToSpeechPlayerTest, ReadyForPlaybackEmtpyData) {
 
 // Tests that kTTSWillStartPlayingNotification is received when playback begins
 // and kTTSDidStopPlayingNotification is received when it is cancelled.
-// TODO(rohitrao): Disabled because the bots do not have a valid sound output
-// device.
+// TODO(crbug.com/333113564): Disabled because the bots do not have a valid
+// sound output device.
 TEST_F(TextToSpeechPlayerTest, DISABLED_ValidPlaybackNotifications) {
   NSString* path = [base::apple::FrameworkBundle()
       pathForResource:@"test_sound"
@@ -138,8 +138,8 @@ TEST_F(TextToSpeechPlayerTest, DISABLED_ValidPlaybackNotifications) {
 
 // Tests that playback is cancelled when the application enters the background
 // while playback is occurring.
-// TODO(rohitrao): Disabled because the bots do not have a valid sound output
-// device.
+// TODO(crbug.com/333113564): Disabled because the bots do not have a valid
+// sound output device.
 TEST_F(TextToSpeechPlayerTest, DISABLED_BackgroundNotification) {
   NSString* path = [base::apple::FrameworkBundle()
       pathForResource:@"test_sound"
