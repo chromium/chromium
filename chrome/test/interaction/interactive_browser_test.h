@@ -356,8 +356,8 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   // `web_contents` into view; see Instrument*(). The scrolling happens
   // instantaneously, without animation, and should be available on the next
   // render frame or call into the renderer.
-  [[nodiscard]] MultiStep ScrollIntoView(ui::ElementIdentifier web_contents,
-                                         const DeepQuery& where);
+  [[nodiscard]] StepBuilder ScrollIntoView(ui::ElementIdentifier web_contents,
+                                           const DeepQuery& where);
 
  protected:
   explicit InteractiveBrowserTestApi(

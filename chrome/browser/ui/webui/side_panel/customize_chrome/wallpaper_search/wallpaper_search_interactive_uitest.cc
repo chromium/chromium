@@ -282,14 +282,8 @@ class WallpaperSearchOptimizationGuideInteractiveTest
   base::CallbackListSubscription subscription_;
 };
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/332992599):
-#define MAYBE_CustomizeButtonsWorkTogether DISABLED_CustomizeButtonsWorkTogether
-#else
-#define MAYBE_CustomizeButtonsWorkTogether CustomizeButtonsWorkTogether
-#endif
 IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
-                       MAYBE_CustomizeButtonsWorkTogether) {
+                       CustomizeButtonsWorkTogether) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReopenedCustomizeChromeElementId);
 
   const DeepQuery kCustomizeChromeButton = {"ntp-app", "#customizeButton"};
@@ -397,15 +391,8 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
 // which cannot be easily tested here. LaCrOS has a separate feedback
 // browser test which gives us some coverage.
 #if !BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/332992599):
-#define MAYBE_FeedbackDialogShowsOnThumbsDown \
-  DISABLED_FeedbackDialogShowsOnThumbsDown
-#else
-#define MAYBE_FeedbackDialogShowsOnThumbsDown FeedbackDialogShowsOnThumbsDown
-#endif
 IN_PROC_BROWSER_TEST_F(WallpaperSearchOptimizationGuideInteractiveTest,
-                       MAYBE_FeedbackDialogShowsOnThumbsDown) {
+                       FeedbackDialogShowsOnThumbsDown) {
   EXPECT_CALL(mock_optimization_guide_keyed_service(),
               ShouldFeatureBeCurrentlyAllowedForLogging(
                   optimization_guide::UserVisibleFeatureKey::kWallpaperSearch))
