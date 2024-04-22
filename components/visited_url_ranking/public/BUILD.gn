@@ -4,12 +4,16 @@
 
 source_set("public") {
   sources = [
+    "fetch_options.cc",
+    "fetch_options.h",
     "url_visit.cc",
     "url_visit.h",
+    "visited_url_ranking_service.h",
   ]
 
   deps = [
     "//base",
+    "//components/keyed_service/core",
     "//components/sync_device_info",
     "//url",
   ]

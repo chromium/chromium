@@ -14,14 +14,15 @@
 
 namespace visited_url_ranking {
 
-// Whether the visit was sourced from local or remote data.
-enum class Source { kLocal, kRemote };
-
 /**
  * A wrapper data type that encompasses URL visit related data from various
  * sources.
  */
 struct URLVisit {
+  // If applicable, whether the visit data was sourced from a specific origin
+  // (local or remote).
+  enum class Source { kNotApplicable = 0, kLocal = 1, kRemote = 2 };
+
   URLVisit();
   URLVisit(const URLVisit&) = delete;
   URLVisit(URLVisit&& other);
