@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_helper.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_idle_status_handler.h"
 #import "ios/web/public/web_state_id.h"
 
 @interface TabGroupCoordinator () <GridViewControllerDelegate>
@@ -74,6 +75,7 @@
               gridConsumer:_viewController.gridViewController];
   _mediator.browser = self.browser;
   _mediator.tabGroupsHandler = handler;
+  _mediator.tabGridIdleStatusHandler = self.tabGridIdleStatusHandler;
 
   _tabContextMenuHelper = [[TabContextMenuHelper alloc]
         initWithBrowserState:self.browser->GetBrowserState()
@@ -129,6 +131,8 @@
   id<TabGroupsCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), TabGroupsCommands);
 
+  [self.tabGridIdleStatusHandler
+      tabGridDidPerformAction:TabGridActionType::kInPageAction];
   [handler hideTabGroup];
   [handler showActiveTab];
 }
@@ -198,6 +202,12 @@
 - (void)didTapInactiveTabsSettingsLinkInGridViewController:
     (BaseGridViewController*)gridViewController {
   NOTREACHED_NORETURN();
+}
+
+- (void)gridViewController:(BaseGridViewController*)gridViewController
+    didRequestContextMenuForItemWithID:(web::WebStateID)itemID {
+  [self.tabGridIdleStatusHandler
+      tabGridDidPerformAction:TabGridActionType::kInPageAction];
 }
 
 @end

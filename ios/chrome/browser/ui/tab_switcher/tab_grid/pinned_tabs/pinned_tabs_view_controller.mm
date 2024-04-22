@@ -471,6 +471,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
     contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
                                          point:(CGPoint)point {
+  NSUInteger index = base::checked_cast<NSUInteger>(indexPath.item);
+  CHECK_LT(index, _items.count);
+  const web::WebStateID itemID = _items[index].identifier;
+  [self.delegate pinnedViewController:self
+      didRequestContextMenuForItemWithID:itemID];
+
   PinnedCell* cell = base::apple::ObjCCastStrict<PinnedCell>(
       [self.collectionView cellForItemAtIndexPath:indexPath]);
   return [self.menuProvider

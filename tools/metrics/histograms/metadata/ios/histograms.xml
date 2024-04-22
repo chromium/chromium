@@ -3986,8 +3986,9 @@ chromium-metrics-reviews@google.com.
   <owner>bling-team@google.com</owner>
   <summary>
     Tracks whether the user closed the incognito tab grid page without doing any
-    meaningful action. Meaningful actions are creating, moving, deleting or
-    switching tab. Recorded when the user closed the incognito tab grid page.
+    meaningful action on any tab grid pages. Meaningful actions are creating,
+    moving, deleting or switching tab. Recorded when the user closed the
+    incognito tab grid page.
   </summary>
 </histogram>
 
@@ -3998,8 +3999,9 @@ chromium-metrics-reviews@google.com.
   <owner>bling-team@google.com</owner>
   <summary>
     Tracks whether the user closed the recent tabs page without doing any
-    meaningful action. Meaningful action is opening a tab. Recorded when the
-    user closed the recent tabs page or switched to a tab grid page.
+    meaningful action on any tab grid pages. Meaningful action is opening a tab.
+    Recorded when the user closed the recent tabs page or switched to a tab grid
+    page.
   </summary>
 </histogram>
 
@@ -4010,8 +4012,9 @@ chromium-metrics-reviews@google.com.
   <owner>bling-team@google.com</owner>
   <summary>
     Tracks whether the user closed the regular tab grid page without doing any
-    meaningful action. Meaningful actions are creating, moving, deleting or
-    switching tab. Recorded when the user closed the regular tab grid page.
+    meaningful action on any tab grid pages. Meaningful actions are creating,
+    moving, deleting or switching tab. Recorded when the user closed the regular
+    tab grid page.
   </summary>
 </histogram>
 

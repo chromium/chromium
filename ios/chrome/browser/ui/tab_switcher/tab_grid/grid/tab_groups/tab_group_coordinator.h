@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol TabContextMenuDelegate;
+@protocol TabGridIdleStatusHandler;
 class TabGroup;
 @class TabGroupViewController;
 
@@ -20,6 +21,10 @@ class TabGroup;
 // Whether this coordinator should be presented with smaller motions. Default is
 // NO.
 @property(nonatomic, assign) BOOL smallerMotions;
+
+// Handler that trackes and updates the idle status of the tab grid.
+@property(nonatomic, weak) id<TabGridIdleStatusHandler>
+    tabGridIdleStatusHandler;
 
 // Tab Context Menu delegate.
 @property(nonatomic, weak) id<TabContextMenuDelegate> tabContextMenuDelegate;

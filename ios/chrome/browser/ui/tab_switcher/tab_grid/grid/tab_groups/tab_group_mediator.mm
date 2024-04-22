@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_idle_status_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -65,16 +66,22 @@
 #pragma mark - TabGroupMutator
 
 - (BOOL)addNewItemInGroup {
+  [self.tabGridIdleStatusHandler
+      tabGridDidPerformAction:TabGridActionType::kInPageAction];
   return [self addTabToGroup:_tabGroup.get()];
 }
 
 - (void)ungroup {
+  [self.tabGridIdleStatusHandler
+      tabGridDidPerformAction:TabGridActionType::kInPageAction];
   auto scoped_lock = self.webStateList->StartBatchOperation();
   self.webStateList->DeleteGroup(_tabGroup.get());
   _tabGroup.reset();
 }
 
 - (void)deleteGroup {
+  [self.tabGridIdleStatusHandler
+      tabGridDidPerformAction:TabGridActionType::kInPageAction];
   CloseAllWebStatesInGroup(*self.webStateList, _tabGroup.get(),
                            WebStateList::CLOSE_USER_ACTION);
   _tabGroup.reset();

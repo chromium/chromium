@@ -104,6 +104,10 @@ source_set("tab_grid_activity_observer") {
   ]
 }
 
+source_set("tab_grid_idle_status_handler") {
+  sources = [ "tab_grid_idle_status_handler.h" ]
+}
+
 source_set("tab_grid_metrics") {
   sources = [
     "tab_grid_metrics.h",
@@ -150,6 +154,7 @@ source_set("tab_grid_ui") {
 
   deps = [
     ":tab_grid_activity_observer",
+    ":tab_grid_idle_status_handler",
     ":tab_grid_metrics",
     ":tab_grid_page_mutator",
     ":tab_grid_paging",
@@ -266,6 +271,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/settings:eg_test_support+eg2",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs:inactive_tabs_constants",
     "//ios/chrome/browser/ui/tab_switcher/test:utils",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/test:eg_test_support+eg2",

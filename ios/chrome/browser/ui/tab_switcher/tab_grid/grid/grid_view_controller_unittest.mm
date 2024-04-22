@@ -97,6 +97,11 @@
   // No-op for unittests.
 }
 
+- (void)gridViewController:(BaseGridViewController*)gridViewController
+    didRequestContextMenuForItemWithID:(web::WebStateID)itemID {
+  // No-op for unittests.
+}
+
 @end
 
 class BaseGridViewControllerTest : public RootViewControllerTest,

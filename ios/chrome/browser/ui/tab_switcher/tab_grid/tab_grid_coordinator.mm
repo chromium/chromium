@@ -923,6 +923,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   self.regularTabsMediator.gridConsumer = self.baseViewController;
   self.remoteTabsMediator.gridConsumer = self.baseViewController;
 
+  self.incognitoTabsMediator.tabGridIdleStatusHandler = self.baseViewController;
+  self.regularTabsMediator.tabGridIdleStatusHandler = self.baseViewController;
+
   self.snackbarCoordinator =
       [[SnackbarCoordinator alloc] initWithBaseViewController:baseViewController
                                                       browser:_regularBrowser
@@ -1464,6 +1467,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   if (level == SceneActivationLevelBackground) {
     // When going in the background, hide the Inactive Tabs UI.
     [self.inactiveTabsCoordinator hide];
+  }
+  if (level < SceneActivationLevelForegroundActive) {
+    // User has put the app into background, which constitutes of a meaningful
+    // action.
+    [self.baseViewController
+        tabGridDidPerformAction:TabGridActionType::kBackground];
   }
 }
 

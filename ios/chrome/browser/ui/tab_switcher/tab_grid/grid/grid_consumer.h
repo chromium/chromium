@@ -9,8 +9,6 @@
 
 @protocol GridConsumer
 
-// Sets the idle page status.
-- (void)setPageIdleStatus:(BOOL)status;
 // Sets the active page.
 - (void)setActivePageFromPage:(TabGridPage)page;
 // Sets the page mode.

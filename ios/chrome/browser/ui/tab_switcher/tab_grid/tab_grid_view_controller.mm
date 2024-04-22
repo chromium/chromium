@@ -160,12 +160,15 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 @implementation TabGridViewController {
   // Idle page status.
   // Tracks whether the user closed the tab switcher without doing any
-  // meaningful action.
-  BOOL _idleRegularTabGrid;
-  BOOL _idleIncognitoTabGrid;
+  // `TabGridActionType::kInPageAction`s.
+  BOOL _idleTabGrid;
+  // Whether the user has done anything meaningful when recent tabs page is
+  // visible.
   BOOL _idleRecentTabs;
-
-  TabGridPage _activePageWhenAppear;
+  // Whether the user has changed pages since entering the tab grid.
+  BOOL _pageChangedSinceEntering;
+  // Whether the user has put the app to background since entering tab grid.
+  BOOL _backgroundedSinceEntering;
 }
 
 // TabGridPaging property.
@@ -416,10 +419,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - Public Methods
 
 - (void)contentWillAppearAnimated:(BOOL)animated {
+  _pageChangedSinceEntering = NO;
+  _backgroundedSinceEntering = NO;
   [self resetIdlePageStatus];
   self.viewVisible = YES;
   [self.topToolbar.pageControl setSelectedPage:self.currentPage animated:NO];
-  _activePageWhenAppear = self.currentPage;
   [self configureViewControllerForCurrentSizeClassesAndPage];
 
   // The toolbars should be hidden (alpha 0.0) before the tab appears, so that
@@ -583,6 +587,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)setActivePage:(TabGridPage)activePage {
   [self scrollToPage:activePage animated:YES];
   [self.activityObserver updateLastActiveTabPage:activePage];
+  if (activePage != _activePage) {
+    // Usually, an active page change is a result of an in-page action happening
+    // on a previously non-active page.
+    [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
+  }
   _activePage = activePage;
 }
 
@@ -592,6 +601,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (_tabGridMode == mode) {
     return;
   }
+  [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
   if (self.swipeToIncognitoIPH) {
     [self.swipeToIncognitoIPH
         dismissWithReason:IPHDismissalReasonType::
@@ -633,18 +643,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     return;
   }
 
-  // If the page has changed, the idle status of tab grid pages is `NO`.
-  BOOL onSamePage = self.currentPage == _activePageWhenAppear;
-
   switch (self.currentPage) {
     case TabGridPage::TabGridPageIncognitoTabs:
       base::UmaHistogramBoolean(
-          kUMATabSwitcherIdleIncognitoTabGridPageHistogram,
-          _idleIncognitoTabGrid && onSamePage);
+          kUMATabSwitcherIdleIncognitoTabGridPageHistogram, _idleTabGrid);
       break;
     case TabGridPage::TabGridPageRegularTabs:
       base::UmaHistogramBoolean(kUMATabSwitcherIdleRegularTabGridPageHistogram,
-                                _idleRegularTabGrid && onSamePage);
+                                _idleTabGrid);
       break;
     case TabGridPage::TabGridPageRemoteTabs:
       base::UmaHistogramBoolean(kUMATabSwitcherIdleRecentTabsHistogram,
@@ -653,29 +659,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 }
 
-// Sets the idle page status of the `currentPage`.
-- (void)setCurrentIdlePageStatus:(BOOL)idlePageStatus {
-  if (!self.viewVisible) {
-    return;
-  }
-
-  switch (self.currentPage) {
-    case TabGridPage::TabGridPageIncognitoTabs:
-      _idleIncognitoTabGrid = idlePageStatus;
-      break;
-    case TabGridPage::TabGridPageRegularTabs:
-      _idleRegularTabGrid = idlePageStatus;
-      break;
-    case TabGridPage::TabGridPageRemoteTabs:
-      _idleRecentTabs = idlePageStatus;
-      break;
-  }
-}
-
 // Resets idle page status.
 - (void)resetIdlePageStatus {
-  _idleIncognitoTabGrid = YES;
-  _idleRegularTabGrid = YES;
+  _idleTabGrid = YES;
   // `_idleRecentTabs` is set to 'YES' if the "Done" button has been tapped from
   // the "TabGridPageRemoteTabs" or if the page has changed.
   _idleRecentTabs = NO;
@@ -859,13 +845,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)setCurrentPage:(TabGridPage)currentPage {
-  BOOL samePage = _currentPage == currentPage;
-
   // Record the idle metric if the previous page was `TabGridPageRemoteTabs`.
-  if (!samePage && _currentPage == TabGridPageRemoteTabs) {
-    [self setCurrentIdlePageStatus:YES];
-    [self recordIdlePageStatus];
-    [self setCurrentIdlePageStatus:NO];
+  if (_currentPage != currentPage) {
+    [self tabGridDidPerformAction:TabGridActionType::kChangePage];
+    if (_currentPage == TabGridPageRemoteTabs) {
+      _idleRecentTabs = YES;
+      [self recordIdlePageStatus];
+      _idleRecentTabs = NO;
+    }
   }
 
   // Original current page is about to not be visible. Disable it from being
@@ -1723,7 +1710,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.regularGridHandler selectItemWithID:itemID pinned:YES];
 
   self.activePage = self.currentPage;
-  [self setCurrentIdlePageStatus:NO];
+  [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
 
   [self.tabPresentationDelegate showActiveTabInPage:self.currentPage
                                        focusOmnibox:NO];
@@ -1751,12 +1738,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)pinnedTabsViewControllerDidMoveItem:
     (PinnedTabsViewController*)pinnedTabsViewController {
-  [self setCurrentIdlePageStatus:NO];
+  [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
 }
 
 - (void)pinnedTabsViewController:(BaseGridViewController*)gridViewController
              didRemoveItemWIthID:(web::WebStateID)itemID {
-  [self setCurrentIdlePageStatus:NO];
+  [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
 }
 
 - (void)pinnedViewControllerDropAnimationWillBegin:
@@ -1779,6 +1766,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     (PinnedTabsViewController*)pinnedTabsViewController {
   self.dragSessionInProgress = NO;
   [self.mutator dragAndDropSessionEnded];
+}
+
+- (void)pinnedViewController:(PinnedTabsViewController*)pinnedTabsViewController
+    didRequestContextMenuForItemWithID:(web::WebStateID)itemID {
+  [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
 }
 
 #pragma mark - BaseGridViewControllerDelegate
@@ -1824,7 +1816,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Check if the tab being selected is already selected.
   BOOL alreadySelected = [tabsDelegate isItemWithIDSelected:itemID];
   if (!alreadySelected) {
-    [self setCurrentIdlePageStatus:NO];
+    [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
   }
 
   [tabsDelegate selectItemWithID:itemID pinned:NO];
@@ -1885,7 +1877,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     }
   }
 
-  [self setCurrentIdlePageStatus:NO];
+  [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
 
   [tabsDelegate selectTabGroup:group];
 
@@ -1904,7 +1896,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)gridViewControllerDidMoveItem:
     (BaseGridViewController*)gridViewController {
-  [self setCurrentIdlePageStatus:NO];
+  [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
 }
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
@@ -1924,7 +1916,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
        didRemoveItemWIthID:(web::WebStateID)itemID {
-  [self setCurrentIdlePageStatus:NO];
+  [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
 }
 
 - (void)gridViewControllerDragSessionWillBeginForTab:
@@ -1976,11 +1968,17 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   CHECK_EQ(self.currentPage, TabGridPageRegularTabs);
   base::RecordAction(base::UserMetricsAction("MobileTabGridShowInactiveTabs"));
   [self.delegate showInactiveTabs];
+  [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
 }
 
 - (void)didTapInactiveTabsSettingsLinkInGridViewController:
     (BaseGridViewController*)gridViewController {
   NOTREACHED();
+}
+
+- (void)gridViewController:(BaseGridViewController*)gridViewController
+    didRequestContextMenuForItemWithID:(web::WebStateID)itemID {
+  [self tabGridDidPerformAction:TabGridActionType::kInPageAction];
 }
 
 #pragma mark - TabGridToolbarsMainTabGridDelegate
@@ -1989,7 +1987,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   TabGridPage newActivePage = self.currentPage;
 
   if (self.currentPage == TabGridPageRemoteTabs) {
-    [self setCurrentIdlePageStatus:YES];
+    _idleRecentTabs = YES;
     newActivePage = self.activePage;
   }
 
@@ -2228,10 +2226,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 #pragma mark - GridConsumer
 
-- (void)setPageIdleStatus:(BOOL)status {
-  [self setCurrentIdlePageStatus:status];
-}
-
 - (void)setActivePageFromPage:(TabGridPage)page {
   self.activePage = page;
 }
@@ -2257,6 +2251,29 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.mutator pageChanged:TabGridPageIncognitoTabs
                 interaction:TabSwitcherPageChangeInteraction::kScrollDrag];
   [self setCurrentPageAndPageControl:TabGridPageIncognitoTabs animated:YES];
+}
+
+#pragma mark - TabGridIdleStatusHandler
+
+- (BOOL)status {
+  return _idleTabGrid && !_pageChangedSinceEntering &&
+         !_backgroundedSinceEntering;
+}
+
+- (void)tabGridDidPerformAction:(TabGridActionType)type {
+  if (self.viewVisible) {
+    switch (type) {
+      case TabGridActionType::kInPageAction:
+        _idleTabGrid = NO;
+        break;
+      case TabGridActionType::kChangePage:
+        _pageChangedSinceEntering = YES;
+        break;
+      case TabGridActionType::kBackground:
+        _backgroundedSinceEntering = YES;
+        break;
+    }
+  }
 }
 
 @end

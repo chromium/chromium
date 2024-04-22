@@ -172,6 +172,8 @@
                         tabGroup:tabGroup];
   _tabGroupCoordinator.tabContextMenuDelegate = self.tabContextMenuDelegate;
   _tabGroupCoordinator.smallerMotions = tabGridOpening;
+  _tabGroupCoordinator.tabGridIdleStatusHandler =
+      self.mediator.tabGridIdleStatusHandler;
   [_tabGroupCoordinator start];
 }
 

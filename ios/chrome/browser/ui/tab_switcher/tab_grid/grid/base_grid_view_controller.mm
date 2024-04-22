@@ -685,6 +685,13 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     return nil;
   }
 
+  GridItemIdentifier* itemIdentifier =
+      [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
+  if (itemIdentifier.type == GridItemType::Tab) {
+    [self.delegate gridViewController:self
+        didRequestContextMenuForItemWithID:itemIdentifier.tabSwitcherItem
+                                               .identifier];
+  }
   UICollectionViewCell* collectionViewCell =
       [self.collectionView cellForItemAtIndexPath:indexPath];
 
