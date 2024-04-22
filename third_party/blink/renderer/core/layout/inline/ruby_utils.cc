@@ -976,10 +976,20 @@ FontHeight ComputeEmHeight(const LogicalLineItem& line_item) {
     return result_height;
   }
   if (const auto& layout_result = line_item.layout_result) {
-    if (line_item.Size().inline_size != LayoutUnit()) {
+    const auto& fragment = layout_result->GetPhysicalFragment();
+    const auto& style = fragment.Style();
+    LogicalSize logical_size =
+        LogicalFragment(style.GetWritingDirection(), fragment).Size();
+    const LayoutBox* box = DynamicTo<LayoutBox>(line_item.GetLayoutObject());
+    if (logical_size.inline_size && box && box->IsAtomicInlineLevel()) {
+      LogicalRect overflow =
+          WritingModeConverter(
+              {ToLineWritingMode(style.GetWritingMode()), style.Direction()},
+              fragment.Size())
+              .ToLogical(box->ScrollableOverflowRect());
       // Assume 0 is the baseline.  BlockOffset() is always negative.
-      return FontHeight(-line_item.BlockOffset(),
-                        line_item.Size().block_size + line_item.BlockOffset());
+      return FontHeight(-overflow.offset.block_offset - line_item.BlockOffset(),
+                        overflow.BlockEndOffset() + line_item.BlockOffset());
     }
   }
   return FontHeight();
