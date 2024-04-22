@@ -43,7 +43,7 @@ class FakeSemanticsManager : public fuchsia::accessibility::semantics::testing::
   // A helper function for RequestAccessibilityAction.
   void CheckNumActions();
 
-  // TODO(crbug.com/1291330): Remove async RequestAccessibilityAction(), and
+  // TODO(crbug.com/40212707): Remove async RequestAccessibilityAction(), and
   // replace with RequestAccessibilityActionSync().
   // Request the client to perform |action| on the node with |node_id|.
   void RequestAccessibilityAction(

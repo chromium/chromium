@@ -1060,7 +1060,7 @@ void PrefetchContainer::OnPrefetchComplete(
     return;
   }
 
-  // TODO(https://crbug.com/1399956): Call
+  // TODO(crbug.com/40250089): Call
   // SpeculationHostDevToolsObserver::OnPrefetchBodyDataReceived with body of
   // the response.
   const auto& devtools_observer = GetDevToolsObserver();
@@ -1420,7 +1420,7 @@ void PrefetchContainer::MakeResourceRequest(
       // priority), but the fact that we're doing this at all for more
       // conservative candidates suggests a strong engagement signal.
       //
-      // TODO(crbug.com/1467928): Ideally, we would actually use a combination
+      // TODO(crbug.com/40276985): Ideally, we would actually use a combination
       // of the actual engagement seen (rather than the minimum required to
       // trigger the candidate) and the declared eagerness, and update them as
       // the prefetch becomes increasingly likely.

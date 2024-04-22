@@ -26,7 +26,7 @@ void ExposeChildInterfacesToBrowser(
       base::BindRepeating(&tracing::TracedProcess::OnTracedProcessRequest),
       base::SequencedTaskRunner::GetCurrentDefault());
 
-  // TODO(crbug.com/1505638): Investiagte the reason why the mojo connection
+  // TODO(crbug.com/40946277): Investiagte the reason why the mojo connection
   // is often created and closed for the same render process on lacros-chrome.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!in_browser_process) {

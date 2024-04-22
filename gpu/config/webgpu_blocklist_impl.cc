@@ -59,7 +59,7 @@ bool IsWebGPUAdapterBlocklisted(const WGPUAdapterProperties& properties,
   }
 #endif
 
-  // TODO(crbug.com/1266550): SwiftShader and CPU adapters are blocked until
+  // TODO(crbug.com/40057808): SwiftShader and CPU adapters are blocked until
   // fully tested.
   if (properties.adapterType == WGPUAdapterType_CPU) {
     return true;

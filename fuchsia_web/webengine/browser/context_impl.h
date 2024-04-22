@@ -107,7 +107,7 @@ class WEB_ENGINE_EXPORT ContextImpl final : public fuchsia::web::Context {
   CookieManagerImpl cookie_manager_;
   fidl::BindingSet<fuchsia::web::CookieManager> cookie_manager_bindings_;
 
-  // TODO(crbug.com/893236): Make this false by default, and allow it to be
+  // TODO(crbug.com/40597158): Make this false by default, and allow it to be
   // initialized at Context creation time.
   bool allow_javascript_injection_ = true;
 

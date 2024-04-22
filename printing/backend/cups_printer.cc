@@ -41,7 +41,7 @@ class CupsPrinterImpl : public CupsPrinter {
     // attribute, but make sure Chromium doesn't crash if one doesn't for
     // whatever reason. The printer in question won't actually work, but
     // that's a better outcome than crashing here.
-    // TODO(crbug.com/1418564): filter such printers out before reaching this
+    // TODO(crbug.com/40894807): filter such printers out before reaching this
     // point
     if (printer_uri) {
       printer_uri_ = printer_uri;

@@ -370,7 +370,7 @@ sk_sp<SkData> SerializeRasterImage(SkImage* img, void*) {
     return data;
   }
 
-  // TODO(crbug.com/1486503) Convert texture-backed images to raster
+  // TODO(crbug.com/40073326) Convert texture-backed images to raster
   // *before* they get this far if possible.
   if (img->isTextureBacked()) {
     GrDirectContext* ctx = SkImages::GetContext(img);

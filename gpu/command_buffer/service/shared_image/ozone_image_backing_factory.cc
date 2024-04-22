@@ -406,7 +406,7 @@ bool OzoneImageBackingFactory::CanImportNativePixmapToWebGPU() {
   // Safe to always return true here, as it's not possible to create a WebGPU
   // adapter that doesn't support importing native pixmaps:
   // https://source.chromium.org/chromium/chromium/src/+/main:gpu/command_buffer/service/webgpu_decoder_impl.cc;drc=daed597d580d450d36578c0cc53b4f72d3b507da;l=1291
-  // TODO(crbug.com/1349189): To check it without vk_context_provider.
+  // TODO(crbug.com/40855765): To check it without vk_context_provider.
   return true;
 #else
   // Assume that if skia/vulkan vkDevice supports the Vulkan extensions

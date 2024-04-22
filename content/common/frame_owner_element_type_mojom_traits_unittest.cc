@@ -39,7 +39,7 @@ TEST_F(FrameOwnerElementTypeTest, RejectInvalid) {
   const auto mojo_type =
       static_cast<content::mojom::ChildFrameOwnerElementType>(1234);
   blink::FrameOwnerElementType output;
-  // TODO(https://crbug.com/1384256): Ideally, we would not use EnumTraits
+  // TODO(crbug.com/40246400): Ideally, we would not use EnumTraits
   // directly.
   bool valid =
       mojo::EnumTraits<content::mojom::ChildFrameOwnerElementType,

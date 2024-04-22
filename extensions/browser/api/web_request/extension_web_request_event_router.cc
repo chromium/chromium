@@ -2035,7 +2035,7 @@ WebRequestEventRouter::BlockedRequestMap&
 WebRequestEventRouter::GetBlockedRequestMap(
     content::BrowserContext* browser_context) {
   // Blocked requests are stored in the data for the regular context.
-  // TODO(crbug.com/1474688): Blocked requests should be isolated to
+  // TODO(crbug.com/40279375): Blocked requests should be isolated to
   // a particular BrowserContext and not shared between the main and
   // OTR contexts.
   if (browser_context->IsOffTheRecord()) {

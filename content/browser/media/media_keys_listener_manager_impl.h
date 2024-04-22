@@ -178,7 +178,7 @@ class MediaKeysListenerManagerImpl
       delegate_map_;
   std::unique_ptr<ui::MediaKeysListener> media_keys_listener_;
 
-  // TODO(crbug.com/1502981) consider moving these somewhere else.
+  // TODO(crbug.com/40943388) consider moving these somewhere else.
   // Browser's connection to the system media controls.
   std::unique_ptr<system_media_controls::SystemMediaControls>
       browser_system_media_controls_;

@@ -4773,7 +4773,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessMouseWheelHitTestBrowserTest,
 // Ensure that the positions of mouse wheel events sent to cross-process
 // subframes account for any change in the position of the subframe during the
 // scroll sequence.
-// TODO(https://crbug.com/1033388): Flaky on all platforms.
+// TODO(crbug.com/40663303): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(SitePerProcessMouseWheelHitTestBrowserTest,
                        DISABLED_MouseWheelEventPositionChange) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -6685,7 +6685,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessNonIntegerScaleFactorHitTestBrowserTest,
 
 // MacOSX does not have fractional device scales.
 // Linux/Lacros started failing after Wayland window configuration fixes have
-// landed. TODO(crbug.com/1313023): Re-enable once the test issue is addressed.
+// landed. TODO(crbug.com/40832051): Re-enable once the test issue is addressed.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_NestedSurfaceHitTestTest DISABLED_NestedSurfaceHitTestTest
 #else
@@ -6898,7 +6898,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   }
 }
 
-// TODO(https://crbug.com/1269640): This flakes badly on debug & sanitizer
+// TODO(crbug.com/40804367): This flakes badly on debug & sanitizer
 // builds on almost all platforms, and on Mac and Android.
 IN_PROC_BROWSER_TEST_F(SitePerProcessUserActivationHitTestBrowserTest,
                        DISABLED_RenderWidgetUserActivationStateTest) {
@@ -7405,8 +7405,8 @@ using SitePerProcessDelegatedInkBrowserTest = SitePerProcessHitTestBrowserTest;
 // Test confirms that a point hitting an OOPIF that is requesting delegated ink
 // trails results in the metadata being correctly sent to the child's
 // RenderWidgetHost and is usable for sending delegated ink points.
-// TODO(https://crbug.com/1318221): Fix and enable the test on Fuchsia.
-// TODO(https://crbug.com/1490367): flaky on ChromeOS
+// TODO(crbug.com/40835227): Fix and enable the test on Fuchsia.
+// TODO(crbug.com/40935254): flaky on ChromeOS
 // TODO(http://b/331190208): Test failing on Linux
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_MetadataAndPointGoThroughOOPIF \

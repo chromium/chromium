@@ -162,7 +162,7 @@ class TestLauncher {
 #if BUILDFLAG(IS_WIN)
     return true;
 #else
-    // TODO(https://crbug.com/1038857): Enable for macOS, Linux, and Fuchsia.
+    // TODO(crbug.com/40666527): Enable for macOS, Linux, and Fuchsia.
     return false;
 #endif
   }

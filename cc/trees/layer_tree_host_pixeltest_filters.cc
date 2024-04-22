@@ -647,7 +647,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_ImageFilterScaled) {
 #endif  // BUILDFLAG(IS_IOS)
 TEST_P(LayerTreeHostFiltersPixelTest, MAYBE_BackdropFilterRotated) {
   if (renderer_type() == viz::RendererType::kSkiaVk) {
-    // TODO(crbug.com/1354678): The vulkan expected image requires rebasing
+    // TODO(crbug.com/40859233): The vulkan expected image requires rebasing
     // after Skia roll, so skip this test until then.
     return;
   }

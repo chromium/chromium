@@ -964,9 +964,9 @@ void GlobalHistogramAllocator::Set(GlobalHistogramAllocator* allocator) {
   // Record the number of histograms that were sampled before the global
   // histogram allocator was initialized.
   //
-  // TODO(crbug/1504919): CHECK(histogram_count == 0) and remove emit of early
-  // histogram count once |histogram_count| is reliably zero (0) for all process
-  // types.
+  // TODO(crbug.com/40945497): CHECK(histogram_count == 0) and remove emit of
+  // early histogram count once |histogram_count| is reliably zero (0) for all
+  // process types.
   size_t histogram_count = StatisticsRecorder::GetHistogramCount();
   if (histogram_count != 0) {
     DVLOG(1) << histogram_count

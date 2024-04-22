@@ -49,7 +49,7 @@ QuicSessionKey::QuicSessionKey(
     SecureDnsPolicy secure_dns_policy,
     bool require_dns_https_alpn)
     : QuicSessionKey(
-          // TODO(crbug.com/1103350): Handle non-boolean privacy modes.
+          // TODO(crbug.com/40139214): Handle non-boolean privacy modes.
           quic::QuicServerId(host, port, privacy_mode != PRIVACY_MODE_DISABLED),
           proxy_chain,
           session_usage,

@@ -243,9 +243,9 @@ static base::LazyInstance<WebViewKeyToIDMap>::DestructorAtExit
     web_view_key_to_id_map = LAZY_INSTANCE_INITIALIZER;
 
 bool IsInWebViewMainFrame(content::NavigationHandle* navigation_handle) {
-  // TODO(1261928): Due to the use of inner WebContents, a WebView's main frame
-  // is considered primary. This will no longer be the case once we migrate
-  // guest views to MPArch.
+  // TODO(crbug.com/40202416): Due to the use of inner WebContents, a WebView's
+  // main frame is considered primary. This will no longer be the case once we
+  // migrate guest views to MPArch.
   return navigation_handle->IsInPrimaryMainFrame();
 }
 
@@ -1168,7 +1168,7 @@ bool WebViewGuest::IsPermissionRequestable(ContentSettingsType type) const {
       // BrowserContext, not a StoragePartition, a permission granted to an
       // origin loaded in a regular tab could be applied to a webview, hence the
       // need to preemptively reject it.
-      // TODO(crbug.com/1469672): Permissions should be scoped to
+      // TODO(crbug.com/40068594): Permissions should be scoped to
       // StoragePartitions.
       return false;
   }

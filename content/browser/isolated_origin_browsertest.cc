@@ -3089,7 +3089,7 @@ class InjectIsolationRequestingNavigation
   bool was_called_ = false;
 };
 
-// TODO(crbug.com/1110767): flaky on Android builders since 2020-07-28.
+// TODO(crbug.com/40708791): flaky on Android builders since 2020-07-28.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_FrameTreeTestBeforeDidCommit DISABLED_FrameTreeTestBeforeDidCommit
 #else

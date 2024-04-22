@@ -220,7 +220,7 @@ The final manifest looks as follows:
 ```
 
 ### MSI Wrapper
-TODO(crbug.com/1327497) - Implement and document.
+TODO(crbug.com/40841203) - Implement and document.
 
 ### Scope
 The updater is installed in one of the following modes (or scopes):
@@ -611,7 +611,7 @@ install. Legacy MSI installers read values such as the
 `LastInstallerResultUIString` from the `ClientState` key in the registry and
 display the string.
 
-TODO(crbug.com/1339454): Implement running installers at
+TODO(crbug.com/40229998): Implement running installers at
 BELOW_NORMAL_PRIORITY_CLASS if the update flow is a background flow.
 
 #### Updater UI behavior
@@ -1176,7 +1176,7 @@ The updater accepts updates packaged as CRX₃ files. All files are signed with 
 publisher key. The corresponding public key is hardcoded into the updater.
 
 ### Differential Updates
-TODO(crbug.com/1331030): Implement and document differential update support.
+TODO(crbug.com/40227383): Implement and document differential update support.
 
 ### Update Timing
 The updater runs periodic tasks every hour, checking its own status, detecting

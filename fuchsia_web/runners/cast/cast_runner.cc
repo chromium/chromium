@@ -61,7 +61,7 @@ base::FilePath GetStagedForDeletionDirectoryPath() {
 
 // Deletes files/directories staged for deletion during the previous run.
 // We delete synchronously on main thread for simplicity. Note that this
-// overall mechanism is a temporary solution. TODO(crbug.com/1146480): migrate
+// overall mechanism is a temporary solution. TODO(crbug.com/40730097): migrate
 // to the framework mechanism of clearing session data when available.
 void DeleteStagedForDeletionDirectoryIfExists() {
   const base::FilePath staged_for_deletion_directory =
@@ -82,7 +82,7 @@ void DeleteStagedForDeletionDirectoryIfExists() {
                << " ms";
 }
 
-// TODO(crbug.com/1134719): Consider removing this flag once Media Capabilities
+// TODO(crbug.com/40151573): Consider removing this flag once Media Capabilities
 // is supported.
 void EnsureSoftwareVideoDecodersAreDisabled(
     ::fuchsia::web::ContextFeatureFlags* features) {

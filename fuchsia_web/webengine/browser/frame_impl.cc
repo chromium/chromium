@@ -128,7 +128,8 @@ bool FrameFocusRules::SupportsChildActivation(const aura::Window*) const {
   return true;
 }
 
-// TODO(crbug.com/1113289): Use OnLoadScriptInjectorHost's origin matching code.
+// TODO(crbug.com/40710183): Use OnLoadScriptInjectorHost's origin matching
+// code.
 bool IsUrlMatchedByOriginList(const GURL& url,
                               const std::vector<std::string>& allowed_origins) {
   for (const std::string& origin : allowed_origins) {
@@ -801,7 +802,7 @@ void FrameImpl::UpdateRenderFrameZoomLevel(
 }
 
 void FrameImpl::ConnectToAccessibilityBridge() {
-  // TODO(crbug.com/1291613): Replace callbacks with an interface that
+  // TODO(crbug.com/40212813): Replace callbacks with an interface that
   // FrameImpl implements.
   accessibility_bridge_ = std::make_unique<ui::AccessibilityBridgeFuchsiaImpl>(
       root_window(), fidl::HLCPPToNatural(window_tree_host_->CreateViewRef()),
@@ -959,7 +960,7 @@ void FrameImpl::AddBeforeLoadJavaScript(
     return;
   }
 
-  // TODO(crbug.com/1108607): Only allow wildcards to be specified standalone.
+  // TODO(crbug.com/40707541): Only allow wildcards to be specified standalone.
   if (base::Contains(origins, kWildcardOrigin)) {
     script_injector_.AddScriptForAllOrigins(id, *script_as_string);
   } else {
@@ -1566,7 +1567,7 @@ FrameImpl::CreateAudioStreamBrokerFactory(content::WebContents* web_contents) {
 bool FrameImpl::CanOverscrollContent() {
   // Don't process "overscroll" events (e.g. pull-to-refresh, swipe back,
   // swipe forward).
-  // TODO(crbug/1177399): Add overscroll toggle to Frame API.
+  // TODO(crbug.com/40748448): Add overscroll toggle to Frame API.
   return false;
 }
 

@@ -91,7 +91,7 @@ source_set("common") {
     "video_decoder_pipeline.h",
   ]
 
-  # TODO(crbug.com/1012587): Merge :fourcc to :common.
+  # TODO(crbug.com/40652235): Merge :fourcc to :common.
   public_deps = [
     ":fourcc",
     ":video_frame_resource",

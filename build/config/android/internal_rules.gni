@@ -3889,7 +3889,7 @@ if (enable_java_templates) {
       }
 
       if (defined(invoker.resources_package) && _type == "java_library") {
-        # TODO(crbug.com/1296632): remove _bypass_platform_checks from the list
+        # TODO(crbug.com/40821816): remove _bypass_platform_checks from the list
         # once all robolectric targets have migrated to robolectric_library.
         assert(_requires_android || _bypass_platform_checks || _is_robolectric,
                "Setting resources_package applicable only for " +

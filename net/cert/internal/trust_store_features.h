@@ -15,7 +15,7 @@ namespace net {
 // When disabled, platform bssl::TrustStore implementations will not enforce
 // anchor constraints (other than expiry). Has no effect if using a platform
 // CertVerifyProc implementation.
-// TODO(https://crbug.com/1406103): remove this a few milestones after the
+// TODO(crbug.com/40887079): remove this a few milestones after the
 // trust anchor constraints enforcement has been launched on all relevant
 // platforms.
 // Should only be called after base::Features have been resolved. Note that

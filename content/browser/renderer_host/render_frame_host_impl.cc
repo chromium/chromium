@@ -631,7 +631,7 @@ DetermineWhetherToForbidTrustTokenOperation(
     const url::Origin& subframe_origin,
     const network::mojom::TrustTokenOperationType& operation) {
   std::unique_ptr<blink::PermissionsPolicy> subframe_policy;
-  // TODO(https://crbug.com/1430514): Add WPT to test how TrustTokens behave in
+  // TODO(crbug.com/40263106): Add WPT to test how TrustTokens behave in
   // a FencedFrame's subframe.
   if (frame->IsFencedFrameRoot()) {
     const std::optional<FencedFrameProperties>& fenced_frame_properties =
@@ -1720,7 +1720,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   if (setup_local_render_widget_host) {
     if (is_main_frame()) {
       // For main frames, the RenderWidgetHost is owned by the RenderViewHost.
-      // TODO(https://crbug.com/545684): Once RenderViewHostImpl has-a
+      // TODO(crbug.com/40441137): Once RenderViewHostImpl has-a
       // RenderWidgetHostImpl, the main render frame should probably start
       // owning the RenderWidgetHostImpl itself.
       DCHECK(GetLocalRenderWidgetHost());
@@ -1829,7 +1829,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
                  navigation_request->GetRenderFrameHost() == this) {
         // As we are unable to come up with a case that will lead to this path,
         // we instead record the dumps for debugging the scenario.
-        // TODO(crbug.com/1430653): if we verify that this path is impossible,
+        // TODO(crbug.com/40263181): if we verify that this path is impossible,
         // replace the `DumpWithoutCrashing` with a `CHECK`. Otherwise, add a
         // new browser test for it.
         base::debug::DumpWithoutCrashing();
@@ -2281,8 +2281,8 @@ void RenderFrameHostImpl::ForEachRenderFrameHostImpl(
 
   // Potentially include our FrameTreeNode's speculative RenderFrameHost, but
   // only if |this| is current in its FrameTree.
-  // TODO(1264145): Avoid having a RenderFrameHost access its FrameTreeNode's
-  // speculative RenderFrameHost by moving
+  // TODO(crbug.com/40203236): Avoid having a RenderFrameHost access its
+  // FrameTreeNode's speculative RenderFrameHost by moving
   // ForEachRenderFrameHostIncludingSpeculative from RenderFrameHostImpl or
   // possibly removing it entirely.
   if (include_speculative && frame_tree_node()->current_frame_host() == this) {
@@ -2417,7 +2417,7 @@ RenderFrameHostImpl::GetIsolationInfoForSubresources() {
 
 net::IsolationInfo
 RenderFrameHostImpl::GetPendingIsolationInfoForSubresources() {
-  // TODO(https://crbug.com/1211126): Figure out if
+  // TODO(crbug.com/40767475): Figure out if
   // ForPendingOrLastCommittedNavigation is correct below (it might not be).
   auto config =
       SubresourceLoaderFactoriesConfig::ForPendingOrLastCommittedNavigation(
@@ -3086,7 +3086,7 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
     // inherited to avoid creating inconsistencies. See:
     // https://chromium-review.googlesource.com/c/chromium/src/+/3645368
     //
-    // TODO(https://crbug.com/1338603): What makes sense for GuestView?
+    // TODO(crbug.com/40849161): What makes sense for GuestView?
     const PolicyContainerPolicies& parent_policies =
         GetParentOrOuterDocument()->policy_container_host()->policies();
 
@@ -3506,7 +3506,7 @@ void RenderFrameHostImpl::DeleteRenderFrame(
     // (1) to allow the process to be potentially reused by future navigations
     // withjin a short time window, and
     // (2) to give the subframe unload handlers a chance to execute.
-    // TODO(crbug.com/1356280): consider delaying process shutdown for fenced
+    // TODO(crbug.com/40860307): consider delaying process shutdown for fenced
     // frames.
     if (!is_main_frame() && IsActive()) {
       base::TimeDelta subframe_shutdown_timeout =
@@ -4771,7 +4771,7 @@ bool RenderFrameHostImpl::VerifyFencedFrameFocusChange(
                         focused_rfh->IsFencedFrameRoot());
 
   // If none of the other cases were hit, disallow the focus change.
-  // TODO(crbug.com/1458985): We will later badmessage the renderer, but, for
+  // TODO(crbug.com/40274134): We will later badmessage the renderer, but, for
   // now, we will dump without crashing to monitor if any legitimate cases are
   // reaching this point.
   if (base::FeatureList::IsEnabled(features::kFencedFramesEnforceFocus)) {
@@ -6152,7 +6152,7 @@ void RenderFrameHostImpl::ShowCreatedWindow(
       FromFrameToken(GetProcess()->GetID(), opener_frame_token);
 
   // If |opener_frame_host| has been destroyed just return.
-  // TODO(crbug.com/1150976): Get rid of having to look up the opener frame
+  // TODO(crbug.com/40158114): Get rid of having to look up the opener frame
   // to find the newly created web contents, because it is actually just
   // |delegate_|.
   if (!opener_frame_host) {
@@ -7428,7 +7428,7 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithFlattenedAndTreeReasons(
 
   if (!in_back_forward_cache) {
     TRACE_EVENT0("navigation", "BackForwardCache_EvictAfterDocumentRestored");
-    // TODO(crbug.com/1163843): We should no longer get into this branch thanks
+    // TODO(crbug.com/40163285): We should no longer get into this branch thanks
     // to https://crrev.com/c/2563674 but we do. We should eventually replace
     // this with a CHECK.
     BackForwardCacheMetrics::RecordEvictedAfterDocumentRestored(
@@ -8200,7 +8200,7 @@ void RenderFrameHostImpl::OpenURL(blink::mojom::OpenURLParamsPtr params) {
     // `source_site_instance`.
     // url::Origin initiator_origin;
 
-    // TODO(crbug.com/1237552): Resolve the discussion of download policy.
+    // TODO(crbug.com/40193166): Resolve the discussion of download policy.
     blink::NavigationDownloadPolicy download_policy;
 
     MaybeRecordAdClickMainFrameNavigationMetrics(
@@ -10809,7 +10809,7 @@ void RenderFrameHostImpl::CommitNavigation(
       const std::string& scheme = factory.first;
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           original_pending_factory = std::move(factory.second);
-      // TODO(https://crbug.com/1376879): Remove the workaround below once the
+      // TODO(crbug.com/40243371): Remove the workaround below once the
       // root cause of the bug has been fixed.
       if (!original_pending_factory)
         continue;
@@ -10932,7 +10932,7 @@ void RenderFrameHostImpl::CommitNavigation(
     // Note that this loader does not depend on
     // `subresource_proxying_loader_factory_for_renderer`.
     //
-    // TODO(https://crbug.com/1441113): consolidate with
+    // TODO(crbug.com/40266418): consolidate with
     // `subresource_proxying_loader_factory_for_renderer` so that requests can
     // be properly handled when both keepalive and browsing_topics are
     // specified.
@@ -11285,7 +11285,7 @@ void RenderFrameHostImpl::ClearWebUI() {
 
 const mojo::Remote<blink::mojom::ImageDownloader>&
 RenderFrameHostImpl::GetMojoImageDownloader() {
-  // TODO(https://crbug.com/1249933): Call AssertFrameWasCommitted() here.
+  // TODO(crbug.com/40197801): Call AssertFrameWasCommitted() here.
   if (!mojo_image_downloader_.is_bound() && GetRemoteInterfaces()) {
     GetRemoteInterfaces()->GetInterface(
         mojo_image_downloader_.BindNewPipeAndPassReceiver());
@@ -12551,7 +12551,7 @@ void RenderFrameHostImpl::BindTrustTokenQueryAnswerer(
     return;
   }
 
-  // TODO(crbug.com/1145346): Document.hasPrivateToken is restricted to
+  // TODO(crbug.com/40729410): Document.hasPrivateToken is restricted to
   // secure contexts, so we could additionally add a check verifying that the
   // bind request "is coming from a secure context"---but there's currently no
   // direct way to perform such a check in the browser.
@@ -12909,7 +12909,7 @@ RenderFrameHostImpl::CreateMessageFilterForAssociatedReceiver(
 
 network::mojom::ClientSecurityStatePtr
 RenderFrameHostImpl::BuildClientSecurityState() const {
-  // TODO(https://crbug.com/1184150) Remove this bandaid.
+  // TODO(crbug.com/40752428) Remove this bandaid.
   //
   // Due to a race condition, CreateCrossOriginPrefetchLoaderFactoryBundle() is
   // sometimes called on the previous document, before the new document is
@@ -13808,7 +13808,7 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // This COOP value is not used to enforce anything on this frame, but will be
   // inherited to every local-scheme document created from them.
   // It will also be inherited by the initial empty document from its opener.
-  // TODO(https://crbug.com/1442535): Always inherit COOP since it's now tied
+  // TODO(crbug.com/40266995): Always inherit COOP since it's now tied
   // to an origin that set it.
 
   // TODO(https://crbug.com/888079) Computing and assigning the
@@ -16064,7 +16064,7 @@ bool RenderFrameHostImpl::IsDocumentOnLoadCompletedInMainFrame() {
   return GetPage().is_on_load_completed_in_main_document();
 }
 
-// TODO(crbug.com/1192003): Move this method to content::Page when available.
+// TODO(crbug.com/40174718): Move this method to content::Page when available.
 const std::vector<blink::mojom::FaviconURLPtr>&
 RenderFrameHostImpl::FaviconURLs() {
   return GetPage().favicon_urls();

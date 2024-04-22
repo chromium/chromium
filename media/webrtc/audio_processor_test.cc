@@ -362,7 +362,7 @@ TEST_P(AudioProcessorTestMultichannelAndFormat, TestStereoAudio) {
   // Test without and with audio processing enabled.
   constexpr bool kUseApmValues[] =
 #if BUILDFLAG(IS_IOS)
-      // TODO(https://crbug.com/1417474): `false` fails on ios-blink platform
+      // TODO(crbug.com/40257333): `false` fails on ios-blink platform
       // due to a special case for iOS in settings.NeedWebrtcAudioProcessing()
       {true};
 #else

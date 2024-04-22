@@ -305,8 +305,8 @@ const ui::AXNodeData& ViewAXPlatformNodeDelegate::GetData() const {
     // `AtomicViewAXTreeManager::GetRoot` calls this function
     // (`ViewAXplatformNodeDelegate::GetData`), which leads to an infinite loop.
     //
-    // TODO(1468416): This code is temporary until the ViewsAX project is
-    // completed.
+    // TODO(crbug.com/40924888): This code is temporary until the ViewsAX
+    // project is completed.
     atomic_view_ax_tree_manager_->ClearComputedRootData();
   }
 

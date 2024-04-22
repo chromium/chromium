@@ -18,8 +18,8 @@ namespace views {
 // This class manages a "tree" which consists of a single node. This is intended
 // for use with Views, enabling the UIA ITextProvider and ITextRangeProvider
 // functionalities. This class is TEMPORARY and not a long term solution.
-// TODO(crbug.com/1468416): Remove this temporary class once the ViewsAX project
-// is completed.
+// TODO(crbug.com/40924888): Remove this temporary class once the ViewsAX
+// project is completed.
 class VIEWS_EXPORT AtomicViewAXTreeManager : public ui::AXPlatformTreeManager {
  public:
   static std::unique_ptr<AtomicViewAXTreeManager> Create(

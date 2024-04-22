@@ -141,7 +141,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   QuotaErrorOr<BucketInfo> UpdateBucketPersistence(BucketId bucket,
                                                    bool persistent);
 
-  // TODO(crbug.com/1202167): Remove once all usages have updated to use
+  // TODO(crbug.com/40179024): Remove once all usages have updated to use
   // SetBucketLastAccessTime.
   [[nodiscard]] QuotaError SetStorageKeyLastAccessTime(
       const blink::StorageKey& storage_key,

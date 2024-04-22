@@ -21,7 +21,7 @@ using WriteKeyPressCallback =
 
 // Provides a unified interface for using user input monitors of unrelated
 // classes.
-// TODO(crbug.com/1096425): remove this when non-Ozone path is deprecated.
+// TODO(crbug.com/40136193): remove this when non-Ozone path is deprecated.
 class UserInputMonitorAdapter {
  public:
   UserInputMonitorAdapter() = default;

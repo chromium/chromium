@@ -50,7 +50,7 @@ class OnScreenKeyboardDisplayManagerInputPane::VirtualKeyboardInputPane
   }
 
   void TryShowInBackgroundThread(HWND hwnd) {
-    // TODO(crbug.com/1031786): Remove this once TSF fix for input pane policy
+    // TODO(crbug.com/40110609): Remove this once TSF fix for input pane policy
     // is serviced
     DCHECK(!main_task_runner_->BelongsToCurrentThread());
     if (!EnsureInputPanePointersInBackgroundThread(hwnd))
@@ -63,7 +63,7 @@ class OnScreenKeyboardDisplayManagerInputPane::VirtualKeyboardInputPane
   }
 
   void TryHideInBackgroundThread(HWND hwnd) {
-    // TODO(crbug.com/1031786): Remove this once TSF fix for input pane policy
+    // TODO(crbug.com/40110609): Remove this once TSF fix for input pane policy
     // is serviced
     DCHECK(!main_task_runner_->BelongsToCurrentThread());
     if (!EnsureInputPanePointersInBackgroundThread(hwnd))

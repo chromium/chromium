@@ -108,7 +108,7 @@ _disallowed_printing_deps = [
   "//printing/backend/*",
 ]
 
-# TODO(crbug.com/1311822): Replace the uses of this in each target with a group
+# TODO(crbug.com/40220356): Replace the uses of this in each target with a group
 # that depends on those targets once this is correctly supported.
 _disallowed_deps =
     _disallowed_cast_deps + _disallowed_extensions_deps + _disallowed_pdf_deps +
@@ -155,7 +155,7 @@ repack("web_engine_pak") {
     "//ui/resources",
   ]
 
-  # TODO(crbug.com/1092804): Move this into ${target_gen_dir} and have a
+  # TODO(crbug.com/40698522): Move this into ${target_gen_dir} and have a
   # GN SDK fuchsia_resource() rule map it into place in the web_engine package.
   output = "$root_gen_dir/web_engine_common_resources.pak"
 }
@@ -470,7 +470,7 @@ fuchsia_component("web_instance_with_svc_directory_component") {
 }
 
 # Component definition for the legacy fuchsia.web.ContextProvider service.
-# TODO(crbug.com/1443560): Remove once all callers have migrated to launching
+# TODO(crbug.com/40267388): Remove once all callers have migrated to launching
 # instances directly as Components.
 fuchsia_component("context_provider_component") {
   manifest = "context_provider.cml"
@@ -492,7 +492,7 @@ fuchsia_package("web_engine") {
 
 fuchsia_package_installer("web_engine_installer") {
   # Force this template to apply visibility. See the bug below.
-  # TODO(crbug.com/1328459): Remove once the bug is fixed.
+  # TODO(crbug.com/40841959): Remove once the bug is fixed.
   visibility += []
   package = ":web_engine"
 }
@@ -584,7 +584,7 @@ test("web_engine_browsertests") {
     "browser/virtual_keyboard_browsertest.cc",
   ]
 
-  # TODO(crbug.com/1157909): Move to the list above when the bug is fixed.
+  # TODO(crbug.com/40736687): Move to the list above when the bug is fixed.
   if (!is_component_build) {
     sources += [ "browser/explicit_sites_filter_browsertest.cc" ]
   }

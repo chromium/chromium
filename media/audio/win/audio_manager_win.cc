@@ -116,9 +116,9 @@ AudioManagerWin::~AudioManagerWin() = default;
 
 void AudioManagerWin::ShutdownOnAudioThread() {
   // Prevent pending callbacks from `output_device_listener_` from being run.
-  // TODO(crbug.com/1458623): Remove this call when kAudioServiceOutOfProcess is
-  // removed on Windows; `weak_factory_on_audio_thread_` will be guaranteed to
-  // be destroyed/invalidated on the right thread then.
+  // TODO(crbug.com/40066532): Remove this call when kAudioServiceOutOfProcess
+  // is removed on Windows; `weak_factory_on_audio_thread_` will be guaranteed
+  // to be destroyed/invalidated on the right thread then.
   weak_factory_on_audio_thread_.InvalidateWeakPtrs();
 
   AudioManagerBase::ShutdownOnAudioThread();

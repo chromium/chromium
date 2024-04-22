@@ -413,7 +413,7 @@ std::optional<AggregatableReportSharedInfo> ConvertSharedInfoFromProto(
       debug_mode,
       // TODO(alexmt): Persist additional_fields when it becomes necessary.
       /*additional_fields=*/base::Value::Dict(),
-      // TODO(crbug.com/1340296): Add mechanism to upgrade stored requests from
+      // TODO(crbug.com/40230303): Add mechanism to upgrade stored requests from
       // older to newer versions.
       std::move(api_version), std::move(api_identifier));
 }

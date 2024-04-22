@@ -15,7 +15,7 @@ def _GetTestingEnv(input_api):
   """Gets the common environment for running testing/ tests."""
   testing_env = dict(input_api.environ)
   testing_path = input_api.PresubmitLocalPath()
-  # TODO(crbug.com/1358733): This is temporary till gpu code in
+  # TODO(crbug.com/40237086): This is temporary till gpu code in
   # flake_suppressor_commonis moved to gpu dir.
   # Only common code will reside under /testing.
   gpu_test_path = input_api.os_path.join(

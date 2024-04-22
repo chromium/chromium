@@ -385,7 +385,7 @@ uint32_t BrowserAccessibilityFuchsia::GetOffsetContainerOrRootNodeID() const {
   BrowserAccessibilityFuchsia* fuchsia_container =
       ToBrowserAccessibilityFuchsia(offset_container);
 
-  // TODO(https://crbug.com/1321935): Remove this check once we understand why
+  // TODO(crbug.com/40837684): Remove this check once we understand why
   // we're getting non-existent offset container IDs from blink.
   if (!fuchsia_container) {
     ZX_LOG(ERROR, ZX_OK) << "Node " << GetId()

@@ -320,7 +320,7 @@ struct XRHitResult {
   Pose mojo_from_result;  // Pose of the result (aka intersection point).
   uint64 plane_id;  // If the hit test result was computed based off of a plane,
                     // the plane ID will be stored here. 0 signifies no plane.
-                    // TODO(https://crbug.com/657632) - make it optional once
+                    // TODO(crbug.com/40489779) - make it optional once
                     // mojo supports optional numeric types.
 };
 
@@ -347,7 +347,7 @@ struct XRView {
   // and GVR only expose the head pose (aka. mojo_from_viewer) and the
   // head-from-eye pose (viewer_from_view), so this calculation needs to be
   // done in the XR process before sending to the renderer.
-  // TODO(https://crbug.com/1070380): All of the runtimes currently assume mojo
+  // TODO(crbug.com/40684534): All of the runtimes currently assume mojo
   // and local space are equivalent, so this is the same as local_from_view.
   // Instead, send this in mojo space and send the relevant transforms to other
   // spaces in XRFrameData so the clients can calculate them as needed.
@@ -947,7 +947,7 @@ interface XREnvironmentIntegrationProvider {
     XRNativeOriginInformation native_origin_information,
     Pose native_origin_from_anchor)
       => (CreateAnchorResult result, uint64 anchor_id);
-  // TODO(https://crbug.com/657632): Switch anchor_id to nullable integer once
+  // TODO(crbug.com/40489779): Switch anchor_id to nullable integer once
   // that's available. This will allow us to remove CreateAnchorResult if we're
   // not interested in obtaining detailed error information from the device.
 
@@ -963,7 +963,7 @@ interface XREnvironmentIntegrationProvider {
     Pose native_origin_from_anchor,
     uint64 plane_id)
       => (CreateAnchorResult result, uint64 anchor_id);
-  // TODO(https://crbug.com/657632): Ditto - make anchor_id a nullable integer.
+  // TODO(crbug.com/40489779): Ditto - make anchor_id a nullable integer.
 
   // Detaches an existing anchor. The |anchor_id| must be a valid id of an
   // anchor created by one of the CreateAnchor calls, otherwise the call will be

@@ -32,7 +32,7 @@ namespace {
 
 // Returns true if `process_id` is associated with a WebUI process.
 bool ProcessHasWebUIBindings(int process_id) {
-  // TODO(crbug.com/1055656): HasWebUIBindings does not always return true for
+  // TODO(crbug.com/40676401): HasWebUIBindings does not always return true for
   // WebUIs. This should be changed to use something else.
   return content::ChildProcessSecurityPolicy::GetInstance()->HasWebUIBindings(
       process_id);

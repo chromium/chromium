@@ -44,7 +44,7 @@ enum class PredictorConfusionMatrix {
 // The scope of current preloading logging is only limited to the same
 // WebContents navigations. If the predicted URL is opened in a new tab we lose
 // the data corresponding to the navigation in different WebContents.
-// TODO(crbug.com/1332123): Expand PreloadingData scope to consider multiple
+// TODO(crbug.com/40227626): Expand PreloadingData scope to consider multiple
 // WebContent navigations.
 class CONTENT_EXPORT PreloadingDataImpl
     : public PreloadingData,

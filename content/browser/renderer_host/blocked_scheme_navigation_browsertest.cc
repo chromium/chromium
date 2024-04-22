@@ -804,7 +804,8 @@ IN_PROC_BROWSER_TEST_P(BlockedSchemeNavigationBrowserTest,
     // original page may clear all filesystem: URLs associated with that origin,
     // so we keep the origin around in the original shell.
     ShellAddedObserver new_shell_observer;
-    // TODO(crbug/811558): about:blank might commit without needing to wait.
+    // TODO(crbug.com/40090464): about:blank might commit without needing to
+    // wait.
     //                     Remove the wait.
     EXPECT_TRUE(ExecJs(shell()->web_contents(), "window.open('about:blank');"));
     Shell* new_shell = new_shell_observer.GetShell();

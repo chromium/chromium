@@ -1656,7 +1656,7 @@ ci.builder(
     shadow_reclient_instance = None,
 )
 
-# TODO(crbug.com/1260232): remove this after the migration.
+# TODO(crbug.com/40201781): remove this after the migration.
 fyi_mac_builder(
     name = "Mac Builder (reclient compare)",
     description_html = "Verifies whether local and remote build artifacts are identical.",
@@ -1903,7 +1903,7 @@ fyi_mac_builder(
 
 fyi_mac_builder(
     name = "mac13-wpt-content-shell-fyi-rel",
-    # TODO(crbug.com/1385202): Enable scheduler when machine has been allocated.
+    # TODO(crbug.com/40246666): Enable scheduler when machine has been allocated.
     schedule = "with 5h interval",
     triggered_by = [],
     builder_spec = builder_config.builder_spec(

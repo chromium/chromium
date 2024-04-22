@@ -330,7 +330,7 @@ INSTANTIATE_TEST_SUITE_P(
     AccessibilityHitTestingBrowserTest::TestPassToString());
 
 #if defined(THREAD_SANITIZER)
-// TODO(https://crbug.com/1224979): Times out flakily on TSAN builds.
+// TODO(crbug.com/40775546): Times out flakily on TSAN builds.
 #define MAYBE_CachingAsyncHitTest DISABLED_CachingAsyncHitTest
 #else
 #define MAYBE_CachingAsyncHitTest CachingAsyncHitTest
@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
 }
 
 #if defined(THREAD_SANITIZER)
-// TODO(https://crbug.com/1224938): Times out flakily on TSAN builds.
+// TODO(crbug.com/40775516): Times out flakily on TSAN builds.
 #define MAYBE_HitTest DISABLED_HitTest
 #else
 #define MAYBE_HitTest HitTest
@@ -680,7 +680,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   }
 }
 
-// TODO(https://crbug.com/1224978): Times out flakily on TSAN builds.
+// TODO(crbug.com/40775545): Times out flakily on TSAN builds.
 // TODO(https://crbug.com/1459570): Times out flakily on ASan builds.
 // TODO(crbug.com/40921699): Times out flakily on win-asan.
 IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
@@ -734,7 +734,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   }
 }
 
-// Timeouts on Linux. TODO(crbug.com/1083805): Enable this test.
+// Timeouts on Linux. TODO(crbug.com/40692703): Enable this test.
 IN_PROC_BROWSER_TEST_P(
     AccessibilityHitTestingBrowserTest,
     DISABLED_CachingAsyncHitTestMissesElement_WithPinchZoom) {

@@ -60,7 +60,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
       public RenderFrameMetadataProvider::Observer,
       public viz::HostFrameSinkClient {
  public:
-  // TODO(crbug.com/1182855): Pass multi-screen info from the parent.
+  // TODO(crbug.com/40170974): Pass multi-screen info from the parent.
   static RenderWidgetHostViewChildFrame* Create(
       RenderWidgetHost* widget,
       const display::ScreenInfos& parent_screen_infos);

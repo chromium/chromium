@@ -29,7 +29,7 @@ void FileTracingProviderImpl::FileTracingEnable(const void* id) {
 void FileTracingProviderImpl::FileTracingDisable(const void* id) {
   TRACE_EVENT_NESTABLE_ASYNC_END0(
       kFileTracingEventCategoryGroup, FILE_TRACING_PREFIX, id);
-  // TODO(crbug.com/1021571): Remove this once fixed.
+  // TODO(crbug.com/40657156): Remove this once fixed.
   PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
 }
 

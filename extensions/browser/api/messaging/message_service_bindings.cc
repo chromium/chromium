@@ -258,7 +258,7 @@ bool IsValidSourceUrl(content::RenderProcessHost& process,
 
   // Verify `source_url` via ChildProcessSecurityPolicy::HostsOrigin.
   //
-  // TODO(https://crbug.com/1449796): Stop partially/not-100%-correctly
+  // TODO(crbug.com/40915015): Stop partially/not-100%-correctly
   // replicating checks from `RenderFrameHostImpl::CanCommitOriginAndUrl`.
   // The code below correctly handles URLs like `about:blank`, but may diverge
   // from //content checks in some cases (e.g. WebUI checks are not replicated

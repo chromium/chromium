@@ -194,7 +194,7 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
   // should be removed (protected, unprotected, or both).
   // TODO(ttr314): Remove "(where implemented yet)" constraint above once
   // crbug.com/113621 is done.
-  // TODO(crbug.com/589586): Support all backends w/ origin filter.
+  // TODO(crbug.com/40458377): Support all backends w/ origin filter.
   void RemoveImpl(const base::Time& delete_begin,
                   const base::Time& delete_end,
                   uint64_t remove_mask,

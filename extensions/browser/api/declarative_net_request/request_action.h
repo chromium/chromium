@@ -93,14 +93,14 @@ struct RequestAction {
   ExtensionId extension_id;
 
   // Valid iff |type| is |MODIFY_HEADERS|.
-  // TODO(crbug.com/1074530): Constructing these vectors could involve lots of
+  // TODO(crbug.com/40686893): Constructing these vectors could involve lots of
   // string copies. One potential enhancement involves storing a WeakPtr to the
   // flatbuffer index that contain the actual header strings.
   std::vector<HeaderInfo> request_headers_to_modify;
   std::vector<HeaderInfo> response_headers_to_modify;
 
   // Whether the action has already been tracked by the ActionTracker.
-  // TODO(crbug.com/983761): Move the tracking of actions matched to
+  // TODO(crbug.com/40635953): Move the tracking of actions matched to
   // ActionTracker.
   mutable bool tracked = false;
 

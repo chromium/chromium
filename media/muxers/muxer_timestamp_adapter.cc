@@ -156,7 +156,7 @@ bool MuxerTimestampAdapter::FlushNextFrame() {
   // data before live-and-enabled transitions to true. This can lead to us
   // emitting non-monotonic timestamps to the muxer, which results in an error
   // return. Fix this by enforcing monotonicity by rewriting timestamps.
-  // TODO(crbug.com/1145203): consider auto-marking a track live-and-enabled
+  // TODO(crbug.com/40155764): consider auto-marking a track live-and-enabled
   // when media appears and remove this catch-all.
   base::TimeDelta relative_timestamp =
       frame.timestamp_minus_paused - first_timestamp_;

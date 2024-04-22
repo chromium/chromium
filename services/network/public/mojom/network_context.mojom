@@ -1543,7 +1543,7 @@ interface NetworkContext {
   // |source_origin|. The passed |patterns| will be set instead. If an empty
   // array is given for |allow_patterns| and/or |block_patterns|, the
   // |source_origin|'s origin list for each is set to empty respectively.
-  // TODO(crbug.com/936310): Eventually, we want to stop using per-context
+  // TODO(crbug.com/40094155): Eventually, we want to stop using per-context
   // access lists, and use only per-factory access lists, or stop managing the
   // list in the NetworkService completely.
   SetCorsOriginAccessListsForOrigin(

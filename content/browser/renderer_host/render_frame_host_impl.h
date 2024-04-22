@@ -3643,8 +3643,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Stores a snapshot of the inherited base URL from the initiator's
   // FrameLoadRequest, if this document inherited one (e.g., about:srcdoc).
-  // TODO(1356658): about:blank frames will also need to inherit base URLs,
-  // from the initiator rather than the parent. See
+  // TODO(crbug.com/40060678): about:blank frames will also need to inherit base
+  // URLs, from the initiator rather than the parent. See
   // https://crbug.com/1356658#c7.
   void SetInheritedBaseUrl(const GURL& inherited_base_url);
 
@@ -4529,7 +4529,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Holds same-document NavigationRequests while waiting for the navigations
   // to commit.
-  // TODO(https://crbug.com/1133115): Use the NavigationRequest as key once
+  // TODO(crbug.com/40150899): Use the NavigationRequest as key once
   // NavigationRequests are bound to same-document DidCommit callbacks,
   // similar to |navigation_requests_| above.
   base::flat_map<base::UnguessableToken, std::unique_ptr<NavigationRequest>>

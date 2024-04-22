@@ -858,7 +858,7 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
     // Return an unbound |pending_remote| if the |browser_context| has already
     // started shutting down.
     //
-    // TODO(https://crbug.com/1376879): This should be a DCHECK or a CHECK
+    // TODO(crbug.com/40243371): This should be a DCHECK or a CHECK
     // (no new ExtensionURLLoaderFactory should be created after BrowserContext
     // shutdown has started *if* all WebContents got closed before starting the
     // shutdown).

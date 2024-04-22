@@ -190,7 +190,7 @@ void ValidateAndAddBucketFromPath(
     // origin-based path format. Populate our BucketLocator with enough
     // data to construct the appropriate path from it below.
     bucket_locator = storage::BucketLocator::ForDefaultBucket(storage_key);
-    // TODO(https://crbug.com/1218097): Once enough time has passed it should be
+    // TODO(crbug.com/40185498): Once enough time has passed it should be
     // safe to treat this case as an index validation error.
   }
 

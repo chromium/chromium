@@ -350,7 +350,7 @@ bool ShouldSendClientCertificates(mojom::CredentialsMode credentials_mode) {
     case mojom::CredentialsMode::kSameOrigin:
       return true;
 
-    // TODO(https://crbug.com/775438): Due to a bug, the default behavior does
+    // TODO(crbug.com/40089326): Due to a bug, the default behavior does
     // not properly correspond to Fetch's "credentials mode", in that client
     // certificates will be sent if available, or the handshake will be aborted
     // to allow selecting a client cert.

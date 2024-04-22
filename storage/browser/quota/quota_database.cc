@@ -656,7 +656,7 @@ QuotaErrorOr<mojom::BucketTableEntryPtr> QuotaDatabase::DeleteBucketData(
   // While this is not ideal, this does not introduce any new edge case.
   // We should check that bucket IDs have existing associated directories,
   // because database corruption could result in invalid bucket IDs.
-  // TODO(crbug.com/1314567): For handling inconsistencies between the db and
+  // TODO(crbug.com/40832940): For handling inconsistencies between the db and
   // the file system.
   ScheduleCommit();
 
@@ -1231,7 +1231,7 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
     StorageType type,
     int max_bucket_count) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug/1210259): Add DCHECKs for input validation.
+  // TODO(crbug.com/40182349): Add DCHECKs for input validation.
   QuotaError open_error = EnsureOpened();
   if (open_error != QuotaError::kNone) {
     return base::unexpected(open_error);

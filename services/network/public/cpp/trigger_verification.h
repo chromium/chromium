@@ -23,7 +23,7 @@ class COMPONENT_EXPORT(NETWORK_CPP_ATTRIBUTION) TriggerVerification {
 
   // Creates an invalid instance for use with Mojo deserialization, which
   // requires types to be default-constructible.
-  // TODO(https://crbug.com/1408442): Avoid exposing default constructor
+  // TODO(crbug.com/40253544): Avoid exposing default constructor
   TriggerVerification();
 
   ~TriggerVerification();

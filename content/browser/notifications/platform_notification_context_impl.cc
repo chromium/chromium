@@ -950,7 +950,7 @@ void PlatformNotificationContextImpl::DoWriteNotificationData(
 
   if (CanTrigger(write_database_data) &&
       !DoCheckNotificationTriggerQuota(origin)) {
-    // TODO(crbug.com/891339): Reply with a custom error so developers can
+    // TODO(crbug.com/40596304): Reply with a custom error so developers can
     // handle this.
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), /* success= */ false,

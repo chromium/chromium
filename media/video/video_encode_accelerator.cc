@@ -248,7 +248,7 @@ bool VideoEncodeAccelerator::IsFlushSupported() {
 
 bool VideoEncodeAccelerator::IsGpuFrameResizeSupported() {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1166889) Add proper method overrides in
+  // TODO(crbug.com/40164413) Add proper method overrides in
   // MojoVideoEncodeAccelerator and other subclasses that might return true.
   return true;
 #else

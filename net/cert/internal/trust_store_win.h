@@ -18,7 +18,7 @@ namespace net {
 // cert systems to find user-added trust anchors for path building. It ignores
 // the Windows builtin trust anchors. This bssl::TrustStore is thread-safe (we
 // think).
-// TODO(https://crbug.com/1239270): confirm this is thread safe.
+// TODO(crbug.com/40784682): confirm this is thread safe.
 class NET_EXPORT TrustStoreWin : public bssl::TrustStore {
  public:
   struct NET_EXPORT_PRIVATE CertStores {

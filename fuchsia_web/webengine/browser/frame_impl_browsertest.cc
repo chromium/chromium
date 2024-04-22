@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ContextDeletedBeforeFrameWithView) {
   EXPECT_FALSE(frame.ptr());
 }
 
-// TODO(https://crbug.com/695592): Remove this test when WebSQL is removed from
+// TODO(crbug.com/40507959): Remove this test when WebSQL is removed from
 // Chrome.
 IN_PROC_BROWSER_TEST_F(FrameImplTest, EnsureWebSqlDisabled) {
   auto frame = FrameForTest::Create(context(), {});

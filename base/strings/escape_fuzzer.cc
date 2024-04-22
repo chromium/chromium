@@ -7,7 +7,7 @@
 // Prevent the optimizer from optimizing away a function call by "using" the
 // result.
 //
-// TODO(crbug.com/1377534): Replace this with a more general solution.
+// TODO(crbug.com/40243629): Replace this with a more general solution.
 void UseResult(const std::string& input) {
   volatile char c;
   if (input.length() > 0)

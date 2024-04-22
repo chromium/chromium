@@ -25,7 +25,7 @@ namespace content {
 // events without calling TakeRequest in between will record metrics for all
 // events using the same timestamps instead of tracking each event separately.
 //
-// TODO(crbug.com/1263687): Stop doing that. There should be a separate start
+// TODO(crbug.com/40203057): Stop doing that. There should be a separate start
 // time for each event.
 class CONTENT_EXPORT VisibleTimeRequestTrigger {
  public:

@@ -458,7 +458,7 @@ bool RenderWidgetHostViewAndroid::ScreenStateChangeHandler::
         if (pending_screen_state_.is_expecting_fullscreen_rotation) {
           start_rotation = true;
         } else if (rwhva_->in_rotation_) {
-          // TODO(crbug.com/1380117): The legacy killswitch path, combined with
+          // TODO(crbug.com/40244577): The legacy killswitch path, combined with
           // the legacy kOnShowWithPageVisibility path make it difficult to
           // refactor the hidden rotation handling. Once we clear those we
           // should consider no SurfaceSync while hidden. Then synchronizing the
@@ -3256,7 +3256,7 @@ void RenderWidgetHostViewAndroid::NotifyHostAndDelegateOnWasShown(
     rotation_metrics_.begin()->first = base::TimeTicks::Now();
   }
 
-  // TODO(crbug.com/1385146): Ideally we would do no synchronizing at all when
+  // TODO(crbug.com/40879074): Ideally we would do no synchronizing at all when
   // hidden. We should just amass all the new blink::VisualProperties and send
   // them once when becoming visible. However the refactor would be difficult
   // right now. We will revisit this once we are satisfied with the rollout of

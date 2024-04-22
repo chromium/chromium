@@ -1149,7 +1149,7 @@ void BluetoothLowEnergyEventRouter::OnCharacteristicPrepareWriteRequest(
     bool has_subsequent_request,
     base::OnceClosure callback,
     Delegate::ErrorCallback error_callback) {
-  // TODO(crbug/856869): Support reliable write.
+  // TODO(crbug.com/40582544): Support reliable write.
   OnCharacteristicWriteRequest(device, characteristic, value, offset,
                                std::move(callback), std::move(error_callback));
 }

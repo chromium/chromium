@@ -50,7 +50,7 @@ _can_use_hermetic_swift =
     build_with_chromium && is_ios && target_environment != "catalyst"
 
 if (swift_toolchain_path == -1) {
-  # TODO(crbug.com/1451611) The custom swift toolchain not does currently work
+  # TODO(crbug.com/40915887) The custom swift toolchain not does currently work
   # with Xcode 15 beta 1.
   if (_can_use_hermetic_swift && !(is_ios && xcode_version_int >= 1500)) {
     # Version of the hermetic compiler. Needs to be updated when a new version of

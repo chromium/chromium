@@ -121,7 +121,7 @@ class CONTENT_EXPORT ChildProcessHost : public IPC::Sender {
 
     // Starts a child process with the macOS entitlement that allows unsigned
     // executable memory.
-    // TODO(https://crbug.com/985816): Change this to use MAP_JIT and the
+    // TODO(crbug.com/40636855): Change this to use MAP_JIT and the
     // allow-jit entitlement instead.
     CHILD_GPU,
 

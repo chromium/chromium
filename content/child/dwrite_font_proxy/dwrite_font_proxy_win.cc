@@ -34,7 +34,7 @@ namespace {
 // input delay. It will not ship as-is, because it breaks some pages. Local
 // experiments show that accessing >20 fonts is typically done by fingerprinting
 // scripts.
-// TODO(https://crbug.com/1089390): Remove this feature when the experiment is
+// TODO(crbug.com/40133493): Remove this feature when the experiment is
 // complete. If the experiment shows a significant input delay improvement,
 // replace with a more refined mitigation for pages that access many fonts.
 BASE_FEATURE(kLimitFontFamilyNamesPerRenderer,

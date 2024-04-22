@@ -878,10 +878,10 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
 
 // ChromeOS and Android has fading out scrollbars, which makes the test flacky.
 // TODO(crbug.com/40157725) Android has a problem with changing scale.
-// TODO(crbug.com/1147911) Android Lollipop has a problem with capturing
+// TODO(crbug.com/40156819) Android Lollipop has a problem with capturing
 // screenshot.
 // TODO(crbug.com/40736077) Flaky on linux-lacros-tester-rel
-// TODO(crbug.com/1286261): Failing on MacOS.
+// TODO(crbug.com/40815512): Failing on MacOS.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || \
     BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
 #define MAYBE_CaptureScreenshotBeyondViewport_InnerScrollbarsAreShown \
@@ -1502,7 +1502,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizeTapGesture) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/1303155): Flaky on multiple bots.
+// TODO(crbug.com/40825729): Flaky on multiple bots.
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_PageCrash) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url = embedded_test_server()->GetURL("/devtools/navigation.html");
@@ -1612,7 +1612,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PageCrashClearsPendingCommands) {
   EXPECT_THAT(console_messages_, ElementsAre("first page", "second page"));
 }
 
-// TODO(crbug.com/1280531): Disabled due to flakiness. Flaky on mac and linux
+// TODO(crbug.com/40811521): Disabled due to flakiness. Flaky on mac and linux
 // la-cros
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        DISABLED_NavigationPreservesMessages) {
@@ -1669,7 +1669,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CrossSiteNoDetach) {
   EXPECT_FALSE(HasExistingNotification());
 }
 
-// TODO(crbug.com/1280746): Flaky on MacOS.
+// TODO(crbug.com/40811670): Flaky on MacOS.
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_CrossSiteNavigation) {
   content::SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());

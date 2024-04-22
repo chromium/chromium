@@ -293,7 +293,7 @@ BASE_EXPORT bool ReadStreamToStringWithMaxSize(FILE* stream,
 // into `buffer`. This function is protected against EINTR and partial reads.
 // Returns true iff `buffer` was successfully filled with bytes read from `fd`.
 BASE_EXPORT bool ReadFromFD(int fd, span<char> buffer);
-// TODO(https://crbug.com/1490484): Migrate callers to the span variant.
+// TODO(crbug.com/40284755): Migrate callers to the span variant.
 BASE_EXPORT bool ReadFromFD(int fd, char* buffer, size_t bytes);
 
 // Performs the same function as CreateAndOpenTemporaryStreamInDir(), but
@@ -456,8 +456,8 @@ BASE_EXPORT void SetDisableSecureSystemTempForTesting(bool disabled);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Do NOT USE in new code. Use ScopedTempDir instead.
-// TODO(crbug.com/561597) Remove existing usage and make this an implementation
-// detail inside ScopedTempDir.
+// TODO(crbug.com/40446440) Remove existing usage and make this an
+// implementation detail inside ScopedTempDir.
 //
 // Create a new directory. If prefix is provided, the new directory name is in
 // the format of prefixyyyy.
@@ -566,14 +566,14 @@ BASE_EXPORT std::optional<uint64_t> ReadFile(const FilePath& filename,
                                              span<uint8_t> buffer);
 
 // Same as above, but returns -1 on error.
-// TODO(https://crbug.com/1490484): Migrate callers to the span variant.
+// TODO(crbug.com/40284755): Migrate callers to the span variant.
 BASE_EXPORT int ReadFile(const FilePath& filename, char* data, int max_size);
 
 // Writes the given buffer into the file, overwriting any data that was
 // previously there.  Returns the number of bytes written, or -1 on error.
 // If file doesn't exist, it gets created with read/write permissions for all.
 // Note that the other variants of WriteFile() below may be easier to use.
-// TODO(https://crbug.com/1490484): Migrate callers to the span variant.
+// TODO(crbug.com/40284755): Migrate callers to the span variant.
 BASE_EXPORT int WriteFile(const FilePath& filename, const char* data,
                           int size);
 

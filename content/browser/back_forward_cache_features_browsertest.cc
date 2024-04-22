@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheWithDedicatedWorkerBrowserTest,
   ExpectRestored(FROM_HERE);
 }
 
-// TODO(https://crbug.com/1299018): Flaky on Linux.
+// TODO(crbug.com/40823301): Flaky on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBroadcastChannel \
   DISABLED_DoNotCacheWithDedicatedWorkerWithWebTransportAndDocumentWithBroadcastChannel
@@ -302,7 +302,7 @@ IN_PROC_BROWSER_TEST_P(
       {}, {}, {}, FROM_HERE);
 }
 
-// TODO(https://crbug.com/1296306): Disabled due to being flaky.
+// TODO(crbug.com/40821593): Disabled due to being flaky.
 IN_PROC_BROWSER_TEST_P(
     BackForwardCacheWithDedicatedWorkerBrowserTest,
     DISABLED_DoNotCacheWithDedicatedWorkerWithClosedWebTransportAndDocumentWithBroadcastChannel) {
@@ -4101,7 +4101,7 @@ class BackForwardCacheBrowserWebUsbTest
 };
 
 // Check the BackForwardCache is disabled when the WebUSB feature is used.
-// TODO(https://crbug.com/1339720): Consider testing in a subframe. This will
+// TODO(crbug.com/40849874): Consider testing in a subframe. This will
 // require adjustments to Permissions Policy.
 IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserWebUsbTest, Serials) {
   // WebUSB requires HTTPS.
@@ -4975,7 +4975,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // restored if the flag is on.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
-  // TODO(crbug.com/1411151): Test that onend callback is fired upon restore.
+  // TODO(crbug.com/40254716): Test that onend callback is fired upon restore.
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
@@ -5241,7 +5241,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithMediaSession,
                        CacheWhenMediaSessionServiceIsNotUsed) {
   // There are sometimes unexpected messages from a renderer to the browser,
   // which caused test flakiness.
-  // TODO(crbug.com/1253200): Fix the test flakiness.
+  // TODO(crbug.com/40793577): Fix the test flakiness.
   DoNotFailForUnexpectedMessagesWhileCached();
 
   ASSERT_TRUE(embedded_test_server()->Start());

@@ -294,7 +294,7 @@ class RenderFrameDeletedObserver : public WebContentsObserver {
   // Overridden WebContentsObserver methods.
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
 
-  // TODO(1267073): Add [[nodiscard]]
+  // TODO(crbug.com/40204325): Add [[nodiscard]]
   // Returns true if the frame was deleted before the timeout.
   bool WaitUntilDeleted();
   bool deleted() const;

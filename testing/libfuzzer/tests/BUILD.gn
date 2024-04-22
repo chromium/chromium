@@ -17,7 +17,7 @@ group("tests") {
   }
 }
 
-# TODO(crbug.com/906751): Get the tests working on Windows. Disable them for now
+# TODO(crbug.com/40603084): Get the tests working on Windows. Disable them for now
 # because they cause the Windows clang ToT builder to fail.
 if (!is_win) {
   test("libfuzzer_tests") {

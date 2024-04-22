@@ -34,7 +34,7 @@ GURL ContentScriptInjectionUrlGetter::Get(
       url::kFileSystemScheme,
   };
 
-  // TODO(https://crbug.com/1212918): Consider reducing tracing instrumentation
+  // TODO(crbug.com/40055997): Consider reducing tracing instrumentation
   // in the main function bodu and in the lambda below (once the bug is
   // understood and fixed).
   auto should_consider_origin = [&document_url, match_origin_as_fallback]() {

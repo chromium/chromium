@@ -61,8 +61,8 @@ bool SmsQueue::HasSubscriber(const OriginList& origin_list,
 // Similar to the success case, we only notify the first subscriber with that
 // origin.
 bool SmsQueue::NotifyFailure(FailureType failure_type) {
-  // TODO(crbug.com/1138454): We should improve the infrastructure to be able to
-  // handle failed requests when there are multiple pending origins
+  // TODO(crbug.com/40153007): We should improve the infrastructure to be able
+  // to handle failed requests when there are multiple pending origins
   // simultaneously.
   if (subscribers_.size() != 1)
     return false;

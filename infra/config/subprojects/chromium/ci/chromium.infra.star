@@ -78,7 +78,7 @@ packager_builder(
 packager_builder(
     name = "3pp-mac-amd64-packager",
     executable = "recipe:chromium_3pp",
-    # TODO(crbug.com/1267449): Trigger builds routinely once works fine.
+    # TODO(crbug.com/40204454): Trigger builds routinely once works fine.
     schedule = "triggered",
     triggered_by = [],
     builderless = True,

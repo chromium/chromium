@@ -33,7 +33,7 @@ namespace {
 // uncaught Java exception (historical behavior). If enabled, we give the Java
 // uncaught exception handler a chance to handle the exception first, so that
 // the crash is (hopefully) seen as a Java crash, not a native crash.
-// TODO(https://crbug.com/1426888): remove this switch once we are confident the
+// TODO(crbug.com/40261529): remove this switch once we are confident the
 // new behavior is fine.
 BASE_FEATURE(kHandleExceptionsInJava,
              "HandleJniExceptionsInJava",

@@ -368,7 +368,7 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
       return;
     }
   } else if (profile == VP9PROFILE_PROFILE1 || profile == VP9PROFILE_PROFILE3) {
-    // TODO(crbug.com/1116617): Support 4:2:2 subsampling.
+    // TODO(crbug.com/40144811): Support 4:2:2 subsampling.
     if (options.subsampling != VideoChromaSampling::k444) {
       std::move(done_cb).Run(EncoderStatus(
           EncoderStatus::Codes::kEncoderUnsupportedConfig,

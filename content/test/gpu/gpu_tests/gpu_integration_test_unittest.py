@@ -149,7 +149,7 @@ class GpuIntegrationTestUnittest(unittest.TestCase):
         benchmark_dirs=[os.path.join(gpu_path_util.GPU_DIR, 'unittest_data')])
     with binary_manager.TemporarilyReplaceBinaryManager(None), \
          mock.patch.object(gpu_project_config, 'CONFIG', unittest_config):
-      # TODO(crbug.com/1103792): Using NamedTemporaryFile() as a generator is
+      # TODO(crbug.com/40139419): Using NamedTemporaryFile() as a generator is
       # causing windows bots to fail. When the issue is fixed with
       # tempfile_ext.NamedTemporaryFile(), put it in the list of generators
       # starting this with block. Also remove the try finally statement

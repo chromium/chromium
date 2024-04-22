@@ -802,7 +802,7 @@ void RenderWidgetHostViewEventHandler::MoveCursorToCenter(
   gfx::Point center_in_screen(window_->GetBoundsInScreen().CenterPoint());
   window_->MoveCursorTo(center);
 #if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/781182): This is a workaround for a bug from Windows
+  // TODO(crbug.com/40547981): This is a workaround for a bug from Windows
   // update 16299, and should be remove once the bug is fixed in OS. Send a
   // synthesized event to update the blink side states.
   global_mouse_position_ = gfx::PointF(center_in_screen);

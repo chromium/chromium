@@ -1348,7 +1348,7 @@ size_t RenderWidgetHostViewAura::ConfirmCompositionText(bool keep_selection) {
         keep_selection);
   }
   has_composition_text_ = false;
-  // TODO(crbug/1109604): Return the number of characters committed by this
+  // TODO(crbug.com/40141817): Return the number of characters committed by this
   // function.
   return std::numeric_limits<size_t>::max();
 }
@@ -2840,7 +2840,7 @@ void RenderWidgetHostViewAura::OnUpdateTextInputStateCalled(
         GetInputMethod()->GetTextInputClient() == this) {
       GetInputMethod()->SetVirtualKeyboardVisibilityIfEnabled(true);
     }
-// TODO(crbug.com/1031786): Remove this once TSF fix for input pane policy
+// TODO(crbug.com/40110609): Remove this once TSF fix for input pane policy
 // is serviced
 #elif BUILDFLAG(IS_WIN)
     if (GetInputMethod()) {

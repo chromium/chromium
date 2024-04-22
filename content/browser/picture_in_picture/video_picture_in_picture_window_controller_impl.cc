@@ -359,7 +359,7 @@ void VideoPictureInPictureWindowControllerImpl::MediaSessionInfoChanged(
 
 void VideoPictureInPictureWindowControllerImpl::MediaSessionActionsChanged(
     const std::set<media_session::mojom::MediaSessionAction>& actions) {
-  // TODO(crbug.com/919842): Currently, the first Media Session to be created
+  // TODO(crbug.com/40608570): Currently, the first Media Session to be created
   // (independently of the frame) will be used. This means, we could show a
   // Skip Ad button for a PiP video from another frame. Ideally, we should have
   // a Media Session per frame, not per tab. This is not implemented yet.

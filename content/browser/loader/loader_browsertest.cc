@@ -833,7 +833,7 @@ IN_PROC_BROWSER_TEST_F(RequestDataBrowserTest, LinkRelPrefetchReferrerPolicy) {
   EXPECT_TRUE(image_request->load_flags & net::LOAD_PREFETCH);
 }
 
-// TODO(crbug.com/1271868): Flaky on all platforms.
+// TODO(crbug.com/40805845): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(RequestDataBrowserTest, DISABLED_BasicCrossSite) {
   GURL top_url(embedded_test_server()->GetURL(
       "a.com", "/nested_page_with_subresources.html"));

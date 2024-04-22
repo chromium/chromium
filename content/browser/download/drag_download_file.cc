@@ -64,7 +64,7 @@ class DragDownloadFile::DragDownloadFileUI
         RenderFrameHost::FromID(render_process_id_, render_frame_id_);
     if (!host)
       return;
-    // TODO(https://crbug.com/614134) This should use the frame actually
+    // TODO(crbug.com/40470366) This should use the frame actually
     // containing the link being dragged rather than the main frame of the tab.
     net::NetworkTrafficAnnotationTag traffic_annotation =
         net::DefineNetworkTrafficAnnotation("drag_download_file", R"(

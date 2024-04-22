@@ -259,7 +259,7 @@ struct URLRequest {
   // What this resource load is for (main frame, sub-frame, sub-resource,
   // object).
   // Note: this is an enum of type blink::mojom::ResourceType.
-  // TODO(https://crbug.com/1059639): remove this in favor of `destination`.
+  // TODO(crbug.com/40121693): remove this in favor of `destination`.
   int32 resource_type;
 
   // The priority of this request determined by Blink.
@@ -526,7 +526,7 @@ struct URLRequest {
   // Indicates whether Attribution Reporting API related runtime features are
   // enabled.
   //
-  // TODO(https://crbug.com/1443602): Get rid of this with proper OT
+  // TODO(crbug.com/40267414): Get rid of this with proper OT
   // infrastructure support in the network service.
   AttributionReportingRuntimeFeatures attribution_reporting_runtime_features;
 

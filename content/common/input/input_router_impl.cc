@@ -255,7 +255,7 @@ bool InputRouterImpl::HandleGestureScrollForStylusWriting(
       break;
     }
     case WebInputEvent::Type::kGestureScrollUpdate:
-      // TODO(crbug.com/1330817): Pass the queued scroll delta to stylus
+      // TODO(crbug.com/40843488): Pass the queued scroll delta to stylus
       // writing recognition system.
       return stylus_writing_started_;
     case WebInputEvent::Type::kGestureScrollEnd: {

@@ -388,7 +388,7 @@ sk_sp<SkImage> ReadImage(
         // overhead with modern APIs leading to lesser scheduling concerns.
         // Also, eventually we want to move tile raster off the GPU main thread.
         // Based on these reasons, its okay to not flush for Graphite here.
-        // TODO(crbug.com/1463790): Revisit flushes for Graphite here if yield
+        // TODO(crbug.com/40922674): Revisit flushes for Graphite here if yield
         // to scheduler is needed.
         plane = SkImages::TextureFromImage(graphite_recorder, plane, props);
       }

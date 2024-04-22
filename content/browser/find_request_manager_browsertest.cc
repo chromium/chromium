@@ -1017,7 +1017,7 @@ class ZoomToFindInPageRectMessageFilter
 }  // namespace
 
 // Tests activating the find match nearest to a given point.
-// TODO(crbug.com/1362116): Fix flaky failures.
+// TODO(crbug.com/40864045): Fix flaky failures.
 IN_PROC_BROWSER_TEST_P(FindRequestManagerTest,
                        DISABLED_ActivateNearestFindMatch) {
   LoadAndWait("/find_in_page.html");
@@ -1642,7 +1642,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Tests that the previous results from old document are removed and we get the
 // new results from the new document when we navigate the subframe that
 // hasn't finished the find-in-page session to the new document.
-// TODO(crbug.com/1311444): Fix flakiness and reenable the test.
+// TODO(crbug.com/40220234): Fix flakiness and reenable the test.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
 #define MAYBE_NavigateFrameDuringFind DISABLED_NavigateFrameDuringFind

@@ -44,7 +44,7 @@ using WebUIManagedInterfaceNoPageHandler = void;
 //                            WebUIManagedInterfaceNoPageHandler,
 //                            BarObserver> { ... }
 //
-// TODO(crbug.com/1417272): provide helpers to retrieve InterfaceImpl objects.
+// TODO(crbug.com/40257252): provide helpers to retrieve InterfaceImpl objects.
 template <typename InterfaceImpl, typename PageHandler, typename Page = void>
 class WebUIManagedInterface : public WebUIManagedInterfaceBase {
  public:
@@ -94,7 +94,7 @@ class WebUIManagedInterface : public WebUIManagedInterfaceBase {
   }
 
   // Invoked when Mojo endpoints are bound and ready to use.
-  // TODO(crbug.com/1417260): Remove this by saving endpoints in an external
+  // TODO(crbug.com/40257247): Remove this by saving endpoints in an external
   // storage before constructing `InterfaceImpl`.
   virtual void OnReady() {}
 

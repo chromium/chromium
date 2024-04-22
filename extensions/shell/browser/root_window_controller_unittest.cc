@@ -148,7 +148,7 @@ TEST_F(RootWindowControllerTest, Basic) {
 }
 
 // Tests the window layout.
-// TODO(crbug.com/1505747): Flakily times out in Debug
+// TODO(crbug.com/40946388): Flakily times out in Debug
 #if defined(NDEBUG)
 #define MAYBE_FillLayout FillLayout
 #else

@@ -136,7 +136,7 @@ class Kind:
             == (rhs.spec, rhs.parent_kind, rhs.is_nullable))
 
   def __hash__(self):
-    # TODO(crbug.com/1060471): Remove this and other __hash__ methods on Kind
+    # TODO(crbug.com/40122051): Remove this and other __hash__ methods on Kind
     # and its subclasses. This is to support existing generator code which uses
     # some primitive Kinds as dict keys. The default hash (object identity)
     # breaks these dicts when a pickled Module instance is unpickled and used

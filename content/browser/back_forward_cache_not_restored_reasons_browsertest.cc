@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
           BlockListedFeatures()));
 
   // Both reasons are recorded and sent to the renderer.
-  // TODO(crbug.com/1462827): BrowsingInstanceNotSwapped should not be reported
+  // TODO(crbug.com/40275090): BrowsingInstanceNotSwapped should not be reported
   // as internal-error.
   auto rfh_a_result = MatchesNotRestoredReasons(
       /*id=*/std::nullopt,

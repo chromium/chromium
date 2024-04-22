@@ -202,7 +202,7 @@ std::string SysInfo::OperatingSystemArchitecture() {
 
 // static
 std::string SysInfo::CPUModelName() {
-  // TODO(crbug.com/1233859): Implement this when Fuchsia supports it.
+  // TODO(crbug.com/40191727): Implement this when Fuchsia supports it.
   NOTIMPLEMENTED_LOG_ONCE();
   return std::string();
 }

@@ -39,7 +39,7 @@ constexpr bool kColorSensitiveStyleBlocks = false;
 
 // A negative ID for ui::AXNodeID needs to start from -2 as using -1 for this
 // node id is still incorrectly treated as invalid.
-// TODO(crbug.com/1439285): fix code treating -1 as invalid for ui::AXNodeID.
+// TODO(crbug.com/40908646): fix code treating -1 as invalid for ui::AXNodeID.
 constexpr int kFirstValidNegativeId = -2;
 
 ui::AXNodeID next_negative_node_id{kFirstValidNegativeId};

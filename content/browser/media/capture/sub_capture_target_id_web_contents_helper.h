@@ -73,7 +73,7 @@ class CONTENT_EXPORT SubCaptureTargetIdWebContentsHelper final
   bool IsAssociatedWith(const base::Token& id, Type type) const;
 
  protected:
-  // TODO(crbug.com/1264849): Remove this local copy of GUIDToToken().
+  // TODO(crbug.com/40203554): Remove this local copy of GUIDToToken().
   // It is copy of a function that is not currently visible from the browser
   // process. It should be made visible to the browser process and reused
   // rather than redefined. It is defined as protected so that unit tests
@@ -87,11 +87,11 @@ class CONTENT_EXPORT SubCaptureTargetIdWebContentsHelper final
   // WebContentsObserver implementation.
   // Cross-document navigation of the top-level document discards all
   // SubCaptureTargetIds associated with the top-level WebContents.
-  // TODO(crbug.com/1264849): Record per RFH and treat its navigation.
+  // TODO(crbug.com/40203554): Record per RFH and treat its navigation.
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) final;
 
   // Forgets all associations of SubCaptureTargetIds to this WebContents.
-  // TODO(crbug.com/1264849): Clear per-RFH or throughout.
+  // TODO(crbug.com/40203554): Clear per-RFH or throughout.
   void ClearIds();
 
   // Records which SubCaptureTargetIds are associated with this WebContents.

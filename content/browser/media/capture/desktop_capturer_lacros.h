@@ -64,7 +64,7 @@ class DesktopCapturerLacros : public webrtc::DesktopCapturer,
   // Whether this object is capturing screens or windows.
   const CaptureType capture_type_;
 
-  // TODO(https://crbug.com/1094460): The webrtc options for screen/display
+  // TODO(crbug.com/40135428): The webrtc options for screen/display
   // capture are currently ignored.
   const webrtc::DesktopCaptureOptions options_;
 

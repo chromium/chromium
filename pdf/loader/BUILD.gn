@@ -9,7 +9,7 @@ assert(enable_pdf)
 
 source_set("loader") {
   visibility = [
-    # TODO(crbug.com/1158929): Eliminate
+    # TODO(crbug.com/40161525): Eliminate
     # chrome_find_request_manager_browsertest.cc's dependence on
     # document_loader_impl.h.
     "//chrome/test:browser_tests${exec_target_suffix}",

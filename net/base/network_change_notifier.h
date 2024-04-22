@@ -70,7 +70,7 @@ class NET_EXPORT NetworkChangeNotifier {
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.net
   //
-  // TODO(crbug.com/1127134): Introduce subtypes for 5G networks once they can
+  // TODO(crbug.com/40148439): Introduce subtypes for 5G networks once they can
   // be detected.
   enum ConnectionSubtype {
     SUBTYPE_UNKNOWN = 0,
@@ -332,7 +332,7 @@ class NET_EXPORT NetworkChangeNotifier {
   };
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1347382): Remove this section and align the behavior
+  // TODO(crbug.com/40232923): Remove this section and align the behavior
   // with other platforms or confirm that Lacros needs to be separated.
   static constexpr ConnectionType kDefaultInitialConnectionType =
       CONNECTION_UNKNOWN;

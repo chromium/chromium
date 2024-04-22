@@ -45,7 +45,7 @@ namespace {
 constexpr char kHeadlessSwitch[] = "headless";
 constexpr char kEnableProtectedMediaIdentifier[] =
     "enable-protected-media-identifier";
-// TODO(crbug.com/1421342): This flag will be removed. Keep for now to prevent
+// TODO(crbug.com/40896202): This flag will be removed. Keep for now to prevent
 // users from failing.
 constexpr char kUseWebInstance[] = "use-web-instance";
 constexpr char kUseContextProvider[] = "use-context-provider";

@@ -28,7 +28,7 @@ class NET_EXPORT ClientCertStoreMac : public ClientCertStore {
                       ClientCertListCallback callback) override;
 
  private:
-  // TODO(https://crbug.com/1302761): Improve test coverage and remove/reduce
+  // TODO(crbug.com/40825523): Improve test coverage and remove/reduce
   // the friend tests and ForTesting methods.
   friend class ClientCertStoreMacTest;
   friend class ClientCertStoreMacTestDelegate;

@@ -13,7 +13,7 @@ declare_args() {
   # Enables printing support.
   enable_printing = !is_ios && !is_castos && !is_cast_android
 
-  # TODO(crbug.com/1432082): iOS blink port only enables printing_tests to run
+  # TODO(crbug.com/40263786): iOS blink port only enables printing_tests to run
   # unit tests and web tests for now because the port does not enable the
   # printing feature yet.
   enable_printing_tests = is_ios && use_blink

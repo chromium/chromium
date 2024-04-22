@@ -540,7 +540,7 @@ TEST_F(GpuDataManagerImplPrivateTest, ChromecastStartsWithGpuDisabled) {
 #endif  // defined(CAST_AUDIO_ONLY)
 
 #if BUILDFLAG(ENABLE_VULKAN)
-// TODO(crbug.com/1155622): enable tests when Vulkan is supported on LaCrOS.
+// TODO(crbug.com/40735511): enable tests when Vulkan is supported on LaCrOS.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithUseVulkanFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(

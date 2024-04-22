@@ -147,8 +147,8 @@ int IsolatedWorldManager::GetOrCreateIsolatedWorldForHost(
     int blink_world_id = g_next_blink_world_id++;
     // This map will tend to pile up over time, but realistically, you're never
     // going to have enough injection hosts for it to matter.
-    // TODO(crbug/1429408): Are we sure about that? Processes can stick around
-    // awhile.... (and this could be affected by introducing user script
+    // TODO(crbug.com/40262660): Are we sure about that? Processes can stick
+    // around awhile.... (and this could be affected by introducing user script
     // worlds).
     world_info = &isolated_worlds_[blink_world_id];
     world_info->host_id = host_id;

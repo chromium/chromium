@@ -11,7 +11,7 @@ declare_args() {
   # If this flag is set, we assume Chrome runs on Chrome OS devices, using
   # Wayland (instead of X11).
   #
-  # TODO(crbug.com/1052397):
+  # TODO(crbug.com/40118868):
   # Define chromeos_product instead, which takes either "browser" or "ash".
   # Re-define the following variables as:
   # is_chromeos_lacros = chromeos_product == "browser"

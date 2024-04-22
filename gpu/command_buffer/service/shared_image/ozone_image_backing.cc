@@ -791,7 +791,7 @@ bool OzoneImageBacking::BeginAccess(bool readonly,
     // context that end up creating a big number of fences, which may have some
     // performance overhead depending on the gpu. Instead, when these images
     // will be scheduled as overlays, a single fence will be created.
-    // TODO(crbug.com/1254033): this block of code shall be removed after cc is
+    // TODO(crbug.com/40199420): this block of code shall be removed after cc is
     // able to set a single (duplicated) fence for bunch of tiles instead of
     // having the SI framework creating fences for each single message when
     // write access ends.

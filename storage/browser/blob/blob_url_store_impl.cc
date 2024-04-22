@@ -91,7 +91,7 @@ void BlobURLStoreImpl::Register(
     const base::UnguessableToken& unsafe_agent_cluster_id,
     const std::optional<net::SchemefulSite>& unsafe_top_level_site,
     RegisterCallback callback) {
-  // TODO(https://crbug.com/1376126): Generate blob URLs here, rather than
+  // TODO(crbug.com/40061399): Generate blob URLs here, rather than
   // validating the URLs the renderer process generated.
   if (!BlobUrlIsValid(url, "Register")) {
     std::move(callback).Run();
@@ -159,7 +159,7 @@ void BlobURLStoreImpl::ResolveForNavigation(
 
 bool BlobURLStoreImpl::BlobUrlIsValid(const GURL& url,
                                       const char* method) const {
-  // TODO(crbug.com/1278268): Remove crash keys.
+  // TODO(crbug.com/40810120): Remove crash keys.
   url::Origin storage_key_origin = storage_key_.origin();
   static crash_reporter::CrashKeyString<256> origin_key("origin");
   static crash_reporter::CrashKeyString<256> url_key("url");

@@ -84,7 +84,7 @@ source_set("browser_sources") {
     "activity.h",
     "allowlist_state.h",
 
-    # TODO(https://crbug.com/883570): Anything under api/ should be moved out of
+    # TODO(crbug.com/40593486): Anything under api/ should be moved out of
     # this target.
     "api/api_resource.cc",
     "api/api_resource.h",

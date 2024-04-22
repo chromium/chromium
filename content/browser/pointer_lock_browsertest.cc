@@ -832,7 +832,7 @@ IN_PROC_BROWSER_TEST_F(PointerLockBrowserTest, DISABLED_UnadjustedMovement) {
 #endif
 
 #if defined(USE_AURA)
-// TODO(https://crbug.com/982379): Remove failure test when fully implemented
+// TODO(crbug.com/40635377): Remove failure test when fully implemented
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_ChangeUnadjustedMovementFailure \
   DISABLED_ChangeUnadjustedMovementFailure

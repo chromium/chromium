@@ -418,7 +418,7 @@ void PreloadingDecider::UpdateSpeculationCandidates(
 
     processed_candidates_[key].push_back(candidate.Clone());
 
-    // TODO(crbug.com/1341019): Pass the action requested by speculation rules
+    // TODO(crbug.com/40230530): Pass the action requested by speculation rules
     // to PreloadingPrediction.
     // A new web contents will be created for the case of prerendering into a
     // new tab, so recording PreloadingPrediction is delayed until

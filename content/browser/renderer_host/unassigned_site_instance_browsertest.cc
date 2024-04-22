@@ -38,7 +38,7 @@
 // should be reused or replaced. Note that there are some differences between
 // about:blank and custom embedder-defined cases.
 //
-// TODO(crbug.com/1296173): We would like to enforce the fact that unassigned
+// TODO(crbug.com/40214665): We would like to enforce the fact that unassigned
 // SiteInstances only ever exist in their own BrowsingInstance. The exact way to
 // achieve that is still unclear. We might only allow leaving SiteInstances
 // unassigned for empty schemes, or make the siteless behavior kick in only for

@@ -8,7 +8,7 @@ from enum import Enum
 from typing import Any, Dict, List, Tuple, NamedTuple
 
 TagTupleType = Tuple[str, ...]
-# TODO(crbug.com/1358735): Remove this and update both GPU and Web test
+# TODO(crbug.com/40237087): Remove this and update both GPU and Web test
 # suppressor with status support.
 # Sample:
 # {

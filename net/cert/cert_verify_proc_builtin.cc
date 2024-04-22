@@ -1123,7 +1123,7 @@ int CertVerifyProcBuiltin::VerifyInternal(X509Certificate* input_cert,
   }
 #endif
 
-  // TODO(crbug.com/1477317): Netlog extra configuration information stored
+  // TODO(crbug.com/40928765): Netlog extra configuration information stored
   // inside CertVerifyProcBuiltin (e.g. certs in additional_trust_store and
   // system trust store)
 

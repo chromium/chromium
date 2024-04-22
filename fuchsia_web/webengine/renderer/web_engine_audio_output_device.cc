@@ -26,7 +26,7 @@ constexpr size_t kNumBuffers = 4;
 // keep latency reasonably low, while making playback reliable under normal
 // conditions.
 //
-// TODO(crbug.com/1153909): It may be possible to reduce this value to reduce
+// TODO(crbug.com/40159229): It may be possible to reduce this value to reduce
 // total latency, but that requires that an elevated scheduling profile is
 // applied to this thread.
 constexpr base::TimeDelta kLeadTimeExtra = base::Milliseconds(20);

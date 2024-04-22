@@ -661,7 +661,7 @@ targets.mixin(
     name = "has_native_resultdb_integration",
     resultdb = targets.resultdb(
         enable = True,
-        # TODO(crbug.com/1163797): Remove the 'enable' field in favor of
+        # TODO(crbug.com/40740370): Remove the 'enable' field in favor of
         # 'has_native_resultdb_integration'.
         has_native_resultdb_integration = True,
     ),

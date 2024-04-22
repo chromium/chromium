@@ -579,7 +579,7 @@ void V8Initializer::GetV8ExternalSnapshotData(const char** snapshot_data_out,
 // static
 void V8Initializer::LoadV8Snapshot(V8SnapshotFileType snapshot_file_type) {
   if (g_mapped_snapshot) {
-    // TODO(crbug.com/802962): Confirm not loading different type of snapshot
+    // TODO(crbug.com/40558459): Confirm not loading different type of snapshot
     // files in a process.
     return;
   }

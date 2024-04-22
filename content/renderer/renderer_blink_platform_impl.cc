@@ -64,7 +64,7 @@
 #include "content/renderer/worker/dedicated_worker_host_factory_client.h"
 #include "content/renderer/worker/worker_thread_registry.h"
 #include "device/gamepad/public/cpp/gamepads.h"
-#include "gin/array_buffer.h"  // TODO(crbug.com/1321521) remove import once resolved.
+#include "gin/array_buffer.h"  // TODO(crbug.com/40837434) remove import once resolved.
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_finch_features.h"
@@ -752,7 +752,7 @@ CreateWebGPUGraphicsContext3DImpl(
   // buffers need to be mapped using the ArrayBuffer shared memory mapper. As
   // there is currently no way of specifying a custom mapper per buffer, we
   // have to map all buffers created by this provider using the custom mapper.
-  // TODO(crbug.com/1321521) instead of mapping all buffers created by this
+  // TODO(crbug.com/40837434) instead of mapping all buffers created by this
   // provider with the array buffer mapper, only map those that will actually
   // be used as ArrayBuffers and remove this per-provider mapper again.
   base::SharedMemoryMapper* buffer_mapper =

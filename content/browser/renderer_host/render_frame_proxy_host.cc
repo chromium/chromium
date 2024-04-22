@@ -606,7 +606,7 @@ void RenderFrameProxyHost::RouteMessageEvent(
         // in the target SiteInstance. If it doesn't exist, create it on demand
         // and also create its opener chain, since that will also be accessible
         // to the target page.
-        // TODO(https://crbug.com/1427387): Using WebContents here disregards
+        // TODO(crbug.com/40261772): Using WebContents here disregards
         // the possibility of postMessaging an iframe. This is broken, and
         // sometimes leads to null event.source.
         target_rfh->delegate()->EnsureOpenerProxiesExist(source_rfh);
@@ -778,7 +778,7 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   // See also https://crbug.com/647772.
   // TODO(clamy): The transition should probably be changed for POST navigations
   // to PAGE_TRANSITION_FORM_SUBMIT. See https://crbug.com/829827.
-  // TODO(https://crbug.com/1261963): Determine which source_site_instance from
+  // TODO(crbug.com/40202433): Determine which source_site_instance from
   // site_instance_group_ to use for navigations to about:blank, once
   // RenderFrameProxyHost no longer has a site_instance_deprecated_.
   frame_tree_node_->navigator().NavigateFromFrameProxy(

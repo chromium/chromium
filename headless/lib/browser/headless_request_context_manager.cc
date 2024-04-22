@@ -259,7 +259,7 @@ void HeadlessRequestContextManager::ConfigureNetworkContextParamsInternal(
   context_params->user_agent = user_agent_;
   context_params->accept_language = accept_language_;
 
-  // TODO(https://crbug.com/458508): Allow
+  // TODO(crbug.com/40405715): Allow
   // context_params->http_auth_static_network_context_params->allow_default_credentials
   // to be controllable by a flag.
   context_params->http_auth_static_network_context_params =

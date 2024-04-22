@@ -94,8 +94,8 @@ void StagingBuffer::DestroyGLResources(gpu::raster::RasterInterface* ri,
 void StagingBuffer::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                                  viz::SharedImageFormat dump_format,
                                  bool in_free_list) const {
-  // TODO(crbug.com/1431314): Need to call through to the buffer's SharedImage's
-  // ScopedMapping::OnMemoryDump()?
+  // TODO(crbug.com/40263478): Need to call through to the buffer's
+  // SharedImage's ScopedMapping::OnMemoryDump()?
 }
 
 StagingBufferPool::StagingBufferPool(

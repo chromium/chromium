@@ -71,7 +71,7 @@ def FinalizeApk(apksigner_path,
                             print_stdout=True,
                             fail_on_output=warnings_as_errors)
     shutil.move(staging_file.name, final_apk_path)
-    # TODO(crbug.com/1174969): Remove this once Python2 is obsoleted.
+    # TODO(crbug.com/40167754): Remove this once Python2 is obsoleted.
     if sys.version_info.major == 2:
       staging_file.delete = False
     else:

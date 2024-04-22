@@ -1058,7 +1058,7 @@ TEST_P(AudioFocusManagerTest, AudioFocusGrouping_TransientResume) {
 
   media_session_4.AbandonAudioFocusFromClient();
 
-  // TODO(https://crbug.com/916177): This should wait on a more precise
+  // TODO(crbug.com/40606983): This should wait on a more precise
   // condition than RunLoop idling, but it's not clear exactly what that
   // should be.
   base::RunLoop().RunUntilIdle();

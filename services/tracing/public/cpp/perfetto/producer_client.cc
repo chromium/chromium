@@ -413,8 +413,8 @@ bool ProducerClient::InitSharedMemoryIfNeeded() {
   shared_memory_ =
       std::make_unique<ChromeBaseSharedMemory>(GetPreferredSmbSizeBytes());
 
-  // TODO(crbug/1057614): We see shared memory region creation fail on windows
-  // in the field. Investigate why this can happen. Gather statistics on
+  // TODO(crbug.com/40677516): We see shared memory region creation fail on
+  // windows in the field. Investigate why this can happen. Gather statistics on
   // failure rates.
   bool valid = shared_memory_->region().IsValid();
   base::UmaHistogramBoolean(kSharedBufferIsValidMetricName, valid);

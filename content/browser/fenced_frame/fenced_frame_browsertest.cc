@@ -4744,7 +4744,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
                     true /*G*/});
 }
 
-// TODO(crbug.com/1459591): Flaky on Android release bots.
+// TODO(crbug.com/40919516): Flaky on Android release bots.
 #if BUILDFLAG(IS_ANDROID) && defined(NDEBUG)
 #define MAYBE_FencedAdSizes DISABLED_FencedAdSizes
 #else

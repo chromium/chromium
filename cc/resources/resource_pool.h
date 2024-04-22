@@ -388,7 +388,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
       // Early research found with raw draw, GPU memory usage is reduced to
       // 50%, so we consider a raw draw backing uses 50% of a normal backing
       // in average.
-      // TODO(crbug.com/1295443): use accurate size for raw draw backings.
+      // TODO(crbug.com/40214331): use accurate size for raw draw backings.
       if (gpu_backing_ && gpu_backing_->is_using_raw_draw) {
         memory_usage = memory_usage / 2;
       }

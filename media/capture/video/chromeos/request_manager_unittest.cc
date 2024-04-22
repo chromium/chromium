@@ -616,6 +616,6 @@ TEST_P(RequestManagerTest, BufferErrorTest) {
 INSTANTIATE_TEST_SUITE_P(, RequestManagerTest, ::testing::Bool());
 
 // Test that preview and still capture buffers can be correctly submitted.
-// TODO(crbug.com/917574): Add take photo test.
+// TODO(crbug.com/40607619): Add take photo test.
 
 }  // namespace media

@@ -152,9 +152,9 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
       return;
     }
 
-    // TODO(crbug.com/1500135): Currently PrefetchServingPageMetricsContainer is
-    // created only when the navigation is renderer-initiated and its initiator
-    // document has PrefetchDocumentManager.
+    // TODO(crbug.com/40288091): Currently PrefetchServingPageMetricsContainer
+    // is created only when the navigation is renderer-initiated and its
+    // initiator document has PrefetchDocumentManager.
     CHECK(!serving_page_metrics_container_);
   }
 

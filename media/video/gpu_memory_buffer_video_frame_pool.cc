@@ -869,7 +869,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
       passthrough = true;
   }
 
-  // TODO(https://crbug.com/638906): Handle odd positioned video frame input.
+  // TODO(crbug.com/40481128): Handle odd positioned video frame input.
   if (video_frame->visible_rect().x() % 2 ||
       video_frame->visible_rect().y() % 2) {
     passthrough = true;
@@ -1304,7 +1304,7 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
                        gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-      // TODO(crbug.com/1241537): Always add the flag once the
+      // TODO(crbug.com/40194712): Always add the flag once the
       // OzoneImageBacking is by default turned on.
       if (base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kEnableUnsafeWebGPU)) {

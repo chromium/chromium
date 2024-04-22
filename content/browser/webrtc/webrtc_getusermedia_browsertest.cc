@@ -339,7 +339,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
                           kGetUserMediaAndExpectFailure, "", video_ids[0])));
 }
 
-// TODO(crbug.com/1239385): Flaky on Mac.
+// TODO(crbug.com/40784748): Flaky on Mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_GetUserMediaWithInvalidOptionalSourceID \
   DISABLED_GetUserMediaWithInvalidOptionalSourceID

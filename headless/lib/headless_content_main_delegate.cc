@@ -302,7 +302,7 @@ void HeadlessContentMainDelegate::InitLogging(
   // Otherwise we log to where the executable is.
   if (log_path.empty()) {
 #if BUILDFLAG(IS_FUCHSIA)
-    // TODO(crbug.com/1262330): Use the same solution as used for LOG_DIR.
+    // TODO(crbug.com/40202595): Use the same solution as used for LOG_DIR.
     // Use -1 to allow this to compile.
     if (base::PathService::Get(-1, &log_path)) {
 #else
@@ -352,7 +352,7 @@ void HeadlessContentMainDelegate::InitCrashReporter(
   }
 
 #if BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/1226159): Implement this when crash reporting is available
+  // TODO(crbug.com/40188745): Implement this when crash reporting is available
   // for Fuchsia.
   NOTIMPLEMENTED();
 #else

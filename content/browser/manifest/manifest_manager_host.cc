@@ -58,7 +58,7 @@ void ManifestManagerHost::GetManifest(GetManifestCallback callback) {
   // Do not call into MaybeOverrideManifest in a non primary page since
   // it checks the url from PreRedirectionURLObserver that works only in
   // a primary page.
-  // TODO(crbug.com/1296125): Maybe cancel prerendering if it hits this.
+  // TODO(crbug.com/40214638): Maybe cancel prerendering if it hits this.
   if (!page().IsPrimary()) {
     std::move(callback).Run(GURL(), blink::mojom::Manifest::New());
     return;

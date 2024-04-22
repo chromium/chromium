@@ -476,7 +476,7 @@ void InputHandler::RecordScrollBegin(
   //   (2) the scroll is driven by the compositor, but blocked on the main
   //       thread.
   // Otherwise, the compositor-thread is the 'scrolling thread'.
-  // TODO(crbug.com/1060712): We should also count 'main thread' as the
+  // TODO(crbug.com/40122138): We should also count 'main thread' as the
   // 'scrolling thread' if the layer being scrolled has scroll-event handlers.
   FrameInfo::SmoothEffectDrivingThread scrolling_thread;
   switch (scroll_start_state) {

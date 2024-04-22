@@ -721,7 +721,7 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
     // The channel won't open. If this was a pending channel, remove it,
     // because now it will never open. This prevents the pending message
     // from being re-added indefinitely. See https://crbug.com/1231683.
-    // TODO(crbug.com/1296492): This probably isn't the best solution.
+    // TODO(crbug.com/40821724): This probably isn't the best solution.
     // Ideally, we should close the channel before we get to this point
     // if there's no chance it will ever open, remove it from pending
     // channels, and then only try to open the pending channel if it's

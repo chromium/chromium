@@ -159,7 +159,7 @@ ServiceWorkerSingleScriptUpdateChecker::ServiceWorkerSingleScriptUpdateChecker(
 
   // Upgrade the request to an a priori authenticated URL, if appropriate.
   // https://w3c.github.io/webappsec-upgrade-insecure-requests/#upgrade-request
-  // TODO(https://crbug.com/987491): Set |ResourceRequest::upgrade_if_insecure_|
+  // TODO(crbug.com/40637521): Set |ResourceRequest::upgrade_if_insecure_|
   // appropriately.
 
   if (service_worker_loader_helpers::ShouldValidateBrowserCacheForScript(
@@ -261,7 +261,7 @@ void ServiceWorkerSingleScriptUpdateChecker::OnReceiveResponse(
              ->ShouldServiceWorkerInheritPolicyContainerFromCreator(
                  script_url_)) {
       policy_container_host_ = base::MakeRefCounted<PolicyContainerHost>(
-          // TODO(https://crbug.com/1366920): Ensure parsed headers are
+          // TODO(crbug.com/40867256): Ensure parsed headers are
           // available
           response_head->parsed_headers
               // This does not parse the referrer policy, which will be

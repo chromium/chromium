@@ -116,7 +116,7 @@ class PrefetchBrowserTestPrivacyChanges
 };
 
 // Test flakes.
-// TODO(crbug.com/1395163): Resolve flake and reenable.
+// TODO(crbug.com/40248957): Resolve flake and reenable.
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTestPrivacyChanges,
                        DISABLED_RedirectNotFollowed) {
   const char* prefetch_path = "/prefetch.html";

@@ -66,7 +66,7 @@ class StubDevToolsAgentHostClient : public content::DevToolsAgentHostClient {
 // is tracking while a cross-site navigation is canceled after having reached
 // the ReadyToCommit stage.
 // See https://crbug.com/695203.
-// TODO(crbug.com/1452098): Re-enable this test
+// TODO(crbug.com/40916125): Re-enable this test
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_CancelCrossOriginNavigationAfterReadyToCommit \
   DISABLED_CancelCrossOriginNavigationAfterReadyToCommit

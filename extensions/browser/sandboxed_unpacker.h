@@ -318,7 +318,7 @@ class SandboxedUnpacker : public ImageSanitizer::Client {
   // The decoded install icon.
   SkBitmap install_icon_;
 
-  // TODO(crbug.com/1346172): Consider to wrap it in base::SequenceBound
+  // TODO(crbug.com/40232388): Consider to wrap it in base::SequenceBound
   std::unique_ptr<IOThreadState> io_thread_state_;
 };
 

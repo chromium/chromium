@@ -32,17 +32,19 @@ namespace {
 std::vector<const char*>* GetDeprecatedPrefs() {
   // Add deprecated previously tracked preferences below for them to be cleaned
   // up from both the pref files and the hash store.
-  static std::vector<const char*> prefs {
+  static std::vector<const char*> prefs{
 #if BUILDFLAG(IS_WIN)
-    // TODO(crbug/1439998): Remove after Oct 2024
-    "software_reporter.prompt_version", "software_reporter.prompt_seed",
-        "settings_reset_prompt.prompt_wave",
-        "settings_reset_prompt.last_triggered_for_default_search",
-        "settings_reset_prompt.last_triggered_for_startup_urls",
-        "settings_reset_prompt.last_triggered_for_homepage",
-        "software_reporter.reporting",
-        // Also delete the now empty dictionaries.
-        "software_reporter", "settings_reset_prompt",
+      // TODO(crbug.com/40265803): Remove after Oct 2024
+      "software_reporter.prompt_version",
+      "software_reporter.prompt_seed",
+      "settings_reset_prompt.prompt_wave",
+      "settings_reset_prompt.last_triggered_for_default_search",
+      "settings_reset_prompt.last_triggered_for_startup_urls",
+      "settings_reset_prompt.last_triggered_for_homepage",
+      "software_reporter.reporting",
+      // Also delete the now empty dictionaries.
+      "software_reporter",
+      "settings_reset_prompt",
 #endif
   };
 

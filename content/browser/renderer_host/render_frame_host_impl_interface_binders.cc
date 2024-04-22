@@ -265,7 +265,7 @@ void RenderFrameHostImpl::SetUpMojoConnection() {
             base::Unretained(this)));
   }
 
-  // TODO(crbug.com/1395830): Avoid binding the DomAutomationControllerHost
+  // TODO(crbug.com/40249262): Avoid binding the DomAutomationControllerHost
   // interface outside of tests.
   associated_registry_->AddInterface<mojom::DomAutomationControllerHost>(
       base::BindRepeating(

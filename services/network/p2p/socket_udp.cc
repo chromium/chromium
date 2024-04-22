@@ -388,8 +388,8 @@ bool P2PSocketUdp::DoSend(const P2PPendingPacket& packet) {
       &P2PSocketUdp::OnSend, base::Unretained(this), packet.id,
       packet.packet_options.packet_id, send_time_us / 1000);
 
-  // TODO(crbug.com/656607): Pass traffic annotation after DatagramSocketServer
-  // is updated.
+  // TODO(crbug.com/40489281): Pass traffic annotation after
+  // DatagramSocketServer is updated.
   int result = socket_->SendTo(packet.data.get(), packet.size, packet.to,
                                base::BindOnce(callback_binding));
 

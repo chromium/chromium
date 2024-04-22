@@ -319,7 +319,7 @@ void TryChangeWifiOptions(int options) {
   EXPECT_EQ(previous_options, GetWifiOptions());
 }
 
-// Test fails on Win Arm64 bots. TODO(https://crbug.com/1425465): Fix on bot.
+// Test fails on Win Arm64 bots. TODO(crbug.com/40260910): Fix on bot.
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
 #define MAYBE_SetWifiOptions DISABLED_SetWifiOptions
 #else

@@ -257,7 +257,7 @@ void CertVerifierServiceFactoryImpl::UpdateCtLogList(
     scoped_refptr<const net::CTLogVerifier> log_verifier =
         net::CTLogVerifier::Create(log->public_key, log->name);
     if (!log_verifier) {
-      // TODO(crbug.com/1211056): Signal bad configuration (such as bad key).
+      // TODO(crbug.com/40767441): Signal bad configuration (such as bad key).
       continue;
     }
     ct_logs.push_back(std::move(log_verifier));

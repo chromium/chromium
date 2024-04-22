@@ -53,7 +53,7 @@ void LockScreenServiceImpl::SetData(const std::string& key,
 }
 
 bool LockScreenServiceImpl::IsAllowed() {
-  // TODO(crbug.com/1278144): Ideally we wouldn't even need to bind the
+  // TODO(crbug.com/40810036): Ideally we wouldn't even need to bind the
   // interface in the cases below.
   if (origin().opaque())
     return false;

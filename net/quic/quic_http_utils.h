@@ -16,8 +16,8 @@
 
 namespace net {
 
-// TODO(crbug/988608): Convert to SpdyStreamPrecedence directly instead of to
-// SpdyPriority which will go away eventually.
+// TODO(crbug.com/40638051): Convert to SpdyStreamPrecedence directly instead of
+// to SpdyPriority which will go away eventually.
 NET_EXPORT_PRIVATE spdy::SpdyPriority ConvertRequestPriorityToQuicPriority(
     RequestPriority priority);
 

@@ -18,7 +18,7 @@
 #include "extensions/shell/browser/shell_virtual_keyboard_delegate.h"
 #include "extensions/shell/browser/shell_web_view_guest_delegate.h"
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "extensions/shell/browser/api/file_system/shell_file_system_delegate.h"
@@ -56,7 +56,7 @@ ShellExtensionsAPIClient::CreateDisplayInfoProvider() const {
   return std::make_unique<ShellDisplayInfoProvider>();
 }
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 FileSystemDelegate* ShellExtensionsAPIClient::GetFileSystemDelegate() {

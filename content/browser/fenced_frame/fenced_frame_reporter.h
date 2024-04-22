@@ -92,8 +92,8 @@ class CONTENT_EXPORT FencedFrameReporter
   using DestinationVariant = absl::
       variant<DestinationEnumEvent, DestinationURLEvent, AutomaticBeaconEvent>;
 
-  // TODO(crbug.com/1492125): Once the CL that stops repeating checks for fenced
-  // frame reporting beacons is landed, this observer will be extended to
+  // TODO(crbug.com/40285398): Once the CL that stops repeating checks for
+  // fenced frame reporting beacons is landed, this observer will be extended to
   // observe whether the beacon is eventually sent or not.
   class ObserverForTesting : public base::CheckedObserver {
    public:
@@ -208,7 +208,7 @@ class CONTENT_EXPORT FencedFrameReporter
   // be called with an empty ReportingMacros, so it can discard macro reports,
   // and provide errors messages for subsequent SendReporter().
   //
-  // TODO(https://crbug.com/1409133): Consider investing in outputting error to
+  // TODO(crbug.com/40253851): Consider investing in outputting error to
   // correct frame, if it still exists. `frame_tree_node_id` somewhat does this,
   // though it doesn't change across navigations, so could end up displaying an
   // error for a page a frame was previously displaying. There may be other

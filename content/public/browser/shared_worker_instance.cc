@@ -58,7 +58,7 @@ bool SharedWorkerInstance::Matches(
     return false;
   }
 
-  // TODO(https://crbug.com/794098): file:// URLs should be treated as opaque
+  // TODO(crbug.com/40554285): file:// URLs should be treated as opaque
   // origins, but not in url::Origin. Therefore, we manually check it here.
   if (url.SchemeIsFile() || storage_key.origin().scheme() == url::kFileScheme)
     return false;

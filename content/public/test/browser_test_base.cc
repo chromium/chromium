@@ -435,7 +435,7 @@ void BrowserTestBase::SetUp() {
 
 #if BUILDFLAG(IS_FUCHSIA)
   // GPU support is not available to tests.
-  // TODO(crbug.com/1259462): Enable GPU support.
+  // TODO(crbug.com/40797662): Enable GPU support.
   command_line->AppendSwitch(switches::kDisableGpu);
 
   ui::fuchsia::IgnorePresentCallsForTest();
@@ -456,7 +456,8 @@ void BrowserTestBase::SetUp() {
   // //chrome/browser/ash/crosapi/test_mojo_connection_manager.h.
   {
     if (!chromeos::BrowserParamsProxy::Get()->IsCrosapiDisabledForTesting()) {
-      // TODO(crbug.com/1127581): Switch to use |kLacrosMojoSocketForTesting| in
+      // TODO(crbug.com/40719121): Switch to use |kLacrosMojoSocketForTesting|
+      // in
       // //ash/constants/ash_switches.h.
       // Please refer to the CL comments for why it can't be done now:
       // http://crrev.com/c/2402580/2/content/public/test/browser_test_base.cc
@@ -582,7 +583,7 @@ void BrowserTestBase::SetUp() {
     logging::SetLogMessageHandler([](int severity, const char* file, int line,
                                      size_t message_start,
                                      const std::string& str) {
-      // TODO(crbug.com/1157954): Print the message to the console before
+      // TODO(crbug.com/40161080): Print the message to the console before
       // calling this to ensure that the message is still printed if something
       // goes wrong.
       if (severity == logging::LOGGING_FATAL)
@@ -828,7 +829,7 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
   // Re-allow such tasks while for init / tear down
   // (ScopedDisallowBlocking objects below ensure the test body is tested under
   // the same blocking-ban as the regular main message loop).
-  // TODO(crbug.com/1253634): Remove this wide allowance in favor of localized
+  // TODO(crbug.com/40793886): Remove this wide allowance in favor of localized
   // allowances for init/teardown phases.
   base::ScopedAllowUnresponsiveTasksForTesting allow_for_init;
 
@@ -1084,7 +1085,7 @@ void BrowserTestBase::InitializeNetworkProcess() {
   // pick up the host resolver rules, but it will not automatically see
   // `replace_system_dns_config_` and `test_doh_config_`.
   //
-  // TODO(https://crbug.com/1295732): Can the Mojo interface also be used in
+  // TODO(crbug.com/40821298): Can the Mojo interface also be used in
   // this case?
   if (IsInProcessNetworkService()) {
     if (replace_system_dns_config_ || test_doh_config_) {

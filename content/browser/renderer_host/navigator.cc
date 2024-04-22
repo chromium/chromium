@@ -671,7 +671,7 @@ void Navigator::DidNavigate(
   // group, update the browsing context group in all the renderers that have a
   // representation of this page. Do not update the page in the main frame's own
   // process, as it was already updated during commit.
-  // TODO(https://crbug.com/1446696): See if that can be consolidated with other
+  // TODO(crbug.com/40268712): See if that can be consolidated with other
   // similar IPCs.
   if (render_frame_host->is_main_frame() &&
       navigation_request->browsing_context_group_swap().ShouldSwap()) {
@@ -729,7 +729,7 @@ void Navigator::DidNavigate(
   // properties of RenderFrameHost / Page / Navigation Controller / Navigation
   // Request (e.g. `RenderFrameHost::GetLastCommittedURL`,
   // `NavigationRequest::GetHttpStatusCode`) before notifying the observers.
-  // TODO(crbug.com/1275933): Don't dispatch PrimaryPageChanged for initial
+  // TODO(crbug.com/40207280): Don't dispatch PrimaryPageChanged for initial
   // empty document navigations.
   if (!was_within_same_document && render_frame_host->is_main_frame()) {
     render_frame_host->GetPage().NotifyPageBecameCurrent();

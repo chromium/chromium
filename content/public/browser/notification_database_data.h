@@ -22,7 +22,7 @@ namespace content {
 // database. Beyond the notification's own data, its id and attribution need
 // to be available for users of the database as well.
 // Note: There are extra properties being stored for UKM logging purposes.
-// TODO(https://crbug.com/842622): Add the UKM that will use these properties.
+// TODO(crbug.com/40576162): Add the UKM that will use these properties.
 struct CONTENT_EXPORT NotificationDatabaseData {
   NotificationDatabaseData();
   NotificationDatabaseData(const NotificationDatabaseData& other);

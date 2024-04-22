@@ -1313,7 +1313,7 @@ bool Database::DetachDatabase(std::string_view attachment_point) {
   return statement.Run();
 }
 
-// TODO(crbug.com/1230443): Change this to execute exactly one statement.
+// TODO(crbug.com/40779018): Change this to execute exactly one statement.
 SqliteResultCode Database::ExecuteAndReturnResultCode(const char* sql) {
   TRACE_EVENT0("sql", "Database::ExecuteAndReturnErrorCode");
 
@@ -1980,7 +1980,7 @@ bool Database::OpenInternal(const std::string& db_file_path) {
   //
   // We currently set different values for small vs large files.
   //
-  // TODO(crbug.com/1305778): Replace file size-based heuristic with a
+  // TODO(crbug.com/40827336): Replace file size-based heuristic with a
   // DatabaseOptions member. Use the DatabaseOptions value for temporary
   // databases as well.
   sqlite3_file* file = GetSqliteVfsFile();

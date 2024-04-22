@@ -125,7 +125,7 @@ void InvalidateContext(v8::Local<v8::Context> context) {
 }
 
 std::string GetPlatformString() {
-// TODO(https://crbug.com/1052397): For readability, this should become
+// TODO(crbug.com/40118868): For readability, this should become
 // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_LACROS). The second
 // conditional should be BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH).
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -879,7 +879,7 @@ TopicsHeaderValueResult GetTopicsHeaderValueForNavigationRequest(
   RenderFrameHostImpl* rfh = frame_tree_node->current_frame_host();
 
   // Skip top frame navigation.
-  // TODO(crbug.com/1424261): This should be checked at the mojom boundary of
+  // TODO(crbug.com/40260337): This should be checked at the mojom boundary of
   // RenderFrameHostImpl::DidChangeIframeAttributes, and should be a DCHECK
   // here.
   if (rfh->is_main_frame()) {
@@ -1385,7 +1385,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
 
   // CreateRendererInitiated() should only be triggered when the navigation is
   // initiated by a frame in the same process.
-  // TODO(https://crbug.com/1074464): Find a way to DCHECK that the routing ID
+  // TODO(crbug.com/40686861): Find a way to DCHECK that the routing ID
   // is from the current RFH.
   int initiator_process_id =
       frame_tree_node->current_frame_host()->GetProcess()->GetID();
@@ -1824,7 +1824,7 @@ NavigationRequest::NavigationRequest(
 
   // Let the NTP override the navigation params and pretend that this is a
   // browser-initiated, bookmark-like navigation.
-  // TODO(crbug.com/1099431): determine why some link navigations on chrome://
+  // TODO(crbug.com/40702467): determine why some link navigations on chrome://
   //     pages have |browser_initiated| set to true and others set to false.
   if (source_site_instance_) {
     bool is_renderer_initiated = !browser_initiated;
@@ -4109,7 +4109,7 @@ const GURL& NavigationRequest::GetOriginalRequestURL() {
   // is started by a client redirect, this will be the URL of the document that
   // started the redirect. Otherwise, this will be the first destination URL
   // of the navigation, before any server redirects.
-  // TODO(https://crbug.com/1176636): Reconsider the behavior with client
+  // TODO(crbug.com/40168423): Reconsider the behavior with client
   // redirects, as all script-initiated navigations are considered client
   // redirects, which means the client redirect might not always trigger
   // immediately (or at all, if the navigation depends on user interaction)
@@ -5855,7 +5855,7 @@ void NavigationRequest::CommitNavigation() {
        origin_to_commit.GetTupleOrPrecursorTupleIfOpaque() !=
            common_params()
                .initiator_origin->GetTupleOrPrecursorTupleIfOpaque())) {
-    // TODO(https://crbug.com/1169736): Make this unreachable by blocking
+    // TODO(crbug.com/40165505): Make this unreachable by blocking
     // cross-origin about:srcdoc navigations. Then enforce that the chosen
     // origin for srcdoc cases agrees with the parent frame's origin.
     common_params_->initiator_base_url = std::nullopt;
@@ -7523,7 +7523,7 @@ void NavigationRequest::DidCommitNavigation(
     service_worker_handle_->OnEndNavigationCommit();
   }
 
-  // TODO(https://crbug.com/1399499): consider using NavigationOrDocumentHandle
+  // TODO(crbug.com/40249865): consider using NavigationOrDocumentHandle
   // instead once we can get a WeakDocumentPtr from NavigationOrDocumentHandle.
   if (subresource_proxying_url_loader_service_bind_context_) {
     DCHECK(!IsSameDocument());
@@ -8596,7 +8596,7 @@ net::IsolationInfo NavigationRequest::GetIsolationInfo() {
   if (isolation_info_)
     return isolation_info_.value();
 
-  // TODO(crbug.com/979296): Consider changing this code to copy an origin
+  // TODO(crbug.com/40634002): Consider changing this code to copy an origin
   // instead of creating one from a URL which lacks opacity information.
   return frame_tree_node_->current_frame_host()
       ->ComputeIsolationInfoForNavigation(
@@ -9149,7 +9149,7 @@ NavigationRequest::BuildClientSecurityStateForNavigationFetch() {
     // since those do not use MPArch.
     //
     // TODO(crbug.com/40258825): Determine how to treat portals.
-    // TODO(https://crbug.com/1420577): Determine how to treat guest views.
+    // TODO(crbug.com/40258826): Determine how to treat guest views.
     //
     // NOTE: ShadowDOM-based fenced frames are treated as `kSubframe`.
     case FrameType::kPrimaryMainFrame:

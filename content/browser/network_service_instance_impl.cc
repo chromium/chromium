@@ -893,7 +893,7 @@ GetCertVerifierServiceFactoryForTesting() {
   // from GetCertVerifierServiceFactoryRemoteForTesting() applies here, but
   // since this method could be called on the IO thread, it is not CHECKed here.
 
-  // TODO(https://crbug.com/1085233): This depends on the cert verifier service
+  // TODO(crbug.com/40693524): This depends on the cert verifier service
   // and the network service both being in the same process as the unit test.
   // The network service is taken care of by `UnitTestTestSuite` calling
   // `ForceCreateNetworkServiceDirectlyForTesting()`, but if the cert verifier

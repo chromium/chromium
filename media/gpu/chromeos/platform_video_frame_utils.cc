@@ -381,7 +381,7 @@ scoped_refptr<VideoFrame> CreateVideoFrameFromGpuMemoryBufferHandle(
     return nullptr;
 
   // We only support importing non-DISJOINT multi-planar GbmBuffer right now.
-  // TODO(crbug.com/1258986): Add DISJOINT support.
+  // TODO(crbug.com/40201271): Add DISJOINT support.
   frame->metadata().is_webgpu_compatible = supports_zero_copy_webgpu_import;
 
   return frame;

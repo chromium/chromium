@@ -287,7 +287,7 @@ bool WebAppFileHandlerMatch::matched_file_extension() const {
 }
 
 bool WebAppFileHandlerMatch::DoMatch(const EntryInfo& entry) {
-  // TODO(crbug.com/1060026): At the moment, apps::FileHandler doesn't have
+  // TODO(crbug.com/40678811): At the moment, apps::FileHandler doesn't have
   // an include_directories flag. It may be necessary to add one as this new
   // representation replaces apps::FileHandlerInfo.
   if (entry.is_directory)

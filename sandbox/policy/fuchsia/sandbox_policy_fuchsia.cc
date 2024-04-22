@@ -72,7 +72,7 @@ struct SandboxConfig {
 // Prevent incorrect indentation due to the preprocessor lines within `({...})`:
 // clang-format off
 constexpr auto kMinimalServices = base::make_span((const char* const[]){
-    // TODO(crbug.com/1286960): Remove this and/or intl below if an alternative
+    // TODO(crbug.com/40815933): Remove this and/or intl below if an alternative
     // solution does not require access to the service in all processes. For now
     // these services are made available everywhere because they are required by
     // base::SysInfo.

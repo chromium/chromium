@@ -24,7 +24,7 @@ bool PathProviderFuchsia(int key, FilePath* result) {
       *result = base::FilePath(base::kPackageRootDirectoryPath);
       return true;
 
-    // TODO(crbug.com/1459692): Align with other platforms and remove this
+    // TODO(crbug.com/40274404): Align with other platforms and remove this
     // specialization.
     case DIR_GEN_TEST_DATA_ROOT:
       [[fallthrough]];

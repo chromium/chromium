@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest, Pause) {
   MakeTypicalCall("testPauseAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
-// TODO(crbug.com/571389): Flaky on TSAN bots.
+// TODO(crbug.com/40450139): Flaky on TSAN bots.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PauseStop DISABLED_PauseStop
 #else

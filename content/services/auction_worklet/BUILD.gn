@@ -160,7 +160,7 @@ source_set("tests") {
     "worklet_v8_debug_test_util.h",
   ]
 
-  # TODO(crbug.com/1413818): These tests depend on WASM.
+  # TODO(crbug.com/40255826): These tests depend on WASM.
   if (!is_ios) {
     sources += [
       "auction_v8_helper_unittest.cc",

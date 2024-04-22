@@ -33,7 +33,7 @@
 #include "third_party/boringssl/src/pki/trust_store.h"
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
-// TODO(crbug.com/1482000): We can remove these weak attributes in M123 or
+// TODO(crbug.com/40281745): We can remove these weak attributes in M123 or
 // later. Until then, these need to be declared with the weak attribute
 // since older platforms may not provide these symbols.
 extern "C" CERTCertList* CERT_CreateSubjectCertListForChromium(

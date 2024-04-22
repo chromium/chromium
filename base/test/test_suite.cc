@@ -124,7 +124,7 @@ class DisableMaybeTests : public testing::EmptyTestEventListener {
 class ResetCommandLineBetweenTests : public testing::EmptyTestEventListener {
  public:
   ResetCommandLineBetweenTests() : old_command_line_(CommandLine::NO_PROGRAM) {
-    // TODO(crbug.com/1123627): Remove this after A/B test is done.
+    // TODO(crbug.com/40053215): Remove this after A/B test is done.
     // Workaround a test-specific race conditon with StatisticsRecorder lock
     // initialization checking CommandLine by ensuring it's created here (when
     // we start the test process), rather than in some arbitrary test. This

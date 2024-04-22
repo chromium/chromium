@@ -197,7 +197,7 @@ WebEngineBrowserContext::WebEngineBrowserContext(
 
   BrowserContextDependencyManager::GetInstance()->MarkBrowserContextLive(this);
 
-  // TODO(crbug.com/1181156): Should apply any persisted isolated origins here.
+  // TODO(crbug.com/40170271): Should apply any persisted isolated origins here.
   // However, since WebEngine does not persist any, that would currently be a
   // no-op.
 }

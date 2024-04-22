@@ -349,7 +349,7 @@ void ScriptInjection::InjectOrRemoveCss(
         // (i.e. x - y = x + -y and x | y = ~(~x & ~y)), so it is handled here
         // in the injection function.
         //
-        // TODO(https://crbug.com/1116061): Extend this API's capabilities to
+        // TODO(crbug.com/40144586): Extend this API's capabilities to
         // also remove CSS added by content scripts?
         web_frame->GetDocument().RemoveInsertedStyleSheet(source.key,
                                                           blink_css_origin);

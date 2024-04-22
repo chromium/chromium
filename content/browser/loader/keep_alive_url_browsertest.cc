@@ -498,7 +498,7 @@ IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest, OneRequest) {
 // Note: Chromium allows at most 6 concurrent connections to the same host under
 // HTTP 1.1 protocol, which `server()` uses by default.
 // Exceeding this limit will hang the browser.
-// TODO(crbug.com/1428502): Flaky on Fuchsia and Android.
+// TODO(crbug.com/40262244): Flaky on Fuchsia and Android.
 IN_PROC_BROWSER_TEST_P(KeepAliveURLBrowserTest,
                        DISABLED_TwoConcurrentRequestsPerHost) {
   const std::string method = GetParam();
@@ -1425,7 +1425,7 @@ IN_PROC_BROWSER_TEST_P(SendBeaconBrowserTest,
 // endpoint (/no-cors-server-redirect-307) which does not support CORS.
 // As navigator.sendBeacon() marks its request with `no-cors`, the redirect
 // should succeed.
-// TODO(crbug.com/1485088): Flaky on Android and Mac.
+// TODO(crbug.com/40282448): Flaky on Android and Mac.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_CrossOriginAndCORSSafelistedRedirectRequest \
   DISABLED_CrossOriginAndCORSSafelistedRedirectRequest

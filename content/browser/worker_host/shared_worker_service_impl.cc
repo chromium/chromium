@@ -127,8 +127,8 @@ void SharedWorkerServiceImpl::ConnectToWorker(
   RenderFrameHostImpl* render_frame_host =
       RenderFrameHostImpl::FromID(client_render_frame_host_id);
   if (!render_frame_host) {
-    // TODO(crbug.com/31666): Support the case where the requester is a worker
-    // (i.e., nested worker).
+    // TODO(crbug.com/40340498): Support the case where the requester is a
+    // worker (i.e., nested worker).
     ScriptLoadFailed(std::move(client), /*error_message=*/"");
     return;
   }

@@ -84,7 +84,7 @@ class GPU_EXPORT ClientSharedImage
 
     // ScopedMapping is essentially a wrapper around GpuMemoryBuffer for now for
     // simplicity and will be removed later.
-    // TODO(crbug.com/1474697): Refactor/Rename GpuMemoryBuffer and its
+    // TODO(crbug.com/40279377): Refactor/Rename GpuMemoryBuffer and its
     // implementations  as the end goal after all clients using GMB are
     // converted to use the ScopedMapping and notion of GpuMemoryBuffer is being
     // removed.

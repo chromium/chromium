@@ -192,7 +192,7 @@ void MarkRequestCompleteTask::DidOpenCache(
   std::vector<blink::mojom::BatchOperationPtr> operations;
   operations.emplace_back(std::move(put));
 
-  // TODO(crbug.com/774054): The request blob stored in the cache is being
+  // TODO(crbug.com/40544433): The request blob stored in the cache is being
   // overwritten here, it should be written back.
   cache_storage_cache_remote()->Batch(
       std::move(operations), trace_id,

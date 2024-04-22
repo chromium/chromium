@@ -175,7 +175,7 @@ class SignedExchangeRequestHandlerBrowserTestBase
     // Enable BackForwardCache for now as some tests are flaky when the previous
     // RenderFrameHost doesn't change on navigation (the histograms are not
     // recoded correctly).
-    // TODO(https://crbug.com/1373767): Figure out why and fix.
+    // TODO(crbug.com/40242189): Figure out why and fix.
     feature_list_.InitWithFeatures(
         {features::kSignedHTTPExchange, features::kBackForwardCache}, {});
   }

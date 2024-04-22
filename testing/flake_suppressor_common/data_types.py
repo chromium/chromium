@@ -33,7 +33,7 @@ class Result():
   for the purposes of the flake finder.
   """
 
-  # TODO(crbug.com/1358735): Refactor this Class to take ResultTupleType as an
+  # TODO(crbug.com/40237087): Refactor this Class to take ResultTupleType as an
   # input.
   def __init__(self,
                suite: str,

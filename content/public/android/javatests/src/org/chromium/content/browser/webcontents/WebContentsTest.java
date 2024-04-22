@@ -115,7 +115,7 @@ public class WebContentsTest {
      */
     @Test
     @SmallTest
-    // TODO(crbug.com/635567): Fix this properly.
+    // TODO(crbug.com/40479664): Fix this properly.
     @SuppressLint("ParcelClassLoader")
     public void testWebContentsSerializeDeserializeInBundle() {
         mActivityTestRule.launchContentShellWithUrl(TEST_URL_1);
@@ -156,7 +156,7 @@ public class WebContentsTest {
      */
     @Test
     @SmallTest
-    // TODO(crbug.com/635567): Fix this properly.
+    // TODO(crbug.com/40479664): Fix this properly.
     @SuppressLint("ParcelClassLoader")
     public void testWebContentsSerializeDeserializeInIntent() {
         mActivityTestRule.launchContentShellWithUrl(TEST_URL_1);

@@ -235,7 +235,7 @@ template("fuchsia_test_runner") {
       "$root_gen_dir/package_metadata/${invoker.package_name}.meta",
     ]
 
-    # TODO(crbug.com/1256870): Remove this once all out-of-tree references
+    # TODO(crbug.com/40200403): Remove this once all out-of-tree references
     # to "package_name_override" are migrated to "package_name".
     if (defined(invoker.package_name_override)) {
       package_name = invoker.package_name_override

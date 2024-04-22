@@ -153,7 +153,7 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
                          OnConnectionLostWhileWaitingForCallback,
                      base::Unretained(this)));
 
-  // TODO(crbug.com/925083)
+  // TODO(crbug.com/40610987)
   media::VideoCaptureParams new_params = params;
   new_params.power_line_frequency =
       media::VideoCaptureDevice::GetPowerLineFrequency(params);

@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
 }
 
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM_FAMILY))
-// TODO(https://crbug.com/1270792): Failing on Mac.
+// TODO(crbug.com/40805145): Failing on Mac.
 // TODO(https://crbug.com/1280308): Failing on Fuchsia arm.
 #define MAYBE_Playback_VideoOnly_MP4_VP9Profile2 \
   DISABLED_Playback_VideoOnly_MP4_VP9Profile2

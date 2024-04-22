@@ -752,7 +752,7 @@ mojom("vulkan_interface") {
   webui_module_path = "/"
   generate_legacy_js_bindings = true
 
-  # TODO(crbug.com/1062364): This interface code is used by some javascript
+  # TODO(crbug.com/40122851): This interface code is used by some javascript
   # targets even when vulkan isn't enabled, but the C++ fuzzer code will fail
   # to compile if the headers aren't available.
   if (!enable_vulkan) {

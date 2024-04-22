@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, IframeNotFound) {
 
 // An MHTML document with an iframe using a data-URL. The data-URL is not
 // defined in the MHTML archive.
-// TODO(https://crbug.com/967307): Enable this test. It currently reaches a
+// TODO(crbug.com/40629273): Enable this test. It currently reaches a
 // DCHECK or timeout in release mode.
 IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest, IframeDataUrlNotFound) {
   MhtmlArchive mhtml_archive;

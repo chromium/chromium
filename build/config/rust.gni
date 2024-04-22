@@ -73,7 +73,7 @@ declare_args() {
   # compilation artifacts produced by `rustc`).  In LaCrOS and ash builds this
   # may not be true - see b/299483903.
   #
-  # TODO(https://crbug.com/1482525): Re-enable ThinLTO for Rust on LaCrOS
+  # TODO(crbug.com/40281834): Re-enable ThinLTO for Rust on LaCrOS
   # TODO(b/300937673): Re-enable ThinLTO for Rust on ash-chrome
   toolchain_supports_rust_thin_lto = !is_chromeos
 

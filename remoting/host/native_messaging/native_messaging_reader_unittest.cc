@@ -114,7 +114,7 @@ TEST_F(NativeMessagingReaderTest, ReaderDestroyedByClosingPipe) {
 #if BUILDFLAG(IS_WIN)
 // This scenario is only a problem on Windows as closing the write pipe there
 // does not trigger the parent process to close the read pipe.
-// TODO(crbug.com/1313610) Disabled because it's flaky.
+// TODO(crbug.com/40221037) Disabled because it's flaky.
 TEST_F(NativeMessagingReaderTest, DISABLED_ReaderDestroyedByOwner) {
   WriteMessage("{\"foo\": 42}");
   RunAndWaitForOperationComplete();

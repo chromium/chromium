@@ -27,7 +27,8 @@ public final class StrictModeContext implements Closeable {
     private final StrictMode.VmPolicy mVmPolicy;
 
     private StrictModeContext(StrictMode.ThreadPolicy threadPolicy, StrictMode.VmPolicy vmPolicy) {
-        // TODO(crbug/1475610): Determine after auditing strict mode context usage if we should keep
+        // TODO(crbug.com/40279700): Determine after auditing strict mode context usage if we should
+        // keep
         // or remove these trace events.
         TraceEvent.startAsync("StrictModeContext", hashCode());
         mThreadPolicy = threadPolicy;

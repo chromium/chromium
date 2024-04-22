@@ -926,7 +926,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // created if this is a root or child local root).
   // The `frame_routing_id` and `frame_remote` are both valid or not together,
   // as they are valid when the renderer-side frame is already created.
-  // TODO(https://crbug.com/1060082): Eliminate or rename
+  // TODO(crbug.com/40121874): Eliminate or rename
   // renderer_initiated_creation.
   std::unique_ptr<RenderFrameHostImpl> CreateRenderFrameHost(
       CreateFrameCase create_frame_case,

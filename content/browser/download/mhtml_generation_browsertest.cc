@@ -345,9 +345,9 @@ class MHTMLGenerationTest : public ContentBrowserTest,
     ASSERT_TRUE(has_mhtml_callback_run())
         << "Unexpected error generating MHTML file";
 
-    // TODO(crbug.com/997408): Add tests which will let MHTMLGeneration manager
-    // fail during file write operation. This will allow us to actually test if
-    // we receive a bogus hash instead of a std::nullopt.
+    // TODO(crbug.com/40641976): Add tests which will let MHTMLGeneration
+    // manager fail during file write operation. This will allow us to actually
+    // test if we receive a bogus hash instead of a std::nullopt.
     EXPECT_EQ(std::nullopt, file_digest());
 
     // Skip well formedness check if explicitly disabled or there was a

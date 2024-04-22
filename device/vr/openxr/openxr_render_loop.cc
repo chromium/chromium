@@ -167,7 +167,7 @@ void OpenXrRenderLoop::GetFrameData(
   pending_frame_->webxr_has_pose_ = true;
   pending_frame_->sent_frame_data_time_ = base::TimeTicks::Now();
 
-  // TODO(https://crbug.com/1218135): The lack of frame_data_ here indicates
+  // TODO(crbug.com/40771470): The lack of frame_data_ here indicates
   // that we probably should have deferred this call, but it matches the
   // behavior from before the stage parameters were updated in this function and
   // avoids a crash. Likely the deferral above should check if we're awaiting
@@ -828,7 +828,7 @@ void OpenXrRenderLoop::SubmitFrame(int16_t frame_index,
   DVLOG(3) << __func__ << " frame_index=" << frame_index;
   CHECK(!graphics_binding_->IsUsingSharedImages());
   DCHECK(BUILDFLAG(IS_ANDROID));
-  // TODO(https://crbug.com/1454942): Support non-shared buffer mode.
+  // TODO(crbug.com/40917172): Support non-shared buffer mode.
   SubmitFrameMissing(frame_index, mailbox.sync_token);
 }
 
@@ -860,7 +860,7 @@ void OpenXrRenderLoop::OnWebXrTokenSignaled(
     return;
   }
 
-  // TODO(https://crbug.com/1454950): Unify OpenXr Rendering paths.
+  // TODO(crbug.com/40917174): Unify OpenXr Rendering paths.
 #if BUILDFLAG(IS_WIN)
   SubmitFrameWithTextureHandle(frame_index, mojo::PlatformHandle(),
                                gpu::SyncToken());

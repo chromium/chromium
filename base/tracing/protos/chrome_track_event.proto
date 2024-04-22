@@ -597,7 +597,7 @@ message ChromeThreadPoolTask {
   optional ShutdownBehavior shutdown_behavior = 4;
 }
 
-// TODO(crbug.com/1258495): Add more information.
+// TODO(crbug.com/40797026): Add more information.
 message BackForwardCacheCanStoreDocumentResult {
   enum BackForwardCacheNotRestoredReason {
     NOT_MAIN_FRAME = 1;
@@ -723,7 +723,7 @@ message RendererMainThreadTaskExecution {
     TASK_TYPE_WORKER_THREAD_TASK_QUEUE_COMPOSITOR = 48;
     TASK_TYPE_COMPOSITOR_THREAD_TASK_QUEUE_INPUT = 49;
 
-    // TODO(crbug.com/860545): Obsolete. Remove.
+    // TODO(crbug.com/40583778): Obsolete. Remove.
     TASK_TYPE_NETWORKING_WITH_URL_LOADER_ANNOTATION = 50;
 
     TASK_TYPE_WORKER_ANIMATION = 51;

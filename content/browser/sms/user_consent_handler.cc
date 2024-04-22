@@ -51,7 +51,7 @@ void PromptBasedUserConsentHandler::RequestUserConsent(
   if (!frame_host_->IsActive()) {
     // Skips showing the SMS prompt if the RFH is inactive. e.g. it's stored in
     // BackForwardCache or waiting to be unloaded and deleted.
-    // TODO(crbug.com/1230106): Record how often the RFH is inactive upon
+    // TODO(crbug.com/40190200): Record how often the RFH is inactive upon
     // requesting user consent.
     std::move(on_complete).Run(UserConsentResult::kInactiveRenderFrameHost);
     return;

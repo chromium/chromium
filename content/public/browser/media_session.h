@@ -43,7 +43,7 @@ class MediaSession : public media_session::mojom::MediaSession {
 
   // Media item IDs have a shared namespace including both UnguessableTokens and
   // strings.
-  // TODO(https://crbug.com/1260385): Use UnguessableToken only and remove this
+  // TODO(crbug.com/40798185): Use UnguessableToken only and remove this
   // API.
   CONTENT_EXPORT static WebContents* GetWebContentsFromRequestId(
       const std::string& request_id);

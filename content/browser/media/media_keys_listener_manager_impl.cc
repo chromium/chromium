@@ -471,7 +471,7 @@ void MediaKeysListenerManagerImpl::UpdateMediaKeysListener() {
 
 bool MediaKeysListenerManagerImpl::ShouldListenToKey(
     const ListeningData& listening_data) const {
-  // TODO(crbug.com/1502991) verify if this needs a PWA check.
+  // TODO(crbug.com/40943399) verify if this needs a PWA check.
   return !listening_data.listeners.empty() ||
          (listening_data.browser_active_media_session_controller_listening &&
           CanActiveMediaSessionControllerReceiveEvents());

@@ -914,7 +914,7 @@ class WebContents : public PageNavigator,
   //
   // Always returns a non-null value.
   //
-  // TODO(crbug.com/1498410): Consider replacing this with
+  // TODO(crbug.com/40939539): Consider replacing this with
   // GuestViewBase::GetTopLevelWebContents, since that is now the only case
   // where this would return a contents other than |this|.
   virtual WebContents* GetResponsibleWebContents() = 0;
@@ -1513,7 +1513,7 @@ class WebContents : public PageNavigator,
 
   // Tag `WebContents` with its owner. Used purely for debugging purposes so it
   // does not need to be exhaustive or perfectly correct.
-  // TODO(crbug.com/1407197): Remove after bug is fixed.
+  // TODO(crbug.com/40062641): Remove after bug is fixed.
   virtual void SetOwnerLocationForDebug(
       std::optional<base::Location> owner_location) = 0;
 

@@ -605,7 +605,7 @@ bool DownloadManagerImpl::InterceptDownload(
       // Ensure the method is called from an active document.
       // If inactive documents start download, it can be a security risk.
       // Call ReceiveBadMessage to terminate such a renderer.
-      // TODO(https://crbug.com/1259521): confirm if fenced frames or portals
+      // TODO(crbug.com/40201479): confirm if fenced frames or portals
       // are allowed to start downloads.
       if (!RenderFrameHost::FromID(info.render_process_id, info.render_frame_id)
                ->IsActive()) {

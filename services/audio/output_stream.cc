@@ -405,7 +405,7 @@ void OutputStream::CallDeleter() {
   std::move(delete_callback_).Run(this);
 }
 
-// TODO(crbug.com/1017219): it might be useful to track these transitions with
+// TODO(crbug.com/40104418): it might be useful to track these transitions with
 // logs as well but note that the method is called at a rather high rate.
 void OutputStream::OnAudibleStateChanged(bool is_audible) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);

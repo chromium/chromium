@@ -518,7 +518,7 @@ void KeepAliveURLLoader::EndReceiveRedirect(
   resource_request_.referrer_policy = redirect_info.new_referrer_policy;
   // Ask the network service to follow the redirect.
   last_url_ = GURL(redirect_info.new_url);
-  // TODO(crbug.com/1393520): Remove Authorization header upon cross-origin
+  // TODO(crbug.com/40880984): Remove Authorization header upon cross-origin
   // redirect.
   if (observer_for_testing_) {
     CHECK_IS_TEST();
@@ -826,7 +826,7 @@ void KeepAliveURLLoader::ForwardingClient::OnDisconnected() {
     // The renderer disconnects before this loader forwards anything to it.
     // But the in-browser request processing may not complete yet.
 
-    // TODO(crbug.com/1422645): Ensure that attributionsrc response handling is
+    // TODO(crbug.com/40259706): Ensure that attributionsrc response handling is
     // taken over by browser.
     return;
   }

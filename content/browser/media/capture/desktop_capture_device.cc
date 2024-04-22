@@ -816,7 +816,7 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
   switch (source.type) {
     case DesktopMediaID::TYPE_SCREEN: {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      // TODO(https://crbug.com/1094460): Handle options.
+      // TODO(crbug.com/40135428): Handle options.
       std::unique_ptr<webrtc::DesktopCapturer> screen_capturer =
           std::make_unique<DesktopCapturerLacros>(
               DesktopCapturerLacros::CaptureType::kScreen,

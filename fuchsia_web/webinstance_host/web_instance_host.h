@@ -76,7 +76,7 @@ class WebInstanceHost {
   // `outgoing_directory`. WebInstanceHost owners must serve the directory
   // before creating web instances, and must ensure that the directory outlives
   // the WebInstanceHost instance.
-  // TODO(crbug.com/1327587): Remove `outgoing_directory` if and when it is
+  // TODO(crbug.com/40841277): Remove `outgoing_directory` if and when it is
   // possible for tests to serve a test-specific outgoing directory via
   // base::TestComponentContextForProcess on a separate thread.
   WebInstanceHost(sys::OutgoingDirectory& outgoing_directory,

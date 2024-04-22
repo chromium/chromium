@@ -1006,7 +1006,7 @@ bool CommitNavigationPauser::WillProcessDidCommitNavigation(
   return false;
 }
 
-// TODO(https://crbug.com/1473319): Use
+// TODO(crbug.com/40278950): Use
 // `WebFrameWidgetImpl::NotifySwapAndPresentationTime` instead.
 void WaitForCopyableViewInWebContents(WebContents* web_contents) {
   WaitForCopyableViewInFrame(web_contents->GetPrimaryMainFrame());

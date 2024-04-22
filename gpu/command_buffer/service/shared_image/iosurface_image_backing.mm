@@ -156,7 +156,7 @@ base::apple::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
   [mtl_tex_desc.get() setMipmapLevelCount:1];
   [mtl_tex_desc.get() setArrayLength:1];
   [mtl_tex_desc.get() setSampleCount:1];
-  // TODO(https://crbug.com/952063): For zero-copy resources that are populated
+  // TODO(crbug.com/40622826): For zero-copy resources that are populated
   // on the CPU (e.g, video frames), it may be that MTLStorageModeManaged will
   // be more appropriate.
 #if BUILDFLAG(IS_IOS)

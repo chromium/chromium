@@ -128,8 +128,8 @@ struct MapKeyTypes {
   map<float, float> f9;
   map<double, double> f10;
   map<string, string> f11;
-  // TODO(crbug.com/628104): JS doesn't support struct as key.  map<Rect, Rect>
-  // f12;
+  // TODO(crbug.com/40476504): JS doesn't support struct as key.
+  // map<Rect, Rect> f12;
 };
 
 // Used to verify that various map value types can be encoded and decoded

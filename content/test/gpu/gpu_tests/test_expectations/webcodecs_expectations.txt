@@ -121,7 +121,7 @@ crbug.com/1465531 [ win amd-0x7340 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123
 
 # The following expectations are added to enable WebCodecs tests on Sherlock.
 # unexpected_pass_finder is disabled so that the tool does not automatically remove these expectations.
-# TODO(crbug.com/1400465) Enable unexpected_pass_finder once test is running regularly on Sherlock.
+# TODO(crbug.com/40250273) Enable unexpected_pass_finder once test is running regularly on Sherlock.
 # finder:disable-unused
 
 # TexImage2d tests crashes GPU on Sherlock devices.

@@ -41,7 +41,7 @@ class QuotaBrowserTest : public ContentBrowserTest {
   }
 };
 
-// TODO(crbug.com/654704): Android does not support PRE_ tests.
+// TODO(crbug.com/40488499): Android does not support PRE_ tests.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(QuotaBrowserTest, PRE_QuotaDatabaseBootstrapTest) {
   base::ScopedAllowBlockingForTesting allow_blocking;

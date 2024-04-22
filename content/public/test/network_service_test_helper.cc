@@ -530,7 +530,7 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   void MockCertVerifierSetDefaultResult(
       int32_t default_result,
       MockCertVerifierSetDefaultResultCallback callback) override {
-    // TODO(crbug.com/1377734): Since testing/variations/
+    // TODO(crbug.com/40243688): Since testing/variations/
     // fieldtrial_testing_config.json changes the command line flags after
     // ContentBrowserTest::SetUpCommandLine() and NetworkServiceTest
     // instantiation, MockCertVerifierSetDefaultResult can be called without

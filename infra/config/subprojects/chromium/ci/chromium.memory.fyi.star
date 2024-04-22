@@ -112,7 +112,7 @@ ci.builder(
     reclient_jobs = reclient.jobs.DEFAULT,
 )
 
-# TODO(crbug.com/1320449): Remove this builder after burning down failures
+# TODO(crbug.com/40223516): Remove this builder after burning down failures
 # and measuring performance to see if we can roll LSan into ASan.
 ci.builder(
     name = "mac-lsan-fyi-rel",

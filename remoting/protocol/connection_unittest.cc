@@ -615,7 +615,7 @@ TEST_P(ConnectionTest, MAYBE_DestroyOnIncomingMessage) {
   run_loop.Run();
 }
 
-// TODO(crbug.com/1146302): Test is flaky.
+// TODO(crbug.com/40729981): Test is flaky.
 TEST_P(ConnectionTest, DISABLED_VideoStats) {
   // Currently this test only works for WebRTC because ICE connections stats are
   // reported by SoftwareVideoRenderer which is not used in this test.

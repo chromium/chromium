@@ -106,7 +106,7 @@ SCTAuditingCache::MaybeGenerateReportEntry(
   SHA256_Init(&ctx);
   for (const auto& sct : signed_certificate_timestamps) {
     auto* sct_source_and_status = tls_report->add_included_sct();
-    // TODO(crbug.com/1082860): Update the proto to remove the status entirely
+    // TODO(crbug.com/40692154): Update the proto to remove the status entirely
     // since only valid SCTs are reported now.
     sct_source_and_status->set_status(
         sct_auditing::SCTWithVerifyStatus::SctVerifyStatus::

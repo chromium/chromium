@@ -2197,7 +2197,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
   EXPECT_EQ(1u, GetSharedDictionaryUsageInfo(GetTargetShell()).size());
 }
 
-// TODO(crbug.com/898503): When we support wildcard directive
+// TODO(crbug.com/40599527): When we support wildcard directive
 // `Clear-Site-Data: "*"", add test for it.
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,

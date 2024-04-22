@@ -35,7 +35,7 @@ declare_args() {
   # libchrome (CrOS's version of //base). This flag can disable tracing support
   # altogether, in which case all tracing instrumentation in //base becomes a
   # no-op.
-  # TODO(crbug/1065905): Add dependency on perfetto to support typed events.
+  # TODO(crbug.com/40124378): Add dependency on perfetto to support typed events.
   enable_base_tracing = true
 
   # Switches the TRACE_EVENT instrumentation from base's TraceLog implementation
@@ -54,7 +54,7 @@ declare_args() {
   gtest_enable_absl_printers = !is_nacl
 
   # Allow projects that wish to stay on C++17 to override Chromium's default.
-  # TODO(crbug.com/1402249): evaluate removing this end of 2023
+  # TODO(crbug.com/40251117): evaluate removing this end of 2023
   use_cxx17 = false
 }
 

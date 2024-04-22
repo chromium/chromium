@@ -139,7 +139,7 @@ TEST_F(BrokeredTcpClientSocketTest, Bind) {
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1456795): Re-enable on Fuchsia once cause for failure is
+// TODO(crbug.com/40918119): Re-enable on Fuchsia once cause for failure is
 // determined.
 #define MAYBE_FailedBind DISABLED_FailedBind
 #else

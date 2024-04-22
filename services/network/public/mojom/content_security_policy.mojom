@@ -159,7 +159,7 @@ struct ContentSecurityPolicy {
   // Spec: https://www.w3.org/TR/upgrade-insecure-requests/
   //
   // Parsed by both the network and blink CSP parsers.
-  // TODO(https://crbug.com/1076894): Only the value coming from blink is used.
+  // TODO(crbug.com/40128885): Only the value coming from blink is used.
   // We might want to reverse this. The browser could 'push' its value to the
   // renderer instead of 'pulling' it after the navigation commit.
   bool upgrade_insecure_requests = false;

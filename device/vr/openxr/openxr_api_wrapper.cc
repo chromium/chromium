@@ -540,7 +540,7 @@ XrResult OpenXrApiWrapper::CreateSession() {
 }
 
 XrResult OpenXrApiWrapper::CreateSwapchain() {
-  // TODO(https://crbug.com/1454936): Move CreateSwapchain (and related methods)
+  // TODO(crbug.com/40917166): Move CreateSwapchain (and related methods)
   // to the `OpenXrGraphicsBinding` instead of here.
   DCHECK(IsInitialized());
   DCHECK(HasSession());
@@ -642,7 +642,7 @@ XrSpace OpenXrApiWrapper::GetReferenceSpace(
 // Based on the capabilities of the system and runtime, determine whether
 // to use shared images to draw into OpenXR swap chain buffers.
 bool OpenXrApiWrapper::ShouldCreateSharedImages() const {
-  // TODO(https://crbug.com/1454940): Investigate moving the remaining Windows-
+  // TODO(crbug.com/40917171): Investigate moving the remaining Windows-
   // only checks out of this class and into the GraphicsBinding.
 #if BUILDFLAG(IS_WIN)
   // ANGLE's render_to_texture extension on Windows fails to render correctly
@@ -671,7 +671,7 @@ bool OpenXrApiWrapper::ShouldCreateSharedImages() const {
 
 void OpenXrApiWrapper::OnContextProviderCreated(
     scoped_refptr<viz::ContextProvider> context_provider) {
-  // TODO(https://crbug.com/1454935): Move `context_provider_` to
+  // TODO(crbug.com/40917165): Move `context_provider_` to
   // `OpenXrGraphicsBinding`.
   // We need to store the context provider because the shared mailboxes are
   // re-created when secondary view configurations become active or non active.

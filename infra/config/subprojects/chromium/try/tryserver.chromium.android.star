@@ -200,7 +200,7 @@ try_.builder(
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
-# TODO(crbug.com/1367523): Reenable this builder once the reboot issue is resolved.
+# TODO(crbug.com/40240078): Reenable this builder once the reboot issue is resolved.
 # try_.builder(
 #     name = "android-asan",
 #     mirrors = ["ci/android-asan"],

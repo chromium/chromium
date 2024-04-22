@@ -281,7 +281,7 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   // requests to the service directory.
   base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();
 
-  // TODO(crbug.com/1163073): Update tests to make a service connection to the
+  // TODO(crbug.com/40162984): Update tests to make a service connection to the
   // Context and remove this workaround.
   fidl::InterfaceRequest<fuchsia::web::Context>& request = GetTestRequest();
   if (request)

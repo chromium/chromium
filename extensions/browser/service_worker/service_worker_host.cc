@@ -366,7 +366,7 @@ void ServiceWorkerHost::RenderProcessExited(
     content::RenderProcessHost* host,
     const content::ChildProcessTerminationInfo& info) {
   CHECK_EQ(host, render_process_host_);
-  // TODO(crbug.com/1407197): Investigate clearing the user data from
+  // TODO(crbug.com/40062641): Investigate clearing the user data from
   // RenderProcessHostImpl::Cleanup.
   Destroy();
   // This instance has now been deleted.

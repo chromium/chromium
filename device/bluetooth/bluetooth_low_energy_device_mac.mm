@@ -537,7 +537,7 @@ void BluetoothLowEnergyDeviceMac::DidDisconnectPeripheral(NSError* error) {
 
 std::ostream& operator<<(std::ostream& out,
                          const BluetoothLowEnergyDeviceMac& device) {
-  // TODO(crbug.com/703878): Should use
+  // TODO(crbug.com/40511884): Should use
   // BluetoothLowEnergyDeviceMac::GetNameForDisplay() instead.
   std::optional<std::string> name = device.GetName();
   const char* is_gatt_connected =

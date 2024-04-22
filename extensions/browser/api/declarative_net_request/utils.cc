@@ -507,7 +507,7 @@ bool HasDNRFeedbackPermission(const Extension* extension,
                    mojom::APIPermissionID::kDeclarativeNetRequestFeedback);
 }
 
-// TODO(crbug.com/1370166): Add a parameter that allows more specific strings
+// TODO(crbug.com/40869593): Add a parameter that allows more specific strings
 // for error messages that can pinpoint the error within a single rule.
 std::string GetParseError(ParseResult error_reason, int rule_id) {
   switch (error_reason) {

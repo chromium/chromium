@@ -160,7 +160,7 @@ mojom::ResultCode PrintingContextLinux::PrintDocument(
   if (!print_dialog_) {
     return mojom::ResultCode::kFailed;
   }
-  // TODO(crbug.com/1252685)  Plumb error code back from
+  // TODO(crbug.com/40198881)  Plumb error code back from
   // `PrintDialogLinuxInterface`.
   print_dialog_->PrintDocument(metafile, document_name_);
   return mojom::ResultCode::kSuccess;

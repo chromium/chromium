@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenDetectionTest, DetachAttachDuringFullscreen) {
 
 // The test changes visibility of the <video> and observes
 // how it gets and loses effectively-fullscreen status.
-// TODO(crbug.com/1352246): Re-enable this test
+// TODO(crbug.com/40857652): Re-enable this test
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_HideVideoTag DISABLED_HideVideoTag
 #else

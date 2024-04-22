@@ -192,7 +192,7 @@ struct VideoEncodeOptions {
 
   // Quantizer(QP) value for encoding of the given frame.
   // This value is only heeded if VEA configured with external rate control mode
-  // TODO(crbug.com/657632): All negative values mean "ignore this field",
+  // TODO(crbug.com/40489779): All negative values mean "ignore this field",
   // we don't use proper optional field because Java bindgen doesn't support
   // optional primitive types.
   int32 quantizer;

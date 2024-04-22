@@ -432,7 +432,7 @@ NativeLibrary LoadTestLibrary(std::string_view library_name) {
   const auto load = [&](NativeLibrary* library) {
     FilePath library_path;
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
-    // TODO(crbug.com/1262430): Find a solution that works across platforms.
+    // TODO(crbug.com/40799492): Find a solution that works across platforms.
     ASSERT_TRUE(PathService::Get(DIR_ASSETS, &library_path));
 #else
     // The module is next to the test module rather than with test data.

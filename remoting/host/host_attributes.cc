@@ -99,8 +99,9 @@ std::string GetHostAttributes() {
   GetD3DCapabilities(&result);
   result.push_back("Win10+");
 
-  // TODO(crbug.com/1184041): Remove this and/or the entire HostAttributes class
-  // so we can remove //remoting/host:common from //media/gpu's visibility list.
+  // TODO(crbug.com/40752360): Remove this and/or the entire HostAttributes
+  // class so we can remove //remoting/host:common from //media/gpu's visibility
+  // list.
   if (media::InitializeMediaFoundation()) {
     result.push_back("HWEncoder");
   }

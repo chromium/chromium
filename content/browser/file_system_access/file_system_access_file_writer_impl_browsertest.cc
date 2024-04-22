@@ -372,7 +372,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
   EXPECT_TRUE(close_result.error.empty()) << close_result.error;
 }
 
-// TODO(https://crbug.com/992089): Files are only quarantined on windows in
+// TODO(crbug.com/40639570): Files are only quarantined on windows in
 // browsertests unfortunately. Change this when more platforms are enabled.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_FileAnnotated FileAnnotated

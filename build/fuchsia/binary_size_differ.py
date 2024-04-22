@@ -75,7 +75,7 @@ def ComputePackageDiffs(before_sizes_file, after_sizes_file, author=None):
               ' this trybot:<br>{}'.format(_TRYBOT_DOC))
   growth['summary'] = summary
 
-  # TODO(crbug.com/1266085): Investigate using these fields.
+  # TODO(crbug.com/40801868): Investigate using these fields.
   growth['archive_filenames'] = []
   growth['links'] = []
   return growth

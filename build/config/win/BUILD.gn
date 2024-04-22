@@ -646,7 +646,7 @@ config("default_incremental_linking") {
       # lld.
       ldflags += [ "/OPT:NOREF" ]
 
-      # TODO(crbug.com/1444129): Mixing incrememntal and icf produces an error
+      # TODO(crbug.com/40267564): Mixing incrememntal and icf produces an error
       # in lld-link.
       ldflags += [ "/OPT:NOICF" ]
     }

@@ -198,7 +198,7 @@ class ContextProviderCommandBuffer
 
   // Shared memory mapper used by command buffer proxies created from this
   // provider when creating shared memory mappings.
-  // TODO(crbug.com/1321521) remove this member again once users of the command
+  // TODO(crbug.com/40837434) remove this member again once users of the command
   // buffer proxy can specify the mapper for each mapping individually.
   raw_ptr<base::SharedMemoryMapper> buffer_mapper_ = nullptr;
 };

@@ -235,10 +235,10 @@ bool MixedContentChecker::ShouldBlockInternal(
   // If we're in strict mode, we'll automagically fail everything, and
   // intentionally skip the client/embedder checks in order to prevent degrading
   // the site's security UI.
-  // TODO(crbug.com/1312424): Instead of checking `node->IsInFencedFrameTree()`,
-  // set insecure_request_policy to block mixed content requests in a fenced
-  // frame tree and change `InWhichFrameIsContentMixed()` to not cross the frame
-  // tree boundary.
+  // TODO(crbug.com/40220595): Instead of checking
+  // `node->IsInFencedFrameTree()`, set insecure_request_policy to block mixed
+  // content requests in a fenced frame tree and change
+  // `InWhichFrameIsContentMixed()` to not cross the frame tree boundary.
   bool block_all_mixed_content =
       ((mixed_content_frame->frame_tree_node()
             ->current_replication_state()
@@ -259,7 +259,7 @@ bool MixedContentChecker::ShouldBlockInternal(
   // dangerous in this respect than navigating the main frame to the non-webby
   // scheme directly. See https://crbug.com/621131.
   //
-  // TODO(https://crbug.com/1030307): decide whether CORS-enabled is really the
+  // TODO(crbug.com/40109927): decide whether CORS-enabled is really the
   // right way to draw this distinction.
   if (!ShouldTreatURLSchemeAsCorsEnabled(url)) {
     return false;

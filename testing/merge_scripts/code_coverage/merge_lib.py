@@ -129,7 +129,7 @@ def _validate_and_convert_profraws(profraw_files,
   cpu_count = multiprocessing.cpu_count()
   counts = max(10, cpu_count - 5)  # Use 10+ processes, but leave 5 cpu cores.
   if sys.platform == 'win32':
-    # TODO(crbug.com/1190269) - we can't use more than 56 child processes on
+    # TODO(crbug.com/40755900) - we can't use more than 56 child processes on
     # Windows or Python3 may hang.
     counts = min(counts, 56)
   pool = multiprocessing.Pool(counts)

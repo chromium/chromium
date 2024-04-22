@@ -860,7 +860,7 @@ void NetworkContext::CreateURLLoaderFactory(
 
 void NetworkContext::CreateURLLoaderFactoryForCertNetFetcher(
     mojo::PendingReceiver<mojom::URLLoaderFactory> factory_receiver) {
-  // TODO(crbug.com/1087790): investigate changing these params.
+  // TODO(crbug.com/40695068): investigate changing these params.
   auto url_loader_factory_params = mojom::URLLoaderFactoryParams::New();
   url_loader_factory_params->is_trusted = true;
   url_loader_factory_params->process_id = mojom::kBrowserProcessId;
@@ -1794,7 +1794,7 @@ void NetworkContext::CreateHostResolver(
     // with the specified configuration overrides. Because we are using a non-
     // standard resolver, disable the cache.
     //
-    // TODO(crbug.com/846423): Consider allowing per-resolve overrides, so the
+    // TODO(crbug.com/40577881): Consider allowing per-resolve overrides, so the
     // same net::HostResolver with the same scheduler and cache can be used with
     // different overrides.  But since this is only used for special cases for
     // now, much easier to create entirely separate net::HostResolver instances.
@@ -2338,7 +2338,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     DCHECK(params_->cert_verifier_params);
     // base::Unretained() is safe below because |this| will own
     // |cert_verifier|.
-    // TODO(https://crbug.com/1085233): this cert verifier should deal with
+    // TODO(crbug.com/40693524): this cert verifier should deal with
     // disconnections if the CertVerifierService is run outside of the browser
     // process.
     cert_verifier = std::make_unique<cert_verifier::MojoCertVerifier>(
@@ -2357,7 +2357,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
             std::move(cert_verifier)));
 
 #if BUILDFLAG(IS_CHROMEOS)
-    // TODO(https://crbug.com/1477317): The TrustAnchorUsed callback should
+    // TODO(crbug.com/40928765): The TrustAnchorUsed callback should
     // work on all platforms. (Also consider whether this wrapper is the best
     // way to handle this or if it should be refactored.)
     cert_verifier_with_trust_anchors_ =

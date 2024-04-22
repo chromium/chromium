@@ -69,7 +69,7 @@ PrefetchURLLoader::PrefetchURLLoader(
     // Set the SignedExchange accept header.
     // (https://wicg.github.io/webpackage/draft-yasskin-http-origin-signed-responses.html#internet-media-type-applicationsigned-exchange).
 
-    // TODO(https://crbug.com/1400888): find a solution for CORS requests,
+    // TODO(crbug.com/40250488): find a solution for CORS requests,
     // perhaps exempt the Accept header from the 128-byte rule
     // (https://fetch.spec.whatwg.org/#cors-safelisted-request-header). For now,
     // we use the frame Accept header for prefetches only in requests with a

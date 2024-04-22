@@ -794,7 +794,7 @@ int SSLClientSocketImpl::Init() {
 
   SSL_set_shed_handshake_config(ssl_.get(), 1);
 
-  // TODO(https://crbug.com/775438), if |ssl_config_.privacy_mode| is enabled,
+  // TODO(crbug.com/40089326), if |ssl_config_.privacy_mode| is enabled,
   // this should always continue with no client certificate.
   if (ssl_config_.privacy_mode == PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS) {
     send_client_cert_ = true;

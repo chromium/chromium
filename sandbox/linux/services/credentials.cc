@@ -96,7 +96,7 @@ bool ChrootToSafeEmptyDir() {
   // new TLS to avoid corrupting the current process's TLS. On ARCH_CPU_X86,
   // glibc performs syscalls by calling a function pointer in TLS, so we do not
   // attempt this optimization.
-  // TODO(crbug.com/1247458) Broken in MSan builds after LLVM f1bb30a4956f.
+  // TODO(crbug.com/40196869) Broken in MSan builds after LLVM f1bb30a4956f.
   clone_flags |= CLONE_VM | CLONE_VFORK | CLONE_SETTLS;
 
   // PTHREAD_STACK_MIN can be dynamic in glibc2.34+, so it is not possible to

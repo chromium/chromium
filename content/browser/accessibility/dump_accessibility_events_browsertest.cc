@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-busy-changed.html"));
 }
 
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
 // complete.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define DISABLED_ON_LINUX_TSAN_MSAN(name) DISABLED_##name
@@ -741,7 +741,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("focus-listbox-multiselect.html"));
 }
 
-// TODO(crbug.com/1298770): Flaky on Linux.
+// TODO(crbug.com/40823137): Flaky on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_AccessibilityEventsIframeSrcChanged \
   DISABLED_AccessibilityEventsIframeSrcChanged
@@ -800,7 +800,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("listbox-next.html"));
 }
 
-// TODO(https://crbug.com/1123394): This is failing on Windows.
+// TODO(crbug.com/40716698): This is failing on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_AccessibilityEventsLiveRegionAdd \
   DISABLED_AccessibilityEventsLiveRegionAdd
@@ -878,7 +878,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       // TODO(crbug.com/1466801): Re-enable this test
+                       // TODO(crbug.com/40924143): Re-enable this test
                        DISABLED_AccessibilityEventsMenuListCollapseNext) {
   RunEventTest(FILE_PATH_LITERAL("menulist-collapse-next.html"));
 }
@@ -976,7 +976,7 @@ IN_PROC_BROWSER_TEST_P(NavigationApiDumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("navigation-api.html"));
 }
 
-// TODO(crbug.com/1369754): Failing on linux/mac/win multiple builders.
+// TODO(crbug.com/40869309): Failing on linux/mac/win multiple builders.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_AccessibilityEventsImmediateRefresh \
   DISABLED_AccessibilityEventsImmediateRefresh
@@ -1067,7 +1067,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("subtree-reparented-ignored-changed.html"));
 }
 
-// TODO(crbug.com/1201313): Fix flakiness.
+// TODO(crbug.com/40762297): Fix flakiness.
 IN_PROC_BROWSER_TEST_P(
     DumpAccessibilityEventsTest,
     DISABLED_AccessibilityEventsSubtreeReparentedViaAppendChild) {

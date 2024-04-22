@@ -27,7 +27,7 @@
         "fuchsia.media.ProfileProvider",
         "fuchsia.media.SessionAudioConsumerFactory",
         // Only needed in enable_widevine=true builds.
-        // TODO(crbug.com/1379411): Move to a shard.
+        // TODO(crbug.com/40875562): Move to a shard.
         "fuchsia.media.drm.Widevine",
         "fuchsia.mediacodec.CodecFactory",
         "fuchsia.memorypressure.Provider",

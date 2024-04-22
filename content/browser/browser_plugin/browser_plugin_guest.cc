@@ -108,7 +108,7 @@ void BrowserPluginGuest::DidStartNavigation(
   // Originally added to suppress the error page when a navigation is blocked
   // using the webrequest API in a <webview> guest: https://crbug.com/284741.
   //
-  // TODO(https://crbug.com/1127132): net::ERR_BLOCKED_BY_CLIENT is used for
+  // TODO(crbug.com/40148437): net::ERR_BLOCKED_BY_CLIENT is used for
   // many other errors. Figure out what suppression policy is desirable here.
   //
   // TODO(mcnee): Investigate moving this out to WebViewGuest.

@@ -622,7 +622,7 @@ FidoAuthenticator::PINUVDisposition
 FidoDeviceAuthenticator::PINUVDispositionForGetAssertion(
     const CtapGetAssertionRequest& request,
     const FidoRequestHandlerBase::Observer* observer) {
-  // TODO(crbug.com/1149405): GetAssertion requests don't allow in-line UV
+  // TODO(crbug.com/40731828): GetAssertion requests don't allow in-line UV
   // enrollment. Perhaps we should change this and align with MakeCredential
   // behavior.
   const bool can_collect_pin = observer && observer->SupportsPIN();

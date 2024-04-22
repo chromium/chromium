@@ -1057,7 +1057,7 @@ FrameTreeNode::GetDeprecatedFencedFrameMode() {
   // See test "NestedUrnIframeUnderFencedFrameUnfencedTopNavigation" in
   // "FencedFrameParameterizedBrowserTest" for why tree traversal is
   // needed here to obtain the correct fenced frame properties.
-  // TODO(crbug.com/1475682): Now the fenced frame properties here are obtained
+  // TODO(crbug.com/40279729): Now the fenced frame properties here are obtained
   // via tree traversal, we should make sure it does not break things at
   // renderers, for example, `_unfencedTop` navigation. Note these issues are
   // pre-existing.

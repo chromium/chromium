@@ -8,7 +8,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   generate_java = true
 
-  # TODO(crbug.com/676224): Conditionally add source files in this list when we
+  # TODO(crbug.com/40499115): Conditionally add source files in this list when we
   # support EnabledIf attribute in mojom files.
   sources = [
     "audio_data_pipe.mojom",

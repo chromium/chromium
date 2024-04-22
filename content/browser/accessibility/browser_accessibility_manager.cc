@@ -752,7 +752,7 @@ BrowserAccessibility* BrowserAccessibilityManager::GetActiveDescendant(
     active_descendant = node->manager()->GetFromID(active_descendant_id);
   }
 
-  // TODO(crbug.com/1363353): This code should be removed in favor of the right
+  // TODO(crbug.com/40864907): This code should be removed in favor of the right
   // computation of the active descendant in Blink.
   if (node->GetRole() == ax::mojom::Role::kComboBoxSelect) {
     BrowserAccessibility* child = node->InternalGetFirstChild();
@@ -1584,7 +1584,7 @@ void BrowserAccessibilityManager::OnNodeReparented(ui::AXTree* tree,
                                                    ui::AXNode* node) {
   DCHECK(node);
   auto iter = id_wrapper_map_.find(node->id());
-  // TODO(crbug.com/1315661): This condition should never occur.
+  // TODO(crbug.com/40833630): This condition should never occur.
   // Identify why we are entering this code path and fix the root cause, then
   // remove the early return. Will need to update
   // BrowserAccessibilityManagerTest.TestOnNodeReparented, which purposely

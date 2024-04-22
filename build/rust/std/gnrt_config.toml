@@ -32,7 +32,7 @@ build_file_template = "BUILD.gn.hbs"
 # However, we can't apply it yet. GN can't automatically clean old artifacts,
 # nor can we delete and rebuild the sysroot on every build.
 #
-# TODO(crbug.com/1245714): set up GN rules to rebuilt the sysroot only when
+# TODO(crbug.com/40196262): set up GN rules to rebuilt the sysroot only when
 # needed. Then set this metadata.
 #
 # rustc_metadata = "libstd"

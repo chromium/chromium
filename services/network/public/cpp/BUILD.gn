@@ -517,7 +517,7 @@ component("cpp_base") {
     ]
   }
 
-  # TODO(crbug.com/1450273): Remove the need to ignore this warning.
+  # TODO(crbug.com/40915226): Remove the need to ignore this warning.
   if (is_win && is_component_build) {
     ldflags = [ "/IGNORE:4217" ]
   }

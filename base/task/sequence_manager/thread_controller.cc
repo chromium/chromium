@@ -449,7 +449,7 @@ void ThreadController::RunLevelTracker::RunLevel::UpdateState(
     LogOnIdleMetrics(lazy_now);
 
     TRACE_EVENT_END("base", lazy_now.Now());
-    // TODO(crbug.com/1021571): Remove this once fixed.
+    // TODO(crbug.com/40657156): Remove this once fixed.
     PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
   }
 

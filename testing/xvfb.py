@@ -327,7 +327,7 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox,
       os.kill(dbus_pid, signal.SIGKILL)
 
 
-# TODO(https://crbug.com/1060466): Write tests.
+# TODO(crbug.com/40122046): Write tests.
 def _run_with_weston(cmd, env, stdoutfile, cwd):
   weston_proc = None
 

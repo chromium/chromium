@@ -33,7 +33,7 @@ namespace {
 // Note that this does not support capture groups, so all lambdas defined like
 // this must be stateless.
 // Example Usage: `CONSTEXPR_LAMBDA((int i, int j) { return i + j; }) lambda;`
-// TODO(crbug.com/752720): Remove once we have constexpr lambdas for real.
+// TODO(crbug.com/40533712): Remove once we have constexpr lambdas for real.
 #define CONSTEXPR_LAMBDA(fun) \
   constexpr struct { constexpr bool operator() fun }
 

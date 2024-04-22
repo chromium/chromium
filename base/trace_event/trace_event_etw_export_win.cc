@@ -92,7 +92,7 @@ namespace {
 //
 // The high 16 bits of the keyword have special semantics and should not be
 // set for enabling individual categories as they are reserved by winmeta.xml.
-// TODO(crbug.com/1497783): Move this to
+// TODO(crbug.com/40287173): Move this to
 // components/tracing/common/etw_export_win.cc once no longer used by
 // TraceEventETWExport.
 const char* const kFilteredEventGroupNames[] = {

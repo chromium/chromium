@@ -1844,7 +1844,7 @@ TEST_F(BluetoothTest,
   EXPECT_EQ(
 #if BUILDFLAG(IS_ANDROID)
       // Closing a GATT connection also disconnects on Android.
-      // TODO(crbug.com/1045648): this value probably shouldn't be different on
+      // TODO(crbug.com/40670359): this value probably shouldn't be different on
       // Android.
       2,
 #else
@@ -1946,8 +1946,8 @@ TEST_F(BluetoothTest, MAYBE_BluetoothGattConnection_ErrorAfterConnection) {
 
   EXPECT_EQ(1, gatt_connection_attempts_);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/578191): Change to ERROR_AUTH_FAILED. We should be getting a
-  // callback only with the first error, but our android framework doesn't yet
+  // TODO(crbug.com/40452547): Change to ERROR_AUTH_FAILED. We should be getting
+  // a callback only with the first error, but our android framework doesn't yet
   // support sending different errors.
   // On Windows, any GattConnectionError will result in ERROR_FAILED.
   EXPECT_EQ(BluetoothDevice::ERROR_FAILED, last_connect_error_code_);

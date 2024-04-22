@@ -33,7 +33,7 @@ source_set("vr_gl_bindings") {
 if (enable_vr) {
   # This target is intended to contain generic base classes or utils that are
   # used by ALL (or almost All) XR devices/runtimes.
-  # TODO(https://crbug.com/1073113): Flesh out and cleanup this target, this
+  # TODO(crbug.com/40686137): Flesh out and cleanup this target, this
   # includes determination of which things (if any) should be in the public
   # target.
   component("vr_base") {

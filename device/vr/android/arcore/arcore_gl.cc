@@ -1031,7 +1031,7 @@ void ArCoreGl::OnReclaimedGpuFenceAvailable(
   // its usage is now appropriately synchronized; however, we have no way of
   // getting the time that the gpu fence triggered, which we need for the
   // rendered frame stats that drive dynamic viewport scaling.
-  // TODO(https://crbug.com/1188302): It appears as though we are actually
+  // TODO(crbug.com/40754792): It appears as though we are actually
   // placing/waiting on this fence after the frame *after* this current frame.
   frame->render_completion_fence = gl::GLFence::CreateForGpuFence();
 

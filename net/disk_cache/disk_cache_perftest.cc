@@ -658,7 +658,7 @@ TEST_F(DiskCachePerfTest, SimpleCacheInitialReadPortion) {
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1318120): Fix this test on Fuchsia and re-enable.
+// TODO(crbug.com/40222788): Fix this test on Fuchsia and re-enable.
 #define MAYBE_EvictionPerformance DISABLED_EvictionPerformance
 #else
 #define MAYBE_EvictionPerformance EvictionPerformance

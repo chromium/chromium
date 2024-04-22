@@ -108,7 +108,7 @@ DEFINE_BINARY_PROTO_FUZZER(
       script.IsEmpty();
     }
 
-    // TODO(crbug.com/775796): run the code once we find a way to avoid endless
-    // loops.
+    // TODO(crbug.com/40545334): run the code once we find a way to avoid
+    // endless loops.
   }
 }

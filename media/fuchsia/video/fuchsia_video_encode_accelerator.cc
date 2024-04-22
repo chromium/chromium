@@ -434,7 +434,7 @@ bool FuchsiaVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  // TODO(crbug.com/1373291): Support NV12 pixel format.
+  // TODO(crbug.com/40241991): Support NV12 pixel format.
   if (config.input_format != PIXEL_FORMAT_I420) {
     return false;
   }
@@ -498,7 +498,7 @@ void FuchsiaVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
   // the frame's alignment, as `input_visible_size.width()` must be aligned to
   // `kWidthAlignment`.
   //
-  // TODO(crbug.com/1381293): Encode only the `visible_rect` of a frame.
+  // TODO(crbug.com/40245141): Encode only the `visible_rect` of a frame.
   if (frame->coded_size().width() > config_->input_visible_size.width() ||
       frame->coded_size().height() > config_->input_visible_size.height()) {
     OnError({EncoderStatus::Codes::kInvalidInputFrame,
@@ -516,7 +516,7 @@ void FuchsiaVideoEncodeAccelerator::RequestEncodingParametersChange(
     const Bitrate& bitrate,
     uint32_t framerate,
     const std::optional<gfx::Size>& size) {
-  // TODO(crbug.com/1373298): Implement RequestEncodingParameterChange.
+  // TODO(crbug.com/40241995): Implement RequestEncodingParameterChange.
   NOTIMPLEMENTED();
 }
 
@@ -528,7 +528,7 @@ void FuchsiaVideoEncodeAccelerator::Destroy() {
 }
 
 bool FuchsiaVideoEncodeAccelerator::IsFlushSupported() {
-  // TODO(crbug.com/1375924): Implement Flush.
+  // TODO(crbug.com/40242985): Implement Flush.
   return false;
 }
 

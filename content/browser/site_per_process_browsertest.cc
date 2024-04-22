@@ -2369,7 +2369,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, OriginReplication) {
 
 // Test that HasReceivedUserGesture and HasReceivedUserGestureBeforeNavigation
 // are propagated correctly across origins.
-// TODO(crbug.com/1014175): This test is flaky.
+// TODO(crbug.com/40653035): This test is flaky.
 IN_PROC_BROWSER_TEST_P(SitePerProcessAutoplayBrowserTest,
                        DISABLED_PropagateUserGestureFlag) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -4991,7 +4991,7 @@ IN_PROC_BROWSER_TEST_P(
 // loads an image with certificate errors, the browser should be
 // notified about the subresource with certificate errors and downgrade
 // the UI appropriately.
-// TODO(crbug.com/1105145): Flaky.
+// TODO(crbug.com/40705650): Flaky.
 IN_PROC_BROWSER_TEST_P(SitePerProcessIgnoreCertErrorsBrowserTest,
                        DISABLED_SubresourceWithCertificateErrors) {
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
@@ -9883,7 +9883,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     // a sandboxed mainframe, so before we call DepictFrameTree below we need to
     // wait for the RenderFrameHost from the initial mainframe to be deleted and
     // its proxies removed.
-    // TODO(https://crbug.com/1485586): See if we can reuse the initial RFH for
+    // TODO(crbug.com/40282613): See if we can reuse the initial RFH for
     // a navigation to a sandboxed frame instead?
     deleted_observer.WaitUntilDeleted();
   }
@@ -11693,7 +11693,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // Wait until the page with the crashed frame gets unloaded (triggering its
   // evicton if it got into the back/forward cache), so that the histogram will
   // be recorded when the renderer process is gone.
-  // TODO(https://crbug.com/1193386): Ensure pages with crashed subframes won't
+  // TODO(crbug.com/40175240): Ensure pages with crashed subframes won't
   // get into back/forward cache.
   InactiveRenderFrameHostDeletionObserver inactive_rfh_deletion_observer(
       web_contents());
@@ -12130,7 +12130,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // the hung renderer dialog used to undesirably show up for background tabs
 // (typically during session restore when many navigations would be happening in
 // backgrounded processes).
-// TODO(crbug.com/1246541): Flaky on LaCrOS, Mac, and Windows.
+// TODO(crbug.com/40196588): Flaky on LaCrOS, Mac, and Windows.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_NoCommitTimeoutForInvisibleWebContents \
   DISABLED_NoCommitTimeoutForInvisibleWebContents

@@ -747,8 +747,8 @@ void BluetoothDeviceWinrt::OnGattServicesChanged(IBluetoothLEDevice* ble_device,
                                                  IInspectable* object) {
   BLUETOOTH_LOG(DEBUG) << "OnGattServicesChanged()";
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  // TODO(crbug/1085596): This event fires once for every newly discovered GATT
-  // service. Hence, the initial GATT service discovery aborts and restarts
+  // TODO(crbug.com/40693710): This event fires once for every newly discovered
+  // GATT service. Hence, the initial GATT service discovery aborts and restarts
   // itself here once for every service discovered, which is unnecessary and
   // slow.
 

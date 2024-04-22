@@ -7118,7 +7118,7 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
 // BrowsingInstance will have visibility of all its BrowsingInstance frames, but
 // will only have visibility of the direct opener frame in a different
 // BrowsingInstance in the same CoopRelatedGroup.
-// TODO(1495328): Failing on Mac bots
+// TODO(crbug.com/40286486): Failing on Mac bots
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_ChainedPopupsMixedBrowsingInstanceProxies DISABLED_ChainedPopupsMixedBrowsingInstanceProxies
 #else
@@ -7409,7 +7409,7 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
 // event.source, even cross-BrowsingInstance, even when the source is an iframe
 // for which the target frame's SiteInstanceGroup does not have a main frame
 // proxy yet.
-// TODO(1495328) Failing on mac bots
+// TODO(crbug.com/40286486) Failing on mac bots
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SubframePostMessageProxiesCrossBrowsingInstance DISABLED_SubframePostMessageProxiesCrossBrowsingInstance
 #else
@@ -8234,9 +8234,9 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesBrowserTest,
 // Smoke test with kNewBrowsingContextStateOnBrowsingContextGroupSwap enabled.
 // Verifies that nothing breaks when we're dealing with proxies across different
 // BrowsingInstances with COOP: restrict-properties.
-// TODO(1394669): Enable once BrowsingContextState new mode implementation is
-// further down the line. Currently this test crashes even with COOP:
-// same-origin.
+// TODO(crbug.com/40061970): Enable once BrowsingContextState new mode
+// implementation is further down the line. Currently this test crashes even
+// with COOP: same-origin.
 IN_PROC_BROWSER_TEST_P(
     CoopRestrictPropertiesWithNewBrowsingContextStateModeBrowserTest,
     DISABLED_BrowsingContextStateNewModeSmokeTest) {
@@ -9759,7 +9759,7 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesAccessBrowserTest,
   // Because they are in different browsing context groups in different
   // CoopRelatedGroups, access to cross-origin properties should conservatively
   // NOT be restricted.
-  // TODO(https://crbug.com/1464618): This might change in the future, if we
+  // TODO(crbug.com/40275679): This might change in the future, if we
   // decide to impose restrictions on all accesses from different browsing
   // context groups.
   EXPECT_TRUE(ExecJs(current_frame_host(), "window.w.blur()"));

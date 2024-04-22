@@ -1,4 +1,4 @@
-# TODO(crbug.com/1413706): remove lines as more tests are supported on the platform.
+# TODO(crbug.com/40255779): remove lines as more tests are supported on the platform.
 
 -AccessibilityActionBrowserTest.ScrollIntoView
 -All/BackForwardCacheMetricsBrowserTest.RestoreNavigationToNextPaint/BFCacheEnabled
@@ -139,7 +139,7 @@
 -ProprietaryCodec/WebRtcMediaRecorderTest.StartWithTimeSlice/0
 -ProprietaryCodec/WebRtcMediaRecorderTest.StartWithTimeSlice/1
 
-# TODO(https://crbug.com/1466906): unexpected `fallback_after_restore` ID.
+# TODO(crbug.com/40276556): unexpected `fallback_after_restore` ID.
 # Resize-while-hidden should give the `DelegatedFrameHost` a new primary ID
 # and fallback ID.
 -BFCachedRenderWidgetHostViewBrowserTest.BFCachedPageResizedWhileHiddenShouldNotHavePreservedFallback
@@ -152,7 +152,7 @@
 # TODO(crbug.com/40276565): unexpected level of support for codec.
 -MediaCanPlayTypeTest.CodecSupportTest_mp4
 
-# TODO(crbug.com/1467854): This test is flaky.
+# TODO(crbug.com/40276950): This test is flaky.
 -BackForwardCacheBrowserTest.NavigateToTwoPagesOnSameSiteWithSubframes
 
 # TODO(crbug.com/40280396): This test is flaky.
@@ -172,7 +172,7 @@
 -BackForwardCacheBrowserTestWithJavaScriptDetails.MultipleBlocksFromHTMLFile
 -BackForwardCacheBrowserTestWithJavaScriptDetails.MultipleBlocksFromJavaScriptFile
 
-# TODO(crbug.com/1484998): These tests fail by a different width for a frame.
+# TODO(crbug.com/40282425): These tests fail by a different width for a frame.
 -All/DumpAccessibilityTreeTest.AccessibilityLinkTarget/blink
 -All/DumpAccessibilityTreeTest.AccessibilityOffscreen/blink
 -All/DumpAccessibilityTreeTest.AccessibilityOffscreenScroll/blink
@@ -276,10 +276,10 @@
 # TODO(crbug.com/40286643): Text area handle has shrunk.
 -FormControlsBrowserTest.Textarea
 
-# TODO(crbug.com/1500334): Flakily fails on the platform.
+# TODO(crbug.com/40288171): Flakily fails on the platform.
 -ThirdPartyCookiesContentSecurityPolicyBrowserTest.CSPMediaThirdPartyCookieBlocking
 
-# TODO(crbug.com/1502136): Flakily fails on the platform.
+# TODO(crbug.com/40942476): Flakily fails on the platform.
 -TouchInputBrowserTest.TouchStartConsume
 -TouchInputBrowserTest.TouchStartNoConsume
 -TouchInputBrowserTest.MultiPointTouchPress
@@ -290,10 +290,10 @@
 # TODO(crbug.com/325442902): Consistently fails on the platform.
 -PrerenderBrowserTest.SessionStorage_TargetBlank_WithTargetHintBlank
 
-# TODO(crbug.com/1502137): Consistently fails on the platform.
+# TODO(crbug.com/40942477): Consistently fails on the platform.
 -All/PrerenderTargetAgnosticBrowserTest.RenderFrameHostLifecycleState/_blank
 
-# TODO(crbug.com/1503172): Fails due to video capture issues.
+# TODO(crbug.com/40943598): Fails due to video capture issues.
 -*.DoesNotCacheIfDisplayMediaAccessGranted*
 -All/BackForwardCacheMediaTest.DoesCacheIfMediaStreamTrackUsingGetDisplayMediaEndedButDoesNotWithoutFlags/0
 -All/BackForwardCacheMediaTest.DoesCacheIfMediaStreamTrackUsingGetDisplayMediaEndedButDoesNotWithoutFlags/1

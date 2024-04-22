@@ -1827,7 +1827,7 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
         // while we debug why no BrowsingInstances were found (in
         // https://crbug.com/1148542), we'll allow requests with an acceptable
         // process lock to proceed.
-        // TODO(1148542): Remove this when known cases of having no
+        // TODO(crbug.com/40731345): Remove this when known cases of having no
         // BrowsingInstance IDs are solved.
         url::Origin origin(url::Origin::Create(url));
         bool matches_origin_keyed_process =
@@ -2006,8 +2006,8 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
           // Skip these checks on the IO thread, since we can't use
           // RenderProcessHost or ShouldLockProcessToSite() there.
           //
-          // TODO(crbug.com/764958): Remove this once this is reachable only on
-          // the UI thread.
+          // TODO(crbug.com/40539942): Remove this once this is reachable only
+          // on the UI thread.
           if (!ShouldRestrictCanAccessDataForOriginToUIThread() &&
               BrowserThread::CurrentlyOn(BrowserThread::IO)) {
             return true;

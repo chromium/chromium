@@ -10,7 +10,7 @@ namespace content {
 // This is the enumeration of the reasons why we might not swap the
 // BrowsingInstance for navigations.
 // This enum is used for histograms and should not be renumbered.
-// TODO(crbug.com/1026101): Remove after the investigations are complete.
+// TODO(crbug.com/40108107): Remove after the investigations are complete.
 enum class ShouldSwapBrowsingInstance {
   kYes_ForceSwap = 0,
   kNo_ProactiveSwapDisabled = 1,

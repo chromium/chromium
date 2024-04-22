@@ -3038,7 +3038,7 @@ TEST_F(RenderWidgetHostViewAuraTest, CursorVisibilityChange) {
   base::RunLoop().RunUntilIdle();
   auto events = GetAndResetDispatchedMessages();
 #if BUILDFLAG(IS_CHROMEOS)
-  // TODO(crbug.com/1164453): Investigate occasional extra mousemoves in CrOS.
+  // TODO(crbug.com/40163541): Investigate occasional extra mousemoves in CrOS.
   EXPECT_GE(1u, events.size());
 #else
   EXPECT_EQ(1u, events.size());

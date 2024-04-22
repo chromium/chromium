@@ -173,7 +173,7 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
     gpu_memory_buffer_handle.dxgi_token = gfx::DXGIHandleToken();
     gpu_memory_buffer_handle.type = gfx::DXGI_SHARED_HANDLE;
 
-    // TODO(https://crbug.com/1458256): This size is the size of the texture
+    // TODO(crbug.com/40918787): This size is the size of the texture
     // from the OpenXr runtime, which is fine but does not work properly if the
     // page requests any kind of framebuffer scaling, because then the image
     // size that the page uses would be different than this size, which can

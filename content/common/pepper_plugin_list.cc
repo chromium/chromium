@@ -31,7 +31,7 @@ const size_t kMaxPluginsToRegisterFromCommandLine = 64;
 
 // Returns true if the plugin can be registered from the command line.
 bool IsAllowedFromCommandLine(const ContentPluginInfo& plugin) {
-  // TODO(crbug.com/1134683): Empty the allowlist.
+  // TODO(crbug.com/40151562): Empty the allowlist.
   static constexpr auto kMimeTypeAllowlist =
       base::MakeFixedFlatSet<std::string_view>({
           "application/x-blink-deprecated-test-plugin",

@@ -257,7 +257,7 @@ void WebUIDataSourceImpl::OverrideCrossOriginResourcePolicy(
 }
 
 void WebUIDataSourceImpl::DisableTrustedTypesCSP() {
-  // TODO(crbug.com/1098685): Trusted Type remaining WebUI
+  // TODO(crbug.com/40137141): Trusted Type remaining WebUI
   // This removes require-trusted-types-for and trusted-types directives
   // from the CSP header.
   OverrideContentSecurityPolicy(

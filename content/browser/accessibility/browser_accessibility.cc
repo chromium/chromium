@@ -795,7 +795,7 @@ gfx::Rect BrowserAccessibility::RelativeToAbsoluteBounds(
     // node of the AXTree. That transform gets applied by the call to
     // RelativeToTreeBounds() in the loop above. However, if the root transform
     // did not include page scale factor, we need to apply it now.
-    // TODO(crbug.com/1074116): this should probably apply visual viewport
+    // TODO(crbug.com/40686662): this should probably apply visual viewport
     // offset as well.
     bool should_include_page_scale_factor_in_root = false;
     #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
@@ -833,7 +833,7 @@ bool BrowserAccessibility::IsWebContent() const {
 bool BrowserAccessibility::HasVisibleCaretOrSelection() const {
   // The caret should be visible if Caret Browsing is enabled.
   //
-  // TODO(crbug.com/1052091): Caret Browsing should be looking at leaf text
+  // TODO(crbug.com/40674120): Caret Browsing should be looking at leaf text
   // nodes so it might not return expected results in this method.
   if (BrowserAccessibilityStateImpl::GetInstance()->IsCaretBrowsingEnabled())
     return true;

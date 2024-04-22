@@ -4288,7 +4288,7 @@ targets.legacy_basic_suite(
     },
 )
 
-# TODO(crbug.com/1320449): Remove this set of test suites when LSan can be
+# TODO(crbug.com/40223516): Remove this set of test suites when LSan can be
 # enabled Mac ASan bots. This list will be gradually filled with more tests
 # until the bot has parity with ASan bots, and the ASan bot can then enable
 # LSan and the mac-lsan-fyi-rel bot go away.

@@ -207,7 +207,7 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   // Rasterization may batch operations, and that batching may be disabled if
   // drawLine() is used instead of drawPath(). These members are used to
   // determine is a drawLine() should be rastered as a drawPath().
-  // TODO(https://crbug.com/1420380): figure out better heurstics.
+  // TODO(crbug.com/40258748): figure out better heurstics.
   uint32_t draw_path_count_ = 0;
   uint32_t draw_line_count_ = 0;
 };

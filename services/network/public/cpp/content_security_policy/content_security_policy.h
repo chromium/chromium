@@ -24,7 +24,7 @@ namespace network {
 class CSPContext;
 
 namespace features {
-// TODO(https://crbug.com/1477193): This feature flag can be removed after M126.
+// TODO(crbug.com/40070927): This feature flag can be removed after M126.
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kCspStopMatchingWildcardDirectivesToFtp);
 }  // namespace features

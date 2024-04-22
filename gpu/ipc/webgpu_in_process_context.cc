@@ -29,7 +29,7 @@ WebGPUInProcessContext::~WebGPUInProcessContext() {
   // Trigger any pending lost contexts. First do a full sync between client
   // and service threads. Then execute any pending tasks.
   if (webgpu_implementation_) {
-    // TODO(crbug.com/868192): do the equivalent of a glFinish here?
+    // TODO(crbug.com/40586882): do the equivalent of a glFinish here?
     client_task_runner_->RunUntilIdle();
     webgpu_implementation_.reset();
   }

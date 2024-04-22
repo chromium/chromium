@@ -186,7 +186,7 @@ bool IsNetworkSandboxSupported() {
   // Network service sandbox uses GetNetworkConnectivityHint which is only
   // supported on Windows 10 Build 19041 (20H1) so versions before that wouldn't
   // have a working network change notifier when running in the sandbox.
-  // TODO(crbug.com/1450754): Move this to an API that works earlier than 20H1
+  // TODO(crbug.com/40915451): Move this to an API that works earlier than 20H1
   // and also works in the LPAC sandbox.
   static const bool supported =
       base::win::GetVersion() >= base::win::Version::WIN10_20H1;

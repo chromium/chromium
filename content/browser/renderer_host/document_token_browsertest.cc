@@ -560,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(DocumentTokenBrowserTest,
                 old_document_token));
 }
 
-// TODO(https://crbug.com/1362938): Add tests for bfcache navigations and
+// TODO(crbug.com/40238502): Add tests for bfcache navigations and
 // prerender activations.
 
 IN_PROC_BROWSER_TEST_F(DocumentTokenBrowserTest, MismatchedProcessID) {

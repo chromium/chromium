@@ -915,7 +915,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 }
 
 // This tests that browser metadata gets included in the trace.
-// TODO(crbug.com/1413115): Re-enable this test on TSAN builds.
+// TODO(crbug.com/40891272): Re-enable this test on TSAN builds.
 #if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_TraceMetadataInTrace DISABLED_TraceMetadataInTrace
 #else
@@ -1193,7 +1193,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
 }
 
 // This tests that histogram triggers for preemptive mode configs.
-// TODO(crbug.com/1429286): Flaky on Linux TSan.
+// TODO(crbug.com/40900999): Flaky on Linux TSan.
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(THREAD_SANITIZER)
 #define MAYBE_ReceiveTraceSucceedsOnHigherHistogramSample \
   DISABLED_ReceiveTraceSucceedsOnHigherHistogramSample
@@ -1708,7 +1708,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTracingManagerBrowserTest,
   EXPECT_FALSE(background_tracing_helper.trace_received());
 }
 
-// TODO(crbug.com/1444519): Re-enable this test once fixed
+// TODO(crbug.com/40267734): Re-enable this test once fixed
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CASTOS)
 #define MAYBE_RunStartupTracing DISABLED_RunStartupTracing
 #else

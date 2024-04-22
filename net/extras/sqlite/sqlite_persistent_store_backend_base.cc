@@ -91,7 +91,7 @@ bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
     return false;
   }
 
-  // TODO(crbug.com/1430231): Remove explicit_locking = false. This currently
+  // TODO(crbug.com/40262972): Remove explicit_locking = false. This currently
   // needs to be set to false because of several failing MigrationTests.
   db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
       .exclusive_locking = false,
@@ -116,7 +116,7 @@ bool SQLitePersistentStoreBackendBase::InitializeDatabase() {
     if (base::PathExists(path_)) {
       // See comments in Database::Preload for explanation of these values.
       constexpr int kPreReadSize = 128 * 1024 * 1024;  // 128 MB
-      // TODO(crbug.com/1434166): Consider moving preload behind a database
+      // TODO(crbug.com/40904059): Consider moving preload behind a database
       // option.
       base::PreReadFile(path_, /*is_executable=*/false, /*sequential=*/false,
                         kPreReadSize);

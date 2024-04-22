@@ -670,7 +670,7 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
   // ResponseCallback, and calling this method avoids that. This is nececessary
   // for tests that use test_utils::RunFunction*(), as those tests typically
   // retrieve the result afterwards through GetResultListForTest().
-  // TODO(https://crbug.com/1268112): Remove this once GetResultListForTest() is
+  // TODO(crbug.com/40803310): Remove this once GetResultListForTest() is
   // removed after ensuring consumers only use RunFunctionAndReturnResult() to
   // retrieve the results.
   bool preserve_results_for_testing_ = false;

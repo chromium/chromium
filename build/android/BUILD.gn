@@ -239,7 +239,7 @@ python_library("resource_sizes_py") {
 # logcat.
 # Hidden behind build_with_chromium because some third party repos that use
 # //build don't pull in //third_party/android_platform.
-# TODO(crbug.com/1120190): Move stack script into //build/third_party
+# TODO(crbug.com/40145789): Move stack script into //build/third_party
 #     and enable unconditionally.
 group("stack_tools") {
   if (build_with_chromium) {

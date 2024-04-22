@@ -20,7 +20,7 @@ struct RequestParams {
 
 // Temporary config struct--this should eventually be deleted as the network
 // service has no reason to know about this config.
-// TODO(https://crbug.com/1427326): remove this.
+// TODO(crbug.com/40899828): remove this.
 struct CertVerifierConfig {
   bool enable_rev_checking;
   bool require_rev_checking_local_anchors;

@@ -10,7 +10,7 @@
 # TODO(crbug.com/41467370): Enable this.
 -ProcessMemoryMetricsEmitterTest.RendererBuildId
 
-# TODO(crbug.com/978051): Enable this.
+# TODO(crbug.com/40633443): Enable this.
 -TabManagerTestWithTwoTabs.TabProactiveDiscardAndFocusBeforeFreezeCompletes
 
 # TODO(crbug.com/977749): Enable this.

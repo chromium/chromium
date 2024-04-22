@@ -405,7 +405,7 @@ class LoadDataWithBaseURLWithPossiblyEmptyURLsBrowserTest
 
     // For cross-document or browser-initiated navigations, the redirect chain
     // contains the document URL.
-    // TODO(https://crbug.com/1171237): Should we use the commit URL instead?
+    // TODO(crbug.com/40166077): Should we use the commit URL instead?
     if (!is_renderer_initiated_same_document_navigation) {
       EXPECT_EQ(1u, entry->GetRedirectChain().size());
       EXPECT_EQ(urls.document_url, entry->GetRedirectChain()[0]);
@@ -3735,7 +3735,7 @@ IN_PROC_BROWSER_TEST_P(
     // converted to a reload and classified as
     // NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY and reuses the previous entry,
     // even though it ended up at a different URL than before.
-    // TODO(https://crbug.com/1247185): Perhaps this should be classified as
+    // TODO(crbug.com/40196772): Perhaps this should be classified as
     // NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY with replacement instead, to be
     // consistent with reloads that redirected cross-site.
     EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
@@ -4393,7 +4393,7 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
   // 4) Navigate to |url_2| on a new subframe that has started a navigation to
   // a URL that never committed.
-  // TODO(https://crbug.com/1311616): The browser-initiated case is flaky so we
+  // TODO(crbug.com/40831147): The browser-initiated case is flaky so we
   // only test this for the renderer-initiated case. Figure out how to test the
   // browser-initiated case in a non-flaky way.
   if (renderer_initiated()) {
@@ -13389,7 +13389,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // Ensure that we do not corrupt a NavigationEntry's PageState if two forward
 // navigations compete in different frames, and the main frame entry contains an
 // iframe of its own.  See https://crbug.com/623319.
-// TODO(https://crbug.com/1101292): flaky.
+// TODO(crbug.com/40138283): flaky.
 IN_PROC_BROWSER_TEST_P(
     NavigationControllerBrowserTest,
     DISABLED_PageStateWithIframeAfterForwardInCompetingFrames) {
@@ -17288,7 +17288,7 @@ IN_PROC_BROWSER_TEST_P(
 // history.back() called twice in the renderer process should not make the user
 // navigate back twice.
 // Regression test for https://crbug.com/869710
-// TODO(crbug.com/1328912): flaky.
+// TODO(crbug.com/40226582): flaky.
 IN_PROC_BROWSER_TEST_P(
     NavigationControllerBrowserTest,
     DISABLED_HistoryBackTwiceFromRendererWithoutUserGesture) {
@@ -17406,7 +17406,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // Checks that a browser initiated error page navigation in a frame pending
 // deletion is ignored and does not result in a crash. See
 // https://crbug.com/1019180.
-// TODO(crbug.com/1291862): Flaky failures
+// TODO(crbug.com/40819000): Flaky failures
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_BrowserInitiatedLoadPostCommitErrorPageIgnoredForFramePendingDeletion \
   DISABLED_BrowserInitiatedLoadPostCommitErrorPageIgnoredForFramePendingDeletion
@@ -21292,7 +21292,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
     EXPECT_EQ(main_url, controller.GetLastCommittedEntry()->GetURL());
     // The document is sandboxed, and has an opaque origin derived from
     // `main_url`.
-    // TODO(https://crbug.com/1359351): The origin should be recalculated and
+    // TODO(crbug.com/40237337): The origin should be recalculated and
     // result in a non-opaque origin instead.
     EXPECT_TRUE(root->current_frame_host()->IsSandboxed(
         network::mojom::WebSandboxFlags::kAll));

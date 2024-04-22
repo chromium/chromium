@@ -117,7 +117,7 @@ bool PrivateAggregationBudgetStorage::InitializeOnDbSequence(
 
   db->set_histogram_tag("PrivateAggregation");
 
-  // TODO(crbug.com/1323320): Record histograms for the different
+  // TODO(crbug.com/40224647): Record histograms for the different
   // outcomes/errors.
   if (exclusively_run_in_memory) {
     if (!db->OpenInMemory()) {

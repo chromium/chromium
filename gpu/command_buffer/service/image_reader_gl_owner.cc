@@ -360,8 +360,8 @@ ImageReaderGLOwner::GetAHardwareBuffer() {
     return nullptr;
   }
 
-  // TODO(1179206): We suspect that buffer is already freed here and it causes
-  // crash later. Trying to crash earlier.
+  // TODO(crbug.com/40749597): We suspect that buffer is already freed here and
+  // it causes crash later. Trying to crash earlier.
   base::AndroidHardwareBufferCompat::GetInstance().Acquire(buffer);
   base::AndroidHardwareBufferCompat::GetInstance().Release(buffer);
 

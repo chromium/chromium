@@ -137,7 +137,7 @@ component("shell_dialogs") {
     sources += [ "select_file_dialog_fuchsia.cc" ]
   }
 
-  # TODO(crbug.com/1052397): Rename is_chromeos_lacros.
+  # TODO(crbug.com/40118868): Rename is_chromeos_lacros.
   if (is_chromeos_lacros) {
     sources += [
       "select_file_dialog_lacros.cc",

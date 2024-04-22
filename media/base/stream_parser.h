@@ -58,7 +58,7 @@ class MEDIA_EXPORT StreamParser {
   // calls while keeping each parse iteration's duration within ~5-15ms range.
   // This value may change in future updates as platform capabilities have
   // generally improved.
-  // TODO(crbug.com/1379177): Tune this experimentally.
+  // TODO(crbug.com/40244251): Tune this experimentally.
   static constexpr int kMaxPendingBytesPerParse = 128 * 1024;  // 128KiB
 
   // Stream parameters passed in InitCB.

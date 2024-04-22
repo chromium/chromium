@@ -88,7 +88,7 @@ enum RedirectMode {
 // Corresponds to Fetch request's "credentials mode":
 // https://fetch.spec.whatwg.org/#concept-request-credentials-mode
 enum CredentialsMode {
-  // TODO(https://crbug.com/775438): Due to a bug, this does not properly
+  // TODO(crbug.com/40089326): Due to a bug, this does not properly
   // correspond to Fetch's "credentials mode", in that client certificates will
   // be sent is available, or the handshake will be aborted in order to allow
   // selecting a client cert. The correct behavior is to omit all client certs
@@ -98,7 +98,7 @@ enum CredentialsMode {
   kSameOrigin,
   kInclude,
 
-  // TODO(https://crbug.com/775438): This works around kOmit not doing the
+  // TODO(crbug.com/40089326): This works around kOmit not doing the
   // spec-defined behavior. This is a temporary workaround that explicitly
   // indicates the caller wants the spec-defined behavior. It's named as such
   // because this should be only temporary, until kOmit is fixed.

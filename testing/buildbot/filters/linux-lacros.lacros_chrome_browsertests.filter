@@ -2,6 +2,6 @@
 # If you need to disable a tests for version skew, use
 # linux-lacros.lacros_chrome_browsertests.skew.filter.
 
-# TODO(crbug.com/1477409) flaky.
+# TODO(crbug.com/40928806) flaky.
 -*InputMethodLacrosBrowserTest.ConfirmCompositionWith*
 -*InputMethodLacrosBrowserTest.DeleteSurroundingText*

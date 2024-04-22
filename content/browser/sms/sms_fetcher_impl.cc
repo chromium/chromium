@@ -91,7 +91,8 @@ void SmsFetcherImpl::Unsubscribe(const OriginList& origin_list,
   // A subscriber does not have a remote cancel callback in the map when
   //   1. it has been unsubscribed before. e.g. we unsubscribe a subscriber when
   //     a verification flow is successful and when the subscriber is destroyed.
-  //   2. TODO(crbug.com/1015645): no need to keep cancel callback when we don't
+  //   2. TODO(crbug.com/40103792): no need to keep cancel callback when we
+  //   don't
   //     fetch a remote sms. e.g. when kWebOTPCrossDevice is disabled.
   auto it = remote_cancel_callbacks_.find(subscriber);
   if (it == remote_cancel_callbacks_.end())

@@ -204,7 +204,7 @@ ci.builder(
         short_name = "32",
     ),
     cq_mirrors_console_view = "mirrors",
-    # TODO(crbug/1473182): Remove once the bug is closed.
+    # TODO(crbug.com/40926931): Remove once the bug is closed.
     reclient_bootstrap_env = {
         "RBE_experimental_exit_on_stuck_actions": "true",
     },
@@ -455,7 +455,7 @@ ci.thin_tester(
     builder_config_settings = builder_config.ci_settings(
         retry_failed_shards = True,
     ),
-    # TODO(crbug.com/1383380): Enable sheriff when stable and green.
+    # TODO(crbug.com/40877793): Enable sheriff when stable and green.
     sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(

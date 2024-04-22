@@ -178,7 +178,8 @@ struct VideoColorSpace {
 
 // This defines a mojo transport format for media::AudioDecoderConfig.
 // See media/base/audio_decoder_config.h for descriptions.
-// TODO(crbug.com/1232205): Support `channels_` set by SetChannelsForDiscrete().
+// TODO(crbug.com/40191032): Support `channels_` set by
+// SetChannelsForDiscrete().
 struct AudioDecoderConfig {
   AudioCodec codec;
   SampleFormat sample_format;
@@ -315,7 +316,7 @@ struct AudioBuffer {
 };
 
 // See media/base/video_frame_metadata.h for a description of fields.
-// TODO(crbug.com/657632): Remove |has_*| values and use nullable types.
+// TODO(crbug.com/40489779): Remove |has_*| values and use nullable types.
 struct VideoFrameMetadata {
   bool allow_overlay;
 

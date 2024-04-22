@@ -110,7 +110,7 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory(
   // when additional parameters can cause validations to fail, this will cause
   // problems.
   //
-  // TODO(crbug.com/1477317): figure out how to get this verifier in sync with
+  // TODO(crbug.com/40928765): figure out how to get this verifier in sync with
   // the profile verifier.
   context_params->cert_verifier_params = GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());

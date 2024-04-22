@@ -107,7 +107,7 @@ bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
 
   for (const auto arg : *args) {
     if (!base::Contains(kAllowedArgs, arg.first)) {
-      // TODO(https://crbug.com/1032439): Increase severity and return false
+      // TODO(crbug.com/40662865): Increase severity and return false
       // once we have a mechanism for soft transitions of supported arguments.
       LOG(WARNING) << "Unknown command-line arg: '" << arg.first
                    << "'. Config file and WebEngine version may not match.";
@@ -189,7 +189,7 @@ bool UpdateCommandLineFromConfigFile(const base::Value::Dict& config,
     command_line->AppendSwitch(switches::kForceProtectedVideoOutputBuffers);
   }
 
-  // TODO(crbug.com/1449048): Remove this switch once fixed.
+  // TODO(crbug.com/40269624): Remove this switch once fixed.
   command_line->AppendSwitchASCII(switches::kEnableHardwareOverlays,
                                   "underlay");
 

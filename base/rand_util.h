@@ -90,7 +90,7 @@ BASE_EXPORT float BitsToOpenEndedUnitIntervalF(uint64_t bits);
 // random number source, code outside of base/ that relies on this should use
 // crypto::RandBytes instead to ensure the requirement is easily discoverable.
 BASE_EXPORT void RandBytes(span<uint8_t> output);
-// TODO(https://crbug.com/1490484): Migrate callers to the span version.
+// TODO(crbug.com/40284755): Migrate callers to the span version.
 BASE_EXPORT void RandBytes(void* output, size_t output_length);
 
 // Creates a vector of `length` bytes, fills it with random data, and returns

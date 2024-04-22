@@ -1299,7 +1299,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, StitchChildTree) {
   link->AccessibilityPerformAction(action_data);
   ASSERT_TRUE(waiter.WaitForNotification());
 
-  // TODO(crbug.com/1468416): Platform nodes are not yet supported in
+  // TODO(crbug.com/40924888): Platform nodes are not yet supported in
   // stitched child trees but will be after the AX Views project is completed.
   // For now, we compare with `ui::AXNode`s.
   const ui::AXNode* child_tree_root_node =
@@ -1352,7 +1352,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ClickSVG) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-// TODO(crbug.com/1476956) Disabled due to flakiness.
+// TODO(crbug.com/40928581) Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
                        DISABLED_ClickAXNodeGeneratedFromCSSContent) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(

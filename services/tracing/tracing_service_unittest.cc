@@ -368,7 +368,7 @@ TEST_F(TracingServiceTest, PerfettoClientProducer) {
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 #if !BUILDFLAG(IS_WIN)
-// TODO(crbug.com/1158482): Support tracing to file on Windows.
+// TODO(crbug.com/40736989): Support tracing to file on Windows.
 TEST_F(TracingServiceTest, TraceToFile) {
   // Set up API bindings.
   EnableClientApiConsumer();

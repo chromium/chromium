@@ -36,7 +36,7 @@ net::HttpRequestHeaders GetRequestHeaders() {
   //     loading case. Extension authors can use the "initiator" property to
   //     observe it.
   auto headers = net::HttpRequestHeaders();
-  // TODO(1240935): Share the code with
+  // TODO(crbug.com/40194454): Share the code with
   // DedicatedWebTransportHttp3Client::DoSendRequest.
   headers.SetHeader("sec-webtransport-http3-draft02", "1");
   return headers;
@@ -192,7 +192,7 @@ class WebTransportHandshakeProxy : public WebRequestAPI::Proxy,
     response.headers =
         override_headers_ ? override_headers_ : response_headers_;
     DCHECK(response.headers);
-    // TODO(1250090): Assign actual server IP 'response';
+    // TODO(crbug.com/40791652): Assign actual server IP 'response';
     response.remote_endpoint = net::IPEndPoint();
     // Web transport doesn't use the http cache.
     response.was_fetched_via_cache = false;

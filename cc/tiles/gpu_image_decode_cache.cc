@@ -2928,7 +2928,7 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
   // - The image is supported according to the profiles advertised by the GPU
   //   service.
   //
-  // TODO(crbug.com/953367): currently, we don't support scaling with hardware
+  // TODO(crbug.com/40623374): currently, we don't support scaling with hardware
   // decode acceleration. Note that it's still okay for the image to be
   // downscaled by Skia using the GPU.
   const ImageHeaderMetadata* image_metadata =

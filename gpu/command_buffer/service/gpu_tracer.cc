@@ -180,7 +180,8 @@ GPUTracer::GPUTracer(DecoderContext* decoder, bool context_is_gl)
     disjoint_time_ = gpu_timing_client_->GetCurrentCPUTime();
   } else {
     can_trace_dev_ = false;
-    // TODO(crbug.com/1018725): GPUTiming should support backends other than GL.
+    // TODO(crbug.com/40655549): GPUTiming should support backends other than
+    // GL.
     gpu_timing_client_ = nullptr;
   }
   outputter_ = decoder_->outputter();

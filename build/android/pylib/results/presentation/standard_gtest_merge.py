@@ -21,7 +21,7 @@ def merge_shard_results(summary_json, jsons_to_merge):
     with open(summary_json) as f:
       summary = json.load(f)
   except (IOError, ValueError):
-    # TODO(crbug.com/1245494):Re-enable this check after the recipe module
+    # TODO(crbug.com/40196155):Re-enable this check after the recipe module
     # chromium_swarming can run it with py3
     # pylint: disable=raise-missing-from
     raise Exception('Summary json cannot be loaded.')

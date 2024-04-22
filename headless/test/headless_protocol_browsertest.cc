@@ -296,7 +296,7 @@ HEADLESS_PROTOCOL_TEST(MAYBE_VirtualTimeWorkerFetch,
 HEADLESS_PROTOCOL_TEST(VirtualTimeWorkerTerminate,
                        "emulation/virtual-time-worker-terminate.js")
 
-// Flaky on Mac. TODO(crbug.com/1164173): Re-enable.
+// Flaky on Mac. TODO(crbug.com/40740587): Re-enable.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_VirtualTimeFetchKeepalive DISABLED_VirtualTimeFetchKeepalive
 #else
@@ -527,7 +527,7 @@ class HeadlessProtocolBrowserTestWithDataPath
     RunTest();                                                              \
   }
 
-// TODO(crbug.com/1399463)  Re-enable after resolving flaky failures.
+// TODO(crbug.com/40883155)  Re-enable after resolving flaky failures.
 HEADLESS_PROTOCOL_TEST_WITH_DATA_PATH(
     FileInputDirectoryUpload,
     "sanity/file-input-directory-upload.js",

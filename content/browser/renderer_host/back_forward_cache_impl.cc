@@ -770,7 +770,7 @@ BackForwardCacheImpl::PopulateReasonsForPage(
     RenderFrameHostImpl* rfh,
     BackForwardCacheCanStoreDocumentResult& flattened_result,
     RequestedFeatures requested_features) {
-  // TODO(crbug.com/1275977): This function should only be called when |rfh| is
+  // TODO(crbug.com/40207294): This function should only be called when |rfh| is
   // the primary main frame. Fix |ShouldProactivelySwapBrowsingInstance()| and
   // |UnloadOldFrame()| so that it will not check bfcache eligibility if not
   // primary main frame.

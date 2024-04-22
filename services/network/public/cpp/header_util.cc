@@ -104,7 +104,7 @@ bool AreRequestHeadersSafe(const net::HttpRequestHeaders& request_headers) {
   return true;
 }
 
-// TODO(https://crbug.com/1302851): Consider merging this with
+// TODO(crbug.com/40217150): Consider merging this with
 // ProcessReferrerPolicyHeaderOnRedirect() in //net and/or
 // blink::SecurityPolicy::ReferrerPolicyFromString().
 mojom::ReferrerPolicy ParseReferrerPolicy(

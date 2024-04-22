@@ -313,7 +313,7 @@ void TraceShouldSwapBrowsingInstanceResult(int frame_tree_node_id,
 // non-isolated iframe), we would iterate through the entire set of FrameTrees
 // and find and reuse the fenced frame BrowsingInstance's default process.
 //
-// TODO(crbug.com/1347235): There are certain scenarios where this won't work,
+// TODO(crbug.com/40232875): There are certain scenarios where this won't work,
 // see bug for an example scenario/proposed fix.
 void ReuseDefaultProcessFromDifferentBrowsingInstanceIfPossible(
     scoped_refptr<SiteInstanceImpl> new_instance,
@@ -831,7 +831,7 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
     if (!frame_tree_node_->frame_tree().IsHidden())
       render_frame_host_->GetView()->Show();
 
-    // TODO(crbug.com/1434403): For same RenderFrameHost, it isn't clear
+    // TODO(crbug.com/40264716): For same RenderFrameHost, it isn't clear
     // whether we should start the new content timer, but to be safe, we start
     // it here. The TODO here is to remove this call when we can.
     //
@@ -1842,7 +1842,7 @@ RenderFrameHostManager::GetFrameHostForNavigation(
   // recording opt-outs when kOriginAgentClusterDefault is enabled, although in
   // that case process isolation isn't involved, and so the following call to
   // CanAccessDataForOrigin isn't a problem.
-  // TODO(https://crbug.com/931895): Remove the following block (and the
+  // TODO(crbug.com/40613869): Remove the following block (and the
   // comments above) when the ProcessLock check below is removed.
   const IsolationContext& isolation_context =
       navigation_rfh->GetSiteInstance()->GetIsolationContext();
@@ -3159,7 +3159,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // If we haven't used our SiteInstance yet, then we can use it for this
   // navigation.  We won't commit the SiteInstance to this site until the
   // response is received (in OnResponseStarted).
-  // TODO(https://crbug.com/1467849): In theory we should be able to go for an
+  // TODO(crbug.com/40276947): In theory we should be able to go for an
   // unused SiteInstance with the same web exposed isolation status.
   if (!current_instance->HasSite() && !dest_url_info.IsIsolated() &&
       !current_instance->IsCrossOriginIsolated()) {
@@ -3267,7 +3267,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // such as file: URLs.  This logic prevents unneeded OOPIFs in those cases.
   // This turns out to be important for correctness on Android Webview, which
   // does not yet support OOPIFs (https://crbug.com/1101214).
-  // TODO(https://crbug.com/1103352): Remove this block when default
+  // TODO(crbug.com/40704573): Remove this block when default
   // SiteInstances support file: URLs.
   //
   // Also if kProcessSharingWithStrictSiteInstances is enabled, don't lump the
@@ -3847,7 +3847,7 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
         // RenderViewHost is also keyed by SiteInstance, when there is an
         // existing RenderViewHost, we want to use the correct corresponding
         // proxy when unloading a frame and committing a navigation.
-        // TODO(crbug.com/1302242): Migrate storage of SiteInstance(Group) =>
+        // TODO(crbug.com/40216896): Migrate storage of SiteInstance(Group) =>
         // RenderViewHost to BrowsingContextState to eliminate this branch.
         browsing_context_state = scoped_refptr<BrowsingContextState>(
             &*(render_view_host->main_browsing_context_state().value()));
@@ -4698,7 +4698,7 @@ void RenderFrameHostManager::CommitPending(
     // here would need to make sure it showed the `blink::WebView` when the
     // RenderWidget was created as visible.
     //
-    // TODO(crbug.com/1429008): In addition to the RenderWidgetHostView
+    // TODO(crbug.com/40262486): In addition to the RenderWidgetHostView
     // visibility there is also the concept of PageVisibilityState. The
     // PageLifecycleStateManager will have the RenderViewHostImpl notify the
     // blink::Page of changes to the PageVisibilityState. This currently does
@@ -5073,7 +5073,7 @@ void RenderFrameHostManager::CollectOpenerFrameTrees(
       // for newly connected frames in the outer delegate SiteInstanceGroup. We
       // do not want to interact with these, so explicitly verify the
       // CoopRelatedGroups match.
-      // TODO(https://crbug.com/1440642): It is not clear that this iteration is
+      // TODO(crbug.com/40266207): It is not clear that this iteration is
       // actually useful for outer delegate proxies. See if this can be
       // prevented to simplify logic here.
       SiteInstanceGroup* opener_sig =

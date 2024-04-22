@@ -89,7 +89,7 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
 
   // Recursive prefetch from a cross-origin main resource prefetch.
   if (resource_request.recursive_prefetch_token) {
-    // TODO(crbug.com/1132770): Figure out why we're seeing this condition
+    // TODO(crbug.com/40150754): Figure out why we're seeing this condition
     // hold true in the field.
     if (!current_context.cross_origin_factory) {
       return;

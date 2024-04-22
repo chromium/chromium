@@ -1158,7 +1158,7 @@ TEST_F(PrefetchServiceTest, SuccessCase_Embedder) {
                       {{"X-Testing", "Hello World"}}, kHTMLBody);
 
   // Verify that the prefetch request was successful.
-  // TODO(crbug.com/1448731): Revise current helper functions (ExpectPrefetch*)
+  // TODO(crbug.com/40269462): Revise current helper functions (ExpectPrefetch*)
   // for browser-initiated prefetch.
   histogram_tester.ExpectUniqueSample(
       "PrefetchProxy.Prefetch.ExistingPrefetchWithMatchingURL", false, 1);

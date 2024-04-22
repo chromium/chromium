@@ -118,7 +118,7 @@ Example:
   ```
 
 ### Accessing Bots
- TODO(crbug.com/1327486): Document how to remote into bots for debugging.
+ TODO(crbug.com/40841197): Document how to remote into bots for debugging.
 
 ### Updating the Checked-In Version of the Updater
 An older version of the updater is checked in under `//third_party/updater`.
@@ -252,7 +252,7 @@ providing to assorted `gn`, `ninja`, and `autoninja` commands. `updater.zip`
 contains copies of the "final" outputs created by the build. `UpdaterSetup` is
 probably what you want for installing the updater you have built.
 
-TODO(crbug.com/1448700): list the relevant/interesting outputs here and what
+TODO(crbug.com/40269445): list the relevant/interesting outputs here and what
 they are, why they're relevant/interesting, etc.
 
 ## Code Coverage

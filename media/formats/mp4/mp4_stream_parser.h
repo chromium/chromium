@@ -139,7 +139,7 @@ class MEDIA_EXPORT MP4StreamParser : public StreamParser {
   // operations, otherwise more data than the amount indicated in the Parse()
   // call's `max_pending_bytes_to_inspect` increment might be inspected in a
   // Parse() call. See the various Modulated*() wrappers in this class.
-  // TODO(https://crbug.com/1286464): Consider reworking all these parsers to
+  // TODO(crbug.com/40815633): Consider reworking all these parsers to
   // use a new type of queue that internally modulates the increment.
   int64_t max_parse_offset_ = 0;
   OffsetByteQueue queue_;

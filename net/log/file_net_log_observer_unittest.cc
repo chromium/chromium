@@ -575,7 +575,7 @@ TEST_P(FileNetLogObserverTest, AddEventsFromMultipleThreads) {
   std::vector<std::unique_ptr<base::Thread>> threads(kNumThreads);
 
 #if BUILDFLAG(IS_FUCHSIA)
-  // TODO(https://crbug.com/959245): Diagnosting logging to determine where
+  // TODO(crbug.com/40625862): Diagnosting logging to determine where
   // this test sometimes hangs.
   LOG(ERROR) << "Create and start threads.";
 #endif

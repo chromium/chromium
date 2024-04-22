@@ -82,7 +82,7 @@ def __step_config(ctx, step_config):
             "name": "android/dex",
             "command_prefix": "python3 ../../build/android/gyp/dex.py",
             "handler": "android_dex",
-            # TODO(crbug.com/1452038): include only required jar, dex files in GN config.
+            # TODO(crbug.com/40270798): include only required jar, dex files in GN config.
             "indirect_inputs": {
                 "includes": ["*.dex", "*.ijar.jar", "*.turbine.jar"],
             },

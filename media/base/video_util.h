@@ -154,7 +154,7 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
 // |txt_frame| and creates a new CPU memory backed frame. It's needed because
 // existing video encoders can't handle texture backed frames.
 //
-// TODO(crbug.com/1162530): Combine this function with
+// TODO(crbug.com/40162806): Combine this function with
 // media::ConvertAndScaleFrame and put it into a new class
 // media:FrameSizeAndFormatConverter.
 MEDIA_EXPORT scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(

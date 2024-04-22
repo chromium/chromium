@@ -480,7 +480,7 @@ TEST_F(CastRunnerIntegrationTest, BasicRequest) {
 
 // Verify that the Runner can continue to be used even after its Context has
 // crashed. Regression test for https://crbug.com/1066826.
-// TODO(crbug.com/1066833): Replace this with a WebRunner test, ideally a
+// TODO(crbug.com/40682680): Replace this with a WebRunner test, ideally a
 //   unit-test, which can simulate Context disconnection more simply.
 TEST_F(CastRunnerIntegrationTest, CanRecreateContext) {
   TestCastComponent component(test_realm_services());
@@ -974,8 +974,8 @@ TEST_F(CastRunnerIntegrationTest, MissingCorsExemptHeaderProvider) {
 // Verifies that CastRunner offers a chromium.cast.DataReset service.
 // Verifies that after the DeletePersistentData() API is invoked, no further
 // component-start requests are honoured.
-// TODO(crbug.com/1146474): Expand the test to verify that the persisted data is
-// correctly cleared (e.g. using a custom test HTML app that uses persisted
+// TODO(crbug.com/40730094): Expand the test to verify that the persisted data
+// is correctly cleared (e.g. using a custom test HTML app that uses persisted
 // data).
 TEST_F(CastRunnerIntegrationTest, DataReset_Service) {
   base::RunLoop loop;

@@ -25,5 +25,5 @@ the Test Executable API in other respects (i.e., honor the
 `--isolated-script-test-filter` arg and other command line flags specified
 in that API).
 
-TODO(crbug.com/816629): Convert everything to the Test Executable API, and
+TODO(crbug.com/40564748): Convert everything to the Test Executable API, and
 change the above SHOULD to a MUST.

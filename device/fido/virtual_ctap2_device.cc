@@ -2490,7 +2490,7 @@ CtapDeviceResponseCode VirtualCtap2Device::OnBioEnrollment(
 
   using SubCmd = BioEnrollmentSubCommand;
   switch (*cmd) {
-    // TODO(crbug.com/1090415): some of these commands should be checking
+    // TODO(crbug.com/40697161): some of these commands should be checking
     // PinUvAuthToken.
     case SubCmd::kGetFingerprintSensorInfo:
       response_map.emplace(

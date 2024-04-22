@@ -2216,7 +2216,7 @@ void PageHandler::BackForwardCacheNotUsed(
       result->not_restored_reasons(), result->blocklisted_features(),
       result->disabled_reasons(), result->blocking_details_map());
 
-  // TODO(crbug.com/1281855): |tree_result| should not be nullptr when |result|
+  // TODO(crbug.com/40812472): |tree_result| should not be nullptr when |result|
   // has the reasons.
   std::unique_ptr<Page::BackForwardCacheNotRestoredExplanationTree>
       explanation_tree =

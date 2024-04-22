@@ -556,7 +556,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   bool HandleWebInputEvent(const blink::WebInputEvent& event);
 
   // Helper method for converting IME text to input events.
-  // TODO(crbug.com/1253665): Consider handling composition events.
+  // TODO(crbug.com/40199248): Consider handling composition events.
   void HandleImeCommit(const blink::WebString& text);
 
   // Callback to print without re-entrancy issues. The callback prevents the

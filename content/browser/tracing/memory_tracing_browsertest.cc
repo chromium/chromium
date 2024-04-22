@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(SingleProcessMemoryTracingTest, DISABLED_QueuedDumps) {
 
 // Flaky on Mac. crbug.com/809809
 // Failing on Android ASAN. crbug.com/1041392
-// TODO(https://crbug.com/1129269): OSMetrics::GetProcessMemoryMaps is not
+// TODO(crbug.com/40720107): OSMetrics::GetProcessMemoryMaps is not
 // implemented on Fuchsia
 #if BUILDFLAG(IS_MAC) ||                                     \
     (BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)) || \

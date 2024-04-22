@@ -484,7 +484,7 @@ TEST_F(MediaInternalsAudioFocusTest, AudioFocusStateIsUpdated) {
   // Abandon audio focus.
   RemoveAllPlayersForTest(media_session1);
 
-  // TODO(https://crbug.com/916177): This should wait on a more precise
+  // TODO(crbug.com/40606983): This should wait on a more precise
   // condition than RunLoop idling, but it's not clear exactly what that should
   // be.
   base::RunLoop().RunUntilIdle();

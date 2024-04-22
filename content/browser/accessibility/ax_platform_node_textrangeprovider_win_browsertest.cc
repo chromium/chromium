@@ -2964,7 +2964,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                           L"Before frame\nText in iframe\nAfter frame");
 }
 
-// TODO(https://crbug.com/1338169): This test is flaky.
+// TODO(crbug.com/40848898): This test is flaky.
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                        DISABLED_OutOfProcessIFrameTraversal) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -3579,7 +3579,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Flaky.
-// TODO(https://crbug.com/1132248): Re-enable.
+// TODO(crbug.com/40721846): Re-enable.
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
                        DISABLED_IframeSelect) {
   LoadInitialAccessibilityTreeFromHtmlFilePath(

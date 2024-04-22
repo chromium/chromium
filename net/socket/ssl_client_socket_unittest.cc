@@ -2361,7 +2361,7 @@ TEST_F(SSLClientSocketTest, LegacyTLSVersions) {
   // through TLS 1.1, these values are just passed through to the BoringSSL API,
   // which means the underlying protocol version numbers can be used here.
   //
-  // TODO(https://crbug.com/1416295): Ideally SSLConfig would just take an enum,
+  // TODO(crbug.com/40893435): Ideally SSLConfig would just take an enum,
   // at which point this test can be removed.
   for (uint16_t version : {SSL3_VERSION, TLS1_VERSION, TLS1_1_VERSION}) {
     SCOPED_TRACE(version);

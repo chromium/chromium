@@ -378,7 +378,7 @@ void PrivateAggregationBudgeter::DeleteByDataKey(
             std::move(callback));
 }
 
-// TODO(crbug.com/1336733): Consider enumerating different error cases and log
+// TODO(crbug.com/40229006): Consider enumerating different error cases and log
 // metrics and/or expose to callers.
 void PrivateAggregationBudgeter::ConsumeBudgetImpl(
     int additional_budget,

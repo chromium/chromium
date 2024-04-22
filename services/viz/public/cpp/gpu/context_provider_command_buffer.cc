@@ -307,7 +307,7 @@ gpu::ContextResult ContextProviderCommandBuffer::BindToCurrentSequence() {
   cache_controller_ =
       std::make_unique<ContextCacheController>(impl_, default_task_runner_);
 
-  // TODO(crbug.com/868192): SetLostContextCallback should probably work on
+  // TODO(crbug.com/40586882): SetLostContextCallback should probably work on
   // WebGPU contexts too.
   if (impl_) {
     impl_->SetLostContextCallback(

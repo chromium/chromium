@@ -25,7 +25,7 @@
 
 namespace device {
 namespace {
-// TODO(https://crbug.com/1429096): It's not clear if the display rotation
+// TODO(crbug.com/40900871): It's not clear if the display rotation
 // should factor into Cardboard's viewport orientation. Initial attempts to
 // map them together frequently gave wrong results, whereas statically using
 // kLandscapeLeft has the expected effect.
@@ -677,7 +677,7 @@ void CardboardRenderLoop::UpdateLayerBounds(int16_t frame_index,
   left_bounds_ = left_bounds;
   right_bounds_ = right_bounds;
 
-  // TODO(https://crbug.com/1429105): This was lifted from ArCoreGl which does
+  // TODO(crbug.com/40900879): This was lifted from ArCoreGl which does
   // a very similar thing, but both cases actually use this texture_size_ to
   // render with and there isn't a corresponding item on the
   // WebXrPresentationState. Replacing the assignment below with a CHECK did not

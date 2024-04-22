@@ -341,7 +341,7 @@
         },
       },
       'Mac12 Tests': {
-        # TODO(crbug.com/1479108): Remove this once the bug is fixed.
+        # TODO(crbug.com/40280753): Remove this once the bug is fixed.
         'args': [
           '--driver-logging',
         ],
@@ -740,7 +740,7 @@
       },
       'linux-bfcache-rel': {
         'args': [
-          # TODO(crbug.com/1255537): Re-enable the test.
+          # TODO(crbug.com/40200069): Re-enable the test.
           '--ignore-tests=external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html',
         ],
       },
@@ -862,7 +862,7 @@
     'remove_from': [
       'CrWinAsan(dll)', # https://crbug.com/935598
       'ToTLinuxTSan',  # https://crbug.com/368525
-      # TODO(crbug.com/1171053): Enable the suite in 'Mac10.15 Tests' once it's
+      # TODO(crbug.com/40166003): Enable the suite in 'Mac10.15 Tests' once it's
       # off CQ.
       'Mac13 Tests (dbg)', # https://crbug.com/1201386
       'mac-code-coverage', # https://crbug.com/1201386
@@ -1104,7 +1104,7 @@
         'swarming': {
           'shards': 30,
         },
-        # TODO(crbug.com/1324240): Enable tests.
+        # TODO(crbug.com/40224958): Enable tests.
         'args': [
           '--gtest_filter=-All/MultiActionAPITest.SessionStorageDoesNotPersistBetweenOpenings/*:All/MultiActionAPITest.PopupCreation/*'
         ],
@@ -1691,7 +1691,7 @@
   },
   'content_browsertests': {
     'remove_from': [
-      # TODO(crbug.com/1431581): Temporarily remove it from android-12L builder due to infra flakiness.
+      # TODO(crbug.com/40263601): Temporarily remove it from android-12L builder due to infra flakiness.
       'android-12l-x64-dbg-tests',
       'CrWinAsan(dll)', # https://crbug.com/935598
       # TODO(crbug.com/1371630): Enable on Fuchsia dbg/asan/clang builders.
@@ -1967,7 +1967,7 @@
       },
       'fuchsia-x64-cast-receiver-rel': {
         # Temporarily only run this on CI due to resource requirements.
-        # TODO(crbug.com/1374125): Remove this once resources are available.
+        # TODO(crbug.com/40872145): Remove this once resources are available.
         'ci_only': True,
         'swarming': {
           'shards': 41,
@@ -3711,7 +3711,7 @@
       },
       'fuchsia-fyi-x64-asan': {
         'args': [
-          # TODO(crbug.com/1199334): Error messages only show up in klog.
+          # TODO(crbug.com/40761189): Error messages only show up in klog.
           '--gtest_filter=-PagedMemoryTest.AccessUncommittedMemoryTriggersASAN'
         ],
       },
@@ -4279,7 +4279,7 @@
       },
       'chromeos-eve-chrome': {
         'args': [
-          # TODO(crbug.com/1191132): Re-enable.
+          # TODO(crbug.com/40756418): Re-enable.
           '--skip=benchmarks.benchmark_smoke_unittest.BenchmarkSmokeTest.wasmpspdfkit',
         ],
       },
@@ -5037,7 +5037,7 @@
   },
   'webgpu_cts_compat_tests': {
     'modifications': {
-      # TODO(crbug.com/1483449): Enable on Intel trybots once there is
+      # TODO(crbug.com/40932096): Enable on Intel trybots once there is
       # sufficient capacity.
       'Dawn Linux x64 DEPS Release (Intel UHD 630)': {
         'ci_only': True,

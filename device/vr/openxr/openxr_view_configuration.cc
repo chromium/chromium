@@ -19,7 +19,7 @@ OpenXrViewProperties::~OpenXrViewProperties() = default;
 
 uint32_t OpenXrViewProperties::Width() const {
   if constexpr (BUILDFLAG(IS_ANDROID)) {
-    // TODO(https://crbug.com/1508028): Devise a more robust way of calculating
+    // TODO(crbug.com/40948737): Devise a more robust way of calculating
     // the max size and per view width. (e.g. (viewWidth/totalWidth) *
     // maxWidth).
     constexpr uint32_t kMaxImageWidth = 4096;

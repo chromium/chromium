@@ -337,7 +337,7 @@ class CONTENT_EXPORT RenderFrameImpl
   // this is false, this is a provisional frame which has not committed yet,
   // and which will swap with a proxy when it commits.
   //
-  // TODO(https://crbug.com/578349): Remove this once provisional frames are
+  // TODO(crbug.com/40452626): Remove this once provisional frames are
   // gone, and clean up code that depends on it.
   bool in_frame_tree() { return in_frame_tree_; }
 

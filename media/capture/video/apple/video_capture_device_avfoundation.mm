@@ -483,7 +483,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   if (best_fourcc == kCMVideoCodecType_JPEG_OpenDML) {
     // Capturing MJPEG for the following camera does not work (frames not
     // forwarded). macOS can convert to the default pixel format for us instead.
-    // TODO(crbug.com/1124884): figure out if there's another workaround.
+    // TODO(crbug.com/40147585): figure out if there's another workaround.
     if ([_captureDevice.modelID isEqualToString:kModelIdLogitech4KPro]) {
       LOG(WARNING) << "Activating MJPEG workaround for camera "
                    << base::SysNSStringToUTF8(kModelIdLogitech4KPro);

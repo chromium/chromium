@@ -38,8 +38,8 @@ void ReceiverSessionClient::SetMojoEndpoints(
 
   // TODO: Add streaming session Constraints based on system capabilities
   // (see crbug.com/1013412) and DisplayDescription (see crbug.com/1087520).
-  // TODO(crbug.com/1218498): Only populate codecs corresponding to those called
-  // out by build flags.
+  // TODO(crbug.com/40185682): Only populate codecs corresponding to those
+  // called out by build flags.
   std::vector<media::VideoCodec> video_codecs;
   std::vector<media::AudioCodec> audio_codecs;
 
@@ -57,7 +57,7 @@ void ReceiverSessionClient::SetMojoEndpoints(
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
   }
 
-  // TODO(crbug.com/1370809): Set config.remoting to expose the device as a
+  // TODO(crbug.com/40241121): Set config.remoting to expose the device as a
   // valid remoting endpoint when |renderer_controller| is set.
   cast_streaming::ReceiverConfig config(std::move(video_codecs),
                                         std::move(audio_codecs));

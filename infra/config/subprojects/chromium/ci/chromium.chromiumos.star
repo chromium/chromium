@@ -967,7 +967,7 @@ ci.builder(
             "release",
         ],
     ),
-    # TODO(crbug.com/1202631) Enable tree closing when stable.
+    # TODO(crbug.com/40179221) Enable tree closing when stable.
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "lacros|arm",

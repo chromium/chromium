@@ -255,7 +255,7 @@ class CONTENT_EXPORT DelegatedFrameHost
 
   // The LocalSurfaceId of the currently embedded surface.
   //
-  // TODO(https://crbug.com/1459238): this value is a copy of what the browser
+  // TODO(crbug.com/40274223): this value is a copy of what the browser
   // wants to embed. The source of truth is stored else where. We should
   // consider de-dup this ID.
   viz::LocalSurfaceId local_surface_id_;

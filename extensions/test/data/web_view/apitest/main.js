@@ -1336,7 +1336,7 @@ function testLoadCommitUrlsWithIframe() {
 
 // This test verifies that new window attachment functions as expected.
 //
-// TODO(crbug.com/594215) Test that opening a new window with a data URL is
+// TODO(crbug.com/40083841) Test that opening a new window with a data URL is
 // blocked. There is currently no way to test this, as the block message is
 // printed on the new window which never gets created, so the message is lost.
 // Also test that opening a new window with a data URL when the webview is

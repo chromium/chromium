@@ -381,7 +381,7 @@ targets.legacy_compound_suite(
         "telemetry_perf_unittests_isolated_scripts",
         "vulkan_swiftshader_isolated_scripts",
         "chromium_web_tests_high_dpi_isolated_scripts",
-        # TODO(crbug.com/1498364): Remove this once the BackgroundResourceFetch
+        # TODO(crbug.com/40287410): Remove this once the BackgroundResourceFetch
         # feature launches.
         "chromium_web_tests_brfetch_isolated_scripts",
         "chromium_wpt_tests_isolated_scripts",
@@ -443,7 +443,7 @@ targets.legacy_compound_suite(
 targets.legacy_compound_suite(
     name = "chromium_mac_rel_isolated_scripts_code_coverage",
     basic_suites = [
-        # TODO(crbug.com/1399354): Enable gpu_dawn_webgpu_blink_web_tests
+        # TODO(crbug.com/40249801): Enable gpu_dawn_webgpu_blink_web_tests
     ],
 )
 

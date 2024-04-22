@@ -1192,7 +1192,7 @@ class RenderWidgetHostDelegatedInkMetadataTest
 // Confirm that using the |updateInkTrailStartPoint| JS API results in the
 // |request_points_for_delegated_ink_| flag being set on the RWHVB.
 // TODO(crbug.com/1344023). Flaky on Linux.
-// TODO(crbug.com/1479339): Failing on ChromesOS MSan.
+// TODO(crbug.com/40929902): Failing on ChromesOS MSan.
 #if BUILDFLAG(IS_LINUX) || (BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER))
 #define MAYBE_FlagGetsSetFromRenderFrameMetadata \
   DISABLED_FlagGetsSetFromRenderFrameMetadata

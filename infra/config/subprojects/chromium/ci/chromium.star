@@ -327,7 +327,7 @@ ci.builder(
         additional_compile_targets = "chrome",
     ),
     cores = 8,
-    # TODO(crbug.com/1362019): Turn on when stable.
+    # TODO(crbug.com/40238185): Turn on when stable.
     sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
@@ -512,7 +512,7 @@ ci.builder(
     ),
     cores = 32,
     sheriff_rotations = args.ignore_default(None),
-    # TODO(crbug.com/1363272): Enable tree_closing/sheriff when stable.
+    # TODO(crbug.com/40238619): Enable tree_closing/sheriff when stable.
     tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "lacros",

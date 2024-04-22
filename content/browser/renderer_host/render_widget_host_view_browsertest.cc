@@ -1704,7 +1704,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewPresentationFeedbackBrowserTest,
 // when the RWHV is visible. These tests add a parent layer to make sure that
 // presentation feedback is logged when the state is UseParentLayerCompositor.
 
-// TODO(https://crbug.com/1164477): These tests don't match the behaviour of the
+// TODO(crbug.com/40163556): These tests don't match the behaviour of the
 // browser. In production the Browser.Tabs.* histograms are logged but in this
 // test, the presentation time request is swallowed during the
 // UseParentLayerCompositor state. Need to find out what's wrong with the test

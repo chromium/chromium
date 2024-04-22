@@ -511,7 +511,7 @@ TEST_F(HidServiceRenderFrameHostTest, OpenAndNavigateCrossOrigin) {
   // The test assumes the previous page gets deleted after navigation,
   // disconnecting the device. Disable back/forward cache to ensure that it
   // doesn't get preserved in the cache.
-  // TODO(crbug.com/1346021): Integrate WebHID with bfcache and remove this.
+  // TODO(crbug.com/40232335): Integrate WebHID with bfcache and remove this.
   DisableBackForwardCacheForTesting(web_contents(),
                                     BackForwardCache::TEST_REQUIRES_NO_CACHING);
 

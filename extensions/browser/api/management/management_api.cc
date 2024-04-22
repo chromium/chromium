@@ -547,7 +547,7 @@ bool ManagementSetEnabledFunction::IsExtensionApprovalFlowRequired(
     return false;
   }
   // Don't prompt the user if the extension has unsupported requirements.
-  // TODO(crbug/1071978): If OnRequirementsChecked() passes, the extension
+  // TODO(crbug.com/40127008): If OnRequirementsChecked() passes, the extension
   // will enable, bypassing parent approval.
   if (HasUnsupportedRequirements(extension_id_)) {
     return false;

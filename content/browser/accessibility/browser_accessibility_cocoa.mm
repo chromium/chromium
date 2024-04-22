@@ -1589,7 +1589,7 @@ bool content::IsNSRange(id value) {
           ->GetManagerForRootFrame()
           ->ToBrowserAccessibilityManagerMac();
   if (!root_manager) {
-    // TODO(crbug.com/1350583) Find out why this happens -- there should always
+    // TODO(crbug.com/40234203) Find out why this happens -- there should always
     // be a root manager whenever an object is instanceActive. This used to be a
     // CHECK() but caused too many crashes, with unknown cause.
     return nil;

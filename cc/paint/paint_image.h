@@ -383,7 +383,7 @@ class CC_PAINT_EXPORT PaintImage {
   friend class DrawImageToneMapUtil;
   friend class DrawSkottieOp;
 
-  // TODO(crbug.com/1031051): Remove these once GetSkImage()
+  // TODO(crbug.com/40110279): Remove these once GetSkImage()
   // is fully removed.
   friend class ImagePaintFilter;
   friend class PaintShader;

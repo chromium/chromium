@@ -142,7 +142,7 @@ class BASE_EXPORT WorkQueueSets {
 
   // This is for a debugging feature which lets us randomize task selection. Its
   // not for production use.
-  // TODO(crbug.com/1350190): Use a seedable PRNG from ::base if one is added.
+  // TODO(crbug.com/40234060): Use a seedable PRNG from ::base if one is added.
   uint64_t Random() const {
     last_rand_ = MurmurHash3(last_rand_);
     return last_rand_;

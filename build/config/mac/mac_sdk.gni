@@ -64,7 +64,7 @@ declare_args() {
 # host (they are not shipped) --- this is required as Chrome on iOS is usually
 # build with the latest version of Xcode that may not ship with the version of
 # the macOS SDK used to build Chrome on mac.
-# TODO(crbug.com/635745): the check for target_os should be replaced by a
+# TODO(crbug.com/40479759): the check for target_os should be replaced by a
 # check that current_toolchain is default_toolchain, and the file should
 # assert that current_os is "mac" once this file is no longer included by
 # iOS toolchains.

@@ -31,7 +31,7 @@ class ReadHandleImpl
                            size_t offset,
                            size_t size,
                            void* serializePointer) override {
-    // TODO(crbug.com/1373314): A compromised renderer could have a shared
+    // TODO(crbug.com/40061304): A compromised renderer could have a shared
     // memory size not large enough to fit the GPU buffer contents. Instead of
     // DCHECK, do a CHECK here to crash the release build. The crash is fine
     // since it is not reachable from normal behavior. WebGPU post-V1 will have

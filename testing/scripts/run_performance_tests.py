@@ -495,7 +495,7 @@ class TelemetryCommandGenerator(object):
   def _generate_reference_build_args(self):
     if self._is_reference:
       reference_browser_flag = '--browser=reference'
-      # TODO(crbug.com/1038137): Make the logic generic once more reference
+      # TODO(crbug.com/40113070): Make the logic generic once more reference
       # settings are added
       if '--browser=android-chrome-bundle' in self._get_passthrough_args():
         reference_browser_flag = '--browser=reference-android-chrome-bundle'
@@ -567,7 +567,7 @@ def execute_telemetry_benchmark(
   # Telemetry sets exit code to -1 to indicate that no stories were run. This
   # becomes 255 on linux because linux doesn't support -1 so it does modulo:
   # -1 % 256 == 255.
-  # TODO(crbug.com/1019139): Make 111 be the exit code that means
+  # TODO(crbug.com/40105219): Make 111 be the exit code that means
   # "no stories were run.".
   if return_code in (111, -1, 255):
     print('Exit code %s indicates that no stories were run, so we are marking '
@@ -692,7 +692,7 @@ def main(sys_args):
     command_generator = GtestCommandGenerator(
         options, additional_flags=passthrough_args, ignore_shard_env_vars=True)
     # Fallback to use the name of the executable if flag isn't set.
-    # TODO(crbug.com/870899): remove fallback logic and raise parser error if
+    # TODO(crbug.com/40588014): remove fallback logic and raise parser error if
     # --non-telemetry is set but --gtest-benchmark-name is not set once pinpoint
     # is converted to always pass --gtest-benchmark-name flag.
     if not benchmark_name:

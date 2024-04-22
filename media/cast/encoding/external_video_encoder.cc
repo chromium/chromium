@@ -236,8 +236,8 @@ class ExternalVideoEncoder::VEAClientImpl final
     // something VEA can't handle (as of this writing, it expects an unsafe
     // region).
     //
-    // TODO(crbug.com/888829): Revisit whether we can remove this memcpy, if VEA
-    // can accept other "memory backing" methods.
+    // TODO(crbug.com/40595267): Revisit whether we can remove this memcpy, if
+    // VEA can accept other "memory backing" methods.
     scoped_refptr<media::VideoFrame> frame = video_frame;
     if (video_frame->coded_size() != frame_coded_size_ ||
         video_frame->storage_type() !=

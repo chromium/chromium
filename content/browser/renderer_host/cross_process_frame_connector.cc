@@ -425,7 +425,7 @@ void CrossProcessFrameConnector::OnVisibilityChanged(
   if (!view_)
     return;
 
-  // TODO(https://crbug.com/1014212) Remove this CHECK when the bug is fixed.
+  // TODO(crbug.com/40103184) Remove this CHECK when the bug is fixed.
   CHECK(current_child_frame_host());
   current_child_frame_host()->VisibilityChanged(visibility_);
 

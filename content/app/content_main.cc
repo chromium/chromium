@@ -277,7 +277,7 @@ RunContentProcess(ContentMainParams params,
     // We need this pool for all the objects created before we get to the event
     // loop, but we don't want to leave them hanging around until the app quits.
     // Each "main" needs to flush this pool right before it goes into its main
-    // event loop to get rid of the cruft. TODO(https://crbug.com/1424190): This
+    // event loop to get rid of the cruft. TODO(crbug.com/40260311): This
     // is not safe. Each main loop should create and destroy its own pool; it
     // should not be flushing the pool at the base of the autorelease pool
     // stack.

@@ -311,7 +311,7 @@ class DesktopCaptureDeviceTest : public testing::Test {
 };
 
 #if BUILDFLAG(IS_FUCHSIA)
-// TODO(crbug.com/1424897) The test is currently broken on Fuchsia.
+// TODO(crbug.com/40260627) The test is currently broken on Fuchsia.
 #define MAYBE_Capture DISABLED_Capture
 #else
 #define MAYBE_Capture Capture

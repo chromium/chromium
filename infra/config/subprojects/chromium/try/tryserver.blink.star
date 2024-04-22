@@ -70,7 +70,7 @@ try_.builder(
     main_list_view = "try",
 )
 
-# TODO(crbug.com/1474702): Once `chrome_wpt_tests` is on CQ/CI (`linux-rel` and
+# TODO(crbug.com/40927590): Once `chrome_wpt_tests` is on CQ/CI (`linux-rel` and
 # `Linux Tests`), remove `ci/linux-wpt-fyi-rel` and move its definition here.
 #
 # `linux-wpt-chromium-rel` (tests chrome) is distinct from `linux-blink-rel`

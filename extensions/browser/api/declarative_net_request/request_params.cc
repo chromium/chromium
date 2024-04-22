@@ -34,7 +34,7 @@ namespace {
 namespace flat_rule = url_pattern_index::flat;
 
 // Returns whether the request to `url` is third party to its `document_origin`.
-// TODO(crbug.com/696822): Look into caching this.
+// TODO(crbug.com/40508457): Look into caching this.
 bool IsThirdPartyRequest(const GURL& url, const url::Origin& document_origin) {
   if (document_origin.opaque())
     return true;

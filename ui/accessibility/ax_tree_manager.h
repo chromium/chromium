@@ -155,7 +155,7 @@ class AX_EXPORT AXTreeManager : public AXTreeObserver {
  protected:
   // This is only made protected to accommodate the `AtomicViewAXTreeManager`.
   // It should be made private once that class is removed.
-  // TODO(crbug.com/1468416): Make private.
+  // TODO(crbug.com/40924888): Make private.
   static AXTreeManagerMap& GetMap();
 
   virtual AXTreeManager* GetParentManager() const;

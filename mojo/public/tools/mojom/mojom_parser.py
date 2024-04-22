@@ -232,7 +232,7 @@ def _Shard(target_func, arg_list, processes=None):
   processes = min(processes, len(arg_list) // 2)
 
   if sys.platform == 'win32':
-    # TODO(crbug.com/1190269) - we can't use more than 56
+    # TODO(crbug.com/40755900) - we can't use more than 56
     # cores on Windows or Python3 may hang.
     processes = min(processes, 56)
 

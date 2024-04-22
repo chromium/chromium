@@ -238,7 +238,7 @@ content_shell_apk_tmpl("content_shell_test_apk") {
 
   additional_apks = [ "//net/android:net_test_support_apk" ]
 
-  # TODO(crbug.com/1099536): Fix tests that break when this is increased.
+  # TODO(crbug.com/40137544): Fix tests that break when this is increased.
   target_sdk_version = 24
 }
 

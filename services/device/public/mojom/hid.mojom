@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/1110184): We have to mark this mojom as [Stable] before
+// TODO(crbug.com/40142029): We have to mark this mojom as [Stable] before
 // lacros begins the process of launching.
 
 module device.mojom;

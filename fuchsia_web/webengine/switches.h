@@ -46,7 +46,7 @@ extern const char kUseLegacyMetricsService[];
 extern const char kCorsExemptHeaders[];
 
 // Enables the Cast Streaming Receiver.
-// TODO(crbug.com/1078919): Consider removing this flag when we have a better
+// TODO(crbug.com/40129708): Consider removing this flag when we have a better
 // way of enabling this feature.
 extern const char kEnableCastStreamingReceiver[];
 

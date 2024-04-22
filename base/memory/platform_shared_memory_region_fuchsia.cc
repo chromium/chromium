@@ -118,7 +118,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
     return {};
   }
 
-  // TODO(crbug.com/991805): Take base::Location from the caller and use it to
+  // TODO(crbug.com/40639453): Take base::Location from the caller and use it to
   // generate the name here.
   constexpr char kVmoName[] = "cr-shared-memory-region";
   status = vmo.set_property(ZX_PROP_NAME, kVmoName, strlen(kVmoName));

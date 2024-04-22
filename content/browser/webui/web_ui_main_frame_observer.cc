@@ -97,7 +97,7 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
   }
 
   // Redact query parameters & fragment. Also the username and password.
-  // TODO(https://crbug.com/1121816) Improve redaction.
+  // TODO(crbug.com/40146362) Improve redaction.
   GURL url(source_id);
   if (!url.is_valid()) {
     DVLOG(3) << "Message not reported, invalid URL";

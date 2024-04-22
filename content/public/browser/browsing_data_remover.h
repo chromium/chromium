@@ -59,8 +59,8 @@ class StoragePartitionConfig;
 //
 ////////////////////////////////////////////////////////////////////////////////
 //
-// TODO(crbug.com/668114): BrowsingDataRemover does not currently support plugin
-// data deletion. Use PluginDataRemover instead.
+// TODO(crbug.com/40495069): BrowsingDataRemover does not currently support
+// plugin data deletion. Use PluginDataRemover instead.
 class BrowsingDataRemover {
  public:
   // Mask used for Remove.

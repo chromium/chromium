@@ -274,7 +274,7 @@ interface GenerateBidClient {
   //  the interest group's priorityOverrides map. Null values mean to delete the
   //  corresponding value, if present. Values with keys not in the map are
   //  preserved.
-  //  TODO(https://crbug.com/657632): Update to use `double?` type if/when
+  //  TODO(crbug.com/40489779): Update to use `double?` type if/when
   //  that's supported as a value in a Mojo map.
   //
   // `pa_requests` The various requests made to the Private Aggregation API.

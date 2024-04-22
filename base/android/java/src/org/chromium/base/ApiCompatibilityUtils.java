@@ -290,12 +290,13 @@ public class ApiCompatibilityUtils {
     }
 
     /**
-     * Sets the bottom handwriting bounds offset of the given view to 0.
-     * See https://crbug.com/1427112
+     * Sets the bottom handwriting bounds offset of the given view to 0. See
+     * https://crbug.com/1427112
+     *
      * @param view The view on which to set the handwriting bounds.
      */
     public static void clearHandwritingBoundsOffsetBottom(View view) {
-        // TODO(crbug.com/1427112): Replace uses of this method with direct calls once the API is
+        // TODO(crbug.com/40261637): Replace uses of this method with direct calls once the API is
         // available.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return;
         // Set the bottom handwriting bounds offset to 0 so that the view doesn't intercept

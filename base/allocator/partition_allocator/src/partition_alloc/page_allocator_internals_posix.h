@@ -150,7 +150,7 @@ bool UseMapJit() {
 #if TARGET_IPHONE_SIMULATOR
   return true;
 #else
-  // TODO(https://crbug.com/1413818): Fill this out when the API it is
+  // TODO(crbug.com/40255826): Fill this out when the API it is
   // available.
   return false;
 #endif  // TARGET_IPHONE_SIMULATOR

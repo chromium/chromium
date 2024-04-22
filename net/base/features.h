@@ -212,7 +212,7 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSameSiteDefaultChecksMethodRigorously);
 // When enabled, bssl::TrustStore implementations will use TRUSTED_LEAF,
 // TRUSTED_ANCHOR_OR_LEAF, and TRUSTED_ANCHOR as appropriate. When disabled,
 // bssl::TrustStore implementation will only use TRUSTED_ANCHOR.
-// TODO(https://crbug.com/1403034): remove this a few milestones after the
+// TODO(crbug.com/40885140): remove this a few milestones after the
 // trusted leaf support has been launched on all relevant platforms.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(USE_NSS_CERTS) || BUILDFLAG(IS_WIN)
 NET_EXPORT BASE_DECLARE_FEATURE(kTrustStoreTrustedLeafSupport);

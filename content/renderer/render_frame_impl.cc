@@ -4086,7 +4086,7 @@ void RenderFrameImpl::DidCommitDocumentReplacementNavigation(
     blink::WebDocumentLoader* document_loader) {
   DocumentState::FromDocumentLoader(document_loader)
       ->set_navigation_state(NavigationState::CreateForSynchronousCommit());
-  // TODO(https://crbug.com/855189): figure out which of the following observer
+  // TODO(crbug.com/40581836): figure out which of the following observer
   // calls are necessary, if any.
   for (auto& observer : observers_)
     observer.DidStartNavigation(document_loader->GetUrl(), std::nullopt);

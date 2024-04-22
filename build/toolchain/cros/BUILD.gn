@@ -259,7 +259,7 @@ if (also_build_lacros_chrome_for_architecture != "") {
     toolchain_args = {
       forward_variables_from(lacros_args, "*")
 
-      # TODO(crbug.com/1298821) Change to a better way to set gn args.
+      # TODO(crbug.com/40823173) Change to a better way to set gn args.
       # The following gn args are present in ash config like
       # //build/args/chromeos/atlas.gni but not in
       # //build/args/chromeos/amd64-generic-crostoolchain.gni.

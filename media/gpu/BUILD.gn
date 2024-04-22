@@ -53,7 +53,7 @@ component("gpu") {
     "//third_party/blink/renderer/modules/mediarecorder",
     "//ui/gl:gl_unittests",
 
-    # TODO(crbug.com/1184041): Remove //remoting/host:common when the usage is removed.
+    # TODO(crbug.com/40752360): Remove //remoting/host:common when the usage is removed.
     "//remoting/host:common",
   ]
 

@@ -326,7 +326,7 @@ gfx::Transform Layer::ComputeTransformToParent() const {
 }
 
 std::optional<gfx::Transform> Layer::ComputeTransformFromParent() const {
-  // TODO(crbug.com/1408128): Consider caching this result since GetInverse
+  // TODO(crbug.com/40888305): Consider caching this result since GetInverse
   // may be expensive.
   gfx::Transform inverse_transform;
   if (!transform_.GetInverse(&inverse_transform)) {

@@ -2234,11 +2234,11 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
     // cases, we reuse the last committed entry.
     entry = GetLastCommittedEntry();
 
-    // TODO(crbug.com/751023): Set page transition type to PAGE_TRANSITION_LINK
-    // to avoid misleading interpretations (e.g. URLs paired with
-    // PAGE_TRANSITION_TYPED that haven't actually been typed) as well as to fix
-    // the inconsistency with what we report to observers (PAGE_TRANSITION_LINK
-    // | PAGE_TRANSITION_CLIENT_REDIRECT).
+    // TODO(crbug.com/40532777): Set page transition type to
+    // PAGE_TRANSITION_LINK to avoid misleading interpretations (e.g. URLs
+    // paired with PAGE_TRANSITION_TYPED that haven't actually been typed) as
+    // well as to fix the inconsistency with what we report to observers
+    // (PAGE_TRANSITION_LINK | PAGE_TRANSITION_CLIENT_REDIRECT).
 
     CopyReplacedNavigationEntryDataIfPreviouslyEmpty(entry, entry);
 
@@ -3760,7 +3760,7 @@ void NavigationControllerImpl::HandleRendererDebugURL(
   // Several tests expect a load of Chrome Debug URLs to send a DidStopLoading
   // notification, so set is loading to true here to properly surface it when
   // the renderer process is done handling the URL.
-  // TODO(crbug.com/1254130): Remove the test dependency on this behavior.
+  // TODO(crbug.com/40199456): Remove the test dependency on this behavior.
   if (!url.SchemeIs(url::kJavaScriptScheme)) {
     frame_tree_node->current_frame_host()->SetIsLoadingForRendererDebugURL();
   }
@@ -4848,7 +4848,7 @@ bool NavigationControllerImpl::ShouldProtectUrlInNavigationApi(
 
 bool NavigationControllerImpl::ShouldMaintainTrivialSessionHistory(
     const FrameTreeNode* frame_tree_node) const {
-  // TODO(https://crbug.com/1197384): We may have to add portals in addition to
+  // TODO(crbug.com/40176906): We may have to add portals in addition to
   // prerender and fenced frames. This should be kept in sync with
   // LocalFrame version, LocalFrame::ShouldMaintainTrivialSessionHistory.
   // The preview mode appears as prerendered page in renderers, and

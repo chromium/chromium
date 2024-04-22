@@ -427,7 +427,7 @@ TEST_P(MAYBE_InvitationCppTest, MAYBE_ProcessErrors) {
   error_loop.Run();
   EXPECT_EQ(MOJO_RESULT_OK, MojoDestroyMessage(message));
 
-  // TODO(https://crbug.com/846833): Once we can rework the C++ invitation API
+  // TODO(crbug.com/40578072): Once we can rework the C++ invitation API
   // to also notify on disconnect, this test should cover that too. For now we
   // just tell the process to exit and wait for it to do.
   WriteMessage(pipe, kDisconnectMessage);

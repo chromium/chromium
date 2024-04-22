@@ -1589,7 +1589,7 @@ class LayerTreeHostTestNoDamageCausesNoInvalidate : public LayerTreeHostTest {
 
 // This behavior is specific to Android WebView, which only uses
 // multi-threaded compositor.
-// TODO(https://crbug.com/1345000): Flaky.
+// TODO(crbug.com/40853271): Flaky.
 // MULTI_THREAD_TEST_F(LayerTreeHostTestNoDamageCausesNoInvalidate);
 
 // When settings->enable_early_damage_check is true, verify that the early
@@ -1686,7 +1686,7 @@ class LayerTreeHostTestEarlyDamageCheckStops : public LayerTreeHostTest {
 
 // This behavior is specific to Android WebView, which only uses
 // multi-threaded compositor.
-// TODO(crbug.com/1043900): Disabled because test is flaky on Mac10.13.
+// TODO(crbug.com/40669342): Disabled because test is flaky on Mac10.13.
 // MULTI_THREAD_TEST_F(LayerTreeHostTestEarlyDamageCheckStops);
 
 // When settings->enable_early_damage_check is true, verifies that PrepareTiles
@@ -2726,7 +2726,7 @@ class LayerTreeHostTestNoExtraCommitFromScrollbarInvalidate
   scoped_refptr<FakePaintedScrollbarLayer> scrollbar_;
 };
 
-// TODO(crbug.com/1292184): Flaky failures.
+// TODO(crbug.com/40819189): Flaky failures.
 // SINGLE_AND_MULTI_THREAD_TEST_F(
 //    LayerTreeHostTestNoExtraCommitFromScrollbarInvalidate);
 
@@ -3538,7 +3538,7 @@ class LayerTreeHostTestSetVisible : public LayerTreeHostTest {
   int num_draws_;
 };
 
-// TODO(crbug.com/1298939): Test is flaky.
+// TODO(crbug.com/40823253): Test is flaky.
 // MULTI_THREAD_TEST_F(LayerTreeHostTestSetVisible);
 
 class LayerTreeHostTestDeviceScaleFactorScalesViewportAndLayers
@@ -4256,7 +4256,7 @@ class LayerTreeHostTestAbortedCommitDoesntStallSynchronousCompositor
   raw_ptr<OnDrawLayerTreeFrameSink> layer_tree_frame_sink_ = nullptr;
 };
 
-// TODO(crbug.com/1121690): Test is flaky.
+// TODO(crbug.com/40146306): Test is flaky.
 // MULTI_THREAD_TEST_F(
 //    LayerTreeHostTestAbortedCommitDoesntStallSynchronousCompositor);
 
@@ -8687,7 +8687,7 @@ class LayerTreeHostTestImageAnimationSynchronousSchedulingSoftwareDraw
   }
 };
 
-// TODO(crbug.com/1092110): Flaky on TSan bot.
+// TODO(crbug.com/40698130): Flaky on TSan bot.
 // MULTI_THREAD_TEST_F(
 //     LayerTreeHostTestImageAnimationSynchronousSchedulingSoftwareDraw);
 

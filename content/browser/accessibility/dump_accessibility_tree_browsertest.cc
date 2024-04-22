@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAOnclick) {
   RunHtmlTest(FILE_PATH_LITERAL("a-onclick.html"));
 }
 
-// TODO(https://crbug.com/1309941): This test is failing on Fuchsia.
+// TODO(crbug.com/40830092): This test is failing on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_AccessibilityANestedStructure \
   DISABLED_AccessibilityANestedStructure
@@ -736,7 +736,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-describedby.html"));
 }
 
-// TODO(crbug.com/1344894): disabled on UIA
+// TODO(crbug.com/40853220): disabled on UIA
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestExceptUIA,
                        AccessibilityAriaDescribedByUpdates) {
   RunAriaTest(FILE_PATH_LITERAL("aria-describedby-updates.html"));
@@ -756,7 +756,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-details-multiple.html"));
 }
 
-// TODO(crbug.com/1329847): disabled on UIA
+// TODO(crbug.com/40842838): disabled on UIA
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestExceptUIA,
                        AccessibilityAriaDetailsRoles) {
   RunAriaTest(FILE_PATH_LITERAL("aria-details-roles.html"));
@@ -2299,7 +2299,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInPageLinks) {
   RunHtmlTest(FILE_PATH_LITERAL("in-page-links.html"));
 }
 
-// TODO(crbug.com/1459354): Flaky on CrOS MSan.
+// TODO(crbug.com/40919402): Flaky on CrOS MSan.
 #if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
 #define MAYBE_InertAttribute DISABLED_InertAttribute
 #else
@@ -2514,7 +2514,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("input-radio-wrapped-label.html"));
 }
 
-// TODO(crbug.com/1407673): failing on Fuchsia
+// TODO(crbug.com/40887968): failing on Fuchsia
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_AccessibilityInputRange DISABLED_AccessibilityInputRange
 #else
@@ -3490,7 +3490,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityVideoTextOnly) {
   RunHtmlTest(FILE_PATH_LITERAL("video-text-only.html"));
 }
 
-// TODO(https://crbug.com/1377779): This test is failing on Android.
+// TODO(crbug.com/40874552): This test is failing on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_AccessibilityNodeChangedCrashInEditableText \
   DISABLED_AccessibilityNodeChangedCrashInEditableText
@@ -3754,7 +3754,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, MissingParent) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        NullObjectOnHypertextOffsetComputation) {
   if (!base::FeatureList::IsEnabled(blink::features::kMutationEvents)) {
-    // TODO(crbug.com/1446498) Remove this test (and the .html file) when
+    // TODO(crbug.com/40268638) Remove this test (and the .html file) when
     // MutationEvents are disabled for good. This is just a crash test related
     // to `DOMNodeInserted`.
     return;

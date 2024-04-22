@@ -308,7 +308,7 @@ struct FrameDetails {
     if (module_base_address == 0) {
       module_base_address = 1;
     }
-    // TODO(crbug/1393372): Investigate and maybe cleanup this logic.
+    // TODO(crbug.com/40248195): Investigate and maybe cleanup this logic.
     if (module_name.empty()) {
       module_name = "missing";
     }

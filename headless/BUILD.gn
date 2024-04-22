@@ -605,7 +605,7 @@ test("headless_browsertests") {
     sources += [ "test/headless_command_browsertest.cc" ]
   }
 
-  # TODO(crbug.com/1318548): Enable on Fuchsia when no longer flakily timeout.
+  # TODO(crbug.com/40222911): Enable on Fuchsia when no longer flakily timeout.
   if (!is_fuchsia) {
     sources += [
       "test/headless_compositor_browsertest.cc",

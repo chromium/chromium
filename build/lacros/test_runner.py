@@ -281,7 +281,7 @@ def _WaitForAshChromeToStart(tmp_xdg_dir, lacros_mojo_socket_file,
   Determine whether ash-chrome is up and running by checking whether two files
   (lock file + socket) have been created in the |XDG_RUNTIME_DIR| and the lacros
   mojo socket file has been created if enabling the mojo "crosapi" interface.
-  TODO(crbug.com/1107966): Figure out a more reliable hook to determine the
+  TODO(crbug.com/40707216): Figure out a more reliable hook to determine the
   status of ash-chrome, likely through mojo connection.
 
   Args:

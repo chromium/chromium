@@ -35,7 +35,7 @@ bool ExitedCleanly(int exit_status) {
   return exit_status == 0;
 }
 
-// TODO(crbug.com/1402267): ASAN death test is not picking up the failure
+// TODO(crbug.com/40884672): ASAN death test is not picking up the failure
 // in the emulator logs. Disabling to keep ASAN queue clear.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_ErrorCallback DISABLED_ErrorCallback

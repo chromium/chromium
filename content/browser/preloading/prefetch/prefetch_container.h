@@ -659,7 +659,8 @@ class CONTENT_EXPORT PrefetchContainer {
   base::WeakPtr<BrowserContext> browser_context_;
 
   // The current status, if any, of the prefetch.
-  // TODO(crbug.com/1494771): Use `load_state_` instead for non-metrics purpose.
+  // TODO(crbug.com/40075414): Use `load_state_` instead for non-metrics
+  // purpose.
   std::optional<PrefetchStatus> prefetch_status_;
 
   // The current status of the prefetch.

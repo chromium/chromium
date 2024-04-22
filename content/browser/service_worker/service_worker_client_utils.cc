@@ -403,7 +403,7 @@ void FocusWindowClient(ServiceWorkerContainerHost* container_host,
   }
 
   // Avoid focusing on inactive pages.
-  // TODO(https://crbug.com/1239553): Running the callback with nullptr
+  // TODO(crbug.com/40193903): Running the callback with nullptr
   // results in NotFoundError whereas TypeError should be invoked
   // according to the specification.
   // https://w3c.github.io/ServiceWorker/#client-focus

@@ -109,7 +109,7 @@ void BluetoothAdapter::SetPowered(bool powered,
 }
 
 bool BluetoothAdapter::IsPeripheralRoleSupported() const {
-  // TODO(crbug/1071595): Implement this for more platforms.
+  // TODO(crbug.com/40685201): Implement this for more platforms.
   return true;
 }
 

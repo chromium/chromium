@@ -190,7 +190,7 @@ TEST_F(BackForwardCacheMetricsTest, TimeRecordedAtStart) {
               testing::ElementsAre(UkmEntry{id3, {{time_away, 0b1000}}}));
 }
 
-// TODO(crbug.com/1255492): Flaky under TSan.
+// TODO(crbug.com/40200059): Flaky under TSan.
 #if BUILDFLAG(USING_SANITIZER)
 #define MAYBE_TimeRecordedWhenRendererIsKilled DISABLED_TimeRecordedWhenRendererIsKilled
 #else

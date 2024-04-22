@@ -53,8 +53,8 @@ uint8_t QindexToQuantizer(uint8_t q_index) {
   return std::size(kQuantizerToQindex) - 1;
 }
 
-// TODO(crbug.com/752720): remove this in favor of std::gcd if c++17 is enabled
-// to use.
+// TODO(crbug.com/40533712): remove this in favor of std::gcd if c++17 is
+// enabled to use.
 int GCD(int a, int b) {
   return a == 0 ? b : GCD(b % a, a);
 }

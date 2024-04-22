@@ -1408,7 +1408,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
 // Verify an OOPIF resize handler doesn't fire immediately after load without
 // the frame having been resized. See https://crbug.com/826457.
-// TODO(crbug.com/1278038): Test is very flaky on many platforms.
+// TODO(crbug.com/40809978): Test is very flaky on many platforms.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        DISABLED_NoResizeAfterIframeLoad) {
   GURL main_url(embedded_test_server()->GetURL(
@@ -1706,7 +1706,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // This test verifies that changing the CSS visibility of a cross-origin
 // <iframe> is forwarded to its corresponding RenderWidgetHost and all other
 // RenderWidgetHosts corresponding to the nested cross-origin frame.
-// TODO(crbug.com/1363740): Flaky on mac, linux-lacros, android.
+// TODO(crbug.com/40865141): Flaky on mac, linux-lacros, android.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_CSSVisibilityChanged DISABLED_CSSVisibilityChanged
 #else

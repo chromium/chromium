@@ -10,5 +10,5 @@ command-line tools. The Python module implements the parser used by the
 command-line tools and exposes an API to help external bindings generators emit
 useful code from the parser's outputs.
 
-TODO(https://crbug.com/1060464): Fill out this documentation once the library
+TODO(crbug.com/40122045): Fill out this documentation once the library
 and tools have stabilized.

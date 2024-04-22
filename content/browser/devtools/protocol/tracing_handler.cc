@@ -788,7 +788,7 @@ void TracingHandler::Start(Maybe<std::string> categories,
 
   // Check if we should adopt the startup tracing session. Only the first
   // Tracing.start() sent to the browser endpoint can adopt it.
-  // TODO(crbug.com/1183735): Add tests for system-controlled startup traces.
+  // TODO(crbug.com/40171330): Add tests for system-controlled startup traces.
   AttemptAdoptStartupSession(return_as_stream, gzip_compression, proto_format,
                              *backend);
 

@@ -489,7 +489,7 @@ wgpu::TextureFormat ToDawnTextureViewFormat(viz::SharedImageFormat format,
                                             int plane_index) {
   // The multi plane formats create a separate image per plane and return the
   // single planar equivalents.
-  // TODO(crbug.com/1449108): The above reasoning does not hold unilaterally
+  // TODO(crbug.com/40269645): The above reasoning does not hold unilaterally
   // on Android, and this function will need more information to determine the
   // correct operation to take on that platform.
 #if BUILDFLAG(IS_ANDROID)

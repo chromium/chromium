@@ -436,6 +436,6 @@ if (is_android || is_chromeos) {
   javac_paths_for_inputs =
       [ "//third_party/jdk/current/bin/javac" ] + _common_inputs_for_jre_jdk
 
-  # TODO(crbug.com/1426605): Remove.
+  # TODO(crbug.com/40261378): Remove.
   use_upstream_errorprone_annotations_threadsafe = true
 }

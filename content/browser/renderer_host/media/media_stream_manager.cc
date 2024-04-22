@@ -3054,7 +3054,7 @@ void MediaStreamManager::FinalizeGenerateStreams(const std::string& label,
 
   // It is safe to bind base::Unretained(this) because MediaStreamManager is
   // owned by BrowserMainLoop and so outlives the IO thread.
-  // TODO(crbug.com/1314741): Avoid using PTZ permission checks for non-gUM
+  // TODO(crbug.com/40833062): Avoid using PTZ permission checks for non-gUM
   // tracks.
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -3088,7 +3088,7 @@ void MediaStreamManager::FinalizeGetOpenDevice(const std::string& label,
 
   // It is safe to bind base::Unretained(this) because MediaStreamManager is
   // owned by BrowserMainLoop and so outlives the IO thread.
-  // TODO(crbug.com/1314743): Avoid this check once you have this permission
+  // TODO(crbug.com/40833063): Avoid this check once you have this permission
   // value from original context.
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -3104,7 +3104,7 @@ void MediaStreamManager::FinalizeGetOpenDevice(const std::string& label,
 
 // TODO(https://crbug.com/1288839): Ensure CaptureHandle works for transferred
 // MediaStreamTracks and add tests for the same.
-// TODO(https://crbug.com/1314634): Ensure track transfer does not initiate
+// TODO(crbug.com/40832991): Ensure track transfer does not initiate
 // focus-change with Conditional focus enabled.
 void MediaStreamManager::PanTiltZoomPermissionChecked(
     const std::string& label,
@@ -3188,7 +3188,7 @@ void MediaStreamManager::FinalizeRequestFailed(
       if (devices.video_device.has_value()) {
         const blink::MediaStreamDevice& device = devices.video_device.value();
         DCHECK_NE(device.type, MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET);
-        // TODO(crbug.com/1334332): Also consider
+        // TODO(crbug.com/40228114): Also consider
         // DISPLAY_VIDEO_CAPTURE_THIS_TAB.
         if (device.type == MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
             device.type == MediaStreamType::DISPLAY_VIDEO_CAPTURE) {

@@ -157,7 +157,7 @@ base::expected<void, CorsErrorStatus> CheckAccess(
     // Since the credential is a concept for network schemes, we perform the
     // wildcard check only for HTTP and HTTPS. This is a quick hack to allow
     // data URL (see https://crbug.com/315152).
-    // TODO(https://crbug.com/736308): Once the callers exist only in the
+    // TODO(crbug.com/40088171): Once the callers exist only in the
     // browser process or network service, this check won't be needed any more
     // because it is always for network requests there.
     if (response_url.SchemeIsHTTPOrHTTPS()) {

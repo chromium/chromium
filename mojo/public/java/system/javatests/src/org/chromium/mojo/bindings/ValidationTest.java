@@ -75,7 +75,7 @@ public class ValidationTest {
 
     @SuppressLint("NewApi")
     private static String getStringContent(File f) throws FileNotFoundException {
-        // TODO(crbug.com/635567): Fix this properly.
+        // TODO(crbug.com/40479664): Fix this properly.
         try (Scanner scanner = new Scanner(f)) {
             scanner.useDelimiter("\\Z");
             StringBuilder result = new StringBuilder();

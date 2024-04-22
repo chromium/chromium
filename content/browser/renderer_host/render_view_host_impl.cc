@@ -283,7 +283,7 @@ void RenderViewHostImpl::GetPlatformSpecificPrefs(
 #elif BUILDFLAG(IS_FUCHSIA)
   // Make Blink's "focus ring" invisible. The focus ring is a hairline border
   // that's rendered around clickable targets.
-  // TODO(crbug.com/1066605): Consider exposing this as a FIDL parameter.
+  // TODO(crbug.com/40124608): Consider exposing this as a FIDL parameter.
   prefs->focus_ring_color = SK_AlphaTRANSPARENT;
 #endif
 #if BUILDFLAG(IS_OZONE)

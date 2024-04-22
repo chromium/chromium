@@ -247,7 +247,7 @@ void AggregationServiceImpl::OnReportAssemblyComplete(
     return;
   }
 
-  // TODO(crbug.com/1354220): Consider checking with the browser client if
+  // TODO(crbug.com/40235503): Consider checking with the browser client if
   // reporting is allowed before sending. We don't currently have the top-frame
   // origin to perform this check.
   base::Value value(report->GetAsJson());

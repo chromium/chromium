@@ -118,7 +118,7 @@ public class ChildProcessConnection {
     /** The string passed to bindToCaller to identify this class loader. */
     @VisibleForTesting
     public static String getBindToCallerClazz() {
-        // TODO(crbug.com/1057102): Have embedder explicitly set separate different strings since
+        // TODO(crbug.com/40677220): Have embedder explicitly set separate different strings since
         // this could still collide in theory.
         ClassLoader cl = ChildProcessConnection.class.getClassLoader();
         return cl.toString() + cl.hashCode();

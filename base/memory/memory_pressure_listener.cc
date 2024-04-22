@@ -27,7 +27,7 @@ class MemoryPressureObserver {
   ~MemoryPressureObserver() = delete;
 
   void AddObserver(MemoryPressureListener* listener, bool sync) {
-    // TODO(crbug.com/1063868): DCHECK instead of silently failing when a
+    // TODO(crbug.com/40123466): DCHECK instead of silently failing when a
     // MemoryPressureListener is created in a non-sequenced context. Tests will
     // need to be adjusted for that to work.
     if (SequencedTaskRunner::HasCurrentDefault()) {

@@ -22,7 +22,7 @@ namespace content {
 
 // Intakes media events (such as media key presses) and controls the active
 // media session.
-// TODO(crbug.com/1502989) Consider renaming this class in the world of
+// TODO(crbug.com/40943396) Consider renaming this class in the world of
 // instanced system media controls.
 class CONTENT_EXPORT ActiveMediaSessionController
     : public media_session::mojom::MediaControllerObserver,

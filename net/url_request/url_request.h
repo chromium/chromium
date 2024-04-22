@@ -826,7 +826,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Delegate::OnCertificateRequested callback when cookies/credentials are also
   // suppressed. This method has no effect if credentials are enabled (cookies
   // saved and sent).
-  // TODO(https://crbug.com/775438): Remove this when the underlying
+  // TODO(crbug.com/40089326): Remove this when the underlying
   // issue is fixed.
   void set_send_client_certs(bool send_client_certs) {
     send_client_certs_ = send_client_certs;

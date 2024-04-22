@@ -30,7 +30,7 @@ const CGFloat kToolBarHeight = 44;
   _delegate = nil;
   _type = configs->dialog_type;
   _initTime = configs->dialog_value;
-  // TODO(crbug.com/1461947): Handle other values in `configs` such as minimum
+  // TODO(crbug.com/40274667): Handle other values in `configs` such as minimum
   // or maximum.
   return self;
 }

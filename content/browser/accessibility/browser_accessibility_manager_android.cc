@@ -103,7 +103,7 @@ BrowserAccessibility* BrowserAccessibilityManagerAndroid::GetFocus() const {
 ui::AXNode* BrowserAccessibilityManagerAndroid::RetargetForEvents(
     ui::AXNode* node,
     RetargetEventType type) const {
-  // TODO(crbug.com/1350627): Node should not be null. But this seems to be
+  // TODO(crbug.com/40856596): Node should not be null. But this seems to be
   // happening in the wild for reasons not yet determined. Because the only
   // consequence of node being null is that we'll fail to fire an event on a
   // non-existent object, the style guide's suggestion of using a CHECK

@@ -964,7 +964,7 @@ bool LayerTreeHost::DoUpdateLayers() {
   }
 #else
   // This is a quick sanity check for readiness of paint properties.
-  // TODO(crbug.com/913464): This is to help analysis of crashes of the bug.
+  // TODO(crbug.com/40605801): This is to help analysis of crashes of the bug.
   // Remove this CHECK when we close the bug.
   CHECK(
       property_trees()->effect_tree().Node(root_layer()->effect_tree_index()));

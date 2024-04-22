@@ -502,7 +502,7 @@ void WebContentsFrameTracker::OnPossibleTargetChange() {
       context_ ? context_->GetCaptureTarget()
                : WebContentsImpl::CaptureTarget{};
 
-  // TODO(crbug.com/1264849): Clear |sub_capture_target_| when
+  // TODO(crbug.com/40203554): Clear |sub_capture_target_| when
   // share-this-tab-instead is clicked.
   if (capture_target.sink_id != target_frame_sink_id_) {
     target_frame_sink_id_ = capture_target.sink_id;

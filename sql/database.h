@@ -103,7 +103,7 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   //
   // This option is experimental and will be merged into the `exclusive_locking`
   // option above if proven to cause no OS compatibility issues.
-  // TODO(crbug.com/1429117): Merge into above option, if possible.
+  // TODO(crbug.com/40262539): Merge into above option, if possible.
   bool exclusive_database_file_lock = false;
 
   // If true, enables SQLite's Write-Ahead Logging (WAL).
@@ -285,7 +285,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // DatabaseOptions::explicit_locking to true. For historical reasons, this
   // constructor results in DatabaseOptions::explicit_locking set to false.
   //
-  // TODO(crbug.com/1126968): Remove this constructor after migrating all
+  // TODO(crbug.com/40148370): Remove this constructor after migrating all
   //                          uses to the explicit constructor below.
   Database();
 
@@ -298,7 +298,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // Allows mmapping to be disabled globally by default in the calling process.
   // Must be called before any threads attempt to create a Database.
   //
-  // TODO(crbug.com/1117049): Remove this global configuration.
+  // TODO(crbug.com/40144971): Remove this global configuration.
   static void DisableMmapByDefault();
 
   // Pre-init configuration ----------------------------------------------------

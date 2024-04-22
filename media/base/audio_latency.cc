@@ -50,7 +50,7 @@ uint32_t RoundUpToPowerOfTwo(uint32_t v) {
 #if BUILDFLAG(IS_ANDROID)
 // WebAudio renderer's quantum size (frames per callback) that is used for
 // calculating the "interactive" buffer size.
-// TODO(crbug.com/988121): This number needs to be passed down from Blink when
+// TODO(crbug.com/40637820): This number needs to be passed down from Blink when
 // user-selectable render quantum size is implemented.
 const int kWebAudioRenderQuantumSize = 128;
 

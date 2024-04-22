@@ -73,7 +73,7 @@ These are the cases where you can't rebaseline:
 
 ## Handling flaky tests
 
-<!-- TODO(crbug.com/1429690): Describe the current flakiness dashboard and
+<!-- TODO(crbug.com/40262793): Describe the current flakiness dashboard and
     LUCI test history. -->
 
 Once you decide that a test is truly flaky, you can suppress it using the

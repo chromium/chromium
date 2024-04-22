@@ -9,7 +9,7 @@ import androidx.annotation.IntDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-// TODO(crbug.com/1108163): This file should be generated with all permissions policy enum values.
+// TODO(crbug.com/40707311): This file should be generated with all permissions policy enum values.
 @IntDef({PermissionsPolicyFeature.PAYMENT, PermissionsPolicyFeature.WEB_SHARE})
 @Retention(RetentionPolicy.SOURCE)
 public @interface PermissionsPolicyFeature {

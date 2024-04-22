@@ -1289,7 +1289,7 @@ TEST_P(SingleThreadTaskExecutorTypedTest, RunLoopQuitOrderAfter) {
 // accumulated in the pipe per two posts, so we should repeat 128K times to
 // reproduce the bug.
 #if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/1188497): This test is unreasonably slow on CrOS and flakily
+// TODO(crbug.com/40754898): This test is unreasonably slow on CrOS and flakily
 // times out (100x slower than other platforms which take < 1s to complete
 // it).
 #define MAYBE_RecursivePostsDoNotFloodPipe DISABLED_RecursivePostsDoNotFloodPipe

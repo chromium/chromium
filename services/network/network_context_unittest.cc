@@ -6941,7 +6941,7 @@ class NetworkContextSplitCacheTest : public NetworkContextTest {
       params->is_trusted = true;
       // These params must be individually set, to be consistent with the
       // IsolationInfo if its request type is a main frame navigation.
-      // TODO(crbug.com/1172314): Unify these to avoid inconsistencies.
+      // TODO(crbug.com/40745575): Unify these to avoid inconsistencies.
       if (isolation_info.request_type() ==
           net::IsolationInfo::RequestType::kMainFrame) {
         request.is_outermost_main_frame = true;

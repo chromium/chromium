@@ -239,7 +239,7 @@ int ProxyResolvingClientSocket::DoProxyResolve() {
   // base::Unretained(this) is safe because resolution request is canceled when
   // |proxy_resolve_request_| is destroyed.
   //
-  // TODO(https://crbug.com/1023439): Pass along a NetworkAnonymizationKey.
+  // TODO(crbug.com/40658165): Pass along a NetworkAnonymizationKey.
   return network_session_->proxy_resolution_service()->ResolveProxy(
       url_, net::HttpRequestHeaders::kPostMethod, network_anonymization_key_,
       &proxy_info_,

@@ -318,7 +318,7 @@ class APIKeyCache {
     }
 
     if (key_value == DUMMY_API_TOKEN) {
-// TODO(crbug.com/1294915): Rewrite this condition using
+// TODO(crbug.com/40214105): Rewrite this condition using
 // BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY).
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_FUCHSIA)
       // No key should be unset in an official build except the

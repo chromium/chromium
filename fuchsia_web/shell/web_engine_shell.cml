@@ -108,7 +108,7 @@
     {
       // Required by `fuchsia.web/ContextFeatureFlags.WIDEVINE_CDM` if the value
       // of the GN arg `enable_widevine` at is true.
-      // TODO(crbug.com/1379411): Use a shard to conditionally `use` based on
+      // TODO(crbug.com/40875562): Use a shard to conditionally `use` based on
       // the build-time config.
       protocol: "fuchsia.media.drm.Widevine",
       availability: "optional",
@@ -262,7 +262,7 @@
     {
       // Required by `fuchsia.web/ContextFeatureFlags.WIDEVINE_CDM` if the value
       // of the GN arg `enable_widevine` at is true.
-      // TODO(crbug.com/1379411): Use a shard to conditionally `offer` based on
+      // TODO(crbug.com/40875562): Use a shard to conditionally `offer` based on
       // the build-time config.
       protocol: "fuchsia.media.drm.Widevine",
       from: "parent",

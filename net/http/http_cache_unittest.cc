@@ -2428,8 +2428,8 @@ TEST_F(HttpCacheTest, RangeGET_OverlappingRangesCouldntConditionalize) {
     ScopedMockTransaction transaction_pre(kRangeGET_TransactionOK);
     transaction_pre.request_headers = "Range: bytes = 10-29\r\n" EXTRA_HEADER;
 
-    // TODO(crbug.com/992521): Fix this scenario to not return the cached bytes
-    // repeatedly.
+    // TODO(crbug.com/40639784): Fix this scenario to not return the cached
+    // bytes repeatedly.
     transaction_pre.data = "rg: 10-19 rg: 10-19 rg: 20-29 ";
     MockHttpRequest request_pre(transaction_pre);
     HttpResponseInfo response_pre;

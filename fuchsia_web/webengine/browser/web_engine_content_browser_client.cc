@@ -196,7 +196,7 @@ void WebEngineContentBrowserClient::OverrideWebkitPrefs(
   // and does not work. See crbug.com/1317431.
   web_prefs->databases_enabled = false;
 
-  // TODO(crbug.com/1382970): Remove once supported in WebEngine.
+  // TODO(crbug.com/40245916): Remove once supported in WebEngine.
   web_prefs->disable_webauthn = true;
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER)

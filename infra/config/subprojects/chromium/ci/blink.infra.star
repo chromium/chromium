@@ -99,7 +99,7 @@ ci.builder(
                 },
                 "cl_title": "Blink web tests suppression",
                 "args": [
-                    # TODO(crbug.com/1358735): Create a new project to avoid
+                    # TODO(crbug.com/40237087): Create a new project to avoid
                     # capacity issue.
                     "--project",
                     "chrome-unexpected-pass-data",

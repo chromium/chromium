@@ -27,7 +27,7 @@ constexpr float kAudioSchedulingCapacity = 0.3;
 constexpr TimeDelta kDisplaySchedulingPeriod = Seconds(1) / 60;
 
 // Request 50% max CPU deadline utilization for a display thread.
-// TODO(crbug.com/1181421): Currently DISPLAY priority is not enabled for any
+// TODO(crbug.com/40750845): Currently DISPLAY priority is not enabled for any
 // thread on Fuchsia. The value below will need to be fine-tuned when it's
 // enabled.
 const float kDisplaySchedulingCapacity = 0.5;

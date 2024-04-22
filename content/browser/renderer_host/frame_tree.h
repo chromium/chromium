@@ -164,7 +164,7 @@ class CONTENT_EXPORT FrameTree {
     // LoadingTree would return the frame tree to which loading events should be
     // directed.
     //
-    // TODO(crbug.com/1261928): Remove this method and directly rely on
+    // TODO(crbug.com/40202416): Remove this method and directly rely on
     // GetOutermostMainFrame() once guest views are migrated to MPArch.
     virtual FrameTree* LoadingTree() = 0;
 

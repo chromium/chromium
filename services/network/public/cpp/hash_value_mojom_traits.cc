@@ -16,7 +16,7 @@ bool StructTraits<
   mojo::ArrayDataView<uint8_t> bytes;
   in.GetDataDataView(&bytes);
   if (bytes.size() != 32) {
-    // TODO(crbug.com/1394542): Mojo should validate this array size. We can
+    // TODO(crbug.com/40061960): Mojo should validate this array size. We can
     // CHECK it instead when it does.
     return false;
   }

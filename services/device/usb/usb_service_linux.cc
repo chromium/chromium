@@ -46,7 +46,7 @@ bool ShouldReadDescriptors(const UsbDeviceLinux& device) {
     return false;
 
   // Avoid detaching the usb-storage driver.
-  // TODO(crbug.com/1176107): We should read descriptors for composite mass
+  // TODO(crbug.com/40168206): We should read descriptors for composite mass
   // storage devices.
   auto* configuration = device.GetActiveConfiguration();
   if (configuration) {

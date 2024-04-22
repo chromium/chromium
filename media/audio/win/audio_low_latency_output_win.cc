@@ -787,7 +787,7 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
         base::TimeDelta gap_duration =
             qpc_position_time_increase - position_time_increase;
 
-        // TODO(crbug.com/1417946): Investigate precisely what gap duration
+        // TODO(crbug.com/40257462): Investigate precisely what gap duration
         // should be counted as a glitch.
         bool is_glitch = gap_duration > buffer_duration / 2;
         glitch_reporter_.UpdateStats(is_glitch ? gap_duration

@@ -882,7 +882,7 @@ void HostResolverManager::Job::StartMdnsTask() {
 
 void HostResolverManager::Job::OnMdnsTaskComplete() {
   DCHECK(mdns_task_);
-  // TODO(crbug.com/846423): Consider adding MDNS-specific logging.
+  // TODO(crbug.com/40577881): Consider adding MDNS-specific logging.
 
   HostCache::Entry results = mdns_task_->GetResults();
 

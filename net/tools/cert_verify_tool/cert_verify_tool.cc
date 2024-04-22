@@ -523,7 +523,7 @@ int main(int argc, char** argv) {
     der_certs_with_trust_settings.push_back({target_der_cert, trust});
   }
 
-  // TODO(https://crbug.com/1408473): Maybe default to the trust setting that
+  // TODO(crbug.com/40888483): Maybe default to the trust setting that
   // would be used for locally added anchors on the current platform?
   bssl::CertificateTrust root_trust = bssl::CertificateTrust::ForTrustAnchor();
 

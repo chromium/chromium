@@ -67,7 +67,7 @@ class CONTENT_EXPORT StoragePartitionConfig {
     if (fallback != FallbackMode::kNone) {
       DCHECK(!is_default());
       DCHECK(!partition_domain_.empty());
-      // TODO(https://crbug.com/1279537): Ideally we shouldn't have storage
+      // TODO(crbug.com/40208586): Ideally we shouldn't have storage
       // partition configs that differ only in their fallback mode, but
       // unfortunately that isn't true. When that is fixed this can be made more
       // robust by disallowing fallback from storage partitions with an empty

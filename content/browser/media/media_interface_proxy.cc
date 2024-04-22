@@ -212,7 +212,7 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
       mojo::PendingReceiver<media::mojom::DCOMPSurfaceRegistry> receiver)
       override {
     if (media::SupportMediaFoundationPlayback()) {
-      // TODO(crbug.com/1233379): Pass IO task runner and remove the PostTask()
+      // TODO(crbug.com/40191522): Pass IO task runner and remove the PostTask()
       // in DCOMPSurfaceRegistryBroker after bug fixed.
       mojo::MakeSelfOwnedReceiver(
           std::make_unique<DCOMPSurfaceRegistryBroker>(), std::move(receiver));

@@ -80,7 +80,7 @@ interface AudioOutputStreamProvider {
 interface AudioOutputStreamProviderClient {
   // |stream| is used to pass commands to the stream, and |data_pipe| is used
   // to transfer the audio data.
-  // TODO(https://crbug.com/787806): Currently, this will be called at most
+  // TODO(crbug.com/40551225): Currently, this will be called at most
   // once. In the future, it may be called several times.
   Created(pending_remote<AudioOutputStream> stream,
           ReadWriteAudioDataPipe data_pipe);

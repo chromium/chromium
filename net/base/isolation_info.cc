@@ -68,7 +68,7 @@ bool IsConsistent(IsolationInfo::RequestType request_type,
   }
   switch (request_type) {
     case IsolationInfo::RequestType::kMainFrame:
-      // TODO(https://crbug.com/1056706): Check that |top_frame_origin| and
+      // TODO(crbug.com/40677006): Check that |top_frame_origin| and
       // |frame_origin| are the same, once the ViewSource code creates a
       // consistent IsolationInfo object.
       //

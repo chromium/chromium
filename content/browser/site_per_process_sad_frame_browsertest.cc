@@ -424,7 +424,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSadFrameTabReload,
 // kShownAfterCrashing. See https://crbug.com/1132938.
 IN_PROC_BROWSER_TEST_P(
     SitePerProcessBrowserTestWithSadFrameTabReload,
-    // TODO(crbug.com/1325478): Re-enable this test
+    // TODO(crbug.com/40839850): Re-enable this test
     DISABLED_CrashedFencedframeVisibilityMetricsDuringParentLoad) {
   GURL primary_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL child_url(

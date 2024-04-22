@@ -42,7 +42,7 @@ declare_args() {
   # Enables "param-retval" mode, which finds more uses of uninitialized data and
   # reduces code size. Behind a flag as there are a number of previously
   # undetected violations that still need to be fixed.
-  # TODO(crbug.com/1369167): Default this to true and remove.
+  # TODO(crbug.com/40240570): Default this to true and remove.
   msan_eager_checks = false
 
   # Use dynamic libraries instrumented by one of the sanitizers instead of the
@@ -146,7 +146,7 @@ declare_args() {
   # enable it by default only in sanitizer builds.
   # Also be sure not to enable this on non-Chromium builds where
   # the required //third_party/fuzztest dependency may be absent.
-  # TODO(crbug.com/1495713): enable on component builds
+  # TODO(crbug.com/40286621): enable on component builds
   enable_fuzztest_fuzz =
       !(use_libfuzzer || use_afl || use_centipede ||
         use_external_fuzzing_engine) &&
@@ -222,7 +222,7 @@ fuzzing_engine_supports_custom_main = use_libfuzzer || use_centipede
 # declare_args block.
 declare_args() {
   # Generates an owners file for each fuzzer test.
-  # TODO(crbug.com/1194183): Remove this arg when finding OWNERS is faster.
+  # TODO(crbug.com/40175535): Remove this arg when finding OWNERS is faster.
   generate_fuzzer_owners = use_fuzzing_engine
 
   use_sanitizer_coverage =

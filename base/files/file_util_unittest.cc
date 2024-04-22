@@ -4522,7 +4522,7 @@ TEST_F(FileUtilTest, MAYBE_PreReadFileWithSequentialAccess) {
 // thread-safety issues @ https://crbug.com/826408#c17.
 TEST(FileUtilMultiThreadedTest, MultiThreadedTempFiles) {
 #if BUILDFLAG(IS_FUCHSIA)
-  // TODO(crbug.com/844416): Too slow to run on infra due to QEMU overhead.
+  // TODO(crbug.com/40577019): Too slow to run on infra due to QEMU overhead.
   constexpr int kNumThreads = 8;
 #else
   constexpr int kNumThreads = 64;

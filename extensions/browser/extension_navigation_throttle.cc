@@ -364,7 +364,7 @@ ExtensionNavigationThrottle::WillProcessResponse() {
   // the frame is sandboxed, however, we shouldn't show the embedded resource.
   // Instead, we should notify the MimeHandlerViewEmbedder (so that it will
   // delete itself) and commit an error page.
-  // TODO(https://crbug.com/1144913): Currently MimeHandlerViewEmbedder is
+  // TODO(crbug.com/40729158): Currently MimeHandlerViewEmbedder is
   // created by PluginResponseInterceptorURLLoaderThrottle before the sandbox
   // flags are ready. This means in some cases we will create it and delete it
   // soon after that here. We should move MimeHandlerViewEmbedder creation to a

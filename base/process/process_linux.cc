@@ -431,8 +431,8 @@ void Process::CleanUpProcess(int remaining_retries) const {
   }
 
   // Try to delete the cgroup
-  // TODO(1322562): We can use notify_on_release to automoatically delete the
-  // cgroup when the process has left the cgroup.
+  // TODO(crbug.com/40224348): We can use notify_on_release to automoatically
+  // delete the cgroup when the process has left the cgroup.
   FilePath cgroup = CGroups::Get().GetForegroundCgroupDir(unique_token_);
   if (!DeleteFile(cgroup)) {
     auto saved_errno = errno;

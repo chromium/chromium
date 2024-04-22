@@ -54,7 +54,7 @@ def _get_vulkan_args(use_vulkan: Optional[str]) -> List[str]:
     vulkan_args = []
     if not use_vulkan:
         if get_host_arch() == 'x64':
-            # TODO(crbug.com/1261646) Remove once Vulkan is enabled by
+            # TODO(crbug.com/40202294) Remove once Vulkan is enabled by
             # default.
             use_vulkan = 'native'
         else:

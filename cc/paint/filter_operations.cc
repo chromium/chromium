@@ -145,7 +145,7 @@ float FilterOperations::MaximumPixelMovement() const {
         max_movement = fmax(max_movement, 100);
         continue;
       case FilterOperation::OFFSET:
-        // TODO(crbug/1379125): Work out how to correctly set maximum pixel
+        // TODO(crbug.com/40244221): Work out how to correctly set maximum pixel
         // movement when an offset filter may be combined with other pixel
         // moving filters.
         max_movement =

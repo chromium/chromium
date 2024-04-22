@@ -268,7 +268,7 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
   Paper default_paper;
 
   // Describes a media type (plain paper, photo paper, etc.)
-  // TODO(crbug.com/1459344): Support media types on platforms other than
+  // TODO(crbug.com/40274266): Support media types on platforms other than
   // ChromeOS
   struct COMPONENT_EXPORT(PRINT_BACKEND) MediaType {
     std::string display_name;

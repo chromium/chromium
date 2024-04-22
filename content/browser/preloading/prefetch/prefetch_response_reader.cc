@@ -202,7 +202,7 @@ void PrefetchResponseReader::BindAndStart(
       //
       // TODO(crbug.com/1449360): we might want to revisit this behavior.
 
-      // TODO(crbug.com/1483599): The code below is duplicated to investigate
+      // TODO(crbug.com/40072532): The code below is duplicated to investigate
       // the `load_state_` value on CHECK failure. Remove the duplicated code.
       CHECK(GetHead());
       CHECK(forward_body_);
@@ -298,7 +298,7 @@ void PrefetchResponseReader::RunEventQueue(ServingUrlLoaderClientId client_id) {
 
 void PrefetchResponseReader::OnComplete(
     network::URLLoaderCompletionStatus completion_status) {
-  // TODO(crbug.com/1484028): Remove this alias.
+  // TODO(crbug.com/40072670): Remove this alias.
   auto load_state = load_state_;
   base::debug::Alias(&load_state);
 

@@ -80,7 +80,7 @@ void OverflowTestsSoftExpectTrue(bool overflow_detected) {
 // - XSan aborts when operator new returns nullptr.
 // - PartitionAlloc crashes by design when size_t overflows.
 //
-// TODO(https://crbug.com/927179): Fix the test on Mac.
+// TODO(crbug.com/40611888): Fix the test on Mac.
 TEST(SecurityTest, MAYBE_NewOverflow) {
   const size_t kArraySize = 4096;
   // We want something "dynamic" here, so that the compiler doesn't

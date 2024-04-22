@@ -49,7 +49,7 @@ const uint32 kURLLoadOptionAsCorsPreflight = 128;
 // This option is supported by the network service, but might not be supported
 // by other URLLoaderFactory implementations.
 //
-// TODO(crbug.com/1115776): This option can be removed if CORS-RFC1918 ships
+// TODO(crbug.com/40711533): This option can be removed if CORS-RFC1918 ships
 // without a feature flag, and additionally it changes to block requests by
 // default if the security state is unknown.
 const uint32 kURLLoadOptionBlockLocalRequest = 256;

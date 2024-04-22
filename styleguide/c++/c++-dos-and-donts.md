@@ -303,7 +303,7 @@ if existing code uses the old one.
 ```cpp
 // `FooImpl` implements the `FooBase` class.
 // `FooFunction()` modifies `foo_member_`.
-// TODO(crbug.com/1): Rename things to something more descriptive than "foo".
+// TODO(crbug.com/40097047): Rename things to something more descriptive than "foo".
 ```
 
 ## Named namespaces

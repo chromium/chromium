@@ -258,7 +258,7 @@ try_.orchestrator_builder(
     compilator = "lacros-amd64-generic-rel-gtest-compilator",
     contact_team_email = "chrome-desktop-engprod@google.com",
     main_list_view = "try",
-    # TODO(crbug.com/1471166) Enable on CQ.
+    # TODO(crbug.com/40278121) Enable on CQ.
     tryjob = try_.job(
         equivalent_builder = "try/lacros-amd64-generic-rel-gtest-and-tast",
         equivalent_builder_percentage = 100,
@@ -517,7 +517,7 @@ try_.compilator_builder(
 try_.builder(
     name = "linux-lacros-dbg",
     branch_selector = branches.selector.CROS_BRANCHES,
-    # TODO(crbug.com/1233247) Adds the CI tester when it's available.
+    # TODO(crbug.com/40780788) Adds the CI tester when it's available.
     mirrors = [
         "ci/linux-lacros-dbg",
     ],

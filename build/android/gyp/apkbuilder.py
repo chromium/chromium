@@ -306,7 +306,8 @@ def main(args):
   # Python's zip implementation duplicates file comments in the central
   # directory, whereas zipalign does not, so use zipalign for official builds.
   requires_alignment = options.format == 'apk'
-  # TODO(crbug.com/1495851): Re-enable zipalign once we are using Android V SDK.
+  # TODO(crbug.com/40286668): Re-enable zipalign once we are using Android V
+  # SDK.
   run_zipalign = requires_alignment and options.best_compression and False
   fast_align = bool(requires_alignment and not run_zipalign)
 

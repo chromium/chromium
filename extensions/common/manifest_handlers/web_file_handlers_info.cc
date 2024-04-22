@@ -270,7 +270,7 @@ bool WebFileHandlersParser::Validate(
     const Extension* extension,
     std::string* error,
     std::vector<InstallWarning>* warnings) const {
-  // TODO(1313786): Verify that icons exist.
+  // TODO(crbug.com/40832486): Verify that icons exist.
   return true;
 }
 

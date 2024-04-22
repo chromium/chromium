@@ -806,7 +806,7 @@ void ExtractUnderlines(NSAttributedString* string,
   WebMouseEvent webEvent = WebMouseEventBuilder::Build(event, self);
   webEvent.SetModifiers(webEvent.GetModifiers() |
                         WebInputEvent::kRelativeMotionEvent);
-  // TODO(crbug.com/1465562): We shouldn't be posting events with null
+  // TODO(crbug.com/40276040): We shouldn't be posting events with null
   // timestamps. However `MessagePumpNSApplication::DoQuit` usage of
   // `otherEventWithType` seems to truncate `NSTimeInterval` to seconds. Which
   // could lead to those generated events be in the past, compared to ones
@@ -2404,7 +2404,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
     // into
     // |_availableText|. This variable will ultimately be asynchronously updated
     // by Blink.
-    // TODO(crbug.com/1169288): Mac's IME API is synchronous and it plays badly
+    // TODO(crbug.com/40165347): Mac's IME API is synchronous and it plays badly
     // with async APIs between the browser and the renderer. Probably replace
     // the sync |interpretKeyEvents:| with the async
     // |handleEventByInputMethod:|, which is an undocumented API used in

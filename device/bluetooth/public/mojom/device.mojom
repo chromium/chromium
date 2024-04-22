@@ -56,7 +56,7 @@ enum GattResult {
   DESCRIPTOR_NOT_FOUND,
 };
 
-// TODO(crbug.com/657632): Remove when numerical values can be optional.
+// TODO(crbug.com/40489779): Remove when numerical values can be optional.
 struct RSSIWrapper {
   int8 value;
 };

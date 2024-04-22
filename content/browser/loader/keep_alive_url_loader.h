@@ -154,7 +154,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
   base::WeakPtr<KeepAliveURLLoader> GetWeakPtr();
 
   // For testing only:
-  // TODO(crbug.com/1427366): Figure out alt to not rely on this in test.
+  // TODO(crbug.com/40261761): Figure out alt to not rely on this in test.
   class TestObserver : public base::RefCountedThreadSafe<TestObserver> {
    public:
     virtual void OnReceiveRedirectForwarded(KeepAliveURLLoader* loader) = 0;

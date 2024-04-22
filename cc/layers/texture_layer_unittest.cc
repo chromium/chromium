@@ -60,7 +60,7 @@ using ::testing::AtLeast;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Mock;
 
-// TODO(https://crbug.com/1400943): settings new expecations after
+// TODO(crbug.com/40883999): settings new expecations after
 // VerifyAndClearExpectations is undefined behavior. See
 // http://google.github.io/googletest/gmock_cook_book.html#forcing-a-verification
 #define EXPECT_SET_NEEDS_COMMIT(expect, code_to_test)                 \
@@ -1184,7 +1184,7 @@ class TextureLayerChangeInvisibleMailboxTest : public LayerTreeTest,
   bool close_on_resource_returned_ = false;
 };
 
-// TODO(crbug.com/1197350): Test fails on chromeos-amd64-generic-rel.
+// TODO(crbug.com/40760099): Test fails on chromeos-amd64-generic-rel.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SINGLE_AND_MULTI_THREAD_TEST_F MULTI_THREAD_TEST_F
 #else

@@ -770,7 +770,7 @@ void AuthenticatorCommonImpl::MakeCredential(
   req_state_->is_payment_request = options->is_payment_credential_creation;
   req_state_->hints.insert(options->hints.begin(), options->hints.end());
 
-  // TODO(crbug.com/1459443): remove this and everything else from
+  // TODO(crbug.com/40274309): remove this and everything else from
   // the CL that added it if this is unused by June 2024.
   if (options->timeout &&
       base::FeatureList::IsEnabled(device::kWebAuthnLinkingExperimentation) &&
@@ -1084,7 +1084,7 @@ void AuthenticatorCommonImpl::GetAssertion(
   req_state_->is_payment_request = !payment_options.is_null();
   req_state_->hints.insert(options->hints.begin(), options->hints.end());
 
-  // TODO(crbug.com/1459443): remove this and everything else from
+  // TODO(crbug.com/40274309): remove this and everything else from
   // the CL that added it if this is unused by June 2024.
   if (options->timeout &&
       base::FeatureList::IsEnabled(device::kWebAuthnLinkingExperimentation) &&

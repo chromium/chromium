@@ -227,7 +227,7 @@ void FidoCableDiscovery::OnGetAdapter(scoped_refptr<BluetoothAdapter> adapter) {
   }
 
 #if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/1314404): turn this into a user-visible UI if we believe
+  // TODO(crbug.com/40221398): turn this into a user-visible UI if we believe
   // that it's a good signal.
   switch (fido::mac::ProcessIsSigned()) {
     case fido::mac::CodeSigningState::kSigned:

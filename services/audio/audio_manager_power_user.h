@@ -16,7 +16,7 @@ class AudioManager;
 namespace audio {
 
 // Helper class to get access to the protected AudioManager API.
-// TODO(https://crbug.com/834674): Replace this class with a public API
+// TODO(crbug.com/40572543): Replace this class with a public API
 // once the audio manager is inaccessible from outside the audio service.
 class AudioManagerPowerUser {
  public:

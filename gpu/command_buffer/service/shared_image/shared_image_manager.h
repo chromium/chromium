@@ -79,7 +79,7 @@ class GPU_GLES2_EXPORT SharedImageManager
   // using the same |mailbox|. This is because the underlying shared image
   // compatibility also depends on the WGPUAdapter which ProduceDawn does not
   // associate with the representation.
-  // TODO(crbug.com/1147184): Revisit this in the future for WebGPU
+  // TODO(crbug.com/40730564): Revisit this in the future for WebGPU
   // multi-adapter support.
   std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       const Mailbox& mailbox,

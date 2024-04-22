@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(EventLatencyBrowserTest, DISABLED_KeyPressOnButton) {
 
 // Tests that if a key-press on a page with an animation causes a visual update,
 // appropriate event latency metrics are reported.
-// TODO(https://crbug.com/1076186): Test is flaky.
+// TODO(crbug.com/40128555): Test is flaky.
 IN_PROC_BROWSER_TEST_F(EventLatencyBrowserTest,
                        DISABLED_KeyPressOnButtonWithAnimation) {
   base::HistogramTester histogram_tester;

@@ -101,7 +101,7 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
       }
       return {};
     case FidoTransportProtocol::kNearFieldCommunication:
-      // TODO(https://crbug.com/825949): Add NFC support.
+      // TODO(crbug.com/40568770): Add NFC support.
       return {};
     case FidoTransportProtocol::kInternal: {
       std::vector<std::unique_ptr<FidoDiscoveryBase>> discoveries;

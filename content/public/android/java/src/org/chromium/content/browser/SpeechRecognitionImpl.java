@@ -194,7 +194,7 @@ public class SpeechRecognitionImpl {
      * query Android's package manager to find a suitable speech recognition provider that supports
      * continuous recognition.
      */
-    // TODO(crbug.com/635567): Fix this properly.
+    // TODO(crbug.com/40479664): Fix this properly.
     public static boolean initialize() {
         Context context = ContextUtils.getApplicationContext();
         if (!SpeechRecognizer.isRecognitionAvailable(context)) return false;

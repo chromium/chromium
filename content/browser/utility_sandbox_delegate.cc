@@ -113,9 +113,9 @@ ZygoteCommunication* UtilitySandboxedProcessLauncherDelegate::GetZygote() {
   if (sandbox::policy::IsUnsandboxedSandboxType(sandbox_type_))
     return nullptr;
 
-  // TODO(crbug.com/1427280): remove this special case and fork from the zygote.
-  // For now, browser tests fail when forking the network service from the
-  // unsandboxed zygote, as the forked process only creates the
+  // TODO(crbug.com/40261714): remove this special case and fork from the
+  // zygote. For now, browser tests fail when forking the network service from
+  // the unsandboxed zygote, as the forked process only creates the
   // NetworkServiceTestHelper if the process is exec'd.
   if (sandbox_type_ == sandbox::mojom::Sandbox::kNetwork) {
     return nullptr;

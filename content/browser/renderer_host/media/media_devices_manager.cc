@@ -1041,7 +1041,7 @@ void MediaDevicesManager::VideoInputDevicesEnumerated(
     // manually-collected chrome logs at customers.
     SendLogMessage(log_message);
     VLOG(1) << log_message;
-    // TODO(crbug.com/1313822): Propagate this as an error response to the
+    // TODO(crbug.com/40221155): Propagate this as an error response to the
     // page and expose in the JS API.
   }
   blink::WebMediaDeviceInfoArray snapshot;

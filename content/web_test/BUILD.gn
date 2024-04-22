@@ -221,7 +221,7 @@ static_library("web_test_browser") {
     "//url",
   ]
 
-  # TODO(crbug.com/1103882): Blink test plugin must be migrated from PPAPI.
+  # TODO(crbug.com/40139469): Blink test plugin must be migrated from PPAPI.
   if (enable_ppapi) {
     deps += [
       "//content/ppapi_plugin",
@@ -243,7 +243,7 @@ static_library("web_test_browser") {
   }
 }
 
-# TODO(crbug.com/1154721): The `allow_circular_includes_from` declared in
+# TODO(crbug.com/40159584): The `allow_circular_includes_from` declared in
 # `:web_test_renderer` does not propagate the public_deps
 # from `:web_test_renderer`'s own dependencies. This means that those targets
 # are not built when `//third_party/blink/renderer/core/web_test` is built,

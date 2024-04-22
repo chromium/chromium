@@ -441,7 +441,7 @@ void ProcessMemoryDump::SerializeAllocatorDumpsInto(
 
     memory_edge->set_source_id(edge.source.ToUint64());
     memory_edge->set_target_id(edge.target.ToUint64());
-    // TODO(crbug.com/1333557): Fix .proto and remove this cast.
+    // TODO(crbug.com/40845742): Fix .proto and remove this cast.
     memory_edge->set_importance(static_cast<uint32_t>(edge.importance));
   }
 }

@@ -22,7 +22,7 @@ CrashKeyString* AllocateCrashKeyString(const char name[],
   if (!g_crash_key_impl)
     return nullptr;
 
-    // TODO(https://crbug.com/1341077): It would be great if the DCHECKs below
+    // TODO(crbug.com/40850825): It would be great if the DCHECKs below
     // could also be enabled on Android, but debugging tryjob failures was a bit
     // difficult... :-/
 #if DCHECK_IS_ON() && !BUILDFLAG(IS_ANDROID)

@@ -185,7 +185,7 @@ ShouldCapture ShouldCaptureForWorkInProgressConditions(
                                          ->render_manager()
                                          ->current_frame_host();
   if (is_same_rfh_or_early_commit) {
-    // TODO(https://crbug.com/1445976): Screenshot capture for same-RFH
+    // TODO(crbug.com/40268383): Screenshot capture for same-RFH
     // navigations can yield unexpected results because the
     // `viz::LocalSurfaceId` update is in a different IPC than navigation. We
     // will rely on RenderDocument to be enabled to all navigations.

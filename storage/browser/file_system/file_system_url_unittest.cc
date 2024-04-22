@@ -81,7 +81,7 @@ TEST(FileSystemURLTest, CreateSibling) {
   // non-empty by construction: the base::SafeBaseName::Create factory function
   // returns absl::Optional<base::SafeBaseName> not base::SafeBaseName.
   //
-  // See also TODO(crbug.com/1269986)
+  // See also TODO(crbug.com/40205226)
   const base::SafeBaseName sibling_name =
       *base::SafeBaseName::Create(FPL("sister"));
 

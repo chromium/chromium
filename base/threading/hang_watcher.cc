@@ -767,7 +767,7 @@ void HangWatcher::WatchStateSnapShot::Init(
             this, perfetto::ThreadTrack::ForThread(thread_id));
         TRACE_EVENT_BEGIN("base", "HangWatcher::ThreadHung", track, deadline);
         TRACE_EVENT_END("base", track, now);
-        // TODO(crbug.com/1021571): Remove this once fixed.
+        // TODO(crbug.com/40657156): Remove this once fixed.
         PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
       }
 #endif

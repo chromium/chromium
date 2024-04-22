@@ -24,7 +24,7 @@
 
 namespace content {
 
-// TODO(crbug.com/1264849): Remove this protected static function.
+// TODO(crbug.com/40203554): Remove this protected static function.
 // See header for more details.
 base::Token SubCaptureTargetIdWebContentsHelper::GUIDToToken(
     const base::Uuid& guid) {

@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.SortedSet;
 
 /** Paste popup implementation based on floating ActionModes. */
-// TODO(crbug.com/1468921): Merge this class with SelectionPopupControllerImpl and remove.
+// TODO(crbug.com/40925113): Merge this class with SelectionPopupControllerImpl and remove.
 public class FloatingPastePopupMenu implements PastePopupMenu {
     private final View mParent;
     private final PastePopupMenuDelegate mDelegate;

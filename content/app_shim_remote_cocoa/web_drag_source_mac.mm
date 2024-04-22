@@ -108,7 +108,7 @@
       !_dropData.download_metadata.empty()) {
     std::string mimeType;
 
-    // TODO(https://crbug.com/898608): The |downloadFileName_| and
+    // TODO(crbug.com/40599578): The |downloadFileName_| and
     // |downloadURL_| values should be computed by the caller.
     if (_dropData.download_metadata.empty()) {
       std::optional<base::FilePath> suggestedFilename =

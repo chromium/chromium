@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileModificationHostImplBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileModificationHostImplBrowserTest,
                        MAYBE_QuotaUsageOverallocation) {
-  // TODO(https://crbug.com/1240056): Implement a more sophisticated test suite
+  // TODO(crbug.com/40194113): Implement a more sophisticated test suite
   // for this feature.
   const GURL& test_url =
       embedded_test_server()->GetURL("/run_async_code_on_worker.html");

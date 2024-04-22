@@ -4443,7 +4443,7 @@ bool RenderProcessHostImpl::IsSuitableHost(
     // chrome://process-internals, don't have bindings, so this method would
     // return false for a chrome://process-internals host and a
     // chrome://process-internals target URL.
-    // TODO(crbug.com/1158277): Don't return false for suitable WebUI hosts
+    // TODO(crbug.com/40736874): Don't return false for suitable WebUI hosts
     // and WebUI target URLs.
     //
     // Note that an initial RenderFrameHost's unused process won't have

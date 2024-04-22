@@ -783,7 +783,7 @@ TEST(SystemMetrics2Test, GetSystemMemoryInfo) {
 
   // All the values should be less than the total amount of memory.
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/711450): re-enable the following assertion on iOS.
+  // TODO(crbug.com/40515565): re-enable the following assertion on iOS.
   EXPECT_LT(info.free, info.total);
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)

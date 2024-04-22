@@ -462,7 +462,7 @@ void SiteInstanceImpl::ReuseExistingProcessIfPossible(
     return;
   }
 
-  // TODO(crbug.com/1055779): Don't try to reuse process if either of the
+  // TODO(crbug.com/40676483): Don't try to reuse process if either of the
   // SiteInstances are cross-origin isolated (uses COOP/COEP).
   SetProcessInternal(existing_process);
 }

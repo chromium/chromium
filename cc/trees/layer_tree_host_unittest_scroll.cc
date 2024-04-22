@@ -1367,7 +1367,7 @@ class LayerTreeHostScrollTestImplOnlyScrollSnap
   bool snap_animation_finished_ = false;
 };
 
-// TODO(crbug.com/1201662): Flaky on Fuchsia, ChromeOS, and Linux.
+// TODO(crbug.com/40762489): Flaky on Fuchsia, ChromeOS, and Linux.
 // TODO(crbug.com/41495136): Flaky on Windows ASAN.
 #if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_CHROMEOS) && \
     !BUILDFLAG(IS_LINUX) && !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))

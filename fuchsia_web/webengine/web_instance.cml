@@ -73,12 +73,12 @@
 
         // Required by `ContextFeatureFlags.WIDEVINE_CDM`.
         // Only needed in builds with enable_widevine=true.
-        // TODO(crbug.com/1379411): Move to a shard.
+        // TODO(crbug.com/40875562): Move to a shard.
         "fuchsia.media.drm.Widevine",
 
         // Required by CreateContextParams.playready_key_system.
         // Only needed in builds with enable_widevine && enable_cast_receiver.
-        // TODO(crbug.com/1379411): Move to a shard.
+        // TODO(crbug.com/40875562): Move to a shard.
         "fuchsia.media.drm.PlayReady",
 
         // When `ContextFeatureFlags.HEADLESS` is not set, required to use
@@ -89,7 +89,7 @@
 
         // Required by `ContextFeatureFlags.LEGACY_METRICS`.
         // Only needed in enable_cast_receiver=true builds.
-        // TODO(crbug.com/1379411): Move to a shard.
+        // TODO(crbug.com/40875562): Move to a shard.
         "fuchsia.legacymetrics.MetricsRecorder",
 
         // Required by `ContextFeatureFlags.KEYBOARD`.

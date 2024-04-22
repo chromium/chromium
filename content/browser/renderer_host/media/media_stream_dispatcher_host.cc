@@ -145,7 +145,7 @@ bool AllowedStreamTypeCombination(
     blink::mojom::MediaStreamType audio_stream_type,
     blink::mojom::MediaStreamType video_stream_type) {
   switch (audio_stream_type) {
-    // TODO(crbug.com/1288237): Disallow video_stream_type == NO_SERVICE when
+    // TODO(crbug.com/40211480): Disallow video_stream_type == NO_SERVICE when
     // {video=false} is no longer allowed.
     case blink::mojom::MediaStreamType::NO_SERVICE:
       return blink::IsVideoInputMediaType(video_stream_type) ||
@@ -241,7 +241,7 @@ MediaStreamDispatcherHost::MediaStreamDispatcherHost(
           base::BindRepeating(&GetMediaDeviceSaltAndOrigin)) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  // TODO(crbug.com/1265369): Register focus_callback only when needed.
+  // TODO(crbug.com/40203744): Register focus_callback only when needed.
   base::RepeatingClosure focus_callback =
       base::BindRepeating(&MediaStreamDispatcherHost::OnWebContentsFocused,
                           weak_factory_.GetWeakPtr());

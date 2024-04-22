@@ -162,7 +162,7 @@ void PageLifecycleStateManager::SendUpdatesToRendererIfNeeded(
     blink::mojom::PageRestoreParamsPtr page_restore_params,
     base::OnceClosure done_cb) {
   if (!render_view_host_impl_->GetAssociatedPageBroadcast()) {
-    // TODO(https://crbug.com/1153155): For some tests, |render_view_host_impl_|
+    // TODO(crbug.com/40158974): For some tests, |render_view_host_impl_|
     // does not have the associated page.
     if (done_cb) {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

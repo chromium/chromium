@@ -200,7 +200,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // and available for copy when this API is called. This Surface can be removed
   // from the UI after this call.
   //
-  // TODO(https://crbug.com/1467314): merge this API into `CopyFromSurface()`,
+  // TODO(crbug.com/40276723): merge this API into `CopyFromSurface()`,
   // and enable it fully on Android.
   virtual void CopyFromExactSurface(
       const gfx::Rect& src_rect,

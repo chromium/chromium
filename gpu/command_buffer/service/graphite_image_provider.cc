@@ -81,7 +81,8 @@ void GraphiteImageProvider::PurgeCacheIfNecessaryToAllowForNewImage(
 
   // Remove entries from the cache until it is small enough to admit `new_bytes`
   // while remaining at or below the maximum allowed size.
-  // TODO(crbug.com/1457525): A smarter strategy such as LRU could be used here.
+  // TODO(crbug.com/40273649): A smarter strategy such as LRU could be used
+  // here.
   while (current_cache_bytes_ + new_bytes > preferred_max_cache_bytes_) {
     auto image = cache_.begin()->second;
     current_cache_bytes_ -= image->textureSize();

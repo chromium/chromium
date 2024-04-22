@@ -501,7 +501,7 @@ grit("resources") {
 
 ### **build_webui**
 
-<!-- TODO(crbug.com/1340376): Elevate build_webui() to the top of this document
+<!-- TODO(crbug.com/40230335): Elevate build_webui() to the top of this document
       after it has been deployed to a few places. -->
 
 See the [go/build-webui-pipeline](http://go/build-webui-pipeline) design doc for

@@ -138,7 +138,7 @@ net::CookieOptions MakeOptionsForGet(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const CookieSettings& cookie_settings) {
-  // TODO(https://crbug.com/925311): Wire initiator here.
+  // TODO(crbug.com/40611099): Wire initiator here.
   net::CookieOptions options;
   bool force_ignore_site_for_cookies =
       cookie_settings.ShouldIgnoreSameSiteRestrictions(url, site_for_cookies);

@@ -36,7 +36,7 @@ using SharedStorageReportingMap = base::flat_map<std::string, ::GURL>;
 // Keeps a mapping of fenced frames URN:UUID and URL. Also keeps a set of
 // pending mapped URN:UUIDs to support asynchronous mapping. See
 // https://github.com/WICG/fenced-frame/blob/master/explainer/opaque_src.md
-// TODO(crbug.com/1405477): Add methods for:
+// TODO(crbug.com/40252330): Add methods for:
 // 1. generating the pending config.
 // 2. finalizing the pending config.
 class CONTENT_EXPORT FencedFrameURLMapping {

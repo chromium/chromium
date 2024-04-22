@@ -60,8 +60,8 @@ void CustomExtensionProvider::OnContentSettingChanged(
     bool incognito) {
   if (incognito_ != incognito)
     return;
-  // TODO(1245927): Be more concise and use the type/pattern that actually
-  // changed.
+  // TODO(crbug.com/40196354): Be more concise and use the type/pattern that
+  // actually changed.
   NotifyObservers(ContentSettingsPattern::Wildcard(),
                   ContentSettingsPattern::Wildcard(),
                   ContentSettingsType::DEFAULT, /*partition_key=*/nullptr);

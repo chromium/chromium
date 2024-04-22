@@ -12,7 +12,7 @@
 namespace content {
 namespace {
 
-// TODO(crbug.com/1166275): These global state variables will likely lead to
+// TODO(crbug.com/40164163): These global state variables will likely lead to
 // issues if multiple tests are run in parallel. Use caution if adding more
 // tests to this file until crbug.com/1166275 is resolved.
 static DWORD g_flag;

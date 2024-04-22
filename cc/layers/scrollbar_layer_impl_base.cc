@@ -214,7 +214,7 @@ gfx::Rect ScrollbarLayerImplBase::ComputeThumbQuadRectWithThumbThicknessScale(
   int thumb_thickness = ThumbThickness();
   // TODO(crbug.com/40194000): This is a speculative fix.
   float maximum = std::max(scroll_layer_length() - clip_layer_length(), 0.0f);
-  // TODO(crbug.com/1239510): Re-enable the following DCHECK once the
+  // TODO(crbug.com/40193888): Re-enable the following DCHECK once the
   // underlying issue is resolved.
   // DCHECK(scroll_layer_length() >= clip_layer_length());
 

@@ -214,7 +214,7 @@ luci.realm(
 )
 
 # Allows builders to write baselines and query ResultDB for new tests.
-# TODO(crbug/1465953) @project is not available, and @root should inherit into
+# TODO(crbug.com/40276195) @project is not available, and @root should inherit into
 # project so we'll do this for now until @project is supported.
 luci.realm(
     name = "@root",

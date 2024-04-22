@@ -323,7 +323,7 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
   std::unique_ptr<ClientCertIdentityMac> preferred_identity;
   ClientCertIdentityMacList regular_identities;
 
-// TODO(https://crbug.com/1348251): Is it still true, as claimed below, that
+// TODO(crbug.com/40233280): Is it still true, as claimed below, that
 // SecIdentitySearchCopyNext sometimes returns identities missed by
 // SecItemCopyMatching? Add some histograms to test this and, if none are
 // missing, remove this code.

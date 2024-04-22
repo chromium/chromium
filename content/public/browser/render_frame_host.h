@@ -451,8 +451,8 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // committing a navigation. After the first navigation commits this
   // will return the token for the last committed document.
   //
-  // TODO(crbug/1098283): Remove the nullopt scenario by creating the token in
-  // CreateChildFrame() or similar.
+  // TODO(crbug.com/40136951): Remove the nullopt scenario by creating the token
+  // in CreateChildFrame() or similar.
   virtual std::optional<base::UnguessableToken> GetEmbeddingToken() = 0;
 
   // Returns the assigned name of the frame, the name of the iframe tag

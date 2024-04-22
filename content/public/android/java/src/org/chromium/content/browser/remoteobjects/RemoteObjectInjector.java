@@ -50,7 +50,7 @@ public final class RemoteObjectInjector extends WebContentsObserver {
     private final Set<Object> mRetainingSet = new HashSet<>();
     private final Map<String, Pair<Object, Class<? extends Annotation>>> mInjectedObjects =
             new HashMap<>();
-    // TODO(1191511): This is essentially implementing DocumentUserData. Once a java
+    // TODO(crbug.com/40756645): This is essentially implementing DocumentUserData. Once a java
     // equivalent of that is created, we should use it instead of managing RFH associated state
     // here.
     private final Map<GlobalRenderFrameHostId, RemoteObjectGatewayHelper>

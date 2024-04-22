@@ -68,7 +68,7 @@ interface CertVerifierServiceFactory {
   // CRLSets (where older is determined by the sequence number). All
   // CertVerifierServices created by the CertVerifierServiceFactory, including
   // those created after this call, will use the same CRLSet.
-  // TODO(https://crbug.com/1431347): consider using ReadOnlySharedMemoryRegion
+  // TODO(crbug.com/40902260): consider using ReadOnlySharedMemoryRegion
   // or ReadOnlyFile instead of BigBuffer for this and ChromeRootStore.
   UpdateCRLSet(mojo_base.mojom.BigBuffer crl_set) => ();
 

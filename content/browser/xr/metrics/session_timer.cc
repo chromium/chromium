@@ -36,7 +36,7 @@ void SessionTimer::StopSession() {
   // Calculate the duration of the session.
   base::TimeDelta session_duration = base::Time::Now() - start_time_;
   if (!session_duration.is_zero()) {
-    // TODO(https://crbug.com/1056930): Consider renaming the timers to
+    // TODO(crbug.com/40677123): Consider renaming the timers to
     // something that indicates both that these also record AR, and that these
     // are no longer "suffixed" histograms.
     base::UmaHistogramCustomTimes("VRSessionTime.WebVR", session_duration,

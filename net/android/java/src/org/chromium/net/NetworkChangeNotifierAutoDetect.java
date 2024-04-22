@@ -53,11 +53,10 @@ import java.util.Arrays;
 import javax.annotation.concurrent.GuardedBy;
 
 /**
- * Used by the NetworkChangeNotifier to listens to platform changes in connectivity.
- * Note that use of this class requires that the app have the platform
- * ACCESS_NETWORK_STATE permission.
+ * Used by the NetworkChangeNotifier to listens to platform changes in connectivity. Note that use
+ * of this class requires that the app have the platform ACCESS_NETWORK_STATE permission.
  */
-// TODO(crbug.com/635567): Fix this properly.
+// TODO(crbug.com/40479664): Fix this properly.
 @SuppressLint("NewApi")
 public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     /** Immutable class representing the state of a device's network. */
@@ -555,7 +554,7 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
                                     .checkPermission(
                                             permission.ACCESS_WIFI_STATE, mContext.getPackageName())
                             == PackageManager.PERMISSION_GRANTED;
-            // TODO(crbug.com/635567): Fix lint properly.
+            // TODO(crbug.com/40479664): Fix lint properly.
             mWifiManager =
                     mHasWifiPermission
                             ? (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE)

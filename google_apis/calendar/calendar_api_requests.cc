@@ -57,7 +57,7 @@ constexpr int kMaxCalendars = 250;
 // As a short term solution increasing the number of events per page to the
 // maximum allowed number (2500 / 30 = 80+ events per day should be more than
 // enough).
-// TODO(crbug.com/1359388): Implement pagination using `nextPageToken` from the
+// TODO(crbug.com/40862361): Implement pagination using `nextPageToken` from the
 // response.
 constexpr int kMaxResults = 2500;
 

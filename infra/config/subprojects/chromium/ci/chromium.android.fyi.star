@@ -238,7 +238,7 @@ ci.builder(
     execution_timeout = 4 * time.hour,
 )
 
-# TODO(https://crbug.com/1431581): Remove after experimental is done.
+# TODO(crbug.com/40263601): Remove after experimental is done.
 ci.builder(
     name = "android-12l-x64-fyi-dbg",
     builder_spec = builder_config.builder_spec(
@@ -282,7 +282,7 @@ ci.builder(
     execution_timeout = 4 * time.hour,
 )
 
-# TODO(https://crbug.com/1431581): Remove after experimental is done.
+# TODO(crbug.com/40263601): Remove after experimental is done.
 ci.builder(
     name = "android-13-x64-fyi-rel",
     builder_spec = builder_config.builder_spec(

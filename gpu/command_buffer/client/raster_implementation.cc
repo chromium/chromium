@@ -1221,7 +1221,7 @@ void RasterImplementation::CopySharedImage(const gpu::Mailbox& source_mailbox,
   if (!source_mailbox.IsSharedImage()) {
     SetGLError(GL_INVALID_VALUE, "glCopySharedImage",
                "source_mailbox is not a shared image.");
-    // TODO(crbug.com/1229479): This call to NOTREACHED is temporary while we
+    // TODO(crbug.com/40778397): This call to NOTREACHED is temporary while we
     // investigate crbug.com/1229479. The failure with test
     // WebRtcVideoCaptureServiceBrowserTest.
     // FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage when OOP-R

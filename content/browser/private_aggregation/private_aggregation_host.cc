@@ -461,7 +461,7 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
     }
 
     // Null reports caused by no contributions never have debug mode enabled.
-    // TODO(crbug.com/1466668): Consider permitting this.
+    // TODO(crbug.com/40276453): Consider permitting this.
     receiver_context.report_debug_details =
         blink::mojom::DebugModeDetails::New();
   }

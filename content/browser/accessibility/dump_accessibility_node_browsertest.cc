@@ -528,7 +528,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTest, NameComboboxFocusable) {
   RunAccNameTest(FILE_PATH_LITERAL("name-combobox-focusable.html"));
 }
 
-// TODO(crbug.com/1329523): disabled on UIA
+// TODO(crbug.com/40842662): disabled on UIA
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityAccNameTestExceptUIA,
                        NameDivContentOnly) {
   RunAccNameTest(FILE_PATH_LITERAL("name-div-content-only.html"));

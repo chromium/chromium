@@ -39,7 +39,7 @@ enum class FrameType {
   // This differs from RenderFrameHost::IsFencedFrameRoot(), which covers
   // both MPArch and ShadowDOM-based FencedFrames.
   kFencedFrameRoot,
-  // TODO(crbug.com/1267506): Consider if we need to have the types for portals
+  // TODO(crbug.com/40204472): Consider if we need to have the types for portals
   // or guestviews.
 };
 

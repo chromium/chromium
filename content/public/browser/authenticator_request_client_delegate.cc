@@ -170,7 +170,7 @@ void AuthenticatorRequestClientDelegate::SelectAccount(
         callback) {
   // Automatically choose the first account to allow resident keys for virtual
   // authenticators without a browser implementation, e.g. on content shell.
-  // TODO(crbug.com/991666): Provide a way to determine which account gets
+  // TODO(crbug.com/40639383): Provide a way to determine which account gets
   // picked.
   DCHECK(virtual_environment_);
   std::move(callback).Run(std::move(responses.at(0)));

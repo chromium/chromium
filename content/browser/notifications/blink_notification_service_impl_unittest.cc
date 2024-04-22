@@ -300,7 +300,7 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
     notification_service_remote_->DisplayNonPersistentNotification(
         token, platform_notification_data, notification_resources,
         std::move(event_listener_remote));
-    // TODO(https://crbug.com/787459): Pass a callback to
+    // TODO(crbug.com/40551046): Pass a callback to
     // DisplayNonPersistentNotification instead of waiting for all tasks to run
     // here; a callback parameter will be needed anyway to enable
     // non-persistent notification event acknowledgements - see bug.

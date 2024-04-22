@@ -115,7 +115,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TraceEventMetadataSource
   std::optional<base::Value::Dict> GenerateTraceConfigMetadataDict();
 
   // All members are protected by |lock_|.
-  // TODO(crbug.com/1138893): Change annotations to GUARDED_BY
+  // TODO(crbug.com/40153181): Change annotations to GUARDED_BY
   base::Lock lock_;
   std::vector<JsonMetadataGeneratorFunction> json_generator_functions_
       GUARDED_BY(lock_);

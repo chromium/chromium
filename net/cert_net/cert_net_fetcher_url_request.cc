@@ -523,7 +523,7 @@ void Job::StartURLRequest(URLRequestContext* context) {
   url_request_->SetSecureDnsPolicy(SecureDnsPolicy::kDisable);
 
   // Create IsolationInfo based on the origin of the requested URL.
-  // TODO(https://crbug.com/1016890): Cert validation needs to either be
+  // TODO(crbug.com/40104280): Cert validation needs to either be
   // double-keyed or based on a static database, to protect it from being used
   // as a cross-site user tracking vector. For now, just treat it as if it were
   // a subresource request of the origin used for the request. This allows the

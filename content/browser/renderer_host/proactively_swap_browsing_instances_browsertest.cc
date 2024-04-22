@@ -1213,7 +1213,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesTest,
   // Note that we're using a renderer-initiated navigation here. If we do a
   // browser-initiated navigation, it will hit the case at crbug.com/1094147
   // where we can't reuse |url_2|'s process even though |url_3| is same-site.
-  // TODO(crbug.com/1094147): Test with browser-initiated navigation too once
+  // TODO(crbug.com/40135315): Test with browser-initiated navigation too once
   // the issue is fixed.
   EXPECT_TRUE(NavigateToURLFromRenderer(shell(), cross_site_redirector_url,
                                         url_3 /* expected_commit_url */));
@@ -1557,7 +1557,7 @@ IN_PROC_BROWSER_TEST_P(
   if (IsBackForwardCacheEnabled()) {
     // bfcached subframes with unload/pagehide/visibilitychange handlers will
     // crash on a failed DCHECK due to crbug.com/1109742.
-    // TODO(crbug.com/1109742): don't skip this test when bfcache is enabled.
+    // TODO(crbug.com/40141877): don't skip this test when bfcache is enabled.
     return;
   }
   ASSERT_TRUE(embedded_test_server()->Start());

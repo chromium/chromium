@@ -74,7 +74,7 @@ const char kWebSpeechExpectGoodResult1[] = "Pictures of the moon";
 const char kWebSpeechPageGoodResult1[] = "goodresult1";
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
-// TODO(https://crbug.com/841818) Use FakeSystemInfo instead.
+// TODO(crbug.com/40575807) Use FakeSystemInfo instead.
 class MockAudioSystem : public media::AudioSystem {
  public:
   MockAudioSystem() = default;

@@ -65,7 +65,7 @@ interface CompositorFrameSink {
   // DidReceiveCompositorFrameAck() asynchronously when the frame has been
   // processed in order to unthrottle the next frame.
   //
-  // TODO(crbug.com/1141980): Investigate whether it's possible to alter the
+  // TODO(crbug.com/40154480): Investigate whether it's possible to alter the
   // CompositorFrame structure to be less likely to exceed soft message size
   // limits and remove [UnlimitedSize] here.
   [EstimateSize, UnlimitedSize]

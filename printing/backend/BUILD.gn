@@ -129,7 +129,7 @@ component("backend") {
       ]
     }
     if (!is_chromeos_ash) {
-      # TODO(crbug.com/1062136): Remove the original CUPS backend for macOS
+      # TODO(crbug.com/40122734): Remove the original CUPS backend for macOS
       # when Cloud Print support is terminated. Follow up after Jan 1, 2021.
       sources += [
         "cups_helper.cc",

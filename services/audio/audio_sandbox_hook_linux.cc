@@ -189,7 +189,7 @@ bool AudioPreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
                                }),
                                GetAudioFilePermissions(), options);
 
-  // TODO(https://crbug.com/850878) enable namespace sandbox. Currently, if
+  // TODO(crbug.com/40579955) enable namespace sandbox. Currently, if
   // enabled, connect() on pulse native socket fails with ENOENT (called from
   // pa_context_connect).
 

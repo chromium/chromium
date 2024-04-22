@@ -789,7 +789,7 @@ IN_PROC_BROWSER_TEST_F(WebUIRequiringGestureBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     WebUIRequiringGestureBrowserTest,
-    // TODO(crbug.com/1342300): Re-enable this test
+    // TODO(crbug.com/40851657): Re-enable this test
     DISABLED_MessageRequiringGestureAllowedWithInteractiveEvent) {
   // Simulate a click at Now.
   content::SimulateMouseClick(web_contents(), 0,
@@ -823,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, UntrustedSchemeLoads) {
 
 // Verify that we can successfully navigate to a chrome-untrusted:// URL
 // without a crash while WebUI::Send is being performed.
-// TODO(crbug.com/1221528): Enable this test once a root cause is identified.
+// TODO(crbug.com/40773523): Enable this test once a root cause is identified.
 IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest, DISABLED_NavigateWhileWebUISend) {
   ASSERT_TRUE(embedded_test_server()->Start());
 

@@ -137,7 +137,7 @@ TEST_F(BluetoothRemoteGattDescriptorTest, MAYBE_GetIdentifier) {
   BluetoothRemoteGattCharacteristic* char5 = service3->GetCharacteristics()[0];
   BluetoothRemoteGattCharacteristic* char6 = service3->GetCharacteristics()[1];
   // 6 descriptors (same UUID), 1 on each characteristic
-  // TODO(576900) Test multiple descriptors with same UUID on one
+  // TODO(crbug.com/40452039) Test multiple descriptors with same UUID on one
   // characteristic.
   SimulateGattDescriptor(char1, kTestUUIDCharacteristicUserDescription);
   SimulateGattDescriptor(char2, kTestUUIDCharacteristicUserDescription);

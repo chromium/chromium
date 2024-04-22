@@ -54,7 +54,7 @@ SpeculationCandidateToPrefetchUrlParams(
 
   if (prefetch_type.IsProxyRequiredWhenCrossOrigin() &&
       ShouldPrefetchBypassProxyForTestHost(prefetch_url.host())) {
-    // TODO(crbug.com/1501700): Remove SetProxyBypassedForTest, since it is the
+    // TODO(crbug.com/40942006): Remove SetProxyBypassedForTest, since it is the
     // only mutator of the PrefetchType.
     prefetch_type.SetProxyBypassedForTest();  // IN-TEST
   }

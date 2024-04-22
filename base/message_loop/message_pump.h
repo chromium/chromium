@@ -149,9 +149,9 @@ class BASE_EXPORT MessagePump {
     // Called before a unit of work is executed. This allows reports
     // about individual units of work to be produced. The unit of work ends when
     // the returned ScopedDoWorkItem goes out of scope.
-    // TODO(crbug.com/851163): Place calls for all platforms. Without this, some
-    // state like the top-level "ThreadController active" trace event will not
-    // be correct when work is performed.
+    // TODO(crbug.com/40580088): Place calls for all platforms. Without this,
+    // some state like the top-level "ThreadController active" trace event will
+    // not be correct when work is performed.
     [[nodiscard]] ScopedDoWorkItem BeginWorkItem() {
       return ScopedDoWorkItem(this);
     }

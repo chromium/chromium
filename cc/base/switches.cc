@@ -102,7 +102,7 @@ const char kAnimatedImageResume[] = "animated-image-resume";
 
 // Allows scaling clipped images in GpuImageDecodeCache. Note that this may
 // cause color-bleeding.
-// TODO(crbug.com/1157548): Remove this workaround flag once the underlying
+// TODO(crbug.com/40160880): Remove this workaround flag once the underlying
 // cache problems are solved.
 const char kEnableClippedImageScaling[] = "enable-scaling-clipped-images";
 

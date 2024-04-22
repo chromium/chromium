@@ -69,7 +69,7 @@ BASE_FEATURE(kMojoChannelAssociatedSendUsesRunOrPostTask,
 
 // Used to track some internal Channel state in pursuit of message leaks.
 //
-// TODO(https://crbug.com/813045): Remove this.
+// TODO(crbug.com/40563310): Remove this.
 class ControllerMemoryDumpProvider
     : public base::trace_event::MemoryDumpProvider {
  public:

@@ -1793,7 +1793,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 
 // Flaky on Lacros: https://crbug.com/1292527
-// TODO(https://crbug.com/1318197): Enable on Fuchsia when content_browsertests
+// TODO(crbug.com/40835208): Enable on Fuchsia when content_browsertests
 // runs in non-headless mode.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_ControlsIdsForDateTimePopup DISABLED_ControlsIdsForDateTimePopup
@@ -2060,7 +2060,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     CrossPlatformAccessibilityBrowserTest,
-    // TODO(crbug.com/1377745): Re-enable this test
+    // TODO(crbug.com/40874531): Re-enable this test
     DISABLED_IFrameContentHadFocus_ThenRootDocumentGainedFocus) {
   LoadInitialAccessibilityTreeFromHtmlFilePath(
       "/accessibility/html/iframe-padding.html");
@@ -2149,7 +2149,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
 #if defined(IS_FAST_BUILD)  // Avoid flakiness on slower debug/sanitizer builds.
 
-// TODO(crbug.com/1466360):  Enable once thread flakiness is resolved.
+// TODO(crbug.com/40923912):  Enable once thread flakiness is resolved.
 // TODO(crbug.com/332652840): It is flaky with SkiaGraphite enabled on Windows.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_NonInteractiveChangesAreBatched \
@@ -2639,7 +2639,7 @@ IN_PROC_BROWSER_TEST_F(
 // We do not run this test on Android because only the Java code can change the
 // size of the web contents, instead see the associated test in
 // WebContentsAccessibilityTest#testBoundingBoxUpdatesOnWindowResize().
-// TODO(https://crbug.com/1458666): Timeout on iOS-Blink
+// TODO(crbug.com/40918989): Timeout on iOS-Blink
 #if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
 #define MAYBE_FlexBoxBoundingBoxUpdatesOnWindowResize \
   DISABLED_FlexBoxBoundingBoxUpdatesOnWindowResize

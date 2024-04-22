@@ -1680,7 +1680,7 @@ INSTANTIATE_TEST_SUITE_P(
 // Test pagehide's persisted value and whether the page can be BFCached when a
 // sticky/non-sticky feature is used on the mainframe/subframe.
 //
-// TODO(crbug.com/1446474): Flaky on all platforms.
+// TODO(crbug.com/40913015): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_P(
     BackForwardCacheBrowserTestWithVaryingFrameAndFeatureStickinessType,
     DISABLED_TestPagehidePersistedValue) {
@@ -1851,8 +1851,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // On windows, the expected value is off by ~20ms. In order to get the
 // feature out to canary, the test is disabled for WIN.
-// TODO(crbug.com/1022191): Fix this for Win.
-// TODO(crbug.com/1211428): Flaky on other platforms.
+// TODO(crbug.com/40657468): Fix this for Win.
+// TODO(crbug.com/40767606): Flaky on other platforms.
 // Make sure we are exposing the duration between back navigation's
 // navigationStart and the page's original navigationStart through pageshow
 // event's timeStamp, and that we aren't modifying

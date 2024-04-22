@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(TouchInputBrowserTest, TouchNoHandler) {
 
   // The same is true for release because there is no touch-end handler.
   //
-  // TODO(https://crbug.com/1417126): a suspicious flake in AR/XR tests forced
+  // TODO(crbug.com/40893874): a suspicious flake in AR/XR tests forced
   // us to disable `kDroppedTouchSequenceIncludesTouchEnd` then override the
   // expectation here!
   filter = AddFilter(WebInputEvent::Type::kTouchEnd);

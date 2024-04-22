@@ -25,7 +25,7 @@ namespace content {
 // Logitech.
 #define MAYBE_ManipulateFocusDistance DISABLED_ManipulateFocusDistance
 
-// TODO(crbug.com/793859): Re-enable test on Android as soon as the cause for
+// TODO(crbug.com/40554182): Re-enable test on Android as soon as the cause for
 // the bug is understood and fixed.
 // TODO(crbug.com/1187247): Flaky on Linux/Windows.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureSucceedsBrowserTest,
 }
 
 // TODO(crbug.com/998304): Flaky on Linux.
-// TODO(crbug.com/793859): Re-enable test on Android as soon as the cause for
+// TODO(crbug.com/40554182): Re-enable test on Android as soon as the cause for
 // the bug is understood and fixed.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_ManipulateTilt DISABLED_ManipulateTilt

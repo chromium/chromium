@@ -99,10 +99,10 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     /**
-     * A {@link android.os.Parcelable.Creator} instance that is used to build
-     * {@link WebContentsImpl} objects from a {@link Parcel}.
+     * A {@link android.os.Parcelable.Creator} instance that is used to build {@link
+     * WebContentsImpl} objects from a {@link Parcel}.
      */
-    // TODO(crbug.com/635567): Fix this properly.
+    // TODO(crbug.com/40479664): Fix this properly.
     @SuppressLint("ParcelClassLoader")
     public static final Parcelable.Creator<WebContents> CREATOR =
             new Parcelable.Creator<WebContents>() {

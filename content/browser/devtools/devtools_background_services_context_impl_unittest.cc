@@ -276,7 +276,7 @@ class DevToolsBackgroundServicesContextTest
 };
 
 // Flaky on Fuchsia.
-// TODO(crbug.com/1492963): Reenable test on Fuchsia.
+// TODO(crbug.com/40936408): Reenable test on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_NothingStoredWithRecordingModeOff \
   DISABLED_NothingStoredWithRecordingModeOff

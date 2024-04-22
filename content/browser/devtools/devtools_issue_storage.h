@@ -19,7 +19,7 @@ class InspectorIssue;
 }  // namespace Audits
 }  // namespace protocol
 
-// TODO(crbug.com/1063007): Attribute issues to ongoing navigations correctly.
+// TODO(crbug.com/40051801): Attribute issues to ongoing navigations correctly.
 class DevToolsIssueStorage
     : public content::PageUserData<DevToolsIssueStorage> {
  public:

@@ -485,7 +485,7 @@ PrivacyMode URLRequestHttpJob::DeterminePrivacyMode() const {
     // |allow_credentials_| implies LOAD_DO_NOT_SAVE_COOKIES.
     DCHECK(request_->load_flags() & LOAD_DO_NOT_SAVE_COOKIES);
 
-    // TODO(https://crbug.com/775438): Client certs should always be
+    // TODO(crbug.com/40089326): Client certs should always be
     // affirmatively omitted for these requests.
     return request()->send_client_certs()
                ? PRIVACY_MODE_ENABLED

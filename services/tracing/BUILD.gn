@@ -148,13 +148,13 @@ source_set("tests") {
   }
 
   if (is_posix) {
-    # TODO(crbug.com/1184180): System perfetto tests are flaky on Mac.
+    # TODO(crbug.com/40171530): System perfetto tests are flaky on Mac.
     if (!is_apple) {
       sources += [ "perfetto/system_perfetto_unittest.cc" ]
     }
 
     if (!is_android && !is_ios) {
-      # TODO(crbug.com/1451751): Failed on iOS by '(errno: 63, File name too long)'.
+      # TODO(crbug.com/40270670): Failed on iOS by '(errno: 63, File name too long)'.
       sources += [ "public/cpp/system_tracing_service_unittest.cc" ]
     }
   }

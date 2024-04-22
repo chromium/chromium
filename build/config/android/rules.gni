@@ -2259,7 +2259,7 @@ if (is_robolectric) {
 
     _uses_static_library = defined(invoker.static_library_provider)
 
-    # TODO(crbug.com/864142): Allow incremental installs of bundle modules.
+    # TODO(crbug.com/40585188): Allow incremental installs of bundle modules.
     _incremental_apk =
         !_is_bundle_module &&
         !(defined(invoker.never_incremental) && invoker.never_incremental) &&
@@ -3820,7 +3820,7 @@ if (is_robolectric) {
       testonly = true
       create_apk_script = false
 
-      # TODO(crbug.com/1099849): Figure out why angle tests fail to launch
+      # TODO(crbug.com/40702672): Figure out why angle tests fail to launch
       #     with newer target_sdk_version.
       if (!defined(invoker.target_sdk_version) && _use_native_activity) {
         target_sdk_version = 24

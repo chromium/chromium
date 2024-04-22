@@ -28,7 +28,7 @@ class ArCoreHostDisplayClient : public viz::HostDisplayClient {
   explicit ArCoreHostDisplayClient(ui::WindowAndroid* root_window)
       : HostDisplayClient(gfx::kNullAcceleratedWidget),
         root_window_(root_window) {
-    // TODO(https://crbug.com/1194775): Ideally, we'd DCHECK here, but the UTs
+    // TODO(crbug.com/40758616): Ideally, we'd DCHECK here, but the UTs
     // don't create a root_window.
   }
 

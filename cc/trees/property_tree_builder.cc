@@ -688,8 +688,8 @@ bool PropertyTreeBuilderContext::IsRoundedCornerLayerWithinParentLayerBounds(
     return true;
   }
 
-  // TODO(1382038): support cases when the layer has transforms or pixel moving
-  // filters.
+  // TODO(crbug.com/40245439): support cases when the layer has transforms or
+  // pixel moving filters.
   if (!layer->transform().IsIdentity() ||
       layer->filters().HasFilterThatMovesPixels()) {
     return false;

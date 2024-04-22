@@ -27,7 +27,7 @@ namespace remoting::xdg_portal {
 using webrtc::Scoped;
 
 namespace {
-// TODO(crbug/1291247): See if these can be pulled from a common place.
+// TODO(crbug.com/40212673): See if these can be pulled from a common place.
 constexpr int BUTTON_LEFT_KEYCODE = 272;
 constexpr int BUTTON_RIGHT_KEYCODE = 273;
 constexpr int BUTTON_MIDDLE_KEYCODE = 274;

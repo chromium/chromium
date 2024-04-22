@@ -217,7 +217,7 @@ bool BrowsingContextState::CommitFramePolicy(
   // Documents create iframes, iframes host new documents. Both are associated
   // with sandbox flags. They are required to be stricter or equal to their
   // owner when they change, as we go down.
-  // TODO(https://crbug.com/1262061). Enforce the invariant mentioned above,
+  // TODO(crbug.com/40202483). Enforce the invariant mentioned above,
   // once the interactions with fenced frame has been tested and clarified.
 
   bool did_change_flags = new_frame_policy.sandbox_flags !=

@@ -315,7 +315,7 @@ TEST_F(ShellExtensionLoaderTestAura, AppLaunchAndReload) {
 }
 
 // Tests failing to reload an app.
-// TODO(crbug.com/1166675): Flaky on Linux, Lacros, ChromeOS, and similar.
+// TODO(crbug.com/40742257): Flaky on Linux, Lacros, ChromeOS, and similar.
 TEST_F(ShellExtensionLoaderTestAura, DISABLED_ReloadFailure) {
   ShellExtensionLoader loader(browser_context());
   ExtensionId extension_id;

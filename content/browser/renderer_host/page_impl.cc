@@ -353,7 +353,7 @@ void PageImpl::UpdateEncoding(const std::string& encoding_name) {
 
 void PageImpl::NotifyVirtualKeyboardOverlayRect(
     const gfx::Rect& keyboard_rect) {
-  // TODO(https://crbug.com/1317002): send notification to outer frames if
+  // TODO(crbug.com/40222405): send notification to outer frames if
   // needed.
   DCHECK_EQ(virtual_keyboard_mode(),
             ui::mojom::VirtualKeyboardMode::kOverlaysContent);

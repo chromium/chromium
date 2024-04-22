@@ -235,7 +235,7 @@ class CONTENT_EXPORT NavigationRequest
   // should use CreateBrowserInitiated() and renderer-initiated navigations
   // should use CreateRendererInitiated().
   //
-  // TODO(crbug.com/1399292): Refactor the remaining uses of this function to
+  // TODO(crbug.com/40249771): Refactor the remaining uses of this function to
   // use either CreateBrowserInitiated() or CreateRendererInitiated() and then
   // remove this helper.
   static std::unique_ptr<NavigationRequest> Create(
@@ -1971,7 +1971,7 @@ class CONTENT_EXPORT NavigationRequest
   // process. It is left empty for browser side initiated navigation. This is a
   // problem. This function is an incomplete attempt to start computing it from
   // the browser process instead.
-  // TODO(https://crbug.com/1395742): Complete the implementation the browser
+  // TODO(crbug.com/40249217): Complete the implementation the browser
   // side implementation.
   void ComputeDownloadPolicy();
 
@@ -2058,7 +2058,7 @@ class CONTENT_EXPORT NavigationRequest
   // commit in (i.e. when we receive the final network response for most
   // navigations). Note that currently this can be reset to std::nullopt for
   // cross-document restarts and some failed navigations.
-  // TODO(https://crbug.com/1416916): Don't reset this on failed navigations,
+  // TODO(crbug.com/40063115): Don't reset this on failed navigations,
   // and ensure the NavigationRequest doesn't outlive the `render_frame_host_`
   // picked for failed Back/Forward Cache restores.
   // Invariant: At least one of |loader_| or |render_frame_host_| is

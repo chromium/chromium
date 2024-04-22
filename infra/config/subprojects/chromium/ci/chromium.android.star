@@ -92,7 +92,7 @@ ci.builder(
     contact_team_email = "clank-engprod@google.com",
     # Higher build timeout since dbg ASAN builds can take a while on a clobber
     # build.
-    # TODO(crbug.com/1395760): Check why the compile takes longer time.
+    # TODO(crbug.com/40882299): Check why the compile takes longer time.
     execution_timeout = 8 * time.hour,
 )
 

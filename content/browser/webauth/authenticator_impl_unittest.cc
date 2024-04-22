@@ -4581,7 +4581,7 @@ TEST_F(AuthenticatorImplTest, VirtualAuthenticatorPublicKeyAlgos) {
 }
 
 TEST_F(AuthenticatorImplTest, TestAuthenticationTransport) {
-  // TODO(crbug.com/1249057): handle case where the transport is unknown.
+  // TODO(crbug.com/40197472): handle case where the transport is unknown.
   NavigateAndCommit(GURL(kTestOrigin1));
   // Verify transport used during authentication is correctly being returned
   // to the renderer layer.
@@ -9788,7 +9788,7 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, IsConditionalMediationAvailable) {
 }
 
 // Temporary regression test for crbug.com/1489468.
-// TODO(crbug.com/1489482): Remove after passkey metadata syncing is enabled by
+// TODO(crbug.com/40284051): Remove after passkey metadata syncing is enabled by
 // default.
 TEST_F(AuthenticatorImplWithRequestProxyTest,
        IsConditionalMediationAvailable_MetadataSyncing) {

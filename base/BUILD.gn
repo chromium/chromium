@@ -1473,7 +1473,7 @@ component("base") {
 
     # These only need to be public deps because of includes of their headers
     # by public //base headers, which requires they be on the include path.
-    # TODO(https://crbug.com/841171): Move these back to |deps|.
+    # TODO(crbug.com/40575514): Move these back to |deps|.
     public_deps += [
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.component.runner:fuchsia.component.runner_hlcpp",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl:fuchsia.intl_hlcpp",
@@ -1517,7 +1517,7 @@ component("base") {
   # cannot easily depend on BoringSSL due to the nacl_io library, so NaCl builds
   # still retain a dedicated local implementation of the functionality.
   #
-  # TODO(crbug.com/702997) Use only boringssl when NaCl is removed.
+  # TODO(crbug.com/40511454) Use only boringssl when NaCl is removed.
   sources += [
     "hash/md5.h",
     "hash/md5_constexpr.h",
@@ -3114,7 +3114,7 @@ if (is_fuchsia) {
     sources = [ "fuchsia/test.test-fidl" ]
   }
 
-  # TODO(crbug.com/1416553): remove this once all users are migrated to natural bindings.
+  # TODO(crbug.com/40256912): remove this once all users are migrated to natural bindings.
   source_set("test_interface_impl") {
     testonly = true
     sources = [

@@ -357,7 +357,7 @@ struct VideoCaptureFeedback {
   [MinVersion=2] int32 frame_id = 0;
 
   // Indicates whether or not the value in |frame_id| is valid.
-  // TODO(https://crbug.com/657632): Remove this and replace frame_id with an
+  // TODO(crbug.com/40489779): Remove this and replace frame_id with an
   // optional type.
   [MinVersion=2] bool has_frame_id = false;
 };
@@ -403,7 +403,7 @@ enum SubCaptureTargetType {
 
 // The result of an attempt by the client to start/stop cropping,
 // restricting or otherwise applying a sub-capture target.
-// TODO(crbug.com/1264849): Remove kNotImplemented.
+// TODO(crbug.com/40203554): Remove kNotImplemented.
 enum ApplySubCaptureTargetResult {
   kSuccess,
   kErrorGeneric,

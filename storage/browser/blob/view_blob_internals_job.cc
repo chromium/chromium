@@ -148,7 +148,7 @@ std::string ViewBlobInternalsJob::GenerateHTML(
                               entry->content_disposition(), entry->refcount(),
                               &out);
     }
-    // TODO(https://crbug.com/1112483): Bring back information about blob URLs.
+    // TODO(crbug.com/40709731): Bring back information about blob URLs.
   }
   EndHTML(&out);
   return out;

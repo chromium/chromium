@@ -111,7 +111,7 @@ class ScopedSharedImageAccess {
       gl->BeginSharedImageAccessDirectCHROMIUM(texture, access);
   }
 
-  // TODO(crbug.com/1023270): Remove this ctor once we're no longer relying on
+  // TODO(crbug.com/40106960): Remove this ctor once we're no longer relying on
   // texture ids for Mailbox access as that is only supported on
   // RasterImplementationGLES.
   ScopedSharedImageAccess(

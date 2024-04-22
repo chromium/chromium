@@ -90,7 +90,7 @@ void PreloadingAttemptImpl::SetEligibility(PreloadingEligibility eligibility) {
   eligibility_ = eligibility;
 }
 
-// TODO(crbug.com/1464836): most call sites of this should be removed, as
+// TODO(crbug.com/40275772): most call sites of this should be removed, as
 // PreloadingConfig should subsume most feature-specific holdbacks that exist
 // today. Some cases can remain as specific overrides of the PreloadingConfig
 // logic, e.g. if DevTools is open, or for features that are still launching and
@@ -212,7 +212,7 @@ void PreloadingAttemptImpl::RecordPreloadingAttemptMetrics(
   // Ensure that when the `triggering_outcome_` is kSuccess, then the
   // accurate_triggering should be true.
   if (triggering_outcome_ == PreloadingTriggeringOutcome::kSuccess) {
-    // TODO(https://crbug.com/1431055): Fix PreloadingAttempt for Prefetching in
+    // TODO(crbug.com/40263357): Fix PreloadingAttempt for Prefetching in
     // a different WebContents. It is allowed to activate a prefetched result in
     // another WebContents instance, and the WebContents that stores `this`
     // instance does not have the opportunity to set the

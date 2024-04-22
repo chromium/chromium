@@ -1007,7 +1007,7 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
                                     "Couldn't create SkImage for reading."));
   }
 
-  // TODO(crbug.com/1502623): Add back src_rect validation once renderer passes
+  // TODO(crbug.com/40942998): Add back src_rect validation once renderer passes
   // a correct rect size.
   bool success = false;
   if (gr_context) {
@@ -1032,8 +1032,8 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
       success = true;
       // Use CopyPlane to flip as Graphite doesn't support bottom left origin
       // images. Using a negative height causes CopyPlane to flip while copying.
-      // TODO(crbug.com/1449764): Remove this if Graphite performs the flip once
-      // it supports bottom left origin images.
+      // TODO(crbug.com/40269891): Remove this if Graphite performs the flip
+      // once it supports bottom left origin images.
       const int height =
           source_shared_image->surface_origin() == kTopLeft_GrSurfaceOrigin
               ? dst_info.height()

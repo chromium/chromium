@@ -248,7 +248,7 @@ TEST_F(PrefetchCanaryCheckerTest, CacheHit) {
   EXPECT_FALSE(checker->IsActive());
 }
 
-// TODO(crbug.com/1307470): Re-enable; flaky.
+// TODO(crbug.com/40828450): Re-enable; flaky.
 TEST_F(PrefetchCanaryCheckerTest, DISABLED_NetworkConnectionShardsCache) {
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_3G);

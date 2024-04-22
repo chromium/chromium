@@ -163,7 +163,7 @@ InputStream::~InputStream() {
     return;
   }
 
-  // TODO(https://crbug.com/803102): remove InputController::Close() after
+  // TODO(crbug.com/40558532): remove InputController::Close() after
   // content/ streams are removed, destructor should suffice.
   controller_->Close();
 

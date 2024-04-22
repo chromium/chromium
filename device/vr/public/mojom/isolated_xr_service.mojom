@@ -110,7 +110,7 @@ interface XRRuntime {
 };
 
 // Information required for rendering, used by ImmersiveOverlay.
-// TODO(https://crbug.com/1126608): This struct currently contains subset of
+// TODO(crbug.com/40718594): This struct currently contains subset of
 // data contained by XRFrameData, move it to vr_service.mojom and refactor
 // XRFrameData so that it embeds this struct.
 struct XRRenderInfo

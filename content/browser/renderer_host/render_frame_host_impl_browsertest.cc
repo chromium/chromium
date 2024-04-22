@@ -2072,7 +2072,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, FastNavigationAbort) {
   // RenderFrame, otherwise the document.open() will run on the previous
   // page's RenderFrame, and the navigation won't get aborted. We need to
   // ensure that we won't trigger a same-site cross-RFH navigation.
-  // TODO(crbug.com/1099193): This should also work on cross-RFH same-site
+  // TODO(crbug.com/40137364): This should also work on cross-RFH same-site
   // navigations.
   if (ShouldCreateNewHostForAllFrames()) {
     return;
@@ -3195,7 +3195,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // their URLs do not match - matching instead using navigation id or mojo
   // interface identity).
 
-  // TODO(https://crbug.com/759184): Verify CSP frame-ancestors in the browser
+  // TODO(crbug.com/40537082): Verify CSP frame-ancestors in the browser
   // process. Currently, this is done by the renderer process, which commits an
   // empty document with success instead.
   EXPECT_TRUE(navigation_observer.has_committed());
@@ -7177,7 +7177,7 @@ class RenderFrameHostImplBrowsingContextStateNameTest
       GTEST_SKIP();
     }
 
-    // TODO(https://crbug.com/1422190):
+    // TODO(crbug.com/40259517):
     // A RenderViewHostImpl from outside the BackForward take a
     // `main_browsing_context_state` associated with a RenderFrameHost from
     // within the BackForwardCache.

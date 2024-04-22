@@ -198,7 +198,7 @@ declare_args() {
   # * Windows is not supported as it doesn't use DWARF.
   # * Apple platforms (e.g. MacOS, iPhone, iPad) aren't supported because xcode
   #   lldb doesn't have the needed changes yet.
-  # TODO(crbug.com/1379070): Remove if the upstream default ever changes.
+  # TODO(crbug.com/40244196): Remove if the upstream default ever changes.
   #
   # This greatly reduces the size of debug builds, at the cost of
   # debugging information which is required by some specialized
@@ -611,7 +611,7 @@ config("compiler") {
       }
     }
 
-    # TODO(crbug.com/1488374): This causes binary size growth and potentially
+    # TODO(crbug.com/40283598): This causes binary size growth and potentially
     # other problems.
     # TODO(crbug.com/40284925): This isn't supported by Cronet's mainline llvm version.
     if (default_toolchain != "//build/toolchain/cros:target" &&
@@ -629,7 +629,7 @@ config("compiler") {
       }
     }
 
-    # TODO(crbug.com/1235145): Investigate why/if this should be needed.
+    # TODO(crbug.com/40192287): Investigate why/if this should be needed.
     if (is_win) {
       cflags += [ "/clang:-ffp-contract=off" ]
     } else {
@@ -808,7 +808,7 @@ config("compiler") {
         # TODO(b/271459198): Revert limit on amd64 to 30 when fixed.
         import_instr_limit = 20
       } else if (is_android && optimize_for_size) {
-        # TODO(crbug.com/1308318): Investigate if we can get the > 6% perf win
+        # TODO(crbug.com/40219076): Investigate if we can get the > 6% perf win
         # of import_instr_limit 30 with a binary size hit smaller than ~2 MiB.
         import_instr_limit = 5
       }
@@ -824,7 +824,7 @@ config("compiler") {
       ldflags += [ "-Wl,-mllvm,-disable-auto-upgrade-debug-info" ]
     }
 
-    # TODO(https://crbug.com/1211155): investigate why this isn't effective on
+    # TODO(crbug.com/40182783): investigate why this isn't effective on
     # arm32.
     if (!is_android || current_cpu == "arm64") {
       cflags += [ "-fwhole-program-vtables" ]
@@ -878,7 +878,7 @@ config("compiler") {
     ldflags += [ "-Wl,--no-rosegment" ]
   }
 
-  # TODO(crbug.com/1374347): Cleanup undefined symbol errors caught by
+  # TODO(crbug.com/40242425): Cleanup undefined symbol errors caught by
   # --no-undefined-version.
   if (use_lld && !is_win && !is_mac && !is_ios) {
     ldflags += [ "-Wl,--undefined-version" ]
@@ -1075,10 +1075,10 @@ config("compiler") {
   # consistently apply in both Chromium and non-Chromium code *and* non-NaCl
   # and NaCl code.
   #
-  # TODO(https://crbug.com/702997): Move this back to the `runtime_library`
+  # TODO(crbug.com/40511454): Move this back to the `runtime_library`
   # config when NaCl is removed.
   if (use_safe_libcxx) {
-    # TODO(https://crbug.com/1465186): Switch saigo to hardened mode once
+    # TODO(crbug.com/40275904): Switch saigo to hardened mode once
     # it's rolled in.
     if (is_nacl_saigo) {
       defines += [ "_LIBCPP_ENABLE_ASSERTIONS=1" ]
@@ -1498,7 +1498,7 @@ config("compiler_codegen") {
   if (current_cpu == "arm64" && !is_win && is_clang) {
     # Disable outlining everywhere on arm64 except Win. For more information see
     # crbug.com/931297 for Android and crbug.com/1410297 for iOS.
-    # TODO(crbug.com/1411363): Enable this on Windows if possible.
+    # TODO(crbug.com/40890229): Enable this on Windows if possible.
     cflags += [ "-mno-outline" ]
 
     # This can be removed once https://bugs.llvm.org/show_bug.cgi?id=40348
@@ -1689,7 +1689,7 @@ config("runtime_library") {
     configs += [ "//build/config/clang:compiler_builtins" ]
   }
 
-  # TODO(crbug.com/830987): Come up with a better name for is POSIX + Fuchsia
+  # TODO(crbug.com/40570904): Come up with a better name for is POSIX + Fuchsia
   # configuration.
   if (is_posix || is_fuchsia) {
     configs += [ "//build/config/posix:runtime_library" ]
@@ -1901,22 +1901,22 @@ config("default_warnings") {
         # TODO(thakis): Only for no_chromium_code? http://crbug.com/912662
         "-Wno-ignored-pragma-optimize",
 
-        # TODO(crbug.com/1343975) Evaluate and possibly enable.
+        # TODO(crbug.com/40231599) Evaluate and possibly enable.
         "-Wno-deprecated-builtins",
 
-        # TODO(crbug.com/1352183) Evaluate and possibly enable.
+        # TODO(crbug.com/40234766) Evaluate and possibly enable.
         "-Wno-bitfield-constant-conversion",
 
-        # TODO(crbug.com/1412713) Evaluate and possibly enable.
+        # TODO(crbug.com/40255410) Evaluate and possibly enable.
         "-Wno-deprecated-this-capture",
 
-        # TODO(https://crbug.com/1491833): Fix and re-enable.
+        # TODO(crbug.com/40285259): Fix and re-enable.
         "-Wno-invalid-offsetof",
 
-        # TODO(crbug.com/1494809): Evaluate and possibly enable.
+        # TODO(crbug.com/40286317): Evaluate and possibly enable.
         "-Wno-vla-extension",
 
-        # TODO(https://crbug.com/1490607): Fix and re-enable.
+        # TODO(crbug.com/40284799): Fix and re-enable.
         "-Wno-thread-safety-reference-return",
       ]
 
@@ -2119,7 +2119,7 @@ config("no_chromium_code") {
         # Disabled for similar reasons as -Wunused-variable.
         "-Wno-unused-but-set-variable",
 
-        # TODO(https://crbug.com/1202159): Clean up and enable.
+        # TODO(crbug.com/40762742): Clean up and enable.
         "-Wno-misleading-indentation",
       ]
     }
@@ -2182,7 +2182,7 @@ config("no_rtti") {
 # (de)allocate memory on a different heap, which would spell trouble if pointers
 # to heap-allocated memory are passed over shared library boundaries.
 config("export_dynamic") {
-  # TODO(crbug.com/1052397): Revisit after target_os flip is completed.
+  # TODO(crbug.com/40118868): Revisit after target_os flip is completed.
   if (is_linux || is_chromeos_lacros || export_libcxxabi_from_executables) {
     ldflags = [ "-rdynamic" ]
   }
@@ -2832,7 +2832,7 @@ config("symbols") {
 
   if (is_clang && (!is_nacl || is_nacl_saigo) && current_os != "zos") {
     if (is_apple) {
-      # TODO(https://crbug.com/1050118): Investigate missing debug info on mac.
+      # TODO(crbug.com/40117949): Investigate missing debug info on mac.
       # Make sure we don't use constructor homing on mac.
       cflags += [
         "-Xclang",

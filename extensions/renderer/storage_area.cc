@@ -204,7 +204,7 @@ class SessionStorageArea final : public gin::Wrappable<SessionStorageArea> {
         .SetMethod("remove", &SessionStorageArea::Remove)
         .SetMethod("clear", &SessionStorageArea::Clear)
         .SetMethod("getBytesInUse", &SessionStorageArea::GetBytesInUse)
-        // TODO(crbug.com/1227410): Only expose `setAccessLevel` in privileged
+        // TODO(crbug.com/40189208): Only expose `setAccessLevel` in privileged
         // contexts.
         .SetMethod("setAccessLevel", &SessionStorageArea::SetAccessLevel)
         .SetProperty("onChanged", &SessionStorageArea::GetOnChangedEvent)

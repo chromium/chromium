@@ -177,8 +177,8 @@ void MimeHandlerViewGuest::CreateWebContents(
   // `WebContents` will need to be swapped.
   scoped_refptr<content::SiteInstance> guest_site_instance;
 #if BUILDFLAG(ENABLE_PDF)
-  // TODO(crbug.com/1300730): Using `SiteInstance::CreateForURL()` creates a new
-  // `BrowsingInstance`, which causes problems for features like background
+  // TODO(crbug.com/40216386): Using `SiteInstance::CreateForURL()` creates a
+  // new `BrowsingInstance`, which causes problems for features like background
   // pages. Remove one of these branches either when `ProcessManager` correctly
   // handles the multiple `StoragePartitionConfig` case, or when no
   // `MimeHandlerView` extension depends on background pages.

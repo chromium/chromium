@@ -390,7 +390,7 @@ class TrustStoreWin::Impl {
   crypto::ScopedHCERTSTORE disallowed_cert_store_;
 };
 
-// TODO(https://crbug.com/1239268): support CTLs.
+// TODO(crbug.com/40784681): support CTLs.
 TrustStoreWin::TrustStoreWin() = default;
 
 void TrustStoreWin::InitializeStores() {

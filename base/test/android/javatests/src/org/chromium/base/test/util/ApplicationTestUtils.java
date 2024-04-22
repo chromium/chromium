@@ -48,7 +48,7 @@ public class ApplicationTestUtils {
                 ACTIVITY_TIMEOUT,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         // De-flake by flushing the tasks that are already queued on the Looper's Handler.
-        // TODO(https://crbug.com/1424788): Remove this and properly fix flaky tests.
+        // TODO(crbug.com/40260566): Remove this and properly fix flaky tests.
         TestThreadUtils.flushNonDelayedLooperTasks();
     }
 

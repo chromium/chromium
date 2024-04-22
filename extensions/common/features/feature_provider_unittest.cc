@@ -127,7 +127,7 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
 
   // A permission only available to allowlisted extensions returns availability
   // NOT_FOUND_IN_ALLOWLIST.
-  // TODO(https://crbug.com/1251347): Port //device/bluetooth to Fuchsia to
+  // TODO(crbug.com/40198321): Port //device/bluetooth to Fuchsia to
   // enable bluetooth extensions.
 #if !BUILDFLAG(IS_FUCHSIA)
   feature = provider->GetFeature("bluetoothPrivate");

@@ -1476,7 +1476,7 @@ TEST_P(BluetoothTestWinrt, DiscoverySessionFailure) {
 #define MAYBE_TurnOffAdapterWithConnectedDevice \
   DISABLED_TurnOffAdapterWithConnectedDevice
 #endif
-// TODO(crbug.com/725270): Enable on relevant platforms.
+// TODO(crbug.com/40522060): Enable on relevant platforms.
 TEST_F(BluetoothTest, MAYBE_TurnOffAdapterWithConnectedDevice) {
   if (!PlatformSupportsLowEnergy()) {
     GTEST_SKIP() << "Low Energy Bluetooth unavailable, skipping unit test.";

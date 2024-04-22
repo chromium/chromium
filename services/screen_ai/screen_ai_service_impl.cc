@@ -410,7 +410,7 @@ void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
   // that the annotation function was not successful.
   std::move(callback).Run(update);
 
-  // TODO(crbug.com/1434701): Send the AXTreeUpdate to the browser
+  // TODO(crbug.com/40904361): Send the AXTreeUpdate to the browser
   // side client for Backlight.
 }
 

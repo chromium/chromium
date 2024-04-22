@@ -556,7 +556,7 @@ int ObfuscatedFileUtilMemoryDelegate::WriteFile(
 // (crbug.com/986608)
 #if !BUILDFLAG(IS_FUCHSIA)
     if (last_position >= partition_alloc::MaxDirectMapped() / 2) {
-      // TODO(https://crbug.com/1043914): Allocated memory is rounded up to
+      // TODO(crbug.com/40669351): Allocated memory is rounded up to
       // 100MB blocks to reduce memory allocation delays. Switch to a more
       // proper container to remove this dependency.
       const size_t round_up_size = 100 * 1024 * 1024;

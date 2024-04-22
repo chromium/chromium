@@ -154,7 +154,7 @@ public class BundleUtils {
             // The Application class handles locking itself using the split context lock. This is
             // necessary to prevent a possible deadlock, since the application waits for splits
             // preloading on a background thread.
-            // TODO(crbug.com/1172950): Consider moving preloading logic into //base so we can lock
+            // TODO(crbug.com/40745927): Consider moving preloading logic into //base so we can lock
             // here.
             if (isApplicationContext(base)) {
                 context = ApiHelperForO.createContextForSplit(base, splitName);

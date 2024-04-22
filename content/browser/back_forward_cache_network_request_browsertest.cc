@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 // the page is in back-forward cache.
 // TODO(https://crbug.com/1137682): We should not trigger eviction on redirects
 // of keepalive fetches.
-// TODO(https://crbug.com/1377737): Disabled for flakiness.
+// TODO(crbug.com/40874525): Disabled for flakiness.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        DISABLED_KeepAliveFetchRedirectedWhileStoring) {
   net::test_server::ControllableHttpResponse fetch_response(

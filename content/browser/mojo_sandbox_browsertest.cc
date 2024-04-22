@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(MojoSandboxTest, IsProcessSandboxed) {
   EXPECT_TRUE(maybe_is_sandboxed.value());
 }
 
-// TODO(https://crbug.com/1071420): There is currently no way to know whether a
+// TODO(crbug.com/40126761): There is currently no way to know whether a
 // child process is sandboxed or not on Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_NotIsProcessSandboxed DISABLED_NotIsProcessSandboxed

@@ -76,7 +76,7 @@ MediaFormatPtr CreateAudioParams(const AudioEncoder::Options& options,
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_MAX_INPUT_SIZE,
                         input_size);
 
-  // TODO(crbug.com/1421301) Consider adding HE-AAC profile support.
+  // TODO(crbug.com/40259205) Consider adding HE-AAC profile support.
 
   if (options.bitrate_mode) {
     constexpr int32_t BITRATE_MODE_VBR = 1;

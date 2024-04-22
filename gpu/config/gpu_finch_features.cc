@@ -545,7 +545,7 @@ bool IsDrDcEnabled() {
   }
 
   // DrDc is not supported with Graphite-Dawn yet.
-  // TODO(crbug.com/1505023): Add DrDc support with Graphite
+  // TODO(crbug.com/40945609): Add DrDc support with Graphite
   if (IsSkiaGraphiteEnabled(base::CommandLine::ForCurrentProcess())) {
     return false;
   }
@@ -741,7 +741,7 @@ bool IsAImageReaderEnabled() {
   // Device Hammer_Energy_2 seems to be very crash with image reader during
   // gl::GLImageEGL::BindTexImage(). Disable image reader on that device for
   // now. crbug.com/1323921
-  // TODO(crbug.com/1323921): Can we revisit this now that GLImage no longer
+  // TODO(crbug.com/40224845): Can we revisit this now that GLImage no longer
   // exists?
   if (IsDeviceBlocked(base::android::BuildInfo::GetInstance()->device(),
                       "Hammer_Energy_2")) {

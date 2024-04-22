@@ -118,7 +118,7 @@ std::vector<RequestAction>
 ExtensionUrlPatternIndexMatcher::GetModifyHeadersActions(
     const RequestParams& params,
     std::optional<uint64_t> min_priority) const {
-  // TODO(crbug.com/1083178): Plumb |min_priority| into UrlPatternIndexMatcher
+  // TODO(crbug.com/40131283): Plumb |min_priority| into UrlPatternIndexMatcher
   // to prune more rules before matching on url filters.
   std::vector<const flat_rule::UrlRule*> rules = GetAllMatchingRules(
       params, before_request_matchers_, flat::IndexType_modify_headers);

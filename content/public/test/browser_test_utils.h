@@ -355,7 +355,7 @@ void SimulateMouseClickAt(WebContents* web_contents,
 // are relative to the page not the viewport. In particular for Android make
 // sure the page has the meta tag
 // <meta name="viewport" content="width=device-width,minimum-scale=1">
-// TODO(https://crbug.com/1199644): Make the Simulate* methods more user
+// TODO(crbug.com/40177926): Make the Simulate* methods more user
 // friendly by taking zooming into account.
 gfx::PointF GetCenterCoordinatesOfElementWithId(
     const ToRenderFrameHost& adapter,

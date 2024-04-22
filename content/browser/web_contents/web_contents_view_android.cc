@@ -228,7 +228,7 @@ DropData* WebContentsViewAndroid::GetDropData() const {
   return NULL;
 }
 
-// TODO(crbug.com/1488620): Implement this.
+// TODO(crbug.com/40934697): Implement this.
 void WebContentsViewAndroid::TransferDragSecurityInfo(WebContentsView*) {
   NOTIMPLEMENTED();
 }
@@ -407,7 +407,7 @@ void WebContentsViewAndroid::StartDragging(
     bitmap = &dummy_bitmap;
   }
 
-  // TODO(crbug.com/1405120): Consolidate cursor_offset and drag_obj_rect with
+  // TODO(crbug.com/40886472): Consolidate cursor_offset and drag_obj_rect with
   // drop_data.
 
   ScopedJavaLocalRef<jobject> jdrop_data = ToJavaDropData(drop_data);
@@ -483,7 +483,7 @@ bool WebContentsViewAndroid::OnDragEvent(const ui::DragEventAndroid& event) {
   return true;
 }
 
-// TODO(crbug.com/1301905): does not work for OOPIFs. The drag-and-drop calls
+// TODO(crbug.com/40216782): does not work for OOPIFs. The drag-and-drop calls
 // on GetRenderViewHost()->GetWidget() in the following functions will need to
 // be targeted to specific RenderWidgetHosts.
 

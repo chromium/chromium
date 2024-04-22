@@ -32,7 +32,7 @@ from update_sdk import GetSDKOverrideGCSPath
 IMAGE_SIGNATURE_FILE = '.hash'
 
 
-# TODO(crbug.com/1138433): Investigate whether we can deprecate
+# TODO(crbug.com/40725453): Investigate whether we can deprecate
 # use of sdk_bucket.txt.
 def GetOverrideCloudStorageBucket():
   """Read bucket entry from sdk_bucket.txt"""

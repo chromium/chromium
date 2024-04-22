@@ -1164,7 +1164,7 @@ void MergeOnBeforeSendHeadersResponses(
 
   // A strict subset of |removed_headers| consisting of headers removed by the
   // web request API. Used for metrics.
-  // TODO(crbug.com/1098945): Use std::string_view to avoid copying header
+  // TODO(crbug.com/40702193): Use std::string_view to avoid copying header
   // names.
   std::set<std::string> web_request_removed_headers;
 

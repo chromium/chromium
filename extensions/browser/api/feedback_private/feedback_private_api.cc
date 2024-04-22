@@ -106,7 +106,7 @@ void SendFeedback(content::BrowserContext* browser_context,
   feedback_params.is_internal_email =
       IsGoogleInternalAccountEmail(browser_context);
   feedback_params.load_system_info = load_system_info;
-  // TODO(crbug.com/1407646): Attach autofill metadata in the feedback report.
+  // TODO(crbug.com/40253237): Attach autofill metadata in the feedback report.
   feedback_params.send_autofill_metadata =
       feedback_info.send_autofill_metadata.value_or(false);
   feedback_params.send_histograms =

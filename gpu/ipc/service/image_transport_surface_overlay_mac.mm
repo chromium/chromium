@@ -182,9 +182,9 @@ bool ImageTransportSurfaceOverlayMacEGL::ScheduleOverlayPlane(
     DLOG(ERROR) << "Invalid non-zero Z order.";
     return false;
   }
-  // TODO(1290313): the display_bounds might not need to be rounded to the
-  // nearest rect as this eventually gets made into a CALayer. CALayers work in
-  // floats.
+  // TODO(crbug.com/40818047): the display_bounds might not need to be rounded
+  // to the nearest rect as this eventually gets made into a CALayer. CALayers
+  // work in floats.
   const ui::CARendererLayerParams overlay_as_calayer_params(
       /*is_clipped=*/false,
       /*clip_rect=*/gfx::Rect(),

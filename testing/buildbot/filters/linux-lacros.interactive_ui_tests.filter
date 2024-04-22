@@ -1,4 +1,4 @@
-# TODO(crbug.com/1443374) Fix BookmarkBarViewTests.
+# TODO(crbug.com/40267327) Fix BookmarkBarViewTests.
 # The following tests fail consistently.
 -BookmarkBarViewTest22.CloseSourceBrowserDuringDrag
 -BookmarkBarViewTest28.ClickWithModifierOnFolderOpensAllBookmarks

@@ -1042,7 +1042,7 @@ class _AvdInstance:
         self._debug_tags.add('time')
         emulator_cmd.extend(['-debug', ','.join(self._debug_tags)])
         if 'kernel' in self._debug_tags or 'all' in self._debug_tags:
-          # TODO(crbug.com/1404176): newer API levels need "-virtio-console"
+          # TODO(crbug.com/40885864): newer API levels need "-virtio-console"
           # as well to print kernel log.
           emulator_cmd.append('-show-kernel')
 

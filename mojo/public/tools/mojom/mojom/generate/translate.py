@@ -942,7 +942,7 @@ def _Enum(module, parsed_enum, parent_kind):
         map(lambda field: _EnumField(module, enum, field),
             parsed_enum.enum_value_list))
     _ResolveNumericEnumValues(enum)
-    # TODO(https://crbug.com/731893): Require a default value to be
+    # TODO(crbug.com/40525166): Require a default value to be
     # specified.
     for field in enum.fields:
       if field.default:

@@ -406,7 +406,7 @@ bool TouchFile(const FilePath& path,
     flags |= File::FLAG_WIN_BACKUP_SEMANTICS;
 #elif BUILDFLAG(IS_FUCHSIA)
   // On Fuchsia, we need O_RDONLY for directories, or O_WRONLY for files.
-  // TODO(https://crbug.com/947802): Find a cleaner workaround for this.
+  // TODO(crbug.com/40620916): Find a cleaner workaround for this.
   flags |= (DirectoryExists(path) ? File::FLAG_READ : File::FLAG_WRITE);
 #endif
 

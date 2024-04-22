@@ -423,7 +423,7 @@ std::optional<std::string> NetworkServiceMemoryCache::CanServe(
 
   // We hit a DCHECK failure without this early return. Let's have this
   // workaround for now.
-  // TODO(crbug.com/1360815): Remove this, and handle this request correctly.
+  // TODO(crbug.com/40863303): Remove this, and handle this request correctly.
   if (resource_request.trusted_params &&
       !resource_request.trusted_params->isolation_info.IsEmpty()) {
     return std::nullopt;

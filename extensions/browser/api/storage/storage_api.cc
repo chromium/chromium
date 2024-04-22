@@ -438,7 +438,7 @@ ExtensionFunction::ResponseValue StorageStorageAreaSetFunction::RunInSession() {
                     ->Set(extension_id(), std::move(values), changes);
 
   if (!result) {
-    // TODO(crbug.com/1185226): Add API test that triggers this behavior.
+    // TODO(crbug.com/40171997): Add API test that triggers this behavior.
     return Error(
         "Session storage quota bytes exceeded. Values were not stored.");
   }

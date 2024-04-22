@@ -460,7 +460,7 @@ def GetPackageBlobs(far_files, build_out_dir):
 def GetPackageSizes(package_blobs):
   """Calculates compressed and uncompressed package sizes from blob sizes."""
 
-  # TODO(crbug.com/1126177): Use partial sizes for blobs shared by
+  # TODO(crbug.com/40718363): Use partial sizes for blobs shared by
   # non Chrome-Fuchsia packages.
 
   # Count number of packages sharing blobs (a count of 1 is not shared).

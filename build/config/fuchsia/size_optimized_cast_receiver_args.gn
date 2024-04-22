@@ -25,7 +25,7 @@ enable_dav1d_decoder = false
 produce_v8_compile_hints = false
 
 # //chrome makes many assumptions that Extensions are enabled.
-# TODO(crbug.com/1363742): Fix theses assumptions or avoid building it.
+# TODO(crbug.com/40238815): Fix theses assumptions or avoid building it.
 # enable_extensions = false
 
 enable_hidpi = false

@@ -1609,7 +1609,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     // that has the focused frame. The FrameTree tree could be arbitrarily deep.
     // An inner WebContents if focused is responsible for setting this back to
     // another valid during its destruction. See WebContentsImpl destructor.
-    // TODO(crbug.com/1257595): Support clearing this for inner frame trees.
+    // TODO(crbug.com/40200744): Support clearing this for inner frame trees.
     base::SafeRef<FrameTree> focused_frame_tree_;
   };
 

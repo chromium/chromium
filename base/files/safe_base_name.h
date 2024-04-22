@@ -22,7 +22,7 @@ namespace base {
 // FilePath dir(FILE_PATH_LITERAL("foo")); dir.Append(*a);
 class BASE_EXPORT SafeBaseName {
  public:
-  // TODO(crbug.com/1269986): Change to only be exposed to Mojo.
+  // TODO(crbug.com/40205226): Change to only be exposed to Mojo.
   SafeBaseName() = default;
 
   // Factory method that returns a valid SafeBaseName or std::nullopt.

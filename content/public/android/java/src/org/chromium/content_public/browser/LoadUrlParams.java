@@ -396,7 +396,7 @@ public class LoadUrlParams {
     }
 
     private void verifyHeaders() {
-        // TODO(https://crbug.com/1199393): Merge extra and verbatim headers internally, and only
+        // TODO(crbug.com/40761218): Merge extra and verbatim headers internally, and only
         // expose one way to get headers, so users of this class don't miss headers.
         if (mExtraHeaders != null && mVerbatimHeaders != null) {
             // If both header types are set, ensure they're the same.

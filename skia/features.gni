@@ -23,7 +23,7 @@ declare_args() {
 
 # Skia only needs to support GPU rasterization if we use the full Chromium
 # rendering stack i.e. |use_blink| is true.
-# TODO(crbug.com/1431198): Split out into separate enable_skia_ganesh flag.
+# TODO(crbug.com/40902173): Split out into separate enable_skia_ganesh flag.
 skia_support_gpu = use_blink
 
 # Skia Ganesh GL backend is always enabled on all platforms - applies only when

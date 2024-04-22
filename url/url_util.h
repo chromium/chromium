@@ -312,7 +312,7 @@ void EncodeURIComponent(std::string_view input, CanonOutput* output);
 
 // Returns true if `c` is a character that does not require escaping in
 // encodeURIComponent.
-// TODO(crbug.com/1481056): Remove this when event-level reportEvent is removed
+// TODO(crbug.com/40281561): Remove this when event-level reportEvent is removed
 // (if it is still this function's only consumer).
 COMPONENT_EXPORT(URL)
 bool IsURIComponentChar(char c);

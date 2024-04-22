@@ -77,7 +77,7 @@ if (is_chromeos_ash) {
 # consequently also when building for NaCl toolchains.) For this reason we
 # check |target_os| explicitly, as it's consistent across all toolchains.
 #
-# TODO(crbug.com/1052397): Remove !chromeos_is_browser_only once
+# TODO(crbug.com/40118868): Remove !chromeos_is_browser_only once
 # lacros-chrome switches to target_os="chromeos"
 enable_scrambled_message_ids =
     enable_mojom_message_id_scrambling &&
@@ -1331,7 +1331,7 @@ template("mojom") {
 
       generator_target_name = "${target_name}${variant_suffix}__generator"
 
-      # TODO(crbug.com/1194274): Investigate nondeterminism in Py3 builds.
+      # TODO(crbug.com/40758345): Investigate nondeterminism in Py3 builds.
       action(generator_target_name) {
         allow_remote = true
         visibility = [ ":*" ]
@@ -2078,9 +2078,9 @@ template("mojom") {
           args += [ "--js_generate_struct_deserializers" ]
         }
 
-        # TODO(crbug.com/1007587): Support scramble_message_ids if above is
+        # TODO(crbug.com/40100373): Support scramble_message_ids if above is
         # insufficient.
-        # TODO(crbug.com/1007591): Support generate_fuzzing.
+        # TODO(crbug.com/40100376): Support generate_fuzzing.
       }
     }
   }

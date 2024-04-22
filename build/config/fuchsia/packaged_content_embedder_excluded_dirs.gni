@@ -11,6 +11,6 @@ assert(is_fuchsia)
 # of fuchsia_package().
 FUCHSIA_PACKAGED_CONTENT_EMBEDDER_EXCLUDED_DIRS = [
   # These are mistakenly being shipped in both PAK form and runtime data deps.
-  # TODO(crbug.com/1265660): Remove when DevTools stops leaking its source list.
+  # TODO(crbug.com/40203829): Remove when DevTools stops leaking its source list.
   devtools_root_location,
 ]
