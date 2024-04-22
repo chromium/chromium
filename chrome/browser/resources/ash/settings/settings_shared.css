@@ -317,6 +317,7 @@ h2.first {
   --cr-icon-button-hover-background-color: transparent;
   --cr-icon-button-active-background-color: transparent;
 }
+
 /* For grouping elements with common flex options. */
 .settings-row {
   align-items: center;

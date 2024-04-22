@@ -69,7 +69,7 @@
       <h2 class="hr">$i18n{mouseScrolling}</h2>
     </template>
     <div class="settings-box bottom-divider" id="mouseReverseScrollRow"
-          on-click="onMouseReverseScrollRowClicked_">
+          on-click="onMouseReverseScrollRowClicked_" actionable-row>
       <div class="start settings-box-text">
         <localized-link
             aria-describedby="mouseName"
@@ -92,7 +92,7 @@
     </div>
     <template is="dom-if" if="[[allowScrollSettings_]]" restamp>
       <div class="settings-box bottom-divider" id="mouseControlledScrollingRow"
-            on-click="onMouseControlledScrollingRowClicked_">
+            on-click="onMouseControlledScrollingRowClicked_" actionable-row>
         <div class="start settings-box-text">
           <localized-link
               aria-describedby="mouseName"
