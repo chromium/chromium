@@ -464,6 +464,9 @@ OffTheRecordProfileImpl::GetProfileCloudPolicyManager() {
   return GetOriginalProfile()->GetProfileCloudPolicyManager();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+policy::CloudPolicyManager* OffTheRecordProfileImpl::GetCloudPolicyManager() {
+  return GetOriginalProfile()->GetCloudPolicyManager();
+}
 
 scoped_refptr<network::SharedURLLoaderFactory>
 OffTheRecordProfileImpl::GetURLLoaderFactory() {

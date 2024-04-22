@@ -888,6 +888,20 @@ TestingProfile::GetProfileCloudPolicyManager() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+policy::CloudPolicyManager* TestingProfile::GetCloudPolicyManager() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return GetUserCloudPolicyManagerAsh();
+#else
+  if (user_cloud_policy_manager_) {
+    return GetUserCloudPolicyManager();
+  }
+  if (profile_cloud_policy_manager_) {
+    return GetProfileCloudPolicyManager();
+  }
+  return nullptr;
+#endif
+}
+
 policy::ProfilePolicyConnector* TestingProfile::GetProfilePolicyConnector() {
   // This matches OffTheRecordProfileImpl::GetProfilePolicyConnector()
   // implementation.

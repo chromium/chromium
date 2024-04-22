@@ -56,10 +56,7 @@ ProfileCloudManagementDelegate::GetUploadBrowserPublicKeyUrl() const {
 const enterprise_management::PolicyData*
 ProfileCloudManagementDelegate::GetPolicyData() const {
   policy::CloudPolicyManager* policy_manager =
-      profile_->GetUserCloudPolicyManager();
-  if (!policy_manager) {
-    policy_manager = profile_->GetProfileCloudPolicyManager();
-  }
+      profile_->GetCloudPolicyManager();
   if (policy_manager && policy_manager->core() &&
       policy_manager->core()->store() &&
       policy_manager->core()->store()->has_policy()) {

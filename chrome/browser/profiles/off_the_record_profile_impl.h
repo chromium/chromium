@@ -64,6 +64,7 @@ class OffTheRecordProfileImpl : public Profile {
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
   policy::ProfileCloudPolicyManager* GetProfileCloudPolicyManager() override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  policy::CloudPolicyManager* GetCloudPolicyManager() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   bool IsSameOrParent(Profile* profile) override;
   base::Time GetStartTime() const override;

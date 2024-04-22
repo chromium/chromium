@@ -532,11 +532,7 @@ std::optional<ConnectorsService::DmToken> ConnectorsService::GetProfileDmToken()
     const {
   Profile* profile = Profile::FromBrowserContext(context_);
 
-  policy::CloudPolicyManager* policy_manager =
-      profile->GetUserCloudPolicyManager();
-  if (!policy_manager) {
-    policy_manager = profile->GetProfileCloudPolicyManager();
-  }
+  policy::CloudPolicyManager* policy_manager = profile->GetCloudPolicyManager();
 
   if (!policy_manager || !policy_manager->IsClientRegistered()) {
     return std::nullopt;

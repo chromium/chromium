@@ -81,12 +81,7 @@ ProfileReportGeneratorDelegateBase::GetCloudPolicyManager(
 
   // Profile report will include user cloud policy information by default.
   // Or ProfileCloudPolicyManager when it's not managed by gaia account.
-  auto* cloud_policy_manager = profile_->GetUserCloudPolicyManager();
-  if (cloud_policy_manager) {
-    return cloud_policy_manager;
-  }
-
-  return profile_->GetProfileCloudPolicyManager();
+  return profile_->GetCloudPolicyManager();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

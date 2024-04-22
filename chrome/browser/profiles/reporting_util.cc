@@ -57,18 +57,15 @@ const enterprise_management::PolicyData* GetPolicyData(Profile* profile) {
   }
 #endif
 
-  auto* manager =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      profile->GetUserCloudPolicyManagerAsh();
-#else
-      profile->GetUserCloudPolicyManager();
-#endif
-  if (!manager)
+  auto* manager = profile->GetCloudPolicyManager();
+  if (!manager) {
     return nullptr;
+  }
 
   policy::CloudPolicyStore* store = manager->core()->store();
-  if (!store || !store->has_policy())
+  if (!store || !store->has_policy()) {
     return nullptr;
+  }
 
   return store->policy();
 }

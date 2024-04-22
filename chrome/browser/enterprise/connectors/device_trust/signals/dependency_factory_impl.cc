@@ -20,12 +20,7 @@ DependencyFactoryImpl::~DependencyFactoryImpl() = default;
 
 policy::CloudPolicyManager* DependencyFactoryImpl::GetUserCloudPolicyManager()
     const {
-  policy::CloudPolicyManager* user_policy_manager =
-      profile_->GetUserCloudPolicyManager();
-  if (!user_policy_manager) {
-    user_policy_manager = profile_->GetProfileCloudPolicyManager();
-  }
-  return user_policy_manager;
+  return profile_->GetCloudPolicyManager();
 }
 
 }  // namespace enterprise_connectors

@@ -57,10 +57,7 @@ bool IsProfileManaged(Profile* profile) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 policy::CloudPolicyStore* GetUserCloudPolicyStore(Profile* profile) {
   policy::CloudPolicyManager* user_policy_manager =
-      profile->GetUserCloudPolicyManager();
-  if (!user_policy_manager) {
-    user_policy_manager = profile->GetProfileCloudPolicyManager();
-  }
+      profile->GetCloudPolicyManager();
   if (user_policy_manager) {
     auto* core = user_policy_manager->core();
     if (core) {

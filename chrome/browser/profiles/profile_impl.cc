@@ -1273,6 +1273,25 @@ policy::ProfileCloudPolicyManager* ProfileImpl::GetProfileCloudPolicyManager() {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+policy::CloudPolicyManager* ProfileImpl::GetCloudPolicyManager() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return GetUserCloudPolicyManagerAsh();
+#else
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (IsMainProfile()) {
+    return nullptr;
+  }
+#endif
+  if (user_cloud_policy_manager_) {
+    return GetUserCloudPolicyManager();
+  }
+  if (profile_cloud_policy_manager_) {
+    return GetProfileCloudPolicyManager();
+  }
+  return nullptr;
+#endif // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 policy::ConfigurationPolicyProvider*
 ProfileImpl::configuration_policy_provider() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)

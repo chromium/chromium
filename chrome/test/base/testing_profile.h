@@ -390,6 +390,7 @@ class TestingProfile : public Profile {
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
   policy::ProfileCloudPolicyManager* GetProfileCloudPolicyManager() override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  policy::CloudPolicyManager* GetCloudPolicyManager() override;
   policy::ProfilePolicyConnector* GetProfilePolicyConnector() override;
   const policy::ProfilePolicyConnector* GetProfilePolicyConnector()
       const override;
