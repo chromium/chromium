@@ -11,7 +11,7 @@ suite('voice and language utils', () => {
     // Success codes
     assertEquals(
         (mojoVoicePackStatusToVoicePackStatusEnum('kNotInstalled')),
-        VoicePackStatus.NOT_INSTALLED);
+        VoicePackStatus.EXISTS);
     assertEquals(
         (mojoVoicePackStatusToVoicePackStatusEnum('kInstalled')),
         VoicePackStatus.INSTALLED);
@@ -22,22 +22,22 @@ suite('voice and language utils', () => {
     // Error codes
     assertEquals(
         (mojoVoicePackStatusToVoicePackStatusEnum('kUnknown')),
-        VoicePackStatus.ERROR);
+        VoicePackStatus.INSTALL_ERROR);
     assertEquals(
         (mojoVoicePackStatusToVoicePackStatusEnum('kOther')),
-        VoicePackStatus.ERROR);
+        VoicePackStatus.INSTALL_ERROR);
     assertEquals(
         (mojoVoicePackStatusToVoicePackStatusEnum('kWrongId')),
-        VoicePackStatus.ERROR);
+        VoicePackStatus.INSTALL_ERROR);
     assertEquals(
         (mojoVoicePackStatusToVoicePackStatusEnum('kNeedReboot')),
-        VoicePackStatus.ERROR);
+        VoicePackStatus.INSTALL_ERROR);
     assertEquals(
         (mojoVoicePackStatusToVoicePackStatusEnum('kAllocation')),
-        VoicePackStatus.ERROR);
+        VoicePackStatus.INSTALL_ERROR);
     assertEquals(
         (mojoVoicePackStatusToVoicePackStatusEnum('kUnsupportedPlatform')),
-        VoicePackStatus.ERROR);
+        VoicePackStatus.INSTALL_ERROR);
   });
 
   test('convertLangOrLocaleForVoicePackManager', () => {

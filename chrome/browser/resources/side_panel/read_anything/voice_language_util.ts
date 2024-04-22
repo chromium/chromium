@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 export enum VoicePackStatus {
-  NOT_INSTALLED,
-  INSTALLING,
-  INSTALLED,
-  ERROR,
+  NONE, //  no language pack available
+  EXISTS, // available, and not installed
+  INSTALLING, // we've requested a language pack installation
+  DOWNLOADED, // language pack downloaded, waiting for update to voices
+  INSTALLED, //  we have natural voices for this language
+  REMOVED_BY_USER, // user removed this voice pack outside of reading mode
+  INSTALL_ERROR,
 }
 
 export function createInitialListOfEnabledLanguages(
@@ -78,7 +81,7 @@ export function convertLangToAnAvailableLangIfPresent(
 export function mojoVoicePackStatusToVoicePackStatusEnum(
     mojoPackStatus: string) {
   if (mojoPackStatus === 'kNotInstalled') {
-    return VoicePackStatus.NOT_INSTALLED;
+    return VoicePackStatus.EXISTS;
   } else if (mojoPackStatus === 'kInstalling') {
     return VoicePackStatus.INSTALLING;
   } else if (mojoPackStatus === 'kInstalled') {
@@ -86,7 +89,7 @@ export function mojoVoicePackStatusToVoicePackStatusEnum(
   }
   // The success statuses were not sent so return an Error
   // TODO (b/331795122) Handle install errors on the UI
-  return VoicePackStatus.ERROR;
+  return VoicePackStatus.INSTALL_ERROR;
 }
 
 // The ChromeOS VoicePackManager labels some voices by locale, and some by

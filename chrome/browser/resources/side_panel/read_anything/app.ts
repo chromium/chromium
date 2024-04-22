@@ -764,7 +764,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       return;
     }
     const voicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
-    if (voicePackStatus === VoicePackStatus.NOT_INSTALLED &&
+    if (voicePackStatus === VoicePackStatus.EXISTS &&
         this.languagesForVoiceDownloads.has(lang)) {
       chrome.readingMode.sendInstallVoicePackRequest(lang);
     }
