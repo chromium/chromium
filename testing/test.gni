@@ -314,9 +314,6 @@ template("mixed_test") {
           ":" + _fuzzer_target_name,
         ]
         deps = [
-          # Depend on fuzzing_engine so that our recipes know to build all
-          # these wrapper script targets.
-          "//testing/libfuzzer:fuzzing_engine",
           "//testing/libfuzzer:individual_fuzztest_wrapper",
           ":" + _fuzztest_generate_fuzzer + "_constants",
         ]

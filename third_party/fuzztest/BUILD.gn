@@ -52,6 +52,7 @@ config("fuzztest_internal_config") {
 
 if (use_centipede) {
   source_set("centipede_common") {
+    testonly = true
     sources = [
       "src/centipede/binary_info.cc",
       "src/centipede/binary_info.h",
@@ -92,6 +93,7 @@ if (use_centipede) {
   }
 
   source_set("centipede_runner_no_main") {
+    testonly = true
     sources = [
       "src/centipede/runner.cc",
       "src/centipede/runner.h",
@@ -115,6 +117,10 @@ if (use_centipede) {
     configs -= fuzztest_remove_configs
     configs += fuzztest_add_configs
 
+    # Ensure that the centipede driver executable is also built
+    # whenever we build any centipede-based fuzzer
+    data_deps = [ ":centipede" ]
+
     # sancov symbols need to be exported for centipede to work correctly with
     # multi-dso.
     configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
@@ -122,6 +128,7 @@ if (use_centipede) {
   }
 
   source_set("centipede_runner_main") {
+    testonly = true
     deps = [
       ":centipede_runner_no_main",
       "//third_party/abseil-cpp:absl",
@@ -175,14 +182,6 @@ if (use_centipede) {
       "src/centipede/workdir.cc",
       "src/centipede/workdir.h",
     ]
-
-    if (build_with_chromium) {
-      deps += [
-        # Depend on fuzzing_engine so that we are automatically built in builds
-        # destined for ClusterFuzz.
-        "//testing/libfuzzer:fuzzing_engine",
-      ]
-    }
   }
 
   # The centipede out-of-process runner executable.
@@ -287,14 +286,6 @@ source_set("fuzztest_internal") {
     "//third_party/abseil-cpp:absl_full",
   ]
 
-  if (build_with_chromium) {
-    deps += [
-      # Depends transitively on fuzzing_engine so that we are automatically
-      # built in builds destined for ClusterFuzz.
-      "//testing/libfuzzer:fuzzing_engine",
-    ]
-  }
-
   public_deps = [
     "//third_party/abseil-cpp:absl",
 
@@ -324,6 +315,12 @@ source_set("fuzztest_internal") {
 #  centipede --binary=./mytest  # Allows the binary to be run using centipede
 #                               # out of process execution environment.
 #                               # Requires use_centipede gn argument.
+# Nothing in this target depends upon //testing/libfuzzer:is_a_fuzz_target,
+# so dependent binaries won't directly be built by the fuzzing build job.
+# However, any uses of the test("...") template which declare that they
+# have fuzztests will cause wrapper executables to be built (because they
+# will depend upon :is_a_fuzz_target). Such executables will have a data_dep
+# on the underlying fuzztest executable, so it will get built.
 source_set("fuzztest") {
   sources = [
     "src/fuzztest/init_fuzztest.cc",
@@ -343,7 +340,7 @@ source_set("fuzztest") {
     ]
   } else if (use_fuzzing_engine && fuzzing_engine_supports_custom_main) {
     # Typically, libfuzzer.
-    deps += [ "//testing/libfuzzer:fuzzing_engine_no_main" ]
+    deps += [ "//testing/libfuzzer:fuzzing_engine_no_main_core" ]
   }
   public_deps = [ ":fuzztest_internal" ]
   configs -= fuzztest_remove_configs
