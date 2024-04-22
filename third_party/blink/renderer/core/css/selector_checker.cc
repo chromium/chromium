@@ -590,12 +590,7 @@ static bool AttributeValueMatches(const Attribute& attribute_item,
                                   CSSSelector::MatchType match,
                                   const AtomicString& selector_value,
                                   TextCaseSensitivity case_sensitivity) {
-  // TODO(esprehn): How do we get here with a null value?
   const AtomicString& value = attribute_item.Value();
-  if (value.IsNull()) {
-    return false;
-  }
-
   switch (match) {
     case CSSSelector::kAttributeExact:
       if (case_sensitivity == kTextCaseSensitive) {
