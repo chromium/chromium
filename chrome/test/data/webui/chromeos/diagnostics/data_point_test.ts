@@ -6,41 +6,31 @@ import 'chrome://diagnostics/data_point.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {DataPointElement} from 'chrome://diagnostics/data_point.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-
-import {isVisible} from '../test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
 suite('dataPointTestSuite', function() {
-  /** @type {?DataPointElement} */
-  let dataPointElement = null;
+  let dataPointElement: DataPointElement|null = null;
 
   setup(() => {
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
   teardown(() => {
-    if (dataPointElement) {
-      dataPointElement.remove();
-    }
+    dataPointElement?.remove();
     dataPointElement = null;
   });
 
-  /**
-   * @param {string} header
-   * @param {string} value
-   * @param {string=} tooltipText
-   * @param {boolean=} warningState
-   */
   function initializeDataPoint(
-      header, value, tooltipText = '', warningState = false) {
+      header: string, value: string, tooltipText: string = '',
+      warningState: boolean = false): Promise<void> {
     assertFalse(!!dataPointElement);
 
     // Add the data point to the DOM.
-    dataPointElement =
-        /** @type {!DataPointElement} */ (document.createElement('data-point'));
+    dataPointElement = document.createElement('data-point');
     assertTrue(!!dataPointElement);
     dataPointElement.header = header;
     dataPointElement.value = value;
@@ -57,14 +47,14 @@ suite('dataPointTestSuite', function() {
     const tooltipText = 'Test tooltip';
     return initializeDataPoint(header, value, tooltipText).then(() => {
       dx_utils.assertElementContainsText(
-          dataPointElement.shadowRoot.querySelector('.header > span'), header);
+          dataPointElement!.shadowRoot!.querySelector('.header > span'),
+          header);
       dx_utils.assertElementContainsText(
-          dataPointElement.shadowRoot.querySelector('.value'), value);
-      assertTrue(isVisible(
-          /**@type {!HTMLElement} */ (
-              dataPointElement.shadowRoot.querySelector('#infoIcon'))));
+          dataPointElement!.shadowRoot!.querySelector('.value'), value);
+      assertTrue(
+          isVisible(dataPointElement!.shadowRoot!.querySelector('#infoIcon')));
       dx_utils.assertElementContainsText(
-          dataPointElement.shadowRoot.querySelector('paper-tooltip'),
+          dataPointElement!.shadowRoot!.querySelector('paper-tooltip'),
           tooltipText);
     });
   });
@@ -74,9 +64,8 @@ suite('dataPointTestSuite', function() {
     const value = 'Test value';
     return initializeDataPoint(header, value).then(() => {
       // Icon should be hidden when tooltip text is not provided.
-      assertFalse(isVisible(
-          /**@type {!HTMLElement} */ (
-              dataPointElement.shadowRoot.querySelector('#infoIcon'))));
+      assertFalse(
+          isVisible(dataPointElement!.shadowRoot!.querySelector('#infoIcon')));
     });
   });
 
@@ -85,7 +74,7 @@ suite('dataPointTestSuite', function() {
     const value = 'Test value';
     return initializeDataPoint(header, value, '', true).then(() => {
       dx_utils.assertElementContainsText(
-          dataPointElement.shadowRoot.querySelector('.text-red'), value);
+          dataPointElement!.shadowRoot!.querySelector('.text-red'), value);
     });
   });
 });

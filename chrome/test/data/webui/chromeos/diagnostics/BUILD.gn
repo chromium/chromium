@@ -19,7 +19,7 @@ build_webui_tests("build_webui_tests") {
     "cellular_info_test.ts",
     "connectivity_card_test.ts",
     "cpu_card_test.ts",
-    "data_point_test.js",
+    "data_point_test.ts",
     "diagnostics_app_input_hiding_test.js",
     "diagnostics_app_test.js",
     "diagnostics_network_icon_test.js",
