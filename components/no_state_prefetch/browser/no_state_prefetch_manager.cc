@@ -283,17 +283,6 @@ NoStatePrefetchManager::AddSameOriginSpeculation(
       initiator_origin, gfx::Rect(size), session_storage_namespace);
 }
 
-std::unique_ptr<NoStatePrefetchHandle>
-NoStatePrefetchManager::StartPrefetchingFromExternalRequest(
-    const GURL& url,
-    const content::Referrer& referrer,
-    SessionStorageNamespace* session_storage_namespace,
-    const gfx::Rect& bounds) {
-  return StartPrefetchingWithPreconnectFallback(ORIGIN_EXTERNAL_REQUEST, url,
-                                                referrer, std::nullopt, bounds,
-                                                session_storage_namespace);
-}
-
 void NoStatePrefetchManager::CancelAllPrerenders() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   while (!active_prefetches_.empty()) {

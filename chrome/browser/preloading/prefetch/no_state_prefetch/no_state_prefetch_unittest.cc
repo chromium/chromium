@@ -959,34 +959,6 @@ TEST_F(PrerenderFallbackToPreconnectEnabledTest,
   EXPECT_NE(it, active_hints.end());
 }
 
-// Test that when prefetch fails and the kPrerenderFallbackToPreconnect
-// experiment is enabled, a prefetch initiated by an external request actually
-// results in preconnect.
-TEST_F(PrerenderFallbackToPreconnectEnabledTest,
-       ExternalRequest_AllowedWhenNotDisabled_LowMemory_FeatureEnabled) {
-  const GURL kURL(GURL("http://www.example.com"));
-
-  predictors::LoadingPredictorConfig config;
-  PopulateTestConfig(&config);
-
-  auto* loading_predictor =
-      predictors::LoadingPredictorFactory::GetForProfile(profile());
-  loading_predictor->StartInitialization();
-  content::RunAllTasksUntilIdle();
-
-  // Prefetch should be disabled on low memory devices.
-  no_state_prefetch_manager()->SetIsLowEndDevice(true);
-  EXPECT_FALSE(no_state_prefetch_manager()->StartPrefetchingFromExternalRequest(
-      kURL, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
-
-  // Verify that the prefetch request falls back to a preconnect request.
-  EXPECT_EQ(1u, loading_predictor->GetActiveHintsSizeForTesting());
-
-  auto& active_hints = loading_predictor->active_hints_for_testing();
-  auto it = active_hints.find(kURL);
-  EXPECT_NE(it, active_hints.end());
-}
-
 TEST_F(NoStatePrefetchTest, LinkRelStillAllowedWhenDisabled) {
   DisablePrerender();
   GURL url("http://www.google.com/");
@@ -1016,104 +988,6 @@ TEST_F(NoStatePrefetchTest, LinkRelAllowedOnCellular) {
           ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN, FINAL_STATUS_USED);
   EXPECT_TRUE(AddSimpleLinkTrigger(url));
   EXPECT_TRUE(no_state_prefetch_contents->prefetching_has_started());
-  std::unique_ptr<NoStatePrefetchContents> entry =
-      no_state_prefetch_manager()->FindAndUseEntry(url);
-  ASSERT_EQ(no_state_prefetch_contents, entry.get());
-}
-
-// Verify that the external prefetch requests are not allowed on cellular
-// connection when kPredictivePrefetchingAllowedOnAllConnectionTypes feature is
-// not enabled.
-TEST_F(NoStatePrefetchTest, PrerenderNotAllowedOnCellularWithExternalOrigin) {
-  EnablePrerender();
-  std::unique_ptr<net::NetworkChangeNotifier> mock(
-      new MockNetworkChangeNotifier4GMetered);
-  EXPECT_TRUE(net::NetworkChangeNotifier::IsConnectionCellular(
-      net::NetworkChangeNotifier::GetConnectionType()));
-  EXPECT_EQ(net::NetworkChangeNotifier::CONNECTION_COST_METERED,
-            net::NetworkChangeNotifier::GetConnectionCost());
-  GURL url("http://www.google.com/");
-  FakeNoStatePrefetchContents* no_state_prefetch_contents =
-      no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          url, std::nullopt, ORIGIN_EXTERNAL_REQUEST,
-          FINAL_STATUS_PROFILE_DESTROYED);
-  std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
-      no_state_prefetch_manager()->StartPrefetchingFromExternalRequest(
-          url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
-  EXPECT_TRUE(no_state_prefetch_handle);
-  EXPECT_TRUE(no_state_prefetch_contents->prefetching_has_started());
-  histogram_tester().ExpectTotalCount("Prerender.FinalStatus", 0);
-}
-
-// Verify that the external prefetch requests are allowed on unmetered cellular
-// connection when kPredictivePrefetchingAllowedOnAllConnectionTypes feature is
-// not enabled.
-TEST_F(NoStatePrefetchTest,
-       PrerenderAllowedOnUnmeteredCellularWithExternalOrigin) {
-  EnablePrerender();
-  std::unique_ptr<net::NetworkChangeNotifier> mock(
-      new MockNetworkChangeNotifier4GUnmetered);
-  EXPECT_TRUE(net::NetworkChangeNotifier::IsConnectionCellular(
-      net::NetworkChangeNotifier::GetConnectionType()));
-  EXPECT_EQ(net::NetworkChangeNotifier::CONNECTION_COST_UNMETERED,
-            net::NetworkChangeNotifier::GetConnectionCost());
-  GURL url("http://www.google.com/");
-  FakeNoStatePrefetchContents* no_state_prefetch_contents =
-      no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          url, std::nullopt, ORIGIN_EXTERNAL_REQUEST,
-          FINAL_STATUS_PROFILE_DESTROYED);
-  std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
-      no_state_prefetch_manager()->StartPrefetchingFromExternalRequest(
-          url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
-  EXPECT_TRUE(no_state_prefetch_handle);
-  EXPECT_TRUE(no_state_prefetch_contents->prefetching_has_started());
-  histogram_tester().ExpectTotalCount("Prerender.FinalStatus", 0);
-}
-
-// Verify that the external prefetch requests are not allowed on metered wifi
-// connection when kPredictivePrefetchingAllowedOnAllConnectionTypes feature is
-// not enabled.
-TEST_F(NoStatePrefetchTest,
-       PrerenderNotAllowedOnMeteredWifiWithExternalOrigin) {
-  EnablePrerender();
-  std::unique_ptr<net::NetworkChangeNotifier> mock(
-      new MockNetworkChangeNotifierWifiMetered);
-  EXPECT_FALSE(net::NetworkChangeNotifier::IsConnectionCellular(
-      net::NetworkChangeNotifier::GetConnectionType()));
-  EXPECT_EQ(net::NetworkChangeNotifier::CONNECTION_COST_METERED,
-            net::NetworkChangeNotifier::GetConnectionCost());
-  GURL url("http://www.google.com/");
-  FakeNoStatePrefetchContents* no_state_prefetch_contents =
-      no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          url, std::nullopt, ORIGIN_EXTERNAL_REQUEST,
-          FINAL_STATUS_PROFILE_DESTROYED);
-  std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
-      no_state_prefetch_manager()->StartPrefetchingFromExternalRequest(
-          url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
-  EXPECT_TRUE(no_state_prefetch_handle);
-  EXPECT_TRUE(no_state_prefetch_contents->prefetching_has_started());
-  histogram_tester().ExpectTotalCount("Prerender.FinalStatus", 0);
-}
-
-// Verify that the external prerender requests are allowed on cellular.
-TEST_F(
-    NoStatePrefetchTest,
-    PrerenderAllowedOnCellularWithExternalOrigin_PredictivePrefetchingAllowedOnAllConnectionTypes) {
-  EnablePrerender();
-  std::unique_ptr<net::NetworkChangeNotifier> mock(
-      new MockNetworkChangeNotifier4GMetered);
-  EXPECT_TRUE(net::NetworkChangeNotifier::IsConnectionCellular(
-      net::NetworkChangeNotifier::GetConnectionType()));
-  GURL url("http://www.google.com/");
-  FakeNoStatePrefetchContents* no_state_prefetch_contents =
-      no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
-          url, std::nullopt, ORIGIN_EXTERNAL_REQUEST, FINAL_STATUS_USED);
-  std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
-      no_state_prefetch_manager()->StartPrefetchingFromExternalRequest(
-          url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
-  EXPECT_TRUE(no_state_prefetch_handle);
-  EXPECT_TRUE(no_state_prefetch_contents->prefetching_has_started());
-  EXPECT_EQ(no_state_prefetch_contents, no_state_prefetch_handle->contents());
   std::unique_ptr<NoStatePrefetchContents> entry =
       no_state_prefetch_manager()->FindAndUseEntry(url);
   ASSERT_EQ(no_state_prefetch_contents, entry.get());

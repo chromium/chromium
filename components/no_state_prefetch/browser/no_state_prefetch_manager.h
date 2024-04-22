@@ -133,12 +133,6 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
       const gfx::Size& size,
       const url::Origin& initiator_origin);
 
-  std::unique_ptr<NoStatePrefetchHandle> StartPrefetchingFromExternalRequest(
-      const GURL& url,
-      const content::Referrer& referrer,
-      content::SessionStorageNamespace* session_storage_namespace,
-      const gfx::Rect& bounds);
-
   // Cancels all active prerenders.
   void CancelAllPrerenders();
 

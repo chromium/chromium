@@ -34,8 +34,6 @@ std::string PrerenderHistograms::GetHistogramPrefix(Origin origin) {
       return "websame";
     case ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN:
       return "webcross";
-    case ORIGIN_EXTERNAL_REQUEST:
-      return "externalrequest";
     case ORIGIN_LINK_REL_NEXT:
       return "webnext";
     case ORIGIN_GWS_PRERENDER:

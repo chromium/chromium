@@ -2894,7 +2894,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes name="PrerenderSource" separator="_" ordering="prefix">
   <suffix name="" label="All prerenders."/>
-  <suffix name="externalrequest" label="Externally triggered prerender."/>
   <suffix name="gws" label="GWS triggered prerender."/>
   <suffix name="navigationpredictor"
       label="Triggered by the NavigationPredictor."/>

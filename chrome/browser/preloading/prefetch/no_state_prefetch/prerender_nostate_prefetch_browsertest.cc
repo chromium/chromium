@@ -1471,9 +1471,9 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, MAYBE_RendererCrash) {
           FINAL_STATUS_RENDERER_CRASHED);
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
-      GetNoStatePrefetchManager()->StartPrefetchingFromExternalRequest(
-          GURL(blink::kChromeUICrashURL), content::Referrer(),
-          storage_namespace, gfx::Rect(kSize)));
+      GetNoStatePrefetchManager()->StartPrefetchingFromOmnibox(
+          GURL(blink::kChromeUICrashURL), storage_namespace, kSize,
+          /*attempt=*/nullptr));
   ASSERT_EQ(no_state_prefetch_handle->contents(), test_prerender->contents());
   test_prerender->WaitForStop();
 }
