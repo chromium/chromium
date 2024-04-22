@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/commerce/product_specifications_button.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
@@ -27,7 +26,6 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/commerce/core/commerce_feature_list.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard_constants.h"
@@ -107,18 +105,6 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
                                       views::LayoutAlignment::kCenter);
   }
 
-  // Add and configure the ProductSpecificationsButton.
-  std::unique_ptr<ProductSpecificationsButton> product_specifications_button;
-  if (tab_search_container &&
-      base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
-    product_specifications_button =
-        std::make_unique<ProductSpecificationsButton>(
-            tab_strip_->controller(), render_tab_search_before_tab_strip_,
-            this);
-    product_specifications_button->SetProperty(views::kCrossAxisAlignmentKey,
-                                               views::LayoutAlignment::kCenter);
-  }
-
   if (tab_search_container && render_tab_search_before_tab_strip_) {
     tab_search_container->SetPaintToLayer();
     tab_search_container->layer()->SetFillsBoundsOpaquely(false);
@@ -128,16 +114,6 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
     // Inset between the tabsearch and tabstrip should be reduced to account for
     // extra spacing.
     tab_search_container_->SetProperty(views::kViewIgnoredByLayoutKey, true);
-
-    if (product_specifications_button) {
-      product_specifications_button->SetPaintToLayer();
-      product_specifications_button->layer()->SetFillsBoundsOpaquely(false);
-
-      product_specifications_button_ =
-          AddChildView(std::move(product_specifications_button));
-      product_specifications_button_->SetProperty(
-          views::kViewIgnoredByLayoutKey, true);
-    }
   }
 
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
@@ -246,10 +222,6 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
   if (browser && tab_search_container &&
       !WindowFrameUtil::IsWindowsTabSearchCaptionButtonEnabled(browser) &&
       !render_tab_search_before_tab_strip_) {
-    if (product_specifications_button) {
-      product_specifications_button_ =
-          AddChildView(std::move(product_specifications_button));
-    }
     tab_search_container_ = AddChildView(std::move(tab_search_container));
     if (features::IsChromeRefresh2023()) {
       tab_search_container_->SetProperty(
@@ -287,13 +259,6 @@ bool TabStripRegionView::IsRectInWindowCaption(const gfx::Rect& rect) {
           get_target_rect(tab_search_container_))) {
     return !tab_search_container_->HitTestRect(
         get_target_rect(tab_search_container_));
-  }
-
-  if (render_tab_search_before_tab_strip_ && product_specifications_button_ &&
-      product_specifications_button_->GetLocalBounds().Intersects(
-          get_target_rect(product_specifications_button_))) {
-    return !product_specifications_button_->HitTestRect(
-        get_target_rect(product_specifications_button_));
   }
 
   // Perform a hit test against the |tab_strip_container_| to ensure that the
@@ -356,10 +321,6 @@ views::View::Views TabStripRegionView::GetChildrenInZOrder() {
     children.emplace_back(tab_search_container_.get());
   }
 
-  if (product_specifications_button_) {
-    children.emplace_back(product_specifications_button_.get());
-  }
-
   if (reserved_grab_handle_space_) {
     children.emplace_back(reserved_grab_handle_space_.get());
   }
@@ -380,19 +341,20 @@ void TabStripRegionView::Layout(PassKey) {
   LayoutSuperclass<views::AccessiblePaneView>(this);
 
   if (tab_search_container_before_tab_strip) {
-    // Manually adjust x-axis position of the UI components. Currently the
-    // components are `tab_search_container_` and
-    // `product_specifications_button` if it's available.
-    if (product_specifications_button_) {
-      AdjustViewBoundsRect(product_specifications_button_, 0);
-    }
+    const gfx::Size tab_search_container_size =
+        tab_search_container_->GetPreferredSize();
 
-    int product_specifications_button_width =
-        product_specifications_button_
-            ? product_specifications_button_->GetPreferredSize().width()
-            : 0;
-    AdjustViewBoundsRect(tab_search_container_,
-                         product_specifications_button_width);
+    // The TabSearchButton is calculated as controls padding away from the first
+    // tab (not including bottom corner radius)
+    const int x = tab_strip_container_->x() +
+                  TabStyle::Get()->GetBottomCornerRadius() -
+                  GetLayoutConstant(TAB_STRIP_PADDING) -
+                  tab_search_container_size.width();
+
+    const gfx::Rect tab_search_new_bounds =
+        gfx::Rect(gfx::Point(x, 0), tab_search_container_size);
+
+    tab_search_container_->SetBoundsRect(tab_search_new_bounds);
   }
 
   if (render_new_tab_button_over_tab_strip_ && new_tab_button_) {
@@ -549,22 +511,15 @@ void TabStripRegionView::UpdateTabStripMargin() {
     // The `tab_search_container_` is being laid out manually.
     tab_search_container_->GetProperty(views::kViewIgnoredByLayoutKey);
 
-    // When tab search container shows before tab strip, add a margin to the
-    // tab_strip_container_ to leave the correct amount of space for UI
-    // components showing before tab strip. Currently the components are
-    // `tab_search_container_` and `product_specifications_button` if it's
-    // available.
-    int product_specifications_button_width =
-        product_specifications_button_
-            ? product_specifications_button_->GetPreferredSize().width()
-            : 0;
-    tab_strip_left_margin = tab_search_container_->GetPreferredSize().width() +
-                            product_specifications_button_width;
+    // Add a margin to the tab_strip_container_ to leave the correct amount of
+    // space for the `tab_search_container_`.
+    const gfx::Size tab_search_container_size =
+        tab_search_container_->GetPreferredSize();
 
     // The TabSearchContainer should be 6 pixels from the left and the tabstrip
     // should have 6 px of padding between it and the tab_search button (not
     // including the corner radius).
-    tab_strip_left_margin = tab_strip_left_margin.value() +
+    tab_strip_left_margin = tab_search_container_size.width() +
                             GetLayoutConstant(TAB_STRIP_PADDING) +
                             GetLayoutConstant(TAB_STRIP_PADDING) -
                             TabStyle::Get()->GetBottomCornerRadius();
@@ -578,15 +533,6 @@ void TabStripRegionView::UpdateTabStripMargin() {
         gfx::Insets::TLBR(0, tab_strip_left_margin.value_or(0), 0,
                           tab_strip_right_margin.value_or(0)));
   }
-}
-
-void TabStripRegionView::AdjustViewBoundsRect(View* view, int offset) {
-  const gfx::Size view_size = view->GetPreferredSize();
-  const int x =
-      tab_strip_container_->x() + TabStyle::Get()->GetBottomCornerRadius() -
-      GetLayoutConstant(TAB_STRIP_PADDING) - view_size.width() - offset;
-  const gfx::Rect new_bounds = gfx::Rect(gfx::Point(x, 0), view_size);
-  view->SetBoundsRect(new_bounds);
 }
 
 BEGIN_METADATA(TabStripRegionView)
