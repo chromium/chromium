@@ -62,20 +62,6 @@ class DataPipeProducerHandle : public Handle {
     return result;
   }
 
-  // DEPRECATED: Please use the `size_t` overload instead.
-  // TODO(https://crbug.com/1201109): Remove once all the callers have been
-  // migrated over to the `size_t` overload.
-  template <std::same_as<uint32_t> UINT32_T>
-    requires(sizeof(size_t) != sizeof(uint32_t))
-  MojoResult WriteData(const void* elements,
-                       UINT32_T* num_bytes,
-                       MojoWriteDataFlags flags) const {
-    MojoWriteDataOptions options;
-    options.struct_size = sizeof(options);
-    options.flags = flags;
-    return MojoWriteData(value(), elements, num_bytes, &options);
-  }
-
   // Begins a two-phase write to a data pipe. See |MojoBeginWriteData()| for
   // complete documentation.
   MojoResult BeginWriteData(void** buffer,
@@ -99,20 +85,6 @@ class DataPipeProducerHandle : public Handle {
         MojoBeginWriteData(value(), &options, buffer, &buffer_num_bytes_u32);
     *buffer_num_bytes = size_t{buffer_num_bytes_u32};
     return result;
-  }
-
-  // DEPRECATED: Please use the `size_t` overload instead.
-  // TODO(https://crbug.com/1201109): Remove once all the callers have been
-  // migrated over to the `size_t` overload.
-  template <std::same_as<uint32_t> UINT32_T>
-    requires(sizeof(size_t) != sizeof(uint32_t))
-  MojoResult BeginWriteData(void** buffer,
-                            UINT32_T* buffer_num_bytes,
-                            MojoBeginWriteDataFlags flags) const {
-    MojoBeginWriteDataOptions options;
-    options.struct_size = sizeof(options);
-    options.flags = flags;
-    return MojoBeginWriteData(value(), &options, buffer, buffer_num_bytes);
   }
 
   // Completes a two-phase write to a data pipe. See |MojoEndWriteData()| for
@@ -171,21 +143,6 @@ class DataPipeConsumerHandle : public Handle {
     return result;
   }
 
-  // DEPRECATED: Please use the `size_t` overload instead.
-  // TODO(https://crbug.com/1201109): Remove once all the callers have been
-  // migrated over to the `size_t` overload.
-  template <typename UINT32_T>
-    requires(std::same_as<uint32_t, UINT32_T> &&
-             sizeof(size_t) != sizeof(uint32_t))
-  MojoResult ReadData(void* elements,
-                      UINT32_T* num_bytes,
-                      MojoBeginReadDataFlags flags) const {
-    MojoReadDataOptions options;
-    options.struct_size = sizeof(options);
-    options.flags = flags;
-    return MojoReadData(value(), &options, elements, num_bytes);
-  }
-
   // Begins a two-phase read from a data pipe. See |MojoBeginReadData()| for
   // complete documentation.
   MojoResult BeginReadData(const void** buffer,
@@ -204,21 +161,6 @@ class DataPipeConsumerHandle : public Handle {
         MojoBeginReadData(value(), &options, buffer, &buffer_num_bytes_u32);
     *buffer_num_bytes = size_t{buffer_num_bytes_u32};
     return result;
-  }
-
-  // DEPRECATED: Please use the `size_t` overload instead.
-  // TODO(https://crbug.com/1201109): Remove once all the callers have been
-  // migrated over to the `size_t` overload.
-  template <typename UINT32_T>
-    requires(std::same_as<uint32_t, UINT32_T> &&
-             sizeof(size_t) != sizeof(uint32_t))
-  MojoResult BeginReadData(const void** buffer,
-                           UINT32_T* buffer_num_bytes,
-                           MojoBeginReadDataFlags flags) const {
-    MojoBeginReadDataOptions options;
-    options.struct_size = sizeof(options);
-    options.flags = flags;
-    return MojoBeginReadData(value(), &options, buffer, buffer_num_bytes);
   }
 
   // Completes a two-phase read from a data pipe. See |MojoEndReadData()| for
