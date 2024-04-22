@@ -261,6 +261,7 @@ component("cpp") {
     "power_utils.h",
     "presentation_time_recorder.cc",
     "presentation_time_recorder.h",
+    "print_preview_delegate.h",
     "privacy_hub_delegate.h",
     "privacy_screen_dlp_helper.cc",
     "privacy_screen_dlp_helper.h",
