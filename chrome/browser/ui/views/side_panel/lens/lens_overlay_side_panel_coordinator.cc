@@ -45,6 +45,29 @@ LensOverlaySidePanelCoordinator::~LensOverlaySidePanelCoordinator() {
   DeregisterEntry();
 }
 
+// static
+actions::ActionItem::InvokeActionCallback
+LensOverlaySidePanelCoordinator::CreateSidePanelActionCallback(
+    Browser* browser) {
+  return base::BindRepeating(
+      [](Browser* browser, actions::ActionItem* item,
+         actions::ActionInvocationContext context) {
+        LensOverlayController* controller =
+            LensOverlayController::GetController(
+                browser->tab_strip_model()->GetActiveWebContents());
+        DCHECK(controller);
+
+        // Toggle the Lens overlay. There's no need to show or hide the side
+        // panel as the overlay controller will handle that.
+        if (controller->IsOverlayShowing()) {
+          controller->CloseUI();
+        } else {
+          controller->ShowUI();
+        }
+      },
+      browser);
+}
+
 void LensOverlaySidePanelCoordinator::RegisterEntryAndShow() {
   RegisterEntry();
   side_panel_ui_->Show(SidePanelEntry::Id::kLensOverlayResults);

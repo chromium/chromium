@@ -38,6 +38,10 @@ class LensOverlaySidePanelCoordinator : public SidePanelEntryObserver {
       const LensOverlaySidePanelCoordinator&) = delete;
   ~LensOverlaySidePanelCoordinator() override;
 
+  // Handles activations of the Lens overlay side panel entry.
+  static actions::ActionItem::InvokeActionCallback
+  CreateSidePanelActionCallback(Browser* browser);
+
   // Registers the side panel entry in the side panel if it doesn't already
   // exist and then shows it.
   void RegisterEntryAndShow();

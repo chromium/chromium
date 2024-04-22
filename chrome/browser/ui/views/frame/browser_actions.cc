@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -183,7 +184,23 @@ void BrowserActions::InitializeBrowserActions() {
             .Build());
   }
 
-  if (companion::IsCompanionFeatureEnabled()) {
+  if (lens::features::IsLensOverlayEnabled()) {
+    //  TODO(b/328295358): Change title, tooltip and icon when available.
+    root_action_item_->AddChild(
+        ChromeMenuAction(
+            lens::LensOverlaySidePanelCoordinator::
+                CreateSidePanelActionCallback(&(browser_.get())),
+            kActionSidePanelShowLensOverlayResults,
+            IDS_SIDE_PANEL_COMPANION_TITLE,
+            IDS_SIDE_PANEL_COMPANION_TOOLBAR_TOOLTIP,
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+            vector_icons::kGoogleSearchCompanionMonochromeLogoChromeRefreshIcon
+#else
+            vector_icons::kSearchIcon
+#endif
+            )
+            .Build());
+  } else if (companion::IsCompanionFeatureEnabled()) {
     if (SearchCompanionSidePanelCoordinator::IsSupported(
             profile,
             /*include_runtime_checks=*/false)) {
@@ -206,17 +223,6 @@ void BrowserActions::InitializeBrowserActions() {
               profile,
               /*include_runtime_checks=*/true));
     }
-  }
-
-  if (lens::features::IsLensOverlayEnabled()) {
-    // TODO(b/328295358): Change title and icon when available.
-    root_action_item_->AddChild(
-        SidePanelAction(SidePanelEntryId::kLensOverlayResults, std::nullopt,
-                        IDS_SIDE_PANEL_COMPANION_TOOLBAR_TOOLTIP,
-                        vector_icons::kSearchIcon,
-                        kActionSidePanelShowLensOverlayResults,
-                        &(browser_.get()), /*is_pinnable=*/true)
-            .Build());
   }
 
   // Create the lens action item. The icon and text are set appropriately in the

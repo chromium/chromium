@@ -33,6 +33,10 @@ bool IsCompanionFeatureEnabled() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (lens::features::IsLensOverlayEnabled()) {
+    return false;
+  }
+
   if (!base::FeatureList::IsEnabled(lens::features::kLensStandalone)) {
     return false;
   }
