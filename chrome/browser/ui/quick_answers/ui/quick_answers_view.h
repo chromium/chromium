@@ -103,10 +103,10 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   std::string title_;
   bool is_internal_ = false;
 
-  raw_ptr<views::View> base_view_ = nullptr;
-  raw_ptr<views::View> main_view_ = nullptr;
-  raw_ptr<views::View> content_view_ = nullptr;
-  raw_ptr<views::View> report_query_view_ = nullptr;
+  views::ViewTracker base_view_;
+  views::ViewTracker main_view_;
+  views::ViewTracker content_view_;
+  views::ViewTracker report_query_view_;
   raw_ptr<views::Label> first_answer_label_ = nullptr;
   raw_ptr<views::LabelButton> retry_label_ = nullptr;
   raw_ptr<views::ImageButton> dogfood_feedback_button_ = nullptr;

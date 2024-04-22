@@ -46,6 +46,7 @@
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -123,12 +124,6 @@ gfx::Insets GetContentViewInsets() {
   return kContentViewInsets;
 }
 
-// Maximum height QuickAnswersView can expand to.
-int MaximumViewHeight() {
-  return kMainViewInsets.height() + GetContentViewInsets().height() +
-         kMaxRows * kDefaultLineHeightDip + (kMaxRows - 1) * kLineSpacingDip;
-}
-
 class MainView : public views::Button {
   METADATA_HEADER(MainView, views::Button)
 
@@ -190,8 +185,13 @@ class ReportQueryView : public views::Button {
   METADATA_HEADER(ReportQueryView, views::Button)
 
  public:
+  static constexpr size_t kMaximumHeight = kReportQueryViewFontSize;
+
   explicit ReportQueryView(PressedCallback callback)
       : Button(std::move(callback)) {
+    SetAccessibleName(l10n_util::GetStringUTF16(
+        IDS_QUICK_ANSWERS_VIEW_REPORT_QUERY_REPORT_LABEL));
+
     SetBackground(views::CreateThemedSolidBackground(
         kColorQuickAnswersReportQueryButtonBackground));
 
@@ -255,6 +255,13 @@ class ReportQueryView : public views::Button {
 BEGIN_METADATA(ReportQueryView)
 END_METADATA
 
+// Maximum height QuickAnswersView can expand to.
+int MaximumViewHeight(bool is_internal) {
+  return kMainViewInsets.height() + GetContentViewInsets().height() +
+         kMaxRows * kDefaultLineHeightDip + (kMaxRows - 1) * kLineSpacingDip +
+         (is_internal ? ReportQueryView::kMaximumHeight : 0);
+}
+
 }  // namespace
 
 namespace quick_answers {
@@ -287,13 +294,13 @@ QuickAnswersView::~QuickAnswersView() = default;
 void QuickAnswersView::RequestFocus() {
   // When the Quick Answers view is focused, we actually want `main_view_`
   // to have the focus for highlight and selection purposes.
-  main_view_->RequestFocus();
+  main_view_.view()->RequestFocus();
 }
 
 bool QuickAnswersView::HasFocus() const {
   // When the Quick Answers view is focused, `main_view_` should have
   // the focus.
-  return main_view_->HasFocus();
+  return main_view_.view()->HasFocus();
 }
 
 void QuickAnswersView::OnFocus() {
@@ -312,8 +319,7 @@ void QuickAnswersView::OnFocus() {
 
 void QuickAnswersView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  SetBackground(views::CreateSolidBackground(
-      GetColorProvider()->GetColor(ui::kColorPrimaryBackground)));
+
   if (settings_button_) {
     settings_button_->SetImageModel(
         views::Button::ButtonState::STATE_NORMAL,
@@ -356,19 +362,14 @@ gfx::Size QuickAnswersView::GetMaximumSize() const {
   // in `ReadWriteCardsUiController`. We need to reserve space at
   // the top since the view might expand for two-line answers.
   // Note that the width will not be used in the calculation.
-  return gfx::Size(0, MaximumViewHeight());
+  return gfx::Size(0, MaximumViewHeight(is_internal_));
 }
 
 void QuickAnswersView::UpdateBoundsForQuickAnswers() {
   // Multi-line labels need to be resized to be compatible with bounds width.
+  // TODO(b/331271987): Remove this. This should be handled by a layout manager.
   if (first_answer_label_) {
     first_answer_label_->SetMaximumWidth(GetLabelWidth(/*is_title=*/false));
-
-    // Directly calls `PreferredSizeChanged` of `this` to propagate a layout
-    // change. A layout change propagation is not working correctly for now
-    // because of the current view tree set up.
-    // TODO(b/331271987): Remove this.
-    PreferredSizeChanged();
   }
 }
 
@@ -391,10 +392,12 @@ void QuickAnswersView::ShowRetryView() {
   }
 
   ResetContentView();
-  main_view_->SetBackground(nullptr);
+
+  // TODO(b/335701090): Utilize main_view_ for handling OnRetryLabelPressed.
+  main_view_.view()->SetBackground(nullptr);
 
   // Add title.
-  auto* title_label = content_view_->AddChildView(
+  auto* title_label = content_view_.view()->AddChildView(
       std::make_unique<quick_answers::QuickAnswersTextLabel>(
           QuickAnswerText(title_)));
   title_label->SetMaximumWidthSingleLine(GetLabelWidth(/*is_title=*/true));
@@ -404,7 +407,7 @@ void QuickAnswersView::ShowRetryView() {
   description_labels.push_back(std::make_unique<QuickAnswerResultText>(
       l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_NETWORK_ERROR)));
   auto* description_container =
-      AddHorizontalUiElements(content_view_, description_labels);
+      AddHorizontalUiElements(content_view_.view(), description_labels);
 
   // Add retry label.
   retry_label_ =
@@ -430,19 +433,24 @@ ui::ImageModel QuickAnswersView::GetIconImageModelForTesting() {
 }
 
 void QuickAnswersView::InitLayout() {
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetBackground(
+      views::CreateThemedSolidBackground(ui::kColorPrimaryBackground));
+  SetUseDefaultFillLayout(true);
 
-  base_view_ = AddChildView(std::make_unique<View>());
-  auto* base_layout =
-      base_view_->SetLayoutManager(std::make_unique<views::FlexLayout>());
-  base_layout->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+  base_view_.SetView(
+      AddChildView(views::Builder<views::BoxLayoutView>()
+                       .SetOrientation(views::LayoutOrientation::kVertical)
+                       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
+                       .Build()));
 
-  main_view_ =
-      base_view_->AddChildView(std::make_unique<MainView>(base::BindRepeating(
-          &QuickAnswersView::SendQuickAnswersQuery, base::Unretained(this))));
-  auto* layout =
-      main_view_->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  main_view_.SetView(base_view_.view()->AddChildView(
+      std::make_unique<MainView>(base::BindRepeating(
+          &QuickAnswersView::SendQuickAnswersQuery, base::Unretained(this)))));
+  main_view_.view()->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
+
+  auto* layout = main_view_.view()->SetLayoutManager(
+      std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetInteriorMargin(kMainViewInsets);
 
@@ -464,20 +472,21 @@ void QuickAnswersView::InitLayout() {
 
 void QuickAnswersView::AddContentView() {
   // Add content view.
-  content_view_ = main_view_->AddChildView(std::make_unique<View>());
-  auto* layout =
-      content_view_->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  content_view_.SetView(
+      main_view_.view()->AddChildView(std::make_unique<View>()));
+  auto* layout = content_view_.view()->SetLayoutManager(
+      std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical)
       .SetInteriorMargin(GetContentViewInsets())
       .SetDefault(views::kMarginsKey,
                   gfx::Insets::TLBR(0, 0, kLineSpacingDip, 0));
-  auto* title_label = content_view_->AddChildView(
+  auto* title_label = content_view_.view()->AddChildView(
       std::make_unique<quick_answers::QuickAnswersTextLabel>(
           QuickAnswerText(title_)));
   title_label->SetMaximumWidthSingleLine(GetLabelWidth(/*is_title=*/true));
   std::string loading =
       l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_LOADING);
-  content_view_->AddChildView(
+  content_view_.view()->AddChildView(
       std::make_unique<quick_answers::QuickAnswersTextLabel>(
           QuickAnswerResultText(loading)));
 }
@@ -554,7 +563,7 @@ void QuickAnswersView::AddPhoneticsAudioButton(
 
 void QuickAnswersView::AddGoogleIcon() {
   // Add Google icon.
-  auto* google_icon_container = main_view_->AddChildView(
+  auto* google_icon_container = main_view_.view()->AddChildView(
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kHorizontal)
           .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
@@ -571,7 +580,7 @@ void QuickAnswersView::AddGoogleIcon() {
 void QuickAnswersView::AddDefaultResultTypeIcon() {
   // Use a container view for the icon and circle background to set
   // the correct margins.
-  auto* result_type_icon_container = main_view_->AddChildView(
+  auto* result_type_icon_container = main_view_.view()->AddChildView(
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kHorizontal)
           .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
@@ -614,7 +623,7 @@ int QuickAnswersView::GetLabelWidth(bool is_title) {
 }
 
 void QuickAnswersView::ResetContentView() {
-  content_view_->RemoveAllChildViews();
+  content_view_.view()->RemoveAllChildViews();
   first_answer_label_ = nullptr;
 }
 
@@ -626,8 +635,7 @@ void QuickAnswersView::UpdateQuickAnswerResult(
   ResetContentView();
 
   if (report_query_view_) {
-    base_view_->RemoveChildViewT(report_query_view_.get());
-    report_query_view_ = nullptr;
+    RemoveChildViewT(report_query_view_.view());
   }
 
   // Update the icon representing the quick answers result type if it's shown.
@@ -641,7 +649,8 @@ void QuickAnswersView::UpdateQuickAnswerResult(
   }
 
   // Add title.
-  View* title_view = AddHorizontalUiElements(content_view_, quick_answer.title);
+  View* title_view =
+      AddHorizontalUiElements(content_view_.view(), quick_answer.title);
   auto* title_label = static_cast<Label*>(title_view->children().front());
   title_label->SetMaximumWidthSingleLine(GetLabelWidth(/*is_title=*/true));
 
@@ -655,8 +664,8 @@ void QuickAnswersView::UpdateQuickAnswerResult(
   // Add first row answer.
   View* first_answer_view = nullptr;
   if (!quick_answer.first_answer_row.empty()) {
-    first_answer_view =
-        AddHorizontalUiElements(content_view_, quick_answer.first_answer_row);
+    first_answer_view = AddHorizontalUiElements(content_view_.view(),
+                                                quick_answer.first_answer_row);
   }
   bool first_answer_is_single_label =
       first_answer_view->children().size() == 1 &&
@@ -674,7 +683,8 @@ void QuickAnswersView::UpdateQuickAnswerResult(
 
   // Add second row answer.
   if (!quick_answer.second_answer_row.empty()) {
-    AddHorizontalUiElements(content_view_, quick_answer.second_answer_row);
+    AddHorizontalUiElements(content_view_.view(),
+                            quick_answer.second_answer_row);
   } else {
     // If secondary-answer does not exist and primary-answer is a single label,
     // allow that label to wrap through to the row intended for the former.
@@ -698,10 +708,11 @@ void QuickAnswersView::UpdateQuickAnswerResult(
   }
 
   if (quick_answer.result_type == ResultType::kNoResult && is_internal_) {
-    report_query_view_ = base_view_->AddChildView(
+    CHECK(base_view_.view());
+    report_query_view_.SetView(base_view_.view()->AddChildView(
         std::make_unique<ReportQueryView>(base::BindRepeating(
             &QuickAnswersUiController::OnReportQueryButtonPressed,
-            controller_)));
+            controller_))));
   }
 
   if (chromeos::features::IsQuickAnswersRichCardEnabled() &&
@@ -740,7 +751,7 @@ std::vector<views::View*> QuickAnswersView::GetFocusableViews() {
   // The main view does not gain focus for retry-view and transfers it to the
   // retry-label, and so is not included when this is the case.
   if (!retry_label_) {
-    focusable_views.push_back(main_view_);
+    focusable_views.push_back(main_view_.view());
   }
   if (dogfood_feedback_button_ && dogfood_feedback_button_->GetVisible()) {
     focusable_views.push_back(dogfood_feedback_button_);
@@ -754,8 +765,8 @@ std::vector<views::View*> QuickAnswersView::GetFocusableViews() {
   if (retry_label_ && retry_label_->GetVisible()) {
     focusable_views.push_back(retry_label_);
   }
-  if (report_query_view_ && report_query_view_->GetVisible()) {
-    focusable_views.push_back(report_query_view_);
+  if (report_query_view_ && report_query_view_.view()->GetVisible()) {
+    focusable_views.push_back(report_query_view_.view());
   }
   return focusable_views;
 }

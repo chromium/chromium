@@ -51,8 +51,6 @@ class ReadWriteCardsView : public views::View {
 
   // views::View:
   void AddedToWidget() override;
-  void PreferredSizeChanged() override;
-  void ChildPreferredSizeChanged(views::View* child) override;
 
   const gfx::Rect& context_menu_bounds() const { return context_menu_bounds_; }
 

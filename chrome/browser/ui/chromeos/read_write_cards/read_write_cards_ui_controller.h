@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
@@ -37,25 +38,23 @@ class ReadWriteCardsUiController : public views::ViewObserver {
 
   ~ReadWriteCardsUiController() override;
 
-  // Sets/removes quick answers views. This view will be added into this widget
-  // and used to calculate widget bounds.
-  ReadWriteCardsView* SetQuickAnswersView(
+  // Sets/removes a view for quick answers ui. This view will be added into this
+  // widget and used to calculate widget bounds. This can be either
+  // `QuickAnswersView` or `UserConsentView`.
+  ReadWriteCardsView* SetQuickAnswersUi(
       std::unique_ptr<ReadWriteCardsView> view);
-  void RemoveQuickAnswersView();
+  void RemoveQuickAnswersUi();
 
   // Sets/removes mahi views. This view will be added into this widget and used
   // to calculate widget bounds.
   // TODO(b/331132971): Use `ReadWriteCardsView` for Mahi view.
+  // TODO(b/331271987): Make this API symmetric with `SetQuickAnswersUi`, both
+  //                    name and behavior.
   views::View* SetMahiView(std::unique_ptr<views::View> view);
   void RemoveMahiView();
 
   ReadWriteCardsView* GetQuickAnswersViewForTest();
   views::View* GetMahiViewForTest();
-
-  // Re-layout a widget and views. This includes updating the widget bounds and
-  // reorder child views, if needed.
-  void Relayout();
-  void MaybeRelayout();
 
   void SetContextMenuBounds(const gfx::Rect& context_menu_bounds);
 
@@ -66,6 +65,7 @@ class ReadWriteCardsUiController : public views::ViewObserver {
  private:
   // views::ViewObserver:
   void OnViewIsDeleting(views::View* observed_view) override;
+  void OnViewLayoutInvalidated(views::View* view) override;
 
   // Initializes `widget_` if needed.
   void CreateWidgetIfNeeded();
@@ -77,8 +77,16 @@ class ReadWriteCardsUiController : public views::ViewObserver {
   // above or below the context menu.
   void ReorderChildViews(bool widget_above_context_menu);
 
-  // Owned by the views hierarchy.
-  raw_ptr<ReadWriteCardsView> quick_answers_view_;
+  // Re-layout a widget and views. This includes updating the widget bounds and
+  // reorder child views, if needed.
+  void Relayout();
+
+  ReadWriteCardsView* quick_answers_ui() {
+    return quick_answers_ui_observation_.GetSource();
+  }
+
+  base::ScopedObservation<ReadWriteCardsView, ReadWriteCardsUiController>
+      quick_answers_ui_observation_{this};
 
   views::ViewTracker mahi_view_;
 

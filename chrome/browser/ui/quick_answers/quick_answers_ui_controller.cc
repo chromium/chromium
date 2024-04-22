@@ -94,7 +94,7 @@ void QuickAnswersUiController::CreateQuickAnswersView(Profile* profile,
   DCHECK(!IsShowingUserConsentView());
   SetActiveQuery(profile, query);
 
-  auto* view = GetReadWriteCardsUiController().SetQuickAnswersView(
+  auto* view = GetReadWriteCardsUiController().SetQuickAnswersUi(
       std::make_unique<quick_answers::QuickAnswersView>(
           title, is_internal,
           /*controller=*/weak_factory_.GetWeakPtr()));
@@ -146,7 +146,7 @@ void QuickAnswersUiController::OnGoogleSearchLabelPressed() {
 bool QuickAnswersUiController::CloseQuickAnswersView() {
   if (controller_->GetQuickAnswersVisibility() ==
       QuickAnswersVisibility::kQuickAnswersVisible) {
-    GetReadWriteCardsUiController().RemoveQuickAnswersView();
+    GetReadWriteCardsUiController().RemoveQuickAnswersUi();
     return true;
   }
   return false;
@@ -194,7 +194,7 @@ void QuickAnswersUiController::CreateUserConsentView(
   CHECK_EQ(controller_->GetQuickAnswersVisibility(),
            QuickAnswersVisibility::kPending);
 
-  auto* view = GetReadWriteCardsUiController().SetQuickAnswersView(
+  auto* view = GetReadWriteCardsUiController().SetQuickAnswersUi(
       std::make_unique<quick_answers::UserConsentView>(
           anchor_bounds, intent_type, intent_text, weak_factory_.GetWeakPtr()));
   user_consent_view_.SetView(view);
@@ -203,7 +203,7 @@ void QuickAnswersUiController::CreateUserConsentView(
 void QuickAnswersUiController::CloseUserConsentView() {
   CHECK_EQ(controller_->GetQuickAnswersVisibility(),
            QuickAnswersVisibility::kUserConsentVisible);
-  GetReadWriteCardsUiController().RemoveQuickAnswersView();
+  GetReadWriteCardsUiController().RemoveQuickAnswersUi();
 }
 
 void QuickAnswersUiController::OnSettingsButtonPressed() {

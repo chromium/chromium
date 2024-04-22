@@ -60,36 +60,27 @@ views::Widget::InitParams CreateWidgetInitParams() {
 }  // namespace
 
 ReadWriteCardsUiController::ReadWriteCardsUiController() = default;
+ReadWriteCardsUiController::~ReadWriteCardsUiController() = default;
 
-ReadWriteCardsUiController::~ReadWriteCardsUiController() {
-  if (quick_answers_view_) {
-    OnViewIsDeleting(quick_answers_view_);
-  }
-}
-
-ReadWriteCardsView* ReadWriteCardsUiController::SetQuickAnswersView(
+ReadWriteCardsView* ReadWriteCardsUiController::SetQuickAnswersUi(
     std::unique_ptr<ReadWriteCardsView> view) {
   CreateWidgetIfNeeded();
 
-  CHECK(!quick_answers_view_);
-
-  views::View* contents_view = widget_->GetContentsView();
-  quick_answers_view_ = contents_view->AddChildView(std::move(view));
-  quick_answers_view_->AddObserver(this);
+  CHECK(!quick_answers_ui_observation_.IsObserving());
+  quick_answers_ui_observation_.Observe(
+      widget_->GetContentsView()->AddChildView(std::move(view)));
 
   Relayout();
 
-  return quick_answers_view_;
+  return quick_answers_ui();
 }
 
-void ReadWriteCardsUiController::RemoveQuickAnswersView() {
-  if (!quick_answers_view_) {
+void ReadWriteCardsUiController::RemoveQuickAnswersUi() {
+  if (!quick_answers_ui()) {
     return;
   }
 
-  widget_->GetContentsView()->RemoveChildViewT(
-      quick_answers_view_.ExtractAsDangling());
-  quick_answers_view_ = nullptr;
+  widget_->GetContentsView()->RemoveChildViewT(quick_answers_ui());
   MaybeHideWidget();
 
   if (widget_) {
@@ -125,7 +116,7 @@ void ReadWriteCardsUiController::RemoveMahiView() {
 }
 
 ReadWriteCardsView* ReadWriteCardsUiController::GetQuickAnswersViewForTest() {
-  return quick_answers_view_;
+  return quick_answers_ui();
 }
 
 views::View* ReadWriteCardsUiController::GetMahiViewForTest() {
@@ -147,11 +138,11 @@ void ReadWriteCardsUiController::Relayout() {
   // to avoid running out of space when a view re-layout. We will use the
   // view's `GetMaximumSize()` to calculate this reserved height.
   int extra_reserved_height = 0;
-  if (quick_answers_view_ && !quick_answers_view_->GetMaximumSize().IsZero()) {
-    CHECK_GE(quick_answers_view_->GetMaximumSize().height(),
-             quick_answers_view_->size().height());
-    extra_reserved_height = quick_answers_view_->GetMaximumSize().height() -
-                            quick_answers_view_->size().height();
+  if (quick_answers_ui() && !quick_answers_ui()->GetMaximumSize().IsZero()) {
+    CHECK_GE(quick_answers_ui()->GetMaximumSize().height(),
+             quick_answers_ui()->size().height());
+    extra_reserved_height = quick_answers_ui()->GetMaximumSize().height() -
+                            quick_answers_ui()->size().height();
   }
 
   bool widget_above_context_menu = true;
@@ -176,20 +167,12 @@ void ReadWriteCardsUiController::Relayout() {
   widget_->SetBounds(bounds);
 }
 
-void ReadWriteCardsUiController::MaybeRelayout() {
-  if (!widget_) {
-    return;
-  }
-
-  Relayout();
-}
-
 void ReadWriteCardsUiController::SetContextMenuBounds(
     const gfx::Rect& context_menu_bounds) {
   context_menu_bounds_ = context_menu_bounds;
 
-  if (quick_answers_view_) {
-    quick_answers_view_->SetContextMenuBounds(context_menu_bounds);
+  if (quick_answers_ui()) {
+    quick_answers_ui()->SetContextMenuBounds(context_menu_bounds);
   }
 
   if (widget_) {
@@ -197,14 +180,21 @@ void ReadWriteCardsUiController::SetContextMenuBounds(
   }
 }
 
-void ReadWriteCardsUiController::OnViewIsDeleting(views::View* observed_view) {
-  if (!quick_answers_view_) {
+void ReadWriteCardsUiController::OnViewIsDeleting(views::View* view) {
+  if (view != quick_answers_ui()) {
     return;
   }
 
-  CHECK_EQ(quick_answers_view_, observed_view);
-  quick_answers_view_->RemoveObserver(this);
-  quick_answers_view_ = nullptr;
+  CHECK(quick_answers_ui_observation_.IsObserving());
+  quick_answers_ui_observation_.Reset();
+}
+
+void ReadWriteCardsUiController::OnViewLayoutInvalidated(views::View* view) {
+  if (!widget_) {
+    return;
+  }
+
+  Relayout();
 }
 
 void ReadWriteCardsUiController::CreateWidgetIfNeeded() {
@@ -230,7 +220,7 @@ void ReadWriteCardsUiController::CreateWidgetIfNeeded() {
 }
 
 void ReadWriteCardsUiController::MaybeHideWidget() {
-  if (quick_answers_view_ || mahi_view_.view()) {
+  if (quick_answers_ui() || mahi_view_.view()) {
     return;
   }
 
@@ -241,7 +231,7 @@ void ReadWriteCardsUiController::MaybeHideWidget() {
 void ReadWriteCardsUiController::ReorderChildViews(
     bool widget_above_context_menu) {
   // No need to reorder if one of the view is not set.
-  if (!quick_answers_view_ || !mahi_view_) {
+  if (!quick_answers_ui() || !mahi_view_) {
     return;
   }
 
@@ -251,7 +241,7 @@ void ReadWriteCardsUiController::ReorderChildViews(
   // Quick Answers view should be on top if the widget is above the context
   // menu. The order should be reversed otherwise.
   if (widget_above_context_menu) {
-    contents_view->ReorderChildView(quick_answers_view_, /*index=*/0);
+    contents_view->ReorderChildView(quick_answers_ui(), /*index=*/0);
   } else {
     contents_view->ReorderChildView(mahi_view_.view(), /*index=*/0);
   }
