@@ -275,13 +275,13 @@ PaymentsDataManager::PaymentsDataManager(
     GeoIpCountryCode variations_country_code,
     const std::string& app_locale,
     base::RepeatingClosure notify_pdm_observers)
-    : notify_pdm_observers_(notify_pdm_observers),
-      image_fetcher_(image_fetcher),
+    : image_fetcher_(image_fetcher),
       shared_storage_handler_(std::move(shared_storage_handler)),
       sync_service_(sync_service),
       identity_manager_(identity_manager),
       variations_country_code_(std::move(variations_country_code)),
-      app_locale_(app_locale) {
+      app_locale_(app_locale),
+      notify_pdm_observers_(std::move(notify_pdm_observers)) {
   database_helper_ = std::make_unique<PaymentsDatabaseHelper>(
       this, profile_database, account_database);
   SetPrefService(pref_service);
@@ -446,7 +446,7 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
     PaymentsDataCleaner(this).CleanupPaymentsData();
   }
 
-  notify_pdm_observers_.Run();
+  NotifyObservers();
 }
 
 CoreAccountInfo PaymentsDataManager::GetAccountInfoForPaymentsServer() const {
@@ -861,6 +861,12 @@ void PaymentsDataManager::SetPrefService(PrefService* pref_service) {
       base::BindRepeating(
           &PaymentsDataManager::OnAutofillPaymentsCardBenefitsPrefChange,
           base::Unretained(this)));
+}
+
+void PaymentsDataManager::NotifyObservers() {
+  if (!HasPendingPaymentQueries()) {
+    notify_pdm_observers_.Run();
+  }
 }
 
 bool PaymentsDataManager::IsCardEligibleForBenefits(

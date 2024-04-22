@@ -86,12 +86,12 @@ bool TestPaymentsDataManager::RemoveByGUID(const std::string& guid) {
   if (CreditCard* credit_card = GetCreditCardByGUID(guid)) {
     local_credit_cards_.erase(base::ranges::find(
         local_credit_cards_, credit_card, &std::unique_ptr<CreditCard>::get));
-    notify_pdm_observers_.Run();
+    NotifyObservers();
     return true;
   } else if (const Iban* iban = GetIbanByGUID(guid)) {
     local_ibans_.erase(
         base::ranges::find(local_ibans_, iban, &std::unique_ptr<Iban>::get));
-    notify_pdm_observers_.Run();
+    NotifyObservers();
     return true;
   }
   return false;
@@ -123,7 +123,7 @@ void TestPaymentsDataManager::AddCreditCard(const CreditCard& credit_card) {
   std::unique_ptr<CreditCard> local_credit_card =
       std::make_unique<CreditCard>(credit_card);
   local_credit_cards_.push_back(std::move(local_credit_card));
-  notify_pdm_observers_.Run();
+  NotifyObservers();
 }
 
 std::string TestPaymentsDataManager::AddAsLocalIban(Iban iban) {
@@ -133,7 +133,7 @@ std::string TestPaymentsDataManager::AddAsLocalIban(Iban iban) {
       Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   std::unique_ptr<Iban> local_iban = std::make_unique<Iban>(iban);
   local_ibans_.push_back(std::move(local_iban));
-  notify_pdm_observers_.Run();
+  NotifyObservers();
   return iban.guid();
 }
 
@@ -152,7 +152,7 @@ void TestPaymentsDataManager::DeleteLocalCreditCards(
     // behavior of PersonalDataManager.
     RemoveCardWithoutNotification(card);
   }
-  notify_pdm_observers_.Run();
+  NotifyObservers();
 }
 
 void TestPaymentsDataManager::UpdateCreditCard(const CreditCard& credit_card) {
@@ -278,7 +278,7 @@ void TestPaymentsDataManager::AddServerCreditCard(
   std::unique_ptr<CreditCard> server_credit_card =
       std::make_unique<CreditCard>(credit_card);
   server_credit_cards_.push_back(std::move(server_credit_card));
-  notify_pdm_observers_.Run();
+  NotifyObservers();
 }
 
 void TestPaymentsDataManager::AddAutofillOfferData(
@@ -286,26 +286,26 @@ void TestPaymentsDataManager::AddAutofillOfferData(
   std::unique_ptr<AutofillOfferData> data =
       std::make_unique<AutofillOfferData>(offer_data);
   autofill_offer_data_.emplace_back(std::move(data));
-  notify_pdm_observers_.Run();
+  NotifyObservers();
 }
 
 void TestPaymentsDataManager::AddServerIban(const Iban& iban) {
   CHECK(iban.value().empty());
   server_ibans_.push_back(std::make_unique<Iban>(iban));
-  notify_pdm_observers_.Run();
+  NotifyObservers();
 }
 
 void TestPaymentsDataManager::AddCardArtImage(const GURL& url,
                                               const gfx::Image& image) {
   credit_card_art_images_[url] = std::make_unique<gfx::Image>(image);
-  notify_pdm_observers_.Run();
+  NotifyObservers();
 }
 
 void TestPaymentsDataManager::AddVirtualCardUsageData(
     const VirtualCardUsageData& usage_data) {
   autofill_virtual_card_usage_data_.push_back(
       std::make_unique<VirtualCardUsageData>(usage_data));
-  notify_pdm_observers_.Run();
+  NotifyObservers();
 }
 
 void TestPaymentsDataManager::SetNicknameForCardWithGUID(
@@ -321,7 +321,7 @@ void TestPaymentsDataManager::SetNicknameForCardWithGUID(
       card->SetNickname(base::ASCIIToUTF16(nickname));
     }
   }
-  notify_pdm_observers_.Run();
+  NotifyObservers();
 }
 
 void TestPaymentsDataManager::RemoveCardWithoutNotification(

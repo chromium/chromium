@@ -491,6 +491,8 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   void SetPrefService(PrefService* pref_service);
 
+  void NotifyObservers();
+
   // Stores the PaymentsCustomerData obtained from the database.
   std::unique_ptr<PaymentsCustomerData> payments_customer_data_;
 
@@ -543,9 +545,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // True if personal data has been loaded from the web database.
   bool is_payments_data_loaded_ = false;
-
-  // TODO(b/322170538): Remove once the PDM observer is split.
-  base::RepeatingClosure notify_pdm_observers_;
 
  private:
   // Triggered when all the card art image fetches have been completed,
@@ -621,6 +620,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Stores the |app_locale| supplied on construction.
   const std::string app_locale_;
+
+  // TODO(b/322170538): Remove once the PDM observer is split.
+  base::RepeatingClosure notify_pdm_observers_;
 
   // The PrefService that this instance uses to read and write preferences.
   // Must outlive this instance.
