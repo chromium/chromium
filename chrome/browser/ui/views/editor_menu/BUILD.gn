@@ -28,8 +28,8 @@ source_set("utils") {
 
   deps = [
     "//base",
-    "//chrome/browser/ui/views/editor_menu/vector_icons",
     "//chromeos/crosapi/mojom",
+    "//chromeos/ui/vector_icons",
     "//components/vector_icons",
     "//ui/aura",
     "//ui/display",
@@ -100,9 +100,9 @@ source_set("views") {
   deps = [
     ":utils",
     "//base",
-    "//chrome/browser/ui/views/editor_menu/vector_icons",
     "//chromeos/constants:constants",
     "//chromeos/strings:strings_grit",
+    "//chromeos/ui/vector_icons",
     "//components/vector_icons",
     "//ui/aura",
     "//ui/base",

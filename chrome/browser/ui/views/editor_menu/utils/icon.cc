@@ -7,7 +7,7 @@
 #include <string_view>
 
 #include "chrome/browser/ui/views/editor_menu/utils/preset_text_query.h"
-#include "chrome/browser/ui/views/editor_menu/vector_icons/vector_icons.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/gfx/vector_icon_types.h"
 
