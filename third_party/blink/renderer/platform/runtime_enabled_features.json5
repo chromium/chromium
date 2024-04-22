@@ -1526,6 +1526,7 @@
     {
       // crbug.com/333630754
       name: "FasterMinContent",
+      status: "stable",
     },
     // Kill switch.
     {
