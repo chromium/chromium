@@ -17,6 +17,7 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
+#include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/sync/base/features.h"
@@ -908,9 +909,11 @@ class AuthenticatorWindowTest : public InProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+    command_line->AppendSwitchASCII(switches::kGaiaUrl,
+                                    https_server_.base_url().spec());
     command_line->AppendSwitchASCII(
-        switches::kGaiaUrl,
-        https_server_.GetURL("accounts.google.com", "/").spec());
+        webauthn::switches::kGpmPinResetReauthUrlSwitch,
+        https_server_.GetURL("/encryption/pin/reset").spec());
   }
 
   void SetUpOnMainThread() override {
@@ -947,7 +950,7 @@ document.addEventListener('DOMContentLoaded', function() {
       new Map([["hw_protected", [{epoch: 1, key: new ArrayBuffer(32)}]]]));
 });
 </script></head><body><p>Test MagicArch</p></body></html>)");
-    } else if (path == "/embedded/xreauth/chrome") {
+    } else if (path == "/encryption/pin/reset") {
       response->set_code(net::HTTP_OK);
       response->set_content(R"(<html><head><title>Test Reauth</title>
 <script>
