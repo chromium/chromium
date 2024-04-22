@@ -14,26 +14,23 @@ import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_prov
 import {KeyboardInfo} from 'chrome://diagnostics/input.mojom-webui.js';
 import {setInputDataProviderForTesting, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {SelectorItem} from 'chrome://resources/ash/common/navigation_selector.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestDiagnosticsBrowserProxy} from './test_diagnostics_browser_proxy.js';
 
 suite('appTestSuiteForInputHiding', function() {
-  /** @type {?DiagnosticsAppElement} */
-  let page = null;
+  let page: DiagnosticsAppElement|null = null;
 
-  /** @type {?FakeSystemDataProvider} */
-  let systemDataProvider = null;
+  const systemDataProvider = new FakeSystemDataProvider();
 
-  /** @type {?FakeInputDataProvider} */
-  let inputDataProvider = null;
+  const inputDataProvider = new FakeInputDataProvider();
 
-  /** @type {?TestDiagnosticsBrowserProxy} */
-  let DiagnosticsBrowserProxy = null;
+  const DiagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
 
   suiteSetup(() => {
-    systemDataProvider = new FakeSystemDataProvider();
     systemDataProvider.setFakeSystemInfo(fakeSystemInfo);
     systemDataProvider.setFakeBatteryChargeStatus(fakeBatteryChargeStatus);
     systemDataProvider.setFakeBatteryHealth(fakeBatteryHealth);
@@ -42,15 +39,13 @@ suite('appTestSuiteForInputHiding', function() {
     systemDataProvider.setFakeMemoryUsage(fakeMemoryUsage);
     setSystemDataProviderForTesting(systemDataProvider);
 
-    inputDataProvider = new FakeInputDataProvider();
     setInputDataProviderForTesting(inputDataProvider);
 
-    DiagnosticsBrowserProxy = new TestDiagnosticsBrowserProxy();
     DiagnosticsBrowserProxyImpl.setInstance(DiagnosticsBrowserProxy);
   });
 
   setup(() => {
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     loadTimeData.overrideValues(
         {isTouchpadEnabled: false, isTouchscreenEnabled: false});
@@ -60,50 +55,47 @@ suite('appTestSuiteForInputHiding', function() {
     loadTimeData.overrideValues(
         {isTouchpadEnabled: true, isTouchscreenEnabled: true});
 
-    page.remove();
+    page?.remove();
     page = null;
     inputDataProvider.reset();
   });
 
-  /** @param {!Array<!KeyboardInfo>} keyboards */
-  function initializeDiagnosticsApp(keyboards) {
-    assertFalse(!!page);
-
+  function initializeDiagnosticsApp(keyboards: KeyboardInfo[]): Promise<void> {
     inputDataProvider.setFakeConnectedDevices(keyboards, fakeTouchDevices);
 
-    page = /** @type {!DiagnosticsAppElement} */ (
-        document.createElement('diagnostics-app'));
-    assertTrue(!!page);
+    page = document.createElement('diagnostics-app');
+    assert(page);
     document.body.appendChild(page);
     return flushTasks();
   }
 
-  /** @param {!string} id */
-  function navigationSelectorHasId(id) {
-    const items = page.shadowRoot.querySelector('navigation-view-panel')
-                      .shadowRoot.querySelector('navigation-selector')
-                      .selectorItems;
-    return !!items.find((item) => item.id === id);
+  function navigationSelectorHasId(id: string): boolean {
+    assert(page);
+    const items =
+        page.shadowRoot!.querySelector('navigation-view-panel')!.shadowRoot!
+            .querySelector('navigation-selector')!.selectorItems;
+    return !!items.find((item: SelectorItem) => item.id === id);
   }
 
   test('InputPageHiddenWhenNoKeyboardsConnected', async () => {
     await initializeDiagnosticsApp([]);
     assertFalse(navigationSelectorHasId('input'));
 
-    inputDataProvider.addFakeConnectedKeyboard(fakeKeyboards[0]);
+    inputDataProvider.addFakeConnectedKeyboard(
+        (fakeKeyboards[0] as KeyboardInfo));
     await flushTasks();
     assertTrue(navigationSelectorHasId('input'));
 
-    inputDataProvider.removeFakeConnectedKeyboardById(fakeKeyboards[0].id);
+    inputDataProvider.removeFakeConnectedKeyboardById(fakeKeyboards[0]!.id);
     await flushTasks();
     assertFalse(navigationSelectorHasId('input'));
   });
 
   test('InputPageShownWhenKeyboardConnectedAtLaunch', async () => {
-    await initializeDiagnosticsApp([fakeKeyboards[0]]);
+    await initializeDiagnosticsApp([(fakeKeyboards[0] as KeyboardInfo)]);
     assertTrue(navigationSelectorHasId('input'));
 
-    inputDataProvider.removeFakeConnectedKeyboardById(fakeKeyboards[0].id);
+    inputDataProvider.removeFakeConnectedKeyboardById(fakeKeyboards[0]!.id);
     await flushTasks();
     assertFalse(navigationSelectorHasId('input'));
   });
