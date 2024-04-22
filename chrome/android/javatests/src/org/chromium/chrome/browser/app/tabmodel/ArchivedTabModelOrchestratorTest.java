@@ -10,17 +10,15 @@ import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureList.TestValues;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -29,23 +27,17 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 
 /** Tests for ArchivedTabModelOrchestrator. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "Test interacts with activity shutdown and thus is incompatible with batching")
 @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
 public class ArchivedTabModelOrchestratorTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    private static final String TEST_PATH = "/chrome/test/data/android/about.html";
 
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
-
-    private static final String TEST_PATH = "/chrome/test/data/android/about.html";
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private Profile mProfile;
     private ArchivedTabModelOrchestrator mOrchestrator;
@@ -55,6 +47,8 @@ public class ArchivedTabModelOrchestratorTest {
 
     @Before
     public void setUp() throws Exception {
+        mActivityTestRule.startMainActivityOnBlankPage();
+
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.sAndroidTabDeclutterArchiveTimeDeltaHours, "0");
@@ -63,7 +57,7 @@ public class ArchivedTabModelOrchestratorTest {
         runOnUiThreadBlocking(
                 () -> {
                     mProfile =
-                            sActivityTestRule
+                            mActivityTestRule
                                     .getActivity()
                                     .getProfileProviderSupplier()
                                     .get()
@@ -71,26 +65,16 @@ public class ArchivedTabModelOrchestratorTest {
                     mOrchestrator = ArchivedTabModelOrchestrator.getForProfile(mProfile);
                     mOrchestrator.resetArchiveSettingsForTesting();
                     mArchivedTabModel = mOrchestrator.getTabModelSelector().getModel(false);
-                    mRegularTabModel = sActivityTestRule.getActivity().getCurrentTabModel();
-                    mRegularTabCreator = sActivityTestRule.getActivity().getTabCreator(false);
-                });
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        runOnUiThreadBlocking(
-                () -> {
-                    // Clear out all tabs between tests.
-                    mArchivedTabModel.closeAllTabs();
-                    mRegularTabModel.closeAllTabs();
+                    mRegularTabModel = mActivityTestRule.getActivity().getCurrentTabModel();
+                    mRegularTabCreator = mActivityTestRule.getActivity().getTabCreator(false);
                 });
     }
 
     @Test
     @MediumTest
     public void testBeginDeclutter() {
-        sActivityTestRule.loadUrlInNewTab(
-                sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+        mActivityTestRule.loadUrlInNewTab(
+                mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
@@ -105,8 +89,8 @@ public class ArchivedTabModelOrchestratorTest {
     @Test
     @MediumTest
     public void testRescueTabs() {
-        sActivityTestRule.loadUrlInNewTab(
-                sActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
+        mActivityTestRule.loadUrlInNewTab(
+                mActivityTestRule.getTestServer().getURL(TEST_PATH), /* incognito= */ false);
 
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
@@ -121,5 +105,14 @@ public class ArchivedTabModelOrchestratorTest {
 
         assertEquals(2, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
+    }
+
+    @Test
+    @MediumTest
+    public void testDestroyBeforeActivityDestroyed() {
+        runOnUiThreadBlocking(
+                () -> ArchivedTabModelOrchestrator.destroyProfileKeyedMapForTesting());
+        // The PKM is already destroyed, but the ATMO shouldn't crash when it
+        // receives an activity destroyed event.
     }
 }

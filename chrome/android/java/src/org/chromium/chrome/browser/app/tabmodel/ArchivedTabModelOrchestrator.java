@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.app.tabmodel;
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ApplicationStateListener;
@@ -43,16 +45,24 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
     private static ProfileKeyedMap<ArchivedTabModelOrchestrator> sProfileMap;
 
     // TODO(crbug.com/333572160): Rely on PKM destroy infra when it's working.
-    private static final ApplicationStatus.ApplicationStateListener sApplicationStateListener =
+    @VisibleForTesting
+    static final ApplicationStatus.ApplicationStateListener sApplicationStateListener =
             new ApplicationStateListener() {
                 @Override
                 public void onApplicationStateChange(@ApplicationState int newState) {
                     if (ApplicationStatus.isEveryActivityDestroyed()) {
-                        // Destroy the profile map, which will also destroy all orchestrators.
-                        // Null it out so if we go from 1 -> 0 -> 1 activities, #getForProfile
-                        // will still work.
-                        sProfileMap.destroy();
-                        sProfileMap = null;
+                        // This block can be called at times where sProfileMap may be null
+                        // (crbug.com/335684785). Probably not necessary now that the application
+                        // state listener is unregistered.
+                        if (sProfileMap != null) {
+                            // Destroy the profile map, which will also destroy all orchestrators.
+                            // Null it out so if we go from 1 -> 0 -> 1 activities, #getForProfile
+                            // will still work.
+                            sProfileMap.destroy();
+                            sProfileMap = null;
+                        }
+                        ApplicationStatus.unregisterApplicationStateListener(
+                                sApplicationStateListener);
                     }
                 }
             };
