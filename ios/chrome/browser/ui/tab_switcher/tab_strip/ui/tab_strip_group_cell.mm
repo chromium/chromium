@@ -23,6 +23,7 @@ constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
   UILabel* _titleLabel;
   UIView* _titleContainer;
   TabStripGroupStrokeView* _groupStrokeView;
+  NSLayoutConstraint* _titleContainerHeightConstraint;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -56,6 +57,18 @@ constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
   [super prepareForReuse];
   self.titleContainerBackgroundColor = nil;
   self.collapsed = NO;
+}
+
+- (void)applyLayoutAttributes:
+    (UICollectionViewLayoutAttributes*)layoutAttributes {
+  [super applyLayoutAttributes:layoutAttributes];
+  // Update the transition state asynchronously to ensure bounds of subviews
+  // have been updated accordingly.
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf updateTransitionState];
+      }));
 }
 
 #pragma mark - Setters
@@ -105,7 +118,9 @@ constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
   titleLabel.font = [UIFont systemFontOfSize:TabStripTabItemConstants.fontSize
                                       weight:UIFontWeightMedium];
   titleLabel.textColor = [UIColor colorNamed:kSolidWhiteColor];
-  titleLabel.adjustsFontSizeToFitWidth = YES;
+  [titleLabel
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
   return titleLabel;
 }
 
@@ -113,6 +128,7 @@ constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
 - (UIView*)createTitleContainer {
   UIView* titleContainer = [[UIView alloc] init];
   titleContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  titleContainer.layer.masksToBounds = YES;
   titleContainer.layer.cornerRadius =
       TabStripGroupItemConstants.titleContainerHorizontalPadding;
   _titleLabel = [self createTitleLabel];
@@ -135,26 +151,31 @@ constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
       constraintEqualToAnchor:contentView.centerYAnchor
                      constant:kTitleContainerCenterYOffset]
       .active = YES;
-  AddSameConstraintsWithInsets(
-      _titleLabel, _titleContainer,
-      NSDirectionalEdgeInsetsMake(
-          kTitleContainerVerticalPadding,
-          TabStripGroupItemConstants.titleContainerHorizontalPadding,
-          kTitleContainerVerticalPadding,
-          TabStripGroupItemConstants.titleContainerHorizontalPadding));
-  const CGFloat titleLabelMinimumHeight =
-      2 * (TabStripGroupItemConstants.titleContainerHorizontalPadding -
-           kTitleContainerVerticalPadding);
-  [_titleLabel.heightAnchor
-      constraintGreaterThanOrEqualToConstant:titleLabelMinimumHeight]
-      .active = YES;
+  AddSameCenterConstraints(_titleLabel, _titleContainer);
+  _titleContainerHeightConstraint =
+      [_titleContainer.heightAnchor constraintEqualToConstant:0];
+  _titleContainerHeightConstraint.active = YES;
+  NSLayoutConstraint* groupStrokeViewTitleLabelConstraint =
+      [_groupStrokeView.widthAnchor
+          constraintEqualToAnchor:_titleLabel.widthAnchor];
+  groupStrokeViewTitleLabelConstraint.priority = UILayoutPriorityRequired - 2;
+  NSLayoutConstraint* groupStrokeViewTitleContainerConstraint =
+      [_groupStrokeView.widthAnchor
+          constraintLessThanOrEqualToAnchor:_titleContainer.widthAnchor
+                                   constant:
+                                       -2 *
+                                       TabStripGroupItemConstants
+                                           .titleContainerHorizontalPadding];
+  groupStrokeViewTitleContainerConstraint.priority =
+      UILayoutPriorityRequired - 1;
+  NSLayoutConstraint* groupStrokeViewConstantConstraint =
+      [_groupStrokeView.widthAnchor
+          constraintGreaterThanOrEqualToConstant:kGroupStrokeViewMinimumWidth];
+  groupStrokeViewConstantConstraint.priority = UILayoutPriorityRequired;
   [NSLayoutConstraint activateConstraints:@[
-    [_groupStrokeView.leftAnchor
-        constraintLessThanOrEqualToAnchor:_titleLabel.leftAnchor],
-    [_groupStrokeView.rightAnchor
-        constraintGreaterThanOrEqualToAnchor:_titleLabel.rightAnchor],
-    [_groupStrokeView.widthAnchor
-        constraintGreaterThanOrEqualToConstant:kGroupStrokeViewMinimumWidth],
+    groupStrokeViewTitleLabelConstraint,
+    groupStrokeViewConstantConstraint,
+    groupStrokeViewTitleContainerConstraint,
     [_groupStrokeView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
     [_groupStrokeView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
   ]];
@@ -204,6 +225,28 @@ constexpr double kCollapseUpdateGroupStrokeDelaySeconds = 0.25;
     [rightPath addLineToPoint:rightPoint];
   }
   [_groupStrokeView setTrailingPath:rightPath.CGPath];
+}
+
+// Updates the title alpha value and title container height according to the
+// difference between the size of the title and the size of its container.
+- (void)updateTransitionState {
+  CGFloat horizontalTitlePadding =
+      TabStripGroupItemConstants.titleContainerHorizontalPadding;
+  CGFloat verticalTitlePadding = kTitleContainerVerticalPadding;
+  CGFloat titleContainerWidth = _titleContainer.bounds.size.width;
+  CGFloat maxTitleContainerWidth =
+      _titleLabel.frame.size.width + 2 * horizontalTitlePadding;
+  CGFloat minTitleContainerHeight = 2 * _titleContainer.layer.cornerRadius;
+  CGFloat maxTitleContainerHeight =
+      _titleLabel.frame.size.height + 2 * verticalTitlePadding;
+  CGFloat factor = 0;
+  if (maxTitleContainerWidth - 2 * horizontalTitlePadding > 0) {
+    factor = (titleContainerWidth - 2 * horizontalTitlePadding) /
+             (maxTitleContainerWidth - 2 * horizontalTitlePadding);
+  }
+  _titleLabel.alpha = factor;
+  _titleContainerHeightConstraint.constant =
+      (1 - factor) * minTitleContainerHeight + factor * maxTitleContainerHeight;
 }
 
 @end

@@ -345,6 +345,71 @@ class TabStripLayout: UICollectionViewFlowLayout {
   )
     -> UICollectionViewLayoutAttributes?
   {
+    if UIAccessibility.isVoiceOverRunning {
+      // Prevent frame resizing while VoiceOver is active.
+      // This ensures swiping right/left goes to the next cell.
+      return layoutAttributes
+    }
+
+    let contentOffset = collectionView.contentOffset
+    var frame = layoutAttributes.frame
+    let collectionViewWidth = collectionView.bounds.size.width
+
+    let leftBounds: CGFloat = contentOffset.x + sectionInset.left
+    let rightBounds: CGFloat = collectionViewWidth + contentOffset.x - sectionInset.right
+    let isScrollable: Bool = collectionView.contentSize.width > collectionView.frame.width
+
+    /// Recalculate the cell width and origin when it intersects with the left
+    /// collection view's bounds. The cell should collapse within the collection
+    /// view's bounds until its width reaches 0.
+    if isScrollable && (frame.minX < leftBounds || frame.maxX > rightBounds) {
+      let minCellWidth = TabStripConstants.GroupItem.minCellWidth
+
+      // If the cell is out of bounds, make it invisible.
+      if frame.maxX < leftBounds || frame.minX > rightBounds {
+        layoutAttributes.alpha = 0
+      }
+
+      // If intersects with the left bounds.
+      else if frame.minX < leftBounds {
+        // Update the frame origin and width.
+        frame.origin.x = max(leftBounds, frame.origin.x)
+        let offsetLeft: CGFloat = abs(frame.origin.x - layoutAttributes.frame.origin.x)
+        frame.size.width = min(frame.size.width - offsetLeft, frame.size.width)
+
+        /// Start animating the cell out of the collection view  if  the new
+        /// width `frame.size.width` is less than or equal to
+        /// `collapseThreshold`.
+        if frame.size.width <= minCellWidth {
+          // Move the cell to the left until it reaches its final position.
+          frame.origin.x = max(
+            frame.origin.x - minCellWidth + frame.size.width,
+            leftBounds - minCellWidth)
+
+          // Update its alpha value.
+          layoutAttributes.alpha = frame.size.width / minCellWidth
+          frame.size.width = minCellWidth
+        }
+      }
+
+      // If intersects with the right bounds.
+      else if frame.maxX > rightBounds {
+        // Update the frame origin and width.
+        frame.origin.x = min(rightBounds, frame.origin.x)
+        frame.size.width = min(rightBounds - frame.origin.x, frame.size.width)
+
+        /// Start animating the cell out of the collection view  if the new
+        ///  width `frame.size.width` is less than or equal to
+        ///  `collapseThreshold`.
+        if frame.size.width <= minCellWidth {
+          // Update its alpha value.
+          layoutAttributes.alpha = frame.size.width / minCellWidth
+          frame.size.width = minCellWidth
+        }
+      }
+    }
+
+    layoutAttributes.frame = frame
     return layoutAttributes
   }
 
