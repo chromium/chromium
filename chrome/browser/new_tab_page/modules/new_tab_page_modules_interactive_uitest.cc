@@ -19,13 +19,15 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementChildrenReadyEvent);
 const char kMainHistoryClusterTileLinkUrl[] =
     "https://store.google.com/product/pixel_7?hl=en-US";
 const char kHistoryClustersCartTileLinkUrl[] = "https://store.google.com/cart";
-const std::string kHistoryClusterSuggestTileLinkUrl =
+const char kHistoryClusterSuggestTileLinkUrl[] =
     "https://www.google.com/search?q=new%20google%20products";
 const char kGooglePageUrl[] = "https://www.google.com/";
 
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 const DeepQuery kModulesV2Container = {"ntp-app", "ntp-modules-v2",
                                        "#container"};
+const DeepQuery kModulesV2Wrapper = {"ntp-app", "ntp-modules-v2", "#container",
+                                     "ntp-module-wrapper"};
 
 struct ModuleDetails {
   const std::vector<base::test::FeatureRefAndParams> features;
@@ -33,25 +35,113 @@ struct ModuleDetails {
   const DeepQuery more_button_query;
   const DeepQuery more_action_menu_query;
   const DeepQuery dismiss_button_query;
+  const DeepQuery disable_button_query;
+  const DeepQuery tile_link_query;
+  const char* tile_link;
 };
 
-const ModuleDetails kTabResumptionModuleDetails = {
-    .features = {{ntp_features::kNtpTabResumptionModule,
-                  {{ntp_features::kNtpTabResumptionModuleDataParam,
-                    "Fake Data"}}},
-                 {ntp_features::kNtpModulesRedesigned, {}}},
-    .module_query = {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
-                     "#moduleElement", "ntp-tab-resumption"},
-    .more_button_query = {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
-                          "#moduleElement", "ntp-tab-resumption",
-                          "ntp-module-header-v2", "#menuButton"},
-    .more_action_menu_query = {"ntp-app", "ntp-modules-v2",
-                               "ntp-module-wrapper", "#moduleElement",
-                               "ntp-tab-resumption", "ntp-module-header-v2",
-                               "cr-action-menu", "dialog"},
-    .dismiss_button_query = {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
-                             "#moduleElement", "ntp-tab-resumption",
-                             "ntp-module-header-v2", "#dismiss"}};
+struct HistoryClustersModuleDetails : public ModuleDetails {
+  const bool redesigned;
+  const DeepQuery history_clusters_related_search_link;
+  const DeepQuery history_clusters_cart_tile_link;
+  const DeepQuery history_clusters_done_button;
+};
+
+const unsigned long kNumClusters = 1;
+const unsigned long kRedesignedNumClusters = 3;
+const unsigned long kNumVisits = 2;
+const unsigned long kNumVisitsWithImages = 2;
+
+HistoryClustersModuleDetails CreateHistoryClustersModuleDetails(
+    bool redesigned,
+    const unsigned long num_clusters) {
+  if (redesigned) {
+    return {
+        {
+            {{ntp_features::kNtpHistoryClustersModule,
+              {{ntp_features::kNtpHistoryClustersModuleDataParam,
+                base::StringPrintf("%lu,%lu,%lu", num_clusters, kNumVisits,
+                                   kNumVisitsWithImages)}}},
+             {ntp_features::kNtpModulesRedesigned, {}}},
+            {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+             "ntp-history-clusters-redesigned"},
+            {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+             "ntp-history-clusters-redesigned", "history-clusters-header-v2",
+             "ntp-module-header-v2", "#menuButton"},
+            {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+             "ntp-history-clusters-redesigned", "history-clusters-header-v2",
+             "ntp-module-header-v2", "cr-action-menu", "dialog"},
+            {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+             "ntp-history-clusters-redesigned", "history-clusters-header-v2",
+             "ntp-module-header-v2", "#dismiss"},
+            {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+             "ntp-history-clusters-redesigned", "history-clusters-header-v2",
+             "ntp-module-header-v2", "#disable"},
+            {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+             "ntp-history-clusters-redesigned",
+             "ntp-history-clusters-visit-tile", "a"},
+            kMainHistoryClusterTileLinkUrl,
+        },
+        true,
+        {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+         "ntp-history-clusters-redesigned",
+         "ntp-history-clusters-suggest-tile-v2", "a"},
+        {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+         "ntp-history-clusters-redesigned", "ntp-history-clusters-cart-tile-v2",
+         "a"},
+        {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
+         "ntp-history-clusters-redesigned", "history-clusters-header-v2",
+         "cr-icon-button"},
+    };
+  } else {
+    return {
+        {
+            {{ntp_features::kNtpHistoryClustersModule,
+              {{ntp_features::kNtpHistoryClustersModuleDataParam,
+                base::StringPrintf("%lu,%lu,%lu", num_clusters, kNumVisits,
+                                   kNumVisitsWithImages)}}}},
+            {"ntp-app", "ntp-modules", "ntp-module-wrapper",
+             "ntp-history-clusters"},
+            {"ntp-app", "ntp-modules", "ntp-module-wrapper",
+             "ntp-history-clusters", "ntp-module-header", "#menuButton"},
+            {"ntp-app", "ntp-modules", "ntp-module-wrapper",
+             "ntp-history-clusters", "ntp-module-header", "cr-action-menu",
+             "dialog"},
+            {"ntp-app", "ntp-modules", "ntp-module-wrapper",
+             "ntp-history-clusters", "ntp-module-header", "#dismiss"},
+            {"ntp-app", "ntp-modules", "ntp-module-wrapper",
+             "ntp-history-clusters", "ntp-module-header", "#disable"},
+            {"ntp-app", "ntp-modules", "ntp-module-wrapper",
+             "ntp-history-clusters", ".main-tile", "a"},
+            kMainHistoryClusterTileLinkUrl,
+        },
+        false,
+        {"ntp-app", "ntp-modules", "ntp-module-wrapper", "ntp-history-clusters",
+         "ntp-history-clusters-suggest-tile", "a"},
+        {"ntp-app", "ntp-modules", "ntp-module-wrapper", "ntp-history-clusters",
+         "ntp-history-clusters-cart-tile", "a"},
+        {},
+    };
+  }
+}
+
+ModuleDetails kTabResumptionModuleDetails = {
+    {{ntp_features::kNtpTabResumptionModule,
+      {{ntp_features::kNtpTabResumptionModuleDataParam, "Fake Data"}}},
+     {ntp_features::kNtpModulesRedesigned, {}}},
+    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper", "ntp-tab-resumption"},
+    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper", "ntp-tab-resumption",
+     "ntp-module-header-v2", "#menuButton"},
+    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper", "ntp-tab-resumption",
+     "ntp-module-header-v2", "cr-action-menu", "dialog"},
+    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper", "ntp-tab-resumption",
+     "ntp-module-header-v2", "#dismiss"},
+    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper", "ntp-tab-resumption",
+     "ntp-module-header-v2", "#disable"},
+    {"ntp-app", "ntp-modules-v2", "ntp-module-wrapper", "ntp-tab-resumption",
+     "#tabs", "a"},
+    kGooglePageUrl,
+};
 
 }  // namespace
 
@@ -124,6 +214,16 @@ class NewTabPageModulesInteractiveUiBaseTest : public InteractiveBrowserTest {
     return WaitForStateChange(kNewTabPageElementId, std::move(element_loaded));
   }
 
+  InteractiveTestApi::MultiStep WaitForElementHiddenSet(
+      const DeepQuery& element) {
+    StateChange element_loaded;
+    element_loaded.event = kElementReadyEvent;
+    element_loaded.type = StateChange::Type::kExistsAndConditionTrue;
+    element_loaded.where = element;
+    element_loaded.test_function = "(el) => { return el.hidden; }";
+    return WaitForStateChange(kNewTabPageElementId, std::move(element_loaded));
+  }
+
   InteractiveTestApi::MultiStep ClickElement(
       const ui::ElementIdentifier& contents_id,
       const DeepQuery& element) {
@@ -136,7 +236,7 @@ class NewTabPageModulesInteractiveUiBaseTest : public InteractiveBrowserTest {
 
 class NewTabPageModulesInteractiveUiTest
     : public NewTabPageModulesInteractiveUiBaseTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<ModuleDetails> {
  public:
   NewTabPageModulesInteractiveUiTest() = default;
   ~NewTabPageModulesInteractiveUiTest() override = default;
@@ -146,127 +246,195 @@ class NewTabPageModulesInteractiveUiTest
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kSignedOutNtpModulesSwitch);
+
+    features.InitWithFeaturesAndParameters(ModuleDetails().features, {});
+    InteractiveBrowserTest::SetUp();
+  }
+
+  ModuleDetails ModuleDetails() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NewTabPageModulesInteractiveUiTest,
+    ::testing::Values(kTabResumptionModuleDetails,
+                      CreateHistoryClustersModuleDetails(true, kNumClusters)));
+// TODO(crbug.com/335214502): Flaky on Linux/ChromeOS Tests.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ClickingHideButtonDismissesModule \
+  DISABLED_ClickingHideButtonDismissesModule
+#else
+#define MAYBE_ClickingHideButtonDismissesModule \
+  ClickingHideButtonDismissesModule
+#endif
+IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
+                       MAYBE_ClickingHideButtonDismissesModule) {
+  RunTestSequence(
+      // 1. Wait for new tab page to load.
+      LoadNewTabPage(),
+      // 2. Wait for modules container to have an expected child count matching
+      // the test setup.
+      WaitForElementChildElementCount(kModulesV2Container, 1),
+      // 3. Ensure the module's dismiss button exists, and thus, that the module
+      // loaded successfully.
+      WaitForElementToLoad(ModuleDetails().dismiss_button_query),
+      // 4. Scroll to the dismiss element of the NTP module's header. Modules
+      // may sometimes load below the fold.
+      ScrollIntoView(kNewTabPageElementId,
+                     ModuleDetails().dismiss_button_query),
+      // 5. Click the "more actions" menu button of the NTP history clusters
+      // module.
+      ClickElement(kNewTabPageElementId, ModuleDetails().more_button_query),
+      // 6. Wait for module's menu dialog to be anchored.
+      WaitForElementStyleSet(ModuleDetails().more_action_menu_query),
+      // 7. Click the dismiss action element of the NTP module.
+      ClickElement(kNewTabPageElementId, ModuleDetails().dismiss_button_query),
+      // 8. Wait for modules container to reflect an updated element count that
+      // resulted from dismissing a module.
+      WaitForElementChildElementCount(kModulesV2Container, 0));
+}
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ClickingDisableButtonDisablesModule \
+  DISABLED_ClickingDisableButtonDisablesModule
+#else
+#define MAYBE_ClickingDisableButtonDisablesModule \
+  ClickingDisableButtonDisablesModule
+#endif
+IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
+                       MAYBE_ClickingDisableButtonDisablesModule) {
+  const auto& module_details = ModuleDetails();
+  RunTestSequence(
+      // 1. Wait for new tab page to load.
+      LoadNewTabPage(),
+      // 2. Wait for modules container to have an expected child count matching
+      // the test setup.
+      WaitForElementChildElementCount(kModulesV2Container, 1),
+      // 3. Ensure the module's dismiss button exists, and thus, that the module
+      // loaded successfully.
+      WaitForElementToLoad(module_details.disable_button_query),
+      // 4. Scroll to the dismiss element of the NTP module's header. Modules
+      // may sometimes load below the fold.
+      ScrollIntoView(kNewTabPageElementId, module_details.disable_button_query),
+      // 5. Click the "more actions" menu button of the NTP history clusters
+      // module.
+      ClickElement(kNewTabPageElementId, module_details.more_button_query),
+      // 6. Wait for module's menu dialog to be anchored.
+      WaitForElementStyleSet(module_details.more_action_menu_query),
+      // 7. Click the disable action element of the NTP module.
+      ClickElement(kNewTabPageElementId, module_details.disable_button_query),
+      // 8. Wait for modules container to reflect an updated element count that
+      // resulted from disabling a module.
+      WaitForElementHiddenSet(kModulesV2Wrapper));
+}
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ClickingEntryNavigatesToCorrectPage \
+  DISABLED_ClickingEntryNavigatesToCorrectPage
+#else
+#define MAYBE_ClickingEntryNavigatesToCorrectPage \
+  ClickingEntryNavigatesToCorrectPage
+#endif
+IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
+                       MAYBE_ClickingEntryNavigatesToCorrectPage) {
+  RunTestSequence(
+      // 1. Wait for new tab page to load.
+      LoadNewTabPage(),
+      // 2. Wait for modules container to have an expected child count matching
+      // the test setup.
+      WaitForElementChildElementCount(kModulesV2Container, 1),
+      // 3. Wait for the Tab resumption module to load.
+      WaitForElementToLoad(ModuleDetails().module_query),
+      // 4. Wait for tile to load.
+      WaitForLinkToLoad(ModuleDetails().tile_link_query,
+                        ModuleDetails().tile_link),
+      // 5. Scroll to tile. Modules may sometimes load below the fold.
+      ScrollIntoView(kNewTabPageElementId, ModuleDetails().tile_link_query),
+      // 6. Click the element link.
+      ClickElement(kNewTabPageElementId, ModuleDetails().tile_link_query),
+      // 7. Verify that the tab navigates to the tile's link.
+      WaitForWebContentsNavigation(kNewTabPageElementId,
+                                   GURL(ModuleDetails().tile_link)));
+}
+
+class NewTabPageModulesHistoryClustersInteractiveUiTest
+    : public NewTabPageModulesInteractiveUiBaseTest,
+      public testing::WithParamInterface<HistoryClustersModuleDetails> {
+ public:
+  NewTabPageModulesHistoryClustersInteractiveUiTest() = default;
+  ~NewTabPageModulesHistoryClustersInteractiveUiTest() override = default;
+  NewTabPageModulesHistoryClustersInteractiveUiTest(
+      const NewTabPageModulesHistoryClustersInteractiveUiTest&) = delete;
+  void operator=(const NewTabPageModulesHistoryClustersInteractiveUiTest&) =
+      delete;
+
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     // TODO(crbug.com/40901780): This test should include signing into an
     // account.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kSignedOutNtpModulesSwitch);
-    const unsigned long kNumClusters = 1;
-    const unsigned long kNumVisits = 2;
-    const unsigned long kNumVisitsWithImages = 2;
 
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        ModuleDetails().features;
 
-    enabled_features.push_back(
-        {ntp_features::kNtpHistoryClustersModule,
-         {{ntp_features::kNtpHistoryClustersModuleDataParam,
-           base::StringPrintf("%lu,%lu,%lu", kNumClusters, kNumVisits,
-                              kNumVisitsWithImages)}}});
     enabled_features.push_back(
         {ntp_features::kNtpChromeCartInHistoryClusterModule,
          {{ntp_features::kNtpChromeCartInHistoryClustersModuleDataParam,
            "6"}}});
 
-    if (Redesigned()) {
-      enabled_features.push_back({ntp_features::kNtpModulesRedesigned, {}});
-    } else {
-      disabled_features.push_back(ntp_features::kNtpModulesRedesigned);
-    }
-
-    features.InitWithFeaturesAndParameters(std::move(enabled_features),
-                                           std::move(disabled_features));
+    features.InitWithFeaturesAndParameters(std::move(enabled_features), {});
     InteractiveBrowserTest::SetUp();
   }
 
-  bool Redesigned() const { return GetParam(); }
+  HistoryClustersModuleDetails ModuleDetails() const { return GetParam(); }
+  bool Redesigned() const { return ModuleDetails().redesigned; }
 };
 
-IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
-                       ClickingHistoryClustersTileNavigatesToCorrectPage) {
-  const DeepQuery tileLink = {"ntp-app",
-                              "ntp-modules",
-                              "ntp-module-wrapper",
-                              "ntp-history-clusters",
-                              ".main-tile",
-                              "a"};
-  const DeepQuery tileLinkRedesigned = {"ntp-app",
-                                        "ntp-modules-v2",
-                                        "ntp-module-wrapper",
-                                        "ntp-history-clusters-redesigned",
-                                        "ntp-history-clusters-visit-tile",
-                                        "a"};
-  const DeepQuery kHistoryClusterVisitTileLink =
-      Redesigned() ? tileLinkRedesigned : tileLink;
-
-  RunTestSequence(
-      // 1. Wait for new tab page to load.
-      LoadNewTabPage(),
-      // 2. Wait for tile to load.
-      WaitForLinkToLoad(kHistoryClusterVisitTileLink,
-                        kMainHistoryClusterTileLinkUrl),
-      // 3. Scroll to tile. Modules may sometimes load below the fold.
-      ScrollIntoView(kNewTabPageElementId, kHistoryClusterVisitTileLink),
-      // 4. Click the tile.
-      ClickElement(kNewTabPageElementId, kHistoryClusterVisitTileLink),
-      // 5. Verify that the tab navigates to the tile's link.
-      WaitForWebContentsNavigation(kNewTabPageElementId,
-                                   GURL(kMainHistoryClusterTileLinkUrl)));
-}
-
+// TODO(crbug.com/335214502): Flaky on Linux/ChromeOS Tests.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ClickingHistoryClustersRelatedSearchNavigatesToCorrectPage \
+  DISABLED_ClickingHistoryClustersRelatedSearchNavigatesToCorrectPage
+#else
+#define MAYBE_ClickingHistoryClustersRelatedSearchNavigatesToCorrectPage \
+  ClickingHistoryClustersRelatedSearchNavigatesToCorrectPage
+#endif
 IN_PROC_BROWSER_TEST_P(
-    NewTabPageModulesInteractiveUiTest,
-    ClickingHistoryClustersRelatedSearchNavigatesToCorrectPage) {
-  const DeepQuery relatedSearchLink = {"ntp-app",
-                                       "ntp-modules",
-                                       "ntp-module-wrapper",
-                                       "ntp-history-clusters",
-                                       "ntp-history-clusters-suggest-tile",
-                                       "a"};
-  const DeepQuery relatedSearchLinkRedesigned = {
-      "ntp-app",
-      "ntp-modules-v2",
-      "ntp-module-wrapper",
-      "ntp-history-clusters-redesigned",
-      "ntp-history-clusters-suggest-tile-v2",
-      "a"};
+    NewTabPageModulesHistoryClustersInteractiveUiTest,
+    MAYBE_ClickingHistoryClustersRelatedSearchNavigatesToCorrectPage) {
   const DeepQuery kHistoryClusterRelatedSearchLink =
-      Redesigned() ? relatedSearchLinkRedesigned : relatedSearchLink;
+      ModuleDetails().history_clusters_related_search_link;
 
   RunTestSequence(
       // 1. Wait for new tab page to load.
       LoadNewTabPage(),
       // 2. Wait for tile to load.
       WaitForLinkToLoad(kHistoryClusterRelatedSearchLink,
-                        kHistoryClusterSuggestTileLinkUrl.c_str()),
+                        kHistoryClusterSuggestTileLinkUrl),
       // 3. Scroll to tile. Modules may sometimes load below the fold.
       ScrollIntoView(kNewTabPageElementId, kHistoryClusterRelatedSearchLink),
       // 4. Click the tile.
       ClickElement(kNewTabPageElementId, kHistoryClusterRelatedSearchLink),
       // 5. Verify that the tab navigates to the tile's link.
-      WaitForWebContentsNavigation(
-          kNewTabPageElementId,
-          GURL(kHistoryClusterSuggestTileLinkUrl.c_str())));
+      WaitForWebContentsNavigation(kNewTabPageElementId,
+                                   GURL(kHistoryClusterSuggestTileLinkUrl)));
 }
 
-IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
-                       ClickingHistoryClustersCartTileNavigatesToCorrectPage) {
-  const DeepQuery tileLink = {"ntp-app",
-                              "ntp-modules",
-                              "ntp-module-wrapper",
-                              "ntp-history-clusters",
-                              "ntp-history-clusters-cart-tile",
-                              "a"};
-
-  const DeepQuery kHistoryClustersCartTileLinkRedesigned = {
-      "ntp-app",
-      "ntp-modules-v2",
-      "ntp-module-wrapper",
-      "ntp-history-clusters-redesigned",
-      "ntp-history-clusters-cart-tile-v2",
-      "a"};
-
+// TODO(crbug.com/335214502): Flaky on Linux/ChromeOS Tests.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ClickingHistoryClustersCartTileNavigatesToCorrectPage \
+  DISABLED_ClickingHistoryClustersCartTileNavigatesToCorrectPage
+#else
+#define MAYBE_ClickingHistoryClustersCartTileNavigatesToCorrectPage \
+  ClickingHistoryClustersCartTileNavigatesToCorrectPage
+#endif
+IN_PROC_BROWSER_TEST_P(
+    NewTabPageModulesHistoryClustersInteractiveUiTest,
+    MAYBE_ClickingHistoryClustersCartTileNavigatesToCorrectPage) {
   const DeepQuery kHistoryClustersCartTileLink =
-      Redesigned() ? kHistoryClustersCartTileLinkRedesigned : tileLink;
+      ModuleDetails().history_clusters_cart_tile_link;
 
   RunTestSequence(
       // 1. Wait for new tab page to load.
@@ -283,106 +451,6 @@ IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
                                    GURL(kHistoryClustersCartTileLinkUrl)));
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         NewTabPageModulesInteractiveUiTest,
-                         ::testing::Bool());
-
-constexpr unsigned long kSampleNumClusters = 3;
-
-class NewTabPageModulesRedesignedInteractiveUiTest
-    : public NewTabPageModulesInteractiveUiBaseTest {
- public:
-  NewTabPageModulesRedesignedInteractiveUiTest() = default;
-  ~NewTabPageModulesRedesignedInteractiveUiTest() override = default;
-  NewTabPageModulesRedesignedInteractiveUiTest(
-      const NewTabPageModulesRedesignedInteractiveUiTest&) = delete;
-  void operator=(const NewTabPageModulesRedesignedInteractiveUiTest&) = delete;
-
-  void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kSignedOutNtpModulesSwitch);
-
-    const unsigned long kNumVisits = 2;
-    const unsigned long kNumVisitsWithImages = 2;
-    features.InitWithFeaturesAndParameters(
-        {{ntp_features::kNtpHistoryClustersModule,
-          {{ntp_features::kNtpHistoryClustersModuleDataParam,
-            base::StringPrintf("%lu,%lu,%lu", kSampleNumClusters, kNumVisits,
-                               kNumVisitsWithImages)}}},
-         {ntp_features::kNtpChromeCartInHistoryClusterModule,
-          {{ntp_features::kNtpChromeCartInHistoryClustersModuleDataParam,
-            "6"}}},
-         {ntp_features::kNtpModulesRedesigned, {}}},
-        {});
-    InteractiveBrowserTest::SetUp();
-  }
-};
-
-// TODO(crbug.com/40925724): Enable the test on a compatible version skew.
-// TODO(crbug.com/40926438): Flaky on Linux ChromiumOS MSan.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_ClickingHideButtonDismissesCluster \
-  DISABLED_ClickingHideButtonDismissesCluster
-#else
-#define MAYBE_ClickingHideButtonDismissesCluster \
-  ClickingHideButtonDismissesCluster
-#endif
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesRedesignedInteractiveUiTest,
-                       MAYBE_ClickingHideButtonDismissesCluster) {
-  const DeepQuery kModulesContainer = {"ntp-app", "ntp-modules-v2",
-                                       "#container"};
-  const DeepQuery kHistoryClustersMoreButton = {
-      "ntp-app",
-      "ntp-modules-v2",
-      "ntp-module-wrapper",
-      "ntp-history-clusters-redesigned",
-      "history-clusters-header-v2",
-      "ntp-module-header-v2",
-      "#menuButton"};
-  const DeepQuery kHistoryClustersMoreActionMenu = {
-      "ntp-app",
-      "ntp-modules-v2",
-      "ntp-module-wrapper",
-      "ntp-history-clusters-redesigned",
-      "history-clusters-header-v2",
-      "ntp-module-header-v2",
-      "cr-action-menu",
-      "dialog"};
-  const DeepQuery kHistoryClustersHideButton = {
-      "ntp-app",
-      "ntp-modules-v2",
-      "ntp-module-wrapper",
-      "ntp-history-clusters-redesigned",
-      "history-clusters-header-v2",
-      "ntp-module-header-v2",
-      "#dismiss"};
-
-  RunTestSequence(
-      // 1. Wait for new tab page to load.
-      LoadNewTabPage(),
-      // 2. Wait for modules container to have an expected child count matching
-      // the test setup.
-      WaitForElementChildElementCount(kModulesContainer, kSampleNumClusters),
-      // 3. Ensure the NTP history clusters module "hide" button exists, and
-      // thus, that the module loaded successfully.
-      WaitForElementToLoad(kHistoryClustersHideButton),
-      // 4. Scroll to the "hide" element of the NTP history clusters module.
-      // Modules may sometimes load below the fold.
-      ScrollIntoView(kNewTabPageElementId, kHistoryClustersHideButton),
-      // 5. Click the "more actions" menu button of the NTP history clusters
-      // module.
-      ClickElement(kNewTabPageElementId, kHistoryClustersMoreButton),
-      // 6. Wait for history clusters menu dialog to be anchored.
-      WaitForElementStyleSet(kHistoryClustersMoreActionMenu),
-      // 7. Click the "hide" element of the NTP history clusters module.
-      ClickElement(kNewTabPageElementId, kHistoryClustersHideButton),
-      // 8. Wait for modules container to reflect an updated element count that
-      // resulted from dismissing a module.
-      WaitForElementChildElementCount(kModulesContainer,
-                                      kSampleNumClusters - 1));
-}
-
 // TODO(crbug.com/40925463): Flaky on Linux Tests (dbg, MSan).
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ClickingDoneButtonDismissesCluster \
@@ -391,166 +459,36 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesRedesignedInteractiveUiTest,
 #define MAYBE_ClickingDoneButtonDismissesCluster \
   ClickingDoneButtonDismissesCluster
 #endif
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesRedesignedInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(NewTabPageModulesHistoryClustersInteractiveUiTest,
                        MAYBE_ClickingDoneButtonDismissesCluster) {
-  const DeepQuery kModulesContainer = {"ntp-app", "ntp-modules-v2",
-                                       "#container"};
-  const DeepQuery kHistoryClustersMoreButton = {
-      "ntp-app",
-      "ntp-modules-v2",
-      "ntp-module-wrapper",
-      "ntp-history-clusters-redesigned",
-      "history-clusters-header-v2",
-      "ntp-module-header-v2",
-      "#menuButton"};
-  const DeepQuery kHistoryClustersMoreActionMenu = {
-      "ntp-app",
-      "ntp-modules-v2",
-      "ntp-module-wrapper",
-      "ntp-history-clusters-redesigned",
-      "history-clusters-header-v2",
-      "ntp-module-header-v2",
-      "cr-action-menu",
-      "dialog"};
-  const DeepQuery kHistoryClustersDoneButton = {
-      "ntp-app",
-      "ntp-modules-v2",
-      "ntp-module-wrapper",
-      "ntp-history-clusters-redesigned",
-      "history-clusters-header-v2",
-      "ntp-module-header-v2",
-      "#done"};
-
-  RunTestSequence(
-      // 1. Wait for new tab page to load.
-      LoadNewTabPage(),
-      // 2. Wait for modules container to have an expected child count matching
-      // the test setup.
-      WaitForElementChildElementCount(kModulesContainer, kSampleNumClusters),
-      // 3. Ensure the NTP history clusters module "done" button exists, and
-      // thus, that the module loaded successfully.
-      WaitForElementToLoad(kHistoryClustersDoneButton),
-      // 4. Scroll to the "done" element of the NTP history clusters module.
-      // Modules may sometimes load below the fold.
-      ScrollIntoView(kNewTabPageElementId, kHistoryClustersDoneButton),
-      // 5. Click the "more actions" menu button of the NTP history clusters
-      // module.
-      ClickElement(kNewTabPageElementId, kHistoryClustersMoreButton),
-      // 6. Wait for history clusters menu dialog to be anchored.
-      WaitForElementStyleSet(kHistoryClustersMoreActionMenu),
-      // 7. Click the "done" element of the NTP history clusters module.
-      ClickElement(kNewTabPageElementId, kHistoryClustersDoneButton),
-      // 8. Wait for modules container to reflect an updated element count that
-      // resulted from dismissing a module.
-      WaitForElementChildElementCount(kModulesContainer,
-                                      kSampleNumClusters - 1));
-}
-
-class NewTabPageModulesRedesignedHeaderInteractiveUiTest
-    : public NewTabPageModulesInteractiveUiBaseTest,
-      public testing::WithParamInterface<ModuleDetails> {
- public:
-  NewTabPageModulesRedesignedHeaderInteractiveUiTest() = default;
-  ~NewTabPageModulesRedesignedHeaderInteractiveUiTest() override = default;
-  NewTabPageModulesRedesignedHeaderInteractiveUiTest(
-      const NewTabPageModulesRedesignedHeaderInteractiveUiTest&) = delete;
-  void operator=(const NewTabPageModulesRedesignedHeaderInteractiveUiTest&) =
-      delete;
-
-  void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kSignedOutNtpModulesSwitch);
-
-    features.InitWithFeaturesAndParameters(ModuleDetails().features, {});
-    InteractiveBrowserTest::SetUp();
+  if (Redesigned()) {
+    const DeepQuery kHistoryClustersDoneButton =
+        ModuleDetails().history_clusters_done_button;
+    RunTestSequence(
+        // 1. Wait for new tab page to load.
+        LoadNewTabPage(),
+        // 2. Wait for modules container to have an expected child count
+        // matching the test setup.
+        WaitForElementChildElementCount(kModulesV2Container,
+                                        kRedesignedNumClusters),
+        // 3. Ensure the NTP history clusters module "done" button exists, and
+        // thus, that the module loaded successfully.
+        WaitForElementToLoad(kHistoryClustersDoneButton),
+        // 4. Scroll to the "done" element of the NTP history clusters module.
+        // Modules may sometimes load below the fold.
+        ScrollIntoView(kNewTabPageElementId, kHistoryClustersDoneButton),
+        // 5. Click the "done" element of the NTP history clusters module.
+        ClickElement(kNewTabPageElementId, kHistoryClustersDoneButton),
+        // 6. Wait for modules container to reflect an updated element count
+        // that resulted from dismissing a module.
+        WaitForElementChildElementCount(kModulesV2Container,
+                                        kRedesignedNumClusters - 1));
   }
-
-  ModuleDetails ModuleDetails() const { return GetParam(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         NewTabPageModulesRedesignedHeaderInteractiveUiTest,
-                         ::testing::Values(kTabResumptionModuleDetails));
-
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ClickingHideButtonDismissesModule \
-  DISABLED_ClickingHideButtonDismissesModule
-#else
-#define MAYBE_ClickingHideButtonDismissesModule \
-  ClickingHideButtonDismissesModule
-#endif
-IN_PROC_BROWSER_TEST_P(NewTabPageModulesRedesignedHeaderInteractiveUiTest,
-                       MAYBE_ClickingHideButtonDismissesModule) {
-  const auto& module_details = ModuleDetails();
-  RunTestSequence(
-      // 1. Wait for new tab page to load.
-      LoadNewTabPage(),
-      // 2. Wait for modules container to have an expected child count matching
-      // the test setup.
-      WaitForElementChildElementCount(kModulesV2Container, 1),
-      // 3. Ensure the module's dismiss button exists, and thus, that the module
-      // loaded successfully.
-      WaitForElementToLoad(module_details.dismiss_button_query),
-      // 4. Scroll to the dismiss element of the NTP module's header. Modules
-      // may sometimes load below the fold.
-      ScrollIntoView(kNewTabPageElementId, module_details.dismiss_button_query),
-      // 5. Click the "more actions" menu button of the NTP history clusters
-      // module.
-      ClickElement(kNewTabPageElementId, module_details.more_button_query),
-      // 6. Wait for module's menu dialog to be anchored.
-      WaitForElementStyleSet(module_details.more_action_menu_query),
-      // 7. Click the dismiss action element of the NTP module.
-      ClickElement(kNewTabPageElementId, module_details.dismiss_button_query),
-      // 8. Wait for modules container to reflect an updated element count that
-      // resulted from dismissing a module.
-      WaitForElementChildElementCount(kModulesV2Container, 0));
 }
 
-class NewTabPageTabResumptionModuleInteractiveUiTest
-    : public NewTabPageModulesInteractiveUiBaseTest {
- public:
-  NewTabPageTabResumptionModuleInteractiveUiTest() = default;
-  ~NewTabPageTabResumptionModuleInteractiveUiTest() override = default;
-  NewTabPageTabResumptionModuleInteractiveUiTest(
-      const NewTabPageTabResumptionModuleInteractiveUiTest&) = delete;
-  void operator=(const NewTabPageTabResumptionModuleInteractiveUiTest&) =
-      delete;
-
-  void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kSignedOutNtpModulesSwitch);
-    features.InitWithFeaturesAndParameters(
-        kTabResumptionModuleDetails.features,
-        {ntp_features::kNtpHistoryClustersModule});
-    InteractiveBrowserTest::SetUp();
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(NewTabPageTabResumptionModuleInteractiveUiTest,
-                       ClickingEntryNavigatesToCorrectPage) {
-  const DeepQuery kResumeTabLink = {"ntp-app",
-                                    "ntp-modules-v2",
-                                    "ntp-module-wrapper",
-                                    "#moduleElement",
-                                    "ntp-tab-resumption",
-                                    "#tabs",
-                                    "a"};
-  RunTestSequence(
-      // 1. Wait for new tab page to load.
-      LoadNewTabPage(),
-      // 2. Wait for modules container to have an expected child count matching
-      // the test setup.
-      WaitForElementChildElementCount(kModulesV2Container, 1),
-      // 3. Wait for the Tab resumption module to load.
-      WaitForElementToLoad(kTabResumptionModuleDetails.module_query),
-      // 4. Wait for tile to load.
-      WaitForLinkToLoad(kResumeTabLink, kGooglePageUrl),
-      // 3. Scroll to tile. Modules may sometimes load below the fold.
-      ScrollIntoView(kNewTabPageElementId, kResumeTabLink),
-      // 4. Click the element link.
-      ClickElement(kNewTabPageElementId, kResumeTabLink),
-      // 5. Verify that the tab navigates to the tile's link.
-      WaitForWebContentsNavigation(kNewTabPageElementId, GURL(kGooglePageUrl)));
-}
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NewTabPageModulesHistoryClustersInteractiveUiTest,
+    testing::Values(
+        CreateHistoryClustersModuleDetails(false, kNumClusters),
+        CreateHistoryClustersModuleDetails(true, kRedesignedNumClusters)));
