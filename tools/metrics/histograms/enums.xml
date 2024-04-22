@@ -35096,6 +35096,7 @@ This is true even if the type has been removed from the mojom file.
   <int value="-2024468885" label="chrome://ntp-tiles-internals/"/>
   <int value="-2020874093" label="chrome://lock-reauth/"/>
   <int value="-1977692791" label="chrome://crash/"/>
+  <int value="-1970917350" label="chrome-untrusted://compose/"/>
   <int value="-1949142440" label="chrome://smb-credentials-dialog/"/>
   <int value="-1911971715" label="chrome://history/"/>
   <int value="-1887206190" label="chrome://nfc-debug/"/>
@@ -35140,6 +35141,7 @@ This is true even if the type has been removed from the mojom file.
   <int value="-1203248739" label="chrome://scanning/"/>
   <int value="-1198437953" label="chrome://download-shelf.top-chrome/"/>
   <int value="-1177126000" label="chrome://profile-internals/"/>
+  <int value="-1176451566" label="chrome://access-code-cast/"/>
   <int value="-1169621742" label="chrome://linux-proxy-config/"/>
   <int value="-1137946367" label="chrome://webrt-logs/"/>
   <int value="-1108319739" label="chrome://sync-internals/"/>
@@ -35192,6 +35194,7 @@ This is true even if the type has been removed from the mojom file.
   <int value="-377028639" label="chrome://copresence/"/>
   <int value="-359703631" label="chrome://slow_trace/"/>
   <int value="-245337017" label="chrome://user-actions/"/>
+  <int value="-222190329" label="chrome://dino/"/>
   <int value="-206925255" label="chrome://popular-sites-internals/"/>
   <int value="-176639700" label="chrome://omnibox/"/>
   <int value="-106823253" label="chrome://conflicts/"/>
@@ -35199,6 +35202,7 @@ This is true even if the type has been removed from the mojom file.
   <int value="-89853739" label="chrome://thumbnails/"/>
   <int value="-88246682" label="chrome://uithreadhang/"/>
   <int value="-68100096" label="chrome://welcome-win10/"/>
+  <int value="-58745346" label="chrome://network-errors/"/>
   <int value="-42737706" label="chrome://extensions-frame/"/>
   <int value="-12304525" label="chrome://tab-strip/"/>
   <int value="-2353438" label="chrome://sim-unlock/"/>
@@ -35265,6 +35269,7 @@ This is true even if the type has been removed from the mojom file.
   <int value="1131405887" label="chrome://taskscheduler-internals/"/>
   <int value="1134924982" label="chrome://app-icon/"/>
   <int value="1145000455" label="chrome://arc-overview-tracing/"/>
+  <int value="1145963223" label="chrome://process-internals/"/>
   <int value="1148733422" label="chrome://restart/"/>
   <int value="1211642987" label="chrome://voicesearch/"/>
   <int value="1213428635" label="chrome://memory-redirect/"/>
@@ -35309,6 +35314,8 @@ This is true even if the type has been removed from the mojom file.
   <int value="1673299360" label="chrome://tab-search.top-chrome/"/>
   <int value="1677735296" label="chrome://sync-confirmation/"/>
   <int value="1687272877" label="chrome://syncresources/"/>
+  <int value="1715073862"
+      label="chrome-untrusted://read-anything-side-panel.top-chrome/"/>
   <int value="1725906496" label="chrome://imageburner/"/>
   <int value="1765337366" label="chrome://certificate-manager/"/>
   <int value="1776179126" label="chrome://thumb/"/>
