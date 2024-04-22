@@ -348,6 +348,7 @@ component("capture_lib") {
     ]
     data_deps = [
       ":camera_hal_dispatcher_mojo_policy",
+      ":document_scanner_mojo_policy",
       ":jpeg_accelerator_mojo_policy",
       ":system_event_monitor_mojo_policy",
       ":video_capture_device_info_monitor_mojo_policy",
