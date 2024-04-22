@@ -635,7 +635,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 }
 
 - (void)evaluateJavaScript:(NSString*)javaScriptString
-                completion:(void (^)(id, NSError*))completion {
+         completionHandler:(void (^)(id result, NSError* error))completion {
   web::WebFrame* mainFrame =
       _webState->GetPageWorldWebFramesManager()->GetMainWebFrame();
   if (!mainFrame) {
@@ -661,6 +661,11 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
         }
         completion(jsResult, error);
       }));
+}
+
+- (void)evaluateJavaScript:(NSString*)javaScriptString
+                completion:(void (^)(id, NSError*))completion {
+  [self evaluateJavaScript:javaScriptString completionHandler:completion];
 }
 
 - (void)setUIDelegate:(id<CWVUIDelegate>)UIDelegate {
