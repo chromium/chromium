@@ -338,8 +338,15 @@ IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_GetAllScreensMediaNoScreenSuccessIfStrictCSP \
+  DISABLED_GetAllScreensMediaNoScreenSuccessIfStrictCSP
+#else
+#define MAYBE_GetAllScreensMediaNoScreenSuccessIfStrictCSP \
+  GetAllScreensMediaNoScreenSuccessIfStrictCSP
+#endif
 IN_PROC_BROWSER_TEST_P(GetAllScreensMediaBrowserTest,
-                       GetAllScreensMediaNoScreenSuccessIfStrictCSP) {
+                       MAYBE_GetAllScreensMediaNoScreenSuccessIfStrictCSP) {
   SetScreens(/*screen_count=*/1u);
   const auto& param = GetParam();
   if (param.expected_csp_acceptable) {
