@@ -153,6 +153,17 @@ class CloudFileSystem : public ProvidedFileSystemInterface {
                             storage::AsyncFileUtil::StatusCallback callback,
                             base::File::Error result);
 
+  // When an attempt to read the file from disk completes, in the event it fails
+  // ensure it gets delegated to the underlying FSP.
+  void OnReadFileFromCacheCompleted(int file_handle,
+                                    net::IOBuffer* buffer,
+                                    int64_t offset,
+                                    int length,
+                                    ReadChunkReceivedCallback callback,
+                                    int bytes_read,
+                                    bool has_more,
+                                    base::File::Error result);
+
   // When a `ReadFile` completes, attempt to cache the bytes on disk.
   void OnReadFileCompleted(int file_handle,
                            net::IOBuffer* buffer,

@@ -295,6 +295,41 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
 }
 
 TEST_F(FileSystemProviderCloudFileSystemTest,
+       WhenReadingUpToDateItemsFromCacheFailsShouldDeferToFsp) {
+  auto [mock_content_cache, cloud_file_system] =
+      CreateMockContentCacheAndCloudFileSystem();
+
+  // Open the `kFakeFilePath` file to stage it in the `FakeProvidedFileSystem`.
+  int file_handle = GetFileHandleFromSuccessfulOpenFile(
+      *cloud_file_system, base::FilePath(kFakeFilePath));
+
+  scoped_refptr<net::IOBuffer> buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(1);
+
+  // Set the first read bytes to return true, this indicates that the data is
+  // fresh and available in the cache, however, make the inner callback to
+  // return `base::File::FILE_ERROR_FAILED` to indicate that the actual
+  // underlying read of the cached file failed.
+  EXPECT_CALL(*mock_content_cache,
+              StartReadBytes(_, buffer.get(), /*offset=*/0,
+                             /*length=*/1, IsNotNullCallback()))
+      .WillOnce(
+          [](const OpenedCloudFile& file, net::IOBuffer* buffer, int64_t offset,
+             int length,
+             ProvidedFileSystemInterface::ReadChunkReceivedCallback callback) {
+            std::move(callback).Run(/*chunk_length=*/0, /*has_more=*/false,
+                                    base::File::FILE_ERROR_FAILED);
+            return true;
+          });
+
+  // Ensure that the read still completes successfully, this indicates it
+  // deferred the actual read to the underlying FSP instead of the failed cloud
+  // file system.
+  ReadFileSuccessfully(*cloud_file_system, file_handle, buffer);
+  CloseFileSuccessfully(*cloud_file_system, file_handle);
+}
+
+TEST_F(FileSystemProviderCloudFileSystemTest,
        ContentCacheFailsWritingBytesShouldStillReturnSuccessfully) {
   auto [mock_content_cache, cloud_file_system] =
       CreateMockContentCacheAndCloudFileSystem();

@@ -199,11 +199,12 @@ AbortCallback CloudFileSystem::ReadFile(int file_handle,
   // Attempt to read the file from the content cache, in the event
   // `StartReadBytes` succeeds, an actual read of the underlying FD will be
   // kicked off, for the purposes of this method it has finished successfully.
-  // TODO(b/331691461): Fallback to serving the file from the FSP if the read
-  // from the cache fails.
   const OpenedCloudFile& opened_cloud_file = it->second;
-  if (content_cache_->StartReadBytes(opened_cloud_file, buffer, offset, length,
-                                     callback)) {
+  if (content_cache_->StartReadBytes(
+          opened_cloud_file, buffer, offset, length,
+          base::BindRepeating(&CloudFileSystem::OnReadFileFromCacheCompleted,
+                              weak_ptr_factory_.GetWeakPtr(), file_handle,
+                              buffer, offset, length, callback))) {
     return AbortCallback();
   }
 
@@ -214,6 +215,27 @@ AbortCallback CloudFileSystem::ReadFile(int file_handle,
       base::BindRepeating(&CloudFileSystem::OnReadFileCompleted,
                           weak_ptr_factory_.GetWeakPtr(), file_handle, buffer,
                           offset, length, callback));
+}
+
+void CloudFileSystem::OnReadFileFromCacheCompleted(
+    int file_handle,
+    net::IOBuffer* buffer,
+    int64_t offset,
+    int length,
+    ReadChunkReceivedCallback callback,
+    int bytes_read,
+    bool has_more,
+    base::File::Error result) {
+  if (result == base::File::FILE_OK) {
+    // If the cached read file was successful, ensure that is passed to the
+    // caller.
+    callback.Run(bytes_read, has_more, result);
+    return;
+  }
+
+  LOG(ERROR) << "Couldn't read the file from cache";
+  file_system_->ReadFile(file_handle, buffer, offset, length,
+                         std::move(callback));
 }
 
 void CloudFileSystem::OnReadFileCompleted(int file_handle,
