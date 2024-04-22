@@ -105,8 +105,11 @@ std::string It2MeDesktopEnvironment::GetCapabilities() const {
 
   // TODO: joedow - Move MultiStream capability to a shared base
   // class once all platforms and connection modes support it.
+  // TODO: b/335873769 - Fix crash in ChromeOS when multi-stream is enabled.
+#if !BUILDFLAG(IS_CHROMEOS)
   capabilities += " ";
   capabilities += protocol::kMultiStreamCapability;
+#endif
 
   return capabilities;
 }
