@@ -16056,6 +16056,25 @@
             ]
         }
     ],
+    "RelatedSearchesViaZPSPrefetchingDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_RelatedSearchesIntegration",
+                    "enable_features": [
+                        "ExtractRelatedSearchesFromPrefetchedZPSResponse"
+                    ]
+                }
+            ]
+        }
+    ],
     "RemotePageMetadataAndroid": [
         {
             "platforms": [
