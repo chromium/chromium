@@ -134,7 +134,6 @@ bool VaapiVideoEncodeAccelerator::Initialize(
     Client* client,
     std::unique_ptr<MediaLog> media_log) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
-  DCHECK_EQ(state_, kUninitialized);
   VLOGF(2) << "Initializing VAVEA, " << config.AsHumanReadableString();
 
   if (!can_use_encoder_) {
@@ -671,6 +670,7 @@ scoped_refptr<VASurface> VaapiVideoEncodeAccelerator::CreateInputSurface(
     VaapiWrapper& vaapi_wrapper,
     const gfx::Size& encode_size,
     const std::vector<VaapiWrapper::SurfaceUsageHint>& surface_usage_hints) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   if (!base::Contains(input_surfaces_, encode_size)) {
     auto surface =
         CreateScopedSurface(vaapi_wrapper, encode_size, surface_usage_hints);
@@ -1132,6 +1132,7 @@ void VaapiVideoEncodeAccelerator::SetState(State state) {
     return;
   }
 
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   VLOGF(2) << "setting state to: " << state;
   state_ = state;
 }

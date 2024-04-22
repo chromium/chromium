@@ -267,36 +267,43 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // while it is running.
 
   // Encoder state. Encode tasks will only run in kEncoding state.
-  State state_ = State::kUninitialized;
+  State state_ GUARDED_BY_CONTEXT(encoder_sequence_checker_) =
+      State::kUninitialized;
 
   // Encoder instance managing video codec state and preparing encode jobs.
   // Should only be used on |encoder_task_runner_|.
-  std::unique_ptr<VaapiVideoEncoderDelegate> encoder_;
+  std::unique_ptr<VaapiVideoEncoderDelegate> encoder_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // Map of input surfaces. In non |native_input_mode_|, this is always created
   // and memory-based encode input VideoFrame is written into this.
   // In |native_input_mode_|, this is created only if scaling or cropping is
   // required and used as a VPP destination.
-  InputSurfaceMap input_surfaces_;
+  InputSurfaceMap input_surfaces_ GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // Map of available reconstructed surfaces for encoding index by a layer
   // resolution. These are stored as reference frames in
   // VaapiVideoEncoderDelegate if necessary.
-  EncodeSurfacesMap available_encode_surfaces_;
+  EncodeSurfacesMap available_encode_surfaces_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // Map of the number of allocated reconstructed surfaces for encoding
   // indexed by a layer resolution.
-  EncodeSurfacesCountMap encode_surfaces_count_;
+  EncodeSurfacesCountMap encode_surfaces_count_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // Queue of input frames to be encoded.
-  base::queue<InputFrameRef> input_queue_;
+  base::queue<InputFrameRef> input_queue_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // BitstreamBuffers mapped, ready to be filled with encoded stream data.
-  base::queue<BitstreamBuffer> available_bitstream_buffers_;
+  base::queue<BitstreamBuffer> available_bitstream_buffers_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // VASurfaces already encoded and waiting for the bitstream buffer to
   // be downloaded.
-  base::queue<std::optional<EncodeResult>> pending_encode_results_;
+  base::queue<std::optional<EncodeResult>> pending_encode_results_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // Task runner for interacting with the client, and its checker.
   const scoped_refptr<base::SequencedTaskRunner> child_task_runner_;
@@ -318,7 +325,7 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
       GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // The completion callback of the Flush() function.
-  FlushCallback flush_callback_;
+  FlushCallback flush_callback_ GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // Supported profiles that are filled if and only if in a unit test.
   SupportedProfiles supported_profiles_for_testing_;
