@@ -399,7 +399,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
   NOTREACHED_NORETURN();
 }
 
-- (void)selectItemWithID:(web::WebStateID)itemID pinned:(BOOL)pinned {
+- (void)selectItemWithID:(web::WebStateID)itemID
+                    pinned:(BOOL)pinned
+    isFirstActionOnTabGrid:(BOOL)isFirstActionOnTabGrid {
   NOTREACHED_NORETURN();
 }
 
