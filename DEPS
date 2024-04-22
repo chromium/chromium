@@ -4136,12 +4136,6 @@ deps = {
       'condition': 'checkout_ios and checkout_src_internal',
   },
 
-  'src/remoting/android/internal': {
-      'url': Var('chrome_git') + '/chrome/remoting/android/internal.git' + '@' +
-        '016a13fdc552a86d4ca8e730f156e6487c93056b',
-      'condition': 'checkout_android and checkout_src_internal',
-  },
-
   'src/remoting/host/installer/linux/internal': {
       'url': Var('chrome_git') + '/chrome/remoting/host/installer/linux/internal.git' + '@' +
         'e190816de75b14897f1af785eb37d237750460e2',

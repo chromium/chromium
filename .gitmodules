@@ -740,10 +740,6 @@
 	path = ios_internal
 	url = https://chrome-internal.googlesource.com/chrome/ios_internal
 	gclient-condition = checkout_ios and checkout_src_internal
-[submodule "remoting/android/internal"]
-	path = remoting/android/internal
-	url = https://chrome-internal.googlesource.com/chrome/remoting/android/internal
-	gclient-condition = checkout_android and checkout_src_internal
 [submodule "remoting/host/installer/linux/internal"]
 	path = remoting/host/installer/linux/internal
 	url = https://chrome-internal.googlesource.com/chrome/remoting/host/installer/linux/internal
