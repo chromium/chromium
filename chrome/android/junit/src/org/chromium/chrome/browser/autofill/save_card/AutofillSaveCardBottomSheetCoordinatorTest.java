@@ -4,10 +4,9 @@
 
 package org.chromium.chrome.browser.autofill.save_card;
 
-import static com.google.common.truth.Truth.assertThat;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Robolectric.buildActivity;
 import static org.robolectric.Shadows.shadowOf;
@@ -96,6 +95,6 @@ public final class AutofillSaveCardBottomSheetCoordinatorTest {
 
         mCoordinator.destroy();
 
-        verify(mMediator).destroy();
+        verify(mMediator).hide(eq(BottomSheetController.StateChangeReason.NONE));
     }
 }

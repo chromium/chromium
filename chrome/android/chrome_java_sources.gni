@@ -128,6 +128,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetBridge.java",
   "java/src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetContent.java",
   "java/src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetCoordinator.java",
+  "java/src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetLifecycle.java",
   "java/src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetMediator.java",
   "java/src/org/chromium/chrome/browser/autofill/settings/AndroidPaymentAppPreference.java",
   "java/src/org/chromium/chrome/browser/autofill/settings/AndroidPaymentAppsFragment.java",

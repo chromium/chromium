@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.autofill.payments.AutofillSaveCardUiInfo;
 import org.chromium.components.autofill.payments.CardDetail;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
@@ -92,7 +93,10 @@ public final class AutofillSaveCardBottomSheetBridgeTest {
         mBridge.destroy();
 
         verify(mBottomSheetController)
-                .hideContent(any(AutofillSaveCardBottomSheetContent.class), eq(false));
+                .hideContent(
+                        any(AutofillSaveCardBottomSheetContent.class),
+                        eq(true),
+                        eq(StateChangeReason.NONE));
     }
 
     @Test

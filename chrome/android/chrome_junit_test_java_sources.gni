@@ -45,6 +45,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetBridgeTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetContentTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetCoordinatorTest.java",
+  "junit/src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetLifecycleTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/settings/AutofillDeletePaymentMethodConfirmationDialogTest.java",
   "junit/src/org/chromium/chrome/browser/autofill/settings/AutofillDeleteSavedCvcsConfirmationDialogTest.java",

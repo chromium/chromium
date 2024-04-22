@@ -63,15 +63,18 @@ public class AutofillSaveCardBottomSheetCoordinator {
             AutofillSaveCardBottomSheetBridge bridge) {
         mContext = context;
         mBridge = bridge;
+        AutofillSaveCardBottomSheetContent content =
+                new AutofillSaveCardBottomSheetContent(context);
+        content.setUiInfo(uiInfo);
         mMediator =
                 new AutofillSaveCardBottomSheetMediator(
-                        new AutofillSaveCardBottomSheetContent(context),
-                        uiInfo,
+                        content,
+                        new AutofillSaveCardBottomSheetLifecycle(
+                                bottomSheetController, layoutStateProvider, tabModel),
                         bottomSheetController,
-                        layoutStateProvider,
-                        tabModel,
-                        this::launchCctOnLegalMessageClick,
-                        bridge);
+                        bridge,
+                        this::launchCctOnLegalMessageClick);
+        content.setDelegate(mMediator);
     }
 
     @VisibleForTesting
@@ -103,6 +106,6 @@ public class AutofillSaveCardBottomSheetCoordinator {
 
     /** Destroys this component hiding the bottom sheet if needed. */
     public void destroy() {
-        mMediator.destroy();
+        mMediator.hide(BottomSheetController.StateChangeReason.NONE);
     }
 }

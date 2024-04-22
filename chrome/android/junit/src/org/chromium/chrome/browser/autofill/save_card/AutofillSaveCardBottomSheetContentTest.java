@@ -77,7 +77,7 @@ public class AutofillSaveCardBottomSheetContentTest {
 
         button.callOnClick();
 
-        verify(mDelegate).didClickConfirm();
+        verify(mDelegate).onAccepted();
     }
 
     @Test
@@ -87,7 +87,7 @@ public class AutofillSaveCardBottomSheetContentTest {
 
         button.callOnClick();
 
-        verify(mDelegate).didClickCancel();
+        verify(mDelegate).onCanceled();
     }
 
     @Test
@@ -111,22 +111,48 @@ public class AutofillSaveCardBottomSheetContentTest {
         mContent.setUiInfo(uiInfo);
         View contentView = mContent.getContentView();
 
-        ImageView logoImageView = contentView.findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_icon);
+        ImageView logoImageView =
+                contentView.findViewById(
+                        org.chromium.chrome.browser.autofill.R.id.autofill_save_card_icon);
         assertEquals(View.GONE, logoImageView.getVisibility());
-        assertEquals("Title Text", getTextViewText(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_title_text));
-        assertEquals("Description Text", getTextViewText(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_description_text));
-        ImageView issuerImageView =
-                contentView.findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_credit_card_icon);
-        assertThat(issuerImageView.getDrawable(), notNullValue());
-        assertEquals("CardLabel Text", getTextViewText(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_credit_card_label));
         assertEquals(
-                "CardSubLabel Text", getTextViewText(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_credit_card_sublabel));
+                "Title Text",
+                getTextViewText(
+                        org.chromium.chrome.browser.autofill.R.id.autofill_save_card_title_text));
+        assertEquals(
+                "Description Text",
+                getTextViewText(
+                        org.chromium.chrome.browser.autofill.R.id
+                                .autofill_save_card_description_text));
+        ImageView issuerImageView =
+                contentView.findViewById(
+                        org.chromium.chrome.browser.autofill.R.id
+                                .autofill_save_card_credit_card_icon);
+        assertThat(issuerImageView.getDrawable(), notNullValue());
+        assertEquals(
+                "CardLabel Text",
+                getTextViewText(
+                        org.chromium.chrome.browser.autofill.R.id
+                                .autofill_save_card_credit_card_label));
+        assertEquals(
+                "CardSubLabel Text",
+                getTextViewText(
+                        org.chromium.chrome.browser.autofill.R.id
+                                .autofill_save_card_credit_card_sublabel));
         assertEquals(
                 "Card Description",
-                contentView.findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_credit_card_chip).getContentDescription());
-        Button confirmButton = contentView.findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_confirm_button);
+                contentView
+                        .findViewById(
+                                org.chromium.chrome.browser.autofill.R.id.autofill_credit_card_chip)
+                        .getContentDescription());
+        Button confirmButton =
+                contentView.findViewById(
+                        org.chromium.chrome.browser.autofill.R.id
+                                .autofill_save_card_confirm_button);
         assertEquals("Confirm Text", confirmButton.getText());
-        Button cancelButton = contentView.findViewById(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_cancel_button);
+        Button cancelButton =
+                contentView.findViewById(
+                        org.chromium.chrome.browser.autofill.R.id.autofill_save_card_cancel_button);
         assertEquals("Cancel Text", cancelButton.getText());
     }
 

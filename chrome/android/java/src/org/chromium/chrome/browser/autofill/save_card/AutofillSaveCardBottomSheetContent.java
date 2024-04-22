@@ -36,10 +36,10 @@ import java.util.function.Consumer;
         void didClickLegalMessageUrl(String url);
 
         /** Called when the bottom sheet is submitted. E.g. through a button click. */
-        void didClickConfirm();
+        void onAccepted();
 
         /** Called when the bottom sheet is cancelled. E.g. through a button click. */
-        void didClickCancel();
+        void onCanceled();
     }
 
     /**
@@ -50,9 +50,16 @@ import java.util.function.Consumer;
     /*package*/ AutofillSaveCardBottomSheetContent(Context context) {
         mView =
                 LayoutInflater.from(context)
-                        .inflate(org.chromium.chrome.browser.autofill.R.layout.autofill_save_card_bottom_sheet, /* root= */ null);
-        setButtonDelegateAction(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_confirm_button, Delegate::didClickConfirm);
-        setButtonDelegateAction(org.chromium.chrome.browser.autofill.R.id.autofill_save_card_cancel_button, Delegate::didClickCancel);
+                        .inflate(
+                                org.chromium.chrome.browser.autofill.R.layout
+                                        .autofill_save_card_bottom_sheet,
+                                /* root= */ null);
+        setButtonDelegateAction(
+                org.chromium.chrome.browser.autofill.R.id.autofill_save_card_confirm_button,
+                Delegate::onAccepted);
+        setButtonDelegateAction(
+                org.chromium.chrome.browser.autofill.R.id.autofill_save_card_cancel_button,
+                Delegate::onCanceled);
         setLinkMovementMethod(org.chromium.chrome.browser.autofill.R.id.legal_message);
     }
 
