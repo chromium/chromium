@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_factory_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_separator_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_title_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
@@ -149,16 +151,17 @@ PopupViewViews::PopupViewViews(
                     /*show_arrow_pointer=*/false),
       controller_(controller),
       parent_(parent) {
-  InitViews();
+  InitViews({});
 }
 
 PopupViewViews::PopupViewViews(
-    base::WeakPtr<AutofillPopupController> controller)
+    base::WeakPtr<AutofillPopupController> controller,
+    PopupViewSearchBarConfig search_bar_config)
     : PopupBaseView(controller,
                     views::Widget::GetTopLevelWidgetForNativeView(
                         controller->container_view())),
       controller_(controller) {
-  InitViews();
+  InitViews(search_bar_config);
 }
 
 PopupViewViews::~PopupViewViews() = default;
@@ -517,7 +520,7 @@ void PopupViewViews::OnSuggestionsChanged() {
   open_sub_popup_timer_.Stop();
   SetRowWithOpenSubPopup(std::nullopt);
 
-  CreateChildViews();
+  CreateSuggestionViews();
   DoUpdateBoundsAndRedrawPopup();
 }
 
@@ -686,18 +689,28 @@ bool PopupViewViews::HasPopupRowViewAt(size_t index) const {
          absl::holds_alternative<PopupRowView*>(rows_[index]);
 }
 
-void PopupViewViews::InitViews() {
+void PopupViewViews::InitViews(PopupViewSearchBarConfig search_bar_config) {
   SetNotifyEnterExitOnChild(true);
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
 
-  views::BoxLayout* layout =
-      SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical));
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
+  if (search_bar_config.enabled) {
+    search_bar_ = AddChildView(
+        std::make_unique<PopupSearchBarView>(search_bar_config.placeholder));
+    search_bar_->SetProperty(views::kMarginsKey,
+                             gfx::Insets::VH(GetContentsVerticalPadding(), 0));
+    AddChildView(std::make_unique<PopupSeparatorView>(/*vertical_padding=*/0));
+  }
 
-  CreateChildViews();
+  suggestions_container_ =
+      AddChildView(views::Builder<views::BoxLayoutView>()
+                       .SetOrientation(views::BoxLayout::Orientation::kVertical)
+                       .Build());
+
+  CreateSuggestionViews();
 }
 
-void PopupViewViews::CreateChildViews() {
+void PopupViewViews::CreateSuggestionViews() {
   // Null all pointers prior to deleting the children views to avoid temporarily
   // dangling pointers that might be picked up by dangle detection builds. Also,
   // `footer_container_` is instantiated conditionally, which can make its value
@@ -706,20 +719,13 @@ void PopupViewViews::CreateChildViews() {
   body_container_ = nullptr;
   footer_container_ = nullptr;
   rows_.clear();
-  RemoveAllChildViews();
+  suggestions_container_->RemoveAllChildViews();
 
   const int kInterItemsPadding = GetContentsVerticalPadding();
   const std::vector<Suggestion> kSuggestions = controller_->GetSuggestions();
 
   SetBackground(
       views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
-
-  // `content_view` wraps the full content of the popup and provides vertical
-  // padding.
-  raw_ptr<views::BoxLayoutView> content_view =
-      AddChildView(views::Builder<views::BoxLayoutView>()
-                       .SetOrientation(views::BoxLayout::Orientation::kVertical)
-                       .Build());
 
   rows_.reserve(kSuggestions.size());
   size_t current_line_number = 0u;
@@ -801,8 +807,8 @@ void PopupViewViews::CreateChildViews() {
             .ClipHeightTo(0, body_container->GetPreferredSize().height())
             .Build();
     body_container_ = scroll_view->SetContents(std::move(body_container));
-    scroll_view_ = content_view->AddChildView(std::move(scroll_view));
-    content_view->SetFlexForView(scroll_view_.get(), 1);
+    scroll_view_ = suggestions_container_->AddChildView(std::move(scroll_view));
+    suggestions_container_->SetFlexForView(scroll_view_.get(), 1);
   }
 
   if (current_line_number >= kSuggestions.size()) {
@@ -824,15 +830,16 @@ void PopupViewViews::CreateChildViews() {
     // no vertical padding as these elements have their own top/bottom paddings.
     if (kSuggestions[current_line_number].popup_item_id ==
         PopupItemId::kSeparator) {
-      rows_.push_back(content_view->AddChildView(
+      rows_.push_back(suggestions_container_->AddChildView(
           std::make_unique<PopupSeparatorView>(/*vertical_padding=*/0)));
       ++current_line_number;
     }
 
-    footer_container_ = content_view->AddChildView(std::move(footer_container));
+    footer_container_ =
+        suggestions_container_->AddChildView(std::move(footer_container));
     footer_container_->SetInsideBorderInsets(
         gfx::Insets::VH(kInterItemsPadding, 0));
-    content_view->SetFlexForView(footer_container_, 0);
+    suggestions_container_->SetFlexForView(footer_container_, 0);
   }
 
   for (; current_line_number < kSuggestions.size(); ++current_line_number) {
@@ -1025,6 +1032,9 @@ bool PopupViewViews::CanShowDropdownInBounds(const gfx::Rect& bounds) const {
   int min_height = 0;
   if (body_container_ && !body_container_->children().empty()) {
     min_height += body_container_->children()[0]->GetPreferredSize().height();
+  }
+  if (search_bar_) {
+    min_height += search_bar_->GetPreferredSize().height();
   }
   if (footer_container_ && !footer_container_->children().empty() &&
       !IsFooterScrollable()) {

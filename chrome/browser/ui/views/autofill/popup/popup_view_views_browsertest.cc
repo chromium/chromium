@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_pixel_test.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views_test_api.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -168,6 +169,7 @@ class PopupViewViewsBrowsertestBase
       EXPECT_CALL(controller(), ViewDestroyed);
     }
 
+    search_bar_config_ = {};
     popup_has_parent_ = false;
     popup_parent_.reset();
     PopupPixelTest::TearDownOnMainThread();
@@ -193,8 +195,10 @@ class PopupViewViewsBrowsertestBase
     }
   }
 
-  void ShowAndVerifyUi(bool popup_has_parent = false) {
+  void ShowAndVerifyUi(bool popup_has_parent = false,
+                       PopupViewSearchBarConfig search_bar_config = {}) {
     popup_has_parent_ = popup_has_parent;
+    search_bar_config_ = search_bar_config;
     PopupPixelTest::ShowAndVerifyUi();
   }
 
@@ -206,7 +210,7 @@ class PopupViewViewsBrowsertestBase
                                 test_api(*popup_parent_).GetWeakPtr(),
                                 popup_parent_->GetWidget());
     }
-    return new PopupViewViews(controller.GetWeakPtr());
+    return new PopupViewViews(controller.GetWeakPtr(), search_bar_config_);
   }
 
  private:
@@ -215,6 +219,7 @@ class PopupViewViewsBrowsertestBase
 
   // Controls whether the view is created as a sub-popup (i.e. having a parent).
   bool popup_has_parent_ = false;
+  PopupViewSearchBarConfig search_bar_config_;
   std::unique_ptr<PopupViewViews> popup_parent_;
 };
 
@@ -398,6 +403,13 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   suggestions.push_back(PopupItemId::kAutofillOptions);
   controller().set_suggestions(std::move(suggestions));
   ShowAndVerifyUi(/*popup_has_parent=*/true);
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, SearchBarViewProvided) {
+  controller().set_suggestions({PopupItemId::kAddressEntry});
+  ShowAndVerifyUi(
+      /*popup_has_parent=*/false,
+      PopupViewSearchBarConfig{.enabled = true, .placeholder = u"Search"});
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

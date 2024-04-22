@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
 #include "components/autofill/core/common/aliases.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -53,6 +54,13 @@ class ExpandablePopupParentView {
   virtual void OnMouseExitedInChildren() = 0;
 };
 
+struct PopupViewSearchBarConfig {
+  // This setting controls the search bar's visibility. If set to 'false',
+  // the search bar won't be displayed, and other settings become irrelevant.
+  bool enabled = false;
+  std::u16string placeholder;
+};
+
 // Views implementation for the autofill and password suggestion.
 class PopupViewViews : public PopupBaseView,
                        public AutofillPopupView,
@@ -77,10 +85,14 @@ class PopupViewViews : public PopupBaseView,
   static constexpr base::TimeDelta kNoSelectionHideSubPopupDelay =
       base::Milliseconds(2500);
 
+  // Constructor for creating sub-popups.
   PopupViewViews(base::WeakPtr<AutofillPopupController> controller,
                  base::WeakPtr<ExpandablePopupParentView> parent,
                  views::Widget* parent_widget);
-  explicit PopupViewViews(base::WeakPtr<AutofillPopupController> controller);
+
+  // Constructor for creating root level popups.
+  explicit PopupViewViews(base::WeakPtr<AutofillPopupController> controller,
+                          PopupViewSearchBarConfig search_bar_config = {});
   PopupViewViews(const PopupViewViews&) = delete;
   PopupViewViews& operator=(const PopupViewViews&) = delete;
   ~PopupViewViews() override;
@@ -146,12 +158,12 @@ class PopupViewViews : public PopupBaseView,
   bool HasPopupRowViewAt(size_t index) const;
 
   // Instantiates the content of the popup.
-  void InitViews();
+  void InitViews(PopupViewSearchBarConfig search_bar_config);
 
   // Creates child views based on the suggestions given by |controller_|.
   // This method expects that all non-footer suggestions precede footer
   // suggestions.
-  void CreateChildViews();
+  void CreateSuggestionViews();
 
   // Applies certain rounding rules to the given width, such as matching the
   // element width when possible.
@@ -235,6 +247,8 @@ class PopupViewViews : public PopupBaseView,
   std::optional<size_t> row_with_open_sub_popup_;
 
   std::vector<RowPointer> rows_;
+  raw_ptr<PopupSearchBarView> search_bar_ = nullptr;
+  raw_ptr<views::BoxLayoutView> suggestions_container_ = nullptr;
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;
   raw_ptr<views::BoxLayoutView> body_container_ = nullptr;
   raw_ptr<views::BoxLayoutView> footer_container_ = nullptr;
