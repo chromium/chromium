@@ -895,7 +895,14 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_SplitModifierKeyboard) {
   ASSERT_TRUE(future.IsReady());
 }
 
-TEST_F(InputDataProviderTest, FilterOutSplitModifierKeyboard) {
+// TODO(crbug.com/336373314): the test is flaky on ChromeOS Msan builders.
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_FilterOutSplitModifierKeyboard \
+  DISABLED_FilterOutSplitModifierKeyboard
+#else
+#define MAYBE_FilterOutSplitModifierKeyboard FilterOutSplitModifierKeyboard
+#endif
+TEST_F(InputDataProviderTest, MAYBE_FilterOutSplitModifierKeyboard) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
   auto ignore_modifier_split_secret_key =
