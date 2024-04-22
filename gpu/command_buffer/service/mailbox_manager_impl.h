@@ -28,7 +28,6 @@ class GPU_GLES2_EXPORT MailboxManagerImpl : public MailboxManager {
 
   // MailboxManager implementation:
   TextureBase* ConsumeTexture(const Mailbox& mailbox) override;
-  void ProduceTexture(const Mailbox& mailbox, TextureBase* texture) override;
   void TextureDeleted(TextureBase* texture) override;
 
  private:

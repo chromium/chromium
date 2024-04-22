@@ -553,7 +553,6 @@ test("gpu_unittests") {
     "command_buffer/service/gr_shader_cache_unittest.cc",
     "command_buffer/service/id_manager_unittest.cc",
     "command_buffer/service/indexed_buffer_binding_host_unittest.cc",
-    "command_buffer/service/mailbox_manager_unittest.cc",
     "command_buffer/service/memory_program_cache_unittest.cc",
     "command_buffer/service/multi_draw_manager_unittest.cc",
     "command_buffer/service/passthrough_program_cache_unittest.cc",
