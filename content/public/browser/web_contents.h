@@ -1373,7 +1373,7 @@ class WebContents : public PageNavigator,
   // since the last navigation.
   virtual bool CompletedFirstVisuallyNonEmptyPaint() = 0;
 
-  // TODO(https://crbug.com/826293): This is a simple mitigation to validate
+  // TODO(crbug.com/41379215): This is a simple mitigation to validate
   // that an action that requires a user gesture actually has one in the
   // trustworthy browser process, rather than relying on the untrustworthy
   // renderer. This should be eventually merged into and accounted for in the

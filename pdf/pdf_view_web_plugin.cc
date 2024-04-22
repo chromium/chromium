@@ -1026,7 +1026,7 @@ void PdfViewWebPlugin::SubmitForm(const std::string& url,
 }
 
 void PdfViewWebPlugin::DidFormOpen(int32_t result) {
-  // TODO(crbug.com/719344): Process response.
+  // TODO(crbug.com/41317525): Process response.
   LOG_IF(ERROR, result != kSuccess) << "DidFormOpen failed: " << result;
   form_loader_.reset();
 }

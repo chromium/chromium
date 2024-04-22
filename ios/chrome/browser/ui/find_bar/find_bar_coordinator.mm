@@ -83,7 +83,7 @@
   [self.presenter prepareForPresentation];
   [self.presenter presentAnimated:animated];
 
-  // TODO(crbug.com/731045): This early return temporarily replaces a DCHECK.
+  // TODO(crbug.com/41324045): This early return temporarily replaces a DCHECK.
   // For unknown reasons, this DCHECK sometimes was hit in the wild, resulting
   // in a crash.
   if (!self.currentWebState) {

@@ -132,7 +132,7 @@ BASE_EXPORT void EnsureProcessGetsReaped(Process process);
 // terminated if necessary, and reaped on exit. The caller should have signalled
 // |process| to exit before calling this API. The API will allow a couple of
 // seconds grace period before forcibly terminating |process|.
-// TODO(https://crbug.com/806451): The Mac implementation currently blocks the
+// TODO(crbug.com/41367359): The Mac implementation currently blocks the
 // calling thread for up to two seconds.
 BASE_EXPORT void EnsureProcessTerminated(Process process);
 

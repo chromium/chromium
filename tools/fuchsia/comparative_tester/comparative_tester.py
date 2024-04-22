@@ -55,9 +55,8 @@ def RunCommand(command: List[str], msg: str) -> str:
   return out
 
 
-# TODO(crbug.com/848465): replace with --test-launcher-filter-file directly
-def ParseFilterFile(filepath: str,
-                    p_filts: List[str],
+# TODO(crbug.com/41392149): replace with --test-launcher-filter-file directly
+def ParseFilterFile(filepath: str, p_filts: List[str],
                     n_filts: List[str]) -> str:
   """Takes a path to a filter file, parses it, and constructs a gtest_filter
   string for test execution.
@@ -306,7 +305,7 @@ def GenerateTestData(do_config: bool, do_build: bool, num_reps: int,
     print("Ran GN")
   elif is_debug:
     logging.warning("The --is_debug flag is ignored unless --do_config is also \
-                     specified")
+                     specified"                               )
 
   if do_build:
     # Build test targets in both output directories.

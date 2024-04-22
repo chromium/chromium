@@ -89,7 +89,7 @@ bool CreateUploadDataSourcesFromResourceRequest(
   for (auto& element : *request.request_body->elements()) {
     switch (element.type()) {
       case network::DataElement::Tag::kDataPipe:
-        // TODO(https://crbug.com/721414): Support data pipe elements.
+        // TODO(crbug.com/41318947): Support data pipe elements.
         break;
 
       case network::DataElement::Tag::kBytes:
@@ -97,7 +97,7 @@ bool CreateUploadDataSourcesFromResourceRequest(
             element.As<network::DataElementBytes>().AsStringPiece()));
         break;
       case network::DataElement::Tag::kFile:
-        // TODO(https://crbug.com/715679): This may not work when network
+        // TODO(crbug.com/41315406): This may not work when network
         // process is sandboxed.
         data_sources->push_back(std::make_unique<FileUploadDataSource>(
             element.As<network::DataElementFile>().path()));

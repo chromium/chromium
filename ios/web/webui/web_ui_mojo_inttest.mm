@@ -211,7 +211,7 @@ TEST_F(WebUIMojoTest, MessageExchange) {
           // RunUntilIdle() is incompatible with mojo::SimpleWatcher's
           // automatic arming behavior, which Mojo JS still depends upon.
           //
-          // TODO(crbug.com/701875): Introduce the full watcher API to JS and
+          // TODO(crbug.com/41307566): Introduce the full watcher API to JS and
           // get rid of this hack.
           base::RunLoop loop;
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

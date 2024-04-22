@@ -172,9 +172,9 @@ std::optional<AttestedCredentialData>
 AttestedCredentialData::CreateFromU2fRegisterResponse(
     base::span<const uint8_t> u2f_data,
     std::unique_ptr<PublicKey> public_key) {
-  // TODO(crbug/799075): Introduce a CredentialID class to do this extraction.
-  // Extract the length of the credential (i.e. of the U2FResponse key
-  // handle). Length is big endian.
+  // TODO(crbug.com/41363164): Introduce a CredentialID class to do this
+  // extraction. Extract the length of the credential (i.e. of the U2FResponse
+  // key handle). Length is big endian.
   std::vector<uint8_t> extracted_length =
       fido_parsing_utils::Extract(u2f_data, kU2fKeyHandleLengthOffset, 1);
 

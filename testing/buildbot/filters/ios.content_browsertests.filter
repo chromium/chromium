@@ -302,7 +302,7 @@
 -All/YieldingParserDumpAccessibilityTreeTest.AccessibilityPopoverApi/blink
 -All/DumpAccessibilityTreeTestWithIgnoredNodes.AccessibilityInputRadioCheckboxLabel/blink
 
-# TODO(crbug.com/1511011): These emit an extra inlineTextBox
+# TODO(crbug.com/41483598): These emit an extra inlineTextBox
 -All/DumpAccessibilityTreeTest.ReusedMapChangeMapName/blink
 -All/DumpAccessibilityTreeTest.ReusedMapMoveImage/blink
 -All/YieldingParserDumpAccessibilityTreeTest.ReusedMapChangeMapName/blink

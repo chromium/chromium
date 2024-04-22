@@ -277,7 +277,7 @@ bool HttpAuthHandlerDigest::ParseChallengeProperty(std::string_view name,
     // Parse the comma separated list of qops.
     // auth is the only supported qop, and all other values are ignored.
     //
-    // TODO(https://crbug.com/820198): Remove this copy when
+    // TODO(crbug.com/41375521): Remove this copy when
     // HttpUtil::ValuesIterator can take a std::string_view.
     std::string value_str(value);
     HttpUtil::ValuesIterator qop_values(value_str.begin(), value_str.end(),

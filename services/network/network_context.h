@@ -749,7 +749,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // `cert_verify_result.cert_status` and
   // `cert_verify_result.policy_compliance`. Returns net::OK or
   // net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED.
-  // TODO(crbug.com/828447): This code is more-or-less duplicated in
+  // TODO(crbug.com/41380502): This code is more-or-less duplicated in
   // SSLClientSocket and QUIC. Fold this into some CertVerifier-shaped class
   // in //net.
   int CheckCTRequirementsForSignedExchange(

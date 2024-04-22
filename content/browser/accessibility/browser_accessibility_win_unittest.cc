@@ -3167,7 +3167,7 @@ TEST_F(BrowserAccessibilityWinTest, AccChildOnlyReturnsDescendants) {
                       child_unique_id_variant, &result));
 }
 
-// TODO(crbug.com/929563): Disabled due to flakiness.
+// TODO(crbug.com/41439880): Disabled due to flakiness.
 TEST_F(BrowserAccessibilityWinTest, DISABLED_TestIAccessible2Relations) {
   ui::AXNodeData root;
   root.id = 1;

@@ -319,7 +319,7 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
 
   // This must occur at PreMainMessageLoopRun because `SetupMetrics()` uses the
   // blocking pool, which is disabled until the CreateThreads phase of startup.
-  // TODO(crbug.com/786494): Investigate whether metrics recording can be
+  // TODO(crbug.com/41356264): Investigate whether metrics recording can be
   // initialized consistently across iOS and non-iOS platforms
   SetupMetrics();
 

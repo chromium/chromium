@@ -731,7 +731,7 @@ void DesktopCaptureDevice::Core::ScheduleNextCaptureFrame() {
 void DesktopCaptureDevice::Core::RequestWakeLock() {
   mojo::Remote<device::mojom::WakeLockProvider> wake_lock_provider;
   auto receiver = wake_lock_provider.BindNewPipeAndPassReceiver();
-  // TODO(https://crbug.com/823869): Fix DesktopCaptureDeviceTest and remove
+  // TODO(crbug.com/41377723): Fix DesktopCaptureDeviceTest and remove
   // this conditional.
   if (BrowserThread::IsThreadInitialized(BrowserThread::UI)) {
     GetUIThreadTaskRunner({})->PostTask(

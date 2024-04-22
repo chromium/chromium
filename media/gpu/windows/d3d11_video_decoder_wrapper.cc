@@ -67,11 +67,11 @@ class D3D11VideoDecoderWrapperImpl : public D3D11VideoDecoderWrapper {
     // If bit 14 is clear, then it's the former, else it's the latter.
     //
     // Let the workaround override array texture mode, if enabled.
-    // TODO(crbug.com/971952): Ignore |use_single_video_decoder_texture_| here,
-    // since it might be the case that it's not actually the right fix. Instead,
-    // We use this workaround to force a copy later.  The workaround will be
-    // renamed if this turns out to fix the issue, but we might need to merge
-    // back and smaller changes are better.
+    // TODO(crbug.com/41463736): Ignore |use_single_video_decoder_texture_|
+    // here, since it might be the case that it's not actually the right fix.
+    // Instead, We use this workaround to force a copy later.  The workaround
+    // will be renamed if this turns out to fix the issue, but we might need to
+    // merge back and smaller changes are better.
     //
     // For more information, please see:
     // https://download.microsoft.com/download/9/2/A/92A4E198-67E0-4ABD-9DB7-635D711C2752/DXVA_VPx.pdf

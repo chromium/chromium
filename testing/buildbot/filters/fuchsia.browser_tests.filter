@@ -387,7 +387,7 @@
 -All/MediaEngagementAutoplayBrowserTest.UsePreloadedData_Denied/0
 -All/MediaEngagementAutoplayBrowserTest.UsePreloadedData_Denied/1
 
-# TODO(crbug.com/1278123): PWA not supported yet
+# TODO(crbug.com/42050400): PWA not supported yet
 -AppSessionRestoreTest.RestoreAppMinimized
 -AppSessionRestoreTest.RestoreMaximizedApp
 -AppSettingsAppTest.All

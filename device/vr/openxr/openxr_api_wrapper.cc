@@ -1316,7 +1316,7 @@ bool OpenXrApiWrapper::GetStageParameters(
 
   local_from_stage = gfx::Transform::Compose(local_from_stage_decomp);
 
-  // TODO(https://crbug.com/1522245): Check for crash dumps.
+  // TODO(crbug.com/41495208): Check for crash dumps.
   std::array<float, 16> transform_data;
   local_from_stage.GetColMajorF(transform_data.data());
   bool contains_nan = base::ranges::any_of(

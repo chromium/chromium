@@ -39,8 +39,8 @@ fidl::SyncClient<fuchsia_media::ProfileProvider> ConnectProfileProvider() {
 // Sets the current thread to the given scheduling role, optionally including
 // hints about the workload period and max CPU runtime (capacity * period) in
 // that period.
-// TODO(crbug.com/1365682): Migrate to the new fuchsia.scheduler.ProfileProvider
-// API when available.
+// TODO(crbug.com/42050523): Migrate to the new
+// fuchsia.scheduler.ProfileProvider API when available.
 void SetThreadRole(std::string_view role_name,
                    TimeDelta period = {},
                    float capacity = 0.0f) {

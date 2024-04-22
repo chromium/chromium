@@ -194,7 +194,7 @@ void DataPipeProducer::Write(std::unique_ptr<DataSource> data_source,
 
 void DataPipeProducer::InitializeNewRequest(CompletionCallback callback) {
   DCHECK(!sequence_state_);
-  // TODO(crbug.com/924416): Re-evaluate how TaskPriority is set here and in
+  // TODO(crbug.com/41436919): Re-evaluate how TaskPriority is set here and in
   // other file URL-loading-related code. Some callers require USER_VISIBLE
   // (i.e., BEST_EFFORT is not enough).
   auto file_task_runner = base::ThreadPool::CreateSequencedTaskRunner(

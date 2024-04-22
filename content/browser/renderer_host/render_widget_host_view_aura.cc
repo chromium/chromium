@@ -2066,7 +2066,7 @@ void RenderWidgetHostViewAura::GetHitTestMask(SkPath* mask) const {}
 
 bool RenderWidgetHostViewAura::RequiresDoubleTapGestureEvents() const {
   RenderWidgetHostOwnerDelegate* owner_delegate = host()->owner_delegate();
-  // TODO(crbug.com/916715): Child local roots do not work here?
+  // TODO(crbug.com/41432676): Child local roots do not work here?
   if (!owner_delegate)
     return false;
   return double_tap_to_zoom_enabled_;

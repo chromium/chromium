@@ -114,7 +114,7 @@ def install_symbols(package_paths: Iterable[str],
                            symbol_file)
 
 
-# TODO(crbug.com/1279803): Until one can send files to the device when running
+# TODO(crbug.com/42050403): Until one can send files to the device when running
 # a test, filter files must be read from the test package.
 def map_filter_file_to_package_file(filter_file: str) -> str:
     """Returns the path to |filter_file| within the test component's package."""

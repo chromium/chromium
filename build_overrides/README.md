@@ -23,7 +23,7 @@ The build.gni file provides a way for projects to override defaults for
 variables used in //build itself (which we want to be shareable between
 projects).
 
-TODO(crbug.com/588513): Ideally //build_overrides and, in particular,
+TODO(crbug.com/41240413): Ideally //build_overrides and, in particular,
 //build_overrides/build.gni should go away completely in favor of some
 mechanism that can re-use other required files like //.gn, so that we don't
 have to keep requiring projects to create a bunch of different files to use GN.

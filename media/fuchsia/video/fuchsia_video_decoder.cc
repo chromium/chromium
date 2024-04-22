@@ -349,7 +349,7 @@ void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,
   current_config_ = config;
 
   // Default to REC601 when the colorspace is not specified in the container.
-  // TODO(crbug.com/1364366): HW decoders currently don't provide accurate
+  // TODO(crbug.com/42050522): HW decoders currently don't provide accurate
   // color space information to sysmem. Once that issue is resolved, we'll
   // need to update this logic accordingly.
   if (!current_config_.color_space_info().IsSpecified())

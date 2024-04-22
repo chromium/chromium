@@ -878,7 +878,7 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, Stop) {
 #if defined(ARCH_CPU_ARM_FAMILY)
 #define MAYBE_SetPageScale DISABLED_SetPageScale
 #else
-// TODO(crbug.com/1239135): SetPageScale/ExecuteJavaScript is racey, causing
+// TODO(crbug.com/42050328): SetPageScale/ExecuteJavaScript is racey, causing
 // the test to flake.
 #define MAYBE_SetPageScale DISABLED_SetPageScale
 #endif

@@ -15,7 +15,7 @@
 
 namespace mojo {
 
-// TODO(https://crbug.com/820627): This file will no longer be needed if Mojo
+// TODO(crbug.com/41375746): This file will no longer be needed if Mojo
 // allows the ability to specify a custom hasher for Mojo maps.
 template <>
 struct StructTraits<bluetooth::mojom::ServiceDataMapDataView,

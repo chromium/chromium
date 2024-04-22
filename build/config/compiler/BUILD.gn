@@ -1882,7 +1882,7 @@ config("default_warnings") {
 
       if (is_fuchsia) {
         cflags_cc += [
-          # TODO(https://crbug.com/1474434): fix and reenable
+          # TODO(crbug.com/42050603): fix and reenable
           "-Wno-missing-field-initializers",
 
           # TODO(https://crbug.com/324953188): fix and reenable

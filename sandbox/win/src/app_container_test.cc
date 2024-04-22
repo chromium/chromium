@@ -467,9 +467,9 @@ TEST_F(AppContainerTest, ChildProcessMitigationLowBox) {
   TestRunner runner(JobLevel::kUnprotected, USER_UNPROTECTED, USER_UNPROTECTED);
 
 #if defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
-  // TODO(crbug.com/1524390) A DPLOG issued when CreateProcess() fails conflicts
-  // with Csrss lockdown on Win11 ARM64 - so allow Csrss to allow the process to
-  // run the right exitcode and not an access violation crash.
+  // TODO(crbug.com/41497342) A DPLOG issued when CreateProcess() fails
+  // conflicts with Csrss lockdown on Win11 ARM64 - so allow Csrss to allow the
+  // process to run the right exitcode and not an access violation crash.
   runner.SetDisableCsrss(false);
 #endif  // defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
 

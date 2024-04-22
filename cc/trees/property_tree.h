@@ -541,7 +541,7 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   // Note: Using this method may causes the associated transform node for this
   // scroll node to update its transforms.
   //
-  // TODO(crbug.com/585458): Updating single transform node only works for
+  // TODO(crbug.com/41238797): Updating single transform node only works for
   // simple cases but we really should update the whole transform tree otherwise
   // we are ignoring any parent transform node that needs updating and thus our
   // snap amount can be incorrect.

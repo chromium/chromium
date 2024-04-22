@@ -2442,7 +2442,7 @@ class PointerLockDelegate : public WebContentsDelegate {
   bool request_pointer_lock_called_ = false;
 };
 
-// TODO(crbug.com/898641): This test is flaky.
+// TODO(crbug.com/41422519): This test is flaky.
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        DISABLED_RenderWidgetDeletedWhileMouseLockPending) {
   ASSERT_TRUE(embedded_test_server()->Start());

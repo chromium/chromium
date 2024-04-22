@@ -544,7 +544,7 @@ std::optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
   DCHECK(IsOnGlThread());
   DCHECK(!arcore_session_.is_valid());
 
-  // TODO(https://crbug.com/837944): Notify error earlier if this will fail.
+  // TODO(crbug.com/41386064): Notify error earlier if this will fail.
 
   JNIEnv* env = base::android::AttachCurrentThread();
   if (!env) {

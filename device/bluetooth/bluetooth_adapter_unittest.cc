@@ -1188,7 +1188,7 @@ TEST_P(BluetoothTestWinrt, SimulateAdapterPowerFailure) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-// TODO(https://crbug.com/804356): Enable this test on old Windows versions as
+// TODO(crbug.com/41366193): Enable this test on old Windows versions as
 // well.
 #if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothTestWinrt, TogglePowerFakeAdapter) {

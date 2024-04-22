@@ -70,7 +70,7 @@ void WakeLock::CancelWakeLock() {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(receiver_set_.current_context());
 
-  // TODO(crbug.com/935063): Calling CancelWakeLock befoe RequestWakeLock
+  // TODO(crbug.com/41443051): Calling CancelWakeLock befoe RequestWakeLock
   // shouldn't be allowed.
   if (!(*receiver_set_.current_context()))
     return;

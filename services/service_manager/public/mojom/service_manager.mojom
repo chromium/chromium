@@ -51,7 +51,7 @@ interface ServiceManagerListener {
   // happens when the Service Manager first handles a request to launch the
   // Service, before a process is created for it.
   //
-  // TODO(https://crbug.com/908319): This should just take an Identity instead
+  // TODO(crbug.com/41428001): This should just take an Identity instead
   // of a RunningServiceInfo. Newly created service instances never have a PID
   // and are always in the |kCreated| state.
   OnServiceCreated(RunningServiceInfo service);

@@ -518,7 +518,7 @@ class CookieStoreContentBrowserClient
 
 // Cookie access in loader is locked to a particular origin, so messages
 // for wrong URLs are rejected.
-// TODO(https://crbug.com/954603): This should actually result in renderer
+// TODO(crbug.com/41453892): This should actually result in renderer
 // kills.
 IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CrossSiteCookieSecurityEnforcement) {
   // The code under test is only active under site isolation.

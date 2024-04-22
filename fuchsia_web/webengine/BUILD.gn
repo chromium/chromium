@@ -438,7 +438,7 @@ source_set("webui_resources") {
 }
 
 _web_engine_excluded_files = [
-  # TODO(crbug.com/1022542): SwiftShader is used only in tests. It should
+  # TODO(crbug.com/42050042): SwiftShader is used only in tests. It should
   # not be included in the WebEngine package.
   # Whenever this list is updated the exclusions in the cast_runner package
   # should be updated as well (see fuchsia_web/runners/BUILD.gn).

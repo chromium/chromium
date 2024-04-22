@@ -291,8 +291,8 @@ bool RawInputGamepadDeviceWin::QueryDeviceInfo() {
   // "DEV" instead of "VID" and "PID". PCI HID devices are typically not
   // gamepads and are ignored.
   // Example PCI device name: \\?\HID#VEN_1234&DEV_ABCD
-  // TODO(crbug/881539): Potentially allow PCI HID devices to be enumerated, but
-  // prefer known gamepads when there is contention.
+  // TODO(crbug.com/41412324): Potentially allow PCI HID devices to be
+  // enumerated, but prefer known gamepads when there is contention.
   std::wstring pci_prefix = L"\\\\?\\HID#VEN_";
   if (!name_.compare(0, pci_prefix.size(), pci_prefix))
     return false;

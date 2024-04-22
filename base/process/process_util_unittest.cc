@@ -736,7 +736,7 @@ TEST_F(ProcessUtilTest, GetTerminationStatusSigKill) {
 }
 
 #if BUILDFLAG(IS_POSIX)
-// TODO(crbug.com/753490): Access to the process termination reason is not
+// TODO(crbug.com/42050610): Access to the process termination reason is not
 // implemented in Fuchsia. Unix signals are not implemented in Fuchsia so this
 // test might not be relevant anyway.
 TEST_F(ProcessUtilTest, GetTerminationStatusSigTerm) {

@@ -263,7 +263,7 @@ void ArCoreGl::Initialize(
 
   initialized_callback_ = std::move(callback);
 
-  // TODO(https://crbug.com/953503): start using the list to control the
+  // TODO(crbug.com/41453315): start using the list to control the
   // behavior of local and unbounded spaces & send appropriate data back in
   // GetFrameData().
   enabled_features_ = maybe_initialize_result->enabled_features;

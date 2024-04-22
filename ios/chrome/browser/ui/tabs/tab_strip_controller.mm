@@ -491,7 +491,7 @@ const CGFloat kSymbolSize = 18;
                             underName:kNewTabButtonGuide];
 
     _isIncognito = _browser->GetBrowserState()->IsOffTheRecord();
-    // TODO(crbug.com/600829): Rewrite layout code and convert these masks to
+    // TODO(crbug.com/41247629): Rewrite layout code and convert these masks to
     // to trailing and leading margins rather than right and bottom.
     _buttonNewTab.autoresizingMask = (UIViewAutoresizingFlexibleRightMargin |
                                       UIViewAutoresizingFlexibleBottomMargin);

@@ -111,7 +111,7 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
       const net::RedirectInfo& redirect_info,
       const network::mojom::URLResponseHeadPtr& response_head) = 0;
 
-  // TODO(crbug.com/1523917): remove the function after the spec has been
+  // TODO(crbug.com/41496865): remove the function after the spec has been
   // decided and the implementation is ready.
   //
   // Currently, timing info for the ServiceWorker static routing API

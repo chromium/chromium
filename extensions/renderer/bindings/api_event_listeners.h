@@ -39,7 +39,7 @@ class APIEventListeners {
   // to associate multiple listeners from different v8::Contexts with the same
   // owner (e.g., extension). This is used lazily, when listeners are first
   // added.
-  // TODO(https://crbug.com/877658): Ideally, we'd just pass in the context
+  // TODO(crbug.com/41410015): Ideally, we'd just pass in the context
   // owner to the event directly. However, this led to https://crbug.com/877401,
   // presumably because of https://crbug.com/877658. If we can fix that, we can
   // simplify this again.

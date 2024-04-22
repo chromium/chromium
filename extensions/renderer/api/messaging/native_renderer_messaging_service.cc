@@ -507,7 +507,7 @@ void NativeRendererMessagingService::DeliverMessageToWorker(
   v8::HandleScope handle_scope(isolate);
   std::unique_ptr<InteractionProvider::Scope> scoped_extension_interaction;
   if (message.user_gesture) {
-    // TODO(https://crbug.com/977629): Add logging for privilege level for
+    // TODO(crbug.com/41467311): Add logging for privilege level for
     // sender and receiver and decide if want to allow unprivileged to
     // privileged support.
     scoped_extension_interaction =

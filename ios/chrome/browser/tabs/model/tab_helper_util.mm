@@ -250,7 +250,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   LookalikeUrlTabAllowList::CreateForWebState(web_state);
   LookalikeUrlContainer::CreateForWebState(web_state);
 
-  // TODO(crbug.com/794115): pre-rendered WebState have lots of unnecessary
+  // TODO(crbug.com/41360476): pre-rendered WebState have lots of unnecessary
   // tab helpers for historical reasons. For the moment, AttachTabHelpers
   // allows to inhibit the creation of some of them. Once PreloadController
   // has been refactored to only create the necessary tab helpers, this

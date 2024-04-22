@@ -1072,7 +1072,7 @@ struct Invoker<Traits, StorageType, R(UnboundArgs...)> {
 };
 
 // Allow binding a method call with no receiver.
-// TODO(crbug.com/1511757): Remove or make safe.
+// TODO(crbug.com/41484339): Remove or make safe.
 template <typename... Unused>
 void VerifyMethodReceiver(Unused&&...) {}
 

@@ -2871,7 +2871,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   //     navigation, a new FrameTree is initialized with new BrowsingInstance /
   //     SiteInstance, and a new unused process will be assigned to it
   //     accordingly.
-  //     TODO(crbug.com/1519131): Note that it is a short term-fix. Ideally we
+  //     TODO(crbug.com/41492112): Note that it is a short term-fix. Ideally we
   //     could try to stay in the unassigned SiteInstance / BrowsingInstance in
   //     this scenario, rather than swapping to a new BrowsingInstance and
   //     reusing the process. Additionally, it could cover other navigations

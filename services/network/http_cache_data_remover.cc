@@ -76,8 +76,8 @@ std::unique_ptr<HttpCacheDataRemover> HttpCacheDataRemover::CreateAndStart(
   }
 
   // Clear QUIC server information from memory and the disk cache.
-  // TODO(crbug.com/817849): add a browser test to validate the QUIC information
-  // is cleared.
+  // TODO(crbug.com/41374118): add a browser test to validate the QUIC
+  // information is cleared.
   http_cache->GetSession()
       ->quic_session_pool()
       ->ClearCachedStatesInCryptoConfig(remover->url_matcher_);

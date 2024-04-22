@@ -147,7 +147,7 @@ class FuchsiaFrameAccessibilityTest : public WebEngineBrowserTest {
   }
 
  protected:
-  // TODO(crbug.com/1038786): Maybe move to WebEngineBrowserTest.
+  // TODO(crbug.com/42050058): Maybe move to WebEngineBrowserTest.
   std::optional<base::TestComponentContextForProcess> test_context_;
 
   FrameForTest frame_;

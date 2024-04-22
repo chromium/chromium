@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(MouseLatencyBrowserTest,
   AssertTraceIdsBeginAndEnd(trace_data, "InputLatency::MouseMove");
 }
 
-// TODO(https://crbug.com/923627): This is flaky on multiple platforms.
+// TODO(crbug.com/41436535): This is flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(MouseLatencyBrowserTest,
                        DISABLED_CoalescedMouseWheelsCorrectlyTerminated) {
   LoadURL();

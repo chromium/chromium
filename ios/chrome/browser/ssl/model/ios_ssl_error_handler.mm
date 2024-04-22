@@ -58,7 +58,7 @@ void IOSSSLErrorHandler::HandleSSLError(
     base::OnceCallback<void(NSString*)> blocking_page_callback) {
   DCHECK(web_state);
   DCHECK(!FromWebState(web_state));
-  // TODO(crbug.com/747405): If certificate error is only a name mismatch,
+  // TODO(crbug.com/41334833): If certificate error is only a name mismatch,
   // check if the cert is from a known captive portal.
 
   web_state->SetUserData(
@@ -88,7 +88,7 @@ IOSSSLErrorHandler::IOSSSLErrorHandler(
       weak_factory_(this) {}
 
 void IOSSSLErrorHandler::StartHandlingError() {
-  // TODO(crbug.com/760873): replace test with DCHECK when this method is only
+  // TODO(crbug.com/41342207): replace test with DCHECK when this method is only
   // called on WebStates attached to tabs.
   IOSBlockingPageTabHelper* blocking_tab_helper =
       IOSBlockingPageTabHelper::FromWebState(web_state_);

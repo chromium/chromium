@@ -318,7 +318,7 @@ bool FakePeripheral::IsGattServicesDiscoveryComplete() const {
   // Bluetooth needs to initiate a Service Discovery procedure and post
   // a task to call GattServicesDiscovered to simulate that the procedure has
   // completed.
-  // TODO(crbug.com/729456): Remove this override and run
+  // TODO(crbug.com/41323173): Remove this override and run
   // DiscoverGattServices() callback with next_discovery_response_ once
   // DiscoverGattServices() is implemented.
   if (!pending_gatt_discovery_ && !discovery_complete) {

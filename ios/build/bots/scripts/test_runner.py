@@ -1052,9 +1052,9 @@ class DeviceTestRunner(TestRunner):
 
   def shutdown_and_restart(self):
     """Restart the device, wait for two minutes."""
-    # TODO(crbug.com/760399): swarming bot ios 11 devices turn to be unavailable
-    # in a few hours unexpectedly, which is assumed as an ios beta issue. Should
-    # remove this method once the bug is fixed.
+    # TODO(crbug.com/41341969): swarming bot ios 11 devices turn to be
+    # unavailable in a few hours unexpectedly, which is assumed as an ios beta
+    # issue. Should remove this method once the bug is fixed.
     if self.restart:
       LOGGER.info('Restarting device, wait for two minutes.')
       try:
@@ -1077,7 +1077,7 @@ class DeviceTestRunner(TestRunner):
     try:
       print_process_output(self.start_proc(cmd))
     except subprocess.CalledProcessError:
-      # TODO(crbug.com/828951): Raise the exception when the bug is fixed.
+      # TODO(crbug.com/41380784): Raise the exception when the bug is fixed.
       LOGGER.warning('Failed to retrieve crash reports from device.')
 
   def tear_down(self):

@@ -240,7 +240,7 @@ TEST_F(FaviconCallbackTest, EmptyFaviconUrl) {
   const std::vector<FaviconURL>& favicons =
       observer()->favicon_url_candidates();
   ASSERT_EQ(1U, favicons.size());
-  // TODO(crbug.com/721852): This result is not correct.
+  // TODO(crbug.com/41319193): This result is not correct.
   EXPECT_EQ(GURL("https://chromium.test/"), favicons[0].icon_url);
   EXPECT_EQ(FaviconURL::IconType::kFavicon, favicons[0].icon_type);
   ASSERT_TRUE(favicons[0].icon_sizes.empty());

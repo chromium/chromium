@@ -360,9 +360,8 @@ class LayerTreeHostBlurFiltersPixelTestGPULayerList
         RenderSurfaceReason::kBackdropFilter;
     blur_effect_node.closest_ancestor_with_copy_request_id = 1;
 
-    // TODO(916311): We should be able to set the bounds like this, but the
-    // resulting output is clipped incorrectly.
-    // gfx::RRectF
+    // TODO(crbug.com/41432457): We should be able to set the bounds like this,
+    // but the resulting output is clipped incorrectly. gfx::RRectF
     // backdrop_filter_bounds(gfx::RectF(gfx::SizeF(blur->bounds())),0);
     // blur_effect_node.backdrop_filter_bounds.emplace(backdrop_filter_bounds);
 

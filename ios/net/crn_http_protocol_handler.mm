@@ -276,9 +276,9 @@ void HttpProtocolHandlerCore::HandleStreamEvent(NSStream* stream,
       }
 
       NSInteger length;
-      // TODO(crbug.com/738025): Dynamically change the size of the read buffer
-      // to improve the read (POST) performance, see AllocateReadBuffer(), &
-      // avoid unnecessary data copy.
+      // TODO(crbug.com/41327992): Dynamically change the size of the read
+      // buffer to improve the read (POST) performance, see
+      // AllocateReadBuffer(), & avoid unnecessary data copy.
       length = [base::apple::ObjCCastStrict<NSInputStream>(stream)
                read:reinterpret_cast<unsigned char*>(read_buffer_.get())
           maxLength:read_buffer_size_];

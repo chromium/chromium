@@ -597,7 +597,7 @@ void WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
     // This forces SetSize() not to early return which would otherwise happen
     // when we set the size to |window_size| which is the same as its current
     // size. See http://crbug.com/1011191 for more details.
-    // TODO(crbug.com/309760): This resize to half-size could go away if
+    // TODO(crbug.com/41067256): This resize to half-size could go away if
     // testRunner.useUnfortunateSynchronousResizeMode() goes away.
     main_window_->web_contents()->GetRenderWidgetHostView()->DisableAutoResize(
         gfx::Size());

@@ -174,7 +174,7 @@ bool XrCompositingInitializeConfig(sandbox::TargetConfig* config,
                                    base::CommandLine& cmd_line,
                                    sandbox::mojom::Sandbox sandbox_type) {
   DCHECK(!config->IsConfigured());
-  // TODO(https://crbug.com/881919): Try to harden the XR Compositor
+  // TODO(crbug.com/41412553): Try to harden the XR Compositor
   // sandbox to use mitigations and restrict the token.
 
   // Unprotected token/job.

@@ -193,7 +193,8 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
       render_pass->CreateAndAppendSharedQuadState();
 
   if (raster_source_->IsSolidColor()) {
-    // TODO(979672): This is still hard-coded at 1.0. This has some history:
+    // TODO(crbug.com/41468388): This is still hard-coded at 1.0. This has some
+    // history:
     //  - for crbug.com/769319, the contents scale was allowed to change, to
     //    avoid blurring on high-dpi screens.
     //  - for crbug.com/796558, the max device scale was hard-coded back to 1.0
@@ -799,9 +800,10 @@ void PictureLayerImpl::UpdateRasterSource(
   // tilings that are going to disappear on the pending tree (if scale changed).
   // But that would also be more complicated, so we just do it here for now.
   //
-  // TODO(crbug.com/843787): If the LayerTreeFrameSink is lost, and we activate,
-  // this ends up running with the old LayerTreeFrameSink, or possibly with a
-  // null LayerTreeFrameSink, which can give incorrect results or maybe crash.
+  // TODO(crbug.com/41389434): If the LayerTreeFrameSink is lost, and we
+  // activate, this ends up running with the old LayerTreeFrameSink, or possibly
+  // with a null LayerTreeFrameSink, which can give incorrect results or maybe
+  // crash.
   if (pending_set) {
     tilings_->UpdateTilingsToCurrentRasterSourceForActivation(
         raster_source_, pending_set, invalidation_, MinimumContentsScale(),

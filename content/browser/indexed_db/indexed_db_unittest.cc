@@ -103,7 +103,7 @@ namespace {
 constexpr char16_t kDatabaseName[] = u"db";
 constexpr char kOrigin[] = "https://www.example.com";
 
-// TODO(crbug.com/889590): Replace with common converter.
+// TODO(crbug.com/41417435): Replace with common converter.
 url::Origin ToOrigin(const std::string& url) {
   return url::Origin::Create(GURL(url));
 }

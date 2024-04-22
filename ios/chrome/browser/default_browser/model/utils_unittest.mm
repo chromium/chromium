@@ -44,7 +44,7 @@ constexpr base::TimeDelta k2Years = base::Days(2 * 365);
 // About 5 years.
 constexpr base::TimeDelta k5Years = base::Days(5 * 365);
 
-// TODO(crbug.com/1523056): We should reuse the ones from utils directly to
+// TODO(crbug.com/41496010): We should reuse the ones from utils directly to
 // avoid manual errors. Test key for recording the last time a http link
 // was opened via Chrome, which indicates that it's set as default browser.
 NSString* const kLastHTTPURLOpenTime = @"lastHTTPURLOpenTime";

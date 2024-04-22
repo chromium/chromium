@@ -136,8 +136,8 @@ TEST_F(GeolocationServiceUnitTest, UrlWithApiKey) {
 }
 #endif
 
-// TODO(https://crbug.com/912057): Flaky on Chrome OS / Fails often on *San.
-// TODO(https://crbug.com/999409): Also flaky on other platforms.
+// TODO(crbug.com/41430104): Flaky on Chrome OS / Fails often on *San.
+// TODO(crbug.com/41479143): Also flaky on other platforms.
 TEST_F(GeolocationServiceUnitTest, DISABLED_GeolocationConfig) {
   BindGeolocationConfig();
   {

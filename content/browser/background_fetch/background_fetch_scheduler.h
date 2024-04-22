@@ -201,7 +201,7 @@ class CONTENT_EXPORT BackgroundFetchScheduler
   // Map from |unique_id|s to the registration data.
   // An entry in here means the fetch has completed. This information is needed
   // after the fetch has completed to dispatch the backgroundfetchclick event.
-  // TODO(crbug.com/857122): Clean this up when the UI is no longer showing.
+  // TODO(crbug.com/41397180): Clean this up when the UI is no longer showing.
   std::map<std::string, std::unique_ptr<RegistrationData>> completed_fetches_;
 
   // Scheduling params - Finch configurable.

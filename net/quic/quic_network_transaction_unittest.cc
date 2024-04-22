@@ -120,7 +120,7 @@ constexpr std::string_view kQuic200RespStatusLine = "HTTP/1.1 200";
 // Response data used for QUIC requests in multiple tests.
 constexpr std::string_view kQuicRespData = "hello!";
 // Response data used for HTTP requests in multiple tests.
-// TODO(https://crbug.com/1523631): Once MockReadWrite accepts a
+// TODO(crbug.com/41496581): Once MockReadWrite accepts a
 // std::string_view parameter, we can use "constexpr std::string_view" for this.
 const char kHttpRespData[] = "hello world";
 

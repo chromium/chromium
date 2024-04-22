@@ -46,7 +46,7 @@ class PlatformSensorReaderWinrtFactory {
 // interfaces should be passed in. The owner of this class must guarantee
 // construction and destruction occur on the same thread and that no
 // other thread is accessing it during destruction.
-// TODO(crbug.com/995594): Change Windows.Devices.Sensors based
+// TODO(crbug.com/41477114): Change Windows.Devices.Sensors based
 //   implementation of W3C sensor API to use hardware thresholding.
 template <wchar_t const* runtime_class_id,
           class ISensorWinrtStatics,

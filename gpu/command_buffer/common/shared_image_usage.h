@@ -35,7 +35,8 @@ enum SharedImageUsage : uint32_t {
   // Image will be read by Dawn (for WebGPU)
   SHARED_IMAGE_USAGE_WEBGPU_READ = 1 << 7,
   // Image may use concurrent read/write access. Used by single buffered canvas.
-  // TODO(crbug.com/969114): This usage is currently not supported in GL/Vulkan
+  // TODO(crbug.com/41462072): This usage is currently not supported in
+  // GL/Vulkan
   // interop cases.
   SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE = 1 << 8,
   // Image will be used for video decode acceleration on Chrome OS.

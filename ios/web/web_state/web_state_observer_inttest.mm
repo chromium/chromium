@@ -1427,7 +1427,7 @@ TEST_F(WebStateObserverTest, ReloadWithUserAgentType) {
                              _, ResponseInfoMatch(expected_response_info), _))
       .WillOnce(
           RunOnceCallback<2>(WebStatePolicyDecider::PolicyDecision::Allow()));
-  // TODO(crbug.com/798836): verify the correct User-Agent header is sent.
+  // TODO(crbug.com/41363052): verify the correct User-Agent header is sent.
   EXPECT_CALL(observer_, DidFinishNavigation(web_state(), _));
   EXPECT_CALL(observer_, DidStopLoading(web_state()));
   EXPECT_CALL(observer_,

@@ -49,7 +49,7 @@
         // Used by the test UI stack.
         "fuchsia.scheduler.ProfileProvider",
 
-        // TODO(crbug.com/1364196) Remove once not needed to avoid log spam.
+        // TODO(crbug.com/42050521) Remove once not needed to avoid log spam.
         "fuchsia.tracing.perfetto.ProducerConnector",
       ],
       from: "parent",

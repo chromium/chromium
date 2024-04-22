@@ -225,7 +225,7 @@ class PipelineImpl::RendererWrapper final : public DemuxerHost,
   bool was_played_with_user_activation_ = false;
 
   // Lock used to serialize |shared_state_|.
-  // TODO(crbug.com/893739): Add GUARDED_BY annotations.
+  // TODO(crbug.com/41419817): Add GUARDED_BY annotations.
   mutable base::Lock shared_state_lock_;
 
   // State shared between main and media thread.

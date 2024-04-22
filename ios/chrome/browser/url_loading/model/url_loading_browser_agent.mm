@@ -226,8 +226,8 @@ void UrlLoadingBrowserAgent::LoadUrlInCurrentTab(const UrlLoadParams& params) {
   }
 
   // If this is a reload initiated from the omnibox.
-  // TODO(crbug.com/730192): Add DCHECK to verify that whenever urlToLoad is the
-  // same as the old url, the transition type is ui::PAGE_TRANSITION_RELOAD.
+  // TODO(crbug.com/41323528): Add DCHECK to verify that whenever urlToLoad is
+  // the same as the old url, the transition type is ui::PAGE_TRANSITION_RELOAD.
   if (PageTransitionCoreTypeIs(web_params.transition_type,
                                ui::PAGE_TRANSITION_RELOAD)) {
     current_web_state->GetNavigationManager()->Reload(

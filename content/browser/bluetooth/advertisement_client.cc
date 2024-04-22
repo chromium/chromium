@@ -153,7 +153,7 @@ void WebBluetoothServiceImpl::ScanningClient::SendEvent(
       }
     }
 
-    // TODO(crbug.com/707635): Support manufacturerData and serviceData
+    // TODO(crbug.com/41310835): Support manufacturerData and serviceData
     // filters.
 
     if (prompt_controller_) {

@@ -406,7 +406,7 @@ void InputHandler::AdjustScrollDeltaForScrollbarSnap(
   // Ideally, scrollbar track and arrow interactions would have
   // kScrollByPage and kScrollByLine, respectively. Currently, both have
   // kScrollByPixel granularity.
-  // TODO(crbug.com/959441): Update snap strategy once the granularity is
+  // TODO(crbug.com/41456637): Update snap strategy once the granularity is
   // properly set. Currently, track and arrow scrolls both use a direction
   // strategy; however, the track should be using an "end and direction"
   // strategy.

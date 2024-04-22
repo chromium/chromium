@@ -235,7 +235,7 @@ void WebTestBrowserMainRunner::Initialize() {
   // since it's incompatible with single threaded compositor and display
   // compositor pixel dumps.
   //
-  // TODO(crbug.com/894613) Add kRunAllCompositorStagesBeforeDraw back here
+  // TODO(crbug.com/41420287) Add kRunAllCompositorStagesBeforeDraw back here
   // once you figure out why it causes so much web test flakiness.
   // command_line.AppendSwitch(switches::kRunAllCompositorStagesBeforeDraw);
   command_line.AppendSwitch(cc::switches::kDisableCheckerImaging);

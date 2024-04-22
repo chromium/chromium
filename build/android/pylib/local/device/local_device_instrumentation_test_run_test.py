@@ -26,7 +26,7 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
         local_device_instrumentation_test_run.LocalDeviceInstrumentationTestRun(
             self._env, self._ti))
 
-  # TODO(crbug.com/797002): Decide whether the _ShouldRetry hook is worth
+  # TODO(crbug.com/41361955): Decide whether the _ShouldRetry hook is worth
   # retaining and remove these tests if not.
 
   def testShouldRetry_failure(self):

@@ -118,7 +118,7 @@ class MojoRenderer : public Renderer, public mojom::RendererClient {
 
   // Video frame overlays are rendered onto this sink.
   // Rendering of a new overlay is only needed when video natural size changes.
-  // TODO(https://crbug.com/1517922) Investigate dangling pointer.
+  // TODO(crbug.com/41490899) Investigate dangling pointer.
   raw_ptr<VideoRendererSink,
           FlakyDanglingUntriaged | AcrossTasksDanglingUntriaged>
       video_renderer_sink_ = nullptr;

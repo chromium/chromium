@@ -267,7 +267,7 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
       fidl::InterfaceRequestHandler<fuchsia::web::FrameHost>(fit::bind_member(
           this, &WebEngineBrowserMainParts::HandleFrameHostRequest)));
 
-  // TODO(crbug.com/1315601): Create a base::ProcessLifecycle instance here, to
+  // TODO(crbug.com/42050460): Create a base::ProcessLifecycle instance here, to
   // trigger graceful shutdown on component stop, when migrated to CFv2.
 
   // Manage network-quality signals and send them to renderers. Provides input

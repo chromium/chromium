@@ -11998,7 +11998,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // Ensure that when a process is about to be destroyed after the last active
 // frame in it goes away, an attempt to reuse a proxy in that process doesn't
 // result in a crash.  See https://crbug.com/794625.
-// TODO(https://crbug.com/754084): This is flaky on Fuchsia because the
+// TODO(crbug.com/42050611): This is flaky on Fuchsia because the
 // MessagePort is not cleared on the other side, resulting in Zircon killing the
 // process. See the comment referencing the same bug in
 // //mojo/core/channel_fuchsia.cc

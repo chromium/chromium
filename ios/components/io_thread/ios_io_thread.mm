@@ -316,7 +316,7 @@ IOSIOThread::ConstructSystemRequestContext() {
   *quic_context->params() = quic_params_;
   builder.set_quic_context(std::move(quic_context));
   // In-memory cookie store.
-  // TODO(crbug.com/801910): Hook up logging by passing in a non-null netlog.
+  // TODO(crbug.com/41364708): Hook up logging by passing in a non-null netlog.
   builder.SetCookieStore(std::make_unique<net::CookieMonster>(
       nullptr /* store */, nullptr /* netlog */));
   builder.set_network_delegate(std::move(network_delegate));

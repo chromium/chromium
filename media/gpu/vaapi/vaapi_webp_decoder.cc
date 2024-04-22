@@ -31,7 +31,7 @@ static bool IsVaapiSupportedWebP(const Vp8FrameHeader& webp_header) {
   }
 
   // Validate the size.
-  // TODO(crbug.com/984971): Make sure visible size and coded size are treated
+  // TODO(crbug.com/41471307): Make sure visible size and coded size are treated
   // similarly here: we don't currently know if we really have to provide the
   // coded size to the VAAPI. So far, it seems to work by just passing the
   // visible size, but we have to learn more, probably by looking into the

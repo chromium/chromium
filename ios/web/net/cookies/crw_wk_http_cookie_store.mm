@@ -13,7 +13,7 @@ namespace {
 // completion handlers are not called until there is a WKWebView on the view
 // hierarchy.
 void PrioritizeWKHTTPCookieStoreCallbacks() {
-  // TODO(crbug.com/885218): Currently this hack is needed to fix
+  // TODO(crbug.com/41414488): Currently this hack is needed to fix
   // crbug.com/885218. Remove when the behavior of
   // [WKHTTPCookieStore getAllCookies:] changes.
   NSSet* data_types = [NSSet setWithObject:WKWebsiteDataTypeCookies];

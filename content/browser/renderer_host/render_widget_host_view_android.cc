@@ -1874,8 +1874,8 @@ void RenderWidgetHostViewAndroid::SynchronousCopyContents(
   const gfx::Rect src_subrect_in_pixel = gfx::ToEnclosingRect(
       gfx::ConvertRectToPixels(valid_src_subrect_in_dips, view_.GetDipScale()));
 
-  // TODO(crbug/698974): [BUG] Current implementation does not support read-back
-  // of regions that do not originate at (0,0).
+  // TODO(crbug.com/41305903): [BUG] Current implementation does not support
+  // read-back of regions that do not originate at (0,0).
   const gfx::Size& input_size_in_pixel = src_subrect_in_pixel.size();
   DCHECK(!input_size_in_pixel.IsEmpty());
 

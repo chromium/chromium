@@ -26,8 +26,8 @@
 namespace {
 
 // Simulates a given network connection type for tests.
-// TODO(crbug.com/938598): Refactor this and similar net::NetworkChangeNotifier
-// subclasses for testing into a separate file.
+// TODO(crbug.com/41445136): Refactor this and similar
+// net::NetworkChangeNotifier subclasses for testing into a separate file.
 class FakeNetworkChangeNotifier : public net::NetworkChangeNotifier {
  public:
   FakeNetworkChangeNotifier(

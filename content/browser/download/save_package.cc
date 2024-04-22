@@ -1298,8 +1298,8 @@ SaveItem* SavePackage::CreatePendingSaveItem(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   Referrer sanitized_referrer = Referrer::SanitizeForRequest(url, referrer);
   // Use an empty Isolation Info for subresources.
-  // TODO(crbug.com/1513122): Populate the correct site isolation and fetch mode
-  // per-resource.
+  // TODO(crbug.com/41485695): Populate the correct site isolation and fetch
+  // mode per-resource.
   const net::IsolationInfo isolation_info;
   SaveItem* save_item = new SaveItem(
       url, sanitized_referrer, isolation_info,

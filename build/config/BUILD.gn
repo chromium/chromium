@@ -68,7 +68,7 @@ config("feature_flags") {
     # but they also build some targets with the Android toolchain. This ensures
     # that Android targets still build with USE_OZONE=0 in such cases.
     #
-    # TODO(crbug.com/837032): Maybe this can be cleaned up if we can avoid
+    # TODO(crbug.com/41385586): Maybe this can be cleaned up if we can avoid
     # setting use_ozone globally.
     defines += [ "USE_OZONE=1" ]
   }

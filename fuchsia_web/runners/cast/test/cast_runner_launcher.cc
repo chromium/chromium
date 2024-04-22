@@ -203,7 +203,7 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
   AddRouteFromParent(realm_builder, kCastRunnerComponentName,
                      "fuchsia.tracing.provider.Registry");
 
-  // TODO(crbug.com/1364196) Remove once not needed to avoid log spam.
+  // TODO(crbug.com/42050521) Remove once not needed to avoid log spam.
   AddRouteFromParent(realm_builder, kCastRunnerComponentName,
                      "fuchsia.tracing.perfetto.ProducerConnector");
 

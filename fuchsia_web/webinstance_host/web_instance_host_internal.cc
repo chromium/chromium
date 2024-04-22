@@ -191,7 +191,7 @@ void HandleDisableCodeGenerationParam(
   // Blink.
   AppendToSwitch(kJavaScriptFlags, kV8JitlessFlag, launch_args);
 
-  // TODO(crbug.com/1290907): Disable use of VmexResource in this case, once
+  // TODO(crbug.com/42050417): Disable use of VmexResource in this case, once
   // migrated off of ambient VMEX.
 }
 

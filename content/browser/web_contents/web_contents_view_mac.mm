@@ -667,7 +667,7 @@ void WebContentsViewMac::ViewsHostableAttach(
     [GetInProcessNSView() setHost:nullptr];
   }
 
-  // TODO(https://crbug.com/933679): WebContentsNSViewBridge::SetParentView
+  // TODO(crbug.com/41442285): WebContentsNSViewBridge::SetParentView
   // will look up the parent NSView by its id, but this has been observed to
   // fail in the field, so assume that the caller handles updating the NSView
   // hierarchy.

@@ -104,7 +104,7 @@ if (concurrent_links == -1) {
     _args += [ "--secondary_mem_per_link=2" ]
   }
 
-  # TODO(crbug.com/617429) Pass more build configuration info to the script
+  # TODO(crbug.com/41257258) Pass more build configuration info to the script
   # so that we can compute better values.
   _command_dict = exec_script("get_concurrent_links.py", _args, "scope")
 

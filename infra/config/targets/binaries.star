@@ -299,7 +299,7 @@ targets.binaries.console_test_launcher(
     label = "//fuchsia_web/runners:cast_runner_unittests",
 )
 
-# TODO(issues.chromium.org/1516671): Remove unneeded cast_* suites.
+# TODO(crbug.com/41489655): Remove unneeded cast_* suites.
 
 targets.binaries.console_test_launcher(
     name = "cast_display_settings_unittests",

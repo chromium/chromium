@@ -96,7 +96,7 @@
         "fuchsia.media.ProfileProvider",
 
         // Optionally used by the tracing service.
-        // TODO(crbug.com/1364196): Offer only when enabled.
+        // TODO(crbug.com/42050521): Offer only when enabled.
         "fuchsia.tracing.perfetto.ProducerConnector",
       ],
       from: "parent",

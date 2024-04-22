@@ -28,7 +28,7 @@ class WebViewTranslateService {
  private:
   // Manages enabling translate requests only when resource requests are
   // allowed.
-  // TODO(crbug.com/728776): Merge TranslateRequestsAllowedListener and
+  // TODO(crbug.com/41322782): Merge TranslateRequestsAllowedListener and
   // WebViewTranslateService. They currently must be separate classes because
   // the destructor of web_resource::ResourceRequestAllowedNotifier::Observer is
   // not virtual.

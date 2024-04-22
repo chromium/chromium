@@ -6872,7 +6872,7 @@ class LayerTreeHostTestWillBeginImplFrameHasDidFinishImplFrame
   int did_finish_impl_frame_count_;
 };
 
-// TODO(crbug.com/842038): Disabled as flaky.
+// TODO(crbug.com/41388437): Disabled as flaky.
 // SINGLE_AND_MULTI_THREAD_TEST_F(
 //     LayerTreeHostTestWillBeginImplFrameHasDidFinishImplFrame);
 

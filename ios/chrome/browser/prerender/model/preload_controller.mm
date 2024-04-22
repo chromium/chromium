@@ -636,9 +636,9 @@ void DestroyPrerenderingWebState(std::unique_ptr<web::WebState> web_state) {
 #pragma mark - PreloadCancelling
 
 - (void)schedulePrerenderCancel {
-  // TODO(crbug.com/228550): Instead of cancelling the prerender, should we mark
-  // it as failed instead?  That way, subsequent prerender requests for the same
-  // URL will not kick off new prerenders.
+  // TODO(crbug.com/41005198): Instead of cancelling the prerender, should we
+  // mark it as failed instead?  That way, subsequent prerender requests for the
+  // same URL will not kick off new prerenders.
   [self removeScheduledPrerenderRequests];
   [self performSelector:@selector(cancelPrerender) withObject:nil afterDelay:0];
 }

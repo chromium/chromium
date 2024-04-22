@@ -157,7 +157,7 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
   // ServiceWorkerClient from the system (thus allowing unregistration/update to
   // occur and ensuring the Clients API doesn't return the client).
   //
-  // TODO(https://crbug.com/931497): Remove this weird partially destroyed
+  // TODO(crbug.com/41441021): Remove this weird partially destroyed
   // state.
   void OnNetworkProviderDestroyed();
 

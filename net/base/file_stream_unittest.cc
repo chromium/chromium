@@ -845,7 +845,7 @@ TEST_F(FileStreamTest, AsyncFlagMismatch) {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-// TODO(https://crbug.com/894599): flaky on both android and cronet bots.
+// TODO(crbug.com/41420277): flaky on both android and cronet bots.
 TEST_F(FileStreamTest, DISABLED_ContentUriRead) {
   base::FilePath test_dir;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_dir);

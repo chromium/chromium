@@ -453,7 +453,7 @@ class CastRunnerIntegrationTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
-  // TODO(https://crbug.com/1168538): Override the RunLoop timeout set by
+  // TODO(crbug.com/42050227): Override the RunLoop timeout set by
   // |task_environment_| to allow for the very high variability in web.Context
   // launch times.
   const base::test::ScopedRunLoopTimeout scoped_timeout_{

@@ -62,9 +62,10 @@ void PushNotificationClient::OnSceneActiveForegroundBrowserReady() {
   }
 }
 
-// TODO(crbug.com/1524081): Make functionality that relies on this multi-profile
-// and multi-window safe. That might mean removing this method and finding a
-// different way to determine which window should be used to present UI.
+// TODO(crbug.com/41497027): Make functionality that relies on this
+// multi-profile and multi-window safe. That might mean removing this method and
+// finding a different way to determine which window should be used to present
+// UI.
 Browser* PushNotificationClient::GetSceneLevelForegroundActiveBrowser() {
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(GetLastUsedBrowserState());

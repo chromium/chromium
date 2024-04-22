@@ -78,7 +78,7 @@ using testing::Field;
 #include "base/win/scoped_handle.h"
 #endif
 
-// TODO(crbug.com/949811): Fix memory leaks in tests and re-enable on LSAN.
+// TODO(crbug.com/41451310): Fix memory leaks in tests and re-enable on LSAN.
 #ifdef LEAK_SANITIZER
 #define MAYBE_BlockFileOpenOrCreateEntry DISABLED_BlockFileOpenOrCreateEntry
 #define MAYBE_NonEmptyCorruptSimpleCacheDoesNotRecover \

@@ -45,7 +45,7 @@ type ApplicationConfig = resource table {
     /// The initial minimum severity of `console` logs that will be logged to the
     /// [`fuchsia.logger/LogSink`] configured for this application. If not set, no
     /// messages will be logged.
-    // TODO(crbug.com/1088094): Deprecate once there is another mechanism.
+    // TODO(crbug.com/42050112): Deprecate once there is another mechanism.
     10: initial_min_console_log_severity fuchsia.diagnostics.Severity;
 
     /// The usage for [`fuchsia.media/AudioRenderer`] created by the app. If not

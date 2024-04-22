@@ -263,10 +263,10 @@ void ReadingListWebStateObserver::LoadOfflineReadingListEntry() {
                  navigationManager->GetPendingItemIndex()) == item) {
     // The navigation corresponds to a back/forward. The item on the stack can
     // be reused for the offline navigation.
-    // TODO(crbug.com/665189): GetPendingItemIndex() will return currentEntry()
-    // if navigating to a new URL. Test the addresses to verify that
-    // GetPendingItemIndex() actually returns the pending item index. Remove
-    // this extra test on item addresses once bug 665189 is fixed.
+    // TODO(crbug.com/41286168): GetPendingItemIndex() will return
+    // currentEntry() if navigating to a new URL. Test the addresses to verify
+    // that GetPendingItemIndex() actually returns the pending item index.
+    // Remove this extra test on item addresses once bug 665189 is fixed.
     item->SetURL(url);
     item->SetVirtualURL(pending_url_);
     navigationManager->GoToIndex(navigationManager->GetPendingItemIndex());

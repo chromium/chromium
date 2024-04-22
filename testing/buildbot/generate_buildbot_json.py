@@ -795,7 +795,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     self.substitute_magic_args(result, tester_name, tester_config)
 
     if 'swarming' in result and not result.get('merge'):
-      # TODO(https://crbug.com/958376): Consider adding the ability to not have
+      # TODO(crbug.com/41456107): Consider adding the ability to not have
       # this default.
       result['merge'] = {
         'script': '//testing/merge_scripts/standard_isolated_script_merge.py',
@@ -1671,7 +1671,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     if bot_names is not None:
       internal_waterfalls = self.get_internal_waterfalls()
       for waterfall in self.waterfalls:
-        # TODO(crbug.com/991417): Remove the need for this exception.
+        # TODO(crbug.com/41474799): Remove the need for this exception.
         if waterfall['name'] in internal_waterfalls:
           continue  # pragma: no cover
         for bot_name in waterfall['machines']:
@@ -1906,7 +1906,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     return self.check_ast_list_formatted(keys, file_path, verbose)
 
   def check_input_files_sorting(self, verbose=False):
-    # TODO(https://crbug.com/886993): Add the ability for this script to
+    # TODO(crbug.com/41415841): Add the ability for this script to
     # actually format the files, rather than just complain if they're
     # incorrectly formatted.
     bad_files = set()

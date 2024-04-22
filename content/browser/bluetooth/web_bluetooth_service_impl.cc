@@ -448,7 +448,7 @@ WebBluetoothServiceImpl::GetBluetoothAllowed() {
 
   // Some embedders that don't support Web Bluetooth indicate this by not
   // returning a chooser.
-  // TODO(https://crbug.com/993829): Perform this check once there is a way to
+  // TODO(crbug.com/41476036): Perform this check once there is a way to
   // check if a platform is capable of producing a chooser and return a
   // |blink::mojom::WebBluetoothResult::WEB_BLUETOOTH_NOT_SUPPORTED| error.
   switch (GetContentClient()->browser()->AllowWebBluetooth(

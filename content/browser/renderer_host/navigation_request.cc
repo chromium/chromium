@@ -4297,9 +4297,9 @@ void NavigationRequest::OnResponseStarted(
             frame_tree_node_->current_origin(),
             url::Origin::Create(common_params_->url))) {
       commit_params_->was_activated = blink::mojom::WasActivatedOption::kYes;
-      // TODO(805871): the next check is relying on sanitized_referrer_ but
-      // should ideally use a more reliable source for the originating URL when
-      // the navigation is renderer initiated.
+      // TODO(crbug.com/41367031): the next check is relying on
+      // sanitized_referrer_ but should ideally use a more reliable source for
+      // the originating URL when the navigation is renderer initiated.
     } else if (((common_params_->has_user_gesture &&
                  !commit_params_->is_browser_initiated) ||
                 common_params_->started_from_context_menu) &&
@@ -4806,7 +4806,7 @@ void NavigationRequest::OnRequestFailedInternal(
 
   devtools_instrumentation::OnNavigationRequestFailed(*this, status);
 
-  // TODO(https://crbug.com/757633): Check that ssl_info.has_value() if
+  // TODO(crbug.com/41340435): Check that ssl_info.has_value() if
   // net_error is a certificate error.
   EnterChildTraceEvent("OnRequestFailed", this, "error", status.error_code);
   SetState(WILL_FAIL_REQUEST);
@@ -9549,7 +9549,7 @@ void NavigationRequest::SetState(NavigationState state) {
 }
 
 bool NavigationRequest::MaybeCancelFailedNavigation() {
-  // TODO(crbug.com/774663): Maybe take `ThrottleCheckResult::action()` into
+  // TODO(crbug.com/41349746): Maybe take `ThrottleCheckResult::action()` into
   // account as well.
   // If the request was canceled by the user, do not show an error page.
   if (net::ERR_ABORTED == net_error_ ||

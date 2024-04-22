@@ -223,10 +223,10 @@ HRESULT DirectManipulationEventHandler::OnContentUpdated(
 
   // Ignore the scale factor change less than float point rounding error and
   // scroll offset change less than 1.
-  // TODO(456622) Because we don't fully support fractional scroll, pass float
-  // scroll offset feels steppy. eg.
-  // first x_offset is 0.1 ignored, but last_x_offset_ set to 0.1
-  // second x_offset is 1 but x_offset - last_x_offset_ is 0.9 ignored.
+  // TODO(crbug.com/41156440) Because we don't fully support fractional scroll,
+  // pass float scroll offset feels steppy. eg. first x_offset is 0.1 ignored,
+  // but last_x_offset_ set to 0.1 second x_offset is 1 but x_offset -
+  // last_x_offset_ is 0.9 ignored.
   if (FloatEquals(scale, last_scale_) && x_offset == last_x_offset_ &&
       y_offset == last_y_offset_) {
     return hr;

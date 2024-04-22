@@ -146,7 +146,7 @@ class CodecWorkerImpl {
   // Protects `Worker::status_`. The other attributes in `Worker` are expected
   // to be updated in isolation.
   base::Lock mutex_;
-  // TODO(crbug.com/1514426): consider using sequenced task runner instead of
+  // TODO(crbug.com/41486982): consider using sequenced task runner instead of
   // dedicated threads.
   base::Thread thread_;
   // Avoids creating a WaitableEvent on stack when work needs to be depleted.

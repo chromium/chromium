@@ -479,7 +479,7 @@ TEST_P(LayerTreeHostReadbackPixelTest, MultipleReadbacksOnLayer) {
       base::FilePath(FILE_PATH_LITERAL("green.png")));
 }
 
-// TODO(crbug.com/971257): Enable these tests for Skia Vulkan using texture
+// TODO(crbug.com/41463412): Enable these tests for Skia Vulkan using texture
 // readback.
 ReadbackTestConfig const kTestConfigs[] = {
     ReadbackTestConfig{viz::RendererType::kSoftware, TestReadBackType::kBitmap},

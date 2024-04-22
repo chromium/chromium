@@ -226,7 +226,7 @@ web::WebState* WebStateDelegateBrowserAgent::CreateNewWebState(
       // window.open before its initial load is committed.  Rather than relying
       // on the last committed or pending NavigationItem's referrer policy, just
       // use ReferrerPolicyDefault.
-      // TODO(crbug.com/719993): Update this to a more appropriate referrer
+      // TODO(crbug.com/41317904): Update this to a more appropriate referrer
       // policy once referrer policies are correctly recorded in
       // NavigationItems.
       web::Referrer referrer(opener_url, web::ReferrerPolicyDefault);

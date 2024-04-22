@@ -533,7 +533,7 @@ NET_EXPORT BASE_DECLARE_FEATURE(kUseNewAlpsCodepointQUIC);
 
 // Treat HTTP header `Expires: "0"` as expired value according section 5.3 on
 // RFC 9111.
-// TODO(https://crbug.com/853508): Remove after the bug fix will go well for a
+// TODO(crbug.com/41395025): Remove after the bug fix will go well for a
 // while on stable channels.
 NET_EXPORT BASE_DECLARE_FEATURE(kTreatHTTPExpiresHeaderValueZeroAsExpired);
 

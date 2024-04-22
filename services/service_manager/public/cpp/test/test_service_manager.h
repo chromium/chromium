@@ -43,7 +43,7 @@ class TestServiceManager {
   // unique service instance with capabilities tied to |service_name|'s entry
   // in the testing catalog.
   //
-  // TODO(https://crbug.com/895616): Support the caller supplying a manifest
+  // TODO(crbug.com/41420845): Support the caller supplying a manifest
   // object directly rather than supplying a service name and consulting a
   // global catalog.
   mojo::PendingReceiver<mojom::Service> RegisterTestInstance(

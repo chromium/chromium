@@ -808,7 +808,8 @@ SignedExchangeHandler::CreateResponseBodyStream() {
   }
 
   // For now, we allow only mi-sha256-03 content encoding.
-  // TODO(crbug.com/934629): Handle other content codings, such as gzip and br.
+  // TODO(crbug.com/41442806): Handle other content codings, such as gzip and
+  // br.
   auto content_encoding_iter = headers.find("content-encoding");
   if (content_encoding_iter == headers.end()) {
     signed_exchange_utils::ReportErrorAndTraceEvent(

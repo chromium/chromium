@@ -54,7 +54,7 @@ void ClearBrowsingData(BrowserState* browser_state,
   }
 
   if (IsRemoveDataMaskSet(types, ClearBrowsingDataMask::kRemoveVisitedLinks)) {
-    // TODO(crbug.com/557963): Purging the WKProcessPool is a workaround for
+    // TODO(crbug.com/41219991): Purging the WKProcessPool is a workaround for
     // the fact that there is no public API to clear visited links in
     // WKWebView. Remove this workaround if/when that API is made public.
     // Note: Purging the WKProcessPool for clearing visisted links does have

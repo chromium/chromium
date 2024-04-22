@@ -132,7 +132,7 @@ mojom::AggregatedMetricsPtr ComputeGlobalNativeCodeResidentMemoryKb(
         static_cast<int32_t>(not_resident_ordered_pages * kb_per_page);
   }
 
-  // TODO(crbug.com/956464) replace adding |NativeCodeResidentMemory| to trace
+  // TODO(crbug.com/41455053) replace adding |NativeCodeResidentMemory| to trace
   // this way by adding it through |tracing_observer| in Finalize().
   TRACE_EVENT_INSTANT1(base::trace_event::MemoryDumpManager::kTraceCategory,
                        "ReportGlobalNativeCodeResidentMemoryKb",

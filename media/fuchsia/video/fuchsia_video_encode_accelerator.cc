@@ -49,7 +49,7 @@ namespace media {
 namespace {
 
 // Hardcoded constants defined in the Amlogic driver.
-// TODO(crbug.com/1373287): Get this values from platform API rather than
+// TODO(crbug.com/42050532): Get this values from platform API rather than
 // hardcoding them.
 constexpr int kMaxResolutionWidth = 1920;
 constexpr int kMaxResolutionHeight = 1088;

@@ -18,7 +18,7 @@ namespace media {
 
 namespace {
 
-// TODO(https://crbug.com/619628): Use vector instructions to speed this up.
+// TODO(crbug.com/41258600): Use vector instructions to speed this up.
 template <class SourceSampleTypeTraits>
 void CopyConvertFromInterleaved(
     const typename SourceSampleTypeTraits::ValueType* source_buffer,

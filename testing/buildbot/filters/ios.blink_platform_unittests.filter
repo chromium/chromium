@@ -1,3 +1,3 @@
-# TODO(crbug.com/1519476): chooses a different safe-to-break offset than is
+# TODO(crbug.com/41492456): chooses a different safe-to-break offset than is
 # chosen on other platforms.
 -ShapeResultTest.AddUnsafeToBreakRtl

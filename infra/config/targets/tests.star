@@ -372,7 +372,7 @@ targets.tests.junit_test(
     label = "//chromecast/base:cast_base_junit_tests",
 )
 
-# TODO(issues.chromium.org/1516671): Eliminate cast_* suites that are no longer
+# TODO(crbug.com/41489655): Eliminate cast_* suites that are no longer
 # needed.
 
 targets.tests.gtest_test(

@@ -43,7 +43,7 @@
         "fuchsia.media.ProfileProvider",
 
         // Optionally used by the tracing service.
-        // TODO(crbug.com/1364196): Provide conditionally when enabled.
+        // TODO(crbug.com/42050521): Provide conditionally when enabled.
         "fuchsia.tracing.perfetto.ProducerConnector",
 
         // Required for `Frame.SetPreferredTheme(DEFAULT)`.

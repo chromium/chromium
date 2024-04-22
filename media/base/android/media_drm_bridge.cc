@@ -406,7 +406,7 @@ scoped_refptr<MediaDrmBridge> MediaDrmBridge::CreateInternal(
   // All paths requires the MediaDrmApis.
   DCHECK(!scheme_uuid.empty());
 
-  // TODO(crbug.com/917527): Check that |origin_id| is specified on devices
+  // TODO(crbug.com/41433110): Check that |origin_id| is specified on devices
   // that support it.
 
   scoped_refptr<MediaDrmBridge> media_drm_bridge(new MediaDrmBridge(

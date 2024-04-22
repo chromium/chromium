@@ -1526,7 +1526,7 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
 
 - (void)webViewDidFinishNavigation:(CWVWebView*)webView {
   NSLog(@"%@", NSStringFromSelector(_cmd));
-  // TODO(crbug.com/679895): Add some visual indication that the page load has
+  // TODO(crbug.com/41294395): Add some visual indication that the page load has
   // finished.
   [self updateToolbar];
 }

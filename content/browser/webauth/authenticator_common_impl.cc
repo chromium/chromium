@@ -1905,7 +1905,7 @@ void AuthenticatorCommonImpl::BeginRequestTimeout(
                                           weak_factory_.GetWeakPtr()));
 }
 
-// TODO(crbug.com/814418): Add web tests to verify timeouts are
+// TODO(crbug.com/41371792): Add web tests to verify timeouts are
 // indistinguishable from NOT_ALLOWED_ERROR cases.
 void AuthenticatorCommonImpl::OnTimeout() {
   if (req_state_->awaiting_attestation_response) {

@@ -16,7 +16,7 @@ namespace base {
 constexpr TimeDelta kAudioSchedulingPeriod = Milliseconds(10);
 
 // Request 30% max CPU deadline utilization for an audio thread.
-// TODO(crbug.com/1174811): A different value may need to be used for WebAudio
+// TODO(crbug.com/42050235): A different value may need to be used for WebAudio
 // threads (see media::FuchsiaAudioOutputDevice). A higher capacity may need to
 // be allocated in that case.
 constexpr float kAudioSchedulingCapacity = 0.3;

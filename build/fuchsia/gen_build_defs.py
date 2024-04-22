@@ -359,8 +359,8 @@ def main():
     logging.warning('Fuchsia SDK is not supported on this platform.')
     return 0
 
-  # TODO(crbug/1432399): Remove this when links to these files inside the sdk
-  # directory have been redirected.
+  # TODO(crbug.com/42050591): Remove this when links to these files inside the
+  # sdk directory have been redirected.
   build_path = os.path.join(SDK_ROOT, 'build')
   os.makedirs(build_path, exist_ok=True)
   for gn_file in ['component.gni', 'package.gni']:

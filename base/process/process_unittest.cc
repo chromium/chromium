@@ -183,7 +183,7 @@ MULTIPROCESS_TEST_MAIN(SleepyChildProcess) {
   return 0;
 }
 
-// TODO(https://crbug.com/726484): Enable these tests on Fuchsia when
+// TODO(crbug.com/42050607): Enable these tests on Fuchsia when
 // CreationTime() is implemented.
 TEST_F(ProcessTest, CreationTimeCurrentProcess) {
   // The current process creation time should be less than or equal to the

@@ -249,7 +249,7 @@ void FuchsiaStreamDecryptor::SendInputPacket(
   if (!packet.unit_end()) {
     // The encrypted data size is too big. Decryptor should consider
     // splitting the buffer and update the IV and subsample entries.
-    // TODO(crbug.com/1003651): Handle large encrypted buffer correctly. For
+    // TODO(crbug.com/42050011): Handle large encrypted buffer correctly. For
     // now, just reject the decryption.
     LOG(ERROR) << "DecoderBuffer doesn't fit in one packet.";
     OnError();

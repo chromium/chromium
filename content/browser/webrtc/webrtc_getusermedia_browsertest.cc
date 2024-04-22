@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
   EXPECT_TRUE(ExecJs(shell(), "getUserMediaAndClone();"));
 }
 
-// TODO(crbug.com/803516) : Flaky on all platforms.
+// TODO(crbug.com/41365739) : Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
                        DISABLED_RenderVideoTrackInMultipleTagsAndPause) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -705,7 +705,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest, SrcObjectAddVideoTrack) {
   EXPECT_TRUE(ExecJs(shell(), "srcObjectAddVideoTrack()"));
 }
 
-// TODO(crbug.com/848330) Flaky on all platforms
+// TODO(crbug.com/41392081) Flaky on all platforms
 IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
                        DISABLED_SrcObjectReplaceInactiveTracks) {
   ASSERT_TRUE(embedded_test_server()->Start());

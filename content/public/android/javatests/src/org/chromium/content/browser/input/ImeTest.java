@@ -57,7 +57,7 @@ import java.util.concurrent.TimeoutException;
 public class ImeTest {
     /* package */ static final String IME_BATCH = "ImeTestBatch";
 
-    // TODO(https://crbug.com/989569): Find a way to re-use the content shell
+    // TODO(crbug.com/41473895): Find a way to re-use the content shell
     // across tests?
     @Rule public ImeActivityTestRule mRule = new ImeActivityTestRule();
     @Rule public ExpectedException thrown = ExpectedException.none();

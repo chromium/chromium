@@ -6425,7 +6425,7 @@ void WebContentsImpl::ReadyToCommitNavigation(
   // possible to avoid race conditions with pages attempting to access
   // WebGL early on.
   //
-  // TODO(crbug.com/617904): currently navigations initiated by the browser
+  // TODO(crbug.com/41257523): currently navigations initiated by the browser
   // (reload button, reload menu option, pressing return in the Omnibox)
   // return false from HasUserGesture(). If or when that is addressed,
   // remove the check for IsRendererInitiated() below.

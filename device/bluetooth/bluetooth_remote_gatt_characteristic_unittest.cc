@@ -1243,7 +1243,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   EXPECT_EQ(2, callback_count_);
   EXPECT_EQ(0, error_callback_count_);
 
-  // TODO(591740): Remove if define for OS_ANDROID in this test.
+  // TODO(crbug.com/41242200): Remove if define for OS_ANDROID in this test.
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)
@@ -2130,7 +2130,7 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
 #define MAYBE_Notification_During_ReadRemoteCharacteristic \
   DISABLED_Notification_During_ReadRemoteCharacteristic
 #endif
-// TODO(crbug.com/713991): Enable on windows once it better matches
+// TODO(crbug.com/41314495): Enable on windows once it better matches
 // how other platforms set global variables.
 // Tests that a notification arriving during a pending read doesn't
 // cause a crash.
@@ -3492,8 +3492,8 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
 #else
 #define MAYBE_GattCharacteristicAdded DISABLED_GattCharacteristicAdded
 #endif
-// TODO(786473) Android should report that services are discovered when a
-// characteristic is added, but currently does not.
+// TODO(crbug.com/41356253) Android should report that services are discovered
+// when a characteristic is added, but currently does not.
 #if BUILDFLAG(IS_WIN)
 TEST_P(BluetoothRemoteGattCharacteristicTestWinrt, GattCharacteristicAdded) {
 #else

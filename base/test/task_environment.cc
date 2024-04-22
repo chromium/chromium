@@ -451,7 +451,7 @@ TaskEnvironment::TaskEnvironment(
                                     : nullptr),
       scoped_lazy_task_runner_list_for_testing_(
           std::make_unique<internal::ScopedLazyTaskRunnerListForTesting>()),
-      // TODO(https://crbug.com/922098): Enable Run() timeouts even for
+      // TODO(crbug.com/41435712): Enable Run() timeouts even for
       // instances created with TimeSource::MOCK_TIME.
       run_loop_timeout_(
           mock_time_domain_

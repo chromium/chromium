@@ -89,7 +89,7 @@ ScriptContext* ScriptContextSet::Register(
   } else if (effective_context_type == mojom::ContextType::kWebPage &&
              !is_webview && context_data.IsIsolatedApplication()) {
     host_id.type = mojom::HostID::HostType::kControlledFrameEmbedder;
-    // TODO(crbug.com/1517392): Improve how we derive origin for controlled
+    // TODO(crbug.com/41490370): Improve how we derive origin for controlled
     // frame embedders in renderer.
     host_id.id = "";
     if (frame_url.has_scheme()) {

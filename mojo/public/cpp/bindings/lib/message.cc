@@ -186,7 +186,7 @@ void SerializeUnserializedContext(MojoMessageHandle message,
                       *context->header());
   context->Serialize(new_message);
 
-  // TODO(crbug.com/753433): Support lazy serialization of associated endpoint
+  // TODO(crbug.com/41338252): Support lazy serialization of associated endpoint
   // handles.
   new_message.SerializeHandles(/*group_controller=*/nullptr);
 

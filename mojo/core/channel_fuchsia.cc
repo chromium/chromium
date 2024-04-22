@@ -370,7 +370,7 @@ class ChannelFuchsia : public Channel,
         outgoing_handle.CompleteTransit();
 
       if (result != ZX_OK) {
-        // TODO(crbug.com/754084): Handle ZX_ERR_SHOULD_WAIT flow-control
+        // TODO(crbug.com/42050611): Handle ZX_ERR_SHOULD_WAIT flow-control
         // errors, once the platform starts generating them.
         ZX_DLOG_IF(ERROR, result != ZX_ERR_PEER_CLOSED, result)
             << "WriteNoLock(zx_channel_write)";
@@ -391,8 +391,8 @@ class ChannelFuchsia : public Channel,
       // reading to fetch any in-flight messages, relying on end-of-stream to
       // signal the actual disconnection.
       if (read_watch_) {
-        // TODO(crbug.com/754084): When we add flow-control for writes, we also
-        // need to reset the write-watcher here.
+        // TODO(crbug.com/42050611): When we add flow-control for writes, we
+        // also need to reset the write-watcher here.
         return;
       }
     }

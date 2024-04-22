@@ -621,7 +621,7 @@ std::unique_ptr<DEVMODE, base::FreeDeleter> CreateDevMode(HANDLE printer,
   // recorded in crash dumps.
   // See https://crbug.com/780016 and https://crbug.com/806016 for example
   // crashes.
-  // TODO(crbug.com/780016): Remove this debug code if the CHECK_GE() below
+  // TODO(crbug.com/41352705): Remove this debug code if the CHECK_GE() below
   // stops failing.
   base::debug::Alias(&size);
   base::debug::Alias(&extra_size);

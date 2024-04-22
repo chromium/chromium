@@ -776,7 +776,7 @@ RendererBlinkPlatformImpl::CreateWebGPUGraphicsContext3DProvider(
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_host(
       RenderThreadImpl::current()->EstablishGpuChannelSync());
   if (!gpu_channel_host) {
-    // TODO(crbug.com/973017): Collect GPU info and surface context creation
+    // TODO(crbug.com/41464325): Collect GPU info and surface context creation
     // error.
     return nullptr;
   }

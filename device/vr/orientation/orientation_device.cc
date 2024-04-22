@@ -165,7 +165,7 @@ void VROrientationDevice::RequestSession(
   // browser side (BrowserXRRuntimeImpl::SupportsFeature()), so if we have
   // reached this point, it is safe to assume that all requested features are
   // enabled.
-  // TODO(https://crbug.com/995377): revisit the approach when the bug is fixed.
+  // TODO(crbug.com/41476975): revisit the approach when the bug is fixed.
   session->enabled_features.insert(session->enabled_features.end(),
                                    options->required_features.begin(),
                                    options->required_features.end());

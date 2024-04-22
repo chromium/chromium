@@ -44,7 +44,7 @@ void FuchsiaDecoderFactory::CreateVideoDecoders(
     // instance, but there is no way to get it here. For now just don't add
     // FuchsiaVideoDecoder in that scenario.
     //
-    // TODO(crbug.com/995902) Handle lost context.
+    // TODO(crbug.com/42050657) Handle lost context.
     if (context_provider) {
       video_decoders->push_back(std::make_unique<FuchsiaVideoDecoder>(
           context_provider, resource_provider_, allow_overlays_));

@@ -189,7 +189,7 @@ the browser process to:
     definition of proper defanging varies per platform.
 1.  Prepend its own parent directory to the basename, e.g. ~/Downloads.
 
-> TODO(https://crbug.com/779196): Even better would be to implement a C++ type
+> TODO(crbug.com/41352236): Even better would be to implement a C++ type
 > performs the appropriate sanitizations and recommend its usage directly here.
 
 

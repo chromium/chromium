@@ -22,7 +22,7 @@ enum InvalidateTypes {
   INVALIDATE_TYPE_TITLE = 1 << 3,  // The title changed.
   INVALIDATE_TYPE_AUDIO = 1 << 4,  // The tab became audible or
                                    // inaudible.
-                                   // TODO(crbug.com/846374):
+                                   // TODO(crbug.com/41390955):
                                    // remove this.
 
   INVALIDATE_TYPE_ALL = (1 << 5) - 1,

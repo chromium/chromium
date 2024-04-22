@@ -109,7 +109,7 @@ void SetDataParamsForMainContext(fuchsia::web::CreateContextParams* params) {
     return;
 
   // Allow best-effort persistent of Cast application data.
-  // TODO(crbug.com/1148334): Remove the need for an explicit quota to be
+  // TODO(crbug.com/42050202): Remove the need for an explicit quota to be
   // configured, once the platform provides storage quotas.
   const auto profile_path = base::FilePath(base::kPersistedCacheDirectoryPath)
                                 .Append(kProfileSubdirectoryName);

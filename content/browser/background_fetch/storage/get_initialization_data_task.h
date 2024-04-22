@@ -67,7 +67,7 @@ using GetInitializationDataCallback =
 // Gets all the data needed to resume fetches. The task starts by getting
 // all the <ServiceWorker Registration ID, Background Fetch Unique ID>
 // pairs available.
-//    * TODO(crbug.com/853060): Consider persisting which SWIDs contain BGF
+//    * TODO(crbug.com/41394781): Consider persisting which SWIDs contain BGF
 //    info.
 // Then for every Background Fetch Unique ID the required information is
 // queried from the ServiceWorker Database to fill an instance of

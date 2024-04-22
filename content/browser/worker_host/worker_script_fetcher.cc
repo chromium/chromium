@@ -247,7 +247,7 @@ void WorkerScriptFetcher::CreateAndStart(
   bool constructor_uses_file_url =
       request_initiator.scheme() == url::kFileScheme;
 
-  // TODO(https://crbug.com/987517): Filesystem URL support on shared workers
+  // TODO(crbug.com/41472712): Filesystem URL support on shared workers
   // are now broken.
   bool filesystem_url_support =
       request_destination == network::mojom::RequestDestination::kWorker;

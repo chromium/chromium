@@ -3719,7 +3719,7 @@
       },
     },
     'remove_from': [
-      # TODO(crbug.com/931138): Fix permission issue when creating tmp files
+      # TODO(crbug.com/41440830): Fix permission issue when creating tmp files
       'android-arm64-proguard-rel',
       'android-asan',
       'android-code-coverage',

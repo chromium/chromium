@@ -256,7 +256,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
   //    subframe navigations.
   // 2. (Implicitly) Because of 1, we don't animate subframe history
   //    navigations.
-  // 3. TODO(https://crbug.com/1515916): For now, subframe navigations won't
+  // 3. TODO(crbug.com/41488906): For now, subframe navigations won't
   //    cancel the main frame history naivgations.
   //
   // Note: Also implicitly, all the subframes' DidFinishNavigation()s are
@@ -290,13 +290,13 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
         navigation_state_ = NavigationState::kCommitted;
         physics_model_.OnNavigationFinished(/*navigation_committed=*/true);
         if (navigation_request.DidEncounterError()) {
-          // TODO(https://crbug.com/1509887): Implement a different UX if we
+          // TODO(crbug.com/41482489): Implement a different UX if we
           // decide not show the animation at all (i.e. abort animation early
           // when we receive the response header).
         }
         CloneOldSurfaceLayerAndRegisterNewFrameActivationObserver(old_host,
                                                                   new_host);
-        // TODO(https://crbug.com/1519149): Handle the cross-origin server
+        // TODO(crbug.com/41492130): Handle the cross-origin server
         // redirect. We cannot show a cross-origin fullscreen overlay of a.com
         // if a.com redirect the user to b.com.
       } else {
@@ -408,7 +408,7 @@ void BackForwardTransitionAnimator::OnNavigationCancelledBeforeStart(
 // `CloneOldSurfaceLayerAndRegisterNewFrameActivationObserver()` on how we guard
 // this case.
 //
-// TODO(https://crbug.com/1515590): Should consider subscribe to FCP. FCP
+// TODO(crbug.com/41488142): Should consider subscribe to FCP. FCP
 // works mainframe as well as subframes navigations, with the exceptions of
 // same-doc navigations.
 void BackForwardTransitionAnimator::OnRenderFrameMetadataChangedAfterActivation(
@@ -978,7 +978,7 @@ bool BackForwardTransitionAnimator::StartNavigationAndTrackRequest() {
   }
   // TOOD(https://crbug.com/1518341): Collect the requests for the same-doc
   // navigations.
-  // TODO(https://crbug.com/1517736): Collect subframe requests from the
+  // TODO(crbug.com/41490714): Collect subframe requests from the
   // subframe FrameTreeNodes.
   return false;
 }
@@ -1092,7 +1092,7 @@ void BackForwardTransitionAnimator::
   // draws a new frame, so we can start cross-fading from the preview screenshot
   // to the new page's live content.
   //
-  // TODO(https://crbug.com/1510570): This won't work for same-doc navigations.
+  // TODO(crbug.com/41483162): This won't work for same-doc navigations.
   // We need to listen to `OnLocalSurfaceIdChanged` when we bump the `SurfaceId`
   // for same-doc navigations.
   CHECK(!new_render_widget_host_);

@@ -686,7 +686,7 @@ BOOL _credentialExtensionWasUsed = NO;
 }
 
 - (void)updateMetricsPrefsOnPermissionChange:(BOOL)enabled {
-  // TODO(crbug.com/635669): Consolidate with metrics_reporting_state.cc
+  // TODO(crbug.com/41268699): Consolidate with metrics_reporting_state.cc
   // function.
   metrics::MetricsService* metrics =
       GetApplicationContext()->GetMetricsService();

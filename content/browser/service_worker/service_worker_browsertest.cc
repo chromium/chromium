@@ -5967,7 +5967,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1431421): Flaky on Fuchsia.
-// TODO(crbug.com/1517557): Flaky on Android.
+// TODO(crbug.com/41490535): Flaky on Android.
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_Subresource_FetchHandler_Wins_Redirect \
   DISABLED_Subresource_FetchHandler_Wins_Redirect

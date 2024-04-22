@@ -160,7 +160,7 @@ class SharedStorageStory(
   def SIZE(self):
     return self._size
 
-  # TODO(crbug.com/1516507): Wait for relevant Shared Storage timing histograms
+  # TODO(crbug.com/41489492): Wait for relevant Shared Storage timing histograms
   # to be recorded in each step, rather than simply the event notifications.
   #
   # Note that this will require retrieving histograms from renderer processes;

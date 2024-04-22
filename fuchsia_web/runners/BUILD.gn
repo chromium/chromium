@@ -116,7 +116,7 @@ executable("cast_runner_exe") {
 }
 
 # web_instance_host's deps, especially //content/public/common, adds these.
-# TODO(crbug.com/1212191): Moving flag parsing to web_instance should
+# TODO(crbug.com/42050285): Moving flag parsing to web_instance should
 # eliminate the dependencies that cause these files to be added. Remove them
 # and add the targets that generate these to assert_no_deps in
 # cast_runner_core.
@@ -125,7 +125,7 @@ _web_instance_host_deps_files_to_exclude = [
   "lib/libGLESv2.so",
   "lib/libvulkan.so",
 
-  # TODO(crbug.com/1022542): SwiftShader is not used in cast_runner.
+  # TODO(crbug.com/42050042): SwiftShader is not used in cast_runner.
   # This list should match the list of SwiftShader files excluded from the
   # web_engine package (see fuchsia_web/webengine/BUILD.gn).
   "lib/libvk_swiftshader.so",

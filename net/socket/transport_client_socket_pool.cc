@@ -1592,7 +1592,7 @@ void TransportClientSocketPool::Group::OnBackupJobTimerFired(
   // connection - the timeout they used is tuned for that, and tests expect that
   // behavior.
   //
-  // TODO(https://crbug.com/929814): Replace both this and the
+  // TODO(crbug.com/41440018): Replace both this and the
   // LOAD_STATE_RESOLVING_HOST check with a callback. Use the
   // LOAD_STATE_RESOLVING_HOST callback to start the timer (And invoke the
   // OnHostResolved callback of any pending requests), and the

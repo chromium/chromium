@@ -98,7 +98,7 @@ uint64_t SysInfo::AmountOfPhysicalMemoryImpl() {
 
 // static
 uint64_t SysInfo::AmountOfAvailablePhysicalMemoryImpl() {
-  // TODO(crbug.com/986608): Implement this when Fuchsia supports it.
+  // TODO(crbug.com/42050649): Implement this when Fuchsia supports it.
   NOTIMPLEMENTED_LOG_ONCE();
   return 0;
 }
@@ -129,7 +129,7 @@ int64_t SysInfo::AmountOfFreeDiskSpace(const FilePath& path) {
   const int64_t total_space =
       GetAmountOfTotalDiskSpaceAndVolumePath(path, &volume_path);
   if (total_space >= 0) {
-    // TODO(crbug.com/1148334): Replace this with an efficient implementation.
+    // TODO(crbug.com/42050202): Replace this with an efficient implementation.
     const int64_t used_space = ComputeDirectorySize(volume_path);
     return std::max(0l, total_space - used_space);
   }
@@ -182,7 +182,7 @@ std::string SysInfo::OperatingSystemVersion() {
 void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
                                             int32_t* minor_version,
                                             int32_t* bugfix_version) {
-  // TODO(crbug.com/1348711): Implement this when Fuchsia supports it.
+  // TODO(crbug.com/42050501): Implement this when Fuchsia supports it.
   NOTIMPLEMENTED_LOG_ONCE();
   *major_version = 0;
   *minor_version = 0;

@@ -314,9 +314,9 @@ void PrepareDragData(const DropData& drop_data,
 // support was for dragging items out of Outlook.exe for upload to a file
 // hosting service. The Outlook drag source does not add url data to the data
 // object.
-// TODO(https://crbug.com/958273): DragDrop: Extend virtual filename support
+// TODO(crbug.com/41456054): DragDrop: Extend virtual filename support
 // to DropData, for parity with real filename support.
-// TODO(https://crbug.com/964461): Drag and drop: Should support both virtual
+// TODO(crbug.com/41459545): Drag and drop: Should support both virtual
 // file and url data on drop.
 bool ShouldIncludeVirtualFiles(const DropData& drop_data) {
   return !drop_data.did_originate_from_renderer && drop_data.url.is_empty();

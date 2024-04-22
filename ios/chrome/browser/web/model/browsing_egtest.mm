@@ -166,7 +166,7 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
 // Tests that clicking a link with URL changed by onclick uses the href of the
 // anchor tag instead of the one specified in JavaScript. Also verifies a new
 // tab is opened by target '_blank'.
-// TODO(crbug.com/688223): WKWebView does not open a new window as expected by
+// TODO(crbug.com/41299306): WKWebView does not open a new window as expected by
 // this test.
 - (void)DISABLED_testBrowsingPreventDefaultWithLinkOpenedByJavascript {
   // Create map of canned responses and set up the test HTML server.

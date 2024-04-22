@@ -62,7 +62,7 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   //    navigating away from a crashed frame (early-swap), or for same-RFH
   //    navigations.
   //
-  // TODO(https://crbug.com/1515412): This also won't work for the initial
+  // TODO(crbug.com/41487964): This also won't work for the initial
   // navigation away from "about:blank". We might be able to treat this
   // navigation as a same-doc one.
   //

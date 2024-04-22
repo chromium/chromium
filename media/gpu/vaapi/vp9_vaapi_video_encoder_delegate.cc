@@ -769,7 +769,7 @@ bool VP9VaapiVideoEncoderDelegate::SubmitFrameParameters(
   VAEncSequenceParameterBufferVP9 seq_param = {};
 
   const auto& frame_header = pic->frame_hdr;
-  // TODO(crbug.com/811912): Double check whether the
+  // TODO(crbug.com/41370458): Double check whether the
   // max_frame_width or max_frame_height affects any of the memory
   // allocation and tighten these values based on that.
   constexpr gfx::Size kMaxFrameSize(4096, 4096);

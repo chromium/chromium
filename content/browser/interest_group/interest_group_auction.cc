@@ -4436,7 +4436,7 @@ void InterestGroupAuction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
   any_bid_made_ = true;
   bid->BeginTracingForScoring();
 
-  // TODO(https://crbug.com/1516642): Report k-anon re-runs.
+  // TODO(crbug.com/41489627): Report k-anon re-runs.
   if (IsBidRoleUsedForWinner(kanon_mode_, bid->bid_role)) {
     InterestGroupManagerImpl::InterestGroupObserver::AccessType event_type =
         InterestGroupManagerImpl::InterestGroupObserver::kBid;

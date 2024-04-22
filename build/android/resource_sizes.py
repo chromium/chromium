@@ -638,7 +638,7 @@ def _AnalyzeInternal(apk_path,
   # end result is going to be uploaded to the perf dashboard in the HistogramSet
   # format due to mixed units (bytes vs. zip entries) causing malformed
   # summaries to be generated.
-  # TODO(https://crbug.com/903970): Remove this workaround if unit mixing is
+  # TODO(crbug.com/41425646): Remove this workaround if unit mixing is
   # ever supported.
   report_func('FileCount', 'file count', len(apk_contents), 'zip entries')
 

@@ -803,7 +803,7 @@ class HeadersOnlyBodyHandler : public BodyHandler, public BodyReader::Delegate {
 
   void OnStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle body_data_pipe) override {
-    // TODO(crbug.com/871420): The request can be completed at this point
+    // TODO(crbug.com/41406327): The request can be completed at this point
     // however that requires more changes to SimpleURLLoader as OnComplete()
     // will not have been called yet.
     DCHECK(!body_reader_);

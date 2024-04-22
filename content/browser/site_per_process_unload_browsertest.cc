@@ -1302,7 +1302,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     document.querySelector('iframe').remove();
   )"));
   delete_B2.WaitUntilDeleted();
-  // TODO(https://crbug.com/964950): PostMessage called from an unloading frame
+  // TODO(crbug.com/41459857): PostMessage called from an unloading frame
   // must work. A1 must received 'B2 message'. This is not the case here.
   EXPECT_EQ("nothing received", EvalJs(A1, "received_message"));
 }

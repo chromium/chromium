@@ -404,7 +404,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // if a device stops advertising manufacturer data for a Manufacturer Id, this
   // function will still return the cached value for that Id.
   //
-  // TODO(crbug.com/661814) Support this on platforms that don't use BlueZ.
+  // TODO(crbug.com/41284350) Support this on platforms that don't use BlueZ.
   // Only BlueZ supports this now. This method returns an empty map on platforms
   // that don't use BlueZ.
   const ManufacturerDataMap& GetManufacturerData() const;

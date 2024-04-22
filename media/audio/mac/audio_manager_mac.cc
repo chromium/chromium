@@ -328,7 +328,7 @@ static bool GetInputDeviceChannels(AudioDeviceID device, int* channels) {
 
   // For input, get the channel count directly from the AudioUnit's stream
   // format.
-  // TODO(https://crbug.com/796163): Find out if we can use channel layout on
+  // TODO(crbug.com/41361558): Find out if we can use channel layout on
   // input element, or confirm that we can't.
   ScopedAudioUnit au(device, AUElement::INPUT);
   if (!au.is_valid()) {

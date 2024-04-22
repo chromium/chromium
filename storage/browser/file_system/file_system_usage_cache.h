@@ -95,7 +95,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemUsageCache {
 
   // Incognito usages are kept in memory and are not written to disk.
   bool is_incognito_;
-  // TODO(https://crbug.com/955905): Stop using base::FilePath as the key in
+  // TODO(crbug.com/41454722): Stop using base::FilePath as the key in
   // this API as the paths are not necessarily actual on-disk locations.
   std::map<base::FilePath, std::vector<uint8_t>> incognito_usages_;
 

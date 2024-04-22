@@ -3510,7 +3510,7 @@ void LayerTreeHostImpl::OnMemoryPressure(
   if (!ImageDecodeCacheUtils::ShouldEvictCaches(level))
     return;
 
-    // TODO(crbug.com/1189208): Unlocking decoded-image-tracker images causes
+    // TODO(crbug.com/42050253): Unlocking decoded-image-tracker images causes
     // flickering in visible trees if Out-Of-Process rasterization is enabled.
 #if BUILDFLAG(IS_FUCHSIA)
   if (use_gpu_rasterization() && visible())

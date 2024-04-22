@@ -30,8 +30,8 @@ namespace {
 constexpr base::TimeDelta kContextMenuLongPressDuration = base::Seconds(1);
 
 // Duration to wait for verification of JavaScript action.
-// TODO(crbug.com/670910): Reduce duration if the time required for verification
-// is reduced on devices.
+// TODO(crbug.com/41289402): Reduce duration if the time required for
+// verification is reduced on devices.
 constexpr base::TimeDelta kWaitForVerificationTimeout = base::Seconds(8);
 
 // Returns a no element found error.

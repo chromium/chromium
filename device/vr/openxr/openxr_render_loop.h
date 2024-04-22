@@ -195,7 +195,7 @@ class OpenXrRenderLoop : public XRThread,
 
   mojom::XRFrameDataPtr GetNextFrameData();
 
-  // TODO(https://crbug.com/1516973): Investigate removing this callback.
+  // TODO(crbug.com/41489956): Investigate removing this callback.
   using ContextProviderAcquiredCallback =
       base::OnceCallback<void(bool success)>;
 

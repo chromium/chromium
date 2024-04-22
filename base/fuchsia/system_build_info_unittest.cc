@@ -30,7 +30,7 @@ TEST(BuildInfoTest, GetCachedBuildInfo_CheckExpectedValues) {
   ClearCachedSystemInfoForTesting();
   ASSERT_TRUE(FetchAndCacheSystemInfo());
 
-  // TODO(crbug.com/1326674): Check for specific values once Fuchsia
+  // TODO(crbug.com/42050479): Check for specific values once Fuchsia
   // completes the requested changes to the data returned from the fake.
   EXPECT_TRUE(GetCachedBuildInfo().product_config().has_value());
   EXPECT_TRUE(GetCachedBuildInfo().board_config().has_value());

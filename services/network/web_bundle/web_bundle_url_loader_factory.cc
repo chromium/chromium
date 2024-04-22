@@ -868,7 +868,7 @@ void WebBundleURLLoaderFactory::SendResponseToLoader(
   mojom::URLResponseHeadPtr response_head =
       web_package::CreateResourceResponseFromHeaderString(headers);
   // Currently we allow only net::HTTP_OK responses in bundles.
-  // TODO(crbug.com/990733): Revisit this once
+  // TODO(crbug.com/41474458): Revisit this once
   // https://github.com/WICG/webpackage/issues/478 is resolved.
   if (response_head->headers->response_code() != net::HTTP_OK) {
     web_bundle_handle_->OnWebBundleError(

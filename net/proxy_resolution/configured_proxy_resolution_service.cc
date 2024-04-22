@@ -380,7 +380,7 @@ base::Value::Dict NetLogFinishedResolvingProxyParams(const ProxyInfo* result) {
 // for security (attacker can already route traffic through their HTTP proxy
 // and see the full URL for http:// requests).
 //
-// TODO(https://crbug.com/882536): Use the same stripping for insecure URL
+// TODO(crbug.com/41412888): Use the same stripping for insecure URL
 // schemes.
 GURL SanitizeUrl(const GURL& url) {
   DCHECK(url.is_valid());

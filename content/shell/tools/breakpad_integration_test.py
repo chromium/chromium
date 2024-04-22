@@ -169,7 +169,7 @@ def run_test(options, crash_dir, symbols_dir, platform,
     minidump = get_android_dump(options, crash_dir, symbols_dir)
   else:
     dmp_dir = crash_dir
-    # TODO(crbug.com/782923): This test should not reach directly into the
+    # TODO(crbug.com/41354248): This test should not reach directly into the
     # Crashpad database, but instead should use crashpad_database_util.
     if platform == 'darwin' or platform.startswith('linux'):
       dmp_dir = os.path.join(dmp_dir, 'pending')

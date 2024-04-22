@@ -946,7 +946,7 @@ cc_test("cc_unittests") {
   }
 
   if (is_fuchsia) {
-    # TODO(https://crbug.com/1022542): Some of these tests use SwiftShader,
+    # TODO(crbug.com/42050042): Some of these tests use SwiftShader,
     # which requires ambient VMEX.
     test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
 

@@ -258,7 +258,7 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // GatherEstimatesForNextConnectionType(). This should always be called in
   // production, because getting the network id involves a blocking call to
   // recv() in AddressTrackerLinux, and the IO thread should never be blocked.
-  // TODO(https://crbug.com/821607): Remove after the bug is resolved.
+  // TODO(crbug.com/41376341): Remove after the bug is resolved.
   void EnableGetNetworkIdAsynchronously();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -22,7 +22,7 @@ namespace base {
 
 TestComponentContextForProcess::TestComponentContextForProcess(
     InitialState initial_state) {
-  // TODO(https://crbug.com/1038786): Migrate to sys::ComponentContextProvider
+  // TODO(crbug.com/42050058): Migrate to sys::ComponentContextProvider
   // once it provides access to an sys::OutgoingDirectory or PseudoDir through
   // which to publish additional_services().
 

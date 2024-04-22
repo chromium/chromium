@@ -50,7 +50,7 @@ void SwizzleUIImageImageNamed() {
 
   // TODO(crbug.com/41318097): Add missing image.
   [exceptions addObject:@"card_close_button_pressed_incognito"];
-  // TODO(crbug.com/720355): Add missing image.
+  // TODO(crbug.com/41318110): Add missing image.
   [exceptions addObject:@"find_close_pressed_incognito"];
   // TODO(crbug.com/40519792): Add missing images.
   [exceptions addObject:@"glif-mic-to-dots-small_37"];

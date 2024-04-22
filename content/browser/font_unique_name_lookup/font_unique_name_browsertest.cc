@@ -128,7 +128,7 @@ class FontUniqueNameBrowserTest : public DevToolsProtocolTest {
 #endif
 };
 
-// TODO(crbug.com/949181): Make this work on Fuchsia.
+// TODO(crbug.com/42050634): Make this work on Fuchsia.
 #if !BUILDFLAG(IS_FUCHSIA)
 IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest,
                        ContentLocalFontsMatching) {

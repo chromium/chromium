@@ -416,7 +416,7 @@ void NetworkServiceNetworkDelegate::ForwardProxyErrors(int net_error) {
   if (!proxy_error_client_)
     return;
 
-  // TODO(https://crbug.com/876848): Provide justification for the currently
+  // TODO(crbug.com/41409550): Provide justification for the currently
   // enumerated errors.
   switch (net_error) {
     case net::ERR_PROXY_AUTH_UNSUPPORTED:

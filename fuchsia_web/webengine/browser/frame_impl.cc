@@ -605,7 +605,7 @@ void FrameImpl::AddNewContents(
     bool* was_blocked) {
   DCHECK_EQ(source, web_contents_.get());
 
-  // TODO(crbug.com/995395): Add window disposition to the FIDL interface.
+  // TODO(crbug.com/41476982): Add window disposition to the FIDL interface.
   switch (disposition) {
     case WindowOpenDisposition::NEW_FOREGROUND_TAB:
     case WindowOpenDisposition::NEW_BACKGROUND_TAB:

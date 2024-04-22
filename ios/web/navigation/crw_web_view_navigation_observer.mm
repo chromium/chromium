@@ -267,8 +267,8 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
     //    synced to self.webView.URL.
     // This needs to be done before `URLDidChangeWithoutDocumentChange` so any
     // WebStateObserver callbacks will see the updated URL.
-    // TODO(crbug.com/809287) use currentItem.URL instead of self.webView.URL to
-    // update NavigationItem URL.
+    // TODO(crbug.com/41368944) use currentItem.URL instead of self.webView.URL
+    // to update NavigationItem URL.
     const GURL webViewURL = net::GURLWithNSURL(self.webView.URL);
     web::NavigationItem* currentItem = nullptr;
     if (self.webView.backForwardList.currentItem) {
@@ -320,7 +320,7 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
                self.documentURL.DeprecatedGetOriginAsURL() ==
                URL.DeprecatedGetOriginAsURL();
            // Check that the web view URL still matches the new URL.
-           // TODO(crbug.com/563568): webViewURLMatchesNewURL check
+           // TODO(crbug.com/41224497): webViewURLMatchesNewURL check
            // may drop same document URL changes if pending URL
            // change occurs immediately after. Revisit heuristics to
            // prevent this.

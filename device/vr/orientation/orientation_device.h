@@ -27,7 +27,7 @@ class VROrientationSession;
 // ABSOLUTE_ORIENTATION_QUATERNION because compass readings can be inacurate
 // when used indoors, unless we're on Windows which doesn't support
 // RELATIVE_ORIENTATION_QUATERNION.
-// TODO(crbug.com/730440) If RELATIVE_ORIENTATION_QUATERNION is ever
+// TODO(crbug.com/41323676) If RELATIVE_ORIENTATION_QUATERNION is ever
 // implemented on Windows, use that instead.
 static constexpr mojom::SensorType kOrientationSensorType =
 #if BUILDFLAG(IS_WIN)

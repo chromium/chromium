@@ -468,7 +468,7 @@ class AttributionDataHostManagerImpl::RegistrationContext {
       case RegistrationMethod::kNavForeground:
       // keep alive is not supported in service workers. As such, for browser
       // registrations `was_fetched_via_serivce_worker` can only be false.
-      // TODO(https://crbug.com/1523862): Once service worker keep alive
+      // TODO(crbug.com/41496810): Once service worker keep alive
       // requests are supported, handle it here.
       case RegistrationMethod::kNavBackgroundBrowser:
       case RegistrationMethod::kAttributionSrcBrowser:

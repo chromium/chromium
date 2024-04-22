@@ -109,7 +109,7 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
   BOOL _currentURLLoadWasTrigerred;
   BOOL _isBeingDestroyed;  // YES if in the process of closing.
   // The actual URL of the document object (i.e., the last committed URL).
-  // TODO(crbug.com/549616): Remove this in favor of just updating the
+  // TODO(crbug.com/41213672): Remove this in favor of just updating the
   // navigation manager and treating that as authoritative.
   GURL _documentURL;
   // Actions to execute once the page load is complete.
@@ -529,7 +529,7 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
 
 - (void)reloadWithRendererInitiatedNavigation:(BOOL)rendererInitiated {
   // Clear last user interaction.
-  // TODO(crbug.com/546337): Move to after the load commits, in the subclass
+  // TODO(crbug.com/41211432): Move to after the load commits, in the subclass
   // implementation. This will be inaccurate if the reload fails or is
   // cancelled.
   _userInteractionState.SetLastUserInteraction(nullptr);
@@ -589,7 +589,7 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
   } else if (!_currentURLLoadWasTrigerred) {
     [self ensureContainerViewCreated];
 
-    // TODO(crbug.com/796608): end the practice of calling `loadCurrentURL`
+    // TODO(crbug.com/41361784): end the practice of calling `loadCurrentURL`
     // when it is possible there is no current URL. If the call performs
     // necessary initialization, break that out.
     [self loadCurrentURLWithRendererInitiatedNavigation:NO];
@@ -1730,7 +1730,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
                                             webView:self.webView];
   newContext->SetHasCommitted(!isSameDocumentNavigation);
   self.webStateImpl->OnNavigationFinished(newContext.get());
-  // TODO(crbug.com/792515): It is OK, but very brittle, to call
+  // TODO(crbug.com/41359661): It is OK, but very brittle, to call
   // `didFinishNavigation:` here because the gating condition is mutually
   // exclusive with the condition below. Refactor this method after
   // deprecating self.navigationHandler.pendingNavigationInfo.

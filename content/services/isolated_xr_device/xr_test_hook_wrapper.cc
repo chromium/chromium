@@ -7,7 +7,7 @@
 
 namespace device {
 
-// TODO(https://crbug.com/891832): Remove these as conversion functions as part
+// TODO(crbug.com/41418750): Remove these as conversion functions as part
 // of the switch to only mojom types.
 ControllerRole MojoToDeviceControllerRole(
     device_test::mojom::ControllerRole role) {

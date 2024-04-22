@@ -30,7 +30,7 @@ class TestRunner(ABC):
         if package_deps:
             self._package_deps = TestRunner._build_package_deps(package_deps)
 
-    # TODO(crbug.com/1256503): Remove when all tests are converted to CFv2.
+    # TODO(crbug.com/42050366): Remove when all tests are converted to CFv2.
     @staticmethod
     def is_cfv2() -> bool:
         """

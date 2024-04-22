@@ -130,7 +130,7 @@ source_set("unit_tests") {
   ]
 }
 
-# TODO(crbug.com/734054): remove this target when the downstream repository
+# TODO(crbug.com/41325811): remove this target when the downstream repository
 # has been fixed to directly depends on the individual targets.
 group("assets") {
   deps = [

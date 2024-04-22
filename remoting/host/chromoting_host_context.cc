@@ -119,7 +119,7 @@ ChromotingHostContextChromeOs::url_loader_factory() {
 #else  // !BUILDFLAG(IS_CHROMEOS_ASH)
 void DisallowBlockingOperations() {
   base::DisallowBlocking();
-  // TODO(crbug.com/793486): Re-enable after the underlying issue is fixed.
+  // TODO(crbug.com/41360128): Re-enable after the underlying issue is fixed.
   // base::DisallowBaseSyncPrimitives();
 }
 

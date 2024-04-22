@@ -62,7 +62,7 @@ void ClientUsageTracker::GetBucketsUsage(const std::set<BucketLocator>& buckets,
                      std::move(info)));
 
   for (const auto& bucket : buckets) {
-    // TODO(https://crbug.com/941480): `storage_key` should not be opaque or
+    // TODO(crbug.com/41446656): `storage_key` should not be opaque or
     // have an empty url, but sometimes it is.
     if (bucket.storage_key.origin().opaque()) {
       DVLOG(1) << "GetBucketsUsage for opaque storage_key!";

@@ -165,7 +165,7 @@ src:*third_party/dawn/src/dawn/native/*
 
 # Dawn uses std::function for callbacks from the main binary to
 # liboptimization_guide_internal.so.
-# TODO(crbug.com/1511050): See if we can avoid disabling CFI for std::function.
+# TODO(crbug.com/41483637): See if we can avoid disabling CFI for std::function.
 src:*third_party/libc*/invoke.h
 src:*third_party/libc*/function.h
 

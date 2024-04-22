@@ -512,7 +512,7 @@ def BuildFFmpeg(target_os, target_arch, host_os, host_arch, parallel_jobs,
         RewriteFile(os.path.join(config_dir, 'ffbuild/config.mak'),
                     [(r'(LDFLAGS=.*)', r'\1 -FORCE:UNRESOLVED')])
 
-    # TODO(https://crbug.com/840976): Linking when targetting mac on linux is
+    # TODO(crbug.com/41387829): Linking when targetting mac on linux is
     # currently broken.
     # Replace the linker step with something that just creates the target.
     if target_os == 'mac' and host_os == 'linux':

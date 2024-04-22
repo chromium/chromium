@@ -2547,7 +2547,7 @@ enum HeaderBehaviour {
   self.tabStripView = tabStripView;
   CGRect tabStripFrame = [self.tabStripView frame];
   tabStripFrame.origin = CGPointZero;
-  // TODO(crbug.com/256655): Move the origin.y below to -setUpViewLayout.
+  // TODO(crbug.com/41023322): Move the origin.y below to -setUpViewLayout.
   // because the CGPointZero above will break reset the offset, but it's not
   // clear what removing that will do.
   tabStripFrame.origin.y = self.headerOffset;

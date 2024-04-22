@@ -242,7 +242,7 @@ class PermissionsManager : public KeyedService {
   // CHECKs to fail when validating that permissions being revoked are present
   // (see https://crbug.com/930062).
   // Returns null if there are no stored runtime-granted permissions.
-  // TODO(https://crbug.com/931881): ExtensionPrefs should return
+  // TODO(crbug.com/41441259): ExtensionPrefs should return
   // properly-bounded permissions.
   std::unique_ptr<PermissionSet> GetRuntimePermissionsFromPrefs(
       const Extension& extension) const;

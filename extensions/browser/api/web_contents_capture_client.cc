@@ -29,7 +29,7 @@ WebContentsCaptureClient::CaptureResult WebContentsCaptureClient::CaptureAsync(
     WebContents* web_contents,
     const ImageDetails* image_details,
     base::OnceCallback<void(const SkBitmap&)> callback) {
-  // TODO(crbug/419878): Account for fullscreen render widget?
+  // TODO(crbug.com/41135213): Account for fullscreen render widget?
   RenderWidgetHostView* const view =
       web_contents ? web_contents->GetRenderWidgetHostView() : nullptr;
   if (!view)

@@ -293,7 +293,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-live-changed.html"));
 }
 
-// TODO(crbug.com/983709): Flaky.
+// TODO(crbug.com/41470592): Flaky.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaMenuItemFocus) {
   RunEventTest(FILE_PATH_LITERAL("aria-menuitem-focus.html"));
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-focus.html"));
 }
 
-// TODO(crbug.com/835455): Fails on Windows.
+// TODO(crbug.com/41384724): Fails on Windows.
 // TODO(crbug.com/41448628): Flaky on Mac.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_AccessibilityEventsAriaComboBoxDelayAddList \

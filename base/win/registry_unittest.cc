@@ -588,7 +588,7 @@ INSTANTIATE_TEST_SUITE_P(Recursive,
                          ::testing::Values(RegKey::RecursiveDelete(true)));
 
 // A test harness for tests that use HKLM to test WoW redirection and such.
-// TODO(https://crbug.com/377917): The tests here that write to the registry are
+// TODO(crbug.com/41110299): The tests here that write to the registry are
 // disabled because they need work to handle parallel runs of different tests.
 class RegistryTestHKLM : public ::testing::Test {
  protected:

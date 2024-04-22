@@ -1126,8 +1126,8 @@ bool GpuImageDecodeCache::ImageData::HasUploadedData() const {
     case DecodedDataMode::kGpu:
       // upload.image() stores the result of MakeFromYUVATextures
       if (upload.image()) {
-        // TODO(915968): Be smarter about being able to re-upload planes
-        // selectively if only some get deleted from under us.
+        // TODO(crbug.com/41432265): Be smarter about being able to re-upload
+        // planes selectively if only some get deleted from under us.
         DCHECK(!info.yuva.has_value() || upload.has_yuv_planes());
         return true;
       }

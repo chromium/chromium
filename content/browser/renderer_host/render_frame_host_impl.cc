@@ -1698,8 +1698,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   InitializePrivateNetworkRequestPolicy();
 
   auto task_runner = GetUIThreadTaskRunner({BrowserTaskType::kUserInput});
-  // TODO(crbug.com/1510787): Stop using BrowserTaskType::kUserInput task runner
-  // for non-input related tasks.
+  // TODO(crbug.com/41483375): Stop using BrowserTaskType::kUserInput task
+  // runner for non-input related tasks.
   unload_event_monitor_timeout_ = std::make_unique<TimeoutMonitor>(
       base::BindRepeating(&RenderFrameHostImpl::OnNavigationUnloadTimeout,
                           weak_ptr_factory_.GetWeakPtr()),

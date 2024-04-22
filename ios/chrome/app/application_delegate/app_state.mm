@@ -140,7 +140,7 @@ void FlushCookieStoreOnIOThread(
   // Whether the application is currently in the background.
   // This is a workaround for rdar://22392526 where
   // -applicationDidEnterBackground: can be called twice.
-  // TODO(crbug.com/546196): Remove this once rdar://22392526 is fixed.
+  // TODO(crbug.com/41211311): Remove this once rdar://22392526 is fixed.
   BOOL _applicationInBackground;
   // The counter of the number of views which want to block the screen to
   // portrait mode for iPhone. This counter should always be 0 for iPad.

@@ -72,7 +72,7 @@ void ExtensionRegistrar::AddExtension(
     // Other than for unpacked extensions, we should not be downgrading.
     if (!Manifest::IsUnpackedLocation(extension->location()) &&
         version_compare_result < 0) {
-      // TODO(https://crbug.com/810799): It would be awfully nice to CHECK this,
+      // TODO(crbug.com/41369768): It would be awfully nice to CHECK this,
       // but that's caused problems. There are apparently times when this
       // happens that we aren't accounting for. We should track those down and
       // fix them, but it can be tricky.

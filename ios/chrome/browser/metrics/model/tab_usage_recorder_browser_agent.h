@@ -96,7 +96,7 @@ class TabUsageRecorderBrowserAgent
   void ResetAll();
 
  private:
-  // TODO(crbug.com/731724): remove this once the code has been refactored not
+  // TODO(crbug.com/41324440): remove this once the code has been refactored not
   // to depends on injecting values in `termination_timestamps_`.
   friend class TabUsageRecorderBrowserAgentTest;
 

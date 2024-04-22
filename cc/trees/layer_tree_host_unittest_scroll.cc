@@ -790,7 +790,7 @@ TEST_F(LayerTreeHostScrollTestCaseWithChild,
   RunTest(CompositorMode::THREADED);
 }
 
-// TODO(crbug.com/1521921): Test is flaky on asan on multiple platforms.
+// TODO(crbug.com/41494888): Test is flaky on asan on multiple platforms.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_DeviceScaleFactor2_ScrollChild \
   DISABLED_DeviceScaleFactor2_ScrollChild
@@ -804,7 +804,7 @@ TEST_F(LayerTreeHostScrollTestCaseWithChild,
   RunTest(CompositorMode::THREADED);
 }
 
-// TODO(crbug.com/1521395): Test is flaky on asan on multiple platforms.
+// TODO(crbug.com/41494364): Test is flaky on asan on multiple platforms.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     defined(ADDRESS_SANITIZER)
 #define MAYBE_DeviceScaleFactor1_ScrollRootScrollLayer \
@@ -820,7 +820,7 @@ TEST_F(LayerTreeHostScrollTestCaseWithChild,
   RunTest(CompositorMode::THREADED);
 }
 
-// TODO(crbug.com/1521926): Test is flaky on Win asan.
+// TODO(crbug.com/41494893): Test is flaky on Win asan.
 // TODO(crbug.com/1517753): Test is flaky on Mac asan.
 // Test is flaky on asan on multiple platforms.
 #if defined(ADDRESS_SANITIZER)
@@ -839,7 +839,7 @@ TEST_F(LayerTreeHostScrollTestCaseWithChild,
 
 // Test is flaky on asan on multiple platforms.
 #if defined(ADDRESS_SANITIZER)
-// TODO(https://crbug.com/1521778): Fix the flakiness on Mac ASan and re-enable.
+// TODO(crbug.com/41494746): Fix the flakiness on Mac ASan and re-enable.
 #define MAYBE_DeviceScaleFactor2_ScrollRootScrollLayer \
   DISABLED_DeviceScaleFactor2_ScrollRootScrollLayer
 #else

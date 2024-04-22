@@ -438,7 +438,7 @@ source_set("browser_sources") {
     "guest_view/mime_handler_view/mime_handler_view_guest_delegate.cc",
     "guest_view/mime_handler_view/mime_handler_view_guest_delegate.h",
 
-    # TODO(crbug.com/730220): Ideally web_view should be a separate target on
+    # TODO(crbug.com/41323543): Ideally web_view should be a separate target on
     # which the extension system depends.
     "guest_view/web_view/controlled_frame_embedder_url_fetcher.cc",
     "guest_view/web_view/controlled_frame_embedder_url_fetcher.h",

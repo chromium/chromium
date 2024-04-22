@@ -164,7 +164,7 @@ class WebRtcImageCaptureSucceedsBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/998305): Flaky on Linux.
+// TODO(crbug.com/41478485): Flaky on Linux.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_GetPhotoCapabilities DISABLED_GetPhotoCapabilities
 #else
@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureSucceedsBrowserTest,
   ASSERT_TRUE(RunImageCaptureTestCase("testManipulatePan()"));
 }
 
-// TODO(crbug.com/998304): Flaky on Linux.
+// TODO(crbug.com/41478484): Flaky on Linux.
 // TODO(crbug.com/40554182): Re-enable test on Android as soon as the cause for
 // the bug is understood and fixed.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)

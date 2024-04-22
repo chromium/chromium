@@ -774,8 +774,9 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   UMA_HISTOGRAM_BOOLEAN("IOS.CommittedURLMatchesCurrentItem",
                         webViewURL == currentWKItemURL);
 
-  // TODO(crbug.com/787497): Always use webView.backForwardList.currentItem.URL
-  // to obtain lastCommittedURL once loadHTML: is no longer user for WebUI.
+  // TODO(crbug.com/41356827): Always use
+  // webView.backForwardList.currentItem.URL to obtain lastCommittedURL once
+  // loadHTML: is no longer user for WebUI.
   if (webViewURL.is_empty()) {
     // It is possible for `webView.URL` to be nil, in which case
     // webView.backForwardList.currentItem.URL will return the right committed
@@ -1794,7 +1795,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
   navigationContext->SetError(contextError);
   navigationContext->SetIsPost([self isCurrentNavigationItemPOST]);
-  // TODO(crbug.com/803631) DCHECK that self.currentNavItem is the navigation
+  // TODO(crbug.com/41365797) DCHECK that self.currentNavItem is the navigation
   // item associated with navigationContext.
 
   if ([error.domain

@@ -32,6 +32,7 @@ group("deployment_resources") {
     "//third_party/fuchsia-sdk/sdk/meta/manifest.json",
     "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx",
     "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx-meta.json",
+
     # The following folder contains standalone binaries running as ffx plugins.
     "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/ffx_tools/",
     "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/fvm",
@@ -66,7 +67,7 @@ group("deployment_resources") {
       data += [
         "//third_party/qemu-${host_os}-${test_host_cpu}/",
 
-        # TODO(https://crbug.com/1336776): remove when ffx has native support
+        # TODO(crbug.com/42050489): remove when ffx has native support
         # for starting emulator on arm64 host.
         "//third_party/fuchsia-sdk/sdk/tools/x64/qemu_internal-meta.json",
       ]

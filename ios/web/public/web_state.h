@@ -397,7 +397,7 @@ class WebState : public base::SupportsUserData {
   // Returns true if the web process backing this WebState is believed to
   // currently be crashed or was evicted (by calling SetWebUsageEnabled
   // with false).
-  // TODO(crbug.com/619971): Remove once all code has been ported to use
+  // TODO(crbug.com/41258826): Remove once all code has been ported to use
   // IsCrashed() instead of IsEvicted().
   virtual bool IsEvicted() const = 0;
 

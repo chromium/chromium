@@ -26,7 +26,7 @@
   ],
   facets: {
     "fuchsia.test": {
-      // TODO(crbug.com/1408597): Remove when the isolated font provider
+      // TODO(crbug.com/42050571): Remove when the isolated font provider
       // component is subpackaged.
       "deprecated-allowed-packages": [ "fonts_hermetic_for_test" ],
     },

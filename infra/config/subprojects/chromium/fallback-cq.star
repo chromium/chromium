@@ -8,7 +8,7 @@ fallback_cq = struct(
     GROUP = "fallback-cq",
 )
 
-# TODO(https://crbug.com/966115) Run a generator to set the fallback field for
+# TODO(crbug.com/41460531) Run a generator to set the fallback field for
 # the empty CQ group until it's exposed in lucicfg or there is a better way to
 # create a CQ group for all of the canary branches
 def _generate_cq_group_fallback(ctx):

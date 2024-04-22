@@ -51,7 +51,7 @@ XrRenderer::XrRenderer() {
   std::string error;
   GLuint vertex_shader_handle =
       vr::CompileShader(GL_VERTEX_SHADER, kVertexShader, error);
-  // TODO(crbug.com/866593): fail gracefully if shaders don't compile.
+  // TODO(crbug.com/41403313): fail gracefully if shaders don't compile.
   CHECK(vertex_shader_handle) << error << "\nvertex_src\n" << kVertexShader;
 
   GLuint fragment_shader_handle =

@@ -1477,7 +1477,7 @@ void PrefetchContainer::AddClientHintsHeaders(
     return;
   }
 
-  // TODO(crbug.com/1524069): Consider supporting UA override mode here
+  // TODO(crbug.com/41497015): Consider supporting UA override mode here
   const bool is_ua_override_on = false;
   net::HttpRequestHeaders client_hints_headers;
   AddClientHintsHeadersToPrefetchNavigation(

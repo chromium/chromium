@@ -41,7 +41,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/android-official",
-            # TODO(crbug.com/1517934): Restore DCHECKs when the build is fixed.
+            # TODO(crbug.com/41490911): Restore DCHECKs when the build is fixed.
             #"dcheck_always_on",
         ],
     ),

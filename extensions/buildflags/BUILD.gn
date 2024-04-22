@@ -5,7 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//extensions/buildflags/buildflags.gni")
 
-# TODO(crbug.com/731689): Assert that extensions are enabled.
+# TODO(crbug.com/41324418): Assert that extensions are enabled.
 
 # This file is in a separate directory so all targets in the build can refer to
 # the buildflag header to get the necessary preprocessor defines without

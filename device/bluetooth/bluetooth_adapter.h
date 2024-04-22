@@ -236,7 +236,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     //   GetCharacteristic(s)
     //   GetDescriptor(s)
     //
-    // TODO(710352): Remove Service, Characteristic, & Descriptor Added/Removed.
+    // TODO(crbug.com/41312390): Remove Service, Characteristic, & Descriptor
+    // Added/Removed.
 
     // See "Deprecated GATT Added/Removed Events NOTE" above.
     //
@@ -261,8 +262,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     virtual void GattServicesDiscovered(BluetoothAdapter* adapter,
                                         BluetoothDevice* device) {}
 
-    // TODO(782494): Deprecated & not functional on all platforms. Use
-    // GattServicesDiscovered.
+    // TODO(crbug.com/41354033): Deprecated & not functional on all platforms.
+    // Use GattServicesDiscovered.
     //
     // Called when all characteristic and descriptor discovery procedures are
     // known to be completed for the GATT service |service|. This method will be

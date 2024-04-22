@@ -9,7 +9,7 @@ namespace extensions {
 bool CpuInfoProvider::QueryCpuTimePerProcessor(
     std::vector<api::system_cpu::ProcessorInfo>* infos) {
   DCHECK(infos);
-  // TODO(crbug.com/1233555): Integrate with platform APIs, when available.
+  // TODO(crbug.com/42050323): Integrate with platform APIs, when available.
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }

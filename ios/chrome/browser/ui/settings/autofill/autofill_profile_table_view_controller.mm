@@ -702,7 +702,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
               profileCount)
                 action:^{
                   [weakSelf willDeleteItemsAtIndexPaths:indexPaths];
-                  // TODO(crbug.com/650390) Generalize removing empty sections
+                  // TODO(crbug.com/41277594) Generalize removing empty sections
                   [weakSelf removeSectionIfEmptyForSectionWithIdentifier:
                                 SectionIdentifierProfiles];
                   [weakSelf dismissDeletionSheet];

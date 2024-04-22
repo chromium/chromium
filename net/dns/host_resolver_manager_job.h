@@ -288,7 +288,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
   const JobKey key_;
   const ResolveHostParameters::CacheUsage cache_usage_;
-  // TODO(crbug.com/969847): Consider allowing requests within a single Job to
+  // TODO(crbug.com/41462480): Consider allowing requests within a single Job to
   // have different HostCaches.
   const raw_ptr<HostCache> host_cache_;
 

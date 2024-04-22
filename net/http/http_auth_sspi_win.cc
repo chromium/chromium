@@ -327,7 +327,7 @@ SECURITY_STATUS SSPILibraryDefault::QueryContextAttributesEx(
     ULONG ulAttribute,
     PVOID pBuffer,
     ULONG cbBuffer) {
-  // TODO(https://crbug.com/992779): QueryContextAttributesExW is not included
+  // TODO(crbug.com/41475489): QueryContextAttributesExW is not included
   // in Secur32.Lib in 10.0.18362.0 SDK. This symbol requires switching to using
   // Windows SDK API sets in mincore.lib or OneCore.Lib. Switch to using
   // QueryContextAttributesEx when the switch is made.

@@ -891,7 +891,7 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
   if (visible_rect.IsEmpty())
     visible_rect = config_.visible_rect();
 
-  // TODO(https://crbug.com/843150): Use aspect ratio from decoder (SPS) if
+  // TODO(crbug.com/41389060): Use aspect ratio from decoder (SPS) if
   // the config's aspect ratio isn't valid.
   gfx::Size natural_size = config_.aspect_ratio().GetNaturalSize(visible_rect);
 

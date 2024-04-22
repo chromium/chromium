@@ -130,7 +130,7 @@ class LeakDetectionStorySet(story_module.StorySet):
         'https://archive.org/',
         'https://www.udemy.com/',
         'https://answers.yahoo.com/',
-        # TODO(crbug.com/985552): Memory dump fails flakily.
+        # TODO(crbug.com/41471571): Memory dump fails flakily.
         # 'https://www.goodreads.com/',
         'https://www.cricbuzz.com/',
         'http://www.goal.com/',

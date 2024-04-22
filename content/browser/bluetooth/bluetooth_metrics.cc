@@ -29,8 +29,9 @@ int HashUUID(const std::string& canonical_uuid) {
                                          "strings in canonical format to "
                                          "ensure consistent hash results.";
 
-  // TODO(520284): Other than verifying that |uuid| contains a value, this logic
-  // should be migrated to a dedicated histogram macro for hashed strings.
+  // TODO(crbug.com/41194594): Other than verifying that |uuid| contains a
+  // value, this logic should be migrated to a dedicated histogram macro for
+  // hashed strings.
   uint32_t data = base::PersistentHash(canonical_uuid);
 
   // Strip off the sign bit to make the hash look nicer.

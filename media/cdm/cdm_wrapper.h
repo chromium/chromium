@@ -59,7 +59,7 @@ typedef void* (*CreateCdmFunc)(int cdm_interface_version,
 // Since this file is highly templated and default implementations are short
 // (just a shim layer in most cases), everything is done in this header file.
 //
-// TODO(crbug.com/799169): After pepper CDM support is removed, this file can
+// TODO(crbug.com/41363203): After pepper CDM support is removed, this file can
 // depend on media/ and we can clean this class up, e.g. pass in CdmConfig.
 class CdmWrapper {
  public:

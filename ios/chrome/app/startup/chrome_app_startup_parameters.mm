@@ -324,7 +324,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   } else if (IsXCallbackURL(parsedURL)) {
     base::UmaHistogramEnumeration(kAppLaunchSource,
                                   AppLaunchSource::X_CALLBACK);
-    // TODO(crbug.com/228098): Temporary fix.
+    // TODO(crbug.com/41004788): Temporary fix.
     NSString* action = [completeURL path];
     // Currently only "open" and "extension-command" are supported.
     // Other actions are being considered (see b/6914153).

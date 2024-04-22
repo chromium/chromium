@@ -944,7 +944,7 @@ void CreateFileURLLoaderBypassingSecurityChecks(
     std::unique_ptr<FileURLLoaderObserver> observer,
     bool allow_directory_listing,
     scoped_refptr<net::HttpResponseHeaders> extra_response_headers) {
-  // TODO(crbug.com/924416): Re-evaluate how TaskPriority is set here and in
+  // TODO(crbug.com/41436919): Re-evaluate how TaskPriority is set here and in
   // other file URL-loading-related code. Some callers require USER_VISIBLE
   // (i.e., BEST_EFFORT is not enough).
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
@@ -970,8 +970,8 @@ mojo::PendingRemote<network::mojom::URLLoaderFactory>
 CreateFileURLLoaderFactory(
     const base::FilePath& profile_path,
     scoped_refptr<SharedCorsOriginAccessList> shared_cors_origin_access_list) {
-  // TODO(crbug.com/924416): Re-evaluate TaskPriority: Should the caller provide
-  // it?
+  // TODO(crbug.com/41436919): Re-evaluate TaskPriority: Should the caller
+  // provide it?
   return FileURLLoaderFactory::Create(profile_path,
                                       shared_cors_origin_access_list,
                                       base::TaskPriority::USER_VISIBLE);
