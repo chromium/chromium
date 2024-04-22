@@ -1,18 +1,19 @@
 <!DOCTYPE html>
-<title>Custom property values from the root element</title>
+<title>Custom property values from the originating element</title>
 <link rel="author" title="Stephen Chenney" href="mailto:schenney@chromium.org">
 <link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#highlight-cascade">
 <link rel="match" href="highlight-cascade-008-ref.html">
-<meta name="assert" value="This test verifies that when a custom property is not found in highlight cascade, its value is taken from the root element.">
+<meta name="assert" value="This test verifies that custom properties from the originating element are used to resolve var() on highlight pseudos.">
 <meta name="fuzzy" content="0-255;0-10">
 <script src="support/selections.js"></script>
 <style>
   :root {
     --background-color: green;
-    --decoration-color: purple;
+    --decoration-color: yellow;
   }
   ::selection {
-    --decoration-color: yellow;
+    --background-color: cyan;
+    --decoration-color: magenta;
   }
   div::selection {
     background-color: var(--background-color, red);
@@ -20,8 +21,11 @@
     text-decoration-style: line;
     text-decoration-color: var(--decoration-color, red);
   }
-  span::selection {
+  span {
     --background-color: blue;
+  }
+  span::selection {
+    --background-color: purple;
     background-color: var(--background-color, red);
   }
 </style>

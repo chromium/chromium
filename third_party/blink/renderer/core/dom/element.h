@@ -1577,7 +1577,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     // The HighlightData from the old style can be re-used.
     kReuse,
     // The HighlightData contains relative units and may need recalc.
-    kRelativeUnits,
+    kOriginatingDependent,
     // Highlights must be calculated in full.
     kFull,
   };

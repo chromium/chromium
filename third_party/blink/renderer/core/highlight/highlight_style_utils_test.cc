@@ -319,10 +319,13 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritance) {
         --root-color: green;
       }
       ::selection {
+        /* This rule should not apply */
         --selection-color: blue;
       }
       div::selection {
+        /* Use the fallback */
         color: var(--selection-color, red);
+        /* Use the :root inherited via originating */
         background-color: var(--root-color, red);
       }
     </style>
@@ -347,7 +350,7 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritance) {
                     paint_style, paint_info)
                     .style;
 
-  EXPECT_EQ(Color(0, 0, 255), paint_style.fill_color);
+  EXPECT_EQ(Color(255, 0, 0), paint_style.fill_color);
 
   Color background_color = HighlightStyleUtils::HighlightBackgroundColor(
       GetDocument(), div_style, div_node, previous_layer_color,
@@ -356,7 +359,8 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritance) {
   EXPECT_EQ(Color(0, 128, 0), background_color);
 }
 
-TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritanceNoRoot) {
+TEST_F(HighlightStyleUtilsTest,
+       CustomPropertyOriginatingInheritanceUniversal) {
   ScopedHighlightInheritanceForTest highlight_inheritance_enabled(true);
   SimRequest main_resource("https://example.com/test.html", "text/html");
 
@@ -366,13 +370,19 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritanceNoRoot) {
     <!doctype html>
     <style>
       :root {
-        --background-color: green;
+        --selection-color: green;
       }
-      div::selection {
-        background-color: var(--background-color, red);
+      ::selection {
+        background-color: var(--selection-color);
+      }
+      .blue {
+        --selection-color: blue;
       }
     </style>
-    <div>Selected</div>
+    <div>
+      <p>Some <strong>green</strong> highlight</p>
+      <p class="blue">Some <strong>still blue</strong> highlight</p>
+    </div>
   )HTML");
 
   // Select some text.
@@ -383,11 +393,45 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritanceNoRoot) {
 
   const ComputedStyle& div_style = div_node->ComputedStyleRef();
   std::optional<Color> previous_layer_color;
-  Color background_color = HighlightStyleUtils::HighlightBackgroundColor(
+  Color div_background_color = HighlightStyleUtils::HighlightBackgroundColor(
       GetDocument(), div_style, div_node, previous_layer_color,
       kPseudoIdSelection);
+  EXPECT_EQ(Color(0, 128, 0), div_background_color);
 
-  EXPECT_EQ(Color(0, 128, 0), background_color);
+  auto* div_inherited_vars = div_style.InheritedVariables();
+
+  auto* first_p_node = To<HTMLElement>(div_node->firstChild()->nextSibling());
+  const ComputedStyle& first_p_style = first_p_node->ComputedStyleRef();
+  Color first_p_background_color =
+      HighlightStyleUtils::HighlightBackgroundColor(
+          GetDocument(), first_p_style, first_p_node, previous_layer_color,
+          kPseudoIdSelection);
+  EXPECT_EQ(Color(0, 128, 0), first_p_background_color);
+  auto* first_p_inherited_vars = first_p_style.InheritedVariables();
+  EXPECT_EQ(div_inherited_vars, first_p_inherited_vars);
+
+  auto* second_p_node =
+      To<HTMLElement>(first_p_node->nextSibling()->nextSibling());
+  const ComputedStyle& second_p_style = second_p_node->ComputedStyleRef();
+  Color second_p_background_color =
+      HighlightStyleUtils::HighlightBackgroundColor(
+          GetDocument(), second_p_style, second_p_node, previous_layer_color,
+          kPseudoIdSelection);
+  EXPECT_EQ(Color(0, 0, 255), second_p_background_color);
+  auto* second_p_inherited_vars = second_p_style.InheritedVariables();
+  EXPECT_NE(second_p_inherited_vars, first_p_inherited_vars);
+
+  auto* second_strong_node =
+      To<HTMLElement>(second_p_node->firstChild()->nextSibling());
+  const ComputedStyle& second_strong_style =
+      second_strong_node->ComputedStyleRef();
+  Color second_strong_background_color =
+      HighlightStyleUtils::HighlightBackgroundColor(
+          GetDocument(), second_strong_style, second_strong_node,
+          previous_layer_color, kPseudoIdSelection);
+  EXPECT_EQ(Color(0, 0, 255), second_strong_background_color);
+  auto* second_strong_inherited_vars = second_strong_style.InheritedVariables();
+  EXPECT_EQ(second_p_inherited_vars, second_strong_inherited_vars);
 }
 
 TEST_F(HighlightStyleUtilsTest, FontMetricsFromOriginatingElement) {

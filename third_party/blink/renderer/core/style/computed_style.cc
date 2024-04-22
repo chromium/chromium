@@ -704,6 +704,35 @@ bool ComputedStyle::HighlightPseudoElementStylesDependOnViewportUnits() const {
   return false;
 }
 
+bool ComputedStyle::HighlightPseudoElementStylesHaveVariableReferences() const {
+  const StyleHighlightData& highlight_data = HighlightData();
+  if (highlight_data.Selection() &&
+      highlight_data.Selection()->HasVariableReference()) {
+    return true;
+  }
+  if (highlight_data.TargetText() &&
+      highlight_data.TargetText()->HasVariableReference()) {
+    return true;
+  }
+  if (highlight_data.SpellingError() &&
+      highlight_data.SpellingError()->HasVariableReference()) {
+    return true;
+  }
+  if (highlight_data.GrammarError() &&
+      highlight_data.GrammarError()->HasVariableReference()) {
+    return true;
+  }
+  const CustomHighlightsStyleMap& custom_highlights =
+      highlight_data.CustomHighlights();
+  for (auto custom_highlight : custom_highlights) {
+    if (custom_highlight.value->HasVariableReference()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 const ComputedStyle* ComputedStyle::GetCachedPseudoElementStyle(
     PseudoId pseudo_id,
     const AtomicString& pseudo_argument) const {

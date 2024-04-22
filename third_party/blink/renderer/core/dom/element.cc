@@ -4945,9 +4945,16 @@ Element::HighlightRecalc Element::CalculateHighlightRecalc(
   // pseudo style.
   if (parent_style != nullptr &&
       parent_style->HighlightPseudoElementStylesDependOnRelativeUnits()) {
-    return HighlightRecalc::kRelativeUnits;
+    return HighlightRecalc::kOriginatingDependent;
   }
 
+  // If the parent style depends on custom properties we may need recalc
+  // in the event the originating element has changed the values for those
+  // properties.
+  if (parent_style != nullptr &&
+      parent_style->HighlightPseudoElementStylesHaveVariableReferences()) {
+    return HighlightRecalc::kOriginatingDependent;
+  }
   return HighlightRecalc::kNone;
 }
 
@@ -4959,7 +4966,17 @@ bool Element::ShouldRecalcHighlightPseudoStyle(
   if (highlight_recalc == HighlightRecalc::kFull) {
     return true;
   }
-  DCHECK(highlight_recalc == HighlightRecalc::kRelativeUnits);
+  DCHECK(highlight_recalc == HighlightRecalc::kOriginatingDependent);
+  // If the highlight depends on variables and the variables on the
+  // originating element have changed, we need to re-evaluate.
+  if (highlight_parent && highlight_parent->HasVariableReference() &&
+      (originating_style.InheritedVariables() !=
+           highlight_parent->InheritedVariables() ||
+       originating_style.NonInheritedVariables() !=
+           highlight_parent->NonInheritedVariables())) {
+    return true;
+  }
+  // Font relative units must be recomputed if the font size has changed.
   if (highlight_parent && highlight_parent->HasFontRelativeUnits() &&
       originating_style.SpecifiedFontSize() !=
           highlight_parent->SpecifiedFontSize()) {

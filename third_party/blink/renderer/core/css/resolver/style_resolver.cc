@@ -1169,29 +1169,14 @@ void StyleResolver::InitStyle(Element& element,
     // if the element has no rules for this highlight pseudo, we skip resolution
     // entirely (leaving the scoped_refptr untouched). The bad news is that if
     // the element has rules but no matched properties, we currently clone.
-
     state.SetStyle(*parent_style);
 
-    // Custom Properties on highlight pseudos are taken from :root, due to the
-    // standard practice of putting document wide custom properties on :root.
-    // The highlight pseudo that requires the variables will have a non-pseudo
-    // parent style (as the root of the highlight inheritance chain).
-    bool parent_is_initial_style = parent_style->StyleType() == kPseudoIdNone;
-    DCHECK(parent_style->StyleType() == style_request.pseudo_id ||
-           parent_is_initial_style);
-
-    if (parent_is_initial_style) {
-      DCHECK(!parent_style->InheritedVariables());
-      DCHECK(!parent_style->NonInheritedVariables());
-      // Style on the root itself has no root element, so use the originating
-      // element which will be the root.
-      const ComputedStyle* source_style = state.RootElementStyle()
-                                              ? state.RootElementStyle()
-                                              : state.OriginatingElementStyle();
-      DCHECK(source_style);
-      state.StyleBuilder().CopyInheritedVariablesFrom(source_style);
-      state.StyleBuilder().CopyNonInheritedVariablesFrom(source_style);
-    }
+    // Highlight Pseudos do not support custom properties defined on the
+    // pseudo itself. They may use var() references but those must be resolved
+    // against the originating element. Share the variables from the originating
+    // style.
+    state.StyleBuilder().CopyInheritedVariablesFrom(state.OriginatingElementStyle());
+    state.StyleBuilder().CopyNonInheritedVariablesFrom(state.OriginatingElementStyle());
   } else {
     state.CreateNewStyle(
         source_for_noninherited, *parent_style,

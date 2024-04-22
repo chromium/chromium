@@ -837,6 +837,7 @@ class ComputedStyle final : public ComputedStyleBase {
   bool HighlightPseudoElementStylesDependOnRelativeUnits() const;
   bool HighlightPseudoElementStylesDependOnContainerUnits() const;
   bool HighlightPseudoElementStylesDependOnViewportUnits() const;
+  bool HighlightPseudoElementStylesHaveVariableReferences() const;
 
   // font-size
   int FontSize() const { return GetFontDescription().ComputedPixelSize(); }
