@@ -9,6 +9,8 @@
 
 #include <utility>
 
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,17 +21,17 @@ namespace base {
 namespace {
 
 // Create a temporary buffer and fill it with a watermark sequence.
-std::unique_ptr<uint8_t[]> CreateTestBuffer(size_t size, size_t offset) {
-  std::unique_ptr<uint8_t[]> buf(new uint8_t[size]);
+base::HeapArray<uint8_t> CreateTestBuffer(size_t size, size_t offset) {
+  auto buf = base::HeapArray<uint8_t>::Uninit(size);
   for (size_t i = 0; i < size; ++i)
-    buf.get()[i] = static_cast<uint8_t>((offset + i) % 253);
+    buf[i] = static_cast<uint8_t>((offset + i) % 253);
   return buf;
 }
 
 // Check that the watermark sequence is consistent with the |offset| provided.
 bool CheckBufferContents(span<const uint8_t> bytes, size_t offset) {
-  std::unique_ptr<uint8_t[]> test_data(CreateTestBuffer(bytes.size(), offset));
-  return memcmp(test_data.get(), bytes.data(), bytes.size()) == 0;
+  base::HeapArray<uint8_t> test_data(CreateTestBuffer(bytes.size(), offset));
+  return test_data.as_span() == bytes;
 }
 
 class MemoryMappedFileTest : public PlatformTest {
@@ -46,9 +48,8 @@ class MemoryMappedFileTest : public PlatformTest {
               File::FLAG_CREATE_ALWAYS | File::FLAG_READ | File::FLAG_WRITE);
     EXPECT_TRUE(file.IsValid());
 
-    std::unique_ptr<uint8_t[]> test_data(CreateTestBuffer(size, 0));
-    size_t bytes_written =
-        file.Write(0, reinterpret_cast<char*>(test_data.get()), size);
+    base::HeapArray<uint8_t> test_data(CreateTestBuffer(size, 0));
+    size_t bytes_written = file.Write(0, test_data.as_span()).value();
     EXPECT_EQ(size, bytes_written);
     file.Close();
   }
