@@ -87,14 +87,20 @@ enum SharedImageUsage : uint32_t {
   // Specified in conjunction with RASTER_READ and/or RASTER_WRITE.
   SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY = 1 << 23,
 
+  // Image will contain protected content to be scanned out. Note that this type of image
+  // won't necessarily be written to by a hardware video decoder, but will instead be written
+  // to by a preprocessing step that converts the image's pixel format into something the
+  // display controller understands.
+  SHARED_IMAGE_USAGE_PROTECTED_VIDEO = 1 << 24,
+
   // Start service side only usage flags after this entry. They must be larger
   // than `LAST_CLIENT_USAGE`.
-  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY,
+  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_PROTECTED_VIDEO,
 
   // Image will have pixels uploaded from CPU. The backing must implement
   // `UploadFromMemory()` if it supports this usage. Clients should specify
   // SHARED_IMAGE_USAGE_CPU_WRITE if they need to write pixels to the image.
-  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 24,
+  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 25,
 
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
 };

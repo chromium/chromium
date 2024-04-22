@@ -277,6 +277,7 @@ class GbmDeviceWrapper {
     // flag.
     constexpr auto kScanoutUsages = base::MakeFixedFlatSet<gfx::BufferUsage>(
         {gfx::BufferUsage::SCANOUT,
+         gfx::BufferUsage::PROTECTED_SCANOUT,
 #if !BUILDFLAG(USE_V4L2_CODEC)
          gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE,
 #endif

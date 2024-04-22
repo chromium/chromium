@@ -40,8 +40,10 @@ namespace gpu {
 namespace {
 
 gfx::BufferUsage GetBufferUsage(uint32_t usage) {
-  if (usage &
-      (SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
+  if (usage & SHARED_IMAGE_USAGE_PROTECTED_VIDEO) {
+    return gfx::BufferUsage::PROTECTED_SCANOUT;
+  } else if (usage & (SHARED_IMAGE_USAGE_WEBGPU_READ |
+                      SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
     // Just use SCANOUT for WebGPU since the memory doesn't need to be linear.
     return gfx::BufferUsage::SCANOUT;
   } else if (usage & SHARED_IMAGE_USAGE_SCANOUT) {
@@ -69,7 +71,8 @@ constexpr uint32_t kSupportedUsage =
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
     SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
-    SHARED_IMAGE_USAGE_CPU_WRITE | SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE;
+    SHARED_IMAGE_USAGE_CPU_WRITE | SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
+    SHARED_IMAGE_USAGE_PROTECTED_VIDEO;
 
 }  // namespace
 

@@ -139,6 +139,8 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
         return gfx::mojom::BufferUsage::SCANOUT_CPU_READ_WRITE;
       case gfx::BufferUsage::SCANOUT_VDA_WRITE:
         return gfx::mojom::BufferUsage::SCANOUT_VDA_WRITE;
+      case gfx::BufferUsage::PROTECTED_SCANOUT:
+        return gfx::mojom::BufferUsage::PROTECTED_SCANOUT;
       case gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE:
         return gfx::mojom::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE;
       case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
@@ -173,6 +175,9 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
         return true;
       case gfx::mojom::BufferUsage::SCANOUT_VDA_WRITE:
         *out = gfx::BufferUsage::SCANOUT_VDA_WRITE;
+        return true;
+      case gfx::mojom::BufferUsage::PROTECTED_SCANOUT:
+        *out = gfx::BufferUsage::PROTECTED_SCANOUT;
         return true;
       case gfx::mojom::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE:
         *out = gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE;
