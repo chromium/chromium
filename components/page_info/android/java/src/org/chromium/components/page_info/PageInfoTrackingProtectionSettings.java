@@ -34,6 +34,7 @@ import org.chromium.ui.util.AttrUtils;
 public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment {
     private static final String COOKIE_SUMMARY_PREFERENCE = "cookie_summary";
     private static final String TP_SWITCH_PREFERENCE = "tp_switch";
+    private static final String TP_STATUS_PREFERENCE = "tp_status";
     private static final String STORAGE_IN_USE_PREFERENCE = "storage_in_use";
     private static final String FPS_IN_USE_PREFERENCE = "fps_in_use";
     private static final String TPC_TITLE = "tpc_title";
@@ -45,6 +46,7 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
     private ChromeImageViewPreference mFPSInUse;
     private TextMessagePreference mThirdPartyCookiesTitle;
     private Preference mThirdPartyCookiesSummary;
+    private TrackingProtectionStatusPreference mTpStatus;
     private Runnable mOnClearCallback;
     private Runnable mOnCookieSettingsLinkClicked;
     private Callback<Activity> mOnFeedbackClicked;
@@ -98,6 +100,7 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
         mCookieSwitch = findPreference(TP_SWITCH_PREFERENCE);
         if (mShowLaunchUI) mCookieSwitch.setUseSummaryAsTitle(false);
 
+        mTpStatus = findPreference(TP_STATUS_PREFERENCE);
         mStorageInUse = findPreference(STORAGE_IN_USE_PREFERENCE);
         mFPSInUse = findPreference(FPS_IN_USE_PREFERENCE);
         mFPSInUse.setVisible(false);
@@ -147,6 +150,7 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
         mCookieSwitch.setOnPreferenceChangeListener(
                 (preference, newValue) -> {
                     boolean boolValue = (Boolean) newValue;
+                    if (mShowLaunchUI) mTpStatus.setTrackingProtectionStatus(boolValue);
                     // Invert since the switch is inverted.
                     boolValue = !boolValue;
                     params.onThirdPartyCookieToggleChanged.onResult(boolValue);
@@ -242,6 +246,7 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
                                     : R.drawable.ic_visibility_black));
         }
         mCookieSwitch.setChecked(!protectionsOn);
+        if (mShowLaunchUI) mTpStatus.setTrackingProtectionStatus(protectionsOn);
         mCookieSwitch.setEnabled(!isEnforced);
         mCookieSwitch.setManagedPreferenceDelegate(
                 new ForwardingManagedPreferenceDelegate(

@@ -29,4 +29,7 @@ found in the LICENSE file.
         android:persistent="false"
         app:allowDividerAbove="false" />
 
+    <org.chromium.components.page_info.TrackingProtectionStatusPreference
+        android:key="tp_status" />
+
 </PreferenceScreen>
