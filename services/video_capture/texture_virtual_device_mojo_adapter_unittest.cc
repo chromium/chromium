@@ -37,6 +37,12 @@ class TextureVirtualDeviceMojoAdapterTest : public ::testing::Test {
                                              std::move(dummy_buffer_handle));
   }
 
+  void ProducerSharesSharedImageBufferHandle(int32_t buffer_id) {
+    auto dummy_buffer_handle = media::mojom::SharedImageBufferHandleSet::New();
+    adapter_->OnNewSharedImageBufferHandle(buffer_id,
+                                           std::move(dummy_buffer_handle));
+  }
+
   void ProducerRetiresBufferHandle(int32_t buffer_id) {
     adapter_->OnBufferRetired(buffer_id);
   }
@@ -100,6 +106,35 @@ TEST_F(TextureVirtualDeviceMojoAdapterTest,
   wait_loop.Run();
 }
 
+TEST_F(TextureVirtualDeviceMojoAdapterTest,
+       SharedImageBufferHandlesAreSharedWithReceiverConnectingLate) {
+  const int kArbitraryBufferId1 = 1;
+  const int kArbitraryBufferId2 = 2;
+  ProducerSharesSharedImageBufferHandle(kArbitraryBufferId1);
+  ProducerSharesSharedImageBufferHandle(kArbitraryBufferId2);
+
+  base::RunLoop wait_loop;
+  int buffer_received_count = 0;
+  EXPECT_CALL(*mock_video_frame_handler_1_,
+              DoOnNewBuffer(kArbitraryBufferId1, _))
+      .WillOnce(InvokeWithoutArgs([&wait_loop, &buffer_received_count]() {
+        buffer_received_count++;
+        if (buffer_received_count == 2) {
+          wait_loop.Quit();
+        }
+      }));
+  EXPECT_CALL(*mock_video_frame_handler_1_,
+              DoOnNewBuffer(kArbitraryBufferId2, _))
+      .WillOnce(InvokeWithoutArgs([&wait_loop, &buffer_received_count]() {
+        buffer_received_count++;
+        if (buffer_received_count == 2) {
+          wait_loop.Quit();
+        }
+      }));
+  Receiver1Connects();
+  wait_loop.Run();
+}
+
 // Tests that when a receiver disconnects and a new receiver connects, the
 // virtual device adapter shares all valid buffer handles with it.
 TEST_F(TextureVirtualDeviceMojoAdapterTest,
@@ -110,6 +145,26 @@ TEST_F(TextureVirtualDeviceMojoAdapterTest,
   Receiver1Connects();
   ProducerSharesBufferHandle(kArbitraryBufferId1);
   ProducerSharesBufferHandle(kArbitraryBufferId2);
+  Receiver1Disconnects();
+
+  ProducerRetiresBufferHandle(kArbitraryBufferId1);
+
+  base::RunLoop wait_loop;
+  EXPECT_CALL(*mock_video_frame_handler_2_,
+              DoOnNewBuffer(kArbitraryBufferId2, _))
+      .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
+  Receiver2Connects();
+  wait_loop.Run();
+}
+
+TEST_F(TextureVirtualDeviceMojoAdapterTest,
+       SharedImageBufferHandlesAreSharedWithSecondReceiver) {
+  const int kArbitraryBufferId1 = 1;
+  const int kArbitraryBufferId2 = 2;
+
+  Receiver1Connects();
+  ProducerSharesSharedImageBufferHandle(kArbitraryBufferId1);
+  ProducerSharesSharedImageBufferHandle(kArbitraryBufferId2);
   Receiver1Disconnects();
 
   ProducerRetiresBufferHandle(kArbitraryBufferId1);

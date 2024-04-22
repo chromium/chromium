@@ -101,6 +101,10 @@ struct VideoCaptureImpl::BufferContext
       case VideoFrameBufferHandleType::kMailboxHandles:
         InitializeFromMailbox(std::move(buffer_handle->get_mailbox_handles()));
         break;
+      case VideoFrameBufferHandleType::kSharedImageHandles:
+        InitializeFromSharedImage(
+            std::move(buffer_handle->get_shared_image_handles()));
+        break;
       case VideoFrameBufferHandleType::kGpuMemoryBufferHandle:
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
         // On macOS, an IOSurfaces passed as a GpuMemoryBufferHandle can be
@@ -126,6 +130,15 @@ struct VideoCaptureImpl::BufferContext
   }
   const Vector<gpu::MailboxHolder>& mailbox_holders() const {
     return mailbox_holders_;
+  }
+  const Vector<scoped_refptr<gpu::ClientSharedImage>>& shared_images() const {
+    return shared_images_;
+  }
+  const gpu::SyncToken& shared_image_sync_token() const {
+    return shared_image_sync_token_;
+  }
+  uint32_t shared_image_texture_target() const {
+    return shared_image_texture_target_;
   }
   media::GpuVideoAcceleratorFactories* gpu_factories() const {
     return gpu_factories_;
@@ -215,6 +228,24 @@ struct VideoCaptureImpl::BufferContext
     mailbox_holders_ = std::move(mailbox_handles->mailbox_holder);
   }
 
+  void InitializeFromSharedImage(
+      media::mojom::blink::SharedImageBufferHandleSetPtr shared_image_handles) {
+    DCHECK_GE(media::VideoFrame::kMaxPlanes,
+              shared_image_handles->shared_images.size());
+    for (wtf_size_t i = 0; i < media::VideoFrame::kMaxPlanes; ++i) {
+      if (i < shared_image_handles->shared_images.size()) {
+        scoped_refptr<gpu::ClientSharedImage> shared_image =
+            gpu::ClientSharedImage::ImportUnowned(
+                shared_image_handles->shared_images[i]);
+        shared_images_.emplace_back(shared_image);
+      } else {
+        shared_images_.emplace_back(nullptr);
+      }
+    }
+    shared_image_sync_token_ = shared_image_handles->sync_token;
+    shared_image_texture_target_ = shared_image_handles->texture_target;
+  }
+
   void InitializeFromGpuMemoryBufferHandle(
       gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle) {
     gmb_resources_ = std::make_unique<GpuMemoryBufferResources>(
@@ -259,6 +290,11 @@ struct VideoCaptureImpl::BufferContext
 
   // Only valid for |buffer_type_ == MAILBOX_HANDLES|.
   Vector<gpu::MailboxHolder> mailbox_holders_;
+
+  // Only valid for |buffer_type_ == SHARED_IMAGE_HANDLES|.
+  Vector<scoped_refptr<gpu::ClientSharedImage>> shared_images_;
+  gpu::SyncToken shared_image_sync_token_;
+  uint32_t shared_image_texture_target_;
 
   // The following is for |buffer_type == GPU_MEMORY_BUFFER_HANDLE|.
 
@@ -377,6 +413,26 @@ VideoCaptureImpl::CreateVideoFrameInitData(
           media::VideoFrame::WrapNativeTextures(
               video_frame_init_data.ready_buffer->info->pixel_format,
               mailbox_holder_array, media::VideoFrame::ReleaseMailboxCB(),
+              gfx::Size(video_frame_init_data.ready_buffer->info->coded_size),
+              gfx::Rect(video_frame_init_data.ready_buffer->info->visible_rect),
+              video_frame_init_data.ready_buffer->info->visible_rect.size(),
+              video_frame_init_data.ready_buffer->info->timestamp);
+      break;
+    }
+    case VideoFrameBufferHandleType::kSharedImageHandles: {
+      scoped_refptr<gpu::ClientSharedImage>
+          shared_images[media::VideoFrame::kMaxPlanes];
+      CHECK_GE(media::VideoFrame::kMaxPlanes,
+               buffer_context->shared_images().size());
+      for (wtf_size_t i = 0; i < buffer_context->shared_images().size(); i++) {
+        shared_images[i] = buffer_context->shared_images()[i];
+      }
+      video_frame_init_data.frame_or_buffer =
+          media::VideoFrame::WrapSharedImages(
+              video_frame_init_data.ready_buffer->info->pixel_format,
+              shared_images, buffer_context->shared_image_sync_token(),
+              buffer_context->shared_image_texture_target(),
+              media::VideoFrame::ReleaseMailboxCB(),
               gfx::Size(video_frame_init_data.ready_buffer->info->coded_size),
               gfx::Rect(video_frame_init_data.ready_buffer->info->visible_rect),
               video_frame_init_data.ready_buffer->info->visible_rect.size(),

@@ -5,6 +5,8 @@
 module media.mojom;
 
 import "gpu/ipc/common/mailbox_holder.mojom";
+import "gpu/ipc/common/exported_shared_image.mojom";
+import "gpu/ipc/common/sync_token.mojom";
 import "media/capture/mojom/video_capture_types.mojom";
 import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
@@ -43,6 +45,16 @@ struct MailboxBufferHandleSet {
   array<gpu.mojom.MailboxHolder, 4> mailbox_holder;
 };
 
+struct SharedImageBufferHandleSet {
+  // The size of the |shared_images| array is always 1 when storing
+  // MultiplanarSharedImage, and should otherwise match the plane number
+  // of the corresponding pixel format listed in media::VideoPixelFormat.
+  // In either case, the size should never exceed media::VideoFrame::kMaxPlanes.
+  array<gpu.mojom.ExportedSharedImage> shared_images;
+  gpu.mojom.SyncToken sync_token;
+  uint32 texture_target;
+};
+
 union VideoBufferHandle {
   // TODO(crbug.com/40222341): It is extremely confusing that this union
   // has both an unsafe and a read-only shmem region subtype. This is probably
@@ -51,5 +63,6 @@ union VideoBufferHandle {
   mojo_base.mojom.UnsafeSharedMemoryRegion unsafe_shmem_region;
   mojo_base.mojom.ReadOnlySharedMemoryRegion read_only_shmem_region;
   MailboxBufferHandleSet mailbox_handles;
+  SharedImageBufferHandleSet shared_image_handles;
   gfx.mojom.GpuMemoryBufferHandle gpu_memory_buffer_handle;
 };

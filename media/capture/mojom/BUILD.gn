@@ -29,6 +29,7 @@ mojom("video_capture_buffer") {
     "//gpu/ipc/common:interfaces",
     "//media//mojo/mojom:mojom",
     "//mojo/public/mojom/base",
+    "//services/viz/public/mojom:shared_image_format",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/mojom",
   ]
