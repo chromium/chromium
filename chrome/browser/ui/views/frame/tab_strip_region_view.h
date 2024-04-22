@@ -20,7 +20,6 @@ class NewTabButton;
 class TabSearchButton;
 class TabStrip;
 class TabStripScrollContainer;
-class ProductSpecificationsButton;
 
 // Container for the tabstrip and the other views sharing space with it -
 // with the exception of the caption buttons.
@@ -46,10 +45,6 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   views::Button* new_tab_button() { return new_tab_button_; }
 
   TabSearchContainer* tab_search_container() { return tab_search_container_; }
-
-  ProductSpecificationsButton* product_specifications_button() {
-    return product_specifications_button_;
-  }
 
   views::View* reserved_grab_handle_space_for_testing() {
     return reserved_grab_handle_space_;
@@ -102,10 +97,6 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   // `render_tab_search_before_tab_strip_` is true.
   void UpdateTabStripMargin();
 
-  // Gets called on `Layout` and adjusts the x-axis position of the `view` based
-  // on `offset`. This should only used for views that show before tab strip.
-  void AdjustViewBoundsRect(View* view, int offset);
-
   raw_ptr<views::View, AcrossTasksDanglingUntriaged> tab_strip_container_ =
       nullptr;
   raw_ptr<views::View, DanglingUntriaged> reserved_grab_handle_space_ = nullptr;
@@ -115,8 +106,6 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   raw_ptr<views::Button, DanglingUntriaged> new_tab_button_ = nullptr;
   raw_ptr<TabSearchContainer, DanglingUntriaged> tab_search_container_ =
       nullptr;
-  raw_ptr<ProductSpecificationsButton, DanglingUntriaged>
-      product_specifications_button_ = nullptr;
 
   // On some platforms for Chrome Refresh, the TabSearchButton should be
   // laid out before the TabStrip. Storing this configuration prevents
