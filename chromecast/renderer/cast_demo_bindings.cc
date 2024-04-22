@@ -139,10 +139,10 @@ void CastDemoBindings::OnGetRetailerName(
     const std::string& retailer_name) {
   v8::Isolate* isolate =
       render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
-  v8::MicrotasksScope microtasks_scope(
-      isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = original_context.Get(isolate);
+  v8::MicrotasksScope microtasks_scope(
+      context, v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Context::Scope context_scope(context);
 
   resolver.Get(isolate)
