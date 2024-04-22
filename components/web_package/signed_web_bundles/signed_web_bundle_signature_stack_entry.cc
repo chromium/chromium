@@ -4,9 +4,6 @@
 
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
 
-#include "components/web_package/mojom/web_bundle_parser.mojom.h"
-#include "components/web_package/signed_web_bundles/ed25519_public_key.h"
-
 namespace web_package {
 
 SignedWebBundleSignatureStackEntry::SignedWebBundleSignatureStackEntry(

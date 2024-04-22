@@ -9,6 +9,7 @@
 #include "base/functional/overloaded.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
+#include "components/web_package/signed_web_bundles/constants.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_utils.h"
 #include "crypto/secure_hash.h"
@@ -25,10 +26,16 @@ using IntegritySignatureErrorForTesting =
 using IntegritySignatureErrorsForTesting =
     WebBundleSigner::IntegritySignatureErrorsForTesting;
 
+using PublicKey = absl::variant<Ed25519PublicKey>;
+
 cbor::Value CreateSignatureStackEntryAttributes(
-    const Ed25519PublicKey& public_key,
+    const PublicKey& public_key,
     IntegritySignatureErrorsForTesting errors_for_testing = {}) {
-  std::vector<uint8_t> public_key_bytes = base::ToVector(public_key.bytes());
+  std::vector<uint8_t> public_key_bytes =
+      absl::visit(base::Overloaded{[](const auto& public_key) {
+                    return base::ToVector(public_key.bytes());
+                  }},
+                  public_key);
   if (errors_for_testing.Has(
           IntegritySignatureErrorForTesting::kInvalidPublicKeyLength)) {
     public_key_bytes.push_back(42);
@@ -49,8 +56,11 @@ cbor::Value CreateSignatureStackEntryAttributes(
       attributes[cbor::Value("ed25519")] = cbor::Value(public_key_bytes);
 
     } else {
-      attributes[cbor::Value("ed25519PublicKey")] =
-          cbor::Value(public_key_bytes);
+      attributes[cbor::Value(
+          absl::visit(base::Overloaded{[](const Ed25519PublicKey&) {
+                        return kEd25519PublicKeyAttributeName;
+                      }},
+                      public_key))] = cbor::Value(public_key_bytes);
     }
   }
 
@@ -63,7 +73,7 @@ cbor::Value CreateSignatureStackEntryAttributes(
 }
 
 cbor::Value CreateSignatureStackEntry(
-    const Ed25519PublicKey& public_key,
+    const PublicKey& public_key,
     std::vector<uint8_t> signature,
     IntegritySignatureErrorsForTesting errors_for_testing = {}) {
   if (errors_for_testing.Has(

@@ -14,6 +14,7 @@
 #include "base/types/expected_macros.h"
 #include "components/web_package/input_reader.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "components/web_package/signed_web_bundles/constants.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_signature.h"
 #include "components/web_package/web_bundle_parser.h"
@@ -23,17 +24,19 @@ namespace web_package {
 
 namespace {
 
+using SignatureType = mojom::SignatureInfo::Tag;
+
 constexpr auto kPublicKeyAttributeNameToSignatureType =
-    base::MakeFixedFlatMap<std::string_view, mojom::SignatureInfo::Tag>({
+    base::MakeFixedFlatMap<std::string_view, SignatureType>({
         // clang-format off
-        {"ed25519PublicKey", mojom::SignatureInfo::Tag::kEd25519},
+        {kEd25519PublicKeyAttributeName, SignatureType::kEd25519},
         // clang-format on
     });
 
-mojom::SignatureInfo::Tag GetSignatureType(std::string_view attribute_name) {
+SignatureType GetSignatureType(std::string_view attribute_name) {
   auto* signature_type =
       base::FindOrNull(kPublicKeyAttributeNameToSignatureType, attribute_name);
-  return signature_type ? *signature_type : mojom::SignatureInfo::Tag::kUnknown;
+  return signature_type ? *signature_type : SignatureType::kUnknown;
 }
 
 }  // namespace
@@ -295,13 +298,11 @@ void IntegrityBlockParser::ParseSignatureStackEntryAttributesPublicKeyName(
   offset_in_stream += input.CurrentOffset();
 
   switch (GetSignatureType(*attribute_name)) {
-    case mojom::SignatureInfo::Tag::kEd25519: {
+    case SignatureType::kEd25519: {
       signature_stack_entry->signature_info =
           mojom::SignatureInfo::NewEd25519(mojom::SignatureInfoEd25519::New());
-
-      break;
-    }
-    case mojom::SignatureInfo::Tag::kUnknown: {
+    } break;
+    case SignatureType::kUnknown: {
       // Unknown signature cipher type.
       if (signature_stack_.size() == 0) {
         RunErrorCallback("Unknown cipher type of the first signature.");
@@ -310,9 +311,7 @@ void IntegrityBlockParser::ParseSignatureStackEntryAttributesPublicKeyName(
 
       signature_stack_entry->signature_info =
           mojom::SignatureInfo::NewUnknown(mojom::SignatureInfoUnknown::New());
-
-      break;
-    }
+    } break;
   }
   data_source_->get()->Read(
       offset_in_stream, *public_key_value_size,
@@ -335,14 +334,13 @@ void IntegrityBlockParser::ReadSignatureStackEntryAttributesPublicKeyValue(
 
   auto& signature_info = signature_stack_entry->signature_info;
   switch (signature_info->which()) {
-    case mojom::SignatureInfo::Tag::kEd25519: {
+    case SignatureType::kEd25519: {
       ASSIGN_OR_RETURN(
           signature_stack_entry->signature_info->get_ed25519()->public_key,
           Ed25519PublicKey::Create(*public_key_bytes),
           [&](std::string error) { RunErrorCallback(std::move(error)); });
-      break;
-    }
-    case mojom::SignatureInfo::Tag::kUnknown:
+    } break;
+    case SignatureType::kUnknown:
       break;
   }
 
@@ -382,7 +380,7 @@ void IntegrityBlockParser::ParseSignatureStackEntrySignatureHeader(
 
   auto& signature_info = signature_stack_entry->signature_info;
   switch (signature_info->which()) {
-    case mojom::SignatureInfo::Tag::kEd25519: {
+    case SignatureType::kEd25519: {
       if (*signature_length != ED25519_SIGNATURE_LEN) {
         RunErrorCallback(base::StringPrintf(
             "The signature does not have the correct length, "
@@ -391,7 +389,7 @@ void IntegrityBlockParser::ParseSignatureStackEntrySignatureHeader(
         return;
       }
     } break;
-    case mojom::SignatureInfo::Tag::kUnknown:
+    case SignatureType::kUnknown:
       break;
   }
 
@@ -420,13 +418,13 @@ void IntegrityBlockParser::ParseSignatureStackEntrySignature(
 
   auto& signature_info = signature_stack_entry->signature_info;
   switch (signature_info->which()) {
-    case mojom::SignatureInfo::Tag::kEd25519: {
+    case SignatureType::kEd25519: {
       ASSIGN_OR_RETURN(
           signature_stack_entry->signature_info->get_ed25519()->signature,
           Ed25519Signature::Create(*signature_bytes),
           [&](std::string error) { RunErrorCallback(std::move(error)); });
     } break;
-    case mojom::SignatureInfo::Tag::kUnknown:
+    case SignatureType::kUnknown:
       break;
   }
 
