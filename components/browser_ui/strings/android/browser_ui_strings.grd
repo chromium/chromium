@@ -457,8 +457,8 @@
       <message name="IDS_PAGE_INFO_FORGET_SITE_TITLE" desc="Label used at top of dialog which clears stored information displayed in page info (ie permissions, cookies, eventually history).">
         Forget this site?
       </message>
-      <message name="IDS_PAGE_INFO_FORGET_SITE_MESSAGE" desc="Message used in dialogwhich clears stored information displayed in page info.">
-        Are you sure you want to reset permissions, and clear cookies and site data?
+      <message name="IDS_PAGE_INFO_FORGET_SITE_MESSAGE" desc="Message used in dialog which deletes stored information displayed in page info.">
+        Are you sure you want to reset permissions, and delete cookies and site data?
       </message>
       <message name="IDS_PAGE_INFO_FORGET_SITE_CONFIRMATION_BUTTON" desc="Confirmation button in dialog which clears stored information displayed in page info.">
         Forget

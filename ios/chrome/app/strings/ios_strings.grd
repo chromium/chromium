@@ -4686,7 +4686,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SIGNIN_SNACKBAR_UNDO" desc="This string is found on a button that signs the user out when the user taps it. It is on a confirmation message that users see when they sign in to Chrome with their Google Account. This text is a verb and is short for the longer phrase 'Undo my sign-in.' The tone should be informative. [Length: 15em] [iOS only]">
         Undo
       </message>
-      <message name="IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON" desc="This button signs the user out and clear all the data from the user device. The data remain in their Google account. Related to IDS_IOS_SIGNOUT_DIALOG_TITLE [iOS only].">
+      <message name="IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON" desc="This button signs the user out and delete all the data from the user device. The data remain in their Google account. Related to IDS_IOS_SIGNOUT_DIALOG_TITLE [iOS only].">
         Clear Data
       </message>
       <message name="IDS_IOS_SIGNOUT_DIALOG_KEEP_DATA_BUTTON" desc="This button signs the user out and all its data stays on the device. Related to IDS_IOS_SIGNOUT_DIALOG_TITLE [iOS only].">

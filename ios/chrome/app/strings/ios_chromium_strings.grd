@@ -574,7 +574,7 @@ Things to consider:
       <message name="IDS_IOS_NEW_SYNC_ENCRYPTION_PASSPHRASE_INFO_UNO" desc="The information text for encrypting sync using a passphrase, shown on the passphrase screen [iOS only]">
         Payment methods and addresses won’t be encrypted. Browsing history from Chromium won’t sync.
 
-Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chromium data in your account<ph name="END_LINK">END_LINK</ph>.
+Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chromium data in your account<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_IOS_NOTIFICATIONS_ALERT_MESSAGE" desc="Text for the Notifications UI Alert Prompt that redirects the user to the iOS notifications permission page">
         To receive notifications from Chromium, turn on notifications in your iOS Settings.
@@ -926,15 +926,10 @@ For more settings that use data to improve your Chromium experience, go to <ph n
       <message name="IDS_IOS_SUGGESTED_STRONG_PASSWORD_HINT_DISPLAYING_EMAIL" desc="Text shown alongside a suggested password to tell user that generated passwords are recorded by chrome. [Length: unlimited] [iOS only]">
             You won't need to remember this password. It will be saved to Password Manager for <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
       </message>
-      <message name="IDS_IOS_SYNC_ENCRYPTION_PASSPHRASE_HINT" desc="The information text on how to reset encryption passphrase for sync, shown on the sync encryption settings [Length: 300em] [iOS only]">
-        Passphrase encryption doesn’t include payment methods and addresses from Google Pay.
-
-To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chromium data in your account<ph name="END_LINK">END_LINK</ph>.
-      </message>
       <message name="IDS_IOS_SYNC_ENCRYPTION_PASSPHRASE_HINT_UNO" desc="The information text on how to reset encryption passphrase for sync, shown on the sync encryption settings [Length: 300em] [iOS only]">
         Passphrase encryption doesn’t include payment methods and addresses.
 
-To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chromium data in your account<ph name="END_LINK">END_LINK</ph>.
+To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chromium data in your account<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_IOS_SYNC_ENTER_PASSPHRASE_BODY_WITH_EMAIL" desc="Instructions for the dialog where the user enters the passphrase.">
         Signed in as <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>.
@@ -950,7 +945,7 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
         Keep using the Chromium data in your Google Account.
       </message>
       <message name="IDS_IOS_SYNC_PASSPHRASE_RECOVER" desc="Message about how to recover from a lost passphrase. [Length:100em, may be multiple lines] [iOS only]">
-        If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chromium data in your account<ph name="END_LINK">END_LINK</ph>.
+        If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chromium data in your account<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_IOS_TAB_SWITCHER_NO_TABS_TO_SYNC_PROMO" desc="The title of the paragraph IDS_OPEN_TABS_NO_SESSION_INSTRUCTIONS_IOS. The paragraph explains that tabs opened on other devices where the user is signed in will appear here, in the Tab Switcher. [iOS only]">
         Use Chromium Everywhere

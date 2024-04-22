@@ -1309,8 +1309,8 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_CLEAR_BROWSING_DATA_IMPORTANT_DIALOG_BUTTON" desc="The text of the button to perform the clear action in the dialog presenting the user with 'important' sites that they can exclude from clearing.">
         Delete
       </message>
-      <message name="IDS_OPEN_CLEAR_BROWSING_DATA_DIALOG_BUTTON" desc="Title of the button that will open the clear browsing data dialog.">
-        Clear browsing data…
+      <message name="IDS_OPEN_CLEAR_BROWSING_DATA_DIALOG_BUTTON" desc="Title of the button that will open the delete browsing data dialog.">
+        Delete browsing data…
       </message>
       <message name="IDS_OPEN_FULL_CHROME_HISTORY" desc="Title of the button that will open the full history in Chrome browser from CCT history page.">
               Open full Chrome history
@@ -2142,7 +2142,7 @@ Your Google account may have other forms of browsing history like searches and a
         Turn off sync?
       </message>
       <message name="IDS_SIGNOUT_MANAGED_ACCOUNT_TITLE" desc="Title for sign out of Chrome dialog for enterprise account [CHAR_LIMIT=40]">
-        Clear your Chrome data from this device?
+        Delete your Chrome data from this device?
       </message>
       <message name="IDS_SIGNOUT_MESSAGE" desc="The text is displayed as the message of a dialog to confirm whether the user wants to sign out of Chrome. The dialog is titled ‘Sign out of Chrome?’. The user can cancel and stay signed in, or confirm and sign out.">
         Some Chrome features won\u2019t be available anymore
@@ -2154,7 +2154,7 @@ Your Google account may have other forms of browsing history like searches and a
         Your bookmarks, history, and other Chrome data will no longer be synced to your Google Account
       </message>
       <message name="IDS_REMOVE_LOCAL_DATA" desc="Checkbox to delete all existing data in local device storage">
-        Also clear your Chrome data from this device
+        Also delete your Chrome data from this device
       </message>
       <message name="IDS_SIGNOUT_MANAGED_ACCOUNT_MESSAGE" desc="Message to display for sign out of Chrome dialog when the account has enterprise management, and all user data will be erased">
         Because you're signing out of an account managed by <ph name="DOMAIN_NAME">%1$s<ex>google.com</ex></ph>, your Chrome data will be deleted from this device. It will remain in your Google Account.
@@ -2294,7 +2294,7 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_SYNC_ENCRYPTION_CREATE_PASSPHRASE" desc="Prompt user to create a custom sync password.">
         Payment methods and addresses from Google Pay won’t be encrypted. Browsing history from Chrome won’t sync.
-Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome data in your account<ph name="END_LINK">END_LINK</ph>.
+Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome data in your account<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_SYNC_ENTER_CUSTOM_PASSPHRASE_HINT" desc="Hint for the passphrase field when user is to type in a passphrase. [CHAR_LIMIT=30]">
         Passphrase
@@ -2312,7 +2312,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
         This field cannot be blank
       </message>
       <message name="IDS_SYNC_PASSPHRASE_RECOVER" desc="Inform the user how they can reset their passphrase if they have forgotten it." meaning="Android">
-        If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome data in your account<ph name="END_LINK">END_LINK</ph>.
+        If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome data in your account<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_SYNC_PASSPHRASES_DO_NOT_MATCH" desc="Inform user that their sync password does not match.">
         Passphrases do not match
@@ -2320,7 +2320,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_SYNC_PASSPHRASE_ENCRYPTION_RESET_INSTRUCTIONS" desc="Inform user how to change their encryption setting.">
         Passphrase encryption doesn’t include payment methods and addresses from Google Pay.
 
-To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome data in your account<ph name="END_LINK">END_LINK</ph>.
+To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome data in your account<ph name="END_LINK">END_LINK</ph>.
       </message>
       <message name="IDS_SYNC_PASSPHRASE_INCORRECT" desc="Inform the user that the passphrase they entered for sync is incorrect. [CHAR_LIMIT=40]">
         Incorrect passphrase
@@ -2425,7 +2425,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
         The service is not available; try again later.
       </message>
       <message name="IDS_WIPING_PROFILE_DATA_TITLE" desc="Title for the progress dialog shown while profile data is being wiped after signing out of an enterprise account">
-        Clearing account data
+        Deleting account data
       </message>
       <message name="IDS_WIPING_PROFILE_DATA_MESSAGE" desc="Message for the progress dialog shown while profile data is being wiped after signing out of an enterprise account">
         Please wait…
