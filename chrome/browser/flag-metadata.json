@@ -230,7 +230,7 @@
   {
     "name": "app-install-service-uri-borealis",
     "owners": [ "tsergeant@chromium.org", "chromeos-apps-foundation-team@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 128
   },
   {
     "name": "app-launch-automation",
