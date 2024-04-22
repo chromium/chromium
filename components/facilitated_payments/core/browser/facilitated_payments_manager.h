@@ -110,6 +110,11 @@ class FacilitatedPaymentsManager {
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            RetrievesClientTokenIfPixPaymentPromptAccepted);
   FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerTest,
+      TriggerPixDetectionOnDomContentLoadedExpDisabled_Ukm);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           TriggerPixDetectionOnDomContentLoadedExpEnabled_Ukm);
+  FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerWithPixPaymentsDisabledTest,
       ValidPixCodeDetectionResultDoesNotTriggerApiClient);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
