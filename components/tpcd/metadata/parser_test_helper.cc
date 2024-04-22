@@ -16,4 +16,7 @@ std::string MakeBase64EncodedMetadata(const Metadata& metadata) {
   return base::Base64Encode(compressed);
 }
 
+uint32_t DeterministicGenerator::Generate() const {
+  return rand_;
+}
 }  // namespace tpcd::metadata

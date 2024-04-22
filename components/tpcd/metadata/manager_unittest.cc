@@ -22,6 +22,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/tpcd/metadata/metadata.pb.h"
 #include "components/tpcd/metadata/parser.h"
+#include "components/tpcd/metadata/parser_test_helper.h"
 #include "components/tpcd/metadata/prefs.h"
 #include "net/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -199,25 +200,6 @@ TEST_P(ManagerTest, FireSyncCallback) {
   }
 }
 
-class DeterministicManager : public Manager {
- public:
-  DeterministicManager(Parser* parser,
-                       GrantsSyncCallback callback,
-                       PrefService* local_state)
-      : Manager(parser, callback, local_state) {}
-  ~DeterministicManager() override = default;
-
-  // Returns a deterministic "random" value for testing.
-  uint32_t GenerateRand() const override { return rand_; }
-
-  using Manager::GenerateKeyHash;
-
-  void set_rand(uint32_t rand) { rand_ = rand; }
-
- private:
-  uint32_t rand_ = 0;
-};
-
 class ManagerCohortsTest
     : public testing::Test,
       public testing::WithParamInterface<std::tuple<bool, int32_t>> {
@@ -237,15 +219,6 @@ class ManagerCohortsTest
       manager_ = std::make_unique<Manager>(GetParser(), callback, nullptr);
     }
     return manager_.get();
-  }
-
-  DeterministicManager* GetDeterministicManager(
-      GrantsSyncCallback callback = base::NullCallback()) {
-    if (!det_manager_) {
-      det_manager_ = std::make_unique<DeterministicManager>(GetParser(),
-                                                            callback, nullptr);
-    }
-    return det_manager_.get();
   }
 
   bool IsTpcdMetadataStagedRollbackEnabled() { return std::get<0>(GetParam()); }
@@ -298,7 +271,6 @@ class ManagerCohortsTest
   // Guarantees proper tear down of dependencies.
   void TearDown() override {
     delete manager_.release();
-    delete det_manager_.release();
     delete parser_.release();
   }
 
@@ -306,7 +278,6 @@ class ManagerCohortsTest
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<Parser> parser_;
   std::unique_ptr<Manager> manager_;
-  std::unique_ptr<DeterministicManager> det_manager_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -345,6 +316,7 @@ TEST_P(ManagerCohortsTest, DTRP_Eligibility) {
   EXPECT_EQ(rule_source, GetTpcdMetadataRuleSource());
 
   switch (GetTpcdMetadataRuleSource()) {
+    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST:
     case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_1P_DT:
     case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_3P_DT:
       EXPECT_TRUE(Parser::IsDtrpEligible(rule_source));
@@ -354,7 +326,6 @@ TEST_P(ManagerCohortsTest, DTRP_Eligibility) {
         SOURCE_CRITICAL_SECTOR:
     case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_CUJ:
     case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_GOV_EDU_TLD:
-    case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_TEST:
     case content_settings::mojom::TpcdMetadataRuleSource::SOURCE_UNSPECIFIED:
       EXPECT_FALSE(Parser::IsDtrpEligible(rule_source));
       break;
@@ -452,8 +423,9 @@ TEST_P(ManagerCohortsTest, DTRP_GE_Rand) {
       ToRuleSourceStr(GetTpcdMetadataRuleSource()), dtrp_being_tested);
   EXPECT_EQ(metadata.metadata_entries_size(), 1);
 
-  DeterministicManager* manager = GetDeterministicManager();
-  manager->set_rand(rand_being_tested);
+  Manager* manager = GetManager();
+  manager->SetRandGeneratorForTesting(
+      new DeterministicGenerator(rand_being_tested));
   GetParser()->ParseMetadata(metadata.SerializeAsString());
 
   EXPECT_EQ(manager->GetGrants().size(), 1u);
@@ -494,8 +466,9 @@ TEST_P(ManagerCohortsTest, DTRP_LT_Rand) {
       ToRuleSourceStr(GetTpcdMetadataRuleSource()), dtrp_being_tested);
   EXPECT_EQ(metadata.metadata_entries_size(), 1);
 
-  DeterministicManager* manager = GetDeterministicManager();
-  manager->set_rand(rand_being_tested);
+  Manager* manager = GetManager();
+  manager->SetRandGeneratorForTesting(
+      new DeterministicGenerator(rand_being_tested));
   GetParser()->ParseMetadata(metadata.SerializeAsString());
 
   EXPECT_EQ(manager->GetGrants().size(), 1u);
@@ -523,7 +496,10 @@ TEST_P(ManagerCohortsTest, DTRP_LT_Rand) {
 
 class ManagerPrefsTest : public testing::Test {
  public:
-  ManagerPrefsTest() = default;
+  ManagerPrefsTest() {
+    det_generator_ = new DeterministicGenerator();
+    GetManager()->SetRandGeneratorForTesting(det_generator_);
+  }
   ~ManagerPrefsTest() override = default;
 
   Parser* GetParser() {
@@ -541,13 +517,7 @@ class ManagerPrefsTest : public testing::Test {
     return manager_.get();
   }
 
-  DeterministicManager* GetDeterministicManager() {
-    if (!det_manager_) {
-      det_manager_ = std::make_unique<DeterministicManager>(
-          GetParser(), base::NullCallback(), &local_state_);
-    }
-    return det_manager_.get();
-  }
+  DeterministicGenerator* GetDetGenerator() { return det_generator_; }
 
   PrefService* GetLocalState() { return &local_state_; }
 
@@ -564,16 +534,16 @@ class ManagerPrefsTest : public testing::Test {
 
   // Guarantees proper tear down of dependencies.
   void TearDown() override {
+    det_generator_ = nullptr;
     delete manager_.release();
-    delete det_manager_.release();
     delete parser_.release();
   }
 
  private:
   base::test::ScopedFeatureList scoped_list_;
+  raw_ptr<DeterministicGenerator> det_generator_;
   std::unique_ptr<Parser> parser_;
   std::unique_ptr<Manager> manager_;
-  std::unique_ptr<DeterministicManager> det_manager_;
   TestingPrefServiceSimple local_state_;
 };
 
@@ -594,8 +564,8 @@ TEST_F(ManagerPrefsTest, PersistedCohorts) {
                                 dtrp);
     EXPECT_EQ(metadata.metadata_entries_size(), 1);
 
-    DeterministicManager* manager = GetDeterministicManager();
-    manager->set_rand(rand);
+    Manager* manager = GetManager();
+    GetDetGenerator()->set_rand(rand);
     GetParser()->ParseMetadata(metadata.SerializeAsString());
 
     auto picked_cohort =
@@ -607,7 +577,7 @@ TEST_F(ManagerPrefsTest, PersistedCohorts) {
     const auto& dict = GetLocalState()->GetDict(prefs::kCohorts);
     EXPECT_EQ(dict.size(), 1u);
     EXPECT_EQ(dict.cbegin()->first,
-              manager->GenerateKeyHash(metadata.metadata_entries(0)));
+              helpers::GenerateKeyHash(metadata.metadata_entries(0)));
     EXPECT_EQ(dict.cbegin()->second,
               static_cast<int>(content_settings::mojom::TpcdMetadataCohort::
                                    GRACE_PERIOD_FORCED_ON));
@@ -626,8 +596,8 @@ TEST_F(ManagerPrefsTest, PersistedCohorts) {
                                 dtrp);
     EXPECT_EQ(metadata.metadata_entries_size(), 1);
 
-    DeterministicManager* manager = GetDeterministicManager();
-    manager->set_rand(rand);
+    Manager* manager = GetManager();
+    GetDetGenerator()->set_rand(rand);
     GetParser()->ParseMetadata(metadata.SerializeAsString());
 
     auto stored_cohort =
@@ -639,7 +609,7 @@ TEST_F(ManagerPrefsTest, PersistedCohorts) {
     const auto& dict = GetLocalState()->GetDict(prefs::kCohorts);
     EXPECT_EQ(dict.size(), 1u);
     EXPECT_EQ(dict.cbegin()->first,
-              manager->GenerateKeyHash(metadata.metadata_entries(0)));
+              helpers::GenerateKeyHash(metadata.metadata_entries(0)));
     EXPECT_EQ(dict.cbegin()->second,
               static_cast<int>(content_settings::mojom::TpcdMetadataCohort::
                                    GRACE_PERIOD_FORCED_ON));
@@ -658,8 +628,8 @@ TEST_F(ManagerPrefsTest, PersistedCohorts) {
                                 dtrp);
     EXPECT_EQ(metadata.metadata_entries_size(), 1);
 
-    DeterministicManager* manager = GetDeterministicManager();
-    manager->set_rand(rand);
+    Manager* manager = GetManager();
+    GetDetGenerator()->set_rand(rand);
     GetParser()->ParseMetadata(metadata.SerializeAsString());
 
     auto picked_cohort =
@@ -671,7 +641,7 @@ TEST_F(ManagerPrefsTest, PersistedCohorts) {
     const auto& dict = GetLocalState()->GetDict(prefs::kCohorts);
     EXPECT_EQ(dict.size(), 1u);
     EXPECT_EQ(dict.cbegin()->first,
-              manager->GenerateKeyHash(metadata.metadata_entries(0)));
+              helpers::GenerateKeyHash(metadata.metadata_entries(0)));
     EXPECT_EQ(dict.cbegin()->second,
               static_cast<int>(content_settings::mojom::TpcdMetadataCohort::
                                    GRACE_PERIOD_FORCED_ON));
@@ -690,8 +660,8 @@ TEST_F(ManagerPrefsTest, PersistedCohorts) {
                                 dtrp);
     EXPECT_EQ(metadata.metadata_entries_size(), 1);
 
-    DeterministicManager* manager = GetDeterministicManager();
-    manager->set_rand(rand);
+    Manager* manager = GetManager();
+    GetDetGenerator()->set_rand(rand);
     GetParser()->ParseMetadata(metadata.SerializeAsString());
 
     auto picked_cohort =
@@ -703,7 +673,7 @@ TEST_F(ManagerPrefsTest, PersistedCohorts) {
     const auto& dict = GetLocalState()->GetDict(prefs::kCohorts);
     EXPECT_EQ(dict.size(), 1u);
     EXPECT_EQ(dict.cbegin()->first,
-              manager->GenerateKeyHash(metadata.metadata_entries(0)));
+              helpers::GenerateKeyHash(metadata.metadata_entries(0)));
     EXPECT_EQ(dict.cbegin()->second,
               static_cast<int>(content_settings::mojom::TpcdMetadataCohort::
                                    GRACE_PERIOD_FORCED_OFF));

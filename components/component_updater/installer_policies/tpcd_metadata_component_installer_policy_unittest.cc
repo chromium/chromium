@@ -270,7 +270,7 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest, ComponentReady_kIllicitDtrp) {
   tpcd::metadata::Metadata metadata;
   tpcd::metadata::helpers::AddEntryToMetadata(
       metadata, primary_pattern_spec, secondary_pattern_spec,
-      tpcd::metadata::Parser::kSourceTest, std::nullopt,
+      tpcd::metadata::Parser::kSourceCriticalSector, std::nullopt,
       tpcd::metadata::Parser::kMaxDtrp);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
@@ -294,7 +294,8 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest, ComponentReady_FiresCallback) {
 
   tpcd::metadata::Metadata metadata;
   tpcd::metadata::helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
-                                              secondary_pattern_spec);
+                                              secondary_pattern_spec,
+                                              Parser::kSourceCriticalSector);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());
@@ -330,7 +331,8 @@ TEST_P(TpcdMetadataComponentInstallerPolicyTest,
 
   tpcd::metadata::Metadata metadata;
   tpcd::metadata::helpers::AddEntryToMetadata(metadata, primary_pattern_spec,
-                                              secondary_pattern_spec);
+                                              secondary_pattern_spec,
+                                              Parser::kSourceCriticalSector);
   ASSERT_EQ(metadata.metadata_entries_size(), 1);
 
   ExecFakeComponentInstallation(metadata.SerializeAsString());

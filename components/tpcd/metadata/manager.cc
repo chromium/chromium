@@ -5,6 +5,7 @@
 #include "components/tpcd/metadata/manager.h"
 
 #include <cstdint>
+#include <memory>
 #include <random>
 #include <string>
 #include <utility>
@@ -23,6 +24,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/tpcd/metadata/metadata.pb.h"
 #include "components/tpcd/metadata/parser.h"
@@ -55,6 +57,8 @@ Manager::Manager(Parser* parser,
       local_state_(local_state) {
   CHECK(parser_);
 
+  rand_generator_ = std::make_unique<RandGenerator>();
+
   if (base::FeatureList::IsEnabled(
           content_settings::features::kHostIndexedMetadataGrants)) {
     base::AutoLock lock(grants_lock_);
@@ -74,15 +78,7 @@ Manager::~Manager() {
   parser_->RemoveObserver(this);
 }
 
-bool Manager::IsAllowed(const GURL& url,
-                        const GURL& first_party_url,
-                        content_settings::SettingInfo* out_info) const {
-  base::AutoLock lock(grants_lock_);
-  return CONTENT_SETTING_ALLOW ==
-         GetContentSetting(grants_, url, first_party_url, out_info);
-}
-
-uint32_t Manager::GenerateRand() const {
+uint32_t Manager::RandGenerator::Generate() const {
   base::RandomBitGenerator generator;
   std::uniform_int_distribution<uint32_t> distribution(Parser::kMinDtrp + 1,
                                                        Parser::kMaxDtrp);
@@ -90,16 +86,12 @@ uint32_t Manager::GenerateRand() const {
   return rand;
 }
 
-std::string Manager::GenerateKeyHash(
-    const MetadataEntry& metadata_entry) const {
-  std::string key = base::StrCat(
-      {metadata_entry.primary_pattern_spec(),
-       /*Non-url delimiter:*/ "\\", metadata_entry.secondary_pattern_spec(),
-       base::NumberToString(ElectedDtrp(metadata_entry))});
-
-  // The hash from SHA1 is faster to obtain than SHA256 and will be forever
-  // unchanged if key is unchanged and provides lesser collision risk than MD5.
-  return base::Base64Encode(base::SHA1HashString(key));
+bool Manager::IsAllowed(const GURL& url,
+                        const GURL& first_party_url,
+                        content_settings::SettingInfo* out_info) const {
+  base::AutoLock lock(grants_lock_);
+  return CONTENT_SETTING_ALLOW ==
+         GetContentSetting(grants_, url, first_party_url, out_info);
 }
 
 void Manager::SetGrants(const ContentSettingsForOneType& grants) {
@@ -124,11 +116,8 @@ void Manager::SetGrants(const ContentSettingsForOneType& grants) {
   }
 }
 
-void Manager::OnMetadataReady() {
-  if (!base::FeatureList::IsEnabled(net::features::kTpcdMetadataGrants)) {
-    return;
-  }
-
+ContentSettingsForOneType Manager::BuildGrantsWithPredicate(
+    base::FunctionRef<bool(const MetadataEntry&)> predicate) {
   base::flat_set<std::string> remove_keys;
   if (base::FeatureList::IsEnabled(
           net::features::kTpcdMetadataStagedRollback) &&
@@ -168,10 +157,10 @@ void Manager::OnMetadataReady() {
       cohort = content_settings::mojom::TpcdMetadataCohort::DEFAULT;
     }
 
-    std::string key_hash = GenerateKeyHash(metadata_entry);
+    std::string key_hash = helpers::GenerateKeyHash(metadata_entry);
 
     // Get the cohort from the prefs if available.
-    if (!cohort.has_value()) {
+    if (!cohort.has_value() && !predicate(metadata_entry)) {
       if (local_state_) {
         const base::Value::Dict& dict = local_state_->GetDict(prefs::kCohorts);
 
@@ -190,7 +179,7 @@ void Manager::OnMetadataReady() {
     }
 
     if (!cohort.has_value()) {
-      cohort = GenerateRand() <= ElectedDtrp(metadata_entry)
+      cohort = rand_generator_->Generate() <= ElectedDtrp(metadata_entry)
                    ? content_settings::mojom::TpcdMetadataCohort::
                          GRACE_PERIOD_FORCED_OFF
                    : content_settings::mojom::TpcdMetadataCohort::
@@ -199,6 +188,10 @@ void Manager::OnMetadataReady() {
       if (local_state_) {
         ScopedDictPrefUpdate update(local_state_, prefs::kCohorts);
         update->Set(key_hash, static_cast<int32_t>(cohort.value()));
+
+        if (predicate(metadata_entry)) {
+          remove_keys.erase(key_hash);
+        }
       }
     }
 
@@ -219,11 +212,19 @@ void Manager::OnMetadataReady() {
     }
   }
 
-  SetGrants(grants);
+  return grants;
+}
+
+void Manager::OnMetadataReady() {
+  if (!base::FeatureList::IsEnabled(net::features::kTpcdMetadataGrants)) {
+    return;
+  }
+
+  SetGrants(
+      BuildGrantsWithPredicate([](const MetadataEntry&) { return false; }));
 }
 
 ContentSettingsForOneType Manager::GetGrants() const {
-
   if (!base::FeatureList::IsEnabled(net::features::kTpcdMetadataGrants)) {
     return ContentSettingsForOneType();
   }
@@ -238,5 +239,46 @@ ContentSettingsForOneType Manager::GetGrants() const {
   base::AutoLock lock(grants_lock_);
   return absl::get<ContentSettingsForOneType>(grants_);
 }
+
+void Manager::ResetCohorts(PatternSourcePredicate pattern_predicate) {
+  if (!base::FeatureList::IsEnabled(
+          net::features::kTpcdMetadataStagedRollback)) {
+    return;
+  }
+
+  if (pattern_predicate.is_null()) {
+    SetGrants(
+        BuildGrantsWithPredicate([](const MetadataEntry&) { return true; }));
+    return;
+  }
+
+  auto reset_cohort = [&](const MetadataEntry& metadata_entry) -> bool {
+    if (!Parser::IsDtrpEligible(
+            Parser::ToRuleSource(metadata_entry.source()))) {
+      return false;
+    }
+
+    const auto primary_pattern = ContentSettingsPattern::FromString(
+        metadata_entry.primary_pattern_spec());
+    const auto secondary_pattern = ContentSettingsPattern::FromString(
+        metadata_entry.secondary_pattern_spec());
+
+    return pattern_predicate.Run(primary_pattern, secondary_pattern);
+  };
+  SetGrants(BuildGrantsWithPredicate(reset_cohort));
+}
+
+namespace helpers {
+std::string GenerateKeyHash(const MetadataEntry& metadata_entry) {
+  std::string key = base::StrCat(
+      {metadata_entry.primary_pattern_spec(),
+       /*Non-url delimiter:*/ "\\", metadata_entry.secondary_pattern_spec(),
+       base::NumberToString(ElectedDtrp(metadata_entry))});
+
+  // The hash from SHA1 is faster to obtain than SHA256 and will be forever
+  // unchanged if key is unchanged and provides lesser collision risk than MD5.
+  return base::Base64Encode(base::SHA1HashString(key));
+}
+}  // namespace helpers
 
 }  // namespace tpcd::metadata
