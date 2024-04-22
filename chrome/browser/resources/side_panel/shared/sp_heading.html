@@ -1,67 +1,7 @@
-<style include="cr-hidden-style sp-shared-style">
-  :host {
-    align-items: center;
-    display: flex;
-    flex-shrink: 0;
-    gap: 4px;
-    height: 36px;
-  }
-
-  :host([compact]) {
-    height: 36px;
-  }
-
-  #backButton,
-  ::slotted(cr-icon-button[slot=buttons]) {
-    --cr-icon-button-icon-size: 16px;
-    --cr-icon-button-size: 24px;
-  }
-
-  #backButton {
-    --cr-icon-button-fill-color: var(--cr-primary-text-color);
-    margin: 0 -4px;
-  }
-
-  ::slotted(cr-icon-button[slot=buttons]) {
-    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
-    margin: 0;
-  }
-
-  ::slotted([slot=heading]:is(h1, h2, h3, h4, h5, h6)) {
-    color: var(--cr-primary-text-color);
-    flex: 1;
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
-    margin: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  :host([compact]) ::slotted([slot=heading]:is(h1, h2, h3, h4, h5, h6)) {
-    color: var(--cr-primary-text-color);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
-  }
-
-  ::slotted([slot=metadata]) {
-    color: var(--cr-secondary-text-color);
-    flex-shrink: 0;
-    font-size: 11px;
-    font-weight: 400;
-    line-height: 16px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-</style>
-
 <cr-icon-button id="backButton" iron-icon="cr:arrow-back"
-    hidden$="[[hideBackButton]]" disabled$="[[disableBackButton]]"
-    on-click="onBackButtonClick_" aria-label$="[[backButtonAriaLabel]]"
-    title$="[[backButtonTitle]]">
+    ?hidden="${this.hideBackButton}" ?disabled="${this.disableBackButton}"
+    @click="${this.onBackButtonClick_}" aria-label="${this.backButtonAriaLabel}"
+    title="${this.backButtonTitle}">
 </cr-icon-button>
 
 <slot name="heading"></slot>

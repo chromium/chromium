@@ -19,7 +19,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';
 
-import type {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
+import type {SpHeadingElement} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import type {ThemeHueSliderDialogElement} from 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';
 import type {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
@@ -101,7 +101,7 @@ export interface WallpaperSearchElement {
     descriptorComboboxC: CustomizeChromeCombobox,
     error: HTMLElement,
     feedbackButtons: CrFeedbackButtonsElement,
-    heading: SpHeading,
+    heading: SpHeadingElement,
     historyCard: HTMLElement,
     hueSlider: ThemeHueSliderDialogElement,
     loading: HTMLElement,

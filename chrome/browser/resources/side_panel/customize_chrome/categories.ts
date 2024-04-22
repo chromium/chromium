@@ -13,7 +13,7 @@ import './check_mark_wrapper.js';
 import './strings.m.js';
 import './wallpaper_search/wallpaper_search_tile.js';
 
-import type {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
+import type {SpHeadingElement} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
@@ -53,7 +53,7 @@ export interface CategoriesElement {
   $: {
     chromeWebStoreTile: HTMLElement,
     classicChromeTile: HTMLElement,
-    heading: SpHeading,
+    heading: SpHeadingElement,
     uploadImageTile: HTMLElement,
   };
 }

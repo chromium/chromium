@@ -1,0 +1,70 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=./sp_shared_style_lit.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit sp-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+  height: 36px;
+}
+
+:host([compact]) {
+  height: 36px;
+}
+
+#backButton,
+::slotted(cr-icon-button[slot=buttons]) {
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-size: 24px;
+}
+
+#backButton {
+  --cr-icon-button-fill-color: var(--cr-primary-text-color);
+  margin: 0 -4px;
+}
+
+::slotted(cr-icon-button[slot=buttons]) {
+  --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+  margin: 0;
+}
+
+::slotted([slot=heading]:is(h1, h2, h3, h4, h5, h6)) {
+  color: var(--cr-primary-text-color);
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:host([compact]) ::slotted([slot=heading]:is(h1, h2, h3, h4, h5, h6)) {
+  color: var(--cr-primary-text-color);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+::slotted([slot=metadata]) {
+  color: var(--cr-secondary-text-color);
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

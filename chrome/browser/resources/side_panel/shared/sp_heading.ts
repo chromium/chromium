@@ -2,60 +2,61 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/cr_shared_vars.css.js';
-import './sp_shared_style.css.js';
 
 import {assert} from '//resources/js/assert.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './sp_heading.html.js';
+import {getCss} from './sp_heading.css.js';
+import {getHtml} from './sp_heading.html.js';
 
-export interface SpHeading {
+export interface SpHeadingElement {
   $: {
     backButton: HTMLElement,
   };
 }
 
-export class SpHeading extends PolymerElement {
+export class SpHeadingElement extends CrLitElement {
   static get is() {
     return 'sp-heading';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       compact: {
         type: Boolean,
-        reflectToAttribute: true,
-        value: false,
+        reflect: true,
       },
 
-      backButtonAriaLabel: String,
-      backButtonTitle: String,
-
-      hideBackButton: {
-        type: Boolean,
-        value: false,
-        observer: 'onHideBackButtonChanged_',
-      },
-
-      disableBackButton: {
-        type: Boolean,
-        value: false,
-      },
+      backButtonAriaLabel: {type: String},
+      backButtonTitle: {type: String},
+      hideBackButton: {type: Boolean},
+      disableBackButton: {type: Boolean},
     };
   }
 
-  compact: boolean;
+  compact: boolean = false;
   backButtonAriaLabel: string;
   backButtonTitle: string;
-  hideBackButton: boolean;
-  disableBackButton: boolean;
+  hideBackButton: boolean = false;
+  disableBackButton: boolean = false;
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('hideBackButton')) {
+      this.onHideBackButtonChanged_();
+    }
+  }
 
   private onHideBackButtonChanged_() {
     if (!this.hideBackButton) {
@@ -63,7 +64,7 @@ export class SpHeading extends PolymerElement {
     }
   }
 
-  private onBackButtonClick_() {
+  protected onBackButtonClick_() {
     this.dispatchEvent(new CustomEvent('back-button-click'));
   }
 
@@ -74,8 +75,8 @@ export class SpHeading extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'sp-heading': SpHeading;
+    'sp-heading': SpHeadingElement;
   }
 }
 
-customElements.define(SpHeading.is, SpHeading);
+customElements.define(SpHeadingElement.is, SpHeadingElement);
