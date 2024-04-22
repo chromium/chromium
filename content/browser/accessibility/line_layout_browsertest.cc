@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLineLayoutBrowserTest,
 // immediately; we can wait for them but without the aforementioned fix the
 // updated tree isn't processed to create the Next/PreviousOnLine links.)
 #if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/1515673): Disabled on chromeos due to failing on
+// TODO(crbug.com/41488668): Disabled on chromeos due to failing on
 // linux-chromeos-dbg.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_NestedLayoutNGInlineFormattingContext \

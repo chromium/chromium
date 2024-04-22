@@ -176,7 +176,7 @@ void VideoFrameYUVMailboxesHolder::VideoFrameToMailboxes(
     // RASTER_{READ, WRITE} usages should be included as these SharedImages are
     // both read and written via raster, but historically these usages were not
     // included. Currently in the process of adding with a killswitch.
-    // TODO(crbug.com/1524009): Remove this killswitch post-safe rollout.
+    // TODO(crbug.com/41496957): Remove this killswitch post-safe rollout.
     // NOTE: It is critical to specify that this raster usage is *only* over
     // GLES2 to the service side to ensure that the correct SharedImage backing
     // is created (see crbug.com/328472684).

@@ -387,7 +387,7 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
   EG_TEST_HELPER_ASSERT_TRUE(tabGridButtonVisible,
                              @"Show tab grid button was not visible.");
 
-  // TODO(crbug.com/933953) For an unknown reason synchronization doesn't work
+  // TODO(crbug.com/41442441) For an unknown reason synchronization doesn't work
   // well with tapping on the tabgrid button, and instead triggers the long
   // press gesture recognizer.  Disable this here so the test can be re-enabled.
   ScopedSynchronizationDisabler disabler;

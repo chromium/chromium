@@ -319,7 +319,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // entries. Also verifies that the user is still signed in when the dialog
 // Cancel button is tapped.
 - (void)testUnsyncedDataDialogShowsInCaseOfUnsyncedReadingListEntry {
-  // TODO(crbug.com/1521690): Test fails on iPhone device and simulator.
+  // TODO(crbug.com/41494658): Test fails on iPhone device and simulator.
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPhone.");
   }

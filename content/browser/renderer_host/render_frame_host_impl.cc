@@ -7372,7 +7372,7 @@ void RenderFrameHostImpl::EvictFromBackForwardCache(
           "Source location must not be provided in this condition.");
     }
   }
-  // TODO(crbug.com/1513120): Use `source` to report the source location of
+  // TODO(crbug.com/41485693): Use `source` to report the source location of
   // JavaScript execution.
   EvictFromBackForwardCacheWithReason(
       RendererEvictionReasonToNotRestoredReason(reason));

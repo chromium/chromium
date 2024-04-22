@@ -92,7 +92,7 @@ public abstract class PathUtils {
         }
     }
 
-    // TODO(crbug.com/1512123): Merge the Chrome and WebView implementations
+    // TODO(crbug.com/41484704): Merge the Chrome and WebView implementations
     // of isPathUnderAppDir into one.
     @RequiresApi(Build.VERSION_CODES.N)
     public static boolean isPathUnderAppDir(String path, Context context) {
@@ -264,7 +264,7 @@ public abstract class PathUtils {
     @SuppressWarnings("unused")
     @CalledByNative
     public static @NonNull String getDownloadsDirectory() {
-        // TODO(crbug.com/508615): Move calls to getDownloadsDirectory() to background thread.
+        // TODO(crbug.com/41187555): Move calls to getDownloadsDirectory() to background thread.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 // https://developer.android.com/preview/privacy/scoped-storage

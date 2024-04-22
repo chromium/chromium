@@ -91,7 +91,7 @@ const char kMetaItContentLanguage[] =
     "<meta http-equiv=\"content-language\" content=\"it\">";
 
 // Various link components.
-// TODO(crbug.com/729195): Re-write the hardcoded address.
+// TODO(crbug.com/41322998): Re-write the hardcoded address.
 const char kHttpServerDomain[] = "127.0.0.1";
 const char kLanguagePath[] = "/languagepath/";
 const char kLinkPath[] = "/linkpath/";

@@ -1668,7 +1668,7 @@
         ],
       },
       'win-asan': {
-        # TODO(crbug.com/1518411): With a single shard seems to hit time limit.
+        # TODO(crbug.com/41491387): With a single shard seems to hit time limit.
         'swarming': {
           'shards': 4,
         },

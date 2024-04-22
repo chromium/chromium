@@ -569,7 +569,7 @@ void V4L2VideoDecodeAccelerator::ImportBufferForPictureTask(
     return;
   }
 
-  // TODO(crbug.com/982172): ARC++ may adjust the size of the buffer due to
+  // TODO(crbug.com/41469754): ARC++ may adjust the size of the buffer due to
   // allocator constraints, but the VDA API does not provide a way for it to
   // communicate the actual buffer size. If we are importing, make sure that the
   // actual buffer size is coherent with what we expect, and adjust our size if

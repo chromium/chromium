@@ -1588,7 +1588,7 @@ bool RenderWidgetHostViewAura::GetEditableSelectionRange(
 
 bool RenderWidgetHostViewAura::SetEditableSelectionRange(
     const gfx::Range& range) {
-  // TODO(crbug.com/915630): Write an unit test for this method.
+  // TODO(crbug.com/41432062): Write an unit test for this method.
   auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
   if (!input_handler)
     return false;

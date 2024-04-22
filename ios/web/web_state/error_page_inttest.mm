@@ -305,7 +305,7 @@ TEST_F(ErrorPageTest, GoBackFromErrorPageAndForwardToErrorPage) {
 // Sucessfully loads the page, then loads the URL which fails to load, then
 // sucessfully goes back to the first page and goes forward to error page.
 // Back-forward navigations are renderer-initiated.
-// TODO(crbug.com/867927): Re-enable this test.
+// TODO(crbug.com/41404136): Re-enable this test.
 TEST_F(ErrorPageTest,
        DISABLED_RendererInitiatedGoBackFromErrorPageAndForwardToErrorPage) {
   // First page loads sucessfully.

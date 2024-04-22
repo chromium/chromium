@@ -71,9 +71,9 @@ EXCLUDED_TESTS = [
     os.path.join('tests', 'codegen', 'issue-45222.rs'),
     # https://github.com/rust-lang/rust/issues/96497
     os.path.join('tests', 'codegen', 'issue-96497-slice-size-nowrap.rs'),
-    # TODO(https://crbug.com/1515111): remove after rolling rust with fix
+    # TODO(crbug.com/41487664): remove after rolling rust with fix
     os.path.join('tests', 'codegen', 'abi-main-signature-32bit-c-int.rs'),
-    # TODO(https://crbug.com/1513478): remove after rolling rust with fix
+    # TODO(crbug.com/41486049): remove after rolling rust with fix
     os.path.join('tests', 'ui', 'asm', 'inline-syntax.rs'),
     # TODO(https://crbug.com/324853415): benign failure; remove when fixed.
     os.path.join('tests', 'codegen', 'iter-repeat-n-trivial-drop.rs'),

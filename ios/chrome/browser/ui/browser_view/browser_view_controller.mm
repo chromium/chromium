@@ -1028,10 +1028,10 @@ enum HeaderBehaviour {
 
   self.fullscreenController->BrowserTraitCollectionChangedBegin();
 
-  // TODO(crbug.com/527092): - traitCollectionDidChange: is not always forwarded
-  // because in some cases the presented view controller isn't a child of the
-  // BVC in the view controller hierarchy (some intervening object isn't a
-  // view controller).
+  // TODO(crbug.com/41198852): - traitCollectionDidChange: is not always
+  // forwarded because in some cases the presented view controller isn't a child
+  // of the BVC in the view controller hierarchy (some intervening object isn't
+  // a view controller).
   [self.presentedViewController
       traitCollectionDidChange:previousTraitCollection];
 
@@ -1159,7 +1159,7 @@ enum HeaderBehaviour {
     // The second call would dismiss the BVC itself, so look for that case and
     // return early.
     //
-    // TODO(crbug.com/811671): A similar bug exists on all iOS versions with
+    // TODO(crbug.com/41370278): A similar bug exists on all iOS versions with
     // WKFileUploadPanel and UIDocumentPickerViewController.
     //
     // To make M65 as safe as possible, return early whenever this method is
@@ -1197,7 +1197,7 @@ enum HeaderBehaviour {
                      animated:(BOOL)flag
                    completion:(void (^)())completion {
   ProceduralBlock finalCompletionHandler = [completion copy];
-  // TODO(crbug.com/580098) This is an interim fix for the flicker between the
+  // TODO(crbug.com/41235932) This is an interim fix for the flicker between the
   // launch screen and the FRE Animation. The fix is, if the FRE is about to be
   // presented, to show a temporary view of the launch screen and then remove it
   // when the controller for the FRE has been presented. This fix should be
@@ -1356,8 +1356,8 @@ enum HeaderBehaviour {
   CGFloat height = self.toolbarCoordinator.expandedPrimaryToolbarHeight;
   // If the primary toolbar is not the topmost header, it does not overlap with
   // the unsafe area.
-  // TODO(crbug.com/806437): Update implementation such that this calculates the
-  // topmost header's height.
+  // TODO(crbug.com/41367346): Update implementation such that this calculates
+  // the topmost header's height.
   UIView* primaryToolbar =
       self.toolbarCoordinator.primaryToolbarViewController.view;
   UIView* topmostHeader = [self.headerViews firstObject].view;

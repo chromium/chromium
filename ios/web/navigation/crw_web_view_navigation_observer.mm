@@ -209,7 +209,7 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
 
 // Called when WKWebView URL has been changed.
 - (void)webViewURLDidChange {
-  // TODO(crbug.com/966412): Determine if there are any cases where this still
+  // TODO(crbug.com/41460688): Determine if there are any cases where this still
   // happens, and if so whether anything should be done when it does.
   if (self.webView.URL.absoluteString.length == 0) {
     DVLOG(1) << "Received nil/empty URL callback";

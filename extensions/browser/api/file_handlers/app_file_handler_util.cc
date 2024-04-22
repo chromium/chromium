@@ -411,7 +411,7 @@ bool FileHandlerCanHandleEntry(const apps::FileHandlerInfo& handler,
 
 bool WebAppFileHandlerCanHandleEntry(const apps::FileHandler& handler,
                                      const EntryInfo& entry) {
-  // TODO(crbug.com/938103): At the moment, apps::FileHandler doesn't have an
+  // TODO(crbug.com/41444843): At the moment, apps::FileHandler doesn't have an
   // include_directories flag. It may be necessary to add one as this new
   // representation replaces apps::FileHandlerInfo.
   if (entry.is_directory)

@@ -386,8 +386,8 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, MAYBE(CharacterByCharacter)) {
 }
 
 // TODO(crbug.com/615291): This test frequently fails on Android.
-// TODO(crbug.com/674742): This test is flaky on Win
-// TODO(crbug.com/850286): Flaky on CrOS MSan
+// TODO(crbug.com/41291496): This test is flaky on Win
+// TODO(crbug.com/41393143): Flaky on CrOS MSan
 // Tests sending a large number of find requests subsequently.
 IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, DISABLED_RapidFire) {
   LoadAndWait("/find_in_page.html");
@@ -676,8 +676,8 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, MAYBE_FindNewMatches) {
 }
 
 // TODO(crbug.com/615291): These tests frequently fail on Android.
-// TODO(crbug.com/779912): Flaky timeout on Win7 (dbg).
-// TODO(crbug.com/875306): Flaky on Win10.
+// TODO(crbug.com/41352658): Flaky timeout on Win7 (dbg).
+// TODO(crbug.com/41408666): Flaky on Win10.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_FindInPage_Issue627799 DISABLED_FindInPage_Issue627799
 #else

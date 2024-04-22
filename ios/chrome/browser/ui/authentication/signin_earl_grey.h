@@ -23,7 +23,7 @@ class GURL;
   [SigninEarlGreyImpl invokedFromFile:@"" __FILE__ lineNumber:__LINE__]
 
 // Methods used for the EarlGrey tests.
-// TODO(crbug.com/974833): Consider moving these into ChromeEarlGrey.
+// TODO(crbug.com/41465348): Consider moving these into ChromeEarlGrey.
 @interface SigninEarlGreyImpl : BaseEGTestHelperImpl
 
 // Calls -[SigninEarlGreyImpl addFakeIdentity:withUnknownCapabilities:NO].

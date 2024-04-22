@@ -36,7 +36,7 @@
   [ChromeEarlGreyUI openToolsMenu];
 
   // Open new tab.
-  // TODO(crbug.com/917114): Calling the string directly is temporary while we
+  // TODO(crbug.com/41432876): Calling the string directly is temporary while we
   // roll out a solution to access constants across the code base for EG2.
   id<GREYMatcher> newTabButtonMatcher =
       grey_accessibilityID(@"kToolsMenuNewTabId");

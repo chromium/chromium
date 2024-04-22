@@ -174,7 +174,7 @@ interface URLLoaderNetworkServiceObserver {
   // Called when the Clear-Site-Data header has been received. The callback
   // should be run after the data is deleted.
   // https://www.w3.org/TR/clear-site-data/
-  // TODO(crbug.com/876931): We might want to move header parsing work to
+  // TODO(crbug.com/41409604): We might want to move header parsing work to
   // Network Service for security concerns (e.g. |header_value| => booleans).
   OnClearSiteData(url.mojom.Url url,
                   string header_value,

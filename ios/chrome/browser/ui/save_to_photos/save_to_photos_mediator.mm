@@ -366,7 +366,7 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
     _identity = nil;
     base::UmaHistogramTimes(kSaveToPhotosUploadFailureLatencyHistogram,
                             base::TimeTicks::Now() - _uploadStart);
-    // TODO(crbug.com/1513891): Emit the failure type as-is once the service is
+    // TODO(crbug.com/41486457): Emit the failure type as-is once the service is
     // able to identify out-of-storage errors by itself.
     if (result.failure_type == PhotosServiceUploadFailureType::kUploadPhoto2 &&
         [result.error.localizedDescription

@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 // TODO(crbug.com/835455): Fails on Windows.
-// TODO(crbug.com/945193): Flaky on Mac.
+// TODO(crbug.com/41448628): Flaky on Mac.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_AccessibilityEventsAriaComboBoxDelayAddList \
   DISABLED_AccessibilityEventsAriaComboBoxDelayAddList

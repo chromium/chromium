@@ -169,7 +169,7 @@ NSString* BuildMessage(NSArray<NSString*>* messageComponents) {
   NSString* certificateDetails = @"";
   if (!issuerName.empty()) {
     // Show the issuer name if it's available.
-    // TODO(crbug.com/502470): Implement a certificate viewer instead.
+    // TODO(crbug.com/41183995): Implement a certificate viewer instead.
     certificateDetails = l10n_util::GetNSStringF(
         IDS_IOS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY, issuerName);
   }

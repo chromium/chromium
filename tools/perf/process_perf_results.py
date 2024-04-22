@@ -529,7 +529,7 @@ def _GetCpuCount(log=True):
     if log:
       logging.warning(
           'Failed to get a CPU count for this bot. See crbug.com/947035.')
-    # TODO(crbug.com/948281): This is currently set to 4 since the mac masters
+    # TODO(crbug.com/41450490): This is currently set to 4 since the mac masters
     # only have 4 cores. Once we move to all-linux, this can be increased or
     # we can even delete this whole function and use multiprocessing.cpu_count()
     # directly.

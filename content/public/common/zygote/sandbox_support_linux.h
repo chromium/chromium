@@ -13,7 +13,7 @@ class NaClListener;
 
 namespace content {
 
-// TODO(crbug.com/982879): Remove this when NaCl is unshipped.
+// TODO(crbug.com/41470149): Remove this when NaCl is unshipped.
 class CONTENT_EXPORT SharedMemoryIPCSupport {
  private:
   friend class ::NaClListener;

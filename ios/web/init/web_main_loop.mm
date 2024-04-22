@@ -34,7 +34,7 @@
 namespace web {
 
 // The currently-running WebMainLoop.  There can be one or zero.
-// TODO(crbug.com/965889): Desktop uses this to implement
+// TODO(crbug.com/41460416): Desktop uses this to implement
 // ImmediateShutdownAndExitProcess.  If we don't need that functionality, we can
 // remove this.
 WebMainLoop* g_current_web_main_loop = nullptr;

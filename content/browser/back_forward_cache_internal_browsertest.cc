@@ -1091,7 +1091,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 // updated during the "freeze" event in a way that would have prevented the
 // document from entering the BackForwardCache in the first place.
 //
-// TODO(https://crbug.com/996267): The document should be evicted.
+// TODO(crbug.com/41477477): The document should be evicted.
 //
 // ┌───────┐                     ┌────────┐
 // │browser│                     │renderer│

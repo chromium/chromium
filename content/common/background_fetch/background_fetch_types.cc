@@ -26,7 +26,7 @@ namespace content {
 // static
 blink::mojom::FetchAPIResponsePtr BackgroundFetchSettledFetch::CloneResponse(
     const blink::mojom::FetchAPIResponsePtr& response) {
-  // TODO(https://crbug.com/876546): Replace this method with response.Clone()
+  // TODO(crbug.com/41409379): Replace this method with response.Clone()
   // if the associated bug is fixed.
   if (response.is_null())
     return nullptr;

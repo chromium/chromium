@@ -12,8 +12,8 @@
 class GURL;
 
 // Protocol for commands that will be handled by the BrowserCoordinator.
-// TODO(crbug.com/906662) : Rename this protocol to one that is more descriptive
-// and representative of the contents.
+// TODO(crbug.com/41427057) : Rename this protocol to one that is more
+// descriptive and representative of the contents.
 @protocol BrowserCoordinatorCommands
 
 // Prints the currently active tab.

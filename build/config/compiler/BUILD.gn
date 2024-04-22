@@ -1926,7 +1926,7 @@ config("default_warnings") {
 
       if (!is_nacl) {
         cflags_cc += [
-          # TODO(https://crbug.com/1513724): Fix and re-enable.
+          # TODO(crbug.com/41486292): Fix and re-enable.
           "-Wno-c++11-narrowing-const-reference",
         ]
       }
@@ -2539,7 +2539,7 @@ config("optimize_max") {
 # instead of code size. This config is exactly the same as "optimize_max"
 # except that we use -O3 instead of -O2 on non-IRT platforms.
 #
-# TODO(crbug.com/621335) - rework how all of these configs are related
+# TODO(crbug.com/41259697) - rework how all of these configs are related
 # so that we don't need this disclaimer.
 config("optimize_speed") {
   if (is_nacl && is_nacl_irt) {

@@ -15,7 +15,7 @@ class WebState;
 
 // Test observer to check that the WebStateObserver methods are called as
 // expected. Can only observe a single WebState.
-// TODO(crbug.com/775684): fix this to allow observing multiple WebStates.
+// TODO(crbug.com/41350286): fix this to allow observing multiple WebStates.
 class FakeWebStateObserver : public WebStateObserver {
  public:
   FakeWebStateObserver(WebState* web_state);

@@ -48,7 +48,7 @@ void SwizzleUIImageImageNamed() {
   // A set of image names that are exceptions to the 'missing image' check.
   NSMutableSet* exceptions = [NSMutableSet set];
 
-  // TODO(crbug.com/720337): Add missing image.
+  // TODO(crbug.com/41318097): Add missing image.
   [exceptions addObject:@"card_close_button_pressed_incognito"];
   // TODO(crbug.com/720355): Add missing image.
   [exceptions addObject:@"find_close_pressed_incognito"];
@@ -56,7 +56,7 @@ void SwizzleUIImageImageNamed() {
   [exceptions addObject:@"glif-mic-to-dots-small_37"];
   [exceptions addObject:@"glif-mic-to-dots-large_37"];
   [exceptions addObject:@"glif-google-to-dots_28"];
-  // TODO(crbug.com/721338): Add missing image.
+  // TODO(crbug.com/41318906): Add missing image.
   [exceptions addObject:@"voice_icon_keyboard_accessory"];
 
   // The original implementation of [UIImage imageNamed:].

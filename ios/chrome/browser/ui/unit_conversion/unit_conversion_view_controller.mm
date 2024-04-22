@@ -475,7 +475,7 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
   // crbug/1512445) but this could not be reproduced. To prevent further
   // crash, set the title to a valid string and log more info so this can
   // be debugged.
-  // TODO(crbug.com/1513168): remove when the issue is fixed.
+  // TODO(crbug.com/41485741): remove when the issue is fixed.
   NSString* debugSourceUnit = _formattedSourceUnit;
   if (!debugSourceUnit) {
     debugSourceUnit = [_sourceUnit description];

@@ -209,7 +209,7 @@ const CGFloat kGroupColorViewSize = 18;
   // title and close button.
   return YES;
 }
-// TODO(crbug.com/1511982): Add the accessibility custom actions.
+// TODO(crbug.com/41484563): Add the accessibility custom actions.
 
 #pragma mark - Public
 

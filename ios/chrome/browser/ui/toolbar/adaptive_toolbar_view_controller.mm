@@ -207,7 +207,7 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-  // TODO(crbug.com/882723): Remove this call once iPad trait collection
+  // TODO(crbug.com/41413004): Remove this call once iPad trait collection
   // override issue is fixed.
   [self updateAllButtonsVisibility];
 }

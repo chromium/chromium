@@ -155,8 +155,8 @@ TEST_F(GpuChannelManagerTest, GpuPeakMemoryOnlyReportedForValidSequence) {
   base::test::TestTraceProcessor ttp;
   ttp.StartTrace("gpu");
 #else
-  // TODO(crbug.com/1006541): Remove trace_analyzer usage after migration to the
-  // SDK.
+  // TODO(crbug.com/42050015): Remove trace_analyzer usage after migration to
+  // the SDK.
   trace_analyzer::Start("gpu");
 #endif
 

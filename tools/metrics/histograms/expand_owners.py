@@ -246,7 +246,7 @@ def _MakeOwners(document, path, emails_with_dom_elements):
     A collection of DOM Elements made from owners in the given OWNERS file.
   """
   owner_elements = []
-  # TODO(crbug.com/987709): An OWNERS file API would be ideal.
+  # TODO(crbug.com/41472818): An OWNERS file API would be ideal.
   emails_from_owners_file = _ExtractEmailAddressesFromOWNERS(path)
   if not emails_from_owners_file:
     raise Error('No emails could be derived from {}.'.format(path))

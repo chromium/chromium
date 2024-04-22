@@ -508,7 +508,7 @@ void WebrtcVideoStream::OnEncodedFrameSent(
   // Convert the frame quantizer to a measure of frame quality between 0 and
   // 100, for a simple visualization of quality over time. The quantizer from
   // VP8/VP9 encoder lies within 0-63, with 0 representing a lossless frame.
-  // TODO(crbug.com/891571): Remove |quantizer| from the WebrtcVideoEncoder
+  // TODO(crbug.com/41418600): Remove |quantizer| from the WebrtcVideoEncoder
   // interface, and move this logic to the encoders.
   stats.frame_quality = (63 - frame.quantizer) * 100 / 63;
 

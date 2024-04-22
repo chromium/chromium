@@ -253,8 +253,9 @@ int ProxyResolvingClientSocket::DoProxyResolveComplete(int result) {
   if (result == net::OK) {
     // Removes unsupported proxies from the list. Currently, this removes
     // just the SCHEME_QUIC proxy.
-    // TODO(crbug.com/876885): Allow QUIC proxy once net::QuicProxyClientSocket
-    // supports ReadIfReady() and CancelReadIfReady().
+    // TODO(crbug.com/41409577): Allow QUIC proxy once
+    // net::QuicProxyClientSocket supports ReadIfReady() and
+    // CancelReadIfReady().
     proxy_info_.RemoveProxiesWithoutScheme(
         net::ProxyServer::SCHEME_HTTP | net::ProxyServer::SCHEME_HTTPS |
         net::ProxyServer::SCHEME_SOCKS4 | net::ProxyServer::SCHEME_SOCKS5);

@@ -5204,7 +5204,7 @@ class BackForwardCacheBrowserTestWithMediaSessionNoTestingConfig
     // The MediaSessionEnterPictureInPicture feature depends on the
     // BackForwardCacheMediaSessionService feature, so we need to also disable
     // it here.
-    // TODO(https://crbug.com/1510995): Remove these tests since the
+    // TODO(crbug.com/41483582): Remove these tests since the
     // BackForwardCacheMediaSessionService feature has been launched.
     DisableFeature(blink::features::kMediaSessionEnterPictureInPicture);
 

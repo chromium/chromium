@@ -970,7 +970,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     }
   }
 
-  // TODO(crbug.com/872303) : This is a workaround because TabRestoreService
+  // TODO(crbug.com/41406890) : This is a workaround because TabRestoreService
   // does not notify observers when entries are removed. When close all tabs
   // removes entries, the remote tabs page in the tab grid are not updated. This
   // ensures that the table is updated whenever scrolling to it.
@@ -1064,7 +1064,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // will be created.
 - (void)setupRemoteTabsViewController {
   self.remoteTabsViewController.UIDelegate = self;
-  // TODO(crbug.com/804589) : Dark style on remote tabs.
+  // TODO(crbug.com/41366321) : Dark style on remote tabs.
   // The styler must be set before the view controller is loaded.
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
   styler.tableViewBackgroundColor = [UIColor colorNamed:kGridBackgroundColor];

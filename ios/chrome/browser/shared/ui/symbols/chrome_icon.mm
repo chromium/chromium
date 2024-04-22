@@ -38,7 +38,8 @@ UIImage* IconNamed(NSString* name) {
 
 // Wraps -[UIImage imageFlippedForRightToLeftLayoutDirection] to also support
 // porting accessibility properties.
-// TODO(crbug.com/622543): remove this workaround if Apple fixes rdar://26962660
+// TODO(crbug.com/41260431): remove this workaround if Apple fixes
+// rdar://26962660
 UIImage* ImageFlippedForRightToLeftLayoutDirection(UIImage* image) {
   UIImage* imageFlipped = [image imageFlippedForRightToLeftLayoutDirection];
   imageFlipped.accessibilityIdentifier = image.accessibilityIdentifier;

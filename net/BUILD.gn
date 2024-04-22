@@ -1419,7 +1419,7 @@ component("net") {
       ]
     }
 
-    # TODO(https://crbug.com/978854): This is a public config because
+    # TODO(crbug.com/41467965): This is a public config because
     # multi_threaded_cert_verifier.h depends on NSS. When the linked bug is
     # fixed, switch this to a non-public config, so NSS usage must be explicit
     # in the build.

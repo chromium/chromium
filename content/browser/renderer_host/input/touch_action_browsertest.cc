@@ -676,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest,
                                     kShortJankTime);
 }
 
-// TODO(crbug.com/899005): Make this test work on Android.
+// TODO(crbug.com/41422733): Make this test work on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TwoFingerPanYDisallowed DISABLED_TwoFingerPanYDisallowed
 #else

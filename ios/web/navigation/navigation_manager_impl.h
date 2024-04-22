@@ -154,7 +154,7 @@ class NavigationManagerImpl final : public NavigationManager {
                       web::HttpsUpgradeType https_upgrade_type);
 
   // Commits the pending item, if any.
-  // TODO(crbug.com/936933): Remove this method.
+  // TODO(crbug.com/41444193): Remove this method.
   void CommitPendingItem();
 
   // Commits given pending `item` stored outside of navigation manager

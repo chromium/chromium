@@ -2996,7 +2996,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 
 // Tries verifying a certificate chain that is missing an intermediate. The
 // intermediate is available via AIA.
-// TODO(crbug.com/860189): Failing on iOS
+// TODO(crbug.com/41399468): Failing on iOS
 #if BUILDFLAG(IS_IOS)
 #define MAYBE_IntermediateFromAia200Der DISABLED_IntermediateFromAia200Der
 #else
@@ -3054,7 +3054,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 // Tries verifying a certificate chain that is missing an intermediate. The
 // intermediate is available via AIA, however is served as a PEM file rather
 // than DER.
-// TODO(crbug.com/860189): Failing on iOS
+// TODO(crbug.com/41399468): Failing on iOS
 #if BUILDFLAG(IS_IOS)
 #define MAYBE_IntermediateFromAia200Pem DISABLED_IntermediateFromAia200Pem
 #else
@@ -3106,7 +3106,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 // This test is the same as IntermediateFromAia200Pem, but with a different
 // formatting on the PEM data.
 //
-// TODO(crbug.com/860189): Failing on iOS
+// TODO(crbug.com/41399468): Failing on iOS
 #if BUILDFLAG(IS_IOS)
 #define MAYBE_IntermediateFromAia200Pem2 DISABLED_IntermediateFromAia200Pem2
 #else

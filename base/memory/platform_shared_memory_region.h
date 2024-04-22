@@ -95,7 +95,7 @@ class BASE_EXPORT PlatformSharedMemoryRegion {
     //
     // This is only used to support sandbox_ipc_linux.cc, and should not be used
     // anywhere else in chrome. This is restricted via AllowCreateExecutable.
-    // TODO(crbug.com/982879): remove this when NaCl is unshipped.
+    // TODO(crbug.com/41470149): remove this when NaCl is unshipped.
     //
     // Returns an invalid ScopedFD if the call fails.
     static ScopedFD CreateFD(size_t size);

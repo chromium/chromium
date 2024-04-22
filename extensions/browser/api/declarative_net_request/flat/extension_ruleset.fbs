@@ -93,7 +93,7 @@ table EmbedderConditions {
 
   /// Headers to include/exclude. Note that `excluded_response_headers` will
   /// only match on header names.
-  /// TODO(crbug.com/1510018): Consider relocating these header conditions as
+  /// TODO(crbug.com/41482616): Consider relocating these header conditions as
   /// they apply to requests and what "embeds" the requests (such as the
   /// browser). One potentially suitable place would be a new table in the
   /// UrlPatternIndex for more complex conditions from requests and responses,

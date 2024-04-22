@@ -77,7 +77,8 @@ class SyncServiceFactoryTest : public PlatformTest {
     datatypes.Put(syncer::PREFERENCES);
     datatypes.Put(syncer::PRIORITY_PREFERENCES);
     datatypes.Put(syncer::READING_LIST);
-    // TODO(crbug.com/919489) Add SECURITY_EVENTS data type once it is enabled.
+    // TODO(crbug.com/41434211) Add SECURITY_EVENTS data type once it is
+    // enabled.
     datatypes.Put(syncer::SESSIONS);
     datatypes.Put(syncer::SUPERVISED_USER_SETTINGS);
     datatypes.Put(syncer::USER_EVENTS);

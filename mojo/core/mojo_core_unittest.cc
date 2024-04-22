@@ -28,7 +28,7 @@ const char kMojoUseExplicitLibraryPath[] = "mojo-use-explicit-library-path";
 
 namespace {
 
-// TODO(https://crbug.com/902135): Re-enable this on MSAN. Currently hangs
+// TODO(crbug.com/41424555): Re-enable this on MSAN. Currently hangs
 // because of an apparent deadlock in MSAN's fork() in multithreaded
 // environments.
 #if !defined(MEMORY_SANITIZER)

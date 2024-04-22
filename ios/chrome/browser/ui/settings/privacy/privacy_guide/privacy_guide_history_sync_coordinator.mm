@@ -46,7 +46,7 @@
   _viewController = [[PrivacyGuideHistorySyncViewController alloc] init];
   _viewController.delegate = self;
   _viewController.presentationDelegate = self;
-  // TODO(crbug.com/1520481): Implement History Sync mediator.
+  // TODO(crbug.com/41493454): Implement History Sync mediator.
 
   CHECK(self.baseNavigationController);
   [self.baseNavigationController pushViewController:_viewController

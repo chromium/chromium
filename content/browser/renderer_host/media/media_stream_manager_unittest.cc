@@ -2007,7 +2007,7 @@ TEST_P(MediaStreamManagerCapturedSurfaceControlActionTest,
 // This test is currently disabled because the code that ensures that Captured
 // Surface Control APIs are disallowed for self-capture has not yet been
 // authored.
-// TODO(crbug.com/1511754): Enable this test.
+// TODO(crbug.com/41484336): Enable this test.
 TEST_P(MediaStreamManagerCapturedSurfaceControlActionTest,
        DISABLED_FailsIfSelfCapture) {
   SCOPED_TRACE("FailsIfSelfCapture");

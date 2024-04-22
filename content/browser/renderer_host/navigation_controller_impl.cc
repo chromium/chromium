@@ -4130,7 +4130,7 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
   // back/forward/reload navigation that does a form resubmission.
   scoped_refptr<network::ResourceRequestBody> request_body;
   std::string post_content_type;
-  // TODO(https://crbug.com/931209) Store |is_form_submission| in the history
+  // TODO(crbug.com/41440869) Store |is_form_submission| in the history
   // entry. This way, it could be directly retrieved here. Right now, it is only
   // partially recovered when request.method == "POST" and request.body exists.
   bool is_form_submission = false;

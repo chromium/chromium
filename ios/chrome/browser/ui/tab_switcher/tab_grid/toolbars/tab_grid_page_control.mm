@@ -692,7 +692,7 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   } else {
     // bug: taps in the left- or rightmost `kSliderOverhang` points of the
     // control will fall through to this case.
-    // TODO(crbug.com/804500): Fix this.
+    // TODO(crbug.com/41366258): Fix this.
     page = TabGridPageRegularTabs;
   }
   if (page != self.selectedPage) {

@@ -480,7 +480,7 @@ void TapSuppressDialogsButton() {
 }
 
 // Tests that an alert is presented after displaying the share menu.
-// TODO(crbug.com/747622): re-enable this test once earl grey can interact
+// TODO(crbug.com/41334973): re-enable this test once earl grey can interact
 // with the share menu.
 - (void)DISABLED_testShowJavaScriptAfterShareMenu {
   // Load the blank test page.

@@ -527,7 +527,7 @@ void OmniboxViewIOS::OnDidChange(bool processing_user_event) {
   if (!processing_user_event && !proceed_without_user_event)
     return;
 
-  // TODO(crbug.com/564599): OnAfterPossibleChange() now takes an argument. It
+  // TODO(crbug.com/41225237): OnAfterPossibleChange() now takes an argument. It
   // use to not take an argument and was defaulting to false, so as it is
   // unclear what the correct value is, using what was that before seems
   // consistent.

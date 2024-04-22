@@ -181,7 +181,7 @@ const CGFloat kFolderCellHorizonalInset = 17.0;
     case BookmarksFolderAccessoryTypeDisclosureIndicator: {
       self.accessoryView = [[UIImageView alloc]
           initWithImage:[UIImage imageNamed:@"table_view_cell_chevron"]];
-      // TODO(crbug.com/870841): Use default accessory type.
+      // TODO(crbug.com/41405943): Use default accessory type.
       if (base::i18n::IsRTL()) {
         self.accessoryView.transform = CGAffineTransformMakeRotation(M_PI);
       }

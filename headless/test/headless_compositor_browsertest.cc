@@ -72,7 +72,7 @@ HEADLESS_COMPOSITOR_TEST(CompositorBasicRaf,
 HEADLESS_COMPOSITOR_TEST(CompositorImageAnimation,
                          "emulation/compositor-image-animation-test.js")
 
-// Flaky on all platforms. TODO(crbug.com/986027): Re-enable.
+// Flaky on all platforms. TODO(crbug.com/41471823): Re-enable.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_CompositorCssAnimation DISABLED_CompositorCssAnimation

@@ -2877,7 +2877,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // details, see the definition of `FrameTreeNode::is_initial_empty_document_`.
   // This is implemented in the .cc file to avoid a circular dependency on
   // frame_tree_node.h.
-  // TODO(https://crbug.com/1517371): Remove this function. Callers within RFHI
+  // TODO(crbug.com/41490349): Remove this function. Callers within RFHI
   // should migrate to another way of getting this information such as having a
   // caller pass it or through `owner_`.
   bool is_initial_empty_document() const;

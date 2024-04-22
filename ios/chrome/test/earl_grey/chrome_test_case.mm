@@ -79,7 +79,7 @@ NSArray* multitaskingTests() {
     @"testErrorPage",                  // ErrorPageTestCase
     @"testFindInPage",                 // FindInPageTestCase
     @"testDismissFirstRun",            // FirstRunTestCase
-    // TODO(crbug.com/872788) Failing after move to Xcode 10.
+    // TODO(crbug.com/41407180) Failing after move to Xcode 10.
     // @"testLongPDFScroll",                         // FullscreenTestCase
     @"testDeleteHistory",                         // HistoryUITestCase
     @"testInfobarsDismissOnNavigate",             // InfobarTestCase

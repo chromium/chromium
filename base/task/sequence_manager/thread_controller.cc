@@ -143,13 +143,13 @@ void ThreadController::RunLevelTracker::TimeKeeper::EnableRecording(
 #if BUILDFLAG(ENABLE_BASE_TRACING)
   perfetto_track_.emplace(
       reinterpret_cast<uint64_t>(this),
-      // TODO(crbug.com/1006541): Replace with ThreadTrack::Current() after SDK
+      // TODO(crbug.com/42050015): Replace with ThreadTrack::Current() after SDK
       // migration.
       // In the non-SDK version, ThreadTrack::Current() returns a different
       // track id on some platforms (for example Mac OS), which results in
       // async tracks not being associated with their thread.
       perfetto::ThreadTrack::ForThread(base::PlatformThread::CurrentId()));
-  // TODO(1006541): Use Perfetto library to name this Track.
+  // TODO(crbug.com/42050015): Use Perfetto library to name this Track.
   // auto desc = perfetto_track_->Serialize();
   // desc.set_name(JoinString({"MessagePumpPhases", thread_name}, " "));
   // perfetto::internal::TrackEventDataSource::SetTrackDescriptor(
@@ -553,8 +553,8 @@ void ThreadController::RunLevelTracker::TimeKeeper::RecordEndOfPhase(
   if (is_tracing_enabled) {
     if (!was_tracing_enabled_) {
       // The first event name on the track hackily names the track...
-      // TODO(1006541): Use the Perfetto library to properly name this Track in
-      // EnableRecording above.
+      // TODO(crbug.com/42050015): Use the Perfetto library to properly name
+      // this Track in EnableRecording above.
       TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("base"),
                           "MessagePumpPhases", *perfetto_track_,
                           last_phase_end_ - Seconds(1));

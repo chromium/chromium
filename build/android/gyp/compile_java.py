@@ -64,7 +64,7 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'ToStringReturnsNull',
     # If possible, this should be automatically fixed if turned on:
     'MalformedInlineTag',
-    # TODO(crbug.com/834807): Follow steps in bug
+    # TODO(crbug.com/41384359): Follow steps in bug
     'DoubleBraceInitialization',
     # TODO(crbug.com/834790): Follow steps in bug.
     'CatchAndPrintStackTrace',

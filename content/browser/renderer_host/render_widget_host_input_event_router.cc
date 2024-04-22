@@ -478,7 +478,7 @@ RenderWidgetTargetResult RenderWidgetHostInputEventRouter::FindMouseEventTarget(
     // the OOPIF renderer. Instead of using the coordinate transformation in the
     // browser process process, use the cached coordinates that were determined
     // by the renderer process on the previous MouseDown.
-    // TODO(crbug.com/989109): Currently there is a mismatch between the
+    // TODO(crbug.com/41473630): Currently there is a mismatch between the
     // coordinate transforms from browser process and renderer process. We need
     // to fix it so that we don't need to cache the transform from MouseDown.
     if (event.GetType() == blink::WebInputEvent::Type::kMouseUp &&
@@ -636,11 +636,11 @@ void RenderWidgetHostInputEventRouter::DispatchMouseEvent(
     auto hit_test_result =
         FindViewAtLocation(root_view, mouse_event.PositionInWidget(),
                            viz::EventSource::MOUSE, &transformed_point);
-    // TODO(crbug.com/893101): This is skipped if the HitTestResult is requiring
-    // an asynchronous hit test to the renderer process, because it might mean
-    // sending extra MouseMoves to renderers that don't need the event updates
-    // which is a worse outcome than the cursor being delayed in updating.
-    // An asynchronous hit test can be added here to fix the problem.
+    // TODO(crbug.com/41419447): This is skipped if the HitTestResult is
+    // requiring an asynchronous hit test to the renderer process, because it
+    // might mean sending extra MouseMoves to renderers that don't need the
+    // event updates which is a worse outcome than the cursor being delayed in
+    // updating. An asynchronous hit test can be added here to fix the problem.
     if (hit_test_result.view != target && !hit_test_result.should_query_view) {
       SendMouseEnterOrLeaveEvents(
           mouse_event, hit_test_result.view, root_view,
@@ -914,7 +914,7 @@ void RenderWidgetHostInputEventRouter::DispatchTouchEvent(
     } else {
       // GetTransformToViewCoordSpace() fails when viz_hit_test is off but
       // TransformRootPointToViewCoordSpace() still works at this case.
-      // TODO(crbug.com/917015) remove the extra code when viz_hit_test is
+      // TODO(crbug.com/41432837) remove the extra code when viz_hit_test is
       // always on.
       gfx::PointF point_in_target =
           touch_target_->TransformRootPointToViewCoordSpace(

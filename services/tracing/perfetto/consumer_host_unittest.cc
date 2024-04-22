@@ -305,7 +305,7 @@ class ThreadedPerfettoService : public mojom::TracingSessionClient {
   bool tracing_enabled_ = false;
 };
 
-// TODO(crbug.com/1006541): Switch this to use TracingUnitTest.
+// TODO(crbug.com/42050015): Switch this to use TracingUnitTest.
 class TracingConsumerTest : public testing::Test,
                             public mojo::DataPipeDrainer::Client {
  public:

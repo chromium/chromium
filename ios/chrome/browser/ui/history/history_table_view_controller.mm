@@ -357,7 +357,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
 
 - (void)historyEntriesStatusItem:(HistoryEntriesStatusItem*)item
                didRequestOpenURL:(const GURL&)URL {
-  // TODO(crbug.com/805190): Migrate. This will navigate to the status message
+  // TODO(crbug.com/41366648): Migrate. This will navigate to the status message
   // "Show Full History" URL.
 }
 
@@ -1286,7 +1286,7 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   return _cancelButton;
 }
 
-// TODO(crbug.com/831865): Find a way to disable the button when a VC is
+// TODO(crbug.com/41382611): Find a way to disable the button when a VC is
 // presented.
 - (UIBarButtonItem*)clearBrowsingDataButton {
   if (!_clearBrowsingDataButton) {

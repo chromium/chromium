@@ -571,7 +571,7 @@ void BackForwardTransitionAnimator::DidFinishNavigation(
   // 204/205/Download, or the ongoing navigation is cancelled. We need
   // to animate the old page back.
   //
-  // TODO(https://crbug.com/1509886): We might need a better UX than
+  // TODO(crbug.com/41482488): We might need a better UX than
   // just display the cancel animation.
   AdvanceAndProcessState(State::kDisplayingCancelAnimation);
 }

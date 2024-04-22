@@ -572,7 +572,7 @@ id<GREYMatcher> UploadBannerLabelsMatcher() {
 // Ensures that submitting the form should query Google Payments; but the
 // fallback local save infobar should not appear if the maximum StrikeDatabase
 // strike limit is reached.
-// TODO(crbug.com/925670): remove SetFormFillMaxStrikes() and incur
+// TODO(crbug.com/41437589): remove SetFormFillMaxStrikes() and incur
 // the maximum number of strikes by showing and declining save infobar instead.
 - (void)testNotOfferLocalSave_MaxStrikesReached {
   [ChromeEarlGrey

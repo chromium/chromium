@@ -8446,9 +8446,9 @@ void WebContentsImpl::DidStopLoading() {
   // loading. Notify the spare renderer manager about the page loading
   // completion. This is a no-op if a spare rendere already exists.
   //
-  // TODO(crbug.com/1517067): replace the implicit treatment of TimeDelta::Max()
-  // with an enum and optional TimeDelta if we decide to launch deferred spare
-  // renderer.
+  // TODO(crbug.com/41490050): replace the implicit treatment of
+  // TimeDelta::Max() with an enum and optional TimeDelta if we decide to launch
+  // deferred spare renderer.
   bool immediately_warmup_spare_renderer =
       GetContentClient()->browser()->GetSpareRendererDelayForSiteURL(
           GetURL()) == base::TimeDelta::Max();

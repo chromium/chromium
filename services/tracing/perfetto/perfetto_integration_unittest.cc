@@ -21,7 +21,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "third_party/perfetto/protos/perfetto/common/commit_data_request.pb.h"
 
-// TODO(crbug.com/961066): Fix memory leaks in tests and re-enable on LSAN.
+// TODO(crbug.com/41457644): Fix memory leaks in tests and re-enable on LSAN.
 #ifdef LEAK_SANITIZER
 #define MAYBE_DifferentSharedMemoryBuffersForDifferentAgents \
   DISABLED_DifferentSharedMemoryBuffersForDifferentAgents

@@ -3634,7 +3634,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
 // Verify that navigations to the same WebUI URL are correctly classified as
 // EXISTING_ENTRY (it becomes a reload).
-// TODO(crbug.com/1516015): Flaky on Linux.
+// TODO(crbug.com/41489005): Flaky on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_NavigationTypeClassification_ExistingEntrySameURL_WebUI \
   DISABLED_NavigationTypeClassification_ExistingEntrySameURL_WebUI
@@ -17323,7 +17323,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_TRUE(ExecJs(shell(), "history.back(); history.back();"));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
-  // TODO(https://crbug.com/869710): This should be url2.
+  // TODO(crbug.com/41405295): This should be url2.
   EXPECT_EQ(url1, shell()->web_contents()->GetLastCommittedURL());
 }
 

@@ -569,7 +569,7 @@ class LayerTreeHostPictureTestRSLLMembershipWithScale
 
 // Multi-thread only because in single thread you can't pinch zoom on the
 // compositor thread.
-// TODO(https://crbug.com/997866): Flaky on several platforms.
+// TODO(crbug.com/41478255): Flaky on several platforms.
 // MULTI_THREAD_TEST_F(LayerTreeHostPictureTestRSLLMembershipWithScale);
 
 class LayerTreeHostPictureTestForceRecalculateScales

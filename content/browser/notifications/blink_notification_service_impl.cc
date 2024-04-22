@@ -316,7 +316,7 @@ void BlinkNotificationServiceImpl::DisplayPersistentNotification(
   database_data.notification_data = platform_notification_data;
   database_data.notification_resources = notification_resources;
 
-  // TODO(https://crbug.com/870258): Validate resources are not too big (either
+  // TODO(crbug.com/41405589): Validate resources are not too big (either
   // here or in the mojo struct traits).
 
   notification_context_->WriteNotificationData(

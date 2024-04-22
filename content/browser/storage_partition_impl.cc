@@ -2846,7 +2846,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     // is specified. Therefore we ignore clearing session storage in this case.
     // TODO(lazyboy): Fix.
     if (storage_key_origin_empty) {
-      // TODO(crbug.com/960325): Sometimes SessionStorage fails to call its
+      // TODO(crbug.com/41457196): Sometimes SessionStorage fails to call its
       // callback. Figure out why.
       ClearSessionStorageOnUIThread(
           base::WrapRefCounted(dom_storage_context), storage_policy_ref,

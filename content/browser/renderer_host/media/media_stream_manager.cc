@@ -382,7 +382,7 @@ void SendVideoCaptureLogMessage(const std::string& message) {
 // will be captured. Otherwise, the capturer ends up capturing
 // their own tab.
 //
-// TODO(crbug.com/1512911): Refactor this function.
+// TODO(crbug.com/41485487): Refactor this function.
 MediaStreamDevices DisplayMediaDevicesFromFakeDeviceConfig(
     blink::mojom::MediaStreamType media_type,
     bool request_audio,

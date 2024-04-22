@@ -94,7 +94,7 @@ typedef struct {
 // Initializes a new BVC.
 // `browserContainerViewController` is the container object this BVC will exist
 // inside.
-// TODO(crbug.com/992582): Remove references to model objects from this class.
+// TODO(crbug.com/41475381): Remove references to model objects from this class.
 - (instancetype)
     initWithBrowserContainerViewController:
         (BrowserContainerViewController*)browserContainerViewController

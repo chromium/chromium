@@ -1674,7 +1674,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   g_object_unref(contenteditable);
 }
 
-// TODO(crbug.com/981913): This flakes on linux.
+// TODO(crbug.com/41469621): This flakes on linux.
 IN_PROC_BROWSER_TEST_F(
     AccessibilityAuraLinuxBrowserTest,
     DISABLED_TestSetCaretSetsSequentialFocusNavigationStartingPoint) {

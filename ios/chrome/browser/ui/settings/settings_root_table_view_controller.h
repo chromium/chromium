@@ -52,7 +52,7 @@
 // Updates the edit or done button to reflect editing state.  If the
 // tableView is not in edit mode (and thus showing the 'Done' button) it is
 // using shouldHideDoneButton to know if it should display the edit button.
-// TODO(crbug.com/952227): This method should probably be called from the
+// TODO(crbug.com/41452612): This method should probably be called from the
 // setEditing:animated: method instead of being manually triggered.
 - (void)updateUIForEditState;
 

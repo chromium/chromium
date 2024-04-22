@@ -132,7 +132,8 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
 // button and asserts it doesn't commit the omnibox contents if the input is
 // canceled.
 - (void)testToolbarOmniboxHideKeyboard {
-  // TODO(crbug.com/642559): Enable the test for iPad when typing bug is fixed.
+  // TODO(crbug.com/41272886): Enable the test for iPad when typing bug is
+  // fixed.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Disabled for iPad due to a simulator bug.");
   }

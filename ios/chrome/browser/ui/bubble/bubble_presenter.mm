@@ -588,7 +588,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
 - (void)presentPullToRefreshGestureInProductHelp {
   if (UIAccessibilityIsVoiceOverRunning() || (![self canPresentBubble])) {
-    // TODO(crbug.com/1521489): Add voice over announcement once fixed.
+    // TODO(crbug.com/41494458): Add voice over announcement once fixed.
     return;
   }
   const base::Feature& pullToRefreshFeature =

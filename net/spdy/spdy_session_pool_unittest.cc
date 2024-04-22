@@ -1991,7 +1991,7 @@ TEST_F(SpdySessionPoolTest, SSLConfigForServerChangedWithStreams) {
 
   // Close the active stream.
   active_stream->Close();
-  // TODO(https://crbug.com/982499): The invalidated session should be closed
+  // TODO(crbug.com/41469912): The invalidated session should be closed
   // after a RunUntilIdle(), but it is not.
 }
 

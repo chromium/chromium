@@ -37,7 +37,7 @@ namespace reading_list {
 
 // ReadingListMediatorTest is parameterized on this enum to test both
 // FaviconAttributesProvider and FaviconLoader.
-// TODO(crbug.com/878796): Remove as part of UIRefresh cleanup.
+// TODO(crbug.com/41410664): Remove as part of UIRefresh cleanup.
 enum class FaviconServiceType {
   FAVICON_LOADER,
   ATTRIBUTES_PROVIDER,

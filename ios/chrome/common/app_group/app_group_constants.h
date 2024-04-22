@@ -203,7 +203,7 @@ NSString* CommonApplicationGroup();
 // Gets the legacy share extension folder URL.
 // This folder is deprecated and will be removed soon. Please do not add items
 // to it.
-// TODO(crbug.com/695381): Remove this value.
+// TODO(crbug.com/41303853): Remove this value.
 NSURL* LegacyShareExtensionItemsFolder();
 
 // Gets the shared folder URL containing commands from other applications.

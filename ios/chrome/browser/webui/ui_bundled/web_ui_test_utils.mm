@@ -31,7 +31,7 @@ bool WaitForOmniboxURLString(const std::string& url, bool exact_match) {
   const std::string trimmed_URL(
       base::TrimString(url, "/", TrimPositions::TRIM_TRAILING));
 
-  // TODO(crbug.com/642207): Unify with the omniboxText matcher or move to the
+  // TODO(crbug.com/41272687): Unify with the omniboxText matcher or move to the
   // same location with the omniboxText matcher.
   return base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^{

@@ -154,7 +154,7 @@ void RdpClientTest::CloseRdpClient() {
 }
 
 // Creates a loopback RDP connection.
-// TODO(crbug.com/1523705): Consistently times out on Windows 11 ARM64.
+// TODO(crbug.com/41496654): Consistently times out on Windows 11 ARM64.
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
 #define MAYBE_Basic DISABLED_Basic
 #else

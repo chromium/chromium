@@ -134,7 +134,7 @@ void SandboxIPCHandler::HandleMakeSharedMemorySegment(
   uint32_t size;
   if (!iter.ReadUInt32(&size))
     return;
-  // TODO(crbug.com/982879): executable shared memory should be removed when
+  // TODO(crbug.com/41470149): executable shared memory should be removed when
   // NaCl is unshipped.
   bool executable;
   if (!iter.ReadBool(&executable))

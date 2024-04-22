@@ -220,7 +220,7 @@ void EventAckData::DecrementInflightEvent(
     // torn down when EventRouter + BrowserContext are still alive and an
     // event happens to be acked here.
     case content::ServiceWorkerExternalRequestResult::kNullContext:
-      // TODO(crbug.com/1521084): Perform more graceful shutdown when
+      // TODO(crbug.com/41494056): Perform more graceful shutdown when
       // ServiceWorkerContextCore is torn down.
 
     // kBadRequestId can expectedly happen if a new instance of a worker starts

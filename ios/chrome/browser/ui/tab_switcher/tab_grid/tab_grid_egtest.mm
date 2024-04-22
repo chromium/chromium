@@ -584,7 +584,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 // Tests that the Undo button is no longer available after tapping Close All,
 // then creating a new tab, then coming back to the tab grid.
 // Validates this case when Tab Grid Bulk Actions feature is enabled.
-// TODO(crbug.com/1521789): Test fails on device.
+// TODO(crbug.com/41494757): Test fails on device.
 #if !TARGET_IPHONE_SIMULATOR
 #define MAYBE_testUndoCloseAllNotAvailableAfterNewTabCreation \
   DISABLED_testUndoCloseAllNotAvailableAfterNewTabCreation

@@ -82,8 +82,8 @@ struct CommitDataRequest {
 
 // Passed as part of DataSourceConfig
 struct ChromeConfig {
-  // TODO(crbug/928687): Once we've completed removing the old IPC layer we
-  // should convert this into a struct that represents a
+  // TODO(crbug.com/41439336): Once we've completed removing the old IPC layer
+  // we should convert this into a struct that represents a
   // base::trace_event::TraceConfig object rather then the json encoded string
   // used currently.
   string trace_config;

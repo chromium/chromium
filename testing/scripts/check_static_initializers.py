@@ -26,7 +26,7 @@ _LINUX_SI_ALLOWLIST = {
         'InstrProfilingRuntime\\.cpp : ' +
         '_GLOBAL__sub_I_InstrProfilingRuntime\\.cpp',
 
-        # TODO(crbug.com/973554): Remove.
+        # TODO(crbug.com/41464604): Remove.
         'iostream\\.cpp : _GLOBAL__I_000100',
 
         # TODO(crbug.com/40268361): Rust stdlib argv handling.

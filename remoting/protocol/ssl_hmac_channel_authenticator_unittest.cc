@@ -206,7 +206,7 @@ TEST_F(SslHmacChannelAuthenticatorTest, InvalidCertificate) {
   host_auth_ = SslHmacChannelAuthenticator::CreateForHost(host_cert_, key_pair_,
                                                           kTestSharedSecret);
 
-  // TODO(https://crbug.com/912383): The server sees
+  // TODO(crbug.com/41430308): The server sees
   // ERR_BAD_SSL_CLIENT_AUTH_CERT because its peer (the client) alerts it with
   // bad_certificate. The alert-mapping code assumes it is running on a client,
   // so it translates bad_certificate to ERR_BAD_SSL_CLIENT_AUTH_CERT, which

@@ -122,7 +122,7 @@ void HttpServer::Stop() {
   DCHECK([NSThread isMainThread]);
   DCHECK(IsRunning()) << "Cannot stop an already stopped server.";
   RemoveAllResponseProviders();
-  // TODO(crbug.com/711723): Re-write the Stop() function when shutting down
+  // TODO(crbug.com/41313142): Re-write the Stop() function when shutting down
   // server works for iOS.
   embedded_test_server_.release();
   SetPort(0);

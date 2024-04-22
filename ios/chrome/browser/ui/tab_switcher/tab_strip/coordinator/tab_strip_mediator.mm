@@ -816,7 +816,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
       [self moveItemWithID:tabInfo.tabID toIndex:destinationIndex];
     } else {
       // The tab lives in another Browser.
-      // TODO(crbug.com/1515821): Need to be updated for pinned tabs.
+      // TODO(crbug.com/41488813): Need to be updated for pinned tabs.
       base::UmaHistogramEnumeration(kUmaTabStripViewDragOrigin,
                                     DragItemOrigin::kOtherBrwoser);
       [self moveItemWithIDFromDifferentBrowser:tabInfo.tabID

@@ -28,7 +28,7 @@
 // implementation of trace macros.
 // [1] https://perfetto.dev/docs/instrumentation/track-events
 // [2] //third_party/perfetto/include/perfetto/tracing/track_event.h
-// TODO(crbug/1006541): Replace this file with the Perfetto client library.
+// TODO(crbug.com/42050015): Replace this file with the Perfetto client library.
 
 // Typed event macros:
 //

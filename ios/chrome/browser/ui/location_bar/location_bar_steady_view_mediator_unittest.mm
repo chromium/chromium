@@ -144,4 +144,4 @@ TEST_F(LocationBarSteadyViewMediatorTest,
   EXPECT_TRUE(consumer_.icon);
 }
 
-// TODO(crbug.com/992578): Add more tests to this suite.
+// TODO(crbug.com/41475379): Add more tests to this suite.

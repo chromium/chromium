@@ -68,7 +68,7 @@ class BASE_EXPORT StackTrace {
  public:
   // LINT.IfChange(max_stack_frames)
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(https://crbug.com/925525): Testing indicates that Android has issues
+  // TODO(crbug.com/41437515): Testing indicates that Android has issues
   // with a larger value here, so leave Android at 62.
   static constexpr size_t kMaxTraces = 62;
 #else

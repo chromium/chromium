@@ -735,7 +735,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the Password View Controller is dismissed when tapping the
 // keyboard.
-// TODO(crbug.com/909629): started to be flaky and sometimes opens full list
+// TODO(crbug.com/41428686): started to be flaky and sometimes opens full list
 // when typing text.
 - (void)DISABLED_testTappingKeyboardDismissPasswordControllerPopOver {
   if (![ChromeEarlGrey isIPadIdiom]) {

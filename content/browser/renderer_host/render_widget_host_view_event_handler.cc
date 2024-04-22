@@ -836,7 +836,8 @@ bool RenderWidgetHostViewEventHandler::MatchesSynthesizedMovePosition(
       // the center of the screen leading to the lock operation not working
       // correctly. Workaround is to treat a mouse move or drag event off by
       // atmost 2 px from the center as a move to center event.
-      // TODO(crbug.com/991236): figure out a way to avoid the conversion error.
+      // TODO(crbug.com/41474713): figure out a way to avoid the conversion
+      // error.
       return ((std::abs(event.PositionInScreen().x() -
                         synthetic_move_position_->x()) <= 2) &&
               (std::abs(event.PositionInScreen().y() -

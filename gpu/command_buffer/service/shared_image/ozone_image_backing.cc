@@ -796,7 +796,7 @@ bool OzoneImageBacking::BeginAccess(bool readonly,
     // having the SI framework creating fences for each single message when
     // write access ends.
 
-    // TODO(crbug.com/1522940): Implement vk fence optimization in the case of
+    // TODO(crbug.com/41495896): Implement vk fence optimization in the case of
     // raster delegation.
     const bool skip_fence_in_delegation =
         (usage() & SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING) &&

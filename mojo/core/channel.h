@@ -74,7 +74,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
     enum class MessageType : uint16_t {
       // An old format normal message, that uses the LegacyHeader.
       // Only used on Android and ChromeOS.
-      // TODO(https://crbug.com/695645): remove legacy support when Arc++ has
+      // TODO(crbug.com/41303999): remove legacy support when Arc++ has
       // updated to Mojo with normal versioned messages.
       NORMAL_LEGACY = 0,
 #if BUILDFLAG(IS_IOS)

@@ -32,8 +32,8 @@ class ReadingListObserverBridge;
 
 @end
 
-// TODO(crbug.com/590725): use the one-and-only protocol-based implementation of
-// ReadingListModelObserver
+// TODO(crbug.com/41241675): use the one-and-only protocol-based implementation
+// of ReadingListModelObserver
 class ReadingListObserverBridge : public ReadingListModelObserver {
  public:
   explicit ReadingListObserverBridge(ReadingListMenuNotifier* owner)

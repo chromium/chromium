@@ -804,7 +804,7 @@ int SSLClientSocketImpl::Init() {
   }
 
   if (context_->config().ech_enabled) {
-    // TODO(https://crbug.com/1509597): Enable this unconditionally.
+    // TODO(crbug.com/41482204): Enable this unconditionally.
     SSL_set_enable_ech_grease(ssl_.get(), 1);
   }
   if (!ssl_config_.ech_config_list.empty()) {
@@ -983,7 +983,7 @@ int SSLClientSocketImpl::DoHandshakeComplete(int result) {
   // too large. See
   // https://boringssl-review.googlesource.com/c/boringssl/+/34948.
   //
-  // TODO(https://crbug.com/958638): It is also a step in making TLS 1.3 client
+  // TODO(crbug.com/41456237): It is also a step in making TLS 1.3 client
   // certificate alerts less unreliable.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,

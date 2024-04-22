@@ -5115,7 +5115,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
     // X-Frame-Options and CSP frame-ancestors behave differently. XFO commits
     // an error page, while CSP commits a "data:," URL.
-    // TODO(https://crbug.com/870815): Use an error page for both.
+    // TODO(crbug.com/41405925): Use an error page for both.
     EXPECT_FALSE(load_observer.last_navigation_succeeded());
     EXPECT_EQ(net::ERR_BLOCKED_BY_RESPONSE,
               load_observer.last_net_error_code());

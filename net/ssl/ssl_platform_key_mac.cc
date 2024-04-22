@@ -90,7 +90,7 @@ class SSLPlatformKeySecKey : public ThreadedSSLPrivateKey::Delegate {
   ~SSLPlatformKeySecKey() override = default;
 
   std::string GetProviderName() override {
-    // TODO(https://crbug.com/900721): Is there a more descriptive name to
+    // TODO(crbug.com/41423739): Is there a more descriptive name to
     // return?
     return "SecKey";
   }

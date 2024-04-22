@@ -25195,7 +25195,7 @@ TEST_P(HttpNetworkTransactionTest, ZeroRTTReject) {
 
       // The retry succeeds.
       //
-      // TODO(https://crbug.com/950705): If |reject_error| is
+      // TODO(crbug.com/41451775): If |reject_error| is
       // ERR_EARLY_DATA_REJECTED, the retry should happen over the same socket.
       MockWrite data2_writes[] = {
           request.method == "POST"

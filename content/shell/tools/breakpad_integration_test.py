@@ -93,7 +93,7 @@ def get_android_dump(options, crash_dir, symbols_dir):
     time.sleep(5)
 
   if len(dumps) != 1:
-    # TODO(crbug.com/861730): Temporary code to debug unexpected crash dumps.
+    # TODO(crbug.com/41400491): Temporary code to debug unexpected crash dumps.
     minidump_stackwalk = os.path.join(options.build_dir, 'minidump_stackwalk')
     failure = 'Failed to run minidump_stackwalk.'
     for dump in dumps:

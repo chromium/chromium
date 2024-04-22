@@ -312,7 +312,7 @@ TEST_F(SessionRestorationBrowserAgentTest, RestoreSessionOnEmptyWebStateList) {
       "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
 }
 
-// TODO(crbug.com/888674): This test requires commiting item to
+// TODO(crbug.com/41416872): This test requires commiting item to
 // NavigationManagerImpl which is not possible, migrate this to EG test so
 // it can be tested.
 TEST_F(SessionRestorationBrowserAgentTest, DISABLED_RestoreSessionOnNTPTest) {

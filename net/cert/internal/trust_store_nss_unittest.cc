@@ -932,7 +932,7 @@ TEST_F(TrustStoreNSSTestAllowSpecifiedUserSlot, SystemRootCertOnMultipleSlots) {
   EXPECT_TRUE(HasTrust({system_root}, ExpectedTrustForLeaf()));
 }
 
-// TODO(https://crbug.com/980443): If the internal non-removable slot is
+// TODO(crbug.com/41468842): If the internal non-removable slot is
 // relevant on Chrome OS, add a test for allowing trust for certificates
 // stored on that slot.
 

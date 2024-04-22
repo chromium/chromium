@@ -23,8 +23,8 @@ namespace {
 // will round-trip a URL through the escaping process so that it can be adjusted
 // pre-storing, to allow later comparisons to work as expected.
 GURL URLEscapedForHistory(const GURL& url) {
-  // TODO(crbug.com/973871): This is a very large hammer; see if limited unicode
-  // escaping would be sufficient.
+  // TODO(crbug.com/41464782): This is a very large hammer; see if limited
+  // unicode escaping would be sufficient.
   return net::GURLWithNSURL(net::NSURLWithGURL(url));
 }
 

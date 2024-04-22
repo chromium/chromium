@@ -143,7 +143,7 @@ bool AiaRequest::AddCompletedFetchToResults(
   //    certificates MUST be able to accept individual DER encoded
   //    certificates and SHOULD be able to accept "certs-only" CMS messages.
 
-  // TODO(https://crbug.com/870359): Some AIA responses are served as PEM, which
+  // TODO(crbug.com/41405652): Some AIA responses are served as PEM, which
   // is not part of RFC 5280's profile.
   return ParseCertFromDer(fetched_bytes, results) ||
          ParseCertsFromCms(fetched_bytes, results) ||

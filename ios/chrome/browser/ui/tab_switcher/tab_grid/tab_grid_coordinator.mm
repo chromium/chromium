@@ -897,7 +897,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   self.firstPresentation = YES;
 
-  // TODO(crbug.com/850387) : Currently, consumer calls from the mediator
+  // TODO(crbug.com/41393201) : Currently, consumer calls from the mediator
   // prematurely loads the view in `RecentTabsTableViewController`. Fix this so
   // that the view is loaded only by an explicit placement in the view
   // hierarchy. As a workaround, the view controller hierarchy is loaded here

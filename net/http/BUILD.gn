@@ -55,7 +55,7 @@ compiled_action_foreach("transport_security_state_unittest_data") {
   ]
 
   # All possible inputs to ensure correctness when files change.
-  # TODO(crbug/1508893): Use {{source_name_part}}_pins.json.
+  # TODO(crbug.com/41481512): Use {{source_name_part}}_pins.json.
   inputs = [
              "transport_security_state_static_unittest1_pins.json",
              "transport_security_state_static_unittest2_pins.json",

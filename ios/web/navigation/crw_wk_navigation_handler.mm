@@ -2108,7 +2108,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
                }];
         }
 
-        // TODO(crbug.com/973765): This is a workaround because `item` might
+        // TODO(crbug.com/41464714): This is a workaround because `item` might
         // get released after
         // `self.navigationManagerImpl->
         // CommitPendingItem(context->ReleaseItem()`.
@@ -2289,8 +2289,8 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   // is the post-policy value, and the source policy is no longer available,
   // the policy is set to Always so that whatever WebKit decided to send will be
   // re-sent when replaying the entry.
-  // TODO(crbug.com/227769): When possible, get the real referrer and policy in
-  // advance and use that instead.
+  // TODO(crbug.com/41004475): When possible, get the real referrer and policy
+  // in advance and use that instead.
   return web::Referrer(GURL(base::SysNSStringToUTF8(referrerString)),
                        web::ReferrerPolicyAlways);
 }

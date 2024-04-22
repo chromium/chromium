@@ -726,7 +726,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   [self updateNavigationAvailability];
   [self updateCurrentURLs];
 
-  // TODO(crbug.com/898357): Remove this once crbug.com/898357 is fixed.
+  // TODO(crbug.com/41422373): Remove this once crbug.com/898357 is fixed.
   [self updateVisibleSSLStatus];
 
   if (navigation->HasCommitted() && !navigation->IsSameDocument() &&

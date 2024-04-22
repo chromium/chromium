@@ -140,7 +140,7 @@ TEST(PartitionAllocPageAllocatorTest, AllocFailure) {
   EXPECT_FALSE(ReserveAddressSpace(EasyAllocSize()));
 }
 
-// TODO(crbug.com/765801): Test failed on chromium.win/Win10 Tests x64.
+// TODO(crbug.com/41344946): Test failed on chromium.win/Win10 Tests x64.
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_64_BITS)
 #define MAYBE_ReserveAddressSpace DISABLED_ReserveAddressSpace
 #else

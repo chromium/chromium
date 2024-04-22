@@ -237,7 +237,7 @@ class StatisticsRecorderStarvationTest
 // StatisticsRecorder. When switching to a Read/Write lock (see crbug/1123627),
 // we encountered such a starvation issue, where a thread trying to write to the
 // internal map was starved out for 10+ seconds by readers on iOS.
-// TODO(crbug.com/1516818): StatisticsRecorderNoStarvation continuously emits a
+// TODO(crbug.com/41489801): StatisticsRecorderNoStarvation continuously emits a
 // new histogram which can cause the app memory footprint to grow unbounded and
 // watchdog kill the unit test on iOS devices.
 TEST_P(StatisticsRecorderStarvationTest, StatisticsRecorderNoStarvation) {

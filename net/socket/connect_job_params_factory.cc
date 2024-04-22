@@ -284,7 +284,7 @@ ConnectJobParams ConstructConnectJobParams(
     ssl_config.disable_cert_verification_network_fetches =
         disable_cert_network_fetches;
 
-    // TODO(https://crbug.com/964642): Also enable 0-RTT for TLS proxies.
+    // TODO(crbug.com/41459647): Also enable 0-RTT for TLS proxies.
     ssl_config.early_data_enabled =
         *common_connect_job_params->enable_early_data;
   }

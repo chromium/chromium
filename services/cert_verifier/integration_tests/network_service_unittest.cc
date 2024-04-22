@@ -149,7 +149,7 @@ class NetworkServiceIntegrationTest : public testing::Test {
   mojo::Remote<network::mojom::URLLoader> loader_;
 };
 
-// TODO(crbug.com/860189): AIA tests fail on iOS
+// TODO(crbug.com/41399468): AIA tests fail on iOS
 #if BUILDFLAG(IS_IOS)
 #define MAYBE(test_name) DISABLED_##test_name
 #else

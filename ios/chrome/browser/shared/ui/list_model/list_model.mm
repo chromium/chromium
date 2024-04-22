@@ -440,7 +440,7 @@ typedef NSMutableArray<ListItem*> SectionItems;
 
 @end
 
-// TODO(crbug.com/419346): Store in the browser state preference or in
+// TODO(crbug.com/41134911): Store in the browser state preference or in
 // UISceneSession.unserInfo instead of NSUserDefaults.
 @implementation ListModelCollapsedMediator
 

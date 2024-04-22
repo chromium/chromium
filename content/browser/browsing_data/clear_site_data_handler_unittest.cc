@@ -527,7 +527,7 @@ TEST_F(ClearSiteDataHandlerTest, FormattedConsoleOutput) {
        "No recognized types specified.\n"},
   };
 
-  // TODO(crbug.com/876931): Delay output until next frame for navigations.
+  // TODO(crbug.com/41409604): Delay output until next frame for navigations.
   bool kHandlerTypeIsNavigation[] = {false};
 
   for (bool navigation : kHandlerTypeIsNavigation) {

@@ -10,7 +10,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/logging_buildflags.h"
 
-// TODO(crbug.com/1520664): Remove once NOTIMPLEMENTED() call sites include
+// TODO(crbug.com/41493641): Remove once NOTIMPLEMENTED() call sites include
 // base/notimplemented.h.
 #include "base/notimplemented.h"
 

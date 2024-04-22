@@ -275,7 +275,7 @@ void TapSecondaryActionButton() {
 
 // Tests that the "All Set" module is shown after completing all Set Up List
 // Hero Cell modules in the Magic Stack.
-// TODO(crbug.com/1520954): Test is flaky, re-enable when fixed.
+// TODO(crbug.com/41493926): Test is flaky, re-enable when fixed.
 - (void)DISABLED_testMagicStackSetUpListCompleteAllItems {
   [self prepareToTestSetUpListInMagicStack];
 

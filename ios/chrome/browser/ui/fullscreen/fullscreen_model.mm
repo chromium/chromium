@@ -378,9 +378,9 @@ void FullscreenModel::UpdateDisabledCounterForContentHeight() {
     // After reloads, pages whose viewports fit the screen are sometimes resized
     // to account for the safe area insets.  Adding these to the threshold helps
     // prevent fullscreen from beeing re-enabled in this case.
-    // TODO(crbug.com/924807): This logic can potentially disable fullscreen for
-    // short pages in which this bug does not occur.  It should be removed once
-    // the page can be reloaded without resizing.
+    // TODO(crbug.com/41437113): This logic can potentially disable fullscreen
+    // for short pages in which this bug does not occur.  It should be removed
+    // once the page can be reloaded without resizing.
     disabling_threshold += safe_area_insets_.top + safe_area_insets_.bottom;
   }
 

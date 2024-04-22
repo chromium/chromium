@@ -522,7 +522,7 @@ UserScriptLoader::SendUpdateResult UserScriptLoader::SendUpdate(
         // For Controlled Frame embedders, |owner_host| will be a serialized
         // form of the embedder's origin, using scheme, host, port [if
         // applicable] tuple in origin form. No trailing slash.
-        // TODO(crbug.com/1517391): Use an actual Origin object in the
+        // TODO(crbug.com/41490369): Use an actual Origin object in the
         // Controlled Frame comparison rather than a serialized Origin.
         if (owner_host != host_id().id) {
           return SendUpdateResult::kNoActionTaken;

@@ -128,7 +128,7 @@ class CONTENT_EXPORT CapturedSurfaceController {
   // In the unlikely-yet-possible case that SendWheel() or SetZoomLevel()
   // are called while the task to resolve is pending, those calls will
   // fail gracefully. Subsequent calls are valid and can succeed.
-  // TODO(crbug.com/1520375): Add UMA to measure how often this happens
+  // TODO(crbug.com/41493349): Add UMA to measure how often this happens
   // and determine whether it's worth the effort to fix.
   std::optional<base::WeakPtr<WebContents>> captured_wc_;
 

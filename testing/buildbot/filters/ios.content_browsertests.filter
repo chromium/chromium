@@ -126,7 +126,7 @@
 -MediaColorTest.Yuvj420pH264
 -MediaSourceTest.Playback_Video_MP4_Audio_WEBM
 
-# TODO(crbug.com/1509461): these flakily timeout.
+# TODO(crbug.com/41482069): these flakily timeout.
 -All/BackForwardCacheNetworkLimitBrowserTest.ImageStillLoading*
 
 # TODO(crbug.com/40276545): hitting unexpected driver errors.
@@ -308,7 +308,7 @@
 -All/YieldingParserDumpAccessibilityTreeTest.ReusedMapChangeMapName/blink
 -All/YieldingParserDumpAccessibilityTreeTest.ReusedMapMoveImage/blink
 
-# TODO(crbug.com/1516750): the following consistently crash.
+# TODO(crbug.com/41489733): the following consistently crash.
 -SystemTracingEndToEndBrowserTest.PerformanceMark
 -SystemTracingEndToEndBrowserTest.SimpleTraceEvent
 

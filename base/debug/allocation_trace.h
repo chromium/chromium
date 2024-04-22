@@ -117,7 +117,7 @@ class BASE_EXPORT OperationRecord {
   //
   // The value is mutable since pre C++20 there is no const getter in
   // atomic_flag. All ways to get the value involve setting it.
-  // TODO(https://crbug.com/1284275): Remove mutable and make IsRecording() use
+  // TODO(crbug.com/42050406): Remove mutable and make IsRecording() use
   // atomic_flag::test();
   mutable std::atomic_flag is_recording_ = ATOMIC_FLAG_INIT;
 };

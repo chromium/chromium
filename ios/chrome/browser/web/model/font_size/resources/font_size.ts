@@ -21,7 +21,7 @@ declare interface CSSTextSizeAdjust extends CSSStyleDeclaration {
 /**
  * Adjust the font size of current web page by "size%"
  *
- * TODO(crbug.com/836962): Consider the original value of
+ * TODO(crbug.com/41385551): Consider the original value of
  *                         -webkit-text-size-adjust on the web page. Add it
  *                         if it's a number or abort if it's 'none'.
  *

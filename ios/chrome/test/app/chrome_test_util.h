@@ -66,7 +66,7 @@ void ClearPresentedState(ProceduralBlock completion);
 void PresentSignInAccountsViewControllerIfNecessary();
 
 // Sets the value of a boolean local state pref.
-// TODO(crbug.com/647022): Clean up other tests that use this helper function.
+// TODO(crbug.com/41275546): Clean up other tests that use this helper function.
 void SetBooleanLocalStatePref(const char* pref_name, bool value);
 
 // Sets the value of a boolean user pref in the given browser state.

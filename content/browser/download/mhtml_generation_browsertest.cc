@@ -565,7 +565,7 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateMHTMLInNonTempDir) {
 
 // Regression test for the crash/race from https://crbug.com/612098.
 //
-// TODO(crbug.com/959435): Flaky on Android.
+// TODO(crbug.com/41456635): Flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_GenerateMHTMLAndCloseConnection \
   DISABLED_GenerateMHTMLAndCloseConnection
@@ -594,7 +594,7 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest,
   EXPECT_EQ(ReadFileSizeFromDisk(path), file_size());
 }
 
-// TODO(crbug.com/672313): Flaky on Windows.
+// TODO(crbug.com/41290169): Flaky on Windows.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_InvalidPath DISABLED_InvalidPath
 #else

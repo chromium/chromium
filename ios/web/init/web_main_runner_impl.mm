@@ -48,7 +48,7 @@ int WebMainRunnerImpl::Initialize(WebMainParams params) {
 
   mojo::core::Init();
 
-  // TODO(crbug.com/965894): Should we instead require that all embedders call
+  // TODO(crbug.com/41460421): Should we instead require that all embedders call
   // SetWebClient()?
   if (!GetWebClient()) {
     SetWebClient(&empty_web_client_);

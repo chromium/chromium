@@ -63,7 +63,7 @@
 
 @interface MainContentUIStateUpdater ()
 // The pan gesture driving the current scroll event.
-// TODO(crbug.com/785508): Use this gesture recognizer to broadcast the scroll
+// TODO(crbug.com/41355675): Use this gesture recognizer to broadcast the scroll
 // touch location.
 @property(nonatomic, weak) UIPanGestureRecognizer* panGesture;
 @end
