@@ -5,23 +5,13 @@
     --compose-textarea-input-padding: 10px;
     --compose-textarea-readonly-height: 48px;
     --compose-textarea-readonly-padding: 16px;
-    --compose-textarea-readonly-background: var(--google-grey-100);
+    --compose-textarea-readonly-background:
+        var(--color-compose-dialog-textarea-readonly-background);
 
     display: grid;
     grid-template-areas: "content";
     align-items: start;
     grid-auto-columns: 100%;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :host {
-      --compose-textarea-readonly-background: rgba(53, 54, 58, 1);
-    }
-  }
-
-  :host-context([chrome-refresh-2023]):host {
-    --compose-textarea-readonly-background:
-        var(--color-compose-dialog-textarea-readonly-background);
   }
 
   #inputContainer,
@@ -41,13 +31,13 @@
     appearance: none;
     background: transparent;
     border: none;
-    outline: solid 1px var(--google-grey-300);
+    outline: solid 1px var(--color-compose-dialog-textarea-outline);
     outline-offset: -1px;
     border-radius: 8px;
-    color: var(--cr-primary-text-color);
+    color: var(--color-compose-dialog-textarea);
     font: inherit;
     font-size: 12px;
-    line-height: 20px;
+    line-height: 16px;
     resize: none;
     width: 100%;
     height: var(--compose-textarea-input-height);
@@ -56,73 +46,32 @@
     scroll-padding-block: 10px;
   }
 
-  @media (prefers-color-scheme: dark) {
-    textarea {
-      outline-color: var(--google-grey-500);
-    }
-  }
-
-  :host-context([chrome-refresh-2023]) textarea {
-    outline-color: var(--color-compose-dialog-textarea-outline);
-    color: var(--color-compose-dialog-textarea);
-    line-height: 16px;
-  }
-
   :host([readonly]) textarea {
     overflow: hidden;
   }
 
   textarea::placeholder {
-    color: var(--cr-secondary-text-color);
+    color: var(--color-compose-dialog-textarea-placeholder);
   }
 
   #input:focus::placeholder  {
     color: transparent;
   }
 
-  :host-context([chrome-refresh-2023]) textarea::placeholder {
-    color: var(--color-compose-dialog-textarea-placeholder);
-  }
-
   :host([invalid-input_]) textarea {
-    outline: solid 2px var(--google-red-600);
+    outline: solid 2px var(--color-compose-dialog-error);
     outline-offset: -2px;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :host([invalid-input_]) textarea {
-      outline-color: var(--google-red-300);
-    }
-  }
-
-  :host-context([chrome-refresh-2023]):host([invalid-input_]) textarea {
-    outline-color: var(--color-compose-dialog-error);
   }
 
   .error {
     margin: 4px 10px 0;
-    color: var(--google-red-600);
+    color: var(--color-compose-dialog-error);
     font-size: 11px;
     line-height: 16px;
     user-select: text;
   }
 
-  @media (prefers-color-scheme: dark) {
-    .error {
-      color: var(--google-red-300);
-    }
-  }
-
-  :host-context([chrome-refresh-2023]) .error {
-    color: var(--color-compose-dialog-error);
-  }
-
   textarea:focus {
-    outline: solid 2px var(--cr-focus-outline-color);
-    outline-offset: -2px;
-  }
-
-  :host-context([chrome-refresh-2023]) textarea:focus {
     outline: solid 2px var(--cr-focus-outline-color);
     outline-offset: -2px;
   }
@@ -131,17 +80,6 @@
     border-radius: 8px;
     display: flex;
     padding: 16px;
-    background: var(--compose-textarea-readonly-background);
-    color: var(--cr-primary-text-color);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #readonlyContainer {
-      background: rgba(53, 54, 58, 1);
-    }
-  }
-
-  :host-context([chrome-refresh-2023]) #readonlyContainer {
     background: var(--color-compose-dialog-textarea-readonly-background);
     color: var(--color-compose-dialog-textarea-readonly-foreground);
   }
@@ -149,17 +87,12 @@
   #readonlyText {
     font-size: 12px;
     font-weight: 400;
-    line-height: 20px;
+    line-height: 16px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     width: 100%;
     user-select: text;
-  }
-
-  :host-context([chrome-refresh-2023]) #readonlyText {
-    font-size: 12px;
-    line-height: 16px;
   }
 
   #editButtonContainer {
