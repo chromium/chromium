@@ -492,11 +492,6 @@ bool CookieSettings::MitigationsEnabledFor3pcd() const {
   return mitigations_enabled_for_3pcd_;
 }
 
-bool CookieSettings::TrackingProtectionEnabledFor3pcd() const {
-  base::AutoLock auto_lock(lock_);
-  return tracking_protection_enabled_for_3pcd_;
-}
-
 void CookieSettings::UpdateFedCmSharingPermissions() {
   base::AutoLock lock(fedcm_sharing_permissions_lock_);
   ContentSettingsForOneType settings = compute_fedcm_sharing_permissions_.Run();

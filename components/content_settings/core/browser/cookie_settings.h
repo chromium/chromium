@@ -208,9 +208,6 @@ class CookieSettings
   // This method may be called on any thread. Virtual for testing.
   bool MitigationsEnabledFor3pcd() const override;
 
-  // Returns true iff tracking protection for 3PCD (prefs + UX) is enabled.
-  bool TrackingProtectionEnabledFor3pcd() const;
-
   // Returns true if there is an active storage access exception with
   // |first_party_url| as the secondary pattern.
   bool HasAnyFrameRequestedStorageAccess(const GURL& first_party_url) const;

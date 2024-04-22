@@ -840,7 +840,8 @@ ProfileNetworkContextService::CreateCookieManagerParams(
       cookie_settings.MitigationsEnabledFor3pcd();
 
   out->tracking_protection_enabled_for_3pcd =
-      cookie_settings.TrackingProtectionEnabledFor3pcd();
+      TrackingProtectionSettingsFactory::GetForProfile(profile)
+          ->IsTrackingProtection3pcdEnabled();
 
   return out;
 }
