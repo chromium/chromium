@@ -785,12 +785,14 @@ ResourceFetcher::IsControlledByServiceWorker() const {
   return properties_->GetControllerServiceWorkerMode();
 }
 
-bool ResourceFetcher::ShouldDeferResource(ResourceType type,
-                                          const FetchParameters& params) const {
+ResourceFetcher::DeferPolicy ResourceFetcher::GetDeferPolicy(
+    ResourceType type,
+    const FetchParameters& params) const {
   // Defer a font load until it is actually needed unless this is a link
   // preload.
-  if (type == ResourceType::kFont && !params.IsLinkPreload())
-    return true;
+  if (type == ResourceType::kFont && !params.IsLinkPreload()) {
+    return DeferPolicy::kDefer;
+  }
 
   // Defer loading images when:
   // - images are disabled.
@@ -800,10 +802,10 @@ bool ResourceFetcher::ShouldDeferResource(ResourceType type,
       (ShouldDeferImageLoad(params.Url()) ||
        params.GetImageRequestBehavior() ==
            FetchParameters::ImageRequestBehavior::kDeferImageLoad)) {
-    return true;
+    return DeferPolicy::kDefer;
   }
 
-  return false;
+  return DeferPolicy::kNoDefer;
 }
 
 bool ResourceFetcher::ResourceAlreadyLoadStarted(Resource* resource,
@@ -814,11 +816,15 @@ bool ResourceFetcher::ResourceAlreadyLoadStarted(Resource* resource,
 
 bool ResourceFetcher::ResourceNeedsLoad(Resource* resource,
                                         RevalidationPolicy policy,
-                                        bool should_defer) const {
-  // MHTML documents should not trigger actual loads (i.e. all resource requests
-  // should be fulfilled by the MHTML archive).
-  return !archive_ && !should_defer &&
-         !ResourceAlreadyLoadStarted(resource, policy);
+                                        DeferPolicy defer_policy) const {
+  switch (defer_policy) {
+    case DeferPolicy::kNoDefer:
+      // MHTML documents should not trigger actual loads (i.e. all resource
+      // requests should be fulfilled by the MHTML archive).
+      return !archive_ && !ResourceAlreadyLoadStarted(resource, policy);
+    case DeferPolicy::kDefer:
+      return false;
+  }
 }
 
 void ResourceFetcher::DidLoadResourceFromMemoryCache(
@@ -993,9 +999,15 @@ void ResourceFetcher::MakePreloadedResourceBlockOnloadIfNeeded(
 ResourceFetcher::RevalidationPolicyForMetrics
 ResourceFetcher::MapToPolicyForMetrics(RevalidationPolicy policy,
                                        Resource* resource,
-                                       bool should_defer) {
-  if (should_defer && !ResourceAlreadyLoadStarted(resource, policy)) {
-    return RevalidationPolicyForMetrics::kDefer;
+                                       DeferPolicy defer_policy) {
+  switch (defer_policy) {
+    case DeferPolicy::kDefer:
+      if (!ResourceAlreadyLoadStarted(resource, policy)) {
+        return RevalidationPolicyForMetrics::kDefer;
+      }
+      break;
+    case DeferPolicy::kNoDefer:
+      break;
   }
   // A resource in memory cache but not yet loaded is a deferred resource
   // created in previous loads.
@@ -1223,11 +1235,12 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   bool is_data_url = resource_request.Url().ProtocolIsData();
   bool is_static_data = is_data_url || archive_;
   bool is_stale_revalidation = params.IsStaleRevalidation();
-  bool should_defer = ShouldDeferResource(resource_type, params);
+  DeferPolicy defer_policy = GetDeferPolicy(resource_type, params);
   // MHTML archives do not load from the network and must load immediately. Data
   // urls can also load immediately, except in cases when they should be
   // deferred.
-  if (!is_stale_revalidation && (archive_ || (is_data_url && !should_defer))) {
+  if (!is_stale_revalidation &&
+      (archive_ || (is_data_url && defer_policy != DeferPolicy::kDefer))) {
     resource = CreateResourceForStaticData(params, factory);
     if (resource) {
       policy =
@@ -1275,7 +1288,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   }
 
   UpdateMemoryCacheStats(
-      resource, MapToPolicyForMetrics(policy, resource, should_defer), params,
+      resource, MapToPolicyForMetrics(policy, resource, defer_policy), params,
       factory, is_static_data, same_top_frame_site_resource_cached);
 
   switch (policy) {
@@ -1362,7 +1375,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   // loading immediately. If revalidation policy was determined as |Revalidate|,
   // the resource was already initialized for the revalidation here, but won't
   // start loading.
-  if (ResourceNeedsLoad(resource, policy, should_defer)) {
+  if (ResourceNeedsLoad(resource, policy, defer_policy)) {
     if (!StartLoad(resource,
                    std::move(params.MutableResourceRequest().MutableBody()),
                    load_blocking_policy, params.GetRenderBlockingBehavior())) {

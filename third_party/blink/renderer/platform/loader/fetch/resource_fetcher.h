@@ -384,6 +384,13 @@ class PLATFORM_EXPORT ResourceFetcher
     kIncludingKeepaliveLoaders,
   };
 
+  enum class DeferPolicy {
+    kNoDefer,
+    // kDefer doesn't start loading in `ResourceRequest()`. This option is used
+    // to defer a non-link preload font, or image loading is disabled.
+    kDefer,
+  };
+
   bool StartLoad(Resource*,
                  ResourceRequestBody,
                  ImageLoadBlockingPolicy,
@@ -507,11 +514,9 @@ class PLATFORM_EXPORT ResourceFetcher
                                       bool is_static_data,
                                       RenderBlockingBehavior);
 
-  bool ShouldDeferResource(ResourceType, const FetchParameters& params) const;
+  DeferPolicy GetDeferPolicy(ResourceType, const FetchParameters& params) const;
 
-  bool ResourceNeedsLoad(Resource*,
-                         RevalidationPolicy,
-                         bool should_defer) const;
+  bool ResourceNeedsLoad(Resource*, RevalidationPolicy, DeferPolicy) const;
 
   static bool ResourceAlreadyLoadStarted(Resource*, RevalidationPolicy);
 
@@ -519,7 +524,7 @@ class PLATFORM_EXPORT ResourceFetcher
 
   static RevalidationPolicyForMetrics MapToPolicyForMetrics(RevalidationPolicy,
                                                             Resource*,
-                                                            bool should_defer);
+                                                            DeferPolicy);
 
   void UpdateMemoryCacheStats(Resource*,
                               RevalidationPolicyForMetrics,
