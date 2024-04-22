@@ -72,29 +72,13 @@ void PotentiallyRecordNonAsciiCookieNameValue(
   }
 }
 
+// Relies on checks in RecordPartitionedCookiesUKMs to confirm that that the
+// cookie name is not "receive-cookie-deprecation", that cookie is first party
+// partitioned and the RenderFrameHost is not prerendering.
 void RecordFirstPartyPartitionedCookieCrossSiteContextUKM(
     RenderFrameHostImpl* render_frame_host_impl,
-    const net::CanonicalCookie& cookie) {
-  // Our data collection policy disallows collecting UKMs while prerendering.
-  // See //content/browser/preloading/prerender/README.md and ask the team to
-  // explore options to record data for prerendering pages if we need to
-  // support the case.
-  if (render_frame_host_impl->IsInLifecycleState(
-          RenderFrameHost::LifecycleState::kPrerendering)) {
-    return;
-  }
-
-  if (!cookie.IsFirstPartyPartitioned()) {
-    return;
-  }
-
-  // Cookies_FirstPartyPartitionedInCrossSiteContextV3 measures cookies
-  // without the name of 'receive-cookie-deprecation'. Return here to ensure
-  // that the metric does not include those cookies.
-  if (cookie.Name() == "receive-cookie-deprecation") {
-    return;
-  }
-
+    const net::CanonicalCookie& cookie,
+    const ukm::SourceId& source_id) {
   // Same-site embed with cross-site ancestors (ABA embeds) have a null site
   // for cookies since it is a cross-site context. If the result of
   // ComputeSiteForCookies is first-party that means we are not in an ABA
@@ -104,29 +88,49 @@ void RecordFirstPartyPartitionedCookieCrossSiteContextUKM(
           GURL(base::StrCat({url::kHttpsScheme, url::kStandardSchemeSeparator,
                              cookie.DomainWithoutDot()})));
 
-  ukm::builders::Cookies_FirstPartyPartitionedInCrossSiteContextV3(
-      render_frame_host_impl->GetPageUkmSourceId())
+  ukm::builders::Cookies_FirstPartyPartitionedInCrossSiteContextV3(source_id)
       .SetCookiePresent(has_cross_site_ancestor)
       .Record(ukm::UkmRecorder::Get());
 }
 
-void RecordPartitionedCookieUseUKM(RenderFrameHost* rfh,
-                                   bool partitioned_cookies_exist) {
+// Relies on checks in RecordPartitionedCookiesUKMs to confirm that that the
+// cookie is partitioned, the cookie name is not
+// "receive-cookie-deprecation" and the RenderFrameHost is not prerendering.
+void RecordPartitionedCookieUseV2UKM(RenderFrameHost* rfh,
+                                     const net::CanonicalCookie& cookie,
+                                     const ukm::SourceId& source_id) {
+  ukm::builders::PartitionedCookiePresentV2(source_id)
+      .SetPartitionedCookiePresentV2(true)
+      .Record(ukm::UkmRecorder::Get());
+}
+
+void RecordPartitionedCookiesUKMs(RenderFrameHostImpl* render_frame_host_impl,
+                                  const net::CanonicalCookie& cookie) {
   // Our data collection policy disallows collecting UKMs while prerendering.
   // See //content/browser/preloading/prerender/README.md and ask the team to
   // explore options to record data for prerendering pages if we need to
   // support the case.
-  if (rfh->IsInLifecycleState(RenderFrameHost::LifecycleState::kPrerendering)) {
+  if (render_frame_host_impl->IsInLifecycleState(
+          RenderFrameHost::LifecycleState::kPrerendering)) {
     return;
   }
-  if (!partitioned_cookies_exist) {
-    return;
-  }
-  ukm::SourceId source_id = rfh->GetPageUkmSourceId();
 
-  ukm::builders::PartitionedCookiePresent(source_id)
-      .SetPartitionedCookiePresent(partitioned_cookies_exist)
-      .Record(ukm::UkmRecorder::Get());
+  // Cookies_FirstPartyPartitionedInCrossSiteContextV3 and
+  // PartitionedCookiePresentV2 both measure cookies
+  // without the name of 'receive-cookie-deprecation'. Return here to ensure
+  // that the metrics do not include those cookies.
+  if (cookie.Name() == "receive-cookie-deprecation") {
+    return;
+  }
+
+  ukm::SourceId source_id = render_frame_host_impl->GetPageUkmSourceId();
+
+  if (cookie.IsFirstPartyPartitioned()) {
+    RecordFirstPartyPartitionedCookieCrossSiteContextUKM(render_frame_host_impl,
+                                                         cookie, source_id);
+  }
+
+  RecordPartitionedCookieUseV2UKM(render_frame_host_impl, cookie, source_id);
 }
 
 void RecordRedirectContextDowngradeUKM(RenderFrameHost* rfh,
@@ -309,11 +313,9 @@ void EmitCookieWarningsAndMetricsOnce(
          // usage of the Partitioned attribute.
          !cookie->cookie_or_line->get_cookie().PartitionKey()->nonce());
 
-    RecordPartitionedCookieUseUKM(rfh, partitioned_cookies_exist);
 
     if (partitioned_cookies_exist) {
-      RecordFirstPartyPartitionedCookieCrossSiteContextUKM(
-          rfh, cookie->cookie_or_line->get_cookie());
+      RecordPartitionedCookiesUKMs(rfh, cookie->cookie_or_line->get_cookie());
     }
 
     breaking_context_downgrade =

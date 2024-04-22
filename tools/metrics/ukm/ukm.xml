@@ -20022,12 +20022,30 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PartitionedCookiePresent">
+  <obsolete>
+    Deprecated as of 04/2024.
+  </obsolete>
   <owner>selya@chromium.org</owner>
   <owner>selya@google.com</owner>
   <summary>
     Recorded when a page has a partitioned cookie present.
   </summary>
   <metric name="PartitionedCookiePresent" enum="Boolean">
+    <summary>
+      Records '1' if one or more partitioned cookies are present. This metric is
+      only logged for sites that have partitioned cookies.
+    </summary>
+  </metric>
+</event>
+
+<event name="PartitionedCookiePresentV2">
+  <owner>selya@chromium.org</owner>
+  <owner>dylancutler@google.com</owner>
+  <summary>
+    Recorded when a page has a partitioned cookie present and the cookie's name
+    is not receive-cookie-deprecation.
+  </summary>
+  <metric name="PartitionedCookiePresentV2" enum="Boolean">
     <summary>
       Records '1' if one or more partitioned cookies are present. This metric is
       only logged for sites that have partitioned cookies.
