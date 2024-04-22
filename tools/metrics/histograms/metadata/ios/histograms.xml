@@ -1941,6 +1941,20 @@ chromium-metrics-reviews@google.com.
   <summary>MultiWindow configuration sampled once per minute.</summary>
 </histogram>
 
+<histogram name="IOS.MultiWindow.ConnectedScenesCount" units="scenes"
+    expires_after="2025-03-03">
+  <owner>fedegermi@google.com</owner>
+  <owner>marq@chromium.org</owner>
+  <summary>Records the number of connected scenes.</summary>
+</histogram>
+
+<histogram name="IOS.MultiWindow.DisconnectedScenesCount" units="scenes"
+    expires_after="2025-03-03">
+  <owner>fedegermi@google.com</owner>
+  <owner>marq@chromium.org</owner>
+  <summary>Records the number of disconnected scenes.</summary>
+</histogram>
+
 <histogram name="IOS.MultiWindow.OpenInNewWindow" enum="WindowActivityOrigin"
     expires_after="2022-06-26">
   <owner>marq@chromium.org</owner>

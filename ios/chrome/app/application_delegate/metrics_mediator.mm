@@ -331,6 +331,8 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
 // Returns a corresponding TabAgeGroup for provided `timeSinceCreation` time.
 + (TabsAgeGroup)tabsAgeGroupFromTimeSinceCreation:
     (base::TimeDelta)timeSinceCreation;
+// Logs the number of connected and disconnected scenes.
++ (void)recordConnectedAndDisconnectedSceneCount:(int)connectedScenes;
 @end
 
 @implementation MetricsMediator
@@ -506,6 +508,8 @@ BOOL _credentialExtensionWasUsed = NO;
     // Only log at resume since there are likely no live NTPs on startup.
     [self recordResumeLiveNTPTabCount:liveNTPTabCount];
   }
+
+  [self recordConnectedAndDisconnectedSceneCount:scenes.count];
 
   if (UIAccessibilityIsVoiceOverRunning()) {
     base::RecordAction(
@@ -797,6 +801,14 @@ BOOL _credentialExtensionWasUsed = NO;
         [self tabsAgeGroupFromTimeSinceCreation:timeSinceCreation];
     UMA_HISTOGRAM_ENUMERATION("Tabs.TimeSinceCreationAtStartup", tabsAgeGroup);
   }
+}
+
++ (void)recordConnectedAndDisconnectedSceneCount:(int)connectedScenes {
+  base::UmaHistogramCounts100("IOS.MultiWindow.ConnectedScenesCount",
+                              connectedScenes);
+  base::UmaHistogramCounts100(
+      "IOS.MultiWindow.DisconnectedScenesCount",
+      UIApplication.sharedApplication.openSessions.count - connectedScenes);
 }
 
 + (void)recordAndResetWarmStartCount {
