@@ -132,7 +132,7 @@ class SiteEngagementService : public KeyedService,
   static double GetScoreFromSettings(HostContentSettingsMap* settings,
                                      const GURL& origin);
 
-  // Retrieves all details for origins within `scheme_set`. Can be called
+  // Retrieves all details for origins within `url_set`. Can be called
   // from a background thread. `now` must be the current timestamp. Takes a
   // scoped_refptr to keep HostContentSettingsMap alive. See crbug.com/901287.
   static std::vector<mojom::SiteEngagementDetails> GetAllDetailsInBackground(
@@ -155,7 +155,7 @@ class SiteEngagementService : public KeyedService,
   blink::mojom::EngagementLevel GetEngagementLevel(const GURL& url) const;
 
   // Returns an array of engagement score details for all origins that are
-  // in `scheme_set` and have a score. A origin can have a score due to
+  // in `url_set` and have a score. A origin can have a score due to
   // direct engagement, or other factors that cause an engagement bonus to
   // be applied.
   //
