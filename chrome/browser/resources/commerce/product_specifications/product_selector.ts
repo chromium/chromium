@@ -7,13 +7,14 @@ import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import type {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -28,7 +29,6 @@ export interface UrlListEntry {
 
 export interface ProductSelectorElement {
   $: {
-    currentItemButton: CrExpandButtonElement,
     currentProduct: CrUrlListItemElement,
     currentProductContainer: HTMLElement,
     productSelectionMenu: CrLazyRenderElement<CrActionMenuElement>,
@@ -65,7 +65,7 @@ export class ProductSelectorElement extends PolymerElement {
 
   private openTabsExpanded: boolean;
 
-  private async onShowMenu() {
+  private async onShowMenu_() {
     const {urlInfos} = await this.shoppingApi_.getUrlInfosForOpenTabs();
     this.openTabs = urlInfos.map(({title, url}) => ({
                                    title: title,
@@ -79,6 +79,19 @@ export class ProductSelectorElement extends PolymerElement {
       top: rect.bottom,
       left: rect.left,
     });
+    this.$.currentProductContainer.classList.add('showing-menu');
+  }
+
+  private onCloseMenu_() {
+    this.$.currentProductContainer.classList.remove('showing-menu');
+  }
+
+  private onCurrentProductContainerKeyDown_(e: KeyboardEvent) {
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+      this.onShowMenu_();
+    }
   }
 }
 

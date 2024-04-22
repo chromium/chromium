@@ -375,6 +375,7 @@
   E_CPONLY(kColorPipWindowSkipAdButtonBackground) \
   E_CPONLY(kColorPipWindowSkipAdButtonBorder) \
   /* Product Specifications colors */ \
+  E_CPONLY(kColorProductSpecificationsButtonBackground) \
   E_CPONLY(kColorProductSpecificationsContentBackground) \
   E_CPONLY(kColorProductSpecificationsSummaryBackground) \
   /* Profile Menu colors. */ \

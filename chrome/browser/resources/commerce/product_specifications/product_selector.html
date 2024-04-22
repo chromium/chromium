@@ -1,46 +1,81 @@
 <style include="cr-shared-style">
   :host {
+    --cr-url-list-item-padding: 0;
+    --iron-icon-gap: 8px;
+    --iron-icon-width: 24px;
+    --product-selector-border-radius: 10px;
+    --product-selector-height: 50px;
+    --product-selector-padding: 8px;
     --product-selector-width: 250px;
-  }
-
-  #currentProductContainer,
-  #selectionContainer {
-    box-sizing: border-box;
-    display: block;
-    overflow: clip;
-    width: var(--product-selector-width);
-  }
-
-  #currentProductContainer {
-    border-radius: 10px;
-    height: 50px;
-  }
-
-  #selectionContainer {
-    padding: 0 8px;
   }
 
   cr-action-menu {
     --cr-menu-border-radius: 10px;
   }
 
-  #currentItemButton {
-    --cr-section-vertical-padding: 0;
+  #currentProduct {
+    pointer-events: none;
+    width: calc(var(--product-selector-width)
+        - 2 * var(--product-selector-padding)
+        - var(--iron-icon-width)
+        - var(--iron-icon-gap));
+  }
+
+  #currentProductContainer,
+  #selectionContainer {
+    box-sizing: border-box;
+    overflow: clip;
+    width: var(--product-selector-width);
+  }
+
+  #currentProductContainer {
+    align-items: center;
+    background: var(--color-product-specifications-button-background);
+    border-radius: var(--product-selector-border-radius);
+    display: flex;
+    gap: var(--iron-icon-gap);
+    height: var(--product-selector-height);
+    padding: var(--product-selector-padding);
+  }
+
+  #hoverLayer {
+    display: none;
+  }
+
+  #currentProductContainer:active > #hoverLayer,
+  #currentProductContainer:focus-within > #hoverLayer,
+  #currentProductContainer:hover > #hoverLayer,
+  #currentProductContainer.showing-menu > #hoverLayer {
+    background-color: var(--cr-hover-background-color);
+    border-radius: var(--product-selector-border-radius);
+    display: block;
+    height: var(--product-selector-height);
+    position: absolute;
+    transform: translateX(calc(-1 * var(--product-selector-padding)));
+    width: var(--product-selector-width);
+  }
+
+  #selectionContainer {
+    display: block;
+    padding: 0 8px;
   }
 </style>
 
-<div id="currentProductContainer">
-  <cr-expand-button id="currentItemButton" on-click="onShowMenu" no-hover>
-    <cr-url-list-item id="currentProduct" size="medium"
-        url="[[selectedItem.url]]" title="[[selectedItem.title]]"
-        description="[[selectedItem.url]]" no-hover>
-    </cr-url-list-item>
-  </cr-expand-button>
+<div id="currentProductContainer"
+    on-click="onShowMenu_"
+    on-keydown="onCurrentProductContainerKeyDown_"
+    tabindex="0">
+  <cr-url-list-item id="currentProduct" size="medium"
+    url="[[selectedItem.url]]" title="[[selectedItem.title]]"
+    description="[[selectedItem.url]]" tabindex="-1">
+  </cr-url-list-item>
+  <iron-icon icon="cr:expand-more"></iron-icon>
+  <div id="hoverLayer"></div>
 </div>
 
 <cr-lazy-render id="productSelectionMenu">
   <template>
-    <cr-action-menu>
+    <cr-action-menu on-close="onCloseMenu_">
       <div id="selectionContainer">
         <template is="dom-if" if="[[openTabs.length]]" restamp>
           <cr-expand-button expanded="{{openTabsExpanded}}" no-hover>

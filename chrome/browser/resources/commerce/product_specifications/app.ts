@@ -75,7 +75,12 @@ export class ProductSpecificationsElement extends PolymerElement {
     this.specsTable_ = {
       columns: productSpecs.products.map(p => {
         return {
-          selectedItem: {title: p.title, url: '', imageUrl: p.imageUrl.url},
+          selectedItem: {
+            title: p.title,
+            // TODO(b/335637140): Replace with actual URL once available
+            url: 'https://placeholder.com',
+            imageUrl: p.imageUrl.url,
+          },
         };
       }),
       rows,

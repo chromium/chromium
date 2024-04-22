@@ -6,8 +6,8 @@ import 'chrome://compare/product_selector.js';
 
 import type {ProductSelectorElement} from 'chrome://compare/product_selector.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
-import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
@@ -19,6 +19,16 @@ suite('ProductSelectorTest', () => {
     document.body.appendChild(selector);
     await flushTasks();
     return selector;
+  }
+
+  function initUrlInfos() {
+    const titleString = 'title';
+    const openTabs = [{
+      title: stringToMojoString16(titleString),
+      url: stringToMojoUrl('http://example.com'),
+    }];
+    shoppingServiceApi.setResultFor(
+        'getUrlInfosForOpenTabs', Promise.resolve({urlInfos: openTabs}));
   }
 
   setup(async () => {
@@ -40,7 +50,7 @@ suite('ProductSelectorTest', () => {
 
     assertEquals(0, shoppingServiceApi.getCallCount('getUrlInfosForOpenTabs'));
 
-    selector.$.currentItemButton.click();
+    selector.$.currentProductContainer.click();
 
     await shoppingServiceApi.whenCalled('getUrlInfosForOpenTabs');
 
@@ -51,5 +61,44 @@ suite('ProductSelectorTest', () => {
 
     assertEquals(titleString, selector.openTabs[0]!.title);
     assertEquals(openTabs[0]!.url.url, selector.openTabs[0]!.url);
+  });
+
+  test('MenuShownOnEnter', async () => {
+    initUrlInfos();
+    const selector = await createSelector();
+    const showingMenuClass = 'showing-menu';
+
+    assertEquals(selector.$.productSelectionMenu.getIfExists(), null);
+    assertFalse(selector.$.currentProductContainer.classList.contains(
+        showingMenuClass));
+
+    selector.$.currentProductContainer.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Enter'}));
+    await flushTasks();
+
+    assertNotEquals(selector.$.productSelectionMenu.getIfExists(), null);
+    assertTrue(selector.$.currentProductContainer.classList.contains(
+        showingMenuClass));
+  });
+
+  test('UpdatesShowingMenuClass', async () => {
+    initUrlInfos();
+    const selector = await createSelector();
+    const showingMenuClass = 'showing-menu';
+
+    assertFalse(selector.$.currentProductContainer.classList.contains(
+        showingMenuClass));
+
+    selector.$.currentProductContainer.click();
+    await flushTasks();
+
+    assertTrue(selector.$.currentProductContainer.classList.contains(
+        showingMenuClass));
+
+    selector.$.productSelectionMenu.get().close();
+    await flushTasks();
+
+    assertFalse(selector.$.currentProductContainer.classList.contains(
+        showingMenuClass));
   });
 });
