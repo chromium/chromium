@@ -5271,6 +5271,8 @@ static_library("ui") {
       "views/commerce/price_tracking_icon_view.h",
       "views/commerce/price_tracking_view.cc",
       "views/commerce/price_tracking_view.h",
+      "views/commerce/product_specifications_button.cc",
+      "views/commerce/product_specifications_button.h",
       "views/commerce/shopping_collection_iph_view.cc",
       "views/commerce/shopping_collection_iph_view.h",
       "views/confirm_bubble_views.cc",
