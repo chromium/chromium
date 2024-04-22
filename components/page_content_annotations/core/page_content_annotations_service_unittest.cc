@@ -156,9 +156,8 @@ class PageContentAnnotationsServiceTest : public testing::Test {
 
     // Instantiate service.
     service_ = std::make_unique<PageContentAnnotationsService>(
-        /*autocomplete_provider_client=*/nullptr, "en-US", "us",
-        optimization_guide_model_provider_.get(), history_service_.get(),
-        template_url_service_.get(),
+        "en-US", "us", optimization_guide_model_provider_.get(),
+        history_service_.get(), template_url_service_.get(),
         /*zero_suggest_cache_service=*/nullptr,
         /*database_provider=*/nullptr,
         /*database_dir=*/base::FilePath(),

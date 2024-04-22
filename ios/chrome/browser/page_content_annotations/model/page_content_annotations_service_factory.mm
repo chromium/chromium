@@ -57,7 +57,6 @@ std::unique_ptr<KeyedService> BuildPageContentAnnotationsService(
 
   return std::make_unique<
       page_content_annotations::PageContentAnnotationsService>(
-      std::make_unique<AutocompleteProviderClientImpl>(chrome_browser_state),
       GetApplicationContext()->GetApplicationLocale(),
       GetCurrentCountryCode(GetApplicationContext()->GetVariationsService()),
       optimization_guide_keyed_service, history_service,

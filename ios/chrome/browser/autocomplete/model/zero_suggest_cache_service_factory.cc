@@ -8,6 +8,8 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
+#include "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
+#include "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 namespace ios {
@@ -38,6 +40,7 @@ ZeroSuggestCacheServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<ZeroSuggestCacheService>(
+      std::make_unique<AutocompleteSchemeClassifierImpl>(),
       browser_state->GetPrefs(),
       OmniboxFieldTrial::kZeroSuggestCacheMaxSize.Get());
 }

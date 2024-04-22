@@ -7,6 +7,8 @@ source_set("common") {
     "omnibox_features.cc",
     "omnibox_features.h",
     "omnibox_focus_state.h",
+    "zero_suggest_cache_service_interface.cc",
+    "zero_suggest_cache_service_interface.h",
   ]
   deps = [
     "//base",

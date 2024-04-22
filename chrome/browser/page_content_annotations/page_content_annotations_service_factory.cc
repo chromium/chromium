@@ -12,7 +12,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -22,13 +21,13 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "chrome/browser/search_engines/template_url_fetcher_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/service/variations_service.h"
@@ -133,8 +132,8 @@ PageContentAnnotationsServiceFactory::BuildServiceInstanceForBrowserContext(
   if (optimization_guide_keyed_service && history_service) {
     std::string country_code =
         GetCurrentCountryCode(g_browser_process->variations_service());
-    return std::make_unique<page_content_annotations::PageContentAnnotationsService>(
-        std::make_unique<ChromeAutocompleteProviderClient>(profile),
+    return std::make_unique<
+        page_content_annotations::PageContentAnnotationsService>(
         g_browser_process->GetApplicationLocale(), country_code,
         optimization_guide_keyed_service, history_service, template_url_service,
         zero_suggest_cache_service, proto_db_provider, profile_path,

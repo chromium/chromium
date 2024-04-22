@@ -58,7 +58,8 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
         pref_service_(new TestingPrefServiceSimple()) {
     ZeroSuggestProvider::RegisterProfilePrefs(pref_service_->registry());
     zero_suggest_cache_service_ = std::make_unique<ZeroSuggestCacheService>(
-        pref_service_.get(), kCacheSize);
+        std::make_unique<TestSchemeClassifier>(), pref_service_.get(),
+        kCacheSize);
   }
   FakeAutocompleteProviderClient(const FakeAutocompleteProviderClient&) =
       delete;

@@ -20,8 +20,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
-#include "components/omnibox/browser/autocomplete_input.h"
-#include "components/omnibox/browser/search_suggestion_parser.h"
+#include "components/omnibox/common/zero_suggest_cache_service_interface.h"
 #include "components/optimization_guide/core/noisy_metrics_recorder.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -172,21 +171,19 @@ std::string GetCanonicalSearchURL(const GURL& url,
 }  // namespace
 
 PageContentAnnotationsService::PageContentAnnotationsService(
-    std::unique_ptr<AutocompleteProviderClient> autocomplete_provider_client,
     const std::string& application_locale,
     const std::string& country_code,
     optimization_guide::OptimizationGuideModelProvider*
         optimization_guide_model_provider,
     history::HistoryService* history_service,
     TemplateURLService* template_url_service,
-    ZeroSuggestCacheService* zero_suggest_cache_service,
+    ZeroSuggestCacheServiceInterface* zero_suggest_cache_service,
     leveldb_proto::ProtoDatabaseProvider* database_provider,
     const base::FilePath& database_dir,
     OptimizationGuideLogger* optimization_guide_logger,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
-    : autocomplete_provider_client_(std::move(autocomplete_provider_client)),
-      min_page_category_score_to_persist_(
+    : min_page_category_score_to_persist_(
           features::GetMinimumPageCategoryScoreToPersist()),
       history_service_(history_service),
       template_url_service_(template_url_service),
@@ -202,7 +199,7 @@ PageContentAnnotationsService::PageContentAnnotationsService(
   DCHECK(optimization_guide_model_provider);
   DCHECK(history_service_);
   history_service_observation_.Observe(history_service_);
-  if (zero_suggest_cache_service_) {
+  if (ShouldExtractRelatedSearchesFromZPSCache()) {
     zero_suggest_cache_service_observation_.Observe(
         zero_suggest_cache_service_);
   }
@@ -512,34 +509,28 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
 bool PageContentAnnotationsService::ShouldExtractRelatedSearchesFromZPSCache() {
   return base::FeatureList::IsEnabled(
              features::kExtractRelatedSearchesFromPrefetchedZPSResponse) &&
-         autocomplete_provider_client_ &&
          search::DefaultSearchProviderIsGoogle(template_url_service_) &&
          zero_suggest_cache_service_;
 }
 
 void PageContentAnnotationsService::OnZeroSuggestResponseUpdated(
     const std::string& page_url,
-    const ZeroSuggestCacheService::CacheEntry& response) {
-  if (!ShouldExtractRelatedSearchesFromZPSCache()) {
-    return;
-  }
-
+    const ZeroSuggestCacheServiceInterface::CacheEntry& response) {
   if (page_url.empty() || !google_util::IsGoogleSearchUrl(GURL(page_url))) {
     return;
   }
 
-  AutocompleteInput input(u"", metrics::OmniboxEventProto::JOURNEYS,
-                          autocomplete_provider_client_->GetSchemeClassifier());
-  const auto suggest_results =
-      response.GetSuggestResults(input, *autocomplete_provider_client_);
+  const std::vector<ZeroSuggestCacheServiceInterface::CacheEntrySuggestResult>
+      suggest_results =
+          zero_suggest_cache_service_->GetSuggestResults(response);
 
   std::vector<std::string> related_searches;
   for (const auto& result : suggest_results) {
-    const auto subtypes = result.subtypes();
     // Suggestions with HIVEMIND subtype are considered "related searches".
-    if (base::Contains(subtypes, omnibox::SuggestSubtype::SUBTYPE_HIVEMIND)) {
-      related_searches.push_back(base::UTF16ToUTF8(
-          base::CollapseWhitespace(result.suggestion(), true)));
+    if (base::Contains(result.subtypes,
+                       omnibox::SuggestSubtype::SUBTYPE_HIVEMIND)) {
+      related_searches.push_back(
+          base::UTF16ToUTF8(base::CollapseWhitespace(result.suggestion, true)));
     }
   }
 

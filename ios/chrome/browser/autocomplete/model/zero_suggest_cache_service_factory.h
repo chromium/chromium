@@ -5,13 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_ZERO_SUGGEST_CACHE_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_ZERO_SUGGEST_CACHE_SERVICE_FACTORY_H_
 
-#include "memory.h"
+#include <memory>
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#include "components/omnibox/browser/zero_suggest_cache_service.h"
 
 class ChromeBrowserState;
-class ZeroSuggestCacheService;
 
 namespace ios {
 // Singleton that owns all ZeroSuggestCacheServices and associates them with

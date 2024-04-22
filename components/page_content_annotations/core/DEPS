@@ -7,7 +7,6 @@ include_rules = [
   "+components/history/core/test",
   "+components/keyed_service/core",
   "+components/leveldb_proto/public",
-  "+components/omnibox/browser",
   "+components/omnibox/common",
   "+components/optimization_guide",
   "+components/optimization_guide/core",
