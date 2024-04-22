@@ -36,7 +36,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         return new ListItem(
                 FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(IMAGE_DRAWABLE_ID, R.drawable.google_pay)
+                        .with(IMAGE_DRAWABLE_ID, R.drawable.pix_gpay_logo)
                         .build());
     }
 }
