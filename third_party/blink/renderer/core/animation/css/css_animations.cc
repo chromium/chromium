@@ -2655,6 +2655,9 @@ void CSSAnimations::CalculateTransitionUpdate(
             transition_data->PropertyList()[transition_index];
         if (transition_property.unresolved_property == CSSPropertyID::kAll) {
           any_transition_had_transition_all = true;
+          // We don't need to build listed_properties (which is expensive for
+          // 'all').
+          state.listed_properties = nullptr;
         }
         CalculateTransitionUpdateForProperty(
             state, transition_property, transition_index, writing_direction);
