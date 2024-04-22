@@ -17,6 +17,10 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 
+namespace base {
+class Location;
+}
+
 namespace sync_pb {
 class WebauthnCredentialSpecifics;
 }
@@ -99,9 +103,11 @@ class PasskeyModel : public KeyedService {
 
   // Deletes the passkey with the given `credential_id`. If the passkey is the
   // head of the shadow chain, then all passkeys for the same (user id, rp id)
-  // are deleted as well.
-  // Returns true if a passkey was found and deleted, false otherwise.
-  virtual bool DeletePasskey(const std::string& credential_id) = 0;
+  // are deleted as well. `location` is used for logging purposes and
+  // investigations. Returns true if a passkey was found and deleted, false
+  // otherwise.
+  virtual bool DeletePasskey(const std::string& credential_id,
+                             const base::Location& location) = 0;
 
   // Updates attributes of the passkey with the given `credential_id`. Returns
   // true if the credential was found and updated, false otherwise.

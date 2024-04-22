@@ -18,6 +18,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -148,7 +149,7 @@ bool SavedPasswordsPresenter::RemoveCredential(
     CHECK(passkey_store_);
     std::string credential_id(credential.passkey_credential_id.begin(),
                               credential.passkey_credential_id.end());
-    if (!passkey_store_->DeletePasskey(std::move(credential_id))) {
+    if (!passkey_store_->DeletePasskey(std::move(credential_id), FROM_HERE)) {
       return false;
     }
     return true;

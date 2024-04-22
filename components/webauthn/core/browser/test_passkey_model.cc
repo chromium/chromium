@@ -119,7 +119,8 @@ std::string TestPasskeyModel::AddNewPasskeyForTesting(
   return credentials_.back().credential_id();
 }
 
-bool TestPasskeyModel::DeletePasskey(const std::string& credential_id) {
+bool TestPasskeyModel::DeletePasskey(const std::string& credential_id,
+                                     const base::Location& location) {
   // Don't implement the shadow chain deletion logic. Instead, remove the
   // credential with the matching id.
   const auto credential_it =

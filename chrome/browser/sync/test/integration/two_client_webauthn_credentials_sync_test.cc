@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/location.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
@@ -51,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAuthnCredentialsSyncTest,
   ASSERT_TRUE(AwaitAllModelsMatch());
   EXPECT_EQ(model1.GetAllSyncIds().size(), 2u);
 
-  ASSERT_TRUE(model1.DeletePasskey(passkey0.credential_id()));
+  ASSERT_TRUE(model1.DeletePasskey(passkey0.credential_id(), FROM_HERE));
   ASSERT_TRUE(AwaitAllModelsMatch());
   EXPECT_EQ(model1.GetAllSyncIds().size(), 1u);
 }

@@ -20,6 +20,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -315,7 +316,8 @@ PasskeySyncBridge::GetPasskeysForRelyingPartyId(
   return passkey_model_utils::FilterShadowedCredentials(passkeys);
 }
 
-bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id) {
+bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id,
+                                      const base::Location& location) {
   // Find the credential with the given |credential_id|.
   const auto passkey_it =
       base::ranges::find_if(data_, [&credential_id](const auto& passkey) {
@@ -357,7 +359,9 @@ bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id) {
     changes.emplace_back(PasskeyModelChange::ChangeType::REMOVE,
                          data_.at(sync_id));
     data_.erase(sync_id);
-    change_processor()->Delete(sync_id, write_batch->GetMetadataChangeList());
+    change_processor()->Delete(sync_id,
+                               syncer::DeletionOrigin::FromLocation(location),
+                               write_batch->GetMetadataChangeList());
     write_batch->DeleteData(sync_id);
   }
   store_->CommitWriteBatch(

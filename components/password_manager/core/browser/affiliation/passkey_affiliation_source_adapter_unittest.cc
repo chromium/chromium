@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/location.h"
 #include "base/rand_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -143,7 +144,7 @@ TEST_F(PasskeyAffiliationSourceAdapterTest, TestPasskeyDeleted) {
   EXPECT_CALL(*mock_source_observer(),
               OnFacetsRemoved(ElementsAre(
                   FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1))));
-  test_passkey_model()->DeletePasskey(passkey.credential_id());
+  test_passkey_model()->DeletePasskey(passkey.credential_id(), FROM_HERE);
   RunUntilIdle();
 }
 
