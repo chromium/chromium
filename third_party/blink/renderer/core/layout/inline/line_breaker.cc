@@ -905,7 +905,7 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
       use_faster_min_content_ && UNLIKELY(mode_ == LineBreakerMode::kMinContent)
           ? LineBreakState::kOverflow
           : LineBreakState::kContinue;
-  trailing_whitespace_ = WhitespaceState::kLeading;
+  trailing_whitespace_ = initial_whitespace_;
   while (state_ != LineBreakState::kDone) {
     // If we reach at the end of the block, this is the last line.
     DCHECK_LE(current_.item_index, items.size());
@@ -3027,13 +3027,14 @@ bool LineBreaker::HandleRuby(LineInfo* line_info) {
   // TODO(crbug.com/324111880): Setup for a wrapped ruby column.
   const InlineItem& item = Items()[open_column_item_index];
 
-  LineInfo base_line_info =
-      CreateSubLineInfo(base_start, base_end_index, LayoutUnit::Max());
+  LineInfo base_line_info = CreateSubLineInfo(
+      base_start, base_end_index, LayoutUnit::Max(), trailing_whitespace_);
 
   HeapVector<LineInfo, 1> annotation_line_list;
   for (const auto& data : annotation_data) {
     annotation_line_list.push_back(
-        CreateSubLineInfo(data.start, data.end_item_index, LayoutUnit::Max()));
+        CreateSubLineInfo(data.start, data.end_item_index, LayoutUnit::Max(),
+                          WhitespaceState::kLeading));
   }
 
   LayoutUnit ruby_size = MaxLineWidth(base_line_info, annotation_line_list);
@@ -3042,11 +3043,12 @@ bool LineBreaker::HandleRuby(LineInfo* line_info) {
     // Recreate lines because lines created with LineBreakerMode::kMaxContent
     // are not usable in InlineLayoutAlgorithm.
     base_line_info =
-        CreateSubLineInfo(base_start, base_end_index, LayoutUnit::NearlyMax());
+        CreateSubLineInfo(base_start, base_end_index, LayoutUnit::NearlyMax(),
+                          trailing_whitespace_);
     for (wtf_size_t i = 0; i < annotation_data.size(); ++i) {
       annotation_line_list[i] = CreateSubLineInfo(
           annotation_data[i].start, annotation_data[i].end_item_index,
-          LayoutUnit::NearlyMax());
+          LayoutUnit::NearlyMax(), WhitespaceState::kLeading);
     }
 
     AddRubyColumnResult(item, base_line_info, annotation_line_list,
@@ -3060,9 +3062,11 @@ bool LineBreaker::HandleRuby(LineInfo* line_info) {
   // RemainingAvailableWidth().
 }
 
-LineInfo LineBreaker::CreateSubLineInfo(InlineItemTextIndex start,
-                                        wtf_size_t end_item_index,
-                                        LayoutUnit limit) {
+LineInfo LineBreaker::CreateSubLineInfo(
+    InlineItemTextIndex start,
+    wtf_size_t end_item_index,
+    LayoutUnit limit,
+    WhitespaceState initial_whitespace_state) {
   ExclusionSpace empty_exclusion_space;
   LeadingFloats empty_leading_floats;
   LineInfo sub_line_info;
@@ -3073,7 +3077,8 @@ LineInfo LineBreaker::CreateSubLineInfo(InlineItemTextIndex start,
       constraint_space_, LineLayoutOpportunity(limit), empty_leading_floats,
       /* break_token */ nullptr,
       /* column_spanner_path */ nullptr, &empty_exclusion_space);
-  sub_line_breaker.SetInputRange(start, end_item_index);
+  sub_line_breaker.SetInputRange(start, end_item_index,
+                                 initial_whitespace_state);
   sub_line_breaker.NextLine(&sub_line_info);
   return sub_line_info;
 }
@@ -4102,10 +4107,12 @@ void LineBreaker::MoveToNextOf(const InlineItemResult& item_result) {
 }
 
 void LineBreaker::SetInputRange(InlineItemTextIndex start,
-                                wtf_size_t end_item_index) {
+                                wtf_size_t end_item_index,
+                                WhitespaceState initial_whitespace_state) {
   DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
   current_ = start;
   end_item_index_ = end_item_index;
+  initial_whitespace_ = initial_whitespace_state;
 }
 
 const InlineBreakToken* LineBreaker::CreateBreakToken(

@@ -1111,7 +1111,7 @@ TEST_F(LineBreakerTest, SetInputRange) {
                            LineLayoutOpportunity(LayoutUnit::Max()),
                            leading_floats, nullptr, nullptr, &exclusion_space);
   // <span> to just after </span>.
-  line_breaker.SetInputRange({1, 6}, 4);
+  line_breaker.SetInputRange({1, 6}, 4, LineBreaker::WhitespaceState::kLeading);
   LineInfo line_info;
   line_breaker.NextLine(&line_info);
   // The result should contain only <span>...</span>.

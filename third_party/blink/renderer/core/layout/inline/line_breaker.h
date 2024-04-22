@@ -55,9 +55,6 @@ class CORE_EXPORT LineBreaker {
 
   const InlineItemsData& ItemsData() const { return items_data_; }
 
-  // This LineBreaker handles only [start, end_item_index) of `Items()`.
-  void SetInputRange(InlineItemTextIndex start, wtf_size_t end_item_index);
-
   // True if the last line has `box-decoration-break: clone`, which affected the
   // size.
   bool HasClonedBoxDecorations() const { return has_cloned_box_decorations_; }
@@ -122,6 +119,11 @@ class CORE_EXPORT LineBreaker {
   // True if the argument can break; i.e. has at least one break opportunity.
   bool CanBreakInside(const LineInfo& line_info);
   bool CanBreakInside(const InlineItemResult& item_result);
+
+  // This LineBreaker handles only [start, end_item_index) of `Items()`.
+  void SetInputRange(InlineItemTextIndex start,
+                     wtf_size_t end_item_index,
+                     WhitespaceState initial_whitespace_state);
 
  private:
   Document& GetDocument() const { return node_.GetDocument(); }
@@ -218,7 +220,8 @@ class CORE_EXPORT LineBreaker {
   bool HandleRuby(LineInfo* line_info);
   LineInfo CreateSubLineInfo(InlineItemTextIndex start,
                              wtf_size_t end_item_index,
-                             LayoutUnit limit);
+                             LayoutUnit limit,
+                             WhitespaceState initial_whitespace_state);
   InlineItemResult* AddRubyColumnResult(
       const InlineItem& item,
       const LineInfo& base_line_info,
@@ -305,6 +308,9 @@ class CORE_EXPORT LineBreaker {
   // |WhitespaceState| of the current end. When a line is broken, this indicates
   // the state of trailing whitespaces.
   WhitespaceState trailing_whitespace_ = WhitespaceState::kUnknown;
+  // The state just after starting BreakLine(). This can be overridden by
+  // SetInputRange().
+  WhitespaceState initial_whitespace_ = WhitespaceState::kLeading;
 
   // The current position from inline_start. Unlike InlineLayoutAlgorithm
   // that computes position in visual order, this position in logical order.
