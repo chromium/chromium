@@ -305,11 +305,9 @@ struct FormFieldData {
     selected_text_ = std::move(selected_text);
   }
 
-  const FormControlType& form_control_type() const {
-    return form_control_type_;
-  }
+  FormControlType form_control_type() const { return form_control_type_; }
   void set_form_control_type(FormControlType form_control_type) {
-    form_control_type_ = std::move(form_control_type);
+    form_control_type_ = form_control_type;
   }
   const std::string& autocomplete_attribute() const {
     return autocomplete_attribute_;
@@ -354,15 +352,15 @@ struct FormFieldData {
   // field DOM elements in the same frame.
   // In the browser process, use global_id() instead.
   // See global_id() for details on the properties and pitfalls.
-  const FieldRendererId& renderer_id() const { return renderer_id_; }
+  FieldRendererId renderer_id() const { return renderer_id_; }
   void set_renderer_id(FieldRendererId renderer_id) {
-    renderer_id_ = std::move(renderer_id);
+    renderer_id_ = renderer_id;
   }
 
   // Renderer ID of the owning form in the same frame.
-  const FormRendererId& host_form_id() const { return host_form_id_; }
+  FormRendererId host_form_id() const { return host_form_id_; }
   void set_host_form_id(FormRendererId host_form_id) {
-    host_form_id_ = std::move(host_form_id);
+    host_form_id_ = host_form_id;
   }
 
   // The signature of the field's renderer form, that is, the signature of the
@@ -373,11 +371,9 @@ struct FormFieldData {
   // and in the Password Manager.
   // This value is written and read only in the browser for voting of
   // cross-frame forms purposes. It is therefore not sent via mojo.
-  const FormSignature& host_form_signature() const {
-    return host_form_signature_;
-  }
+  FormSignature host_form_signature() const { return host_form_signature_; }
   void set_host_form_signature(FormSignature host_form_signature) {
-    host_form_signature_ = std::move(host_form_signature);
+    host_form_signature_ = host_form_signature;
   }
 
   // The origin of the frame that hosts the field.
@@ -385,9 +381,9 @@ struct FormFieldData {
   void set_origin(url::Origin origin) { origin_ = std::move(origin); }
 
   // The ax node id of the form control in the accessibility tree.
-  const int32_t& form_control_ax_id() const { return form_control_ax_id_; }
+  int32_t form_control_ax_id() const { return form_control_ax_id_; }
   void set_form_control_ax_id(int32_t form_control_ax_id) {
-    form_control_ax_id_ = std::move(form_control_ax_id);
+    form_control_ax_id_ = form_control_ax_id;
   }
 
   // The unique identifier of the section (e.g. billing vs. shipping address)
@@ -416,15 +412,11 @@ struct FormFieldData {
   // which could span 32 & 64 bit processes. We chose uint64_t instead of
   // uint32_t to maintain compatibility with old code which used size_t
   // (base::Pickle used to serialize that as 64 bit).
-  const uint64_t& max_length() const { return max_length_; }
-  void set_max_length(uint64_t max_length) {
-    max_length_ = std::move(max_length);
-  }
+  uint64_t max_length() const { return max_length_; }
+  void set_max_length(uint64_t max_length) { max_length_ = max_length; }
 
-  const bool& is_autofilled() const { return is_autofilled_; }
-  void set_is_autofilled(bool is_autofilled) {
-    is_autofilled_ = std::move(is_autofilled);
-  }
+  bool is_autofilled() const { return is_autofilled_; }
+  void set_is_autofilled(bool is_autofilled) { is_autofilled_ = is_autofilled; }
 
   // Whether the user has edited this field since page load or resetting the
   // field.
@@ -445,48 +437,40 @@ struct FormFieldData {
   // when the form is reset (JavaScript's HTMLFormElement.reset()).
   // TODO(crbug.com/1501627): On iOS, also non-trusted events reset the
   // property.
-  const bool& is_user_edited() const { return is_user_edited_; }
+  bool is_user_edited() const { return is_user_edited_; }
   void set_is_user_edited(bool is_user_edited) {
-    is_user_edited_ = std::move(is_user_edited);
+    is_user_edited_ = is_user_edited;
   }
 
-  const CheckStatus& check_status() const { return check_status_; }
+  CheckStatus check_status() const { return check_status_; }
   void set_check_status(CheckStatus check_status) {
-    check_status_ = std::move(check_status);
+    check_status_ = check_status;
   }
-  const bool& is_focusable() const { return is_focusable_; }
-  void set_is_focusable(bool is_focusable) {
-    is_focusable_ = std::move(is_focusable);
-  }
-  const bool& is_visible() const { return is_visible_; }
-  void set_is_visible(bool is_visible) { is_visible_ = std::move(is_visible); }
-  const bool& should_autocomplete() const { return should_autocomplete_; }
+  bool is_focusable() const { return is_focusable_; }
+  void set_is_focusable(bool is_focusable) { is_focusable_ = is_focusable; }
+  bool is_visible() const { return is_visible_; }
+  void set_is_visible(bool is_visible) { is_visible_ = is_visible; }
+  bool should_autocomplete() const { return should_autocomplete_; }
   void set_should_autocomplete(bool should_autocomplete) {
-    should_autocomplete_ = std::move(should_autocomplete);
+    should_autocomplete_ = should_autocomplete;
   }
-  const RoleAttribute& role() const { return role_; }
-  void set_role(RoleAttribute role) { role_ = std::move(role); }
-  const base::i18n::TextDirection& text_direction() const {
-    return text_direction_;
-  }
+  RoleAttribute role() const { return role_; }
+  void set_role(RoleAttribute role) { role_ = role; }
+  base::i18n::TextDirection text_direction() const { return text_direction_; }
   void set_text_direction(base::i18n::TextDirection text_direction) {
-    text_direction_ = std::move(text_direction);
+    text_direction_ = text_direction;
   }
-  const FieldPropertiesMask& properties_mask() const {
-    return properties_mask_;
-  }
+  FieldPropertiesMask properties_mask() const { return properties_mask_; }
   void set_properties_mask(FieldPropertiesMask properties_mask) {
-    properties_mask_ = std::move(properties_mask);
+    properties_mask_ = properties_mask;
   }
 
   // Data members from the next block are used for parsing only, they are not
   // serialised for storage.
-  const bool& is_enabled() const { return is_enabled_; }
-  void set_is_enabled(bool is_enabled) { is_enabled_ = std::move(is_enabled); }
-  const bool& is_readonly() const { return is_readonly_; }
-  void set_is_readonly(bool is_readonly) {
-    is_readonly_ = std::move(is_readonly);
-  }
+  bool is_enabled() const { return is_enabled_; }
+  void set_is_enabled(bool is_enabled) { is_enabled_ = is_enabled; }
+  bool is_readonly() const { return is_readonly_; }
+  void set_is_readonly(bool is_readonly) { is_readonly_ = is_readonly; }
   // Contains password, username or credit card number value that was either
   // manually typed or autofilled on user trigger into a text-mode input field.
   const std::u16string& user_input() const { return user_input_; }
@@ -502,9 +486,9 @@ struct FormFieldData {
 
   // Password Manager doesn't use labels nor client side nor server side, so
   // label_source isn't in serialize methods.
-  const LabelSource& label_source() const { return label_source_; }
+  LabelSource label_source() const { return label_source_; }
   void set_label_source(LabelSource label_source) {
-    label_source_ = std::move(label_source);
+    label_source_ = label_source;
   }
 
   // The bounds of this field in current frame coordinates at the
@@ -526,9 +510,9 @@ struct FormFieldData {
   // When sent from browser to renderer, this bit indicates whether a field
   // should be filled even though it is already considered autofilled OR
   // user modified.
-  const bool& force_override() const { return force_override_; }
+  bool force_override() const { return force_override_; }
   void set_force_override(bool force_override) {
-    force_override_ = std::move(force_override);
+    force_override_ = force_override;
   }
 
  private:

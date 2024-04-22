@@ -252,16 +252,6 @@ bool DeserializeSection11(base::PickleIterator* iter,
   return true;
 }
 
-auto IdentityTuple(const FormFieldData& f) {
-  return std::tuple_cat(
-      std::tie(f.label(), f.name(), f.name_attribute(), f.id_attribute(),
-               f.form_control_type(), f.autocomplete_attribute(),
-               f.placeholder(), f.max_length(), f.css_classes(),
-               f.is_focusable(), f.should_autocomplete(), f.role(),
-               f.text_direction(), f.options()),
-      std::make_tuple(IsCheckable(f.check_status())));
-}
-
 }  // namespace
 
 Section Section::FromAutocomplete(Section::Autocomplete autocomplete) {
@@ -366,7 +356,16 @@ FormFieldData& FormFieldData::operator=(FormFieldData&&) = default;
 FormFieldData::~FormFieldData() = default;
 
 bool FormFieldData::SameFieldAs(const FormFieldData& field) const {
-  return IdentityTuple(*this) == IdentityTuple(field);
+  auto equality_tuple = [](const FormFieldData& f) {
+    return std::tuple_cat(
+        std::tie(f.label_, f.name_, f.name_attribute_, f.id_attribute_,
+                 f.form_control_type_, f.autocomplete_attribute_,
+                 f.placeholder_, f.max_length_, f.css_classes_, f.is_focusable_,
+                 f.should_autocomplete_, f.role_, f.text_direction_,
+                 f.options_),
+        std::make_tuple(IsCheckable(f.check_status_)));
+  };
+  return equality_tuple(*this) == equality_tuple(field);
 }
 
 bool FormFieldData::IsTextInputElement() const {
@@ -409,8 +408,7 @@ bool FormFieldData::WasPasswordAutofilled() const {
 
 // static
 bool FormFieldData::DeepEqual(const FormFieldData& a, const FormFieldData& b) {
-  return a.renderer_id() == b.renderer_id() &&
-         IdentityTuple(a) == IdentityTuple(b);
+  return a.renderer_id() == b.renderer_id() && a.SameFieldAs(b);
 }
 
 FormFieldData::FillData::FillData() = default;
