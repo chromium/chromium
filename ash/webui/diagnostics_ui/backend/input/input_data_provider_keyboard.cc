@@ -245,6 +245,7 @@ constexpr mojom::TopRowKey ConvertTopRowActionKeyToDiagnosticsTopRowKey(
     case ui::TopRowActionKey::kAllApplications:
     case ui::TopRowActionKey::kEmojiPicker:
     case ui::TopRowActionKey::kDictation:
+    case ui::TopRowActionKey::kAccessibility:
     case ui::TopRowActionKey::kUnknown:
       return mojom::TopRowKey::kUnknown;
     case ui::TopRowActionKey::kNone:

@@ -1163,6 +1163,7 @@ class TopRowLayoutCustomTest
         return CustomTopRowScanCode::kPlayPause;
       case TopRowActionKey::kPrivacyScreenToggle:
         return CustomTopRowScanCode::kPrivacyScreenToggle;
+      case TopRowActionKey::kAccessibility:
       case TopRowActionKey::kAllApplications:
       case TopRowActionKey::kEmojiPicker:
       case TopRowActionKey::kDictation:

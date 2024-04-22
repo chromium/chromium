@@ -137,6 +137,7 @@ bool ShouldAlwaysShowWithExternalKeyboard(ui::TopRowActionKey action_key) {
     case ui::TopRowActionKey::kKeyboardBacklightToggle:
     case ui::TopRowActionKey::kPrivacyScreenToggle:
     case ui::TopRowActionKey::kAllApplications:
+    case ui::TopRowActionKey::kAccessibility:
       return false;
     case ui::TopRowActionKey::kDictation:
     case ui::TopRowActionKey::kFullscreen:

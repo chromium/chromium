@@ -411,6 +411,8 @@ mojom_vkey EnumTraits<mojom_vkey, ui::KeyboardCode>::ToMojom(
       return mojom_vkey::kFunction;
     case ui::VKEY_RIGHT_ALT:
       return mojom_vkey::kRightAlt;
+    case ui::VKEY_ACCESSIBILITY:
+      return mojom_vkey::kAccessibility;
     case ui::VKEY_BUTTON_0:
       return mojom_vkey::kButton0;
     case ui::VKEY_BUTTON_1:
@@ -1043,6 +1045,9 @@ bool EnumTraits<mojom_vkey, ui::KeyboardCode>::FromMojom(
       return true;
     case ash::mojom::VKey::kRightAlt:
       *out = ui::KeyboardCode::VKEY_RIGHT_ALT;
+      return true;
+    case ash::mojom::VKey::kAccessibility:
+      *out = ui::KeyboardCode::VKEY_ACCESSIBILITY;
       return true;
     case ash::mojom::VKey::kFunction:
       *out = ui::KeyboardCode::VKEY_FUNCTION;

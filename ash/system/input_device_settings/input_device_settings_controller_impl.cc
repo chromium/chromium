@@ -147,6 +147,8 @@ constexpr mojom::TopRowActionKey ConvertTopRowActionKey(
       return mojom::TopRowActionKey::kEmojiPicker;
     case ui::TopRowActionKey::kDictation:
       return mojom::TopRowActionKey::kDictation;
+    case ui::TopRowActionKey::kAccessibility:
+      return mojom::TopRowActionKey::kAccessibility;
     case ui::TopRowActionKey::kUnknown:
     case ui::TopRowActionKey::kNone:
       return mojom::TopRowActionKey::kNone;

@@ -52,7 +52,8 @@ enum class TopRowActionKey {
   kEmojiPicker,
   kDictation,
   kPrivacyScreenToggle,
-  kMaxValue = kPrivacyScreenToggle,
+  kAccessibility,
+  kMaxValue = kAccessibility,
 };
 
 static const TopRowActionKey kLayout1TopRowActionKeys[] = {

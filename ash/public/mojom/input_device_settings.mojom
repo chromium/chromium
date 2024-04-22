@@ -125,6 +125,7 @@ enum TopRowActionKey {
   kEmojiPicker,
   kDictation,
   kPrivacyScreenToggle,
+  kAccessibility,
 };
 
 // Contains all information needed to display, apply, and update keyboard

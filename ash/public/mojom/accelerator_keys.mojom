@@ -187,6 +187,7 @@ enum VKey {
   kOemClear = 0xFE,
   kFunction = 0xFF,
   kRightAlt = 0x100,
+  kAccessibility = 0x101,
   kUnknown = 0,
 
   // POSIX specific VKEYs. Note that as of Windows SDK 7.1, 0x97-9F, 0xD8-DA,

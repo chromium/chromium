@@ -116,6 +116,7 @@ constexpr auto kVKeyToTopRowActionKeyMap =
         {VKEY_EMOJI_PICKER, TopRowActionKey::kEmojiPicker},
         {VKEY_DICTATE, TopRowActionKey::kDictation},
         {VKEY_PRIVACY_SCREEN_TOGGLE, TopRowActionKey::kPrivacyScreenToggle},
+        {VKEY_ACCESSIBILITY, TopRowActionKey::kAccessibility},
     });
 
 // Some ChromeOS compatible keyboards have a capslock key.
