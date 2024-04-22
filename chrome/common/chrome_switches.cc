@@ -747,19 +747,6 @@ const char kSchedulerConfigurationDefault[] = "scheduler-configuration-default";
 const char kHelp[] = "help";
 const char kHelpShort[] = "h";
 
-// Specifies which encryption storage backend to use. Possible values are
-// kwallet, kwallet5, kwallet6, gnome-libsecret, basic.
-// Any other value will lead to Chrome detecting the best backend automatically.
-// TODO(crbug.com/40449930): Once PasswordStore no longer uses KWallet for
-// storing passwords, rename this flag to stop referencing passwords. Do not
-// rename it sooner, though; developers and testers might rely on it keeping
-// large amounts of testing passwords out of their KWallets.
-const char kPasswordStore[] = "password-store";
-
-// Enables the feature of allowing the user to disable the backend via a
-// setting.
-const char kEnableEncryptionSelection[] = "enable-encryption-selection";
-
 // The same as the --class argument in X applications.  Overrides the WM_CLASS
 // window property with the given value.
 const char kWmClass[] = "class";

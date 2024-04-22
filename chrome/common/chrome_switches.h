@@ -234,8 +234,6 @@ extern const char kSchedulerConfigurationDefault[];
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kHelp[];
 extern const char kHelpShort[];
-extern const char kPasswordStore[];
-extern const char kEnableEncryptionSelection[];
 extern const char kWmClass[];
 #endif
 
