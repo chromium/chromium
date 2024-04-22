@@ -535,6 +535,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void EnableMojoJsBindings(
       content::mojom::ExtraMojoJsFeaturesPtr features) override;
   bool ShouldChangeRenderFrameHostOnSameSiteNavigation() const override;
+  bool IsClipboardOwner(ui::ClipboardSequenceNumberToken seqno) const override;
+  void MarkClipboardOwner(ui::ClipboardSequenceNumberToken seqno) override;
 
   // Additional non-override const version of GetMainFrame.
   const RenderFrameHostImpl* GetMainFrame() const;

@@ -112,6 +112,7 @@
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
+#include "content/browser/renderer_host/clipboard_host_impl.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/cookie_utils.h"
 #include "content/browser/renderer_host/dip_util.h"
@@ -16526,6 +16527,16 @@ RenderFrameHostImpl::MakeUrgentMessageScopeIfNeeded() {
 void RenderFrameHostImpl::AddDeferredSharedStorageHeaderCallback(
     base::OnceCallback<void(NavigationOrDocumentHandle*)> callback) {
   deferred_shared_storage_header_callbacks_.push_back(std::move(callback));
+}
+
+bool RenderFrameHostImpl::IsClipboardOwner(
+    ui::ClipboardSequenceNumberToken seqno) const {
+  return IsLastClipboardWrite(*this, seqno);
+}
+
+void RenderFrameHostImpl::MarkClipboardOwner(
+    ui::ClipboardSequenceNumberToken seqno) {
+  SetLastClipboardWrite(*this, seqno);
 }
 
 }  // namespace content

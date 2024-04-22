@@ -754,6 +754,7 @@
 
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
+#include "chrome/browser/enterprise/data_protection/paste_allowed_request.h"
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
@@ -7550,7 +7551,7 @@ void ChromeContentBrowserClient::IsClipboardPasteAllowedByPolicy(
     ClipboardPasteData clipboard_paste_data,
     IsClipboardPasteAllowedCallback callback) {
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-  enterprise_data_protection::PasteIfAllowedByPolicy(
+  enterprise_data_protection::PasteAllowedRequest::StartPasteAllowedRequest(
       source, destination, metadata, std::move(clipboard_paste_data),
       std::move(callback));
 #else

@@ -13,6 +13,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/data_controls/data_controls_dialog.h"
 #include "chrome/browser/enterprise/data_controls/rules_service.h"
+#include "chrome/browser/enterprise/data_protection/paste_allowed_request.h"
 #include "components/enterprise/common/files_scan_data.h"
 #include "components/enterprise/content/clipboard_restriction_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -410,7 +411,6 @@ void PasteIfAllowedByPolicy(
     const content::ClipboardMetadata& metadata,
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback) {
-
   if (ui::DataTransferPolicyController::HasInstance()) {
     absl::variant<size_t, std::vector<base::FilePath>> pasted_content;
     if (clipboard_paste_data.file_paths.empty()) {

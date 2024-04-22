@@ -1100,6 +1100,15 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual void OnPreloadingHeuristicsModelDone(const GURL& url,
                                                float score) = 0;
 
+  // Checks if `seqno` is known to have originated from this RFH. This will only
+  // return true if `seqno` represents the last clipboard write made by all
+  // RFHs.
+  virtual bool IsClipboardOwner(
+      ui::ClipboardSequenceNumberToken seqno) const = 0;
+
+  // Marks `seqno` as originating from this RFH.
+  virtual void MarkClipboardOwner(ui::ClipboardSequenceNumberToken seqno) = 0;
+
  private:
   // This interface should only be implemented inside content.
   friend class RenderFrameHostImpl;

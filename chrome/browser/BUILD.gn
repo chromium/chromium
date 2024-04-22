@@ -6414,6 +6414,8 @@ static_library("browser") {
     sources += [
       "//chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.cc",
       "//chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h",
+      "//chrome/browser/enterprise/data_protection/paste_allowed_request.cc",
+      "//chrome/browser/enterprise/data_protection/paste_allowed_request.h",
     ]
     deps += [ "//chrome/browser/enterprise/data_controls" ]
   }

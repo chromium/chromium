@@ -10359,7 +10359,10 @@ test("unit_tests") {
   }
 
   if (enterprise_data_controls) {
-    sources += [ "../browser/enterprise/data_protection/data_protection_clipboard_utils_unittest.cc" ]
+    sources += [
+      "../browser/enterprise/data_protection/data_protection_clipboard_utils_unittest.cc",
+      "../browser/enterprise/data_protection/paste_allowed_request_unittest.cc",
+    ]
     deps += [ "../browser/enterprise/data_controls:unit_tests" ]
   }
 

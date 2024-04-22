@@ -93,14 +93,6 @@ class CopyObserver : public ui::ClipboardObserver {
   }
 };
 
-// Helper to check if an `rfh`/`seqno` pair was the last browser tab to write
-// to the clipboard.
-bool IsLastClipboardWrite(const RenderFrameHost& rfh,
-                          ui::ClipboardSequenceNumberToken seqno) {
-  const auto& info = LastClipboardWriterInfoStorage();
-  return info.rfh_id == rfh.GetGlobalId() && info.seqno == seqno;
-}
-
 void ClearIfLastClipboardWriterIs(const RenderFrameHost& rfh) {
   if (LastClipboardWriterInfoStorage().rfh_id == rfh.GetGlobalId()) {
     LastClipboardWriterInfoStorage() = {};
@@ -129,12 +121,19 @@ std::u16string ExtractText(ui::ClipboardBuffer clipboard_buffer,
 
 }  // namespace
 
-// The amount of time that the result of a content allow request is cached
-// and reused for the same clipboard `seqno`.
-// TODO(b/294844565): Update this once multi-format pastes are handled
-// correctly.
-constexpr base::TimeDelta ClipboardHostImpl::kIsPasteAllowedRequestTooOld =
-    base::Milliseconds(5000);
+bool IsLastClipboardWrite(const RenderFrameHost& rfh,
+                          ui::ClipboardSequenceNumberToken seqno) {
+  const auto& info = LastClipboardWriterInfoStorage();
+  return info.rfh_id == rfh.GetGlobalId() && info.seqno == seqno;
+}
+
+void SetLastClipboardWrite(const RenderFrameHost& rfh,
+                           ui::ClipboardSequenceNumberToken seqno) {
+  LastClipboardWriterInfoStorage() = {
+      .rfh_id = rfh.GetGlobalId(),
+      .seqno = seqno,
+  };
+}
 
 ClipboardEndpoint GetSourceClipboardEndpoint(
     ui::ClipboardSequenceNumberToken seqno,
@@ -175,56 +174,6 @@ ClipboardEndpoint GetSourceClipboardEndpoint(
           },
           info.rfh_id),
       *rfh);
-}
-
-ClipboardHostImpl::IsPasteAllowedRequest::IsPasteAllowedRequest() = default;
-ClipboardHostImpl::IsPasteAllowedRequest::~IsPasteAllowedRequest() = default;
-
-bool ClipboardHostImpl::IsPasteAllowedRequest::AddCallback(
-    IsClipboardPasteAllowedCallback callback) {
-  callbacks_.push_back(std::move(callback));
-
-  // If this is the first callback registered tell the caller to start the scan.
-  return callbacks_.size() == 1;
-}
-
-void ClipboardHostImpl::IsPasteAllowedRequest::AddData(
-    ClipboardPasteData data) {
-  data_.Merge(std::move(data));
-}
-
-void ClipboardHostImpl::IsPasteAllowedRequest::Complete(
-    IsClipboardPasteAllowedCallbackArgType data) {
-  completed_time_ = base::Time::Now();
-  data_allowed_ = data.has_value();
-  if (*data_allowed_) {
-    AddData(std::move(*data));
-  }
-  InvokeCallbacks();
-}
-
-bool ClipboardHostImpl::IsPasteAllowedRequest::IsObsolete(base::Time now) {
-  return (now - completed_time_) > kIsPasteAllowedRequestTooOld;
-}
-
-base::Time ClipboardHostImpl::IsPasteAllowedRequest::completed_time() {
-  DCHECK(is_complete());
-  return completed_time_;
-}
-
-void ClipboardHostImpl::IsPasteAllowedRequest::InvokeCallbacks() {
-  DCHECK(data_allowed_.has_value());
-
-  auto callbacks = std::move(callbacks_);
-  for (auto& callback : callbacks) {
-    if (!callback.is_null()) {
-      if (*data_allowed_) {
-        std::move(callback).Run(data_);
-      } else {
-        std::move(callback).Run(std::nullopt);
-      }
-    }
-  }
 }
 
 ClipboardHostImpl::ClipboardHostImpl(
@@ -693,14 +642,6 @@ void ClipboardHostImpl::CommitWrite() {
 bool ClipboardHostImpl::IsRendererPasteAllowed(
     ui::ClipboardBuffer clipboard_buffer,
     RenderFrameHost& render_frame_host) {
-  auto it = is_allowed_requests_.find(
-      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
-          clipboard_buffer));
-  if (it != is_allowed_requests_.end() && it->second.is_complete() &&
-      !it->second.IsObsolete(base::Time::Now())) {
-    return true;
-  }
-
   return GetContentClient()->browser()->IsClipboardPasteAllowed(
       &render_frame_host);
 }
@@ -766,49 +707,13 @@ void ClipboardHostImpl::PasteIfPolicyAllowed(
     const ui::ClipboardFormatType& data_type,
     ClipboardPasteData clipboard_paste_data,
     IsClipboardPasteAllowedCallback callback) {
-  if (clipboard_paste_data.empty()) {
-    std::move(callback).Run(std::move(clipboard_paste_data));
-    return;
-  }
-
-  CleanupObsoleteRequests();
-  ui::ClipboardSequenceNumberToken seqno =
-      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(clipboard_buffer);
-
-  // Always allow if the source of the last clipboard commit was this host.
-  if (IsLastClipboardWrite(render_frame_host(), seqno)) {
-    std::move(callback).Run(std::move(clipboard_paste_data));
-    return;
-  }
-
-  // Add |callback| to the callbacks associated to the sequence number, adding
-  // an entry to the map if one does not exist.
-  auto& request = is_allowed_requests_[seqno];
-
-  // If this request has already completed, invoke the callback immediately
-  // and return.
-  if (request.is_complete()) {
-    std::move(callback).Run(std::move(clipboard_paste_data));
-    return;
-  }
-
-  if (request.AddCallback(std::move(callback))) {
-    StartIsPasteAllowedRequest(seqno, data_type, clipboard_buffer,
-                               std::move(clipboard_paste_data));
-  } else {
-    request.AddData(std::move(clipboard_paste_data));
-  }
-}
-
-void ClipboardHostImpl::StartIsPasteAllowedRequest(
-    const ui::ClipboardSequenceNumberToken& seqno,
-    const ui::ClipboardFormatType& data_type,
-    ui::ClipboardBuffer clipboard_buffer,
-    ClipboardPasteData clipboard_paste_data) {
   std::optional<size_t> data_size;
   if (clipboard_paste_data.file_paths.empty()) {
     data_size = clipboard_paste_data.size();
   }
+
+  ui::ClipboardSequenceNumberToken seqno =
+      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(clipboard_buffer);
 
   static_cast<RenderFrameHostImpl&>(render_frame_host())
       .IsClipboardPasteAllowedByPolicy(
@@ -819,19 +724,7 @@ void ClipboardHostImpl::StartIsPasteAllowedRequest(
               .format_type = data_type,
               .seqno = seqno,
           },
-          std::move(clipboard_paste_data),
-          base::BindOnce(&ClipboardHostImpl::FinishPasteIfAllowed,
-                         weak_ptr_factory_.GetWeakPtr(), seqno));
-}
-
-void ClipboardHostImpl::FinishPasteIfAllowed(
-    const ui::ClipboardSequenceNumberToken& seqno,
-    std::optional<ClipboardPasteData> clipboard_paste_data) {
-  if (is_allowed_requests_.count(seqno) == 0)
-    return;
-
-  auto& request = is_allowed_requests_[seqno];
-  request.Complete(std::move(clipboard_paste_data));
+          std::move(clipboard_paste_data), std::move(callback));
 }
 
 void ClipboardHostImpl::OnCopyHtmlAllowedResult(
@@ -885,15 +778,6 @@ void ClipboardHostImpl::OnCopyAllowedResult(
         pickle, ui::ClipboardFormatType::WebCustomDataType());
   } else {
     NOTREACHED();
-  }
-}
-
-void ClipboardHostImpl::CleanupObsoleteRequests() {
-  for (auto it = is_allowed_requests_.begin();
-       it != is_allowed_requests_.end();) {
-    it = it->second.IsObsolete(base::Time::Now())
-             ? is_allowed_requests_.erase(it)
-             : std::next(it);
   }
 }
 
