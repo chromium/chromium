@@ -47,6 +47,10 @@ BASE_FEATURE(kAVFoundationCaptureForwardSampleTimestamps,
              "AVFoundationCaptureForwardSampleTimestamps",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAVFoundationCaptureSonomaStallCheck,
+             "AVFoundationCaptureSonomaStallCheck",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 // Logitech 4K Pro
@@ -79,6 +83,16 @@ std::optional<base::TimeTicks> GetCMSampleBufferTimestamp(
     return base::TimeTicks::FromMachAbsoluteTime(mach_time);
   }
   return std::nullopt;
+}
+
+bool ShouldRunStallCheck() {
+  // The stall check should not be needed on macOS 14 due to a redesign of the
+  // camera capture in macOS 14. It also interferes with the Presenter's Overlay
+  // feature that was introduced in macOS 14. See https://crbug.com/335210401.
+  if (@available(macOS 14.0, *)) {
+    return base::FeatureList::IsEnabled(kAVFoundationCaptureSonomaStallCheck);
+  }
+  return true;
 }
 
 constexpr size_t kPixelBufferPoolSize = 10;
@@ -553,7 +567,9 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     _capturedFirstFrame = false;
     _capturedFrameSinceLastStallCheck = NO;
   }
-  [self doStallCheck:0];
+  if (ShouldRunStallCheck()) {
+    [self doStallCheck:0];
+  }
   return YES;
 }
 
