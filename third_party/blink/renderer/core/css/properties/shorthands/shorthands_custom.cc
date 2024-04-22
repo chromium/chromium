@@ -795,35 +795,27 @@ bool BorderImage::ParseShorthand(
 
   css_parsing_utils::AddProperty(
       CSSPropertyID::kBorderImageSource, CSSPropertyID::kBorderImage,
-      source
-          ? *source
-          : *To<Longhand>(&GetCSSPropertyBorderImageSource())->InitialValue(),
+      source ? *source : *GetCSSPropertyBorderImageSource().InitialValue(),
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
   css_parsing_utils::AddProperty(
       CSSPropertyID::kBorderImageSlice, CSSPropertyID::kBorderImage,
-      slice ? *slice
-            : *To<Longhand>(&GetCSSPropertyBorderImageSlice())->InitialValue(),
+      slice ? *slice : *GetCSSPropertyBorderImageSlice().InitialValue(),
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
   css_parsing_utils::AddProperty(
       CSSPropertyID::kBorderImageWidth, CSSPropertyID::kBorderImage,
-      width ? *width
-            : *To<Longhand>(&GetCSSPropertyBorderImageWidth())->InitialValue(),
+      width ? *width : *GetCSSPropertyBorderImageWidth().InitialValue(),
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
   css_parsing_utils::AddProperty(
       CSSPropertyID::kBorderImageOutset, CSSPropertyID::kBorderImage,
-      outset
-          ? *outset
-          : *To<Longhand>(&GetCSSPropertyBorderImageOutset())->InitialValue(),
+      outset ? *outset : *GetCSSPropertyBorderImageOutset().InitialValue(),
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
   css_parsing_utils::AddProperty(
       CSSPropertyID::kBorderImageRepeat, CSSPropertyID::kBorderImage,
-      repeat
-          ? *repeat
-          : *To<Longhand>(&GetCSSPropertyBorderImageRepeat())->InitialValue(),
+      repeat ? *repeat : *GetCSSPropertyBorderImageRepeat().InitialValue(),
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
 
@@ -2071,16 +2063,15 @@ bool Grid::ParseShorthand(bool important,
     // their initial value, as normal for shorthands.
     css_parsing_utils::AddProperty(
         CSSPropertyID::kGridAutoFlow, CSSPropertyID::kGrid,
-        *(To<Longhand>(GetCSSPropertyGridAutoFlow()).InitialValue()), important,
+        *GetCSSPropertyGridAutoFlow().InitialValue(), important,
         css_parsing_utils::IsImplicitProperty::kImplicit, properties);
     css_parsing_utils::AddProperty(
         CSSPropertyID::kGridAutoColumns, CSSPropertyID::kGrid,
-        *(To<Longhand>(GetCSSPropertyGridAutoColumns()).InitialValue()),
-        important, css_parsing_utils::IsImplicitProperty::kImplicit,
-        properties);
+        *GetCSSPropertyGridAutoColumns().InitialValue(), important,
+        css_parsing_utils::IsImplicitProperty::kImplicit, properties);
     css_parsing_utils::AddProperty(
         CSSPropertyID::kGridAutoRows, CSSPropertyID::kGrid,
-        *(To<Longhand>(GetCSSPropertyGridAutoRows()).InitialValue()), important,
+        *GetCSSPropertyGridAutoRows().InitialValue(), important,
         css_parsing_utils::IsImplicitProperty::kImplicit, properties);
     return true;
   }
@@ -2103,8 +2094,7 @@ bool Grid::ParseShorthand(bool important,
       return false;
     }
     if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
-      auto_rows_value =
-          To<Longhand>(GetCSSPropertyGridAutoRows()).InitialValue();
+      auto_rows_value = GetCSSPropertyGridAutoRows().InitialValue();
     } else {
       auto_rows_value = css_parsing_utils::ConsumeGridTrackList(
           range, context, css_parsing_utils::TrackListType::kGridAuto);
@@ -2120,10 +2110,8 @@ bool Grid::ParseShorthand(bool important,
                                                                    context))) {
       return false;
     }
-    template_rows =
-        To<Longhand>(GetCSSPropertyGridTemplateRows()).InitialValue();
-    auto_columns_value =
-        To<Longhand>(GetCSSPropertyGridAutoColumns()).InitialValue();
+    template_rows = GetCSSPropertyGridTemplateRows().InitialValue();
+    auto_columns_value = GetCSSPropertyGridAutoColumns().InitialValue();
   } else {
     // 3- <grid-template-rows> / [ auto-flow && dense? ] <grid-auto-columns>?
     template_rows =
@@ -2140,8 +2128,7 @@ bool Grid::ParseShorthand(bool important,
       return false;
     }
     if (range.AtEnd()) {
-      auto_columns_value =
-          To<Longhand>(GetCSSPropertyGridAutoColumns()).InitialValue();
+      auto_columns_value = GetCSSPropertyGridAutoColumns().InitialValue();
     } else {
       auto_columns_value = css_parsing_utils::ConsumeGridTrackList(
           range, context, css_parsing_utils::TrackListType::kGridAuto);
@@ -2149,9 +2136,8 @@ bool Grid::ParseShorthand(bool important,
         return false;
       }
     }
-    template_columns =
-        To<Longhand>(GetCSSPropertyGridTemplateColumns()).InitialValue();
-    auto_rows_value = To<Longhand>(GetCSSPropertyGridAutoRows()).InitialValue();
+    template_columns = GetCSSPropertyGridTemplateColumns().InitialValue();
+    auto_rows_value = GetCSSPropertyGridAutoRows().InitialValue();
   }
 
   if (!range.AtEnd()) {
@@ -2171,9 +2157,8 @@ bool Grid::ParseShorthand(bool important,
       properties);
   css_parsing_utils::AddProperty(
       CSSPropertyID::kGridTemplateAreas, CSSPropertyID::kGrid,
-      *(To<Longhand>(GetCSSPropertyGridTemplateAreas()).InitialValue()),
-      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
+      *GetCSSPropertyGridTemplateAreas().InitialValue(), important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   css_parsing_utils::AddProperty(
       CSSPropertyID::kGridAutoFlow, CSSPropertyID::kGrid, *grid_auto_flow,
       important, css_parsing_utils::IsImplicitProperty::kImplicit, properties);
@@ -2594,8 +2579,8 @@ bool Offset::ParseShorthand(
   // CSSPropertys, and the base CSSProperty::ParseSingleValue contains
   // no functionality.
   const CSSValue* offset_position =
-      To<Longhand>(GetCSSPropertyOffsetPosition())
-          .ParseSingleValue(range, context, CSSParserLocalContext());
+      GetCSSPropertyOffsetPosition().ParseSingleValue(range, context,
+                                                      CSSParserLocalContext());
   const CSSValue* offset_path =
       css_parsing_utils::ConsumeOffsetPath(range, context);
   const CSSValue* offset_distance = nullptr;
@@ -2611,9 +2596,8 @@ bool Offset::ParseShorthand(
   }
   const CSSValue* offset_anchor = nullptr;
   if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
-    offset_anchor =
-        To<Longhand>(GetCSSPropertyOffsetAnchor())
-            .ParseSingleValue(range, context, CSSParserLocalContext());
+    offset_anchor = GetCSSPropertyOffsetAnchor().ParseSingleValue(
+        range, context, CSSParserLocalContext());
     if (!offset_anchor) {
       return false;
     }
@@ -2902,8 +2886,8 @@ bool PlaceContent::ParseShorthand(
   CSSParserTokenRange range_copy = range;
   bool is_baseline = css_parsing_utils::IsBaselineKeyword(range.Peek().Id());
   const CSSValue* align_content_value =
-      To<Longhand>(GetCSSPropertyAlignContent())
-          .ParseSingleValue(range, context, local_context);
+      GetCSSPropertyAlignContent().ParseSingleValue(range, context,
+                                                    local_context);
   if (!align_content_value) {
     return false;
   }
@@ -2919,9 +2903,8 @@ bool PlaceContent::ParseShorthand(
     }
   }
   if (!justify_content_value) {
-    justify_content_value =
-        To<Longhand>(GetCSSPropertyJustifyContent())
-            .ParseSingleValue(range, context, local_context);
+    justify_content_value = GetCSSPropertyJustifyContent().ParseSingleValue(
+        range, context, local_context);
   }
 
   if (!justify_content_value || !range.AtEnd()) {
@@ -2963,8 +2946,8 @@ bool PlaceItems::ParseShorthand(
 
   CSSParserTokenRange range_copy = range;
   const CSSValue* align_items_value =
-      To<Longhand>(GetCSSPropertyAlignItems())
-          .ParseSingleValue(range, context, local_context);
+      GetCSSPropertyAlignItems().ParseSingleValue(range, context,
+                                                  local_context);
   if (!align_items_value) {
     return false;
   }
@@ -2974,8 +2957,8 @@ bool PlaceItems::ParseShorthand(
   }
 
   const CSSValue* justify_items_value =
-      To<Longhand>(GetCSSPropertyJustifyItems())
-          .ParseSingleValue(range, context, local_context);
+      GetCSSPropertyJustifyItems().ParseSingleValue(range, context,
+                                                    local_context);
   if (!justify_items_value || !range.AtEnd()) {
     return false;
   }
@@ -3015,8 +2998,7 @@ bool PlaceSelf::ParseShorthand(
 
   CSSParserTokenRange range_copy = range;
   const CSSValue* align_self_value =
-      To<Longhand>(GetCSSPropertyAlignSelf())
-          .ParseSingleValue(range, context, local_context);
+      GetCSSPropertyAlignSelf().ParseSingleValue(range, context, local_context);
   if (!align_self_value) {
     return false;
   }
@@ -3026,8 +3008,8 @@ bool PlaceSelf::ParseShorthand(
   }
 
   const CSSValue* justify_self_value =
-      To<Longhand>(GetCSSPropertyJustifySelf())
-          .ParseSingleValue(range, context, local_context);
+      GetCSSPropertyJustifySelf().ParseSingleValue(range, context,
+                                                   local_context);
   if (!justify_self_value || !range.AtEnd()) {
     return false;
   }
@@ -3067,7 +3049,7 @@ bool PositionTry::ParseShorthand(
       CSSPropertyID::kPositionTryOrder, CSSPropertyID::kPositionTry, context,
       range);
   if (!order) {
-    order = To<Longhand>(&GetCSSPropertyPositionTryOrder())->InitialValue();
+    order = GetCSSPropertyPositionTryOrder().InitialValue();
   }
   AddProperty(CSSPropertyID::kPositionTryOrder, CSSPropertyID::kPositionTry,
               *order, important,

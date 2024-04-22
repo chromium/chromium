@@ -81,8 +81,7 @@ MediaQueryExpValue CalcValue(const String& syntax, const String& value) {
 
 MediaQueryExpValue NumericLiteralValue(double value,
                                        CSSPrimitiveValue::UnitType unit) {
-  auto* num_lit_val =
-      DynamicTo<CSSPrimitiveValue>(CSSNumericLiteralValue::Create(value, unit));
+  auto* num_lit_val = CSSNumericLiteralValue::Create(value, unit);
   EXPECT_NE(num_lit_val, nullptr);
 
   return CssValue(*num_lit_val);
