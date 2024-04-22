@@ -82,11 +82,10 @@ def main():
     else:
       args = ['siso', 'ninja', '-C', options.out_dir]
     args.extend(targets)
-    p = subprocess.run(args, cwd=repo_root, capture_output=True)
+    p = subprocess.run(args, cwd=repo_root, stdout=2, stderr=2)
     if p.returncode != 0:
       # TODO: report error in IdeAnalysis.Status?
-      sys.stderr.write('build failed with %d\n%s\n%s' % (
-          p.returncode, p.stdout, p.stderr))
+      sys.stderr.write('build failed with %d\n' % p.returncode)
       return 1
 
   args = ['siso', 'query', 'ideanalysis', '-C', options.out_dir]
