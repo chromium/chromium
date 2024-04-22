@@ -232,8 +232,7 @@ class ClankCompiler:
         'is_official_build=true',
         'symbol_level=1',  # to fit 30 GiB RAM on the bot when LLD is running
         'target_os="android"',
-        # TODO(b/236070141): remove goma config.
-        'use_goma=' + str(self._options.use_goma).lower(),
+        'enable_proguard_obfuscation=false',  # More debuggable stacktraces.
         'use_remoteexec=' + str(self._options.use_remoteexec).lower(),
         'use_order_profiling=' + str(instrumented).lower(),
         'devtools_instrumentation_dumping=' + str(instrumented).lower()
