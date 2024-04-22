@@ -2511,12 +2511,6 @@ BASE_FEATURE(kWebFontsCacheAwareTimeoutAdaption,
 #endif
 );
 
-// Controls whether the implementation of the performance.measureMemory
-// web API uses PerformanceManager or not.
-BASE_FEATURE(kWebMeasureMemoryViaPerformanceManager,
-             "WebMeasureMemoryViaPerformanceManager",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kWebRtcCombinedNetworkAndWorkerThread,
              "WebRtcCombinedNetworkAndWorkerThread",
              base::FEATURE_ENABLED_BY_DEFAULT);

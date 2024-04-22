@@ -26,7 +26,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -159,13 +158,6 @@ void WebMeasureMemorySecurityCheckerImpl::CheckMeasureMemoryIsAllowed(
   // If that happens the DocumentCoordinationUnit mojo interface is reset so
   // the measurement result will be thrown away, so this is not a security
   // issue, but it does mean doing extra work.
-
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kWebMeasureMemoryViaPerformanceManager)) {
-    std::move(bad_message_callback)
-        .Run("WebMeasureMemoryViaPerformanceManager feature is disabled");
-    return;
-  }
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&CheckIsCrossOriginIsolatedOnUISeq,
                                 frame->GetRenderFrameHostProxy(),

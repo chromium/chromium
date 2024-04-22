@@ -8,7 +8,6 @@
 #include "base/rand_util.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom-blink.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -86,10 +85,6 @@ enum class ApiStatus {
 };
 
 ApiStatus CheckMeasureMemoryAvailability() {
-  if (!base::FeatureList::IsEnabled(
-          features::kWebMeasureMemoryViaPerformanceManager)) {
-    return ApiStatus::kNotAvailableDueToFlag;
-  }
   if (!RuntimeEnabledFeatures::PerformanceManagerInstrumentationEnabled()) {
     return ApiStatus::kNotAvailableDueToResourceCoordinator;
   }
