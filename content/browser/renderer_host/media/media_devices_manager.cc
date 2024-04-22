@@ -387,7 +387,10 @@ MediaDevicesManager::SubscriptionRequest::operator=(SubscriptionRequest&&) =
 class MediaDevicesManager::AudioServiceDeviceListener
     : public audio::mojom::DeviceListener {
  public:
-  AudioServiceDeviceListener() { ConnectToService(); }
+  AudioServiceDeviceListener(base::RepeatingClosure disconnect_cb)
+      : disconnect_cb_(std::move(disconnect_cb)) {
+    ConnectToService();
+  }
 
   AudioServiceDeviceListener(const AudioServiceDeviceListener&) = delete;
   AudioServiceDeviceListener& operator=(const AudioServiceDeviceListener&) =
@@ -420,8 +423,10 @@ class MediaDevicesManager::AudioServiceDeviceListener
 
   void OnConnectionError() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(disconnect_cb_);
     mojo_audio_device_notifier_.reset();
     receiver_.reset();
+    disconnect_cb_.Run();
 
     // Resetting the error handler in a posted task since doing it synchronously
     // results in a browser crash. See https://crbug.com/845142.
@@ -430,6 +435,10 @@ class MediaDevicesManager::AudioServiceDeviceListener
                                   weak_factory_.GetWeakPtr()));
   }
 
+  // |disconnect_cb_| is a callback used to invalidate the cache and do a
+  // fresh enumeration to avoid losing out on the changes that might happen
+  // when the audio service is not active.
+  const base::RepeatingClosure disconnect_cb_;
   mojo::Receiver<audio::mojom::DeviceListener> receiver_{this};
   mojo::Remote<audio::mojom::DeviceNotifier> mojo_audio_device_notifier_;
 
@@ -615,8 +624,14 @@ void MediaDevicesManager::StartMonitoring() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kAudioServiceOutOfProcess)) {
     DCHECK(!audio_service_device_listener_);
+
+    // base::Unretained(this) is safe here because |this| owns
+    // |audio_service_device_listener_|.
     audio_service_device_listener_ =
-        std::make_unique<AudioServiceDeviceListener>();
+        std::make_unique<AudioServiceDeviceListener>(
+            /*disconnect_cb=*/base::BindRepeating(
+                &MediaDevicesManager::HandleDevicesChanged,
+                base::Unretained(this), MediaDeviceType::kMediaAudioInput));
   }
 #endif
   SendLogMessage("StartMonitoring()");
