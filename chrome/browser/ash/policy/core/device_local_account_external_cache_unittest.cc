@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/policy/core/device_local_account_external_cache.h"
 
+#include <initializer_list>
+#include <iomanip>
 #include <memory>
 #include <set>
 #include <string>
@@ -17,6 +19,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -24,6 +27,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
@@ -156,6 +160,24 @@ void AddExtensionToDictionary(const std::string& extension_id,
   dict.Set(extension_id, std::move(value));
 }
 
+base::Value::Dict CreateExtensionsDictionary(
+    std::initializer_list<std::string> extensions) {
+  base::Value::Dict result;
+
+  for (std::string extension_id : extensions) {
+    AddExtensionToDictionary(extension_id, "http://download.url", result);
+  }
+  return result;
+}
+
+std::vector<std::string> GetKeys(const base::Value::Dict& dict) {
+  std::vector<std::string> keys;
+  for (auto [key, _] : dict) {
+    keys.push_back(key);
+  }
+  return keys;
+}
+
 }  // namespace
 
 class DeviceLocalAccountExternalCacheTest : public testing::Test {
@@ -252,8 +274,8 @@ base::FilePath DeviceLocalAccountExternalCacheTest::SimulateExtensionDownload(
         extension_update_found_observer) {
   // Return a manifest to the downloader.
   std::string manifest;
-  EXPECT_TRUE(base::ReadFileToString(test_dir_.Append(kExtensionUpdateManifest),
-                                     &manifest));
+  EXPECT_TRUE(
+      base::ReadFileToString(test_dir_.Append(manifest_file), &manifest));
 
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
   test_url_loader_factory_.AddResponse(pending_request->request.url.spec(),
@@ -271,7 +293,7 @@ base::FilePath DeviceLocalAccountExternalCacheTest::SimulateExtensionDownload(
                                        "Content is irrelevant.");
 
   return cache_dir_.Append(
-      base::StringPrintf("%s-%s.crx", kExtensionId, kExtensionCRXVersion));
+      base::StringPrintf("%s-%s.crx", id.c_str(), kExtensionCRXVersion));
 }
 
 // Verifies that when the cache is not explicitly started, the loader does not
@@ -290,7 +312,8 @@ TEST_F(DeviceLocalAccountExternalCacheTest, ForceInstallListEmpty) {
   EXPECT_CALL(visitor_, OnExternalProviderReady(provider_.get())).Times(1);
   external_cache_->StartCache(
       base::SingleThreadTaskRunner::GetCurrentDefault());
-  external_cache_->UpdateExtensionsList(base::Value::Dict());
+  external_cache_->UpdateExtensionsList(base::Value::Dict(),
+                                        base::Value::Dict());
   base::RunLoop().RunUntilIdle();
   VerifyAndResetVisitorCallExpectations();
 
@@ -319,7 +342,7 @@ TEST_F(DeviceLocalAccountExternalCacheTest, ForceInstallListSet) {
   auto cache_task_runner = base::MakeRefCounted<TrackingProxyTaskRunner>(
       base::SingleThreadTaskRunner::GetCurrentDefault());
   external_cache_->StartCache(cache_task_runner);
-  external_cache_->UpdateExtensionsList(std::move(dict));
+  external_cache_->UpdateExtensionsList(std::move(dict), base::Value::Dict());
 
   // Spin the loop, allowing the loader to process the force-install list.
   // Verify that the loader announces an empty extension list.
@@ -358,6 +381,41 @@ TEST_F(DeviceLocalAccountExternalCacheTest, ForceInstallListSet) {
   // that point, no further file I/O tasks are pending.
   shutdown_run_loop.Run();
   EXPECT_FALSE(cache_task_runner->has_pending_tasks());
+}
+
+TEST_F(DeviceLocalAccountExternalCacheTest,
+       ShouldSeparateAshAndLacrosExtensions) {
+  base::Value::Dict ash_extension_prefs =
+      CreateExtensionsDictionary({"ash-extension", "shared-extension"});
+  base::Value::Dict lacros_extension_prefs =
+      CreateExtensionsDictionary({"lacros-extension", "shared-extension"});
+
+  base::test::TestFuture<const std::string&, base::Value::Dict> ash_loader;
+  base::test::TestFuture<const std::string&, base::Value::Dict> lacros_loader;
+
+  DeviceLocalAccountExternalCache cache{ash_loader.GetRepeatingCallback(),
+                                        lacros_loader.GetRepeatingCallback(),
+                                        "<the-user-id>", cache_dir_};
+
+  cache.UpdateExtensionsList(ash_extension_prefs.Clone(),
+                             lacros_extension_prefs.Clone());
+
+  // Pretend the extensions have been downloaded by the cache.
+  cache.SetCacheResponseForTesting(CreateExtensionsDictionary(
+      {"ash-extension", "lacros-extension", "shared-extension"}));
+
+  auto [user_id_sent_to_ash, extensions_sent_to_ash] = ash_loader.Take();
+  EXPECT_EQ(user_id_sent_to_ash, "<the-user-id>");
+  EXPECT_THAT(
+      GetKeys(extensions_sent_to_ash),
+      ::testing::UnorderedElementsAre("ash-extension", "shared-extension"));
+
+  auto [user_id_sent_to_lacros, extensions_sent_to_lacros] =
+      lacros_loader.Take();
+  EXPECT_EQ(user_id_sent_to_lacros, "<the-user-id>");
+  EXPECT_THAT(
+      GetKeys(extensions_sent_to_lacros),
+      ::testing::UnorderedElementsAre("lacros-extension", "shared-extension"));
 }
 
 }  // namespace chromeos

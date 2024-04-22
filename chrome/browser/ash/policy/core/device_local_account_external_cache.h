@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_POLICY_CORE_DEVICE_LOCAL_ACCOUNT_EXTERNAL_CACHE_H_
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -21,8 +22,12 @@ namespace chromeos {
 class ExternalCache;
 
 /**
- * Wrapper class around ExternalCache that also handles the callbacks from
- * ExternalCacheDelegate.
+ * Wrapper class around `ExternalCache` that will inform the given loaders when
+ * extensions have been downloaded by the cache.
+ * A single instance per device local account (running in Ash) handles all
+ * extensions needed both by Ash and Lacros, but only the cached extensions
+ * meant for Ash will be sent to the `ash_loader`, and only the cached
+ * extensions meant for Lacros will be sent to the `lacros_loader`.
  */
 class DeviceLocalAccountExternalCache : public ExternalCacheDelegate {
  public:
@@ -47,12 +52,21 @@ class DeviceLocalAccountExternalCache : public ExternalCacheDelegate {
   // Return whether the cache is currently running.
   bool IsCacheRunning() const;
 
-  // Send the new extension dictionary down to the ExternalCache.
-  void UpdateExtensionsList(base::Value::Dict dict);
+  // Sends all extensions from both dictionaries down to the `ExternalCache`.
+  // Then when the extensions are downloaded by the cache only the extensions
+  // from `ash_extensions` will be sent to the `ash_loader`, and only the
+  // extensions from `lacros_extensions` will be sent to the `lacros_loader`.
+  void UpdateExtensionsList(base::Value::Dict ash_extensions,
+                            base::Value::Dict lacros_extensions);
 
   scoped_refptr<extensions::ExternalLoader> GetExtensionLoader();
 
-  base::Value::Dict GetCachedExtensions() const;
+  // Returns all cached extensions, both the ones meant for Ash and for Lacros.
+  base::Value::Dict GetCachedExtensionsForTesting() const;
+
+  // Pretends the external cache responded to `OnExtensionListUpdated` with the
+  // given list of cached/downloaded extensions.
+  void SetCacheResponseForTesting(const base::Value::Dict& cached_extensions);
 
  private:
   // `ExternalCacheDelegate`:
@@ -63,6 +77,9 @@ class DeviceLocalAccountExternalCache : public ExternalCacheDelegate {
   const std::string user_id_;
   const base::FilePath cache_dir_;
   std::unique_ptr<ExternalCache> external_cache_;
+
+  std::set<std::string> ash_extension_keys_;
+  std::set<std::string> lacros_extension_keys_;
 
   // Callback invoked when the list of cached extensions that must be installed
   // in Ash is updated.

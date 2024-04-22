@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_CROSAPI_DEVICE_LOCAL_ACCOUNT_EXTENSION_SERVICE_ASH_H_
 #define CHROME_BROWSER_ASH_CROSAPI_DEVICE_LOCAL_ACCOUNT_EXTENSION_SERVICE_ASH_H_
 
+#include <map>
 #include <string>
 
 #include "base/values.h"
@@ -18,9 +19,12 @@ namespace crosapi {
 // Implementation of the crosapi::mojom::DeviceLocalAccountExtensionService
 // interface.
 //
-// When Lacros first comes up, we find the broker belonging to the logged in
-// user, retrieve the install information necessary to install its cached
-// extensions and send them through to Lacros. Subsequent updates will be passed
+// This class will be informed about the force install extensions for all device
+// local accounts, but Lacros only cares about the force install extensions of
+// the primary (logged in) user. However this class exists at the login screen
+// where the primary user is still unknown, so `extensions_by_user_id_` will
+// track all this information and send the right force install extensions
+// dictionary when Lacros first comes up. Subsequent updates will be passed
 // directly via SetForceInstallExtensionsFromCache.
 class DeviceLocalAccountExtensionServiceAsh
     : public crosapi::mojom::DeviceLocalAccountExtensionService {
@@ -50,8 +54,15 @@ class DeviceLocalAccountExtensionServiceAsh
       const base::Value::Dict& dict);
 
  private:
+  base::Value::Dict GetForceInstallExtensionsForPrimaryUser() const;
+
   mojo::ReceiverSet<mojom::DeviceLocalAccountExtensionService> receivers_;
   mojo::RemoteSet<mojom::DeviceLocalAccountExtensionInstaller> installers_;
+
+  // Tracks the latest force-install-extensions dictionary sent to
+  // `SetForceInstallExtensionsFromCache`, keyed on the corresponding
+  // `device_local_account_user_email`.
+  std::map<std::string, base::Value::Dict> user_email_to_extensions_dict_;
 };
 
 }  // namespace crosapi

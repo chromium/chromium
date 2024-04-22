@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_POLICY_HANDLERS_H_
 #define CHROME_BROWSER_EXTENSIONS_POLICY_HANDLERS_H_
 
+#include <optional>
+
 #include "base/values.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 namespace policy {
@@ -44,6 +48,12 @@ class ExtensionListPolicyHandler : public policy::ListPolicyHandler {
 };
 
 // Class for parsing the list of extensions to force install.
+//
+// On ChromeOS the policy values will be filtered before updating the prefs,
+// such that the prefs on Ash only contain the extensions that must be force
+// installed on Ash.
+// Similarly the prefs on Lacros will only contain the extensions that must
+// be force installed on Lacros.
 class ExtensionInstallForceListPolicyHandler
     : public policy::TypeCheckingPolicyHandler {
  public:
@@ -60,9 +70,32 @@ class ExtensionInstallForceListPolicyHandler
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
 
-  // Convenience method to directly get a base::Value::Dict with the policy
-  // values.
-  base::Value::Dict GetPolicyDict(const policy::PolicyMap& policy_map);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Returns a `base::Value::Dict` with the extensions that must be force
+  // installed in Ash. If Lacros is disabled this is the full extensions list,
+  // and if Lacros is enabled this only contains the extensions that must run on
+  // the Ash side.
+  //
+  // Returns nullopt if the policy is unset.
+  std::optional<base::Value::Dict> GetAshPolicyDict(
+      const policy::PolicyMap& policy_map);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Returns a `base::Value::Dict` with the extensions that must be force
+  // installed in Lacros.
+  //
+  // Returns nullopt if the policy is unset.
+  std::optional<base::Value::Dict> GetLacrosPolicyDict(
+      const policy::PolicyMap& policy_map);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Returns a `base::Value::Dict` with the extensions that must be force
+  // installed.
+  //
+  // Returns nullopt if the policy is unset.
+  std::optional<base::Value::Dict> GetPolicyDict(
+      const policy::PolicyMap& policy_map);
 
  private:
   // Parses the data in |policy_value| and writes them to |extension_dict|.

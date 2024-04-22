@@ -128,7 +128,9 @@ class DeviceLocalAccountPolicyBroker
   // Return whether the cache is currently running.
   bool IsCacheRunning() const;
 
-  base::Value::Dict GetCachedExtensions() const;
+  // Returns all cached extensions, both the ones meant for Ash and the ones
+  // meant for Lacros.
+  base::Value::Dict GetCachedExtensionsForTesting() const;
 
  private:
   void CreateComponentCloudPolicyService(CloudPolicyClient* client);

@@ -729,7 +729,7 @@ TEST_F(DeviceLocalAccountPolicyExtensionCacheTest, OnStoreLoaded) {
   loop.Run();
 
   base::Value::Dict extension_dict =
-      broker->GetCachedExtensions().FindDict(kExtensionID)->Clone();
+      broker->GetCachedExtensionsForTesting().FindDict(kExtensionID)->Clone();
   EXPECT_EQ(*extension_dict.FindString(
                 extensions::ExternalProviderImpl::kExternalCrx),
             full_crx_path.value());
