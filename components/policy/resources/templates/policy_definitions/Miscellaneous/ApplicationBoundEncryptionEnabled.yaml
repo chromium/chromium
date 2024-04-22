@@ -11,9 +11,9 @@ features:
   dynamic_refresh: false
   per_profile: false
 items:
-- caption: Disable Application Bound Encryption
-  value: true
 - caption: Enable Application Bound Encryption
+  value: true
+- caption: Disable Application Bound Encryption
   value: false
 owners:
 - wfh@chromium.org
