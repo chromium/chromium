@@ -1,0 +1,46 @@
+Tests the data of Network request lifecycle trace events
+Testing XHR request with responseType of 'text'
+Recording started
+Tracing complete
+Found 4 XHRReadyStateChange events:
+Event 1:
+=> readyState: 1
+=> url: http://127.0.0.1:8000/inspector-protocol/resources/blank.js
+
+Event 2:
+=> readyState: 2
+=> url: http://127.0.0.1:8000/inspector-protocol/resources/blank.js
+
+Event 3:
+=> readyState: 3
+=> url: http://127.0.0.1:8000/inspector-protocol/resources/blank.js
+
+Event 4:
+=> readyState: 4
+=> url: http://127.0.0.1:8000/inspector-protocol/resources/blank.js
+
+XHRLoad event URL: http://127.0.0.1:8000/inspector-protocol/resources/blank.js
+
+
+Testing XHR request with responseType of 'blob'
+Recording started
+Tracing complete
+Found 4 XHRReadyStateChange events:
+Event 1:
+=> readyState: 1
+=> url: http://127.0.0.1:8000/inspector-protocol/resources/blank.js
+
+Event 2:
+=> readyState: 2
+=> url: http://127.0.0.1:8000/inspector-protocol/resources/blank.js
+
+Event 3:
+=> readyState: 3
+=> url: http://127.0.0.1:8000/inspector-protocol/resources/blank.js
+
+Event 4:
+=> readyState: 4
+=> url: http://127.0.0.1:8000/inspector-protocol/resources/blank.js
+
+XHRLoad event URL: http://127.0.0.1:8000/inspector-protocol/resources/blank.js
+
