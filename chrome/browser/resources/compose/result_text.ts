@@ -80,6 +80,7 @@ export class ComposeResultTextElement extends PolymerElement {
       },
       editingEnabled_: {
         type: Boolean,
+        reflectToAttribute: true,
       },
     };
   }
@@ -132,10 +133,16 @@ export class ComposeResultTextElement extends PolymerElement {
   }
 
   private onFocusIn_() {
+    this.dispatchEvent(new CustomEvent(
+        'set-result-focus', {bubbles: true, composed: true, detail: true}));
+
     this.initialText_ = this.textInput.text;
   }
 
   private onFocusOut_() {
+    this.dispatchEvent(new CustomEvent(
+        'set-result-focus', {bubbles: true, composed: true, detail: false}));
+
     const currentText = this.$.resultText.innerText;
     if (currentText === '') {
       // We disallow the user from saving or using empty text. Instead, replace

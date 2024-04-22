@@ -267,6 +267,10 @@
     line-height: 20px;
   }
 
+  :host([enable-ui-refinements][is-editing-result-text_]) .result-container {
+    outline: solid 2px var(--cr-focus-outline-color);
+  }
+
   :host-context([chrome-refresh-2023]) .result-container {
     --compose-result-text-color-while-loading: var(
         --color-compose-dialog-result-foreground-while-loading);
@@ -613,11 +617,13 @@
               is-output-complete="{{outputComplete_}}"
               has-output="{{hasOutput_}}"
               has-partial-output="{{hasPartialOutput_}}"
-              on-result-edit="onResultEdit_">
+              on-result-edit="onResultEdit_"
+              on-set-result-focus="onSetResultFocus_">
             </compose-result-text>
           </div>
           <div id="resultOptionsContainer">
-            <div id="resultOptions" inert$="[[hideResults_(hasOutput_, feedbackEnabled_)]]">
+            <div id="resultOptions"
+                inert$="[[hideResults_(hasOutput_, feedbackEnabled_)]]">
               <select class="md-select" id="lengthMenu"
                 value="[[selectedLength_]]" aria-label="$i18n{lengthMenuTitle}"
                 on-change="onLengthChanged_" hidden="[[enableUiRefinements]]">
