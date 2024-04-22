@@ -15,13 +15,12 @@
 namespace blink {
 class AbortSignal;
 class DOMTaskSignal;
-class SoftNavigationContext;
 
 class MODULES_EXPORT TaskAttributionInfoImpl final
     : public ScriptWrappableTaskState,
       public scheduler::TaskAttributionInfo {
  public:
-  TaskAttributionInfoImpl(scheduler::TaskAttributionId, SoftNavigationContext*);
+  explicit TaskAttributionInfoImpl(scheduler::TaskAttributionId id);
 
   // `ScriptWrappableTaskState` implementation:
   AbortSignal* AbortSource() override;
@@ -30,13 +29,11 @@ class MODULES_EXPORT TaskAttributionInfoImpl final
 
   // `scheduler::TaskAttributionInfo` implementation:
   scheduler::TaskAttributionId Id() const override;
-  SoftNavigationContext* GetSoftNavigationContext() override;
 
   void Trace(Visitor*) const override;
 
  private:
   const scheduler::TaskAttributionId id_;
-  Member<SoftNavigationContext> soft_navigation_context_;
 };
 
 // `TaskAttributionInfoImpl` is the only implementation of

@@ -106,14 +106,23 @@ bool CallbackInvokeHelper<CallbackBase, mode, return_type_is_promise>::
           callback_this.V8Value(callback_->CallbackRelevantScriptState());
     }
     if (auto* tracker = scheduler::TaskAttributionTracker::From(isolate)) {
-      scheduler::TaskAttributionInfo* task_state_to_propagate = nullptr;
+      // There are 3 possible callbacks here:
+      // a) Callbacks which track their registering task as their parent
+      // b) Callbacks which don't do the above, split into two groups:
+      //   1) If there's a current running task, no need to create a new scope.
+      //   2) If there is no current running task, set the parent to
+      //   std::nullopt, making the current callback a root task.
+      scheduler::TaskAttributionInfo* parent_task = nullptr;
       if constexpr (std::is_same<
                         CallbackBase,
                         CallbackFunctionWithTaskAttributionBase>::value) {
-        task_state_to_propagate = callback_->GetParentTask();
+        parent_task = callback_->GetParentTask();
       }
-      task_attribution_scope_ = tracker->MaybeCreateTaskScopeForCallback(
-          callback_->CallbackRelevantScriptState(), task_state_to_propagate);
+      if (parent_task || !tracker->RunningTask()) {
+        task_attribution_scope_ = tracker->CreateTaskScope(
+            callback_->CallbackRelevantScriptState(), parent_task,
+            scheduler::TaskAttributionTracker::TaskScopeType::kCallback);
+      }
     }
   }
 

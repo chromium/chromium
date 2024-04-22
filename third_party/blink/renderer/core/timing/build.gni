@@ -80,8 +80,6 @@ blink_core_sources_timing = [
   "responsiveness_metrics.h",
   "render_blocking_metrics_reporter.cc",
   "render_blocking_metrics_reporter.h",
-  "soft_navigation_context.cc",
-  "soft_navigation_context.h",
   "soft_navigation_heuristics.cc",
   "soft_navigation_heuristics.h",
   "soft_navigation_entry.cc",
