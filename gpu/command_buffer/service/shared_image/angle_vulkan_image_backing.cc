@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image/angle_vulkan_image_backing.h"
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -37,6 +38,10 @@
 namespace gpu {
 
 namespace {
+
+BASE_FEATURE(kCorrectColorAttachmentUsageComputationInAngleVk,
+             "CorrectColorAttachmentUsageComputationInAngleVk",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 gl::ScopedEGLImage CreateEGLImage(VkImage image,
                                   const VkImageCreateInfo* create_info,
@@ -280,16 +285,28 @@ bool AngleVulkanImageBacking::Initialize(
     const base::span<const uint8_t>& data) {
   auto* device_queue = context_state_->vk_context_provider()->GetDeviceQueue();
 
-  constexpr auto kUsageNeedsColorAttachment =
-      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-      SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
-      SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
-      SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_WEBGPU_READ |
-      SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+  uint32_t usages_needing_color_attachment = 0;
+  // This killswitch guards the correction of the computation on using the color
+  // attachment, which conceptually is "can this backing be written".
+  // TODO(crbug.com/333014977): Remove this killswitch post safe rollout.
+  if (base::FeatureList::IsEnabled(
+          kCorrectColorAttachmentUsageComputationInAngleVk)) {
+    usages_needing_color_attachment = SHARED_IMAGE_USAGE_GLES2_WRITE |
+                                      SHARED_IMAGE_USAGE_RASTER_WRITE |
+                                      SHARED_IMAGE_USAGE_DISPLAY_WRITE;
+  } else {
+    usages_needing_color_attachment =
+        SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
+        SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT |
+        SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+        SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_WEBGPU_READ |
+        SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+  }
+
   VkImageUsageFlags vk_usage = VK_IMAGE_USAGE_SAMPLED_BIT |
                                VK_IMAGE_USAGE_TRANSFER_SRC_BIT |
                                VK_IMAGE_USAGE_TRANSFER_DST_BIT;
-  if (usage() & kUsageNeedsColorAttachment) {
+  if (usage() & usages_needing_color_attachment) {
     vk_usage |= VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
                 VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
     if (format().IsCompressed()) {
