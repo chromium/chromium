@@ -686,7 +686,8 @@ void ResourcePrefetchPredictor::LearnLcpp(const GURL& url,
     base::UmaHistogramBoolean("LoadingPredictor.LcppStatCorruptedAtLearnTime",
                               true);
   }
-  bool data_updated = UpdateLcppDataWithLcppDataInputs(config_, inputs, data);
+  bool data_updated = UpdateLcppStatWithLcppDataInputs(
+      config_, inputs, *data.mutable_lcpp_stat());
   DCHECK(IsValidLcppStat(data.lcpp_stat()));
   if (data_updated) {
     lcpp_data_->UpdateData(key, data);

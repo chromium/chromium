@@ -85,9 +85,9 @@ struct LcppDataInputs {
   std::vector<GURL> unused_preload_resources;
 };
 
-bool UpdateLcppDataWithLcppDataInputs(const LoadingPredictorConfig& config,
+bool UpdateLcppStatWithLcppDataInputs(const LoadingPredictorConfig& config,
                                       const LcppDataInputs& inputs,
-                                      LcppData& data);
+                                      LcppStat& stat);
 
 void UpdateLcppStringFrequencyStatData(
     size_t sliding_window_size,
