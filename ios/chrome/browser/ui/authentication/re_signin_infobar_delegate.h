@@ -13,44 +13,21 @@
 #include "components/infobars/core/infobar.h"
 #include "ui/gfx/image/image.h"
 
-class ChromeBrowserState;
+class AuthenticationService;
 @protocol SigninPresenter;
-
-namespace infobars {
-class InfoBarManager;
-}  // namespace infobars
-
-namespace web {
-class WebState;
-}  // namespace web
 
 // A confirmation infobar prompting user to bring up the sign-in screen.
 class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
-  ReSignInInfoBarDelegate(ChromeBrowserState* browser_state,
-                          id<SigninPresenter> presenter);
+  // Returns nullptr if the infobar must not be shown.
+  static std::unique_ptr<ReSignInInfoBarDelegate> Create(
+      AuthenticationService* authentication_service,
+      id<SigninPresenter> signin_presenter);
 
   ReSignInInfoBarDelegate(const ReSignInInfoBarDelegate&) = delete;
   ReSignInInfoBarDelegate& operator=(const ReSignInInfoBarDelegate&) = delete;
 
   ~ReSignInInfoBarDelegate() override;
-
-  // Creates a re-sign-in error infobar and adds it to the `web_state`. Returns
-  // whether the infobar was actually added.
-  static bool Create(ChromeBrowserState* browser_state,
-                     web::WebState* web_state,
-                     id<SigninPresenter> presenter);
-
-  // Creates a re-sign-in error infobar, but does not add it to tab content.
-  static std::unique_ptr<infobars::InfoBar> CreateInfoBar(
-      infobars::InfoBarManager* infobar_manager,
-      ChromeBrowserState* browser_state,
-      id<SigninPresenter> presenter);
-
-  // Creates a re-sign-in error infobar delegate, visible for testing.
-  static std::unique_ptr<ReSignInInfoBarDelegate> CreateInfoBarDelegate(
-      ChromeBrowserState* browser_state,
-      id<SigninPresenter> presenter);
 
   // InfobarDelegate implementation.
   InfoBarIdentifier GetIdentifier() const override;
@@ -66,9 +43,11 @@ class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate {
   void InfoBarDismissed() override;
 
  private:
-  raw_ptr<ChromeBrowserState> browser_state_;
-  gfx::Image icon_;
-  id<SigninPresenter> presenter_;
+  ReSignInInfoBarDelegate(AuthenticationService* authentication_service,
+                          id<SigninPresenter> signin_presenter);
+
+  const raw_ptr<AuthenticationService> authentication_service_;
+  const id<SigninPresenter> signin_presenter_;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_RE_SIGNIN_INFOBAR_DELEGATE_H_
