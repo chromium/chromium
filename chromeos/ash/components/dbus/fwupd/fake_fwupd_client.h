@@ -23,14 +23,16 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FakeFwupdClient : public FwupdClient {
   void Init(dbus::Bus* bus) override;
   void RequestUpdates(const std::string& device_id) override;
   void RequestDevices() override;
-  void InstallUpdate(const std::string& device_id,
-                     base::ScopedFD file_descriptor,
-                     FirmwareInstallOptions options,
-                     base::OnceCallback<void(FwupdResult)> callback) override;
-  void UpdateMetadata(const std::string& remote_id,
-                      base::ScopedFD data_file_descriptor,
-                      base::ScopedFD sig_file_descriptor,
-                      base::OnceCallback<void(FwupdResult)> callback) override;
+  void InstallUpdate(
+      const std::string& device_id,
+      base::ScopedFD file_descriptor,
+      FirmwareInstallOptions options,
+      base::OnceCallback<void(FwupdDbusResult)> callback) override;
+  void UpdateMetadata(
+      const std::string& remote_id,
+      base::ScopedFD data_file_descriptor,
+      base::ScopedFD sig_file_descriptor,
+      base::OnceCallback<void(FwupdDbusResult)> callback) override;
 
   void TriggerPropertiesChangeForTesting(uint32_t percentage, uint32_t status);
   void TriggerSuccessfulUpdateForTesting();
@@ -53,7 +55,7 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FakeFwupdClient : public FwupdClient {
   bool has_update_started_ = false;
 
   // Callback to run when InstallUpdate completes.
-  base::OnceCallback<void(FwupdResult)> install_update_callback_;
+  base::OnceCallback<void(FwupdDbusResult)> install_update_callback_;
 
   // The temporary directory where fake update files are created.
   base::ScopedTempDir temp_directory_;

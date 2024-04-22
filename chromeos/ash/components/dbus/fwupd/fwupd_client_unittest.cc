@@ -652,8 +652,8 @@ TEST_F(FwupdClientTest, Install) {
   base::RunLoop run_loop;
   fwupd_client_->InstallUpdate(
       kFakeDeviceIdForTesting, base::ScopedFD(0), std::map<std::string, bool>(),
-      base::BindLambdaForTesting([&](FwupdResult result) {
-        EXPECT_EQ(result, FwupdResult::kSuccess);
+      base::BindLambdaForTesting([&](FwupdDbusResult result) {
+        EXPECT_EQ(result, FwupdDbusResult::kSuccess);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -852,8 +852,8 @@ TEST_F(FwupdClientTest, UpdateMetadata) {
   base::RunLoop run_loop;
   fwupd_client_->UpdateMetadata(
       kFakeRemoteIdForTesting, base::ScopedFD(0), base::ScopedFD(1),
-      base::BindLambdaForTesting([&](FwupdResult result) {
-        EXPECT_EQ(result, FwupdResult::kSuccess);
+      base::BindLambdaForTesting([&](FwupdDbusResult result) {
+        EXPECT_EQ(result, FwupdDbusResult::kSuccess);
         run_loop.Quit();
       }));
   run_loop.Run();

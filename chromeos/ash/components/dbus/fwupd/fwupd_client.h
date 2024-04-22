@@ -36,7 +36,7 @@ namespace ash {
 // All values returnable by fwupd dbus signal
 // The errors are consistent with
 // https://fwupd.github.io/libfwupd/error.Error.html
-enum class FwupdResult {
+enum class FwupdDbusResult {
   kSuccess,
   kInternalError,
   kVersionNewerError,
@@ -117,14 +117,14 @@ class COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdClient
       const std::string& device_id,
       base::ScopedFD file_descriptor,
       FirmwareInstallOptions options,
-      base::OnceCallback<void(FwupdResult)> callback) = 0;
+      base::OnceCallback<void(FwupdDbusResult)> callback) = 0;
 
   // Updates metadata for |remote_id| with given old and new file descriptors.
   virtual void UpdateMetadata(
       const std::string& remote_id,
       base::ScopedFD data_file_descriptor,
       base::ScopedFD sig_file_descriptor,
-      base::OnceCallback<void(FwupdResult)> callback) = 0;
+      base::OnceCallback<void(FwupdDbusResult)> callback) = 0;
 
  protected:
   friend class FwupdClientTest;

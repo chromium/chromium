@@ -82,48 +82,48 @@ const char kFileComponent[] = "file:";
 
 FirmwareUpdateManager* g_instance = nullptr;
 
-InstallResult GetInstallResultFromFwupdResult(FwupdResult error) {
+MethodResult GetMethodResultFromFwupdDbusResult(FwupdDbusResult error) {
   switch (error) {
-    case FwupdResult::kSuccess:
-      return InstallResult::kSuccess;
-    case FwupdResult::kInternalError:
-      return InstallResult::kInternalError;
-    case FwupdResult::kVersionNewerError:
-      return InstallResult::kVersionNewerError;
-    case FwupdResult::kVersionSameError:
-      return InstallResult::kVersionSameError;
-    case FwupdResult::kAlreadyPendingError:
-      return InstallResult::kAlreadyPendingError;
-    case FwupdResult::kAuthFailedError:
-      return InstallResult::kAuthFailedError;
-    case FwupdResult::kReadError:
-      return InstallResult::kReadError;
-    case FwupdResult::kWriteError:
-      return InstallResult::kWriteError;
-    case FwupdResult::kInvalidFileError:
-      return InstallResult::kInvalidFileError;
-    case FwupdResult::kNotFoundError:
-      return InstallResult::kNotFoundError;
-    case FwupdResult::kNothingToDoError:
-      return InstallResult::kNothingToDoError;
-    case FwupdResult::kNotSupportedError:
-      return InstallResult::kNotSupportedError;
-    case FwupdResult::kSignatureInvalidError:
-      return InstallResult::kSignatureInvalidError;
-    case FwupdResult::kAcPowerRequiredError:
-      return InstallResult::kAcPowerRequiredError;
-    case FwupdResult::kPermissionDeniedError:
-      return InstallResult::kPermissionDeniedError;
-    case FwupdResult::kBrokenSystemError:
-      return InstallResult::kBrokenSystemError;
-    case FwupdResult::kBatteryLevelTooLowError:
-      return InstallResult::kBatteryLevelTooLowError;
-    case FwupdResult::kNeedsUserActionError:
-      return InstallResult::kNeedsUserActionError;
-    case FwupdResult::kAuthExpiredError:
-      return InstallResult::kAuthExpiredError;
-    case FwupdResult::kUnknownError:
-      return InstallResult::kUnknownError;
+    case FwupdDbusResult::kSuccess:
+      return MethodResult::kSuccess;
+    case FwupdDbusResult::kInternalError:
+      return MethodResult::kInternalError;
+    case FwupdDbusResult::kVersionNewerError:
+      return MethodResult::kVersionNewerError;
+    case FwupdDbusResult::kVersionSameError:
+      return MethodResult::kVersionSameError;
+    case FwupdDbusResult::kAlreadyPendingError:
+      return MethodResult::kAlreadyPendingError;
+    case FwupdDbusResult::kAuthFailedError:
+      return MethodResult::kAuthFailedError;
+    case FwupdDbusResult::kReadError:
+      return MethodResult::kReadError;
+    case FwupdDbusResult::kWriteError:
+      return MethodResult::kWriteError;
+    case FwupdDbusResult::kInvalidFileError:
+      return MethodResult::kInvalidFileError;
+    case FwupdDbusResult::kNotFoundError:
+      return MethodResult::kNotFoundError;
+    case FwupdDbusResult::kNothingToDoError:
+      return MethodResult::kNothingToDoError;
+    case FwupdDbusResult::kNotSupportedError:
+      return MethodResult::kNotSupportedError;
+    case FwupdDbusResult::kSignatureInvalidError:
+      return MethodResult::kSignatureInvalidError;
+    case FwupdDbusResult::kAcPowerRequiredError:
+      return MethodResult::kAcPowerRequiredError;
+    case FwupdDbusResult::kPermissionDeniedError:
+      return MethodResult::kPermissionDeniedError;
+    case FwupdDbusResult::kBrokenSystemError:
+      return MethodResult::kBrokenSystemError;
+    case FwupdDbusResult::kBatteryLevelTooLowError:
+      return MethodResult::kBatteryLevelTooLowError;
+    case FwupdDbusResult::kNeedsUserActionError:
+      return MethodResult::kNeedsUserActionError;
+    case FwupdDbusResult::kAuthExpiredError:
+      return MethodResult::kAuthExpiredError;
+    case FwupdDbusResult::kUnknownError:
+      return MethodResult::kUnknownError;
   }
 }
 
@@ -289,6 +289,16 @@ firmware_update::mojom::DeviceRequestPtr GetDeviceRequest(
       static_cast<firmware_update::mojom::DeviceRequestKind>(request.kind));
 }
 
+bool RefreshRemoteAllowed(FirmwareUpdateManager::Source source) {
+  // TODO(rishabhagr): Check if metadata file was modified in the last 24 hours.
+  DCHECK(NetworkHandler::IsInitialized());
+  const bool is_metered = NetworkHandler::Get()
+                              ->network_state_handler()
+                              ->default_network_is_metered();
+  FIRMWARE_LOG(DEBUG) << "Connection metered: " << is_metered;
+  return !is_metered || source == FirmwareUpdateManager::Source::kUI;
+}
+
 }  // namespace
 
 FirmwareUpdateManager::FirmwareUpdateManager()
@@ -422,20 +432,15 @@ void FirmwareUpdateManager::RequestAllUpdates(Source source) {
     return;
   }
 
-  const bool is_metered = NetworkHandler::Get()
-                              ->network_state_handler()
-                              ->default_network_is_metered();
-  // If connection is metered, refresh remote only if firmware update UI has
-  // been opened by the user.
-  if (!is_metered || (is_metered && source == Source::kUI)) {
+  if (RefreshRemoteAllowed(source)) {
     FIRMWARE_LOG(USER) << "Refreshing LVFS remote";
-    // TODO(rishabhagr): Add logic for refresh metadata
   } else {
-    FIRMWARE_LOG(DEBUG) << "Skipping refresh remote for LVFS, metered: "
-                        << is_metered
-                        << ", source: " << static_cast<int>(source);
+    FIRMWARE_LOG(DEBUG) << "Skipping refresh remote for LVFS, "
+                        << "source: " << static_cast<int>(source);
   }
-
+  // TODO(rishabhagr): Move below logic to else case to prevent race between
+  // RefreshRemote and RequestDevices - We only want to call RequestDevices once
+  // RefreshRemote is completed.
   FIRMWARE_LOG(USER) << "RequestAllUpdates()";
   is_fetching_updates_ = true;
   RequestDevices();
@@ -455,7 +460,7 @@ void FirmwareUpdateManager::RequestUpdates(const std::string& device_id) {
 
 void FirmwareUpdateManager::StartInstall(const std::string& device_id,
                                          const base::FilePath& filepath,
-                                         InstallCallback callback) {
+                                         MethodCallback callback) {
   base::FilePath root_dir;
   CHECK(base::PathService::Get(base::DIR_TEMP, &root_dir));
   const base::FilePath cache_path =
@@ -476,12 +481,12 @@ void FirmwareUpdateManager::CreateLocalPatchFile(
     const base::FilePath& cache_path,
     const std::string& device_id,
     const base::FilePath& filepath,
-    InstallCallback callback,
+    MethodCallback callback,
     bool create_dir_success) {
   if (!create_dir_success) {
     FIRMWARE_LOG(ERROR)
         << "Firmware update directory does not exist and cannot be created.";
-    std::move(callback).Run(InstallResult::kFailedToCreateUpdateDirectory);
+    std::move(callback).Run(MethodResult::kFailedToCreateUpdateDirectory);
     return;
   }
   const base::FilePath patch_path =
@@ -506,11 +511,11 @@ void FirmwareUpdateManager::MaybeDownloadFileToInternal(
     const base::FilePath& patch_path,
     const std::string& device_id,
     const base::FilePath& filepath,
-    InstallCallback callback,
+    MethodCallback callback,
     bool write_file_success) {
   if (!write_file_success) {
     FIRMWARE_LOG(ERROR) << "Writing to file failed: " << patch_path;
-    std::move(callback).Run(InstallResult::kFailedToCreatePatchFile);
+    std::move(callback).Run(MethodResult::kFailedToCreatePatchFile);
     return;
   }
 
@@ -528,7 +533,7 @@ void FirmwareUpdateManager::MaybeDownloadFileToInternal(
     size_t filepath_start = filepath.value().find(components[1]);
     if (filepath_start == std::string::npos) {
       FIRMWARE_LOG(ERROR) << "Empty patch file: " << filepath.value();
-      std::move(callback).Run(InstallResult::kEmptyPatchFile);
+      std::move(callback).Run(MethodResult::kEmptyPatchFile);
       return;
     }
     const base::FilePath file(filepath.value().substr(filepath_start - 1));
@@ -543,14 +548,14 @@ void FirmwareUpdateManager::MaybeDownloadFileToInternal(
   }
 
   FIRMWARE_LOG(ERROR) << "Invalid file or download URI: " << filepath.value();
-  std::move(callback).Run(InstallResult::kInvalidPatchFileUri);
+  std::move(callback).Run(MethodResult::kInvalidPatchFileUri);
 }
 
 void FirmwareUpdateManager::DownloadFileToInternal(
     const base::FilePath& patch_path,
     const std::string& device_id,
     const base::FilePath& filepath,
-    InstallCallback callback) {
+    MethodCallback callback) {
   const std::string url = filepath.value();
   GURL download_url(fake_url_for_testing_.empty() ? url
                                                   : fake_url_for_testing_);
@@ -576,13 +581,13 @@ void FirmwareUpdateManager::DownloadFileToInternal(
 void FirmwareUpdateManager::OnUrlDownloadedToFile(
     const std::string& device_id,
     std::unique_ptr<network::SimpleURLLoader> simple_loader,
-    InstallCallback callback,
+    MethodCallback callback,
     base::FilePath download_path) {
   if (simple_loader->NetError() != net::OK) {
     FIRMWARE_LOG(ERROR) << "Downloading to file failed with error code: "
                         << GetResponseCode(simple_loader.get())
                         << ", network error " << simple_loader->NetError();
-    std::move(callback).Run(InstallResult::kFailedToDownloadToFile);
+    std::move(callback).Run(MethodResult::kFailedToDownloadToFile);
     return;
   }
 
@@ -605,11 +610,11 @@ void FirmwareUpdateManager::OnUrlDownloadedToFile(
 void FirmwareUpdateManager::OnGetFileDescriptor(
     const std::string& device_id,
     FirmwareInstallOptions options,
-    InstallCallback callback,
+    MethodCallback callback,
     base::ScopedFD file_descriptor) {
   if (!file_descriptor.is_valid()) {
     FIRMWARE_LOG(ERROR) << "Invalid file descriptor for device: " << device_id;
-    std::move(callback).Run(InstallResult::kInvalidFileDescriptor);
+    std::move(callback).Run(MethodResult::kInvalidFileDescriptor);
     return;
   }
 
@@ -633,11 +638,11 @@ void FirmwareUpdateManager::OnGetFileDescriptor(
 
 void FirmwareUpdateManager::InstallUpdate(const std::string& device_id,
                                           FirmwareInstallOptions options,
-                                          InstallCallback callback,
+                                          MethodCallback callback,
                                           base::File patch_file) {
   if (!patch_file.IsValid()) {
     inflight_update_.reset();
-    std::move(callback).Run(InstallResult::kInvalidPatchFile);
+    std::move(callback).Run(MethodResult::kInvalidPatchFile);
     return;
   }
 
@@ -712,10 +717,10 @@ void FirmwareUpdateManager::OnUpdateListResponse(const std::string& device_id,
   NotifyUpdateListObservers();
 }
 
-void FirmwareUpdateManager::OnInstallResponse(InstallCallback callback,
-                                              FwupdResult result) {
-  InstallResult install_result = GetInstallResultFromFwupdResult(result);
-  bool success = install_result == InstallResult::kSuccess;
+void FirmwareUpdateManager::OnInstallResponse(MethodCallback callback,
+                                              FwupdDbusResult result) {
+  MethodResult install_result = GetMethodResultFromFwupdDbusResult(result);
+  bool success = install_result == MethodResult::kSuccess;
   FIRMWARE_LOG(EVENT) << "OnInstallResponse(). Success: " << success;
 
   if (!success) {
@@ -733,17 +738,17 @@ void FirmwareUpdateManager::OnInstallResponse(InstallCallback callback,
           base::Time::Now() - last_request_started_timestamp_.value();
       firmware_update::metrics::EmitFailedDeviceRequestDuration(
           request_duration, last_device_request_->id);
-      std::move(callback).Run(InstallResult::kInstallFailedTimeout);
+      std::move(callback).Run(MethodResult::kInstallFailedTimeout);
     } else {
       std::move(callback).Run(install_result);
     }
     return;
   }
-  std::move(callback).Run(InstallResult::kSuccess);
+  std::move(callback).Run(MethodResult::kSuccess);
 }
 
-void FirmwareUpdateManager::InstallComplete(InstallResult result) {
-  if (result != InstallResult::kSuccess) {
+void FirmwareUpdateManager::InstallComplete(MethodResult result) {
+  if (result != MethodResult::kSuccess) {
     FIRMWARE_LOG(ERROR) << "Install failed: " << static_cast<int>(result);
   } else {
     FIRMWARE_LOG(USER) << "Install complete";
@@ -752,7 +757,7 @@ void FirmwareUpdateManager::InstallComplete(InstallResult result) {
 
   // If the firmware update app is closed, the observer is no longer bound.
   if (update_progress_observer_.is_bound()) {
-    auto state = result == InstallResult::kSuccess
+    auto state = result == MethodResult::kSuccess
                      ? firmware_update::mojom::UpdateState::kSuccess
                      : firmware_update::mojom::UpdateState::kFailed;
     auto update = ash::firmware_update::mojom::InstallationProgress::New(
@@ -843,7 +848,7 @@ void FirmwareUpdateManager::BeginUpdate(const std::string& device_id,
   DCHECK(!filepath.empty());
 
   if (!IsValidFirmwarePatchFile(filepath)) {
-    InstallComplete(InstallResult::kInvalidPatchFile);
+    InstallComplete(MethodResult::kInvalidPatchFile);
     return;
   }
 

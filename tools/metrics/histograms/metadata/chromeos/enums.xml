@@ -908,7 +908,7 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="WaitingForUser"/>
 </enum>
 
-<enum name="FirmwareUpdateInstallResult">
+<enum name="FirmwareUpdateMethodResult">
   <int value="0" label="Success"/>
   <int value="1" label="DEPRECATED: InstallFailed"/>
   <int value="2" label="FailedToCreateUpdateDirectory"/>

@@ -66,11 +66,11 @@ void FakeFwupdClient::InstallUpdate(
     const std::string& device_id,
     base::ScopedFD file_descriptor,
     FirmwareInstallOptions options,
-    base::OnceCallback<void(FwupdResult)> callback) {
+    base::OnceCallback<void(FwupdDbusResult)> callback) {
   // This matches the behavior of the real class. I.e. if you send an unknown
   // id, nothing happens.
   if (device_id != kFakeDeviceIdForTesting) {
-    std::move(callback).Run(FwupdResult::kInternalError);
+    std::move(callback).Run(FwupdDbusResult::kInternalError);
     return;
   }
 
@@ -78,7 +78,7 @@ void FakeFwupdClient::InstallUpdate(
   if (defer_install_update_callback_) {
     install_update_callback_ = std::move(callback);
   } else {
-    std::move(callback).Run(FwupdResult::kSuccess);
+    std::move(callback).Run(FwupdDbusResult::kSuccess);
   }
 }
 
@@ -93,7 +93,7 @@ void FakeFwupdClient::TriggerPropertiesChangeForTesting(uint32_t percentage,
 void FakeFwupdClient::TriggerSuccessfulUpdateForTesting() {
   CHECK(install_update_callback_);
   has_update_started_ = false;
-  std::move(install_update_callback_).Run(FwupdResult::kSuccess);
+  std::move(install_update_callback_).Run(FwupdDbusResult::kSuccess);
 }
 
 void FakeFwupdClient::EmitDeviceRequestForTesting(uint32_t device_request_id) {
@@ -130,12 +130,12 @@ void FakeFwupdClient::UpdateMetadata(
     const std::string& remote_id,
     base::ScopedFD data_file_descriptor,
     base::ScopedFD sig_file_descriptor,
-    base::OnceCallback<void(FwupdResult)> callback) {
+    base::OnceCallback<void(FwupdDbusResult)> callback) {
   if (remote_id != kFakeRemoteIdForTesting) {
-    std::move(callback).Run(FwupdResult::kInternalError);
+    std::move(callback).Run(FwupdDbusResult::kInternalError);
     return;
   }
-  std::move(callback).Run(FwupdResult::kSuccess);
+  std::move(callback).Run(FwupdDbusResult::kSuccess);
 }
 
 }  // namespace ash

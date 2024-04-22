@@ -59,9 +59,9 @@ enum class FwupdStatus {
   kMaxValue = kWaitingForUser,
 };
 
-// Used in histograms. Keep in sync with FirmwareUpdateInstallResult in
+// Used in histograms. Keep in sync with FirmwareUpdateMethodResult in
 // tools/metrics/histograms/metadata/chromeos/enums.xml.
-enum class InstallResult {
+enum class MethodResult {
   kSuccess = 0,
   // DEPRECATED: kInstallFailed = 1,
   kFailedToCreateUpdateDirectory = 2,
@@ -205,53 +205,53 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_FWUPD) FirmwareUpdateManager
   // Query the fwupd DBus client for updates for a certain device.
   void RequestUpdates(const std::string& device_id);
 
-  typedef base::OnceCallback<void(InstallResult)> InstallCallback;
+  typedef base::OnceCallback<void(MethodResult)> MethodCallback;
 
   // Download and prepare the install file for a specific device.
   void StartInstall(const std::string& device_id,
                     const base::FilePath& filepath,
-                    InstallCallback callback);
+                    MethodCallback callback);
 
   // Callback handler after fetching the file descriptor.
   void OnGetFileDescriptor(const std::string& device_id,
                            FirmwareInstallOptions options,
-                           InstallCallback callback,
+                           MethodCallback callback,
                            base::ScopedFD file_descriptor);
 
   // Query the fwupd DBus client to install an update for a certain device.
   void InstallUpdate(const std::string& device_id,
                      FirmwareInstallOptions options,
-                     InstallCallback callback,
+                     MethodCallback callback,
                      base::File patch_file);
 
   // Response from fwupd DBus client InstallUpdate call.
-  void OnInstallResponse(InstallCallback callback, FwupdResult result);
+  void OnInstallResponse(MethodCallback callback, FwupdDbusResult result);
 
   // InstallComplete will be called exactly once with a result when an install
   // attempt succeeds or fails for any reason.
-  void InstallComplete(InstallResult result);
+  void InstallComplete(MethodResult result);
 
   void CreateLocalPatchFile(const base::FilePath& cache_path,
                             const std::string& device_id,
                             const base::FilePath& filepath,
-                            InstallCallback callback,
+                            MethodCallback callback,
                             bool create_dir_success);
 
   void MaybeDownloadFileToInternal(const base::FilePath& patch_path,
                                    const std::string& device_id,
                                    const base::FilePath& filepath,
-                                   InstallCallback callback,
+                                   MethodCallback callback,
                                    bool write_file_success);
 
   void DownloadFileToInternal(const base::FilePath& patch_path,
                               const std::string& device_id,
                               const base::FilePath& filepath,
-                              InstallCallback callback);
+                              MethodCallback callback);
 
   void OnUrlDownloadedToFile(
       const std::string& device_id,
       std::unique_ptr<network::SimpleURLLoader> simple_loader,
-      InstallCallback callback,
+      MethodCallback callback,
       base::FilePath download_path);
 
   // Notifies observers registered with ObservePeripheralUpdates() the current

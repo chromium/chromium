@@ -54,49 +54,49 @@ const uint64_t kTrustedReportsReleaseFlag = 1llu << 8;
 // Defined here: https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h
 const uint64_t kRequestsFeatureFlag = 1llu << 4;
 
-// String to FwupdResult conversion
+// String to FwupdDbusResult conversion
 // Consistent with
 // https://github.com/fwupd/fwupd/blob/988f27fd96c5334089ec5daf9c4b2a34f5c6943a/libfwupd/fwupd-error.c#L26
-FwupdResult GetFwupdResult(const std::string& error_name) {
+FwupdDbusResult GetFwupdDbusResult(const std::string& error_name) {
   if (error_name == std::string(kFwupdErrorName_Internal)) {
-    return FwupdResult::kInternalError;
+    return FwupdDbusResult::kInternalError;
   } else if (error_name == std::string(kFwupdErrorName_VersionNewer)) {
-    return FwupdResult::kVersionNewerError;
+    return FwupdDbusResult::kVersionNewerError;
   } else if (error_name == std::string(kFwupdErrorName_VersionSame)) {
-    return FwupdResult::kVersionSameError;
+    return FwupdDbusResult::kVersionSameError;
   } else if (error_name == std::string(kFwupdErrorName_AlreadyPending)) {
-    return FwupdResult::kAlreadyPendingError;
+    return FwupdDbusResult::kAlreadyPendingError;
   } else if (error_name == std::string(kFwupdErrorName_AuthFailed)) {
-    return FwupdResult::kAuthFailedError;
+    return FwupdDbusResult::kAuthFailedError;
   } else if (error_name == std::string(kFwupdErrorName_Read)) {
-    return FwupdResult::kReadError;
+    return FwupdDbusResult::kReadError;
   } else if (error_name == std::string(kFwupdErrorName_Write)) {
-    return FwupdResult::kWriteError;
+    return FwupdDbusResult::kWriteError;
   } else if (error_name == std::string(kFwupdErrorName_InvalidFile)) {
-    return FwupdResult::kInvalidFileError;
+    return FwupdDbusResult::kInvalidFileError;
   } else if (error_name == std::string(kFwupdErrorName_NotFound)) {
-    return FwupdResult::kNotFoundError;
+    return FwupdDbusResult::kNotFoundError;
   } else if (error_name == std::string(kFwupdErrorName_NothingToDo)) {
-    return FwupdResult::kNothingToDoError;
+    return FwupdDbusResult::kNothingToDoError;
   } else if (error_name == std::string(kFwupdErrorName_NotSupported)) {
-    return FwupdResult::kNotSupportedError;
+    return FwupdDbusResult::kNotSupportedError;
   } else if (error_name == std::string(kFwupdErrorName_SignatureInvalid)) {
-    return FwupdResult::kSignatureInvalidError;
+    return FwupdDbusResult::kSignatureInvalidError;
   } else if (error_name == std::string(kFwupdErrorName_AcPowerRequired)) {
-    return FwupdResult::kAcPowerRequiredError;
+    return FwupdDbusResult::kAcPowerRequiredError;
   } else if (error_name == std::string(kFwupdErrorName_PermissionDenied)) {
-    return FwupdResult::kPermissionDeniedError;
+    return FwupdDbusResult::kPermissionDeniedError;
   } else if (error_name == std::string(kFwupdErrorName_BrokenSystem)) {
-    return FwupdResult::kBrokenSystemError;
+    return FwupdDbusResult::kBrokenSystemError;
   } else if (error_name == std::string(kFwupdErrorName_BatteryLevelTooLow)) {
-    return FwupdResult::kBatteryLevelTooLowError;
+    return FwupdDbusResult::kBatteryLevelTooLowError;
   } else if (error_name == std::string(kFwupdErrorName_NeedsUserAction)) {
-    return FwupdResult::kNeedsUserActionError;
+    return FwupdDbusResult::kNeedsUserActionError;
   } else if (error_name == std::string(kFwupdErrorName_AuthExpired)) {
-    return FwupdResult::kAuthExpiredError;
+    return FwupdDbusResult::kAuthExpiredError;
   }
   FIRMWARE_LOG(ERROR) << "No matching error found for: " << error_name;
-  return FwupdResult::kUnknownError;
+  return FwupdDbusResult::kUnknownError;
 }
 
 base::FilePath GetFilePathFromUri(const GURL uri) {
@@ -246,10 +246,11 @@ class FwupdClientImpl : public FwupdClient {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void InstallUpdate(const std::string& device_id,
-                     base::ScopedFD file_descriptor,
-                     FirmwareInstallOptions options,
-                     base::OnceCallback<void(FwupdResult)> callback) override {
+  void InstallUpdate(
+      const std::string& device_id,
+      base::ScopedFD file_descriptor,
+      FirmwareInstallOptions options,
+      base::OnceCallback<void(FwupdDbusResult)> callback) override {
     FIRMWARE_LOG(USER) << "fwupd: InstallUpdate called for id: " << device_id;
     dbus::MethodCall method_call(kFwupdServiceInterface,
                                  kFwupdInstallMethodName);
@@ -278,10 +279,11 @@ class FwupdClientImpl : public FwupdClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
-  void UpdateMetadata(const std::string& remote_id,
-                      base::ScopedFD data_file_descriptor,
-                      base::ScopedFD sig_file_descriptor,
-                      base::OnceCallback<void(FwupdResult)> callback) override {
+  void UpdateMetadata(
+      const std::string& remote_id,
+      base::ScopedFD data_file_descriptor,
+      base::ScopedFD sig_file_descriptor,
+      base::OnceCallback<void(FwupdDbusResult)> callback) override {
     FIRMWARE_LOG(USER) << "fwupd: UpdateMetadata called for remote id: "
                        << remote_id;
     dbus::MethodCall method_call(kFwupdServiceInterface,
@@ -527,14 +529,14 @@ class FwupdClientImpl : public FwupdClient {
     }
   }
 
-  void InstallUpdateCallback(base::OnceCallback<void(FwupdResult)> callback,
+  void InstallUpdateCallback(base::OnceCallback<void(FwupdDbusResult)> callback,
                              dbus::Response* response,
                              dbus::ErrorResponse* error_response) {
-    FwupdResult result = FwupdResult::kSuccess;
+    FwupdDbusResult result = FwupdDbusResult::kSuccess;
     if (error_response) {
       FIRMWARE_LOG(ERROR) << "Firmware install failed with error message: "
                           << error_response->ToString();
-      result = GetFwupdResult(error_response->GetErrorName());
+      result = GetFwupdDbusResult(error_response->GetErrorName());
     }
 
     FIRMWARE_LOG(USER) << "fwupd: InstallUpdate returned with: "
@@ -631,14 +633,15 @@ class FwupdClientImpl : public FwupdClient {
     }
   }
 
-  void UpdateMetadataCallback(base::OnceCallback<void(FwupdResult)> callback,
-                              dbus::Response* response,
-                              dbus::ErrorResponse* error_response) {
-    FwupdResult result = FwupdResult::kSuccess;
+  void UpdateMetadataCallback(
+      base::OnceCallback<void(FwupdDbusResult)> callback,
+      dbus::Response* response,
+      dbus::ErrorResponse* error_response) {
+    FwupdDbusResult result = FwupdDbusResult::kSuccess;
     if (error_response) {
       FIRMWARE_LOG(ERROR) << "UpdateMetadata failed with error message: "
                           << error_response->ToString();
-      result = GetFwupdResult(error_response->GetErrorName());
+      result = GetFwupdDbusResult(error_response->GetErrorName());
     }
 
     FIRMWARE_LOG(USER) << "UpdateMetadata returned with: "

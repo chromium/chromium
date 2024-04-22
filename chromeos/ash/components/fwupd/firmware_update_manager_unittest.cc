@@ -264,10 +264,10 @@ class FirmwareUpdateManagerTest : public testing::Test {
     // Create a fake update so that the following method call works correctly.
     firmware_update_manager_->inflight_update_ = CreateFakeUpdate();
     // Setting default value for failure error name
-    FwupdResult result = FwupdResult::kInternalError;
+    FwupdDbusResult result = FwupdDbusResult::kInternalError;
     // Trigger an unsuccessful update.
     firmware_update_manager_->OnInstallResponse(
-        base::BindOnce([](InstallResult) {}), result);
+        base::BindOnce([](MethodResult) {}), result);
     task_environment_.RunUntilIdle();
   }
 
@@ -795,16 +795,16 @@ TEST_F(FirmwareUpdateManagerTest, BeginUpdate) {
   ASSERT_EQ(2, update_observer.num_times_notified());
 
   histogram_tester.ExpectUniqueSample("ChromeOS.FirmwareUpdateUi.InstallResult",
-                                      InstallResult::kSuccess, 1);
+                                      MethodResult::kSuccess, 1);
 }
 
 struct FailedInstallWithErrorParam {
   explicit FailedInstallWithErrorParam(std::string error_name,
-                                       InstallResult install_result)
+                                       MethodResult install_result)
       : error_name(error_name), install_result(install_result) {}
 
   std::string error_name;
-  InstallResult install_result;
+  MethodResult install_result;
 };
 
 class FirmwareUpdateManagerTest_FailedInstallWithErrorMessage
@@ -816,45 +816,45 @@ INSTANTIATE_TEST_SUITE_P(
     FirmwareUpdateManagerTest_FailedInstallWithErrorMessage,
     ::testing::Values(
         FailedInstallWithErrorParam(kFwupdErrorName_Internal,
-                                    InstallResult::kInternalError),
+                                    MethodResult::kInternalError),
         FailedInstallWithErrorParam(kFwupdErrorName_VersionNewer,
-                                    InstallResult::kVersionNewerError),
+                                    MethodResult::kVersionNewerError),
         FailedInstallWithErrorParam(kFwupdErrorName_VersionSame,
-                                    InstallResult::kVersionSameError),
+                                    MethodResult::kVersionSameError),
         FailedInstallWithErrorParam(kFwupdErrorName_AlreadyPending,
-                                    InstallResult::kAlreadyPendingError),
+                                    MethodResult::kAlreadyPendingError),
         FailedInstallWithErrorParam(kFwupdErrorName_AuthFailed,
-                                    InstallResult::kAuthFailedError),
+                                    MethodResult::kAuthFailedError),
         FailedInstallWithErrorParam(kFwupdErrorName_Read,
-                                    InstallResult::kReadError),
+                                    MethodResult::kReadError),
         FailedInstallWithErrorParam(kFwupdErrorName_Write,
-                                    InstallResult::kWriteError),
+                                    MethodResult::kWriteError),
         FailedInstallWithErrorParam(kFwupdErrorName_InvalidFile,
-                                    InstallResult::kInvalidFileError),
+                                    MethodResult::kInvalidFileError),
         FailedInstallWithErrorParam(kFwupdErrorName_NotFound,
-                                    InstallResult::kNotFoundError),
+                                    MethodResult::kNotFoundError),
         FailedInstallWithErrorParam(kFwupdErrorName_NothingToDo,
-                                    InstallResult::kNothingToDoError),
+                                    MethodResult::kNothingToDoError),
         FailedInstallWithErrorParam(kFwupdErrorName_NotSupported,
-                                    InstallResult::kNotSupportedError),
+                                    MethodResult::kNotSupportedError),
         FailedInstallWithErrorParam(kFwupdErrorName_SignatureInvalid,
-                                    InstallResult::kSignatureInvalidError),
+                                    MethodResult::kSignatureInvalidError),
         FailedInstallWithErrorParam(kFwupdErrorName_AcPowerRequired,
-                                    InstallResult::kAcPowerRequiredError),
+                                    MethodResult::kAcPowerRequiredError),
         FailedInstallWithErrorParam(kFwupdErrorName_PermissionDenied,
-                                    InstallResult::kPermissionDeniedError),
+                                    MethodResult::kPermissionDeniedError),
         FailedInstallWithErrorParam(kFwupdErrorName_BrokenSystem,
-                                    InstallResult::kBrokenSystemError),
+                                    MethodResult::kBrokenSystemError),
         FailedInstallWithErrorParam(kFwupdErrorName_BatteryLevelTooLow,
-                                    InstallResult::kBatteryLevelTooLowError),
+                                    MethodResult::kBatteryLevelTooLowError),
         FailedInstallWithErrorParam(kFwupdErrorName_NeedsUserAction,
-                                    InstallResult::kNeedsUserActionError),
+                                    MethodResult::kNeedsUserActionError),
         FailedInstallWithErrorParam(kFwupdErrorName_AuthExpired,
-                                    InstallResult::kAuthExpiredError),
+                                    MethodResult::kAuthExpiredError),
         FailedInstallWithErrorParam("Random Error",
-                                    InstallResult::kUnknownError),
+                                    MethodResult::kUnknownError),
         FailedInstallWithErrorParam("Random Error 2",
-                                    InstallResult::kUnknownError)));
+                                    MethodResult::kUnknownError)));
 
 TEST_P(FirmwareUpdateManagerTest_FailedInstallWithErrorMessage,
        FailedInstall_WithErrorMessage) {
@@ -924,7 +924,7 @@ TEST_F(FirmwareUpdateManagerTest, BeginUpdateLocalPatch) {
   BeginUpdate(std::string(kFakeDeviceIdForTesting), base::FilePath(uri));
 
   histogram_tester.ExpectUniqueSample("ChromeOS.FirmwareUpdateUi.InstallResult",
-                                      InstallResult::kSuccess, 1);
+                                      MethodResult::kSuccess, 1);
   EXPECT_EQ(ash::firmware_update::mojom::UpdateState::kSuccess,
             update_progress_observer.GetLatestUpdate()->state);
 }
@@ -953,7 +953,7 @@ TEST_F(FirmwareUpdateManagerTest, BeginUpdateInvalidFile) {
               base::FilePath("BadTestFilename@#.cab"));
 
   histogram_tester.ExpectUniqueSample("ChromeOS.FirmwareUpdateUi.InstallResult",
-                                      InstallResult::kInvalidPatchFile, 1);
+                                      MethodResult::kInvalidPatchFile, 1);
   EXPECT_EQ(ash::firmware_update::mojom::UpdateState::kFailed,
             update_progress_observer.GetLatestUpdate()->state);
 }
