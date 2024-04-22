@@ -27,9 +27,9 @@
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/tpcd/metadata/browser/prefs.h"
 #include "components/tpcd/metadata/metadata.pb.h"
 #include "components/tpcd/metadata/parser.h"
-#include "components/tpcd/metadata/prefs.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace tpcd::metadata {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/tpcd/metadata/prefs.h"
+#include "components/tpcd/metadata/browser/prefs.h"
 
 #include "components/prefs/pref_registry_simple.h"
 

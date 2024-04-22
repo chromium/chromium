@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_TPCD_METADATA_PREFS_H_
-#define COMPONENTS_TPCD_METADATA_PREFS_H_
+#ifndef COMPONENTS_TPCD_METADATA_BROWSER_PREFS_H_
+#define COMPONENTS_TPCD_METADATA_BROWSER_PREFS_H_
 
 class PrefRegistrySimple;
 
@@ -20,4 +20,4 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
 }  // namespace tpcd::metadata
 
-#endif  // COMPONENTS_TPCD_METADATA_PREFS_H_
+#endif  // COMPONENTS_TPCD_METADATA_BROWSER_PREFS_H_

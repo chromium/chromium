@@ -6,8 +6,8 @@ import("//third_party/protobuf/proto_library.gni")
 
 static_library("prefs") {
   sources = [
-    "prefs.cc",
-    "prefs.h",
+    "browser/prefs.cc",
+    "browser/prefs.h",
   ]
 
   deps = [
