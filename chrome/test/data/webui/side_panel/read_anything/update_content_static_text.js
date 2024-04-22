@@ -11,8 +11,9 @@
 (() => {
   chrome.readingMode.onConnected = () => {};
 
-  const readAnythingApp = document.querySelector('read-anything-app');
-  const container = document.getElementById('container');
+  const readAnythingApp =
+      document.querySelector('read-anything-app').shadowRoot;
+  const container = readAnythingApp.getElementById('container');
   let result = true;
 
   const assertEquals = (actual, expected) => {

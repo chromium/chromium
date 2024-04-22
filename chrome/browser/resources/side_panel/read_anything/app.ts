@@ -205,7 +205,7 @@ export interface WordBoundaryState {
 export interface ReadAnythingElement {
   $: {
     toolbar: ReadAnythingToolbarElement,
-    appFlexParent: HTMLElement,
+    flexParent: HTMLElement,
     container: HTMLElement,
   };
 }
@@ -227,14 +227,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   private startTime = Date.now();
   private constructorTime: number;
-
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  override _attachDom(dom: Node|null): ShadowRoot|null {
-    if (dom) {
-      this.appendChild(dom);
-    }
-    return null;
-  }
 
   // Maps a DOM node to the AXNodeID that was used to create it. DOM nodes and
   // AXNodeIDs are unique, so this is a two way map where either DOM node or
@@ -343,7 +335,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // panel. This follows Side Panel best practices and prevents loading
     // artifacts from showing if the side panel is shown before content is
     // ready.
-    listenOnce(this.$.appFlexParent, 'dom-change', () => {
+    listenOnce(this.$.flexParent, 'dom-change', () => {
       setTimeout(() => chrome.readingMode.shouldShowUi(), 0);
     });
 
@@ -362,7 +354,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       if (!this.hasContent_ || !this.speechPlayingState.paused) {
         return;
       }
-      const selection = this.getSelection();
+      const shadowRoot = this.shadowRoot;
+      assert(shadowRoot, 'no shadow root');
+      const selection = shadowRoot.getSelection();
       assert(selection, 'no selection');
       const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
       if (!anchorNode || !focusNode) {
@@ -446,11 +440,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // getHtmlTag might return '#document' which is not a valid to pass to
     // createElement.
     if (htmlTag === '#document') {
-      htmlTag = 'div';
-    }
-
-    // Only one body tag is allowed per document.
-    if (htmlTag === 'body') {
       htmlTag = 'div';
     }
 
@@ -665,7 +654,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   getSelection(): any {
-    const selection = document.getSelection();
+    const shadowRoot = this.shadowRoot;
+    assert(shadowRoot, 'no shadow root');
+    const selection = shadowRoot.getSelection();
     return selection;
   }
 
@@ -739,8 +730,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   updateLinks() {
+    if (!this.shadowRoot) {
+      return;
+    }
+
     const selector = this.shouldShowLinks() ? 'span[data-link]' : 'a';
-    const elements = this.querySelectorAll(selector);
+    const elements = this.shadowRoot.querySelectorAll(selector);
 
     for (const elem of elements) {
       assert(elem instanceof HTMLElement, 'link is not an HTMLElement');

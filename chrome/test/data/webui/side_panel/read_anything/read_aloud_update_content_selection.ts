@@ -6,7 +6,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_too
 import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/app.js';
 import {PauseActionSource} from 'chrome-untrusted://read-anything-side-panel.top-chrome/app.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {suppressInnocuousErrors} from './common.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -109,10 +109,10 @@ suite('ReadAloud_UpdateContentSelection', () => {
     test('selection in reading mode panel correct', () => {
       // Calling shadowRoot.getSelection directly is not supported in TS tests,
       // so use a helper to get the selection from the app instead.
-      const selection = document.getSelection()!;
+      const selection = app.getSelection();
       assertTrue(selection != null);
-      assertEquals(selection.anchorNode!.textContent, 'World');
-      assertEquals(selection.focusNode!.textContent, 'Friend');
+      assertEquals(selection.anchorNode.textContent, 'World');
+      assertEquals(selection.focusNode.textContent, 'Friend');
       assertEquals(selection.anchorOffset, 1);
       assertEquals(selection.focusOffset, 2);
     });
@@ -145,8 +145,13 @@ suite('ReadAloud_UpdateContentSelection', () => {
     });
 
     test('selection in reading model panel cleared', () => {
-      const selection = document.getSelection()!;
-      assertEquals(selection.toString(), '');
+      // Calling shadowRoot.getSelection directly is not supported in TS tests,
+      // so use a helper to get the selection from the app instead.
+      const selection = app.getSelection();
+      assertNull(selection.anchorNode);
+      assertNull(selection.focusNode);
+      assertEquals(selection.anchorOffset, 0);
+      assertEquals(selection.focusOffset, 0);
     });
 
 
@@ -181,15 +186,15 @@ suite('ReadAloud_UpdateContentSelection', () => {
     test('selection in reading mode container correct', () => {
       // Calling shadowRoot.getSelection directly is not supported in TS tests,
       // so use a helper to get the selection from the app instead.
-      const selection = document.getSelection()!;
+      const selection = app.getSelection();
       assertTrue(selection != null);
 
       // TODO(b/327519645): Playing Read Aloud slightly adjusts what's
       // selected. This happened before disabling selection when Read Aloud
       // was playing, but adding tests for disabled selection makes this bug
       // more apparent.
-      assertEquals(selection.anchorNode!.textContent, 'World');
-      assertEquals(selection.focusNode!.textContent, 'Friend!');
+      assertEquals(selection.anchorNode.textContent, 'World');
+      assertEquals(selection.focusNode.textContent, 'Friend!');
       assertEquals(selection.anchorOffset, 0);
       assertEquals(selection.focusOffset, 0);
     });

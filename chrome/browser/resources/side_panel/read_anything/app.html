@@ -1,11 +1,11 @@
 <style include="cr-hidden-style sp-shared-style">
-  html[chrome-refresh-2023] #empty-state-container {
+  :host-context([chrome-refresh-2023]) #empty-state-container {
     border-radius: 12px;
   }
   .sp-scroller {
     display: block;
   }
-  html[chrome-refresh-2023] #empty-state-container {
+  :host-context([chrome-refresh-2023]) #empty-state-container {
     margin: 0 8px;
     padding: 20px 0;
   }
@@ -14,19 +14,19 @@
     width: 100%;
   }
 
-  #appFlexParent {
+  #flexParent {
     height: 100%;
     width: 100%;
     display: flex;
     flex-direction: column;
   }
 
-  #appFlexParent #container-parent {
+  #container-parent {
+    background: var(--background-color);
     height: 100%;
-    overflow: auto;
   }
 
-  html[chrome-refresh-2023] .sp-scroller::-webkit-scrollbar-track {
+  :host-context([chrome-refresh-2023]) .sp-scroller::-webkit-scrollbar-track {
     margin-top: 6px;
     margin-bottom: 6px;
   }
@@ -41,7 +41,7 @@
     user-select: auto;
   }
 
-  #appFlexParent #container {
+  #container {
     background: var(--background-color);
     color: var(--foreground-color);
     font-family: var(--font-family);
@@ -53,40 +53,40 @@
     max-width: 60ch;
     margin: 0 auto;
   }
-  #appFlexParent a:link {
+  a:link {
     color: var(--link-color);
   }
-  #appFlexParent a:visited {
+  a:visited {
     color: var(--visited-link-color);
   }
-  #appFlexParent #empty-state-container {
+  #empty-state-container {
     background: var(--background-color);
     height: 100%;
     padding: 20px;
   }
-  #appFlexParent sp-empty-state {
+  sp-empty-state {
     display: flex;
     margin: 0 auto 16px auto;
     width: fit-content;
   }
-  #appFlexParent ::selection {
+  ::selection {
     background: var(--selection-color);
     color: var(--selection-text-color);
   }
-  #appFlexParent .current-read-highlight {
+  .current-read-highlight {
     background-color: var(--current-highlight-bg-color);
   }
-  #appFlexParent .previous-read-highlight {
+  .previous-read-highlight {
     color: var(--previous-highlight-color);
     background-color: transparent;
   }
 
-  #appFlexParent img {
+  img {
     max-width: 100%;
   }
 
 </style>
-<div id="appFlexParent" on-keydown="onKeyDown_">
+<div id="flexParent" on-keydown="onKeyDown_">
   <div id="toolbar-container" hidden="[[!isWebUIToolbarVisible_]]">
     <read-anything-toolbar
       paused="[[speechPlayingState.paused]]"

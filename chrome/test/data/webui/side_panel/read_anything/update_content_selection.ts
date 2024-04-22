@@ -102,6 +102,8 @@ suite('UpdateContentSelection', () => {
     });
 
     test('CorrectContentSelected', () => {
+      // Calling shadowRoot.getSelection directly is not supported in TS tests,
+      // so use a helper to get the selection from the app instead.
       const selection = app.getSelection();
       assertEquals(selection.anchorNode.textContent, 'World');
       assertEquals(selection.focusNode.textContent, 'Friend');

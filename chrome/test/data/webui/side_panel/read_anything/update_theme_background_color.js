@@ -11,8 +11,9 @@
 (() => {
   chrome.readingMode.onConnected = () => {};
 
-  const readAnythingApp = document.querySelector('read-anything-app');
-  const container = document.getElementById('container');
+  const readAnythingApp =
+      document.querySelector('read-anything-app').shadowRoot;
+  const container = readAnythingApp.getElementById('container');
 
   chrome.readingMode.setThemeForTesting(
       'f', 1, true, 0, /* SkColorSetRGB(0xFD, 0xE2, 0x93) = */ 4294828691, 1,

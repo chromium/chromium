@@ -11,8 +11,9 @@
 (() => {
   chrome.readingMode.onConnected = () => {};
 
-  const readAnythingApp = document.querySelector('read-anything-app');
-  const container = document.getElementById('container');
+  const readAnythingApp =
+      document.querySelector('read-anything-app').shadowRoot;
+  const container = readAnythingApp.getElementById('container');
 
   chrome.readingMode.setThemeForTesting('f', 1, true, 0, 0, 1, 3);
   // Very loose letter letter spacing = 0.1em, font size = 1em = 16px

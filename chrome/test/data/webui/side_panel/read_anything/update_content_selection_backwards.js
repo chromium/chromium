@@ -11,8 +11,9 @@
 (() => {
   chrome.readingMode.onConnected = () => {};
 
-  const readAnythingApp = document.querySelector('read-anything-app');
-  const container = document.getElementById('container');
+  const readAnythingApp =
+      document.querySelector('read-anything-app').shadowRoot;
+  const container = readAnythingApp.getElementById('container');
   let result = true;
 
   const assertEquals = (actual, expected) => {
@@ -124,7 +125,7 @@
   // selection.
   const expected = '<div><p>Hello</p><p>World</p><p>Friend!</p></div>';
   assertContainerInnerHTML(expected);
-  const selection = document.getSelection();
+  const selection = readAnythingApp.getSelection();
   assertEquals(selection.anchorNode.textContent, 'Hello');
   assertEquals(selection.focusNode.textContent, 'Friend');
   assertEquals(selection.anchorOffset, 1);

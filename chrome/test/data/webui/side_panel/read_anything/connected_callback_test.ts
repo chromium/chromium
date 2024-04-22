@@ -30,9 +30,10 @@ suite('ConnectedCallback', () => {
 
   test('shows loading page', () => {
     assertEquals(
-        app.querySelector<HTMLElement>('#empty-state-container')!.hidden,
+        app.shadowRoot!.querySelector<HTMLElement>(
+                           '#empty-state-container')!.hidden,
         false);
-    const emptyState = app.querySelector('sp-empty-state')!;
+    const emptyState = app.shadowRoot!.querySelector('sp-empty-state')!;
     assertEquals(emptyState.heading, 'Getting ready');
     assertEquals(emptyState.body, '');
     assertStringContains(emptyState.imagePath, 'throbber');

@@ -11,7 +11,8 @@
 (() => {
   chrome.readingMode.onConnected = () => {};
 
-  const readAnythingApp = document.querySelector('read-anything-app');
+  const readAnythingApp =
+      document.querySelector('read-anything-app').shadowRoot;
   const emptyState = readAnythingApp.querySelector('sp-empty-state');
   let result = true;
 
@@ -37,7 +38,8 @@
     return contains;
   };
 
-  assertEquals(document.getElementById('empty-state-container').hidden, false);
+  assertEquals(
+      readAnythingApp.getElementById('empty-state-container').hidden, false);
   assertEquals(emptyState.heading, 'Getting ready');
   assertEquals(emptyState.body, '');
   assertStringContains(emptyState.imagePath, 'throbber');
