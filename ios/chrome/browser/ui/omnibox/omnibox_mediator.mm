@@ -340,7 +340,6 @@ using base::UserMetricsAction;
   __weak __typeof(self) weakSelf = self;
   auto textCompletion =
       ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
-        default_browser::NotifyOmniboxTextCopyPasteAndNavigate(self.tracker);
         dispatch_async(dispatch_get_main_queue(), ^{
           NSString* text = static_cast<NSString*>(providedItem);
           if (text) {
@@ -396,6 +395,7 @@ using base::UserMetricsAction;
     } else if ([itemProvider canLoadObjectOfClass:[NSString class]]) {
       RecordAction(
           UserMetricsAction("Mobile.OmniboxPasteButton.SearchCopiedText"));
+      default_browser::NotifyOmniboxTextCopyPasteAndNavigate(self.tracker);
       [itemProvider loadObjectOfClass:[NSString class]
                     completionHandler:textCompletion];
       break;
