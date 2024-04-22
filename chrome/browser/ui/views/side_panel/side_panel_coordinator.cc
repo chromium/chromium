@@ -399,6 +399,11 @@ void SidePanelCoordinator::Close() {
       browser_view_->unified_side_panel()->IsClosing()) {
     return;
   }
+
+  if (current_entry_ &&
+      browser_view_->toolbar()->pinned_toolbar_actions_container()) {
+    NotifyPinnedContainerOfActiveStateChange(current_entry_->key(), false);
+  }
   if (views::View* content_container = GetContentContainerView()) {
     content_container->SetProperty(
         kSidePanelContentStateKey,
@@ -650,6 +655,9 @@ void SidePanelCoordinator::Show(
             SidePanelContentState::kReadyToShow));
     if (content_wrapper->loading_entry()) {
       content_wrapper->ResetLoadingEntryIfNecessary();
+    }
+    if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
+      NotifyPinnedContainerOfActiveStateChange(entry->key(), true);
     }
     return;
   }
@@ -1146,22 +1154,6 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
       // different entries being shown.
     }
 
-    // If the entry is being deregistered there is no chance it could be
-    // reopened during the closing animation, handle closing clean up here since
-    // |current_entry_| will not exist after the side panel is closed.
-    if (current_entry_) {
-      // Reset current_entry_ first to prevent current_entry->OnEntryHidden()
-      // from calling multiple times. This could happen in the edge cases when
-      // callback inside current_entry->OnEntryHidden() is calling Close() to
-      // trigger race condition.
-      auto* current_entry = current_entry_.get();
-      current_entry_.reset();
-      if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
-        NotifyPinnedContainerOfActiveStateChange(current_entry->key(), false);
-      }
-      current_entry->OnEntryHidden();
-    }
-
     if (auto* new_active_entry =
             GetNewActiveEntryOnDeregister(registry, entry->key())) {
       Show(new_active_entry,
@@ -1370,9 +1362,6 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
       if (global_registry_->GetEntryForKey(current_entry->key()) ==
           current_entry) {
         closing_global = true;
-      }
-      if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
-        NotifyPinnedContainerOfActiveStateChange(current_entry->key(), false);
       }
       current_entry->OnEntryHidden();
     }
