@@ -23,11 +23,21 @@ suite('VoiceSelectionMenuElement', () => {
   const voiceSelectionButtonSelector: string =
       '.dropdown-voice-selection-button:not(.language-menu-button)';
 
-  const setAvailableVoices = () => {
+  // If no param for enabledLangs is provided, it auto populates it with the
+  // langs of the voices
+  const setAvailableVoices = (enabledLangs: string[]|undefined = undefined) => {
     // Bypass Typescript compiler to allow us to set a private readonly
     // property
     // @ts-ignore
     voiceSelectionMenu.availableVoices = availableVoices;
+    if (enabledLangs === undefined) {
+      // @ts-ignore
+      voiceSelectionMenu.enabledLanguagesInPref =
+          [...new Set(availableVoices.map(({lang}) => lang))];
+    } else {
+      // @ts-ignore
+      voiceSelectionMenu.enabledLanguagesInPref = enabledLangs;
+    }
     flush();
   };
 
@@ -55,7 +65,8 @@ suite('VoiceSelectionMenuElement', () => {
 
   suite('with one voice', () => {
     setup(() => {
-      availableVoices = [{name: 'test voice 1'} as SpeechSynthesisVoice];
+      availableVoices =
+          [{name: 'test voice 1', lang: 'lang'} as SpeechSynthesisVoice];
       setAvailableVoices();
     });
 
@@ -90,8 +101,8 @@ suite('VoiceSelectionMenuElement', () => {
     suite('when availableVoices updates', () => {
       setup(() => {
         availableVoices = [
-          {name: 'test voice 1'} as SpeechSynthesisVoice,
-          {name: 'test voice 2'} as SpeechSynthesisVoice,
+          {name: 'test voice 1', lang: 'lang'} as SpeechSynthesisVoice,
+          {name: 'test voice 2', lang: 'lang'} as SpeechSynthesisVoice,
         ];
         setAvailableVoices();
       });
@@ -176,6 +187,25 @@ suite('VoiceSelectionMenuElement', () => {
 
       assertEquals(englishDropdownItems.length, 3);
       assertEquals(italianDropdownItems.length, 1);
+    });
+
+    suite('with some disabled languages', () => {
+      test('it only shows enabled languages', () => {
+        setAvailableVoices(['it-it']);
+
+        const englishGroup: HTMLElement|null =
+            voiceSelectionMenu!.$.voiceSelectionMenu.get()
+                .querySelector<HTMLElement>('div[data-test-id="group-en-US"]');
+        const italianGroup: HTMLElement =
+            voiceSelectionMenu!.$.voiceSelectionMenu.get()
+                .querySelector<HTMLElement>('div[data-test-id="group-it-IT"]')!;
+        const italianDropdownItems: NodeListOf<HTMLElement> =
+            italianGroup.querySelectorAll<HTMLButtonElement>(
+                '.dropdown-voice-selection-button');
+
+        assertEquals(englishGroup, null);
+        assertEquals(italianDropdownItems.length, 1);
+      });
     });
 
     suite('with Natural voices also available', () => {

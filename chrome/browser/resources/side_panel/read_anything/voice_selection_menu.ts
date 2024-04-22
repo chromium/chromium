@@ -76,9 +76,14 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
       previewVoicePlaying: Object,
       paused: Boolean,
       localeToDisplayName: Object,
+      enabledVoices_: {
+        type: Object,
+        computed:
+            'computeEnabledVoices_(availableVoices, enabledLanguagesInPref)',
+      },
       voiceSelectionOptions_: {
         type: Object,
-        computed: 'computeVoiceDropdown_(selectedVoice, availableVoices,' +
+        computed: 'computeVoiceDropdown_(selectedVoice, enabledVoices_,' +
             ' previewVoicePlaying, localeToDisplayName)',
       },
     };
@@ -98,13 +103,28 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
     });
   }
 
+  private computeEnabledVoices_(
+      availableVoices: SpeechSynthesisVoice[],
+      enabledLanguagesInPref: string[]): SpeechSynthesisVoice[] {
+    if (!availableVoices || !enabledLanguagesInPref) {
+      return [];
+    }
+    const enablesLangsLowerCase: Set<string> =
+        new Set(enabledLanguagesInPref.map(lang => lang.toLowerCase()));
+    return availableVoices.filter(
+        ({lang}) => enablesLangsLowerCase.has(lang.toLowerCase()));
+  }
+
   private computeVoiceDropdown_(
       selectedVoice: SpeechSynthesisVoice,
-      availableVoices: SpeechSynthesisVoice[],
+      enabledVoices: SpeechSynthesisVoice[],
       previewVoicePlaying: SpeechSynthesisVoice|null,
       localeToDisplayName: {[lang: string]: string}): VoiceDropdownGroup[] {
+    if (!enabledVoices) {
+      return [];
+    }
     const languageToVoices =
-        availableVoices.reduce((languageToDropdownItems, voice) => {
+        enabledVoices.reduce((languageToDropdownItems, voice) => {
           const dropdownItem: VoiceDropdownItem = {
             title: voice.name,
             voice,
