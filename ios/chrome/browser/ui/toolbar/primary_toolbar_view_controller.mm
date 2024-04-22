@@ -228,25 +228,13 @@
 
 #pragma mark - ToolbarAnimatee
 
-- (void)expandLocationBar:(BOOL)animated {
+- (void)expandLocationBar {
   [self deactivateViewLocationBarConstraints];
   [NSLayoutConstraint activateConstraints:self.view.expandedConstraints];
-  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
-    // No need to force the view to layout immediately when no animation is
-    // required, the pending layout updates can be calculated and rendered in
-    // the next runloop. Otherwise, this unnecessary layout will affect startup
-    // performance. And it is necessary to force the view to update its layout
-    // when it's animated. This is because there are following animations that
-    // need the final frame of the location bar.
-    if (animated) {
-      [self.view layoutIfNeeded];
-    }
-  } else {
-    [self.view layoutIfNeeded];
-  }
+  [self.view layoutIfNeeded];
 }
 
-- (void)contractLocationBar:(BOOL)animated {
+- (void)contractLocationBar {
   [self deactivateViewLocationBarConstraints];
   if (IsSplitToolbarMode(self)) {
     [NSLayoutConstraint
@@ -254,19 +242,7 @@
   } else {
     [NSLayoutConstraint activateConstraints:self.view.contractedConstraints];
   }
-  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
-    // No need to force the view to layout immediately when no animation is
-    // required, the pending layout updates can be calculated and rendered in
-    // the next runloop. Otherwise, this unnecessary layout will affect startup
-    // performance. And it is necessary to force the view to update its layout
-    // when it's animated. This is because there are following animations that
-    // need the final frame of the location bar.
-    if (animated) {
-      [self.view layoutIfNeeded];
-    }
-  } else {
-    [self.view layoutIfNeeded];
-  }
+  [self.view layoutIfNeeded];
 }
 
 - (void)showCancelButton {
