@@ -42,7 +42,7 @@ build_webui_tests("build_webui_tests") {
     "wrapup_finalize_page_test.ts",
     "wrapup_repair_complete_page_test.ts",
     "wrapup_restock_page_test.ts",
-    "wrapup_wait_for_manual_wp_enable_page_test.js",
+    "wrapup_wait_for_manual_wp_enable_page_test.ts",
   ]
 
   ts_deps = [

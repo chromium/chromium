@@ -166,6 +166,11 @@ IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, RepairCompletePage) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, WaitForManualWpEnable) {
+  RunTest("chromeos/shimless_rma/wrapup_wait_for_manual_wp_enable_page_test.js",
+          "mocha.run()");
+}
+
 }  // namespace
 
 }  // namespace ash
