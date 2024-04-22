@@ -38,6 +38,7 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -86,18 +87,19 @@ void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
   if (interception_status_ != OidcInterceptionStatus::kNoInterception &&
       interception_status_ != OidcInterceptionStatus::kCompleted &&
       interception_status_ != OidcInterceptionStatus::kError) {
-    DVLOG(1) << "Interception already in progress";
+    VLOG_POLICY(1, OIDC_ENROLLMENT) << "OIDC Interception already in progress";
     return;
   }
   interception_status_ = OidcInterceptionStatus::kRegister;
 
   if (!IsValidOidcToken(oidc_tokens)) {
-    DVLOG(1) << "Invalid tokens in the OIDC response";
+    LOG_POLICY(ERROR, OIDC_ENROLLMENT) << "Invalid tokens in the OIDC response";
     return;
   }
 
   if (!intercepted_contents) {
-    DVLOG(1) << "Web contents no longer available, aborting interception";
+    LOG_POLICY(ERROR, OIDC_ENROLLMENT)
+        << "Web contents no longer available, aborting interception";
     return;
   }
 
@@ -116,12 +118,21 @@ void OidcAuthenticationSigninInterceptor::MaybeInterceptOidcAuthentication(
       break;
     }
   }
+
   // Same profile
   if (switch_to_entry_ && switch_to_entry_->GetPath() == profile_path) {
-    DVLOG(1) << "Intercepted info is already in the right profile";
+    VLOG_POLICY(1, OIDC_ENROLLMENT)
+        << "Intercepted info is already in the right profile";
     Reset();
     return;
   }
+
+  switch_to_entry_
+      ? VLOG_POLICY(2, OIDC_ENROLLMENT)
+            << "Existing OIDC profile with match credential found, displaying "
+               "profile switch dialog."
+      : VLOG_POLICY(2, OIDC_ENROLLMENT)
+            << "Displaying unified consent dialog for profile creation.";
 
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
@@ -178,6 +189,7 @@ void OidcAuthenticationSigninInterceptor::Reset() {
 
 void OidcAuthenticationSigninInterceptor::StartOidcRegistration(
     ClientRegisterCallback callback) {
+  VLOG_POLICY(2, OIDC_ENROLLMENT) << "Starting OIDC registration process";
   policy::DeviceManagementService* device_management_service =
       g_browser_process->browser_policy_connector()
           ->device_management_service();
@@ -217,6 +229,9 @@ void OidcAuthenticationSigninInterceptor::StartOidcRegistration(
 void OidcAuthenticationSigninInterceptor::OnClientRegistered(
     std::unique_ptr<CloudPolicyClient> client) {
   if (client->last_dm_status() != policy::DM_STATUS_SUCCESS) {
+    LOG_POLICY(ERROR, OIDC_ENROLLMENT)
+        << "OIDC client registration failed with DM Status: "
+        << client->last_dm_status() << ". Enrollment process interrupted.";
     interception_status_ = OidcInterceptionStatus::kError;
 
     Reset();
@@ -242,6 +257,11 @@ void OidcAuthenticationSigninInterceptor::OnClientRegistered(
   bool is_dasherless_client =
       client->third_party_identity_type() ==
       policy::ThirdPartyIdentityType::OIDC_MANAGEMENT_DASHERLESS;
+
+  VLOG_POLICY(2, OIDC_ENROLLMENT)
+      << "OIDC client registration succeeded for third party identity type: "
+      << client->third_party_identity_type()
+      << ". Starting profile creation process.";
 
   // TODO(b/328055055): Replace this somewhat confusing check when bool
   // IsDasherlessManagement is replaced with an Enum.
@@ -277,8 +297,9 @@ void OidcAuthenticationSigninInterceptor::AddAsPrimaryAccount(
   std::string gaia_id =
       user_policy_manager->core()->store()->policy()->gaia_id();
 
-  VLOG(1) << "Adding user with gaia id <" << gaia_id << "> and email <"
-          << user_email_ << "> to the newly created OIDC profile.";
+  VLOG_POLICY(2, OIDC_ENROLLMENT)
+      << "Adding user with gaia id <" << gaia_id << "> and email <"
+      << user_email_ << "> to the newly created OIDC profile.";
 
   CoreAccountId account_id =
       identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
@@ -287,15 +308,17 @@ void OidcAuthenticationSigninInterceptor::AddAsPrimaryAccount(
           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
           signin_metrics::SourceForRefreshTokenOperation::
               kMachineLogon_CredentialProvider);
-  VLOG(1) << "Account id <" << account_id.ToString()
-          << "> has been added to the newly created OIDC profile.";
+  VLOG_POLICY(2, OIDC_ENROLLMENT)
+      << "Account id <" << account_id.ToString()
+      << "> has been added to the newly created OIDC profile.";
 
   auto set_primary_account_result =
       identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
           account_id, signin::ConsentLevel::kSignin);
-  VLOG(1) << "Operation of setting account id <" << account_id.ToString()
-          << "> received the following result: "
-          << static_cast<int>(set_primary_account_result);
+  VLOG_POLICY(2, OIDC_ENROLLMENT)
+      << "Operation of setting account id <" << account_id.ToString()
+      << "> received the following result: "
+      << static_cast<int>(set_primary_account_result);
 
   interception_status_ = OidcInterceptionStatus::kCompleted;
 
@@ -309,9 +332,9 @@ void OidcAuthenticationSigninInterceptor::OnProfileCreationChoice(
     if (switch_to_entry_) {
       // TODO(b/319479021): Improve metrics of the interceptor class using
       // policy logger.
-      DVLOG(1) << "Profile switch refused by the user";
+      VLOG_POLICY(2, OIDC_ENROLLMENT) << "Profile switch refused by the user";
     } else {
-      DVLOG(1) << "Profile creation refused by the user";
+      VLOG_POLICY(2, OIDC_ENROLLMENT) << "Profile creation refused by the user";
     }
 
     Reset();
@@ -342,7 +365,7 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
   CHECK(profile_creator_);
 
   if (!new_profile) {
-    DVLOG(1) << "Failed to create new profile";
+    VLOG_POLICY(1, OIDC_ENROLLMENT) << "Failed to create new profile";
     Reset();
     return;
   }
@@ -362,7 +385,7 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
           ->BuildAutogeneratedThemeFromColor(profile_color_);
     }
   } else {
-    DVLOG(1) << "Profile switched sucessfully";
+    VLOG_POLICY(2, OIDC_ENROLLMENT) << "Profile switched sucessfully";
   }
 
   if (!disable_browser_creation_after_interception_for_testing_) {
@@ -377,6 +400,8 @@ void OidcAuthenticationSigninInterceptor::OnNewSignedInProfileCreated(
       policy::UserPolicyOidcSigninServiceFactory::GetForProfile(
           new_profile.get());
 
+  VLOG_POLICY(2, OIDC_ENROLLMENT)
+      << "Starting policy fetch process for OIDC-managed profile";
   interception_status_ = OidcInterceptionStatus::kPolicyFetch;
 
   policy_service->FetchPolicyForSignedInUser(
@@ -398,7 +423,7 @@ void OidcAuthenticationSigninInterceptor::
   NavigateParams params(profile_, url_to_open,
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   Navigate(&params);
-  DVLOG(1) << "New browser created";
+  VLOG_POLICY(2, OIDC_ENROLLMENT) << "New browser created";
 }
 
 void OidcAuthenticationSigninInterceptor::CloseInterceptedWebContent(
@@ -406,6 +431,8 @@ void OidcAuthenticationSigninInterceptor::CloseInterceptedWebContent(
   DCHECK(intercepted_contents);
 
   if (intercepted_contents) {
+    VLOG_POLICY(2, OIDC_ENROLLMENT)
+        << "Process finished, closing intercepted web contents.";
     intercepted_contents->Close();
   }
 }
@@ -414,6 +441,9 @@ void OidcAuthenticationSigninInterceptor::OnPolicyFetchCompleteInNewProfile(
     Profile* new_profile,
     bool success) {
   if (success && dasher_based_ && !switch_to_entry_) {
+    VLOG_POLICY(2, OIDC_ENROLLMENT)
+        << "Policy fetched for Dasher-based OIDC profile, adding the user as "
+           "the primary account.";
     return AddAsPrimaryAccount(new_profile);
   }
 
@@ -421,6 +451,8 @@ void OidcAuthenticationSigninInterceptor::OnPolicyFetchCompleteInNewProfile(
                                  : OidcInterceptionStatus::kError;
 
   if (success) {
+    VLOG_POLICY(2, OIDC_ENROLLMENT)
+        << "Policy fetched for Dasherless OIDC profile.";
     CloseInterceptedWebContent(web_contents_.get());
   }
 

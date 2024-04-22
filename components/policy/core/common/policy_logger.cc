@@ -45,6 +45,8 @@ std::string GetLogSourceValue(const PolicyLogger::Log::Source log_source) {
       return "Remote Commands";
     case PolicyLogger::Log::Source::kDeviceTrust:
       return "Device Trust";
+    case PolicyLogger::Log::Source::kOidcEnrollment:
+      return "OIDC Enrollment";
   }
 }
 

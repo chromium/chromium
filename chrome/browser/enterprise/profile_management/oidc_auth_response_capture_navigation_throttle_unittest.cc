@@ -175,7 +175,7 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, SuccessfulInterception) {
                     web_contents(),
                     ProfileManagementOicdTokens{.auth_token = auth_token,
                                                 .id_token = id_token},
-                    kExampleAuthSubject))
+                    kExampleIdSubject))
         .WillOnce(testing::Return());
   }
   auto throttle =
@@ -239,10 +239,10 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, MissingAuthSubClaim) {
                            NavigationThrottle::PROCEED);
 }
 
-TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, EmptyAuthJson) {
-  std::string auth_token = BuildTokenFromDict(base::Value::Dict());
-  std::string id_token = BuildTokenFromDict(
-      base::Value::Dict().Set(kSubjectClaimName, kExampleIdSubject));
+TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, EmptyIdJson) {
+  std::string auth_token = BuildTokenFromDict(
+      base::Value::Dict().Set(kSubjectClaimName, kExampleAuthSubject));
+  std::string id_token = BuildTokenFromDict(base::Value::Dict());
 
   std::string redirection_url = BuildOidcResponseUrl(auth_token, id_token);
 
@@ -253,22 +253,22 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, EmptyAuthJson) {
 
 TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
        WrongNumberOfJwtSections) {
+  std::string auth_token = BuildTokenFromDict(
+      base::Value::Dict()
+          .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
+          .Set(kSubjectClaimName, kExampleAuthSubject));
+
   // Missing header and signature, this token is malformed and only has one
   // section
-  std::string malformed_auth_token = base::Base64Encode(
+  std::string malformed_id_token = base::Base64Encode(
       base::WriteJson(
           base::Value::Dict()
               .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
-              .Set(kSubjectClaimName, kExampleAuthSubject))
+              .Set(kSubjectClaimName, kExampleIdSubject))
           .value());
 
-  std::string id_token = BuildTokenFromDict(
-      base::Value::Dict()
-          .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
-          .Set(kSubjectClaimName, kExampleIdSubject));
-
   std::string redirection_url =
-      BuildOidcResponseUrl(malformed_auth_token, id_token);
+      BuildOidcResponseUrl(auth_token, malformed_id_token);
 
   auto* oidc_interceptor = GetMockOidcInterceptor();
   ExpectNoOidcInterception(oidc_interceptor, redirection_url,
@@ -277,7 +277,7 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest,
 
 TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, DecodeFailure) {
   // The payload section of this token is not encoded.
-  std::string malformed_auth_token = base::StringPrintf(
+  std::string malformed_id_token = base::StringPrintf(
       kTokenTemplate, kDummyHeader,
       base::WriteJson(
           base::Value::Dict()
@@ -287,13 +287,13 @@ TEST_P(OidcAuthResponseCaptureNavigationThrottleTest, DecodeFailure) {
           .c_str(),
       kDummySignature);
 
-  std::string id_token = BuildTokenFromDict(
+  std::string auth_token = BuildTokenFromDict(
       base::Value::Dict()
           .Set(kUserPrincipleNameClaimName, kExampleUserPrincipleName)
           .Set(kSubjectClaimName, kExampleIdSubject));
 
   std::string redirection_url =
-      BuildOidcResponseUrl(malformed_auth_token, id_token);
+      BuildOidcResponseUrl(auth_token, malformed_id_token);
 
   auto* oidc_interceptor = GetMockOidcInterceptor();
   ExpectNoOidcInterception(oidc_interceptor, redirection_url,
