@@ -130,8 +130,7 @@ and then write commands into it:
   $ echo failure >%1$s  # unpauses execution until failure
   $ echo help    >%1$s  # prints this text
 )";
-  LOG(INFO) << base::StringPrintf(msg,
-                                  command_file_path.AsUTF8Unsafe().c_str());
+  VLOG(1) << base::StringPrintf(msg, command_file_path.AsUTF8Unsafe().c_str());
 }
 
 std::optional<autofill::FieldType> StringToFieldType(std::string_view str) {
@@ -211,7 +210,7 @@ std::vector<ExecutionCommand> ReadExecutionCommands(
         commands.push_back({ExecutionCommandType::kWhereAmI});
       } else if (command.starts_with("failure")) {
         commands.push_back({ExecutionCommandType::kRunUntilFailure});
-        // also add an absolute max limit (like a" run" command).
+        // Same commands as for "run":
         commands.push_back({ExecutionCommandType::kAbsoluteLimit,
                             std::numeric_limits<int>::max()});
       } else if (command.starts_with("help")) {
@@ -266,19 +265,19 @@ ExecutionState ProcessCommands(ExecutionState execution_state,
           min_index = std::max(min_index, 0);
           max_index = std::min(max_index, execution_state.length);
           for (int i = min_index; i < max_index; ++i) {
-            LOG(INFO) << "Action " << (i - execution_state.index) << ": "
-                      << (*action_list)[i].DebugString();
+            VLOG(1) << "Action " << (i - execution_state.index) << ": "
+                    << (*action_list)[i].DebugString();
           }
           break;
         }
         case ExecutionCommandType::kWhereAmI: {
-          LOG(INFO) << "Next action is at position " << execution_state.index
-                    << ", limit (excl) is at " << execution_state.limit
-                    << ", last (excl) is at " << execution_state.length;
+          VLOG(1) << "Next action is at position " << execution_state.index
+                  << ", limit (excl) is at " << execution_state.limit
+                  << ", last (excl) is at " << execution_state.length;
           break;
         }
         case ExecutionCommandType::kRunUntilFailure: {
-          LOG(INFO) << "Will stop when a failure is found.";
+          VLOG(1) << "Will stop when a failure is found.";
           execution_state.pause_on_failure = true;
           break;
         }
@@ -481,7 +480,7 @@ For interactive debugging, specify a command file:
 Commands to step through the test can be written into that file.
 Further instructions will be printed then.
 )";
-  LOG(INFO) << base::StringPrintf(msg, test_file_name, kCommandFileFlag);
+  VLOG(1) << base::StringPrintf(msg, test_file_name, kCommandFileFlag);
 }
 
 // FrameObserver --------------------------------------------------------------
@@ -803,7 +802,7 @@ bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
   for (const auto& arg : args)
     full_command.AppendArg(arg);
 
-  LOG(INFO) << full_command.GetArgumentsString();
+  VLOG(1) << full_command.GetArgumentsString();
 
   web_page_replay_server_ = base::LaunchProcess(full_command, options);
   return true;
