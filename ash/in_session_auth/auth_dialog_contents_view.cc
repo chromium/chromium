@@ -207,8 +207,12 @@ class AuthDialogContentsView::FingerprintView : public views::View {
   }
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override {
-    gfx::Size size = views::View::CalculatePreferredSize();
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    views::SizeBounds content_available_size(available_size);
+    content_available_size.set_width(kFingerprintViewWidthDp);
+    gfx::Size size =
+        views::View::CalculatePreferredSize(content_available_size);
     size.set_width(kFingerprintViewWidthDp);
     return size;
   }
