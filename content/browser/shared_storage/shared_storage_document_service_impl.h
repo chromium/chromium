@@ -85,6 +85,12 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
 
   explicit SharedStorageDocumentServiceImpl(RenderFrameHost*);
 
+  void OnCreateWorkletResponseIntercepted(
+      bool is_same_origin,
+      CreateWorkletCallback original_callback,
+      bool success,
+      const std::string& error_message);
+
   SharedStorageWorkletHostManager* GetSharedStorageWorkletHostManager();
 
   SharedStorageWorkletHost* GetSharedStorageWorkletHost();
