@@ -68,7 +68,11 @@ class ArcNetHostImpl : public KeyedService,
   // Overridden from mojom::NetHost.
   void GetNetworks(mojom::GetNetworksRequestType type,
                    GetNetworksCallback callback) override;
+  // TODO(b/329552433): Delete this method after pi-arc is removed.
+  // Deprecated. ArcWifiHostImpl::GetWifiEnabledState() should be used.
   void GetWifiEnabledState(GetWifiEnabledStateCallback callback) override;
+  // TODO(b/329552433): Delete this method after pi-arc is removed.
+  // Deprecated. ArcWifiHostImpl::SetWifiEnabledState() should be used.
   void SetWifiEnabledState(bool is_enabled,
                            SetWifiEnabledStateCallback callback) override;
   void StartScan() override;

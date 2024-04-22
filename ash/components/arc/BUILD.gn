@@ -444,6 +444,7 @@ source_set("unit_tests") {
     "net/always_on_vpn_manager_unittest.cc",
     "net/arc_net_host_impl_unittest.cc",
     "net/arc_net_utils_unittest.cc",
+    "net/arc_wifi_host_impl_unittests.cc",
     "net/passpoint_dialog_view_unittest.cc",
     "pay/arc_payment_app_bridge_unittest.cc",
     "power/arc_power_bridge_unittest.cc",

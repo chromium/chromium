@@ -50,6 +50,8 @@ class ArcWifiHostImpl : public KeyedService,
  private:
   const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
+
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace arc
