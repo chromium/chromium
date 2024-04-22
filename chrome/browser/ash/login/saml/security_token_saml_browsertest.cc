@@ -31,8 +31,9 @@ std::string GetActiveUserEmail() {
 }  // namespace
 
 // Tests the successful login scenario with the correct PIN.
-#if !defined(NDEBUG)
-// Flaky timeout in debug build crbug.com/321826024.
+#if !defined(NDEBUG) || BUILDFLAG(IS_CHROMEOS)
+// Flaky timeout in debug build and chrome os release builds.
+// crbug.com/321826024.
 #define MAYBE_Basic DISABLED_Basic
 #else
 #define MAYBE_Basic Basic
@@ -52,8 +53,9 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenSamlTest, MAYBE_Basic) {
 
 // Tests that the login doesn't hit the timeout for Chrome waiting on Gaia to
 // signal the login completion.
-#if !defined(NDEBUG)
-// Flaky timeout in debug build crbug.com/321826024.
+#if !defined(NDEBUG) || BUILDFLAG(IS_CHROMEOS)
+// Flaky timeout in debug build and chrome os release builds.
+// crbug.com/321826024.
 #define MAYBE_NoGaiaTimeout DISABLED_NoGaiaTimeout
 #else
 #define MAYBE_NoGaiaTimeout NoGaiaTimeout
