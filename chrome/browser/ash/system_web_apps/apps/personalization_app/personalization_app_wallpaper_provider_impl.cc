@@ -519,7 +519,7 @@ void PersonalizationAppWallpaperProviderImpl::SelectWallpaper(
   client->RecordWallpaperSourceUMA(ash::WallpaperType::kOnline);
 
   if (IsTimeOfDayWallpaper(collection_id) &&
-      features::IsTimeOfDayWallpaperEnabled()) {
+      features::IsTimeOfDayWallpaperForcedAutoScheduleEnabled()) {
     // Records the display count of the time of day wallpaper dialog when the
     // user selects one to determine whether to show it the next time.
     contextual_tooltip::HandleGesturePerformed(
@@ -804,7 +804,7 @@ void PersonalizationAppWallpaperProviderImpl::
     ShouldShowTimeOfDayWallpaperDialog(
         ShouldShowTimeOfDayWallpaperDialogCallback callback) {
   std::move(callback).Run(
-      features::IsTimeOfDayWallpaperEnabled() &&
+      features::IsTimeOfDayWallpaperForcedAutoScheduleEnabled() &&
       contextual_tooltip::ShouldShowNudge(
           profile_->GetPrefs(),
           contextual_tooltip::TooltipType::kTimeOfDayWallpaperDialog,

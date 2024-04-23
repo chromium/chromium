@@ -47,6 +47,11 @@ export function isTimeOfDayWallpaperEnabled() {
   return loadTimeData.getBoolean('isTimeOfDayWallpaperEnabled');
 }
 
+export function isTimeOfDayWallpaperForcedAutoScheduleEnabled() {
+  return loadTimeData.getBoolean(
+      'isTimeOfDayWallpaperForcedAutoScheduleEnabled');
+}
+
 export function isCrosPrivacyHubLocationEnabled() {
   return loadTimeData.getBoolean('isCrosPrivacyHubLocationEnabled');
 }

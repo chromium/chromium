@@ -572,7 +572,8 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest,
        ShouldShowTimeOfDayWallpaperDialog) {
   test_wallpaper_controller()->ClearCounts();
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures({features::kFeatureManagementTimeOfDayWallpaper},
+  features.InitWithFeatures({features::kFeatureManagementTimeOfDayWallpaper,
+                             features::kTimeOfDayWallpaperForcedAutoSchedule},
                             {});
 
   auto image_info = GetDefaultImageInfo();

@@ -3102,6 +3102,8 @@ constexpr char kWallpaperFastRefreshInternalName[] = "wallpaper-fast-refresh";
 constexpr char kWallpaperGooglePhotosSharedAlbumsInternalName[] =
     "wallpaper-google-photos-shared-albums";
 constexpr char kWallpaperPerDeskName[] = "per-desk-wallpaper";
+constexpr char kTimeOfDayWallpaperForcedAutoScheduleInternalName[] =
+    "time-of-day-wallpaper-forced-auto-schedule";
 constexpr char kTimeOfDayDlcInternalName[] = "time-of-day-dlc";
 constexpr char kGlanceablesV2InternalName[] = "glanceables-v2";
 constexpr char kGlanceablesV2KeyName[] = "glanceables-v2-key";
@@ -4392,6 +4394,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"passpoint-settings", flag_descriptions::kPasspointSettingsName,
      flag_descriptions::kPasspointSettingsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPasspointSettings)},
+    {kTimeOfDayWallpaperForcedAutoScheduleInternalName,
+     flag_descriptions::kTimeOfDayWallpaperForcedAutoScheduleName,
+     flag_descriptions::kTimeOfDayWallpaperForcedAutoScheduleDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kTimeOfDayWallpaperForcedAutoSchedule)},
     {kTimeOfDayDlcInternalName, flag_descriptions::kTimeOfDayDlcName,
      flag_descriptions::kTimeOfDayDlcDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kTimeOfDayDlc)},

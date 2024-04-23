@@ -4157,6 +4157,9 @@ extern const char kTerminalDevDescription[];
 extern const char kTetherName[];
 extern const char kTetherDescription[];
 
+extern const char kTimeOfDayWallpaperForcedAutoScheduleName[];
+extern const char kTimeOfDayWallpaperForcedAutoScheduleDescription[];
+
 extern const char kTimeOfDayDlcName[];
 extern const char kTimeOfDayDlcDescription[];
 
