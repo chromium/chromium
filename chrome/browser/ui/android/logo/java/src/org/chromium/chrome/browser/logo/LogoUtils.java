@@ -151,13 +151,17 @@ public class LogoUtils {
             boolean useLessBrandSpace,
             boolean isLogoPolishEnabled,
             final @LogoSizeForLogoPolish int logoSizeForLogoPolish) {
+        MarginLayoutParams layoutParams = (MarginLayoutParams) logoView.getLayoutParams();
         setLogoViewLayoutParams(
-                (MarginLayoutParams) logoView.getLayoutParams(),
+                layoutParams,
                 resources,
                 isTablet,
                 useLessBrandSpace,
                 isLogoPolishEnabled,
                 logoSizeForLogoPolish);
+        if (layoutParams != null) {
+            logoView.setLayoutParams(layoutParams);
+        }
     }
 
     @VisibleForTesting
