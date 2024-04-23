@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.google_bottom_bar;
 import android.content.Context;
 import android.view.View;
 
+import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
@@ -20,6 +21,10 @@ import java.util.List;
 public class GoogleBottomBarCoordinator {
 
     private static final String BUTTON_LIST_PARAM = "google_bottom_bar_button_list";
+
+    public static final StringCachedFieldTrialParameter GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST =
+            ChromeFeatureList.newStringCachedFieldTrialParameter(
+                    ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR, BUTTON_LIST_PARAM, "");
 
     // TODO - move the logic into a separate class that will process information received from the
     // intent extras
@@ -77,8 +82,6 @@ public class GoogleBottomBarCoordinator {
         }
 
         // Fall back on encoded string provided in Finch param
-        return BottomBarConfig.fromEncodedString(
-                ChromeFeatureList.getFieldTrialParamByFeature(
-                        ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR, BUTTON_LIST_PARAM));
+        return BottomBarConfig.fromEncodedString(GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST.getValue());
     }
 }
