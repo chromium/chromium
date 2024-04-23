@@ -470,6 +470,38 @@ bool WebDialogView::CheckMediaAccessPermission(
   return false;
 }
 
+void WebDialogView::EnterFullscreenModeForTab(
+    content::RenderFrameHost* requesting_frame,
+    const blink::mojom::FullscreenOptions& options) {
+  if (delegate_) {
+    delegate_->EnterFullscreenModeForTab(requesting_frame, options);
+  }
+}
+
+void WebDialogView::ExitFullscreenModeForTab(
+    content::WebContents* web_contents) {
+  if (delegate_) {
+    delegate_->ExitFullscreenModeForTab(web_contents);
+  }
+}
+
+content::KeyboardEventProcessingResult WebDialogView::PreHandleKeyboardEvent(
+    content::WebContents* source,
+    const content::NativeWebKeyboardEvent& event) {
+  if (delegate_) {
+    return delegate_->PreHandleKeyboardEvent(source, event);
+  }
+  return content::KeyboardEventProcessingResult::NOT_HANDLED;
+}
+
+bool WebDialogView::IsFullscreenForTabOrPending(
+    const content::WebContents* web_contents) {
+  if (delegate_) {
+    return delegate_->IsFullscreenForTabOrPending(web_contents);
+  }
+  return false;
+}
+
 void WebDialogView::SetWebViewCornersRadii(const gfx::RoundedCornersF& radii) {
   views::NativeViewHost* host = web_view_->holder();
   DCHECK(host);

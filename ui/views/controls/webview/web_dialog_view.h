@@ -175,6 +175,15 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) override;
+  void EnterFullscreenModeForTab(
+      content::RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) override;
+  void ExitFullscreenModeForTab(content::WebContents* web_contents) override;
+  content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
+      content::WebContents* source,
+      const content::NativeWebKeyboardEvent& event) override;
+  bool IsFullscreenForTabOrPending(
+      const content::WebContents* web_contents) override;
 
   void SetWebViewCornersRadii(const gfx::RoundedCornersF& radii);
 

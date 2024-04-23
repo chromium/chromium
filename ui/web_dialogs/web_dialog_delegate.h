@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ui_base_types.h"
@@ -260,6 +261,22 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
       content::RenderFrameHost* render_frame_host,
       const url::Origin& security_origin,
       blink::mojom::MediaStreamType type);
+
+  // Called when the renderer puts a tab into fullscreen mode.
+  // |requesting_frame| is the specific content frame requesting fullscreen.
+  virtual void EnterFullscreenModeForTab(
+      content::RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) {}
+  // Called when the renderer puts a tab out of fullscreen mode.
+  virtual void ExitFullscreenModeForTab(content::WebContents* web_contents) {}
+  // Returns true if `web_contents` is, or is transitioning to, tab-fullscreen.
+  virtual bool IsFullscreenForTabOrPending(
+      const content::WebContents* web_contents);
+  // Allows delegates to handle keyboard events before sending to the renderer.
+  // See enum for description of return values.
+  virtual content::KeyboardEventProcessingResult PreHandleKeyboardEvent(
+      content::WebContents* source,
+      const content::NativeWebKeyboardEvent& event);
 
   // Whether to use dialog frame view for non client frame view.
   virtual FrameKind GetWebDialogFrameKind() const;
