@@ -6,13 +6,23 @@
 #define DEVICE_FIDO_ENCLAVE_VERIFY_UTILS_H_
 
 #include <string>
+#include <vector>
 
 #include "base/component_export.h"
+#include "base/types/expected.h"
 
 namespace device::enclave {
 
 // Makes a plausible guess whether the public key is in PEM format.
 bool COMPONENT_EXPORT(DEVICE_FIDO) LooksLikePem(std::string_view maybe_pem);
+
+// Converts a PEM key to raw. Will panic if it does not look like PEM.
+base::expected<std::vector<uint8_t>, std::string> COMPONENT_EXPORT(DEVICE_FIDO)
+    ConvertPemToRaw(std::string_view public_key_pem);
+
+// Converts a raw public key to PEM format.
+std::string COMPONENT_EXPORT(DEVICE_FIDO)
+    ConvertRawToPem(std::vector<uint8_t> public_key);
 
 }  // namespace device::enclave
 
