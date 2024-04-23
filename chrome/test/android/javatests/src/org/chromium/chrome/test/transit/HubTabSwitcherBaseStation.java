@@ -91,10 +91,12 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
         recheckActiveConditions();
 
         HubTabSwitcherAppMenuFacility menu =
-                new HubTabSwitcherAppMenuFacility(
-                        this, mChromeTabbedActivityTestRule, mIsIncognito);
+                new HubTabSwitcherAppMenuFacility(this, mChromeTabbedActivityTestRule);
 
-        return StationFacility.enterSync(menu, () -> HUB_MENU_BUTTON.perform(click()));
+        // TODO(crbug/1506104): Click the menu button instead of using test shortcuts. Presently
+        // using the menu directly is flaky.
+        // onView(HUB_MENU_BUTTON).perform(click())
+        return StationFacility.enterSync(menu, () -> {});
     }
 
     /**
