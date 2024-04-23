@@ -64,7 +64,7 @@ ReadWriteCardsUiController::~ReadWriteCardsUiController() = default;
 
 ReadWriteCardsView* ReadWriteCardsUiController::SetQuickAnswersUi(
     std::unique_ptr<ReadWriteCardsView> view) {
-  CreateWidgetIfNeeded();
+  MaybeCreateWidget();
 
   CHECK(!quick_answers_ui_observation_.IsObserving());
   quick_answers_ui_observation_.Observe(
@@ -81,46 +81,43 @@ void ReadWriteCardsUiController::RemoveQuickAnswersUi() {
   }
 
   widget_->GetContentsView()->RemoveChildViewT(quick_answers_ui());
-  MaybeHideWidget();
-
-  if (widget_) {
-    Relayout();
-  }
 }
 
-views::View* ReadWriteCardsUiController::SetMahiView(
+views::View* ReadWriteCardsUiController::SetMahiUi(
     std::unique_ptr<views::View> view) {
-  CreateWidgetIfNeeded();
+  MaybeCreateWidget();
 
-  CHECK(!mahi_view_.view());
-
-  views::View* contents_view = widget_->GetContentsView();
-  mahi_view_.SetView(contents_view->AddChildView(std::move(view)));
+  CHECK(!mahi_ui_observation_.IsObserving());
+  mahi_ui_observation_.Observe(
+      widget_->GetContentsView()->AddChildView(std::move(view)));
 
   Relayout();
 
-  return mahi_view_.view();
+  return mahi_ui();
 }
 
-void ReadWriteCardsUiController::RemoveMahiView() {
-  if (!mahi_view_.view()) {
+void ReadWriteCardsUiController::RemoveMahiUi() {
+  if (!mahi_ui()) {
     return;
   }
 
-  widget_->GetContentsView()->RemoveChildViewT(mahi_view_.view());
-  MaybeHideWidget();
-
-  if (widget_) {
-    Relayout();
-  }
+  widget_->GetContentsView()->RemoveChildViewT(mahi_ui());
 }
 
-ReadWriteCardsView* ReadWriteCardsUiController::GetQuickAnswersViewForTest() {
+ReadWriteCardsView* ReadWriteCardsUiController::GetQuickAnswersUiForTest() {
   return quick_answers_ui();
 }
 
-views::View* ReadWriteCardsUiController::GetMahiViewForTest() {
-  return mahi_view_.view();
+views::View* ReadWriteCardsUiController::GetMahiUiForTest() {
+  return mahi_ui();
+}
+
+void ReadWriteCardsUiController::MaybeRelayout() {
+  if (!widget_) {
+    return;
+  }
+
+  Relayout();
 }
 
 void ReadWriteCardsUiController::Relayout() {
@@ -175,29 +172,33 @@ void ReadWriteCardsUiController::SetContextMenuBounds(
     quick_answers_ui()->SetContextMenuBounds(context_menu_bounds);
   }
 
-  if (widget_) {
-    Relayout();
-  }
+  MaybeRelayout();
 }
 
 void ReadWriteCardsUiController::OnViewIsDeleting(views::View* view) {
-  if (view != quick_answers_ui()) {
+  if (view == quick_answers_ui()) {
+    CHECK(quick_answers_ui_observation_.IsObserving());
+    quick_answers_ui_observation_.Reset();
+    MaybeHideWidget();
+    MaybeRelayout();
     return;
+  } else if (view == mahi_ui()) {
+    CHECK(mahi_ui_observation_.IsObserving());
+    mahi_ui_observation_.Reset();
+    MaybeHideWidget();
+    MaybeRelayout();
+    return;
+  } else {
+    // This is for a developer to notice forgetting handling of an added view.
+    LOG(FATAL) << "Observing an uninterested view.";
   }
-
-  CHECK(quick_answers_ui_observation_.IsObserving());
-  quick_answers_ui_observation_.Reset();
 }
 
 void ReadWriteCardsUiController::OnViewLayoutInvalidated(views::View* view) {
-  if (!widget_) {
-    return;
-  }
-
-  Relayout();
+  MaybeRelayout();
 }
 
-void ReadWriteCardsUiController::CreateWidgetIfNeeded() {
+void ReadWriteCardsUiController::MaybeCreateWidget() {
   if (!widget_) {
     widget_ = std::make_unique<views::Widget>(CreateWidgetInitParams());
 
@@ -220,7 +221,7 @@ void ReadWriteCardsUiController::CreateWidgetIfNeeded() {
 }
 
 void ReadWriteCardsUiController::MaybeHideWidget() {
-  if (quick_answers_ui() || mahi_view_.view()) {
+  if (quick_answers_ui() || mahi_ui()) {
     return;
   }
 
@@ -231,7 +232,7 @@ void ReadWriteCardsUiController::MaybeHideWidget() {
 void ReadWriteCardsUiController::ReorderChildViews(
     bool widget_above_context_menu) {
   // No need to reorder if one of the view is not set.
-  if (!quick_answers_ui() || !mahi_view_) {
+  if (!quick_answers_ui() || !mahi_ui()) {
     return;
   }
 
@@ -243,7 +244,7 @@ void ReadWriteCardsUiController::ReorderChildViews(
   if (widget_above_context_menu) {
     contents_view->ReorderChildView(quick_answers_ui(), /*index=*/0);
   } else {
-    contents_view->ReorderChildView(mahi_view_.view(), /*index=*/0);
+    contents_view->ReorderChildView(mahi_ui(), /*index=*/0);
   }
 }
 

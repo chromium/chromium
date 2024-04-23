@@ -78,7 +78,7 @@ TEST_F(QuickAnswersUiControllerTest, ShowAndHideConsentView) {
   // The user consent view should appears as the Quick Answers view within
   // `ReadWriteCardsUiController`.
   EXPECT_EQ(user_consent_view,
-            read_write_cards_ui_controller.GetQuickAnswersViewForTest());
+            read_write_cards_ui_controller.GetQuickAnswersUiForTest());
 
   // Click on "Allow" button to close the consent view.
   views::test::ButtonTestApi(user_consent_view->allow_button_for_test())

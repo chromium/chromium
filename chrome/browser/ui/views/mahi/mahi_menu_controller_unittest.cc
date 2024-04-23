@@ -150,14 +150,14 @@ TEST_F(MahiMenuControllerTest, TextSelected) {
 
   EXPECT_TRUE(read_write_cards_ui_controller_.widget_for_test());
   EXPECT_TRUE(read_write_cards_ui_controller_.widget_for_test()->IsVisible());
-  EXPECT_TRUE(read_write_cards_ui_controller_.GetMahiViewForTest());
+  EXPECT_TRUE(read_write_cards_ui_controller_.GetMahiUiForTest());
   EXPECT_TRUE(views::IsViewClass<MahiCondensedMenuView>(
-      read_write_cards_ui_controller_.GetMahiViewForTest()));
+      read_write_cards_ui_controller_.GetMahiUiForTest()));
 
   // Menu widget should hide when dismissed.
   menu_controller()->OnDismiss(/*is_other_command_executed=*/false);
   EXPECT_FALSE(read_write_cards_ui_controller_.widget_for_test());
-  EXPECT_FALSE(read_write_cards_ui_controller_.GetMahiViewForTest());
+  EXPECT_FALSE(read_write_cards_ui_controller_.GetMahiUiForTest());
 }
 
 // Tests the behavior of the controller when pref state changed.
