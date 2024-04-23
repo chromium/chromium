@@ -169,8 +169,15 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
 
 // Tests that exiting fullscreen hides the popup and, in particular, does not
 // crash (crbug.com/1267047).
+// TODO(crbug.com/336448293): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_HidePopupOnWindowExitFullscreen \
+  DISABLED_HidePopupOnWindowExitFullscreen
+#else
+#define MAYBE_HidePopupOnWindowExitFullscreen HidePopupOnWindowExitFullscreen
+#endif
 IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest,
-                       HidePopupOnWindowExitFullscreen) {
+                       MAYBE_HidePopupOnWindowExitFullscreen) {
   content::WebContentsDelegate* wcd = browser();
   wcd->EnterFullscreenModeForTab(main_rfh(), {});
 
