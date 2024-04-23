@@ -454,7 +454,7 @@ bool ParseHost(std::string_view host, mojom::CSPSource* csp_source) {
 
   std::vector<std::string_view> host_pieces = base::SplitStringPiece(
       host, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (int i = 0; const std::string_view& piece : host_pieces) {
+  for (int i = 0; std::string_view piece : host_pieces) {
     // Only a trailing dot is allowed.
     if ((piece.empty() && i + 1 < std::ssize(host_pieces)) ||
         !base::ranges::all_of(piece, [](auto c) {
