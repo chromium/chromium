@@ -290,7 +290,10 @@ DownloadsUIConfig::CreateWebUIController(content::WebUI* web_ui,
 ///////////////////////////////////////////////////////////////////////////////
 
 DownloadsUI::DownloadsUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui, true) {
+    : ui::MojoWebUIController(web_ui, true),
+      webui_load_timer_(web_ui->GetWebContents(),
+                        "Download.WebUi.DocumentLoadedInMainFrameTime",
+                        "Download.WebUi.LoadCompletedInMainFrame") {
   Profile* profile = Profile::FromWebUI(web_ui);
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 

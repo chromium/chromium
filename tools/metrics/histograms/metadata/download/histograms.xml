@@ -1211,6 +1211,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.WebUi.DocumentLoadedInMainFrameTime" units="ms"
+    expires_after="2024-12-01">
+  <owner>awado@google.com</owner>
+  <owner>jacastro@chromium.org</owner>
+  <summary>
+    The amount of time between starting the provisional load and fully loading
+    the document in the main frame of the chrome://downloads page. This
+    corresponds to the WebContentsObserver::DocumentLoadedInFrame method.
+  </summary>
+</histogram>
+
+<histogram name="Download.WebUi.LoadCompletedInMainFrame" units="ms"
+    expires_after="2024-12-01">
+  <owner>awado@google.com</owner>
+  <owner>jacastro@chromium.org</owner>
+  <summary>
+    The amount of time between starting the provisional load and having
+    completed the onload handler in the main frame of the chrome://downloads
+    page. This corresponds to the
+    WebContentsObserver::DocumentOnLoadCompletedInPrimaryMainFrame method.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

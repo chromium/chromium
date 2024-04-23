@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
+#include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -60,6 +61,8 @@ class DownloadsUI : public ui::MojoWebUIController,
 
   mojo::Receiver<downloads::mojom::PageHandlerFactory> page_factory_receiver_{
       this};
+
+  WebuiLoadTimer webui_load_timer_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
