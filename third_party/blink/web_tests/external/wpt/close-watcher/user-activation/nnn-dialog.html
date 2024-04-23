@@ -9,18 +9,17 @@
 
 <body>
 <script>
-const type = "CloseWatcher";
+const type = "dialog";
 
 promise_test(async t => {
   const events = [];
 
   createRecordingCloseWatcher(t, events, "watcher1", type);
-  const watcher2 = createRecordingCloseWatcher(t, events, "watcher2", type);
-
-  await maybeTopLayerBless(watcher2);
+  createRecordingCloseWatcher(t, events, "watcher2", type);
+  createRecordingCloseWatcher(t, events, "watcher3", type);
 
   await sendCloseRequest();
   await waitForPotentialCloseEvent();
-  assert_array_equals(events, ["watcher2 cancel[cancelable=true]", "watcher2 close", "watcher1 cancel[cancelable=true]", "watcher1 close"]);
-}, "Create two CloseWatchers without user activation; send user activation");
+  assert_array_equals(events, ["watcher3 cancel[cancelable=false]", "watcher2 cancel[cancelable=false]", "watcher1 cancel[cancelable=false]", "watcher3 close", "watcher2 close", "watcher1 close"]);
+}, "Create three close watchers without user activation");
 </script>

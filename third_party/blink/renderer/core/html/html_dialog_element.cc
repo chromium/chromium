@@ -415,7 +415,9 @@ void HTMLDialogElement::CloseWatcherFiredCancel(Event* close_watcher_event) {
     return;
   // https://wicg.github.io/close-watcher/#patch-dialog cancelAction
 
-  Event* dialog_event = Event::CreateCancelable(event_type_names::kCancel);
+  Event* dialog_event = close_watcher_event->cancelable()
+                            ? Event::CreateCancelable(event_type_names::kCancel)
+                            : Event::Create(event_type_names::kCancel);
   DispatchEvent(*dialog_event);
   if (dialog_event->defaultPrevented())
     close_watcher_event->preventDefault();

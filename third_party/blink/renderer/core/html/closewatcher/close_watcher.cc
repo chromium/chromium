@@ -119,7 +119,7 @@ void CloseWatcher::WatcherStack::SetHadUserInteraction(
   }
 }
 
-bool CloseWatcher::WatcherStack::CanFireCancelEvent() const {
+bool CloseWatcher::WatcherStack::CancelEventCanBeCancelable() const {
   return watcher_groups_.size() < allowed_groups_ &&
          window_->GetFrame()->IsHistoryUserActivationActive();
 }
@@ -209,18 +209,21 @@ bool CloseWatcher::requestClose() {
   }
 
   WatcherStack& stack = *DomWindow()->closewatcher_stack();
-  if (stack.CanFireCancelEvent()) {
-    Event& cancel_event = *Event::CreateCancelable(event_type_names::kCancel);
-    {
-      base::AutoReset<bool> scoped_committing(&dispatching_cancel_, true);
-      DispatchEvent(cancel_event);
+  Event& cancel_event =
+      stack.CancelEventCanBeCancelable()
+          ? *Event::CreateCancelable(event_type_names::kCancel)
+          : *Event::Create(event_type_names::kCancel);
+
+  {
+    base::AutoReset<bool> scoped_committing(&dispatching_cancel_, true);
+    DispatchEvent(cancel_event);
+  }
+
+  if (cancel_event.defaultPrevented()) {
+    if (DomWindow()) {
+      DomWindow()->GetFrame()->ConsumeHistoryUserActivation();
     }
-    if (cancel_event.defaultPrevented()) {
-      if (DomWindow()) {
-        DomWindow()->GetFrame()->ConsumeHistoryUserActivation();
-      }
-      return false;
-    }
+    return false;
   }
 
   close();

@@ -1,6 +1,4 @@
 <!doctype html>
-<meta name=variant content="?dialog">
-<meta name=variant content="?CloseWatcher">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/testdriver.js"></script>
@@ -11,17 +9,16 @@
 
 <body>
 <script>
-const type = location.search.substring(1);
+const type = "CloseWatcher";
 
 promise_test(async t => {
   const events = [];
 
   createRecordingCloseWatcher(t, events, "watcher1", type);
   createRecordingCloseWatcher(t, events, "watcher2", type);
-  createRecordingCloseWatcher(t, events, "watcher3", type);
 
   await sendCloseRequest();
   await waitForPotentialCloseEvent();
-  assert_array_equals(events, ["watcher3 close", "watcher2 close", "watcher1 close"]);
-}, "Create three close watchers without user activation");
+  assert_array_equals(events, ["watcher2 cancel[cancelable=false]", "watcher2 close", "watcher1 cancel[cancelable=false]", "watcher1 close"]);
+}, "Create two close watchers without user activation");
 </script>

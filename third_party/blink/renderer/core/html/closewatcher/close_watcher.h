@@ -64,7 +64,7 @@ class CloseWatcher final : public EventTarget, public ExecutionContextClient {
     void Remove(CloseWatcher*);
 
     void SetHadUserInteraction(bool);
-    bool CanFireCancelEvent() const;
+    bool CancelEventCanBeCancelable() const;
 
     void Trace(Visitor*) const;
 
