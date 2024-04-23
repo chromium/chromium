@@ -649,7 +649,6 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
       GridItemIdentifier* groupItemIdentifier =
           [GridItemIdentifier groupIdentifier:groupDeleteChange.deleted_group()
                              withWebStateList:_webStateList];
-      [_selectedEditingItems removeItem:groupItemIdentifier];
       [self.consumer removeItemWithIdentifier:groupItemIdentifier
                        selectedItemIdentifier:[self activeIdentifier]];
       break;
@@ -668,9 +667,6 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 
 - (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
   DCHECK_EQ(_webStateList, webStateList);
-
-  // Clear selections.
-  [_selectedEditingItems removeAllItems];
 
   [self addWebStateObservations];
   [self populateConsumerItems];
