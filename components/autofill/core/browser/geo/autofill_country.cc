@@ -45,40 +45,6 @@ constexpr auto kRequiredFieldMapping =
          {FieldType::ADDRESS_HOME_ZIP,
           RequiredFieldsForAddressImport::ADDRESS_REQUIRES_ZIP}});
 
-// Autofill is experimenting with a looser set of requirements based on a newer
-// version of libaddressinput. If the experiment is successful, those
-// requirements will become the default ones. For now the differences are
-// hardcoded using that map.
-// Set of countries where the current autofill country-specific address import
-// requirements differ from the updated ones.
-constexpr auto kAddressRequirementExceptionCountries =
-    base::MakeFixedFlatSet<std::string_view>(
-        {"AF", "AI", "AL", "AM", "AR", "AZ", "BA", "BB", "BD", "BG", "BH", "BM",
-         "BN", "BS", "BT", "CC", "CL", "CO", "CR", "CV", "CX", "CY", "DO", "DZ",
-         "EC", "EH", "ET", "FO", "GE", "GN", "GT", "GW", "HM", "HR", "HT", "ID",
-         "IE", "IL", "IR", "IS", "JO", "KE", "KG", "KH", "KI", "KP", "KW", "KZ",
-         "LA", "LB", "LK", "LR", "LS", "MA", "MC", "MD", "ME", "MG", "MK", "MM",
-         "MN", "MT", "MU", "MV", "MZ", "NA", "NE", "NF", "NG", "NI", "NP", "OM",
-         "PA", "PE", "PK", "PY", "RS", "SA", "SC", "SI", "SN", "SR", "SZ", "TH",
-         "TJ", "TM", "TN", "TV", "TZ", "UY", "UZ", "VA", "VC"});
-
-// Gets the country-specific field requirements for address import.
-RequiredFieldsForAddressImport GetRequiredFieldsForAddressImport(
-    const std::string& country_code) {
-  if (kAddressRequirementExceptionCountries.contains(country_code) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillUseUpdatedRequiredFieldsForAddressImport)) {
-    if (country_code == "CO" || country_code == "ID" || country_code == "CR") {
-      return ADDRESS_REQUIRES_LINE1_STATE;
-    } else {
-      return ADDRESS_REQUIRES_LINE1_CITY;
-    }
-  } else {
-    return CountryDataMap::GetInstance()->GetRequiredFieldsForAddressImport(
-        country_code);
-  }
-}
-
 }  // namespace
 
 AutofillCountry::AutofillCountry(const std::string& country_code,
@@ -92,7 +58,8 @@ AutofillCountry::AutofillCountry(const std::string& country_code,
                       : country_code;
 
   required_fields_for_address_import_ =
-      GetRequiredFieldsForAddressImport(country_code_);
+      CountryDataMap::GetInstance()->GetRequiredFieldsForAddressImport(
+          country_code_);
 
   // Translate the country name by the supplied local.
   if (locale)

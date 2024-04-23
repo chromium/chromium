@@ -653,13 +653,6 @@ BASE_FEATURE(kAutofillLogUKMEventsWithSamplingOnSession,
 const base::FeatureParam<int> kAutofillLogUKMEventsWithSamplingOnSessionRate{
     &kAutofillLogUKMEventsWithSamplingOnSession, "sampling_rate", 10};
 
-// Autofill is experimenting with an updated set of country specific rules.
-// Controls whether we use the current country-specific address import field
-// requirements or the updated ones.
-BASE_FEATURE(kAutofillUseUpdatedRequiredFieldsForAddressImport,
-             "AutofillUseUpdatedRequiredFieldsForAddressImport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether user tap on an element is needed to show autofill
 // suggestions. If enabled, this flag would disable android autofill suggestions
 // if the focus on an element is Javascript-originated.
