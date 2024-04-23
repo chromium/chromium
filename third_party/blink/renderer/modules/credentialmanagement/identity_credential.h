@@ -20,14 +20,18 @@ class MODULES_EXPORT IdentityCredential final : public Credential {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static IdentityCredential* Create(const String& token, bool is_auto_selected);
+  static IdentityCredential* Create(
+      const String& token,
+      bool is_auto_selected = false,
+      const String& config_url = WTF::g_empty_string);
 
   static bool IsRejectingPromiseDueToCSP(ContentSecurityPolicy* policy,
                                          ScriptPromiseResolverBase* resolver,
                                          const KURL& provider_url);
 
   explicit IdentityCredential(const String& token,
-                              bool is_auto_selected = false);
+                              bool is_auto_selected,
+                              const String& config_url);
 
   // Credential:
   bool IsIdentityCredential() const override;
@@ -35,6 +39,7 @@ class MODULES_EXPORT IdentityCredential final : public Credential {
   // IdentityCredential.idl
   const String& token() const { return token_; }
   const bool& isAutoSelected() const { return is_auto_selected_; }
+  const String& configURL() const { return config_url_; }
 
   static ScriptPromise<IDLUndefined> disconnect(
       ScriptState*,
@@ -44,6 +49,7 @@ class MODULES_EXPORT IdentityCredential final : public Credential {
  private:
   const String token_;
   const bool is_auto_selected_{false};
+  const String config_url_;
 };
 
 }  // namespace blink

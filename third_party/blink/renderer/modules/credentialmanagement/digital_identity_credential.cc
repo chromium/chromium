@@ -94,8 +94,7 @@ void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
         resolver->Resolve(credential);
         return;
       }
-      IdentityCredential* credential =
-          IdentityCredential::Create(token, /*is_auto_selected=*/false);
+      IdentityCredential* credential = IdentityCredential::Create(token);
       resolver->Resolve(credential);
       return;
     }

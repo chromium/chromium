@@ -647,8 +647,9 @@ void OnRequestToken(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
       return;
     }
     case RequestTokenStatus::kSuccess: {
-      IdentityCredential* credential =
-          IdentityCredential::Create(token, is_auto_selected);
+      CHECK(selected_idp_config_url);
+      IdentityCredential* credential = IdentityCredential::Create(
+          token, is_auto_selected, *selected_idp_config_url);
       resolver->Resolve(credential);
       return;
     }

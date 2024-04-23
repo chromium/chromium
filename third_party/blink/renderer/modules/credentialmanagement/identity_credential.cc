@@ -44,12 +44,17 @@ void OnDisconnect(ScriptPromiseResolver<IDLUndefined>* resolver,
 }  // namespace
 
 IdentityCredential* IdentityCredential::Create(const String& token,
-                                               bool is_auto_selected) {
-  if (RuntimeEnabledFeatures::FedCmAutoSelectedFlagEnabled()) {
-    return MakeGarbageCollected<IdentityCredential>(token, is_auto_selected);
-  } else {
-    return MakeGarbageCollected<IdentityCredential>(token);
+                                               bool is_auto_selected,
+                                               const String& config_url) {
+  if (!RuntimeEnabledFeatures::FedCmAutoSelectedFlagEnabled()) {
+    is_auto_selected = false;
   }
+  const String& selected_idp_config_url =
+      RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()
+          ? config_url
+          : WTF::g_empty_string;
+  return MakeGarbageCollected<IdentityCredential>(token, is_auto_selected,
+                                                  selected_idp_config_url);
 }
 
 bool IdentityCredential::IsRejectingPromiseDueToCSP(
@@ -86,10 +91,12 @@ bool IdentityCredential::IsRejectingPromiseDueToCSP(
 }
 
 IdentityCredential::IdentityCredential(const String& token,
-                                       bool is_auto_selected)
+                                       bool is_auto_selected,
+                                       const String& config_url)
     : Credential(/* id = */ "", kIdentityCredentialType),
       token_(token),
-      is_auto_selected_(is_auto_selected) {}
+      is_auto_selected_(is_auto_selected),
+      config_url_(config_url) {}
 
 bool IdentityCredential::IsIdentityCredential() const {
   return true;
