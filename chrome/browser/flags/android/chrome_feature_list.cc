@@ -238,6 +238,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kPreconnectOnTabCreation,
     &kPriceChangeModule,
     &kPwaRestoreUi,
+    &kPwaRestoreUiAtStartup,
     &kOmahaMinSdkVersionAndroid,
     &kShortCircuitUnfocusAnimation,
     &kOmniboxNoopEditUrlSuggestionClicks,
@@ -716,6 +717,10 @@ BASE_FEATURE(kPriceChangeModule,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPwaRestoreUi, "PwaRestoreUi", base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPwaRestoreUiAtStartup,
+             "PwaRestoreUiAtStartup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBackGestureActivityTabProvider,
              "BackGestureActivityTabProvider",

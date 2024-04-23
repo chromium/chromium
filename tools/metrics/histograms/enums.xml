@@ -16845,6 +16845,7 @@ from previous Chrome versions.
   <int value="-1935055754" label="WebShare:enabled"/>
   <int value="-1934661084" label="ForceUnifiedConsentBump:disabled"/>
   <int value="-1933425042" label="OfflinePreviews:enabled"/>
+  <int value="-1933262156" label="PwaRestoreUiAtStartup:enabled"/>
   <int value="-1932609987" label="CSSBackdropFilter:disabled"/>
   <int value="-1932379839"
       label="OmniboxUIExperimentHideSteadyStateUrlTrivialSubdomains:enabled"/>
@@ -20777,6 +20778,7 @@ from previous Chrome versions.
   <int value="-180056644" label="HomeButtonWithText:disabled"/>
   <int value="-179580377" label="CrossOriginOpenerPolicy:enabled"/>
   <int value="-178744239" label="DriveFsMirroring:enabled"/>
+  <int value="-178709425" label="PwaRestoreUiAtStartup:disabled"/>
   <int value="-178364053" label="TerminalSystemAppLegacySettings:enabled"/>
   <int value="-178359490" label="DrawImmediatelyWhenInteractive:enabled"/>
   <int value="-177974995" label="CrostiniShowMicSetting:disabled"/>

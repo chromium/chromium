@@ -14,6 +14,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -63,6 +64,15 @@ public class PwaRestorePromoUtils {
                 ChromePreferenceKeys.PWA_RESTORE_PROMO_STAGE, DisplayStage.SHOW_PROMO);
     }
 
+    public static boolean maybeForceShowPromo(Profile profile, WindowAndroid windowAndroid) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_RESTORE_UI_AT_STARTUP)) {
+            Log.i(TAG, "Force showing PWA Restore promo at startup, feature flag is enabled.");
+            launchPromo(profile, windowAndroid);
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Launch the PWA Restore promotion, if we've determined that this launch meets the criteria for
      * for showing it. The promo is intended to show as soon as possible after the user has switched
@@ -75,8 +85,7 @@ public class PwaRestorePromoUtils {
      * @param arrowResourceId The resource id for the Back arrow to use.
      * @return Whether the PWA Restore promo was shown.
      */
-    public static boolean launchPromoIfNeeded(
-            Profile profile, WindowAndroid windowAndroid, int arrowResourceId) {
+    public static boolean launchPromoIfNeeded(Profile profile, WindowAndroid windowAndroid) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_RESTORE_UI)) {
             Log.i(TAG, "Not showing PWA Restore promo, feature flag is disabled.");
             return false;
@@ -128,7 +137,7 @@ public class PwaRestorePromoUtils {
             case DisplayStage.SHOW_PROMO:
                 // We've determined that the promo should show. If successfully shown, we'll mark
                 // it as such, to prevent the promo from appearing in the future.
-                launchPromo(profile, windowAndroid, arrowResourceId);
+                launchPromo(profile, windowAndroid);
                 return true;
             default:
                 assert false;
@@ -136,9 +145,9 @@ public class PwaRestorePromoUtils {
         }
     }
 
-    private static void launchPromo(
-            Profile profile, WindowAndroid windowAndroid, int arrowResourceId) {
-      WebApkSyncService.fetchRestorableApps(profile, windowAndroid, arrowResourceId);
+    private static void launchPromo(Profile profile, WindowAndroid windowAndroid) {
+        WebApkSyncService.fetchRestorableApps(
+                profile, windowAndroid, R.drawable.ic_arrow_back_24dp);
         // Flow continues in onRestorableAppsAvailable.
     }
 

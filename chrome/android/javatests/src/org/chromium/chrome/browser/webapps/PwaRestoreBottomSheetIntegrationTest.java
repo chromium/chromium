@@ -32,6 +32,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.PwaRestoreBottomSheetTestUtils;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -287,6 +288,24 @@ public class PwaRestoreBottomSheetIntegrationTest {
         onView(withText("App 1")).check(matches(isDisplayed()));
         onView(withText("App 1")).perform(click());
         assertIsComboCheckedAtIndex(1, true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PwaRestore"})
+    @DisableFeatures({ChromeFeatureList.PWA_RESTORE_UI_AT_STARTUP})
+    public void testForceFlagOff() throws Exception {
+        mActivityTestRule.startMainActivityFromLauncher();
+        assertDialogShown(false);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PwaRestore"})
+    @EnableFeatures({ChromeFeatureList.PWA_RESTORE_UI_AT_STARTUP})
+    public void testForceFlagOn() throws Exception {
+        mActivityTestRule.startMainActivityFromLauncher();
+        assertDialogShown(true);
     }
 
     private void setAppsAvailableAndPromoStage(boolean appsAvailable, @DisplayStage int value) {

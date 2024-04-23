@@ -1299,6 +1299,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             // single PromoDialogCoordinator.
             boolean isShowingPromo =
                     LocaleManager.getInstance().hasShownSearchEnginePromoThisSession();
+            isShowingPromo |= maybeForceShowPromoAtStartup(profile);
+
             if (!isShowingPromo
                     && !intentWithEffect
                     && FirstRunStatus.getFirstRunFlowComplete()
@@ -1318,6 +1320,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
+    /** Runs any promos set by feature flag to force show at every startup. */
+    private boolean maybeForceShowPromoAtStartup(Profile profile) {
+        // Any promo that has a force-show feature flag should be added to this list (and of course
+        // any promo that you want to trigger at every startup (temporarily for debugging and/or
+        // development).
+        if (PwaRestorePromoUtils.maybeForceShowPromo(profile, mWindowAndroid)) return true;
+
+        return false;
+    }
+
     /** Notifies promos of the First Run Experience having triggered during this launch. */
     private void notifyPromosOfFirstRunTriggered() {
         PwaRestorePromoUtils.notifyFirstRunPromoTriggered();
@@ -1331,8 +1343,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         // user can restore their web apps from their old device (if they have any), and as such it
         // is most effective when shown shortly after the first-run experience. It is therefore
         // at the front of the list of promotions.
-        if (PwaRestorePromoUtils.launchPromoIfNeeded(
-                profile, mWindowAndroid, R.drawable.ic_arrow_back_24dp)) {
+        if (PwaRestorePromoUtils.launchPromoIfNeeded(profile, mWindowAndroid)) {
             return true;
         }
         if (FullScreenSyncPromoUtil.launchPromoIfNeeded(

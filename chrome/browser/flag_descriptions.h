@@ -1143,6 +1143,9 @@ extern const char kCrasSplitAlsaUsbInternalDescription[];
 extern const char kPwaRestoreUiName[];
 extern const char kPwaRestoreUiDescription[];
 
+extern const char kPwaRestoreUiAtStartupName[];
+extern const char kPwaRestoreUiAtStartupDescription[];
+
 extern const char kPwaUniversalInstallRootsName[];
 extern const char kPwaUniversalInstallRootsDescription[];
 

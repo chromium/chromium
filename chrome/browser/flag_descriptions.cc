@@ -2017,6 +2017,12 @@ const char kPwaRestoreUiName[] = "Enable the PWA Restore UI";
 const char kPwaRestoreUiDescription[] =
     "When enabled, the PWA Restore UI can be shown";
 
+const char kPwaRestoreUiAtStartupName[] =
+    "Force-shows the PWA Restore UI at startup";
+const char kPwaRestoreUiAtStartupDescription[] =
+    "When enabled, the PWA Restore UI will be forced to show on startup (even "
+    "if the PwaRestoreUi flag is disabled and there are no apps to restore)";
+
 const char kPwaUniversalInstallRootsName[] =
     "Enable PWA Universal Install on root domains";
 const char kPwaUniversalInstallRootsDescription[] =

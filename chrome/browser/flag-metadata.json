@@ -6988,6 +6988,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "pwa-restore-ui-at-startup",
+    "owners": [ "finnur@chromium.org", "beverloo@chromium.org" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "pwa-universal-install-roots",
     "owners": [ "eirage@chromium.org", "finnur@chromium.org", "beverloo@chromium.org" ],
     "expiry_milestone": 150

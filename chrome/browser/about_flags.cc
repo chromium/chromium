@@ -9598,6 +9598,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPwaRestoreUiDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kPwaRestoreUi)},
 
+    {"pwa-restore-ui-at-startup", flag_descriptions::kPwaRestoreUiAtStartupName,
+     flag_descriptions::kPwaRestoreUiAtStartupDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kPwaRestoreUiAtStartup)},
+
     {"pwa-universal-install-roots",
      flag_descriptions::kPwaUniversalInstallRootsName,
      flag_descriptions::kPwaUniversalInstallRootsDescription, kOsAndroid,
