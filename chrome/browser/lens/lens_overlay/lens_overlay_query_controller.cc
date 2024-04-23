@@ -308,17 +308,19 @@ void LensOverlayQueryController::
     FetchInteractionRequestAndGenerateLensSearchUrl(
         request_index, std::move(region), query_text, object_id,
         additional_search_query_params, image_crop, *cluster_info_);
-    return;
+  } else {
+    cluster_info_received_callback_ = base::BindOnce(
+        &LensOverlayQueryController::
+            FetchInteractionRequestAndGenerateLensSearchUrl,
+        weak_ptr_factory_.GetWeakPtr(), request_index, std::move(region),
+        query_text, object_id, additional_search_query_params, image_crop);
   }
-  cluster_info_received_callback_ = base::BindOnce(
-      &LensOverlayQueryController::
-          FetchInteractionRequestAndGenerateLensSearchUrl,
-      weak_ptr_factory_.GetWeakPtr(), request_index, std::move(region),
-      query_text, object_id, additional_search_query_params, image_crop);
 
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(thumbnail_created_callback_,
-                                image_crop->image().image_content()));
+  if (image_crop.has_value()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(thumbnail_created_callback_,
+                                  image_crop->image().image_content()));
+  }
 }
 
 lens::LensOverlayServerRequest
