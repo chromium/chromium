@@ -43,20 +43,22 @@ class ScopedLayerTreeSynchronizerBase {
   virtual void Restore() = 0;
 
  protected:
-  // Traverses through the layer subtree rooted at `layer`, updates the corners
-  // of `layer` if conditions described in the comment for
-  // `SynchronizeRoundedCorners()`.
+  ui::Layer* root_layer() { return root_layer_; }
+
+  // Traverses through layer subtree rooted at `layer`, adjusting(synchronizing)
+  // the radius of corners of the `layer` to match the radius with
+  // `reference_bounds` if any corner is drawn outside the curvature of the
+  // `reference_bounds`.
   // Returns true if any of the layers of the layer tree were altered.
   // Note: `reference_bounds` are in target space of `root_layer_`;
   bool SynchronizeLayerTreeRoundedCorners(ui::Layer* layer,
                                           const gfx::RRectF& reference_bounds);
 
   // Traverses through the layer subtree rooted at `layer`. Restores the radii
-  // of layer if it was updated by calling `SynchronizeRoundedCorners()`.
+  // of layer if it was updated by in `SynchronizeLayerTreeRoundedCorners()`.
   void RestoreLayerTree(ui::Layer* layer);
 
- protected:
-  ui::Layer* root_layer() { return root_layer_; }
+  void ResetCachedLayerInfo();
 
  private:
   // `transform` is the relative target transform of layer to the `root_layer`.
@@ -74,9 +76,11 @@ class ScopedLayerTreeSynchronizerBase {
   // If true, the layer tree is restored to its old state.
   const bool restore_tree_;
 
-  // Keeps track of the original radii of layers.
-  base::flat_map<const ui::Layer*, std::pair<gfx::RoundedCornersF, bool>>
-      original_layers_radii_;
+  // Keeps track of the original information of layers.
+  base::flat_map<
+      const ui::Layer*,
+      std::pair<gfx::RoundedCornersF, /*is_fast_rounded_corner=*/bool>>
+      original_layers_info_;
 };
 
 // Synchronizes the layer tree to specified rounded corner bounds.
@@ -92,10 +96,9 @@ class ASH_EXPORT ScopedLayerTreeSynchronizer
   ~ScopedLayerTreeSynchronizer() override;
 
   // Synchronizes the rounded corners of the subtree layers that are rooted at
-  // `layer`. (layer must be a child layer of `root_layer`). If a corner of the
-  // subtree's layer intersects or is drawn outside the curvature(if any) of
-  // `reference_bounds', the radius of that corner is updated(synchronized) to
-  // match radius of reference_bounds.
+  // `layer`. (layer must be a child layer of `root_layer`). See
+  // `ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCorners()`
+  // for more details.
   // Note: The current implementation assumes that the subtree is contained
   // within the layer's bounds and the bounds are in the `root_layer`'s target
   // space.
@@ -121,9 +124,10 @@ class ASH_EXPORT ScopedWindowTreeSynchronizer
   ~ScopedWindowTreeSynchronizer() override;
 
   // Synchronizes the rounded corners of layer tree for `window` and the layer
-  // trees of windows is the transient hierarchy of `window`. For each window's
-  // layer tree, the synchronization is performed as described for
-  // `ScopedLayerTreeSynchronizer::SynchronizeRoundedCorners()`.
+  // trees of windows is the transient hierarchy of `window`. (window must be
+  //  a child of `root_window`)
+  // For each window's layer tree, the synchronization is performed as described
+  // in `ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCorners()`.
   void SynchronizeRoundedCorners(aura::Window* window,
                                  const gfx::RRectF& reference_bounds,
                                  TransientTreeIgnorePredicate ignore_predicate);

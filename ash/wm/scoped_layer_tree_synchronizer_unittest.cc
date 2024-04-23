@@ -9,12 +9,16 @@
 #include <tuple>
 #include <utility>
 
+#include "ash/test/ash_test_base.h"
+#include "base/functional/callback_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/test/test_windows.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 namespace {
@@ -289,6 +293,89 @@ TEST_P(ScopedLayerTreeSynchronizerTest, UpdatingLayerTree) {
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          ScopedLayerTreeSynchronizerTest,
                          testing::Bool());
+
+using ScopedWindowTreeSynchronizerTest = AshTestBase;
+
+TEST_F(ScopedWindowTreeSynchronizerTest, Basics) {
+  // root
+  // +---transient_parent
+  // +------child_window
+  // +---transient_window_1
+  // +---transient_window_2
+
+  std::unique_ptr<aura::Window> root(
+      aura::test::CreateTestWindowWithId(0, nullptr));
+  std::unique_ptr<aura::Window> transient_parent(
+      aura::test::CreateTestWindowWithId(1, root.get()));
+  std::unique_ptr<aura::Window> child_window(
+      aura::test::CreateTestWindowWithId(2, transient_parent.get()));
+  std::unique_ptr<aura::Window> transient_window_1(
+      aura::test::CreateTestWindowWithId(3, root.get()));
+  std::unique_ptr<aura::Window> transient_window_2(
+      aura::test::CreateTestWindowWithId(4, root.get()));
+
+  wm::AddTransientChild(transient_parent.get(), transient_window_1.get());
+  wm::AddTransientChild(transient_parent.get(), transient_window_2.get());
+
+  transient_parent->SetBounds(gfx::Rect(0, 0, 1000, 500));
+  child_window->SetBounds(gfx::Rect(0, 0, 50, 50));
+  transient_window_1->SetBounds(gfx::Rect(0, 0, 1000, 500));
+  transient_window_2->SetBounds(gfx::Rect(20, 20, 200, 200));
+
+  transient_parent->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(5));
+  child_window->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(2));
+  transient_window_1->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(5));
+  transient_window_2->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF());
+
+  auto window_tree_synchronizer =
+      std::make_unique<ScopedWindowTreeSynchronizer>(root.get(),
+                                                     /*restore_tree=*/true);
+
+  gfx::RRectF reference_bounds(gfx::RectF(0, 0, 1000, 500),
+                               gfx::RoundedCornersF(10));
+  window_tree_synchronizer->SynchronizeRoundedCorners(
+      transient_parent.get(), reference_bounds, base::NullCallback());
+
+  // All the windows rooted at `transient_parent`(including transient windows)
+  // should be synchronized again `reference_bounds`.
+  EXPECT_EQ(transient_parent->layer()->rounded_corner_radii(),
+            gfx::RoundedCornersF(10));
+  EXPECT_EQ(child_window->layer()->rounded_corner_radii(),
+            gfx::RoundedCornersF(10, 2, 2, 2));
+  EXPECT_EQ(transient_window_1->layer()->rounded_corner_radii(),
+            gfx::RoundedCornersF(10));
+  EXPECT_EQ(transient_window_2->layer()->rounded_corner_radii(),
+            gfx::RoundedCornersF());
+
+  gfx::RRectF updated_reference_bounds(gfx::RectF(0, 0, 1000, 500),
+                                       gfx::RoundedCornersF(15));
+  window_tree_synchronizer->SynchronizeRoundedCorners(
+      transient_parent.get(), updated_reference_bounds, base::NullCallback());
+
+  // All the windows rooted at `transient_parent` should now have new rounded
+  // corners based on `updated_reference_bounds`.
+  EXPECT_EQ(transient_parent->layer()->rounded_corner_radii(),
+            gfx::RoundedCornersF(15));
+  EXPECT_EQ(child_window->layer()->rounded_corner_radii(),
+            gfx::RoundedCornersF(15, 2, 2, 2));
+  EXPECT_EQ(transient_window_1->layer()->rounded_corner_radii(),
+            gfx::RoundedCornersF(15));
+  EXPECT_EQ(transient_window_2->layer()->rounded_corner_radii(),
+            gfx::RoundedCornersF());
+
+  window_tree_synchronizer->Restore();
+
+  // All the windows should now be restored to their original state. (i.e
+  // before calling SynchronizeRoundedCorners() for the first time)
+  EXPECT_EQ(transient_parent->layer()->rounded_corner_radii(),
+            gfx::RoundedCornersF(5));
+  EXPECT_EQ(child_window->layer()->rounded_corner_radii(),
+            gfx::RoundedCornersF(2));
+  EXPECT_EQ(transient_window_1->layer()->rounded_corner_radii(),
+            gfx::RoundedCornersF(5));
+  EXPECT_EQ(transient_window_2->layer()->rounded_corner_radii(),
+            gfx::RoundedCornersF());
+}
 
 }  // namespace
 }  // namespace ash

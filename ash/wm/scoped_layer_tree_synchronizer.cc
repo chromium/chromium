@@ -466,11 +466,11 @@ bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCornersImpl(
                     : radii.lower_left());
 
       if (radii != layer->rounded_corner_radii()) {
-        // If `original_layers_radii_` has an entry, it means the layer
+        // If `original_layers_info_` has an entry, it means the layer
         // radii has been changed in a prior call to
         // `SynchronizeLayerTreeRoundedCorners()`
-        if (restore_tree_ && !original_layers_radii_.contains(layer)) {
-          original_layers_radii_.insert({layer,
+        if (restore_tree_ && !original_layers_info_.contains(layer)) {
+          original_layers_info_.insert({layer,
                                          {layer->rounded_corner_radii(),
                                           layer->is_fast_rounded_corner()}});
         }
@@ -493,17 +493,16 @@ bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCornersImpl(
 
 void ScopedLayerTreeSynchronizerBase::RestoreLayerTree(ui::Layer* layer) {
   CHECK(root_layer_->Contains(layer));
-  if (original_layers_radii_.empty()) {
+  if (original_layers_info_.empty()) {
     return;
   }
 
   RestoreLayerTreeImpl(layer);
-  original_layers_radii_.clear();
 }
 
 void ScopedLayerTreeSynchronizerBase::RestoreLayerTreeImpl(ui::Layer* layer) {
-  if (original_layers_radii_.contains(layer)) {
-    const auto& info = original_layers_radii_.at(layer);
+  if (original_layers_info_.contains(layer)) {
+    const auto& info = original_layers_info_.at(layer);
     layer->SetRoundedCornerRadius(info.first);
     layer->SetIsFastRoundedCorner(/*enable=*/info.second);
   }
@@ -511,6 +510,10 @@ void ScopedLayerTreeSynchronizerBase::RestoreLayerTreeImpl(ui::Layer* layer) {
   for (ui::Layer* child : layer->children()) {
     RestoreLayerTreeImpl(child);
   }
+}
+
+void ScopedLayerTreeSynchronizerBase::ResetCachedLayerInfo() {
+  original_layers_info_.clear();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -524,14 +527,6 @@ ScopedLayerTreeSynchronizer::~ScopedLayerTreeSynchronizer() {
   Restore();
 }
 
-// Synchronizes the rounded corners of the subtree layers that are rooted at
-// `layer`. (layer must be a child layer of root_layer). If a corner of the
-// subtree's layer intersects or is drawn outside the curvature(if any) of
-// `reference_bounds', the radius of that corner is updated(synchronized) to
-// match radius of reference_bounds.
-// Note: The current implementation assumes that the subtree is contained
-// within the layer's bounds and the bounds are in the `root_layer`'s target
-// space.
 void ScopedLayerTreeSynchronizer::SynchronizeRoundedCorners(
     ui::Layer* layer,
     const gfx::RRectF& reference_bounds) {
@@ -540,6 +535,7 @@ void ScopedLayerTreeSynchronizer::SynchronizeRoundedCorners(
 
 void ScopedLayerTreeSynchronizer::Restore() {
   RestoreLayerTree(root_layer());
+  ResetCachedLayerInfo();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -561,7 +557,8 @@ void ScopedWindowTreeSynchronizer::SynchronizeRoundedCorners(
   for (auto* window_iter : GetTransientTreeIterator(window, ignore_predicate)) {
     const bool altered = SynchronizeLayerTreeRoundedCorners(
         window_iter->layer(), reference_bounds);
-    if (altered && !altered_window_observations_.IsObservingSource(window)) {
+    if (altered &&
+        !altered_window_observations_.IsObservingSource(window_iter)) {
       altered_window_observations_.AddObservation(window_iter);
     }
   }
@@ -572,6 +569,7 @@ void ScopedWindowTreeSynchronizer::Restore() {
     RestoreLayerTree(window->layer());
   }
 
+  ResetCachedLayerInfo();
   altered_window_observations_.RemoveAllObservations();
 }
 
