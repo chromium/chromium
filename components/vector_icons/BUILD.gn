@@ -11,6 +11,7 @@ aggregate_vector_icons("components_vector_icons") {
 
   sources = [
     "${branding_path_component}/product.icon",
+    "${branding_path_component}/product_refresh.icon",
     "account_circle.icon",
     "account_circle_chrome_refresh.icon",
     "account_circle_off_chrome_refresh.icon",
@@ -252,14 +253,6 @@ aggregate_vector_icons("components_vector_icons") {
 
   if (is_chromeos_ash) {
     sources += [ "videogame_asset_outline.icon" ]
-  }
-
-  # This is a temporary fix, will be reverted soon.
-  # TODO(http://b/335697556): Add product_refresh.icon to Chrome
-  # for Testing repo.
-  # No icon is provided for branded Chrome for testing builds.
-  if (!is_chrome_for_testing_branded) {
-    sources += [ "${branding_path_component}/product_refresh.icon" ]
   }
 
   if (is_chrome_branded) {
