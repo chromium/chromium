@@ -460,8 +460,16 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWebSocketMetricBrowserTest,
 
 // When WebSocket is connected to the same ip address space, do not log a use
 // counter.
+// TODO(crbug.com/336429017): Flaky on Win.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PrivateNetworkAccessWebSocketConnectedLocalToLocal \
+  DISABLED_PrivateNetworkAccessWebSocketConnectedLocalToLocal
+#else
+#define MAYBE_PrivateNetworkAccessWebSocketConnectedLocalToLocal \
+  PrivateNetworkAccessWebSocketConnectedLocalToLocal
+#endif
 IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWebSocketMetricBrowserTest,
-                       PrivateNetworkAccessWebSocketConnectedLocalToLocal) {
+                       MAYBE_PrivateNetworkAccessWebSocketConnectedLocalToLocal) {
   // Launch a WebSocket server.
   ASSERT_TRUE(ws_server().Start());
 
