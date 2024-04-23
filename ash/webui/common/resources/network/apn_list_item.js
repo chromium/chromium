@@ -59,6 +59,11 @@ class ApnListItem extends ApnListItemBase {
         value: false,
       },
 
+      shouldDisallowApnModification: {
+        type: Boolean,
+        value: false,
+      },
+
       /** The index of this item in its parent list, used for its a11y label. */
       itemIndex: Number,
 

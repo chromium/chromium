@@ -142,7 +142,12 @@ suite('ApnListItemTest', function() {
     };
     await flushTasks();
     assertTrue(!!getRemoveButton());
+    assertFalse(!!getRemoveButton().disabled);
 
+    apnListItem.shouldDisallowApnModification = true;
+    assertTrue(!!getRemoveButton().disabled);
+
+    apnListItem.shouldDisallowApnModification = false;
     mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
     const props = OncMojo.getDefaultManagedProperties(
         NetworkType.kCellular, guid, 'cellular');
@@ -196,7 +201,13 @@ suite('ApnListItemTest', function() {
     apnListItem.apn = disabledApn;
     await flushTasks();
     assertTrue(!!getEnableButton());
+    assertFalse(!!getEnableButton().disabled);
     assertFalse(!!getDisableButton());
+
+    apnListItem.shouldDisallowApnModification = true;
+    assertTrue(!!getEnableButton().disabled);
+
+    apnListItem.shouldDisallowApnModification = false;
     getEnableButton().click();
     await mojoApi_.whenCalled('modifyCustomApn');
     let managedProps = await mojoApi_.getManagedProperties(guid);
@@ -208,7 +219,13 @@ suite('ApnListItemTest', function() {
     apnListItem.apn = createApn(/*disabled=*/ false);
     await flushTasks();
     assertTrue(!!getDisableButton());
+    assertFalse(!!getDisableButton().disabled);
     assertFalse(!!getEnableButton());
+
+    apnListItem.shouldDisallowApnModification = true;
+    assertTrue(!!getDisableButton().disabled);
+
+    apnListItem.shouldDisallowApnModification = false;
     getDisableButton().click();
     await mojoApi_.whenCalled('modifyCustomApn');
     managedProps = await mojoApi_.getManagedProperties(guid);

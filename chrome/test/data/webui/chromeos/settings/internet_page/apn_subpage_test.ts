@@ -11,7 +11,7 @@ import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/m
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {DeviceStateProperties, InhibitReason, ManagedProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -272,5 +272,11 @@ suite('<apn-subpage>', () => {
     mojoApi_.setManagedPropertiesForTest(props);
     await flushTasks();
     assertEquals(PortalState.kNoInternet, getApnList()!.portalState);
+  });
+
+  test('ShouldDisallowApnModification propagated to <apn-list>', async () => {
+    assertFalse(getApnList()!.shouldDisallowApnModification);
+    apnSubpage.shouldDisallowApnModification = true;
+    assertTrue(getApnList()!.shouldDisallowApnModification);
   });
 });

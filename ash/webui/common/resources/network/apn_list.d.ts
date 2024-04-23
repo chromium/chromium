@@ -16,6 +16,10 @@ export class ApnList extends PolymerElement {
       type: BooleanConstructor,
       value: boolean,
     },
+    shouldDisallowApnModification: {
+      type: BooleanConstructor,
+      value: boolean,
+    },
     shouldShowApnDetailDialog_: {
       type: BooleanConstructor,
       value: boolean,
@@ -32,6 +36,7 @@ export class ApnList extends PolymerElement {
   errorState: string;
   portalState: PortalState;
   shouldOmitLinks: boolean;
+  shouldDisallowApnModification: boolean;
   openApnDetailDialogInCreateMode(): void;
   openApnSelectionDialog(): void;
   private getApns_;

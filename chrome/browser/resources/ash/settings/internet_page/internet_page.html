@@ -138,7 +138,7 @@
   <template is="dom-if" route-path="/apn" restamp>
     <os-settings-subpage page-title="$i18n{internetApnPageTitle}">
       <div id="apnSubpageTitleExtra" slot="subpage-title-extra">
-        <template is="dom-if" if="[[isApnManaged_(globalPolicy_)]]">
+        <template is="dom-if" if="[[shouldDisallowApnModification_(globalPolicy_)]]">
           <cr-tooltip-icon id="apnManagedIcon"
               tooltip-text="$i18n{controlledSettingPolicy}"
               icon-class="cr20:domain"
@@ -150,11 +150,12 @@
             focus-row-control focus-type="menu"
             deep-link-focus-id$="[[Setting.kCellularAddApn]]"
             title="$i18n{moreActions}"
-            disabled="[[isApnManaged_(globalPolicy_)]]">
+            disabled="[[shouldDisallowApnModification_(globalPolicy_)]]">
         </cr-icon-button>
       </div>
       <apn-subpage id="apnSubpage"
           is-num-custom-apns-limit-reached="{{isNumCustomApnsLimitReached_}}"
+          should-disallow-apn-modification="[[shouldDisallowApnModification_(globalPolicy_)]]"
       >
       </apn-subpage>
     </os-settings-subpage>

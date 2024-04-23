@@ -67,6 +67,11 @@ export class ApnList extends ApnListBase {
         value: false,
       },
 
+      shouldDisallowApnModification: {
+        type: Boolean,
+        value: false,
+      },
+
       /** @private */
       apns_: {
         type: Object,

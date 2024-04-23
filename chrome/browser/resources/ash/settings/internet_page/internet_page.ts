@@ -1085,7 +1085,8 @@ export class SettingsInternetPageElement extends
     apnSubpage.openApnSelectionDialog();
   }
 
-  private isApnManaged_(globalPolicy: GlobalPolicy|undefined): boolean {
+  private shouldDisallowApnModification_(globalPolicy: GlobalPolicy|
+                                         undefined): boolean {
     if (!this.isApnRevampEnabled_ || !this.isApnPoliciesEnabled_) {
       return false;
     }

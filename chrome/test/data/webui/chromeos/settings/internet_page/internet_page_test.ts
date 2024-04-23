@@ -5,7 +5,7 @@
 import 'chrome://os-settings/os_settings.js';
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrActionMenuElement, CrExpandButtonElement, CrIconButtonElement, CrToggleElement, EsimRemoveProfileDialogElement, EsimRenameDialogElement, NetworkSummaryElement, NetworkSummaryItemElement, OsSettingsCellularSetupDialogElement, OsSettingsSubpageElement, PaperTooltipElement, Router, routes, settingMojom, SettingsInternetPageElement} from 'chrome://os-settings/os_settings.js';
+import {ApnSubpageElement, CrActionMenuElement, CrExpandButtonElement, CrIconButtonElement, CrToggleElement, EsimRemoveProfileDialogElement, EsimRenameDialogElement, NetworkSummaryElement, NetworkSummaryItemElement, OsSettingsCellularSetupDialogElement, OsSettingsSubpageElement, PaperTooltipElement, Router, routes, settingMojom, SettingsInternetPageElement} from 'chrome://os-settings/os_settings.js';
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
@@ -1183,9 +1183,14 @@ suite('<settings-internet-page>', () => {
           const apnActionMenuButton =
               internetPage.shadowRoot!.querySelector<HTMLButtonElement>(
                   '#apnActionMenuButton');
+          const apnSubpage =
+              internetPage.shadowRoot!.querySelector<ApnSubpageElement>(
+                  'apn-subpage');
           assertFalse(!!getApnManagedIcon());
           assert(apnActionMenuButton);
           assertFalse(apnActionMenuButton.disabled);
+          assert(apnSubpage);
+          assertFalse(apnSubpage.shouldDisallowApnModification);
 
           let globalPolicy = {
             allowApnModification: true,
@@ -1194,6 +1199,7 @@ suite('<settings-internet-page>', () => {
           await flushTasks();
           assertFalse(!!getApnManagedIcon());
           assertFalse(apnActionMenuButton.disabled);
+          assertFalse(apnSubpage.shouldDisallowApnModification);
 
           globalPolicy = {
             allowApnModification: false,
@@ -1202,6 +1208,8 @@ suite('<settings-internet-page>', () => {
           await flushTasks();
           assertEquals(isApnPoliciesEnabled, !!getApnManagedIcon());
           assertEquals(isApnPoliciesEnabled, apnActionMenuButton.disabled);
+          assertEquals(
+              isApnPoliciesEnabled, apnSubpage.shouldDisallowApnModification);
         });
   });
 

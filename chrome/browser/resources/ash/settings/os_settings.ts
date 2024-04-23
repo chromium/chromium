@@ -166,6 +166,7 @@ export {SettingsPerDeviceTouchpadElement} from './device_page/per_device_touchpa
 export {SettingsPerDeviceTouchpadSubsectionElement} from './device_page/per_device_touchpad_subsection.js';
 export {getShortcutInputProvider} from './device_page/shortcut_input_mojo_interface_provider.js';
 export {ensureLazyLoaded} from './ensure_lazy_loaded.js';
+export {ApnSubpageElement} from './internet_page/apn_subpage.js';
 export {OsSettingsCellularSetupDialogElement} from './internet_page/cellular_setup_dialog.js';
 export {EsimRemoveProfileDialogElement} from './internet_page/esim_remove_profile_dialog.js';
 export {EsimRenameDialogElement} from './internet_page/esim_rename_dialog.js';

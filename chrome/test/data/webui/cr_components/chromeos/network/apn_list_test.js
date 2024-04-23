@@ -699,5 +699,19 @@ suite('ApnListTest', function() {
                     }
                   });
             }));
+
+    test('ShouldDisallowApnModification is set', async function() {
+      apnList.managedCellularProperties = {
+        customApnList: [customApn1],
+      };
+      await flushTasks();
+      const apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+      assertEquals(apns.length, 1);
+      assertTrue(OncMojo.apnMatch(apns[0].apn, customApn1));
+      assertFalse(!!apns[0].shouldDisallowApnModification);
+
+      apnList.shouldDisallowApnModification = true;
+      assertTrue(!!apns[0].shouldDisallowApnModification);
+    });
   });
 });
