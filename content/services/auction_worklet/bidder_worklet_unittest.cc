@@ -1226,7 +1226,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAd) {
   // Other values JSON can't represent result in failing instead of null.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: function() {return 1;}, bid:1, render:"https://response.test/"})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() bid has invalid ad value."});
 
@@ -1234,7 +1234,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAd) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: {get field() { while(true); } },
           bid:1, render:"https://response.test/"})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() serializing bid 'ad' value to JSON "
        "timed out."});
@@ -1248,7 +1248,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAd) {
           return {ad: a, bid:1, render:"https://response.test/"};
         }
       )",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() bid has invalid ad value."});
 }
@@ -1257,16 +1257,16 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueBid) {
   // Undefined / an empty return statement and null are treated as not bidding.
   RunGenerateBidWithReturnValueExpectingResult(
       "",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr());
+      /*expected_bids=*/mojom::BidderWorkletBidPtr());
   RunGenerateBidWithReturnValueExpectingResult(
       "null",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr());
+      /*expected_bids=*/mojom::BidderWorkletBidPtr());
 
   // Missing bid value is also treated as not bidding, since setBid(null)
   // is basically the same as setBid({}) in WebIDL.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", render:"https://response.test/"})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr());
+      /*expected_bids=*/mojom::BidderWorkletBidPtr());
 
   // Valid positive bid values.
   RunGenerateBidWithReturnValueExpectingResult(
@@ -1311,30 +1311,30 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueBid) {
   // Bids <= 0.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:0, render:"https://response.test/"})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr());
+      /*expected_bids=*/mojom::BidderWorkletBidPtr());
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:-10, render:"https://response.test/"})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr());
+      /*expected_bids=*/mojom::BidderWorkletBidPtr());
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:-1.5, render:"https://response.test/"})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr());
+      /*expected_bids=*/mojom::BidderWorkletBidPtr());
 
   // Infinite and NaN bid.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1/0, render:"https://response.test/"})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() Converting field 'bid' to a Number did "
        "not produce a finite double."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:-1/0, render:"https://response.test/"})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() Converting field 'bid' to a Number did "
        "not produce a finite double."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:0/0, render:"https://response.test/"})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() Converting field 'bid' to a Number did "
        "not produce a finite double."});
@@ -1370,7 +1370,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueBid) {
           /*modeling_signals=*/std::nullopt, base::TimeDelta()));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:[1,2], render:"https://response.test/"})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() Converting field 'bid' to a Number did "
        "not produce a finite double."});
@@ -1383,7 +1383,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueBid) {
             return {ad: "ad", bid:{valueOf:() => {while(true) {} } },
                     render:"https://response.test/"};
           )"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() Converting field 'bid' to Number timed"
        " out."});
@@ -1396,7 +1396,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueBid) {
             return {ad: "ad", get bid() {while(true) {} },
                     render:"https://response.test/"};
           )"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() Execution timed out trying to access "
        "field 'bid'."});
@@ -1512,7 +1512,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueUrl) {
   // Missing render field.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() 'render' is required when making a "
        "bid."});
@@ -1520,7 +1520,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueUrl) {
   // Missing ad and render fields.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({bid:1})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() 'render' is required when making a "
        "bid."});
@@ -1538,33 +1538,33 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueUrl) {
   // Missing value with bid <= 0 is considered a valid no-bid case.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({bid:0})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr());
+      /*expected_bids=*/mojom::BidderWorkletBidPtr());
   RunGenerateBidWithReturnValueExpectingResult(
       R"({bid:-1})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr());
+      /*expected_bids=*/mojom::BidderWorkletBidPtr());
 
   // Disallowed render schemes.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"http://response.test/"})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() bid render URL 'http://response.test/' "
        "isn't a valid https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"chrome-extension://response.test/"})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() bid render URL "
        "'chrome-extension://response.test/' isn't a valid https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"about:blank"})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() bid render URL 'about:blank' isn't a "
        "valid https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"data:,foo"})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() bid render URL 'data:,foo' isn't a "
        "valid https:// URL."});
@@ -1572,25 +1572,25 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueUrl) {
   // Invalid render URLs.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"test"})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() bid render URL '' isn't a valid "
        "https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:"http://"})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() bid render URL 'http:' isn't a valid "
        "https:// URL."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:["http://response.test/"]})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() 'render': Required field 'url' "
        "is undefined."});
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: ["ad"], bid:1, render:9})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() 'render': Value passed as dictionary "
        "is neither object, null, nor undefined."});
@@ -1703,7 +1703,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
         bid:1,
         render:"https://response.test/",
         adComponents:["http://response.test/"]})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() bid contains adComponents but "
        "InterestGroup has no adComponents."});
@@ -1712,7 +1712,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
         bid:1,
         render:"https://response.test/",
         adComponents:[]})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() bid contains adComponents but "
        "InterestGroup has no adComponents."});
@@ -1723,7 +1723,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
         bid:1,
         render:"https://response.test/",
         adComponents:5})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() Sequence field 'adComponents' must be "
        "an Object."});
@@ -1746,7 +1746,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
         bid:1,
         render:"https://response.test/",
         adComponents:null})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() Sequence field 'adComponents' must be "
        "an Object."});
@@ -1776,7 +1776,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
         bid:1,
         render:"https://response.test/",
         adComponents:5})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() Sequence field 'adComponents' must be "
        "an Object."});
@@ -1787,7 +1787,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
         bid:1,
         render:"https://response.test/",
         adComponents:[{}]})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() adComponents entry: Required field "
        "'url' is undefined."});
@@ -1880,7 +1880,7 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueAdComponents) {
           "https://ad_component.test/" /* 20 */,
           "https://ad_component.test/" /* 21 */,
         ]})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() bid adComponents with over 20 "
        "items."});
@@ -1990,7 +1990,7 @@ TEST_F(BidderWorkletCustomAdComponentLimitTest, AdComponentsLimit) {
           "https://ad_component.test/" /* 25 */,
           "https://ad_component.test/" /* 26 */
         ]})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() bid adComponents with over 25 "
        "items."});
@@ -2246,21 +2246,21 @@ TEST_F(BidderWorkletTest, GenerateBidReturnValueInvalid) {
           return {ad: ["ad"], bid:1, render:"https://response.test/"};
         }
       )",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ `generateBid` is not a function."});
   RunGenerateBidWithJavascriptExpectingResult(
-      "", /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      "", /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ `generateBid` is not a function."});
   RunGenerateBidWithJavascriptExpectingResult(
-      "5", /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      "5", /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ `generateBid` is not a function."});
 
   // Throw exception.
   RunGenerateBidWithJavascriptExpectingResult(
-      "shrimp", /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      "shrimp", /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:1 Uncaught ReferenceError: "
        "shrimp is not defined."});
@@ -2278,7 +2278,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
          setBid({ad: function() {return 1;}, bid:1, render:"https://response.test/"});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: bid has invalid ad value."});
 
@@ -2292,7 +2292,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
           return {};
         }
       )",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:5 Uncaught TypeError: bid has invalid ad value."});
 
@@ -2307,7 +2307,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
           return {};
         }
       )",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
 
@@ -2321,7 +2321,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
          setBid({ad: ["ad"], bid:"boo", render:"https://response.test/"});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: Converting field 'bid' to a "
        "Number did not produce a finite double."});
@@ -2330,7 +2330,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
          setBid({ad: ["ad"], bid:[1,2], render:"https://response.test/"});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: Converting field 'bid' to a "
        "Number did not produce a finite double."});
@@ -2345,7 +2345,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
          setBid({ad: ["ad"], bid:1, render:"http://response.test/"});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: bid render URL "
        "'http://response.test/' isn't a valid https:// URL."});
@@ -2356,7 +2356,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
                  render:"chrome-extension://response.test/"});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: bid render URL "
        "'chrome-extension://response.test/' isn't a valid https:// URL."});
@@ -2365,7 +2365,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
          setBid({ad: ["ad"], bid:1, render:"about:blank"});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: bid render URL 'about:blank' "
        "isn't a valid https:// URL."});
@@ -2374,7 +2374,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
          setBid({ad: ["ad"], bid:1, render:"data:,foo"});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: bid render URL 'data:,foo' "
        "isn't a valid https:// URL."});
@@ -2385,7 +2385,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
          setBid({ad: ["ad"], bid:1, render:"test"});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: bid render URL '' isn't a "
        "valid https:// URL."});
@@ -2394,7 +2394,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
          setBid({ad: ["ad"], bid:1, render:"http://"});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: bid render URL 'http:' isn't a "
        "valid https:// URL."});
@@ -2403,7 +2403,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
          setBid({ad: ["ad"], bid:1, render:["http://response.test/"]});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: 'render': Required field 'url' "
        "is undefined."});
@@ -2412,7 +2412,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
          setBid({ad: ["ad"], bid:1, render:9});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: 'render': Value passed as "
        "dictionary is neither object, null, nor undefined."});
@@ -2432,7 +2432,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
                  adComponents:["http://response.test/"]});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: bid contains adComponents but "
        "InterestGroup has no adComponents."});
@@ -2444,7 +2444,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
                  adComponents:[]});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: bid contains adComponents but "
        "InterestGroup has no adComponents."});
@@ -2458,7 +2458,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
                  adComponents:5});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: Sequence field 'adComponents' "
        "must be an Object."});
@@ -2478,7 +2478,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
                  adComponents:5});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: Sequence field 'adComponents' "
        "must be an Object."});
@@ -2492,7 +2492,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
                  adComponents:[{}]});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: adComponents entry: Required "
        "field 'url' is undefined."});
@@ -2533,7 +2533,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
         ]});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: bid adComponents with over 20 "
        "items."});
@@ -2548,7 +2548,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
          setBid(1);
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: Value passed as dictionary "
        "is neither object, null, nor undefined."});
@@ -2559,7 +2559,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
          setBid({bid:"a", render:"https://response.test/"});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: Converting field 'bid' to a "
        "Number did not produce a finite double."});
@@ -2569,7 +2569,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
          return {ad: "actually_reached", bid: 4,
                  render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() bid render URL "
        "'https://response.test/2' isn't one of the registered creative URLs."});
@@ -2578,7 +2578,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
          setBid({ad: ["ad"], bid:"a"});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:2 Uncaught TypeError: Converting field 'bid' to a "
        "Number did not produce a finite double."});
@@ -2590,7 +2590,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
          setBid({ad: ["ad"], bid:"1/0", render:"https://response.test/"});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:3 Uncaught TypeError: Converting field 'bid' to a "
        "Number did not produce a finite double."});
@@ -2610,7 +2610,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidThrows) {
          }
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
           /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
@@ -2629,7 +2629,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidNonTermConversion) {
                  render:"https://response.test/"});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
 
@@ -2641,7 +2641,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidNonTermConversion) {
          } catch (e) {}
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
 
@@ -2652,7 +2652,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidNonTermConversion) {
                  render:"https://response.test/"});
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
 
@@ -2663,7 +2663,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetBidNonTermConversion) {
                  render: { get url() { while(true) {} } } });
          return {ad: "not_reached", bid: 4, render:"https://response.test/2"};
        })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
 }
@@ -2673,7 +2673,7 @@ TEST_F(BidderWorkletTest, GenerateBidMultiBid) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad", bid: 1,
           render: "https://response.test/"}])",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr());
+      /*expected_bids=*/mojom::BidderWorkletBidPtr());
 }
 
 // Cookie disabling trial forces multibid off.
@@ -2681,7 +2681,7 @@ TEST_F(BidderWorkletMultiBidAndCookieDeprecationTest, GenerateBidMultiBid) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad", bid: 1,
           render: "https://response.test/"}])",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr());
+      /*expected_bids=*/mojom::BidderWorkletBidPtr());
 }
 
 // Make sure that fields that are only available with multibid on aren't
@@ -2757,7 +2757,7 @@ TEST_F(BidderWorkletMultiBidTest, ComponentTargetFieldsOnlyMultiBid) {
             throw 'used numMandatoryAdComponents';
           }
       })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/:9 Uncaught used numMandatoryAdComponents."});
@@ -2769,7 +2769,7 @@ TEST_F(BidderWorkletMultiBidTest, ComponentTargetFieldsOnlyMultiBid) {
             throw 'used targetNumAdComponents';
           }
       })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/:9 Uncaught used targetNumAdComponents."});
@@ -2787,7 +2787,7 @@ TEST_F(BidderWorkletMultiBidTest, TargetNumAdComponents) {
           render: {url: "https://response.test/"},
           targetNumAdComponents: 0
       })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/ generateBid() targetNumAdComponents must be "
@@ -2804,7 +2804,7 @@ TEST_F(BidderWorkletMultiBidTest, TargetNumAdComponents) {
           ],
           targetNumAdComponents: 0
       })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/ generateBid() targetNumAdComponents must be "
@@ -2827,7 +2827,7 @@ TEST_F(BidderWorkletMultiBidTest, TargetNumAdComponents) {
   )";
   RunGenerateBidWithJavascriptExpectingResult(
       kLotsProvidedAndTargeted,
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/ generateBid() bid targetNumAdComponents larger than "
@@ -2839,7 +2839,7 @@ TEST_F(BidderWorkletMultiBidTest, TargetNumAdComponents) {
           render: {url: "https://response.test/"},
           targetNumAdComponents: 1
       })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/ generateBid() adComponents list smaller than "
@@ -2853,7 +2853,7 @@ TEST_F(BidderWorkletMultiBidTest, TargetNumAdComponents) {
             "https://ad_component.test",
           ]
       })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/ generateBid() adComponents list smaller than "
@@ -2870,7 +2870,7 @@ TEST_F(BidderWorkletMultiBidTest, TargetNumAdComponents) {
           ],
           targetNumAdComponents: 5
       })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/ generateBid() adComponents list smaller than "
@@ -2916,7 +2916,7 @@ TEST_F(BidderWorkletMultiBidTest, TargetNumAdComponents) {
           targetNumAdComponents: 5,
           numMandatoryAdComponents: 6
       })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/ generateBid() numMandatoryAdComponents cannot exceed "
@@ -2938,7 +2938,7 @@ TEST_F(BidderWorkletMultiBidTest, TargetNumAdComponents) {
           ],
           targetNumAdComponents: 5,
       })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/ generateBid() bid adComponents URL "
@@ -3216,7 +3216,7 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
 
   // Empty array means no-bid.
   RunGenerateBidWithReturnValueExpectingResult(
-      "[]", /*expected_bid=*/mojom::BidderWorkletBidPtr());
+      "[]", /*expected_bids=*/mojom::BidderWorkletBidPtr());
   EXPECT_EQ(reject_reason_, mojom::RejectReason::kNotAvailable);
 
   // Single bid as an array member.
@@ -3252,7 +3252,7 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
           {ad: "ad3", bid: 4,
           render: "https://response.test/"},
          ])",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/ generateBid() more bids provided than permitted by "
@@ -3269,7 +3269,7 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
           {ad: "ad3", bid: 4,
           render: "https://response.test/"},
          ])",
-      /*expected_bid=*/nullptr,
+      /*expected_bids=*/nullptr,
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/ generateBid() more bids provided than permitted by "
@@ -3279,7 +3279,7 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
   // Catches errors in individual entries.
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad", bid: 10}])",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/ generateBid() bids sequence entry: 'render' is "
@@ -3289,7 +3289,7 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
   // Some more complicated error messages.
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad", bid: 10, render: {}}])",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/ generateBid() bids sequence entry: 'render': "
@@ -3300,7 +3300,7 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
       R"([{ad: "ad", bid: 10, render: "https://example.org/",
            adComponents: [{}]
       }])",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/ generateBid() bids sequence entry: adComponents "
@@ -3311,7 +3311,7 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
       R"([{ad: "ad", bid: 2,
           render: "https://response.test/"},
           {ad: "ad", bid: 10}])",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/ generateBid() bids sequence entry: 'render' is "
@@ -3322,7 +3322,7 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
       R"([{ad: "ad", bid: 2,
           render: "https://response.test/"},
           10])",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/ generateBid() bids sequence entry: Value passed as "
@@ -3333,7 +3333,7 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"([{ad: "ad",
           render: "https://response.test/"}])",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr());
+      /*expected_bids=*/mojom::BidderWorkletBidPtr());
   EXPECT_EQ(reject_reason_, mojom::RejectReason::kNotAvailable);
 
   // A non-bid among real bids in an array is also ignored.
@@ -3358,7 +3358,7 @@ TEST_F(BidderWorkletMultiBidTest, GenerateBidMultiBid) {
           render:"https://response.test/"},
           4
          ])",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/ generateBid() bids sequence entry: Value passed as "
@@ -3374,7 +3374,7 @@ TEST_F(BidderWorkletTest, SetBidMultiBid) {
         setBid([{ad: "ad", bid:2, render: "https://response.test"}]);
         throw "oh no";
       })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{"https://url.test/:3 Uncaught oh no."});
 }
@@ -3408,7 +3408,7 @@ TEST_F(BidderWorkletMultiBidTest, SetBidMultiBid) {
          setBid([{ad: "ad", bid:2, render: "https://response.test"}]);
          throw "boo";
        })",
-      /*expected_bid=*/expected_bid->Clone(),
+      /*expected_bids=*/expected_bid->Clone(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{"https://url.test/:3 Uncaught boo."});
 
@@ -3440,7 +3440,7 @@ TEST_F(BidderWorkletMultiBidTest, SetBidMultiBid) {
                  {ad: "lad", bid:8, render: "https://response3.test"}]);
          throw "boo";
        })",
-      /*expected_bid=*/nullptr, /*expected_data_version=*/std::nullopt,
+      /*expected_bids=*/nullptr, /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/:2 Uncaught TypeError: more bids provided than "
        "permitted by auction configuration."});
@@ -3453,7 +3453,7 @@ TEST_F(BidderWorkletMultiBidTest, SetBidMultiBid) {
          setBid([{ad: "lad", bid:8, render: "https://response3.test"}]);
          throw "boo";
        })",
-      /*expected_bid=*/expected_bid3->Clone(),
+      /*expected_bids=*/expected_bid3->Clone(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{"https://url.test/:5 Uncaught boo."});
 
@@ -3465,7 +3465,7 @@ TEST_F(BidderWorkletMultiBidTest, SetBidMultiBid) {
          setBid([]);
          throw "boo";
        })",
-      /*expected_bid=*/nullptr, /*expected_data_version=*/std::nullopt,
+      /*expected_bids=*/nullptr, /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{"https://url.test/:5 Uncaught boo."});
 
   // Individual checks do happen.
@@ -3475,7 +3475,7 @@ TEST_F(BidderWorkletMultiBidTest, SetBidMultiBid) {
                  {ad: "bad", bid:4, render: "https://response4.test"}]);
          throw "boo";
        })",
-      /*expected_bid=*/nullptr, /*expected_data_version=*/std::nullopt,
+      /*expected_bids=*/nullptr, /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/:2 Uncaught TypeError: bids sequence entry: bid "
        "render URL 'https://response4.test/' isn't one of the registered "
@@ -3492,7 +3492,7 @@ TEST_F(BidderWorkletMultiBidTest, SetBidMultiBid) {
          }
          throw "boo";
        })",
-      /*expected_bid=*/expected_bid3->Clone(),
+      /*expected_bids=*/expected_bid3->Clone(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{"https://url.test/:8 Uncaught boo."});
 }
@@ -3501,7 +3501,7 @@ TEST_F(BidderWorkletMultiBidTest, SetBidMultiBid) {
 TEST_F(BidderWorkletTest, GenerateBidDateNotAvailable) {
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: Date().toString(), bid:1, render:"https://response.test/"})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:6 Uncaught ReferenceError: Date is not defined."});
 }
@@ -5342,7 +5342,7 @@ TEST_F(BidderWorkletTest, GenerateBidAds) {
   // A bid URL that's not in the InterestGroup's ads list should fail.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: 0, bid:1, render:"https://response2.test/"})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() bid render URL "
        "'https://response2.test/' isn't one of the registered creative URLs."});
@@ -5402,7 +5402,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponents) {
   // should fail.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: 0, bid:1, render:"https://response.test/", adComponents:["https://response.test/"]})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() bid adComponents URL "
        "'https://response.test/' isn't one of the registered creative URLs."});
@@ -6504,7 +6504,7 @@ TEST_F(BidderWorkletTest, GenerateBidWithSetBid) {
           /*extra_code=*/R"(
             setBid({ad: "ad", bid:1, render:"https://response.test/"})
           )"),
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"returned\"", 2,
           /*bid_currency=*/std::nullopt,
@@ -6521,7 +6521,7 @@ TEST_F(BidderWorkletTest, GenerateBidWithSetBid) {
           /*extra_code=*/R"(
             setBid({ad: "ad", bid:1, render:"https://response.test/"})
           )"),
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBidPtr());
 
   // Test which ends by doing a return; (with no value specified).
@@ -6530,7 +6530,7 @@ TEST_F(BidderWorkletTest, GenerateBidWithSetBid) {
                                                   /*extra_code=*/R"(
             setBid({ad: "ad", bid:1, render:"https://response.test/"})
           )"),
-                                              /*expected_bid=*/
+                                              /*expected_bids=*/
                                               mojom::BidderWorkletBidPtr());
 }
 
@@ -6561,7 +6561,7 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOut) {
   // AuctionV8Helper's default script timeout (50 ms).
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(/*raw_return_value=*/"", R"(while (1))"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
 }
@@ -6585,7 +6585,7 @@ TEST_F(BidderWorkletTest, GenerateBidPerBuyerTimeOut) {
   per_buyer_timeout_ = base::Milliseconds(20);
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(/*raw_return_value=*/"", R"(while (1))"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
 }
@@ -6604,7 +6604,7 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBid) {
             setBid({ad: "ad", bid:1, render:"https://response.test/"});
             while (1)
           )"),
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
           /*bid_currency=*/std::nullopt,
@@ -6625,7 +6625,7 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBid) {
             setBid();
             while (1)
           )"),
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
@@ -6659,7 +6659,7 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBidTwice) {
             setBid({ad: "ad2", bid:2, render:"https://response.test/replacement"});
             while (1)
           )"),
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad2\"", 2,
           /*bid_currency=*/std::nullopt,
@@ -6682,7 +6682,7 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBidTwice) {
             setBid(null);
             while (1)
           )"),
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
@@ -6699,7 +6699,7 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBidTwice) {
             setBid(null);
             while (1)
           )"),
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
@@ -6722,7 +6722,7 @@ TEST_F(BidderWorkletTest, GenerateBidTimedOutWithSetBidMutateAfter) {
             result.render = "https://response.test/3";
             while (1)
           )"),
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
           /*bid_currency=*/std::nullopt,
@@ -6742,7 +6742,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPriority) {
           /*extra_code=*/R"(
             setPriority();
           )"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:6 Uncaught TypeError: setPriority(): at least 1 "
        "argument(s) are required."});
@@ -6753,7 +6753,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPriority) {
           /*extra_code=*/R"(
             setPriority("string");
           )"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:6 Uncaught TypeError: setPriority(): Converting "
        "argument 'priority' to a Number did not produce a finite double."});
@@ -6764,7 +6764,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPriority) {
           /*extra_code=*/R"(
             setPriority(0.0/0.0);
           )"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:6 Uncaught TypeError: setPriority(): Converting "
        "argument 'priority' to a Number did not produce a finite double."});
@@ -6776,7 +6776,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPriority) {
             setPriority(4);
             setPriority(4);
           )"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:7 Uncaught TypeError: setPriority may be called at "
        "most once."});
@@ -6787,7 +6787,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPriority) {
           /*extra_code=*/R"(
             setPriority(9.0);
           )"),
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
           /*bid_currency=*/std::nullopt,
@@ -6806,7 +6806,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPriority) {
                               /*extra_code=*/R"(
             setPriority(9.0);
           )"),
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{},
@@ -6819,7 +6819,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPriority) {
                               /*extra_code=*/R"(
             setPriority(9.0);
           )"),
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
@@ -6838,7 +6838,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPriority) {
               valueOf:() => {while(true) {}}
             });
           )"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
 }
@@ -6850,7 +6850,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
                               /*extra_code=*/R"(
             setPrioritySignalsOverride();
           )"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:6 Uncaught TypeError: setPrioritySignalsOverride(): "
        "at least 1 argument(s) are required."});
@@ -6861,7 +6861,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
                               /*extra_code=*/R"(
             setPrioritySignalsOverride(15, 15);
           )"),
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
           /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
@@ -6883,7 +6883,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
               toString: () => { return {} }
             }, 15);
           )"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:6 Uncaught TypeError: Cannot convert object to "
        "primitive value."});
@@ -6894,7 +6894,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
                               /*extra_code=*/R"(
             setPrioritySignalsOverride("key", "value");
           )"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:6 Uncaught TypeError: setPrioritySignalsOverride(): "
        "Converting argument 'priority' to a Number did not produce a finite "
@@ -6906,7 +6906,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
                               /*extra_code=*/R"(
             setPrioritySignalsOverride("key", 0.0/0.0);
           )"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:6 Uncaught TypeError: setPrioritySignalsOverride(): "
        "Converting argument 'priority' to a Number did not produce a finite "
@@ -6920,7 +6920,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
               valueOf:() => {while(true) {}}
             });
           )"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
 
@@ -6930,7 +6930,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
                               /*extra_code=*/R"(
             setPrioritySignalsOverride("key");
           )"),
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
           /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
@@ -6950,7 +6950,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
                               /*extra_code=*/R"(
             setPrioritySignalsOverride("key", undefined);
           )"),
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
           /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
@@ -6970,7 +6970,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
                               /*extra_code=*/R"(
             setPrioritySignalsOverride("key", null);
           )"),
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
           /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
@@ -6990,7 +6990,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
                               /*extra_code=*/R"(
             setPrioritySignalsOverride("key", 0);
           )"),
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
           /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
@@ -7013,7 +7013,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
             setPrioritySignalsOverride("key", 5);
             setPrioritySignalsOverride("key", 6);
           )"),
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
           /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
@@ -7035,7 +7035,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
             setPrioritySignalsOverride("key2");
             setPrioritySignalsOverride("key3", -6);
           )"),
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "null", 1,
           /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
@@ -7056,7 +7056,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
                               /*extra_code=*/R"(
             setPrioritySignalsOverride("key1", 1);
           )"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/std::nullopt,
@@ -7070,7 +7070,7 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
                               /*extra_code=*/R"(
             setPrioritySignalsOverride("key1", 1);
           )"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/ generateBid() Converting field 'bid' to a Number did "
@@ -9022,7 +9022,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithDebuggingReport(
           R"(forDebuggingOnly.reportAdAuctionLoss())"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:5 Uncaught TypeError: "
        "reportAdAuctionLoss(): at least 1 argument(s) are required."});
@@ -9030,7 +9030,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithDebuggingReport(
           R"(forDebuggingOnly.reportAdAuctionWin())"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:5 Uncaught TypeError: "
        "reportAdAuctionWin(): at least 1 argument(s) are required."});
@@ -9038,7 +9038,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithDebuggingReport(
           R"(forDebuggingOnly.reportAdAuctionLoss({toString:42}))"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:5 Uncaught TypeError: Cannot convert object to "
        "primitive value."});
@@ -9046,7 +9046,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithDebuggingReport(
           R"(forDebuggingOnly.reportAdAuctionWin({toString:42}))"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:5 Uncaught TypeError: Cannot convert object to "
        "primitive value."});
@@ -9054,7 +9054,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithDebuggingReport(
           R"(forDebuggingOnly.reportAdAuctionLoss(null))"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:5 Uncaught TypeError: "
        "reportAdAuctionLoss must be passed a valid HTTPS url."});
@@ -9062,7 +9062,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithDebuggingReport(
           R"(forDebuggingOnly.reportAdAuctionWin([5]))"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:5 Uncaught TypeError: "
        "reportAdAuctionWin must be passed a valid HTTPS url."});
@@ -9073,7 +9073,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
     RunGenerateBidWithJavascriptExpectingResult(
         CreateBasicGenerateBidScriptWithDebuggingReport(base::StringPrintf(
             R"(forDebuggingOnly.reportAdAuctionLoss("%s"))", url.c_str())),
-        /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+        /*expected_bids=*/mojom::BidderWorkletBidPtr(),
         /*expected_data_version=*/std::nullopt,
         {"https://url.test/:5 Uncaught TypeError: "
          "reportAdAuctionLoss must be passed a valid HTTPS url."});
@@ -9081,7 +9081,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
     RunGenerateBidWithJavascriptExpectingResult(
         CreateBasicGenerateBidScriptWithDebuggingReport(base::StringPrintf(
             R"(forDebuggingOnly.reportAdAuctionWin("%s"))", url.c_str())),
-        /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+        /*expected_bids=*/mojom::BidderWorkletBidPtr(),
         /*expected_data_version=*/std::nullopt,
         {"https://url.test/:5 Uncaught TypeError: "
          "reportAdAuctionWin must be passed a valid HTTPS url."});
@@ -9145,7 +9145,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
           R"(forDebuggingOnly.reportAdAuctionLoss({
               toString:() => {while(true) {}}
           }))"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
 
@@ -9154,7 +9154,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
           R"(forDebuggingOnly.reportAdAuctionWin({
               toString:() => {while(true) {}}
           }))"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
 }
@@ -9169,7 +9169,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url1");
             error;
             forDebuggingOnly.reportAdAuctionLoss("https://loss.url2"))"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/:6 Uncaught ReferenceError: error is not defined."},
       GURL("https://loss.url1"));
@@ -9184,7 +9184,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
           R"({ad: ["ad"], bid:"invalid", render:"https://response.test/"})",
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
             forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ generateBid() Converting field 'bid' to a Number did "
        "not produce a finite double."},
@@ -9203,7 +9203,7 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url1");
             while (1);
             forDebuggingOnly.reportAdAuctionLoss("https://loss.url2"))"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."},
       GURL("https://loss.url1"));
@@ -9476,7 +9476,7 @@ TEST_F(BidderWorkletSharedStorageAPIDisabledTest, SharedStorageNotExposed) {
           /*extra_code=*/R"(
           sharedStorage.clear();
         )"),
-      /*expected_bid=*/nullptr,
+      /*expected_bids=*/nullptr,
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/:6 Uncaught ReferenceError: sharedStorage is not "
@@ -9534,7 +9534,7 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
           sharedStorage.delete('a');
           sharedStorage.clear();
         )"),
-        /*expected_bid=*/
+        /*expected_bids=*/
         mojom::BidderWorkletBid::New(
             auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
             /*bid_currency=*/std::nullopt,
@@ -9597,7 +9597,7 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
             /*extra_code=*/R"(
             sharedStorage.clear();
           )"),
-        /*expected_bid=*/nullptr,
+        /*expected_bids=*/nullptr,
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/
         {"https://url.test/:6 Uncaught TypeError: The \"shared-storage\" "
@@ -9775,7 +9775,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
             /*extra_code=*/R"(
             privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
           )"),
-        /*expected_bid=*/
+        /*expected_bids=*/
         mojom::BidderWorkletBid::New(
             auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
             /*bid_currency=*/std::nullopt,
@@ -9804,7 +9804,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
             privateAggregation.contributeToHistogramOnEvent(
                 "reserved.win", {bucket: 234n, value: 56});
           )"),
-        /*expected_bid=*/
+        /*expected_bids=*/
         mojom::BidderWorkletBid::New(
             auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
             /*bid_currency=*/std::nullopt,
@@ -9835,7 +9835,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
             privateAggregation.contributeToHistogramOnEvent(
                 "reserved.win", {bucket: 234n, value: 56});
           )"),
-        /*expected_bid=*/
+        /*expected_bids=*/
         mojom::BidderWorkletBid::New(
             auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
             /*bid_currency=*/std::nullopt,
@@ -9865,7 +9865,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
             /*extra_code=*/R"(
             privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
           )"),
-        /*expected_bid=*/nullptr,
+        /*expected_bids=*/nullptr,
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/
         {"https://url.test/:6 Uncaught TypeError: The \"private-aggregation\" "
@@ -9897,7 +9897,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
             privateAggregation.contributeToHistogramOnEvent(
                 "reserved.win", {bucket: 18446744073709551616n, value: 2});
           )"),
-        /*expected_bid=*/
+        /*expected_bids=*/
         mojom::BidderWorkletBid::New(
             auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
             /*bid_currency=*/std::nullopt,
@@ -9934,7 +9934,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
             privateAggregation.contributeToHistogramOnEvent(
                 "reserved.win", {bucket: 18446744073709551616n, value: 2});
           )"),
-        /*expected_bid=*/
+        /*expected_bids=*/
         mojom::BidderWorkletBid::New(
             auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
             /*bid_currency=*/std::nullopt,
@@ -9967,7 +9967,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
                 "reserved.win", {bucket: 234n, value: 56});
             error;
           )"),
-        /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+        /*expected_bids=*/mojom::BidderWorkletBidPtr(),
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/
         {"https://url.test/:9 Uncaught ReferenceError: error is not defined."},
@@ -10003,7 +10003,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
             privateAggregation.contributeToHistogramOnEvent(
                 "reserved.win", {bucket: 234n, value: 56});
           )"),
-        /*expected_bid=*/
+        /*expected_bids=*/
         mojom::BidderWorkletBid::New(
             auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
             /*bid_currency=*/std::nullopt,
@@ -10045,7 +10045,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
             privateAggregation.contributeToHistogram(
                 {bucket: 18446744073709551616n, value: 1});
           )"),
-        /*expected_bid=*/
+        /*expected_bids=*/
         mojom::BidderWorkletBid::New(
             auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
             /*bid_currency=*/std::nullopt,
@@ -10071,7 +10071,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
             privateAggregation.enableDebugMode();
             privateAggregation.enableDebugMode();
           )"),
-        /*expected_bid=*/
+        /*expected_bids=*/
         mojom::BidderWorkletBidPtr(),
         /*expected_data_version=*/std::nullopt,
         /*expected_errors=*/
@@ -10127,7 +10127,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
               });
             }
           )"),
-        /*expected_bid=*/
+        /*expected_bids=*/
         mojom::BidderWorkletBid::New(
             auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
             /*bid_currency=*/std::nullopt,
@@ -10375,7 +10375,7 @@ TEST_F(BidderWorkletPrivateAggregationDisabledTest, GenerateBid) {
           /*extra_code=*/R"(
             privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
           )"),
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/
       {"https://url.test/:6 Uncaught ReferenceError: privateAggregation is not "
@@ -10409,7 +10409,7 @@ TEST_F(BidderWorkletTest, KAnonSimulate) {
   // Nothing returned regardless of filtering.
   RunGenerateBidWithReturnValueExpectingResult(
       "",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr());
+      /*expected_bids=*/mojom::BidderWorkletBidPtr());
 
   // Sole bid is unauthorized. The non-enforced bid is there, kanon-bid isn't.
   // Since this is simulation mode, set_priority and errors should come from the
@@ -10524,7 +10524,7 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
   // Nothing returned regardless of filtering.
   RunGenerateBidWithReturnValueExpectingResult(
       "",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr());
+      /*expected_bids=*/mojom::BidderWorkletBidPtr());
 
   // Sole bid is unauthorized. The non-enforced bid is there, kanon-bid isn't.
   // Since this is enforcement mode there is no restricted run.
@@ -10532,7 +10532,7 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
       CreateGenerateBidScript(
           R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
           kSideEffectScript),
-      /*expected_bid=*/
+      /*expected_bids=*/
       mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, R"(["ad"])", 1,
           /*bid_currency=*/std::nullopt,
@@ -11167,7 +11167,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
   // The 'render' field corresponds to an object that contains the url string.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid: 1, render: {url: "https://response.test/"}})",
-      /*expected_bid=*/mojom::BidderWorkletBid::New(
+      /*expected_bids=*/mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
           /*bid_currency=*/std::nullopt,
           /*ad_cost=*/std::nullopt,
@@ -11187,7 +11187,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
             height: "50px"
           }
         })",
-      /*expected_bid=*/mojom::BidderWorkletBid::New(
+      /*expected_bids=*/mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
           /*bid_currency=*/std::nullopt,
           /*ad_cost=*/std::nullopt,
@@ -11210,7 +11210,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
             height: "50"
           }
         })",
-      /*expected_bid=*/mojom::BidderWorkletBid::New(
+      /*expected_bids=*/mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
           /*bid_currency=*/std::nullopt,
           /*ad_cost=*/std::nullopt,
@@ -11224,7 +11224,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
   // The 'render' field corresponds to an object with an invalid field.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid: 1, render: {foo: "https://response.test/"}})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() 'render': Required field 'url' "
        "is undefined."});
@@ -11242,7 +11242,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
             foo: 42
           }
         })",
-      /*expected_bid=*/mojom::BidderWorkletBid::New(
+      /*expected_bids=*/mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
           /*bid_currency=*/std::nullopt,
           /*ad_cost=*/std::nullopt,
@@ -11256,7 +11256,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
   // The 'render' field corresponds to an empty object.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid: 1, render: {}})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() 'render': Required field 'url' "
        "is undefined."});
@@ -11264,7 +11264,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
   // The 'render' field corresponds to an object without url string field.
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: "ad", bid: 1, render: {width: "100sw", height: "50px"}})",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() 'render': Required field 'url' "
        "is undefined."});
@@ -11281,7 +11281,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
             height: 50
           }
         })",
-      /*expected_bid=*/mojom::BidderWorkletBid::New(
+      /*expected_bids=*/mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "\"ad\"", 1,
           /*bid_currency=*/std::nullopt,
           /*ad_cost=*/std::nullopt,
@@ -11303,7 +11303,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
             height: 50
           }
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"undefined:0 Uncaught TypeError: Cannot convert object to primitive "
        "value."});
@@ -11318,7 +11318,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
             width: "100sw"
           }
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() 'render': ads that specify dimensions "
        "must specify both."});
@@ -11333,7 +11333,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
             height: "100sw"
           }
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() 'render': ads that specify dimensions "
        "must specify both."});
@@ -11349,7 +11349,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
             height: "100px"
           }
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() bid has invalid size for render ad."});
 
@@ -11364,7 +11364,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
             height: "px"
           }
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() bid has invalid size for render ad."});
 
@@ -11379,7 +11379,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
             height: ""
           }
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() bid has invalid size for render ad."});
 
@@ -11394,7 +11394,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
             height: "10px"
           }
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() bid has invalid size for render ad."});
 
@@ -11409,7 +11409,7 @@ TEST_F(BidderWorkletTest, GenerateBidRenderUrlWithSize) {
             height: "10px"
           }
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() bid has invalid size for render ad."});
 }
@@ -11426,7 +11426,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             {url: "https://ad_component.test/"}
           ]
         })",
-      /*expected_bid=*/mojom::BidderWorkletBid::New(
+      /*expected_bids=*/mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "0", 1,
           /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
           blink::AdDescriptor(GURL("https://response.test/")),
@@ -11449,7 +11449,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             }
           ]
         })",
-      /*expected_bid=*/mojom::BidderWorkletBid::New(
+      /*expected_bids=*/mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "0", 1,
           /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
           blink::AdDescriptor(GURL("https://response.test/")),
@@ -11474,7 +11474,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             }
           ]
         })",
-      /*expected_bid=*/mojom::BidderWorkletBid::New(
+      /*expected_bids=*/mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "0", 1,
           /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
           blink::AdDescriptor(GURL("https://response.test/")),
@@ -11501,7 +11501,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             }
           ]
         })",
-      /*expected_bid=*/mojom::BidderWorkletBid::New(
+      /*expected_bids=*/mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "0", 1,
           /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
           blink::AdDescriptor(GURL("https://response.test/")),
@@ -11531,7 +11531,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             "https://ad_component.test/"
           ]
         })",
-      /*expected_bid=*/mojom::BidderWorkletBid::New(
+      /*expected_bids=*/mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "0", 1,
           /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
           blink::AdDescriptor(GURL("https://response.test/")),
@@ -11557,7 +11557,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             }
           ]
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() adComponents entry: Required field "
        "'url' is undefined."});
@@ -11578,7 +11578,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             }
           ]
         })",
-      /*expected_bid=*/mojom::BidderWorkletBid::New(
+      /*expected_bids=*/mojom::BidderWorkletBid::New(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon, "0", 1,
           /*bid_currency=*/std::nullopt, /*ad_cost=*/std::nullopt,
           blink::AdDescriptor(GURL("https://response.test/")),
@@ -11598,7 +11598,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             {}
           ]
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() adComponents entry: Required field "
        "'url' is undefined."});
@@ -11617,7 +11617,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             }
           ]
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() adComponents entry: Required field "
        "'url' is undefined."});
@@ -11636,7 +11636,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             }
           ]
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/:14 Uncaught oh no."});
 
@@ -11653,7 +11653,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             }
           ]
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() adComponents entry: ads that specify "
        "dimensions must specify both."});
@@ -11671,7 +11671,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             }
           ]
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() adComponents entry: ads that specify "
        "dimensions must specify both."});
@@ -11690,7 +11690,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             }
           ]
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() bid adComponents have invalid size for "
        "ad component."});
@@ -11710,7 +11710,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             }
           ]
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() bid adComponents have invalid size for "
        "ad component."});
@@ -11729,7 +11729,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             }
           ]
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() bid adComponents have invalid size for "
        "ad component."});
@@ -11748,7 +11748,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             }
           ]
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() bid adComponents have invalid size for "
        "ad component."});
@@ -11767,7 +11767,7 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponentsWithSize) {
             }
           ]
         })",
-      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt, /*expected_errors=*/
       {"https://url.test/ generateBid() bid adComponents have invalid size for "
        "ad component."});
