@@ -4725,6 +4725,9 @@ IN_PROC_BROWSER_TEST_P(WebViewPdfTest, ContextMenuNavigationInWebView) {
 
   content::RenderFrameHost* web_view_rfh2 = guest_rfh_list2[0];
   EXPECT_EQ(GURL(url::kAboutBlankURL), web_view_rfh2->GetLastCommittedURL());
+
+  // The following should not crash. See https://crbug.com/331796663
+  GetFirstAppWindowWebContents()->GetFocusedFrame();
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewPdfTest, Shim_TestDialogInPdf) {
