@@ -585,22 +585,23 @@ void ExtensionRegistrar::MaybeSpinUpLazyContext(const Extension* extension,
   // based extensions.
   // We spin up extensions with the webRequest permission so their
   // listeners are reconstructed on load.
-  bool has_web_request_permission =
+  // Event page-based extension cannot have the webRequest permission, but
+  // a bug allowed them to specify it in optional permissions, so filter
+  // out those extensions. See crbug.com/40912377.
+  bool needs_spinup_for_web_request =
       extension->permissions_data()->HasAPIPermission(
-          mojom::APIPermissionID::kWebRequest);
-  // Event page-based extension cannot have the webRequest permission.
-  DCHECK(!has_web_request_permission ||
-         BackgroundInfo::IsServiceWorkerBased(extension));
+          mojom::APIPermissionID::kWebRequest) &&
+      BackgroundInfo::IsServiceWorkerBased(extension);
 
   // If there aren't any special cases, we're done.
   if (!has_orphaned_dev_tools && !is_component_extension &&
-      !has_web_request_permission) {
+      !needs_spinup_for_web_request) {
     return;
   }
 
   // If the extension's not being reloaded (|is_newly_added| = true),
   // only wake it up if it has the webRequest permission.
-  if (is_newly_added && !has_web_request_permission)
+  if (is_newly_added && !needs_spinup_for_web_request)
     return;
 
   // Wake up the extension by posting a dummy task. In the case of a service
