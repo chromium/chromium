@@ -3413,7 +3413,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToPhotos.ContextMenu"
-    enum="IOSSaveToPhotosContextMenuType" expires_after="2024-08-18">
+    enum="IOSSaveToPhotosContextMenuType" expires_after="2024-10-20">
   <owner>qpubert@google.com</owner>
   <owner>djean@chromium.org</owner>
   <summary>
