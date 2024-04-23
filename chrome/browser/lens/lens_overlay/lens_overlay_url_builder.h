@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_URL_BUILDER_H_
 #define CHROME_BROWSER_LENS_LENS_OVERLAY_LENS_OVERLAY_URL_BUILDER_H_
 
+#include <optional>
 #include <string>
 
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
