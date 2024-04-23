@@ -11,6 +11,7 @@
 
 permission {
   background-color:#efefef;
+  box-sizing: border-box !important;
   border-radius: 3px;
   color: #000000;
   display: inline-block;
@@ -40,7 +41,6 @@ permission::-internal-permission-text {
   min-height: inherit;
   outline: none;
   user-select:none;
-  vertical-align: inherit;
   white-space:nowrap;
   width: fit-content;
   word-wrap: normal;

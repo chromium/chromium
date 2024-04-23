@@ -4178,6 +4178,7 @@
         resolver: "bottom",
       },
       supports_incremental_style: true,
+      valid_for_permission_element: true,
     },
     {
       name: "padding-left",
@@ -4197,6 +4198,7 @@
         resolver: "left",
       },
       supports_incremental_style: true,
+      valid_for_permission_element: true,
     },
     {
       name: "padding-right",
@@ -4216,6 +4218,7 @@
         resolver: "right",
       },
       supports_incremental_style: true,
+      valid_for_permission_element: true,
     },
     {
       name: "padding-top",
@@ -4235,6 +4238,7 @@
         resolver: "top",
       },
       supports_incremental_style: true,
+      valid_for_permission_element: true,
     },
     {
       name: "page",
@@ -5697,7 +5701,6 @@
       keywords: ["baseline", "sub", "super", "text-top", "text-bottom", "middle"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
-      valid_for_permission_element: true,
     },
     {
       name: "view-timeline-axis",

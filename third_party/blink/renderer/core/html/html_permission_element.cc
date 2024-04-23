@@ -70,6 +70,8 @@ constexpr float kMaximumLetterSpacingToFontSizeRatio = 0.2;
 constexpr float kMinimumLetterSpacingToFontSizeRatio = -0.05;
 constexpr int kMaxLengthToFontSizeRatio = 3;
 constexpr int kMinLengthToFontSizeRatio = 1;
+constexpr int kMaxVerticalPaddingToFontSizeRatio = 1;
+constexpr int kMaxHorizontalPaddingToFontSizeRatio = 5;
 
 PermissionDescriptorPtr CreatePermissionDescriptor(PermissionName name) {
   auto descriptor = PermissionDescriptor::New();
@@ -492,6 +494,48 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
       AdjustedBoundedLength(builder.MaxWidth(), kMaxLengthToFontSizeRatio,
                             /*is_lower_bound=*/false,
                             /*should_multiply_by_content_size=*/true));
+
+  // If width is set to auto and there is left padding specified, we will
+  // respect the padding (up to a certain maximum), otherwise the padding has no
+  // effect. We treat height and top/bottom padding similarly.
+  if (builder.Width().IsAuto() && builder.PaddingLeft().IsSpecified() &&
+      !builder.PaddingLeft().IsZero()) {
+    if (builder.PaddingRight().IsSpecified() &&
+        !builder.PaddingRight().IsZero() &&
+        builder.PaddingLeft() != builder.PaddingRight()) {
+      AddConsoleError(
+          "The permission element does not support 'padding-right'. "
+          "'padding-right' is always set to be identical to 'padding-left'.");
+    }
+
+    builder.SetPaddingLeft(AdjustedBoundedLength(
+        builder.PaddingLeft(),
+        builder.FontSize() * kMaxHorizontalPaddingToFontSizeRatio,
+        /*is_lower_bound=*/false, /*should_multiply_by_content_size=*/false));
+    builder.SetPaddingRight(builder.PaddingLeft());
+  } else {
+    builder.ResetPaddingLeft();
+    builder.ResetPaddingRight();
+  }
+
+  if (builder.Height().IsAuto() && builder.PaddingTop().IsSpecified() &&
+      !builder.PaddingTop().IsZero()) {
+    if (builder.PaddingBottom().IsSpecified() &&
+        !builder.PaddingBottom().IsZero() &&
+        builder.PaddingTop() != builder.PaddingBottom()) {
+      AddConsoleError(
+          "The permission element does not support 'padding-bottom'. "
+          "'padding-bottom' is always set to be identical to 'padding-top'.");
+    }
+    builder.SetPaddingTop(AdjustedBoundedLength(
+        builder.PaddingTop(),
+        builder.FontSize() * kMaxVerticalPaddingToFontSizeRatio,
+        /*is_lower_bound=*/false, /*should_multiply_by_content_size=*/false));
+    builder.SetPaddingBottom(builder.PaddingTop());
+  } else {
+    builder.ResetPaddingTop();
+    builder.ResetPaddingBottom();
+  }
 }
 
 void HTMLPermissionElement::DidRecalcStyle(const StyleRecalcChange change) {
