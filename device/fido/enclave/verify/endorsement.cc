@@ -4,4 +4,18 @@
 
 #include "device/fido/enclave/verify/endorsement.h"
 
-namespace device::enclave {}  // namespace device::enclave
+#include "base/time/time.h"
+#include "device/fido/enclave/verify/claim.h"
+
+namespace device::enclave {
+
+bool VerifyEndorsementStatement(base::Time now,
+                                const EndorsementStatement& statement) {
+  if (!ValidateEndorsement(statement) ||
+      !VerifyValidityDuration(now, statement)) {
+    return false;
+  }
+  return true;
+}
+
+}  // namespace device::enclave

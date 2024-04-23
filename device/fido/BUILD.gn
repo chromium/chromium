@@ -470,6 +470,8 @@ source_set("test_support") {
 
   if (!is_android) {
     sources += [
+      "enclave/verify/test_utils.cc",
+      "enclave/verify/test_utils.h",
       "multiple_virtual_fido_device_factory.cc",
       "multiple_virtual_fido_device_factory.h",
       "virtual_fido_device_discovery.cc",

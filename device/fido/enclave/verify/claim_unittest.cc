@@ -5,34 +5,10 @@
 #include "device/fido/enclave/verify/claim.h"
 
 #include "base/time/time.h"
+#include "device/fido/enclave/verify/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device::enclave {
-
-EndorsementStatement MakeEndorsementStatement(
-    std::string_view statement_type,
-    std::string_view predicate_type,
-    base::Time issued_on,
-    base::Time not_before,
-    base::Time not_after,
-    std::string_view endorsement_type = kEndorsementV2) {
-  EndorsementStatement endorsement_statement;
-  endorsement_statement.predicate.issued_on = issued_on;
-  endorsement_statement.type = statement_type;
-  endorsement_statement.predicate_type = predicate_type;
-  ClaimValidity claim_validity;
-  claim_validity.not_after = not_after;
-  claim_validity.not_before = not_before;
-  endorsement_statement.predicate.validity = claim_validity;
-  endorsement_statement.predicate.claim_type = endorsement_type;
-  return endorsement_statement;
-}
-
-EndorsementStatement MakeValidEndorsementStatement() {
-  return MakeEndorsementStatement(
-      kStatementV1, kPredicateV2, base::Time::FromTimeT(10),
-      base::Time::FromTimeT(15), base::Time::FromTimeT(20));
-}
 
 TEST(ClaimTest, ValidateClaim_WithAllValidFields_ReturnsTrue) {
   EXPECT_TRUE(ValidateClaim(MakeValidEndorsementStatement()));
@@ -97,7 +73,8 @@ TEST(ClaimTest,
       VerifyValidityDuration(base::Time::Now(), endorsement_statement));
 }
 
-TEST(ClaimTest, VerifyValidityDuration_ValidityNotBeforeHasNotPassed_ReturnsFalse) {
+TEST(ClaimTest,
+     VerifyValidityDuration_ValidityNotBeforeHasNotPassed_ReturnsFalse) {
   EXPECT_FALSE(VerifyValidityDuration(base::Time::FromTimeT(10),
                                       MakeValidEndorsementStatement()));
 }

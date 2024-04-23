@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/time/time.h"
 #include "device/fido/enclave/verify/claim.h"
@@ -15,9 +16,9 @@
 
 namespace device::enclave {
 
-// TODO(livseibert): Change return type to StatusOr<MatchResult> when util.h is
-// ready.
-// Compares the digest contained in the endorsement against the given one.
+// TODO(livseibert): Change return type to std::optional<MatchResult> when
+// util.h is ready. Compares the digest contained in the endorsement against the
+// given one.
 bool VerifyBinaryDigest(base::span<const uint8_t> endorsement,
                         const Hash& expected);
 
@@ -30,8 +31,9 @@ bool VerifyBinaryEndorsement(base::Time now,
                              base::span<const uint8_t> rekor_public_key);
 
 // Verifies endorsement against the given reference values.
-bool VerifyEndorsementStatement(base::Time now,
-                                const EndorsementStatement& statement);
+bool COMPONENT_EXPORT(DEVICE_FIDO)
+    VerifyEndorsementStatement(base::Time now,
+                               const EndorsementStatement& statement);
 
 // Verifies that the endorser public key coincides with the one contained in
 // the attestation.
