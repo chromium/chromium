@@ -10,7 +10,8 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything_too
 import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/app.js';
-import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_language_util.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
@@ -51,6 +52,12 @@ suite('LanguageChanged', () => {
     // Bypass Typescript compiler to allow us to set a private property
     // @ts-ignore
     return app.selectedVoice;
+  }
+
+  function voicePackInstallStatus(): {[language: string]: VoicePackStatus} {
+    // Bypass Typescript compiler to allow us to set a private property
+    // @ts-ignore
+    return app.voicePackInstallStatus;
   }
 
   setup(() => {
@@ -124,5 +131,24 @@ suite('LanguageChanged', () => {
             assertEquals(selectedVoice(), firstVoiceWithLang2);
           });
     });
+  });
+
+  test('updates voice pack status to none if unsupported', () => {
+    chrome.readingMode.baseLanguageForSpeech = 'zh';
+    let sentRequest = false;
+    chrome.readingMode.sendGetVoicePackInfoRequest = () => {
+      sentRequest = true;
+    };
+
+    app.languageChanged();
+
+    // Use this check to ensure this stays updated if the supported languages
+    // changes.
+    assertFalse(PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES.has(
+        chrome.readingMode.baseLanguageForSpeech));
+    assertFalse(sentRequest);
+    assertEquals(
+        voicePackInstallStatus()[chrome.readingMode.baseLanguageForSpeech],
+        VoicePackStatus.NONE);
   });
 });

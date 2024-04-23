@@ -157,7 +157,7 @@ function extractBaseLang(langOrLocale: string): string {
 
 // These are from the Pack Manager. Values should be kept in sync with the code
 // link above.
-const PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES = new Set([
+export const PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES = new Set([
   'bn',    'cs', 'da',  'de', 'el', 'en-au', 'en-gb', 'en-us', 'es-es',
   'es-us', 'fi', 'fil', 'fr', 'hi', 'hu',    'id',    'it',    'ja',
   'km',    'ko', 'nb',  'ne', 'nl', 'pl',    'pt-br', 'pt-pt', 'si',

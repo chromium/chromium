@@ -1703,9 +1703,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const langCodeForVoicePackManager =
         convertLangOrLocaleForVoicePackManager(langOrLocale);
 
-    if (langCodeForVoicePackManager &&
-        this.voicePackInstallStatus[langCodeForVoicePackManager] !==
-            VoicePackStatus.INSTALLED) {
+    if (!langCodeForVoicePackManager) {
+      this.voicePackInstallStatus = {
+        ...this.voicePackInstallStatus,
+        [langOrLocale]: VoicePackStatus.NONE,
+      };
+      return;
+    }
+
+    if (this.voicePackInstallStatus[langCodeForVoicePackManager] !==
+        VoicePackStatus.INSTALLED) {
       this.languagesForVoiceDownloads.add(langCodeForVoicePackManager);
       // Inquire if the voice pack is downloaded. If not, it'll trigger a
       // download when we get the response in updateVoicePackStatus()
