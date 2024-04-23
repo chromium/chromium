@@ -81,16 +81,6 @@ bool V8DOMWrapper::IsWrapper(v8::Isolate* isolate, v8::Local<v8::Value> value) {
     return false;
   }
 
-  const int internal_field_count = object->InternalFieldCount();
-  // If it has internal fields set, it's not our wrapper.
-  for (int i = 0; i < internal_field_count; ++i) {
-    // ArrayBuffers always have internal fields, so we need to check whether
-    // internal fields are actually set.
-    if (object->GetAlignedPointerFromInternalField(isolate, i)) {
-      return false;
-    }
-  }
-
   const WrapperTypeInfo* untrusted_wrapper_type_info =
       ToWrapperTypeInfo(object);
   V8PerIsolateData* per_isolate_data = V8PerIsolateData::From(isolate);
