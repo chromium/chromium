@@ -11724,6 +11724,7 @@
                     },
                     "enable_features": [
                         "MinorModeRestrictionsForHistorySyncOptIn",
+                        "PrefetchSystemCapabilitiesOnFirstRun",
                         "UseSystemCapabilitiesForMinorModeRestrictions"
                     ]
                 }
