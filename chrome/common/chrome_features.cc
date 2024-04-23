@@ -827,7 +827,7 @@ BASE_FEATURE(kIncognitoNtpRevamp,
 // Enables automatic updates of Isolated Web Apps.
 BASE_FEATURE(kIsolatedWebAppAutomaticUpdates,
              "IsolatedWebAppAutomaticUpdates",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Enables Isolated Web App Developer Mode, which allows developers to
