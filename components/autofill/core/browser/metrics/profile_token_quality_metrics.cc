@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_type_utils.h"
@@ -148,8 +149,8 @@ void LogObservationCountBeforeSubmissionMetric(const FormStructure& form,
       // The field was not autofilled.
       continue;
     }
-    if (AutofillProfile* profile =
-            pdm.GetProfileByGUID(*field->autofill_source_profile_guid())) {
+    if (AutofillProfile* profile = pdm.address_data_manager().GetProfileByGUID(
+            *field->autofill_source_profile_guid())) {
       profiles_used.insert(profile);
       FieldType field_type = field->Type().GetStorableType();
       base::UmaHistogramExactLinear(

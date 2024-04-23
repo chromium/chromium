@@ -13,6 +13,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/uuid.h"
 #import "base/values.h"
+#import "components/autofill/core/browser/address_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -138,7 +139,7 @@ NSError* PrepareAutofillProfileWithValues(
     personal_data_manager->RemoveByGUID(local_card->guid());
   }
   for (const autofill::AutofillProfile* local_profile :
-       personal_data_manager->GetProfilesFromSource(
+       personal_data_manager->address_data_manager().GetProfilesFromSource(
            autofill::AutofillProfile::Source::kLocalOrSyncable)) {
     personal_data_manager->RemoveByGUID(local_profile->guid());
   }

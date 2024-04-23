@@ -17,6 +17,7 @@
 #include "base/strings/levenshtein_distance.h"
 #include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -194,8 +195,8 @@ void ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
       // for the profile that was used to autofill the field.
       continue;
     }
-    AutofillProfile* profile =
-        pdm.GetProfileByGUID(*field->autofill_source_profile_guid());
+    AutofillProfile* profile = pdm.address_data_manager().GetProfileByGUID(
+        *field->autofill_source_profile_guid());
     if (profile && profile->token_quality().AddObservationsForFilledForm(
                        form_structure, form_data, pdm)) {
       pdm.UpdateProfile(*profile);

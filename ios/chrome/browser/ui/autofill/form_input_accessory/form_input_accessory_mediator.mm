@@ -12,6 +12,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/address_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
@@ -254,8 +255,9 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
       consumer.creditCardButtonHidden =
           personalDataManager->GetCreditCards().empty();
 
-      consumer.addressButtonHidden =
-          personalDataManager->GetProfilesToSuggest().empty();
+      consumer.addressButtonHidden = personalDataManager->address_data_manager()
+                                         .GetProfilesToSuggest()
+                                         .empty();
     } else {
       consumer.creditCardButtonHidden = YES;
       consumer.addressButtonHidden = YES;
@@ -826,7 +828,9 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
       _personalDataManager->GetCreditCards().empty();
 
   self.consumer.addressButtonHidden =
-      _personalDataManager->GetProfilesToSuggest().empty();
+      _personalDataManager->address_data_manager()
+          .GetProfilesToSuggest()
+          .empty();
 }
 
 #pragma mark - Tests

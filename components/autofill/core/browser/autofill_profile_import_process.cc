@@ -6,6 +6,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -304,7 +305,8 @@ void ProfileImportProcess::ApplyImport() {
   // Confirming an import candidate corresponds to either a new/update profile
   // or a migration prompt.
   if (is_migration()) {
-    personal_data_manager_->MigrateProfileToAccount(confirmed_profile);
+    personal_data_manager_->address_data_manager().MigrateProfileToAccount(
+        confirmed_profile);
   } else if (is_confirmable_update()) {
     personal_data_manager_->UpdateProfile(confirmed_profile);
   } else {

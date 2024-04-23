@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_view.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
@@ -553,8 +554,9 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
     return true;
   }
 
-  if (const AutofillProfile* profile = pdm->GetProfileByGUID(
-          absl::get<Suggestion::Guid>(backend_id).value())) {
+  if (const AutofillProfile* profile =
+          pdm->address_data_manager().GetProfileByGUID(
+              absl::get<Suggestion::Guid>(backend_id).value())) {
     if (title) {
       std::u16string street_address = profile->GetRawInfo(ADDRESS_HOME_CITY);
       if (!street_address.empty()) {

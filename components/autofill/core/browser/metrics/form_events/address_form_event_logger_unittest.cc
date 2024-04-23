@@ -4,6 +4,7 @@
 #include "components/autofill/core/browser/metrics/form_events/address_form_event_logger.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -52,7 +53,8 @@ class CategoryResolvedKeyMetricsTest
   // profiles stored in the PDM can be used for filling.
   void FillFormWithProfile(const FormData& form,
                            const AutofillProfile& profile) {
-    ASSERT_TRUE(personal_data().GetProfileByGUID(profile.guid()));
+    ASSERT_TRUE(personal_data().address_data_manager().GetProfileByGUID(
+        profile.guid()));
     autofill_manager().OnAskForValuesToFillTest(form, form.fields.front());
     autofill_manager().FillOrPreviewProfileForm(
         mojom::ActionPersistence::kFill, form, form.fields.front(), profile,

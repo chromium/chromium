@@ -12,6 +12,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/autofill/core/browser/address_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/profile_requirement_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
@@ -179,7 +180,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewModel* model = self.tableViewModel;
   const std::vector<autofill::AutofillProfile*> autofillProfiles =
-      _personalDataManager->GetProfilesForSettings();
+      _personalDataManager->address_data_manager().GetProfilesForSettings();
   if (!autofillProfiles.empty()) {
     [model addSectionWithIdentifier:SectionIdentifierProfiles];
     [model setHeader:[self profileSectionHeader]
@@ -268,8 +269,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (BOOL)localProfilesExist {
-  return !_settingsAreDismissed &&
-         !_personalDataManager->GetProfilesForSettings().empty();
+  return !_settingsAreDismissed && !_personalDataManager->address_data_manager()
+                                        .GetProfilesForSettings()
+                                        .empty();
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -364,7 +366,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.tableViewModel itemAtIndexPath:indexPath]);
   [self
       showAddressProfileDetailsPageForProfile:_personalDataManager
-                                                  ->GetProfileByGUID(item.GUID)
+                                                  ->address_data_manager()
+                                                  .GetProfileByGUID(item.GUID)
                    withMigrateToAccountButton:item.showMigrateToAccountButton];
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }

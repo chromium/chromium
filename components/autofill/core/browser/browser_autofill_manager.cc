@@ -52,6 +52,7 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -2071,7 +2072,10 @@ AutofillProfile* BrowserAutofillManager::GetProfile(
     Suggestion::BackendId unique_id) {
   std::string guid = absl::get<Suggestion::Guid>(unique_id).value();
   if (base::Uuid::ParseCaseInsensitive(guid).is_valid()) {
-    return client().GetPersonalDataManager()->GetProfileByGUID(guid);
+    return client()
+        .GetPersonalDataManager()
+        ->address_data_manager()
+        .GetProfileByGUID(guid);
   }
   return nullptr;
 }

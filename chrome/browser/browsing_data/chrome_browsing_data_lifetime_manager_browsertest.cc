@@ -28,6 +28,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -510,13 +511,16 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
   autofill::AddTestProfile(GetProfile(), profile);
   auto* personal_data_manager =
       autofill::PersonalDataManagerFactory::GetForProfile(GetProfile());
-  EXPECT_EQ(
-      profile.Compare(*personal_data_manager->GetProfileByGUID(profile.guid())),
-      0);
+  EXPECT_EQ(profile.Compare(
+                *personal_data_manager->address_data_manager().GetProfileByGUID(
+                    profile.guid())),
+            0);
 
   ApplyBrowsingDataLifetimeDeletion(kPref);
 
-  EXPECT_EQ(nullptr, personal_data_manager->GetProfileByGUID(profile.guid()));
+  EXPECT_EQ(nullptr,
+            personal_data_manager->address_data_manager().GetProfileByGUID(
+                profile.guid()));
 }
 #endif
 

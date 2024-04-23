@@ -24,6 +24,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -189,7 +190,8 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
   const bool use_existing_profile = !guid.empty();
   const autofill::AutofillProfile* existing_profile = nullptr;
   if (use_existing_profile) {
-    existing_profile = personal_data->GetProfileByGUID(guid);
+    existing_profile =
+        personal_data->address_data_manager().GetProfileByGUID(guid);
     if (!existing_profile)
       return RespondNow(Error(kErrorDataUnavailable));
   }

@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/profile_requirement_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -127,7 +128,8 @@ void MultiStepImportMerger::OnPersonalDataChanged(
     // Incomplete profiles are not imported yet, so they cannot have changed.
     if (it->is_imported) {
       AutofillProfile* stored_profile =
-          personal_data_manager.GetProfileByGUID(it->profile.guid());
+          personal_data_manager.address_data_manager().GetProfileByGUID(
+              it->profile.guid());
       if (!stored_profile) {
         // The profile was deleted, so we shouldn't offer importing it again.
         multistep_candidates_.erase(it, next);

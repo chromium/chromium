@@ -22,6 +22,7 @@
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -311,7 +312,8 @@ void UpdateProfile(int profile,
                    const std::u16string& value,
                    autofill::VerificationStatus status) {
   PersonalDataManager* pdm = GetPersonalDataManager(profile);
-  AutofillProfile* pdm_profile = pdm->GetProfileByGUID(guid);
+  AutofillProfile* pdm_profile =
+      pdm->address_data_manager().GetProfileByGUID(guid);
   ASSERT_TRUE(pdm_profile);
   // `pdm_profile` points to the PDM's internal copy of the data. It shouldn't
   // be modified directly.

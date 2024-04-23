@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/ref_counted.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/address_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
@@ -70,7 +71,7 @@
     _personalDataManager->AddObserver(_personalDataManagerObserver.get());
 
     std::vector<autofill::AutofillProfile*> profiles =
-        _personalDataManager->GetProfilesToSuggest();
+        _personalDataManager->address_data_manager().GetProfilesToSuggest();
 
     _addressMediator =
         [[ManualFillAddressMediator alloc] initWithProfiles:profiles];
@@ -106,7 +107,7 @@
 
 - (void)onPersonalDataChanged {
   std::vector<autofill::AutofillProfile*> profiles =
-      _personalDataManager->GetProfilesToSuggest();
+      _personalDataManager->address_data_manager().GetProfilesToSuggest();
 
   [self.addressMediator reloadWithProfiles:profiles];
 }

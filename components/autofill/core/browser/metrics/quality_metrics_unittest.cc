@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
@@ -893,7 +894,7 @@ TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
 // metric is emitted correctly.
 TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
   const AutofillProfile& profile =
-      *personal_data().GetProfileByGUID(kTestProfileId);
+      *personal_data().address_data_manager().GetProfileByGUID(kTestProfileId);
 
   // Create a form and fill the `name_field` and `country_field` with values
   // from the `profile`, ensuring that they have a possible type. The

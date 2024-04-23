@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_compose_delegate.h"
@@ -752,8 +753,10 @@ base::WeakPtr<AutofillExternalDelegate> AutofillExternalDelegate::GetWeakPtr() {
 
 void AutofillExternalDelegate::ShowEditAddressProfileDialog(
     const std::string& guid) {
-  AutofillProfile* profile =
-      manager_->client().GetPersonalDataManager()->GetProfileByGUID(guid);
+  AutofillProfile* profile = manager_->client()
+                                 .GetPersonalDataManager()
+                                 ->address_data_manager()
+                                 .GetProfileByGUID(guid);
   if (profile) {
     manager_->client().ShowEditAddressProfileDialog(
         *profile,
@@ -764,8 +767,10 @@ void AutofillExternalDelegate::ShowEditAddressProfileDialog(
 
 void AutofillExternalDelegate::ShowDeleteAddressProfileDialog(
     const std::string& guid) {
-  AutofillProfile* profile =
-      manager_->client().GetPersonalDataManager()->GetProfileByGUID(guid);
+  AutofillProfile* profile = manager_->client()
+                                 .GetPersonalDataManager()
+                                 ->address_data_manager()
+                                 .GetProfileByGUID(guid);
   if (profile) {
     manager_->client().ShowDeleteAddressProfileDialog(
         *profile,
@@ -831,8 +836,10 @@ void AutofillExternalDelegate::PreviewFieldByFieldFillingSuggestion(
             PopupItemId::kCreditCardFieldByFieldFilling);
   CHECK(suggestion.field_by_field_filling_type_used);
   const auto guid = suggestion.GetBackendId<Suggestion::Guid>().value();
-  if (const AutofillProfile* profile =
-          manager_->client().GetPersonalDataManager()->GetProfileByGUID(guid)) {
+  if (const AutofillProfile* profile = manager_->client()
+                                           .GetPersonalDataManager()
+                                           ->address_data_manager()
+                                           .GetProfileByGUID(guid)) {
     PreviewAddressFieldByFieldFillingSuggestion(*profile, suggestion);
   } else if (manager_->client().GetPersonalDataManager()->GetCreditCardByGUID(
                  guid)) {
@@ -848,8 +855,10 @@ void AutofillExternalDelegate::FillFieldByFieldFillingSuggestion(
             PopupItemId::kCreditCardFieldByFieldFilling);
   CHECK(suggestion.field_by_field_filling_type_used);
   const auto guid = suggestion.GetBackendId<Suggestion::Guid>().value();
-  if (const AutofillProfile* profile =
-          manager_->client().GetPersonalDataManager()->GetProfileByGUID(guid)) {
+  if (const AutofillProfile* profile = manager_->client()
+                                           .GetPersonalDataManager()
+                                           ->address_data_manager()
+                                           .GetProfileByGUID(guid)) {
     FillAddressFieldByFieldFillingSuggestion(*profile, suggestion, position);
   } else if (const CreditCard* credit_card = manager_->client()
                                                  .GetPersonalDataManager()
@@ -1017,7 +1026,7 @@ void AutofillExternalDelegate::FillAutofillFormData(
           ? GetTestAddressByGUID(
                 manager_->client().GetTestAddresses(),
                 absl::get<Suggestion::Guid>(backend_id).value())
-          : pdm->GetProfileByGUID(
+          : pdm->address_data_manager().GetProfileByGUID(
                 absl::get<Suggestion::Guid>(backend_id).value());
   if (profile) {
     manager_->FillOrPreviewProfileForm(action_persistence, query_form_,

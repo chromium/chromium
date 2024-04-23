@@ -32,6 +32,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
@@ -807,7 +808,7 @@ class BrowserAutofillManagerTest : public testing::Test {
         form, field, {},
         AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown);
     if (const AutofillProfile* profile =
-            personal_data().GetProfileByGUID(guid)) {
+            personal_data().address_data_manager().GetProfileByGUID(guid)) {
       browser_autofill_manager_->FillOrPreviewProfileForm(
           mojom::ActionPersistence::kFill, form, field, *profile,
           trigger_details);
@@ -2076,7 +2077,7 @@ TEST_P(SuggestionMatchingTest, GetProfileSuggestions_WithDuplicates) {
 
   // Add a duplicate profile.
   AutofillProfile duplicate_profile =
-      *personal_data().GetProfileByGUID(MakeGuid(1));
+      *personal_data().address_data_manager().GetProfileByGUID(MakeGuid(1));
   personal_data().AddProfile(duplicate_profile);
 
   GetAutofillSuggestions(form, form.fields[0]);
@@ -3531,7 +3532,7 @@ TEST_F(BrowserAutofillManagerTest, FormSubmitted_FormDataImporter) {
       FillAutofillFormDataAndGetResults(form, form.fields[0], MakeGuid(1));
   ExpectFilledAddressFormElvis(response_data, false);
   AutofillProfile filled_profile =
-      *personal_data().GetProfileByGUID(MakeGuid(1));
+      *personal_data().address_data_manager().GetProfileByGUID(MakeGuid(1));
 
   // Remove the filled profile and simulate form submission. Since the
   // `personal_data()`'s auto accept imports for testing is enabled, expect
@@ -5051,10 +5052,12 @@ TEST_F(BrowserAutofillManagerTest, FormSubmittedWithDefaultValues) {
   // Simulate form submission. The profile should not be updated with the
   // meaningless default value of the street address field.
   personal_data()
+      .address_data_manager()
       .GetProfileByGUID(kElvisProfileGuid)
       ->ClearFields({ADDRESS_HOME_STREET_ADDRESS});
   FormSubmitted(response_data);
   EXPECT_FALSE(personal_data()
+                   .address_data_manager()
                    .GetProfileByGUID(kElvisProfileGuid)
                    ->HasInfo(ADDRESS_HOME_STREET_ADDRESS));
 }
@@ -5079,11 +5082,13 @@ void DoTestFormSubmittedControlWithDefaultValue(
       form, form.fields[3], kElvisProfileGuid);
 
   test->personal_data()
+      .address_data_manager()
       .GetProfileByGUID(kElvisProfileGuid)
       ->ClearFields({ADDRESS_HOME_STATE});
   test->FormSubmitted(response_data);
   // Expect that the profile was updated with the value of the state select.
   EXPECT_EQ(state_field->value(), test->personal_data()
+                                      .address_data_manager()
                                       .GetProfileByGUID(kElvisProfileGuid)
                                       ->GetRawInfo(ADDRESS_HOME_STATE));
 }
@@ -5129,11 +5134,13 @@ void DoTestFormSubmittedNonAddressControlWithDefaultValue(
 
   // Value of country code field should have been saved.
   test->personal_data()
+      .address_data_manager()
       .GetProfileByGUID(kElvisProfileGuid)
       ->ClearFields({PHONE_HOME_WHOLE_NUMBER});
   test->FormSubmitted(response_data);
   std::u16string formatted_phone_number =
       test->personal_data()
+          .address_data_manager()
           .GetProfileByGUID(kElvisProfileGuid)
           ->GetRawInfo(PHONE_HOME_WHOLE_NUMBER);
   std::u16string phone_number_numbers_only;
@@ -5215,7 +5222,8 @@ TEST_F(BrowserAutofillManagerTest, RemoveProfile) {
   EXPECT_TRUE(browser_autofill_manager_->RemoveAutofillProfileOrCreditCard(
       Suggestion::Guid(profile.guid())));
 
-  EXPECT_FALSE(personal_data().GetProfileByGUID(profile.guid()));
+  EXPECT_FALSE(
+      personal_data().address_data_manager().GetProfileByGUID(profile.guid()));
 }
 
 TEST_F(BrowserAutofillManagerTest, RemoveLocalCreditCard) {
@@ -7617,7 +7625,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_UpdateProfile) {
   profile.set_use_count(1u);
   personal_data().AddProfile(profile);
   AutofillProfile* pdm_profile =
-      personal_data().GetProfileByGUID(profile.guid());
+      personal_data().address_data_manager().GetProfileByGUID(profile.guid());
   ASSERT_TRUE(pdm_profile);
 
   task_environment_.FastForwardBy(base::Hours(1));
@@ -7639,7 +7647,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
   profile.set_source_for_testing(AutofillProfile::Source::kAccount);
   personal_data().AddProfile(profile);
   AutofillProfile* pdm_profile =
-      personal_data().GetProfileByGUID(profile.guid());
+      personal_data().address_data_manager().GetProfileByGUID(profile.guid());
   ASSERT_TRUE(pdm_profile);
   pdm_profile->token_quality().disable_randomization_for_testing();
 
@@ -7662,7 +7670,8 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
   // Submit the form and expect observations for all of the form's types. This
   // updates the `profile` in `personal_data()`, invalidating the pointer.
   FormSubmitted(filled_form);
-  pdm_profile = personal_data().GetProfileByGUID(profile.guid());
+  pdm_profile =
+      personal_data().address_data_manager().GetProfileByGUID(profile.guid());
   ASSERT_TRUE(pdm_profile);
   EXPECT_TRUE(base::ranges::none_of(
       *form_structure,

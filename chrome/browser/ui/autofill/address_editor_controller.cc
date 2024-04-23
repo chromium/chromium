@@ -14,6 +14,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -39,7 +40,8 @@ AddressEditorController::AddressEditorController(
     filter = base::BindRepeating(
         [](const PersonalDataManager* personal_data,
            const std::string& country) {
-          return personal_data->IsCountryEligibleForAccountStorage(country);
+          return personal_data->address_data_manager()
+              .IsCountryEligibleForAccountStorage(country);
         },
         &pdm_.get());
   }

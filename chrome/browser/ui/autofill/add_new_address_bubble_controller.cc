@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/autofill/add_new_address_bubble_controller.h"
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -33,7 +35,8 @@ bool IsEligibleForAccountStorage(content::WebContents* web_contents,
   // TODO(crbug.com/1432505): remove temporary unsupported countries
   // filtering.
   return pdm->address_data_manager().IsEligibleForAddressAccountStorage() &&
-         pdm->IsCountryEligibleForAccountStorage(country_code);
+         pdm->address_data_manager().IsCountryEligibleForAccountStorage(
+             country_code);
 }
 
 }  // namespace

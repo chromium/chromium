@@ -6,6 +6,7 @@
 
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/metrics/address_data_cleaner_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -212,7 +213,7 @@ void AddressDataCleaner::ApplyDeduplicationRoutine() {
 
 void AddressDataCleaner::DeleteDisusedAddresses() {
   const std::vector<AutofillProfile*>& profiles =
-      personal_data_manager_->GetProfilesFromSource(
+      personal_data_manager_->address_data_manager().GetProfilesFromSource(
           AutofillProfile::Source::kLocalOrSyncable);
   // Early return to prevent polluting metrics with uninteresting events.
   if (profiles.empty()) {

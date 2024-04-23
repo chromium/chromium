@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/address_data_manager.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/geo/autofill_country.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
@@ -220,8 +221,10 @@ TEST_F(AutofillProfileEditMediatorTest,
   size_t country_counter_in_mediator = 0;
   for (size_t i = 1; i < countriesVector.size() - 1; i++) {
     if (!countriesVector[i].get() ||
-        !personal_data_manager()->IsCountryEligibleForAccountStorage(
-            countriesVector[i]->country_code())) {
+        !personal_data_manager()
+             ->address_data_manager()
+             .IsCountryEligibleForAccountStorage(
+                 countriesVector[i]->country_code())) {
       continue;
     }
 

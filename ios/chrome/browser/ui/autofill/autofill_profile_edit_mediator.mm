@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/address_data_manager.h"
 #import "components/autofill/core/browser/geo/autofill_country.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/profile_requirement_utils.h"
@@ -114,7 +115,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)didTapMigrateToAccountButton {
-  _personalDataManager->MigrateProfileToAccount(*_autofillProfile);
+  _personalDataManager->address_data_manager().MigrateProfileToAccount(
+      *_autofillProfile);
 
   // Push the saved profile data to the consumer.
   [self sendAutofillProfileDataToConsumer];
@@ -189,8 +191,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   for (size_t i = 1; i < countriesVector.size(); ++i) {
     if (countriesVector[i].get()) {
       if (([self isAccountProfile] || _isMigrationPrompt) &&
-          !_personalDataManager->IsCountryEligibleForAccountStorage(
-              countriesVector[i]->country_code())) {
+          !_personalDataManager->address_data_manager()
+               .IsCountryEligibleForAccountStorage(
+                   countriesVector[i]->country_code())) {
         continue;
       }
       CountryItem* countryItem =

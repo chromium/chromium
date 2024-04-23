@@ -11,11 +11,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/android/preferences/autofill/settings_launcher_helper.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_utils.h"
-#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -100,7 +101,7 @@ AddressAccessoryControllerImpl::GetSheetData() const {
     return std::nullopt;
   }
   std::vector<AutofillProfile*> profiles =
-      personal_data_manager_->GetProfilesToSuggest();
+      personal_data_manager_->address_data_manager().GetProfilesToSuggest();
   std::u16string title_or_empty_message;
   if (profiles.empty()) {
     title_or_empty_message =
@@ -161,9 +162,11 @@ void AddressAccessoryControllerImpl::RefreshSuggestions() {
   }
   if (source_observer_) {
     source_observer_.Run(
-        this, IsFillingSourceAvailable(
-                  personal_data_manager_ &&
-                  !personal_data_manager_->GetProfilesToSuggest().empty()));
+        this,
+        IsFillingSourceAvailable(personal_data_manager_ &&
+                                 !personal_data_manager_->address_data_manager()
+                                      .GetProfilesToSuggest()
+                                      .empty()));
   } else {
     // TODO(crbug.com/1169167): Remove once filling controller pulls this
     // information instead of waiting to get it pushed.

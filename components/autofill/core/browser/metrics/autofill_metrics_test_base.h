@@ -8,6 +8,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -188,7 +189,7 @@ class AutofillMetricsBaseTest {
                          const std::string& profile_guid) {
     autofill_manager().FillOrPreviewProfileForm(
         mojom::ActionPersistence::kFill, form, form.fields.front(),
-        *personal_data().GetProfileByGUID(profile_guid),
+        *personal_data().address_data_manager().GetProfileByGUID(profile_guid),
         {.trigger_source = AutofillTriggerSource::kPopup});
   }
 

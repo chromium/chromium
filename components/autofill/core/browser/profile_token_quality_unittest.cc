@@ -11,6 +11,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -261,13 +262,15 @@ TEST_F(ProfileTokenQualityTest,
   // `SaveObservationsForFilledFormForAllSubmittedProfiles()` operates on the
   // profiles owned by the `pdm_`, the profiles need to be accessed through the
   // `pdm_`. `profile1` and `profile2` haven't changed.
-  const ProfileTokenQuality& quality1 =
-      pdm_.GetProfileByGUID(profile1.guid())->token_quality();
+  const ProfileTokenQuality& quality1 = pdm_.address_data_manager()
+                                            .GetProfileByGUID(profile1.guid())
+                                            ->token_quality();
   EXPECT_THAT(quality1.GetObservationTypesForFieldType(ADDRESS_HOME_CITY),
               UnorderedElementsAre(ObservationType::kAccepted));
   EXPECT_TRUE(quality1.GetObservationTypesForFieldType(EMAIL_ADDRESS).empty());
-  const ProfileTokenQuality& quality2 =
-      pdm_.GetProfileByGUID(profile2.guid())->token_quality();
+  const ProfileTokenQuality& quality2 = pdm_.address_data_manager()
+                                            .GetProfileByGUID(profile2.guid())
+                                            ->token_quality();
   EXPECT_THAT(quality2.GetObservationTypesForFieldType(EMAIL_ADDRESS),
               UnorderedElementsAre(ObservationType::kAccepted));
   EXPECT_TRUE(

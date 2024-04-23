@@ -5,6 +5,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -45,7 +46,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestProfileListTest, PrioritizeCompleteness) {
   // In the Personal Data Manager, the partial address is more frecent.
   autofill::PersonalDataManager* personal_data_manager = GetDataManager();
   std::vector<autofill::AutofillProfile*> profiles =
-      personal_data_manager->GetProfilesToSuggest();
+      personal_data_manager->address_data_manager().GetProfilesToSuggest();
   ASSERT_EQ(2UL, profiles.size());
   EXPECT_EQ(partial, *profiles[0]);
   EXPECT_EQ(complete, *profiles[1]);

@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/metrics/placeholder_metrics.h"
+
 #include "base/test/metrics/histogram_tester.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -269,6 +271,7 @@ TEST_F(PlaceholderMetricsValueStatusTest,
 
 TEST_F(PlaceholderMetricsValueStatusTest, ValueWasRestoredByAutofill) {
   form_description_.fields[1].value = personal_data()
+                                          .address_data_manager()
                                           .GetProfileByGUID(kTestProfileId)
                                           ->GetRawInfo(kPreFilledType);
   form_description_.fields[1].is_autofilled = true;
@@ -292,6 +295,7 @@ TEST_F(PlaceholderMetricsValueStatusTest,
   SeeForm();
   FillTestProfile(form_);
   form_.fields[1].set_value(personal_data()
+                                .address_data_manager()
                                 .GetProfileByGUID(kTestProfileId)
                                 ->GetRawInfo(kPreFilledType));
   SubmitFormAndExpect(AutofillPreFilledValueStatus::
@@ -304,6 +308,7 @@ TEST_F(PlaceholderMetricsValueStatusTest,
   FillTestProfile(form_);
   FillProfileByGUID(form_, kTestProfile2Id);
   form_.fields[1].set_value(personal_data()
+                                .address_data_manager()
                                 .GetProfileByGUID(kTestProfile2Id)
                                 ->GetRawInfo(kPreFilledType));
   SubmitFormAndExpect(AutofillPreFilledValueStatus::
@@ -316,6 +321,7 @@ TEST_F(PlaceholderMetricsValueStatusTest,
   ClassifyThePreFilledFieldAsPlaceholder();
   FillTestProfile(form_);
   form_.fields[1].set_value(personal_data()
+                                .address_data_manager()
                                 .GetProfileByGUID(kTestProfile2Id)
                                 ->GetRawInfo(kPreFilledType));
   ;

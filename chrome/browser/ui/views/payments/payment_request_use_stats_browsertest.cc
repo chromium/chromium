@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/payments/payment_request_browsertest_base.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -56,7 +57,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressUseStatsTest,
 
   // Check that the initial use stats were set correctly.
   autofill::AutofillProfile* initial_shipping =
-      GetDataManager()->GetProfileByGUID(shipping_address2.guid());
+      GetDataManager()->address_data_manager().GetProfileByGUID(
+          shipping_address2.guid());
   EXPECT_EQ(3U, initial_shipping->use_count());
   EXPECT_EQ(kSomeDate, initial_shipping->use_date());
 
@@ -71,7 +73,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestShippingAddressUseStatsTest,
 
   // Check that the usage of the profile was recorded.
   autofill::AutofillProfile* updated_shipping =
-      GetDataManager()->GetProfileByGUID(shipping_address2.guid());
+      GetDataManager()->address_data_manager().GetProfileByGUID(
+          shipping_address2.guid());
   EXPECT_EQ(4U, updated_shipping->use_count());
   EXPECT_EQ(kSomeLaterDate, updated_shipping->use_date());
 }
@@ -102,7 +105,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestContactAddressUseStatsTest,
 
   // Check that the initial use stats were set correctly.
   autofill::AutofillProfile* initial_contact =
-      GetDataManager()->GetProfileByGUID(contact_address2.guid());
+      GetDataManager()->address_data_manager().GetProfileByGUID(
+          contact_address2.guid());
   EXPECT_EQ(3U, initial_contact->use_count());
   EXPECT_EQ(kSomeDate, initial_contact->use_date());
 
@@ -117,7 +121,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestContactAddressUseStatsTest,
 
   // Check that the usage of the profile was recorded.
   autofill::AutofillProfile* updated_contact =
-      GetDataManager()->GetProfileByGUID(contact_address2.guid());
+      GetDataManager()->address_data_manager().GetProfileByGUID(
+          contact_address2.guid());
   EXPECT_EQ(4U, updated_contact->use_count());
   EXPECT_EQ(kSomeLaterDate, updated_contact->use_date());
 }
@@ -148,7 +153,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSameShippingAndContactAddressUseStatsTest,
 
   // Check that the initial use stats were set correctly.
   autofill::AutofillProfile* initial_multi =
-      GetDataManager()->GetProfileByGUID(multi_address2.guid());
+      GetDataManager()->address_data_manager().GetProfileByGUID(
+          multi_address2.guid());
   EXPECT_EQ(3U, initial_multi->use_count());
   EXPECT_EQ(kSomeDate, initial_multi->use_date());
 
@@ -163,7 +169,8 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestSameShippingAndContactAddressUseStatsTest,
 
   // Check that the usage of the profile was only recorded once.
   autofill::AutofillProfile* updated_multi =
-      GetDataManager()->GetProfileByGUID(multi_address2.guid());
+      GetDataManager()->address_data_manager().GetProfileByGUID(
+          multi_address2.guid());
   EXPECT_EQ(4U, updated_multi->use_count());
   EXPECT_EQ(kSomeLaterDate, updated_multi->use_date());
 }
