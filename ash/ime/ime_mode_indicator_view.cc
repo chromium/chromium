@@ -85,9 +85,9 @@ void ImeModeIndicatorView::OnBeforeBubbleWidgetInit(
   }
 }
 
-gfx::Size ImeModeIndicatorView::CalculatePreferredSize() const {
-  gfx::Size size = label_view_->GetPreferredSize(
-      views::SizeBounds(label_view_->width(), {}));
+gfx::Size ImeModeIndicatorView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size size = label_view_->GetPreferredSize({});
   size.SetToMax(gfx::Size(kMinSize, kMinSize));
   return size;
 }

@@ -40,7 +40,8 @@ class ASH_EXPORT ImeModeIndicatorView : public views::BubbleDialogDelegateView {
   // views::BubbleDialogDelegateView override:
   void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
                                 views::Widget* widget) const override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Init() override;
 
  protected:
