@@ -35,6 +35,10 @@ public abstract class TabResumptionDataProvider {
             this.strength = strength;
             this.suggestions = suggestions;
         }
+
+        public int size() {
+            return (suggestions == null) ? 0 : suggestions.size();
+        }
     }
 
     @Nullable protected Runnable mStatusChangedCallback;

@@ -25,12 +25,17 @@ public class TabResumptionModuleEnablement {
             return HomeModulesMetricsUtils.HOME_MODULES_COMBINE_TABS.getValue();
         }
 
+        static boolean isAllowedByConfig() {
+            return HomeModulesConfigManager.getInstance()
+                    .getPrefModuleTypeEnabled(ModuleType.TAB_RESUMPTION);
+        }
+
         static boolean hasData(ModuleDelegate moduleDelegate) {
             return moduleDelegate.getTrackingTab() != null;
         }
 
         static boolean shouldMakeProvider(ModuleDelegate moduleDelegate) {
-            return isFeatureEnabled() && hasData(moduleDelegate);
+            return isFeatureEnabled() && isAllowedByConfig() && hasData(moduleDelegate);
         }
     }
 
@@ -67,8 +72,7 @@ public class TabResumptionModuleEnablement {
      * feature enablement, ignoring other user settings and data availability.
      */
     static boolean isFeatureEnabled() {
-        // TODO(b/332588018): Also consider LocalTab.isFeatureEnabled().
-        return ForeignSession.isFeatureEnabled();
+        return LocalTab.isFeatureEnabled() || ForeignSession.isFeatureEnabled();
     }
 
     /**
@@ -80,7 +84,7 @@ public class TabResumptionModuleEnablement {
      */
     static @Nullable Integer computeModuleNotShownReason(
             ModuleDelegate moduleDelegate, Profile profile) {
-        // TODO(b/332588018): Consider LocalTab.
+        if (LocalTab.isFeatureEnabled() && LocalTab.hasData(moduleDelegate)) return null;
 
         if (!ForeignSession.isFeatureEnabled()) return ModuleNotShownReason.FEATURE_DISABLED;
 

@@ -57,13 +57,21 @@ public class TabResumptionModuleBuilder implements ModuleProviderBuilder, Module
             return false;
         }
 
-        // TODO(b/332588018): Conditionally instantiate TabResumptionDataProvider on this.
-        assert TabResumptionModuleEnablement.ForeignSession.shouldMakeProvider(profile);
+        LocalTabTabResumptionDataProvider localTabProvider =
+                TabResumptionModuleEnablement.LocalTab.shouldMakeProvider(moduleDelegate)
+                        ? new LocalTabTabResumptionDataProvider(moduleDelegate.getTrackingTab())
+                        : null;
 
-        addRefToDataSource();
+        ForeignSessionTabResumptionDataProvider foreignSessionProvider = null;
+        if (TabResumptionModuleEnablement.ForeignSession.shouldMakeProvider(profile)) {
+            addRefToDataSource();
+            foreignSessionProvider =
+                    new ForeignSessionTabResumptionDataProvider(
+                            mForeignSessionTabResumptionDataSource, this::removeRefToDataSource);
+        }
         TabResumptionDataProvider dataProvider =
-                new ForeignSessionTabResumptionDataProvider(
-                        mForeignSessionTabResumptionDataSource, this::removeRefToDataSource);
+                new MixedTabResumptionDataProvider(localTabProvider, foreignSessionProvider);
+
         // TODO(b/332588018): Uses TabListFaviconProvider to replace UrlImageProvider.
         UrlImageProvider urlImageProvider = new UrlImageProvider(profile, mContext);
 
