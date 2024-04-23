@@ -567,14 +567,21 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
           ? SessionRestorationServiceFactory::kOptimized
           : SessionRestorationServiceFactory::kLegacy;
 
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  // `completion` should be called only once when all browser states are
+  // migrated.
+  base::RepeatingClosure closure =
+      ExpectNCall(loadedBrowserStates.size(), base::BindRepeating(completion));
   // MigrateSessionStorageFormat is synchronous if the storage is already in
   // the requested format, so this is safe to call and won't block the app
   // startup.
-  // TODO(crbug.com/325596571): Call this for each loaded app state. Figure out
-  // what to do with the completion handler.
-  SessionRestorationServiceFactory::GetInstance()->MigrateSessionStorageFormat(
-      self.appState.mainBrowserState, requested_format,
-      base::BindOnce(completion));
+  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+    SessionRestorationServiceFactory::GetInstance()
+        ->MigrateSessionStorageFormat(browserState, requested_format, closure);
+  }
 }
 
 // This initialization must happen before any windows are created.
