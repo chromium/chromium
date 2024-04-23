@@ -138,10 +138,12 @@ void DataAggregatorService::AddLocalCommandSource(const std::string& command) {
       base::BindOnce(
           [](mojo::PendingReceiver<mojom::DataSource> pending_receiver,
              const std::string& command) {
-            mojo::MakeSelfOwnedReceiver(
-                std::make_unique<CommandSource>(command,
-                                                kDefaultCommandPollFrequency),
-                std::move(pending_receiver));
+            auto source = std::make_unique<CommandSource>(
+                command, kDefaultCommandPollFrequency);
+            source->StartCollectingData();
+
+            mojo::MakeSelfOwnedReceiver(std::move(source),
+                                        std::move(pending_receiver));
           },
           remote.BindNewPipeAndPassReceiver(), command));
 
@@ -175,9 +177,12 @@ void DataAggregatorService::AddLocalLogSource(const std::string& filepath) {
       base::BindOnce(
           [](mojo::PendingReceiver<mojom::DataSource> pending_receiver,
              const std::string& filepath) {
-            mojo::MakeSelfOwnedReceiver(
-                std::make_unique<LogSource>(filepath, kDefaultLogPollFrequency),
-                std::move(pending_receiver));
+            auto source =
+                std::make_unique<LogSource>(filepath, kDefaultLogPollFrequency);
+            source->StartCollectingData();
+
+            mojo::MakeSelfOwnedReceiver(std::move(source),
+                                        std::move(pending_receiver));
           },
           remote.BindNewPipeAndPassReceiver(), filepath));
 

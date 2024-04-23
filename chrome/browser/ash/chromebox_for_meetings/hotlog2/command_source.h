@@ -21,11 +21,11 @@ class CommandSource : public LocalDataSource {
   CommandSource& operator=(const CommandSource&) = delete;
   ~CommandSource() override;
 
- private:
   // LocalDataSource:
   const std::string& GetDisplayName() override;
   std::vector<std::string> GetNextData() override;
 
+ private:
   std::string command_;
   std::vector<std::string> command_split_;
 

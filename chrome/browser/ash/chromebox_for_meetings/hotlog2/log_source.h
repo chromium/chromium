@@ -24,14 +24,15 @@ class LogSource : public LocalDataSource {
   LogSource& operator=(const LogSource&) = delete;
   ~LogSource() override;
 
- private:
   // LocalDataSource:
   const std::string& GetDisplayName() override;
   std::vector<std::string> GetNextData() override;
 
+ protected:
   int GetCurrentFileInode();
   bool DidFileRotate();
 
+ private:
   std::string filepath_;
 
   // Contains a handle to the log file on disk

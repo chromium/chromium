@@ -29,10 +29,9 @@ LogSource::LogSource(const std::string& filepath, base::TimeDelta poll_rate)
 
   // Store this now so we can detect rotations later.
   last_known_inode_ = GetCurrentFileInode();
-  StartPollTimer();
 }
 
-inline LogSource::~LogSource() = default;
+LogSource::~LogSource() {}
 
 const std::string& LogSource::GetDisplayName() {
   return log_file_.GetFilePath();

@@ -16,7 +16,6 @@ CommandSource::CommandSource(const std::string& command,
     : LocalDataSource(poll_rate), command_(command) {
   command_split_ = base::SplitString(command, " ", base::KEEP_WHITESPACE,
                                      base::SPLIT_WANT_NONEMPTY);
-  StartPollTimer();
 }
 
 inline CommandSource::~CommandSource() = default;

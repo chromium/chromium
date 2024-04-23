@@ -33,8 +33,9 @@ class LocalDataSource : public mojom::DataSource {
                    AddWatchDogCallback callback) override;
   void Flush() override;
 
+  void StartCollectingData();
+
  protected:
-  void StartPollTimer();
   void FillDataBuffer();
 
   // Returns a unique identifier for logging purposes only.

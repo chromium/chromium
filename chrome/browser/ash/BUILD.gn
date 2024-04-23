@@ -6845,6 +6845,7 @@ source_set("unit_tests") {
       "chromebox_for_meetings/device_info/device_info_service_unittest.cc",
       "chromebox_for_meetings/diagnostics/diagnostics_service_unittest.cc",
       "chromebox_for_meetings/hotlog2/local_data_source_unittest.cc",
+      "chromebox_for_meetings/hotlog2/log_source_unittest.cc",
       "chromebox_for_meetings/logger/cfm_logger_service_unittest.cc",
       "chromebox_for_meetings/service_adaptor_unittest.cc",
       "chromebox_for_meetings/xu_camera/xu_camera_service_unittest.cc",

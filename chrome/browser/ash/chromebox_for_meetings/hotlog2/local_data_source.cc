@@ -50,7 +50,7 @@ void LocalDataSource::Flush() {
   pending_upload_buffer_.clear();
 }
 
-void LocalDataSource::StartPollTimer() {
+void LocalDataSource::StartCollectingData() {
   poll_timer_.Start(FROM_HERE, poll_rate_,
                     base::BindRepeating(&LocalDataSource::FillDataBuffer,
                                         weak_ptr_factory_.GetWeakPtr()));
