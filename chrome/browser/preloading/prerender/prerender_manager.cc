@@ -248,7 +248,9 @@ PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
           content::PreloadingType::kPrerender, std::move(same_url_matcher),
           web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
-  // BookmarkBar only allow https protocol.
+  // BookmarkBar only allows https protocol.
+  // TODO(crbug.com/40259793): Add an enum metric to report the protocol scheme
+  // to decide if we should loosen this restriction for the http scheme.
   if (!prerendering_url.SchemeIs("https")) {
     preloading_attempt->SetEligibility(
         content::PreloadingEligibility::kHttpsOnly);
