@@ -130,7 +130,9 @@ void EnclaveWebSocketClient::Connect() {
 
   network_context_factory_.Run()->CreateWebSocket(
       service_url_, {kEnclaveWebSocketProtocol}, net::SiteForCookies(),
-      /*has_storage_access=*/false, net::IsolationInfo(),
+      /*has_storage_access=*/false,
+      net::IsolationInfo::CreateForInternalRequest(
+          url::Origin::Create(service_url_)),
       std::move(additional_headers), network::mojom::kBrowserProcessId,
       url::Origin::Create(service_url_),
       network::mojom::kWebSocketOptionBlockAllCookies,

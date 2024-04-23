@@ -4,7 +4,7 @@
 
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 
-#include "chrome/browser/net/system_network_context_manager.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/webauthn/enclave_manager.h"
@@ -46,13 +46,18 @@ std::unique_ptr<KeyedService>
 EnclaveManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* const profile = Profile::FromBrowserContext(context);
-  // TODO(nsatragno): this should probably use the storage partition network
-  // manager instead.
   return std::make_unique<EnclaveManager>(
       /*base_dir=*/profile->GetPath(),
-      IdentityManagerFactory::GetForProfile(profile), base::BindRepeating([]() {
-        return SystemNetworkContextManager::GetInstance()->GetContext();
-      }),
+      IdentityManagerFactory::GetForProfile(profile),
+      base::BindRepeating(
+          [](base::WeakPtr<Profile> profile)
+              -> network::mojom::NetworkContext* {
+            if (!profile) {
+              return nullptr;
+            }
+            return profile->GetDefaultStoragePartition()->GetNetworkContext();
+          },
+          profile->GetWeakPtr()),
       g_url_loader_factory_test_override
           ? g_url_loader_factory_test_override
           : profile->GetDefaultStoragePartition()
