@@ -121,8 +121,8 @@ BASE_FEATURE(kUseUniversalGetTextureTargetFunction,
              "UseUniversalGetTextureTargetFunction",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDestroySharedImageAutomatically,
-             "DestroySharedImageAutomatically",
+BASE_FEATURE(kEnableAutomaticSharedImageManagement,
+             "EnableAutomaticSharedImageManagement",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 ClientSharedImage::ScopedMapping::ScopedMapping() = default;
@@ -278,7 +278,7 @@ ClientSharedImage::~ClientSharedImage() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kDestroySharedImageAutomatically) ||
+  if (base::FeatureList::IsEnabled(kEnableAutomaticSharedImageManagement) ||
       marked_for_destruction_) {
     auto sii = sii_holder_->Get();
     if (sii) {

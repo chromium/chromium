@@ -2372,6 +2372,11 @@
     "expiry_milestone": 126
   },
   {
+    "name": "enable-automatic-shared-image-management",
+    "owners": [ "mjzhang@chromium.org", "vasilyt@chromium.org" ],
+    "expiry_milestone": 128
+  },
+  {
     "name": "enable-background-blur",
     "owners": [ "newcomer@chromium.org" ],
     "expiry_milestone": 86

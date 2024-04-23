@@ -188,6 +188,7 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "flag_descriptions.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/audio/audio_features.h"
@@ -10049,6 +10050,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseMultiPlaneFormatForSoftwareVideoName,
      flag_descriptions::kUseMultiPlaneFormatForSoftwareVideoDescription, kOsAll,
      FEATURE_VALUE_TYPE(media::kUseMultiPlaneFormatForSoftwareVideo)},
+
+    {"enable-automatic-shared-image-management",
+     flag_descriptions::kEnableAutomaticSharedImageManagementName,
+     flag_descriptions::kEnableAutomaticSharedImageManagementDescription,
+     kOsAll, FEATURE_VALUE_TYPE(gpu::kEnableAutomaticSharedImageManagement)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-notification-image-drag",

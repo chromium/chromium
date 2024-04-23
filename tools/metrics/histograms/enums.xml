@@ -18731,6 +18731,8 @@ from previous Chrome versions.
   <int value="-1098963611" label="ProjectorLocalPlayback:disabled"/>
   <int value="-1097977406"
       label="SupervisedUserCommittedInterstitials:enabled"/>
+  <int value="-1097149297"
+      label="EnableAutomaticSharedImageManagement:disabled"/>
   <int value="-1096694296" label="UpcomingFollowFeatures:enabled"/>
   <int value="-1096595907" label="disable-new-virtual-keyboard-behavior"/>
   <int value="-1095947169" label="ModalPermissionDialogView:disabled"/>
@@ -22908,6 +22910,7 @@ from previous Chrome versions.
   <int value="768855962" label="PaymentRequestBasicCard:enabled"/>
   <int value="768900239" label="ArcSwitchToKeyMintOnTOverride:disabled"/>
   <int value="770680432" label="DecodeLossyWebPImagesToYUV:enabled"/>
+  <int value="771216808" label="EnableAutomaticSharedImageManagement:enabled"/>
   <int value="772272625" label="simplify-https-indicator"/>
   <int value="772348426" label="AffiliationBasedMatching:enabled"/>
   <int value="772360813"

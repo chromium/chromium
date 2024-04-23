@@ -32,7 +32,7 @@ GPU_EXPORT BASE_DECLARE_FEATURE(kUseUniversalGetTextureTargetFunction);
 // Controls whether SharedImageInterface::DestroySharedImage() should be called
 // in ClientSharedImage's destructor if the shared image has not been marked
 // for destruction.
-GPU_EXPORT BASE_DECLARE_FEATURE(kDestroySharedImageAutomatically);
+GPU_EXPORT BASE_DECLARE_FEATURE(kEnableAutomaticSharedImageManagement);
 
 struct ExportedSharedImage;
 

@@ -891,6 +891,9 @@ extern const char kDropInputEventsBeforeFirstPaintDescription[];
 extern const char kBoundaryEventDispatchTracksNodeRemovalName[];
 extern const char kBoundaryEventDispatchTracksNodeRemovalDescription[];
 
+extern const char kEnableAutomaticSharedImageManagementName[];
+extern const char kEnableAutomaticSharedImageManagementDescription[];
+
 extern const char kEnableCssSelectorFragmentAnchorName[];
 extern const char kEnableCssSelectorFragmentAnchorDescription[];
 
