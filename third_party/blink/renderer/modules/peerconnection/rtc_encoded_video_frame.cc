@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_decode_target_indication.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_metadata.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_options.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -99,7 +100,7 @@ RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
 
 RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
     RTCEncodedVideoFrame* original_frame,
-    RTCEncodedVideoFrameMetadata* new_metadata,
+    const RTCEncodedVideoFrameOptions* options_dict,
     ExceptionState& exception_state) {
   RTCEncodedVideoFrame* new_frame;
   if (original_frame) {
@@ -111,9 +112,9 @@ RTCEncodedVideoFrame* RTCEncodedVideoFrame::Create(
         "Cannot create a new VideoFrame from an empty VideoFrame");
     return nullptr;
   }
-  if (new_metadata) {
+  if (options_dict && options_dict->hasMetadata()) {
     base::expected<void, String> set_metadata =
-        new_frame->SetMetadata(new_metadata);
+        new_frame->SetMetadata(options_dict->metadata());
     if (!set_metadata.has_value()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidModificationError,

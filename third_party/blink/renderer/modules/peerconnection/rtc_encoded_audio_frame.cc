@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_metadata.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_options.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -73,7 +74,7 @@ RTCEncodedAudioFrame* RTCEncodedAudioFrame::Create(
 
 RTCEncodedAudioFrame* RTCEncodedAudioFrame::Create(
     RTCEncodedAudioFrame* original_frame,
-    RTCEncodedAudioFrameMetadata* new_metadata,
+    const RTCEncodedAudioFrameOptions* options_dict,
     ExceptionState& exception_state) {
   RTCEncodedAudioFrame* new_frame;
   if (original_frame) {
@@ -85,9 +86,9 @@ RTCEncodedAudioFrame* RTCEncodedAudioFrame::Create(
         "Cannot create a new AudioFrame: input Audioframe is empty.");
     return nullptr;
   }
-  if (new_metadata) {
+  if (options_dict && options_dict->hasMetadata()) {
     base::expected<void, String> set_metadata =
-        new_frame->SetMetadata(new_metadata);
+        new_frame->SetMetadata(options_dict->metadata());
     if (!set_metadata.has_value()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidModificationError,

@@ -27,6 +27,7 @@ namespace blink {
 class DOMArrayBuffer;
 class RTCEncodedVideoFrameDelegate;
 class RTCEncodedVideoFrameMetadata;
+class RTCEncodedVideoFrameOptions;
 
 MODULES_EXPORT BASE_DECLARE_FEATURE(
     kAllowRTCEncodedVideoFrameSetMetadataAllFields);
@@ -39,7 +40,7 @@ class MODULES_EXPORT RTCEncodedVideoFrame final : public ScriptWrappable {
                                       ExceptionState& exception_state);
   static RTCEncodedVideoFrame* Create(
       RTCEncodedVideoFrame* original_frame,
-      RTCEncodedVideoFrameMetadata* new_metadata,
+      const RTCEncodedVideoFrameOptions* options_dict,
       ExceptionState& exception_state);
   explicit RTCEncodedVideoFrame(
       std::unique_ptr<webrtc::TransformableVideoFrameInterface> webrtc_frame);

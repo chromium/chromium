@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_metadata.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame_options.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/webrtc/api/test/mock_transformable_audio_frame.h"
@@ -165,11 +166,13 @@ TEST_F(RTCEncodedAudioFrameTest, ConstructorWithMetadataOnEmptyFrameFails) {
   RTCEncodedAudioFrame encoded_frame(std::move(frame));
   encoded_frame.PassWebRtcFrame();
 
-  RTCEncodedAudioFrameMetadata* new_metadata = CreateAudioMetadata();
+  RTCEncodedAudioFrameOptions* frame_options =
+      RTCEncodedAudioFrameOptions::Create();
+  frame_options->setMetadata(CreateAudioMetadata());
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedAudioFrame* new_frame = RTCEncodedAudioFrame::Create(
-      &encoded_frame, new_metadata, exception_state);
+      &encoded_frame, frame_options, exception_state);
 
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
@@ -196,10 +199,13 @@ TEST_F(RTCEncodedAudioFrameTest,
       RTCEncodedAudioFrameMetadata::Create();
   new_metadata->setContributingSources({});
   new_metadata->setRtpTimestamp(110);
+  RTCEncodedAudioFrameOptions* frame_options =
+      RTCEncodedAudioFrameOptions::Create();
+  frame_options->setMetadata(new_metadata);
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedAudioFrame* new_frame = RTCEncodedAudioFrame::Create(
-      &encoded_frame, new_metadata, exception_state);
+      &encoded_frame, frame_options, exception_state);
 
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(
@@ -220,10 +226,13 @@ TEST_F(RTCEncodedAudioFrameTest, ConstructorWithMetadataModifiesRtpTimestamp) {
   EXPECT_EQ(encoded_frame.getMetadata()->rtpTimestamp(), 17u);
   RTCEncodedAudioFrameMetadata* new_metadata = encoded_frame.getMetadata();
   new_metadata->setRtpTimestamp(new_timestamp);
+  RTCEncodedAudioFrameOptions* frame_options =
+      RTCEncodedAudioFrameOptions::Create();
+  frame_options->setMetadata(new_metadata);
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedAudioFrame* new_frame = RTCEncodedAudioFrame::Create(
-      &encoded_frame, new_metadata, exception_state);
+      &encoded_frame, frame_options, exception_state);
   EXPECT_FALSE(exception_state.HadException()) << exception_state.Message();
   EXPECT_EQ(new_frame->getMetadata()->rtpTimestamp(), new_timestamp);
   EXPECT_NE(encoded_frame.getMetadata()->rtpTimestamp(), new_timestamp);
@@ -265,8 +274,12 @@ TEST_F(RTCEncodedAudioFrameTest, ConstructorWithMetadataCopiesMetadata) {
   RTCEncodedAudioFrame encoded_frame(std::move(frame));
   DummyExceptionStateForTesting exception_state;
   RTCEncodedAudioFrameMetadata* new_metadata = CreateAudioMetadata();
+  RTCEncodedAudioFrameOptions* frame_options =
+      RTCEncodedAudioFrameOptions::Create();
+  frame_options->setMetadata(new_metadata);
+
   RTCEncodedAudioFrame* new_frame = RTCEncodedAudioFrame::Create(
-      &encoded_frame, new_metadata, exception_state);
+      &encoded_frame, frame_options, exception_state);
 
   EXPECT_FALSE(exception_state.HadException()) << exception_state.Message();
   RTCEncodedAudioFrameMetadata* new_frame_metadata = new_frame->getMetadata();

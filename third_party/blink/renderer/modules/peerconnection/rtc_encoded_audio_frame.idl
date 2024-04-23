@@ -9,7 +9,7 @@
     Exposed=(Window, DedicatedWorker)
 ] interface RTCEncodedAudioFrame {
     [RuntimeEnabled=RTCEncodedFrameSetMetadata, Measure, RaisesException]
-    constructor (RTCEncodedAudioFrame originalFrame, optional RTCEncodedAudioFrameMetadata newMetadata);
+    constructor (RTCEncodedAudioFrame originalFrame, optional RTCEncodedAudioFrameOptions options = {});
     readonly attribute unsigned long timestamp;  // RTP timestamp.
     attribute ArrayBuffer data;
     RTCEncodedAudioFrameMetadata getMetadata();

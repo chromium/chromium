@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_metadata.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_options.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/webrtc/api/test/mock_transformable_video_frame.h"
@@ -419,13 +420,13 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorMissingFieldsFails) {
       std::make_unique<NiceMock<MockTransformableVideoFrame>>();
   MockVP8Metadata(frame.get());
   RTCEncodedVideoFrame encoded_frame(std::move(frame));
-
-  RTCEncodedVideoFrameMetadata* empty_metadata =
-      RTCEncodedVideoFrameMetadata::Create();
+  RTCEncodedVideoFrameOptions* empty_frame_options =
+      RTCEncodedVideoFrameOptions::Create();
+  empty_frame_options->setMetadata(RTCEncodedVideoFrameMetadata::Create());
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
-      &encoded_frame, empty_metadata, exception_state);
+      &encoded_frame, empty_frame_options, exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
             "Cannot create a new VideoFrame: new metadata has member(s) "
@@ -449,13 +450,13 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorWithoutFeatureFailsModifications) {
   EXPECT_CALL(*frame, GetPayloadType()).WillRepeatedly(Return(1));
 
   RTCEncodedVideoFrame encoded_frame(std::move(frame));
-
-  RTCEncodedVideoFrameMetadata* new_metadata =
-      CreateMetadata(/*change_all_fields=*/true);
+  RTCEncodedVideoFrameOptions* frame_options =
+      RTCEncodedVideoFrameOptions::Create();
+  frame_options->setMetadata(CreateMetadata(/*change_all_fields=*/true));
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
-      &encoded_frame, new_metadata, exception_state);
+      &encoded_frame, frame_options, exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
             "Cannot create a new VideoFrame: invalid modification of "
@@ -482,10 +483,13 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorWithFeatureAllowsModifications) {
 
   RTCEncodedVideoFrameMetadata* new_metadata =
       CreateMetadata(/*change_all_fields=*/true);
+  RTCEncodedVideoFrameOptions* frame_options =
+      RTCEncodedVideoFrameOptions::Create();
+  frame_options->setMetadata(new_metadata);
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
-      &encoded_frame, new_metadata, exception_state);
+      &encoded_frame, frame_options, exception_state);
 
   EXPECT_FALSE(exception_state.HadException()) << exception_state.Message();
 
@@ -553,15 +557,16 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorWithMetadataOnEmptyFrameFails) {
   MockVP8Metadata(frame.get());
 
   RTCEncodedVideoFrame encoded_frame(std::move(frame));
-  RTCEncodedVideoFrameMetadata* metadata = encoded_frame.getMetadata();
-
+  RTCEncodedVideoFrameOptions* frame_options =
+      RTCEncodedVideoFrameOptions::Create();
+  frame_options->setMetadata(encoded_frame.getMetadata());
   // Move the WebRTC frame out, as if the frame had been written into
   // an encoded insertable stream's WritableStream to be sent on.
   encoded_frame.PassWebRtcFrame();
 
   DummyExceptionStateForTesting exception_state;
-  RTCEncodedVideoFrame* new_frame =
-      RTCEncodedVideoFrame::Create(&encoded_frame, metadata, exception_state);
+  RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
+      &encoded_frame, frame_options, exception_state);
 
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
@@ -588,9 +593,13 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorRejectsInvalidDependencies) {
   // Set an invalid dependency - all deps must be less than frame id.
   new_metadata->setDependencies({new_metadata->frameId()});
 
+  RTCEncodedVideoFrameOptions* frame_options =
+      RTCEncodedVideoFrameOptions::Create();
+  frame_options->setMetadata(new_metadata);
+
   DummyExceptionStateForTesting exception_state;
   RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
-      &encoded_frame, new_metadata, exception_state);
+      &encoded_frame, frame_options, exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
             "Cannot create a new VideoFrame: new metadata has invalid "
@@ -643,10 +652,13 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorWithMetadataGetsNewMetadata) {
 
   RTCEncodedVideoFrame encoded_frame(std::move(frame));
   RTCEncodedVideoFrameMetadata* new_metadata = CreateMetadata();
+  RTCEncodedVideoFrameOptions* frame_options =
+      RTCEncodedVideoFrameOptions::Create();
+  frame_options->setMetadata(new_metadata);
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
-      &encoded_frame, new_metadata, exception_state);
+      &encoded_frame, frame_options, exception_state);
 
   EXPECT_FALSE(exception_state.HadException()) << exception_state.Message();
 
@@ -695,12 +707,13 @@ TEST_F(RTCEncodedVideoFrameTest,
   EXPECT_CALL(*frame, GetPayloadType()).WillRepeatedly(Return(14));
 
   RTCEncodedVideoFrame encoded_frame(std::move(frame));
-
-  RTCEncodedVideoFrameMetadata* new_metadata = CreateMetadata();
+  RTCEncodedVideoFrameOptions* frame_options =
+      RTCEncodedVideoFrameOptions::Create();
+  frame_options->setMetadata(CreateMetadata());
 
   DummyExceptionStateForTesting exception_state;
   RTCEncodedVideoFrame* new_frame = RTCEncodedVideoFrame::Create(
-      &encoded_frame, new_metadata, exception_state);
+      &encoded_frame, frame_options, exception_state);
   EXPECT_TRUE(exception_state.HadException());
   EXPECT_EQ(exception_state.Message(),
             "Cannot create a new VideoFrame: invalid modification of "
