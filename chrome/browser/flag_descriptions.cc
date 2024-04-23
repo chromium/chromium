@@ -764,11 +764,6 @@ const char kSeparateWebAppShortcutBadgeIconDescription[] =
     "The shortcut app badge is painted in the UI instead of being part of the "
     "shortcut app icon, and more effects are added for the icon.";
 
-const char kServiceWorkerStaticRouterName[] = "Service Worker Static Router";
-const char kServiceWorkerStaticRouterDescription[] =
-    "When enabled, Chrome will enable the Service Worker Static Routing API. "
-    "https://chromestatus.com/feature/5185352976826368";
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
 const char kCameraMicEffectsName[] = "Camera and Mic Effects";
 const char kCameraMicEffectsDescription[] =

@@ -9923,11 +9923,6 @@ const FeatureEntry kFeatureEntries[] = {
      MULTI_VALUE_TYPE(kPrintingPpdChannelChoices)},
 #endif
 
-    {"service-worker-static-router",
-     flag_descriptions::kServiceWorkerStaticRouterName,
-     flag_descriptions::kServiceWorkerStaticRouterDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kServiceWorkerStaticRouter)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"app-deduplication-service-fondue",
      flag_descriptions::kAppDeduplicationServiceFondueName,
