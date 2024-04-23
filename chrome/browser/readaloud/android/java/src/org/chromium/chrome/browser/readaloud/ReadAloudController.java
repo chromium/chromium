@@ -1102,7 +1102,8 @@ public class ReadAloudController
         // Highlighter initialization is expensive, so only do it if necessary
         if (mHighlighter != null
                 && mHighlighterConfig != null
-                && mode != mHighlighterConfig.getMode()) {
+                && mode != mHighlighterConfig.getMode()
+                && mPlayback != null) {
             mHighlighterConfig.setMode(mode);
             mHighlighter.handleTabReloaded(mCurrentlyPlayingTab);
             mHighlighter.initializeJs(
@@ -1197,6 +1198,9 @@ public class ReadAloudController
                 new ReadAloudPlaybackHooks.CreatePlaybackCallback() {
                     @Override
                     public void onSuccess(Playback playback) {
+                        if (playback == null) {
+                            promise.reject(new Exception("Playback is null"));
+                        }
                         // Check if in multi-window mode and not supporting multi-window
                         // This failure will also trigger when the user goes into multi-window mode
                         // with a playback since we will attempt to restore
