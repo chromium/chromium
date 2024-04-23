@@ -38,6 +38,10 @@
 #include "services/screen_ai/screen_ai_service_impl.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "services/passage_embeddings/passage_embeddings_service.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(LINUX)
+
 #if BUILDFLAG(IS_WIN)
 #include "chrome/services/system_signals/win/win_system_signals_service.h"
 #include "chrome/services/util_win/processor_metrics.h"
@@ -218,6 +222,13 @@ auto RunMacNotificationService(
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+auto RunPassageEmbeddingsService(
+    mojo::PendingReceiver<passage_embeddings::mojom::PassageEmbeddingsService>
+        receiver) {
+  return std::make_unique<passage_embeddings::PassageEmbeddingsService>(
+      std::move(receiver));
+}
+
 auto RunSystemSignalsService(
     mojo::PendingReceiver<device_signals::mojom::SystemSignalsService>
         receiver) {
@@ -484,6 +495,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  services.Add(RunPassageEmbeddingsService);
   services.Add(RunSystemSignalsService);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

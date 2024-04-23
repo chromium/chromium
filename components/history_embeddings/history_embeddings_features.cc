@@ -30,4 +30,8 @@ const base::FeatureParam<double> kContentVisibilityThreshold(
     "ContentVisibilityThreshold",
     0.5);
 
+const base::FeatureParam<bool> kUseMlEmbedder(&kHistoryEmbeddings,
+                                              "UseMlEmbedder",
+                                              false);
+
 }  // namespace history_embeddings

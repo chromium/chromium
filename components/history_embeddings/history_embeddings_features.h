@@ -28,6 +28,9 @@ extern const base::FeatureParam<bool> kAtKeywordAcceleration;
 // Specifies the content visibility threshold that can be shown to the user.
 extern const base::FeatureParam<double> kContentVisibilityThreshold;
 
+// Specifies whether to use the ML Embedder to embed passages and queries.
+extern const base::FeatureParam<bool> kUseMlEmbedder;
+
 }  // namespace history_embeddings
 
 #endif  // COMPONENTS_HISTORY_EMBEDDINGS_HISTORY_EMBEDDINGS_FEATURES_H_

@@ -1,0 +1,28 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("passage_embeddings") {
+  sources = [
+    "passage_embedder.cc",
+    "passage_embedder.h",
+    "passage_embeddings_service.cc",
+    "passage_embeddings_service.h",
+  ]
+
+  public_deps = [ "//mojo/public/cpp/bindings" ]
+
+  deps = [ "//services/passage_embeddings/public/mojom" ]
+}
+
+source_set("tests") {
+  testonly = true
+
+  sources = [ "passage_embeddings_service_unittest.cc" ]
+  deps = [
+    ":passage_embeddings",
+    "//base/test:test_support",
+    "//services/on_device_model/public/mojom",
+    "//testing/gtest",
+  ]
+}

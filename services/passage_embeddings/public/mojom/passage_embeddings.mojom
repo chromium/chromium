@@ -1,0 +1,50 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module passage_embeddings.mojom;
+
+import "mojo/public/mojom/base/read_only_file.mojom";
+import "sandbox/policy/mojom/context.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+
+// Model files needed to run the passage embeddings service.
+struct PassageEmbeddingsModelAssets {
+  // The tflite model for generating text embeddings.
+  mojo_base.mojom.ReadOnlyFile embeddings_model;
+  // The sentencepiece model to tokenize string input before embeddings
+  // generation.
+  mojo_base.mojom.ReadOnlyFile sp_model;
+};
+
+// The embeddings generated with a single input passage, contains both the raw
+// embeddings and the original passage.
+struct PassageEmbeddingsResult {
+  array<float> embeddings;
+  string passage;
+};
+
+// A loaded model which can be queried to generate embeddings for passages.
+// Functions in this interface will be called from the browser process.
+[ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
+ RequireContext=sandbox.mojom.Context.kBrowser]
+interface PassageEmbedder {
+  // Execute the model to generate embeddings(array<float>) for each string
+  // in `inputs`. If successful, the returned `results` will match the number of
+  // elements in `inputs` and be in the same order. If not successful, an empty
+  // `results` array will be returned.
+  GenerateEmbeddings(array<string> passages) =>
+      (array<PassageEmbeddingsResult> results);
+};
+
+// Service for executing on-device embeddings model.
+// Functions in this interface will be called from the browser process.
+[ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
+ RequireContext=sandbox.mojom.Context.kBrowser]
+interface PassageEmbeddingsService {
+  // Load the given models for generating embeddings.
+  [AllowedContext=sandbox.mojom.Context.kBrowser]
+  LoadModels(
+      PassageEmbeddingsModelAssets assets,
+      pending_receiver<PassageEmbedder> model) => (bool success);
+};

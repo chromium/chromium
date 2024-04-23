@@ -63,6 +63,8 @@ static_library("utility") {
     "//printing/buildflags",
     "//services/data_decoder:lib",
     "//services/network:network_service",
+    "//services/passage_embeddings:passage_embeddings",
+    "//services/passage_embeddings/public/mojom",
     "//services/screen_ai/buildflags",
     "//services/service_manager/public/cpp",
     "//skia",

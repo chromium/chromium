@@ -68,6 +68,7 @@ include_rules = [
   "+media",
   "+services/network/public",
   "+services/network/url_request_context_builder_mojo.h",
+  "+services/passage_embeddings",
   "+services/proxy_resolver",
   "+services/proxy_resolver_win",
   "+services/screen_ai",

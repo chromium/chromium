@@ -102,7 +102,10 @@ test("services_unittests") {
     # NOTE: We do not currently support standalone service binaries on Android
     # or iOS, so any tests which use the ServiceTest framework to connect to
     # standalone services must be added here.
-    deps += [ "//services/video_capture:tests" ]
+    deps += [
+      "//services/passage_embeddings:tests",
+      "//services/video_capture:tests",
+    ]
   }
 
   if (enable_video_effects) {
