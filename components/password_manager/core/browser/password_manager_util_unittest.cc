@@ -681,7 +681,7 @@ TEST(PasswordManagerUtil, AvoidOverlappingAutofillMenuAndManualGeneration) {
   password_manager::StubPasswordManagerClient stub_password_client;
   autofill::TestAutofillClient test_autofill_client;
 
-  test_autofill_client.ShowAutofillPopup(
+  test_autofill_client.ShowAutofillSuggestions(
       autofill::AutofillClient::PopupOpenArgs(), /*delegate=*/nullptr);
   test_autofill_client.ShowAutofillFieldIphForManualFallbackFeature(
       autofill::FormFieldData());

@@ -51,9 +51,9 @@ struct ShowMethod {
 };
 
 // We choose the timeout empirically. 250 ms are not enough; tests become flaky:
-// in ShowAutofillPopup(), the preview triggered by an "arrow down" sometimes
-// only arrives after >250 ms and thus arrives during the DoNothingAndWait(),
-// which causes a crash.
+// in ShowAutofillSuggestions(), the preview triggered by an "arrow down"
+// sometimes only arrives after >250 ms and thus arrives during the
+// DoNothingAndWait(), which causes a crash.
 constexpr base::TimeDelta kAutofillFlowDefaultTimeout = base::Seconds(2);
 
 namespace internal {

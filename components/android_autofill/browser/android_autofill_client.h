@@ -115,18 +115,18 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
       base::WeakPtr<autofill::TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest) override;
   void HideTouchToFillCreditCard() override;
-  void ShowAutofillPopup(
+  void ShowAutofillSuggestions(
       const autofill::AutofillClient::PopupOpenArgs& open_args,
       base::WeakPtr<autofill::AutofillPopupDelegate> delegate) override;
-  void UpdateAutofillPopupDataListValues(
+  void UpdateAutofillDataListValues(
       base::span<const autofill::SelectOption> datalist) override;
   std::vector<autofill::Suggestion> GetPopupSuggestions() const override;
-  void PinPopupView() override;
+  void PinAutofillSuggestions() override;
   void UpdatePopup(
       const std::vector<autofill::Suggestion>& suggestions,
       autofill::FillingProduct main_filling_product,
       autofill::AutofillSuggestionTriggerSource trigger_source) override;
-  void HideAutofillPopup(autofill::PopupHidingReason reason) override;
+  void HideAutofillSuggestions(autofill::PopupHidingReason reason) override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
   void DidFillOrPreviewForm(

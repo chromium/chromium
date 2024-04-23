@@ -1335,7 +1335,7 @@ void RenderViewContextMenu::InitMenu() {
     autofill::AutofillClient* autofill_client =
         autofill::ContentAutofillClient::FromWebContents(web_contents);
     if (autofill_client) {
-      autofill_client->HideAutofillPopup(
+      autofill_client->HideAutofillSuggestions(
           autofill::PopupHidingReason::kContextMenuOpened);
     }
   }

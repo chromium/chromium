@@ -126,7 +126,7 @@ void UserTriggeredManualGenerationFromContextMenu(
     password_manager::PasswordManagerClient* password_manager_client,
     autofill::AutofillClient* autofill_client) {
   if (autofill_client) {
-    autofill_client->HideAutofillPopup(
+    autofill_client->HideAutofillSuggestions(
         autofill::PopupHidingReason::kOverlappingWithPasswordGenerationPopup);
     autofill_client->HideAutofillFieldIphForManualFallbackFeature();
   }

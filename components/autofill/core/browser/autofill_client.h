@@ -706,21 +706,21 @@ class AutofillClient {
   // supported by the platform.
   virtual void HideTouchToFillCreditCard() = 0;
 
-  // Shows an Autofill popup with the given |values|, |labels|, |icons|, and
-  // |identifiers| for the element at |element_bounds|. |delegate| will be
-  // notified of popup events.
+  // Shows Autofill suggestions with the given `values`, `labels`, `icons`, and
+  // `identifiers` for the element at `element_bounds`. `delegate` will be
+  // notified of suggestion events, e.g., the user accepting a suggestion.
   // The popup is shown asynchronously on Desktop and Android.
-  virtual void ShowAutofillPopup(
+  virtual void ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillPopupDelegate> delegate) = 0;
 
-  // Update the data list values shown by the Autofill popup, if visible.
-  virtual void UpdateAutofillPopupDataListValues(
+  // Update the data list values shown by the Autofill suggestions, if visible.
+  virtual void UpdateAutofillDataListValues(
       base::span<const SelectOption> datalist) = 0;
 
-  // Informs the client that the popup needs to be kept alive. Call before
-  // |UpdatePopup| to update the open popup in-place.
-  virtual void PinPopupView() = 0;
+  // Informs the client that the suggestion UI needs to be kept alive. Call
+  // before |UpdatePopup| to update the open popup in-place.
+  virtual void PinAutofillSuggestions() = 0;
 
   // Returns the information of the popup on the screen, if there is one that is
   // showing. Note that this implemented only on Desktop.
@@ -736,8 +736,8 @@ class AutofillClient {
                            FillingProduct main_filling_product,
                            AutofillSuggestionTriggerSource trigger_source) = 0;
 
-  // Hide the Autofill popup if one is currently showing.
-  virtual void HideAutofillPopup(PopupHidingReason reason) = 0;
+  // Hides the Autofill suggestions UI if it is currently showing.
+  virtual void HideAutofillSuggestions(PopupHidingReason reason) = 0;
 
   // TODO(crbug.com/40134864): Rename all the "domain" in this flow to origin.
   //                          The server is passing down full origin of the

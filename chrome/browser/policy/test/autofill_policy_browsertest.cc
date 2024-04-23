@@ -149,10 +149,11 @@ class AutofillPolicyTest : public PolicyTest {
     explicit TestAutofillClient(content::WebContents* web_contents)
         : autofill::ChromeAutofillClient(web_contents) {}
 
-    void ShowAutofillPopup(
+    void ShowAutofillSuggestions(
         const autofill::AutofillClient::PopupOpenArgs& open_args,
         base::WeakPtr<autofill::AutofillPopupDelegate> delegate) override {
-      autofill::ChromeAutofillClient::ShowAutofillPopup(open_args, delegate);
+      autofill::ChromeAutofillClient::ShowAutofillSuggestions(open_args,
+                                                              delegate);
       popup_shown_ = true;
     }
 

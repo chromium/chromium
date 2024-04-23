@@ -218,7 +218,7 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
       // Other suggestion types are not supported.
       NOTREACHED_NORETURN();
   }
-  autofill_client_->HideAutofillPopup(
+  autofill_client_->HideAutofillSuggestions(
       autofill::PopupHidingReason::kAcceptSuggestion);
 }
 
@@ -262,8 +262,8 @@ void PasswordManualFallbackFlow::RunFlowImpl(
       bounds, text_direction, std::move(suggestions),
       autofill::AutofillSuggestionTriggerSource::kManualFallbackPasswords,
       /*form_control_ax_id=*/0);
-  autofill_client_->ShowAutofillPopup(open_args,
-                                      weak_ptr_factory_.GetWeakPtr());
+  autofill_client_->ShowAutofillSuggestions(open_args,
+                                            weak_ptr_factory_.GetWeakPtr());
 }
 
 void PasswordManualFallbackFlow::MaybeAuthenticateBeforeFilling(

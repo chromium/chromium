@@ -503,7 +503,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest, GPMPasskeys) {
   // because the enclave might still be loading. Manually hide the
   // popup so that the autofill client can be destroyed, avoiding
   // a DCHECK on test tear down.
-  autofill_client->HideAutofillPopup(autofill::PopupHidingReason::kTabGone);
+  autofill_client->HideAutofillSuggestions(
+      autofill::PopupHidingReason::kTabGone);
   // The tracker outlives the test. Clean up the device_info to avoid flakiness.
   tracker->Remove(&device_info);
 }
@@ -588,7 +589,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
   // because the enclave might still be loading. Manually hide the
   // popup so that the autofill client can be destroyed, avoiding
   // a DCHECK on test tear down.
-  autofill_client->HideAutofillPopup(autofill::PopupHidingReason::kTabGone);
+  autofill_client->HideAutofillSuggestions(
+      autofill::PopupHidingReason::kTabGone);
   // The tracker outlives the test. Clean up the device_info to avoid flakiness.
   tracker->Remove(&device_info);
 }

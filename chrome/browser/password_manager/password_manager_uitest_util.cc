@@ -64,7 +64,7 @@ void ObservingAutofillClient::WaitForAutofillPopup() {
   DCHECK(!run_loop_);
 }
 
-void ObservingAutofillClient::ShowAutofillPopup(
+void ObservingAutofillClient::ShowAutofillSuggestions(
     const autofill::AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<autofill::AutofillPopupDelegate> delegate) {
   if (run_loop_)

@@ -216,13 +216,13 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest, ResetSelectedLine) {
                                     {u"suggestion2", u"suggestion2"},
                                     {u"suggestion3", u"suggestion3"},
                                     {u"suggestion4", u"suggestion4"}};
-  client->UpdateAutofillPopupDataListValues(rows);
+  client->UpdateAutofillDataListValues(rows);
   int original_suggestions_count = controller->GetLineCount();
   static_cast<AutofillPopupController&>(*controller).SelectSuggestion(3);
 
   // Replace the list with the smaller one.
   rows = {{u"suggestion1", u"suggestion1"}};
-  client->UpdateAutofillPopupDataListValues(rows);
+  client->UpdateAutofillDataListValues(rows);
   // Make sure that previously selected line #3 doesn't exist.
   ASSERT_LT(controller->GetLineCount(), original_suggestions_count);
   // Selecting a new line should not crash.

@@ -121,7 +121,7 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
           base::RepeatingClosure())) {}
 
 ChromeAutofillClientIOS::~ChromeAutofillClientIOS() {
-  HideAutofillPopup(PopupHidingReason::kTabGone);
+  HideAutofillSuggestions(PopupHidingReason::kTabGone);
 }
 
 void ChromeAutofillClientIOS::SetBaseViewController(
@@ -460,7 +460,7 @@ void ChromeAutofillClientIOS::HideTouchToFillCreditCard() {
   NOTREACHED();
 }
 
-void ChromeAutofillClientIOS::ShowAutofillPopup(
+void ChromeAutofillClientIOS::ShowAutofillSuggestions(
     const AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<AutofillPopupDelegate> delegate) {
   [bridge_ showAutofillPopup:open_args.suggestions popupDelegate:delegate];
@@ -478,7 +478,7 @@ void ChromeAutofillClientIOS::OfferPlusAddressCreation(
   bottomSheetTabHelper->ShowPlusAddressesBottomSheet(std::move(callback));
 }
 
-void ChromeAutofillClientIOS::UpdateAutofillPopupDataListValues(
+void ChromeAutofillClientIOS::UpdateAutofillDataListValues(
     base::span<const autofill::SelectOption> datalist) {
   // No op. ios/web_view does not support display datalist.
 }
@@ -488,7 +488,7 @@ std::vector<Suggestion> ChromeAutofillClientIOS::GetPopupSuggestions() const {
   return {};
 }
 
-void ChromeAutofillClientIOS::PinPopupView() {
+void ChromeAutofillClientIOS::PinAutofillSuggestions() {
   NOTIMPLEMENTED();
 }
 
@@ -499,7 +499,8 @@ void ChromeAutofillClientIOS::UpdatePopup(
   NOTIMPLEMENTED();
 }
 
-void ChromeAutofillClientIOS::HideAutofillPopup(PopupHidingReason reason) {
+void ChromeAutofillClientIOS::HideAutofillSuggestions(
+    PopupHidingReason reason) {
   [bridge_ hideAutofillPopup];
 }
 

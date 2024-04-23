@@ -920,7 +920,7 @@ void ChromeAutofillClient::HideTouchToFillCreditCard() {
 #endif
 }
 
-void ChromeAutofillClient::ShowAutofillPopup(
+void ChromeAutofillClient::ShowAutofillSuggestions(
     const PopupOpenArgs& open_args,
     base::WeakPtr<AutofillPopupDelegate> delegate) {
   // The Autofill Popup cannot open if it overlaps with another popup.
@@ -932,11 +932,12 @@ void ChromeAutofillClient::ShowAutofillPopup(
   // attempt to open. This works because the tasks of hiding the IPH and showing
   // the Autofill Popup are posted on the same thread (UI thread).
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ChromeAutofillClient::ShowAutofillPopupImpl,
-                                GetWeakPtr(), open_args, delegate));
+      FROM_HERE,
+      base::BindOnce(&ChromeAutofillClient::ShowAutofillSuggestionsImpl,
+                     GetWeakPtr(), open_args, delegate));
 }
 
-void ChromeAutofillClient::UpdateAutofillPopupDataListValues(
+void ChromeAutofillClient::UpdateAutofillDataListValues(
     base::span<const SelectOption> options) {
   if (suggestion_controller_.get()) {
     suggestion_controller_->UpdateDataListValues(options);
@@ -948,7 +949,7 @@ std::vector<Suggestion> ChromeAutofillClient::GetPopupSuggestions() const {
                                 : std::vector<Suggestion>();
 }
 
-void ChromeAutofillClient::PinPopupView() {
+void ChromeAutofillClient::PinAutofillSuggestions() {
   if (suggestion_controller_.get()) {
     suggestion_controller_->PinView();
   }
@@ -984,7 +985,7 @@ void ChromeAutofillClient::UpdatePopup(
       ShouldAutofillPopupAutoselectFirstSuggestion(trigger_source));
 }
 
-void ChromeAutofillClient::HideAutofillPopup(PopupHidingReason reason) {
+void ChromeAutofillClient::HideAutofillSuggestions(PopupHidingReason reason) {
   if (suggestion_controller_.get()) {
     suggestion_controller_->Hide(reason);
   }
@@ -1247,7 +1248,7 @@ std::u16string ChromeAutofillClient::GetAccountHolderName() {
   return base::UTF8ToUTF16(primary_account_info.full_name);
 }
 
-void ChromeAutofillClient::ShowAutofillPopupImpl(
+void ChromeAutofillClient::ShowAutofillSuggestionsImpl(
     const PopupOpenArgs& open_args,
     base::WeakPtr<AutofillPopupDelegate> delegate) {
   // Convert element_bounds to be in screen space.

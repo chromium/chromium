@@ -430,7 +430,10 @@ class MockAutofillClient : public TestAutofillClient {
               GetProfileType,
               (),
               (const override));
-  MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason reason), (override));
+  MOCK_METHOD(void,
+              HideAutofillSuggestions,
+              (PopupHidingReason reason),
+              (override));
   MOCK_METHOD(bool, IsPasswordManagerEnabled, (), (override));
   MOCK_METHOD(void,
               DidFillOrPreviewForm,
@@ -6803,9 +6806,9 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_AboutBlankTarget) {
 }
 
 // Tests that both Autofill popup and TTF are hidden on renderer event.
-TEST_F(BrowserAutofillManagerTest, HideAutofillPopupAndOtherPopups) {
+TEST_F(BrowserAutofillManagerTest, HideAutofillSuggestionsAndOtherPopups) {
   EXPECT_CALL(autofill_client_,
-              HideAutofillPopup(PopupHidingReason::kRendererEvent));
+              HideAutofillSuggestions(PopupHidingReason::kRendererEvent));
   EXPECT_CALL(autofill_client_, HideAutofillFieldIphForManualFallbackFeature);
   EXPECT_CALL(touch_to_fill_delegate(), HideTouchToFill);
   EXPECT_CALL(fast_checkout_delegate(),
@@ -6816,7 +6819,7 @@ TEST_F(BrowserAutofillManagerTest, HideAutofillPopupAndOtherPopups) {
 // Tests that only Autofill popup is hidden on editing end, but not TTF or FC.
 TEST_F(BrowserAutofillManagerTest, OnDidEndTextFieldEditing) {
   EXPECT_CALL(autofill_client_,
-              HideAutofillPopup(PopupHidingReason::kEndEditing));
+              HideAutofillSuggestions(PopupHidingReason::kEndEditing));
   EXPECT_CALL(touch_to_fill_delegate(), HideTouchToFill).Times(0);
   EXPECT_CALL(fast_checkout_delegate(),
               HideFastCheckout(/*allow_further_runs=*/false))

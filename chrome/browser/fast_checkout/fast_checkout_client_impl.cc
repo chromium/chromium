@@ -202,7 +202,7 @@ bool FastCheckoutClientImpl::TryToStart(
   ShowFastCheckoutUI();
 
   fast_checkout_ui_state_ = FastCheckoutUIState::kIsShowing;
-  autofill_client_->HideAutofillPopup(
+  autofill_client_->HideAutofillSuggestions(
       autofill::PopupHidingReason::kOverlappingWithFastCheckoutSurface);
 
   return true;

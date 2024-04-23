@@ -60,11 +60,11 @@ class MockAutofillClient : public TestAutofillClient {
   MockAutofillClient() = default;
   ~MockAutofillClient() override = default;
   MOCK_METHOD(void,
-              ShowAutofillPopup,
+              ShowAutofillSuggestions,
               (const AutofillClient::PopupOpenArgs&,
                base::WeakPtr<AutofillPopupDelegate>),
               (override));
-  MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason), (override));
+  MOCK_METHOD(void, HideAutofillSuggestions, (PopupHidingReason), (override));
 };
 
 class MockPasswordManagerDriver : public StubPasswordManagerDriver {
@@ -234,7 +234,7 @@ class PasswordManualFallbackFlowTest : public ::testing::Test {
 TEST_F(PasswordManualFallbackFlowTest, RunFlow_NoSuggestionsReturned) {
   InitializeFlow();
 
-  EXPECT_CALL(autofill_client(), ShowAutofillPopup).Times(0);
+  EXPECT_CALL(autofill_client(), ShowAutofillSuggestions).Times(0);
 
   flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
@@ -245,7 +245,7 @@ TEST_F(PasswordManualFallbackFlowTest, RunFlow_NoSuggestionsReturned) {
 TEST_F(PasswordManualFallbackFlowTest, ReturnSuggestions_NoFlowInvocation) {
   InitializeFlow();
 
-  EXPECT_CALL(autofill_client(), ShowAutofillPopup).Times(0);
+  EXPECT_CALL(autofill_client(), ShowAutofillSuggestions).Times(0);
 
   ProcessPasswordStoreUpdates();
 }
@@ -259,7 +259,7 @@ TEST_F(PasswordManualFallbackFlowTest, ReturnSuggestions_InvokeFlow) {
   const gfx::RectF bounds(1, 1, 2, 2);
   EXPECT_CALL(
       autofill_client(),
-      ShowAutofillPopup(
+      ShowAutofillSuggestions(
           AllOf(
               Field("element_bounds",
                     &AutofillClient::PopupOpenArgs::element_bounds, bounds),
@@ -284,7 +284,7 @@ TEST_F(PasswordManualFallbackFlowTest, InvokeFlow_ReturnSuggestions) {
 
   EXPECT_CALL(
       autofill_client(),
-      ShowAutofillPopup(
+      ShowAutofillSuggestions(
           AllOf(
               Field("element_bounds",
                     &AutofillClient::PopupOpenArgs::element_bounds, bounds),
@@ -311,7 +311,7 @@ TEST_F(PasswordManualFallbackFlowTest, LastRunParametersAreUsed) {
 
   EXPECT_CALL(
       autofill_client(),
-      ShowAutofillPopup(
+      ShowAutofillSuggestions(
           AllOf(
               Field("element_bounds",
                     &AutofillClient::PopupOpenArgs::element_bounds, bounds_2),
@@ -336,7 +336,7 @@ TEST_F(PasswordManualFallbackFlowTest, RunFlowMultipleTimes) {
   const gfx::RectF bounds_2(2, 2, 4, 4);
   EXPECT_CALL(
       autofill_client(),
-      ShowAutofillPopup(
+      ShowAutofillSuggestions(
           AllOf(
               Field("element_bounds",
                     &AutofillClient::PopupOpenArgs::element_bounds, bounds_1),
@@ -351,7 +351,7 @@ TEST_F(PasswordManualFallbackFlowTest, RunFlowMultipleTimes) {
 
   EXPECT_CALL(
       autofill_client(),
-      ShowAutofillPopup(
+      ShowAutofillSuggestions(
           AllOf(
               Field("element_bounds",
                     &AutofillClient::PopupOpenArgs::element_bounds, bounds_2),
@@ -374,7 +374,7 @@ TEST_F(PasswordManualFallbackFlowTest, DifferentDomain_NoSuggestedPasswords) {
   const gfx::RectF bounds(1, 1, 2, 2);
   EXPECT_CALL(
       autofill_client(),
-      ShowAutofillPopup(
+      ShowAutofillSuggestions(
           AllOf(
               Field("element_bounds",
                     &AutofillClient::PopupOpenArgs::element_bounds, bounds),
@@ -403,7 +403,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   const gfx::RectF bounds(1, 1, 2, 2);
   EXPECT_CALL(
       autofill_client(),
-      ShowAutofillPopup(
+      ShowAutofillSuggestions(
           AllOf(
               Field("element_bounds",
                     &AutofillClient::PopupOpenArgs::element_bounds, bounds),
@@ -445,7 +445,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   // section.
   EXPECT_CALL(
       autofill_client(),
-      ShowAutofillPopup(
+      ShowAutofillSuggestions(
           AllOf(
               Field("element_bounds",
                     &AutofillClient::PopupOpenArgs::element_bounds, bounds),
@@ -475,7 +475,7 @@ TEST_F(PasswordManualFallbackFlowTest, SameDomain_SuggestsExactMatches) {
   const gfx::RectF bounds(1, 1, 2, 2);
   EXPECT_CALL(
       autofill_client(),
-      ShowAutofillPopup(
+      ShowAutofillSuggestions(
           AllOf(
               Field("element_bounds",
                     &AutofillClient::PopupOpenArgs::element_bounds, bounds),
@@ -524,7 +524,7 @@ TEST_F(PasswordManualFallbackFlowTest, AcceptUsernameFieldByFieldSuggestion) {
   EXPECT_CALL(driver(),
               FillField(field_id, std::u16string(u"username@example.com")));
   EXPECT_CALL(autofill_client(),
-              HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
+              HideAutofillSuggestions(PopupHidingReason::kAcceptSuggestion));
   flow().DidAcceptSuggestion(
       autofill::test::CreateAutofillSuggestion(
           PopupItemId::kPasswordFieldByFieldFilling, u"username@example.com"),

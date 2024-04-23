@@ -48,7 +48,7 @@ AndroidAutofillClient::AndroidAutofillClient(content::WebContents* web_contents)
     : autofill::ContentAutofillClient(web_contents) {}
 
 AndroidAutofillClient::~AndroidAutofillClient() {
-  HideAutofillPopup(autofill::PopupHidingReason::kTabGone);
+  HideAutofillSuggestions(autofill::PopupHidingReason::kTabGone);
 }
 
 bool AndroidAutofillClient::IsOffTheRecord() const {
@@ -197,13 +197,13 @@ bool AndroidAutofillClient::ShowTouchToFillCreditCard(
 
 void AndroidAutofillClient::HideTouchToFillCreditCard() {}
 
-void AndroidAutofillClient::ShowAutofillPopup(
+void AndroidAutofillClient::ShowAutofillSuggestions(
     const autofill::AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<autofill::AutofillPopupDelegate> delegate) {
   NOTIMPLEMENTED();
 }
 
-void AndroidAutofillClient::UpdateAutofillPopupDataListValues(
+void AndroidAutofillClient::UpdateAutofillDataListValues(
     base::span<const autofill::SelectOption> datalist) {
   // Leaving as an empty method since updating autofill popup window
   // dynamically does not seem to be a useful feature when delegating to Android
@@ -216,7 +216,7 @@ std::vector<autofill::Suggestion> AndroidAutofillClient::GetPopupSuggestions()
   return {};
 }
 
-void AndroidAutofillClient::PinPopupView() {
+void AndroidAutofillClient::PinAutofillSuggestions() {
   NOTIMPLEMENTED();
 }
 
@@ -227,7 +227,7 @@ void AndroidAutofillClient::UpdatePopup(
   NOTIMPLEMENTED();
 }
 
-void AndroidAutofillClient::HideAutofillPopup(
+void AndroidAutofillClient::HideAutofillSuggestions(
     autofill::PopupHidingReason reason) {
   // TODO(321950502): Analyze hiding the datalist popup here.
 }

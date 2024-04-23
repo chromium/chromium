@@ -298,7 +298,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
   }
 
   if (should_hide_popup) {
-    autofill_client_->HideAutofillPopup(
+    autofill_client_->HideAutofillSuggestions(
         autofill::PopupHidingReason::kAcceptSuggestion);
   }
 }
@@ -373,7 +373,7 @@ void PasswordAutofillManager::OnNoCredentialsFound() {
 void PasswordAutofillManager::DeleteFillData() {
   fill_data_.reset();
   if (autofill_client_) {
-    autofill_client_->HideAutofillPopup(
+    autofill_client_->HideAutofillSuggestions(
         autofill::PopupHidingReason::kStaleData);
   }
   CancelBiometricReauthIfOngoing();
@@ -487,7 +487,7 @@ bool PasswordAutofillManager::ShowPopup(
   if (!password_manager_driver_->CanShowAutofillUi())
     return false;
   if (!ContainsOtherThanManagePasswords(suggestions)) {
-    autofill_client_->HideAutofillPopup(
+    autofill_client_->HideAutofillSuggestions(
         autofill::PopupHidingReason::kNoSuggestions);
     return false;
   }
@@ -497,8 +497,8 @@ bool PasswordAutofillManager::ShowPopup(
       bounds, text_direction, suggestions,
       autofill::AutofillSuggestionTriggerSource::kPasswordManager,
       /*form_control_ax_id=*/0);
-  autofill_client_->ShowAutofillPopup(last_popup_open_args_,
-                                      weak_ptr_factory_.GetWeakPtr());
+  autofill_client_->ShowAutofillSuggestions(last_popup_open_args_,
+                                            weak_ptr_factory_.GetWeakPtr());
   return true;
 }
 
@@ -507,7 +507,7 @@ void PasswordAutofillManager::UpdatePopup(
   if (!password_manager_driver_->CanShowAutofillUi())
     return;
   if (!ContainsOtherThanManagePasswords(suggestions)) {
-    autofill_client_->HideAutofillPopup(
+    autofill_client_->HideAutofillSuggestions(
         autofill::PopupHidingReason::kNoSuggestions);
     return;
   }
@@ -617,14 +617,14 @@ void PasswordAutofillManager::OnFaviconReady(
 void PasswordAutofillManager::OnUnlockReauthCompleted(
     autofill::PopupItemId unlock_item,
     PasswordManagerClient::ReauthSucceeded reauth_succeeded) {
-  autofill_client_->ShowAutofillPopup(last_popup_open_args_,
-                                      weak_ptr_factory_.GetWeakPtr());
-  autofill_client_->PinPopupView();
+  autofill_client_->ShowAutofillSuggestions(last_popup_open_args_,
+                                            weak_ptr_factory_.GetWeakPtr());
+  autofill_client_->PinAutofillSuggestions();
   if (reauth_succeeded) {
     if (unlock_item ==
         autofill::PopupItemId::kPasswordAccountStorageOptInAndGenerate) {
       password_client_->GeneratePassword(PasswordGenerationType::kAutomatic);
-      autofill_client_->HideAutofillPopup(
+      autofill_client_->HideAutofillSuggestions(
           autofill::PopupHidingReason::kAcceptSuggestion);
     }
     return;
@@ -658,7 +658,7 @@ void PasswordAutofillManager::CancelBiometricReauthIfOngoing() {
 }
 
 void PasswordAutofillManager::HidePopup() {
-  autofill_client_->HideAutofillPopup(
+  autofill_client_->HideAutofillSuggestions(
       autofill::PopupHidingReason::kAcceptSuggestion);
 }
 

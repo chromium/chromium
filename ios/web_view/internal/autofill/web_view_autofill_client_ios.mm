@@ -87,7 +87,7 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
       log_manager_(std::move(log_manager)) {}
 
 WebViewAutofillClientIOS::~WebViewAutofillClientIOS() {
-  HideAutofillPopup(PopupHidingReason::kTabGone);
+  HideAutofillSuggestions(PopupHidingReason::kTabGone);
 }
 
 bool WebViewAutofillClientIOS::IsOffTheRecord() const {
@@ -265,13 +265,13 @@ void WebViewAutofillClientIOS::HideTouchToFillCreditCard() {
   NOTREACHED();
 }
 
-void WebViewAutofillClientIOS::ShowAutofillPopup(
+void WebViewAutofillClientIOS::ShowAutofillSuggestions(
     const AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<AutofillPopupDelegate> delegate) {
   [bridge_ showAutofillPopup:open_args.suggestions popupDelegate:delegate];
 }
 
-void WebViewAutofillClientIOS::UpdateAutofillPopupDataListValues(
+void WebViewAutofillClientIOS::UpdateAutofillDataListValues(
     base::span<const autofill::SelectOption> datalist) {
   // No op. ios/web_view does not support display datalist.
 }
@@ -281,7 +281,7 @@ std::vector<Suggestion> WebViewAutofillClientIOS::GetPopupSuggestions() const {
   return {};
 }
 
-void WebViewAutofillClientIOS::PinPopupView() {
+void WebViewAutofillClientIOS::PinAutofillSuggestions() {
   NOTIMPLEMENTED();
 }
 
@@ -292,7 +292,8 @@ void WebViewAutofillClientIOS::UpdatePopup(
   NOTIMPLEMENTED();
 }
 
-void WebViewAutofillClientIOS::HideAutofillPopup(PopupHidingReason reason) {
+void WebViewAutofillClientIOS::HideAutofillSuggestions(
+    PopupHidingReason reason) {
   [bridge_ hideAutofillPopup];
 }
 

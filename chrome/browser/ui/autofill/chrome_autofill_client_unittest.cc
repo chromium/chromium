@@ -338,12 +338,12 @@ TEST_F(ChromeAutofillClientTest, AutofillManualFallbackIPH_IsShown) {
 }
 
 TEST_F(ChromeAutofillClientTest,
-       AutofillManualFallbackIPH_HideOnShowAutofillPopup) {
+       AutofillManualFallbackIPH_HideOnShowAutofillSuggestions) {
   auto delegate = std::make_unique<MockAutofillPopupDelegate>();
 
   EXPECT_CALL(*autofill_field_promo_controller_manual_fallback(), Hide);
-  client()->ShowAutofillPopup(AutofillClient::PopupOpenArgs(),
-                              delegate->GetWeakPtr());
+  client()->ShowAutofillSuggestions(AutofillClient::PopupOpenArgs(),
+                                    delegate->GetWeakPtr());
 
   // Showing the Autofill Popup is an asynchronous task.
   task_environment()->RunUntilIdle();

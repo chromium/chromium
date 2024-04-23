@@ -231,7 +231,7 @@ class MockFastCheckoutTriggerValidator : public FastCheckoutTriggerValidator {
 class MockAutofillClient : public autofill::TestContentAutofillClient {
  public:
   using autofill::TestContentAutofillClient::TestContentAutofillClient;
-  MOCK_METHOD(void, HideAutofillPopup, (autofill::PopupHidingReason), ());
+  MOCK_METHOD(void, HideAutofillSuggestions, (autofill::PopupHidingReason), ());
 };
 
 class MockFastCheckoutAccessibilityService
@@ -485,7 +485,7 @@ TEST_F(FastCheckoutClientImplTest, Start_InvalidAutofillManager_NoRun) {
   // Do not expect bottomsheet to show up.
   EXPECT_CALL(*fast_checkout_controller(), Show).Times(0);
   // Do not expect Autofill popups to be hidden.
-  EXPECT_CALL(*autofill_client(), HideAutofillPopup).Times(0);
+  EXPECT_CALL(*autofill_client(), HideAutofillSuggestions).Times(0);
 
   OnBeforeAskForValuesToFill();
   EXPECT_FALSE(fast_checkout_client()->TryToStart(
@@ -519,7 +519,7 @@ TEST_F(FastCheckoutClientImplTest,
   // Do not expect bottomsheet to show up.
   EXPECT_CALL(*fast_checkout_controller(), Show).Times(0);
   // Do not expect Autofill popups to be hidden.
-  EXPECT_CALL(*autofill_client(), HideAutofillPopup).Times(0);
+  EXPECT_CALL(*autofill_client(), HideAutofillSuggestions).Times(0);
 
   EXPECT_FALSE(fast_checkout_client()->TryToStart(
       GURL(kUrl), autofill::FormData(), autofill::FormFieldData(),
@@ -539,10 +539,10 @@ TEST_F(FastCheckoutClientImplTest, Start_ShouldRunReturnsSuccess_Run) {
       Show(UnorderedElementsAre(Pointee(kProfile1), Pointee(kProfile2),
                                 Pointee(kIncompleteProfile)),
            UnorderedElementsAre(Pointee(kCreditCard1), Pointee(kCreditCard2))));
-  // Expect call to `HideAutofillPopup`.
+  // Expect call to `HideAutofillSuggestions`.
   EXPECT_CALL(
       *autofill_client(),
-      HideAutofillPopup(
+      HideAutofillSuggestions(
           autofill::PopupHidingReason::kOverlappingWithFastCheckoutSurface));
 
   EXPECT_TRUE(fast_checkout_client()->TryToStart(

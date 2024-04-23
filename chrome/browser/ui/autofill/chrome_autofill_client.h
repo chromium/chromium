@@ -212,18 +212,18 @@ class ChromeAutofillClient : public ContentAutofillClient,
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest) override;
   void HideTouchToFillCreditCard() override;
-  void ShowAutofillPopup(
+  void ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillPopupDelegate> delegate) override;
-  void UpdateAutofillPopupDataListValues(
+  void UpdateAutofillDataListValues(
       base::span<const SelectOption> datalist) override;
   std::vector<Suggestion> GetPopupSuggestions() const override;
-  void PinPopupView() override;
+  void PinAutofillSuggestions() override;
   std::optional<PopupScreenLocation> GetPopupScreenLocation() const override;
   void UpdatePopup(const std::vector<Suggestion>& suggestions,
                    FillingProduct main_filling_product,
                    AutofillSuggestionTriggerSource trigger_source) override;
-  void HideAutofillPopup(PopupHidingReason reason) override;
+  void HideAutofillSuggestions(PopupHidingReason reason) override;
   void UpdateOfferNotification(
       const AutofillOfferData* offer,
       const OfferNotificationOptions& options) override;
@@ -284,8 +284,9 @@ class ChromeAutofillClient : public ContentAutofillClient,
   Profile* GetProfile() const;
   std::u16string GetAccountHolderName();
   bool SupportsConsentlessExecution(const url::Origin& origin);
-  void ShowAutofillPopupImpl(const PopupOpenArgs& open_args,
-                             base::WeakPtr<AutofillPopupDelegate> delegate);
+  void ShowAutofillSuggestionsImpl(
+      const PopupOpenArgs& open_args,
+      base::WeakPtr<AutofillPopupDelegate> delegate);
   base::WeakPtr<ChromeAutofillClient> GetWeakPtr();
 
 #if BUILDFLAG(IS_ANDROID)

@@ -268,7 +268,8 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     OnAutofillAvailabilityEvent(
         mojom::AutofillSuggestionAvailability::kNoSuggestions);
     // No suggestions, any popup currently showing is obsolete.
-    manager_->client().HideAutofillPopup(PopupHidingReason::kNoSuggestions);
+    manager_->client().HideAutofillSuggestions(
+        PopupHidingReason::kNoSuggestions);
     return;
   }
 
@@ -289,7 +290,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     AutofillClient::PopupOpenArgs open_args(
         element_bounds_, query_field_.text_direction(), suggestions,
         trigger_source_, query_field_.form_control_ax_id());
-    manager_->client().ShowAutofillPopup(open_args, GetWeakPtr());
+    manager_->client().ShowAutofillSuggestions(open_args, GetWeakPtr());
   }
 }
 
@@ -323,7 +324,7 @@ void AutofillExternalDelegate::OnAutofillAvailabilityEvent(
 void AutofillExternalDelegate::SetCurrentDataListValues(
     std::vector<SelectOption> datalist) {
   datalist_ = std::move(datalist);
-  manager_->client().UpdateAutofillPopupDataListValues(datalist_);
+  manager_->client().UpdateAutofillDataListValues(datalist_);
 }
 
 absl::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
@@ -649,7 +650,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     manager_->RefetchCardsAndUpdatePopup(query_form_, query_field_,
                                          element_bounds_);
   } else {
-    manager_->client().HideAutofillPopup(PopupHidingReason::kAcceptSuggestion);
+    manager_->client().HideAutofillSuggestions(
+        PopupHidingReason::kAcceptSuggestion);
   }
 }
 
@@ -723,7 +725,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
 }
 
 void AutofillExternalDelegate::DidEndTextFieldEditing() {
-  manager_->client().HideAutofillPopup(PopupHidingReason::kEndEditing);
+  manager_->client().HideAutofillSuggestions(PopupHidingReason::kEndEditing);
 }
 
 void AutofillExternalDelegate::ClearPreviewedForm() {

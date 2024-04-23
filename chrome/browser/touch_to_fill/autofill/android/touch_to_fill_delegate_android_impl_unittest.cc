@@ -50,7 +50,10 @@ class MockAutofillClient : public TestAutofillClient {
                base::span<const CreditCard> cards_to_suggest),
               (override));
   MOCK_METHOD(void, HideTouchToFillCreditCard, (), (override));
-  MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason reason), (override));
+  MOCK_METHOD(void,
+              HideAutofillSuggestions,
+              (PopupHidingReason reason),
+              (override));
 
   void ExpectDelegateWeakPtrFromShowInvalidatedOnHide() {
     EXPECT_CALL(*this, ShowTouchToFillCreditCard)
@@ -190,7 +193,7 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
 
   void TryToShowTouchToFill(bool expected_success) {
     EXPECT_CALL(autofill_client_,
-                HideAutofillPopup(
+                HideAutofillSuggestions(
                     PopupHidingReason::kOverlappingWithTouchToFillSurface))
         .Times(expected_success ? 1 : 0);
 
@@ -478,9 +481,9 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   TryToShowTouchToFill(/*expected_success=*/true);
   touch_to_fill_delegate_->OnDismissed(/*dismissed_by_user=*/true);
 
-  EXPECT_CALL(
-      autofill_client_,
-      HideAutofillPopup(PopupHidingReason::kOverlappingWithTouchToFillSurface))
+  EXPECT_CALL(autofill_client_,
+              HideAutofillSuggestions(
+                  PopupHidingReason::kOverlappingWithTouchToFillSurface))
       .Times(0);
   TryToShowTouchToFill(/*expected_success=*/false);
 }
@@ -489,9 +492,9 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
        TryToShowTouchToFillFailsIfShownCurrently) {
   TryToShowTouchToFill(/*expected_success=*/true);
 
-  EXPECT_CALL(
-      autofill_client_,
-      HideAutofillPopup(PopupHidingReason::kOverlappingWithTouchToFillSurface))
+  EXPECT_CALL(autofill_client_,
+              HideAutofillSuggestions(
+                  PopupHidingReason::kOverlappingWithTouchToFillSurface))
       .Times(0);
   EXPECT_FALSE(
       touch_to_fill_delegate_->TryToShowTouchToFill(form_, form_.fields[0]));

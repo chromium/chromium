@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest,
       {Suggestion(u"test")},
       AutofillSuggestionTriggerSource::kFormControlElementClicked,
       /*form_control_ax_id=*/0);
-  client()->ShowAutofillPopup(open_args, weak_delegate);
+  client()->ShowAutofillSuggestions(open_args, weak_delegate);
 
   // Showing the Autofill Popup and hiding the IPH are asynchronous tasks.
   EXPECT_TRUE(base::test::RunUntil([&]() { return popup_shown; }))

@@ -425,24 +425,24 @@ class TestAutofillClientTemplate : public T {
 
   void HideTouchToFillCreditCard() override {}
 
-  void ShowAutofillPopup(
+  void ShowAutofillSuggestions(
       const AutofillClient::PopupOpenArgs& open_args,
       base::WeakPtr<AutofillPopupDelegate> delegate) override {
     is_showing_popup_ = true;
   }
 
-  void UpdateAutofillPopupDataListValues(
+  void UpdateAutofillDataListValues(
       base::span<const SelectOption> options) override {}
 
   std::vector<Suggestion> GetPopupSuggestions() const override { return {}; }
 
-  void PinPopupView() override {}
+  void PinAutofillSuggestions() override {}
 
   void UpdatePopup(const std::vector<Suggestion>& suggestions,
                    FillingProduct main_filling_product,
                    AutofillSuggestionTriggerSource trigger_source) override {}
 
-  void HideAutofillPopup(PopupHidingReason reason) override {
+  void HideAutofillSuggestions(PopupHidingReason reason) override {
     popup_hidden_reason_ = reason;
     is_showing_popup_ = false;
   }
