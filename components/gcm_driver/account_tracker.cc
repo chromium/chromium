@@ -91,7 +91,7 @@ void AccountTracker::OnPrimaryAccountChanged(
   // ConsentLevel::kSync is cleaned up from the codebase.
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet: {
-      TRACE_EVENT0("identity", "AccountTracker::OnPrimaryAccountSet");
+      TRACE_EVENT0("identity", "AccountTracker::OnPrimaryAccountChanged");
       std::vector<CoreAccountInfo> accounts =
           identity_manager_->GetAccountsWithRefreshTokens();
       DVLOG(1) << "LOGIN " << accounts.size() << " accounts available.";

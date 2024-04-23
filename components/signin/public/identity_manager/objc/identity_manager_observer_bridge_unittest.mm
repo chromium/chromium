@@ -135,7 +135,7 @@ class IdentityManagerObserverBridgeTest : public testing::Test {
 
 // Tests IdentityManagerObserverBridge::OnPrimaryAccountChanged(), with set
 // event.
-TEST_F(IdentityManagerObserverBridgeTest, TestOnPrimaryAccountSet) {
+TEST_F(IdentityManagerObserverBridgeTest, TestOnPrimaryAccountChanged) {
   PrimaryAccountChangeEvent::State previous_state;
   PrimaryAccountChangeEvent::State current_state(account_info_,
                                                  signin::ConsentLevel::kSync);

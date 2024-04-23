@@ -94,7 +94,7 @@ class IdentityManager : public KeyedService,
 
     // Called when a new refresh token is associated with |account_info|.
     // NOTE: On a signin event, the ordering of this callback wrt the
-    // OnPrimaryAccountSet() callback is undefined. If you as a client are
+    // |OnPrimaryAccountChanged| callback is undefined. If you as a client are
     // interested in both callbacks, PrimaryAccountAccessTokenFetcher will
     // likely meet your needs. Otherwise, if this lack of ordering is
     // problematic for your use case, please contact blundell@chromium.org.
