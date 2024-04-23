@@ -840,8 +840,9 @@ BrowserProcessImpl::extension_event_router_forwarder() {
 NotificationUIManager* BrowserProcessImpl::notification_ui_manager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
-  if (!created_notification_ui_manager_)
+  if (!created_notification_ui_manager_ && !shutting_down_) {
     CreateNotificationUIManager();
+  }
   return notification_ui_manager_.get();
 #else
   return nullptr;
