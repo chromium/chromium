@@ -14,31 +14,40 @@ vars = {
   'build_with_chromium': False,
   'generate_location_tags': False,
 
+  'download_remoteexec_cfg': False,
+  'rbe_instance': Str('projects/rbe-chrome-untrusted/instances/default_instance'),
+  'reclient_package': 'infra/rbe/client/',
+  'reclient_version': 're_client_version:0.138.0.e854224-gomaip',
+  'rewrapper_cfg_project': Str(''),
+
   'chromium_git': 'https://chromium.googlesource.com',
 
-  'abseil_revision': 'c1aaebb624a60dacbc75547ff8771d8cae57293f',
-  'build_revision': '6be968106c392e4d179622e443ba586b73a958a6',
-  'buildtools_revision': '2ff42d2008f09f65de12e70c6ff0ad58ddb090ad',
-  'catapult_revision': 'bdf25f32dca0cdcc633b6d19d886c0aeeba23527',
-  'chromium_googletest_revision': '39342c077fc0eaa3ba17d5f51a774b843a20df48',
-  'chromium_testing_revision': 'e0a8fc7153fbd4f2d19f58cb60c981c5dcb528d0',
-  'clang_format_revision': 'f97059df7f8b205064625cdb5f97b56668a125ef',
-  'clang_revision': 'effd9257d456f2d42e9e22fa4f37a24d8cf0b5b5',
-  'depot_tools_revision': '62c7a8bad074fdb4339e544b0053206a4f820e15',
-  'gn_version': 'git_revision:edf6ef4b06b42c58292faea78498aff76bdf68ed',
-  'googletest_revision': 'af29db7ec28d6df1c7f0f745186884091e602e07',
-  'libcxx_revision':       '6f4617b9efc36525e030ec9855114f3c93550ec1',
-  'libcxxabi_revision':    'f7460fc60ab56553f0b3b0853f1ea60aa51b9478',
+  'abseil_revision': 'a64dd87cec79c80c88190265cfea0cbd4027677f',
+  'build_revision': '10bd27f7de8a48c05205b92ccdaf782ae6f2fe17',
+  'buildtools_revision': '571c37f17dd4d1de37cc2efb6b32ff1032e47be2',
+  'catapult_revision': 'e939ac77bb9471acc10f49e82cfe65790068c3d1',
+  'chromium_googletest_revision': 'c5396f931a1319b98da4915f090d00c4d9900601',
+  'chromium_re2_revision': '716d20b6550107ddeba09ed39f2f8185cd6a4aab',
+  'chromium_testing_revision': '870c20f1d8079296b7cf86b85b0e9a0b9b252342',
+  'clang_format_revision': '3c0acd2d4e73dd911309d9e970ba09d58bf23a62',
+  'clang_revision': 'bca0c9f60a365ef2294c42e216420c561093f06f',
+  'depot_tools_revision': '6ba67afd6fb7718743af91b847ddf1907f3ee9a6',
+  'gn_version': 'git_revision:155c53952ec2dc324b0438ce5b9bd4a286577d25',
+  'googletest_revision': '5a37b517ad4ab6738556f0284c256cae1466c5b4',
+  'libcxx_revision':       'e3b94d0e5b86883fd77696bf10dc33ba250ba99b',
+  'libcxxabi_revision':    '51fe3584464d29067c8f0663f6e6dec84cc86868',
   'ninja_version': 'version:2@1.11.1.chromium.6',
+  're2_revision': 'b84e3ff189980a33d4a0c6fa1201aa0b3b8bab4a',
 }
 
 deps = {
+  'third_party/clang-format/script':
+     Var('chromium_git') +
+     '/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@' +
+     Var('clang_format_revision'),
+
   'build': '{chromium_git}/chromium/src/build.git@{build_revision}',
   'buildtools': '{chromium_git}/chromium/src/buildtools.git@{buildtools_revision}',
-
-  'buildtools/clang_format/script':
-      '{chromium_git}/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@' +
-      '{clang_format_revision}',
 
   'buildtools/linux64': {
     'packages': [
@@ -71,6 +80,16 @@ deps = {
     'condition': 'host_os == "win"',
   },
 
+  'buildtools/reclient': {
+     'packages': [
+       {
+         'package': Var('reclient_package') + '${{platform}}',
+         'version': Var('reclient_version'),
+       }
+     ],
+     'dep_type': 'cipd',
+   },
+
   'testing': '{chromium_git}/chromium/src/testing.git@{chromium_testing_revision}',
   'third_party/abseil-cpp': '{chromium_git}/chromium/src/third_party/abseil-cpp@{abseil_revision}',
   'third_party/catapult': '{chromium_git}/catapult.git@{catapult_revision}',
@@ -95,6 +114,11 @@ deps = {
     ],
     'dep_type': 'cipd',
   },
+
+  'third_party/re2':
+      '{chromium_git}/chromium/src/third_party/re2.git@{chromium_re2_revision}',
+  'third_party/re2/src':
+      '{chromium_git}/external/github.com/google/re2.git@{re2_revision}',
 
   'tools/clang': {
     'url': '{chromium_git}/chromium/src/tools/clang.git@{clang_revision}',
@@ -240,5 +264,63 @@ hooks = [
     ],
   },
 
+  # Configure remote exec cfg files
+  {
+    # Use luci_auth if on windows and using chrome-untrusted project
+    'name': 'download_and_configure_reclient_cfgs',
+    'pattern': '.',
+    'condition': 'download_remoteexec_cfg and host_os == "win"',
+    'action': ['python3',
+               'buildtools/reclient_cfgs/configure_reclient_cfgs.py',
+               '--rbe_instance',
+               Var('rbe_instance'),
+               '--reproxy_cfg_template',
+               'reproxy.cfg.template',
+               '--rewrapper_cfg_project',
+               Var('rewrapper_cfg_project'),
+               '--use_luci_auth_credshelper',
+               '--quiet',
+               ],
+  },  {
+    'name': 'download_and_configure_reclient_cfgs',
+    'pattern': '.',
+    'condition': 'download_remoteexec_cfg and not host_os == "win"',
+    'action': ['python3',
+               'buildtools/reclient_cfgs/configure_reclient_cfgs.py',
+               '--rbe_instance',
+               Var('rbe_instance'),
+               '--reproxy_cfg_template',
+               'reproxy.cfg.template',
+               '--rewrapper_cfg_project',
+               Var('rewrapper_cfg_project'),
+               '--quiet',
+               ],
+  },
+  {
+    'name': 'configure_reclient_cfgs',
+    'pattern': '.',
+    'condition': 'not download_remoteexec_cfg',
+    'action': ['python3',
+               'buildtools/reclient_cfgs/configure_reclient_cfgs.py',
+               '--rbe_instance',
+               Var('rbe_instance'),
+               '--reproxy_cfg_template',
+               'reproxy.cfg.template',
+               '--rewrapper_cfg_project',
+               Var('rewrapper_cfg_project'),
+               '--skip_remoteexec_cfg_fetch',
+               '--quiet',
+               ],
+  },
+  # Configure Siso for developer builds.
+  {
+    'name': 'configure_siso',
+    'pattern': '.',
+    'action': ['python3',
+               'build/config/siso/configure_siso.py',
+               '--rbe_instance',
+               Var('rbe_instance'),
+               ],
+  },
 ]
 
