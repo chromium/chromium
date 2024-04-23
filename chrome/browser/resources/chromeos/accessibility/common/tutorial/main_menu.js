@@ -12,37 +12,58 @@ import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Curriculum, InteractionMedium, MainMenuButtonData, Screen} from './constants.js';
-import {Localization} from './localization.js';
+import {Localization, LocalizationInterface} from './localization.js';
 
-export const MainMenu = Polymer({
-  is: 'main-menu',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LocalizationInterface}
+ */
+const MainMenuBase = mixinBehaviors([Localization], PolymerElement);
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class MainMenu extends MainMenuBase {
+  static get is() {
+    return 'main-menu';
+  }
 
-  behaviors: [Localization],
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    /** @private {string} */
-    header_: {type: String},
-    /** @private {string} */
-    headerDescription_: {type: String},
-    /** @private  {Array<!MainMenuButtonData>} */
-    buttonData_: {type: Array},
+  static get properties() {
+    return {
+      /** @private {string} */
+      header_: {type: String},
+      /** @private {string} */
+      headerDescription_: {type: String},
+      /** @private  {Array<!MainMenuButtonData>} */
+      buttonData_: {type: Array},
 
-    // Observed properties.
-    /** @type {Screen} */
-    activeScreen: {type: String, observer: 'maybeFocusHeader_'},
-  },
+      // Observed properties.
+      /** @type {Screen} */
+      activeScreen: {type: String, observer: 'maybeFocusHeader_'},
+    };
+  }
+
+  /**
+   * @param {string} eventName
+   * @param {*} detail
+   */
+  fire(eventName, detail) {
+    this.dispatchEvent(
+      new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
+  }
 
   /** @private */
   maybeFocusHeader_() {
     if (this.activeScreen === Screen.MAIN_MENU) {
       this.$.mainMenuHeader.focus();
     }
-  },
+  }
 
   /**
    * @param {Screen} activeScreen
@@ -51,7 +72,7 @@ export const MainMenu = Polymer({
    */
   shouldHideMainMenu(activeScreen) {
     return activeScreen !== Screen.MAIN_MENU;
-  },
+  }
 
   /**
    * @param {InteractionMedium} buttonMedium
@@ -61,7 +82,7 @@ export const MainMenu = Polymer({
    */
   shouldHideButton_(buttonMedium, activeMedium) {
     return buttonMedium !== activeMedium;
-  },
+  }
 
   /**
    * @param {!MouseEvent} evt
@@ -70,5 +91,6 @@ export const MainMenu = Polymer({
   onButtonClicked_(evt) {
     // Fires an event with button data attached to |evt.detail|.
     this.fire('button-clicked', evt.model.data);
-  },
-});
+  }
+}
+customElements.define(MainMenu.is, MainMenu);
