@@ -31,6 +31,7 @@
 #include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/shared_dictionary_error.mojom.h"
 #include "services/network/shared_dictionary/shared_dictionary.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_disk_cache.h"
@@ -126,22 +127,31 @@ void WriteDictionary(
     const std::vector<std::string>& data_list,
     const std::string& additional_options = std::string(),
     const std::string& additional_header = kDefaultCacheControlHeader) {
+  const std::string use_as_dictionary_header =
+      base::StrCat({"match=\"/", match, "\"", additional_options});
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ": match=\"/", match, "\"", additional_options, "\n",
-           additional_header, "\n"}));
+           ": ", use_as_dictionary_header, "\n", additional_header, "\n"}));
   ASSERT_TRUE(headers);
-  scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-      dictionary_url, /*request_time=*/base::Time::Now(),
-      /*response_time=*/base::Time::Now(), *headers,
-      /*was_fetched_via_cache=*/false,
-      /*access_allowed_check_callback=*/base::BindOnce([]() { return true; }));
-  ASSERT_TRUE(writer);
+  base::expected<scoped_refptr<SharedDictionaryWriter>,
+                 mojom::SharedDictionaryError>
+      writer = SharedDictionaryStorage::MaybeCreateWriter(
+          use_as_dictionary_header, /*shared_dictionary_writer_enabled=*/true,
+          storage, mojom::RequestMode::kSameOrigin,
+          mojom::FetchResponseType::kBasic, dictionary_url,
+          /*request_time=*/base::Time::Now(),
+          /*response_time=*/base::Time::Now(), *headers,
+          /*was_fetched_via_cache=*/false,
+          /*access_allowed_check_callback=*/base::BindOnce([]() {
+            return true;
+          }));
+  ASSERT_TRUE(writer.has_value());
+  ASSERT_TRUE(*writer);
   for (const std::string& data : data_list) {
-    writer->Append(data.c_str(), data.size());
+    (*writer)->Append(data.c_str(), data.size());
   }
-  writer->Finish();
+  (*writer)->Finish();
 }
 
 base::TimeDelta GetDefaultExpiration() {
@@ -501,29 +511,6 @@ TEST_P(SharedDictionaryManagerTest,
                                           mojom::RequestDestination::kEmpty));
 }
 
-TEST_P(SharedDictionaryManagerTest, NoWriterForNoUseAsDictionaryHeader) {
-  std::unique_ptr<SharedDictionaryManager> manager =
-      CreateSharedDictionaryManager();
-
-  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl1),
-                                                  kSite1);
-
-  scoped_refptr<SharedDictionaryStorage> storage =
-      manager->GetStorage(isolation_key);
-
-  ASSERT_TRUE(storage);
-  scoped_refptr<net::HttpResponseHeaders> headers =
-      net::HttpResponseHeaders::TryToCreate("HTTP/1.1 200 OK\n");
-  ASSERT_TRUE(headers);
-  scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-      GURL("https://origin1.test/testfile.txt"),
-      /*request_time=*/base::Time::Now(), /*response_time=*/base::Time::Now(),
-      *headers,
-      /*was_fetched_via_cache=*/false,
-      /*access_allowed_check_callback=*/base::BindOnce([]() { return true; }));
-  EXPECT_FALSE(writer);
-}
-
 TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryHeader) {
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
@@ -537,35 +524,40 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryHeader) {
 
   struct {
     std::string header_string;
-    bool expect_success;
+    std::optional<mojom::SharedDictionaryError> error_status;
   } kTestCases[] = {
       // Empty
-      {"", false},
+      {"", mojom::SharedDictionaryError::kWriteErrorNoMatchField},
 
       // Invalid dictionary.
-      {"()", false},
+      {"()", mojom::SharedDictionaryError::kWriteErrorInvalidStructuredHeader},
 
       // No `match` value.
-      {"dummy", false},
+      {"dummy", mojom::SharedDictionaryError::kWriteErrorNoMatchField},
 
       // Valid `match` value.
-      {"match=\"/test\"", true},
-      {"match=\"test\"", true},
+      {"match=\"/test\"", /*error_status=*/std::nullopt},
+      {"match=\"test\"", /*error_status=*/std::nullopt},
 
       // List `match` value is not supported.
-      {"match=(\"test1\" \"test2\")", false},
+      {"match=(\"test1\" \"test2\")",
+       mojom::SharedDictionaryError::kWriteErrorNonStringMatchField},
       // Token `match` value is not supported.
-      {"match=test", false},
+      {"match=test",
+       mojom::SharedDictionaryError::kWriteErrorNonStringMatchField},
 
       // We support `raw` type.
-      {"match=\"test\", type=raw", true},
-      {"match=\"test\", type=(raw)", true},
+      {"match=\"test\", type=raw", /*error_status=*/std::nullopt},
+      {"match=\"test\", type=(raw)", /*error_status=*/std::nullopt},
       // The type must be a token.
-      {"match=\"test\", type=\"raw\"", false},
+      {"match=\"test\", type=\"raw\"",
+       mojom::SharedDictionaryError::kWriteErrorNonTokenTypeField},
       // We only support `raw` type.
-      {"match=\"test\", type=other", false},
+      {"match=\"test\", type=other",
+       mojom::SharedDictionaryError::kWriteErrorUnsupportedType},
       // We don't support multiple types.
-      {"match=\"test\", type=(raw,rawx)", false},
+      {"match=\"test\", type=(raw, rawx)",
+       mojom::SharedDictionaryError::kWriteErrorInvalidStructuredHeader},
   };
   for (const auto& testcase : kTestCases) {
     SCOPED_TRACE(base::StringPrintf("header_string: %s",
@@ -576,15 +568,26 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryHeader) {
              ": ", testcase.header_string, "\n", kDefaultCacheControlHeader,
              "\n"}));
     ASSERT_TRUE(headers);
-    scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-        GURL("https://origin1.test/testfile.txt"),
-        /*request_time=*/base::Time::Now(), /*response_time=*/base::Time::Now(),
-        *headers,
-        /*was_fetched_via_cache=*/false,
-        /*access_allowed_check_callback=*/base::BindOnce([]() {
-          return true;
-        }));
-    EXPECT_EQ(testcase.expect_success, !!writer);
+    base::expected<scoped_refptr<SharedDictionaryWriter>,
+                   mojom::SharedDictionaryError>
+        writer = SharedDictionaryStorage::MaybeCreateWriter(
+            testcase.header_string, /*shared_dictionary_writer_enabled=*/true,
+            storage.get(), mojom::RequestMode::kSameOrigin,
+            mojom::FetchResponseType::kBasic,
+            GURL("https://origin1.test/testfile.txt"),
+            /*request_time=*/base::Time::Now(),
+            /*response_time=*/base::Time::Now(), *headers,
+            /*was_fetched_via_cache=*/false,
+            /*access_allowed_check_callback=*/base::BindOnce([]() {
+              return true;
+            }));
+    if (testcase.error_status.has_value()) {
+      EXPECT_FALSE(writer.has_value());
+      EXPECT_EQ(testcase.error_status.value(), writer.error());
+    } else {
+      ASSERT_TRUE(writer.has_value());
+      ASSERT_TRUE(*writer);
+    }
   }
 }
 
@@ -613,26 +616,37 @@ TEST_P(SharedDictionaryManagerTest, DictionaryLifetimeFromCacheControlHeader) {
   for (const auto& testcase : kTestCases) {
     SCOPED_TRACE(base::StringPrintf("header_string: %s",
                                     testcase.header_string.c_str()));
+    const std::string use_as_dictionary_header = "match=\"/test\"";
     scoped_refptr<net::HttpResponseHeaders> headers =
         net::HttpResponseHeaders::TryToCreate(base::StrCat(
             {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-             ": match=\"test\"\n", testcase.header_string, "\n"}));
+             ": ", use_as_dictionary_header, "\n", testcase.header_string,
+             "\n"}));
     ASSERT_TRUE(headers);
     const base::Time request_time = base::Time::Now();
     const base::Time response_time = request_time;
-    scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-        GURL("https://origin1.test/testfile.txt"), request_time, response_time,
-        *headers,
-        /*was_fetched_via_cache=*/false,
-        /*access_allowed_check_callback=*/base::BindOnce([]() {
-          return true;
-        }));
-    EXPECT_EQ(!!testcase.expected_expiration, !!writer);
-    if (!writer) {
+    base::expected<scoped_refptr<SharedDictionaryWriter>,
+                   mojom::SharedDictionaryError>
+        writer = SharedDictionaryStorage::MaybeCreateWriter(
+            use_as_dictionary_header, /*shared_dictionary_writer_enabled=*/true,
+            storage.get(), mojom::RequestMode::kSameOrigin,
+            mojom::FetchResponseType::kBasic,
+            GURL("https://origin1.test/testfile.txt"), request_time,
+            response_time, *headers,
+            /*was_fetched_via_cache=*/false,
+            /*access_allowed_check_callback=*/base::BindOnce([]() {
+              return true;
+            }));
+    if (!testcase.expected_expiration) {
+      EXPECT_FALSE(writer.has_value());
+      EXPECT_EQ(mojom::SharedDictionaryError::kWriteErrorExpiredResponse,
+                writer.error());
       continue;
     }
-    writer->Append(kTestData1.c_str(), kTestData1.size());
-    writer->Finish();
+    ASSERT_TRUE(writer.has_value());
+    ASSERT_TRUE(*writer);
+    (*writer)->Append(kTestData1.c_str(), kTestData1.size());
+    (*writer)->Finish();
     if (GetManagerType() == TestManagerType::kOnDisk) {
       FlushCacheTasks();
     }
@@ -655,27 +669,26 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryIdOption) {
 
   struct {
     std::string header_string;
-    bool expect_success;
-    std::string expected_id;
+    base::expected<std::string, mojom::SharedDictionaryError>
+        expected_id_or_error_status;
   } kTestCases[] = {
       // Valid `id` value.
-      {"match=\"test\", id=\"test_id\"",
-       /*expect_success=*/true, /*expected_id=*/"test_id"},
+      {"match=\"test\", id=\"test_id\"", "test_id"},
       // Valid `id` value with backslash.
-      {"match=\"test\", id=\"test\\\\id\"",
-       /*expect_success=*/true, /*expected_id=*/"test\\id"},
+      {"match=\"test\", id=\"test\\\\id\"", "test\\id"},
       // Valid `id` value with double quote.
-      {"match=\"test\", id=\"test\\\"id\"",
-       /*expect_success=*/true, /*expected_id=*/"test\"id"},
+      {"match=\"test\", id=\"test\\\"id\"", "test\"id"},
       // `id` should not be a list.
       {"match=\"test\", id=(\"id1\" \"id2\")",
-       /*expect_success=*/false},
+       base::unexpected(
+           mojom::SharedDictionaryError::kWriteErrorNonStringIdField)},
       // `id` can be 1024 characters long.
       {base::StrCat({"match=\"test\", id=\"", std::string(1024, 'x'), "\""}),
-       /*expect_success=*/true, /*expected_id=*/std::string(1024, 'x')},
+       std::string(1024, 'x')},
       // `id` too long.
       {base::StrCat({"match=\"test\", id=\"", std::string(1025, 'x'), "\""}),
-       /*expect_success=*/false},
+       base::unexpected(
+           mojom::SharedDictionaryError::kWriteErrorTooLongIdField)},
   };
   for (const auto& testcase : kTestCases) {
     SCOPED_TRACE(base::StringPrintf("header_string: %s",
@@ -686,20 +699,28 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryIdOption) {
              ": ", testcase.header_string, "\n", kDefaultCacheControlHeader,
              "\n"}));
     ASSERT_TRUE(headers);
-    scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-        GURL("https://origin1.test/testfile.txt"),
-        /*request_time=*/base::Time::Now(), /*response_time=*/base::Time::Now(),
-        *headers,
-        /*was_fetched_via_cache=*/false,
-        /*access_allowed_check_callback=*/base::BindOnce([]() {
-          return true;
-        }));
-    EXPECT_EQ(testcase.expect_success, !!writer);
-    if (!writer) {
+    base::expected<scoped_refptr<SharedDictionaryWriter>,
+                   mojom::SharedDictionaryError>
+        writer = SharedDictionaryStorage::MaybeCreateWriter(
+            testcase.header_string, /*shared_dictionary_writer_enabled=*/true,
+            storage.get(), mojom::RequestMode::kSameOrigin,
+            mojom::FetchResponseType::kBasic,
+            GURL("https://origin1.test/testfile.txt"),
+            /*request_time=*/base::Time::Now(),
+            /*response_time=*/base::Time::Now(), *headers,
+            /*was_fetched_via_cache=*/false,
+            /*access_allowed_check_callback=*/base::BindOnce([]() {
+              return true;
+            }));
+    if (!testcase.expected_id_or_error_status.has_value()) {
+      EXPECT_FALSE(writer.has_value());
+      EXPECT_EQ(writer.error(), testcase.expected_id_or_error_status.error());
       continue;
     }
-    writer->Append(kTestData1.c_str(), kTestData1.size());
-    writer->Finish();
+    ASSERT_TRUE(writer.has_value());
+    ASSERT_TRUE(*writer);
+    (*writer)->Append(kTestData1.c_str(), kTestData1.size());
+    (*writer)->Finish();
     if (GetManagerType() == TestManagerType::kOnDisk) {
       FlushCacheTasks();
       // TODO(crbug.com/40255884): Currently `id` is not supported by the disk
@@ -709,7 +730,7 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryIdOption) {
     std::vector<network::mojom::SharedDictionaryInfoPtr> result =
         GetSharedDictionaryInfo(manager.get(), isolation_key);
     ASSERT_EQ(1u, result.size());
-    EXPECT_EQ(testcase.expected_id, result[0]->id);
+    EXPECT_EQ(*testcase.expected_id_or_error_status, result[0]->id);
   }
 }
 
@@ -725,45 +746,42 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryMatchDestOption) {
 
   struct {
     std::string header_string;
-    bool expect_success;
-    std::vector<mojom::RequestDestination> expected_match_dest;
+    base::expected<std::vector<mojom::RequestDestination>,
+                   mojom::SharedDictionaryError>
+        expected_match_dest_or_error_status;
   } kTestCases[] = {
       // No `match-dest` value.
-      {"match=\"test\"",
-       /*expect_success=*/true, /*expected_match_dest=*/{}},
+      {"match=\"test\"", {}},
       // Valid `match-dest` value.
       {"match=\"test\", match-dest=(\"document\")",
-       /*expect_success=*/true,
-       /*expected_match_dest=*/{mojom::RequestDestination::kDocument}},
+       std::vector<mojom::RequestDestination>(
+           {mojom::RequestDestination::kDocument})},
       // `match-dest` must be a list.
       {"match=\"test\", match-dest=\"document\"",
-       /*expect_success=*/false},
+       base::unexpected(
+           mojom::SharedDictionaryError::kWriteErrorNonListMatchDestField)},
       // Unknown `match-dest` value should be treated as empty.
-      {"match=\"test\", match-dest=(\"unknown\")",
-       /*expect_success=*/true,
-       /*expected_match_dest=*/{}},
+      {"match=\"test\", match-dest=(\"unknown\")", {}},
       //`match-dest` should not be a sf-token.
       // https://github.com/httpwg/http-extensions/issues/2723
       {"match=\"test\", match-dest=(document)",
-       /*expect_success=*/false},
+       base::unexpected(
+           mojom::SharedDictionaryError::kWriteErrorNonStringInMatchDestList)},
       // Valid `match-dest` value "".
       {"match=\"test\", match-dest=(\"\")",
-       /*expect_success=*/true,
-       /*expected_match_dest=*/{mojom::RequestDestination::kEmpty}},
+       std::vector<mojom::RequestDestination>(
+           {mojom::RequestDestination::kEmpty})},
       // Valid `match-dest` value ("document" "frame" "iframe").
       {"match=\"test\", match-dest=(\"document\" \"frame\" \"iframe\")",
-       /*expect_success=*/true,
-       /*expected_match_dest=*/
-       {mojom::RequestDestination::kDocument, mojom::RequestDestination::kFrame,
-        mojom::RequestDestination::kIframe}},
+       std::vector<mojom::RequestDestination>(
+           {mojom::RequestDestination::kDocument,
+            mojom::RequestDestination::kFrame,
+            mojom::RequestDestination::kIframe})},
       // Valid `match-dest` value ("document" "frame" "iframe" "").
       {"match=\"test\", match-dest=(\"document\" \"\")",
-       /*expect_success=*/true,
-       /*expected_match_dest=*/
-       {mojom::RequestDestination::kEmpty,
-        mojom::RequestDestination::kDocument}},
-
-  };
+       std::vector<mojom::RequestDestination>(
+           {mojom::RequestDestination::kEmpty,
+            mojom::RequestDestination::kDocument})}};
   for (const auto& testcase : kTestCases) {
     base::RunLoop run_loop;
     manager->ClearDataForIsolationKey(isolation_key, run_loop.QuitClosure());
@@ -776,20 +794,29 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryMatchDestOption) {
              ": ", testcase.header_string, "\n", kDefaultCacheControlHeader,
              "\n"}));
     ASSERT_TRUE(headers);
-    scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-        GURL("https://origin1.test/testfile.txt"),
-        /*request_time=*/base::Time::Now(), /*response_time=*/base::Time::Now(),
-        *headers,
-        /*was_fetched_via_cache=*/false,
-        /*access_allowed_check_callback=*/base::BindOnce([]() {
-          return true;
-        }));
-    EXPECT_EQ(testcase.expect_success, !!writer);
-    if (!writer) {
+    base::expected<scoped_refptr<SharedDictionaryWriter>,
+                   mojom::SharedDictionaryError>
+        writer = SharedDictionaryStorage::MaybeCreateWriter(
+            testcase.header_string, /*shared_dictionary_writer_enabled=*/true,
+            storage.get(), mojom::RequestMode::kSameOrigin,
+            mojom::FetchResponseType::kBasic,
+            GURL("https://origin1.test/testfile.txt"),
+            /*request_time=*/base::Time::Now(),
+            /*response_time=*/base::Time::Now(), *headers,
+            /*was_fetched_via_cache=*/false,
+            /*access_allowed_check_callback=*/base::BindOnce([]() {
+              return true;
+            }));
+    if (!testcase.expected_match_dest_or_error_status.has_value()) {
+      EXPECT_FALSE(writer.has_value());
+      EXPECT_EQ(writer.error(),
+                testcase.expected_match_dest_or_error_status.error());
       continue;
     }
-    writer->Append(kTestData1.c_str(), kTestData1.size());
-    writer->Finish();
+    ASSERT_TRUE(writer.has_value());
+    ASSERT_TRUE(*writer);
+    (*writer)->Append(kTestData1.c_str(), kTestData1.size());
+    (*writer)->Finish();
     if (GetManagerType() == TestManagerType::kOnDisk) {
       FlushCacheTasks();
       // TODO(crbug.com/40255884): Currently `match-dest` is not supported by
@@ -799,7 +826,8 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryMatchDestOption) {
     std::vector<network::mojom::SharedDictionaryInfoPtr> result =
         GetSharedDictionaryInfo(manager.get(), isolation_key);
     ASSERT_EQ(1u, result.size());
-    EXPECT_EQ(testcase.expected_match_dest, result[0]->match_dest);
+    EXPECT_EQ(*testcase.expected_match_dest_or_error_status,
+              result[0]->match_dest);
   }
 }
 
@@ -811,33 +839,38 @@ TEST_P(SharedDictionaryManagerTest, InvalidMatch) {
   scoped_refptr<SharedDictionaryStorage> storage =
       manager->GetStorage(isolation_key);
   ASSERT_TRUE(storage);
-  struct {
-    std::string header_string;
-    bool expect_success;
-  } kTestCases[] = {
+  std::string kTestCases[] = {
       // Invalid as a constructor string of URLPattern.
-      {"{", false},
+      "{",
       // Unsupported regexp group.
-      {"(a|b)", false},
+      "(a|b)",
   };
   for (const auto& testcase : kTestCases) {
-    SCOPED_TRACE(
-        base::StringPrintf("match: %s", testcase.header_string.c_str()));
+    SCOPED_TRACE(base::StringPrintf("match: %s", testcase.c_str()));
+    const std::string use_as_dictionary_header =
+        base::StrCat({"match=\"/", testcase, "\""});
     scoped_refptr<net::HttpResponseHeaders> headers =
         net::HttpResponseHeaders::TryToCreate(base::StrCat(
             {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-             ": match=\"", testcase.header_string, "\"\n",
+             ": ", use_as_dictionary_header, "\n",
              "cache-control:max-age=100\n\n"}));
     ASSERT_TRUE(headers);
-    scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-        GURL("https://origin1.test/testfile.txt"),
-        /*request_time=*/base::Time::Now(), /*response_time=*/base::Time::Now(),
-        *headers,
-        /*was_fetched_via_cache=*/false,
-        /*access_allowed_check_callback=*/base::BindOnce([]() {
-          return true;
-        }));
-    EXPECT_EQ(testcase.expect_success, !!writer);
+    base::expected<scoped_refptr<SharedDictionaryWriter>,
+                   mojom::SharedDictionaryError>
+        writer = SharedDictionaryStorage::MaybeCreateWriter(
+            use_as_dictionary_header, /*shared_dictionary_writer_enabled=*/true,
+            storage.get(), mojom::RequestMode::kSameOrigin,
+            mojom::FetchResponseType::kBasic,
+            GURL("https://origin1.test/testfile.txt"),
+            /*request_time=*/base::Time::Now(),
+            /*response_time=*/base::Time::Now(), *headers,
+            /*was_fetched_via_cache=*/false,
+            /*access_allowed_check_callback=*/base::BindOnce([]() {
+              return true;
+            }));
+    EXPECT_FALSE(writer.has_value());
+    EXPECT_EQ(writer.error(),
+              mojom::SharedDictionaryError::kWriteErrorInvalidMatchField);
   }
 }
 
@@ -850,22 +883,29 @@ TEST_P(SharedDictionaryManagerTest, AccessAllowedCheckReturnTrue) {
       manager->GetStorage(isolation_key);
   ASSERT_TRUE(storage);
 
+  const std::string use_as_dictionary_header = "match=\"/test\"";
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ": match=\"test\"\ncache-control:max-age=100\n\n"}));
+           ": ", use_as_dictionary_header, "\ncache-control:max-age=100\n\n"}));
   ASSERT_TRUE(headers);
   bool callback_called = false;
-  scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-      GURL("https://origin1.test/testfile.txt"),
-      /*request_time=*/base::Time::Now(), /*response_time=*/base::Time::Now(),
-      *headers,
-      /*was_fetched_via_cache=*/false,
-      /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
-        callback_called = true;
-        return true;
-      }));
-  EXPECT_TRUE(writer);
+  base::expected<scoped_refptr<SharedDictionaryWriter>,
+                 mojom::SharedDictionaryError>
+      writer = SharedDictionaryStorage::MaybeCreateWriter(
+          use_as_dictionary_header, /*shared_dictionary_writer_enabled=*/true,
+          storage.get(), mojom::RequestMode::kSameOrigin,
+          mojom::FetchResponseType::kBasic,
+          GURL("https://origin1.test/testfile.txt"),
+          /*request_time=*/base::Time::Now(),
+          /*response_time=*/base::Time::Now(), *headers,
+          /*was_fetched_via_cache=*/false,
+          /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
+            callback_called = true;
+            return true;
+          }));
+  EXPECT_TRUE(writer.has_value());
+  EXPECT_TRUE(*writer);
   EXPECT_TRUE(callback_called);
 }
 
@@ -878,22 +918,30 @@ TEST_P(SharedDictionaryManagerTest, AccessAllowedCheckReturnFalse) {
       manager->GetStorage(isolation_key);
   ASSERT_TRUE(storage);
 
+  const std::string use_as_dictionary_header = "match=\"/test\"";
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ": match=\"test\"\ncache-control:max-age=100\n\n"}));
+           ": ", use_as_dictionary_header, "\ncache-control:max-age=100\n\n"}));
   ASSERT_TRUE(headers);
   bool callback_called = false;
-  scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-      GURL("https://origin1.test/testfile.txt"),
-      /*request_time=*/base::Time::Now(), /*response_time=*/base::Time::Now(),
-      *headers,
-      /*was_fetched_via_cache=*/false,
-      /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
-        callback_called = true;
-        return false;
-      }));
-  EXPECT_FALSE(writer);
+  base::expected<scoped_refptr<SharedDictionaryWriter>,
+                 mojom::SharedDictionaryError>
+      writer = SharedDictionaryStorage::MaybeCreateWriter(
+          use_as_dictionary_header, /*shared_dictionary_writer_enabled=*/true,
+          storage.get(), mojom::RequestMode::kSameOrigin,
+          mojom::FetchResponseType::kBasic,
+          GURL("https://origin1.test/testfile.txt"),
+          /*request_time=*/base::Time::Now(),
+          /*response_time=*/base::Time::Now(), *headers,
+          /*was_fetched_via_cache=*/false,
+          /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
+            callback_called = true;
+            return false;
+          }));
+  EXPECT_FALSE(writer.has_value());
+  EXPECT_EQ(writer.error(),
+            mojom::SharedDictionaryError::kWriteErrorDisallowedBySettings);
   EXPECT_TRUE(callback_called);
 }
 
@@ -908,34 +956,48 @@ TEST_P(SharedDictionaryManagerTest, SameDictionaryFromDiskCache) {
 
   GURL dictionary_url = GURL("https://origin1.test/testfile.txt");
   base::Time response_time = base::Time::Now();
+  const std::string use_as_dictionary_header = "match=\"/test\"";
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ": match=\"test\"\ncache-control:max-age=100\n\n"}));
+           ": ", use_as_dictionary_header, "\ncache-control:max-age=100\n\n"}));
   ASSERT_TRUE(headers);
-  scoped_refptr<SharedDictionaryWriter> writer1 = storage->MaybeCreateWriter(
-      dictionary_url, /*request_time=*/response_time,
-      /*response_time=*/response_time, *headers,
-      /*was_fetched_via_cache=*/false,
-      /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
-        return true;
-      }));
-  ASSERT_TRUE(writer1);
-  writer1->Append(kTestData1.c_str(), kTestData1.size());
-  writer1->Finish();
+  base::expected<scoped_refptr<SharedDictionaryWriter>,
+                 mojom::SharedDictionaryError>
+      writer1 = SharedDictionaryStorage::MaybeCreateWriter(
+          use_as_dictionary_header, /*shared_dictionary_writer_enabled=*/true,
+          storage.get(), mojom::RequestMode::kSameOrigin,
+          mojom::FetchResponseType::kBasic, dictionary_url,
+          /*request_time=*/response_time,
+          /*response_time=*/response_time, *headers,
+          /*was_fetched_via_cache=*/false,
+          /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
+            return true;
+          }));
+  ASSERT_TRUE(writer1.has_value());
+  ASSERT_TRUE(*writer1);
+  (*writer1)->Append(kTestData1.c_str(), kTestData1.size());
+  (*writer1)->Finish();
   if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
-  scoped_refptr<SharedDictionaryWriter> writer2 = storage->MaybeCreateWriter(
-      dictionary_url, /*request_time=*/response_time,
-      /*response_time=*/response_time, *headers,
-      /*was_fetched_via_cache=*/true,
-      /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
-        return true;
-      }));
+  base::expected<scoped_refptr<SharedDictionaryWriter>,
+                 mojom::SharedDictionaryError>
+      writer2 = SharedDictionaryStorage::MaybeCreateWriter(
+          use_as_dictionary_header, /*shared_dictionary_writer_enabled=*/true,
+          storage.get(), mojom::RequestMode::kSameOrigin,
+          mojom::FetchResponseType::kBasic, dictionary_url,
+          /*request_time=*/response_time,
+          /*response_time=*/response_time, *headers,
+          /*was_fetched_via_cache=*/true,
+          /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
+            return true;
+          }));
   // MaybeCreateWriter must return false for same dictionary from the disk
   // cache.
-  EXPECT_FALSE(writer2);
+  EXPECT_FALSE(writer2.has_value());
+  EXPECT_EQ(writer2.error(),
+            mojom::SharedDictionaryError::kWriteErrorAlreadyRegistered);
 }
 
 TEST_P(SharedDictionaryManagerTest, DifferentDictionaryFromDiskCache) {
@@ -949,40 +1011,55 @@ TEST_P(SharedDictionaryManagerTest, DifferentDictionaryFromDiskCache) {
 
   GURL dictionary_url = GURL("https://origin1.test/testfile.txt");
   base::Time response_time = base::Time::Now();
+  const std::string use_as_dictionary_header1 = "match=\"/test1\"";
   scoped_refptr<net::HttpResponseHeaders> headers1 =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ": match=\"test1\"\ncache-control:max-age=100\n\n"}));
+           ": ", use_as_dictionary_header1,
+           "\ncache-control:max-age=100\n\n"}));
   ASSERT_TRUE(headers1);
-  scoped_refptr<SharedDictionaryWriter> writer1 = storage->MaybeCreateWriter(
-      dictionary_url, /*request_time=*/response_time,
-      /*response_time=*/response_time, *headers1,
-      /*was_fetched_via_cache=*/false,
-      /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
-        return true;
-      }));
-  ASSERT_TRUE(writer1);
-  writer1->Append(kTestData1.c_str(), kTestData1.size());
-  writer1->Finish();
+  base::expected<scoped_refptr<SharedDictionaryWriter>,
+                 mojom::SharedDictionaryError>
+      writer1 = SharedDictionaryStorage::MaybeCreateWriter(
+          use_as_dictionary_header1, /*shared_dictionary_writer_enabled=*/true,
+          storage.get(), mojom::RequestMode::kSameOrigin,
+          mojom::FetchResponseType::kBasic, dictionary_url,
+          /*request_time=*/response_time,
+          /*response_time=*/response_time, *headers1,
+          /*was_fetched_via_cache=*/false,
+          /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
+            return true;
+          }));
+  ASSERT_TRUE(writer1.has_value());
+  ASSERT_TRUE(*writer1);
+  (*writer1)->Append(kTestData1.c_str(), kTestData1.size());
+  (*writer1)->Finish();
   if (GetManagerType() == TestManagerType::kOnDisk) {
     FlushCacheTasks();
   }
 
+  const std::string use_as_dictionary_header2 = "match=\"/test2\"";
   scoped_refptr<net::HttpResponseHeaders> headers2 =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ": match=\"test2\"\ncache-control:max-age=100\n\n"}));
+           ": ", use_as_dictionary_header2,
+           "\ncache-control:max-age=100\n\n"}));
   ASSERT_TRUE(headers1);
-  scoped_refptr<SharedDictionaryWriter> writer2 = storage->MaybeCreateWriter(
-      dictionary_url, /*request_time=*/response_time,
-      /*response_time=*/response_time, *headers2,
-      /*was_fetched_via_cache=*/true,
-      /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
-        return true;
-      }));
+  base::expected<scoped_refptr<SharedDictionaryWriter>,
+                 mojom::SharedDictionaryError>
+      writer2 = SharedDictionaryStorage::MaybeCreateWriter(
+          use_as_dictionary_header2, /*shared_dictionary_writer_enabled=*/true,
+          storage.get(), mojom::RequestMode::kSameOrigin,
+          mojom::FetchResponseType::kBasic, dictionary_url,
+          /*request_time=*/response_time,
+          /*response_time=*/response_time, *headers2,
+          /*was_fetched_via_cache=*/true,
+          /*access_allowed_check_callback=*/base::BindLambdaForTesting([&]() {
+            return true;
+          }));
   // The mach value in the header is different, so MaybeCreateWriter() must
   // return a new writer.
-  EXPECT_TRUE(writer2);
+  EXPECT_TRUE(writer2.has_value());
 }
 
 TEST_P(SharedDictionaryManagerTest, WriteAndGetDictionary) {

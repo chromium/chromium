@@ -225,6 +225,7 @@ mojom("mojom_network_isolation_key") {
 mojom("mojom_shared_dictionary") {
   generate_java = true
   sources = [
+    "shared_dictionary_error.mojom",
     "shared_dictionary_isolation_key.mojom",
     "shared_dictionary_usage_info.mojom",
   ]

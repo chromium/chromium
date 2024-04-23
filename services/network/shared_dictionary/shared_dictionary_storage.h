@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/pattern.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
@@ -26,11 +27,15 @@ class HttpResponseHeaders;
 
 namespace network {
 namespace mojom {
+enum class FetchResponseType : int32_t;
 enum class RequestDestination : int32_t;
+enum class RequestMode : int32_t;
+enum class SharedDictionaryError : int32_t;
 }  // namespace mojom
 
 class SharedDictionary;
 class SharedDictionaryWriter;
+class SimpleUrlPatternMatcher;
 
 // Shared Dictionary Storage manages dictionaries for a particular
 // net::SharedDictionaryIsolationKey.
@@ -39,6 +44,23 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
  public:
   SharedDictionaryStorage(const SharedDictionaryStorage&) = delete;
   SharedDictionaryStorage& operator=(const SharedDictionaryStorage&) = delete;
+
+  // Returns a SharedDictionaryWriter if `headers` has a valid
+  // `use-as-dictionary` header, and `access_allowed_check_callback`
+  // returns true,
+  static base::expected<scoped_refptr<SharedDictionaryWriter>,
+                        mojom::SharedDictionaryError>
+  MaybeCreateWriter(const std::string& use_as_dictionary_header,
+                    bool shared_dictionary_writer_enabled,
+                    SharedDictionaryStorage* storage,
+                    mojom::RequestMode request_mode,
+                    mojom::FetchResponseType response_tainting,
+                    const GURL& url,
+                    const base::Time request_time,
+                    const base::Time response_time,
+                    const net::HttpResponseHeaders& headers,
+                    bool was_fetched_via_cache,
+                    base::OnceCallback<bool()> access_allowed_check_callback);
 
   // Returns a matching SharedDictionary for `url`. If the metadata has not been
   // read from the database, this method returns nullptr.
@@ -55,17 +77,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
       mojom::RequestDestination destination,
       base::OnceCallback<void(std::unique_ptr<SharedDictionary>)> callback) = 0;
 
-  // Returns a SharedDictionaryWriter if `headers` has a valid
-  // `use-as-dictionary` header, and `access_allowed_check_callback`
-  // returns true,
-  scoped_refptr<SharedDictionaryWriter> MaybeCreateWriter(
-      const GURL& url,
-      const base::Time request_time,
-      const base::Time response_time,
-      const net::HttpResponseHeaders& headers,
-      bool was_fetched_via_cache,
-      base::OnceCallback<bool()> access_allowed_check_callback);
-
  protected:
   friend class base::RefCounted<SharedDictionaryStorage>;
 
@@ -73,13 +84,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
   virtual ~SharedDictionaryStorage();
 
   // Called to create a SharedDictionaryWriter.
-  virtual scoped_refptr<SharedDictionaryWriter> CreateWriter(
-      const GURL& url,
-      base::Time response_time,
-      base::TimeDelta expiration,
-      const std::string& match,
-      const std::set<mojom::RequestDestination>& match_dest,
-      const std::string& id) = 0;
+  virtual base::expected<scoped_refptr<SharedDictionaryWriter>,
+                         mojom::SharedDictionaryError>
+  CreateWriter(const GURL& url,
+               base::Time response_time,
+               base::TimeDelta expiration,
+               const std::string& match,
+               const std::set<mojom::RequestDestination>& match_dest,
+               const std::string& id,
+               std::unique_ptr<SimpleUrlPatternMatcher> matcher) = 0;
 
   // Called to avoid registering the same dictionary from the disk cache.
   virtual bool IsAlreadyRegistered(

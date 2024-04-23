@@ -29,6 +29,7 @@
 #include "net/extras/shared_dictionary/shared_dictionary_info.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/shared_dictionary_error.mojom.h"
 #include "services/network/shared_dictionary/shared_dictionary.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_disk_cache.h"
@@ -70,39 +71,54 @@ void WriteDictionary(SharedDictionaryStorage* storage,
                      const GURL& dictionary_url,
                      const std::string& match,
                      const std::string& data) {
+  const std::string use_as_dictionary_header =
+      base::StrCat({"match=\"/", match, "\""});
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ": match=\"/", match, "\"\n", kDefaultCacheControlHeader, "\n"}));
+           ": ", use_as_dictionary_header, "\n", kDefaultCacheControlHeader,
+           "\n"}));
   ASSERT_TRUE(headers);
-  scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-      dictionary_url, /*request_time=*/base::Time::Now(),
-      /*response_time=*/base::Time::Now(), *headers,
-      /*was_fetched_via_cache=*/false, DummyAccessAllowedCheckCallback());
-  ASSERT_TRUE(writer);
-  writer->Append(data.c_str(), data.size());
-  writer->Finish();
+  base::expected<scoped_refptr<SharedDictionaryWriter>,
+                 mojom::SharedDictionaryError>
+      writer = SharedDictionaryStorage::MaybeCreateWriter(
+          use_as_dictionary_header, /*shared_dictionary_writer_enabled=*/true,
+          storage, mojom::RequestMode::kSameOrigin,
+          mojom::FetchResponseType::kBasic, dictionary_url,
+          /*request_time=*/base::Time::Now(),
+          /*response_time=*/base::Time::Now(), *headers,
+          /*was_fetched_via_cache=*/false, DummyAccessAllowedCheckCallback());
+  ASSERT_TRUE(writer.has_value());
+  ASSERT_TRUE(*writer);
+  (*writer)->Append(data.c_str(), data.size());
+  (*writer)->Finish();
 }
 void WriteDictionaryWithExpiry(SharedDictionaryStorage* storage,
                                const GURL& dictionary_url,
                                const std::string& match,
                                const base::TimeDelta& expires,
                                const std::string& data) {
+  const std::string use_as_dictionary_header =
+      base::StrCat({"match=\"/", match, "\""});
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ": match=\"/", match,
-           "\", expires=", base::NumberToString(expires.InSeconds()), "\n",
-           "cache-control: max-age=", base::NumberToString(expires.InSeconds()),
-           "\n\n"}));
+           ":", use_as_dictionary_header, "\n", "cache-control: max-age=",
+           base::NumberToString(expires.InSeconds()), "\n\n"}));
   ASSERT_TRUE(headers);
-  scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-      dictionary_url, /*request_time=*/base::Time::Now(),
-      /*response_time=*/base::Time::Now(), *headers,
-      /*was_fetched_via_cache=*/false, DummyAccessAllowedCheckCallback());
-  ASSERT_TRUE(writer);
-  writer->Append(data.c_str(), data.size());
-  writer->Finish();
+  base::expected<scoped_refptr<SharedDictionaryWriter>,
+                 mojom::SharedDictionaryError>
+      writer = SharedDictionaryStorage::MaybeCreateWriter(
+          use_as_dictionary_header, /*shared_dictionary_writer_enabled=*/true,
+          storage, mojom::RequestMode::kSameOrigin,
+          mojom::FetchResponseType::kBasic, dictionary_url,
+          /*request_time=*/base::Time::Now(),
+          /*response_time=*/base::Time::Now(), *headers,
+          /*was_fetched_via_cache=*/false, DummyAccessAllowedCheckCallback());
+  ASSERT_TRUE(writer.has_value());
+  ASSERT_TRUE(*writer);
+  (*writer)->Append(data.c_str(), data.size());
+  (*writer)->Finish();
 }
 
 bool DiskCacheEntryExists(SharedDictionaryManager* manager,
@@ -315,18 +331,28 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 
   manager.reset();
 
+  const std::string use_as_dictionary_header =
+      base::StrCat({"match=\"/testfile*\""});
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ": match=\"/testfile*\"\n", kDefaultCacheControlHeader, "\n"}));
+           ": ", use_as_dictionary_header, "\n", kDefaultCacheControlHeader,
+           "\n"}));
   ASSERT_TRUE(headers);
 
   // MaybeCreateWriter() must return nullptr, after `manager` was deleted.
-  scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-      GURL("https://origin.test/dict"), /*request_time=*/base::Time::Now(),
-      /*response_time=*/base::Time::Now(), *headers,
-      /*was_fetched_via_cache=*/false, DummyAccessAllowedCheckCallback());
-  EXPECT_FALSE(writer);
+  base::expected<scoped_refptr<SharedDictionaryWriter>,
+                 mojom::SharedDictionaryError>
+      writer = SharedDictionaryStorage::MaybeCreateWriter(
+          use_as_dictionary_header, /*shared_dictionary_writer_enabled=*/true,
+          storage.get(), mojom::RequestMode::kSameOrigin,
+          mojom::FetchResponseType::kBasic, GURL("https://origin.test/dict"),
+          /*request_time=*/base::Time::Now(),
+          /*response_time=*/base::Time::Now(), *headers,
+          /*was_fetched_via_cache=*/false, DummyAccessAllowedCheckCallback());
+  EXPECT_FALSE(writer.has_value());
+  EXPECT_EQ(mojom::SharedDictionaryError::kWriteErrorShuttingDown,
+            writer.error());
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest, GetDictionaryAfterManagerDeleted) {
@@ -2011,17 +2037,25 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   ASSERT_TRUE(storage);
 
   // Start writing a dictionary.
+  const std::string use_as_dictionary_header = "match=\"/p*\"";
   scoped_refptr<net::HttpResponseHeaders> headers =
       net::HttpResponseHeaders::TryToCreate(base::StrCat(
           {"HTTP/1.1 200 OK\n", shared_dictionary::kUseAsDictionaryHeaderName,
-           ": match=\"/p*\"\n", kDefaultCacheControlHeader, "\n"}));
+           ": ", use_as_dictionary_header, "\n", kDefaultCacheControlHeader,
+           "\n"}));
   ASSERT_TRUE(headers);
-  scoped_refptr<SharedDictionaryWriter> writer = storage->MaybeCreateWriter(
-      GURL("https://target1.test/d"), /*request_time=*/base::Time::Now(),
-      /*response_time=*/base::Time::Now(), *headers,
-      /*was_fetched_via_cache=*/false, DummyAccessAllowedCheckCallback());
-  ASSERT_TRUE(writer);
-  writer->Append(kTestData1.c_str(), kTestData1.size());
+  base::expected<scoped_refptr<SharedDictionaryWriter>,
+                 mojom::SharedDictionaryError>
+      writer = SharedDictionaryStorage::MaybeCreateWriter(
+          use_as_dictionary_header, /*shared_dictionary_writer_enabled=*/true,
+          storage.get(), mojom::RequestMode::kSameOrigin,
+          mojom::FetchResponseType::kBasic, GURL("https://target1.test/d"),
+          /*request_time=*/base::Time::Now(),
+          /*response_time=*/base::Time::Now(), *headers,
+          /*was_fetched_via_cache=*/false, DummyAccessAllowedCheckCallback());
+  ASSERT_TRUE(writer.has_value());
+  ASSERT_TRUE(*writer);
+  (*writer)->Append(kTestData1.c_str(), kTestData1.size());
 
   base::RunLoop run_loop;
   manager->ClearData(
@@ -2042,7 +2076,7 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
       0, 1);
 
   // Finish writing the dictionary.
-  writer->Finish();
+  (*writer)->Finish();
 
   // FlushCacheTasks() to finish the persistence operation.
   FlushCacheTasks();

@@ -38,9 +38,11 @@
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
+#include "services/network/public/mojom/shared_dictionary_error.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/shared_dictionary/shared_dictionary.h"
 #include "services/network/shared_dictionary/shared_dictionary_access_checker.h"
+#include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_data_pipe_writer.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
@@ -269,28 +271,6 @@ void RecordNetworkLoaderCompletionTime(const char* suffix,
   base::UmaHistogramTimes(
       base::StrCat({"NetworkService.NetworkLoaderCompletionTime.", suffix}),
       elapsed);
-}
-
-// The compressed dictionary transport feature supports storing dictionaries
-// if the request was fetched by cors enabled mode request or same-origin mode
-// request or no-cors mode same origin request.
-bool IsSharedDictionaryWriteAllowed(
-    mojom::RequestMode mode,
-    mojom::FetchResponseType response_tainting) {
-  switch (mode) {
-    case mojom::RequestMode::kSameOrigin:
-      return true;
-    case mojom::RequestMode::kNoCors:
-      // Basic `response_tainting` for no-cors request means that the response
-      // is from same origin without any cross origin redirect.
-      return response_tainting == mojom::FetchResponseType::kBasic;
-    case mojom::RequestMode::kCors:
-      return true;
-    case mojom::RequestMode::kCorsWithForcedPreflight:
-      return true;
-    case mojom::RequestMode::kNavigate:
-      return false;
-  }
 }
 
 constexpr const char kTimingAllowOrigin[] = "Timing-Allow-Origin";
@@ -629,30 +609,51 @@ void CorsURLLoader::OnReceiveResponse(
     }
   }
 
-  if (request_.shared_dictionary_writer_enabled && shared_dictionary_storage_ &&
-      IsSharedDictionaryWriteAllowed(request_.mode, response_tainting_)) {
-    // Opaque response tainting requests should not trigger dictionary
-    // registration.
-    CHECK_NE(mojom::FetchResponseType::kOpaque, response_tainting_);
-    auto writer = shared_dictionary_storage_->MaybeCreateWriter(
-        request_.url, response_head->request_time, response_head->response_time,
-        *response_head->headers, response_head->was_fetched_via_cache,
-        base::BindOnce(
-            &SharedDictionaryAccessChecker::CheckAllowedToWriteAndReport,
-            std::make_unique<SharedDictionaryAccessChecker>(
-                *context_, shared_dictionary_observer_),
-            request_.url, request_.site_for_cookies, isolation_info_));
-    if (writer) {
+  std::optional<std::string> use_as_dictionary_header = GetHeaderString(
+      *response_head, shared_dictionary::kUseAsDictionaryHeaderName);
+  if (use_as_dictionary_header) {
+    base::expected<scoped_refptr<SharedDictionaryWriter>,
+                   mojom::SharedDictionaryError>
+        writer_or_error = SharedDictionaryStorage::MaybeCreateWriter(
+            *use_as_dictionary_header,
+            request_.shared_dictionary_writer_enabled,
+            shared_dictionary_storage_.get(), request_.mode, response_tainting_,
+            request_.url, response_head->request_time,
+            response_head->response_time, *response_head->headers,
+            response_head->was_fetched_via_cache,
+            base::BindOnce(
+                &SharedDictionaryAccessChecker::CheckAllowedToWriteAndReport,
+                std::make_unique<SharedDictionaryAccessChecker>(
+                    *context_, shared_dictionary_observer_),
+                request_.url, request_.site_for_cookies, isolation_info_));
+    if (writer_or_error.has_value()) {
+      CHECK(writer_or_error.value());
       shared_dictionary_data_pipe_writer_ =
           SharedDictionaryDataPipeWriter::Create(
-              body, std::move(writer),
+              body, std::move(writer_or_error.value()),
               base::BindOnce(&CorsURLLoader::OnSharedDictionaryWritten,
                              base::Unretained(this)));
       if (!shared_dictionary_data_pipe_writer_) {
+        MaybeReportSharedDictionaryErrorToDevTools(
+            mojom::SharedDictionaryError::kWriteErrorInsufficientResources);
         HandleComplete(
             URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
         return;
       }
+    } else {
+      MaybeReportSharedDictionaryErrorToDevTools(writer_or_error.error());
+    }
+  }
+
+  if (!response_head->did_use_shared_dictionary && shared_dictionary_) {
+    if (!(request_.load_flags & net::LOAD_CAN_USE_SHARED_DICTIONARY)) {
+      // There are matching dictionary, but we can't use it because
+      // the request is no-cors cross origin request.
+      MaybeReportSharedDictionaryErrorToDevTools(
+          mojom::SharedDictionaryError::kUseErrorCrossOriginNoCorsRequest);
+    } else {
+      MaybeReportSharedDictionaryErrorToDevTools(
+          mojom::SharedDictionaryError::kUseErrorMatchingDictionaryNotUsed);
     }
   }
 
@@ -804,6 +805,16 @@ void CorsURLLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
 void CorsURLLoader::OnComplete(const URLLoaderCompletionStatus& status) {
   DCHECK(network_loader_);
   DCHECK(forwarding_client_);
+
+  if (status.error_code == net::ERR_DICTIONARY_LOAD_FAILED) {
+    MaybeReportSharedDictionaryErrorToDevTools(
+        mojom::SharedDictionaryError::kUseErrorDictionaryLoadFailure);
+  } else if (status.error_code ==
+             net::ERR_UNEXPECTED_CONTENT_DICTIONARY_HEADER) {
+    MaybeReportSharedDictionaryErrorToDevTools(
+        mojom::SharedDictionaryError::
+            kUseErrorUnexpectedContentDictionaryHeader);
+  }
 
   // `network_loader_` will call OnComplete at anytime when a problem happens
   // inside the URLLoader, e.g. on URLLoader::OnMojoDisconnect call. We need
@@ -958,6 +969,12 @@ void CorsURLLoader::ReportCorsErrorToDevTools(const CorsErrorStatus& status,
 
 void CorsURLLoader::ReportOrbErrorToDevTools() {
   devtools_observer_->OnOrbError(request_.devtools_request_id, request_.url);
+}
+
+void CorsURLLoader::MaybeReportSharedDictionaryErrorToDevTools(
+    mojom::SharedDictionaryError error) {
+  // TODO(crbug.com/333756098): Send `error` to the browser process via
+  // `devtools_observer_`.
 }
 
 std::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
@@ -1373,6 +1390,10 @@ CorsURLLoader::GetPrivateNetworkAccessPreflightBehavior(
 
 void CorsURLLoader::OnSharedDictionaryWritten(bool success) {
   shared_dictionary_data_pipe_writer_.reset();
+  if (!success) {
+    MaybeReportSharedDictionaryErrorToDevTools(
+        mojom::SharedDictionaryError::kWriteErrorRequestAborted);
+  }
   if (deferred_completion_status_) {
     HandleComplete(*deferred_completion_status_);
     return;

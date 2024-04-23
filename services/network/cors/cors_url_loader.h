@@ -31,6 +31,9 @@
 #include "url/origin.h"
 
 namespace network {
+namespace mojom {
+enum class SharedDictionaryError : int32_t;
+}  // namespace mojom
 
 class URLLoaderFactory;
 class NetworkContext;
@@ -157,6 +160,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
 
   // Reports an ORB error for `request_` to DevTools, if possible.
   void ReportOrbErrorToDevTools();
+
+  // Reports an SharedDictionaryError for `request_` to DevTools, if possible.
+  void MaybeReportSharedDictionaryErrorToDevTools(
+      mojom::SharedDictionaryError error);
 
   // Handles OnComplete() callback.
   void HandleComplete(URLLoaderCompletionStatus status);

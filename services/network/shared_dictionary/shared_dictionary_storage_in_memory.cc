@@ -106,20 +106,17 @@ bool SharedDictionaryStorageInMemory::HasDictionaryBetween(
   return false;
 }
 
-scoped_refptr<SharedDictionaryWriter>
+base::expected<scoped_refptr<SharedDictionaryWriter>,
+               mojom::SharedDictionaryError>
 SharedDictionaryStorageInMemory::CreateWriter(
     const GURL& url,
     base::Time response_time,
     base::TimeDelta expiration,
     const std::string& match,
     const std::set<mojom::RequestDestination>& match_dest,
-    const std::string& id) {
-  std::unique_ptr<SimpleUrlPatternMatcher> matcher;
-  auto matcher_create_result = SimpleUrlPatternMatcher::Create(match, url);
-  if (!matcher_create_result.has_value()) {
-    return nullptr;
-  }
-  matcher = std::move(matcher_create_result.value());
+    const std::string& id,
+    std::unique_ptr<SimpleUrlPatternMatcher> matcher) {
+  CHECK(matcher);
   return base::MakeRefCounted<SharedDictionaryWriterInMemory>(
       base::BindOnce(&SharedDictionaryStorageInMemory::OnDictionaryWritten,
                      weak_factory_.GetWeakPtr(), url, response_time, expiration,
