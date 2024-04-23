@@ -16,7 +16,8 @@ namespace ash::file_system_provider {
 struct OpenedCloudFile {
   OpenedCloudFile(const base::FilePath& file_path,
                   OpenFileMode mode,
-                  const std::string& version_tag);
+                  const std::string& version_tag,
+                  std::optional<int64_t> bytes_in_cloud);
   ~OpenedCloudFile();
 
   // The absolute path of the file that is rooted at the FSP.
@@ -31,9 +32,8 @@ struct OpenedCloudFile {
   // content cache.
   std::string version_tag;
 
-  // Whether the request should be made from the cache first (optimistic) or
-  // made from the FSP (pessimistic).
-  bool serve_from_cache = true;
+  // The expected bytes that exist in the cloud for this file.
+  std::optional<int64_t> bytes_in_cloud;
 };
 
 }  // namespace ash::file_system_provider

@@ -154,7 +154,15 @@ bool ContentCacheImpl::StartReadBytes(
     return false;
   }
 
-  if (ctx.bytes_on_disk < (offset + length)) {
+  if (offset == ctx.bytes_on_disk && offset == file.bytes_in_cloud) {
+    VLOG(1) << "Ignored request: offset is at EOF";
+    callback.Run(0, false, base::File::FILE_OK);
+    return true;
+  }
+
+  // In the event the offset exceeds the known `bytes_on_disk` then we can't
+  // reliably serve this data from the content cache.
+  if (offset >= ctx.bytes_on_disk) {
     VLOG(1) << "Cache miss: requested byte range {offset = '" << offset
             << "', length = '" << length
             << "'} not available {bytes_on_disk = '" << ctx.bytes_on_disk
@@ -162,8 +170,14 @@ bool ContentCacheImpl::StartReadBytes(
     return false;
   }
 
+  // It's possible that the file on disk can't entirely fulfill the offset +
+  // length bytes request. In this instance, the callback will be invoked with
+  // `bytes_read` (which will be less than length) and it's up to the caller to
+  // make a follow up call for the remainder (which will then be served from the
+  // underlying FSP).
   VLOG(1) << "Cache hit: Range {offset = '" << offset << "', length = '"
-          << length << "'} is available";
+          << length << "', bytes_on_disk = '" << ctx.bytes_on_disk
+          << "'} is available";
   io_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ReadBytesBlocking, GetPathOnDiskFromContext(ctx.id),

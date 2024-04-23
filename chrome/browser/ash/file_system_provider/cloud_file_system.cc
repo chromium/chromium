@@ -109,6 +109,13 @@ const std::string GetVersionTag(EntryMetadata* metadata) {
              : "";
 }
 
+std::optional<int64_t> GetCloudSize(EntryMetadata* metadata) {
+  if (metadata && metadata->size) {
+    return *metadata->size;
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 CloudFileSystem::CloudFileSystem(
@@ -187,7 +194,8 @@ bool CloudFileSystem::ShouldAttemptToServeReadFileFromCache(
     const OpenedCloudFileMap::const_iterator it) {
   return content_cache_ && it != opened_files_.end() &&
          it->second.mode == OpenFileMode::OPEN_FILE_MODE_READ &&
-         !it->second.version_tag.empty();
+         !it->second.version_tag.empty() &&
+         it->second.bytes_in_cloud.has_value();
 }
 
 AbortCallback CloudFileSystem::ReadFile(int file_handle,
@@ -534,7 +542,8 @@ void CloudFileSystem::OnOpenFileCompleted(
   if (result == base::File::FILE_OK) {
     opened_files_.try_emplace(
         file_handle,
-        OpenedCloudFile(file_path, mode, GetVersionTag(metadata.get())));
+        OpenedCloudFile(file_path, mode, GetVersionTag(metadata.get()),
+                        GetCloudSize(metadata.get())));
   }
   std::move(callback).Run(file_handle, result, std::move(metadata));
 }

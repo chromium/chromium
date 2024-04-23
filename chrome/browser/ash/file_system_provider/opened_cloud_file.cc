@@ -8,8 +8,12 @@ namespace ash::file_system_provider {
 
 OpenedCloudFile::OpenedCloudFile(const base::FilePath& file_path,
                                  OpenFileMode mode,
-                                 const std::string& version_tag)
-    : file_path(file_path), mode(mode), version_tag(version_tag) {}
+                                 const std::string& version_tag,
+                                 std::optional<int64_t> bytes_in_cloud)
+    : file_path(file_path),
+      mode(mode),
+      version_tag(version_tag),
+      bytes_in_cloud(bytes_in_cloud) {}
 
 OpenedCloudFile::~OpenedCloudFile() = default;
 
