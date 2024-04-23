@@ -125,7 +125,8 @@ Browser* FindBrowserWithTabId(const std::string& tab_id_str) {
 }
 
 // The return value indicates whether the profile picker was shown.
-bool ShowProfilePickerIfNeeded(bool incognito) {
+bool ShowProfilePickerIfNeeded(bool incognito,
+                               std::optional<int64_t> target_display_id) {
   if (StartupProfileModeFromReason(ProfilePicker::GetStartupModeReason()) ==
           StartupProfileMode::kProfilePicker &&
       chrome::GetTotalBrowserCount() == 0 && !incognito) {
@@ -136,6 +137,10 @@ bool ShowProfilePickerIfNeeded(bool incognito) {
     // default behavior for the first browser window supports session restore,
     // additional windows are opened blank and thus it works reasonably well for
     // BrowserServiceLacros.
+    std::optional<display::ScopedDisplayForNewWindows> scoped_display;
+    if (target_display_id.has_value()) {
+      scoped_display.emplace(target_display_id.value());
+    }
     ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
         ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
     return true;
@@ -223,7 +228,7 @@ void BrowserServiceLacros::NewWindow(bool incognito,
     return;
   }
 
-  if (ShowProfilePickerIfNeeded(incognito)) {
+  if (ShowProfilePickerIfNeeded(incognito, target_display_id)) {
     std::move(callback).Run(
         crosapi::mojom::CreationResult::kBrowserWindowUnavailable);
     return;
@@ -314,7 +319,9 @@ void BrowserServiceLacros::NewTab(std::optional<uint64_t> profile_id,
     return;
   }
 
-  if (ShowProfilePickerIfNeeded(false)) {
+  // TODO: crbug.com/333312496 - Update newtab to pass the target display id
+  // through the crosapi.
+  if (ShowProfilePickerIfNeeded(false, std::nullopt)) {
     std::move(callback).Run(
         crosapi::mojom::CreationResult::kBrowserWindowUnavailable);
     return;
@@ -348,7 +355,7 @@ void BrowserServiceLacros::Launch(int64_t target_display_id,
     return;
   }
 
-  if (ShowProfilePickerIfNeeded(false)) {
+  if (ShowProfilePickerIfNeeded(false, target_display_id)) {
     std::move(callback).Run(
         crosapi::mojom::CreationResult::kBrowserWindowUnavailable);
     return;
