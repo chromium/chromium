@@ -476,7 +476,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.EnterpriseUpdateInvalidatedResult"
-    enum="BooleanSuccess" expires_after="2024-05-01">
+    enum="BooleanSuccess" expires_after="2025-05-01">
   <owner>artyomchen@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
