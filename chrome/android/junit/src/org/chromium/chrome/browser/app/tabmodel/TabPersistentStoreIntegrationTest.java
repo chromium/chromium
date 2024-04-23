@@ -36,8 +36,10 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridgeJni;
@@ -74,6 +76,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Tests for TabPersistentStore reacting to events from TabModel and Tab. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(Mode.PAUSED)
+@DisableFeatures({
+    ChromeFeatureList.ANDROID_TAB_DECLUTTER,
+    ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH
+})
 public class TabPersistentStoreIntegrationTest {
     /** Shadow for {@link HomepageManager}. */
     @Implements(HomepageManager.class)
@@ -156,7 +162,6 @@ public class TabPersistentStoreIntegrationTest {
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
 
         TabStateExtractor.resetTabStatesForTesting();
-        ArchivedTabModelOrchestrator.destroyProfileKeyedMapForTesting();
     }
 
     @Test

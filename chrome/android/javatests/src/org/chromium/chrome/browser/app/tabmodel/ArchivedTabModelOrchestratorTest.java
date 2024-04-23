@@ -32,7 +32,10 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Test interacts with activity shutdown and thus is incompatible with batching")
-@EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
+@EnableFeatures({
+    ChromeFeatureList.ANDROID_TAB_DECLUTTER,
+    ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH
+})
 public class ArchivedTabModelOrchestratorTest {
     private static final String TEST_PATH = "/chrome/test/data/android/about.html";
 
