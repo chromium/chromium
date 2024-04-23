@@ -80,6 +80,7 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
         dedicated_worker_host,
     mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
         back_forward_cache_controller_host) {
+  TRACE_EVENT("blink.worker", "DedicatedWorkerGlobalScope::Create");
   std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
       inherited_trial_features =
           std::move(creation_params->inherited_trial_features);
@@ -232,6 +233,8 @@ void DedicatedWorkerGlobalScope::Initialize(
     network::mojom::ReferrerPolicy response_referrer_policy,
     Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
     const Vector<String>* /* response_origin_trial_tokens */) {
+  TRACE_EVENT("blink.worker", "DedicatedWorkerGlobalScope::Initialize",
+              "response_url", response_url);
   // Step 14.3. "Set worker global scope's url to response's url."
   InitializeURL(response_url);
 
@@ -286,7 +289,8 @@ void DedicatedWorkerGlobalScope::FetchAndRunClassicScript(
   DCHECK(base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
   DCHECK(!IsContextPaused());
   TRACE_EVENT("blink.worker",
-              "DedicatedWorkerGlobalScope::FetchAndRunClassicScript");
+              "DedicatedWorkerGlobalScope::FetchAndRunClassicScript",
+              "script_url", script_url);
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "blink.worker", "DedicatedWorkerGlobalScope Fetch", TRACE_ID_LOCAL(this));
   fetch_classic_script_start_ = base::TimeTicks::Now();
@@ -333,6 +337,9 @@ void DedicatedWorkerGlobalScope::FetchAndRunModuleScript(
     WorkerResourceTimingNotifier& outside_resource_timing_notifier,
     network::mojom::CredentialsMode credentials_mode,
     RejectCoepUnsafeNone reject_coep_unsafe_none) {
+  TRACE_EVENT("blink.worker",
+              "DedicatedWorkerGlobalScope::FetchAndRunModuleScript",
+              "module_url_record", module_url_record);
   // TODO(crbug.com/1177199): SetPolicyContainer once we passed down policy
   // container from DedicatedWorkerHost
 
@@ -389,6 +396,7 @@ void DedicatedWorkerGlobalScope::postMessage(ScriptState* script_state,
                                              const ScriptValue& message,
                                              const PostMessageOptions* options,
                                              ExceptionState& exception_state) {
+  TRACE_EVENT("blink.worker", "DedicatedWorkerGlobalScope::postMessage");
   Transferables transferables;
   scoped_refptr<SerializedScriptValue> serialized_message =
       PostMessageHelper::SerializeMessageByMove(script_state->GetIsolate(),
