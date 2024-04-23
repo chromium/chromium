@@ -74,14 +74,16 @@ PickerSearchResult MakeResult(const base::Time time,
   return PickerSearchResult::Text(
       base::LocalizedTimeFormatWithPattern(time, "LLLd"), secondary_text,
       ui::ImageModel::FromVectorIcon(kPickerCalendarIcon,
-                                     cros_tokens::kCrosSysOnSurface));
+                                     cros_tokens::kCrosSysOnSurface),
+      PickerSearchResult::TextData::Source::kDate);
 }
 
 PickerSearchResult OverrideSecondaryText(PickerSearchResult result,
                                          std::u16string_view secondary_text) {
   const PickerSearchResult::TextData& data =
       std::get<PickerSearchResult::TextData>(result.data());
-  return PickerSearchResult::Text(data.primary_text, secondary_text, data.icon);
+  return PickerSearchResult::Text(data.primary_text, secondary_text, data.icon,
+                                  data.source);
 }
 
 void HandleSpecificDayQueries(const base::Time& now,

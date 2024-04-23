@@ -398,8 +398,9 @@ void PickerController::TransformSelectedText(PickerCategory category) {
     return;
   }
   std::u16string_view selected_text = model_->selected_text();
-  InsertResultOnNextFocus(
-      PickerSearchResult::Text(TransformText(selected_text, category)));
+  InsertResultOnNextFocus(PickerSearchResult::Text(
+      TransformText(selected_text, category),
+      PickerSearchResult::TextData::Source::kCaseTransform));
 }
 
 void PickerController::StartSearch(const std::u16string& query,

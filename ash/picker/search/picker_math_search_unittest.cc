@@ -10,6 +10,7 @@
 namespace ash {
 namespace {
 
+using ::testing::AllOf;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::Not;
@@ -34,10 +35,15 @@ TEST(MAYBE_PickerMathSearchTest, NoResult) {
 TEST(MAYBE_PickerMathSearchTest, OnePlusOneEqualsTwo) {
   EXPECT_THAT(
       PickerMathSearch(u"1 + 1"),
-      Optional(Property(
-          "data", &PickerSearchResult::data,
-          VariantWith<PickerSearchResult::TextData>(Field(
-              "text", &PickerSearchResult::TextData::primary_text, u"2")))));
+      Optional(AllOf(
+          Property(
+              "data", &PickerSearchResult::data,
+              VariantWith<PickerSearchResult::TextData>(Field(
+                  "text", &PickerSearchResult::TextData::primary_text, u"2"))),
+          Property("data", &PickerSearchResult::data,
+                   VariantWith<PickerSearchResult::TextData>(
+                       Field("source", &PickerSearchResult::TextData::source,
+                             PickerSearchResult::TextData::Source::kMath))))));
 }
 
 TEST(PickerMathSearchTest, ReturnsExamples) {

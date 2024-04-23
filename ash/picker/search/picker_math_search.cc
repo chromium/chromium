@@ -25,7 +25,9 @@ std::optional<PickerSearchResult> PickerMathSearch(std::u16string_view query) {
   std::optional<std::string> result =
       fend_core::evaluate(base::UTF16ToUTF8(query));
   if (result.has_value()) {
-    return PickerSearchResult::Text(base::UTF8ToUTF16(*result));
+    return PickerSearchResult::Text(
+        base::UTF8ToUTF16(*result),
+        PickerSearchResult::TextData::Source::kMath);
   }
   return std::nullopt;
 }

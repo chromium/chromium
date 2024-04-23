@@ -25,9 +25,27 @@ namespace ash {
 class ASH_PUBLIC_EXPORT PickerSearchResult {
  public:
   struct TextData {
+    enum class Source {
+      kUnknown,  // This should only be used for tests.
+      kDate,
+      kMath,
+      kCaseTransform,
+      kOmnibox,
+    };
+
     std::u16string primary_text;
     std::u16string secondary_text;
     ui::ImageModel icon;
+    Source source;
+
+    TextData(std::u16string primary_text,
+             std::u16string secondary_text,
+             ui::ImageModel icon,
+             Source source);
+
+    TextData(const TextData&);
+    TextData& operator=(const TextData&);
+    ~TextData();
 
     bool operator==(const TextData&) const;
   };
@@ -179,10 +197,14 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
   static PickerSearchResult BrowsingHistory(const GURL& url,
                                             std::u16string title,
                                             ui::ImageModel icon);
-  static PickerSearchResult Text(std::u16string_view text);
-  static PickerSearchResult Text(std::u16string_view primary_text,
-                                 std::u16string_view secondary_text,
-                                 ui::ImageModel icon);
+  static PickerSearchResult Text(
+      std::u16string_view text,
+      TextData::Source source = TextData::Source::kUnknown);
+  static PickerSearchResult Text(
+      std::u16string_view primary_text,
+      std::u16string_view secondary_text,
+      ui::ImageModel icon,
+      TextData::Source source = TextData::Source::kUnknown);
   static PickerSearchResult SearchRequest(std::u16string_view text,
                                           ui::ImageModel icon);
   static PickerSearchResult Emoji(std::u16string_view emoji);

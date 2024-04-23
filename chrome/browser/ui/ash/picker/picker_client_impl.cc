@@ -128,8 +128,9 @@ std::vector<ash::PickerSearchResult> ConvertSearchResults(
           picker_results.push_back(ash::PickerSearchResult::BrowsingHistory(
               *result_url, result->title(), result->icon().icon));
         } else {
-          picker_results.push_back(
-              ash::PickerSearchResult::Text(result->title()));
+          picker_results.push_back(ash::PickerSearchResult::Text(
+              result->title(),
+              ash::PickerSearchResult::TextData::Source::kOmnibox));
         }
         break;
       }
