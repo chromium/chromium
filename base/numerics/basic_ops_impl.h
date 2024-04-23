@@ -5,7 +5,7 @@
 #ifndef BASE_NUMERICS_BASIC_OPS_IMPL_H_
 #define BASE_NUMERICS_BASIC_OPS_IMPL_H_
 
-#include <bit>
+#include <array>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>

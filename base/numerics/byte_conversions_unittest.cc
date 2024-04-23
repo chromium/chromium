@@ -3,6 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/numerics/byte_conversions.h"
+
+#include <array>
+#include <bit>
+#include <concepts>
+#include <cstdint>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base::numerics {

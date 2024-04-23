@@ -5,8 +5,9 @@
 #ifndef BASE_NUMERICS_SAFE_CONVERSIONS_ARM_IMPL_H_
 #define BASE_NUMERICS_SAFE_CONVERSIONS_ARM_IMPL_H_
 
-#include <cassert>
-#include <limits>
+// IWYU pragma: private, include "base/numerics/safe_conversions.h"
+
+#include <stdint.h>
 #include <type_traits>
 
 #include "base/numerics/safe_conversions_impl.h"

@@ -5,12 +5,13 @@
 #ifndef BASE_NUMERICS_CHECKED_MATH_H_
 #define BASE_NUMERICS_CHECKED_MATH_H_
 
-#include <stddef.h>
-
+#include <stdint.h>
 #include <limits>
 #include <type_traits>
 
-#include "base/numerics/checked_math_impl.h"
+#include "base/numerics/checked_math_impl.h"  // IWYU pragma: export
+#include "base/numerics/safe_conversions.h"
+#include "base/numerics/safe_math_shared_impl.h"  // IWYU pragma: export
 
 namespace base {
 namespace internal {

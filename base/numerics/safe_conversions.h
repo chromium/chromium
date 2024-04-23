@@ -12,10 +12,10 @@
 #include <limits>
 #include <type_traits>
 
-#include "base/numerics/safe_conversions_impl.h"
+#include "base/numerics/safe_conversions_impl.h"  // IWYU pragma: export
 
 #if defined(__ARMEL__) && !defined(__native_client__)
-#include "base/numerics/safe_conversions_arm_impl.h"
+#include "base/numerics/safe_conversions_arm_impl.h"  // IWYU pragma: export
 #define BASE_HAS_OPTIMIZED_SAFE_CONVERSIONS (1)
 #else
 #define BASE_HAS_OPTIMIZED_SAFE_CONVERSIONS (0)

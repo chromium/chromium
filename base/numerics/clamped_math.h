@@ -5,12 +5,11 @@
 #ifndef BASE_NUMERICS_CLAMPED_MATH_H_
 #define BASE_NUMERICS_CLAMPED_MATH_H_
 
-#include <stddef.h>
-
-#include <limits>
 #include <type_traits>
 
-#include "base/numerics/clamped_math_impl.h"
+#include "base/numerics/clamped_math_impl.h"  // IWYU pragma: export
+#include "base/numerics/safe_conversions.h"
+#include "base/numerics/safe_math_shared_impl.h"  // IWYU pragma: export
 
 namespace base {
 namespace internal {

@@ -5,6 +5,9 @@
 #ifndef BASE_NUMERICS_SAFE_CONVERSIONS_IMPL_H_
 #define BASE_NUMERICS_SAFE_CONVERSIONS_IMPL_H_
 
+// IWYU pragma: private, include "base/numerics/safe_conversions.h"
+
+#include <stddef.h>
 #include <stdint.h>
 
 #include <concepts>
