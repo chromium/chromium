@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/values.h"
@@ -64,6 +65,11 @@ std::map<std::string, std::string> CreateProviderRequest(
       !config_label.empty()) {
     provider_request["config_label"] = config_label;
   }
+
+  if (base::FeatureList::IsEnabled(features::kOrcaInternationalize)) {
+    provider_request["i18n"] = "true";
+  }
+
   return provider_request;
 }
 
