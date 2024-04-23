@@ -33,7 +33,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) MicView
   MicView& operator=(const MicView&) = delete;
   ~MicView() override;
 
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   int GetHeightForWidth(int width) const override;
 
   // AssistantControllerObserver:

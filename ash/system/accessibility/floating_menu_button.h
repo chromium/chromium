@@ -58,7 +58,8 @@ class FloatingMenuButton : public views::ImageButton {
 
   // views::ImageButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:

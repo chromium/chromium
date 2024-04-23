@@ -122,8 +122,9 @@ void ArrowButtonView::RunTransformAnimation() {
 
   // Translate by |center_offset| so that the view scales outward from center
   // point.
-  auto center_offset = gfx::Vector2d(CalculatePreferredSize().width() / 2.0,
-                                     CalculatePreferredSize().height() / 2.0);
+  gfx::Size preferred_size = CalculatePreferredSize({});
+  auto center_offset = gfx::Vector2d(preferred_size.width() / 2.0,
+                                     preferred_size.height() / 2.0);
   gfx::Transform transform;
   transform.Translate(center_offset);
   // Make view larger.

@@ -133,7 +133,8 @@ void FloatingMenuButton::PaintButtonContents(gfx::Canvas* canvas) {
   views::ImageButton::PaintButtonContents(canvas);
 }
 
-gfx::Size FloatingMenuButton::CalculatePreferredSize() const {
+gfx::Size FloatingMenuButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(size_, size_);
 }
 

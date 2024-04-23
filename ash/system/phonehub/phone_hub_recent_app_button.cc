@@ -46,7 +46,8 @@ PhoneHubRecentAppButton::PhoneHubRecentAppButton(
 
 PhoneHubRecentAppButton::~PhoneHubRecentAppButton() = default;
 
-gfx::Size PhoneHubRecentAppButton::CalculatePreferredSize() const {
+gfx::Size PhoneHubRecentAppButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kRecentAppButtonSize, kRecentAppButtonSize);
 }
 

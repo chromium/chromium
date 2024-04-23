@@ -554,8 +554,9 @@ class FullscreenButton : public ImageButton {
   FullscreenButton& operator=(const FullscreenButton&) = delete;
 
   // Overridden from ImageButton.
-  gfx::Size CalculatePreferredSize() const override {
-    gfx::Size pref = ImageButton::CalculatePreferredSize();
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    gfx::Size pref = ImageButton::CalculatePreferredSize(available_size);
     const gfx::Insets insets = GetInsets();
     pref.Enlarge(insets.width(), insets.height());
     return pref;

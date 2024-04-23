@@ -212,7 +212,8 @@ void NewTabButton::PaintButtonContents(gfx::Canvas* canvas) {
   PaintIcon(canvas);
 }
 
-gfx::Size NewTabButton::CalculatePreferredSize() const {
+gfx::Size NewTabButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   gfx::Size size = kButtonSize;
   const auto insets = GetInsets();
   size.Enlarge(insets.width(), insets.height());

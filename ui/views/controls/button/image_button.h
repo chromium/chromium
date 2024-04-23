@@ -62,7 +62,8 @@ class VIEWS_EXPORT ImageButton : public Button {
   void SetDrawImageMirrored(bool mirrored) { draw_image_mirrored_ = mirrored; }
 
   // Overridden from View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
   views::PaintInfo::ScaleType GetPaintScaleType() const override;
   void OnThemeChanged() override;
 

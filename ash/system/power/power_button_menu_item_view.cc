@@ -85,7 +85,8 @@ void PowerButtonMenuItemView::Layout(PassKey) {
                                   kMenuItemHeight - kTitleTopPadding));
 }
 
-gfx::Size PowerButtonMenuItemView::CalculatePreferredSize() const {
+gfx::Size PowerButtonMenuItemView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kMenuItemWidth + 2 * kItemBorderThickness,
                    kMenuItemHeight + 2 * kItemBorderThickness);
 }

@@ -82,7 +82,8 @@ class NewTabButton : public views::ImageButton,
   void OnGestureEvent(ui::GestureEvent* event) override;
   void NotifyClick(const ui::Event& event) override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // views::MaskedTargeterDelegate:
   bool GetHitTestMask(SkPath* mask) const override;

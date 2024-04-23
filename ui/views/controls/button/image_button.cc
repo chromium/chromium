@@ -114,7 +114,8 @@ void ImageButton::SetMinimumImageSize(const gfx::Size& size) {
 ////////////////////////////////////////////////////////////////////////////////
 // ImageButton, View overrides:
 
-gfx::Size ImageButton::CalculatePreferredSize() const {
+gfx::Size ImageButton::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
   gfx::Size size(kDefaultWidth, kDefaultHeight);
   if (!images_[STATE_NORMAL].IsEmpty())
     size = images_[STATE_NORMAL].Size();

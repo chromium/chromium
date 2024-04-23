@@ -29,7 +29,8 @@ class ASH_EXPORT PhoneHubRecentAppButton : public views::ImageButton {
   PhoneHubRecentAppButton operator=(PhoneHubRecentAppButton&) = delete;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // views::ImageButton:
   void PaintButtonContents(gfx::Canvas* canvas) override;

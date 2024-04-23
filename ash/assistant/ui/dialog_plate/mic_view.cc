@@ -42,7 +42,8 @@ MicView::~MicView() {
     AssistantInteractionController::Get()->GetModel()->RemoveObserver(this);
 }
 
-gfx::Size MicView::CalculatePreferredSize() const {
+gfx::Size MicView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kPreferredSizeDip, GetHeightForWidth(kPreferredSizeDip));
 }
 

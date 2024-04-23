@@ -33,7 +33,8 @@ DeskSwitchButton::DeskSwitchButton()
 
 DeskSwitchButton::~DeskSwitchButton() = default;
 
-gfx::Size DeskSwitchButton::CalculatePreferredSize() const {
+gfx::Size DeskSwitchButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kDeskButtonSwitchButtonWidth,
                    desk_button_container_->zero_state()
                        ? kDeskButtonSwitchButtonHeightVertical
