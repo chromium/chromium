@@ -209,13 +209,8 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
   // Note: windows in the overview belong to different containers. For instance,
   // normal windows belong to a desk container, floated windows to a float
   // container, and always-on-top windows to their respective container.
-  const display::Display display =
-      display::Screen::GetScreen()->GetDisplayMatching(
-          window->GetBoundsInScreen());
-  aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
-
   window_tree_synchronizer_ = std::make_unique<ScopedWindowTreeSynchronizer>(
-      root_window, /*restore_tree=*/true);
+      window_->GetRootWindow(), /*restore_tree=*/true);
 }
 
 ScopedOverviewTransformWindow::~ScopedOverviewTransformWindow() {
@@ -553,12 +548,12 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
     return;
   }
 
-  const gfx::RectF contents_bounds = GetTransformedBounds();
+  const gfx::RectF contents_bounds_in_screen = GetTransformedBounds();
 
   // Depending on the size of `backdrop_view`, we might not want to round the
   // window associated with `layer`.
   const bool has_rounding = window_util::ShouldRoundThumbnailWindow(
-      overview_item_->GetBackDropView(), contents_bounds);
+      overview_item_->GetBackDropView(), contents_bounds_in_screen);
 
   const float scale = layer->transform().To2dScale().x();
   layer->SetRoundedCornerRadius(
@@ -570,12 +565,17 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
     return;
   }
 
-  gfx::RRectF rounded_contents_bounds(
-      contents_bounds, window_util::GetMiniWindowRoundedCorners(
-                           window(), /*include_header_rounding=*/false));
+  gfx::RectF contents_bounds_in_root(contents_bounds_in_screen);
+  wm::TranslateRectFromScreen(window_->GetRootWindow(),
+                              &contents_bounds_in_root);
+
+  const gfx::RRectF rounded_contents_bounds(
+      contents_bounds_in_root,
+      window_util::GetMiniWindowRoundedCorners(
+          window(), /*include_header_rounding=*/false));
 
   // Synchronizing the rounded corners of a window and its transient hierarchy
-  // against `contents_bounds` yields two outcomes:
+  // against `rounded_contents_bounds` yields two outcomes:
   // * We can apply the specified rounding without the need for a render
   //   surface.
   // * It ensures that the transient windows' corners are correctly rounded,
