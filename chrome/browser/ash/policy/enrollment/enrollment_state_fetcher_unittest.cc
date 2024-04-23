@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
+#include "chrome/browser/ash/policy/enrollment/flex_enrollment_test_helper.h"
 #include "chrome/browser/ash/policy/enrollment/psm/rlwe_test_support.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
@@ -272,6 +273,8 @@ class EnrollmentStateFetcherTest : public testing::Test {
   MockStateKeyBroker state_key_broker_;
   MockDeviceSettingsService device_settings_service_;
   psm::testing::RlweTestCase psm_test_case_;
+  policy::test::FlexEnrollmentTestHelper flex_test_helper_{
+      &command_line_, &statistics_provider_};
 
   // Fake URL loader factories.
   network::TestURLLoaderFactory url_loader_factory_;
@@ -1198,22 +1201,12 @@ class EnrollmentStateFetcherTestP
   void SetUp() override {
     EnrollmentStateFetcherTest::SetUp();
     if (device_os_ == DeviceOs::Flex) {
-      SetUpFlexDevice();
+      flex_test_helper_.SetUpFlexDevice();
+      flex_test_helper_.EnableFREOnFlex();
     }
   }
 
  protected:
-  void SetUpFlexDevice() {
-    statistics_provider_.SetMachineStatistic(
-        ash::system::kFirmwareTypeKey,
-        ash::system::kFirmwareTypeValueNonchrome);
-    command_line_.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kRevenBranding);
-    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        ash::switches::kEnterpriseEnableForcedReEnrollmentOnFlex,
-        AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
-  }
-
   const DeviceOs device_os_ = GetParam();
 };
 

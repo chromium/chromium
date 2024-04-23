@@ -12,6 +12,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/policy/enrollment/flex_enrollment_test_helper.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -19,7 +20,9 @@ namespace policy {
 class FlexEnrollmentTokenProviderTest : public testing::Test {
  protected:
   base::test::ScopedCommandLine command_line_;
-  test::FlexEnrollmentTestHelper flex_token_test_helper_{&command_line_};
+  ash::system::ScopedFakeStatisticsProvider statistics_provider_;
+  test::FlexEnrollmentTestHelper flex_token_test_helper_{&command_line_,
+                                                         &statistics_provider_};
 };
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)

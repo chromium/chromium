@@ -53,7 +53,8 @@ class EnrollmentConfigTest : public testing::Test {
   ash::StubInstallAttributes install_attributes_;
   ash::ScopedTestDeviceSettingsService scoped_device_settings_service_;
   base::test::ScopedCommandLine command_line_;
-  test::FlexEnrollmentTestHelper flex_test_helper_{&command_line_};
+  test::FlexEnrollmentTestHelper flex_test_helper_{&command_line_,
+                                                   &statistics_provider_};
 };
 
 TEST_F(EnrollmentConfigTest, TokenEnrollmentModeWithNoTokenFailsDCheck) {

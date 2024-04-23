@@ -32,6 +32,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/oobe_config/fake_oobe_configuration_client.h"
 #include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
@@ -404,7 +405,9 @@ class AutoEnrollmentClientImplBaseTest : public testing::Test {
   }
 
   base::test::ScopedCommandLine command_line_;
-  test::FlexEnrollmentTestHelper flex_test_helper_{&command_line_};
+  ash::system::ScopedFakeStatisticsProvider statistics_provider_;
+  test::FlexEnrollmentTestHelper flex_test_helper_{&command_line_,
+                                                   &statistics_provider_};
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;

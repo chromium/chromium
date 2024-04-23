@@ -63,16 +63,9 @@ class AutoEnrollmentTypeCheckerTest : public testing::Test {
         ash::system::kFirmwareTypeValueNonchrome);
   }
 
-  void SetUpFlexDevice() {
-    SetUpNonchromeDevice();
-    flex_test_helper_.SetUpFlexDevice();
-  }
-
   void SetUpFlexDeviceWithCommandLineSwitchToAlways() {
-    SetUpFlexDevice();
-    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
-        ash::switches::kEnterpriseEnableForcedReEnrollmentOnFlex,
-        AutoEnrollmentTypeChecker::kForcedReEnrollmentAlways);
+    flex_test_helper_.SetUpFlexDevice();
+    flex_test_helper_.EnableFREOnFlex();
   }
 
   void SetupFREEnabled() {
@@ -155,8 +148,9 @@ class AutoEnrollmentTypeCheckerTest : public testing::Test {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   base::test::ScopedCommandLine command_line_;
-  test::FlexEnrollmentTestHelper flex_test_helper_{&command_line_};
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  test::FlexEnrollmentTestHelper flex_test_helper_{&command_line_,
+                                                   &fake_statistics_provider_};
 };
 
 TEST_F(AutoEnrollmentTypeCheckerTest, FREEnabledWhenSwitchIsAlways) {
@@ -384,7 +378,7 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
 
 TEST_F(AutoEnrollmentTypeCheckerTest,
        FRERequiredOnFlexNotEnabledByCommandLineSwitch) {
-  SetUpFlexDevice();
+  flex_test_helper_.SetUpFlexDevice();
 
   EXPECT_FALSE(AutoEnrollmentTypeChecker::IsFREEnabled());
   EXPECT_EQ(AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
@@ -394,7 +388,7 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
 
 TEST_F(AutoEnrollmentTypeCheckerTest,
        DetermineAutoEnrollmentCheckTypeOnFlexWhenTokenPresent) {
-  SetUpFlexDevice();
+  flex_test_helper_.SetUpFlexDevice();
   flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
   fake_statistics_provider_.SetMachineStatistic(
       ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
@@ -442,7 +436,7 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
 
 TEST_F(AutoEnrollmentTypeCheckerTest,
        DetermineAutoEnrollmentCheckTypeOnFlexWithoutTokenPresent) {
-  SetUpFlexDevice();
+  flex_test_helper_.SetUpFlexDevice();
   fake_statistics_provider_.SetMachineStatistic(
       ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
@@ -463,7 +457,7 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
     "flexToken": ""
   })";
   flex_test_helper_.SetUpFlexEnrollmentTokenConfig(kEmptyFlexTokenOobeConfig);
-  SetUpFlexDevice();
+  flex_test_helper_.SetUpFlexDevice();
   fake_statistics_provider_.SetMachineStatistic(
       ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
@@ -692,7 +686,7 @@ class AutoEnrollmentTypeCheckerUnifiedStateDeterminationTestP
     if (device_os_ == DeviceOs::Nonchrome) {
       SetUpNonchromeDevice();
     } else if (device_os_ == DeviceOs::FlexWithoutFRE) {
-      SetUpFlexDevice();
+      flex_test_helper_.SetUpFlexDevice();
     } else if (device_os_ == DeviceOs::FlexWithFRE) {
       SetUpFlexDeviceWithCommandLineSwitchToAlways();
     }
