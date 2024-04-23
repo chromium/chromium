@@ -53,9 +53,8 @@ v8::LocalVector<v8::Value> Arguments::GetAll() const {
 }
 
 v8::Local<v8::Context> Arguments::GetHolderCreationContext() const {
-  v8::Local<v8::Object> holder = is_for_property_
-                                     ? info_for_property_->Holder()
-                                     : info_for_function_->Holder();
+  v8::Local<v8::Object> holder = is_for_property_ ? info_for_property_->Holder()
+                                                  : info_for_function_->This();
   return holder->GetCreationContextChecked();
 }
 

@@ -149,7 +149,7 @@ void V8HTMLConstructor::HtmlConstructor(
   }
   const WrapperTypeInfo* wrapper_type = element->GetWrapperTypeInfo();
   v8::Local<v8::Object> wrapper = V8DOMWrapper::AssociateObjectWithWrapper(
-      isolate, element, wrapper_type, info.Holder());
+      isolate, element, wrapper_type, info.This());
   // If the element had a wrapper, we now update and return that
   // instead.
   V8SetReturnValue(info, wrapper);

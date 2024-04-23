@@ -467,7 +467,7 @@ void MainThreadDebugger::QuerySelectorCallback(
     return;
   if (element) {
     ScriptState* script_state =
-        ScriptState::From(info.Holder()->GetCreationContextChecked());
+        ScriptState::From(info.This()->GetCreationContextChecked());
     info.GetReturnValue().Set(ToV8Traits<Element>::ToV8(script_state, element));
   } else {
     info.GetReturnValue().Set(v8::Null(info.GetIsolate()));
@@ -498,7 +498,7 @@ void MainThreadDebugger::QuerySelectorAllCallback(
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::Local<v8::Array> nodes = v8::Array::New(isolate, element_list->length());
   ScriptState* script_state =
-      ScriptState::From(info.Holder()->GetCreationContextChecked());
+      ScriptState::From(info.This()->GetCreationContextChecked());
   for (wtf_size_t i = 0; i < element_list->length(); ++i) {
     Element* element = element_list->item(i);
     v8::Local<v8::Value> value =
@@ -531,7 +531,7 @@ void MainThreadDebugger::XpathSelectorCallback(
   if (exception_state.HadException() || !result)
     return;
   ScriptState* script_state =
-      ScriptState::From(info.Holder()->GetCreationContextChecked());
+      ScriptState::From(info.This()->GetCreationContextChecked());
   if (result->resultType() == XPathResult::kNumberType) {
     V8SetReturnValue(info, result->numberValue(exception_state));
   } else if (result->resultType() == XPathResult::kStringType) {

@@ -64,7 +64,7 @@ void V8ObjectConstructor::IsValidConstructorMode(
     V8ThrowException::ThrowTypeError(info.GetIsolate(), "Illegal constructor");
     return;
   }
-  V8SetReturnValue(info, info.Holder());
+  V8SetReturnValue(info, info.This());
 }
 
 v8::Local<v8::Function> V8ObjectConstructor::CreateInterfaceObject(
