@@ -12,10 +12,6 @@ def _isolated_script_test_spec_init(node, settings):
     return _targets_common.spec_init(node, settings)
 
 def _isolated_script_test_spec_finalize(name, settings, spec_value):
-    if settings.is_android and spec_value["swarming"].enable:
-        # TODO(https://crbug.com/1137998) make Android presentation work with
-        # isolated scripts in test_results_presentation.py merge script
-        _targets_common.update_spec_for_android_presentation(spec_value)
     default_merge_script = "standard_isolated_script_merge"
     spec_value = _targets_common.spec_finalize(settings, spec_value, default_merge_script)
     return "isolated_scripts", name, spec_value
