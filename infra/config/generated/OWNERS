@@ -1,6 +1,7 @@
 # For most generated files, any OWNER of starlark files should be an owner of
 # the generated configs. cq-usage and sheriff-rotations are both "set noparent",
 # so setting owners for them here would be moot.
+per-file builder-owners/...=*
 per-file health-specs/...=*
 per-file luci/...=*
 per-file *.md=*
