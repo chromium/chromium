@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -62,6 +63,8 @@ namespace {
 
 // Temporary alias as this code moves incrementally into the storage namespace.
 using StorageAreaImpl = StorageAreaImpl;
+
+static const int kDaysInTenYears = 10 * 365;
 
 constexpr std::string_view kVersionKey = "VERSION";
 const uint8_t kMetaPrefix[] = {'M', 'E', 'T', 'A', ':'};
@@ -748,6 +751,25 @@ void LocalStorageImpl::OnGotStorageUsageForShutdown(
   for (const auto& info : usage) {
     const blink::StorageKey& storage_key = info->storage_key;
     const url::Origin& key_origin = storage_key.origin();
+    // Ideally we would be recording last_accessed instead, but there is no
+    // historical data on that. Instead, we will use last_modified as a sanity
+    // check against other data as we try to understand how many 'old' storage
+    // buckets are still in use. This is split into two buckets for greater
+    // resolution on near and far term ages.
+    if (!info->last_modified.is_null() &&
+        info->last_modified < base::Time::Now()) {
+      int days_since_last_modified =
+          (base::Time::Now() - info->last_modified).InDays();
+      if (days_since_last_modified > 400) {
+        base::UmaHistogramCustomCounts(
+            "LocalStorage.DaysSinceLastModified400DaysGT",
+            days_since_last_modified, 401, kDaysInTenYears, 100);
+      } else {
+        base::UmaHistogramCustomCounts(
+            "LocalStorage.DaysSinceLastModified400DaysLTE",
+            days_since_last_modified, 1, 400, 100);
+      }
+    }
     // Delete the storage if its origin matches one of the origins to purge, or
     // if it is third-party and the top-level site is same-site with one of
     // those origins.

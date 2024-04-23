@@ -221,6 +221,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LocalStorage.DaysSinceLastModified400DaysGT" units="days"
+    expires_after="2025-04-19">
+  <owner>arichiv@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Emitted when the browsing context that loaded the related local storage
+    controller shuts down. One entry is recorded per local storage area.
+
+    Number of days since a local storage area was modified (for values over 400
+    days).
+  </summary>
+</histogram>
+
+<histogram name="LocalStorage.DaysSinceLastModified400DaysLTE" units="days"
+    expires_after="2025-04-19">
+  <owner>arichiv@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Emitted when the browsing context that loaded the related local storage
+    controller shuts down. One entry is recorded per local storage area.
+
+    Number of days since a local storage area was modified (for values under 400
+    days).
+  </summary>
+</histogram>
+
 <histogram name="LocalStorage.MojoSizeInKB" units="KB"
     expires_after="2024-09-01">
   <owner>ayui@chromium.org</owner>
