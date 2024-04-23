@@ -383,6 +383,12 @@ class CONTENT_EXPORT RenderFrameHostImpl
   static void SetCodeCacheHostReceiverHandlerForTesting(
       CodeCacheHostReceiverHandler handler);
 
+  // Get the PolicyContainerHost associated with `frame_token`.
+  static PolicyContainerHost* GetPolicyContainerHost(
+      const blink::LocalFrameToken* frame_token,
+      int initiator_process_id,
+      StoragePartitionImpl* storage_partition);
+
   RenderFrameHostImpl(const RenderFrameHostImpl&) = delete;
   RenderFrameHostImpl& operator=(const RenderFrameHostImpl&) = delete;
 
@@ -3140,6 +3146,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   friend class TextInputTestLocalFrame;
   friend class WebContentsSplitCacheBrowserTest;
   friend class RenderFrameHostManagerUnloadBrowserTest;
+  friend class NavigationBrowserTest;
 
   FRIEND_TEST_ALL_PREFIXES(NavigatorTest, TwoNavigationsRacingCommit);
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBeforeUnloadBrowserTest,
@@ -3295,6 +3302,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(
       NavigationControllerHistoryInterventionBrowserTest,
       TestHonorStickyActivationWithChildFrameCrossDocument);
+  FRIEND_TEST_ALL_PREFIXES(NavigationPolicyContainerBuilderBrowserTest,
+                           FinalPoliciesAboutBlankWithInitiatorAndHistory);
 
   class SubresourceLoaderFactoriesConfig;
 

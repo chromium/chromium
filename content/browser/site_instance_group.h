@@ -78,6 +78,10 @@ class CONTENT_EXPORT SiteInstanceGroup
     virtual void ActiveFrameCountIsZero(
         SiteInstanceGroup* site_instance_group) {}
 
+    // Called when all NavigationStateKeepAlives associated with this
+    // SiteInstanceGroup are gone.
+    virtual void KeepAliveCountIsZero(SiteInstanceGroup* site_instance_group) {}
+
     // Called when the renderer process of this SiteInstanceGroup has exited.
     // Note that GetProcess() still returns the same RenderProcessHost instance.
     // You can reinitialize it by a call to SiteInstance::GetProcess()->Init().
@@ -115,6 +119,17 @@ class CONTENT_EXPORT SiteInstanceGroup
   // observers, and may trigger deletion of proxies.
   void DecrementActiveFrameCount();
 
+  // Increase the number of NavigationStateKeepAlives in this SiteInstanceGroup.
+  // This increments when certain renderer-initiated navigations are scheduled
+  // in this group.
+  void IncrementKeepAliveCount();
+
+  // Decrease the number of NavigationStateKeepAlives in this SiteInstanceGroup.
+  // This decreases when the renderer has finished initiating the navigation.
+  // Decrementing this to zero will notify observers and may trigger deletion of
+  // proxies.
+  void DecrementKeepAliveCount();
+
   // Returns true if `group` is in the same BrowsingInstance as `this`. This
   // behaves similarly to SiteInstance::IsRelatedSiteInstance, but can only be
   // used when a SiteInstanceGroup is available.
@@ -130,6 +145,9 @@ class CONTENT_EXPORT SiteInstanceGroup
   // there are no active frames left, all frames in this SiteInstanceGroup can
   // be safely discarded.
   size_t active_frame_count() const { return active_frame_count_; }
+
+  // Get the number of NavigationStateKeepAlives in this SiteInstanceGroup.
+  size_t keep_alive_count() const { return keep_alive_count_; }
 
   RenderProcessHost* process() const { return &*process_; }
 
@@ -195,6 +213,11 @@ class CONTENT_EXPORT SiteInstanceGroup
 
   // The number of active frames in this SiteInstanceGroup.
   size_t active_frame_count_ = 0;
+
+  // The number of NavigationStateKeepAlives in this SiteInstanceGroup. Note
+  // this is also tracked on RenderProcessHostImpl, which aggregates keep alives
+  // across all SiteInstanceGroups in that process.
+  size_t keep_alive_count_ = 0;
 
   // Current RenderProcessHost that is rendering pages for this
   // SiteInstanceGroup, and AgentSchedulingGroupHost (within the process) this

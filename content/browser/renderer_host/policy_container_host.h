@@ -169,17 +169,11 @@ CONTENT_EXPORT std::ostream& operator<<(
 // Although it is owned through a scoped_refptr, a PolicyContainerHost should
 // not be shared between different owners. A RenderFrameHost gets a
 // PolicyContainerHost at creation time, and it gets a new one from the
-// NavigationRequest every time a NavigationRequest commits. Initially, a
-// PolicyContainerHost has no associated frame token. As soon as the
-// PolicyContainerHost becomes owned by a RenderFrameHost, the method
-// AssociateWithFrameToken must be called. This makes it possible to retrieve
-// the PolicyContainerHost via
-// PolicyContainerHost::FromFrameToken. Additionally, this enables the
-// PolicyContainerHost to outlive its RenderFrameHost. In fact, as long as the
-// mojo receiver or a keep alive handle (as registered using
-// IssueKeepAliveHandle) is alive, the PolicyContainerHost will still be
-// retrievable by the corresponding frame token even if the RenderFrameHost has
-// been deleted (and the scoped_refptr with it).
+// NavigationRequest every time a NavigationRequest commits.
+// While a navigation is in flight, it is kept alive by
+// NavigationStateKeepAlive, which means it can outlive its RenderFrameHost.
+// At that point, it can be accessed through
+// RenderFrameHostImpl::GetPolicyContainerHost.
 class CONTENT_EXPORT PolicyContainerHost
     : public base::RefCounted<PolicyContainerHost>,
       public blink::mojom::PolicyContainerHost {
@@ -195,15 +189,8 @@ class CONTENT_EXPORT PolicyContainerHost
   PolicyContainerHost(const PolicyContainerHost&) = delete;
   PolicyContainerHost& operator=(const PolicyContainerHost&) = delete;
 
-  // Retrieve the PolicyContainerHost associated with the frame token |token|
-  // (cf. AsssociateWithFrameToken).
-  static PolicyContainerHost* FromFrameToken(
-      const blink::LocalFrameToken& token);
-
   // AssociateWithFrameToken must be called as soon as this PolicyContainerHost
-  // becomes owned by a RenderFrameHost. After this function is called, it
-  // becomes possible to retrieve this PolicyContainerHost via
-  // PolicyContainerHost::FromFrameToken. This function can be called only once.
+  // becomes owned by a RenderFrameHost.
   void AssociateWithFrameToken(
       const blink::LocalFrameToken& token,
       int process_id = ChildProcessHost::kInvalidUniqueID);

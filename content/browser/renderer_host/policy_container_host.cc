@@ -4,9 +4,6 @@
 
 #include "content/browser/renderer_host/policy_container_host.h"
 
-#include <utility>
-
-#include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
@@ -18,17 +15,6 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
 namespace content {
-
-namespace {
-
-using TokenPolicyContainerMap =
-    std::unordered_map<blink::LocalFrameToken,
-                       PolicyContainerHost*,
-                       blink::LocalFrameToken::Hasher>;
-base::LazyInstance<TokenPolicyContainerMap>::Leaky
-    g_token_policy_container_map = LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
 
 bool operator==(const PolicyContainerPolicies& lhs,
                 const PolicyContainerPolicies& rhs) {
@@ -227,31 +213,14 @@ PolicyContainerHost::PolicyContainerHost() = default;
 PolicyContainerHost::PolicyContainerHost(PolicyContainerPolicies policies)
     : policies_(std::move(policies)) {}
 
-PolicyContainerHost::~PolicyContainerHost() {
-  // The PolicyContainerHost associated with |frame_token_| might have
-  // changed. In that case, we must not remove the map entry.
-  if (frame_token_ && FromFrameToken(frame_token_.value()) == this)
-    g_token_policy_container_map.Get().erase(frame_token_.value());
-}
+PolicyContainerHost::~PolicyContainerHost() = default;
 
 void PolicyContainerHost::AssociateWithFrameToken(
     const blink::LocalFrameToken& frame_token,
     int process_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!frame_token_);
   frame_token_ = frame_token;
   process_id_ = process_id;
-  g_token_policy_container_map.Get().erase(frame_token);
-  g_token_policy_container_map.Get().emplace(frame_token, this);
-}
-
-PolicyContainerHost* PolicyContainerHost::FromFrameToken(
-    const blink::LocalFrameToken& frame_token) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto it = g_token_policy_container_map.Get().find(frame_token);
-  if (it == g_token_policy_container_map.Get().end())
-    return nullptr;
-  return it->second;
 }
 
 void PolicyContainerHost::SetReferrerPolicy(

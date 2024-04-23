@@ -497,6 +497,16 @@ class CONTENT_EXPORT StoragePartitionImpl
       const std::vector<base::UnguessableToken>& nonces,
       network::mojom::NetworkContext::RevokeNetworkForNoncesCallback callback);
 
+  // Get the NavigationStateKeepAlive associated with `frame_token`. See
+  // `navigation_state_keep_alive_map_`.
+  NavigationStateKeepAlive* GetNavigationStateKeepAlive(
+      blink::LocalFrameToken frame_token);
+
+  // Removes the NavigationStateKeepAlive associated with `frame_token`. This
+  // should be called when the keep alive is destructed.
+  void RemoveKeepAliveHandleFromMap(blink::LocalFrameToken frame_token,
+                                    NavigationStateKeepAlive* keep_alive);
+
   enum class ContextType {
     kRenderFrameHostContext,
     kNavigationRequestContext,
@@ -842,6 +852,25 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   int next_pending_trust_token_issuance_callback_key_ = 0;
 
+  // Maps frame tokens to NavigationStateKeepAlives. There is one
+  // NavigationStateKeepAlive per LocalFrameToken. It's possible to have
+  // multiple keep alives per LocalFrameToken (e.g., multiple in-flight
+  // navigations per RenderFrameHost), but this map will store the most recent
+  // NavigationStateKeepAlive.
+  // In the case of multiple navigations for a RenderFrameHost,
+  // it is assumed that they are handled in order, with the latest navigation's
+  // keep alive storing the state for that RenderFrameHost.
+  // Note: This member must be above `keep_alive_handles_receiver_set_`. During
+  // destruction, when NavigationStateKeepAlives get removed from the receiver
+  // set, they will them remove themselves from
+  // `navigation_state_keep_alive_map_`, so this map must still be alive when
+  // that happens.
+  using TokenNavigationStateKeepAliveMap =
+      std::unordered_map<blink::LocalFrameToken,
+                         NavigationStateKeepAlive*,
+                         blink::LocalFrameToken::Hasher>;
+  TokenNavigationStateKeepAliveMap navigation_state_keep_alive_map_;
+
   // Active keepalive handles for in-flight navigations. They are retained
   // on `StoragePartition` because, by design, they may need to outlive the
   // `RenderFrameHostImpl` that initiated the navigation, but shouldn't be used
@@ -852,8 +881,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   // Lookups should not be done from this set. Accessing PolicyContainerHosts
   // kept alive by NavigationStateKeepAlive should be done through
   // PolicyContainerHost::FromFrameToken.
-  // TODO(crbug.com/323753235, yangsharon): Add token keep alive map to
-  // StoragePartition.
   mojo::UniqueReceiverSet<blink::mojom::NavigationStateKeepAliveHandle>
       keep_alive_handles_receiver_set_;
 

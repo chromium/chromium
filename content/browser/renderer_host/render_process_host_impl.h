@@ -422,6 +422,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
   int keep_alive_ref_count() const { return keep_alive_ref_count_; }
   int worker_ref_count() const { return worker_ref_count_; }
 
+  // See `navigation_state_keepalive_count_`.
+  void IncrementNavigationStateKeepAliveCount();
+  void DecrementNavigationStateKeepAliveCount();
+
   static void RegisterCreationObserver(
       RenderProcessHostCreationObserver* observer);
   static void UnregisterCreationObserver(
@@ -534,7 +538,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   };
 
   // Please keep in sync with "RenderProcessHostDelayShutdownReason" in
-  // tools/metrics/histograms/enums.xml. These values should not be renumbered.
+  // tools/metrics/histograms/metadata/browser/enums.xml. These values should
+  // not be renumbered.
   enum class DelayShutdownReason {
     kNoDelay = 0,
     // There are active or pending views other than the ones shutting down.
@@ -557,8 +562,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
     kListener = 9,
     // Delays until all observer callbacks completed.
     kObserver = 10,
+    // There are NavigationStateKeepAlive objects in this process.
+    kNavigationStateKeepAlive = 11,
 
-    kMaxValue = kObserver,
+    kMaxValue = kNavigationStateKeepAlive,
   };
 
   static scoped_refptr<base::SingleThreadTaskRunner>
@@ -1174,6 +1181,15 @@ class CONTENT_EXPORT RenderProcessHostImpl
   int pending_reuse_ref_count_ = 0;
   // We track the start-time for each |handle_id|, for crashkey reporting.
   base::flat_map<uint64_t, base::Time> keep_alive_start_times_;
+
+  // Count of NavigationStateKeepAlives that depend on state tied to this
+  // RenderProcessHost. This is related to SiteInstanceGroup::keep_alive_count_,
+  // but it aggregates the keep alive count across all SiteInstanceGroups in
+  // this process. This allows individual SiteInstanceGroups to go away even
+  // when there are NavigationStateKeepAlives in other SiteInstanceGroups in the
+  // same process. This also lets RenderProcessHosts go away even if there are
+  // NavigationStateKeepAlives in other processes in the same StoragePartition.
+  int navigation_state_keepalive_count_ = 0;
 
   // Set in DisableRefCounts(). When true, |keep_alive_ref_count_| and
   // |worker_ref_count_|, |shutdown_delay_ref_count_|, and

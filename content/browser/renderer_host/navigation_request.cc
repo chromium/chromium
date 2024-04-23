@@ -78,6 +78,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
+#include "content/browser/renderer_host/navigation_state_keep_alive.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/navigator_delegate.h"
 #include "content/browser/renderer_host/page_delegate.h"
@@ -964,7 +965,9 @@ bool IsMhtmlMimeType(const std::string& mime_type) {
 }
 
 network::mojom::WebSandboxFlags GetSandboxFlagsInitiator(
-    const std::optional<blink::LocalFrameToken>& frame_token) {
+    const std::optional<blink::LocalFrameToken>& frame_token,
+    int initiator_process_id,
+    StoragePartitionImpl* storage_partition) {
   if (!frame_token) {
     return network::mojom::WebSandboxFlags::kNone;
   }
@@ -976,8 +979,10 @@ network::mojom::WebSandboxFlags GetSandboxFlagsInitiator(
   // Note: See https://crbug.com/1473165. The "design" is currently not 100%
   // achieved. The PolicyContainer might be missing when the navigation is
   // initiated from RenderViewContextMenu::ExecuteCommand(...).
-  const auto* policy_container_host =
-      PolicyContainerHost::FromFrameToken(frame_token.value());
+  const PolicyContainerHost* policy_container_host =
+      RenderFrameHostImpl::GetPolicyContainerHost(
+          base::OptionalToPtr(frame_token), initiator_process_id,
+          storage_partition);
   if (!policy_container_host) {
     return network::mojom::WebSandboxFlags::kNone;
   }
@@ -1643,8 +1648,11 @@ NavigationRequest::NavigationRequest(
           frame_tree_node->current_frame_host()->GetGlobalId()),
       initiator_frame_token_(begin_params_->initiator_frame_token),
       initiator_process_id_(initiator_process_id),
-      sandbox_flags_initiator_(
-          GetSandboxFlagsInitiator(initiator_frame_token_)),
+      sandbox_flags_initiator_(GetSandboxFlagsInitiator(
+          initiator_frame_token_,
+          initiator_process_id,
+          static_cast<StoragePartitionImpl*>(
+              GetStoragePartitionWithCurrentSiteInfo()))),
       was_opener_suppressed_(was_opener_suppressed),
       is_credentialless_(
           IsDocumentToCommitAnonymous(frame_tree_node,
@@ -1723,6 +1731,7 @@ NavigationRequest::NavigationRequest(
   policy_container_builder_.emplace(
       GetParentFrame(),
       initiator_frame_token_.has_value() ? &*initiator_frame_token_ : nullptr,
+      initiator_process_id_, GetStoragePartitionWithCurrentSiteInfo(),
       frame_entry);
 
   NavigationControllerImpl* controller = GetNavigationController();

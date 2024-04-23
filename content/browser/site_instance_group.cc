@@ -74,9 +74,27 @@ void SiteInstanceGroup::IncrementActiveFrameCount() {
 void SiteInstanceGroup::DecrementActiveFrameCount() {
   if (--active_frame_count_ == 0) {
     base::AutoReset<bool> scope(&is_notifying_observers_, true);
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.ActiveFrameCountIsZero(this);
+    }
   }
+}
+
+void SiteInstanceGroup::IncrementKeepAliveCount() {
+  keep_alive_count_++;
+  static_cast<RenderProcessHostImpl*>(process())
+      ->IncrementNavigationStateKeepAliveCount();
+}
+
+void SiteInstanceGroup::DecrementKeepAliveCount() {
+  if (--keep_alive_count_ == 0) {
+    base::AutoReset<bool> scope(&is_notifying_observers_, true);
+    for (auto& observer : observers_) {
+      observer.KeepAliveCountIsZero(this);
+    }
+  }
+  static_cast<RenderProcessHostImpl*>(process())
+      ->DecrementNavigationStateKeepAliveCount();
 }
 
 bool SiteInstanceGroup::IsRelatedSiteInstanceGroup(SiteInstanceGroup* group) {

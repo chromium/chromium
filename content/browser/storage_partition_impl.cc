@@ -1261,6 +1261,10 @@ void StoragePartitionImpl::RegisterKeepAliveHandle(
     mojo::PendingReceiver<blink::mojom::NavigationStateKeepAliveHandle>
         receiver,
     std::unique_ptr<NavigationStateKeepAlive> handle) {
+  navigation_state_keep_alive_map_.erase(handle->frame_token());
+  navigation_state_keep_alive_map_.insert(
+      std::make_pair(handle->frame_token(), handle.get()));
+
   keep_alive_handles_receiver_set_.Add(std::move(handle), std::move(receiver));
 }
 
@@ -1273,6 +1277,27 @@ void StoragePartitionImpl::RevokeNetworkForNoncesInNetworkContext(
   // `NetworkService`, the network revocation nonces of `NetworkContext` will be
   // restored using this.
   network_revocation_nonces_.insert(std::begin(nonces), std::end(nonces));
+}
+
+void StoragePartitionImpl::RemoveKeepAliveHandleFromMap(
+    blink::LocalFrameToken frame_token,
+    NavigationStateKeepAlive* keep_alive) {
+  // The NavigationStateKeepAlive associated with `frame_token` may have
+  // changed. Make sure the specified one is removed from the map.
+  auto it = navigation_state_keep_alive_map_.find(frame_token);
+  if (it != navigation_state_keep_alive_map_.end() &&
+      it->second == keep_alive) {
+    navigation_state_keep_alive_map_.erase(frame_token);
+  }
+}
+
+NavigationStateKeepAlive* StoragePartitionImpl::GetNavigationStateKeepAlive(
+    blink::LocalFrameToken frame_token) {
+  auto it = navigation_state_keep_alive_map_.find(frame_token);
+  if (it == navigation_state_keep_alive_map_.end()) {
+    return nullptr;
+  }
+  return it->second;
 }
 
 // static

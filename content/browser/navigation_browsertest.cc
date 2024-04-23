@@ -32,6 +32,7 @@
 #include "content/browser/browser_url_handler_impl.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/renderer_host/navigation_state_keep_alive.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -3924,6 +3925,12 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   RenderFrameHost* openee_rfh =
       static_cast<WebContentsImpl*>(openee_shell->web_contents())
           ->GetPrimaryMainFrame();
+  // Issue a KeepAlive for the navigation state so that the PolicyContainerHost
+  // will still exist after the initiator RenderFrameHost is gone.
+  mojo::PendingRemote<blink::mojom::NavigationStateKeepAliveHandle> keep_alive;
+  static_cast<RenderFrameHostImpl*>(openee_rfh)
+      ->IssueKeepAliveHandle(keep_alive.InitWithNewPipeAndPassReceiver());
+
   auto initiator_global_token = openee_rfh->GetGlobalFrameToken();
   base::RunLoop loop;
   DidStartNavigationCallback callback(
@@ -3944,8 +3951,11 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
         // Even if the initiator RenderFrameHost is gone, its policy container
         // should still be around since the LocalFrame has not been destroyed
         // yet.
-        auto* initiator_policy_container =
-            PolicyContainerHost::FromFrameToken(frame_token.value());
+        PolicyContainerHost* initiator_policy_container =
+            RenderFrameHostImpl::GetPolicyContainerHost(
+                base::OptionalToPtr(frame_token),
+                request->GetInitiatorProcessId(),
+                web_contents()->GetPrimaryMainFrame()->GetStoragePartition());
         ASSERT_TRUE(initiator_policy_container);
         ASSERT_EQ(network::mojom::ReferrerPolicy::kAlways,
                   initiator_policy_container->referrer_policy());
@@ -4034,8 +4044,11 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FormSubmissionThenDeleteFrame) {
         // Even if the initiator RenderFrameHost is gone, its policy container
         // should still be around since the LocalFrame has not been destroyed
         // yet.
-        auto* initiator_policy_container =
-            PolicyContainerHost::FromFrameToken(frame_token.value());
+        PolicyContainerHost* initiator_policy_container =
+            RenderFrameHostImpl::GetPolicyContainerHost(
+                base::OptionalToPtr(frame_token),
+                request->GetInitiatorProcessId(),
+                web_contents()->GetPrimaryMainFrame()->GetStoragePartition());
         ASSERT_TRUE(initiator_policy_container);
         EXPECT_EQ(network::mojom::ReferrerPolicy::kAlways,
                   initiator_policy_container->referrer_policy());
@@ -4140,8 +4153,11 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
         // Even if the initiator RenderFrameHost is gone, its policy container
         // should still be around since the LocalFrame has not been destroyed
         // yet.
-        auto* initiator_policy_container =
-            PolicyContainerHost::FromFrameToken(frame_token.value());
+        PolicyContainerHost* initiator_policy_container =
+            RenderFrameHostImpl::GetPolicyContainerHost(
+                base::OptionalToPtr(frame_token),
+                request->GetInitiatorProcessId(),
+                web_contents()->GetPrimaryMainFrame()->GetStoragePartition());
         ASSERT_TRUE(initiator_policy_container);
         EXPECT_EQ(network::mojom::ReferrerPolicy::kAlways,
                   initiator_policy_container->referrer_policy());
@@ -4190,7 +4206,11 @@ class InitiatorClosingOpenURLInterceptor
       : proxy_host_(proxy_host),
         shell_to_close_(std::move(shell_to_close)),
         renderer_to_exit_(renderer_to_exit),
-        swapped_impl_(proxy_host_->frame_host_receiver_for_testing(), this) {}
+        swapped_impl_(
+            std::make_unique<mojo::test::ScopedSwapImplForTesting<
+                mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>>>(
+                proxy_host_->frame_host_receiver_for_testing(),
+                this)) {}
   ~InitiatorClosingOpenURLInterceptor() override = default;
 
   blink::mojom::RemoteFrameHost* GetForwardingInterface() override {
@@ -4209,14 +4229,32 @@ class InitiatorClosingOpenURLInterceptor
     renderer_to_exit_->Shutdown(content::RESULT_CODE_KILLED);
 
     GetForwardingInterface()->OpenURL(std::move(params));
+
+    // Delete the swapped impl while the real RenderFrameProxyHost still exists,
+    // since we only need to intercept a single OpenURL call. The next task may
+    // delete the real impl.
+    swapped_impl_.reset();
+
+    // Clear the other raw_ptrs to avoid dangling pointers.
+    renderer_to_exit_ = nullptr;
+    proxy_host_ = nullptr;
   }
 
  private:
-  const raw_ptr<content::RenderFrameProxyHost> proxy_host_;
+  raw_ptr<content::RenderFrameProxyHost> proxy_host_;
   std::unique_ptr<Shell> shell_to_close_;
   raw_ptr<RenderProcessHost> renderer_to_exit_;
-  mojo::test::ScopedSwapImplForTesting<
-      mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>>
+
+  // The `swapped_impl_` is a unique_ptr, so the member can be deleted before
+  // `this` gets destroyed. `proxy_host_` would normally be swapped back to be
+  // the real impl when `this` gets destroyed. However, `proxy_host_` gets
+  // deleted shortly after the OpenURL IPC is handled, and exchanging the
+  // pointer at interceptor destruction thus causes a use-after-free. To avoid
+  // this, we delete the `swapped_impl_` and swap `proxy_host_` back in place as
+  // soon as we've processed the OpenURL IPC, where we can ensure that
+  // `proxy_host_` is still alive.
+  std::unique_ptr<mojo::test::ScopedSwapImplForTesting<
+      mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>>>
       swapped_impl_;
 };
 
@@ -4228,13 +4266,12 @@ class InitiatorClosingOpenURLInterceptor
 // (and only) frame of that SiteInstance. Deleting it usually causes proxies in
 // the same SiteInstanceGroup to be deleted, meaning the OpenURL IPC may never
 // be received.
-// TODO(crbug.com/323753235, yangsharon): Enable this test when the navigation
-// state keep alive is introduced.
 IN_PROC_BROWSER_TEST_F(
     NavigationBrowserTest,
-    DISABLED_FormSubmissionInRemoteFrameSenderDeletedBeforeReceivingOpenURL) {
+    FormSubmissionInRemoteFrameSenderDeletedBeforeReceivingOpenURL) {
   // We crash a renderer in the OpenURL interceptor.
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+  content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
 
   // Get a unique_ptr to the shell, which will be used to transfer ownership
   // later on.
@@ -4294,8 +4331,11 @@ IN_PROC_BROWSER_TEST_F(
         // Even if the initiator RenderFrameHost is gone, its
         // PolicyContainerHost should still be around since the LocalFrame has
         // not been destroyed yet.
-        auto* initiator_policy_container =
-            PolicyContainerHost::FromFrameToken(frame_token.value());
+        PolicyContainerHost* initiator_policy_container =
+            RenderFrameHostImpl::GetPolicyContainerHost(
+                base::OptionalToPtr(frame_token),
+                request->GetInitiatorProcessId(),
+                web_contents()->GetPrimaryMainFrame()->GetStoragePartition());
         ASSERT_TRUE(initiator_policy_container);
         EXPECT_EQ(network::mojom::ReferrerPolicy::kAlways,
                   initiator_policy_container->referrer_policy());

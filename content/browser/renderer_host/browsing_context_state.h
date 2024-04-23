@@ -196,6 +196,7 @@ class CONTENT_EXPORT BrowsingContextState
 
   // SiteInstanceGroup::Observer
   void ActiveFrameCountIsZero(SiteInstanceGroup* site_instance_group) override;
+  void KeepAliveCountIsZero(SiteInstanceGroup* site_instance_group) override;
   void RenderProcessGone(SiteInstanceGroup* site_instance_group,
                          const ChildProcessTerminationInfo& info) override;
 
@@ -287,6 +288,15 @@ class CONTENT_EXPORT BrowsingContextState
   RenderFrameProxyHost* GetRenderFrameProxyHostImpl(
       SiteInstanceGroup* site_instance_group,
       ProxyAccessMode proxy_access_mode) const;
+
+  // Helper to check if all refcounts SiteInstanceGroup keeps track of are zero.
+  // Deletes all corresponding proxies if so. RefCountType is for tracing.
+  enum RefCountType {
+    kActiveFrameCount = 0,
+    kKeepAliveCount = 1,
+  };
+  void CheckIfSiteInstanceGroupIsUnused(SiteInstanceGroup* site_instance_group,
+                                        RefCountType ref_count_type);
 
   // Proxy hosts for this browsing context in various renderer processes, keyed
   // by SiteInstanceGroup ID.

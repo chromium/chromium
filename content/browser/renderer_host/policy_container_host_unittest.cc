@@ -104,49 +104,4 @@ TEST(PolicyContainerHostTest, ReferrerPolicy) {
             policy_container->referrer_policy());
 }
 
-TEST(PolicyContainerHostTest, AssociateWithFrameToken) {
-  // We need to satisfy DCHECK_CURRENTLY_ON(BrowserThread::UI).
-  content::BrowserTaskEnvironment task_environment;
-
-  scoped_refptr<PolicyContainerHost> policy_container_host =
-      base::MakeRefCounted<PolicyContainerHost>();
-  blink::LocalFrameToken token;
-  policy_container_host->AssociateWithFrameToken(token);
-  EXPECT_EQ(policy_container_host.get(),
-            PolicyContainerHost::FromFrameToken(token));
-
-  // Check that we can associate a new PolicyContainerHost to the same frame
-  // token and everything works correctly.
-  scoped_refptr<PolicyContainerHost> policy_container_host_2 =
-      base::MakeRefCounted<PolicyContainerHost>();
-  policy_container_host_2->AssociateWithFrameToken(token);
-  EXPECT_EQ(policy_container_host_2.get(),
-            PolicyContainerHost::FromFrameToken(token));
-}
-
-TEST(PolicyContainerHostTest, KeepAliveThroughBlinkPolicyContainerRemote) {
-  // Enable tasks and RunLoop on the main thread and satisfy
-  // DCHECK_CURRENTLY_ON(BrowserThread::UI).
-  content::BrowserTaskEnvironment task_environment;
-
-  scoped_refptr<PolicyContainerHost> policy_container_host =
-      base::MakeRefCounted<PolicyContainerHost>();
-  blink::LocalFrameToken token;
-  policy_container_host->AssociateWithFrameToken(token);
-
-  blink::mojom::PolicyContainerPtr blink_policy_container =
-      policy_container_host->CreatePolicyContainerForBlink();
-
-  PolicyContainerHost* raw_pointer = policy_container_host.get();
-  EXPECT_EQ(raw_pointer, PolicyContainerHost::FromFrameToken(token));
-
-  policy_container_host.reset();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(raw_pointer, PolicyContainerHost::FromFrameToken(token));
-
-  blink_policy_container->remote.reset();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(PolicyContainerHost::FromFrameToken(token));
-}
-
 }  // namespace content

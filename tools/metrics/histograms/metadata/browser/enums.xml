@@ -333,6 +333,9 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="In Observer Callback">
     Delays until all observer callbacks completed.
   </int>
+  <int value="11" label="NavigationStateKeepAlive">
+    There are NavigationStateKeepAlives in this process.
+  </int>
 </enum>
 
 <enum name="SpareProcessMaybeTakeAction">

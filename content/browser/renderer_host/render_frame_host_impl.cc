@@ -1585,6 +1585,35 @@ const char* RenderFrameHostImpl::LifecycleStateImplToString(
   }
 }
 
+// static
+PolicyContainerHost* RenderFrameHostImpl::GetPolicyContainerHost(
+    const blink::LocalFrameToken* frame_token,
+    int initiator_process_id,
+    StoragePartitionImpl* storage_partition) {
+  // There is no null check for `storage_partition` as tests can pass in a null
+  // StoragePartition.
+  CHECK(frame_token);
+
+  // Get the PolicyContainerHost directly from the RenderFrameHost if it's still
+  // alive.
+  RenderFrameHostImpl* initiator_rfh =
+      RenderFrameHostImpl::FromFrameToken(initiator_process_id, *frame_token);
+  if (initiator_rfh) {
+    return initiator_rfh->policy_container_host();
+  }
+
+  // Otherwise get it from the NavigationStateKeepAlive stored in
+  // `storage_partition`.
+  NavigationStateKeepAlive* navigation_state =
+      storage_partition->GetNavigationStateKeepAlive(*frame_token);
+  if (navigation_state) {
+    return navigation_state->policy_container_host();
+  }
+
+  // There is no PolicyContainerHost for the given `frame_token`.
+  return nullptr;
+}
+
 RenderFrameHostImpl::RenderFrameHostImpl(
     SiteInstance* site_instance,
     scoped_refptr<RenderViewHostImpl> render_view_host,
@@ -9350,8 +9379,9 @@ void RenderFrameHostImpl::IssueKeepAliveHandle(
     mojo::PendingReceiver<blink::mojom::NavigationStateKeepAliveHandle>
         receiver) {
   GetStoragePartition()->RegisterKeepAliveHandle(
-      std::move(receiver), base::WrapUnique(new NavigationStateKeepAlive(
-                               GetFrameToken(), policy_container_host())));
+      std::move(receiver),
+      base::WrapUnique(new NavigationStateKeepAlive(
+          GetFrameToken(), policy_container_host(), GetSiteInstance())));
 }
 
 void RenderFrameHostImpl::CreateNewPopupWidget(

@@ -2710,7 +2710,8 @@ bool RenderProcessHostImpl::AreAllRefCountsZero() {
     CHECK_EQ(keep_alive_ref_count_, 0);
   }
   return keep_alive_ref_count_ == 0 && worker_ref_count_ == 0 &&
-         shutdown_delay_ref_count_ == 0 && pending_reuse_ref_count_ == 0;
+         shutdown_delay_ref_count_ == 0 && pending_reuse_ref_count_ == 0 &&
+         navigation_state_keepalive_count_ == 0;
 }
 
 void RenderProcessHostImpl::DecrementKeepAliveRefCount(uint64_t handle_id) {
@@ -2757,6 +2758,18 @@ std::string RenderProcessHostImpl::GetKeepAliveDurations() const {
 
 size_t RenderProcessHostImpl::GetShutdownDelayRefCount() const {
   return shutdown_delay_ref_count_;
+}
+
+void RenderProcessHostImpl::IncrementNavigationStateKeepAliveCount() {
+  navigation_state_keepalive_count_++;
+}
+
+void RenderProcessHostImpl::DecrementNavigationStateKeepAliveCount() {
+  CHECK_GT(navigation_state_keepalive_count_, 0);
+  navigation_state_keepalive_count_--;
+  if (navigation_state_keepalive_count_ == 0) {
+    Cleanup();
+  }
 }
 
 int RenderProcessHostImpl::GetRenderFrameHostCount() const {
@@ -2830,6 +2843,8 @@ void RenderProcessHostImpl::DisableRefCounts() {
   worker_ref_count_ = 0;
   shutdown_delay_ref_count_ = 0;
   pending_reuse_ref_count_ = 0;
+  navigation_state_keepalive_count_ = 0;
+
   // Cleaning up will also remove this from the SpareRenderProcessHostManager.
   // (in this case |keep_alive_ref_count_| would be 0 even before).
   Cleanup();
@@ -4070,6 +4085,20 @@ void RenderProcessHostImpl::Cleanup() {
           proto->set_pending_reuse_ref_count(pending_reuse_ref_count_);
         });
     LogDelayReasonForCleanup(DelayShutdownReason::kPendingReuse);
+    return;
+  }
+  if (navigation_state_keepalive_count_ != 0) {
+    TRACE_EVENT(
+        "shutdown",
+        "RenderProcessHostImpl::Cleanup : Have NavigationStateKeepAlive.",
+        ChromeTrackEvent::kRenderProcessHost, *this,
+        [&](perfetto::EventContext ctx) {
+          auto* proto =
+              ctx.event<ChromeTrackEvent>()->set_render_process_host_cleanup();
+          proto->set_navigation_state_keepalive_count(
+              navigation_state_keepalive_count_);
+        });
+    LogDelayReasonForCleanup(DelayShutdownReason::kNavigationStateKeepAlive);
     return;
   }
 

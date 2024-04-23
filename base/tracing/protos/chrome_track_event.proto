@@ -303,6 +303,9 @@ message RenderProcessHostCleanup {
   // Number of "pending reuse" references active in the RenderProcessHost,
   // recorded when Cleanup() was called.
   optional uint32 pending_reuse_ref_count = 5;
+  // Number of NavigationStateKeepAlive references active in the
+  // RenderProcessHost, recorded when Cleanup() was called.
+  optional uint32 navigation_state_keepalive_count = 6;
 }
 
 message ChildProcessLauncherPriority {
