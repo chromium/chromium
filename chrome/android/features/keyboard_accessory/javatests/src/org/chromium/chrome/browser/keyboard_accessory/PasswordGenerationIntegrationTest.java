@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.keyboard_accessory;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 
 import static org.chromium.base.test.util.Matchers.is;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationTestHelper.acceptPasswordInGenerationBottomSheet;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationTestHelper.rejectPasswordInGenerationBottomSheet;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlockingNoException;
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
 
 import android.os.Build.VERSION_CODES;
 import android.view.View;
@@ -64,7 +66,6 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
@@ -156,13 +157,7 @@ public class PasswordGenerationIntegrationTest {
         // Focus again, because the sheet steals the focus from web contents.
         focusField(PASSWORD_NODE_ID);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ButtonCompat suggestStrongPassword =
-                            (ButtonCompat) mHelper.getFirstAccessorySuggestion();
-                    Assert.assertNotNull(suggestStrongPassword);
-                    suggestStrongPassword.performClick();
-                });
+        whenDisplayed(withId(R.id.bar_items_view)).perform(actionOnItemAtPosition(0, click()));
         waitForGenerationDialog();
         rejectPasswordInGenerationDialog();
         assertPasswordTextEmpty(PASSWORD_NODE_ID);
@@ -208,13 +203,7 @@ public class PasswordGenerationIntegrationTest {
         // Focus again, because the sheet steals the focus from web contents.
         focusField(PASSWORD_NODE_ID);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ButtonCompat suggestStrongPassword =
-                            (ButtonCompat) mHelper.getFirstAccessorySuggestion();
-                    Assert.assertNotNull(suggestStrongPassword);
-                    suggestStrongPassword.performClick();
-                });
+        whenDisplayed(withId(R.id.bar_items_view)).perform(actionOnItemAtPosition(0, click()));
         waitForGenerationDialog();
         String generatedPassword = acceptPasswordInGenerationDialog();
         CriteriaHelper.pollInstrumentationThread(

@@ -183,13 +183,6 @@ public class ManualFillingTestHelper {
         return (RecyclerView) keyboardAccessory.findViewById(R.id.bar_items_view);
     }
 
-    public View getFirstAccessorySuggestion() {
-        ViewGroup recyclerView = getAccessoryBarView();
-        assert recyclerView != null;
-        View view = recyclerView.getChildAt(0);
-        return isAssignableFrom(KeyboardAccessoryButtonGroupView.class).matches(view) ? null : view;
-    }
-
     public void focusPasswordField() throws TimeoutException {
         focusPasswordField(true);
     }
@@ -371,6 +364,13 @@ public class ManualFillingTestHelper {
 
     private KeyboardAccessoryCoordinator getKeyboardAccessoryBar() {
         return getManualFillingCoordinator().getMediatorForTesting().getKeyboardAccessory();
+    }
+
+    private View getFirstAccessorySuggestion() {
+        ViewGroup recyclerView = getAccessoryBarView();
+        assert recyclerView != null;
+        View view = recyclerView.getChildAt(0);
+        return isAssignableFrom(KeyboardAccessoryButtonGroupView.class).matches(view) ? null : view;
     }
 
     // ----------------------------------

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.keyboard_accessory;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItem;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
@@ -149,8 +150,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         mHelper.clickNodeAndShowKeyboard("NAME_FIRST", 1);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mHelper.getFirstAccessorySuggestion().performClick());
+        whenDisplayed(withId(R.id.bar_items_view)).perform(actionOnItemAtPosition(0, click()));
         mHelper.waitForKeyboardAccessoryToDisappear();
     }
 
@@ -163,8 +163,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         mHelper.clickNode("NAME_FIRST", 1, FocusedFieldType.FILLABLE_NON_SEARCH_FIELD);
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mHelper.getFirstAccessorySuggestion().performClick());
+        whenDisplayed(withId(R.id.bar_items_view)).perform(actionOnItemAtPosition(0, click()));
         mHelper.waitForKeyboardAccessoryToDisappear();
     }
 
