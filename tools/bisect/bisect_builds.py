@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -102,7 +102,7 @@ VERSION_INFO_URL = (
 CHROMIUM_SEARCH_PATTERN_OLD = (
     r'.*git-svn-id: svn://svn.chromium.org/chrome/trunk/src@(\d+) ')
 CHROMIUM_SEARCH_PATTERN = (
-    r'Cr-Commit-Position: refs/heads/master@{#(\d+)}')  # nocheck
+    r'Cr-Commit-Position: refs/heads/main@{#(\d+)}')
 
 # Search pattern to be matched in the json output from
 # BLINK_GITHASH_TO_SVN_URL to get the blink revision (svn revision).
@@ -938,9 +938,9 @@ def FetchRevision(context, rev, filename, quit_event=None, progress_event=None):
   @param context A PathContext instance.
   @param rev The Chromium revision number/tag to download.
   @param filename The destination for the downloaded file.
-  @param quit_event A threading.Event which will be set by the master thread to  # nocheck
+  @param quit_event A threading.Event which will be set by the main thread to
                     indicate that the download should be aborted.
-  @param progress_event A threading.Event which will be set by the master thread  # nocheck
+  @param progress_event A threading.Event which will be set by the main thread
                     to indicate that the progress of the download should be
                     displayed.
   """
@@ -993,7 +993,7 @@ def InstallRevisionForLacros(context, zip_file):
     tempdir = tempfile.mkdtemp(prefix='bisect_tmp')
     UnzipFilenameToDir(zip_file, tempdir)
     if context.is_official:
-        tempdir = os.path.join(tempdir, context._archive_extract_dir)
+      tempdir = os.path.join(tempdir, context._archive_extract_dir)
 
     cmdline = [context.deploy_chrome_path, '--build-dir=' + tempdir,
      '--device=' + context.device, '--nostrip', '--lacros', '--reset-lacros']
@@ -1575,7 +1575,7 @@ def GetRevisionFromVersion(version):
   chromiumdash_url = VERSION_INFO_URL % str(version)
   data = FetchJsonFromURL(chromiumdash_url)
   if data and 'chromium_main_branch_position' in data:
-      return data['chromium_main_branch_position']
+    return data['chromium_main_branch_position']
   print('Something went wrong. The data we got from chromiumdash:\n%s' % data)
   return None
 

@@ -42,8 +42,6 @@ _EXCLUDED_PATHS = (
     r".+_pb2(_grpc)?\.py$",
     r".+/pnacl_shim\.c$",
     r"^gpu/config/.*_list_json\.cc$",
-    # TODO(crbug.com/332933533) Remove this exception.
-    r"^tools/bisect/.*",
     r"tools/md_browser/.*\.css$",
     # Test pages for Maps telemetry tests.
     r"tools/perf/page_sets/maps_perf_test.*",
