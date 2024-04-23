@@ -7,7 +7,12 @@
 #include "base/check_is_test.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
+#include "components/commerce/core/feature_utils.h"
+#include "components/commerce/core/shopping_service.h"
 
 namespace {
 
@@ -51,6 +56,16 @@ void BrowserWindowFeatures::Init(Browser* browser) {
   // with an omnibox and a tab strip). By default most features should be
   // instantiated in this block.
   if (browser->is_type_normal()) {
+    auto* shopping_service =
+        commerce::ShoppingServiceFactory::GetForBrowserContext(
+            browser->profile());
+    if (shopping_service && shopping_service->GetAccountChecker() &&
+        commerce::IsProductSpecificationsEnabled(
+            shopping_service->GetAccountChecker())) {
+      product_specifications_entry_point_controller_ =
+          std::make_unique<commerce::ProductSpecificationsEntryPointController>(
+              browser->tab_strip_model());
+    }
   }
 }
 

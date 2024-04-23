@@ -9,6 +9,10 @@
 
 class Browser;
 
+namespace commerce {
+class ProductSpecificationsEntryPointController;
+}  // namespace commerce
+
 // This class owns the core controllers for features that are scoped to a given
 // browser window on desktop. It can be subclassed by tests to perform
 // dependency injection.
@@ -42,6 +46,9 @@ class BrowserWindowFeatures {
  private:
   // Features that are per-browser window will each have a controller. e.g.
   // std::unique_ptr<FooFeature> foo_feature_;
+
+  std::unique_ptr<commerce::ProductSpecificationsEntryPointController>
+      product_specifications_entry_point_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_FEATURES_H_
