@@ -785,6 +785,12 @@
     "developer_mode_only": true,
     "feature_flag": "ApiUserScriptsMultipleWorlds"
   },
+  "userScripts.resetWorldConfiguration": {
+    "dependencies": [ "permission:userScripts" ],
+    "contexts": [ "privileged_extension" ],
+    "developer_mode_only": true,
+    "feature_flag": "ApiUserScriptsMultipleWorlds"
+  },
   "virtualKeyboard": {
     "dependencies": ["permission:virtualKeyboard"],
     "contexts": ["privileged_extension"]

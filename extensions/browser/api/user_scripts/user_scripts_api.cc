@@ -629,4 +629,26 @@ UserScriptsGetWorldConfigurationsFunction::Run() {
       api::user_scripts::GetWorldConfigurations::Results::Create(result)));
 }
 
+ExtensionFunction::ResponseAction
+UserScriptsResetWorldConfigurationFunction::Run() {
+  std::optional<api::user_scripts::ResetWorldConfiguration::Params> params(
+      api::user_scripts::ResetWorldConfiguration::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  EXTENSION_FUNCTION_VALIDATE(extension());
+
+  // In theory, it'd be safe to just pass in `world_id` without validating it
+  // because we should never have an invalid world ID in the preferences. But
+  // that's a fragile guarantee and may change if e.g. we start using reserved
+  // world IDs. Validate to be on the safe side.
+  std::string error;
+  if (!IsValidWorldId(params->world_id, &error)) {
+    return RespondNow(Error(std::move(error)));
+  }
+
+  UserScriptWorldConfigurationManager::Get(browser_context())
+      ->ClearUserScriptWorldInfo(*extension(), params->world_id);
+
+  return RespondNow(NoArguments());
+}
+
 }  // namespace extensions

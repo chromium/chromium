@@ -112,6 +112,8 @@ namespace userScripts {
 
   callback GetAllWorldConfigurationsCallback = void(WorldProperties[] worlds);
 
+  callback ResetWorldConfigurationCallback = void();
+
   interface Functions {
     // Registers one or more user scripts for this extension.
     // |scripts|: Contains a list of user scripts to be registered.
@@ -163,5 +165,16 @@ namespace userScripts {
     // TODO(https://crbug.com/331680187): Remove nodoc.
     [nodoc] static void getWorldConfigurations(
         GetAllWorldConfigurationsCallback callback);
+
+    // Resets the configuration for a user script world. Any scripts that inject
+    // into the world with the specified ID will use the default world
+    // configuration.
+    // |worldId|: The ID of the user script world to reset. If omitted, resets
+    // the default world's configuration.
+    // |callback|: Called when the configuration is reset.
+    // TODO(https://crbug.com/331680187): Remove nodoc.
+    [nodoc] static void resetWorldConfiguration(
+        optional DOMString worldId,
+        ResetWorldConfigurationCallback callback);
   };
 };
