@@ -47,7 +47,7 @@ void UserDialogManagerBridge::ShowAlertDialog(const std::u16string& message,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
   auto java_message =
-      ScopedJavaGlobalRef(ConvertUTF16ToJavaString(env, message));
+      ScopedJavaGlobalRef<jstring>(ConvertUTF16ToJavaString(env, message));
   in_progress_dialogs_.emplace_back(
       std::make_unique<InProgressDialog>(std::move(callback)));
   Java_UserDialogManagerBridge_onAlertDialog(
@@ -60,7 +60,7 @@ void UserDialogManagerBridge::ShowConfirmDialog(const std::u16string& message,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
   auto java_message =
-      ScopedJavaGlobalRef(ConvertUTF16ToJavaString(env, message));
+      ScopedJavaGlobalRef<jstring>(ConvertUTF16ToJavaString(env, message));
   in_progress_dialogs_.emplace_back(
       std::make_unique<InProgressDialog>(std::move(callback)));
   Java_UserDialogManagerBridge_onConfirmDialog(
@@ -75,9 +75,9 @@ void UserDialogManagerBridge::ShowTextDialog(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   JNIEnv* env = AttachCurrentThread();
   auto java_message =
-      ScopedJavaGlobalRef(ConvertUTF16ToJavaString(env, message));
+      ScopedJavaGlobalRef<jstring>(ConvertUTF16ToJavaString(env, message));
   auto java_default_user_input =
-      ScopedJavaGlobalRef(ConvertUTF16ToJavaString(env, default_user_input));
+      ScopedJavaGlobalRef<jstring>(ConvertUTF16ToJavaString(env, default_user_input));
   in_progress_dialogs_.emplace_back(
       std::make_unique<InProgressDialog>(std::move(callback)));
   Java_UserDialogManagerBridge_onTextDialog(

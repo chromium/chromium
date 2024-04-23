@@ -48,6 +48,7 @@ class WolvicContentBrowserClient : public ContentBrowserClient {
   std::unique_ptr<LoginDelegate> CreateLoginDelegate(
       const net::AuthChallengeInfo& auth_info,
       WebContents* web_contents,
+      BrowserContext* browser_context,
       const GlobalRequestID& request_id,
       bool is_request_for_primary_main_frame,
       const GURL& url,

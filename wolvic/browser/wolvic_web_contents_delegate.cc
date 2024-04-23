@@ -102,12 +102,12 @@ void WolvicWebContentsDelegate::RequestMediaAccessPermission(
 
 bool WolvicWebContentsDelegate::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
-    const GURL& security_origin,
+    const url::Origin& security_origin,
     blink::mojom::MediaStreamType type) {
   auto* permission_manager = WolvicPermissionManager::GetInstance(
       render_frame_host->GetBrowserContext()->IsOffTheRecord());
   return permission_manager->CheckMediaAccessPermission(render_frame_host,
-                                                        security_origin, type);
+                                                        security_origin.GetURL(), type);
 }
 
 } // namespace wolvic

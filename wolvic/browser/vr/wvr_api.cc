@@ -4,6 +4,7 @@
 
 #include "wolvic/browser/vr/wvr_api.h"
 
+#include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "wolvic/jni_headers/VRManager_jni.h"
 

@@ -6,6 +6,7 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//tools/grit/repack.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 assert(enable_vr)
 assert(is_android)
@@ -126,7 +127,6 @@ shared_library("libcontent_native") {
 repack("pak") {
   sources = [
     "$root_gen_dir/base/tracing/protos/tracing_proto_resources.pak",
-    "$root_gen_dir/content/aggregation_service_internals_resources.pak",
     "$root_gen_dir/components/strings/components_strings_en-US.pak",
     "$root_gen_dir/content/attribution_internals_resources.pak",
     "$root_gen_dir/content/browser/resources/media/media_internals_resources.pak",
@@ -207,6 +207,7 @@ static_library("content_native_lib") {
     "//build:chromeos_buildflags",
     "//cc/base",
     "//components/cdm/browser",
+    "//components/cdm/common",
     "//components/cdm/renderer",
     "//components/custom_handlers",
     "//components/embedder_support:browser_util",
@@ -282,7 +283,6 @@ static_library("content_native_lib") {
 
 generate_build_config_srcjar("build_config_gen") {
   use_final_fields = true
-  enable_multidex = true
 }
 
 jinja_template("content_manifest") {
@@ -332,7 +332,6 @@ android_library("wolvic_java") {
   srcjar_deps = [ ":jni_headers" ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/embedder_support/android:content_view_java",
     "//components/embedder_support/android:view_java",
@@ -340,6 +339,7 @@ android_library("wolvic_java") {
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_full_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
@@ -353,12 +353,13 @@ dist_aar("content_aar") {
     ":wolvic_java",
     "//base",
     "//base:base_java",
-    "//base:jni_java",
     "//components/browser_ui/media/android:java",
     "//components/embedder_support/android:view_java",
+    "//components/externalauth/android:google_delegate_public_impl_java",
     "//components/metrics:metrics_java",
     "//components/signin/public/android:java",
     "//components/viz/service:service_java",
+    "//components/webauthn/android:java",
     "//content/public/android:content_full_java",
     "//device/vr:vr",
     "//device/vr/android:vr_android",
@@ -366,6 +367,8 @@ dist_aar("content_aar") {
     "//services/data_decoder/public/cpp/android:safe_json_java",
     "//services/device/public/java:nfc_java",
     "//ui/android:ui_full_java",
+    "//third_party/android_deps:chromium_play_services_availability_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
   native_libraries = [
     "$root_build_dir/libcontent_native.so",
@@ -381,8 +384,9 @@ dist_aar("content_aar") {
     "org/chromium/build/*.class",
     "org/chromium/components/browser_ui/media/*.class",
     "org/chromium/components/download/*.class",
-    "org/chromium/components/embedder_support/delegate/*.class",
-    "org/chromium/components/embedder_support/view/*.class",
+    "org/chromium/components/embedder_support/*.class",
+    "org/chromium/components/externalauth/*.class",
+    "org/chromium/components/webauthn/cred_man/*.class",
     "org/chromium/components/metrics/*.class",
     "org/chromium/components/signin/*.class",
     "org/chromium/components/signin/identitymanager/*.class",
@@ -392,6 +396,7 @@ dist_aar("content_aar") {
     "org/chromium/content_public/*.class",
     "org/chromium/content/*.class",
     "org/chromium/device/*",
+    "org/chromium/gms/*.class",
     "org/chromium/media/*.class",
     "org/chromium/media_session/mojom/*.class",
     "org/chromium/mojo_base/mojom/*.class",
@@ -403,7 +408,7 @@ dist_aar("content_aar") {
     "org/chromium/ui/touch_selection/*.class",
     "org/chromium/url/*.class",
     "org/chromium/wolvic/*.class",
-    "org/jni_zero/GEN_JNI.class",
+    "org/jni_zero/*.class",
   ]
   resource_included_patterns = [ "*/content/public/*" ]
   jar_excluded_patterns = [

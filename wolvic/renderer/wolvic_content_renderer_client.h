@@ -28,7 +28,7 @@ class WolvicContentRendererClient : public content::ContentRendererClient {
   void ExposeInterfacesToBrowser(mojo::BinderMap* binders) override;
   void RenderFrameCreated(content::RenderFrame* render_frame) override;
 
-  uint64_t VisitedLinkHash(const char* canonical_url, size_t length) override;
+  uint64_t VisitedLinkHash(std::string_view canonical_url) override;
   bool IsLinkVisited(uint64_t link_hash) override;
 
   visitedlink::VisitedLinkReader* visited_link_reader() {

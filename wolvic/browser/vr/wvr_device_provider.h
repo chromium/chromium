@@ -22,7 +22,8 @@ class WvrDeviceProvider : public device::VRDeviceProvider {
 
   ~WvrDeviceProvider() override;
 
-  void Initialize(device::VRDeviceProviderClient* client) override;
+  void Initialize(device::VRDeviceProviderClient* client,
+                  content::WebContents* initializing_web_contents) override;
   bool Initialized() override;
 
  private:

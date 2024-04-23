@@ -52,9 +52,8 @@ void WolvicContentRendererClient::RenderFrameCreated(
   }
 }
 
-uint64_t WolvicContentRendererClient::VisitedLinkHash(const char* canonical_url,
-						      size_t length) {
-  return visited_link_reader_->ComputeURLFingerprint(canonical_url, length);
+uint64_t WolvicContentRendererClient::VisitedLinkHash(std::string_view canonical_url) {
+  return visited_link_reader_->ComputeURLFingerprint(canonical_url);
 }
 
 bool WolvicContentRendererClient::IsLinkVisited(uint64_t link_hash) {

@@ -4,6 +4,7 @@
 
 #include "wolvic/browser/vr/wvr_graphics_delegate.h"
 
+#include "base/android/jni_android.h"
 #include "device/vr/android/web_xr_presentation_state.h"
 #include "ui/gl/android/surface_texture.h"
 #include "ui/gl/gl_bindings.h"

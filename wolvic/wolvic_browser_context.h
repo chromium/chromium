@@ -54,7 +54,6 @@ class WolvicBrowserContext : public BrowserContext,
       const base::FilePath& partition_path) override;
   bool IsOffTheRecord() override;
   DownloadManagerDelegate* GetDownloadManagerDelegate() override;
-  ResourceContext* GetResourceContext() override;
   BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
   PlatformNotificationService* GetPlatformNotificationService() override;
@@ -127,7 +126,6 @@ class WolvicBrowserContext : public BrowserContext,
   void CreateIdentityManger();
 
   const bool off_the_record_;
-  std::unique_ptr<ResourceContext> resource_context_;
   std::unique_ptr<PrefService> user_pref_service_;
   base::FilePath path_;
   std::unique_ptr<SimpleFactoryKey> key_;

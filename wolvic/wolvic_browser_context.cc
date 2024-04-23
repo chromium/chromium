@@ -61,8 +61,7 @@
 namespace content {
 
 WolvicBrowserContext::WolvicBrowserContext(bool off_the_record)
-    : off_the_record_(off_the_record),
-      resource_context_(std::make_unique<ResourceContext>()) {
+    : off_the_record_(off_the_record) {
   LOG(ERROR) << "WolvicLifecycle WolvicBrowserContext()";
   InitWhileIOAllowed();
   BrowserContextDependencyManager::GetInstance()->CreateBrowserContextServices(
@@ -81,15 +80,6 @@ WolvicBrowserContext::~WolvicBrowserContext() {
       SimpleDependencyManager::GetInstance(), key_.get());
 
   SimpleKeyMap::GetInstance()->Dissociate(this);
-
-  // Need to destruct the ResourceContext before posting tasks which may delete
-  // the URLRequestContext because ResourceContext's destructor will remove any
-  // outstanding request while URLRequestContext's destructor ensures that there
-  // are no more outstanding requests.
-  if (resource_context_) {
-    GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
-                                          resource_context_.release());
-  }
   ShutdownStoragePartitions();
 }
 
@@ -209,10 +199,6 @@ DownloadManagerDelegate* WolvicBrowserContext::GetDownloadManagerDelegate() {
         std::make_unique<wolvic::WolvicDownloadManagerDelegate>();
   }
   return download_manager_delegate_.get();
-}
-
-ResourceContext* WolvicBrowserContext::GetResourceContext() {
-  return resource_context_.get();
 }
 
 BrowserPluginGuestManager* WolvicBrowserContext::GetGuestManager() {

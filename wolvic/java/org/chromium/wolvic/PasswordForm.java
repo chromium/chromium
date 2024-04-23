@@ -7,7 +7,7 @@ package org.chromium.wolvic;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 public class PasswordForm {
     private final @NonNull String mUsername;

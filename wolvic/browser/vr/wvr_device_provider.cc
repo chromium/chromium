@@ -13,7 +13,8 @@ namespace wolvic {
 WvrDeviceProvider::WvrDeviceProvider() {}
 WvrDeviceProvider::~WvrDeviceProvider() = default;
 
-void WvrDeviceProvider::Initialize(device::VRDeviceProviderClient* client) {
+void WvrDeviceProvider::Initialize(device::VRDeviceProviderClient* client,
+                                   content::WebContents* initializing_web_contents) {
   vr_device_ = base::WrapUnique(new WvrDevice());
   if (vr_device_) {
     client->AddRuntime(vr_device_->GetId(), vr_device_->GetDeviceData(),
