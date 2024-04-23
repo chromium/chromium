@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_CREDIT_CARD_ACCESSORY_CONTROLLER_IMPL_H_
-#define CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_CREDIT_CARD_ACCESSORY_CONTROLLER_IMPL_H_
+#ifndef CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_PAYMENT_METHOD_ACCESSORY_CONTROLLER_IMPL_H_
+#define CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_PAYMENT_METHOD_ACCESSORY_CONTROLLER_IMPL_H_
 
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/keyboard_accessory/android/credit_card_accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/android/payment_method_accessory_controller.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -19,14 +19,14 @@ namespace autofill {
 
 class BrowserAutofillManager;
 
-// Use either CreditCardAccessoryController::GetOrCreate or
-// CreditCardAccessoryController::GetIfExisting to obtain instances of this
+// Use either PaymentMethodAccessoryController::GetOrCreate or
+// PaymentMethodAccessoryController::GetIfExisting to obtain instances of this
 // class.
-class CreditCardAccessoryControllerImpl
-    : public CreditCardAccessoryController,
-      public content::WebContentsUserData<CreditCardAccessoryControllerImpl> {
+class PaymentMethodAccessoryControllerImpl
+    : public PaymentMethodAccessoryController,
+      public content::WebContentsUserData<PaymentMethodAccessoryControllerImpl> {
  public:
-  ~CreditCardAccessoryControllerImpl() override;
+  ~PaymentMethodAccessoryControllerImpl() override;
 
   // AccessoryController:
   void RegisterFillingSourceObserver(FillingSourceObserver observer) override;
@@ -37,9 +37,9 @@ class CreditCardAccessoryControllerImpl
   void OnOptionSelected(AccessoryAction selected_action) override;
   void OnToggleChanged(AccessoryAction toggled_action, bool enabled) override;
 
-  // CreditCardAccessoryController:
+  // PaymentMethodAccessoryController:
   void RefreshSuggestions() override;
-  base::WeakPtr<CreditCardAccessoryController> AsWeakPtr() override;
+  base::WeakPtr<PaymentMethodAccessoryController> AsWeakPtr() override;
 
   // PersonalDataManagerObserver:
   void OnPersonalDataChanged() override;
@@ -52,16 +52,16 @@ class CreditCardAccessoryControllerImpl
       AutofillDriver* af_driver);
 
  private:
-  friend class content::WebContentsUserData<CreditCardAccessoryControllerImpl>;
+  friend class content::WebContentsUserData<PaymentMethodAccessoryControllerImpl>;
 
   using CardOrVirtualCard =
       absl::variant<const CreditCard*, std::unique_ptr<CreditCard>>;
 
   // Required for construction via |CreateForWebContents|:
-  explicit CreditCardAccessoryControllerImpl(content::WebContents* contents);
+  explicit PaymentMethodAccessoryControllerImpl(content::WebContents* contents);
 
   // Used by CreateForWebContentsForTesting:
-  CreditCardAccessoryControllerImpl(
+  PaymentMethodAccessoryControllerImpl(
       content::WebContents* web_contents,
       base::WeakPtr<ManualFillingController> mf_controller,
       PersonalDataManager* personal_data_manager,
@@ -109,10 +109,10 @@ class CreditCardAccessoryControllerImpl
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
-  base::WeakPtrFactory<CreditCardAccessoryControllerImpl> weak_ptr_factory_{
+  base::WeakPtrFactory<PaymentMethodAccessoryControllerImpl> weak_ptr_factory_{
       this};
 };
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_CREDIT_CARD_ACCESSORY_CONTROLLER_IMPL_H_
+#endif  // CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_PAYMENT_METHOD_ACCESSORY_CONTROLLER_IMPL_H_

@@ -10,14 +10,14 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
-#include "chrome/browser/keyboard_accessory/test_utils/android/mock_address_accessory_controller.h"
-#include "chrome/browser/keyboard_accessory/test_utils/android/mock_credit_card_accessory_controller.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
-#include "chrome/browser/keyboard_accessory/test_utils/android/mock_password_accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
+#include "chrome/browser/keyboard_accessory/test_utils/android/mock_address_accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/test_utils/android/mock_password_accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/test_utils/android/mock_payment_method_accessory_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
@@ -69,13 +69,14 @@ class ManualFillingControllerTest : public testing::Test {
   void SetUp() override {
     ON_CALL(mock_pwd_controller_, RegisterFillingSourceObserver(_))
         .WillByDefault(SaveArg<0>(&pwd_source_observer_));
-    ON_CALL(mock_cc_controller_, RegisterFillingSourceObserver(_))
+    ON_CALL(mock_payment_method_controller_, RegisterFillingSourceObserver(_))
         .WillByDefault(SaveArg<0>(&cc_source_observer_));
     ON_CALL(mock_address_controller_, RegisterFillingSourceObserver(_))
         .WillByDefault(SaveArg<0>(&address_source_observer_));
     ManualFillingControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_pwd_controller_.AsWeakPtr(),
-        mock_address_controller_.AsWeakPtr(), mock_cc_controller_.AsWeakPtr(),
+        mock_address_controller_.AsWeakPtr(),
+        mock_payment_method_controller_.AsWeakPtr(),
         std::make_unique<NiceMock<MockManualFillingView>>());
   }
 
@@ -102,7 +103,7 @@ class ManualFillingControllerTest : public testing::Test {
 
   void NotifyCreditCardSourceObserver(
       IsFillingSourceAvailable source_available) {
-    cc_source_observer_.Run(&mock_cc_controller_, source_available);
+    cc_source_observer_.Run(&mock_payment_method_controller_, source_available);
   }
 
   void NotifyAddressSourceObserver(IsFillingSourceAvailable source_available) {
@@ -118,7 +119,8 @@ class ManualFillingControllerTest : public testing::Test {
 
   NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
-  NiceMock<MockCreditCardAccessoryController> mock_cc_controller_;
+  NiceMock<MockPaymentMethodAccessoryController>
+      mock_payment_method_controller_;
 
   AccessoryController::FillingSourceObserver pwd_source_observer_;
   AccessoryController::FillingSourceObserver cc_source_observer_;
@@ -194,7 +196,7 @@ TEST_F(ManualFillingControllerTest,
 
   // TODO(crbug.com/1169167): Because the data isn't cached, test that only one
   // call to `GetSheetData()` happens.
-  EXPECT_CALL(mock_cc_controller_, GetSheetData)
+  EXPECT_CALL(mock_payment_method_controller_, GetSheetData)
       .Times(AtLeast(1))
       .WillRepeatedly(Return(kTestCreditCardSheet));
   EXPECT_CALL(*view(), OnItemsAvailable(kTestCreditCardSheet))

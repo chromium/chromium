@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/keyboard_accessory/android/credit_card_accessory_controller_impl.h"
+#include "chrome/browser/keyboard_accessory/android/payment_method_accessory_controller_impl.h"
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
@@ -44,7 +44,7 @@ constexpr char kExampleSite[] = "https://example.com";
 namespace autofill {
 namespace {
 
-AccessorySheetData::Builder CreditCardAccessorySheetDataBuilder() {
+AccessorySheetData::Builder PaymentMethodAccessorySheetDataBuilder() {
   return AccessorySheetData::Builder(
              AccessoryTabType::CREDIT_CARDS,
              l10n_util::GetStringUTF16(
@@ -87,7 +87,7 @@ class MockAutofillDriver : public TestContentAutofillDriver {
               (override));
 };
 
-class CreditCardAccessoryControllerTest
+class PaymentMethodAccessoryControllerTest
     : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
@@ -99,7 +99,7 @@ class CreditCardAccessoryControllerTest
     test_api(autofill_manager())
         .set_credit_card_access_manager(std::make_unique<TestAccessManager>(
             &autofill_driver(), &autofill_client(), &data_manager_));
-    CreditCardAccessoryControllerImpl::CreateForWebContentsForTesting(
+    PaymentMethodAccessoryControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_mf_controller_.AsWeakPtr(), &data_manager_,
         &autofill_manager(), &autofill_driver());
     data_manager_.SetPrefService(profile()->GetPrefs());
@@ -114,8 +114,8 @@ class CreditCardAccessoryControllerTest
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  CreditCardAccessoryController* controller() {
-    return CreditCardAccessoryControllerImpl::FromWebContents(web_contents());
+  PaymentMethodAccessoryController* controller() {
+    return PaymentMethodAccessoryControllerImpl::FromWebContents(web_contents());
   }
 
   void SetFormOrigin(GURL origin) {
@@ -156,13 +156,13 @@ class CreditCardAccessoryControllerTest
   TestAutofillManagerInjector<TestBrowserAutofillManager>
       autofill_manager_injector_;
 };
-class CreditCardAccessoryControllerTestSupportingPromoCodeOffers
-    : public CreditCardAccessoryControllerTest {
+class PaymentMethodAccessoryControllerTestSupportingPromoCodeOffers
+    : public PaymentMethodAccessoryControllerTest {
  public:
-  CreditCardAccessoryControllerTestSupportingPromoCodeOffers() = default;
+  PaymentMethodAccessoryControllerTestSupportingPromoCodeOffers() = default;
 };
 
-TEST_F(CreditCardAccessoryControllerTest, RefreshSuggestions) {
+TEST_F(PaymentMethodAccessoryControllerTest, RefreshSuggestions) {
   CreditCard card = test::GetCreditCard();
   data_manager_.AddCreditCard(card);
   AccessorySheetData result(AccessoryTabType::CREDIT_CARDS, std::u16string());
@@ -174,7 +174,7 @@ TEST_F(CreditCardAccessoryControllerTest, RefreshSuggestions) {
 
   EXPECT_EQ(result, controller()->GetSheetData());
   EXPECT_EQ(result,
-            CreditCardAccessorySheetDataBuilder()
+            PaymentMethodAccessorySheetDataBuilder()
                 .AddUserInfo(kVisaCard)
                 .AppendField(card.ObfuscatedNumberWithVisibleLastFourDigits(),
                              /*text_to_fill=*/std::u16string(),
@@ -189,7 +189,7 @@ TEST_F(CreditCardAccessoryControllerTest, RefreshSuggestions) {
                 .Build());
 }
 
-TEST_F(CreditCardAccessoryControllerTest, PreventsFillingInsecureContexts) {
+TEST_F(PaymentMethodAccessoryControllerTest, PreventsFillingInsecureContexts) {
   CreditCard card = test::GetCreditCard();
   data_manager_.AddCreditCard(card);
   AccessorySheetData result(autofill::AccessoryTabType::CREDIT_CARDS,
@@ -203,7 +203,7 @@ TEST_F(CreditCardAccessoryControllerTest, PreventsFillingInsecureContexts) {
 
   EXPECT_EQ(result, controller()->GetSheetData());
   EXPECT_EQ(result,
-            CreditCardAccessorySheetDataBuilder()
+            PaymentMethodAccessorySheetDataBuilder()
                 .SetWarning(l10n_util::GetStringUTF16(
                     IDS_AUTOFILL_WARNING_INSECURE_CONNECTION))
                 .AddUserInfo(kVisaCard)
@@ -231,12 +231,12 @@ TEST_F(CreditCardAccessoryControllerTest, PreventsFillingInsecureContexts) {
                 .Build());
 }
 
-class CreditCardAccessoryControllerCardUnmaskTest
-    : public CreditCardAccessoryControllerTest,
+class PaymentMethodAccessoryControllerCardUnmaskTest
+    : public PaymentMethodAccessoryControllerTest,
       public testing::WithParamInterface<CreditCard::RecordType> {
  public:
-  CreditCardAccessoryControllerCardUnmaskTest() = default;
-  ~CreditCardAccessoryControllerCardUnmaskTest() override = default;
+  PaymentMethodAccessoryControllerCardUnmaskTest() = default;
+  ~PaymentMethodAccessoryControllerCardUnmaskTest() override = default;
 
   CreditCard GetCreditCard() {
     switch (GetParam()) {
@@ -247,7 +247,7 @@ class CreditCardAccessoryControllerCardUnmaskTest
       case CreditCard::RecordType::kFullServerCard:
         return test::GetFullServerCard();
       case CreditCard::RecordType::kVirtualCard: {
-        // The CreditCardAccessoryController will automatically create a virtual
+        // The PaymentMethodAccessoryController will automatically create a virtual
         // card for this masked server card.
         CreditCard card = test::GetMaskedServerCard();
         card.set_virtual_card_enrollment_state(
@@ -262,7 +262,7 @@ class CreditCardAccessoryControllerCardUnmaskTest
   }
 };
 
-TEST_P(CreditCardAccessoryControllerCardUnmaskTest, CardUnmask) {
+TEST_P(PaymentMethodAccessoryControllerCardUnmaskTest, CardUnmask) {
   // TODO(crbug.com/1169167): Move this into setup once controllers don't push
   // updated sheets proactively anymore.
   controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
@@ -298,13 +298,13 @@ TEST_P(CreditCardAccessoryControllerCardUnmaskTest, CardUnmask) {
 
 INSTANTIATE_TEST_SUITE_P(
     ,
-    CreditCardAccessoryControllerCardUnmaskTest,
+    PaymentMethodAccessoryControllerCardUnmaskTest,
     testing::Values(CreditCard::RecordType::kLocalCard,
                     CreditCard::RecordType::kMaskedServerCard,
                     CreditCard::RecordType::kFullServerCard,
                     CreditCard::RecordType::kVirtualCard));
 
-TEST_F(CreditCardAccessoryControllerTest,
+TEST_F(PaymentMethodAccessoryControllerTest,
        RefreshSuggestionsUnmaskedCachedCardNotAdded) {
   // Store a full server card in the credit_card_access_manager's
   // unmasked_cards_cache.
@@ -326,7 +326,7 @@ TEST_F(CreditCardAccessoryControllerTest,
   // Verify that the only the obfuscated last four and no cvc is added to the
   // accessory sheet data.
   EXPECT_EQ(result,
-            CreditCardAccessorySheetDataBuilder()
+            PaymentMethodAccessorySheetDataBuilder()
                 .AddUserInfo(kVisaCard)
                 .AppendField(card.ObfuscatedNumberWithVisibleLastFourDigits(),
                              /*text_to_fill=*/std::u16string(),
@@ -341,7 +341,7 @@ TEST_F(CreditCardAccessoryControllerTest,
                 .Build());
 }
 
-TEST_F(CreditCardAccessoryControllerTest,
+TEST_F(PaymentMethodAccessoryControllerTest,
        RefreshSuggestionsAddsCachedVirtualCards) {
   // Add a masked card to PersonalDataManager.
   CreditCard unmasked_card = test::GetCreditCard();
@@ -368,7 +368,7 @@ TEST_F(CreditCardAccessoryControllerTest,
   // card.
   EXPECT_EQ(
       result,
-      CreditCardAccessorySheetDataBuilder()
+      PaymentMethodAccessorySheetDataBuilder()
           .AddUserInfo(kVisaCard)
           .AppendField(/*display_text=*/card_number_for_display,
                        /*text_to_fill=*/card_number_for_fill,
@@ -396,7 +396,7 @@ TEST_F(CreditCardAccessoryControllerTest,
 }
 
 TEST_F(
-    CreditCardAccessoryControllerTest,
+    PaymentMethodAccessoryControllerTest,
     RefreshSuggestionsAddsVirtualCardWhenOriginalCardIsEnrolledForVirtualCards) {
   // Add a masked card to PersonalDataManager.
   CreditCard masked_card = test::GetMaskedServerCard();
@@ -418,7 +418,7 @@ TEST_F(
   // Verify that a virtual card is inserted before the actual masked card.
   EXPECT_EQ(
       result,
-      CreditCardAccessorySheetDataBuilder()
+      PaymentMethodAccessorySheetDataBuilder()
           .AddUserInfo(kMasterCard)
           .AppendField(virtual_card_label, /*text_to_fill*/ std::u16string(),
                        virtual_card_label, masked_card.guid() + "_vcn",
@@ -442,7 +442,7 @@ TEST_F(
           .Build());
 }
 
-TEST_F(CreditCardAccessoryControllerTest,
+TEST_F(PaymentMethodAccessoryControllerTest,
        CardArtIsNotShownEvenWhenMetadataIsAvailableAndEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -474,7 +474,7 @@ TEST_F(CreditCardAccessoryControllerTest,
 }
 
 TEST_F(
-    CreditCardAccessoryControllerTest,
+    PaymentMethodAccessoryControllerTest,
     CapitalOneVirtualCardIconIsShownForVirtualCardsEvenWhenMetadataIsNotEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
@@ -506,7 +506,7 @@ TEST_F(
 }
 
 // Tests that promo codes are shown.
-TEST_F(CreditCardAccessoryControllerTestSupportingPromoCodeOffers,
+TEST_F(PaymentMethodAccessoryControllerTestSupportingPromoCodeOffers,
        RefreshSuggestionsWithPromoCodeOffers) {
   CreditCard card = test::GetCreditCard();
   data_manager_.AddCreditCard(card);
@@ -535,7 +535,7 @@ TEST_F(CreditCardAccessoryControllerTestSupportingPromoCodeOffers,
   EXPECT_EQ(result, controller()->GetSheetData());
   // Only valid promo code should appear in the AccessorySheet.
   EXPECT_EQ(result,
-            CreditCardAccessorySheetDataBuilder()
+            PaymentMethodAccessorySheetDataBuilder()
                 .AddUserInfo(kVisaCard)
                 .AppendField(card.ObfuscatedNumberWithVisibleLastFourDigits(),
                              /*text_to_fill=*/std::u16string(),

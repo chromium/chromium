@@ -21,7 +21,7 @@
 
 namespace autofill {
 class AddressAccessoryController;
-class CreditCardAccessoryController;
+class PaymentMethodAccessoryController;
 }  // namespace autofill
 
 class PasswordAccessoryController;
@@ -77,7 +77,8 @@ class ManualFillingControllerImpl
       content::WebContents* web_contents,
       base::WeakPtr<PasswordAccessoryController> pwd_controller,
       base::WeakPtr<autofill::AddressAccessoryController> address_controller,
-      base::WeakPtr<autofill::CreditCardAccessoryController> cc_controller,
+      base::WeakPtr<autofill::PaymentMethodAccessoryController>
+          payment_method_controller,
       std::unique_ptr<ManualFillingViewInterface> test_view);
 
 #if defined(UNIT_TEST)
@@ -105,7 +106,8 @@ class ManualFillingControllerImpl
       content::WebContents* web_contents,
       base::WeakPtr<PasswordAccessoryController> pwd_controller,
       base::WeakPtr<autofill::AddressAccessoryController> address_controller,
-      base::WeakPtr<autofill::CreditCardAccessoryController> cc_controller,
+      base::WeakPtr<autofill::PaymentMethodAccessoryController>
+          payment_method_controller,
       std::unique_ptr<ManualFillingViewInterface> view);
 
   // MemoryDumpProvider:
@@ -159,7 +161,8 @@ class ManualFillingControllerImpl
   // associated data.
   base::WeakPtr<PasswordAccessoryController> pwd_controller_;
   base::WeakPtr<autofill::AddressAccessoryController> address_controller_;
-  base::WeakPtr<autofill::CreditCardAccessoryController> cc_controller_;
+  base::WeakPtr<autofill::PaymentMethodAccessoryController>
+      payment_method_controller_;
 
   // Hold the native instance of the view. Must be last declared and initialized
   // member so the view can be created in the constructor with a fully set up

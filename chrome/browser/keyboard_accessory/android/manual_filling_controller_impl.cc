@@ -22,8 +22,8 @@
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "chrome/browser/keyboard_accessory/android/address_accessory_controller.h"
-#include "chrome/browser/keyboard_accessory/android/credit_card_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/android/payment_method_accessory_controller.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "content/public/browser/web_contents.h"
 
@@ -31,7 +31,7 @@ using autofill::AccessoryAction;
 using autofill::AccessorySheetData;
 using autofill::AccessoryTabType;
 using autofill::AddressAccessoryController;
-using autofill::CreditCardAccessoryController;
+using autofill::PaymentMethodAccessoryController;
 using autofill::mojom::FocusedFieldType;
 
 using FillingSource = ManualFillingController::FillingSource;
@@ -152,21 +152,22 @@ void ManualFillingControllerImpl::CreateForWebContentsForTesting(
     content::WebContents* web_contents,
     base::WeakPtr<PasswordAccessoryController> pwd_controller,
     base::WeakPtr<AddressAccessoryController> address_controller,
-    base::WeakPtr<CreditCardAccessoryController> cc_controller,
+    base::WeakPtr<PaymentMethodAccessoryController> payment_method_controller,
     std::unique_ptr<ManualFillingViewInterface> view) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
   DCHECK(!FromWebContents(web_contents)) << "Controller already attached!";
   DCHECK(pwd_controller);
   DCHECK(address_controller);
-  DCHECK(cc_controller);
+  DCHECK(payment_method_controller);
   DCHECK(view);
 
-  web_contents->SetUserData(UserDataKey(),
-                            // Using `new` to access a non-public constructor.
-                            base::WrapUnique(new ManualFillingControllerImpl(
-                                web_contents, std::move(pwd_controller),
-                                std::move(address_controller),
-                                std::move(cc_controller), std::move(view))));
+  web_contents->SetUserData(
+      UserDataKey(),
+      // Using `new` to access a non-public constructor.
+      base::WrapUnique(new ManualFillingControllerImpl(
+          web_contents, std::move(pwd_controller),
+          std::move(address_controller), std::move(payment_method_controller),
+          std::move(view))));
 
   FromWebContents(web_contents)->Initialize();
 }
@@ -201,8 +202,9 @@ void ManualFillingControllerImpl::NotifyFocusedInputChanged(
   last_focused_field_type_ = focused_field_type;
 
   // Ensure warnings and filling state is updated according to focused field.
-  if (cc_controller_)
-    cc_controller_->RefreshSuggestions();
+  if (payment_method_controller_) {
+    payment_method_controller_->RefreshSuggestions();
+  }
 
   // Whenever the focus changes, reset the accessory.
   if (ShouldShowAccessory())
@@ -216,7 +218,7 @@ void ManualFillingControllerImpl::NotifyFocusedInputChanged(
 void ManualFillingControllerImpl::ShowAccessorySheetTab(
     const autofill::AccessoryTabType& tab_type) {
   if (tab_type == autofill::AccessoryTabType::CREDIT_CARDS) {
-    cc_controller_->RefreshSuggestions();
+    payment_method_controller_->RefreshSuggestions();
   } else {
     NOTIMPLEMENTED()
         << "ShowAccessorySheetTab does not support the given TabType yet "
@@ -336,9 +338,9 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
       AddressAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();
   DCHECK(address_controller_);
 
-  cc_controller_ =
-      CreditCardAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();
-  DCHECK(cc_controller_);
+  payment_method_controller_ =
+      PaymentMethodAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();
+  DCHECK(payment_method_controller_);
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "ManualFillingCache",
@@ -349,12 +351,12 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
     content::WebContents* web_contents,
     base::WeakPtr<PasswordAccessoryController> pwd_controller,
     base::WeakPtr<AddressAccessoryController> address_controller,
-    base::WeakPtr<CreditCardAccessoryController> cc_controller,
+    base::WeakPtr<PaymentMethodAccessoryController> payment_method_controller,
     std::unique_ptr<ManualFillingViewInterface> view)
     : content::WebContentsUserData<ManualFillingControllerImpl>(*web_contents),
       pwd_controller_(std::move(pwd_controller)),
       address_controller_(std::move(address_controller)),
-      cc_controller_(std::move(cc_controller)),
+      payment_method_controller_(std::move(payment_method_controller)),
       view_(std::move(view)) {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "ManualFillingCache",
@@ -462,7 +464,7 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForTabType(
     case AccessoryTabType::PASSWORDS:
       return pwd_controller_.get();
     case AccessoryTabType::CREDIT_CARDS:
-      return cc_controller_.get();
+      return payment_method_controller_.get();
     case AccessoryTabType::OBSOLETE_TOUCH_TO_FILL:
     case AccessoryTabType::ALL:
     case AccessoryTabType::COUNT:
@@ -486,7 +488,7 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForAction(
     case AccessoryAction::MANAGE_ADDRESSES:
       return address_controller_.get();
     case AccessoryAction::MANAGE_CREDIT_CARDS:
-      return cc_controller_.get();
+      return payment_method_controller_.get();
     case AccessoryAction::AUTOFILL_SUGGESTION:
     case AccessoryAction::COUNT:
       NOTREACHED() << "Controller not defined for action: "
@@ -501,7 +503,7 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForFillingSource(
     case FillingSource::PASSWORD_FALLBACKS:
       return pwd_controller_.get();
     case FillingSource::CREDIT_CARD_FALLBACKS:
-      return cc_controller_.get();
+      return payment_method_controller_.get();
     case FillingSource::ADDRESS_FALLBACKS:
       return address_controller_.get();
     case FillingSource::AUTOFILL:

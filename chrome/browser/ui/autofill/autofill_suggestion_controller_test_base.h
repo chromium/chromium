@@ -32,8 +32,8 @@
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_address_accessory_controller.h"
-#include "chrome/browser/keyboard_accessory/test_utils/android/mock_credit_card_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_password_accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/test_utils/android/mock_payment_method_accessory_controller.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller_impl.h"
 #else
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
@@ -114,7 +114,8 @@ class AutofillSuggestionControllerTestBase
 #if BUILDFLAG(IS_ANDROID)
     ManualFillingControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_pwd_controller_.AsWeakPtr(),
-        mock_address_controller_.AsWeakPtr(), mock_cc_controller_.AsWeakPtr(),
+        mock_address_controller_.AsWeakPtr(),
+        mock_payment_method_controller_.AsWeakPtr(),
         std::make_unique<::testing::NiceMock<MockManualFillingView>>());
 #endif  // BUILDFLAG(IS_ANDROID)
   }
@@ -196,7 +197,8 @@ class AutofillSuggestionControllerTestBase
 #if BUILDFLAG(IS_ANDROID)
   ::testing::NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
   ::testing::NiceMock<MockAddressAccessoryController> mock_address_controller_;
-  ::testing::NiceMock<MockCreditCardAccessoryController> mock_cc_controller_;
+  ::testing::NiceMock<MockPaymentMethodAccessoryController>
+      mock_payment_method_controller_;
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 

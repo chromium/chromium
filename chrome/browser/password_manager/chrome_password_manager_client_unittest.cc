@@ -99,9 +99,9 @@
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller_impl.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_address_accessory_controller.h"
-#include "chrome/browser/keyboard_accessory/test_utils/android/mock_credit_card_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_password_accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/test_utils/android/mock_payment_method_accessory_controller.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "chrome/common/chrome_switches.h"
@@ -1200,7 +1200,8 @@ class ChromePasswordManagerClientAndroidTest
  private:
   NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
-  NiceMock<MockCreditCardAccessoryController> mock_cc_controller_;
+  NiceMock<MockPaymentMethodAccessoryController>
+      mock_payment_method_controller_;
 };
 
 void ChromePasswordManagerClientAndroidTest::SetUp() {
@@ -1234,7 +1235,8 @@ void ChromePasswordManagerClientAndroidTest::CreateManualFillingController(
     content::WebContents* web_contents) {
   ManualFillingControllerImpl::CreateForWebContentsForTesting(
       web_contents, mock_pwd_controller_.AsWeakPtr(),
-      mock_address_controller_.AsWeakPtr(), mock_cc_controller_.AsWeakPtr(),
+      mock_address_controller_.AsWeakPtr(),
+      mock_payment_method_controller_.AsWeakPtr(),
       std::make_unique<NiceMock<MockManualFillingView>>());
 }
 
