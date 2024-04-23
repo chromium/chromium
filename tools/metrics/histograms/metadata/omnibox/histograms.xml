@@ -414,9 +414,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.CharTypedToRepaintLatency" units="ms"
     expires_after="2024-09-01">
+  <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
-  <owner>asvitkine@chromium.org</owner>
+  <owner>chrome-search@google.com</owner>
   <summary>
     Records the time taken between a keystroke being typed in the omnibox and
     the text being painted. If there are multiple keystrokes before a paint,
@@ -446,9 +447,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.CharTypedToRepaintLatency.InsertToPresent" units="ms"
     expires_after="2024-09-01">
-  <owner>asvitkine@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-search@google.com</owner>
   <summary>
     A refinement of Omnibox.CharTypedToRepaintLatency metric. It measures the
     time between the first character insertion in a series that happen during a
@@ -470,9 +472,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.CharTypedToRepaintLatency.PaintToPresent" units="ms"
     expires_after="2024-06-30">
-  <owner>asvitkine@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-search@google.com</owner>
   <summary>
     Records the time between when OnPaint() is called to the time the compositor
     reports pixels were successfully drawn to the screen. This a subset of the
@@ -493,9 +496,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Omnibox.CharTypedToRepaintLatency.ToPaint" units="ms"
     expires_after="2024-09-01">
-  <owner>asvitkine@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-search@google.com</owner>
   <summary>
     Records the time taken between a keystroke being typed in the omnibox and
     the time when we're ready to paint the omnibox. This is a breakdown
@@ -1292,9 +1296,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.PaintTime" units="ms" expires_after="2024-09-01">
-  <owner>asvitkine@chromium.org</owner>
+  <owner>manukh@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-search@google.com</owner>
   <summary>
     Records the time to paint the omnibox contents. This is a subcomponent of
     Omnibox.CharTypedToRepaintLatency. Implemented on desktop platforms.
