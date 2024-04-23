@@ -729,6 +729,12 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.0.79 -> 1.0.80"
 
+[[audits.proc-macro2]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.80 -> 1.0.81"
+notes = "Comment changes only"
+
 [[audits.prost]]
 who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

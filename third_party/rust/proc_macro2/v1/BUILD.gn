@@ -12,23 +12,23 @@ cargo_crate("lib") {
   crate_name = "proc_macro2"
   epoch = "1"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.80/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.81/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.80/src/detection.rs",
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.80/src/extra.rs",
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.80/src/fallback.rs",
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.80/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.80/src/location.rs",
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.80/src/marker.rs",
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.80/src/parse.rs",
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.80/src/rcvec.rs",
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.80/src/wrapper.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.81/src/detection.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.81/src/extra.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.81/src/fallback.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.81/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.81/src/location.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.81/src/marker.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.81/src/parse.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.81/src/rcvec.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.81/src/wrapper.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "1.0.80"
+  cargo_pkg_version = "1.0.81"
   cargo_pkg_authors =
       "David Tolnay <dtolnay@gmail.com>, Alex Crichton <alex@alexcrichton.com>"
   cargo_pkg_name = "proc-macro2"
@@ -45,8 +45,8 @@ cargo_crate("lib") {
     "span-locations",
   ]
   build_root =
-      "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.80/build.rs"
+      "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.81/build.rs"
   build_sources = [
-    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.80/build.rs",
+    "//third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.81/build.rs",
   ]
 }

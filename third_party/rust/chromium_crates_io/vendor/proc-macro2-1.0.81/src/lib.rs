@@ -86,7 +86,7 @@
 //! a different thread.
 
 // Proc-macro2 types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/proc-macro2/1.0.80")]
+#![doc(html_root_url = "https://docs.rs/proc-macro2/1.0.81")]
 #![cfg_attr(any(proc_macro_span, super_unstable), feature(proc_macro_span))]
 #![cfg_attr(super_unstable, feature(proc_macro_def_site))]
 #![cfg_attr(doc_cfg, feature(doc_cfg))]
@@ -678,12 +678,12 @@ pub enum Delimiter {
     Brace,
     /// `[ ... ]`
     Bracket,
-    /// `Ø ... Ø`
+    /// `∅ ... ∅`
     ///
-    /// An implicit delimiter, that may, for example, appear around tokens
+    /// An invisible delimiter, that may, for example, appear around tokens
     /// coming from a "macro variable" `$var`. It is important to preserve
     /// operator priorities in cases like `$var * 3` where `$var` is `1 + 2`.
-    /// Implicit delimiters may not survive roundtrip of a token stream through
+    /// Invisible delimiters may not survive roundtrip of a token stream through
     /// a string.
     None,
 }
