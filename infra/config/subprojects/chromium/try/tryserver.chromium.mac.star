@@ -590,7 +590,10 @@ try_.orchestrator_builder(
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
+    tryjob = try_.job(
+        # TODO(crbug.com/336382863): Re-enable when it's fixed.
+        experiment_percentage = 100,
+    ),
     use_clang_coverage = True,
     xcode = xcode.xcode_default,
 )
