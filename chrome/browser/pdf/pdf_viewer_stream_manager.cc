@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/pdf_util.h"
 #include "components/pdf/browser/pdf_frame_util.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -439,13 +440,9 @@ void PdfViewerStreamManager::DidFinishNavigation(
   stream_info->set_extension_host_frame_tree_node_id(
       extension_host_frame_tree_node_id);
 
-  content::NavigationController::LoadURLParams params(
-      stream_info->stream()->handler_url());
-  params.frame_tree_node_id = extension_host_frame_tree_node_id;
-  params.source_site_instance = embedder_host->GetSiteInstance();
-  web_contents()->GetController().LoadURLWithParams(params);
-
-  stream_info->SetExtensionNavigated();
+  NavigateToPdfExtensionUrl(extension_host_frame_tree_node_id, stream_info,
+                            embedder_host->GetSiteInstance(),
+                            about_blank_host->GetGlobalId());
 }
 
 void PdfViewerStreamManager::ClaimStreamInfoForTesting(
@@ -469,6 +466,22 @@ void PdfViewerStreamManager::SetContentFrameTreeNodeIdForTesting(
   CHECK(stream_info);
 
   stream_info->set_content_host_frame_tree_node_id(frame_tree_node_id);
+}
+
+void PdfViewerStreamManager::NavigateToPdfExtensionUrl(
+    int extension_host_frame_tree_node_id,
+    StreamInfo* stream_info,
+    content::SiteInstance* source_site_instance,
+    content::GlobalRenderFrameHostId global_id) {
+  CHECK(stream_info);
+
+  content::NavigationController::LoadURLParams params(
+      stream_info->stream()->handler_url());
+  params.frame_tree_node_id = extension_host_frame_tree_node_id;
+  params.source_site_instance = source_site_instance;
+  web_contents()->GetController().LoadURLWithParams(params);
+
+  stream_info->SetExtensionNavigated();
 }
 
 PdfViewerStreamManager::StreamInfo*

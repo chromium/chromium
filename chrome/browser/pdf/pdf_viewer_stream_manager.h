@@ -22,6 +22,8 @@
 namespace content {
 struct GlobalRenderFrameHostId;
 class NavigationHandle;
+class RenderFrameHost;
+class SiteInstance;
 class WebContents;
 }  // namespace content
 
@@ -296,6 +298,21 @@ class PdfViewerStreamManager
   // Returns the stream info for a PDF content navigation.
   StreamInfo* GetClaimedStreamInfoFromPdfContentNavigation(
       content::NavigationHandle* navigation_handle);
+
+  // Navigates the FrameTreeNode with ID `extension_host_frame_tree_node_id` to
+  // the PDF extension URL. Marks the PDF extension as navigated in
+  // `stream_info`, which must be non-null. `source_site_instance` should be the
+  // `content::SiteInstance` of the PDF embedder frame that will be initiating
+  // the navigation.
+  //
+  // Subclasses may override this for use in callbacks. If so, `global_id`,
+  // which is the ID for the intermediate about:blank host for the PDF extension
+  // frame, can be used to get the other parameters safely.
+  virtual void NavigateToPdfExtensionUrl(
+      int extension_host_frame_tree_node_id,
+      StreamInfo* stream_info,
+      content::SiteInstance* source_site_instance,
+      content::GlobalRenderFrameHostId global_id);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PdfViewerStreamManagerTest,
