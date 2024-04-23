@@ -11,6 +11,8 @@ component("wifi_p2p") {
   deps = [
     "//ash/constants",
     "//base",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/patchpanel",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/components/network",
@@ -29,6 +31,8 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/patchpanel",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/components/network",

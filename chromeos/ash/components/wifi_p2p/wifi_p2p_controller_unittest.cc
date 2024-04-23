@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chromeos/ash/components/dbus/patchpanel/fake_patchpanel_client.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
@@ -24,9 +25,18 @@ class WifiP2PControllerTest : public ::testing::Test {
     std::optional<WifiP2PController::WifiDirectConnectionMetadata> metadata;
   };
 
-  void SetUp() override { shill_clients::InitializeFakes(); }
+  void SetUp() override {
+    shill_clients::InitializeFakes();
+    PatchPanelClient::InitializeFake();
+  }
 
-  void TearDown() override { shill_clients::Shutdown(); }
+  void TearDown() override {
+    if (WifiP2PController::IsInitialized()) {
+      WifiP2PController::Shutdown();
+    }
+    PatchPanelClient::Shutdown();
+    shill_clients::Shutdown();
+  }
 
   void Init(bool enable_flag = true) {
     if (enable_flag) {
@@ -91,6 +101,19 @@ class WifiP2PControllerTest : public ::testing::Test {
     return test_result;
   }
 
+  bool TagSocket(int network_id, base::ScopedFD socket_fd) {
+    bool result;
+    base::RunLoop run_loop;
+    WifiP2PController::Get()->TagSocket(
+        network_id, std::move(socket_fd),
+        base::BindLambdaForTesting([&](bool success) {
+          result = success;
+          run_loop.Quit();
+        }));
+    base::RunLoop().RunUntilIdle();
+    return result;
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -103,7 +126,6 @@ TEST_F(WifiP2PControllerTest, FeatureEnabled) {
       base::BindOnce(&WifiP2PControllerTest::OnGetManagerCallback,
                      base::Unretained(this), shill::kP2PAllowedProperty,
                      /*expected_value=*/true));
-  WifiP2PController::Shutdown();
 }
 
 TEST_F(WifiP2PControllerTest, FeatureDisabled) {
@@ -112,7 +134,6 @@ TEST_F(WifiP2PControllerTest, FeatureDisabled) {
       base::BindOnce(&WifiP2PControllerTest::OnGetManagerCallback,
                      base::Unretained(this), shill::kP2PAllowedProperty,
                      /*expected_value=*/false));
-  WifiP2PController::Shutdown();
 }
 
 TEST_F(WifiP2PControllerTest, CreateP2PGroupSuccess) {
@@ -130,8 +151,6 @@ TEST_F(WifiP2PControllerTest, CreateP2PGroupSuccess) {
   EXPECT_EQ(result_arguments.metadata->shill_id, 0);
   EXPECT_EQ(result_arguments.metadata->frequency, 1000u);
   EXPECT_EQ(result_arguments.metadata->network_id, 1);
-
-  WifiP2PController::Shutdown();
 }
 
 TEST_F(WifiP2PControllerTest, CreateP2PGroupFailure_InvalidArguments) {
@@ -147,8 +166,6 @@ TEST_F(WifiP2PControllerTest, CreateP2PGroupFailure_InvalidArguments) {
   EXPECT_EQ(result_arguments.result,
             WifiP2PController::OperationResult::kInvalidArguments);
   EXPECT_FALSE(result_arguments.metadata);
-
-  WifiP2PController::Shutdown();
 }
 
 TEST_F(WifiP2PControllerTest, CreateP2PGroupFailure_DBusError) {
@@ -163,8 +180,6 @@ TEST_F(WifiP2PControllerTest, CreateP2PGroupFailure_DBusError) {
   EXPECT_EQ(result_arguments.result,
             WifiP2PController::OperationResult::kDBusError);
   EXPECT_FALSE(result_arguments.metadata);
-
-  WifiP2PController::Shutdown();
 }
 
 TEST_F(WifiP2PControllerTest, ConnectToP2PGroupSuccess) {
@@ -183,8 +198,6 @@ TEST_F(WifiP2PControllerTest, ConnectToP2PGroupSuccess) {
   EXPECT_EQ(result_arguments.metadata->shill_id, 0);
   EXPECT_EQ(result_arguments.metadata->frequency, 5200u);
   EXPECT_EQ(result_arguments.metadata->network_id, 1);
-
-  WifiP2PController::Shutdown();
 }
 
 TEST_F(WifiP2PControllerTest,
@@ -201,8 +214,6 @@ TEST_F(WifiP2PControllerTest,
   EXPECT_EQ(result_arguments.result,
             WifiP2PController::OperationResult::kConcurrencyNotSupported);
   EXPECT_FALSE(result_arguments.metadata);
-
-  WifiP2PController::Shutdown();
 }
 
 TEST_F(WifiP2PControllerTest, GetP2PCapabilities) {
@@ -230,6 +241,12 @@ TEST_F(WifiP2PControllerTest, GetP2PCapabilities) {
   result = WifiP2PController::Get()->GetP2PCapabilities();
   EXPECT_TRUE(result.is_owner_ready);
   EXPECT_FALSE(result.is_client_ready);
+}
+
+TEST_F(WifiP2PControllerTest, TagSocket) {
+  Init();
+
+  EXPECT_TRUE(TagSocket(123, base::ScopedFD()));
 }
 
 }  // namespace ash

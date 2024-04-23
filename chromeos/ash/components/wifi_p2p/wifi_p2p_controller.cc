@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "chromeos/ash/components/dbus/patchpanel/patchpanel_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -316,6 +317,15 @@ void WifiP2PController::ConnectToWifiP2PGroup(const std::string& ssid,
 const WifiP2PController::WifiP2PCapabilities&
 WifiP2PController::GetP2PCapabilities() const {
   return wifi_p2p_capabilities_;
+}
+
+void WifiP2PController::TagSocket(
+    int network_id,
+    base::ScopedFD socket_fd,
+    base::OnceCallback<void(bool success)> callback) {
+  PatchPanelClient::Get()->TagSocket(
+      socket_fd.get(), network_id,
+      PatchPanelClient::VpnRoutingPolicy::kBypassVpn, std::move(callback));
 }
 
 void WifiP2PController::OnPropertyChanged(const std::string& key,

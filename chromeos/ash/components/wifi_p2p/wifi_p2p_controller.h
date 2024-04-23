@@ -7,6 +7,7 @@
 
 #include "base/check.h"
 #include "base/component_export.h"
+#include "base/files/scoped_file.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -63,7 +64,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
     bool is_client_ready;
   };
 
-  enum OperationResult {
+  enum class OperationResult {
     kSuccess,
     // Wifi direct is disallowed in platform per Manager.P2PAllowed.
     kNotAllowed,
@@ -114,10 +115,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
                              const std::string& passphrase,
                              std::optional<uint32_t> frequency,
                              WifiP2PGroupCallback callback);
-
-  void OnGetManagerProperties(std::optional<base::Value::Dict> properties);
-
   const WifiP2PCapabilities& GetP2PCapabilities() const;
+
+  // Tags the TCP/UDP socket with the given `socket_fd` to the network
+  // specified by `network_id`. The `socket_fd` should be the duplicate of the
+  // fd that the caller process actually keeps.
+  void TagSocket(int network_id,
+                 base::ScopedFD socket_fd,
+                 base::OnceCallback<void(bool success)> callback);
 
  private:
   WifiP2PController();
@@ -147,6 +152,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_WIFI_P2P) WifiP2PController
   void OnSetManagerPropertyFailure(const std::string& property_name,
                                    const std::string& error_name,
                                    const std::string& error_message);
+
+  void OnGetManagerProperties(std::optional<base::Value::Dict> properties);
 
   void UpdateP2PCapabilities(const base::Value::Dict& capabilities);
 
