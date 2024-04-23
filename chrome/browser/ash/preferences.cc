@@ -364,6 +364,9 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(
       ::prefs::kNoteTakingAppsLockScreenToastShown);
 
+  registry->RegisterBooleanPref(::prefs::kLockScreenAutoStartOnlineReauth,
+                                false);
+
   registry->RegisterBooleanPref(::prefs::kShowMobileDataNotification, true);
 
   // Initially all existing users would see "What's new" for current version

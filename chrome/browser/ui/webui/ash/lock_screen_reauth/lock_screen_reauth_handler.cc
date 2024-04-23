@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/webui/ash/login/check_passwords_against_cryptohome_helper.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "chromeos/ash/components/login/auth/challenge_response/cert_utils.h"
@@ -48,8 +49,13 @@
 namespace ash {
 namespace {
 
-bool ShouldDoSamlRedirect(const std::string& email) {
-  if (features::IsGaiaReauthEndpointEnabled()) {
+bool ShouldDoSamlRedirect(const std::string& email,
+                          const bool auto_start_reauth) {
+  // TODO(b/335388700): If automatic re-authentication start is configured we
+  // have to skip any user verification notice page. For SAML this is currently
+  // only possible with redirect endpoint. Once reauth endpoint enables this,
+  // remove auto_start_reauth from this function.
+  if (!auto_start_reauth && features::IsGaiaReauthEndpointEnabled()) {
     return false;
   }
 
@@ -200,8 +206,16 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   params.Set("gaiaUrl", gaia_urls.gaia_url().spec());
   params.Set("clientId", gaia_urls.oauth2_chrome_client_id());
 
-  bool do_saml_redirect = ShouldDoSamlRedirect(context.email);
+  const PrefService* prefs =
+      user_manager::UserManager::Get()->GetPrimaryUser()->GetProfilePrefs();
+  bool auto_start_reauth =
+      prefs && prefs->GetBoolean(::prefs::kLockScreenAutoStartOnlineReauth);
+  bool do_saml_redirect =
+      ShouldDoSamlRedirect(context.email, auto_start_reauth);
   params.Set("doSamlRedirect", do_saml_redirect);
+  // If automatic re-authentication start is enabled, user verification notice
+  // page shouldn't be shown to ensure faster user flow.
+  params.Set("showVerificationNotice", do_saml_redirect && !auto_start_reauth);
 
   // Path without the leading slash, as expected by authenticator.js.
   const std::string default_gaia_path =

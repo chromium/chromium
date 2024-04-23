@@ -1,0 +1,15 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "lock_screen_auto_start_online_reauth",
+      "default_value": false,
+      "values_to_test": [
+        false,
+        true
+      ]
+    }
+  }
+]

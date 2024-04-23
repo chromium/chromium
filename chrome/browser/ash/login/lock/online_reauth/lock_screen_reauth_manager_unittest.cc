@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "ash/login/mock_login_screen_client.h"
 #include "ash/public/cpp/reauth_reason.h"
+#include "ash/test/ash_test_helper.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,11 +18,13 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -292,5 +296,53 @@ TEST_F(LockScreenReauthManagerTest, PolicyNotSet) {
   CreateLockScreenReauthManager();
   EXPECT_FALSE(manager_->ShouldPasswordSyncTriggerReauth());
 }
+
+class AutoStartLockScreenReauthManagerTest
+    : public LockScreenReauthManagerTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  void SetUp() override;
+  void TearDown() override;
+
+  std::unique_ptr<ash::MockLoginScreenClient> login_screen_client_;
+  ash::AshTestHelper ash_test_helper_;
+};
+
+void AutoStartLockScreenReauthManagerTest::SetUp() {
+  LockScreenReauthManagerTest::SetUp();
+
+  ash_test_helper_.SetUp();
+  login_screen_client_ = std::make_unique<ash::MockLoginScreenClient>();
+}
+
+void AutoStartLockScreenReauthManagerTest::TearDown() {
+  ash_test_helper_.TearDown();
+  LockScreenReauthManagerTest::TearDown();
+}
+
+TEST_P(AutoStartLockScreenReauthManagerTest,
+       ForceOnlineReauthOnSessionStateChanged) {
+  const bool is_auto_start_enabled = GetParam();
+  primary_profile_->GetPrefs()->SetBoolean(
+      ::prefs::kLockScreenAutoStartOnlineReauth, is_auto_start_enabled);
+  CreateLockScreenReauthManager();
+  manager_->MaybeForceReauthOnLockScreen(
+      ReauthReason::kSamlLockScreenReauthPolicy);
+  LockScreen();
+  EXPECT_CALL(*lock_handler_,
+              SetAuthType(saml_login_account_id1_,
+                          proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
+                          std::u16string()))
+      .Times(1);
+  EXPECT_CALL(*login_screen_client_, ShowGaiaSignin(saml_login_account_id1_))
+      .Times(is_auto_start_enabled);
+  // The following triggers LockScreenReauthManager::OnSessionStateChanged
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AutoStartLockScreenReauthManagerTest,
+                         /*is_auto_start_enabled=*/testing::Bool());
 
 }  // namespace ash

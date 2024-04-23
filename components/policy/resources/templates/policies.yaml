@@ -1255,6 +1255,7 @@ policies:
   1254: ContextualGoogleIntegrationsEnabled
   1255: ContextualGoogleIntegrationsConfiguration
   1256: PdfViewerOutOfProcessIframeEnabled
+  1257: LockScreenAutoStartOnlineReauth
 atomic_groups:
   1: Homepage
   2: RemoteAccess

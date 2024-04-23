@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/reauth_reason.h"
+#include "ash/shell.h"
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -21,6 +23,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/auth/auth_session_authenticator.h"
 #include "chromeos/ash/components/login/auth/password_update_flow.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
@@ -120,9 +123,16 @@ void LockScreenReauthManager::OnSessionStateChanged() {
 }
 
 void LockScreenReauthManager::ForceOnlineReauth() {
+  const auto account_id = primary_user_->GetAccountId();
   screenlock_bridge_->lock_handler()->SetAuthType(
-      primary_user_->GetAccountId(),
-      proximity_auth::mojom::AuthType::ONLINE_SIGN_IN, u"");
+      account_id, proximity_auth::mojom::AuthType::ONLINE_SIGN_IN, u"");
+
+  const bool auto_start_reauth = primary_profile_->GetPrefs()->GetBoolean(
+      ::prefs::kLockScreenAutoStartOnlineReauth);
+  if (auto_start_reauth) {
+    Shell::Get()->login_screen_controller()->ShowGaiaSignin(
+        /*prefilled_account=*/account_id);
+  }
 }
 
 void LockScreenReauthManager::ResetOnlineReauth() {

@@ -264,7 +264,7 @@ class LockReauth extends LockReauthBase {
     this.email_ = data.email;
     this.isDefaultSsoProvider = data.doSamlRedirect;
     this.isSaml_ = this.isDefaultSsoProvider;
-    if (data['doSamlRedirect']) {
+    if (data.showVerificationNotice) {
       this.isVerifyUser_ = true;
     } else {
       this.doGaiaRedirect_();

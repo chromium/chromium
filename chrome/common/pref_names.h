@@ -592,6 +592,10 @@ inline constexpr char kNoteTakingAppsLockScreenToastShown[] =
 inline constexpr char kRestoreLastLockScreenNote[] =
     "settings.restore_last_lock_screen_note";
 
+// Automatically open online re-authentication window on the lock screen.
+inline constexpr char kLockScreenAutoStartOnlineReauth[] =
+    "lock_screen_auto_start_online_reauth";
+
 // A boolean pref indicating whether user activity has been observed in the
 // current session already. The pref is used to restore information about user
 // activity after browser crashes.

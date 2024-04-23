@@ -2133,6 +2133,7 @@ chromium-metrics-reviews@google.com.
   <int value="1254" label="ContextualGoogleIntegrationsEnabled"/>
   <int value="1255" label="ContextualGoogleIntegrationsConfiguration"/>
   <int value="1256" label="PdfViewerOutOfProcessIframeEnabled"/>
+  <int value="1257" label="LockScreenAutoStartOnlineReauth"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
