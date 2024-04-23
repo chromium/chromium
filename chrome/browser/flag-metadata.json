@@ -6663,7 +6663,7 @@
   {
     "name": "password-suggestion-bottom-sheet-v2",
     "owners": ["atsvirchkova@google.com", "vasilii@chromium.org", "derinel@google.com"],
-    "expiry_milestone": 125
+    "expiry_milestone": 128
   },
   {
     "name": "pcie-billboard-notification",
