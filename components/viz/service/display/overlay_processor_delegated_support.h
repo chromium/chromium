@@ -37,6 +37,7 @@ enum class DelegationStatus {
   kCompositedCandidateQuadMaterial = 14,
   kCompositedCandidateBufferFormat = 15,
   kCompositedCandidateNearFilter = 16,
+  // NOTE: DO NOT USE. kCompositedCandidateNotSharedImage has been deprecated.
   kCompositedCandidateNotSharedImage = 17,
   kCompositedCandidateMaskFilter = 18,
   kCompositedCandidateTransformCantClip = 19,

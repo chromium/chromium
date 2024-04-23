@@ -690,10 +690,6 @@ OverlayCandidate::CandidateStatus OverlayCandidateFactory::FromTextureQuad(
     }
 #endif
 
-    // SkiaRenderer requires overlays to be backed by SharedImages.
-    if (!candidate.mailbox.IsSharedImage())
-      return CandidateStatus::kFailNotSharedImage;
-
     candidate.has_rounded_display_masks =
         !quad->rounded_display_masks_info.IsEmpty();
   }

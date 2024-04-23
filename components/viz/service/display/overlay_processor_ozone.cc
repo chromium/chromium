@@ -444,10 +444,6 @@ bool OverlayProcessorOzone::SetNativePixmapForCandidate(
     const gpu::Mailbox& mailbox,
     bool is_primary) {
   DCHECK(shared_image_interface_);
-
-  if (!mailbox.IsSharedImage())
-    return false;
-
   scoped_refptr<gfx::NativePixmap> native_pixmap =
       shared_image_interface_->GetNativePixmap(mailbox);
 

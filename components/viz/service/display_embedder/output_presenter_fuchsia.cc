@@ -118,7 +118,7 @@ void OutputPresenterFuchsia::ScheduleOverlayPlane(
   if (!next_frame_)
     next_frame_.emplace();
 
-  DCHECK(overlay_plane_candidate.mailbox.IsSharedImage());
+  CHECK(overlay_plane_candidate.mailbox.IsSharedImage());
   auto pixmap = access ? access->GetNativePixmap() : nullptr;
 
   if (!pixmap) {

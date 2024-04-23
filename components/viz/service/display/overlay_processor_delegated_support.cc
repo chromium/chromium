@@ -98,9 +98,6 @@ TryPromoteDrawQuadForDelegation(
       case OverlayCandidate::CandidateStatus::kFailNearFilter:
         return base::unexpected(
             DelegationStatus::kCompositedCandidateNearFilter);
-      case OverlayCandidate::CandidateStatus::kFailNotSharedImage:
-        return base::unexpected(
-            DelegationStatus::kCompositedCandidateNotSharedImage);
       case OverlayCandidate::CandidateStatus::kFailMaskFilterNotSupported:
         return base::unexpected(
             DelegationStatus::kCompositedCandidateMaskFilter);

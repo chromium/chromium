@@ -375,8 +375,9 @@ SkiaOutputDeviceBufferQueue::GetOrCreateOverlayData(const gpu::Mailbox& mailbox,
   if (is_existing)
     *is_existing = false;
 
-  if (!mailbox.IsSharedImage())
+  if (mailbox.IsZero()) {
     return nullptr;
+  }
 
   auto it = overlays_.find(mailbox);
   if (it != overlays_.end()) {
