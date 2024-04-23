@@ -2395,6 +2395,15 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.SpeechError"
+    enum="ReadAnythingSpeechError" expires_after="2025-02-28">
+  <owner>lwinston@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records when a speech error event is captured with Read Anything Read Aloud.
+  </summary>
+</histogram>
+
 <histogram
     name="Accessibility.ReadAnything.TimeFromEntryTriggeredToContentLoaded"
     units="ms" expires_after="2024-09-30">

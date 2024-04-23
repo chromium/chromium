@@ -800,6 +800,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                  &ReadAnythingAppController::GetDisplayNameForLocale)
       .SetMethod("logMetric",
                  &ReadAnythingAppController::LogUmaHistogramLongTimes)
+      .SetMethod("logSpeechError",
+                 &ReadAnythingAppController::LogSpeechErrorEvent)
       .SetMethod("sendGetVoicePackInfoRequest",
                  &ReadAnythingAppController::SendGetVoicePackInfoRequest)
       .SetMethod("sendInstallVoicePackRequest",
@@ -1558,4 +1560,24 @@ int ReadAnythingAppController::GetAccessibleBoundary(const std::u16string& text,
 void ReadAnythingAppController::LogUmaHistogramLongTimes(int64_t time,
                                                          std::string metric) {
   base::UmaHistogramTimes(metric, base::Milliseconds(time));
+}
+
+void ReadAnythingAppController::LogSpeechErrorEvent(std::string error_code) {
+  std::optional<ReadAnythingSpeechError> error;
+  if (error_code == "text-too-long") {
+    error = ReadAnythingSpeechError::kTextTooLong;
+  } else if (error_code == "voice-unavailable") {
+    error = ReadAnythingSpeechError::kVoiceUnavailabe;
+  } else if (error_code == "language-unavailable") {
+    error = ReadAnythingSpeechError::kLanguageUnavailable;
+  } else if (error_code == "invalid-argument") {
+    error = ReadAnythingSpeechError::kInvalidArgument;
+  }
+
+  // There are more error code possibilities, but right now, we only care
+  // about tracking the above error codes.
+  if (error.has_value()) {
+    base::UmaHistogramEnumeration(
+        string_constants::kReadAnythingSpeechErrorHistogramName, error.value());
+  }
 }

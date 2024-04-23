@@ -1375,6 +1375,13 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Letter spacing change"/>
 </enum>
 
+<enum name="ReadAnythingSpeechError">
+  <int value="0" label="Text too long"/>
+  <int value="1" label="Language unavailable"/>
+  <int value="2" label="Voice unavailable"/>
+  <int value="3" label="Invalid argument"/>
+</enum>
+
 <enum name="ReaderModeEntryPoint">
   <int value="0" label="Omnibox icon"/>
   <int value="1" label="Menu option"/>

@@ -23,6 +23,7 @@ extern const char kEmptyStateHistogramName[];
 extern const char kLanguageHistogramName[];
 extern const char kPDFPageStart[];
 extern const char kPDFPageEnd[];
+extern const char kReadAnythingSpeechErrorHistogramName[];
 
 }  // namespace string_constants
 
@@ -103,6 +104,17 @@ enum class ReadAnythingSettingsChange {
   kLineHeightChange = 3,
   kLetterSpacingChange = 4,
   kMaxValue = kLetterSpacingChange,
+};
+
+// Enum for logging when a speech error event occurs.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ReadAnythingSpeechError {
+  kTextTooLong = 0,
+  kLanguageUnavailable = 1,
+  kVoiceUnavailabe = 2,
+  kInvalidArgument = 3,
+  kMaxValue = kInvalidArgument,
 };
 
 // Enum for logging the user-chosen font.

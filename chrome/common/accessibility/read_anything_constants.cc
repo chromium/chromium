@@ -27,6 +27,8 @@ const char kScrollEventHistogramName[] =
     "Accessibility.ReadAnything.ScrollEvent";
 const char kEmptyStateHistogramName[] = "Accessibility.ReadAnything.EmptyState";
 const char kLanguageHistogramName[] = "Accessibility.ReadAnything.Language";
+const char kReadAnythingSpeechErrorHistogramName[] =
+    "Accessibility.ReadAnything.SpeechError";
 const char kPDFPageEnd[] = "End of extracted text";
 const char kPDFPageStart[] = "Start of extracted text";
 

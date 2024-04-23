@@ -307,6 +307,8 @@ class ReadAnythingAppController
   // Helper for logging UmaHistograms based on times recorded in WebUI.
   void LogUmaHistogramLongTimes(int64_t time, std::string metric);
 
+  void LogSpeechErrorEvent(std::string error_code);
+
   content::RenderFrame* GetRenderFrame();
 
   const blink::LocalFrameToken frame_token_;
