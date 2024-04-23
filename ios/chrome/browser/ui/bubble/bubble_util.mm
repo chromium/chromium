@@ -343,7 +343,7 @@ CGFloat FloatingArrowAlignmentOffset(CGFloat bounding_width,
                                      BubbleAlignment alignment) {
   CGFloat alignment_offset;
   BOOL is_rtl = base::i18n::IsRTL();
-  // TODO(crbug.com/1467873): Leading and trailing direction.
+  // TODO(crbug.com/40276959): Leading and trailing direction.
   switch (alignment) {
     case BubbleAlignmentTopOrLeading:
       alignment_offset =

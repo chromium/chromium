@@ -131,7 +131,7 @@ sessions::LiveTab* LiveTabContextBrowserAgent::AddRestoredTab(
     const sessions::tab_restore::Tab& tab,
     int tab_index,
     bool select) {
-  // TODO(crbug.com/661636): Handle tab-switch animation somehow...
+  // TODO(crbug.com/40491734): Handle tab-switch animation somehow...
   web_state_list_->InsertWebState(
       session_util::CreateWebStateWithNavigationEntries(
           browser_state_, tab.normalized_navigation_index(), tab.navigations),

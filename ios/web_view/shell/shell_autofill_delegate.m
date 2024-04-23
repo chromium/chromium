@@ -89,7 +89,7 @@
                           frameID:(NSString*)frameID
                             value:(NSString*)value
                     userInitiated:(BOOL)userInitiated {
-  // TODO(crbug.com/1323932): Fetching suggestions has an important side effect
+  // TODO(crbug.com/40224850): Fetching suggestions has an important side effect
   // of calling PasswordFormManager::UpdateStateOnUserInput. This will ensure
   // that the typed information can be remembered during the save dialogue.
   // Make this method a no-op once the bug is fixed.

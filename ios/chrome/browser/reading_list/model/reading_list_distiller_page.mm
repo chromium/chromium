@@ -194,8 +194,8 @@ void ReadingListDistillerPage::DelayedOnLoadURLDone(int delayed_task_id) {
   }
   if (IsWikipediaPage()) {
     // Workaround for Wikipedia pages.
-    // TODO(crbug.com/647667): remove workaround once DOM distiller handle this
-    // case.
+    // TODO(crbug.com/40485232): remove workaround once DOM distiller handle
+    // this case.
     HandleWikipediaPage();
     return;
   }

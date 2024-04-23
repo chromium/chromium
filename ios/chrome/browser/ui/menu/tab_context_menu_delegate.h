@@ -25,7 +25,7 @@ class WebStateID;
 
 // Tells the delegate to trigger the URL sharing flow for the given `URL` and
 // `title`, with the origin `view` representing the UI component for that URL.
-// TODO(crbug.com/1196956): Investigate removing `view` as a parameter.
+// TODO(crbug.com/40759896): Investigate removing `view` as a parameter.
 - (void)shareURL:(const GURL&)URL
            title:(NSString*)title
         scenario:(SharingScenario)scenario

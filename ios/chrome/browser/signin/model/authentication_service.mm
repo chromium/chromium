@@ -358,7 +358,7 @@ void AuthenticationService::GrantSyncConsent(
 
   // When sync is disabled by enterprise, sync consent is not removed.
   // Consent can be skipped.
-  // TODO(crbug.com/1259054): Remove this if once the sync consent is removed
+  // TODO(crbug.com/40797392): Remove this if once the sync consent is removed
   // when enteprise disable sync.
   if (!HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
     const signin::PrimaryAccountMutator::PrimaryAccountError error =

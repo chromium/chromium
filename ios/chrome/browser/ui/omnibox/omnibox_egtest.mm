@@ -91,7 +91,7 @@ void DefocusOmnibox() {
 
 // Taps the pre edit text in the omnibox.
 void TapOnPreEditTextInOmnibox() {
-  // TODO(crbug.com/1442458): Find a better way to tap on the selected url.
+  // TODO(crbug.com/40266963): Find a better way to tap on the selected url.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_tapAtPoint(CGPointMake(kOmniboxTextFieldOffsetX,
                                                 kOmniboxTextFieldMidY))];
@@ -337,7 +337,7 @@ void FocusFakebox() {
 // Tests that the XClientData header is sent when navigating to
 // https://google.com through the omnibox.
 - (void)testXClientData {
-  // TODO(crbug.com/1120723) This test is flakily because of a DCHECK in
+  // TODO(crbug.com/40145916) This test is flakily because of a DCHECK in
   // ios/web.  Clearing browser history first works around the problem, but
   // shouldn't be necessary otherwise.  Remove once the bug is fixed.
   [ChromeEarlGrey clearBrowsingHistory];
@@ -458,7 +458,7 @@ void FocusFakebox() {
 
 // Tests that Search Copied Image menu button is shown with an image in the
 // clipboard and is starting an image search.
-// TODO(crbug.com/1476912): Fix flakiness and re-enable.
+// TODO(crbug.com/40928559): Fix flakiness and re-enable.
 - (void)DISABLED_testOmniboxMenuPasteImageToSearch {
   [self copyImageIntoClipboard];
 
@@ -1212,7 +1212,7 @@ void FocusFakebox() {
 #define MAYBE_testEmptyOmnibox DISABLED_testEmptyOmnibox
 #endif
 - (void)MAYBE_testEmptyOmnibox {
-  // TODO(crbug.com/1209342): this test fails on iOS 15 devices.
+  // TODO(crbug.com/40766498): this test fails on iOS 15 devices.
   if (!base::ios::IsRunningOnIOS16OrLater()) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.");
   }
@@ -1398,7 +1398,7 @@ void FocusFakebox() {
 #define MAYBE_testNoDefaultMatch DISABLED_testNoDefaultMatch
 #endif
 - (void)MAYBE_testNoDefaultMatch {
-  // TODO(crbug.com/1253345) This test fails on iOS 15 devices.
+  // TODO(crbug.com/40199144) This test fails on iOS 15 devices.
   if (!base::ios::IsRunningOnIOS16OrLater()) {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 15.");
   }

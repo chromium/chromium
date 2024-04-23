@@ -137,7 +137,7 @@
   if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
     // Setting WKWebView frame can mistakenly reset contentOffset. Change it
     // back to the initial value if necessary.
-    // TODO(crbug.com/645857): Remove this workaround once WebKit bug is
+    // TODO(crbug.com/40484457): Remove this workaround once WebKit bug is
     // fixed.
     if (self.compensateFrameChangeByOffset &&
         [scrollViewProxy contentOffset].y != newContentOffset.y) {

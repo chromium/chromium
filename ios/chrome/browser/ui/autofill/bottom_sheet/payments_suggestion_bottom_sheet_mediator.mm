@@ -315,7 +315,7 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
 // that FormSuggestionController's "_provider" member is set, which happens
 // within [FormSuggestionController onSuggestionsReady:provider:], before the
 // credit card suggestion is selected.
-// TODO(crbug.com/1479175): Remove this dependency on suggestions.
+// TODO(crbug.com/40929827): Remove this dependency on suggestions.
 - (void)setupSuggestionsProvider {
   web::WebState* activeWebState = _webStateList->GetActiveWebState();
   if (!activeWebState) {

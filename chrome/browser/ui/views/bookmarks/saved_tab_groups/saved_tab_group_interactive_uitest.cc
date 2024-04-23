@@ -395,7 +395,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       WaitForShow(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem));
 }
 
-// TODO(crbug.com/1487362): Deflake this test before enabling
+// TODO(crbug.com/40934084): Deflake this test before enabling
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_MoveGroupToNewWindowFromButtonMenu \
   DISABLED_MoveGroupToNewWindowFromButtonMenu

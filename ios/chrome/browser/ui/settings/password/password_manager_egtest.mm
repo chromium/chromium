@@ -1770,7 +1770,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // Test that when user types text in search field, passwords and blocked
 // items are filtered out and "save passwords" switch is removed.
 - (void)testSearchPasswords {
-  // TODO(crbug.com/1067818): Test doesn't pass on iPad device or simulator.
+  // TODO(crbug.com/40683159): Test doesn't pass on iPad device or simulator.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(
         @"This test doesn't pass on iPad device or simulator.");
@@ -1814,7 +1814,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 // Test search and delete all passwords and blocked items.
-// TODO(crbug.com/1441783): Flaky.
+// TODO(crbug.com/40910165): Flaky.
 - (void)DISABLED_testSearchAndDeleteAllPasswords {
   SaveExamplePasswordForms();
   SaveExampleBlockedFormsToProfileStore();
@@ -2215,7 +2215,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 // Tests the add password flow from the toolbar button.
-// TODO(crbug.com/1411944): Flaky, please re-enable once fixed.
+// TODO(crbug.com/40255054): Flaky, please re-enable once fixed.
 - (void)DISABLED_testAddNewPasswordCredential {
   OpenPasswordManager();
 

@@ -381,7 +381,7 @@ void OmahaService::CheckNow(OneOffCallback callback) {
   if (OmahaService::IsEnabled()) {
     OmahaService* service = GetInstance();
     DUMP_WILL_BE_CHECK(service->started_);
-    // TODO(crbug.com/1476112): Remove when early callers are removed.
+    // TODO(crbug.com/40070635): Remove when early callers are removed.
     if (!service->started_) {
       return;
     }

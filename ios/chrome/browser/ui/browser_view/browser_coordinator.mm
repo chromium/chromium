@@ -839,7 +839,7 @@ enum class ToolbarKind {
   [self.contextMenuProvider stop];
   self.contextMenuProvider = nil;
 
-  // TODO(crbug.com/1415244): Remove when BVC will no longer handle commands.
+  // TODO(crbug.com/40256480): Remove when BVC will no longer handle commands.
   [self.dispatcher stopDispatchingToTarget:self.viewController];
   [self.viewController shutdown];
   _viewController = nil;
@@ -903,10 +903,10 @@ enum class ToolbarKind {
   _keyCommandsProvider.browserCoordinatorHandler =
       HandlerForProtocol(_dispatcher, BrowserCoordinatorCommands);
 
-  // TODO(crbug.com/1494417): This can't use HandlerForProtocol because dispatch
-  // for BookmarksCommands is set up when the tab grid coordinator starts, which
-  // is after this is called, so for now use static_cast until that can be
-  // untangled.
+  // TODO(crbug.com/40937114): This can't use HandlerForProtocol because
+  // dispatch for BookmarksCommands is set up when the tab grid coordinator
+  // starts, which is after this is called, so for now use static_cast until
+  // that can be untangled.
   _keyCommandsProvider.bookmarksHandler =
       static_cast<id<BookmarksCommands>>(_dispatcher);
 
@@ -1814,7 +1814,7 @@ enum class ToolbarKind {
 - (void)showRecentTabs {
   [IntentDonationHelper donateIntent:IntentType::kOpenRecentTabs];
 
-  // TODO(crbug.com/825431): If BVC's clearPresentedState is ever called (such
+  // TODO(crbug.com/40568563): If BVC's clearPresentedState is ever called (such
   // as in tearDown after a failed egtest), then this coordinator is left in a
   // started state even though its corresponding VC is no longer on screen.
   // That causes issues when the coordinator is started again and we destroy the
@@ -2958,7 +2958,7 @@ enum class ToolbarKind {
 }
 
 #pragma mark - SnapshotGeneratorDelegate methods
-// TODO(crbug.com/1272491): Refactor SnapshotGenerator into (probably) a
+// TODO(crbug.com/40206055): Refactor SnapshotGenerator into (probably) a
 // mediator with a narrowly-defined API to get UI-layer information from the
 // BVC.
 

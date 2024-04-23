@@ -95,7 +95,7 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  // TODO(crbug.com/1246931): refactor to call setIncognitoBrowser from this
+  // TODO(crbug.com/40789579): refactor to call setIncognitoBrowser from this
   // function.
   _reauthAgent =
       [IncognitoReauthSceneAgent agentFromScene:self.browser->GetSceneState()];

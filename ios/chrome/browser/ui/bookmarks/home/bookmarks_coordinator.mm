@@ -409,7 +409,7 @@ enum class PresentedState {
         base::apple::ObjCCastStrict<BookmarksHomeViewController>(controller);
     [bookmarksHomeViewController shutdown];
   }
-  // TODO(crbug.com/940856): Make sure navigaton
+  // TODO(crbug.com/40617797): Make sure navigaton
   // controller doesn't keep any controllers. Without
   // this there's a memory leak of (almost) every BHVC
   // the user visits.

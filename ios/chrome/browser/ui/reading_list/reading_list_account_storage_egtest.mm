@@ -699,7 +699,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [[EarlGrey selectElementWithMatcher:ReadingListMarkAsReadButton()]
       performAction:grey_tap()];
   // Wait one second since the reading list items may update multiple times.
-  // TODO(crbug.com/1445875): Check if this delay can be replaced by the use of
+  // TODO(crbug.com/40268339): Check if this delay can be replaced by the use of
   // waitForUIElementToAppearWithMatcher instead.
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
   // Verify that the unread and the read sections headers are visible.

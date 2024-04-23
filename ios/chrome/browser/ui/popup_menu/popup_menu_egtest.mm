@@ -116,7 +116,7 @@ const char kPDFURL[] = "http://ios/testing/data/http_server_files/testpage.pdf";
 // Tests that the menu is opened and closed correctly, whatever the current
 // device type is.
 - (void)testOpenAndCloseToolsMenu {
-  // TODO(crbug.com/1289776): This test only fails on ipad bots with
+  // TODO(crbug.com/40817696): This test only fails on ipad bots with
   // multitasking enabled (e.g. compact width).
   if ([ChromeEarlGrey isNewOverflowMenuEnabled] &&
       [ChromeEarlGrey isIPadIdiom] && [ChromeEarlGrey isCompactWidth]) {

@@ -146,7 +146,7 @@
         break;
     }
   }
-  // TODO(crbug.com/1462133): Implement the incognito grid or content visible
+  // TODO(crbug.com/40921760): Implement the incognito grid or content visible
   // notification.
 }
 

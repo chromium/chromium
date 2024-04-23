@@ -745,7 +745,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
               containsObject:self.passwords[indexPath.section].username]) {
         [self.usernamesWithMoveToAccountOfferRecorded
             addObject:self.passwords[indexPath.section].username];
-        // TODO(crbug.com/1392747): Use a common function for recording sites.
+        // TODO(crbug.com/40880533): Use a common function for recording sites.
         base::UmaHistogramEnumeration(
             "PasswordManager.AccountStorage.MoveToAccountStoreFlowOffered",
             password_manager::metrics_util::MoveToAccountStoreTrigger::

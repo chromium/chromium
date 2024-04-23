@@ -208,7 +208,7 @@ net::NetLog* ApplicationContext::GetNetLog() {
 component_updater::ComponentUpdateService*
 ApplicationContext::GetComponentUpdateService() {
   if (!component_updater_) {
-    // TODO(crbug.com/1298671): Brand code should be configurable.
+    // TODO(crbug.com/40215633): Brand code should be configurable.
     std::string brand_code =
         ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET ? "APLB"
                                                                    : "APLA";

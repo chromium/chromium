@@ -52,7 +52,7 @@ class PrefService;
 // in //chrome/browser that is used for non-iOS. It cannot be directly used due
 // to the platform differences of the common data structures -
 // NavigationContext vs NavigationHandle, BrowserState vs Profile, etc.
-// TODO(crbug.com/1240907): Add support for clearing the hints when browsing
+// TODO(crbug.com/40785700): Add support for clearing the hints when browsing
 // data is cleared.
 class OptimizationGuideService
     : public KeyedService,

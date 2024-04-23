@@ -163,7 +163,7 @@ id<GREYMatcher> ProfileTableViewButtonMatcher() {
 // Tests that the input accessory view continues working after a picker is
 // present.
 - (void)testInputAccessoryBarIsPresentAfterPickers {
-  // TODO(crbug.com/1488889): Test fails on iPhone.
+  // TODO(crbug.com/40934806): Test fails on iPhone.
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPhone.");
   }
@@ -260,7 +260,7 @@ id<GREYMatcher> ProfileTableViewButtonMatcher() {
 // Tests the mediator stops observing objects when the incognito BVC is
 // destroyed. Waiting for dealloc was causing a race condition with the
 // autorelease pool, and some times a DCHECK will be hit.
-// TODO(crbug.com/1227124) Flaky test.
+// TODO(crbug.com/40776865) Flaky test.
 - (void)DISABLED_testOpeningIncognitoTabsDoNotLeak {
   const GURL URL = self.testServer->GetURL(kFormHTMLFile);
   std::string webViewText("Profile form");
@@ -333,7 +333,7 @@ id<GREYMatcher> ProfileTableViewButtonMatcher() {
 }
 
 // Tests that the manual fallback view is not duplicated after incognito.
-// TODO(crbug.com/1228283): Disabled due to flakiness.
+// TODO(crbug.com/40777592): Disabled due to flakiness.
 - (void)DISABLED_testReturningFromIncognitoDoesNotDuplicatesManualFallbackMenu {
   // Add the profile to use for verification.
   [AutofillAppInterface saveExampleProfile];

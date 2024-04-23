@@ -302,7 +302,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)updateFollowedWebSites {
-  // TODO(crbug.com/1430863): implement a timeout feature.
+  // TODO(crbug.com/40263268): implement a timeout feature.
 
   // Remove the spinner.
   [self stopLoadingIndicatorWithCompletion:nil];

@@ -196,7 +196,7 @@ AutocompleteProviderClientImpl::GetAutocompleteScoringModelService() const {
 
 OnDeviceTailModelService*
 AutocompleteProviderClientImpl::GetOnDeviceTailModelService() const {
-  // TODO(crbug.com/1372112): implement the service factory for iOS.
+  // TODO(crbug.com/40241602): implement the service factory for iOS.
   return nullptr;
 }
 

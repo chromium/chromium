@@ -179,7 +179,7 @@ class NavigationManager {
   // Registers a callback to be run when session restoration is completed.
   // If there is no in-progress session restoration, the callback is run
   // immediately.
-  // TODO(crbug.com/904502): This API is only needed for clearing cookies.
+  // TODO(crbug.com/40602044): This API is only needed for clearing cookies.
   // Remove after //ios/web exposes a proper cookie clearing API.
   virtual void AddRestoreCompletionCallback(base::OnceClosure callback) = 0;
 };

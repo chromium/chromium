@@ -312,7 +312,7 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 // Tests password generation flow.
-// TODO(crbug.com/1423865): The test fails on simulator.
+// TODO(crbug.com/40260214): The test fails on simulator.
 #if TARGET_IPHONE_SIMULATOR
 #define MAYBE_testPasswordGeneration FLAKY_testPasswordGeneration
 #else

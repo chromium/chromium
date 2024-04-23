@@ -31,7 +31,8 @@
 @property(readonly, strong) NSString* learnMoreLinkText;
 
 // The legal message from the payment server.
-// TODO(crbug.com/1485376): Rename SaveCardMessageWithLinks to LegalMessageLine.
+// TODO(crbug.com/40282545): Rename SaveCardMessageWithLinks to
+// LegalMessageLine.
 @property(readonly, strong)
     NSArray<SaveCardMessageWithLinks*>* paymentServerLegalMessageLines;
 

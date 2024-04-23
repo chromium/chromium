@@ -95,7 +95,7 @@ std::unique_ptr<KeyedService> BuildSyncService(web::BrowserState* context) {
       std::make_unique<syncer::SyncServiceImpl>(std::move(init_params));
   sync_service->Initialize();
 
-  // TODO(crbug.com/1400663): Remove the workaround below once
+  // TODO(crbug.com/40250371): Remove the workaround below once
   // PrivacySandboxSettingsFactory correctly declares its KeyedServices
   // dependencies.
   if (history::IsSyncSegmentsDataEnabled()) {

@@ -261,7 +261,7 @@ void ShoppingPersistedDataTabHelper::ParseProto(
     return;
   }
 
-  // TODO(crbug.com/1254900) Filter out non-qualifying price drops (< 10% or
+  // TODO(crbug.com/40794608) Filter out non-qualifying price drops (< 10% or
   // < 2 units).
   payments::CurrencyFormatter* currencyFormatter =
       GetCurrencyFormatter(product_update.old_price().currency_code(),

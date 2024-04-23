@@ -13,7 +13,7 @@
 
 // A minimal implementation of WebLocationBar. Designed to work
 // with LocationBarMediator and LocationBarCoordinator.
-// TODO(crbug.com/818641): downgrade from WebLocationBar subclass straight to
+// TODO(crbug.com/40565667): downgrade from WebLocationBar subclass straight to
 // WebLocationBar once OmniboxViewIOS doesn't need it.
 class WebLocationBarImpl : public WebLocationBar {
  public:

@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-// TODO(crbug.com/1045560): Refactor this class to not use
+// TODO(crbug.com/40670317): Refactor this class to not use
 // BrowserProviderInterface when possible.
 @protocol BrowserProviderInterface;
 

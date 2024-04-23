@@ -38,7 +38,7 @@ class OptimizationGuideServiceFactory : public BrowserStateKeyedServiceFactory {
   OptimizationGuideServiceFactory& operator=(
       const OptimizationGuideServiceFactory&) = delete;
 
-  // TODO(crbug.com/1232860): Add handling for Incognito browsers. For now, the
+  // TODO(crbug.com/40191282): Add handling for Incognito browsers. For now, the
   // default behavior of a null service for incognito browsers is ok.
   //
   // BrowserStateKeyedServiceFactory:

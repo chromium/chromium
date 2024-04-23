@@ -21,7 +21,7 @@
 // not shown.
 // The VC (i.e. Inactive Tabs UI) is created and shown when calling `show`, and
 // hidden and destroyed when calling `hide`. This can be called multiple times.
-// TODO(crbug.com/1448025): Keep the scrolling position between showings.
+// TODO(crbug.com/40914073): Keep the scrolling position between showings.
 @interface InactiveTabsCoordinator : ChromeCoordinator
 
 // The GridCommands receiver handling "Close All"-related commands.

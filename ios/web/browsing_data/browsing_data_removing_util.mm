@@ -70,7 +70,7 @@ void ClearBrowsingData(BrowserState* browser_state,
   }
 
   if (IsRemoveDataMaskSet(types, ClearBrowsingDataMask::kRemoveCookies)) {
-    // TODO(crbug.com/661630): Create a dummy WKWebView to allow the APO
+    // TODO(crbug.com/40491729): Create a dummy WKWebView to allow the APO
     // -[WKWebsiteDataStore removeDataOfType:] to access the cookie store
     // and clear cookies. This is a workaround that for the WebKit bug
     // https://bugs.webkit.org/show_bug.cgi?id=149078 and needs to be

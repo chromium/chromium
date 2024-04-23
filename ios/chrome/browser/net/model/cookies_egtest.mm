@@ -105,7 +105,8 @@ std::string IncognitoCookiePath() {
 
   // Work around a TabGrid bug by opening and closing the grid before
   // proceeding.
-  // TODO(crbug.com/1350742): Fix the underlying bug and remove this workaround.
+  // TODO(crbug.com/40856675): Fix the underlying bug and remove this
+  // workaround.
   [ChromeEarlGrey showTabSwitcher];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
       performAction:grey_tap()];

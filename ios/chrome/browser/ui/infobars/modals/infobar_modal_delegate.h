@@ -10,7 +10,7 @@
 #include "base/ios/block_types.h"
 
 // Delegate to handle InfobarModal actions.
-// TODO(crbug.com/1041574): Update this protocol to be tied with an infobar
+// TODO(crbug.com/40668000): Update this protocol to be tied with an infobar
 // modal view controller rather than plain id types.
 @protocol InfobarModalDelegate
 

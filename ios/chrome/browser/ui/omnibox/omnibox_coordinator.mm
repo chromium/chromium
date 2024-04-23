@@ -83,7 +83,7 @@
 @end
 
 @implementation OmniboxCoordinator {
-  // TODO(crbug.com/818636): use a slimmer subclass of OmniboxView,
+  // TODO(crbug.com/40565663): use a slimmer subclass of OmniboxView,
   // OmniboxPopupViewSuggestionsDelegate instead of OmniboxViewIOS.
   std::unique_ptr<OmniboxViewIOS> _editView;
 

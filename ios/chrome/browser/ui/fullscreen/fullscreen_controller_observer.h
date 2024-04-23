@@ -48,7 +48,7 @@ class FullscreenControllerObserver : public base::CheckedObserver {
                                      FullscreenAnimator* animator) {}
 
   // Invoked before the FullscreenController service is shut down.
-  // TODO(crbug.com/1046022): Rename to FullscreenControllerDestroyed.
+  // TODO(crbug.com/40670578): Rename to FullscreenControllerDestroyed.
   virtual void FullscreenControllerWillShutDown(
       FullscreenController* controller) {}
 

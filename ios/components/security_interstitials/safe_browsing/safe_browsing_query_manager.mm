@@ -224,7 +224,7 @@ void SafeBrowsingQueryManager::UrlCheckerClient::OnCheckComplete(
   DCHECK(url_checker);
 
   auto it = active_url_checkers_.find(url_checker);
-  // TODO(crbug.com/1057253): consider removing this PostTask once
+  // TODO(crbug.com/40677290): consider removing this PostTask once
   // kSafeBrowsingOnUIThread launches, if all the callers are ok with the
   // callback being run synchronously sometimes.
   web::GetUIThreadTaskRunner({})->PostTask(

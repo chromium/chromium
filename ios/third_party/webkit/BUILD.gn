@@ -55,7 +55,7 @@ if (_build_ios_webkit || _build_mac_webkit) {
         # here, use the top-50 most frequently-changed files (excluding
         # ChangeLogs, which are now deprecated) as a proxy to determine whether or
         # not source files have changed.
-        # TODO(crbug.com/934252): This will not pick up local edits to source
+        # TODO(crbug.com/40614900): This will not pick up local edits to source
         # files, so find a way to properly rebuild when those change.
         "src/LayoutTests/TestExpectations",
         "src/Source/WebCore/WebCore.xcodeproj/project.pbxproj",
@@ -113,7 +113,7 @@ if (_build_ios_webkit || _build_mac_webkit) {
 
       args = invoker.args
 
-      # TODO(crbug.com/1329824): "-j 8" restricts xcodebuild to eight simultaneous
+      # TODO(crbug.com/40842823): "-j 8" restricts xcodebuild to eight simultaneous
       # jobs. This is intended to prevent overloading the machine, because ninja
       # will already be spawning a large number of jobs in parallel with
       # xcodebuild, but it causes the webkit build to run very slowly. Find a way

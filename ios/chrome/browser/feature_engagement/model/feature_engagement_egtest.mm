@@ -117,7 +117,7 @@ void RequestDesktopVersion() {
 // Verifies that the Badged Manual Translate Trigger feature shows.
 - (void)testBadgedTranslateManualTriggerFeatureShows {
   if ([ChromeEarlGrey isNewOverflowMenuEnabled]) {
-    // TODO(crbug.com/1285154): Reenable once this is supported.
+    // TODO(crbug.com/40814816): Reenable once this is supported.
     EARL_GREY_TEST_DISABLED(
         @"New overflow menu does not support translate badge");
   }

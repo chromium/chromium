@@ -260,8 +260,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   [self.fakeToolbar addSubview:self.fakeLocationBar];
 
   // Omnibox, used for animations.
-  // TODO(crbug.com/936811): See if it is possible to share some initialization
-  // code with the real Omnibox.
+  // TODO(crbug.com/40615993): See if it is possible to share some
+  // initialization code with the real Omnibox.
   UIColor* color = [UIColor colorNamed:kTextfieldPlaceholderColor];
   OmniboxContainerView* omnibox =
       [[OmniboxContainerView alloc] initWithFrame:CGRectZero

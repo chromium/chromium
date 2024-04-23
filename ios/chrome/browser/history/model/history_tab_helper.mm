@@ -95,7 +95,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
         url.EqualsIgnoringRef(original_url)) {
       redirects.push_back(referrer_url);
     }
-    // TODO(crbug.com/703872): the redirect chain is not constructed the same
+    // TODO(crbug.com/40511880): the redirect chain is not constructed the same
     // way as desktop so this part needs to be revised.
     redirects.push_back(original_url);
     redirects.push_back(url);
@@ -243,8 +243,8 @@ void HistoryTabHelper::DidFinishNavigation(
   DCHECK(!last_committed_item->GetTimestamp().is_null());
 
   // Do not update the history database for back/forward navigations.
-  // TODO(crbug.com/661667): on iOS the navigation is not currently tagged with
-  // a ui::PAGE_TRANSITION_FORWARD_BACK transition.
+  // TODO(crbug.com/40491761): on iOS the navigation is not currently tagged
+  // with a ui::PAGE_TRANSITION_FORWARD_BACK transition.
   const ui::PageTransition transition =
       last_committed_item->GetTransitionType();
   if (transition & ui::PAGE_TRANSITION_FORWARD_BACK) {

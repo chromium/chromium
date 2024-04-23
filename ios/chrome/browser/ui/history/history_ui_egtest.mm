@@ -522,7 +522,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Tests clear browsing history.
-// TODO(crbug.com/1408647): Fix flakiness.
+// TODO(crbug.com/40888582): Fix flakiness.
 - (void)DISABLED_testClearBrowsingHistory {
   [self loadTestURLs];
   [self openHistoryPanel];
@@ -747,7 +747,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that the VC can be dismissed by swiping down while its searching.
 - (void)testSwipeDownDismissWhileSearching {
-// TODO(crbug.com/1078165): Test fails on iOS 13+ iPad devices.
+// TODO(crbug.com/40689184): Test fails on iOS 13+ iPad devices.
 #if !TARGET_IPHONE_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"This test fails on iOS 13+ iPad device.");

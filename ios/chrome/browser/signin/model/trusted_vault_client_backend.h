@@ -52,8 +52,8 @@ class TrustedVaultClientBackend : public KeyedService {
 
   // Registers a delegate-like callback that implements device registration
   // verification.
-  // TODO(crbug.com/1497589): device registration verification has been removed,
-  // remove remaining code from TrustedVaultClientBackend.
+  // TODO(crbug.com/40939090): device registration verification has been
+  // removed, remove remaining code from TrustedVaultClientBackend.
   virtual void SetDeviceRegistrationPublicKeyVerifierForUMA(
       VerifierCallback verifier) = 0;
 

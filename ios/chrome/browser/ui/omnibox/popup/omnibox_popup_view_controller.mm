@@ -1094,8 +1094,8 @@ BOOL ShouldDismissKeyboardOnScroll() {
   if (!scrollView.dragging)
     return;
 
-  // TODO(crbug.com/911534): The following call chain ultimately just dismisses
-  // the keyboard, but involves many layers of plumbing, and should be
+  // TODO(crbug.com/40604984): The following call chain ultimately just
+  // dismisses the keyboard, but involves many layers of plumbing, and should be
   // refactored.
   if (self.forwardsScrollEvents)
     [self.delegate autocompleteResultConsumerDidScroll:self];

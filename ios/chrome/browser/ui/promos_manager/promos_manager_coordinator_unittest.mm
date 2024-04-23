@@ -233,5 +233,5 @@ TEST_F(PromosManagerCoordinatorTest, DisplayPromoCallbackUINotAvailableTest) {
   [mockCoordinator verify];
 }
 
-// TODO(crbug.com/1370763): Add unit tests for promoWasDisplayed being
+// TODO(crbug.com/40241101): Add unit tests for promoWasDisplayed being
 // called when promo is displayed.

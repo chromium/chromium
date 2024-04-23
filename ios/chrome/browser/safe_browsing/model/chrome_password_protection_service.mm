@@ -549,7 +549,7 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseLookupEvent(
     RequestOutcome outcome,
     PasswordType password_type,
     const LoginReputationClientResponse* response) {
-  // TODO(crbug.com/1147967): Complete PhishGuard iOS implementation.
+  // TODO(crbug.com/40731022): Complete PhishGuard iOS implementation.
 }
 
 void ChromePasswordProtectionService::MaybeLogPasswordReuseDetectedEvent(

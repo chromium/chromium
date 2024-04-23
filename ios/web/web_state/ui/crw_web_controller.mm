@@ -78,7 +78,7 @@ namespace {
 char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
 }  // namespace
 
-// TODO(crbug.com/1174560): Allow usage of iOS15 interactionState on iOS 14 SDK
+// TODO(crbug.com/40746865): Allow usage of iOS15 interactionState on iOS 14 SDK
 // based builds.
 #if !defined(__IPHONE_15_0) || __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_15_0
 @interface WKWebView (Additions)
@@ -183,7 +183,7 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
 // -------------------
 // The associated NavigationManagerImpl.
 @property(nonatomic, readonly) NavigationManagerImpl* navigationManagerImpl;
-// TODO(crbug.com/692871): Remove these functions and replace with more
+// TODO(crbug.com/40506829): Remove these functions and replace with more
 // appropriate NavigationItem getters.
 // Returns the navigation item for the current page.
 @property(nonatomic, readonly) web::NavigationItemImpl* currentNavItem;

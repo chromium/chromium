@@ -384,7 +384,7 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreEmptySession) {
 
 // Tests that saving a session with web states, then clearing the WebStatelist
 // and then restoring the session will restore the web states correctly.
-// TODO(crbug.com/1433670): The tests are flaky.
+// TODO(crbug.com/40264505): The tests are flaky.
 TEST_F(SessionRestorationBrowserAgentTest, DISABLED_SaveAndRestoreSession) {
   CreateSessionRestorationBrowserAgent();
 

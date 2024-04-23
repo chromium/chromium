@@ -30,7 +30,7 @@ class WebViewScriptMessageHandlerTest : public WebViewInttestBase {
 
   // Uses GetUrlForPageWithHtmlBody() instead of simply using about:blank
   // because it looks __gCrWeb may not be available on about:blank.
-  // TODO(crbug.com/836114): Analyze why.
+  // TODO(crbug.com/40573199): Analyze why.
   void LoadTestPage() {
     NSURL* url = net::NSURLWithGURL(GetUrlForPageWithHtmlBody(""));
     ASSERT_TRUE(test::LoadUrl(web_view_, url));

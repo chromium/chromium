@@ -65,7 +65,7 @@
 
 // Retreives contact informations from `data` and presents it.
 - (void)presentContactVCardFromData:(NSData*)vcardData {
-  // TODO(crbug.com/1278657): Vcard download code only support the first
+  // TODO(crbug.com/40208267): Vcard download code only support the first
   // contact.
   CNContact* contact =
       [[CNContactVCardSerialization contactsWithData:vcardData

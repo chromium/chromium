@@ -238,7 +238,7 @@ TEST_F(WebViewAutofillTest, TestDelegateCallbacks) {
   [autofill_controller_delegate_
       verifyWithDelay:kWaitForActionTimeout.InSecondsF()];
 
-  // TODO(crbug.com/1444468): `userInitiated` flipped from `NO` in iOS 16.1 to
+  // TODO(crbug.com/40911875): `userInitiated` flipped from `NO` in iOS 16.1 to
   // `YES` in 16.4, so we cannot reliably verify it until the bug is fixed.
   [[[autofill_controller_delegate_ expect] ignoringNonObjectArgs]
          autofillController:autofill_controller_

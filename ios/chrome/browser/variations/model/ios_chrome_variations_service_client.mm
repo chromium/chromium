@@ -47,7 +47,7 @@ bool IOSChromeVariationsServiceClient::OverridesRestrictParameter(
 }
 
 bool IOSChromeVariationsServiceClient::IsEnterprise() {
-  // TODO(crbug.com/1003846): Implement enterprise check for iOS.
+  // TODO(crbug.com/40647432): Implement enterprise check for iOS.
   return false;
 }
 

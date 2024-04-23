@@ -51,7 +51,7 @@ using base::UserMetricsAction;
 
 // YES if we are already forwarding an OnDidChange() message to the edit view.
 // Needed to prevent infinite recursion.
-// TODO(crbug.com/1015413): There must be a better way.
+// TODO(crbug.com/40103694): There must be a better way.
 @property(nonatomic, assign) BOOL forwardingOnDidChange;
 
 // YES if this text field is currently processing a user-initiated event,

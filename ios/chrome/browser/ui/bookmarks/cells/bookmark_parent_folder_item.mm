@@ -92,7 +92,7 @@
                         forAxis:UILayoutConstraintAxisHorizontal];
 
   // Slashed cloud view
-  // TODO(crbug.com/1422602) Check with EGTest the cloud appears when expected.
+  // TODO(crbug.com/40259682) Check with EGTest the cloud appears when expected.
   UIImage* cloudSlashedImage =
       CustomSymbolWithPointSize(kCloudSlashSymbol, kCloudSlashSymbolPointSize);
   self.cloudSlashedView = [[UIImageView alloc] initWithImage:cloudSlashedImage];

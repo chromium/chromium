@@ -15,7 +15,7 @@
 namespace {
 
 // Clean up user defaults.
-// TODO(crbug.com/1462404): Safe to remove in M123+.
+// TODO(crbug.com/40274920): Safe to remove in M123+.
 void CleanUpWhatsNewUserDefaults() {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
 

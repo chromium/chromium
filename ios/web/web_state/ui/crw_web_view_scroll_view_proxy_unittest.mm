@@ -14,7 +14,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-// TODO(crbug.com/1030168): Rewrite tests Delegate, MultipleScrollView,
+// TODO(crbug.com/40661733): Rewrite tests Delegate, MultipleScrollView,
 // DelegateClearingUp not to depend on this, and delete this.
 @interface CRWWebViewScrollViewProxy (Testing)
 

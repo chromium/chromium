@@ -218,7 +218,7 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     // Mocks the component factory so that the NTP is tested with a fake feed.
     // This allows testing of feed-dependent views, such as the feed top
     // section.
-    // TODO(crbug.com/1441139): Replace this with a
+    // TODO(crbug.com/40266435): Replace this with a
     // FakeNewTabPageComponentFactory implementation.
     component_factory_mock_ =
         OCMPartialMock([[NewTabPageComponentFactory alloc] init]);

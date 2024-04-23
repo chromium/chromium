@@ -242,7 +242,7 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 }
 
 // Tests the various ways to dismiss the keyboard during a Find session.
-// TODO(crbug.com/1488891): Test fails on downstream bots.
+// TODO(crbug.com/40283787): Test fails on downstream bots.
 - (void)DISABLED_testFindInPageDismissKeyboard {
   [_helper helperTestFindInPageDismissKeyboard];
 }
@@ -265,9 +265,9 @@ constexpr char kFindInPagePreviousButtonID[] = "find.previousButton";
 
 // Tests that there is no query persistence when coming back to a normal tab
 // after switching temporarily to another tab.
-// TODO(crbug.com/1500182): Re-enable this test.
+// TODO(crbug.com/40940589): Re-enable this test.
 - (void)FLAKY_testFindInPageSwitchingTabs {
-  // TODO(crbug.com/1464379): Failing on iOS17 iPhone.
+  // TODO(crbug.com/40922941): Failing on iOS17 iPhone.
   if (@available(iOS 17.0, *)) {
     if (![ChromeEarlGrey isIPadIdiom]) {
       XCTSkip(@"Failing on iOS17 iPhone");

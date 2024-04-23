@@ -87,7 +87,7 @@ class OfflinePageTabHelper : public web::WebStateUserData<OfflinePageTabHelper>,
   // pending navigation was not yet committed, it returns immediately and is
   // noop. In these conditions, the offline page will be presented on navigation
   // commit.
-  // TODO(crbug.com/936773): handle uncommitted navigations.
+  // TODO(crbug.com/40615979): handle uncommitted navigations.
   void PresentOfflinePageForOnlineUrl(const GURL& url);
 
   // Starts repeating `timer_` which will fire `CheckLoadingProgress` method.

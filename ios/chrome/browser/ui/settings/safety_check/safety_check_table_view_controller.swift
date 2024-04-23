@@ -19,7 +19,7 @@ protocol SafetyCheckTableViewControllerPresentationDelegate: AnyObject {
 protocol SettingsEnum: RawRepresentable where RawValue == Int {}
 extension SettingsEnum {
   var settingsRawValue: Int {
-    // TODO(crbug.com/1285900): This fails on offical builders when trying
+    // TODO(crbug.com/40210643): This fails on offical builders when trying
     // to use the ObjC constant. Hard-code it as a workaround.
     return self.rawValue + 10  // kSectionIdentifierEnumZero
   }

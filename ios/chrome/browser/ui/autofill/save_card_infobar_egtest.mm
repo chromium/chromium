@@ -102,7 +102,7 @@ id<GREYMatcher> UploadBannerLabelsMatcher() {
 
 @implementation SaveCardInfobarEGTest
 
-// TODO(crbug.com/1245213)
+// TODO(crbug.com/40196025)
 // Some tests are not compatible with explicit save prompts for addresses.
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;

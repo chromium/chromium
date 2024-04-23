@@ -227,7 +227,7 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
 
 // Tests that tapping the prerendered suggestions keeps the UserAgent of the
 // previous page.
-// TODO(crbug.com/1110890): Test is flaky.
+// TODO(crbug.com/40708867): Test is flaky.
 - (void)DISABLED_testUserAgentTypeInPreviousLoad {
   [self addURLToHistory];
   const GURL pageURL = self.testServer->GetURL(kPageURL);

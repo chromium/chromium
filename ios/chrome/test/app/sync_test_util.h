@@ -68,7 +68,7 @@ void AddLegacyBookmarkToFakeSyncServer(std::string url,
 
 // Injects a distant session into the fake sync server. Tabs in this session
 // will also be injected.
-// TODO(crbug.com/1434678): don't take a DistantSession; rewrite using entity
+// TODO(crbug.com/40904349): don't take a DistantSession; rewrite using entity
 // builder pattern.
 void AddSessionToFakeSyncServer(const synced_sessions::DistantSession& session);
 

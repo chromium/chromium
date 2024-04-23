@@ -769,7 +769,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     // Updating the favicon can lead to synchronous update of the item if the
     // icon is already available. To avoid causing a crash, update the trigger
     // the favicon asynchronously.
-    // TODO(crbug.com/1368111): check the fix actually prevents crashing.
+    // TODO(crbug.com/40240200): check the fix actually prevents crashing.
     __weak __typeof(item) weakItem = item;
     dispatch_async(dispatch_get_main_queue(), ^{
       if (weakSelf && weakItem) {

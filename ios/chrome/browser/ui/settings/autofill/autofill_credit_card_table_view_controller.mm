@@ -304,7 +304,7 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
   return header;
 }
 
-// TODO(crbug.com/1063426): Add egtest for server cards.
+// TODO(crbug.com/40123293): Add egtest for server cards.
 - (TableViewItem*)itemForCreditCard:(const autofill::CreditCard&)creditCard {
   std::string guid(creditCard.guid());
   NSString* creditCardName = autofill::GetCreditCardName(

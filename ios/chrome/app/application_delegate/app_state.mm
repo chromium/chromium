@@ -550,7 +550,7 @@ void FlushCookieStoreOnIOThread(
   for (UIWindowScene* scene in connectedScenes) {
     if (![scene.delegate isKindOfClass:[SceneDelegate class]]) {
       // This might happen in tests.
-      // TODO(crbug.com/1113097): This shouldn't be needed. (It might also
+      // TODO(crbug.com/40710078): This shouldn't be needed. (It might also
       // be the cause of crbug.com/1142782).
       [sceneStates addObject:[[SceneState alloc] initWithAppState:self]];
       continue;
@@ -714,7 +714,7 @@ void FlushCookieStoreOnIOThread(
 
 #pragma mark - AppStateObserver
 
-// TODO(crbug.com/1191489): Move this logic to a specific agent.
+// TODO(crbug.com/40756629): Move this logic to a specific agent.
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage {
   if (previousInitStage != InitStageBrowserObjectsForUI) {

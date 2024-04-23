@@ -32,8 +32,8 @@ NSString* const kHttpMethod = @"POST";
 class DownloadNativeTaskImplTest : public PlatformTest {
  protected:
   DownloadNativeTaskImplTest() {
-    // TODO(crbug.com/1227419): When removing this if condition, these variables
-    // can be generated through the constructor's initializer list.
+    // TODO(crbug.com/40189213): When removing this if condition, these
+    // variables can be generated through the constructor's initializer list.
     fake_task_bridge_ =
         [[FakeNativeTaskBridge alloc] initWithDownload:fake_download_
                                               delegate:fake_delegate_];

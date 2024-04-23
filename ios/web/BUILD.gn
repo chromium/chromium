@@ -18,7 +18,7 @@ group("all_tests") {
 
 source_set("web") {
   public_deps = [
-    # TODO(crbug.com/616244): Remove private files from public dependencies.
+    # TODO(crbug.com/40471293): Remove private files from public dependencies.
     "//ios/web/public",
     "//ios/web/public/download",
     "//ios/web/public/init",

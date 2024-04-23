@@ -28,7 +28,7 @@ class WebState;
 
 // Tells the consumer to start an animation for a foreground tab.
 // Should be called with a non-null webState.
-// TODO(crbug.com/1417570): Remove webState from this call.
+// TODO(crbug.com/40257373): Remove webState from this call.
 - (void)initiateNewTabForegroundAnimationForWebState:(web::WebState*)webState;
 
 // Tells the consumer to dismiss popups and modal dialogs that are displayed

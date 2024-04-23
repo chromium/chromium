@@ -205,7 +205,7 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
     // the scenario when a user relaunches after existing the app during FRE;
     // however, if the app crashes during FRE, the value will still be YES in
     // the subsequent launch.
-    // TODO(crbug.com/1372180): Import crash helper and take into account
+    // TODO(crbug.com/40241640): Import crash helper and take into account
     // previous crash statistics into account.
     BOOL firstRun = shouldPresentFRE && lastSeedFetchTime.is_null();
     _group = firstRun ? CreateOneTimeExperimentGroupAssignment(

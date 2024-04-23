@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_FORM_INPUT_ACCESSORY_FORM_SUGGESTION_LABEL_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_FORM_INPUT_ACCESSORY_FORM_SUGGESTION_LABEL_H_
 
-// TODO(crbug.com/1115980): Move Autofill ui code to i/c/b/ui/autofill.
+// TODO(crbug.com/40144558): Move Autofill ui code to i/c/b/ui/autofill.
 
 #import <UIKit/UIKit.h>
 

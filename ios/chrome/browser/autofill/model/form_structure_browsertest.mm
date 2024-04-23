@@ -116,7 +116,7 @@ const std::vector<base::FilePath> GetTestFiles() {
 // file that contains one or more forms. The corresponding output file lists the
 // heuristically detected type for each field.
 // This is based on FormStructureBrowserTest from the Chromium Project.
-// TODO(crbug.com/245246): Unify the tests.
+// TODO(crbug.com/41015125): Unify the tests.
 class FormStructureBrowserTest
     : public PlatformTest,
       public testing::DataDrivenTest,
@@ -200,21 +200,21 @@ FormStructureBrowserTest::FormStructureBrowserTest()
   feature_list_.InitWithFeatures(
       // Enabled
       {
-          // TODO(crbug.com/1076175) Remove once launched.
+          // TODO(crbug.com/40128551) Remove once launched.
           autofill::features::kAutofillUseNewSectioningMethod,
-          // TODO(crbug.com/1157405) Remove once launched.
+          // TODO(crbug.com/40160818) Remove once launched.
           features::kAutofillEnableDependentLocalityParsing,
-          // TODO(crbug.com/1165780): Remove once shared labels are launched.
+          // TODO(crbug.com/40741721): Remove once shared labels are launched.
           features::kAutofillEnableSupportForParsingWithSharedLabels,
-          // TODO(crbug.com/1150895) Remove once launched.
+          // TODO(crbug.com/40158074) Remove once launched.
           features::kAutofillParsingPatternProvider,
           features::kAutofillPageLanguageDetection,
           // TODO(crbug.com/1311937): Remove once launched.
           features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
           features::kAutofillInferCountryCallingCode,
-          // TODO(crbug.com/1441057): Remove once launched.
+          // TODO(crbug.com/40266396): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
-          // TODO(crbug.com/1474308): Clean up when launched.
+          // TODO(crbug.com/40279279): Clean up when launched.
           features::kAutofillDefaultToCityAndNumber,
       },
       // Disabled
@@ -223,7 +223,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           // This feature is part of the AutofillRefinedPhoneNumberTypes
           // rollout. As it is not supported on iOS yet, it is disabled.
           features::kAutofillConsiderPhoneNumberSeparatorsValidLabels,
-          // TODO(crbug.com/1317961): Remove once launched. This feature is
+          // TODO(crbug.com/40222716): Remove once launched. This feature is
           // disabled since it is not supported on iOS.
           features::kAutofillAlwaysParsePlaceholders,
           // TODO(crbug.com/40285735): Remove when/if launched. This feature
@@ -360,12 +360,12 @@ namespace {
 // to the failing_test_names constructor.
 const auto& GetFailingTestNames() {
   static std::set<std::string> failing_test_names{
-      // TODO(crbug.com/1187842): These pages contains iframes. Until filling
+      // TODO(crbug.com/40173073): These pages contains iframes. Until filling
       // across iframes is also supported on iOS, iOS has has different
       // expectations compared to non-iOS platforms.
       "049_register_ebay.com.html",
       "148_payment_dickblick.com.html",
-      // TODO(crbug.com/1339277): These pages contain labels which are only
+      // TODO(crbug.com/40229922): These pages contain labels which are only
       // inferred using AutofillImprovedLabelForInference. This feature is
       // currently not available on iOS.
       "074_register_threadless.com.html",

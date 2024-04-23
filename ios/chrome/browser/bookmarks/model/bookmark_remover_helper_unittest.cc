@@ -28,4 +28,4 @@ TEST_F(BookmarkRemoverHelperUnitTest,
   ASSERT_TRUE(test_future.Get());
 }
 
-// TODO(crbug.com/1480008): Add more tests for BookmarkRemoverHelper.
+// TODO(crbug.com/40281153): Add more tests for BookmarkRemoverHelper.

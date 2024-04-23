@@ -153,7 +153,7 @@ class CredentialProviderService
 
   // In-memory stores used to dedupe entries from `profile_password_store_` and
   // `account_password_store_` before persisting via `dual_credential_store_`.
-  // TODO(crbug.com/1425420): This is super hacky. Refactor this class to use
+  // TODO(crbug.com/40260886): This is super hacky. Refactor this class to use
   // SavedPasswordsPresenter, which deduplicates internally.
   MemoryCredentialStore* const profile_credential_store_ =
       [[MemoryCredentialStore alloc] init];

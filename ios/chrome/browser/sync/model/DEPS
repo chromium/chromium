@@ -29,7 +29,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-#TODO(crbug.com/1334154): Remove exceptions as soon as BVC refactoring is complete
+# TODO(crbug.com/40228056): Remove exceptions as soon as BVC refactoring is complete
   "sync_error_browser_agent\.mm": [
     "+ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h",
     "+ios/chrome/browser/ui/authentication/signin_presenter.h",

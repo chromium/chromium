@@ -59,7 +59,7 @@ class WebStateDelegate {
 
   // Returns a pointer to a service to manage dialogs. May return nullptr in
   // which case dialogs aren't shown.
-  // TODO(crbug.com/622084): Find better place for this method.
+  // TODO(crbug.com/40473860): Find better place for this method.
   virtual JavaScriptDialogPresenter* GetJavaScriptDialogPresenter(
       WebState* source);
 

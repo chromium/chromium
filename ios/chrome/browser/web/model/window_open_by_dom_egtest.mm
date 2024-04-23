@@ -187,7 +187,7 @@ id<GREYMatcher> PopupBlocker() {
   // Since about scheme URLs are also trimmed to about:blank, check the url
   // directly instead.
   //
-  // TODO(crbug.com/1484452): Confirm the expected behavir of [ChromeEarlGrey
+  // TODO(crbug.com/40932726): Confirm the expected behavir of [ChromeEarlGrey
   // webStateLastCommittedURL] here. After https://crrev.com/c/4823237, this
   // returns empty URL ("").
   DCHECK_EQ("",

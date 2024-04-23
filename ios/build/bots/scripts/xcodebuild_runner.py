@@ -295,7 +295,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     self.release = kwargs.get('release') or False
     self.test_results['path_delimiter'] = '/'
 
-    # TODO(crbug.com/1486897): For simulators, the record_video_option
+    # TODO(crbug.com/40933880): For simulators, the record_video_option
     # is always None right now, because we are still using our own video
     # plugin. Currently native Xcode15+ video recording is only supported
     # on iOS17+, but we should aim to migrate to the native solution so
@@ -481,7 +481,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       # Adds unexpectedly skipped tests to result if applicable.
       tests_selected_at_runtime = _tests_decided_at_runtime(self.app_path)
       unexpectedly_skipped = []
-      # TODO(crbug.com/1048758): For the multitasking or any flaky test suites,
+      # TODO(crbug.com/40672177): For the multitasking or any flaky test suites,
       # |all_tests_to_run| contains more tests than what actually runs.
       if not tests_selected_at_runtime:
         # |all_tests_to_run| takes into consideration that only a subset of

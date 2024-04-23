@@ -12,7 +12,7 @@ import("//third_party/protobuf/proto_library.gni")
 
 declare_args() {
   # Controls whether to build the Swift - C++ interop tests.
-  # TODO(crbug.com/1444308): the Swift - C++ interop miscompiles when using
+  # TODO(crbug.com/40911785): the Swift - C++ interop miscompiles when using
   # a custom libc++. Re-enable those tests when the interop is fixed.
   ios_enable_swift_interop_tests = !use_custom_libcxx
 }

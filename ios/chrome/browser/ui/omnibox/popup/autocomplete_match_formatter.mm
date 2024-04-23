@@ -219,7 +219,7 @@ UIColor* DimColorIncognito() {
       NSMutableAttributedString* mutableString =
           [[NSMutableAttributedString alloc] init];
       NSAttributedString* tailSuggestPrefix =
-          // TODO(crbug.com/1432987): Do we want to localize the ellipsis ?
+          // TODO(crbug.com/40264215): Do we want to localize the ellipsis ?
           [self attributedStringWithString:@"... "
                            classifications:NULL
                                  smallFont:NO

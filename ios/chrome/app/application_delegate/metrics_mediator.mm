@@ -421,7 +421,7 @@ BOOL _credentialExtensionWasUsed = NO;
   for (SceneState* scene in scenes) {
     if (!scene.browserProviderInterface) {
       // The scene might not yet be initiated.
-      // TODO(crbug.com/1064611): This will not be an issue when the tabs are
+      // TODO(crbug.com/40123792): This will not be an issue when the tabs are
       // counted in sessions instead of scenes.
       continue;
     }

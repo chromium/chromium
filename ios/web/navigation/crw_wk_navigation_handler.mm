@@ -1496,7 +1496,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     return NO;
   }
 
-  // TODO(crbug.com/1308875): Remove this when `canShowMIMEType` is fixed.
+  // TODO(crbug.com/40219220): Remove this when `canShowMIMEType` is fixed.
   // On iOS 15 `canShowMIMEType` returns true for AR files although WebKit is
   // not capable of displaying them natively.
   NSString* MIMEType = WKResponse.response.MIMEType;
@@ -1604,7 +1604,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
       web::NavigationItemImpl* item =
           self.navigationManagerImpl->GetCurrentItemImpl();
-      // TODO(crbug.com/570699): Remove this check once it's no longer
+      // TODO(crbug.com/40449786): Remove this check once it's no longer
       // possible to have no current entries.
       if (item)
         [self cachePOSTDataForRequest:action.request inNavigationItem:item];
@@ -1999,7 +1999,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   }
 
     if (provisionalLoad) {
-      // TODO(crbug.com/973653): Remove this workaround when WebKit bug is
+      // TODO(crbug.com/40631880): Remove this workaround when WebKit bug is
       // fixed.
       if (!navigationContext) {
         // It is likely that `navigationContext` is null because

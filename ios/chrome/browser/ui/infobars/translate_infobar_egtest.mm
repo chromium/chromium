@@ -289,7 +289,7 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Tests that different language signals are detected correctly.
 - (void)testLanguageDetection {
-// TODO(crbug.com/1235979): test failing on ipad device
+// TODO(crbug.com/40192556): test failing on ipad device
 #if !TARGET_IPHONE_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
@@ -357,7 +357,7 @@ void TestResponseProvider::GetLanguageResponse(
 }
 
 // Tests that history.pushState triggers a new detection.
-// TODO(crbug.com/1442963): This test is flaky.
+// TODO(crbug.com/40910864): This test is flaky.
 - (void)FLAKY_testLanguageDetectionWithPushState {
   const GURL URL = web::test::HttpServer::MakeUrl(
       "http://scenarioLanguageDetectionPushState");
@@ -752,7 +752,7 @@ void TestResponseProvider::GetLanguageResponse(
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests that the target language can be changed. TODO(crbug.com/1046629):
+// Tests that the target language can be changed. TODO(crbug.com/40670920):
 // implement test for changing source language.
 // TODO(crbug.com/334867767) Fix and reenable tests.
 - (void)DISABLED_testInfobarChangeTargetLanguage {

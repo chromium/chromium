@@ -265,7 +265,7 @@ void AssertPinnedCellMovedToRegularGrid(unsigned int pinned_index,
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
                            @"supported on iPhone.");
   }
-  // TODO(crbug.com/1464519): Failing on iOS17, and iOS15.5 for
+  // TODO(crbug.com/40923015): Failing on iOS17, and iOS15.5 for
   // ios-simulator-noncq.
   XCTSkip(@"Failing on iOS17 and iOS15.5");
 

@@ -34,7 +34,7 @@ class WebStateList;
 // into or removed from the web state list.
 // TODO(crbug.com/1348459): Stop lazy loading in NTPCoordinator and remove this
 // dependency.
-// TODO(crbug.com/1430080): TabEventsMediator should not have knoledge of
+// TODO(crbug.com/40901519): TabEventsMediator should not have knoledge of
 // browserState.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                       ntpCoordinator:(NewTabPageCoordinator*)ntpCoordinator

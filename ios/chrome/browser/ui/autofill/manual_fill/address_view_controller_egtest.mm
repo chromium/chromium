@@ -144,7 +144,7 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 }
 
 // Tests that the addresses view controller appears on screen.
-// TODO(crbug.com/1116043): Flaky on ios simulator.
+// TODO(crbug.com/40711697): Flaky on ios simulator.
 #if TARGET_IPHONE_SIMULATOR
 #define MAYBE_testAddressesViewControllerIsPresented \
   DISABLED_testAddressesViewControllerIsPresented

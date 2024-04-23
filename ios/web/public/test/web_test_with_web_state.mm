@@ -99,7 +99,7 @@ void WebTestWithWebState::LoadHtmlInWebState(NSString* html,
 bool WebTestWithWebState::LoadHtmlInWebState(const std::string& html,
                                              WebState* web_state) {
   LoadHtmlInWebState(base::SysUTF8ToNSString(html), web_state);
-  // TODO(crbug.com/780062): LoadHtmlInWebState(NSString*) should return bool.
+  // TODO(crbug.com/40547442): LoadHtmlInWebState(NSString*) should return bool.
   return true;
 }
 

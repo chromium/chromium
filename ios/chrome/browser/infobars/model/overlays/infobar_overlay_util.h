@@ -21,7 +21,7 @@ InfoBarIOS* GetOverlayRequestInfobar(OverlayRequest* request);
 // Returns the InfobarType of the InfoBar used to configure `request`.
 // `request` must be non-null and configured with an
 // InfobarOverlayRequestConfig.
-// TODO(crbug.com/1038933): Remove requirements on `request` and return
+// TODO(crbug.com/40113384): Remove requirements on `request` and return
 // InfobarType::kNone once added.
 InfobarType GetOverlayRequestInfobarType(OverlayRequest* request);
 

@@ -63,7 +63,7 @@ void ChromeMainDelegateAndroid::SecureDataDirectory() {
   // By default, Android creates the directory accessible by others.
   // We'd like to tighten security and make it accessible only by
   // the browser process.
-  // TODO(crbug.com/832388): Remove this once minsdk >= 21,
+  // TODO(crbug.com/41382891): Remove this once minsdk >= 21,
   // at which point this will be handled by PathUtils.java.
   base::FilePath data_path;
   bool ok = base::PathService::Get(base::DIR_ANDROID_APP_DATA, &data_path);

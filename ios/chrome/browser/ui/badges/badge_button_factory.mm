@@ -213,7 +213,7 @@ const CGFloat kSymbolIncognitoFullScreenPointSize = 14.;
       forControlEvents:UIControlEventTouchUpInside];
   button.accessibilityIdentifier =
       kBadgeButtonSaveAddressProfileAccessibilityIdentifier;
-  // TODO(crbug.com/1014652): Create a11y label hint.
+  // TODO(crbug.com/40103383): Create a11y label hint.
   return button;
 }
 

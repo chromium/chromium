@@ -308,7 +308,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
     case ReauthenticationResult::kFailure: {
       base::RecordAction(
           base::UserMetricsAction("Signin_BulkUpload_FaceID_Failed"));
-      // TODO(crbug.com/1477699): Warns the user.
+      // TODO(crbug.com/40071049): Warns the user.
       break;
     }
     case ReauthenticationResult::kSkipped: {

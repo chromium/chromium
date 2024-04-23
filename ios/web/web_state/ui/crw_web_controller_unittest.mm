@@ -1246,7 +1246,7 @@ TEST_F(CRWWebControllerTitleTest, TitleChange) {
   // Expect at least one more TitleWasSet callback after changing title via
   // JavaScript. On iOS 10 WKWebView fires 3 callbacks after JS excucution
   // with the following title changes: "Title2", "" and "Title2".
-  // TODO(crbug.com/696104): There should be only 2 calls of TitleWasSet.
+  // TODO(crbug.com/40508196): There should be only 2 calls of TitleWasSet.
   // Fix expecteation when WKWebView stops sending extra KVO calls.
   ExecuteJavaScript(@"window.document.title = 'Title2';");
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{

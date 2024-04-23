@@ -158,7 +158,7 @@ void CommercePushNotificationClient::HandleNotificationInteraction(
     return;
   }
 
-  // TODO(crbug.com/1362342) handle the user tapping 'untrack price'.
+  // TODO(crbug.com/40238314) handle the user tapping 'untrack price'.
   // User taps notification or long presses notification and presses 'Visit
   // Site'.
   if ([action_identifier isEqualToString:kVisitSiteActionIdentifier] ||

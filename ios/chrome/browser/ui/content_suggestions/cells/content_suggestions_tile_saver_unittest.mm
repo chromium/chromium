@@ -209,7 +209,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, SaveMostVisitedToDisk) {
   VerifyWithImage(image_saved_tile, image_title, image_url);
 }
 
-// TODO(crbug.com/1478989): reenable this test.
+// TODO(crbug.com/40071361): reenable this test.
 TEST_F(ContentSuggestionsTileSaverControllerTest, UpdateSingleFaviconFallback) {
   // Set up test with 3 saved sites, 2 of which have a favicon.
   ntp_tiles::NTPTile image_tile1 = ntp_tiles::NTPTile();

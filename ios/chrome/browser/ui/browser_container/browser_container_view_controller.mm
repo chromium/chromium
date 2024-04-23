@@ -61,7 +61,7 @@
     // The second call would dismiss the BrowserContainerViewController itself,
     // so look for that case and return early.
     //
-    // TODO(crbug.com/852367): A similar bug exists on all iOS versions with
+    // TODO(crbug.com/40580587): A similar bug exists on all iOS versions with
     // WKFileUploadPanel and UIDocumentPickerViewController. See also
     // https://crbug.com/811671.
     //

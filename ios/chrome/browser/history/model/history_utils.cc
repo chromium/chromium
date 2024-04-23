@@ -18,7 +18,7 @@ bool CanAddURLToHistory(const GURL& url) {
   if (!url.is_valid())
     return false;
 
-  // TODO(crbug.com/1007192): Don't store the URL as we aren't persiting the
+  // TODO(crbug.com/40649212): Don't store the URL as we aren't persiting the
   // files. Maybe we should start persisting the files and store the URL.
   // TODO: We should allow ChromeUIScheme URLs if they have been explicitly
   // typed.  Right now, however, these are marked as typed even when triggered

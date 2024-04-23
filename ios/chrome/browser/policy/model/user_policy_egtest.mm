@@ -317,7 +317,7 @@ void WaitForVisibleChromeManagementURL() {
   VerifyThatPoliciesAreSet();
 }
 
-// TODO(crbug.com/1386163): Tests that the user policies are fetched when the
+// TODO(crbug.com/40247145): Tests that the user policies are fetched when the
 // user decides to "Continue" in the notification dialog.
 - (void)DISABLED_testUserPolicyNotificationWithAcceptChoice {
   // Clear the prefs related to user policy to make sure that the notification
@@ -375,7 +375,7 @@ void WaitForVisibleChromeManagementURL() {
 
 // Tests that the learn more page is displayed when choosing that option in the
 // notice dialog.
-// TODO(crbug.com/1478990): reenable this test.
+// TODO(crbug.com/40071362): reenable this test.
 - (void)DISABLED_testUserPolicyNotificationWithLearnMoreChoice {
   // Clear the prefs related to user policy to make sure that the notification
   // isn't skipped and that the fetch is started within the minimal schedule

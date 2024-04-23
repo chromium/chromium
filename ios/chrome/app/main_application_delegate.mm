@@ -313,7 +313,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   if (!sceneDelegate)
     return;
 
-  // TODO(crbug.com/1060645): This should be called later, or this flow should
+  // TODO(crbug.com/40679152): This should be called later, or this flow should
   // be changed completely.
   if (self.foregroundSceneCount == 0) {
     [_appState applicationWillEnterForeground:UIApplication.sharedApplication

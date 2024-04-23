@@ -56,7 +56,7 @@ function isElementVisible_(elem: HTMLElement): boolean {
   // only scroll the window, not any scrollable containers in the DOM itself. So
   // for now this function returns false if the element is scrolled outside the
   // viewable area of its ancestors.
-  // TODO(crbug.com/915357): handle scrolling within the DOM.
+  // TODO(crbug.com/40606656): handle scrolling within the DOM.
   let bodyHeight = getBodyHeight_();
   let bodyWidth = getBodyWidth_();
 

@@ -329,7 +329,7 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 
 // Tests "Open in New Tab" on context menu.
 - (void)testContextMenuOpenInNewTab {
-  // TODO(crbug.com/1107513): Test fails in some iPads.
+  // TODO(crbug.com/40706946): Test fails in some iPads.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test disabled on iPad.");
   }

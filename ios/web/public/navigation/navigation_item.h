@@ -116,7 +116,7 @@ class NavigationItem : public base::SupportsUserData {
   virtual base::Time GetTimestamp() const = 0;
 
   // The type of user agent requested for the navigation.
-  // TODO(crbug.com/697512): Create equivalent enum type for WebContents.
+  // TODO(crbug.com/40508799): Create equivalent enum type for WebContents.
   virtual void SetUserAgentType(UserAgentType type) = 0;
   virtual UserAgentType GetUserAgentType() const = 0;
 

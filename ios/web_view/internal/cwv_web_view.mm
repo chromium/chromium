@@ -749,7 +749,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
     return;
   }
 
-  // TODO(crbug.com/1374071): Fragment navigations currently skip calling
+  // TODO(crbug.com/40872106): Fragment navigations currently skip calling
   // `webViewDidStartNavigation:` and `webViewDidCommitNavigation:`, and instead
   // only calls `webViewDidFinishNavigation:` below. Fix this inconsistency.
   SEL selector = @selector(webViewDidFinishNavigation:);

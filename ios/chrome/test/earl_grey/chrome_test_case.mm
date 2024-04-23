@@ -64,7 +64,7 @@ NSArray* multitaskingTests() {
     @"testSignInPopUpAccountOnSyncSettings",   // AccountCollectionsTestCase
     @"testAutofillProfileEditing",             // AutofillSettingsTestCase
     @"testAccessibilityOfBlockPopupSettings",  // BlockPopupsTestCase
-    // TODO(crbug.com/1485297): Failing on ios-simulator-full-configs.
+    // TODO(crbug.com/40282512): Failing on ios-simulator-full-configs.
     // @"testClearCookies",                       // SettingsTestCase
     @"testAccessibilityOfTranslateSettings",  // TranslateUITestCase
 
@@ -72,7 +72,7 @@ NSArray* multitaskingTests() {
     @"testActivityServiceControllerPrintAfterRedirectionToUnprintablePage",
     // ActivityServiceControllerTestCase
     @"testDismissOnDestroy",  // AlertCoordinatorTestCase
-    // TODO(crbug.com/1475206): Re-enable this test.
+    // TODO(crbug.com/40927812): Re-enable this test.
     // @"testAddRemoveBookmark",       // BookmarksTestCase
     @"testJavaScriptInOmnibox",        // BrowserViewControllerTestCase
     @"testChooseCastReceiverChooser",  // CastReceiverTestCase

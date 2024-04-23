@@ -58,7 +58,7 @@ using policy_test_utils::SetPolicy;
 
 namespace {
 
-// TODO(crbug.com/1065522): Add helpers as needed for:
+// TODO(crbug.com/40124201): Add helpers as needed for:
 //    - STRING
 //    - LIST (and subtypes, e.g. int list, string list, etc)
 //    - DICTIONARY (and subtypes, e.g. int dictionary, string dictionary, etc)

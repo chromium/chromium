@@ -12,7 +12,7 @@
 @class CrURL;
 
 // A view model representing a followed web channel.
-// TODO(crbug.com/1346506): remove this class when code has been converted
+// TODO(crbug.com/40232524): remove this class when code has been converted
 // to use FollowedWebSite instead.
 @interface FollowedWebChannel : NSObject
 

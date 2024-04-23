@@ -25,7 +25,7 @@ class WebState;
 // It causes an assertion failure if the web state has no corresponding
 // CWVWebView.
 //
-// TODO(crbug.com/896961): Write unit test for this method.
+// TODO(crbug.com/40598827): Write unit test for this method.
 + (CWVWebView*)webViewForWebState:(web::WebState*)webState;
 
 // This is called by the associated CWVWebViewConfiguration in order to shut

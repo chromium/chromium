@@ -113,7 +113,7 @@ NSError* PrepareAutofillProfileWithValues(
       return error;
     }
 
-    // TODO(crbug.com/895968): Autofill profile and credit card info should be
+    // TODO(crbug.com/40598404): Autofill profile and credit card info should be
     // loaded from separate fields in the recipe, instead of being grouped
     // together. However, need to make sure this change is also performed on
     // desktop automation.

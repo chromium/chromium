@@ -138,8 +138,8 @@ void FullscreenWebStateListObserver::WebStateWasActivated(
     return;
   }
   if (!web_state->IsRealized() || !web_state->GetWebViewProxy()) {
-    // TODO(crbug.com/1473942): This should not be reached. Investigate when/why
-    // an active WebState doesn't have WebViewProxy.
+    // TODO(crbug.com/40279169): This should not be reached. Investigate
+    // when/why an active WebState doesn't have WebViewProxy.
     return;
   }
   if (!HasWebStateBeenActivated(web_state)) {

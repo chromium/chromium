@@ -15,7 +15,7 @@ namespace web {
 class WebState;
 }  // namespace web
 
-// TODO(crbug.com/1445428): Remove this commands.
+// TODO(crbug.com/40268151): Remove this commands.
 // Protocol for commands arounds Bookmarks manipulation.
 @protocol BookmarksCommands <NSObject>
 

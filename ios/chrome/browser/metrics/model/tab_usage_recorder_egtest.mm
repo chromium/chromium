@@ -127,7 +127,7 @@ void SwitchToNormalMode() {
   }
 
   if (!success) {
-    // TODO(crbug.com/951600): Avoid asserting directly unless the test fails,
+    // TODO(crbug.com/40622599): Avoid asserting directly unless the test fails,
     // due to timing issues.
     GREYFail(@"Failed to switch to normal mode.");
   }

@@ -352,7 +352,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   if (immediately) {
     [self loadURLForQuery:sanitizedQuery];
   } else {
-    // TODO(crbug.com/1463766): Clean up the kill switch and else branch.
+    // TODO(crbug.com/40275343): Clean up the kill switch and else branch.
     if (base::FeatureList::IsEnabled(kEnableFocusOmniboxWorkaround)) {
       [self focusOmnibox];
     } else {
@@ -376,7 +376,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
     LoadJavaScriptURL(url, self.browserState,
                       self.webStateList->GetActiveWebState());
   } else {
-    // TODO(crbug.com/785244): Is it ok to call `cancelOmniboxEdit` after
+    // TODO(crbug.com/40550038): Is it ok to call `cancelOmniboxEdit` after
     // `loadURL|?  It doesn't seem to be causing major problems.  If we call
     // cancel before load, then any prerendered pages get destroyed before the
     // call to load.

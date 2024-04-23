@@ -194,7 +194,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 // Browser that contain tabs from the main pane (i.e. non-incognito).
-// TODO(crbug.com/1416934): Make regular ivar as incognito and inactive.
+// TODO(crbug.com/40893775): Make regular ivar as incognito and inactive.
 @property(nonatomic, assign, readonly) Browser* regularBrowser;
 // Superclass property specialized for the class that this coordinator uses.
 @property(nonatomic, weak) TabGridViewController* baseViewController;
@@ -1228,7 +1228,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   MoveTabToBrowser(itemID, self.regularBrowser, toInsertIndex);
 
-  // TODO(crbug.com/1420938): Adapt the animation so the grid animation is
+  // TODO(crbug.com/40896001): Adapt the animation so the grid animation is
   // coming from the inactive panel.
   regularWebStateList->ActivateWebStateAt(toInsertIndex);
   [self.delegate tabGrid:self

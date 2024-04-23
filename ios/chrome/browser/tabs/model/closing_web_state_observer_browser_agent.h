@@ -15,7 +15,7 @@ namespace web::proto {
 class WebStateStorage;
 }
 
-// TODO(crbug.com/1121120): more cleanly separate the responsibilities of this
+// TODO(crbug.com/40715295): more cleanly separate the responsibilities of this
 // class: There should be a different object to be responsible for cleaning up
 // snapshots.
 // A browser agent that is responsible for handling WebStateList

@@ -130,7 +130,7 @@ void PassKitTabHelper::OnDownloadDataAllRead(std::string uma_histogram,
                                              NSArray<NSData*>* all_data) {
   NSMutableArray<PKPass*>* passes = [NSMutableArray array];
   for (NSData* data in all_data) {
-    // TODO(crbug.com/1487198): This should happen on background thread.
+    // TODO(crbug.com/40283195): This should happen on background thread.
     PKPass* pass = [[PKPass alloc] initWithData:data error:nil];
     if (pass) {
       [passes addObject:pass];

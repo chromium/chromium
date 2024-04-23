@@ -37,7 +37,7 @@ bool SyncedWindowDelegateBrowserAgent::IsSessionRestoreInProgress() const {
   // * as this is in a batch operation, no event is forwarded to the sync engine
   // * as it is on main thread, the tab sync (also on the main thread) is not
   // called during the process.
-  // TODO(crbug.com/1010164): Use SessionRestorationObserver to track if the
+  // TODO(crbug.com/40650994): Use SessionRestorationObserver to track if the
   // session is being restored.
   return false;
 }

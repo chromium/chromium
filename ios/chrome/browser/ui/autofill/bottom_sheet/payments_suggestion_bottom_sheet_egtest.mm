@@ -287,7 +287,7 @@ NSString* ExpirationDateNSString() {
 }
 
 // Tests that accessing a long press menu does not disable the bottom sheet.
-// TODO(crbug.com/1479580): Test fails on iPhone simulator only.
+// TODO(crbug.com/40071541): Test fails on iPhone simulator only.
 #if TARGET_IPHONE_SIMULATOR
 #define MAYBE_testOpenPaymentsBottomSheetAfterLongPress \
   DISABLED_testOpenPaymentsBottomSheetAfterLongPress

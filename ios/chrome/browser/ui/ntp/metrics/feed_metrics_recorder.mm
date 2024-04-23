@@ -204,7 +204,7 @@ using feed::FeedUserActionType;
     self.followingPreviousTimeInFeedGV =
         self.prefService->GetDouble(kLongFollowingFeedVisitTimeAggregateKey);
 
-    // TODO(crbug.com/1497419) This scenario can happen (this is very rare)
+    // TODO(crbug.com/40075889) This scenario can happen (this is very rare)
     // because key kLongFeedVisitTimeAggregateKey was moved out of
     // NSUserDefaults later than kLongDiscoverFeedVisitTimeAggregateKey and
     // kLongFollowingFeedVisitTimeAggregateKey. Clean this code in the future.

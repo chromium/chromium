@@ -22,7 +22,7 @@
 
 namespace {
 
-// TODO(crbug.com/1312552): Move
+// TODO(crbug.com/40831740): Move
 // chrome/browser/signin/account_id_from_account_info.h to components/ to be
 // able to reuse the helper here.
 //

@@ -285,7 +285,7 @@ TEST_F(HistoryStateOperationsTest, StateReplacement) {
 #else
 #define MAYBE_StateReplacementReload DISABLED_StateReplacementReload
 #endif
-// TODO(crbug.com/720381): Enable this test on device.
+// TODO(crbug.com/40519813): Enable this test on device.
 TEST_F(HistoryStateOperationsTest, MAYBE_StateReplacementReload) {
   // Set up the state parameters and tap the replace state button.
   std::string new_state("STATE OBJECT");

@@ -139,7 +139,7 @@ bool IsPasswordCheckTappable(PasswordCheckUIState passwordCheckState) {
   }
 }
 
-// TODO(crbug.com/1426463): Remove when CredentialUIEntry operator== is fixed.
+// TODO(crbug.com/40261300): Remove when CredentialUIEntry operator== is fixed.
 template <typename T>
 bool AreNotesEqual(const T& lhs, const T& rhs) {
   return base::ranges::equal(lhs, rhs, {},
@@ -2017,7 +2017,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   [self deleteItemAtIndexPaths:@[ indexPath ]];
 }
 
-// TODO(crbug.com/1486507): Stop downcasting cells to configure them.
+// TODO(crbug.com/40282917): Stop downcasting cells to configure them.
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView

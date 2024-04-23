@@ -150,7 +150,7 @@ struct PermissionsPref {
 #pragma mark - Private
 
 // Returns the ChromeBrowserState that has the given gaiaID set as the primary
-// account. TODO(crbug.com/1400732) Implement policy that computes correct
+// account. TODO(crbug.com/40250402) Implement policy that computes correct
 // permission set. This function naively chooses the first ChromeBrowserState
 // that is associated with the given gaiaID. In a multi-profile environment
 // where the given gaiaID is signed into multiple profiles, it is possible that

@@ -18,7 +18,7 @@
 
 // static
 FullscreenController* FullscreenController::FromBrowser(Browser* browser) {
-  // TODO(crbug.com/1469841): Do not create FullscreenController and
+  // TODO(crbug.com/40277656): Do not create FullscreenController and
   // FullscreenWebStateListObserver for an inactive browser.
   FullscreenController* fullscreen_controller =
       static_cast<FullscreenController*>(

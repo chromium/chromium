@@ -102,8 +102,8 @@ TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateWithinModel) {
   EXPECT_EQ(node->GetTitledUrlNodeUrl(), new_url);
 }
 
-// TODO(crbug.com/1446407): Add tests that call `UpdateBookmark` with
-//                          the account storage.
+// TODO(crbug.com/40268591): Add tests that call `UpdateBookmark` with the
+// account storage.
 
 TEST_F(BookmarkIOSUtilsUnitTest, CreateOrUpdateBetweenModels) {
   const BookmarkNode* local_or_syncable_mobile_node =

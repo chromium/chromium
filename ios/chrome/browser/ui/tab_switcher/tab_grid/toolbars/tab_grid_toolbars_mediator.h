@@ -16,7 +16,7 @@
 @interface TabGridToolbarsMediator : NSObject <GridToolbarsMutator>
 
 // The toolbars consumer.
-// TODO(crbug.com/1456659): Modify it to be consumers instead of being the full
+// TODO(crbug.com/40273192): Modify it to be consumers instead of being the full
 // object.
 @property(nonatomic, strong) TabGridTopToolbar* topToolbarConsumer;
 @property(nonatomic, strong) TabGridBottomToolbar* bottomToolbarConsumer;

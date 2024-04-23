@@ -254,7 +254,7 @@ void OmniboxViewIOS::OnInlineAutocompleteTextMaybeChanged(
 
   NSAttributedString* as = [[NSMutableAttributedString alloc]
       initWithString:base::SysUTF16ToNSString(display_text)];
-  // TODO(crbug.com/1062446): This `user_text_length` calculation  isn't
+  // TODO(crbug.com/40122891): This `user_text_length` calculation  isn't
   //  accurate when there's prefix autocompletion. This should be addressed
   //  before we experiment with prefix autocompletion on iOS.
   size_t user_text_length = display_text.size() - inline_autocompletion.size();

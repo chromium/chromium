@@ -165,7 +165,7 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
   web::Referrer referrer(lastCommittedURL, web::ReferrerPolicyDefault);
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
-  // TODO(crbug.com/1299758) add scenario for not a link and not an image.
+  // TODO(crbug.com/40823789) add scenario for not a link and not an image.
   MenuScenarioHistogram menuScenario =
       isImage && isLink ? kMenuScenarioHistogramContextMenuImageLink
       : isImage         ? kMenuScenarioHistogramContextMenuImage

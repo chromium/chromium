@@ -989,7 +989,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
 
-  // TODO(crbug.com/1184267): Test is failing on iPad devices and simulator.
+  // TODO(crbug.com/40752508): Test is failing on iPad devices and simulator.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"This test is failing.");
   }
@@ -1244,7 +1244,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests dragging tab grid item as URL between windows.
-// TODO(crbug.com/1363373): Re-enable this test.
+// TODO(crbug.com/40864920): Re-enable this test.
 - (void)DISABLED_testDragAndDropURLBetweenWindows {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
@@ -1373,7 +1373,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 }
 
 // Tests dragging tab grid main item as URL to an incognito windows.
-// TODO(crbug.com/1369335): Re-enable this test.
+// TODO(crbug.com/40240640): Re-enable this test.
 - (void)DISABLED_testDragAndDropMainURLInIncognitoWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
@@ -1656,7 +1656,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests adding items to the readinglist from the tab grid edit mode.
 - (void)testTabGridBulkActionAddToReadingList {
-  // TODO(crbug.com/1428591): Test flakes when run on iOS 16.
+  // TODO(crbug.com/40900596): Test flakes when run on iOS 16.
   if (@available(iOS 16, *)) {
     EARL_GREY_TEST_DISABLED(@"Fails on iOS 16.");
   }
@@ -1697,7 +1697,7 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests sharing multiple tabs from the tab grid edit mode.
 - (void)testTabGridBulkActionShare {
-  // TODO(crbug.com/1238501): The pasteboard is "not available at this time"
+  // TODO(crbug.com/40193498): The pasteboard is "not available at this time"
   // when running on device.
 
 #if !TARGET_OS_SIMULATOR

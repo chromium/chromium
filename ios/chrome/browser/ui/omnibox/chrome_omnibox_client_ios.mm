@@ -220,7 +220,7 @@ void ChromeOmniboxClientIOS::OnResultChanged(
   const AutocompleteMatch& match = result.match_at(0);
   bool is_inline_autocomplete = !match.inline_autocompletion.empty();
 
-  // TODO(crbug.com/228480): When prerendering the result of a paste
+  // TODO(crbug.com/40311794): When prerendering the result of a paste
   // operation, we should change the transition to LINK instead of TYPED.
 
   // Only prerender HISTORY_URL matches, which come from the history DB.  Do

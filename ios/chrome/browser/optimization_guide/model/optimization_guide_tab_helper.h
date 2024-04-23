@@ -93,7 +93,7 @@ class OptimizationGuideTabHelper
       inflight_optimization_guide_navigation_datas_;
 
   // The navigation data for the last completed navigation.
-  // TODO(crbug.com/1241152): Clear the last navigation data when the tab gets
+  // TODO(crbug.com/40194554): Clear the last navigation data when the tab gets
   // hidden and when Chrome app is backgrounded.
   std::unique_ptr<IOSOptimizationGuideNavigationData> last_navigation_data_;
 

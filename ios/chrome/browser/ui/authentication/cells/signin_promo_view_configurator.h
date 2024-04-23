@@ -20,7 +20,7 @@
 // the size of IdentityAvatarSize::SmallSize.
 // `hasSignInSpinner` shows a spinner on top of the primary button, and disables
 // other buttons if set YES.
-// TODO(crbug.com/1328877): Consider adding a parameter for
+// TODO(crbug.com/40842280): Consider adding a parameter for
 // SigninPromoViewStyle.
 - (instancetype)initWithSigninPromoViewMode:(SigninPromoViewMode)viewMode
                                   userEmail:(NSString*)userEmail

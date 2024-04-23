@@ -575,7 +575,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                                            _accountBookmarkModel.get())
                                     topMostRow:topMostVisibleIndexPathRow];
   } else {
-    // TODO(crbug.com/1061882):Remove DCHECK once we know the root cause of the
+    // TODO(crbug.com/40679851):Remove DCHECK once we know the root cause of the
     // bug, for now this will cause a crash on Dev/Canary and we should get
     // breadcrumbs.
     DCHECK(NO);
@@ -1243,7 +1243,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   // is set to nil (if `self` holds the last reference to the object).
   std::set<const bookmarks::BookmarkNode*> editedNodesSet =
       _folderChooserCoordinator.editedNodes;
-  // TODO(crbug.com/1446131): Change the type of `editedNodes` to std::vector.
+  // TODO(crbug.com/40268466): Change the type of `editedNodes` to std::vector.
   std::vector<const bookmarks::BookmarkNode*> editedNodesVector(
       editedNodesSet.begin(), editedNodesSet.end());
   [self stopFolderChooserCoordinator];

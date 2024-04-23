@@ -224,7 +224,7 @@ const CGFloat kSymbolSize = 18;
   BOOL _highlightsSelectedTab;
 
   // YES when in reordering mode.
-  // TODO(crbug.com/1327313): This is redundant with `_draggedTab`.  Remove it.
+  // TODO(crbug.com/40841094): This is redundant with `_draggedTab`.  Remove it.
   BOOL _isReordering;
 
   // The tab that is currently being dragged.  nil when not in reordering mode.
@@ -1831,7 +1831,7 @@ const CGFloat kSymbolSize = 18;
 // Called when the TabView's close button was tapped.
 - (void)tabViewCloseButtonPressed:(TabView*)tabView {
   // Ignore taps while in reordering mode.
-  // TODO(crbug.com/754287): We should just hide the close buttons instead.
+  // TODO(crbug.com/40534506): We should just hide the close buttons instead.
   if ([self isReorderingTabs])
     return;
 

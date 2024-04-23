@@ -53,7 +53,7 @@ class UrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
       bool originated_from_service_worker) override;
 
   // This function is unused on iOS, since iOS cannot use content/.
-  // TODO(crbug.com/1069047): Refactor SafeBrowsingUrlCheckerImpl and
+  // TODO(crbug.com/40683815): Refactor SafeBrowsingUrlCheckerImpl and
   // UrlCheckerDelegate to extract the functionality that can be shared across
   // platforms, and move methods used only by content/ to classes used only by
   // content/.

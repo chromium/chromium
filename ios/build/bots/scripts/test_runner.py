@@ -39,7 +39,7 @@ HOST_IS_DOWN_ERROR = 'Domain=NSPOSIXErrorDomain Code=64 "Host is down"'
 MIG_SERVER_DIED_ERROR = '(ipc/mig) server died'
 
 
-# TODO(crbug.com/1077277): Move commonly used error classes to
+# TODO(crbug.com/40129082): Move commonly used error classes to
 # test_runner_errors module.
 class TestRunnerError(test_runner_errors.Error):
   """Base class for TestRunner-related errors."""
@@ -225,7 +225,7 @@ def terminate_process(proc, proc_name):
     LOGGER.info('Error while killing a process: %s' % ex)
 
 
-# TODO(crbug.com/1044812): Moved print_process_output to utils class.
+# TODO(crbug.com/40115765): Moved print_process_output to utils class.
 def print_process_output(proc,
                          proc_name=None,
                          parser=None,
@@ -398,7 +398,7 @@ class TestRunner(object):
       if not os.path.exists(self.xctest_path):
         raise XCTestPlugInNotFoundError(self.xctest_path)
 
-  # TODO(crbug.com/1185295): Move this method to a utils class.
+  # TODO(crbug.com/40172018): Move this method to a utils class.
   @staticmethod
   def remove_proxy_settings():
     """removes any proxy settings which may remain from a previous run."""
@@ -1163,7 +1163,7 @@ class DeviceTestRunner(TestRunner):
         repeat_count=self.repeat_count,
         test_args=self.test_args)
 
-  # TODO(crbug.com/1469697): there's a bug in Xcode 15 such that the devices
+  # TODO(crbug.com/40277601): there's a bug in Xcode 15 such that the devices
   # will get disconnected from Xcode after a reboot. We should revisit this
   # later to see if Apple will resolve this issue. Moreover, if the issue is
   # not resolved, we should aim to add some restrictions to this call such

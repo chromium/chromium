@@ -40,7 +40,7 @@
   DCHECK_NE(_promosManager, nullptr);
   // Only check for a forced promo the first time around, to prevent infinite
   // forced promos.
-  // TODO(crbug.com/1457208): Once promo reentrance is supported, remove this
+  // TODO(crbug.com/40273505): Once promo reentrance is supported, remove this
   // and always show the forced promo.
   if (isFirstShownPromo) {
     std::optional<promos_manager::Promo> forcedPromo =

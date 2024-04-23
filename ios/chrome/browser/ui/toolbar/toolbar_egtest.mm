@@ -228,7 +228,7 @@ void WaitForOmniboxSuggestion(NSString* suggestion, int section, int row) {
 }
 
 // Verifies that copying and pasting a URL includes the hidden protocol prefix.
-// TODO(crbug.com/834345): Enable this test when long press on the steady
+// TODO(crbug.com/40572353): Enable this test when long press on the steady
 // location bar is supported.
 - (void)DISABLED_testCopyPasteURL {
   // Clear generalPasteboard before and after the test.

@@ -59,7 +59,7 @@
       stringByAppendingString:self.sceneState.window.accessibilityIdentifier];
   self.overlayWindow.accessibilityIdentifier = a11yIdentifier;
 
-  // TODO(crbug.com/1107873): Create a coordinator to own this view controller.
+  // TODO(crbug.com/40707167): Create a coordinator to own this view controller.
   // The view controller that blocks all interactions with the scene.
   BlockingOverlayViewController* blockingOverlayViewController =
 

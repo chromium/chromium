@@ -130,7 +130,7 @@ void ReshareToPasteboard(const GURL& expected) {
 }
 
 // Disabled test due to multiple builder failures.
-// TODO(crbug.com/1296211): re-enable the test with fix.
+// TODO(crbug.com/40214683): re-enable the test with fix.
 - (void)DISABLED_testRemove {
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kURLWithFragment)];
   [ChromeEarlGrey waitForWebStateContainingText:kTestPageTextSample];

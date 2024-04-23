@@ -216,7 +216,7 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
   const security_interstitials::UnsafeResource* main_frame_resource =
       unsafe_resource_container->GetMainFrameUnsafeResource();
   if (main_frame_resource && main_frame_resource->url == request_url) {
-    // TODO(crbug.com/1064803): This should directly return the safe browsing
+    // TODO(crbug.com/40681490): This should directly return the safe browsing
     // error decision once error pages for cancelled requests are supported.
     // For now, only cancelled response errors are displayed properly.
     pending_main_frame_query_->decision = CreateSafeBrowsingErrorDecision();

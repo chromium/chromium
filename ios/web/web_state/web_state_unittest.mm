@@ -406,7 +406,7 @@ TEST_F(WebStateTest, RestoreLargeSession) {
   // The restoration of www.0.com ends with displaying an error page which may
   // not be complete at this point.
   // Queue some javascript to wait for every handler to complete.
-  // TODO(crbug.com/1244067): Remove this workaround.
+  // TODO(crbug.com/40195685): Remove this workaround.
   __block BOOL called = false;
   CRWWebController* web_controller =
       WebStateImpl::FromWebState(web_state.get())->GetWebController();

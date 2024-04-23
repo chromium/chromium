@@ -536,7 +536,7 @@ id<GREYMatcher> mostlyNotVisible() {
 // Tests that the tap gesture recognizer that dismisses the keyboard and
 // defocuses the omnibox works.
 - (void)testDefocusOmniboxTapWorks {
-  // TODO(crbug.com/1394749): Test fails on iPhone devices.
+  // TODO(crbug.com/40248742): Test fails on iPhone devices.
 #if !TARGET_IPHONE_SIMULATOR
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPhone device.");
@@ -1238,7 +1238,7 @@ id<GREYMatcher> mostlyNotVisible() {
 // Test that signing in and signing out results in the NTP scrolled to the top
 // and not in some unexpected layout state.
 - (void)testSignInSignOutScrolledToTop {
-// TODO(crbug.com/1433014): test failing on ipad device
+// TODO(crbug.com/40903244): test failing on ipad device
 #if !TARGET_IPHONE_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
@@ -1663,7 +1663,7 @@ id<GREYMatcher> mostlyNotVisible() {
 - (void)checkIfNTPIsScrollable {
   // The custom tab strip on iPad causes an infinite animation that blocks
   // EarlGrey from continuing.
-  // TODO(crbug.com/1358829): Remove iPad condition when scrolling is fixed.
+  // TODO(crbug.com/40237121): Remove iPad condition when scrolling is fixed.
   if ([ChromeEarlGrey isIPadIdiom]) {
     return;
   }

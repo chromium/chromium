@@ -937,7 +937,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
             itemsForAddingToDragSession:(id<UIDragSession>)session
                             atIndexPath:(NSIndexPath*)indexPath
                                   point:(CGPoint)point {
-  // TODO(crbug.com/1087848): Allow multi-select.
+  // TODO(crbug.com/40695113): Allow multi-select.
   // Prevent more items from getting added to the drag session.
   return @[];
 }
@@ -1431,7 +1431,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                 (GridItemIdentifier*)selectedItemIdentifier
                                           snapshot:(GridSnapshot*)snapshot {
   CHECK(item.type == GridItemType::Tab || item.type == GridItemType::Group);
-  // TODO(crbug.com/1473625): There are crash reports that show there could be
+  // TODO(crbug.com/40069795): There are crash reports that show there could be
   // cases where the open tabs section is not present in the snapshot. If so,
   // don't perform the update.
   NSInteger section =

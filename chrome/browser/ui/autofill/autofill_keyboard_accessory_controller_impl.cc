@@ -316,7 +316,7 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
     bool confirmed) {
   // This function might be called in a callback, so ensure the list index is
   // still in bounds. If not, terminate the removing and consider it failed.
-  // TODO(crbug.com/1209792): Replace these checks with a stronger identifier.
+  // TODO(crbug.com/40766704): Replace these checks with a stronger identifier.
   if (base::checked_cast<size_t>(index) >= suggestions_.size()) {
     return;
   }

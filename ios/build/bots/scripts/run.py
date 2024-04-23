@@ -597,7 +597,7 @@ class Runner():
     load_from_json(args)
     validate(args)
     merge_test_cases(args)
-    # TODO(crbug.com/1056820): |app| won't contain "Debug" or "Release" after
+    # TODO(crbug.com/40120476): |app| won't contain "Debug" or "Release" after
     # recipe migrations.
     args.release = args.release or (args.app and "Release" in args.app)
     self.args = args

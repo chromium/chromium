@@ -463,7 +463,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 // YES if the current values of the Card are valid.
-// TODO(crbug.com/1029067):Ideally the InfobarDelegate should validate
+// TODO(crbug.com/40109422):Ideally the InfobarDelegate should validate
 // the correctness of the input.
 - (BOOL)isCurrentInputValid {
   if (![self isCardholderNameValid:self.cardholderNameItem.textFieldValue])

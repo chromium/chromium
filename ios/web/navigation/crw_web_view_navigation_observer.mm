@@ -333,8 +333,8 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
            // completion block fires. Check WKNavigationState to make sure this
            // navigation has started in WKWebView. If so, don't run the block to
            // avoid clobbering global states. See crbug.com/788452.
-           // TODO(crbug.com/788465): simplify hisgtory state handling to avoid
-           // this hack.
+           // TODO(crbug.com/40551549): simplify hisgtory state handling to
+           // avoid this hack.
            WKNavigation* last_added_navigation =
                [self.navigationHandler.navigationStates lastAddedNavigation];
            BOOL differentDocumentNavigationStarted =

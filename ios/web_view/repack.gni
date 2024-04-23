@@ -23,7 +23,7 @@ template("_ios_web_view_repack_one_scale") {
                            ])
 
     sources = [
-      # TODO(crbug.com/842244): Bundle less resources.
+      # TODO(crbug.com/40575998): Bundle less resources.
       "${root_gen_dir}/components/components_resources_${invoker.scale}_percent.pak",
     ]
     deps = [ "//components/resources:components_scaled_resources" ]

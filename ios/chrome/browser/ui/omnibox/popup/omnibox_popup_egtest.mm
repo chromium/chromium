@@ -151,7 +151,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 }
 
 // Test inline autocomplete of legacy text field implementation.
-// TODO(crbug.com/1445722): Re-enable when fixed.
+// TODO(crbug.com/40912598): Re-enable when fixed.
 - (void)DISABLED_testLegacyInlineAutocompleteSuggestion {
   // Skip if new text field implementation is enabled.
   if (base::FeatureList::IsEnabled(kIOSNewOmniboxImplementation)) {
@@ -697,7 +697,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 // Tests that leading image in omnibox changes based on the suggestion
 // highlighted.
-// TODO(crbug.com/1455347): Test is flaky on both device and simulator.
+// TODO(crbug.com/40917341): Test is flaky on both device and simulator.
 - (void)DISABLED_testOmniboxLeadingImage {
   // Start a server to be able to navigate to a web page.
   self.testServer->RegisterRequestHandler(

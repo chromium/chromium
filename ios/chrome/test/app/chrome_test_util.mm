@@ -45,7 +45,7 @@
 // A subclass to pass instances of UIOpenURLContext to scene delegate during
 // testing. UIOpenURLContext has no init available, so this can only be
 // allocated. It uses obscuring properties for URL and options.
-// TODO(crbug.com/1115018) Explore improving this which can become brittle.
+// TODO(crbug.com/40711105) Explore improving this which can become brittle.
 @interface FakeUIOpenURLContext : UIOpenURLContext
 @property(nonatomic, copy) NSURL* URL;
 @property(nonatomic, strong) UISceneOpenURLOptions* options;

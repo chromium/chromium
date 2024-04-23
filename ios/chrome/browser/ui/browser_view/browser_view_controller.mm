@@ -699,7 +699,7 @@ enum HeaderBehaviour {
   [self setNeedsStatusBarAppearanceUpdate];
 }
 
-// TODO(crbug.com/1329111): Federate ClearPresentedState.
+// TODO(crbug.com/40842434): Federate ClearPresentedState.
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
                            dismissOmnibox:(BOOL)dismissOmnibox {
   [_bookmarksCoordinator dismissBookmarkModalControllerAnimated:NO];
@@ -1104,7 +1104,7 @@ enum HeaderBehaviour {
   if (_isShutdown)
     return;
 
-  // TODO(crbug.com/522721): Support size changes for all popups and modal
+  // TODO(crbug.com/40432185): Support size changes for all popups and modal
   // dialogs.
   [self.helpHandler hideAllHelpBubbles];
   if (!IsNewOverflowMenuEnabled()) {
@@ -1175,7 +1175,7 @@ enum HeaderBehaviour {
   // this case and return early.  It is not enough to check
   // `self.dismissingModal` because some dismissals do not go through
   // -[BrowserViewController dismissViewControllerAnimated:completion:`.
-  // TODO(crbug.com/782338): Fix callers and remove this early return.
+  // TODO(crbug.com/40548564): Fix callers and remove this early return.
   if (self.dismissingModal || self.presentedViewController.isBeingDismissed) {
     return;
   }
@@ -1226,10 +1226,10 @@ enum HeaderBehaviour {
       // by the `completion` block below.
       UIView* launchScreenView = launchScreenController.view;
       launchScreenView.userInteractionEnabled = NO;
-      // TODO(crbug.com/1011155): Displaying the launch screen is a hack to hide
-      // the build up of the UI from the user. To implement the hack, this view
-      // controller uses information that it should not know or care about: this
-      // BVC is contained and its parent bounds to the full screen.
+      // TODO(crbug.com/40101769): Displaying the launch screen is a hack to
+      // hide the build up of the UI from the user. To implement the hack, this
+      // view controller uses information that it should not know or care about:
+      // this BVC is contained and its parent bounds to the full screen.
       launchScreenView.frame = self.parentViewController.view.bounds;
       [self.parentViewController.view addSubview:launchScreenView];
       [launchScreenView setNeedsLayout];
@@ -1254,7 +1254,7 @@ enum HeaderBehaviour {
                         animated:flag
                       completion:finalCompletionHandler];
   };
-  // TODO(crbug.com/965688): The Default Browser Promo is
+  // TODO(crbug.com/40628488): The Default Browser Promo is
   // currently the only presented controller that allows interaction with the
   // rest of the App while they are being presented. Dismiss it in case the user
   // or system has triggered another presentation.
@@ -1513,7 +1513,7 @@ enum HeaderBehaviour {
                                  .secondaryToolbarViewController.view
                 aboveSubview:primaryToolbarView];
 
-    // TODO(crbug.com/1450600): Migrate kContentAreaGuide to LayoutGuideCenter.
+    // TODO(crbug.com/40270239): Migrate kContentAreaGuide to LayoutGuideCenter.
     // Add guide kContentAreaGuide to the browser view.
     [self.view
         addLayoutGuide:[[NamedGuide alloc] initWithName:kContentAreaGuide]];
@@ -1522,7 +1522,7 @@ enum HeaderBehaviour {
     NamedGuide* contentAreaGuide = [NamedGuide guideWithName:kContentAreaGuide
                                                         view:self.view];
 
-    // TODO(crbug.com/1136765): Sometimes, `contentAreaGuide` and
+    // TODO(crbug.com/40724393): Sometimes, `contentAreaGuide` and
     // `primaryToolbarView` aren't in the same view hierarchy; this seems to be
     // impossible,  but it does still happen. This will cause an exception in
     // when activiating these constraints. To gather more information about this
@@ -1702,7 +1702,7 @@ enum HeaderBehaviour {
     // Make sure the toolbarView's constraints are also updated.  Leaving the
     // -setFrame call to minimize changes in this CL -- otherwise the way
     // toolbar_view manages it's alpha changes would also need to be updated.
-    // TODO(crbug.com/778822): This can be cleaned up when the new fullscreen
+    // TODO(crbug.com/40546808): This can be cleaned up when the new fullscreen
     // is enabled.
     if (isPrimaryToolbar && !IsRegularXRegularSizeClass(self)) {
       self.primaryToolbarOffsetConstraint.constant = yOrigin;

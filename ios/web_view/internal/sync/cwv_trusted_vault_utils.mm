@@ -27,7 +27,7 @@ CWVConvertTrustedVaultState(CWVTrustedVaultState state) {
       return trusted_vault::TrustedVaultDeviceRegistrationStateForUMA::
           kAttemptingRegistrationWithExistingKeyPair;
     case CWVTrustedVaultStateAttemptingRegistrationWithPersistentAuthError:
-      // TODO(crbug.com/1418027): remove CWV version of this bucket.
+      // TODO(crbug.com/40257503): remove CWV version of this bucket.
       return trusted_vault::TrustedVaultDeviceRegistrationStateForUMA::
           kDeprecatedAttemptingRegistrationWithPersistentAuthError;
     case CWVTrustedVaultStateAlreadyRegisteredV1:

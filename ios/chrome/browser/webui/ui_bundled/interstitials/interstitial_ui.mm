@@ -87,7 +87,7 @@ void InterstitialHTMLSource::StartDataRequest(
   } else if (path_without_query == kChromeInterstitialSafeBrowsingPath) {
     interstitial_page = CreateSafeBrowsingBlockingPage(web_state.get(), url);
   }
-  // TODO(crbug.com/1064805): Update the page HTML when a link for an
+  // TODO(crbug.com/40681491): Update the page HTML when a link for an
   // unsupported interstitial type is tapped.
 
   // Use the HTML generated from the interstitial page if created

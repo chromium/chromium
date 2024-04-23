@@ -86,7 +86,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 #pragma mark - BookmarksFolderChooser Tests
 
 // Tests that new folder is created under `Mobile Bookmarks` by default.
-// TODO(crbug.com/1442459): Add this test after support is available.
+// TODO(crbug.com/40266964): Add this test after support is available.
 // - (void)testCreateNewAccountFolderDefaultDestination {}
 
 // Tests that new folder is created under `Mobile Bookmarks` by default.

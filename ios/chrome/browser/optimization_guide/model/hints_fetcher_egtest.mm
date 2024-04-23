@@ -169,7 +169,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
 
 // The tests in this file should correspond to the tests in
 // //chrome/browser/optimization_guide/hints_fetcher_browsertest.cc.
-// TODO(crbug.com/1241158): Add more EG2 tests so that the different pieces of
+// TODO(crbug.com/40194556): Add more EG2 tests so that the different pieces of
 // optimization guide hints fetching are integration tested. This includes tests
 // that verify hints fetcher failure cases, fetching of hints for multiple open
 // tabs at startup, hints are cleared when browsing history is cleared, etc.

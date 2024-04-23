@@ -345,7 +345,7 @@
 // or in incognito.  The coordinator is also stopped after the load is
 // requested.
 // NOTE: `loadOfflineVersion` may not be used with `inNewTab`.
-// TODO(crbug.com/1313458):  Remove `inNewTab` and `withOfflineURL` when
+// TODO(crbug.com/40220968):  Remove `inNewTab` and `withOfflineURL` when
 // migration is complete.
 - (void)loadEntryURL:(const GURL&)entryURL
         withOfflineURL:(const GURL&)offlineURL
