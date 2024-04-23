@@ -177,8 +177,6 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   void OnLoadInlineTextBoxes(const ui::AXActionTarget* target);
   void OnGetImageData(const ui::AXActionTarget* target,
                       const gfx::Size& max_size);
-  void AddPluginTreeToUpdate(ui::AXTreeUpdate* update,
-                             bool mark_plugin_subtree_dirty);
 
   // If the document is loaded, fire a load complete event.
   void FireLoadCompleteIfLoaded();
