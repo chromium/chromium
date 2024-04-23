@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NO_STATE_PREFETCH_COMMON_PRERENDER_ORIGIN_H_
-#define COMPONENTS_NO_STATE_PREFETCH_COMMON_PRERENDER_ORIGIN_H_
+#ifndef COMPONENTS_NO_STATE_PREFETCH_COMMON_NO_STATE_PREFETCH_ORIGIN_H_
+#define COMPONENTS_NO_STATE_PREFETCH_COMMON_NO_STATE_PREFETCH_ORIGIN_H_
 
 namespace prerender {
 
-// Origin indicates what caused the prerender.
+// Origin indicates what caused the NoStatePrefetch.
 // NOTE: New values need to be appended, since they are used in histograms.
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -41,4 +41,4 @@ const char* NameFromOrigin(Origin origin);
 
 }  // namespace prerender
 
-#endif  // COMPONENTS_NO_STATE_PREFETCH_COMMON_PRERENDER_ORIGIN_H_
+#endif  // COMPONENTS_NO_STATE_PREFETCH_COMMON_NO_STATE_PREFETCH_ORIGIN_H_

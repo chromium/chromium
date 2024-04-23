@@ -7,7 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents_delegate.h"
-#include "components/no_state_prefetch/common/prerender_origin.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_origin.h"
 #include "url/gurl.h"
 
 namespace content_settings {

@@ -24,7 +24,7 @@
 #include "components/no_state_prefetch/browser/prerender_config.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
-#include "components/no_state_prefetch/common/prerender_origin.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_origin.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"

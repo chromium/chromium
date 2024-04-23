@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/common/prerender_origin.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_origin.h"
 
 #include "base/metrics/histogram_macros.h"
 
@@ -32,7 +32,7 @@ const char* kOriginNames[] = {
     "Max",
 };
 static_assert(std::size(kOriginNames) == ORIGIN_MAX + 1,
-              "prerender origin name count mismatch");
+              "NoStatePrefetch origin name count mismatch");
 
 }  // namespace
 
