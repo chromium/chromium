@@ -142,7 +142,8 @@ AppMenuIconController::GetTypeAndSeverity() const {
   }
 #endif
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (DefaultBrowserPromptManager::GetInstance()->get_show_app_menu_prompt()) {
+  if (DefaultBrowserPromptManager::GetInstance()->get_show_app_menu_prompt() &&
+      !profile_->IsIncognitoProfile() && !profile_->IsGuestSession()) {
     CHECK(base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh));
     return {IconType::DEFAULT_BROWSER_PROMPT, Severity::LOW,
             features::kAppMenuChipColorPrimary.Get()};
