@@ -56,6 +56,9 @@ class PlusAddressService : public KeyedService,
     // updated value.
     virtual void OnPlusAddressesChanged(
         const std::vector<PlusAddressDataChange>& changes) = 0;
+
+    // Called when the observed PlusAddressService is being destroyed.
+    virtual void OnPlusAddressServiceShutdown() = 0;
   };
 
   // The number of `HTTP_FORBIDDEN` responses that the user may receive before

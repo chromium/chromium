@@ -61,6 +61,7 @@ class PlusProfileChecker : public StatusChangeChecker,
       override {
     CheckExitCondition();
   }
+  void OnPlusAddressServiceShutdown() override {}
 
  private:
   const raw_ptr<PlusAddressService> service_;

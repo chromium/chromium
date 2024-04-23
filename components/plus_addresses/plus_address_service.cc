@@ -84,7 +84,11 @@ PlusAddressService::PlusAddressService(
   }
 }
 
-PlusAddressService::~PlusAddressService() = default;
+PlusAddressService::~PlusAddressService() {
+  for (Observer& o : observers_) {
+    o.OnPlusAddressServiceShutdown();
+  }
+}
 
 bool PlusAddressService::SupportsPlusAddresses(const url::Origin& origin,
                                                bool is_off_the_record) const {

@@ -29,12 +29,16 @@ class PlusAddressAffiliationSourceAdapter
   // PlusAddressService::Observer:
   void OnPlusAddressesChanged(
       const std::vector<PlusAddressDataChange>& changes) override;
+  void OnPlusAddressServiceShutdown() override;
 
  private:
   // The observer (i.e. the AffiliationsService) owns and outlives the adapter.
   raw_ptr<AffiliationSource::Observer> observer_ = nullptr;
 
-  const raw_ptr<PlusAddressService> service_;
+  // The service used by the adapter as data source. Note that it's possible
+  // that the service is destroyed before the adapter. In that case, the raw_ptr
+  // is reset via `OnPlusAddressServiceShutdown`.
+  raw_ptr<PlusAddressService> service_ = nullptr;
   base::ScopedObservation<PlusAddressService, PlusAddressService::Observer>
       service_observation_{this};
 };

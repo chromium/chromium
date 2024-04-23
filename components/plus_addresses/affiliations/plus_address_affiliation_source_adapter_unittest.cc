@@ -30,14 +30,15 @@ using ::testing::UnorderedElementsAreArray;
 
 class PlusAddressAffiliationSourceAdapterTest : public testing::Test {
  protected:
-  PlusAddressAffiliationSourceAdapterTest()
-      : service_(
-            /*identity_manager=*/nullptr,
-            /*pref_service=*/nullptr,
-            std::make_unique<testing::NiceMock<MockPlusAddressHttpClient>>(),
-            /*webdata_service=*/nullptr),
-        adapter_(
-            std::make_unique<PlusAddressAffiliationSourceAdapter>(&service_)) {}
+  PlusAddressAffiliationSourceAdapterTest() {
+    service_ = std::make_unique<PlusAddressService>(
+        /*identity_manager=*/nullptr,
+        /*pref_service=*/nullptr,
+        std::make_unique<testing::NiceMock<MockPlusAddressHttpClient>>(),
+        /*webdata_service=*/nullptr);
+    adapter_ =
+        std::make_unique<PlusAddressAffiliationSourceAdapter>(service_.get());
+  }
 
   testing::AssertionResult ExpectAdapterToReturnFacets(
       const std::vector<FacetURI>& expected_facets) {
@@ -56,18 +57,14 @@ class PlusAddressAffiliationSourceAdapterTest : public testing::Test {
     return &mock_source_observer_;
   }
 
-  PlusAddressService& service() { return service_; }
-
-  PlusAddressAffiliationSourceAdapter* adapter() { return adapter_.get(); }
-
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
- private:
+ protected:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  PlusAddressService service_;
   testing::StrictMock<MockAffiliationSourceObserver> mock_source_observer_;
   std::unique_ptr<PlusAddressAffiliationSourceAdapter> adapter_;
+  std::unique_ptr<PlusAddressService> service_;
 };
 
 // Verifies that no facets are returned when no plus addresses are registered.
@@ -82,7 +79,7 @@ TEST_F(PlusAddressAffiliationSourceAdapterTest, TestGetFacets) {
   const PlusProfile profile2 =
       test::CreatePlusProfile2(/*use_full_domain=*/true);
 
-  service().OnWebDataChangedBySync(
+  service_->OnWebDataChangedBySync(
       {PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile1),
        PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile2)});
 
@@ -96,12 +93,12 @@ TEST_F(PlusAddressAffiliationSourceAdapterTest, TestGetFacets) {
 TEST_F(PlusAddressAffiliationSourceAdapterTest, OnPlusAddressesChanged) {
   PlusProfile profile1 = test::CreatePlusProfile(/*use_full_domain=*/true);
   PlusProfile profile2 = test::CreatePlusProfile2(/*use_full_domain=*/true);
-  service().OnWebDataChangedBySync(
+  service_->OnWebDataChangedBySync(
       {PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile1)});
 
   EXPECT_TRUE(ExpectAdapterToReturnFacets(
       {FacetURI::FromCanonicalSpec("https://foo.com")}));
-  adapter()->StartObserving(mock_source_observer());
+  adapter_->StartObserving(mock_source_observer());
 
   // Assert that `add` operations are reported before `remove` operation for
   // similar facets.
@@ -120,11 +117,31 @@ TEST_F(PlusAddressAffiliationSourceAdapterTest, OnPlusAddressesChanged) {
   PlusProfile updated_profile1 = profile1;
   updated_profile1.plus_address = "new-" + updated_profile1.plus_address;
 
-  service().OnWebDataChangedBySync(
+  service_->OnWebDataChangedBySync(
       {PlusAddressDataChange(PlusAddressDataChange::Type::kRemove, profile1),
        PlusAddressDataChange(PlusAddressDataChange::Type::kAdd,
                              updated_profile1),
        PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile2)});
+}
+
+// Verifies that the adapter keeps functioning if the service is destroyed.
+TEST_F(PlusAddressAffiliationSourceAdapterTest,
+       TestPlusAddressServiceDestroyed) {
+  const PlusProfile profile1 =
+      test::CreatePlusProfile(/*use_full_domain=*/true);
+  const PlusProfile profile2 =
+      test::CreatePlusProfile2(/*use_full_domain=*/true);
+
+  service_->OnWebDataChangedBySync(
+      {PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile1),
+       PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile2)});
+
+  EXPECT_TRUE(ExpectAdapterToReturnFacets(
+      {FacetURI::FromCanonicalSpec("https://foo.com"),
+       FacetURI::FromCanonicalSpec("https://bar.com")}));
+
+  service_.reset();
+  EXPECT_TRUE(ExpectAdapterToReturnFacets({}));
 }
 
 }  // namespace plus_addresses

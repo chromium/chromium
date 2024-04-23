@@ -15,13 +15,22 @@ using affiliations::FacetURI;
 
 PlusAddressAffiliationSourceAdapter::PlusAddressAffiliationSourceAdapter(
     PlusAddressService* service)
-    : service_(service) {}
+    : service_(service) {
+  // Immediate observation of the plus address service is essential to react to
+  // service destruction. This prevents dangling pointers by automatically
+  // removing observation and resetting the model pointer.
+  service_observation_.Observe(service_.get());
+}
 
 PlusAddressAffiliationSourceAdapter::~PlusAddressAffiliationSourceAdapter() =
     default;
 
 void PlusAddressAffiliationSourceAdapter::GetFacets(
     AffiliationSource::ResultCallback response_callback) {
+  if (!service_) {
+    std::move(response_callback).Run({});
+    return;
+  }
   std::vector<PlusProfile> profiles = service_->GetPlusProfiles();
   std::vector<FacetURI> facets;
   facets.reserve(profiles.size());
@@ -35,12 +44,13 @@ void PlusAddressAffiliationSourceAdapter::StartObserving(
     AffiliationSource::Observer* observer) {
   CHECK(!observer_);
   observer_ = observer;
-  service_observation_.Observe(service_.get());
 }
 
 void PlusAddressAffiliationSourceAdapter::OnPlusAddressesChanged(
     const std::vector<PlusAddressDataChange>& changes) {
-  CHECK(observer_);
+  if (!observer_) {
+    return;
+  }
   std::vector<FacetURI> added_facets;
   std::vector<FacetURI> removed_facets;
   for (const PlusAddressDataChange& change : changes) {
@@ -69,6 +79,11 @@ void PlusAddressAffiliationSourceAdapter::OnPlusAddressesChanged(
   if (!removed_facets.empty()) {
     observer_->OnFacetsRemoved(removed_facets);
   }
+}
+
+void PlusAddressAffiliationSourceAdapter::OnPlusAddressServiceShutdown() {
+  service_observation_.Reset();
+  service_ = nullptr;
 }
 
 }  // namespace plus_addresses

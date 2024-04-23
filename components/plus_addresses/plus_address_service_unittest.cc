@@ -88,6 +88,7 @@ class MockPlusAddressServiceObserver : public PlusAddressService::Observer {
               OnPlusAddressesChanged,
               (const std::vector<PlusAddressDataChange>&),
               (override));
+  MOCK_METHOD(void, OnPlusAddressServiceShutdown, (), (override));
 };
 
 class PlusAddressServiceTest : public ::testing::Test {
@@ -318,9 +319,9 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_Fails) {
 
 TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
   const PlusProfile& profile = test::CreatePlusProfile();
-  MockPlusAddressServiceObserver mock_service_observer;
-  service().AddObserver(&mock_service_observer);
-  EXPECT_CALL(mock_service_observer,
+  MockPlusAddressServiceObserver observer;
+  service().AddObserver(&observer);
+  EXPECT_CALL(observer,
               OnPlusAddressesChanged(testing::ElementsAre(PlusAddressDataChange(
                   PlusAddressDataChange::Type::kAdd, profile))));
   base::test::TestFuture<const PlusProfileOrError&> future;
@@ -343,6 +344,7 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
                                second_future.GetCallback());
   ASSERT_TRUE(second_future.IsReady());
   EXPECT_EQ(second_future.Get()->plus_address, profile.plus_address);
+  service().RemoveObserver(&observer);
 }
 
 TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Fails) {
@@ -814,6 +816,7 @@ TEST_F(PlusAddressServiceWebDataTest, OnWebDataChangedBySync) {
   service().OnWebDataChangedBySync(remove_changes);
   EXPECT_THAT(service().GetPlusProfiles(),
               testing::UnorderedElementsAre(profile2));
+  service().RemoveObserver(&observer);
 }
 
 class PlusAddressServiceDisabledTest : public PlusAddressServiceTest {
