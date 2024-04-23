@@ -33,6 +33,7 @@ async function processFile(inputFile, outputFile) {
 
   // Pass through html-minifier.
   let result = minify(contents, {
+    caseSensitive: true,
     removeComments: true,
     minifyCSS: true,
   });
