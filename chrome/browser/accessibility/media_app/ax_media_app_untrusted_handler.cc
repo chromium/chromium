@@ -394,7 +394,14 @@ content::WebContents* AXMediaAppUntrustedHandler::GetMediaAppWebContents()
 content::RenderFrameHost*
 AXMediaAppUntrustedHandler::GetMediaAppRenderFrameHost() const {
   content::WebContents* web_contents = GetMediaAppWebContents();
-  return web_contents ? web_contents->GetPrimaryMainFrame() : nullptr;
+  content::RenderFrameHost* media_app_render_frame_host =
+      web_contents->GetPrimaryMainFrame();
+  // Return the last inner iframe.
+  web_contents->ForEachRenderFrameHost(
+      [&media_app_render_frame_host](content::RenderFrameHost* rfh) {
+        media_app_render_frame_host = rfh;
+      });
+  return media_app_render_frame_host;
 }
 
 ui::AXNodeID AXMediaAppUntrustedHandler::GetMediaAppRootNodeID() const {
