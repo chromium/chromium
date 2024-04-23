@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_data.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -303,6 +304,10 @@ SkFont FontPlatformData::CreateSkFont(const FontDescription*) const {
   font.setSkewX(synthetic_italic_ ? -SK_Scalar1 / 4 : 0);
 
   font.setEmbeddedBitmaps(!avoid_embedded_bitmaps_);
+
+  if (RuntimeEnabledFeatures::DisableAhemAntialiasEnabled() && IsAhem()) {
+    font.setEdging(SkFont::Edging::kAlias);
+  }
 
   return font;
 }

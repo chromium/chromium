@@ -93,6 +93,7 @@ class PLATFORM_EXPORT FontPlatformData
 #endif
 
   String FontFamilyName() const;
+  bool IsAhem() const { return FontFamilyName().LowerASCII() == "ahem"; }
   float size() const { return text_size_; }
   bool SyntheticBold() const { return synthetic_bold_; }
   bool SyntheticItalic() const { return synthetic_italic_; }

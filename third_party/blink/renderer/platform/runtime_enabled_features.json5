@@ -1263,6 +1263,11 @@
       status: "stable",
     },
     {
+      // Disables anti-aliasing for the Ahem font. Anti-aliasing this font breaks a
+      // significant amount of WPT test expectations.
+      name: "DisableAhemAntialias",
+    },
+    {
       name: "DisableDifferentOriginSubframeDialogSuppression",
       base_feature: "none",
       origin_trial_feature_name: "DisableDifferentOriginSubframeDialogSuppression",
