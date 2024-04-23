@@ -16,6 +16,7 @@ public class UmaActivityObserver {
 
     private final UmaSessionStats mUmaSessionStats;
     private boolean mIsSessionActive;
+    private static @ActivityType int sCurrentActivityType = ActivityType.PRE_FIRST_TAB;
 
     public UmaActivityObserver(Context context) {
         mUmaSessionStats = new UmaSessionStats(context);
@@ -42,6 +43,7 @@ public class UmaActivityObserver {
         // Stage the activity type value such that it can be picked up when the new
         // UMA record is opened as a part of the subsequent session resume.
         ChromeSessionState.setActivityType(activityType);
+        sCurrentActivityType = activityType;
 
         UmaSessionStats.updateMetricsServiceState();
         mUmaSessionStats.startNewSession(tabModelSelector, permissionDelegate);
@@ -60,5 +62,10 @@ public class UmaActivityObserver {
 
         // Record session metrics.
         mUmaSessionStats.logAndEndSession();
+    }
+
+    /** Returns the current activity type being used for UMA logging. */
+    public static @ActivityType int getCurrentActivityType() {
+        return sCurrentActivityType;
     }
 }
