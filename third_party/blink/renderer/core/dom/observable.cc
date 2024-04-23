@@ -9,14 +9,18 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mapper.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_observable_inspector.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_observable_inspector_abort_handler.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observer_complete_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_predicate.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_subscribe_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_subscribe_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_observableinspector_observercallback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_observer_observercallback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_visitor.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_void_function.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/observable_internal_observer.h"
@@ -380,6 +384,269 @@ class OperatorFromPromiseSubscribeDelegate final
   };
 
   ScriptPromiseUntyped promise_;
+};
+
+// This is the subscribe delegate for the `inspect()` operator. It allows one to
+// supply a pseudo "Observer" dictionary, specifically an `ObservableInspector`,
+// which can tap into the direct outputs of a source Observable. It mirrors its
+// `next()`, `error()`, and `complete()` handlers, as well as letting you pass
+// in two supplemental callbacks:
+//   1. A `subscribe()` callback, which runs immediately when the
+//      `Observable`-returned-from-`inspect()` is subscribed to, and just before
+//      *it* subscribes to its source Observable. Errors from this callback are
+//      piped to the consumer Subscriber's `error()` handler, and the
+//      subscription is promptly closed.
+//   2. An `abort()` callback, which is run specifically for consumer-initiated
+//      unsubscriptions/aborts, NOT producer (source-Observable-initiated)
+//      unsubscriptions (via `complete()` or `error()`). See the documentation
+//      in `OperatorInspectSubscribeDelegate::SourceInternalObserver::Error()`.
+class OperatorInspectSubscribeDelegate final
+    : public Observable::SubscribeDelegate {
+ public:
+  OperatorInspectSubscribeDelegate(
+      Observable* source_observable,
+      V8ObserverCallback* next_callback,
+      V8ObserverCallback* error_callback,
+      V8ObserverCompleteCallback* complete_callback,
+      V8VoidFunction* subscribe_callback,
+      V8ObservableInspectorAbortHandler* abort_callback)
+      : source_observable_(source_observable),
+        next_callback_(next_callback),
+        error_callback_(error_callback),
+        complete_callback_(complete_callback),
+        subscribe_callback_(subscribe_callback),
+        abort_callback_(abort_callback) {}
+  void OnSubscribe(Subscriber* subscriber, ScriptState* script_state) override {
+    if (subscribe_callback_) {
+      // `ScriptState::Scope` can only be created in a valid context, so
+      // early-return if we're in a detached one.
+      if (!script_state->ContextIsValid()) {
+        return;
+      }
+
+      ScriptState::Scope scope(script_state);
+      v8::TryCatch try_catch(script_state->GetIsolate());
+      std::ignore = subscribe_callback_->Invoke(nullptr);
+      if (try_catch.HasCaught()) {
+        ScriptValue exception(script_state->GetIsolate(),
+                              try_catch.Exception());
+        subscriber->error(script_state, exception);
+        return;
+      }
+    }
+
+    AbortSignal::AlgorithmHandle* abort_algorithm_handle = nullptr;
+    if (abort_callback_) {
+      abort_algorithm_handle = subscriber->signal()->AddAlgorithm(
+          MakeGarbageCollected<InspectorAbortHandlerAlgorithm>(
+              abort_callback_, subscriber->signal(), script_state));
+    }
+
+    // At this point, the `subscribe_callback_` has been called and has not
+    // thrown an exception, so we proceed to *actually* subscribe to the
+    // underlying Observable, invoking *its* callback through the normal flow
+    // and so on.
+    SubscribeOptions* options = MakeGarbageCollected<SubscribeOptions>();
+    options->setSignal(subscriber->signal());
+
+    source_observable_->SubscribeWithNativeObserver(
+        script_state,
+        MakeGarbageCollected<SourceInternalObserver>(
+            subscriber, script_state, abort_algorithm_handle, next_callback_,
+            error_callback_, complete_callback_),
+        options);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(source_observable_);
+
+    visitor->Trace(next_callback_);
+    visitor->Trace(error_callback_);
+    visitor->Trace(complete_callback_);
+    visitor->Trace(abort_callback_);
+    visitor->Trace(subscribe_callback_);
+
+    Observable::SubscribeDelegate::Trace(visitor);
+  }
+
+ private:
+  class InspectorAbortHandlerAlgorithm final : public AbortSignal::Algorithm {
+   public:
+    InspectorAbortHandlerAlgorithm(
+        V8ObservableInspectorAbortHandler* abort_handler,
+        AbortSignal* signal,
+        ScriptState* script_state)
+        : abort_handler_(abort_handler),
+          signal_(signal),
+          script_state_(script_state) {
+      CHECK(abort_handler_);
+      CHECK(signal_);
+      CHECK(script_state_);
+    }
+
+    void Run() override {
+      abort_handler_->InvokeAndReportException(nullptr,
+                                               signal_->reason(script_state_));
+    }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(abort_handler_);
+      visitor->Trace(signal_);
+      visitor->Trace(script_state_);
+
+      Algorithm::Trace(visitor);
+    }
+
+   private:
+    // Never null. The JS callback that `this` runs when `signal_ is aborted.
+    Member<V8ObservableInspectorAbortHandler> abort_handler_;
+    // Never null. We have to store the `signal_` that `this` is associated with
+    // in order to get the abort reason.
+    Member<AbortSignal> signal_;
+    Member<ScriptState> script_state_;
+  };
+
+  class SourceInternalObserver final : public ObservableInternalObserver {
+   public:
+    SourceInternalObserver(Subscriber* subscriber,
+                           ScriptState* script_state,
+                           AbortSignal::AlgorithmHandle* abort_algorithm_handle,
+                           V8ObserverCallback* next_callback,
+                           V8ObserverCallback* error_callback,
+                           V8ObserverCompleteCallback* complete_callback)
+        : subscriber_(subscriber),
+          script_state_(script_state),
+          abort_algorithm_handle_(abort_algorithm_handle),
+          next_callback_(next_callback),
+          error_callback_(error_callback),
+          complete_callback_(complete_callback) {
+      CHECK(subscriber_);
+      CHECK(script_state_);
+      // All of `next_callback_`, `error_callback_`, `complete_callback_`,
+      // `abort_callback`, can all be null, because script may not have provided
+      // any of them.
+    }
+
+    void ResetAbortAlgorithm() {
+      if (!abort_algorithm_handle_) {
+        return;
+      }
+
+      subscriber_->signal()->RemoveAlgorithm(abort_algorithm_handle_);
+      abort_algorithm_handle_ = nullptr;
+    }
+
+    void Next(ScriptValue value) override {
+      if (!next_callback_) {
+        subscriber_->next(value);
+        return;
+      }
+
+      // `ScriptState::Scope` can only be created in a valid context, so
+      // early-return if we're in a detached one.
+      if (!script_state_->ContextIsValid()) {
+        return;
+      }
+
+      ScriptState::Scope scope(script_state_);
+      v8::TryCatch try_catch(script_state_->GetIsolate());
+      // Invoking `callback_` can detach the context, but that's OK, nothing
+      // below this invocation relies on an attached/valid context.
+      std::ignore = next_callback_->Invoke(nullptr, value);
+      if (try_catch.HasCaught()) {
+        ScriptValue exception(script_state_->GetIsolate(),
+                              try_catch.Exception());
+        // See the documentation in `Error()` for what this does.
+        ResetAbortAlgorithm();
+        subscriber_->error(script_state_, exception);
+      }
+
+      subscriber_->next(value);
+    }
+    void Error(ScriptState*, ScriptValue error) override {
+      // The algorithm represented by `abort_algorithm_handle_` invokes the
+      // `ObservableInspector` dictionary's `ObservableInspectorAbortHandler`
+      // callback. However, that callback must only be invoked for
+      // consumer-initiated aborts, NOT producer-initiated aborts. This means,
+      // when the source Observable calls `Error()` or `Complete()` on `this`,
+      // we must remove the algorithm from `subscriber_`'s signal, because said
+      // signal is about to be aborted for producer-initiated reasons.
+      ResetAbortAlgorithm();
+
+      if (!error_callback_) {
+        subscriber_->error(script_state_, error);
+        return;
+      }
+
+      if (!script_state_->ContextIsValid()) {
+        return;
+      }
+
+      ScriptState::Scope scope(script_state_);
+      v8::TryCatch try_catch(script_state_->GetIsolate());
+      std::ignore = error_callback_->Invoke(nullptr, error);
+      if (try_catch.HasCaught()) {
+        ScriptValue exception(script_state_->GetIsolate(),
+                              try_catch.Exception());
+        subscriber_->error(script_state_, exception);
+      }
+
+      subscriber_->error(script_state_, error);
+    }
+    void Complete() override {
+      // See the documentation in `Error()` for what this does.
+      ResetAbortAlgorithm();
+
+      if (!complete_callback_) {
+        subscriber_->complete(script_state_);
+        return;
+      }
+
+      if (!script_state_->ContextIsValid()) {
+        return;
+      }
+
+      ScriptState::Scope scope(script_state_);
+      v8::TryCatch try_catch(script_state_->GetIsolate());
+      std::ignore = complete_callback_->Invoke(nullptr);
+      if (try_catch.HasCaught()) {
+        ScriptValue exception(script_state_->GetIsolate(),
+                              try_catch.Exception());
+        subscriber_->error(script_state_, exception);
+      }
+
+      subscriber_->complete(script_state_);
+    }
+
+    void Trace(Visitor* visitor) const override {
+      visitor->Trace(subscriber_);
+      visitor->Trace(script_state_);
+      visitor->Trace(abort_algorithm_handle_);
+
+      visitor->Trace(next_callback_);
+      visitor->Trace(error_callback_);
+      visitor->Trace(complete_callback_);
+
+      ObservableInternalObserver::Trace(visitor);
+    }
+
+   private:
+    Member<Subscriber> subscriber_;
+    Member<ScriptState> script_state_;
+    Member<AbortSignal::AlgorithmHandle> abort_algorithm_handle_;
+
+    Member<V8ObserverCallback> next_callback_;
+    Member<V8ObserverCallback> error_callback_;
+    Member<V8ObserverCompleteCallback> complete_callback_;
+  };
+  // The `Observable` which `this` will mirror, when `this` is subscribed to.
+  Member<Observable> source_observable_;
+
+  Member<V8ObserverCallback> next_callback_;
+  Member<V8ObserverCallback> error_callback_;
+  Member<V8ObserverCompleteCallback> complete_callback_;
+  Member<V8VoidFunction> subscribe_callback_;
+  Member<V8ObservableInspectorAbortHandler> abort_callback_;
 };
 
 class OperatorSwitchMapSubscribeDelegate final
@@ -1628,6 +1895,53 @@ Observable* Observable::switchMap(ScriptState*,
       GetExecutionContext(),
       MakeGarbageCollected<OperatorSwitchMapSubscribeDelegate>(
           this, mapper, exception_state.GetContext()));
+  return return_observable;
+}
+
+Observable* Observable::inspect(
+    ScriptState* script_state,
+    V8UnionObservableInspectorOrObserverCallback* inspector_union) {
+  V8VoidFunction* subscribe_callback = nullptr;
+  V8ObserverCallback* next_callback = nullptr;
+  V8ObserverCallback* error_callback = nullptr;
+  V8ObserverCompleteCallback* complete_callback = nullptr;
+  V8ObservableInspectorAbortHandler* abort_callback = nullptr;
+
+  if (inspector_union) {
+    switch (inspector_union->GetContentType()) {
+      case V8UnionObservableInspectorOrObserverCallback::ContentType::
+          kObservableInspector: {
+        ObservableInspector* inspector =
+            inspector_union->GetAsObservableInspector();
+        if (inspector->hasSubscribe()) {
+          subscribe_callback = inspector->subscribe();
+        }
+        if (inspector->hasNext()) {
+          next_callback = inspector->next();
+        }
+        if (inspector->hasError()) {
+          error_callback = inspector->error();
+        }
+        if (inspector->hasComplete()) {
+          complete_callback = inspector->complete();
+        }
+        if (inspector->hasAbort()) {
+          abort_callback = inspector->abort();
+        }
+        break;
+      }
+      case V8UnionObservableInspectorOrObserverCallback::ContentType::
+          kObserverCallback:
+        next_callback = inspector_union->GetAsObserverCallback();
+        break;
+    }
+  }
+
+  Observable* return_observable = MakeGarbageCollected<Observable>(
+      GetExecutionContext(),
+      MakeGarbageCollected<OperatorInspectSubscribeDelegate>(
+          this, next_callback, error_callback, complete_callback,
+          subscribe_callback, abort_callback));
   return return_observable;
 }
 

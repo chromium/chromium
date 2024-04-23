@@ -20,6 +20,7 @@ class SubscribeOptions;
 class V8Mapper;
 class V8Predicate;
 class V8SubscribeCallback;
+class V8UnionObservableInspectorOrObserverCallback;
 class V8UnionObserverOrObserverCallback;
 class V8Visitor;
 
@@ -73,6 +74,8 @@ class CORE_EXPORT Observable final : public ScriptWrappable,
   Observable* switchMap(ScriptState*,
                         V8Mapper*,
                         ExceptionState& exception_state);
+  Observable* inspect(ScriptState*,
+                      V8UnionObservableInspectorOrObserverCallback*);
 
   // Promise-returning operators. See
   // https://wicg.github.io/observable/#promise-returning-operators.

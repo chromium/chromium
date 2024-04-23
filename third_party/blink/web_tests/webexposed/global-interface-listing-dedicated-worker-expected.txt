@@ -1462,6 +1462,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method first
 [Worker]     method flatMap
 [Worker]     method forEach
+[Worker]     method inspect
 [Worker]     method last
 [Worker]     method map
 [Worker]     method subscribe

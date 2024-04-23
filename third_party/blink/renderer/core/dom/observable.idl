@@ -15,6 +15,17 @@ callback Mapper = any (any element, unsigned long long index);
 callback Visitor = undefined (any element, unsigned long long index);
 callback Predicate = boolean (any value);
 
+callback ObservableInspectorAbortHandler = undefined (any value);
+
+dictionary ObservableInspector {
+  ObserverCallback next;
+  ObserverCallback error;
+  ObserverCompleteCallback complete;
+
+  VoidFunction subscribe;
+  ObservableInspectorAbortHandler abort;
+};
+
 dictionary Observer {
   ObserverCallback next;
   ObserverCallback error;
@@ -26,6 +37,7 @@ dictionary SubscribeOptions {
 };
 
 typedef (ObserverCallback or Observer) ObserverUnion;
+typedef (ObserverCallback or ObservableInspector) ObservableInspectorUnion;
 
 [Exposed=(Window,Worker), RuntimeEnabled=ObservableAPI]
 interface Observable {
@@ -47,6 +59,7 @@ interface Observable {
   [CallWith=ScriptState] Observable drop(unsigned long long number_to_drop);
   [CallWith=ScriptState, RaisesException] Observable flatMap(Mapper mapper);
   [CallWith=ScriptState, RaisesException] Observable switchMap(Mapper mapper);
+  [CallWith=ScriptState] Observable inspect(optional ObservableInspectorUnion inspect_observer = {});
 
   // Promise-returning operators.
   // See https://wicg.github.io/observable/#promise-returning-operators.

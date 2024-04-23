@@ -1281,6 +1281,7 @@ interface Observable
     method first
     method flatMap
     method forEach
+    method inspect
     method last
     method map
     method subscribe
