@@ -847,10 +847,19 @@ void V4L2StatefulVideoDecoder::RearmCAPTUREQueueMonitoring() {
       weak_ptr_factory_for_events_.GetWeakPtr()));
   // |client_| needs to be told of a hypothetical resolution change (to wait for
   // frames in flight etc). Once that's done they will ping us via
-  // ApplyResolutionChange().
+  // ApplyResolutionChange(). We use a trampoline lambda to make sure
+  // |weak_ptr_factory_for_events_|'s pointers have not been invalidated (e.g.
+  // by a Reset()).
   auto resolution_change_callback =
       base::BindPostTaskToCurrentDefault(base::BindOnce(
-          &VideoDecoderMixin::Client::PrepareChangeResolution, client_));
+          [](base::WeakPtr<VideoDecoderMixin::Client> client,
+             base::WeakPtr<V4L2StatefulVideoDecoder> weak_this) {
+            if (weak_this && client) {
+              client->PrepareChangeResolution();
+            }
+          },
+          client_, weak_ptr_factory_for_events_.GetWeakPtr()));
+
   // Here we launch a single "wait for a |CAPTURE_queue_| event" monitoring
   // Task (via an infinite-wait POSIX poll()). It lives on a background
   // SequencedTaskRunner whose lifetime we don't control (comes from a pool), so
