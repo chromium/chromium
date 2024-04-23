@@ -64,29 +64,6 @@ UIImageView* CheckmarkIcon() {
   return icon;
 }
 
-// Returns the number of password issue types found given
-// `weak_passwords_count`, `reused_passwords_count`, and
-// `compromised_passwords_count`.
-int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
-                            NSInteger reused_passwords_count,
-                            NSInteger compromised_passwords_count) {
-  int count = 0;
-
-  if (weak_passwords_count > 0) {
-    count++;
-  }
-
-  if (reused_passwords_count > 0) {
-    count++;
-  }
-
-  if (compromised_passwords_count > 0) {
-    count++;
-  }
-
-  return count;
-}
-
 }  // namespace
 
 @implementation SafetyCheckItemView {
@@ -399,23 +376,15 @@ int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
 }
 
 - (NSString*)passwordItemDescriptionText {
-  int passwordIssueTypeCount = PasswordIssuesTypeCount(
-      _weakPasswordsCount, _reusedPasswordsCount, _compromisedPasswordsCount);
-
-  if (passwordIssueTypeCount > 1) {
-    return l10n_util::GetNSString(
-        IDS_IOS_SAFETY_CHECK_DESCRIPTION_MULTIPLE_PASSWORD_ISSUES);
-  }
-
-  if (_weakPasswordsCount > 1) {
+  if (_compromisedPasswordsCount > 1) {
     return l10n_util::GetNSStringF(
-        IDS_IOS_SAFETY_CHECK_DESCRIPTION_MULTIPLE_WEAK_PASSWORDS,
-        base::NumberToString16(_weakPasswordsCount));
+        IDS_IOS_SAFETY_CHECK_DESCRIPTION_MULTIPLE_COMPROMISED_PASSWORDS,
+        base::NumberToString16(_compromisedPasswordsCount));
   }
 
-  if (_weakPasswordsCount == 1) {
+  if (_compromisedPasswordsCount == 1) {
     return l10n_util::GetNSString(
-        IDS_IOS_SAFETY_CHECK_DESCRIPTION_WEAK_PASSWORD);
+        IDS_IOS_SAFETY_CHECK_DESCRIPTION_COMPROMISED_PASSWORD);
   }
 
   if (_reusedPasswordsCount > 1) {
@@ -429,15 +398,15 @@ int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
         IDS_IOS_SAFETY_CHECK_DESCRIPTION_REUSED_PASSWORD);
   }
 
-  if (_compromisedPasswordsCount > 1) {
+  if (_weakPasswordsCount > 1) {
     return l10n_util::GetNSStringF(
-        IDS_IOS_SAFETY_CHECK_DESCRIPTION_MULTIPLE_COMPROMISED_PASSWORDS,
-        base::NumberToString16(_compromisedPasswordsCount));
+        IDS_IOS_SAFETY_CHECK_DESCRIPTION_MULTIPLE_WEAK_PASSWORDS,
+        base::NumberToString16(_weakPasswordsCount));
   }
 
-  if (_compromisedPasswordsCount == 1) {
+  if (_weakPasswordsCount == 1) {
     return l10n_util::GetNSString(
-        IDS_IOS_SAFETY_CHECK_DESCRIPTION_COMPROMISED_PASSWORD);
+        IDS_IOS_SAFETY_CHECK_DESCRIPTION_WEAK_PASSWORD);
   }
 
   return l10n_util::GetNSString(
@@ -482,17 +451,9 @@ int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
 }
 
 - (NSString*)passwordItemCompactDescriptionText {
-  int passwordIssueTypeCount = PasswordIssuesTypeCount(
-      _weakPasswordsCount, _reusedPasswordsCount, _compromisedPasswordsCount);
-
-  if (passwordIssueTypeCount > 1) {
+  if (_compromisedPasswordsCount >= 1) {
     return l10n_util::GetNSString(
-        IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_MULTIPLE_PASSWORD_ISSUES);
-  }
-
-  if (_weakPasswordsCount >= 1) {
-    return l10n_util::GetNSString(
-        IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_WEAK_PASSWORD);
+        IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_COMPROMISED_PASSWORD);
   }
 
   if (_reusedPasswordsCount >= 1) {
@@ -500,9 +461,9 @@ int PasswordIssuesTypeCount(NSInteger weak_passwords_count,
         IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_REUSED_PASSWORD);
   }
 
-  if (_compromisedPasswordsCount >= 1) {
+  if (_weakPasswordsCount >= 1) {
     return l10n_util::GetNSString(
-        IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_COMPROMISED_PASSWORD);
+        IDS_IOS_SAFETY_CHECK_COMPACT_DESCRIPTION_WEAK_PASSWORD);
   }
 
   return l10n_util::GetNSString(
