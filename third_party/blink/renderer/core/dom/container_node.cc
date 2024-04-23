@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_tag_collection.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
@@ -678,6 +679,10 @@ void ContainerNode::WillRemoveChildren() {
 
 LayoutBox* ContainerNode::GetLayoutBoxForScrolling() const {
   return GetLayoutBox();
+}
+
+bool ContainerNode::IsReadingOrderContainer() const {
+  return GetLayoutBox() ? GetLayoutBox()->IsReadingOrderContainer() : false;
 }
 
 void ContainerNode::Trace(Visitor* visitor) const {

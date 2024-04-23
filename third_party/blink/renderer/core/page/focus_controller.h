@@ -43,8 +43,8 @@ class Document;
 class Element;
 class FocusChangedObserver;
 class Frame;
+class HTMLElement;
 class HTMLFrameOwnerElement;
-class HTMLSlotElement;
 class InputDeviceCapabilities;
 class LocalFrame;
 class Page;
@@ -88,7 +88,7 @@ class CORE_EXPORT FocusController final
       LocalFrame* to,
       InputDeviceCapabilities* source_capabilities = nullptr);
   static Element* FindFocusableElementInShadowHost(const Element& shadow_host);
-  static HTMLSlotElement* FindScopeOwnerSlot(const Element&);
+  static HTMLElement* FindScopeOwnerSlotOrReadingOrderContainer(const Element&);
 
   // Returns the next focusable element (likely an <input> field) after the
   // given element in focus traversal and within the enclosing <form> that

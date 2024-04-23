@@ -293,8 +293,8 @@ TEST_F(FocusControllerTest,
                          recover_username, mojom::blink::FocusType::kForward));
 }
 
-// Test for FocusController::FindScopeOwnerSlot().
-TEST_F(FocusControllerTest, FindScopeOwnerSlot) {
+// Test for FocusController::FindScopeOwnerSlotOrReadingOrderContainer().
+TEST_F(FocusControllerTest, FindScopeOwnerSlotOrReadingOrderContainer) {
   const char* main_html =
       "<div id='host'>"
       "<div id='inner1'></div>"
@@ -312,10 +312,14 @@ TEST_F(FocusControllerTest, FindScopeOwnerSlot) {
   auto* slot =
       To<HTMLSlotElement>(shadow_root.QuerySelector(AtomicString("slot")));
 
-  EXPECT_EQ(nullptr, FocusController::FindScopeOwnerSlot(*host));
-  EXPECT_EQ(nullptr, FocusController::FindScopeOwnerSlot(*slot));
-  EXPECT_EQ(slot, FocusController::FindScopeOwnerSlot(*inner1));
-  EXPECT_EQ(slot, FocusController::FindScopeOwnerSlot(*inner2));
+  EXPECT_EQ(nullptr,
+            FocusController::FindScopeOwnerSlotOrReadingOrderContainer(*host));
+  EXPECT_EQ(nullptr,
+            FocusController::FindScopeOwnerSlotOrReadingOrderContainer(*slot));
+  EXPECT_EQ(slot, FocusController::FindScopeOwnerSlotOrReadingOrderContainer(
+                      *inner1));
+  EXPECT_EQ(slot, FocusController::FindScopeOwnerSlotOrReadingOrderContainer(
+                      *inner2));
 }
 
 // crbug.com/1508258

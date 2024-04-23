@@ -4431,4 +4431,40 @@ WritingModeConverter LayoutBox::CreateWritingModeConverter() const {
                               Size());
 }
 
+bool LayoutBox::IsReadingOrderContainer() const {
+  if (!RuntimeEnabledFeatures::CSSReadingOrderItemsEnabled()) {
+    return false;
+  }
+  const ComputedStyle& style = StyleRef();
+  switch (style.ReadingOrderItems()) {
+    case EReadingOrderItems::kNormal:
+      return false;
+    case EReadingOrderItems::kFlexVisual:
+    case EReadingOrderItems::kFlexFlow:
+      return IsFlexibleBox();
+    case EReadingOrderItems::kGridRows:
+    case EReadingOrderItems::kGridColumns:
+    case EReadingOrderItems::kGridOrder:
+      return IsLayoutGrid();
+  }
+  return false;
+}
+
+HeapVector<Member<Element>> LayoutBox::ReadingOrderElements() const {
+  HeapVector<Member<Element>> reading_order_elements;
+  if (!IsReadingOrderContainer()) {
+    return reading_order_elements;
+  }
+  DCHECK_EQ(PhysicalFragmentCount(), 1u);
+  auto children = GetPhysicalFragment(0)->Children();
+  reading_order_elements.ReserveInitialCapacity(
+      base::checked_cast<wtf_size_t>(children.size()));
+  for (const PhysicalFragmentLink& fragment : children) {
+    if (Element* child = DynamicTo<Element>(fragment->GetNode())) {
+      reading_order_elements.push_back(child);
+    }
+  }
+  return reading_order_elements;
+}
+
 }  // namespace blink
