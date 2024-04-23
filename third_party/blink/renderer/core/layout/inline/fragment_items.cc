@@ -221,6 +221,10 @@ void FragmentItems::ClearAssociatedFragments(LayoutObject* container) {
 bool FragmentItems::CanReuseAll(InlineCursor* cursor) {
   for (; *cursor; cursor->MoveToNext()) {
     const FragmentItem& item = *cursor->Current().Item();
+    // Ignore nested kLine items though their descendants affect the result.
+    if (item.Type() == FragmentItem::kLine) {
+      continue;
+    }
     if (!item.CanReuse())
       return false;
   }
