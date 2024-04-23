@@ -429,7 +429,11 @@ void QuickStartMetrics::RecordGaiaAuthenticationRequestEnded(
 void QuickStartMetrics::RecordFastPairAdvertisementStarted(
     bool succeeded,
     std::optional<FastPairAdvertisingErrorCode> error_code) {
-  CHECK(!fast_pair_advertising_timer_);
+  // Timer may already exist if user has cancelled/re-entered Quick Start
+  // multiple times before establishing a connection.
+  if (fast_pair_advertising_timer_) {
+    fast_pair_advertising_timer_.reset();
+  }
 
   if (succeeded) {
     CHECK(!error_code.has_value());
@@ -469,7 +473,11 @@ void QuickStartMetrics::RecordFastPairAdvertisementEnded(
 void QuickStartMetrics::RecordNearbyConnectionsAdvertisementStarted(
     bool succeeded,
     std::optional<NearbyConnectionsAdvertisingErrorCode> error_code) {
-  CHECK(!nearby_connections_advertising_timer_);
+  // Timer may already exist if user has cancelled/re-entered Quick Start
+  // multiple times before establishing a connection.
+  if (nearby_connections_advertising_timer_) {
+    nearby_connections_advertising_timer_.reset();
+  }
 
   if (succeeded) {
     CHECK(!error_code.has_value());
@@ -511,7 +519,10 @@ void QuickStartMetrics::RecordNearbyConnectionsAdvertisementEnded(
 
 void QuickStartMetrics::RecordHandshakeStarted() {
   base::UmaHistogramBoolean(kHandshakeStartedName, true);
-  CHECK(!handshake_elapsed_timer_);
+  if (handshake_elapsed_timer_) {
+    handshake_elapsed_timer_.reset();
+  }
+
   handshake_elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
 }
 
