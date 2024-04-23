@@ -71,8 +71,7 @@
 
 - (void)start {
   autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
-      [self fetchDelegateAndAcceptInfobar:NO];
-
+      [self fetchDelegate];
   _autofillProfile =
       std::make_unique<autofill::AutofillProfile>(*delegate->GetProfile());
 
@@ -164,7 +163,7 @@
 
 - (void)didSaveProfile {
   autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
-      [self fetchDelegateAndAcceptInfobar:YES];
+      [self fetchDelegateAndAcceptInfobar];
 
   delegate->SetProfile(_autofillProfile.get());
   delegate->EditAccepted();
@@ -182,14 +181,37 @@
 #pragma mark - AutofillEditProfileBottomSheetTableViewControllerDelegate
 
 - (void)didCancelBottomSheetView {
+  autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
+      [self fetchDelegate];
+  if (delegate->IsMigrationToAccount()) {
+    delegate->Never();
+    InfoBarManagerImpl::FromWebState(_webState)->RemoveInfoBar(
+        [self addressInfobar]);
+  } else {
+    delegate->EditDeclined();
+  }
+
   [self stop];
 }
 
 #pragma mark - Private
 
 - (autofill::AutofillSaveUpdateAddressProfileDelegateIOS*)
-    fetchDelegateAndAcceptInfobar:(BOOL)acceptInfobar {
+    fetchDelegateAndAcceptInfobar {
+  InfoBarIOS* infobar = static_cast<InfoBarIOS*>([self addressInfobar]);
+  infobar->set_accepted(YES);
+
+  return [self fetchDelegateFromInfobar:infobar];
+}
+
+- (autofill::AutofillSaveUpdateAddressProfileDelegateIOS*)fetchDelegate {
+  InfoBarIOS* infobar = static_cast<InfoBarIOS*>([self addressInfobar]);
+  return [self fetchDelegateFromInfobar:infobar];
+}
+
+- (infobars::InfoBar*)addressInfobar {
   InfoBarManagerImpl* manager = InfoBarManagerImpl::FromWebState(_webState);
+  CHECK(manager);
   const auto it = base::ranges::find(
       manager->infobars(), InfobarType::kInfobarTypeSaveAutofillAddressProfile,
       [](const infobars::InfoBar* infobar) {
@@ -197,16 +219,15 @@
       });
 
   CHECK(it != manager->infobars().cend());
-  InfoBarIOS* infobar = static_cast<InfoBarIOS*>(*it);
+  return *it;
+}
+
+- (autofill::AutofillSaveUpdateAddressProfileDelegateIOS*)
+    fetchDelegateFromInfobar:(InfoBarIOS*)infobar {
   autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
       autofill::AutofillSaveUpdateAddressProfileDelegateIOS::
           FromInfobarDelegate(infobar->delegate());
   CHECK(delegate);
-
-  if (acceptInfobar) {
-    infobar->set_accepted(acceptInfobar);
-  }
-
   return delegate;
 }
 
