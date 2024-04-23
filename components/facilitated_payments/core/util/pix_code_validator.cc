@@ -63,7 +63,8 @@ bool ContainsValidSections(std::string_view input) {
 
 }  // namespace
 
-bool IsValidPixCode(std::string_view code) {
+// static
+bool PixCodeValidator::IsValidPixCode(std::string_view code) {
   if (code.empty()) {
     return false;
   }

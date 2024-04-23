@@ -9,18 +9,25 @@
 
 namespace payments::facilitated {
 
-// Returns true if the input `code` is a valid PIX code, i.e.:
-// 1) It consists of valid PIX code sections.
-// 2) The first section is the payload format indicator.
-// 3) The last section is the CRC16.
-// 4) The merchant account information section contains valid subsections,
-//    including the PIX code indicator as the first subsection. The case
-//    (upper/lower) of the PIX code indicator is ignored.
-// 5) The additional data field template section, if present, contains valid
-//    subsections.
-//
-// This function does not validate the value of the CRC16.
-bool IsValidPixCode(std::string_view code);
+class PixCodeValidator {
+ public:
+  PixCodeValidator() = delete;
+  PixCodeValidator& operator=(const PixCodeValidator& other) = delete;
+  PixCodeValidator(const PixCodeValidator& other) = delete;
+
+  // Returns true if the input `code` is a valid PIX code, i.e.:
+  // 1) It consists of valid PIX code sections.
+  // 2) The first section is the payload format indicator.
+  // 3) The last section is the CRC16.
+  // 4) The merchant account information section contains valid subsections,
+  //    including the PIX code indicator as the first subsection. The case
+  //    (upper/lower) of the PIX code indicator is ignored.
+  // 5) The additional data field template section, if present, contains valid
+  //    subsections.
+  //
+  // This function does not validate the value of the CRC16.
+  static bool IsValidPixCode(std::string_view code);
+};
 
 }  // namespace payments::facilitated
 

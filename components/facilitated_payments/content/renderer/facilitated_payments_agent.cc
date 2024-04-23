@@ -53,7 +53,7 @@ void FacilitatedPaymentsAgent::TriggerPixCodeDetection(
           return false;
         }
 
-        result = IsValidPixCode(trimmed_result)
+        result = PixCodeValidator::IsValidPixCode(trimmed_result)
                      ? mojom::PixCodeDetectionResult::kValidPixCodeFound
                      : mojom::PixCodeDetectionResult::kInvalidPixCodeFound;
 

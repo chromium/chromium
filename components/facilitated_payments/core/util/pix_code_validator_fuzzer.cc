@@ -11,7 +11,7 @@
 namespace payments::facilitated {
 
 void IsValidPixCodeCanParseAnyString(const std::string& input) {
-  IsValidPixCode(input);
+  PixCodeValidator::IsValidPixCode(input);
 }
 
 FUZZ_TEST(IsValidPixCodeTest, IsValidPixCodeCanParseAnyString)
