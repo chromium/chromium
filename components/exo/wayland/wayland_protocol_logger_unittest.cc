@@ -17,6 +17,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+// TODO(b/336495168): Test suite consistently failing on ChromeOS ASAN and LSAN.
+#if !(BUILDFLAG(IS_CHROMEOS) && \
+      (defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)))
 namespace exo::wayland {
 namespace {
 
@@ -280,3 +283,4 @@ TEST_F(WaylandProtocolLoggerTest, LogsArrays) {
 }
 
 }  // namespace exo::wayland
+#endif
