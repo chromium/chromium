@@ -1513,7 +1513,6 @@ HttpHandler::PrepareStandardResponse(
       break;
     case kChromeNotReachable:
     case kDisconnected:
-    case kForbidden:
     case kTabCrashed:
       response = std::make_unique<net::HttpServerResponseInfo>(
           net::HTTP_INTERNAL_SERVER_ERROR);

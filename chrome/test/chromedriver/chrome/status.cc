@@ -62,8 +62,6 @@ const char* StatusCodeToString(StatusCode code) {
       return "chrome not reachable";
     case kDisconnected:
       return "disconnected";
-    case kForbidden:
-      return "forbidden";
     case kTabCrashed:
       return "tab crashed";
     case kNoSuchCookie:

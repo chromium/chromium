@@ -41,7 +41,6 @@ enum StatusCode {
   kChromeNotReachable = 100,
   kNoSuchExecutionContext,
   kDisconnected,
-  kForbidden = 103,
   kTabCrashed,
   kTargetDetached,
   kUnexpectedAlertOpen_Keep,
