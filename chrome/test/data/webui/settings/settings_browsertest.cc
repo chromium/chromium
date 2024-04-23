@@ -1218,8 +1218,7 @@ IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest,
 }
 
 // TODO(crbug.com/40885738): SafeBrowsing suite is flaky on Mac.
-// TODO(crbug.com/40251771): SafeBrowsing suite is flaky on Linux and LaCrOS.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_SafeBrowsing DISABLED_SafeBrowsing
 #else
 #define MAYBE_SafeBrowsing SafeBrowsing
