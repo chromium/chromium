@@ -33,7 +33,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/OmahaServiceStartDelayerIntegrationTest.java",
   "javatests/src/org/chromium/chrome/browser/PopularUrlsTest.java",
   "javatests/src/org/chromium/chrome/browser/PopupPTTest.java",
-  "javatests/src/org/chromium/chrome/browser/PopupTest.java",
   "javatests/src/org/chromium/chrome/browser/ProcessIsolationTest.java",
   "javatests/src/org/chromium/chrome/browser/RestoreHistogramTest.java",
   "javatests/src/org/chromium/chrome/browser/SafeBrowsingTest.java",
