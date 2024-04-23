@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.18](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.17...chromium-bidi-v0.5.18) (2024-04-23)
+
+
+### Features
+
+* implement accessibility locator ([#2148](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2148)) ([e2a6303](https://github.com/GoogleChromeLabs/chromium-bidi/commit/e2a630362e9eaae294dae54eb2e16a3e0082f1a6))
+
+
+### Bug Fixes
+
+* apply existing context check to default user context too ([#2121](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2121)) ([0b1bbe5](https://github.com/GoogleChromeLabs/chromium-bidi/commit/0b1bbe5e2bb713365275c5deb7658e58e185a13f))
+* get the correct status from last response extra info ([#2128](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2128)) ([440e9ab](https://github.com/GoogleChromeLabs/chromium-bidi/commit/440e9ab6f0092254997edd8450d1609db2f9addd))
+
 ## [0.5.17](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.16...chromium-bidi-v0.5.17) (2024-04-10)
 
 
