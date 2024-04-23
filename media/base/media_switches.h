@@ -527,6 +527,10 @@ MEDIA_EXPORT extern const base::FeatureParam<double> kAudioOffloadBufferTimeMs;
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioOffload);
 #endif
 
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationAcceleratedEncodeOnArm64);
+#endif
+
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaSharedBitmapToSharedImage);
 
 // Based on a |command_line| and the current platform, returns the effective
