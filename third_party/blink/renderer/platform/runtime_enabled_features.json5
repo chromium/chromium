@@ -2147,6 +2147,14 @@
       status: {"Android": "test", "iOS": "test", "default": "stable"},
     },
     {
+      // If enabled, the input stepDown(n) and stepUp(n) methods will check
+      // that the current value is valid before applying step 10 of their
+      // specified algorithms.
+      // This flag can be removed in M128 assuming no issues.
+      name: "InputStepCurrentValueValidation",
+      status: "stable",
+    },
+    {
       name: "InputTypeSupportInsertLink",
       status: "stable",
     },

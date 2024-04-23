@@ -263,6 +263,21 @@ TEST_F(HTMLInputElementTest, StepDownOverflow) {
   input->stepDown(1, ASSERT_NO_EXCEPTION);
 }
 
+TEST_F(HTMLInputElementTest, StepDownDefaultToMin) {
+  AtomicString min_attr_value("7");
+
+  auto* input = MakeGarbageCollected<HTMLInputElement>(GetDocument());
+  input->setAttribute(html_names::kTypeAttr, AtomicString("number"));
+  input->setAttribute(html_names::kMinAttr, min_attr_value);
+
+  EXPECT_TRUE(input->Value().empty());
+
+  input->stepDown(1, ASSERT_NO_EXCEPTION);
+
+  // stepDown() should default to min value when the input has no initial value.
+  EXPECT_EQ(min_attr_value, input->Value());
+}
+
 TEST_F(HTMLInputElementTest, CheckboxHasNoShadowRoot) {
   GetDocument().body()->setInnerHTML("<input type='checkbox' />");
   auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());

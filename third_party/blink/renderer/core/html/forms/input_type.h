@@ -364,7 +364,8 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
  private:
   // Helper for stepUp()/stepDown(). Adds step value * count to the current
   // value.
-  void ApplyStep(const Decimal&,
+  void ApplyStep(const Decimal& current,
+                 const bool current_was_invalid,
                  double count,
                  AnyStepHandling,
                  TextFieldEventBehavior,

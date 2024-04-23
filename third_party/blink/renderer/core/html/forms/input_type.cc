@@ -1040,6 +1040,7 @@ ColorChooserClient* InputType::GetColorChooserClient() {
 }
 
 void InputType::ApplyStep(const Decimal& current,
+                          const bool current_was_invalid,
                           double count,
                           AnyStepHandling any_step_handling,
                           TextFieldEventBehavior event_behavior,
@@ -1120,8 +1121,13 @@ void InputType::ApplyStep(const Decimal& current,
   // 10. If either the method invoked was the stepDown() method and value is
   // greater than valueBeforeStepping, or the method invoked was the stepUp()
   // method and value is less than valueBeforeStepping, then return.
-  if ((count < 0 && current < new_value) || (count > 0 && current > new_value))
+  DCHECK(!current_was_invalid || current == 0);
+  if (!(RuntimeEnabledFeatures::InputStepCurrentValueValidationEnabled() &&
+        current_was_invalid) &&
+      ((count < 0 && current < new_value) ||
+       (count > 0 && current > new_value))) {
     return;
+  }
 
   // 11. Let value as string be the result of running the algorithm to convert
   // a number to a string, as defined for the input element's type attribute's
@@ -1145,14 +1151,28 @@ StepRange InputType::CreateStepRange(AnyStepHandling) const {
 }
 
 void InputType::StepUp(double n, ExceptionState& exception_state) {
+  // https://html.spec.whatwg.org/C/#dom-input-stepup
+
+  // 1. If the stepDown() and stepUp() methods do not apply, as defined for the
+  // input element's type attribute's current state, then throw an
+  // "InvalidStateError" DOMException.
   if (!IsSteppable()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "This form element is not steppable.");
     return;
   }
-  const Decimal current = ParseToNumber(GetElement().Value(), 0);
-  ApplyStep(current, n, kRejectAny, TextFieldEventBehavior::kDispatchNoEvent,
-            exception_state);
+
+  // 5. If applying the algorithm to convert a string to a number to the string
+  // given by the element's value does not result in an error, then let value be
+  // the result of that algorithm. Otherwise, let value be zero.
+  Decimal current = ParseToNumberOrNaN(GetElement().Value());
+  bool current_was_invalid = current.IsNaN();
+  if (current_was_invalid) {
+    current = 0;
+  }
+
+  ApplyStep(current, current_was_invalid, n, kRejectAny,
+            TextFieldEventBehavior::kDispatchNoEvent, exception_state);
 }
 
 void InputType::StepUpFromLayoutObject(int n) {
@@ -1235,7 +1255,12 @@ void InputType::StepUpFromLayoutObject(int n) {
   if ((sign > 0 && current >= step_range.Maximum()) ||
       (sign < 0 && current <= step_range.Minimum()))
     return;
-  ApplyStep(current, n, kAnyIsDefaultStep,
+
+  // Given the extra treatment the current value gets in the above 3 blocks, at
+  // this point we can assume it is valid.
+  bool current_was_invalid = false;
+
+  ApplyStep(current, current_was_invalid, n, kAnyIsDefaultStep,
             TextFieldEventBehavior::kDispatchChangeEvent,
             IGNORE_EXCEPTION_FOR_TESTING);
 }
