@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/webid/identity_provider_permission_request.h"
 #include "components/permissions/permission_request_manager.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
 
 IdentityDialogController::IdentityDialogController(
     content::WebContents* rp_web_contents)
@@ -41,6 +42,7 @@ void IdentityDialogController::ShowAccountsDialog(
   on_login_ = std::move(on_add_account);
   on_dismiss_ = std::move(dismiss_callback);
   on_accounts_displayed_ = std::move(accounts_displayed_callback);
+  rp_mode_ = rp_mode;
   if (!account_view_)
     account_view_ = AccountSelectionView::Create(this);
   account_view_->Show(top_frame_for_display, iframe_for_display,
@@ -126,7 +128,15 @@ void IdentityDialogController::OnAccountsDisplayed() {
 void IdentityDialogController::OnAccountSelected(const GURL& idp_config_url,
                                                  const Account& account) {
   CHECK(on_account_selection_);
-  on_dismiss_.Reset();
+
+  // We only allow dismiss after account selection on button flows and not on
+  // widget flows.
+  // TODO(crbug.com/335886093): Figure out whether users can cancel after
+  // selecting an account on button flow modal.
+  if (rp_mode_ == blink::mojom::RpMode::kWidget) {
+    on_dismiss_.Reset();
+  }
+
   std::move(on_account_selection_)
       .Run(idp_config_url, account.id,
            account.login_state ==
@@ -201,4 +211,9 @@ void IdentityDialogController::RequestIdPRegistrationPermision(
 
   permission_request_manager->AddRequest(
       rp_web_contents_->GetPrimaryMainFrame(), request);
+}
+
+void IdentityDialogController::SetAccountSelectionViewForTesting(
+    std::unique_ptr<AccountSelectionView> account_view) {
+  account_view_ = std::move(account_view);
 }

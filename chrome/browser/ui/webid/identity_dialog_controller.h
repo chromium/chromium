@@ -99,6 +99,10 @@ class IdentityDialogController
       const url::Origin& origin,
       base::OnceCallback<void(bool accepted)> callback) override;
 
+  // Allows setting a mock AccountSelectionView for testing purposes.
+  void SetAccountSelectionViewForTesting(
+      std::unique_ptr<AccountSelectionView> account_view);
+
  private:
   std::unique_ptr<AccountSelectionView> account_view_{nullptr};
   AccountSelectionCallback on_account_selection_;
@@ -107,6 +111,7 @@ class IdentityDialogController
   MoreDetailsCallback on_more_details_;
   AccountsDisplayedCallback on_accounts_displayed_;
   raw_ptr<content::WebContents> rp_web_contents_;
+  blink::mojom::RpMode rp_mode_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBID_IDENTITY_DIALOG_CONTROLLER_H_
