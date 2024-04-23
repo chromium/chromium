@@ -176,20 +176,18 @@ suite('ChooserExceptionListEntry', function() {
             policyIndicator!.shadowRoot!.querySelector('cr-tooltip-icon');
         assertTrue(!!icon);
 
-        const paperTooltip = icon!.shadowRoot!.querySelector('paper-tooltip');
-        assertTrue(!!paperTooltip);
+        const crTooltip = icon!.shadowRoot!.querySelector('cr-tooltip');
+        assertTrue(!!crTooltip);
 
         // This tooltip is never shown since a common tooltip will be used.
-        assertTrue(!!paperTooltip);
-        assertTooltipIsHidden(paperTooltip);
-        assertFalse(paperTooltip!._showing);
+        assertTrue(!!crTooltip);
+        assertTooltipIsHidden(crTooltip);
 
         const wait = eventToPromise('show-tooltip', document);
         icon!.$.indicator.dispatchEvent(
             new MouseEvent('mouseenter', {bubbles: true, composed: true}));
         return wait.then(() => {
-          assertTrue(paperTooltip!._showing);
-          assertTooltipIsHidden(paperTooltip);
+          assertTooltipIsHidden(crTooltip);
         });
       });
 

@@ -54,6 +54,7 @@ build_webui_tests("build") {
     "cr_toolbar_focus_test.ts",
     "cr_toolbar_search_field_test.ts",
     "cr_toolbar_test.ts",
+    "cr_tooltip_test.ts",
     "cr_tree_test.ts",
     "cr_url_list_item_test.ts",
     "cr_view_manager_test.ts",

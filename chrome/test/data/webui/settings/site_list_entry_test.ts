@@ -49,16 +49,14 @@ suite('SiteListEntry', function() {
     const prefIndicator = testElement.$$('cr-policy-pref-indicator');
     assertTrue(!!prefIndicator);
     const icon = prefIndicator!.shadowRoot!.querySelector('cr-tooltip-icon')!;
-    const paperTooltip = icon.shadowRoot!.querySelector('paper-tooltip')!;
+    const crTooltip = icon.shadowRoot!.querySelector('cr-tooltip')!;
     // Never shown since site-list will show a common tooltip.
-    assertTooltipIsHidden(paperTooltip);
-    assertFalse(paperTooltip._showing);
+    assertTooltipIsHidden(crTooltip);
     const wait = eventToPromise('show-tooltip', document);
     icon.$.indicator.dispatchEvent(
         new MouseEvent('mouseenter', {bubbles: true, composed: true}));
     return wait.then(() => {
-      assertTrue(paperTooltip._showing);
-      assertTooltipIsHidden(paperTooltip);
+      assertTooltipIsHidden(crTooltip);
     });
   });
 

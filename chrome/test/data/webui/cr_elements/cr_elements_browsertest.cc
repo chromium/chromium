@@ -149,6 +149,10 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrToolbar) {
   RunTest("cr_elements/cr_toolbar_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrElementsTest, CrTooltip) {
+  RunTest("cr_elements/cr_tooltip_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrTree) {
   RunTest("cr_elements/cr_tree_test.js", "mocha.run()");
 }

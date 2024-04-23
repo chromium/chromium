@@ -26,10 +26,10 @@ export function getHtml(this: CrProfileAvatarSelectorElement) {
         </cr-button>
         <cr-icon icon="cr:check" class="checkmark"></cr-icon>
       </div>
-      <paper-tooltip for="${this.getAvatarId_(index)}" offset="0"
+      <cr-tooltip for="${this.getAvatarId_(index)}" offset="0"
           fit-to-visible-bounds>
         ${item.label}
-      </paper-tooltip>
+      </cr-tooltip>
     </div>
   `)}
 </cr-grid>`;

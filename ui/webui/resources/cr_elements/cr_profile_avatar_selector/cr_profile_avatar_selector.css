@@ -93,7 +93,7 @@ cr-button {
   background-size: var(--avatar-size);
 }
 
-paper-tooltip {
+cr-tooltip {
   --paper-tooltip-delay-in: 100ms;
   --paper-tooltip-duration-in: 100ms;
   --paper-tooltip-duration-out: 100ms;
