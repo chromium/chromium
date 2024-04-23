@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <string>
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -26,6 +25,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
@@ -643,14 +643,18 @@ IN_PROC_BROWSER_TEST_F(IncognitoExtensionsToolbarContainerUITest,
 }
 
 class ExtensionsToolbarRuntimeHostPermissionsBrowserTest
-    : public ExtensionsToolbarContainerUITest {
+    : public ExtensionsToolbarContainerUITest,
+      public testing::WithParamInterface<bool> {
  public:
   enum class ContentScriptRunLocation {
     DOCUMENT_START,
     DOCUMENT_IDLE,
   };
 
-  ExtensionsToolbarRuntimeHostPermissionsBrowserTest() = default;
+  ExtensionsToolbarRuntimeHostPermissionsBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        extensions_features::kExtensionsMenuAccessControl, GetParam());
+  }
   ExtensionsToolbarRuntimeHostPermissionsBrowserTest(
       const ExtensionsToolbarRuntimeHostPermissionsBrowserTest&) = delete;
   ExtensionsToolbarRuntimeHostPermissionsBrowserTest& operator=(
@@ -659,6 +663,7 @@ class ExtensionsToolbarRuntimeHostPermissionsBrowserTest
 
   void SetUpOnMainThread() override {
     ExtensionsToolbarContainerUITest::SetUpOnMainThread();
+
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -715,23 +720,46 @@ class ExtensionsToolbarRuntimeHostPermissionsBrowserTest
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   extensions::TestExtensionDir extension_dir_;
   scoped_refptr<const extensions::Extension> extension_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
+    // False disables kExtensionsMenuAccessControl feature, true enables it.
+    testing::Bool(),
+    [](const testing::TestParamInfo<
+        ExtensionsToolbarRuntimeHostPermissionsBrowserTest::ParamType>& info) {
+      return info.param ? "ExtensionsMenuAccessControlFeatureEnabled"
+                        : "ExtensionsMenuAccessControlFeatureDisabled";
+    });
+
 // Tests page access modifications through the context menu which require a page
 // refresh.
-IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
                        ContextMenuPageAccess_RefreshRequired) {
   LoadAllUrlsExtension(ContentScriptRunLocation::DOCUMENT_START);
-  std::u16string tooltip_wants_access = base::JoinString(
-      {u"All Urls Extension",
-       l10n_util::GetStringUTF16(IDS_EXTENSIONS_WANTS_ACCESS_TO_SITE)},
-      u"\n");
-  std::u16string tooltip_has_access = base::JoinString(
-      {u"All Urls Extension",
-       l10n_util::GetStringUTF16(IDS_EXTENSIONS_HAS_ACCESS_TO_SITE)},
-      u"\n");
+
+  // When feature is enabled, tooltip is empty since a hover card is shown
+  // instead. Testing for the hover card is done separately.
+  bool feature_enabled = GetParam();
+  std::u16string tooltip_wants_access =
+      feature_enabled
+          ? std::u16string()
+          : base::JoinString({u"All Urls Extension",
+                              l10n_util::GetStringUTF16(
+                                  IDS_EXTENSIONS_WANTS_ACCESS_TO_SITE)},
+                             u"\n");
+  std::u16string tooltip_has_access =
+      feature_enabled
+          ? std::u16string()
+          : base::JoinString(
+                {u"All Urls Extension",
+                 l10n_util::GetStringUTF16(IDS_EXTENSIONS_HAS_ACCESS_TO_SITE)},
+                u"\n");
 
   ExtensionTestMessageListener injection_listener(kInjectionSucceededMessage);
   injection_listener.set_extension_id(extension()->id());
@@ -830,17 +858,27 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
 
 // Tests page access modifications through the context menu which don't require
 // a page refresh.
-IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
                        ContextMenuPageAccess_RefreshNotRequired) {
   LoadAllUrlsExtension(ContentScriptRunLocation::DOCUMENT_IDLE);
-  std::u16string tooltip_wants_access = base::JoinString(
-      {u"All Urls Extension",
-       l10n_util::GetStringUTF16(IDS_EXTENSIONS_WANTS_ACCESS_TO_SITE)},
-      u"\n");
-  std::u16string tooltip_has_access = base::JoinString(
-      {u"All Urls Extension",
-       l10n_util::GetStringUTF16(IDS_EXTENSIONS_HAS_ACCESS_TO_SITE)},
-      u"\n");
+
+  // When feature is enabled, tooltip is empty since a hover card is shown
+  // instead. Testing for the hover card is done separately.
+  bool feature_enabled = GetParam();
+  std::u16string tooltip_wants_access =
+      feature_enabled
+          ? std::u16string()
+          : base::JoinString({u"All Urls Extension",
+                              l10n_util::GetStringUTF16(
+                                  IDS_EXTENSIONS_WANTS_ACCESS_TO_SITE)},
+                             u"\n");
+  std::u16string tooltip_has_access =
+      feature_enabled
+          ? std::u16string()
+          : base::JoinString(
+                {u"All Urls Extension",
+                 l10n_util::GetStringUTF16(IDS_EXTENSIONS_HAS_ACCESS_TO_SITE)},
+                u"\n");
 
   ExtensionTestMessageListener injection_listener(kInjectionSucceededMessage);
   injection_listener.set_extension_id(extension()->id());

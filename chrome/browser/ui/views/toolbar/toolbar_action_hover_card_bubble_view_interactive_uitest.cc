@@ -1,9 +1,7 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view.h"
-
+#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -11,6 +9,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -22,6 +21,8 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/test/permissions_manager_waiter.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/test/widget_test.h"
@@ -363,9 +364,57 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   EXPECT_EQ(hover_card()->GetActionTitleTextForTesting(), u"Action title");
 }
 
+// Verify site access content in hover card is dynamically updated when the
+// extension site access is updated.
+IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
+                       WidgetContentDynamicallyUpdated_SiteAccessUpdated) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Install an extension and withhold its host permissions.
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", "*://example.com/*");
+  auto permissions_modifier =
+      extensions::ScriptingPermissionsModifier(profile(), extension);
+  permissions_modifier.SetWithholdHostPermissions(true);
+
+  PinExtension(extension->id());
+  ToolbarActionView* action_view =
+      GetExtensionsToolbarContainer()->GetViewForId(extension->id());
+  ASSERT_TRUE(action_view);
+
+  // Navigate to a example.com
+  GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Hover over the extension and verify card anchors to its action.
+  HoverMouseOverActionView(action_view);
+  views::Widget* const widget = hover_card()->GetWidget();
+  views::test::WidgetVisibleWaiter(widget).Wait();
+  ASSERT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_EQ(hover_card()->GetAnchorView(), action_view);
+
+  // Verify site access title has "requests access" text.
+  EXPECT_EQ(
+      hover_card()->GetSiteAccessTitleTextForTesting(),
+      l10n_util::GetStringUTF16(
+          IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_TITLE_REQUESTS_ACCESS));
+
+  // Grant host permissions to example.com.
+  extensions::PermissionsManagerWaiter waiter(
+      extensions::PermissionsManager::Get(profile()));
+  permissions_modifier.GrantHostPermission(url);
+  waiter.WaitForExtensionPermissionsUpdate();
+
+  // Verify site access title has "has access" text.
+  EXPECT_EQ(hover_card()->GetSiteAccessTitleTextForTesting(),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSIONS_TOOLBAR_ACTION_HOVER_CARD_TITLE_HAS_ACCESS));
+}
+
 // Verify hover card is not visible when mouse moves inside the extensions
-// container to a button that is not a toolbar icon view (which has its own 'on
-// mouse moved' event listener).
+// container to a button that is not a toolbar icon view (which has its own
+// 'on mouse moved' event listener).
 IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
                        WidgetNotVisibleOnExtensionsControl) {
   ShowUi("");

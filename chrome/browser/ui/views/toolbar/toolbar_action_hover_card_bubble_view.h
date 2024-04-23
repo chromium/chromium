@@ -44,6 +44,8 @@ class ToolbarActionHoverCardBubbleView
   // Accessors used by tests.
   std::u16string GetTitleTextForTesting() const;
   std::u16string GetActionTitleTextForTesting() const;
+  std::u16string GetSiteAccessTitleTextForTesting() const;
+  std::u16string GetSiteAccessDescriptionTextForTesting() const;
   bool IsActionTitleVisible() const;
   bool IsSiteAccessSeparatorVisible() const;
   bool IsSiteAccessTitleVisible() const;

@@ -284,6 +284,17 @@ std::u16string ToolbarActionHoverCardBubbleView::GetActionTitleTextForTesting()
   return action_title_label_->GetText();
 }
 
+std::u16string
+ToolbarActionHoverCardBubbleView::GetSiteAccessTitleTextForTesting() const {
+  return site_access_title_label_->GetText();
+}
+
+std::u16string
+ToolbarActionHoverCardBubbleView::GetSiteAccessDescriptionTextForTesting()
+    const {
+  return site_access_description_label_->GetText();
+}
+
 bool ToolbarActionHoverCardBubbleView::IsActionTitleVisible() const {
   return action_title_label_->GetVisible();
 }
