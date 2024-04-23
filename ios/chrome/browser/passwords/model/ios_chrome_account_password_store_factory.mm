@@ -54,6 +54,7 @@ IOSChromeAccountPasswordStoreFactory::IOSChromeAccountPasswordStoreFactory()
           "AccountPasswordStore",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(CredentialsCleanerRunnerFactory::GetInstance());
+  DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
 }
 
 IOSChromeAccountPasswordStoreFactory::~IOSChromeAccountPasswordStoreFactory() =
