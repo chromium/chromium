@@ -6633,9 +6633,6 @@ crbug.com/1487899 [ Linux ] fast/canvas/canvas-toBlob-jpeg-medium-quality.html [
 # Gardener 2023-10-02
 [ Release Win10.20h2 ] http/tests/inspector-protocol/fedcm/fedcm-open-url.js [ Failure Pass ]
 
-# TODO(crbug.com/1428024): These tests should be updated because of the migration to new data engine
-crbug.com/1428024 http/tests/devtools/tracing/timeline-misc/timeline-aggregated-details.js [ Failure Pass ]
-
 crbug.com/1481209 [ Mac ] http/tests/inspector-protocol/target/browser-auto-attach-tab.js [ Failure Pass Timeout ]
 crbug.com/1481209 [ Linux ] http/tests/inspector-protocol/target/browser-auto-attach-tab.js [ Failure Pass Timeout ]
 
