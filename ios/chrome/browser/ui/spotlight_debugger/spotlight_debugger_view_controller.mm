@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "base/time/time.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/app/spotlight/bookmarks_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/open_tabs_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/reading_list_spotlight_manager.h"
@@ -52,15 +53,19 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
 
 @end
 
-@implementation SpotlightDebuggerViewController
+@implementation SpotlightDebuggerViewController {
+  // PrefService per a browser state.
+  PrefService* _prefService;
+}
 
-- (instancetype)init {
+- (instancetype)initWithPrefService:(PrefService*)prefService {
   self = [super initWithStyle:UITableViewStyleInsetGrouped];
   if (self) {
     _spinner = [[UIActivityIndicatorView alloc]
         initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleLarge];
     _spinner.translatesAutoresizingMaskIntoConstraints = NO;
     _spotlightInterface = [SpotlightInterface defaultInterface];
+    _prefService = prefService;
   }
   return self;
 }
@@ -121,7 +126,7 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
           break;
         case LastIndexDateRow:
           content.text = @"Time since last reindexing";
-          content.secondaryText = [[self class] timeSinceLastReindexAsString];
+          content.secondaryText = [self timeSinceLastReindexAsString];
           content.image = DefaultSymbolWithPointSize(
               @"arrow.counterclockwise.icloud", kSymbolAccessoryPointSize);
           break;
@@ -253,6 +258,7 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
       [self.tableView reloadData];
     });
   }];
+  _prefService->ClearPref(spotlight::kSpotlightLastIndexingDateKey);
 }
 
 - (void)clearAndReindexBookmarks {
@@ -292,17 +298,15 @@ typedef NS_ENUM(NSUInteger, DebugCommandsRows) {
   [self.spinner removeFromSuperview];
 }
 
-+ (NSString*)timeSinceLastReindexAsString {
-  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-
-  NSDate* date = base::apple::ObjCCast<NSDate>(
-      [userDefaults objectForKey:@(spotlight::kSpotlightLastIndexingDateKey)]);
-  if (!date) {
+- (NSString*)timeSinceLastReindexAsString {
+  const base::Time date =
+      _prefService->GetTime(spotlight::kSpotlightLastIndexingDateKey);
+  if (date == base::Time()) {
     return @"Never";
   }
 
   NSTimeInterval timeSinceReindexing =
-      [[NSDate date] timeIntervalSinceDate:date];
+      [[NSDate date] timeIntervalSinceDate:date.ToNSDate()];
   NSDateComponentsFormatter* formatter =
       [[NSDateComponentsFormatter alloc] init];
   formatter.unitsStyle = NSDateComponentsFormatterUnitsStyleBrief;

@@ -788,6 +788,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
                              base::Time());
 
   registry->RegisterIntegerPref(spotlight::kSpotlightLastIndexingVersionKey, 0);
+  registry->RegisterTimePref(spotlight::kSpotlightLastIndexingDateKey,
+                             base::Time());
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -999,6 +1001,8 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // Added 04/2024.
   MigrateIntegerPreferenceFromUserDefaults(
       spotlight::kSpotlightLastIndexingVersionKey, prefs, defaults);
+  MigrateNSDatePreferenceFromUserDefaults(
+      spotlight::kSpotlightLastIndexingDateKey, prefs, defaults);
 }
 
 void MigrateObsoleteUserDefault() {

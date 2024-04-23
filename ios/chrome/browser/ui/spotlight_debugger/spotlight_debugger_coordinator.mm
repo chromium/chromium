@@ -11,6 +11,7 @@
 #import "ios/chrome/app/spotlight/reading_list_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/topsites_spotlight_manager.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -32,9 +33,10 @@
 - (void)start {
   [super start];
 
-  self.viewController = [[SpotlightDebuggerViewController alloc] init];
-  self.viewController.delegate = self;
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  self.viewController = [[SpotlightDebuggerViewController alloc]
+      initWithPrefService:browserState->GetPrefs()];
+  self.viewController.delegate = self;
   self.viewController.bookmarksManager = [BookmarksSpotlightManager
       bookmarksSpotlightManagerWithBrowserState:browserState];
 

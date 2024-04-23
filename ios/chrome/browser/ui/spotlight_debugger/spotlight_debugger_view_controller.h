@@ -11,6 +11,7 @@
 @class ReadingListSpotlightManager;
 @class OpenTabsSpotlightManager;
 @class TopSitesSpotlightManager;
+class PrefService;
 
 @protocol SpotlightDebuggerViewControllerDelegate
 
@@ -22,7 +23,8 @@
 // This feature needs to be activated in Experimental Settings.
 @interface SpotlightDebuggerViewController : UITableViewController
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPrefService:(PrefService*)prefService
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;

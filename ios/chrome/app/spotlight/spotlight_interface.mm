@@ -125,9 +125,6 @@
   __weak SpotlightInterface* weakSelf = self;
 
   BlockWithError augmentedCallback = ^(NSError* error) {
-    [[NSUserDefaults standardUserDefaults]
-        removeObjectForKey:@(spotlight::kSpotlightLastIndexingDateKey)];
-
     [SpotlightLogger logSpotlightError:error];
 
     if (completionHandler) {

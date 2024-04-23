@@ -9,7 +9,6 @@
 #import <memory>
 #import <stack>
 
-#import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
@@ -227,16 +226,9 @@ class SpotlightBookmarkModelBridge;
 
 // Returns true is the current index is too old or from an incompatible
 - (BOOL)shouldReindex {
-  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-
-  // TODO(crbug.com/324534520): Use PrefService instead.
-  NSDate* date = base::apple::ObjCCast<NSDate>(
-      [userDefaults objectForKey:@(spotlight::kSpotlightLastIndexingDateKey)]);
-  if (!date) {
-    return YES;
-  }
-  const base::TimeDelta timeSinceLastIndexing =
-      base::Time::Now() - base::Time::FromNSDate(date);
+  const base::Time date =
+      _prefService->GetTime(spotlight::kSpotlightLastIndexingDateKey);
+  const base::TimeDelta timeSinceLastIndexing = base::Time::Now() - date;
   if (timeSinceLastIndexing >= kDelayBetweenTwoIndexing) {
     return YES;
   }
@@ -565,11 +557,8 @@ class SpotlightBookmarkModelBridge;
                       _initialIndexTimer->Elapsed());
   _initialIndexTimer.reset();
 
-  // TODO(crbug.com/324534520): Use PrefService instead.
-  [[NSUserDefaults standardUserDefaults]
-      setObject:base::Time::Now().ToNSDate()
-         forKey:@(spotlight::kSpotlightLastIndexingDateKey)];
-
+  _prefService->SetTime(spotlight::kSpotlightLastIndexingDateKey,
+                        base::Time::Now());
   _prefService->SetInteger(spotlight::kSpotlightLastIndexingVersionKey,
                            spotlight::kCurrentSpotlightIndexVersion);
 }
