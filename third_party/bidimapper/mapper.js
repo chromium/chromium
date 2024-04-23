@@ -4998,13 +4998,14 @@ var mapperTab = (function () {
 	            origin: this.origin,
 	        };
 	    }
-	    async evaluate(expression, awaitPromise, resultOwnership = "none" /* Script.ResultOwnership.None */, serializationOptions = {}, userActivation = false) {
+	    async evaluate(expression, awaitPromise, resultOwnership = "none" /* Script.ResultOwnership.None */, serializationOptions = {}, userActivation = false, includeCommandLineApi = false) {
 	        const cdpEvaluateResult = await this.cdpClient.sendCommand('Runtime.evaluate', {
 	            contextId: this.executionContextId,
 	            expression,
 	            awaitPromise,
 	            serializationOptions: Realm.#getSerializationOptions("deep" /* Protocol.Runtime.SerializationOptionsSerialization.Deep */, serializationOptions),
 	            userGesture: userActivation,
+	            includeCommandLineAPI: includeCommandLineApi,
 	        });
 	        if (cdpEvaluateResult.exceptionDetails) {
 	            return await this.#getExceptionResult(cdpEvaluateResult.exceptionDetails, 0, resultOwnership);
@@ -5556,11 +5557,11 @@ var mapperTab = (function () {
 	        }
 	        return await super.deserializeForCdp(localValue);
 	    }
-	    async evaluate(expression, awaitPromise, resultOwnership, serializationOptions, userActivation) {
+	    async evaluate(expression, awaitPromise, resultOwnership, serializationOptions, userActivation, includeCommandLineApi) {
 	        await this.#browsingContextStorage
 	            .getContext(this.#browsingContextId)
 	            .targetUnblockedOrThrow();
-	        return await super.evaluate(expression, awaitPromise, resultOwnership, serializationOptions, userActivation);
+	        return await super.evaluate(expression, awaitPromise, resultOwnership, serializationOptions, userActivation, includeCommandLineApi);
 	    }
 	    async callFunction(functionDeclaration, awaitPromise, thisLocalValue, argumentsLocalValues, resultOwnership, serializationOptions, userActivation) {
 	        await this.#browsingContextStorage
@@ -6316,7 +6317,7 @@ var mapperTab = (function () {
 	        // TODO: create a dedicated sandbox instead of `#defaultRealm`.
 	        return await this.#locateNodesByLocator(this.#defaultRealm, params.locator, params.startNodes ?? [], params.maxNodeCount, params.serializationOptions);
 	    }
-	    #getLocatorDelegate(locator, maxNodeCount, startNodes) {
+	    async #getLocatorDelegate(realm, locator, maxNodeCount, startNodes) {
 	        switch (locator.type) {
 	            case 'css':
 	                return {
@@ -6462,10 +6463,87 @@ var mapperTab = (function () {
 	                        ...startNodes,
 	                    ],
 	                };
+	            case 'accessibility': {
+	                // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-accessibility-attributes
+	                if (!locator.value.name && !locator.value.role) {
+	                    throw new protocol_js_1$9.InvalidSelectorException('Either name or role has to be specified');
+	                }
+	                const bindings = await realm.evaluate(
+	                /* expression=*/ '({getAccessibleName, getAccessibleRole})', 
+	                /* awaitPromise=*/ false, "root" /* Script.ResultOwnership.Root */, 
+	                /* serializationOptions= */ undefined, 
+	                /* userActivation=*/ false, 
+	                /* includeCommandLineApi=*/ true);
+	                if (bindings.type !== 'success') {
+	                    throw new Error('Could not get bindings');
+	                }
+	                if (bindings.result.type !== 'object') {
+	                    throw new Error('Could not get bindings');
+	                }
+	                return {
+	                    functionDeclaration: String((name, role, bindings, maxNodeCount, ...startNodes) => {
+	                        const returnedNodes = [];
+	                        let aborted = false;
+	                        function collect(contextNodes, selector) {
+	                            if (aborted) {
+	                                return;
+	                            }
+	                            for (const contextNode of contextNodes) {
+	                                let match = true;
+	                                if (selector.role) {
+	                                    const role = bindings.getAccessibleRole(contextNode);
+	                                    if (selector.role !== role) {
+	                                        match = false;
+	                                    }
+	                                }
+	                                if (selector.name) {
+	                                    const name = bindings.getAccessibleName(contextNode);
+	                                    if (selector.name !== name) {
+	                                        match = false;
+	                                    }
+	                                }
+	                                if (match) {
+	                                    if (maxNodeCount !== 0 &&
+	                                        returnedNodes.length === maxNodeCount) {
+	                                        aborted = true;
+	                                        break;
+	                                    }
+	                                    returnedNodes.push(contextNode);
+	                                }
+	                                const childNodes = [];
+	                                for (const child of contextNode.children) {
+	                                    if (child instanceof HTMLElement) {
+	                                        childNodes.push(child);
+	                                    }
+	                                }
+	                                collect(childNodes, selector);
+	                            }
+	                        }
+	                        startNodes = startNodes.length > 0 ? startNodes : [document.body];
+	                        collect(startNodes, {
+	                            role,
+	                            name,
+	                        });
+	                        return returnedNodes;
+	                    }),
+	                    argumentsLocalValues: [
+	                        // `name`
+	                        { type: 'string', value: locator.value.name || '' },
+	                        // `role`
+	                        { type: 'string', value: locator.value.role || '' },
+	                        // `bindings`.
+	                        { handle: bindings.result.handle },
+	                        // `maxNodeCount` with `0` means no limit.
+	                        { type: 'number', value: maxNodeCount ?? 0 },
+	                        // `startNodes`
+	                        ...startNodes,
+	                    ],
+	                };
+	            }
 	        }
 	    }
 	    async #locateNodesByLocator(realm, locator, startNodes, maxNodeCount, serializationOptions) {
-	        const locatorDelegate = this.#getLocatorDelegate(locator, maxNodeCount, startNodes);
+	        const locatorDelegate = await this.#getLocatorDelegate(realm, locator, maxNodeCount, startNodes);
 	        serializationOptions = {
 	            ...serializationOptions,
 	            // The returned object is an array of nodes, so no need in deeper JS serialization.
@@ -6480,7 +6558,7 @@ var mapperTab = (function () {
 	            locatorResult.exceptionDetails.text?.endsWith('is not a valid selector.') ||
 	                // XPath selector.
 	                locatorResult.exceptionDetails.text?.endsWith('is not a valid XPath expression.')) {
-	                throw new protocol_js_1$9.InvalidSelectorException(`Not valid selector ${locator.value}`);
+	                throw new protocol_js_1$9.InvalidSelectorException(`Not valid selector ${typeof locator.value === 'string' ? locator.value : JSON.stringify(locator.value)}`);
 	            }
 	            // Heuristic to detect if the `startNode` is not an `HTMLElement` in css selector.
 	            if (locatorResult.exceptionDetails.text ===
@@ -13819,10 +13897,20 @@ var mapperTab = (function () {
 		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
 		(function (BrowsingContext) {
 		    BrowsingContext.LocatorSchema = zod_1.default.lazy(() => zod_1.default.union([
+		        BrowsingContext.AccessibilityLocatorSchema,
 		        BrowsingContext.CssLocatorSchema,
 		        BrowsingContext.InnerTextLocatorSchema,
 		        BrowsingContext.XPathLocatorSchema,
 		    ]));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.AccessibilityLocatorSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('accessibility'),
+		        value: zod_1.default.object({
+		            name: zod_1.default.string().optional(),
+		            role: zod_1.default.string().optional(),
+		        }),
+		    }));
 		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
 		(function (BrowsingContext) {
 		    BrowsingContext.CssLocatorSchema = zod_1.default.lazy(() => zod_1.default.object({
@@ -16046,42 +16134,13 @@ var mapperTab = (function () {
 	 */
 	const log_js_1$2 = log$1;
 	/** HTML source code for the user-facing Mapper tab. */
-	const mapperPageSource = '<!DOCTYPE html><title>BiDi-CDP Mapper</title><style>body{font-family: Roboto, serif; font-size: 13px; color: #202124;}.log{padding: 12px; font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace; font-size: 11px; line-height: 180%; background: #f1f3f4; border-radius: 4px;}.pre{overflow-wrap: break-word; padding: 10px;}.card{margin: 60px auto; padding: 2px 0; max-width: 900px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15), 0 1px 6px rgba(0, 0, 0, 0.2); border-radius: 8px;}.divider{height: 1px; background: #f0f0f0;}.item{padding: 16px 20px;}</style><div class="card"><div class="item"><h1>BiDi-CDP Mapper is controlling this tab</h1><p>Closing or reloading it will stop the BiDi process. <a target="_blank" title="BiDi-CDP Mapper GitHub Repository" href="https://github.com/GoogleChromeLabs/chromium-bidi">Details.</a></p></div><div class="divider"></div><details id="details"><summary class="item">Debug information</summary></details></div>';
-	/**
-	 * The following piece of HTML should be added to the `debug` element:
-	 *
-	 * <div class="divider"></div>
-	 * <div class="item">
-	 * <h3>${name}</h3>
-	 * <div id="${name}_log" class="log">
-	 */
-	function findOrCreateTypeLogContainer(logPrefix) {
-	    const logType = logPrefix.split(':')[0];
-	    const containerId = `${logType}_log`;
-	    const existingContainer = document.getElementById(containerId);
-	    if (existingContainer) {
-	        return existingContainer;
-	    }
-	    const debugElement = document.getElementById('details');
-	    const divider = document.createElement('div');
-	    divider.className = 'divider';
-	    debugElement.appendChild(divider);
-	    const htmlItem = document.createElement('div');
-	    htmlItem.className = 'item';
-	    htmlItem.innerHTML = `<h3>${logType}</h3><div id="${containerId}" class="log"></div>`;
-	    debugElement.appendChild(htmlItem);
-	    return document.getElementById(containerId);
-	}
+	const mapperPageSource = '<!DOCTYPE html><title>BiDi-CDP Mapper</title><style>body{font-family: Roboto,serif;font-size:13px;color:#202124;}.log{padding: 10px;font-family:Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;font-size:11px;line-height:180%;background: #f1f3f4;border-radius:4px;}.pre{overflow-wrap: break-word; margin:10px;}.card{margin:60px auto;padding:2px 0;max-width:900px;box-shadow:0 1px 4px rgba(0,0,0,0.15),0 1px 6px rgba(0,0,0,0.2);border-radius:8px;}.divider{height:1px;background:#f0f0f0;}.item{padding:16px 20px;}</style><div class="card"><div class="item"><h1>BiDi-CDP Mapper is controlling this tab</h1><p>Closing or reloading it will stop the BiDi process. <a target="_blank" title="BiDi-CDP Mapper GitHub Repository" href="https://github.com/GoogleChromeLabs/chromium-bidi">Details.</a></p></div><div class="item"><div id="logs" class="log"></div></div></div></div>';
 	function generatePage() {
 	    // If run not in browser (e.g. unit test), do nothing.
 	    if (!globalThis.document.documentElement) {
 	        return;
 	    }
 	    globalThis.document.documentElement.innerHTML = mapperPageSource;
-	    // Create main log containers in proper order.
-	    findOrCreateTypeLogContainer(log_js_1$2.LogType.debugInfo);
-	    findOrCreateTypeLogContainer(log_js_1$2.LogType.bidi);
-	    findOrCreateTypeLogContainer(log_js_1$2.LogType.cdp);
 	}
 	mapperTabPage.generatePage = generatePage;
 	function stringify(message) {
@@ -16098,17 +16157,20 @@ var mapperTab = (function () {
 	    // Skip sending BiDi logs as they are logged once by `bidi:server:*`
 	    if (!logPrefix.startsWith(log_js_1$2.LogType.bidi)) {
 	        // If `sendDebugMessage` is defined, send the log message there.
-	        globalThis.window?.sendDebugMessage?.(JSON.stringify({ logType: logPrefix, messages }));
+	        globalThis.window?.sendDebugMessage?.(JSON.stringify({ logType: logPrefix, messages }, null, 2));
 	    }
-	    const typeLogContainer = findOrCreateTypeLogContainer(logPrefix);
+	    const debugContainer = document.getElementById('logs');
+	    if (!debugContainer) {
+	        return;
+	    }
 	    // This piece of HTML should be added:
 	    // <div class="pre">...log message...</div>
 	    const lineElement = document.createElement('div');
 	    lineElement.className = 'pre';
 	    lineElement.textContent = [logPrefix, ...messages].map(stringify).join(' ');
-	    typeLogContainer.appendChild(lineElement);
-	    if (typeLogContainer.childNodes.length > 200) {
-	        typeLogContainer.removeChild(typeLogContainer.childNodes[0]);
+	    debugContainer.appendChild(lineElement);
+	    if (debugContainer.childNodes.length > 400) {
+	        debugContainer.removeChild(debugContainer.childNodes[0]);
 	    }
 	}
 	mapperTabPage.log = log;
