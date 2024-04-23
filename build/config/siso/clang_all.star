@@ -33,6 +33,8 @@ def __filegroups(ctx):
                 "bin/clang++",
                 "bin/clang-cl.exe",
                 "*_ignorelist.txt",
+                # https://crbug.com/335997052
+                "clang_rt.profile*.lib",
             ],
         },
     }
