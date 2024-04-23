@@ -127,8 +127,8 @@ TEST_F(AppSourceUrlRecorderTest, CheckBorealis) {
 TEST_F(AppSourceUrlRecorderTest, CheckCrostini) {
   // Typically a desktop ID won't use much besides [a-zA-Z0-9.-] but it's
   // untrusted user-supplied data so make sure it's all escaped anyway.
-  std::string desktop_id("I-💖.unicode!\nUnd der Eisbär?");
-  GURL expected_url("app://I-💖.unicode!\nUnd der Eisbär?/Name");
+  std::string desktop_id("I-💖.unicode!\nUnd_der_Eisbär?");
+  GURL expected_url("app://I-💖.unicode!\nUnd_der_Eisbär?/Name");
   SourceId id = GetSourceIdForCrostini(desktop_id, "Name");
 
   const auto& sources = test_ukm_recorder_.GetSources();
