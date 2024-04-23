@@ -534,12 +534,16 @@ class StateKeys {
   StateKeys& operator=(const StateKeys&) = delete;
 
   using CompletionCallback = base::OnceCallback<void(
-      base::expected<std::string, ServerBackedStateKeysBroker::ErrorType>)>;
+      base::expected<std::optional<std::string>,
+                     ServerBackedStateKeysBroker::ErrorType>)>;
 
-  // This will try up to `kMaxAttempts` times to obtain the state keys.  If
-  // successful, it will return the current state key by calling the completion
-  // callback.
-  // Otherwise, it will return `std::nullopt`.
+  // If FRE is enabled, this will try up to `kMaxAttempts` times to obtain the
+  // state keys. If successful, it will call the completion callback with the
+  // current state key as the callback's expected value. If unsuccessful, the
+  // callback will be passed an unexpected (error) value.
+  //
+  // If FRE is not enabled, the completion callback will be called with the
+  // `std::nullopt` as the callback's expected value.
   void Retrieve(ServerBackedStateKeysBroker* state_key_broker,
                 CompletionCallback completion_callback) {
     ++attempts_;
@@ -1002,14 +1006,20 @@ class EnrollmentStateFetcherImpl::Sequence {
     }
     query_.StoreResponse(local_state_, result.value());
 
-    state_keys_.Retrieve(context_.state_key_broker,
-                         base::BindOnce(&Sequence::OnStateKeysRetrieved,
-                                        weak_factory_.GetWeakPtr()));
+    if (AutoEnrollmentTypeChecker::IsFREEnabled()) {
+      state_keys_.Retrieve(context_.state_key_broker,
+                           base::BindOnce(&Sequence::OnStateKeyRetrieved,
+                                          weak_factory_.GetWeakPtr()));
+    } else {
+      LOG(WARNING) << "Forced re-enrollment is not enabled. No need to "
+                      "retrieve a re-enrollment (a.k.a. state) key.";
+      OnStateKeyRetrieved(std::nullopt);
+    }
   }
 
-  void OnStateKeysRetrieved(
-      base::expected<std::string, ServerBackedStateKeysBroker::ErrorType>
-          state_key) {
+  void OnStateKeyRetrieved(
+      base::expected<std::optional<std::string>,
+                     ServerBackedStateKeysBroker::ErrorType> state_key) {
     ReportStepDurationAndResetTimer(kUMASuffixStateKeysRetrieval);
     base::UmaHistogramEnumeration(
         kUMAStateDeterminationStateKeysRetrievalErrorType,

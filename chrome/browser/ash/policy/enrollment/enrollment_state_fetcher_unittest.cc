@@ -209,13 +209,24 @@ class EnrollmentStateFetcherTest : public testing::Test {
                 ash::DeviceSettingsService::OwnershipStatus::kOwnershipNone)));
   }
 
-  void ExpectStateKeysRequest(base::TimeDelta time = base::TimeDelta()) {
-    EXPECT_CALL(state_key_broker_, RequestStateKeys)
-        .WillOnce(DoAll(
-            InvokeWithoutArgs([=]() { task_environment_.AdvanceClock(time); }),
-            RunOnceCallback<0>(std::vector<std::string>{kTestStateKey})));
-    EXPECT_CALL(state_key_broker_, error_type)
-        .WillOnce(Return(ServerBackedStateKeysBroker::ErrorType::kNoError));
+  std::string GetTestStateKey() {
+    return AutoEnrollmentTypeChecker::IsFREEnabled() ? kTestStateKey
+                                                     : std::string();
+  }
+
+  void ExpectStateKeysRequestOrNotDependingOnFRESupport(
+      base::TimeDelta time = base::TimeDelta()) {
+    if (AutoEnrollmentTypeChecker::IsFREEnabled()) {
+      EXPECT_CALL(state_key_broker_, RequestStateKeys)
+          .WillOnce(DoAll(
+              InvokeWithoutArgs(
+                  [=]() { task_environment_.AdvanceClock(time); }),
+              RunOnceCallback<0>(std::vector<std::string>{kTestStateKey})));
+      EXPECT_CALL(state_key_broker_, error_type)
+          .WillOnce(Return(ServerBackedStateKeysBroker::ErrorType::kNoError));
+    } else {
+      EXPECT_CALL(state_key_broker_, RequestStateKeys).Times(0);
+    }
   }
 
   void ExpectOprfRequest(base::TimeDelta time = base::TimeDelta()) {
@@ -246,7 +257,7 @@ class EnrollmentStateFetcherTest : public testing::Test {
     response.mutable_device_state_retrieval_response();
     EXPECT_CALL(job_creation_handler_,
                 OnJobCreation(JobWithStateRequest(
-                    kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                    GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
         .WillOnce(DoAll(
             InvokeWithoutArgs([=]() { task_environment_.AdvanceClock(time); }),
             fake_dm_service_->SendJobOKAsync(response)));
@@ -377,6 +388,11 @@ TEST_F(EnrollmentStateFetcherTest, OwnershipUnknown) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, StateKeysMissingDueToCommunicationError) {
+  if (!AutoEnrollmentTypeChecker::IsFREEnabled()) {
+    // State keys are not requested, this test doesn't apply.
+    return;
+  }
+
   base::HistogramTester histograms;
   ExpectOwnershipCheck();
   ExpectOprfRequest();
@@ -397,6 +413,11 @@ TEST_F(EnrollmentStateFetcherTest, StateKeysMissingDueToCommunicationError) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, StateKeysMissingDueToMissingIdentifiers) {
+  if (!AutoEnrollmentTypeChecker::IsFREEnabled()) {
+    // State keys are not requested, this test doesn't apply.
+    return;
+  }
+
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -416,6 +437,11 @@ TEST_F(EnrollmentStateFetcherTest, StateKeysMissingDueToMissingIdentifiers) {
 }
 
 TEST_F(EnrollmentStateFetcherTest, StateKeysRetrievalSucceedOnRetry) {
+  if (!AutoEnrollmentTypeChecker::IsFREEnabled()) {
+    // State keys are not requested, this test doesn't apply.
+    return;
+  }
+
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
@@ -560,10 +586,10 @@ TEST_F(EnrollmentStateFetcherTest, EmptyEnrollmentStateResponse) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(
           fake_dm_service_->SendJobOKAsync(em::DeviceManagementResponse()));
 
@@ -576,10 +602,10 @@ TEST_F(EnrollmentStateFetcherTest, ConnectionErrorOnEnrollmentStateRequest) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobResponseAsync(net::ERR_FAILED, 0));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
@@ -593,10 +619,10 @@ TEST_F(EnrollmentStateFetcherTest, ServerErrorOnEnrollmentStateRequest) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobResponseAsync(
           0, DM_STATUS_HTTP_STATUS_ERROR));
 
@@ -610,12 +636,12 @@ TEST_F(EnrollmentStateFetcherTest, NoEnrollment) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   response.mutable_device_state_retrieval_response();
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
@@ -631,14 +657,15 @@ TEST_F(EnrollmentStateFetcherTest, UmaHistogramsTimes) {
   ExpectOwnershipCheck(/*time=*/base::Seconds(1));
   ExpectOprfRequest(/*time=*/base::Seconds(2));
   ExpectQueryRequest(/*time=*/base::Seconds(3));
-  ExpectStateKeysRequest(/*time=*/base::Seconds(4));
+  ExpectStateKeysRequestOrNotDependingOnFRESupport(/*time=*/base::Seconds(4));
   ExpectStateRequest(/*time=*/base::Seconds(5));
 
   std::ignore = FetchEnrollmentState();
 
   const char* ds = kUMAStateDeterminationTotalDurationByState;
-  histograms.ExpectUniqueTimeSample(base::StrCat({ds, kUMASuffixNoEnrollment}),
-                                    base::Seconds(15), 1);
+  histograms.ExpectUniqueTimeSample(
+      base::StrCat({ds, kUMASuffixNoEnrollment}),
+      base::Seconds(AutoEnrollmentTypeChecker::IsFREEnabled() ? 15 : 11), 1);
   histograms.ExpectTotalCount(
       base::StrCat({ds, kUMASuffixStateKeysRetrievalError}), 0);
   histograms.ExpectTotalCount(base::StrCat({ds, kUMASuffixConnectionError}), 0);
@@ -656,9 +683,11 @@ TEST_F(EnrollmentStateFetcherTest, UmaHistogramsTimes) {
       base::StrCat({step_d, kUMASuffixOPRFRequest}), base::Seconds(2), 1);
   histograms.ExpectUniqueTimeSample(
       base::StrCat({step_d, kUMASuffixQueryRequest}), base::Seconds(3), 1);
-  histograms.ExpectUniqueTimeSample(
-      base::StrCat({step_d, kUMASuffixStateKeysRetrieval}), base::Seconds(4),
-      1);
+  if (AutoEnrollmentTypeChecker::IsFREEnabled()) {
+    histograms.ExpectUniqueTimeSample(
+        base::StrCat({step_d, kUMASuffixStateKeysRetrieval}), base::Seconds(4),
+        1);
+  }
   histograms.ExpectUniqueTimeSample(
       base::StrCat({step_d, kUMASuffixStateRequest}), base::Seconds(5), 1);
 }
@@ -667,7 +696,7 @@ TEST_F(EnrollmentStateFetcherTest, PackagedLicenseWithoutEnrollment) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response()
                              ->mutable_initial_state_response();
@@ -679,7 +708,7 @@ TEST_F(EnrollmentStateFetcherTest, PackagedLicenseWithoutEnrollment) {
   state_response->set_is_license_packaged_with_device(true);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
@@ -699,7 +728,7 @@ TEST_F(EnrollmentStateFetcherTest, InitialEnrollmentEnforced) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response()
                              ->mutable_initial_state_response();
@@ -709,7 +738,7 @@ TEST_F(EnrollmentStateFetcherTest, InitialEnrollmentEnforced) {
   state_response->set_management_domain("example.org");
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
@@ -733,7 +762,7 @@ TEST_F(EnrollmentStateFetcherTest, InitialEnrollmentDisabled) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response()
                              ->mutable_initial_state_response();
@@ -743,7 +772,7 @@ TEST_F(EnrollmentStateFetcherTest, InitialEnrollmentDisabled) {
   state_response->mutable_disabled_state()->set_message(kTestDisabledMessage);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
@@ -763,7 +792,7 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithPackagedEnterpriseLicense) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response()
                              ->mutable_initial_state_response();
@@ -776,7 +805,7 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithPackagedEnterpriseLicense) {
           CHROME_ENTERPRISE);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
@@ -798,7 +827,7 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithEducationLicense) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response()
                              ->mutable_initial_state_response();
@@ -811,7 +840,7 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithEducationLicense) {
           CHROME_EDUCATION);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
@@ -830,7 +859,7 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithTerminalLicense) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response()
                              ->mutable_initial_state_response();
@@ -842,7 +871,7 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithTerminalLicense) {
           CHROME_TERMINAL);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
@@ -859,7 +888,7 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithUnspecifiedUpgrade) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response()
                              ->mutable_initial_state_response();
@@ -871,7 +900,7 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithUnspecifiedUpgrade) {
           ASSIGNED_UPGRADE_TYPE_UNSPECIFIED);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
@@ -888,7 +917,7 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithChromeEnterpriseUpgrade) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response()
                              ->mutable_initial_state_response();
@@ -900,7 +929,7 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithChromeEnterpriseUpgrade) {
           ASSIGNED_UPGRADE_TYPE_CHROME_ENTERPRISE);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
@@ -917,7 +946,7 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithKioskAndSignageUpgrade) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response()
                              ->mutable_initial_state_response();
@@ -929,7 +958,7 @@ TEST_F(EnrollmentStateFetcherTest, ZTEWithKioskAndSignageUpgrade) {
           ASSIGNED_UPGRADE_TYPE_KIOSK_AND_SIGNAGE);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
@@ -946,7 +975,7 @@ TEST_F(EnrollmentStateFetcherTest, ReEnrollmentRequested) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response();
   state_response->set_restore_mode(
@@ -954,7 +983,7 @@ TEST_F(EnrollmentStateFetcherTest, ReEnrollmentRequested) {
   state_response->set_management_domain("example.org");
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
@@ -978,14 +1007,14 @@ TEST_F(EnrollmentStateFetcherTest, ReEnrollmentEnforced) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response();
   state_response->set_restore_mode(
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
@@ -1002,7 +1031,7 @@ TEST_F(EnrollmentStateFetcherTest, ReEnrollmentDisabled) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response();
   state_response->set_restore_mode(
@@ -1010,7 +1039,7 @@ TEST_F(EnrollmentStateFetcherTest, ReEnrollmentDisabled) {
   state_response->mutable_disabled_state()->set_message(kTestDisabledMessage);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
@@ -1030,7 +1059,7 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithPerpetualLicense) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response();
   state_response->set_restore_mode(
@@ -1039,7 +1068,7 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithPerpetualLicense) {
       em::LicenseType::CDM_PERPETUAL);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
@@ -1059,7 +1088,7 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithUndefinedLicense) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response();
   state_response->set_restore_mode(
@@ -1068,7 +1097,7 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithUndefinedLicense) {
       em::LicenseType::UNDEFINED);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
@@ -1084,7 +1113,7 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithAnnualLicense) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response();
   state_response->set_restore_mode(
@@ -1093,7 +1122,7 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithAnnualLicense) {
       em::LicenseType::CDM_ANNUAL);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
@@ -1110,7 +1139,7 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithKioskLicense) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response();
   state_response->set_restore_mode(
@@ -1119,7 +1148,7 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithKioskLicense) {
       em::LicenseType::KIOSK);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
@@ -1136,7 +1165,7 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithPackagedLicense) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response();
   state_response->set_restore_mode(
@@ -1145,7 +1174,7 @@ TEST_F(EnrollmentStateFetcherTest, AutoREWithPackagedLicense) {
       em::LicenseType::CDM_PACKAGED);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   const AutoEnrollmentState state = FetchEnrollmentState();
@@ -1192,7 +1221,7 @@ TEST_P(EnrollmentStateFetcherTestP, ReEnrollmentRequested) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response();
   state_response->set_restore_mode(
@@ -1200,7 +1229,7 @@ TEST_P(EnrollmentStateFetcherTestP, ReEnrollmentRequested) {
   state_response->set_management_domain("example.org");
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   AutoEnrollmentState state = FetchEnrollmentState();
@@ -1224,14 +1253,14 @@ TEST_P(EnrollmentStateFetcherTestP, ReEnrollmentEnforced) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response();
   state_response->set_restore_mode(
       em::DeviceStateRetrievalResponse::RESTORE_MODE_REENROLLMENT_ENFORCED);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   AutoEnrollmentState state = FetchEnrollmentState();
@@ -1248,7 +1277,7 @@ TEST_P(EnrollmentStateFetcherTestP, ReEnrollmentDisabled) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   em::DeviceManagementResponse response;
   auto* state_response = response.mutable_device_state_retrieval_response();
   state_response->set_restore_mode(
@@ -1256,7 +1285,7 @@ TEST_P(EnrollmentStateFetcherTestP, ReEnrollmentDisabled) {
   state_response->mutable_disabled_state()->set_message(kTestDisabledMessage);
   EXPECT_CALL(job_creation_handler_,
               OnJobCreation(JobWithStateRequest(
-                  kTestStateKey, kTestSerialNumber, kTestBrandCode)))
+                  GetTestStateKey(), kTestSerialNumber, kTestBrandCode)))
       .WillOnce(fake_dm_service_->SendJobOKAsync(response));
 
   AutoEnrollmentState state = FetchEnrollmentState();
@@ -1277,7 +1306,7 @@ TEST_P(EnrollmentStateFetcherTestP, UmaHistogramsCounts) {
   ExpectOwnershipCheck();
   ExpectOprfRequest();
   ExpectQueryRequest();
-  ExpectStateKeysRequest();
+  ExpectStateKeysRequestOrNotDependingOnFRESupport();
   ExpectStateRequest();
 
   std::ignore = FetchEnrollmentState();
