@@ -472,11 +472,8 @@ suite('SeaPenTemplateQueryElementTest', function() {
         isVisible(getThumbnailsLoadingText()),
         'thumbnails loading text is visible');
     assertEquals(
-        2, getSearchButtons().length,
-        'inspire me and create buttons still exist');
-    assertTrue(
-        getSearchButtons().every(button => !isVisible(button)),
-        'buttons are hidden');
+        0, getSearchButtons().length,
+        'inspire me and create buttons no longer exist');
 
     // Simulate loading end.
     personalizationStore.data.wallpaper.seaPen = {
