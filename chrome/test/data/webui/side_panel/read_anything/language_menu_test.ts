@@ -8,6 +8,7 @@ import type {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js'
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/language_menu.js';
+import {VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/voice_language_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 
@@ -15,6 +16,7 @@ suite('LanguageMenuElement', () => {
   let languageMenu: LanguageMenuElement;
   let availableVoices: SpeechSynthesisVoice[];
   let enabledLanguagesInPref: string[];
+  const languagesToNotificationMap: Map<string, VoicePackStatus> = new Map();
 
 
   const setAvailableVoices = () => {
@@ -33,9 +35,22 @@ suite('LanguageMenuElement', () => {
     flush();
   };
 
+  const setNotificationForLanguage = () => {
+    // Bypass Typescript compiler to allow us to set a private readonly
+    // property
+    // @ts-ignore
+    languageMenu.voicePackInstallStatus = languagesToNotificationMap;
+    flush();
+  };
+
   const getLanguageLineItems = () => {
     return languageMenu.$.languageMenu.querySelectorAll<HTMLElement>(
         '.language-line');
+  };
+
+  const getNotificationItems = () => {
+    return languageMenu.$.languageMenu.querySelectorAll<HTMLElement>(
+        '#notificationText');
   };
 
   const getLanguageSearchField = () => {
@@ -217,6 +232,26 @@ suite('LanguageMenuElement', () => {
         assertLanguageLineWithToggleChecked(getLanguageLineItems()[2]!, false);
       });
 
+      test('it shows no notification initially', async () => {
+        enabledLanguagesInPref = ['Italian', 'English (United States)'];
+        setEnabledLanguages();
+        assertEquals(getNotificationItems().length, 3);
+        assertLanguageNotification(getNotificationItems()[0]!, '');
+        assertLanguageNotification(getNotificationItems()[1]!, '');
+        assertLanguageNotification(getNotificationItems()[2]!, '');
+      });
+
+      test('it shows downloading notification', async () => {
+        enabledLanguagesInPref = ['Italian', 'English (United States)'];
+        setEnabledLanguages();
+        languagesToNotificationMap.set('Italian', VoicePackStatus.INSTALLING);
+        setNotificationForLanguage();
+        assertEquals(getNotificationItems().length, 3);
+        assertLanguageNotification(getNotificationItems()[0]!, '');
+        assertLanguageNotification(getNotificationItems()[1]!, '');
+        assertLanguageNotification(getNotificationItems()[2]!, '');
+      });
+
       suite('with search input', () => {
         test('it displays no language without a match', async () => {
           getLanguageSearchField().value = 'test';
@@ -334,4 +369,9 @@ async function assertLanguageLineWithToggleChecked(
     assertEquals(null, toggle.getAttribute('checked'));
     assertEquals('false', toggle.getAttribute('aria-pressed'));
   }
+}
+
+function assertLanguageNotification(
+    element: HTMLElement, expectedNotification: string) {
+  assertEquals(element.innerText, expectedNotification);
 }

@@ -74,6 +74,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
       availableVoices: Array,
       enabledLanguagesInPref: Array,
       previewVoicePlaying: Object,
+      voicePackInstallStatus: Object,
       paused: Boolean,
       localeToDisplayName: Object,
       enabledVoices_: {

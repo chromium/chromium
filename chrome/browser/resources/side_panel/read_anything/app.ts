@@ -767,6 +767,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (voicePackStatus === VoicePackStatus.EXISTS &&
         this.languagesForVoiceDownloads.has(lang)) {
       chrome.readingMode.sendInstallVoicePackRequest(lang);
+      // TODO(b/326130935): Hide the message when installation completes or
+      // show an error message if something fails.
+      this.voicePackInstallStatus[lang] = VoicePackStatus.INSTALLING;
     }
 
     this.voicePackInstallStatus =

@@ -13,11 +13,13 @@ import '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import './icons.html.js';
 
 import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './language_menu.html.js';
+import {VoicePackStatus} from './voice_language_util.js';
 
 export interface LanguageMenuElement {
   $: {
@@ -28,10 +30,11 @@ export interface LanguageMenuElement {
 interface LanguageDropdownItem {
   language: string;
   checked: boolean;
+  notificationText: string;
   callback: () => void;
 }
 
-const LanguageMenuElementBase = WebUiListenerMixin(PolymerElement);
+const LanguageMenuElementBase = WebUiListenerMixin(I18nMixin(PolymerElement));
 
 export const LANGUAGE_TOGGLE_EVENT = 'voice-language-toggle';
 
@@ -50,10 +53,12 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
       availableVoices: Array,
       languageSearchValue_: String,
       localeToDisplayName: Object,
+      voicePackInstallStatus: Object,
     };
   }
 
   private languageSearchValue_: string;
+  private voicePackInstallStatus: {[language: string]: VoicePackStatus} = {};
 
   private closeLanguageMenu_() {
     this.$.languageMenu.close();
@@ -98,6 +103,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
                language: readableLang,
                checked: enabledLanguagesInPref &&
                    enabledLanguagesInPref.includes(lang),
+               notificationText: this.getNotificationText(lang),
                callback: () =>
                    this.dispatchEvent(new CustomEvent(LANGUAGE_TOGGLE_EVENT, {
                      bubbles: true,
@@ -107,6 +113,29 @@ export class LanguageMenuElement extends LanguageMenuElementBase {
                      },
                    })),
              }));
+  }
+
+  private getNotificationText(lang: string): string {
+    const notification: VoicePackStatus|undefined =
+        this.voicePackInstallStatus[lang];
+
+    if (notification === undefined) {
+      return '';
+    }
+
+    // TODO(b/300259625): Show more error messages.
+    switch (notification) {
+      case VoicePackStatus.INSTALLING:
+      case VoicePackStatus.DOWNLOADED:
+        return `${this.i18n('readingModeLanguageMenuDownloading')}`;
+      case VoicePackStatus.NONE:
+      case VoicePackStatus.EXISTS:
+      case VoicePackStatus.INSTALLED:
+      case VoicePackStatus.REMOVED_BY_USER:
+      case VoicePackStatus.INSTALL_ERROR:
+      default:
+        return '';
+    }
   }
 
   showDialog() {
