@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
@@ -217,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest, ResetSelectedLine) {
                                     {u"suggestion4", u"suggestion4"}};
   client->UpdateAutofillPopupDataListValues(rows);
   int original_suggestions_count = controller->GetLineCount();
-  controller->SelectSuggestion(3);
+  static_cast<AutofillPopupController&>(*controller).SelectSuggestion(3);
 
   // Replace the list with the smaller one.
   rows = {{u"suggestion1", u"suggestion1"}};
@@ -225,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest, ResetSelectedLine) {
   // Make sure that previously selected line #3 doesn't exist.
   ASSERT_LT(controller->GetLineCount(), original_suggestions_count);
   // Selecting a new line should not crash.
-  controller->SelectSuggestion(0);
+  static_cast<AutofillPopupController&>(*controller).SelectSuggestion(0);
 }
 
 }  // namespace autofill

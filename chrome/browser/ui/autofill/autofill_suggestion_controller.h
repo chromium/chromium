@@ -46,13 +46,6 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
   // suggestions change.
   virtual void OnSuggestionsChanged() = 0;
 
-  // Selects the suggestion with `index`. For fillable items, this will trigger
-  // preview. For other items, it does not do anything.
-  virtual void SelectSuggestion(int index) = 0;
-
-  // Unselect currently selected suggestion, noop if nothing is selected.
-  virtual void UnselectSuggestion() = 0;
-
   // Accepts the suggestion at `index`. The suggestion will only be accepted if
   // the popup has been shown for at least `kIgnoreEarlyClicksOnPopupDuration`
   // to allow ruling out accidental popup interactions (crbug.com/1279268).

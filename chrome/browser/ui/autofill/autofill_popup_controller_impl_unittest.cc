@@ -501,6 +501,11 @@ TEST_F(AutofillPopupControllerImplTest,
   histogram_tester.ExpectUniqueSample("Autofill.ProfileDeleted.Any", 1, 0);
 }
 
+TEST_F(AutofillPopupControllerImplTest, UnselectingClearsPreview) {
+  EXPECT_CALL(manager().external_delegate(), ClearPreviewedForm());
+  client().popup_controller(manager()).UnselectSuggestion();
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 

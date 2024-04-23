@@ -525,27 +525,6 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
   return true;
 }
 
-void AutofillPopupControllerImpl::SelectSuggestion(int index) {
-  CHECK_GE(index, 0);
-  CHECK_LT(index, static_cast<int>(GetSuggestionsRef().size()));
-
-  if (IsPointerLocked(web_contents_.get())) {
-    Hide(PopupHidingReason::kMouseLocked);
-    return;
-  }
-
-  if (!IsAcceptablePopupItemId(GetSuggestionAt(index).popup_item_id)) {
-    UnselectSuggestion();
-    return;
-  }
-
-  delegate_->DidSelectSuggestion(GetSuggestionAt(index));
-}
-
-void AutofillPopupControllerImpl::UnselectSuggestion() {
-  delegate_->ClearPreviewedForm();
-}
-
 FillingProduct AutofillPopupControllerImpl::GetMainFillingProduct() const {
   return delegate_->GetMainFillingProduct();
 }
@@ -719,6 +698,26 @@ void AutofillPopupControllerImpl::KeyPressObserver::Reset() {
 }
 
 // AutofillPopupController implementation.
+
+void AutofillPopupControllerImpl::SelectSuggestion(int index) {
+  CHECK_LT(base::checked_cast<size_t>(index), GetSuggestionsRef().size());
+
+  if (IsPointerLocked(web_contents_.get())) {
+    Hide(PopupHidingReason::kMouseLocked);
+    return;
+  }
+
+  if (!IsAcceptablePopupItemId(GetSuggestionAt(index).popup_item_id)) {
+    UnselectSuggestion();
+    return;
+  }
+
+  delegate_->DidSelectSuggestion(GetSuggestionAt(index));
+}
+
+void AutofillPopupControllerImpl::UnselectSuggestion() {
+  delegate_->ClearPreviewedForm();
+}
 
 base::WeakPtr<AutofillSuggestionController>
 AutofillPopupControllerImpl::OpenSubPopup(

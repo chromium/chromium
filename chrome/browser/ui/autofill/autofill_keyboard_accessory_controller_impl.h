@@ -62,8 +62,6 @@ class AutofillKeyboardAccessoryControllerImpl
 
   // AutofillSuggestionController:
   void OnSuggestionsChanged() override;
-  void SelectSuggestion(int index) override;
-  void UnselectSuggestion() override;
   void AcceptSuggestion(int index) override;
   bool RemoveSuggestion(
       int index,

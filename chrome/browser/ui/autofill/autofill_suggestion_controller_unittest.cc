@@ -335,11 +335,6 @@ TEST_F(AutofillSuggestionControllerTest, ProperlyResetController) {
   EXPECT_EQ(0, controller->GetLineCount());
 }
 
-TEST_F(AutofillSuggestionControllerTest, UnselectingClearsPreview) {
-  EXPECT_CALL(manager().external_delegate(), ClearPreviewedForm());
-  client().popup_controller(manager()).UnselectSuggestion();
-}
-
 TEST_F(AutofillSuggestionControllerTest, HidingClearsPreview) {
   EXPECT_CALL(manager().external_delegate(), ClearPreviewedForm());
   EXPECT_CALL(manager().external_delegate(), OnPopupHidden());

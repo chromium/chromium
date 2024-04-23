@@ -218,21 +218,6 @@ void AutofillKeyboardAccessoryControllerImpl::OnSuggestionsChanged() {
   }
 }
 
-void AutofillKeyboardAccessoryControllerImpl::SelectSuggestion(int index) {
-  CHECK_LT(base::checked_cast<size_t>(index), suggestions_.size());
-
-  if (!IsAcceptablePopupItemId(GetSuggestionAt(index).popup_item_id)) {
-    UnselectSuggestion();
-    return;
-  }
-
-  delegate_->DidSelectSuggestion(GetSuggestionAt(index));
-}
-
-void AutofillKeyboardAccessoryControllerImpl::UnselectSuggestion() {
-  delegate_->ClearPreviewedForm();
-}
-
 void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
   // Ignore clicks immediately after the popup was shown. This is to prevent
   // users accidentally accepting suggestions (crbug.com/1279268).

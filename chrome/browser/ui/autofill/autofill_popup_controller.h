@@ -31,6 +31,13 @@ class AutofillPopupController : public AutofillSuggestionController {
     bool operator==(const SuggestionFilterMatch& other) const = default;
   };
 
+  // Selects the suggestion with `index`. For fillable items, this will trigger
+  // preview. For other items, it does not do anything.
+  virtual void SelectSuggestion(int index) = 0;
+
+  // Unselect currently selected suggestion, noop if nothing is selected.
+  virtual void UnselectSuggestion() = 0;
+
   // Creates and shows a sub-popup adjacent to `anchor_bounds`. The sub-popup
   // represents another level of `suggestions` which must be semantically
   // connected to a parent level suggestion, e.g. an address suggestion

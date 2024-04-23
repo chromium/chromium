@@ -79,8 +79,6 @@ class AutofillPopupControllerImpl
 
   // AutofillSuggestionController:
   void OnSuggestionsChanged() override;
-  void SelectSuggestion(int index) override;
-  void UnselectSuggestion() override;
   void AcceptSuggestion(int index) override;
   bool RemoveSuggestion(
       int list_index,
@@ -102,6 +100,8 @@ class AutofillPopupControllerImpl
   void PinView() override;
 
   // AutofillPopupController:
+  void SelectSuggestion(int index) override;
+  void UnselectSuggestion() override;
   base::WeakPtr<AutofillSuggestionController> OpenSubPopup(
       const gfx::RectF& anchor_bounds,
       std::vector<Suggestion> suggestions,
