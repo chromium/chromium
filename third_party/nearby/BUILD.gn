@@ -452,6 +452,12 @@ source_set("analytics_event_logger") {
   public = [ "src/internal/analytics/event_logger.h" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
+  public_deps = [
+    ":connections_log_proto",
+    ":experiments_log_proto",
+    ":fast_pair_log_proto",
+    ":sharing_log_proto",
+  ]
 }
 
 # src/internal/crypto
@@ -573,6 +579,7 @@ source_set("platform_api_comm") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
+
 source_set("platform_api_types") {
   public_configs = [
     ":nearby_include_config",
@@ -1099,6 +1106,12 @@ proto_library("sharing_enums_proto") {
   proto_out_dir = "third_party/nearby"
 }
 
+proto_library("fast_pair_enums_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/proto/fast_pair_enums.proto" ]
+  proto_out_dir = "third_party/nearby"
+}
+
 # src/internal/proto/analytics
 proto_library("connections_log_proto") {
   proto_in_dir = "src"
@@ -1111,6 +1124,26 @@ proto_library("connections_log_proto") {
   link_deps = [
     ":connections_enums_proto",
     ":error_code_enums_proto",
+  ]
+}
+
+proto_library("experiments_log_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/internal/proto/analytics/experiments_log.proto" ]
+  proto_out_dir = "third_party/nearby"
+}
+
+proto_library("fast_pair_log_proto") {
+  proto_in_dir = "src"
+  sources = [ "${proto_in_dir}/internal/proto/analytics/fast_pair_log.proto" ]
+  proto_out_dir = "third_party/nearby"
+  proto_deps = [
+    ":connections_log_proto",
+    ":fast_pair_enums_proto",
+  ]
+  link_deps = [
+    ":connections_log_proto",
+    ":fast_pair_enums_proto",
   ]
 }
 
@@ -1217,6 +1250,15 @@ proto_library("certificate_rpc_proto") {
   proto_out_dir = "third_party/nearby"
   proto_deps = [ ":rpc_resources_proto" ]
   link_deps = [ ":rpc_resources_proto" ]
+}
+
+# src/sharing/proto/analytics
+proto_library("sharing_log_proto") {
+  proto_in_dir = "src"
+  sources =
+      [ "${proto_in_dir}/sharing/proto/analytics/nearby_sharing_log.proto" ]
+  proto_out_dir = "third_party/nearby"
+  import_dirs = [ "../../third_party/protobuf/src" ]
 }
 
 # src/presence/proto
