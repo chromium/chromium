@@ -23,18 +23,6 @@ const LayoutObject* PositionAnchorObject(const LayoutBox& box) {
                                 : box.AcceptableImplicitAnchor();
 }
 
-// Finds the LayoutObject of the element given by position-fallback-bounds.
-const LayoutObject* PositionFallbackBoundsObject(
-    const LayoutObject* layout_object) {
-  if (!layout_object || !layout_object->IsOutOfFlowPositioned() ||
-      !layout_object->StyleRef().PositionFallbackBounds()) {
-    return nullptr;
-  }
-
-  return To<LayoutBox>(layout_object)
-      ->FindTargetAnchor(*layout_object->StyleRef().PositionFallbackBounds());
-}
-
 const Vector<NonOverflowingScrollRange>* GetNonOverflowingScrollRanges(
     const LayoutObject* layout_object) {
   if (!layout_object || !layout_object->IsOutOfFlowPositioned()) {
@@ -70,7 +58,7 @@ bool AnchorPositionScrollData::IsActive() const {
 
 AnchorPositionScrollData::AdjustmentData
 AnchorPositionScrollData::ComputeAdjustmentContainersData(
-    const LayoutObject& anchor_or_bounds) const {
+    const LayoutObject& anchor) const {
   CHECK(anchored_element_->GetLayoutObject());
   AnchorPositionScrollData::AdjustmentData result;
 
@@ -93,7 +81,7 @@ AnchorPositionScrollData::ComputeAdjustmentContainersData(
             ->GetScrollOffset();
   }
 
-  for (const auto* container = &anchor_or_bounds;
+  for (const auto* container = &anchor;
        container && container != bounding_container;
        container = container_ignore_layout_view_for_fixed_pos(*container)) {
     if (container->IsScrollContainer()) {
@@ -176,23 +164,13 @@ AnchorPositionScrollData::ComputeDefaultAnchorAdjustmentData() const {
   return result;
 }
 
-gfx::Vector2dF AnchorPositionScrollData::ComputeAdditionalBoundsOffset() const {
-  if (const LayoutObject* position_fallback_bounds_object =
-          PositionFallbackBoundsObject(anchored_element_->GetLayoutObject())) {
-    return ComputeAdjustmentContainersData(*position_fallback_bounds_object)
-        .accumulated_adjustment;
-  }
-  return gfx::Vector2dF();
-}
-
 AnchorPositionScrollData::SnapshotDiff
 AnchorPositionScrollData::TakeAndCompareSnapshot(bool update) {
   DCHECK(IsActive());
 
   AdjustmentData new_adjustment_data = ComputeDefaultAnchorAdjustmentData();
-  gfx::Vector2dF new_additional_bounds_offset = ComputeAdditionalBoundsOffset();
 
-  SnapshotDiff diff;
+  SnapshotDiff diff = SnapshotDiff::kNone;
   if (AdjustmentContainerIds() !=
       new_adjustment_data.adjustment_container_ids) {
     diff = SnapshotDiff::kScrollersOrFallbackPosition;
@@ -203,13 +181,10 @@ AnchorPositionScrollData::TakeAndCompareSnapshot(bool update) {
                 new_adjustment_data.anchored_element_container_scroll_offset ||
         AccumulatedAdjustmentScrollOrigin() !=
             new_adjustment_data.accumulated_adjustment_scroll_origin;
-    const bool additional_bounds_scrolled =
-        additional_bounds_offset_ != new_additional_bounds_offset;
-    if ((anchor_scrolled || additional_bounds_scrolled) &&
+    if (anchor_scrolled &&
         !IsFallbackPositionValid(
             new_adjustment_data.accumulated_adjustment,
-            new_adjustment_data.anchored_element_container_scroll_offset,
-            new_additional_bounds_offset)) {
+            new_adjustment_data.anchored_element_container_scroll_offset)) {
       diff = SnapshotDiff::kScrollersOrFallbackPosition;
     } else if (anchor_scrolled ||
                NeedsScrollAdjustmentInX() !=
@@ -220,17 +195,11 @@ AnchorPositionScrollData::TakeAndCompareSnapshot(bool update) {
       // paint properties so that compositor can calculate the translation
       // offset correctly.
       diff = SnapshotDiff::kOffsetOnly;
-    } else {
-      // When the additional bounds rect is scrolled without invalidating the
-      // current fallback position, `anchored_element_` doesn't need paint
-      // update.
-      diff = SnapshotDiff::kNone;
     }
   }
 
   if (update && diff != SnapshotDiff::kNone) {
     default_anchor_adjustment_data_ = std::move(new_adjustment_data);
-    additional_bounds_offset_ = new_additional_bounds_offset;
   }
 
   return diff;
@@ -238,8 +207,7 @@ AnchorPositionScrollData::TakeAndCompareSnapshot(bool update) {
 
 bool AnchorPositionScrollData::IsFallbackPositionValid(
     const gfx::Vector2dF& new_accumulated_adjustment,
-    const gfx::Vector2dF& new_anchored_element_container_scroll_offset,
-    const gfx::Vector2dF& new_additional_bounds_offset) const {
+    const gfx::Vector2dF& new_anchored_element_container_scroll_offset) const {
   const Vector<NonOverflowingScrollRange>* non_overflowing_scroll_ranges =
       GetNonOverflowingScrollRanges(anchored_element_->GetLayoutObject());
   if (!non_overflowing_scroll_ranges ||
@@ -249,10 +217,9 @@ bool AnchorPositionScrollData::IsFallbackPositionValid(
 
   for (const NonOverflowingScrollRange& range :
        *non_overflowing_scroll_ranges) {
-    if (range.Contains(TotalOffset(), additional_bounds_offset_) !=
+    if (range.Contains(TotalOffset()) !=
         range.Contains(new_accumulated_adjustment +
-                           new_anchored_element_container_scroll_offset,
-                       new_additional_bounds_offset)) {
+                       new_anchored_element_container_scroll_offset)) {
       return false;
     }
   }

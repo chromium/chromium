@@ -315,8 +315,7 @@
               "compositing/filters",
               "external/wpt/performance-timeline/tentative/with-filter-options-originA.html",
               "external/wpt/soft-navigation-heuristics/disabled.html",
-              "wpt_internal/performance-timeline/performance-user-timing-mark-feature-usage.html",
-              "wpt_internal/css/css-anchor-position/position-fallback-bounds.html"
+              "wpt_internal/performance-timeline/performance-user-timing-mark-feature-usage.html"
             ],
     "exclusive_tests": ["media/stable"],
     "args": ["--stable-release-mode",

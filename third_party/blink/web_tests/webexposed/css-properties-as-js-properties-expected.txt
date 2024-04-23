@@ -355,7 +355,6 @@ popoverHideDelay
 popoverShowDelay
 position
 positionAnchor
-positionFallbackBounds
 positionTry
 positionTryOptions
 positionTryOrder
