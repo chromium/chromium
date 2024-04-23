@@ -41,9 +41,6 @@
 namespace reporting {
 namespace {
 
-constexpr char kUmaRecordProcessedByServer[] =
-    "Browser.ERP.RecordProcessedByServer";
-
 // Processes LOG_UPLOAD event.
 void ProcessFileUpload(
     Priority priority,
@@ -131,20 +128,11 @@ class RecordHandlerImpl::ReportUploader
   void OnCompletion(const CompletionResponse& result) override;
 
   void StartUpload();
-  void LogNumRecordsInUpload(size_t num_records);
   void ResumeUpload(size_t next_record);
   void UploadRequest(size_t next_record);
   void OnUploadComplete(StatusOr<UploadResponseParser> response_result);
   void Complete(CompletionResponse result);
 
-  // Returns a gap record if it is necessary. Expects the contents of the
-  // failedUploadedRecord field in the response:
-  // {
-  //   "sequencingId": 1234
-  //   "generationId": 4321
-  //   "priority": 3
-  //   "generationGuid": "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
-  // }
   bool need_encryption_key_ GUARDED_BY_CONTEXT(sequence_checker_);
   int config_file_version_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::vector<EncryptedRecord> records_ GUARDED_BY_CONTEXT(sequence_checker_);
@@ -212,34 +200,7 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!records_.empty() || need_encryption_key_);
 
-  // Log size of non-empty uploads. Key-request uploads have no records.
-  if (!records_.empty()) {
-    Schedule(&RecordHandlerImpl::ReportUploader::LogNumRecordsInUpload,
-             base::Unretained(this), records_.size());
-  }
-
   ResumeUpload(/*next_record=*/0);
-}
-
-void RecordHandlerImpl::ReportUploader::LogNumRecordsInUpload(
-    size_t num_records) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if BUILDFLAG(IS_CHROMEOS)
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (policy::ManagementServiceFactory::GetForPlatform()
-          ->HasManagementAuthority(
-              policy::EnterpriseManagementAuthority::CLOUD_DOMAIN)) {
-    // This is a managed device, so log the upload as such.
-    base::UmaHistogramCounts1000(
-        "Browser.ERP.RecordsPerUploadFromManagedDevice", num_records);
-  } else {
-    base::UmaHistogramCounts1000(
-        "Browser.ERP.RecordsPerUploadFromUnmanagedDevice", num_records);
-  }
-#else
-  base::UmaHistogramCounts1000(
-      "Browser.ERP.RecordsPerUploadFromNonChromeosDevice", num_records);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void RecordHandlerImpl::ReportUploader::ResumeUpload(size_t next_record) {
@@ -349,25 +310,11 @@ void RecordHandlerImpl::ReportUploader::OnUploadComplete(
   StatusOr<EncryptedRecord> failed_uploaded_record =
       response_parser.gap_record_for_permanent_failure();
   if (failed_uploaded_record.has_value()) {
-    // The record we uploaded previously was unprocessable by the server,
-    // if the record was after the current |highest_sequence_information_|
-    // we should return a gap record. A gap record consists of an
-    // EncryptedRecord with just SequenceInformation. The server will
-    // report success for the gap record and
-    // |highest_sequence_information_| will be updated in the next
-    // response. In the future there may be recoverable |failureStatus|,
-    // but for now all the device can do is delete the record.
-    base::UmaHistogramBoolean(kUmaRecordProcessedByServer, false);
-
-    // Unless confirmation is flagged as `force`, upload the gap record.
-    if (!force_confirm_flag) {
-      records_.push_back(std::move(failed_uploaded_record.value()));
-      // Do not request encryption key again, even if the original failed - the
-      // key should still been delivered.
-      need_encryption_key_ = false;
-      StartUpload();
-      return;
-    }
+    // Do not request encryption key again, even if the original failed - the
+    // key should still been delivered.
+    need_encryption_key_ = false;
+    StartUpload();
+    return;
   }
 
   // If failed upload is returned but is not parseable or does not match the
@@ -386,7 +333,6 @@ void RecordHandlerImpl::ReportUploader::OnUploadComplete(
   }
 
   // Generate and return the highest_sequence_information.
-  base::UmaHistogramBoolean(kUmaRecordProcessedByServer, true);
   Complete(SuccessfulUploadResponse{
       .sequence_information =
           std::move(last_successfully_uploaded_record_sequence_info.value()),

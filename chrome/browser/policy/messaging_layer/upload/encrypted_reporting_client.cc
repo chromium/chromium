@@ -49,6 +49,10 @@ namespace reporting {
 
 namespace {
 
+// UMA that reflects whether events were processed by the server (true/false).
+constexpr char kUmaRecordProcessedByServer[] =
+    "Browser.ERP.RecordProcessedByServer";
+
 // UMA that reflects events upload count: samples number of times a single event
 // is sent to the server. Per-event count is incremented every time an event is
 // sent, and the metrics sample is recorded once the event is confirmed by the
@@ -165,7 +169,7 @@ struct UploadState {
   base::flat_map<int64_t /*sequence_id*/, size_t> upload_counters;
 
   // Highest sequence id that has been successfully sent to server
-  // (but not confirmed, so it remains in `cached_records_`). Events until
+  // (but not confirmed, so it remains in `cached_records`). Events until
   // `last_sequence_id` (inclusive) are not sent to the server.
   // `last_sequence_id` is reset upon upload job completion (if successful,
   // to the last confirmed event, otherwise to -1.
@@ -229,6 +233,26 @@ void RemoveConfirmedEventsFromCache(UploadState* state) {
   state->scoped_reservation.Reduce(records_memory);
 }
 
+// Posts upload records count UMA.
+void LogNumRecordsInUpload(uint64_t num_records) {
+#if BUILDFLAG(IS_CHROMEOS)
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (policy::ManagementServiceFactory::GetForPlatform()
+          ->HasManagementAuthority(
+              policy::EnterpriseManagementAuthority::CLOUD_DOMAIN)) {
+    // This is a managed device, so log the upload as such.
+    base::UmaHistogramCounts1000(
+        "Browser.ERP.RecordsPerUploadFromManagedDevice", num_records);
+  } else {
+    base::UmaHistogramCounts1000(
+        "Browser.ERP.RecordsPerUploadFromUnmanagedDevice", num_records);
+  }
+#else
+  base::UmaHistogramCounts1000(
+      "Browser.ERP.RecordsPerUploadFromNonChromeosDevice", num_records);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
 // Builds uploading payload.
 // Returns dictionary (null in case of failure), matching memory reservation
 // and last seq id included in request.
@@ -273,6 +297,11 @@ void BuildPayload(
   // Assign random UUID as the request id for server side log correlation
   const auto request_id = base::Token::CreateRandom().ToString();
   request_builder.SetRequestId(request_id);
+  // Log size of non-empty upload. Key-request uploads have no records.
+  if (events_to_send > 0u) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&LogNumRecordsInUpload, events_to_send));
+  }
   // Build payload and create job.
   std::move(create_job_cb)
       .Run(request_builder.Build(), std::move(scoped_reservation),
@@ -453,14 +482,14 @@ void EncryptedReportingClient::UploadReport(
       record.Clear();
       continue;
     }
-    if (record.sequence_information().sequencing_id() <=
-        state->last_sequence_id) {
+    const int64_t seq_id = record.sequence_information().sequencing_id();
+    if (seq_id <= state->last_sequence_id) {
       // Record has already been uploaded.
       record.Clear();
       continue;
     }
-    const auto [it, success] = state->cached_records.insert(std::make_pair(
-        record.sequence_information().sequencing_id(), std::move(record)));
+    const auto [it, success] =
+        state->cached_records.insert(std::make_pair(seq_id, std::move(record)));
     if (!success) {
       // `record` is already in cache, skip it.
       continue;
@@ -692,6 +721,7 @@ void EncryptedReportingClient::OnReportUploadCompleted(
   if (const auto last_sequence_info =
           response_parser.last_successfully_uploaded_record_sequence_info();
       last_sequence_info.has_value()) {
+    base::UmaHistogramBoolean(kUmaRecordProcessedByServer, true);
     const int64_t last_sequence_id = last_sequence_info.value().sequencing_id();
     if (state->last_sequence_id < last_sequence_id ||
         response_parser.force_confirm_flag()) {
@@ -699,6 +729,48 @@ void EncryptedReportingClient::OnReportUploadCompleted(
     }
     RemoveConfirmedEventsFromCache(state);
   }
+
+  // Check if a record was unprocessable on the server.
+  StatusOr<EncryptedRecord> failed_uploaded_record =
+      response_parser.gap_record_for_permanent_failure();
+  if (failed_uploaded_record.has_value()) {
+    // The record we uploaded previously was unprocessable by the server.
+    // Unless confirmation is flagged as `force`, upload the gap record.
+    // Returns a gap record if it is necessary. Expects the contents of the
+    // failedUploadedRecord field in the response:
+    // {
+    //   "sequencingId": 1234
+    //   "generationId": 4321
+    //   "priority": 3
+    //   "generationGuid": "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
+    // }
+    // Gap record consists of an EncryptedRecord with just SequenceInformation.
+    // The server will report success for the gap record and
+    // `last_successfully_uploaded_record_sequence_info` will be updated in the
+    // next response. In the future there may be recoverable `failureStatus`,
+    // but for now all the device can do is skip the record.
+    base::UmaHistogramBoolean(kUmaRecordProcessedByServer, false);
+    const int64_t seq_id =
+        failed_uploaded_record.value().sequence_information().sequencing_id();
+    // If record is still cached, replace it by gap record.
+    if (auto it = state->cached_records.find(seq_id);
+        it != state->cached_records.end()) {
+      // Replace by gap.
+      it->second = std::move(failed_uploaded_record.value());
+      // Reduce reserved memory.
+      uint64_t records_memory = 0u;
+      for (const auto& [_, record] : state->cached_records) {
+        records_memory += record.ByteSizeLong();
+      }
+      state->scoped_reservation.Reduce(records_memory);
+    }
+  }
+
+  // If failed upload is returned but is not parseable or does not match the
+  // successfully uploaded part, just log an error.
+  LOG_IF(ERROR, failed_uploaded_record.error().code() != error::NOT_FOUND)
+      << failed_uploaded_record.error();
+
   // Forward results to the pending callback.
   std::move(callback).Run(std::move(response_parser));
 }
