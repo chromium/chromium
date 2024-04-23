@@ -25,7 +25,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.transit.BatchedPublicTransitRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -33,7 +32,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
+import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
 import org.chromium.chrome.test.transit.HubIncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.HubTabSwitcherAppMenuFacility;
 import org.chromium.chrome.test.transit.HubTabSwitcherBaseStation;
@@ -51,21 +50,18 @@ import org.chromium.chrome.test.transit.PageStation;
 @EnableFeatures({ANDROID_HUB})
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherPanePublicTransitTest {
-    @Rule
-    public BatchedPublicTransitRule<PageStation> mBatchedRule =
-            new BatchedPublicTransitRule<>(PageStation.class, /* expectResetByTest= */ true);
-
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    private ChromeTabbedActivityPublicTransitEntryPoints mTransitEntryPoints =
-            new ChromeTabbedActivityPublicTransitEntryPoints(sActivityTestRule);
+    @Rule
+    public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
+            new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
 
     @Test
     @MediumTest
     public void testSwitchTabModel_ScrollToSelectedTab() {
-        PageStation page = mTransitEntryPoints.startOnBlankPageBatched(mBatchedRule);
+        PageStation page = mInitialStateRule.startOnBlankPageBatched();
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
 
         PageAppMenuFacility appMenu = null;
@@ -93,17 +89,14 @@ public class TabSwitcherPanePublicTransitTest {
                             assertEquals(9, layoutManager.findLastVisibleItemPosition());
                         });
 
-        // Reset to a single tab.
-        for (int i = 1; i < 10; i++) {
-            regularTabSwitcher = regularTabSwitcher.closeTabAtIndex(1, HubTabSwitcherStation.class);
-        }
+        // Go back to a tab to cleanup tab state
         page = regularTabSwitcher.selectTabAtIndex(0);
     }
 
     @Test
     @MediumTest
     public void testTabListEditor_EnterAndExit() {
-        PageStation page = mTransitEntryPoints.startOnBlankPageBatched(mBatchedRule);
+        PageStation page = mInitialStateRule.startOnBlankPageBatched();
         PageAppMenuFacility appMenu = page.openAppMenu();
         page = appMenu.openNewTab();
 
@@ -113,15 +106,14 @@ public class TabSwitcherPanePublicTransitTest {
 
         listEditor.pressBackToExit();
 
-        // Reset to a single tab.
-        regularTabSwitcher = regularTabSwitcher.closeTabAtIndex(1, HubTabSwitcherStation.class);
-        page = regularTabSwitcher.selectTabAtIndex(0);
+        // Go back to a tab to cleanup tab state
+        regularTabSwitcher.selectTabAtIndex(0);
     }
 
     @Test
     @MediumTest
     public void testEmptyStateView() {
-        PageStation page = mTransitEntryPoints.startOnBlankPageBatched(mBatchedRule);
+        PageStation page = mInitialStateRule.startOnBlankPageBatched();
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
 
         PageAppMenuFacility appMenu = page.openAppMenu();
@@ -145,7 +137,7 @@ public class TabSwitcherPanePublicTransitTest {
         onView(HubTabSwitcherStation.EMPTY_STATE_TEXT.getViewMatcher())
                 .check(matches(isDisplayed()));
 
-        // Reset to a single tab.
+        // Go back to a tab to cleanup tab state
         HubTabSwitcherAppMenuFacility tabSwitcherAppMenu = regularTabSwitcher.openAppMenu();
         page = tabSwitcherAppMenu.openNewTab();
     }
