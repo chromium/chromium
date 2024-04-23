@@ -39,6 +39,9 @@ struct SyncToken;
 class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
     : public SharedImageInterface {
  public:
+  // Specifies which thread owns this class.
+  enum class OwnerThread { kGpu, kCompositor };
+
   // The callers must guarantee that the instances passed via pointers are kept
   // alive for as long as the instance of this class is alive. This can be
   // achieved by ensuring that the ownership of the created
@@ -52,14 +55,20 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   // achieved by ensuring that the ownership of the created
   // SharedImageInterfaceInProcess is the same as the ownership of the passed in
   // pointers.
-  SharedImageInterfaceInProcess(SingleTaskSequence* task_sequence,
-                                SyncPointManager* sync_point_manager,
-                                const GpuPreferences& gpu_preferences,
-                                const GpuDriverBugWorkarounds& gpu_workarounds,
-                                const GpuFeatureInfo& gpu_feature_info,
-                                gpu::SharedContextState* context_state,
-                                SharedImageManager* shared_image_manager,
-                                bool is_for_display_compositor);
+  // The owner thread parameter specifies which thread owns this class. Note
+  // that parts of the initialization and destruction must take place on the
+  // gpu thread, so this enum determines whether a ScheduleTask is required in
+  // order to complete construction/destruction.
+  SharedImageInterfaceInProcess(
+      SingleTaskSequence* task_sequence,
+      SyncPointManager* sync_point_manager,
+      const GpuPreferences& gpu_preferences,
+      const GpuDriverBugWorkarounds& gpu_workarounds,
+      const GpuFeatureInfo& gpu_feature_info,
+      gpu::SharedContextState* context_state,
+      SharedImageManager* shared_image_manager,
+      bool is_for_display_compositor,
+      OwnerThread owner_thread = OwnerThread::kCompositor);
 
   SharedImageInterfaceInProcess(const SharedImageInterfaceInProcess&) = delete;
   SharedImageInterfaceInProcess& operator=(
@@ -229,6 +238,8 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   scoped_refptr<SyncPointClientState> sync_point_client_state_;
   std::unique_ptr<SharedImageFactory> shared_image_factory_;
   std::unique_ptr<SharedImageCapabilities> shared_image_capabilities_;
+  // Specifies which thread owns this object.
+  const OwnerThread owner_thread_;
 };
 
 }  // namespace gpu

@@ -81,20 +81,29 @@ SharedImageInterfaceInProcess::SharedImageInterfaceInProcess(
     const GpuFeatureInfo& gpu_feature_info,
     gpu::SharedContextState* context_state,
     SharedImageManager* shared_image_manager,
-    bool is_for_display_compositor)
+    bool is_for_display_compositor,
+    OwnerThread owner_thread)
     : task_sequence_(task_sequence),
       command_buffer_id_(
           DisplayCompositorMemoryAndTaskControllerOnGpu::NextCommandBufferId()),
       shared_image_manager_(shared_image_manager),
-      sync_point_manager_(sync_point_manager) {
+      sync_point_manager_(sync_point_manager),
+      owner_thread_(owner_thread) {
   DETACH_FROM_SEQUENCE(gpu_sequence_checker_);
-  task_sequence_->ScheduleTask(
-      base::BindOnce(
-          &SharedImageInterfaceInProcess::SetUpOnGpu, base::Unretained(this),
-          std::make_unique<SetUpOnGpuParams>(
-              gpu_preferences, gpu_workarounds, gpu_feature_info, context_state,
-              shared_image_manager, is_for_display_compositor)),
-      {});
+
+  auto params = std::make_unique<SetUpOnGpuParams>(
+      gpu_preferences, gpu_workarounds, gpu_feature_info, context_state,
+      shared_image_manager, is_for_display_compositor);
+  if (owner_thread_ == OwnerThread::kCompositor) {
+    task_sequence_->ScheduleTask(
+        base::BindOnce(&SharedImageInterfaceInProcess::SetUpOnGpu,
+                       base::Unretained(this), std::move(params)),
+
+        {});
+  } else {
+    CHECK_EQ(owner_thread_, OwnerThread::kGpu);
+    SetUpOnGpu(std::move(params));
+  }
 }
 
 SharedImageInterfaceInProcess::~SharedImageInterfaceInProcess() {
@@ -102,10 +111,16 @@ SharedImageInterfaceInProcess::~SharedImageInterfaceInProcess() {
       base::WaitableEvent::ResetPolicy::MANUAL,
       base::WaitableEvent::InitialState::NOT_SIGNALED);
 
-  task_sequence_->ScheduleTask(
-      base::BindOnce(&SharedImageInterfaceInProcess::DestroyOnGpu,
-                     base::Unretained(this), &completion),
-      {});
+  if (owner_thread_ == OwnerThread::kCompositor) {
+    task_sequence_->ScheduleTask(
+        base::BindOnce(&SharedImageInterfaceInProcess::DestroyOnGpu,
+                       base::Unretained(this), &completion),
+        {});
+  } else {
+    CHECK_EQ(owner_thread_, OwnerThread::kGpu);
+    DestroyOnGpu(&completion);
+  }
+
   completion.Wait();
 }
 

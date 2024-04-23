@@ -1569,6 +1569,7 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
       in_flight_save_sequence_id_ = directive.sequence_id();
       SetSurfaceAnimationManager(SurfaceAnimationManager::CreateWithSave(
           directive, surface, frame_sink_manager_->shared_bitmap_manager(),
+          frame_sink_manager_->shared_image_interface(),
           base::BindOnce(&CompositorFrameSinkSupport::
                              OnCompositorFrameTransitionDirectiveProcessed,
                          base::Unretained(this))));

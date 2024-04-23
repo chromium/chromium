@@ -91,6 +91,7 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     base::ProcessId host_process_id = base::kNullProcessId;
     raw_ptr<HintSessionFactory> hint_session_factory = nullptr;
     size_t max_uncommitted_frames = 0;
+    raw_ptr<gpu::SharedImageInterface> shared_image_interface = nullptr;
   };
   explicit FrameSinkManagerImpl(const InitParams& params);
 
@@ -297,6 +298,17 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     return weak_factory_.GetWeakPtr();
   }
 
+  // Note that if context is lost, this shared image interface will become
+  // invalid. It will then be replaced by a valid one via a
+  // `SetSharedImageInterface` call. It is up to the client to detect changes in
+  // the shared image interface.
+  gpu::SharedImageInterface* shared_image_interface() {
+    return shared_image_interface_.get();
+  }
+
+  void SetSharedImageInterface(
+      gpu::SharedImageInterface* shared_image_interface);
+
  private:
   friend class FrameSinkManagerTest;
   friend class CompositorFrameSinkSupportTest;
@@ -481,6 +493,8 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
 
   // Counts frames for test.
   std::optional<FrameCounter> frame_counter_;
+
+  raw_ptr<gpu::SharedImageInterface> shared_image_interface_ = nullptr;
 
   base::WeakPtrFactory<FrameSinkManagerImpl> weak_factory_{this};
 };

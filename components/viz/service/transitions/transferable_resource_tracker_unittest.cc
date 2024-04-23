@@ -22,9 +22,7 @@ std::unique_ptr<SurfaceSavedFrame> CreateFrameWithResult() {
   CompositorFrameTransitionDirective::SharedElement element;
   auto directive = CompositorFrameTransitionDirective::CreateSave(
       NavigationId::Null(), 1, {element});
-  auto frame = std::make_unique<SurfaceSavedFrame>(
-      std::move(directive),
-      base::BindRepeating([](const CompositorFrameTransitionDirective&) {}));
+  auto frame = SurfaceSavedFrame::CreateForTesting(std::move(directive));
   frame->CompleteSavedFrameForTesting();
   return frame;
 }

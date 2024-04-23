@@ -18,6 +18,10 @@
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/service/viz_service_export.h"
 
+namespace gpu {
+class SharedImageInterface;
+}
+
 namespace viz {
 
 class Surface;
@@ -72,7 +76,11 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
     base::flat_set<ViewTransitionElementResourceId> empty_resource_ids;
   };
 
+  static std::unique_ptr<SurfaceSavedFrame> CreateForTesting(
+      CompositorFrameTransitionDirective directive);
+
   SurfaceSavedFrame(CompositorFrameTransitionDirective directive,
+                    gpu::SharedImageInterface* shared_image_interface,
                     TransitionDirectiveCompleteCallback finished_callback);
   ~SurfaceSavedFrame();
 
@@ -93,6 +101,8 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   base::flat_set<ViewTransitionElementResourceId> GetEmptyResourceIds() const;
 
  private:
+  explicit SurfaceSavedFrame(CompositorFrameTransitionDirective directive);
+
   std::unique_ptr<CopyOutputRequest> CreateCopyRequestIfNeeded(
       const CompositorRenderPass& render_pass,
       const CompositorRenderPassList& render_pass_list) const;
@@ -132,6 +142,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   bool IsSharedElementRenderPass(CompositorRenderPassId pass_id) const;
 
   CompositorFrameTransitionDirective directive_;
+  raw_ptr<gpu::SharedImageInterface> shared_image_interface_;
   TransitionDirectiveCompleteCallback directive_finished_callback_;
 
   std::optional<FrameResult> frame_result_;

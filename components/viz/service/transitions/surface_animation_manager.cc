@@ -135,21 +135,24 @@ SurfaceAnimationManager::CreateWithSave(
     const CompositorFrameTransitionDirective& directive,
     Surface* surface,
     SharedBitmapManager* shared_bitmap_manager,
+    gpu::SharedImageInterface* shared_image_interface,
     TransitionDirectiveCompleteCallback sequence_id_finished_callback) {
-  return base::WrapUnique(
-      new SurfaceAnimationManager(directive, surface, shared_bitmap_manager,
-                                  std::move(sequence_id_finished_callback)));
+  return base::WrapUnique(new SurfaceAnimationManager(
+      directive, surface, shared_bitmap_manager, shared_image_interface,
+      std::move(sequence_id_finished_callback)));
 }
 
 SurfaceAnimationManager::SurfaceAnimationManager(
     const CompositorFrameTransitionDirective& directive,
     Surface* surface,
     SharedBitmapManager* shared_bitmap_manager,
+    gpu::SharedImageInterface* shared_image_interface,
     TransitionDirectiveCompleteCallback sequence_id_finished_callback)
     : transferable_resource_tracker_(shared_bitmap_manager) {
   DCHECK(directive.type() == CompositorFrameTransitionDirective::Type::kSave);
   saved_frame_ = std::make_unique<SurfaceSavedFrame>(
-      directive, std::move(sequence_id_finished_callback));
+      directive, shared_image_interface,
+      std::move(sequence_id_finished_callback));
   saved_frame_->RequestCopyOfOutput(surface);
   empty_resource_ids_ = saved_frame_->GetEmptyResourceIds();
 }
@@ -306,11 +309,6 @@ void SurfaceAnimationManager::ReplaceSharedElementResources(Surface* surface) {
 
   RefResources(resolved_frame.resource_list);
   surface->SetActiveFrameForViewTransition(std::move(resolved_frame));
-}
-
-void SurfaceAnimationManager::CompleteSaveForTesting() {
-  DCHECK(saved_frame_);
-  saved_frame_->CompleteSavedFrameForTesting();  // IN-TEST
 }
 
 }  // namespace viz

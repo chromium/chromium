@@ -84,7 +84,8 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
       log_capture_pipeline_in_webrtc_(params.log_capture_pipeline_in_webrtc),
       debug_settings_(params.debug_renderer_settings),
       host_process_id_(params.host_process_id),
-      hint_session_factory_(params.hint_session_factory) {
+      hint_session_factory_(params.hint_session_factory),
+      shared_image_interface_(params.shared_image_interface) {
   surface_manager_.AddObserver(&hit_test_manager_);
   surface_manager_.AddObserver(this);
 }
@@ -899,6 +900,11 @@ void FrameSinkManagerImpl::OnScreenshotCaptured(
     std::unique_ptr<CopyOutputResult> copy_output_result) {
   client_->OnScreenshotCaptured(destination_token,
                                 std::move(copy_output_result));
+}
+
+void FrameSinkManagerImpl::SetSharedImageInterface(
+    gpu::SharedImageInterface* shared_image_interface) {
+  shared_image_interface_ = shared_image_interface;
 }
 
 void FrameSinkManagerImpl::StartFrameCountingForTest(

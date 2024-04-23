@@ -25,6 +25,10 @@
 #include "ui/gfx/animation/keyframe/keyframe_effect.h"
 #include "ui/gfx/animation/keyframe/keyframe_model.h"
 
+namespace gpu {
+class SharedImageInterface;
+}
+
 namespace viz {
 
 class Surface;
@@ -47,6 +51,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
       const CompositorFrameTransitionDirective& directive,
       Surface* surface,
       SharedBitmapManager* shared_bitmap_manager,
+      gpu::SharedImageInterface* shared_image_interface,
       TransitionDirectiveCompleteCallback sequence_id_finished_callback);
 
   ~SurfaceAnimationManager() override;
@@ -64,8 +69,6 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
   // necessary.
   void ReplaceSharedElementResources(Surface* surface);
 
-  void CompleteSaveForTesting();
-
  private:
   friend class SurfaceAnimationManagerTest;
 
@@ -73,6 +76,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager
       const CompositorFrameTransitionDirective& directive,
       Surface* surface,
       SharedBitmapManager* shared_bitmap_manager,
+      gpu::SharedImageInterface* shared_image_interface,
       TransitionDirectiveCompleteCallback sequence_id_finished_callback);
 
   bool ProcessSaveDirective(const CompositorFrameTransitionDirective& directive,

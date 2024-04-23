@@ -31,6 +31,7 @@
 #include "components/viz/test/fake_external_begin_frame_source.h"
 #include "components/viz/test/fake_surface_observer.h"
 #include "components/viz/test/mock_compositor_frame_sink_client.h"
+#include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/viz_test_suite.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
@@ -2051,11 +2052,14 @@ TEST_F(CompositorFrameSinkSupportTest,
   Surface* surface = support_->GetLastCreatedSurfaceForTesting();
   ASSERT_TRUE(surface);
 
+  auto test_context_provider = TestContextProvider::CreateRaster();
+  TestSharedImageInterface* sii = test_context_provider->SharedImageInterface();
+
   std::unique_ptr<SurfaceAnimationManager> animation_manager =
       SurfaceAnimationManager::CreateWithSave(
           CompositorFrameTransitionDirective::CreateSave(navigation_id,
                                                          /*sequence_id=*/1, {}),
-          surface, &shared_bitmap_manager_, base::DoNothing());
+          surface, &shared_bitmap_manager_, sii, base::DoNothing());
   ASSERT_TRUE(animation_manager);
 
   EXPECT_FALSE(HasAnimationManagerForNavigation(navigation_id));
