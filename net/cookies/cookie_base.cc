@@ -605,13 +605,7 @@ CookieBase::CookieBase(std::string name,
 CookieEffectiveSameSite CookieBase::GetEffectiveSameSite(
     CookieAccessSemantics access_semantics) const {
   base::TimeDelta lax_allow_unsafe_threshold_age =
-      base::FeatureList::IsEnabled(
-          features::kSameSiteDefaultChecksMethodRigorously)
-          ? base::TimeDelta::Min()
-          : (base::FeatureList::IsEnabled(
-                 features::kShortLaxAllowUnsafeThreshold)
-                 ? kShortLaxAllowUnsafeMaxAge
-                 : kLaxAllowUnsafeMaxAge);
+      GetLaxAllowUnsafeThresholdAge();
 
   switch (SameSite()) {
     // If a cookie does not have a SameSite attribute, the effective SameSite
@@ -630,6 +624,10 @@ CookieEffectiveSameSite CookieBase::GetEffectiveSameSite(
     case CookieSameSite::STRICT_MODE:
       return CookieEffectiveSameSite::STRICT_MODE;
   }
+}
+
+base::TimeDelta CookieBase::GetLaxAllowUnsafeThresholdAge() const {
+  return base::TimeDelta::Min();
 }
 
 bool CookieBase::IsRecentlyCreated(base::TimeDelta age_threshold) const {

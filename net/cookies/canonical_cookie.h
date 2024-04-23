@@ -409,6 +409,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
   static bool HasHiddenPrefixName(const std::string_view cookie_value);
 
   // CookieBase:
+  base::TimeDelta GetLaxAllowUnsafeThresholdAge() const override;
   void PostIncludeForRequestURL(
       const CookieAccessResult& access_result,
       const CookieOptions& options_used,

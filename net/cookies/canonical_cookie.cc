@@ -900,6 +900,16 @@ void CanonicalCookie::PostIsSetPermittedInContext(
   }
 }
 
+base::TimeDelta CanonicalCookie::GetLaxAllowUnsafeThresholdAge() const {
+  return base::FeatureList::IsEnabled(
+             features::kSameSiteDefaultChecksMethodRigorously)
+             ? base::TimeDelta::Min()
+             : (base::FeatureList::IsEnabled(
+                    features::kShortLaxAllowUnsafeThreshold)
+                    ? kShortLaxAllowUnsafeMaxAge
+                    : kLaxAllowUnsafeMaxAge);
+}
+
 std::string CanonicalCookie::DebugString() const {
   return base::StringPrintf(
       "name: %s value: %s domain: %s path: %s creation: %" PRId64,

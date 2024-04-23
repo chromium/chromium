@@ -2573,6 +2573,7 @@ test("net_unittests") {
     "cert/x509_util_unittest.cc",
     "cert_net/cert_net_fetcher_url_request_unittest.cc",
     "cookies/canonical_cookie_unittest.cc",
+    "cookies/cookie_base_unittest.cc",
     "cookies/cookie_constants_unittest.cc",
     "cookies/cookie_deletion_info_unittest.cc",
     "cookies/cookie_inclusion_status_unittest.cc",

@@ -210,6 +210,19 @@ class NET_EXPORT CookieBase {
   CookieEffectiveSameSite GetEffectiveSameSite(
       CookieAccessSemantics access_semantics) const;
 
+  // Returns the threshold age for lax-allow-unsafe behavior, below which the
+  // effective SameSite behavior for a cookie that does not specify SameSite is
+  // lax-allow-unsafe, and above which the effective SameSite is just lax.
+  // Lax-allow-unsafe behavior (a.k.a. Lax+POST) is a temporary mitigation for
+  // compatibility reasons that allows a cookie which doesn't specify SameSite
+  // to still be sent on non-safe requests like POST requests for a short amount
+  // of time after creation, despite the default enforcement for most (i.e.
+  // older) SameSite-unspecified cookies being Lax. Implementations should
+  // override this method if they want to enable Lax-allow-unsafe behavior; by
+  // default, this method returns base::TimeDelta::Min(), i.e. no cookies will
+  // ever be lax-allow-unsafe.
+  virtual base::TimeDelta GetLaxAllowUnsafeThresholdAge() const;
+
   // Returns whether the cookie was created at most |age_threshold| ago.
   bool IsRecentlyCreated(base::TimeDelta age_threshold) const;
 
