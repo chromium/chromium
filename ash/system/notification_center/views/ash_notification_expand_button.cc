@@ -83,6 +83,7 @@ AshNotificationExpandButton::AshNotificationExpandButton() {
   message_center_utils::InitLayerForAnimations(image_);
 
   views::FocusRing::Get(this)->SetColorId(ui::kColorAshFocusRing);
+  views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
 
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   layer()->SetFillsBoundsOpaquely(false);
@@ -93,8 +94,9 @@ AshNotificationExpandButton::AshNotificationExpandButton() {
 AshNotificationExpandButton::~AshNotificationExpandButton() = default;
 
 void AshNotificationExpandButton::SetExpanded(bool expanded) {
-  if (expanded_ == expanded)
+  if (expanded_ == expanded) {
     return;
+  }
 
   previous_bounds_ = GetContentsBounds();
 
@@ -139,8 +141,9 @@ void AshNotificationExpandButton::UpdateIcons() {
 void AshNotificationExpandButton::AnimateExpandCollapse() {
   // If the button is not used for grouped notification, there's no animation to
   // perform here.
-  if (!total_grouped_notifications_)
+  if (!total_grouped_notifications_) {
     return;
+  }
 
   int bounds_animation_duration;
   gfx::Tween::Type bounds_animation_tween_type;

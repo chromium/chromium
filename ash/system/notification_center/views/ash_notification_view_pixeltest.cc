@@ -5,6 +5,7 @@
 #include "ash/system/notification_center/message_popup_animation_waiter.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/notification_center/notification_center_tray.h"
+#include "ash/system/notification_center/views/ash_notification_expand_button.h"
 #include "ash/system/notification_center/views/ash_notification_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
@@ -212,6 +213,21 @@ TEST_F(AshNotificationViewPixelTest, InlineReply) {
   // Verify with a pixel test that the inline reply field is correctly drawn.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "inline_reply_focused", /*revision_number=*/0, notification_view));
+}
+
+// Tests the focus ring for the expand button in AshNotificationView.
+TEST_F(AshNotificationViewPixelTest, ExpandButtonFocusRing) {
+  const std::string id = test_api()->AddNotification();
+  test_api()->ToggleBubble();
+
+  auto* notification_view = views::AsViewClass<AshNotificationView>(
+      test_api()->GetNotificationViewForId(id));
+  while (!notification_view->expand_button_for_test()->HasFocus()) {
+    PressAndReleaseKey(ui::VKEY_TAB);
+  }
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "expand_button_focus_ring", /*revision_number=*/0, notification_view));
 }
 
 TEST_F(AshNotificationViewPixelTest, NotificationViewFocusRing) {
