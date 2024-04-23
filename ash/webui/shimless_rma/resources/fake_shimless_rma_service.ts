@@ -656,20 +656,21 @@ export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
     this.methods.setResult('get3pDiagnosticsProvider', {provider});
   }
 
-  getInstallable3pDiagnosticsAppPath(): Promise<{appPath: FilePath}> {
+  getInstallable3pDiagnosticsAppPath(): Promise<{appPath: FilePath | null}> {
     return this.methods.resolveMethod('getInstallable3pDiagnosticsAppPath');
   }
 
-  setInstallable3pDiagnosticsAppPath(appPath: FilePath): void {
+  setInstallable3pDiagnosticsAppPath(appPath: FilePath|null): void {
     this.methods.setResult('getInstallable3pDiagnosticsAppPath', {appPath});
   }
 
   installLastFound3pDiagnosticsApp():
-      Promise<{appInfo: Shimless3pDiagnosticsAppInfo}> {
+      Promise<{appInfo: Shimless3pDiagnosticsAppInfo | null}> {
     return this.methods.resolveMethod('installLastFound3pDiagnosticsApp');
   }
 
-  setInstallLastFound3pDiagnosticsApp(appInfo: Shimless3pDiagnosticsAppInfo): void {
+  setInstallLastFound3pDiagnosticsApp(appInfo: Shimless3pDiagnosticsAppInfo|
+                                      null): void {
     this.methods.setResult('installLastFound3pDiagnosticsApp', {appInfo});
   }
 
@@ -678,13 +679,18 @@ export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
     return Promise.resolve();
   }
 
-  getLastCompleteLast3pDiagnosticsInstallationApproval(): boolean|null {
-    return this.lastCompleteLast3pDiagnosticsInstallationApproval;
+  getLastCompleteLast3pDiagnosticsInstallationApproval(): boolean {
+    assert(this.lastCompleteLast3pDiagnosticsInstallationApproval !== null);
+    return this.lastCompleteLast3pDiagnosticsInstallationApproval as boolean;
   }
 
   show3pDiagnosticsApp(): Promise<{result: Show3pDiagnosticsAppResult}> {
     this.wasShow3pDiagnosticsAppCalled = true;
     return this.methods.resolveMethod('show3pDiagnosticsApp');
+  }
+
+  getWasShow3pDiagnosticsAppCalled(): boolean {
+    return this.wasShow3pDiagnosticsAppCalled;
   }
 
   setShow3pDiagnosticsAppResult(result: Show3pDiagnosticsAppResult): void {
@@ -1129,7 +1135,9 @@ export class FakeShimlessRmaService implements FakeShimlessRmaServiceInterface {
     this.setSaveLogResult({'path': ''});
 
     this.lastCompleteLast3pDiagnosticsInstallationApproval = null;
+    this.wasShow3pDiagnosticsAppCalled = false;
     this.setGet3pDiagnosticsProviderResult(null);
+    this.setAsyncOperationDelayMs(/* delayMs= */ 0);
   }
 
   /**

@@ -171,6 +171,10 @@ IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, WaitForManualWpEnable) {
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ShimlessRmaBrowserTest, Shimless3pDiag) {
+  RunTest("chromeos/shimless_rma/shimless_3p_diag_test.js", "mocha.run()");
+}
+
 }  // namespace
 
 }  // namespace ash

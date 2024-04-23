@@ -81,7 +81,6 @@ if (include_js2gtest_tests) {
     sources = [
       "crostini_installer_browsertest.js",
       "crostini_upgrader_browsertest.js",
-      "shimless_rma/shimless_rma_browsertest.js",
     ]
 
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
