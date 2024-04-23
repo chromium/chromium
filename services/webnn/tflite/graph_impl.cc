@@ -4,17 +4,25 @@
 
 #include "services/webnn/tflite/graph_impl.h"
 
-#include "base/ranges/algorithm.h"
+#include "base/location.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/types/expected_macros.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
+#include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/public/mojom/webnn_error.mojom.h"
+#include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/tflite/graph_builder.h"
 #include "services/webnn/tflite/op_resolver.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 #include "third_party/tflite/src/tensorflow/lite/interpreter_builder.h"
 #include "third_party/tflite/src/tensorflow/lite/stderr_reporter.h"
 
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
+#include "third_party/tflite/src/tensorflow/lite/profiling/buffered_profiler.h"
 #include "third_party/tflite/src/tensorflow/lite/profiling/profile_summarizer.h"
 #endif
 
@@ -45,103 +53,174 @@ std::string_view TfLiteStatusToString(TfLiteStatus status) {
   }
 }
 
+base::span<uint8_t> SpanFromTensor(TfLiteTensor* tensor) {
+  // SAFETY: TFLite guarantees that it has allocated enough memory to
+  // store `tensor`.
+  return UNSAFE_BUFFERS(
+      base::span(static_cast<uint8_t*>(tensor->data.data), tensor->bytes));
+}
+
 }  // namespace
 
-#if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
-ScopedTfLiteProfiler::ScopedTfLiteProfiler(::tflite::Interpreter& interpreter)
-    : interpreter_(interpreter) {
-  // `profiler_` must be a `std::unique_ptr` because this object is movable and
-  // `&profiler_` may change after construction.
-  profiler_ = std::make_unique<::tflite::profiling::BufferedProfiler>(
-      /*max_num_entries=*/1024);
-  interpreter_->SetProfiler(profiler_.get());
-}
+// Represents the thread-safe collection of graph resources which are shared
+// among all interpreters. Since this class is reference counted it MUST be
+// safe to destroy on any thread.
+class GraphImpl::GraphResources
+    : public base::RefCountedThreadSafe<GraphResources> {
+ public:
+  static base::expected<scoped_refptr<GraphResources>, mojom::ErrorPtr> Create(
+      const mojom::GraphInfo& graph_info) {
+    auto self = base::MakeRefCounted<GraphResources>();
 
-ScopedTfLiteProfiler::~ScopedTfLiteProfiler() {
-  // `profiler_` is nullptr if this object was moved.
-  if (profiler_) {
-    ::tflite::profiling::ProfileSummarizer profile_summarizer;
-    auto profile_events = profiler_->GetProfileEvents();
-    profile_summarizer.ProcessProfiles(profile_events, *interpreter_);
-    LOG(INFO) << profile_summarizer.GetOutputString();
-    interpreter_->SetProfiler(nullptr);
+    ASSIGN_OR_RETURN(
+        self->model_content_, GraphBuilder::CreateAndBuild(graph_info),
+        [](std::string error) {
+          return mojom::Error::New(mojom::Error::Code::kNotSupportedError,
+                                   std::move(error));
+        });
+
+    self->model_ = ::tflite::FlatBufferModel::BuildFromBuffer(
+        reinterpret_cast<const char*>(self->model_content_.data()),
+        self->model_content_.size(), ::tflite::DefaultErrorReporter());
+    if (!self->model_) {
+      return base::unexpected(
+          mojom::Error::New(mojom::Error::Code::kUnknownError,
+                            "Unable to build flatbuffer model"));
+    }
+
+    return self;
   }
-}
 
-void ScopedTfLiteProfiler::Start() {
-  profiler_->StartProfiling();
-}
+  GraphResources() = default;
 
-void ScopedTfLiteProfiler::Stop() {
-  profiler_->StopProfiling();
-}
-#else
-ScopedTfLiteProfiler::ScopedTfLiteProfiler(::tflite::Interpreter&) {}
-ScopedTfLiteProfiler::~ScopedTfLiteProfiler() = default;
+  const ::tflite::FlatBufferModel& model() { return *model_; }
 
-void ScopedTfLiteProfiler::Start() {}
-void ScopedTfLiteProfiler::Stop() {}
+ private:
+  friend class base::RefCountedThreadSafe<GraphResources>;
+
+  ~GraphResources() = default;
+
+  // `model_` depends on `model_content_` outliving it.
+  flatbuffers::DetachedBuffer model_content_;
+  std::unique_ptr<::tflite::FlatBufferModel> model_;
+};
+
+// Represents the non-thread-safe collection of graph resources associated with
+// a particular compute context (i.e. a TFLite interpreter).
+class GraphImpl::ComputeResources {
+ public:
+  static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
+  Create(scoped_refptr<GraphResources> graph_resources) {
+    auto self = std::make_unique<ComputeResources>();
+
+    OpResolver op_resolver;
+    TfLiteStatus status = ::tflite::InterpreterBuilder(
+        graph_resources->model(), op_resolver)(&self->interpreter_);
+    if (status != kTfLiteOk) {
+      return base::unexpected(
+          mojom::Error::New(mojom::Error::Code::kUnknownError,
+                            base::StrCat({"Unable to build TFLite intepreter: ",
+                                          TfLiteStatusToString(status)})));
+    }
+
+    // The profiler (if enabled) must be initialized before tensors are
+    // allocated.
+#if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
+    self->interpreter_->SetProfiler(&self->profiler_);
 #endif
 
-ScopedTfLiteProfiler::ScopedTfLiteProfiler(ScopedTfLiteProfiler&& other) =
-    default;
+    status = self->interpreter_->AllocateTensors();
+    if (status != kTfLiteOk) {
+      return base::unexpected(
+          mojom::Error::New(mojom::Error::Code::kUnknownError,
+                            base::StrCat({"Unable to allocate tensors: ",
+                                          TfLiteStatusToString(status)})));
+    }
 
-ScopedTfLiteProfiler& ScopedTfLiteProfiler::operator=(
-    ScopedTfLiteProfiler&& other) = default;
+    return self;
+  }
+
+  ComputeResources() = default;
+
+  ~ComputeResources() {
+#if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
+    if (interpreter_) {
+      ::tflite::profiling::ProfileSummarizer profile_summarizer;
+      auto profile_events = profiler_.GetProfileEvents();
+      profile_summarizer.ProcessProfiles(profile_events, *interpreter_);
+      LOG(INFO) << profile_summarizer.GetOutputString();
+      interpreter_->SetProfiler(nullptr);
+    }
+#endif
+  }
+
+  mojom::ComputeResultPtr InvokeInterpreter(NamedBuffers named_inputs) {
+    for (int tensor_idx : interpreter_->inputs()) {
+      TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
+      auto it = named_inputs.find(tensor->name);
+      // The caller guarantees that all expected tensors have been provided.
+      CHECK(it != named_inputs.end());
+      SpanFromTensor(tensor).copy_from(base::make_span(it->second));
+    }
+
+#if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
+    profiler_.StartProfiling();
+#endif
+    TfLiteStatus status = interpreter_->Invoke();
+#if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
+    profiler_.StopProfiling();
+#endif
+    if (status != kTfLiteOk) {
+      return ToError<mojom::ComputeResult>(
+          mojom::Error::Code::kUnknownError,
+          base::StrCat({"Failed to compute: ", TfLiteStatusToString(status)}));
+    }
+
+    std::vector<std::pair<std::string, mojo_base::BigBuffer>> named_outputs;
+    named_outputs.reserve(interpreter_->outputs().size());
+    for (int tensor_idx : interpreter_->outputs()) {
+      TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
+      named_outputs.emplace_back(tensor->name,
+                                 mojo_base::BigBuffer(SpanFromTensor(tensor)));
+    }
+
+    return mojom::ComputeResult::NewNamedOutputs(std::move(named_outputs));
+  }
+
+ private:
+  // `interpreter_` depends on the `FlatBufferModel` owned by `graph_resources_`
+  // outliving it.
+  scoped_refptr<GraphResources> graph_resources_;
+  std::unique_ptr<::tflite::Interpreter> interpreter_;
+
+#if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
+  ::tflite::profiling::BufferedProfiler profiler_{/*max_num_entries=*/1024};
+#endif
+};
 
 // static
 void GraphImpl::CreateAndBuild(
     mojom::GraphInfoPtr graph_info,
     mojom::WebNNContext::CreateGraphCallback callback) {
-  base::expected<flatbuffers::DetachedBuffer, std::string> conversion_result =
-      GraphBuilder::CreateAndBuild(*graph_info);
-  if (!conversion_result.has_value()) {
-    std::move(callback).Run(ToError<mojom::CreateGraphResult>(
-        mojom::Error::Code::kNotSupportedError, conversion_result.error()));
-    return;
-  }
-  flatbuffers::DetachedBuffer model_content =
-      std::move(conversion_result).value();
+  ASSIGN_OR_RETURN(scoped_refptr<GraphResources> graph_resources,
+                   GraphResources::Create(*graph_info),
+                   [&callback](mojom::ErrorPtr error) {
+                     std::move(callback).Run(
+                         mojom::CreateGraphResult::NewError(std::move(error)));
+                   });
 
-  std::unique_ptr<::tflite::FlatBufferModel> model =
-      ::tflite::FlatBufferModel::BuildFromBuffer(
-          reinterpret_cast<const char*>(model_content.data()),
-          model_content.size(), ::tflite::DefaultErrorReporter());
-  if (!model) {
-    std::move(callback).Run(ToError<mojom::CreateGraphResult>(
-        mojom::Error::Code::kUnknownError, "Unable to build flatbuffer model"));
-    return;
-  }
-
-  OpResolver op_resolver;
-  std::unique_ptr<::tflite::Interpreter> interpreter;
-  TfLiteStatus status =
-      ::tflite::InterpreterBuilder(*model, op_resolver)(&interpreter);
-  if (status != kTfLiteOk) {
-    std::move(callback).Run(ToError<mojom::CreateGraphResult>(
-        mojom::Error::Code::kUnknownError,
-        base::StrCat({"Unable to build TFLite intepreter: ",
-                      TfLiteStatusToString(status)})));
-    return;
-  }
-
-  // The profiler (if enabled) must be initialized before tensors are allocated.
-  ScopedTfLiteProfiler profiler(*interpreter);
-
-  status = interpreter->AllocateTensors();
-  if (status != kTfLiteOk) {
-    std::move(callback).Run(ToError<mojom::CreateGraphResult>(
-        mojom::Error::Code::kUnknownError,
-        base::StrCat(
-            {"Unable to allocate tensors: ", TfLiteStatusToString(status)})));
-    return;
-  }
+  ASSIGN_OR_RETURN(std::unique_ptr<ComputeResources> compute_resources,
+                   ComputeResources::Create(graph_resources),
+                   [&callback](mojom::ErrorPtr error) {
+                     std::move(callback).Run(
+                         mojom::CreateGraphResult::NewError(std::move(error)));
+                   });
 
   mojo::PendingAssociatedRemote<mojom::WebNNGraph> graph;
   mojo::MakeSelfOwnedAssociatedReceiver<mojom::WebNNGraph>(
-      base::WrapUnique(new GraphImpl(
-          ComputeResourceInfo(graph_info), std::move(model_content),
-          std::move(model), std::move(interpreter), std::move(profiler))),
+      base::WrapUnique(new GraphImpl(ComputeResourceInfo(graph_info),
+                                     std::move(graph_resources),
+                                     std::move(compute_resources))),
       graph.InitWithNewEndpointAndPassReceiver());
   std::move(callback).Run(
       mojom::CreateGraphResult::NewGraphRemote(std::move(graph)));
@@ -150,48 +229,49 @@ void GraphImpl::CreateAndBuild(
 GraphImpl::~GraphImpl() = default;
 
 GraphImpl::GraphImpl(ComputeResourceInfo compute_resource_info,
-                     flatbuffers::DetachedBuffer model_content,
-                     std::unique_ptr<::tflite::FlatBufferModel> model,
-                     std::unique_ptr<::tflite::Interpreter> interpreter,
-                     ScopedTfLiteProfiler profiler)
+                     scoped_refptr<GraphResources> graph_resources,
+                     std::unique_ptr<ComputeResources> compute_resources)
     : WebNNGraphImpl(std::move(compute_resource_info)),
-      model_content_(std::move(model_content)),
-      model_(std::move(model)),
-      interpreter_(std::move(interpreter)),
-      profiler_(std::move(profiler)) {}
+      graph_resources_(std::move(graph_resources)),
+      compute_resources_(std::move(compute_resources)) {}
 
-void GraphImpl::ComputeImpl(
-    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
-    mojom::WebNNGraph::ComputeCallback callback) {
-  for (int tensor_idx : interpreter_->inputs()) {
-    TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
-    auto it = named_inputs.find(tensor->name);
-    // The caller guarantees that all expected tensors have been provided.
-    CHECK(it != named_inputs.end());
-    std::ranges::copy(base::make_span(it->second), tensor->data.raw);
+void GraphImpl::ComputeImpl(NamedBuffers named_inputs,
+                            ComputeCallback callback) {
+  // Borrow `compute_resources_` for the current invocation, creating a new one
+  // if necessary.
+  auto compute_resources = std::move(compute_resources_);
+  if (!compute_resources) {
+    ASSIGN_OR_RETURN(compute_resources,
+                     ComputeResources::Create(graph_resources_),
+                     [&callback](mojom::ErrorPtr error) {
+                       std::move(callback).Run(
+                           mojom::ComputeResult::NewError(std::move(error)));
+                     });
   }
 
-  profiler_.Start();
-  TfLiteStatus status = interpreter_->Invoke();
-  profiler_.Stop();
-  if (status != kTfLiteOk) {
-    std::move(callback).Run(ToError<mojom::ComputeResult>(
-        mojom::Error::Code::kUnknownError,
-        base::StrCat({"Failed to compute: ", TfLiteStatusToString(status)})));
-    return;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+      base::BindOnce(
+          [](NamedBuffers named_inputs,
+             std::unique_ptr<ComputeResources> compute_resources)
+              -> AsyncComputeResult {
+            mojom::ComputeResultPtr result =
+                compute_resources->InvokeInterpreter(std::move(named_inputs));
+            return {std::move(result), std::move(compute_resources)};
+          },
+          std::move(named_inputs), std::move(compute_resources)),
+      base::BindOnce(&GraphImpl::OnComputeComplete, weak_factory_.GetWeakPtr(),
+                     std::move(callback)));
+}
+
+void GraphImpl::OnComputeComplete(ComputeCallback callback,
+                                  AsyncComputeResult result) {
+  // Returns the borrowed `compute_resources_` if another task hasn't already.
+  if (!compute_resources_) {
+    compute_resources_ = std::move(result.second);
   }
 
-  std::vector<std::pair<std::string, mojo_base::BigBuffer>> named_outputs;
-  named_outputs.reserve(interpreter_->outputs().size());
-  for (int tensor_idx : interpreter_->outputs()) {
-    TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
-    auto tensor_span = base::make_span(tensor->data.raw, tensor->bytes);
-    named_outputs.emplace_back(
-        tensor->name, mojo_base::BigBuffer(base::as_bytes(tensor_span)));
-  }
-
-  std::move(callback).Run(
-      mojom::ComputeResult::NewNamedOutputs(std::move(named_outputs)));
+  std::move(callback).Run(std::move(result.first));
 }
 
 }  // namespace webnn::tflite

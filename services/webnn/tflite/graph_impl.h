@@ -5,39 +5,19 @@
 #ifndef SERVICES_WEBNN_TFLITE_GRAPH_IMPL_H_
 #define SERVICES_WEBNN_TFLITE_GRAPH_IMPL_H_
 
-#include "services/webnn/buildflags.h"
-#include "services/webnn/public/mojom/webnn_graph.mojom.h"
-#include "services/webnn/webnn_graph_impl.h"
-#include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
-#include "third_party/tflite/src/tensorflow/lite/core/interpreter.h"
-#include "third_party/tflite/src/tensorflow/lite/model_builder.h"
+#include <memory>
+#include <string>
+#include <utility>
 
-#if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
-#include "third_party/tflite/src/tensorflow/lite/profiling/buffered_profiler.h"
-#endif
+#include "base/containers/flat_map.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "mojo/public/cpp/base/big_buffer.h"
+#include "services/webnn/public/mojom/webnn_graph.mojom-forward.h"
+#include "services/webnn/webnn_graph_impl.h"
 
 namespace webnn::tflite {
 
-// When the WEBNN_ENABLE_TFLITE_PROFILER build flag is enabled this creates a
-// profiler which dumps a summary to the log when destroyed.
-class ScopedTfLiteProfiler {
- public:
-  // `interpreter` must outlive this object.
-  explicit ScopedTfLiteProfiler(::tflite::Interpreter& interpreter);
-  ~ScopedTfLiteProfiler();
-
-  ScopedTfLiteProfiler(ScopedTfLiteProfiler&& other);
-  ScopedTfLiteProfiler& operator=(ScopedTfLiteProfiler&& other);
-
-  void Start();
-  void Stop();
-
-#if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
- private:
-  std::unique_ptr<::tflite::profiling::BufferedProfiler> profiler_;
-  raw_ref<::tflite::Interpreter> interpreter_;
-#endif
-};
 // GraphImpl inherits from WebNNGraphImpl to represent a TFLite graph
 // implementation. It is mainly responsible for building a TFLite flatbuffer
 // model from mojom::GraphInfo via tflite::GraphBuilder, then initializing and
@@ -52,24 +32,28 @@ class GraphImpl final : public WebNNGraphImpl {
   ~GraphImpl() override;
 
  private:
+  class GraphResources;
+  class ComputeResources;
+
+  using NamedBuffers = base::flat_map<std::string, mojo_base::BigBuffer>;
+  using AsyncComputeResult =
+      std::pair<mojom::ComputeResultPtr, std::unique_ptr<ComputeResources>>;
+
   GraphImpl(ComputeResourceInfo compute_resource_info,
-            flatbuffers::DetachedBuffer model_content,
-            std::unique_ptr<::tflite::FlatBufferModel> model,
-            std::unique_ptr<::tflite::Interpreter> intepreter,
-            ScopedTfLiteProfiler profiler);
+            scoped_refptr<GraphResources> graph_resources,
+            std::unique_ptr<ComputeResources> compute_resources);
 
   // Execute the compiled platform graph asynchronously. The `named_inputs` were
   // validated in base class so we can use them to compute directly, the result
   // of execution will be returned to renderer process with the `callback`.
-  void ComputeImpl(
-      base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
-      mojom::WebNNGraph::ComputeCallback callback) override;
+  void ComputeImpl(NamedBuffers named_inputs,
+                   mojom::WebNNGraph::ComputeCallback callback) override;
 
-  // `interpreter_` depends on `model_` and `model_content_` outliving it.
-  flatbuffers::DetachedBuffer model_content_;
-  std::unique_ptr<::tflite::FlatBufferModel> model_;
-  std::unique_ptr<::tflite::Interpreter> interpreter_;
-  ScopedTfLiteProfiler profiler_;
+  void OnComputeComplete(ComputeCallback callback, AsyncComputeResult result);
+
+  scoped_refptr<GraphResources> graph_resources_;
+  std::unique_ptr<ComputeResources> compute_resources_;
+  base::WeakPtrFactory<GraphImpl> weak_factory_{this};
 };
 
 }  // namespace webnn::tflite
