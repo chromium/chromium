@@ -32,6 +32,8 @@
   const TabGroup* _tabGroup;
   // Array of all pictures of the group.
   NSMutableArray<GroupTabInfo*>* _tabGroupInfos;
+  // Item to fetch pictures.
+  TabGroupItem* _groupItem;
 }
 
 - (instancetype)
@@ -93,12 +95,11 @@
     _consumer = consumer;
     _tabGroup = tabGroup;
     _webStateList = webStateList;
-    TabGroupItem* groupItem =
-        [[TabGroupItem alloc] initWithTabGroup:_tabGroup
-                                  webStateList:_webStateList];
+    _groupItem = [[TabGroupItem alloc] initWithTabGroup:_tabGroup
+                                           webStateList:_webStateList];
     __weak CreateTabGroupMediator* weakSelf = self;
-    [groupItem fetchGroupTabInfos:^(TabGroupItem* item,
-                                    NSArray<GroupTabInfo*>* groupTabInfos) {
+    [_groupItem fetchGroupTabInfos:^(TabGroupItem* item,
+                                     NSArray<GroupTabInfo*>* groupTabInfos) {
       [weakSelf setGroupTabInfos:groupTabInfos];
       [weakSelf updateConsumer];
     }];
