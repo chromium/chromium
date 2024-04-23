@@ -8,8 +8,7 @@
 #include <optional>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/token.h"
 #include "components/sessions/core/session_id.h"
@@ -23,20 +22,6 @@ class WebContents;
 // SessionRestoreDelegate is responsible for creating the tab loader and the
 // stats collector.
 class SessionRestoreDelegate {
- private:
-  class WebContentsTracker : public content::WebContentsObserver,
-                             public base::RefCounted<WebContentsTracker> {
-   public:
-    explicit WebContentsTracker(content::WebContents* web_contents);
-
-   private:
-    friend class base::RefCounted<WebContentsTracker>;
-    ~WebContentsTracker() override = default;
-
-    // WebContentsObserver:
-    void WebContentsDestroyed() override;
-  };
-
  public:
   class RestoredTab {
    public:
@@ -52,7 +37,7 @@ class SessionRestoreDelegate {
 
     bool operator<(const RestoredTab& right) const;
 
-    content::WebContents* contents() const { return contents_; }
+    content::WebContents* contents() const { return contents_.get(); }
     bool is_active() const { return is_active_; }
     bool is_app() const { return is_app_; }
     bool is_internal_page() const { return is_internal_page_; }
@@ -68,7 +53,11 @@ class SessionRestoreDelegate {
     void StopTrackingWebContentsLifetime();
 
    private:
-    raw_ptr<content::WebContents, DanglingUntriaged> contents_;
+    // During restore it's possible for some WebContents to be deleted, which
+    // is why this is a WeakPtr. Before SessionRestore calls to RestoreTabs()
+    // any RestoredTabs with a deleted WebContents are removed. In other words,
+    // when RestoreTabs() is called, the WebContents will be valid.
+    base::WeakPtr<content::WebContents> contents_;
     bool is_active_;
     bool is_app_;            // Browser window is an app.
     bool is_internal_page_;  // Internal web UI page, like NTP or Settings.
@@ -76,7 +65,6 @@ class SessionRestoreDelegate {
     // The ID for the tab group that this tab belonged to, if any. See
     // |TabStripModel::AddToNewGroup()| for more documentation.
     std::optional<tab_groups::TabGroupId> group_;
-    scoped_refptr<WebContentsTracker> tracker_;
   };
 
   SessionRestoreDelegate() = delete;

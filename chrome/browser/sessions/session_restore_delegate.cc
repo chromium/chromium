@@ -48,7 +48,7 @@ SessionRestoreDelegate::RestoredTab::RestoredTab(
     bool is_app,
     bool is_pinned,
     const std::optional<tab_groups::TabGroupId>& group)
-    : contents_(contents),
+    : contents_(contents->GetWeakPtr()),
       is_active_(is_active),
       is_app_(is_app),
       is_internal_page_(IsInternalPage(contents->GetLastCommittedURL())),
@@ -78,17 +78,6 @@ bool SessionRestoreDelegate::RestoredTab::operator<(
   return contents_->GetLastActiveTime() > right.contents_->GetLastActiveTime();
 }
 
-void SessionRestoreDelegate::RestoredTab::StartTrackingWebContentsLifetime() {
-  if (tracker_) {
-    return;
-  }
-  tracker_ = base::MakeRefCounted<WebContentsTracker>(contents_);
-}
-
-void SessionRestoreDelegate::RestoredTab::StopTrackingWebContentsLifetime() {
-  tracker_ = nullptr;
-}
-
 // static
 void SessionRestoreDelegate::RestoreTabs(
     const std::vector<RestoredTab>& tabs,
@@ -100,6 +89,7 @@ void SessionRestoreDelegate::RestoreTabs(
   // to memory pressure so it's best to have some visual indication of its
   // contents.
   for (const auto& restored_tab : tabs) {
+    CHECK(restored_tab.contents());
     // Restore the favicon for deferred tabs.
     favicon::ContentFaviconDriver* favicon_driver =
         favicon::ContentFaviconDriver::FromWebContents(restored_tab.contents());
@@ -124,18 +114,11 @@ void SessionRestoreDelegate::RestoreTabs(
   } else {
     std::vector<content::WebContents*> web_contents_vector;
     web_contents_vector.reserve(tabs.size());
-    for (auto tab : tabs)
+    for (auto tab : tabs) {
+      CHECK(tab.contents());
       web_contents_vector.push_back(tab.contents());
+    }
     performance_manager::policies::ScheduleLoadForRestoredTabs(
         std::move(web_contents_vector));
   }
-}
-
-SessionRestoreDelegate::WebContentsTracker::WebContentsTracker(
-    content::WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
-
-void SessionRestoreDelegate::WebContentsTracker::WebContentsDestroyed() {
-  // TODO(crbug.com/40072229): remove once crash understood.
-  DUMP_WILL_BE_CHECK(false);
 }
