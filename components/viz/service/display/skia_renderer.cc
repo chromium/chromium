@@ -1145,8 +1145,9 @@ void SkiaRenderer::FinishDrawingFrame() {
       surface_candidate.resource_size_in_pixels = surface_plane.resource_size;
       surface_candidate.format = surface_plane.format;
       surface_candidate.color_space = surface_plane.color_space;
-      if (current_frame()->root_render_pass->content_color_usage ==
-          gfx::ContentColorUsage::kHDR) {
+      if (current_frame()->display_color_spaces.SupportsHDR() &&
+          current_frame()->root_render_pass->content_color_usage ==
+              gfx::ContentColorUsage::kHDR) {
         surface_candidate.hdr_metadata.extended_range.emplace();
         // TODO(crbug.com/40263227): Track the actual brightness of the
         // content. For now, assume that all HDR content is 1,000 nits.
