@@ -392,17 +392,15 @@ void PlusAddressService::OnWebDataChangedBySync(
 void PlusAddressService::OnWebDataServiceRequestDone(
     WebDataServiceBase::Handle handle,
     std::unique_ptr<WDTypedResult> result) {
-  CHECK_EQ(result->GetType(), PLUS_ADDRESS_RESULT);
-  ReplacePlusProfiles(
-      static_cast<WDResult<std::vector<PlusProfile>>*>(result.get())
-          ->GetValue());
-}
-
-void PlusAddressService::ReplacePlusProfiles(
-    const std::vector<PlusProfile>& profiles) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(result->GetType(), PLUS_ADDRESS_RESULT);
   CHECK(plus_profiles_.empty());
   CHECK(plus_addresses_.empty());
+
+  const std::vector<PlusProfile>& profiles =
+      static_cast<WDResult<std::vector<PlusProfile>>*>(result.get())
+          ->GetValue();
+
   std::vector<PlusAddressDataChange> applied_changes;
   applied_changes.reserve(profiles.size());
   for (const PlusProfile& plus_profile : profiles) {

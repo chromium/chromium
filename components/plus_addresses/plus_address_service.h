@@ -191,10 +191,6 @@ class PlusAddressService : public KeyedService,
   // on `excluded_sites_` set, and scheme is http or https.
   bool IsSupportedOrigin(const url::Origin& origin) const;
 
-  // Replaces the data stored in `plus_profiles_` and `plus_addresses_`
-  // with the contents of `profiles`, and notifies observers about this change.
-  void ReplacePlusProfiles(const std::vector<PlusProfile>& profiles);
-
   // Updates `plus_profiles_` and `plus_addresses_` using `map`.
   // TODO(b/322147254): Remove once integration has finished.
   void UpdatePlusAddressMap(const PlusAddressMap& map);
