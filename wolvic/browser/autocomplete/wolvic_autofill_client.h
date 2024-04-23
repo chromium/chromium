@@ -13,6 +13,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/filling_product.h"
 
 namespace payments {
 class PaymentsClient;
@@ -35,7 +37,7 @@ class WolvicAutofillClient : public autofill::ContentAutofillClient {
   bool IsOffTheRecord() override;
   scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactory() override;
-  autofill::AutofillDownloadManager* GetDownloadManager() override;
+  autofill::AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;
   autofill::AutocompleteHistoryManager*
   GetAutocompleteHistoryManager() override;
@@ -44,7 +46,10 @@ class WolvicAutofillClient : public autofill::ContentAutofillClient {
   syncer::SyncService* GetSyncService() override;
   signin::IdentityManager* GetIdentityManager() override;
   autofill::FormDataImporter* GetFormDataImporter() override;
-  autofill::payments::PaymentsClient* GetPaymentsClient() override;
+  autofill::payments::PaymentsAutofillClient* GetPaymentsAutofillClient()
+      override;
+  autofill::payments::PaymentsNetworkInterface* GetPaymentsNetworkInterface()
+      override;
   autofill::StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   ukm::SourceId GetUkmSourceId() override;
@@ -54,7 +59,8 @@ class WolvicAutofillClient : public autofill::ContentAutofillClient {
   security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override;
   const translate::LanguageState* GetLanguageState() override;
   translate::TranslateDriver* GetTranslateDriver() override;
-  void ShowAutofillSettings(autofill::PopupType popup_type) override;
+  void ShowAutofillSettings(
+      autofill::FillingProduct main_filling_product) override;
   void ShowUnmaskPrompt(
       const autofill::CreditCard& card,
       const autofill::CardUnmaskPromptOptions& card_unmask_prompt_options,
@@ -75,20 +81,21 @@ class WolvicAutofillClient : public autofill::ContentAutofillClient {
       const autofill::LegalMessageLines& legal_message_lines,
       SaveCreditCardOptions options,
       UploadSaveCardPromptCallback callback) override;
-  void CreditCardUploadCompleted(bool card_saved) override;
   void ConfirmCreditCardFillAssist(const autofill::CreditCard& card,
                                    base::OnceClosure callback) override;
   void ShowEditAddressProfileDialog(
-      const autofill::AutofillProfile& profile) override;
-  void ShowDeleteAddressProfileDialog() override;
+      const autofill::AutofillProfile& profile,
+      AddressProfileSavePromptCallback on_user_decision_callback) override;
+  void ShowDeleteAddressProfileDialog(
+      const autofill::AutofillProfile& profile,
+      AddressProfileDeleteDialogCallback delete_dialog_callback) override;
   void ConfirmSaveAddressProfile(
       const autofill::AutofillProfile& profile,
       const autofill::AutofillProfile* original_profile,
       SaveAddressProfilePromptOptions options,
       AddressProfileSavePromptCallback callback) override;
-  bool HasCreditCardScanFeature() override;
+  bool HasCreditCardScanFeature() const override;
   void ScanCreditCard(CreditCardScanCallback callback) override;
-  bool IsTouchToFillCreditCardSupported() override;
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<autofill::TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest) override;
@@ -97,8 +104,7 @@ class WolvicAutofillClient : public autofill::ContentAutofillClient {
       const PopupOpenArgs& open_args,
       base::WeakPtr<autofill::AutofillPopupDelegate> delegate) override;
   void UpdateAutofillPopupDataListValues(
-      const std::vector<std::u16string>& values,
-      const std::vector<std::u16string>& labels) override;
+      base::span<const autofill::SelectOption> datalist) override;
   std::vector<autofill::Suggestion> GetPopupSuggestions() const override;
   void PinPopupView() override;
   PopupOpenArgs GetReopenPopupArgs(
@@ -106,17 +112,14 @@ class WolvicAutofillClient : public autofill::ContentAutofillClient {
             const override;
   void UpdatePopup(
       const std::vector<autofill::Suggestion>& suggestions,
-      autofill::PopupType popup_type,
+      autofill::FillingProduct main_filling_product,
       autofill::AutofillSuggestionTriggerSource trigger_source) override;
   void HideAutofillPopup(autofill::PopupHidingReason reason) override;
 
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
-  void PropagateAutofillPredictionsDeprecated(
-      autofill::AutofillDriver* driver,
-      const std::vector<autofill::FormStructure*>& forms) override;
   void DidFillOrPreviewForm(
-      autofill::mojom::AutofillActionPersistence action_persistence,
+      autofill::mojom::ActionPersistence action_persistence,
       autofill::AutofillTriggerSource trigger_source,
       bool is_refill) override;
   void DidFillOrPreviewField(const std::u16string& autofilled_value,
@@ -125,9 +128,13 @@ class WolvicAutofillClient : public autofill::ContentAutofillClient {
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
   autofill::FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
 
-  // RiskDataLoader:
-  void LoadRiskData(
-      base::OnceCallback<void(const std::string&)> callback) override;
+  // autofill::ContentAutofillClient:
+  std::unique_ptr<autofill::AutofillManager> CreateManager(
+      base::PassKey<autofill::ContentAutofillDriver> pass_key,
+      autofill::ContentAutofillDriver& driver) override;
+  void InitAgent(base::PassKey<autofill::ContentAutofillDriverFactory> pass_key,
+                 const mojo::AssociatedRemote<autofill::mojom::AutofillAgent>&
+                     agent) override;
 
   void OnLoginSelected(JNIEnv* env, jint index);
 
@@ -140,7 +147,7 @@ class WolvicAutofillClient : public autofill::ContentAutofillClient {
 
   // These members are initialized lazily in their respective getters.
   // Therefore, do not access the members directly.
-  std::unique_ptr<autofill::AutofillDownloadManager> download_manager_;
+  std::unique_ptr<autofill::AutofillCrowdsourcingManager> crowdsourcing_manager_;
 
   autofill::FormInteractionsFlowId flow_id_{};
   base::Time flow_id_date_;

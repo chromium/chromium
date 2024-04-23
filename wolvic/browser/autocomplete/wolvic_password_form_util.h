@@ -22,9 +22,9 @@ void SetGuidToPasswordFormJavaObject(
 base::android::ScopedJavaLocalRef<jobjectArray>
 CreatePasswordFormJavaArray(JNIEnv* env, int size);
 
-std::unique_ptr<password_manager::PasswordForm>
-GetPasswordFormFromJavaObject(
-    JNIEnv* env, base::android::ScopedJavaLocalRef<jobject> j_password_form);
+password_manager::PasswordForm GetPasswordFormFromJavaObject(
+    JNIEnv* env,
+    base::android::ScopedJavaLocalRef<jobject> j_password_form);
 
 }  // namespace wolvic
 

@@ -32,6 +32,8 @@ shared_library("libcontent_native") {
     "../content/shell/common/shell_switches.h",
     "browser/autocomplete/wolvic_autofill_client.cc",
     "browser/autocomplete/wolvic_autofill_client.h",
+    "browser/autocomplete/wolvic_autofill_manager.cc",
+    "browser/autocomplete/wolvic_autofill_manager.h",
     "browser/autocomplete/wolvic_image_decoder.cc",
     "browser/autocomplete/wolvic_image_decoder.h",
     "browser/autocomplete/wolvic_password_form_util.cc",

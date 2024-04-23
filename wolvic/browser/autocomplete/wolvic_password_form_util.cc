@@ -43,41 +43,41 @@ CreatePasswordFormJavaArray(JNIEnv* env, int size) {
   return Java_PasswordForm_createPasswordFormArray(env, size);
 }
 
-std::unique_ptr<password_manager::PasswordForm>
-GetPasswordFormFromJavaObject(
-    JNIEnv* env, ScopedJavaLocalRef<jobject> j_password_form) {
-  auto form = std::make_unique<password_manager::PasswordForm>();
+password_manager::PasswordForm GetPasswordFormFromJavaObject(
+    JNIEnv* env,
+    ScopedJavaLocalRef<jobject> j_password_form) {
+  password_manager::PasswordForm form;
 
-  form->scheme = password_manager::PasswordForm::Scheme::kHtml;
-  form->username_value = ConvertJavaStringToUTF16(
+  form.scheme = password_manager::PasswordForm::Scheme::kHtml;
+  form.username_value = ConvertJavaStringToUTF16(
       Java_PasswordForm_getUsername(env, j_password_form));
-  form->password_value = ConvertJavaStringToUTF16(
+  form.password_value = ConvertJavaStringToUTF16(
       Java_PasswordForm_getPassword(env, j_password_form));
-  form->url = GURL(ConvertJavaStringToUTF8(
+  form.url = GURL(ConvertJavaStringToUTF8(
       Java_PasswordForm_getOrigin(env, j_password_form)));
 
   ScopedJavaLocalRef<jstring> jaction =
       Java_PasswordForm_getFormActionOrigin(env, j_password_form);
   if (jaction.obj() && env->GetStringLength(jaction.obj()) > 0) {
-    form->action = GURL(ConvertJavaStringToUTF8(env, jaction));
+    form.action = GURL(ConvertJavaStringToUTF8(env, jaction));
   }
 
   ScopedJavaLocalRef<jstring> jsignon_realm =
       Java_PasswordForm_getHttpRealm(env, j_password_form);
   if (jsignon_realm.obj() && env->GetStringLength(jsignon_realm.obj()) > 0) {
-    form->signon_realm = ConvertJavaStringToUTF8(env, jsignon_realm);
+    form.signon_realm = ConvertJavaStringToUTF8(env, jsignon_realm);
   } else {
-    form->signon_realm = password_manager::GetSignonRealm(form->url);
+    form.signon_realm = password_manager::GetSignonRealm(form.url);
   }
 
   ScopedJavaLocalRef<jstring> jguid =
       Java_PasswordForm_getGuid(env, j_password_form);
   if (jguid.obj() && env->GetStringLength(jguid.obj()) > 0) {
-    form->keychain_identifier = ConvertJavaStringToUTF8(env, jguid);
+    form.keychain_identifier = ConvertJavaStringToUTF8(env, jguid);
   }
 
   // We always use the profile store.
-  form->in_store = password_manager::PasswordForm::Store::kProfileStore;
+  form.in_store = password_manager::PasswordForm::Store::kProfileStore;
   return form;
 }
 

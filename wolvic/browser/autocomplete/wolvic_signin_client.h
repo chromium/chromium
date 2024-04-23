@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/signin/public/base/signin_client.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace content {
 class WolvicBrowserContext;
@@ -39,6 +40,7 @@ class WolvicSigninClient : public SigninClient {
       bool has_sync_account) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   network::mojom::CookieManager* GetCookieManager() override;
+  network::mojom::NetworkContext* GetNetworkContext() override;
   bool AreSigninCookiesAllowed() override;
   bool AreSigninCookiesDeletedOnExit() override;
   void AddContentSettingsObserver(
@@ -51,6 +53,10 @@ class WolvicSigninClient : public SigninClient {
       GaiaAuthConsumer* consumer,
       gaia::GaiaSource source) override;
   version_info::Channel GetClientChannel() override;
+  void OnPrimaryAccountChangedWithEventSource(
+      signin::PrimaryAccountChangeEvent event_details,
+      absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+          event_source) override;
 
  private:
   // Returns what kind of signout is possible given `has_sync_account` and the

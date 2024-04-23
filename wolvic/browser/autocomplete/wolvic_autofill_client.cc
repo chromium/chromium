@@ -17,9 +17,12 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
@@ -36,10 +39,11 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/android/window_android.h"
 #include "url/origin.h"
-#include "wolvic/wolvic_browser_context.h"
-#include "wolvic/wolvic_content_browser_client.h"
+#include "wolvic/browser/autocomplete/wolvic_autofill_manager.h"
 #include "wolvic/browser/autocomplete/wolvic_password_form_util.h"
 #include "wolvic/jni_headers/AutofillManager_jni.h"
+#include "wolvic/wolvic_browser_context.h"
+#include "wolvic/wolvic_content_browser_client.h"
 
 using base::android::AttachCurrentThread;
 
@@ -70,16 +74,16 @@ WolvicAutofillClient::GetURLLoaderFactory() {
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 
-autofill::AutofillDownloadManager* WolvicAutofillClient::GetDownloadManager() {
-  if (!download_manager_) {
+autofill::AutofillCrowdsourcingManager*
+WolvicAutofillClient::GetCrowdsourcingManager() {
+  if (!crowdsourcing_manager_) {
     // Lazy initialization to avoid virtual function calls in the constructor.
-    download_manager_ =
-        std::make_unique<autofill::AutofillDownloadManager>(
+    crowdsourcing_manager_ =
+        std::make_unique<autofill::AutofillCrowdsourcingManager>(
             this, GetChannel(), GetLogManager());
   }
-  return download_manager_.get();
+  return crowdsourcing_manager_.get();
 }
-
 
 autofill::PersonalDataManager* WolvicAutofillClient::GetPersonalDataManager() {
   return nullptr;
@@ -113,7 +117,13 @@ autofill::FormDataImporter* WolvicAutofillClient::GetFormDataImporter() {
   return nullptr;
 }
 
-autofill::payments::PaymentsClient* WolvicAutofillClient::GetPaymentsClient() {
+autofill::payments::PaymentsAutofillClient*
+WolvicAutofillClient::GetPaymentsAutofillClient() {
+  return nullptr;
+}
+
+autofill::payments::PaymentsNetworkInterface*
+WolvicAutofillClient::GetPaymentsNetworkInterface() {
   return nullptr;
 }
 
@@ -156,7 +166,7 @@ translate::TranslateDriver* WolvicAutofillClient::GetTranslateDriver() {
 }
 
 void WolvicAutofillClient::ShowAutofillSettings(
-    autofill::PopupType popup_type) {}
+    autofill::FillingProduct main_filling_product) {}
 
 void WolvicAutofillClient::ShowUnmaskPrompt(
     const autofill::CreditCard& card,
@@ -198,8 +208,6 @@ void WolvicAutofillClient::ConfirmSaveCreditCardToCloud(
   std::move(callback).Run(SaveCardOfferUserDecision::kIgnored, {});
 }
 
-void WolvicAutofillClient::CreditCardUploadCompleted(bool card_saved) {}
-
 void WolvicAutofillClient::ConfirmCreditCardFillAssist(
     const autofill::CreditCard& card,
     base::OnceClosure callback) {
@@ -208,9 +216,14 @@ void WolvicAutofillClient::ConfirmCreditCardFillAssist(
 }
 
 void WolvicAutofillClient::ShowEditAddressProfileDialog(
-    const autofill::AutofillProfile& profile) {}
+    const autofill::AutofillProfile& profile,
+    AddressProfileSavePromptCallback on_user_decision_callback) {
+}
 
-void WolvicAutofillClient::ShowDeleteAddressProfileDialog() {}
+void WolvicAutofillClient::ShowDeleteAddressProfileDialog(
+    const autofill::AutofillProfile& profile,
+    AddressProfileDeleteDialogCallback delete_dialog_callback) {
+}
 
 void WolvicAutofillClient::ConfirmSaveAddressProfile(
     const autofill::AutofillProfile& profile,
@@ -220,20 +233,16 @@ void WolvicAutofillClient::ConfirmSaveAddressProfile(
   // Not implemented
   std::move(callback).Run(
       SaveAddressProfileOfferUserDecision::kIgnored,
-      autofill::AutofillProfile());
+      autofill::AutofillProfile(AddressCountryCode("")));
 }
 
-bool WolvicAutofillClient::HasCreditCardScanFeature() {
+bool WolvicAutofillClient::HasCreditCardScanFeature() const {
   return false;
 }
 
 void WolvicAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
   // Not implemented
   std::move(callback).Run(autofill::CreditCard());
-}
-
-bool WolvicAutofillClient::IsTouchToFillCreditCardSupported() {
-  return false;
 }
 
 bool WolvicAutofillClient::ShowTouchToFillCreditCard(
@@ -258,7 +267,9 @@ void WolvicAutofillClient::OnLoginSelected(JNIEnv* env, jint index) {
     return;
   }
 
-  delegate_->DidAcceptSuggestion(suggestions_[index], index, trigger_source_);
+  delegate_->DidAcceptSuggestion(
+      suggestions_[index], autofill::AutofillPopupDelegate::SuggestionPosition{
+                               index, /*sub_popup_level=*/0});
 }
 
 void WolvicAutofillClient::CreatJavaArrayFromSuggestions(JNIEnv* env) {
@@ -286,8 +297,7 @@ void WolvicAutofillClient::ShowAutofillPopup(
 }
 
 void WolvicAutofillClient::UpdateAutofillPopupDataListValues(
-    const std::vector<std::u16string>& values,
-    const std::vector<std::u16string>& labels) {
+    base::span<const autofill::SelectOption> datalist) {
 }
 
 std::vector<autofill::Suggestion>
@@ -305,7 +315,7 @@ WolvicAutofillClient::GetReopenPopupArgs(
 
 void WolvicAutofillClient::UpdatePopup(
     const std::vector<autofill::Suggestion>& suggestions,
-    autofill::PopupType popup_type,
+    autofill::FillingProduct main_filling_product,
     autofill::AutofillSuggestionTriggerSource trigger_source) {
   if (!delegate_)
     return;
@@ -351,13 +361,8 @@ bool WolvicAutofillClient::IsPasswordManagerEnabled() {
       env, java_obj_, window_android->GetJavaObject());
 }
 
-void WolvicAutofillClient::PropagateAutofillPredictionsDeprecated(
-    autofill::AutofillDriver* autofill_driver,
-    const std::vector<autofill::FormStructure*>& forms) {
-}
-
 void WolvicAutofillClient::DidFillOrPreviewForm(
-    autofill::mojom::AutofillActionPersistence action_persistence,
+    autofill::mojom::ActionPersistence action_persistence,
     autofill::AutofillTriggerSource trigger_source,
     bool is_refill) {
 }
@@ -390,18 +395,18 @@ WolvicAutofillClient::GetCurrentFormInteractionsFlowId() {
   return flow_id_;
 }
 
-void WolvicAutofillClient::LoadRiskData(
-    base::OnceCallback<void(const std::string&)> callback) {
-  NOTIMPLEMENTED();
+std::unique_ptr<autofill::AutofillManager> WolvicAutofillClient::CreateManager(
+    base::PassKey<autofill::ContentAutofillDriver> pass_key,
+    autofill::ContentAutofillDriver& driver) {
+  return std::make_unique<WolvicAutofillManager>(&driver, this);
 }
 
+void WolvicAutofillClient::InitAgent(
+    base::PassKey<autofill::ContentAutofillDriverFactory> pass_key,
+    const mojo::AssociatedRemote<autofill::mojom::AutofillAgent>& agent) {}
+
 WolvicAutofillClient::WolvicAutofillClient(content::WebContents* web_contents)
-    : autofill::ContentAutofillClient(
-        web_contents,
-        base::BindRepeating(
-            &autofill::BrowserDriverInitHook,
-            this,
-            content::WolvicContentBrowserClient::Get()->GetApplicationLocale())),
+    : autofill::ContentAutofillClient(web_contents),
       web_contents_(web_contents) {
   JNIEnv* env = AttachCurrentThread();
   java_obj_ = Java_AutofillManager_create(env, reinterpret_cast<intptr_t>(this));

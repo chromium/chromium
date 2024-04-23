@@ -12,8 +12,10 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/content/browser/content_credential_manager.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
@@ -23,7 +25,7 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_client_helper.h"
-#include "components/password_manager/core/browser/password_store_backend_error.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/sync_credentials_filter.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -82,16 +84,19 @@ class WolvicPasswordManagerClient
   void NotifyStorePasswordCalled() override;
   void AutomaticPasswordSave(
       std::unique_ptr<password_manager::PasswordFormManagerForUI>
-          saved_form_manager) override;
+          saved_form_manager,
+      bool is_update_confirmation) override;
   void PasswordWasAutofilled(
-      const std::vector<const password_manager::PasswordForm*>& best_matches,
+      const std::vector<raw_ptr<const password_manager::PasswordForm,
+                                VectorExperimental>>& best_matches,
       const url::Origin& origin,
-      const std::vector<const password_manager::PasswordForm*>*
-          federated_matches,
+      const std::vector<raw_ptr<const password_manager::PasswordForm,
+                                VectorExperimental>>* federated_matches,
       bool was_autofilled_on_pageload) override;
   void AutofillHttpAuth(
       const password_manager::PasswordForm& preferred_match,
       const password_manager::PasswordFormManagerForUI* form_manager) override;
+  void NotifyKeychainError() override;
 
   void PromptUserToMovePasswordToAccount(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_move)
@@ -118,16 +123,16 @@ class WolvicPasswordManagerClient
   PrefService* GetPrefs() const override;
   PrefService* GetLocalStatePrefs() const override;
   const syncer::SyncService* GetSyncService() const override;
+  affiliations::AffiliationService* GetAffiliationService() override;
   password_manager::PasswordStoreInterface*
   GetProfilePasswordStore() const override;
   password_manager::PasswordStoreInterface*
   GetAccountPasswordStore() const override;
   password_manager::PasswordReuseManager*
   GetPasswordReuseManager() const override;
-  password_manager::PasswordChangeSuccessTracker*
-  GetPasswordChangeSuccessTracker() override;
   const password_manager::CredentialsFilter*
   GetStoreResultFilter() const override;
+  autofill::LogManager* GetLogManager() override;
   safe_browsing::PasswordProtectionService*
   GetPasswordProtectionService() const override;
 #if defined(ON_FOCUS_PING_ENABLED)
@@ -194,6 +199,8 @@ class WolvicPasswordManagerClient
   // Helper for performing logic that is common between
   // ChromePasswordManagerClient and IOSChromePasswordManagerClient.
   password_manager::PasswordManagerClientHelper helper_;
+
+  std::unique_ptr<autofill::LogManager> log_manager_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

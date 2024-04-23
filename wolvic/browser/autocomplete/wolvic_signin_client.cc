@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/browser_context.h"
@@ -36,6 +38,10 @@ WolvicSigninClient::GetURLLoaderFactory() {
 network::mojom::CookieManager* WolvicSigninClient::GetCookieManager() {
   return context_->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess();
+}
+
+network::mojom::NetworkContext* WolvicSigninClient::GetNetworkContext() {
+  return context_->GetDefaultStoragePartition()->GetNetworkContext();
 }
 
 bool WolvicSigninClient::AreSigninCookiesAllowed() {
@@ -91,6 +97,13 @@ std::unique_ptr<GaiaAuthFetcher> WolvicSigninClient::CreateGaiaAuthFetcher(
 
 version_info::Channel WolvicSigninClient::GetClientChannel() {
   return version_info::Channel::UNKNOWN;
+}
+
+void WolvicSigninClient::OnPrimaryAccountChangedWithEventSource(
+    signin::PrimaryAccountChangeEvent event_details,
+    absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
+        event_source) {
+  NOTIMPLEMENTED();
 }
 
 SigninClient::SignoutDecision WolvicSigninClient::GetSignoutDecision(

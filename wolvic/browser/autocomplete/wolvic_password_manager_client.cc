@@ -7,14 +7,15 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/browser/renderer_forms_with_server_predictions.h"
+#include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/content/browser/bad_message.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/content/browser/form_meta_data.h"
-#include "components/password_manager/content/browser/password_change_success_tracker_factory.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -36,14 +37,6 @@ using base::android::ScopedJavaLocalRef;
 
 namespace wolvic {
 
-namespace {
-
-const syncer::SyncService* GetSyncServiceInternal() {
-  return nullptr;
-}
-
-}  // namespace
-
 // static
 void WolvicPasswordManagerClient::CreateForWebContents(
     content::WebContents* contents) {
@@ -63,8 +56,9 @@ WolvicPasswordManagerClient::WolvicPasswordManagerClient(
       password_manager_(this),
       password_feature_manager_(GetPrefs(), GetLocalStatePrefs(), nullptr),
       httpauth_manager_(this),
-      credentials_filter_(this, base::BindRepeating(&GetSyncServiceInternal)),
-      helper_(this) {
+      credentials_filter_(this),
+      helper_(this),
+      log_manager_(autofill::LogManager::CreateBuffering()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   password_manager::ContentPasswordManagerDriverFactory::CreateForWebContents(
@@ -87,8 +81,9 @@ void WolvicPasswordManagerClient::OnLoginSaved(
   if (!save_password_callback_)
     return;
 
-  auto form = GetPasswordFormFromJavaObject(env, ScopedJavaLocalRef(jobj));
-  std::move(save_password_callback_).Run(*form.get());
+  auto form =
+      GetPasswordFormFromJavaObject(env, ScopedJavaLocalRef<jobject>(jobj));
+  std::move(save_password_callback_).Run(form);
 }
 
 void WolvicPasswordManagerClient::OnLoginSelected(
@@ -96,8 +91,9 @@ void WolvicPasswordManagerClient::OnLoginSelected(
     const base::android::JavaParamRef<jobject>& jobj) {
   if (!credentials_callback_)
     return;
-  auto form = GetPasswordFormFromJavaObject(env, ScopedJavaLocalRef(jobj));
-  std::move(credentials_callback_).Run(form.get());
+  auto form =
+      GetPasswordFormFromJavaObject(env, ScopedJavaLocalRef<jobject>(jobj));
+  std::move(credentials_callback_).Run(&form);
 }
 
 void WolvicPasswordManagerClient::OnDismissed(JNIEnv* env) {
@@ -155,7 +151,7 @@ bool WolvicPasswordManagerClient::PromptUserToSaveOrUpdatePassword(
 
   ScopedJavaLocalRef<jobject> j_form = CreatePasswordFormJavaObject(env, form);
 
-  for (auto const* match_form : form_to_save->GetBestMatches()) {
+  for (const auto match_form : form_to_save->GetBestMatches()) {
     if (match_form->username_value == form.username_value) {
       SetGuidToPasswordFormJavaObject(env, j_form, match_form->keychain_identifier);
     }
@@ -247,14 +243,17 @@ void WolvicPasswordManagerClient::NotifyStorePasswordCalled() {
 
 void WolvicPasswordManagerClient::AutomaticPasswordSave(
     std::unique_ptr<password_manager::PasswordFormManagerForUI>
-        saved_form_manager) {
+        saved_form_manager,
+    bool is_update_confirmation) {
   // Not implemented to generate password
 }
 
 void WolvicPasswordManagerClient::PasswordWasAutofilled(
-    const std::vector<const password_manager::PasswordForm*>& best_matches,
+    const std::vector<raw_ptr<const password_manager::PasswordForm,
+                              VectorExperimental>>& best_matches,
     const url::Origin& origin,
-    const std::vector<const password_manager::PasswordForm*>* federated_matches,
+    const std::vector<raw_ptr<const password_manager::PasswordForm,
+                              VectorExperimental>>* federated_matches,
     bool was_autofilled_on_pageload) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!best_matches.size() || !best_matches[0]->primary_key.has_value())
@@ -273,6 +272,10 @@ void WolvicPasswordManagerClient::AutofillHttpAuth(
   PasswordWasAutofilled(form_manager->GetBestMatches(),
                         url::Origin::Create(form_manager->GetURL()), nullptr,
                         /*was_autofilled_on_pageload=*/false);
+}
+
+void WolvicPasswordManagerClient::NotifyKeychainError() {
+  NOTIMPLEMENTED();
 }
 
 const password_manager::PasswordManager*
@@ -338,6 +341,11 @@ WolvicPasswordManagerClient::GetSyncService() const {
   return nullptr;
 }
 
+affiliations::AffiliationService*
+WolvicPasswordManagerClient::GetAffiliationService() {
+  return nullptr;
+}
+
 password_manager::PasswordStoreInterface*
 WolvicPasswordManagerClient::GetAccountPasswordStore() const {
   return nullptr;
@@ -348,15 +356,13 @@ WolvicPasswordManagerClient::GetPasswordReuseManager() const {
   return nullptr;
 }
 
-password_manager::PasswordChangeSuccessTracker*
-WolvicPasswordManagerClient::GetPasswordChangeSuccessTracker() { 
-  return password_manager::PasswordChangeSuccessTrackerFactory::
-      GetForBrowserContext(web_contents()->GetBrowserContext());
-}
-
 const password_manager::CredentialsFilter*
 WolvicPasswordManagerClient::GetStoreResultFilter() const {
   return &credentials_filter_;
+}
+
+autofill::LogManager* WolvicPasswordManagerClient::GetLogManager() {
+  return log_manager_.get();
 }
 
 safe_browsing::PasswordProtectionService*
@@ -455,9 +461,8 @@ void WolvicPasswordManagerClient::OnFieldTypesDetermined(
     if (!driver) {
       continue;
     }
-    std::array<const autofill::FormData*, 1> form_pointers = {&form};
     password_manager_.ProcessAutofillPredictions(
-        driver, form_pointers, forms_and_predictions->predictions);
+        driver, form, forms_and_predictions->predictions);
   }
 }
 

@@ -16,7 +16,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -50,12 +50,15 @@ class WolvicPasswordStoreBackend
       base::RepeatingClosure sync_enabled_or_disabled_cb,
       base::OnceCallback<void(bool)> completion) override;
   void Shutdown(base::OnceClosure shutdown_completed) override;
+  bool IsAbleToSavePasswords() override;
   void GetAllLoginsAsync(
+      password_manager::LoginsOrErrorReply callback) override;
+  void GetAllLoginsWithAffiliationAndBrandingAsync(
       password_manager::LoginsOrErrorReply callback) override;
   void GetAutofillableLoginsAsync(
       password_manager::LoginsOrErrorReply callback) override;
   void GetAllLoginsForAccountAsync(
-      absl::optional<std::string> account,
+      std::string account,
       password_manager::LoginsOrErrorReply callback) override;
   void FillMatchingLoginsAsync(
       password_manager::LoginsOrErrorReply callback,
@@ -89,8 +92,10 @@ class WolvicPasswordStoreBackend
   password_manager::SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
-  void ClearAllLocalPasswords() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
+  void RecordAddLoginAsyncCalledFromTheStore() override;
+  void RecordUpdateLoginAsyncCalledFromTheStore() override;
+  base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 
   void GetAllLoginsInternal(password_manager::LoginsOrErrorReply callback);
   void GetLoginsAsync(

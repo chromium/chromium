@@ -14,14 +14,15 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/get_logins_with_affiliations_request_handler.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_store_backend.h"
-#include "components/password_manager/core/browser/password_store_util.h"
-#include "components/password_manager/core/browser/psl_matching_helper.h"
-#include "components/password_manager/core/browser/unified_password_manager_proto_utils.h"
+#include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/password_store_util.h"
+#include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "wolvic/browser/autocomplete/wolvic_password_form_util.h"
 #include "wolvic/jni_headers/PasswordStoreBackend_jni.h"
 
@@ -44,7 +45,7 @@ std::string FormToSignonRealmQuery(
     return password_manager::GetRegistryControlledDomain(GURL(form.signon_realm));
   }
   if (form.scheme == password_manager::PasswordForm::Scheme::kHtml &&
-      !password_manager::IsValidAndroidFacetURI(form.signon_realm)) {
+      !affiliations::IsValidAndroidFacetURI(form.signon_realm)) {
     // Check federated matches and matches for exact signon realm.
     return form.url.host();
   }
@@ -192,9 +193,19 @@ void WolvicPasswordStoreBackend::Shutdown(
   std::move(shutdown_completed).Run();
 }
 
+bool WolvicPasswordStoreBackend::IsAbleToSavePasswords() {
+  return true;
+}
+
 void WolvicPasswordStoreBackend::GetAllLoginsAsync(
     password_manager::LoginsOrErrorReply callback) {
   GetAllLoginsInternal(std::move(callback));
+}
+
+void WolvicPasswordStoreBackend::GetAllLoginsWithAffiliationAndBrandingAsync(
+    password_manager::LoginsOrErrorReply callback) {
+  NOTIMPLEMENTED();
+  std::move(callback).Run({});
 }
 
 void WolvicPasswordStoreBackend::GetAutofillableLoginsAsync(
@@ -203,7 +214,7 @@ void WolvicPasswordStoreBackend::GetAutofillableLoginsAsync(
 }
 
 void WolvicPasswordStoreBackend::GetAllLoginsForAccountAsync(
-    absl::optional<std::string> account,
+    std::string account,
     password_manager::LoginsOrErrorReply callback) {
   GetAllLoginsAsync(std::move(callback));
 }
@@ -324,44 +335,6 @@ WolvicPasswordStoreBackend::CreateSyncControllerDelegate() {
   return nullptr;
 }
 
-void WolvicPasswordStoreBackend::ClearAllLocalPasswords() {
-  password_manager::LoginsOrErrorReply cleaning_callback = base::BindOnce(
-      [](base::WeakPtr<WolvicPasswordStoreBackend> weak_self,
-         password_manager::LoginsResultOrError logins_or_error) {
-        if (!weak_self ||
-            absl::holds_alternative<
-                password_manager::PasswordStoreBackendError>(logins_or_error)) {
-          return;
-        }
-
-        base::OnceClosure callbacks_chain = base::DoNothing();
-        for (const auto& login :
-            absl::get<password_manager::LoginsResult>(logins_or_error)) {
-          base::OnceCallback removal_result =
-              base::BindOnce(
-                    [](password_manager::PasswordChangesOrError change_list) {
-                if (absl::holds_alternative<
-                    password_manager::PasswordStoreBackendError>(change_list)) {
-                  LOG(ERROR) << "Failure to remove by error";
-                } else if (absl::get<password_manager::PasswordChanges>(change_list)
-                            .value_or(password_manager::PasswordStoreChangeList())
-                            .empty()) {
-                  LOG(ERROR) << "Failure to remove by empty result";
-                }
-              });;
-          callbacks_chain = base::BindOnce(
-              &WolvicPasswordStoreBackend::RemoveLoginInternal,
-              weak_self, std::move(*login),
-              std::move(removal_result).Then(std::move(callbacks_chain)));
-        }
-
-        std::move(callbacks_chain).Run();
-      },
-      weak_ptr_factory_.GetWeakPtr());
-
-  GetAllLoginsInternal(std::move(cleaning_callback));
-}
-
 void WolvicPasswordStoreBackend::OnSyncServiceInitialized(
     syncer::SyncService* sync_service) {}
 
@@ -371,6 +344,19 @@ void WolvicPasswordStoreBackend::GetAllLoginsInternal(
 
   JNIEnv* env = AttachCurrentThread();
   Java_PasswordStoreBackend_getAllLogins(env, java_obj_, reply_id_);
+}
+
+void WolvicPasswordStoreBackend::RecordAddLoginAsyncCalledFromTheStore() {
+  NOTIMPLEMENTED();
+}
+
+void WolvicPasswordStoreBackend::RecordUpdateLoginAsyncCalledFromTheStore() {
+  NOTIMPLEMENTED();
+}
+
+base::WeakPtr<password_manager::PasswordStoreBackend>
+WolvicPasswordStoreBackend::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void WolvicPasswordStoreBackend::GetLoginsAsync(
@@ -422,9 +408,9 @@ void WolvicPasswordStoreBackend::FilterAndRemoveLogins(
       std::move(absl::get<password_manager::LoginsResult>(result));
   std::vector<password_manager::PasswordForm> logins_to_remove;
   for (const auto& login : logins) {
-    if (login->date_created >= delete_begin &&
-        login->date_created < delete_end && url_filter.Run(login->url)) {
-      logins_to_remove.push_back(std::move(*login));
+    if (login.date_created >= delete_begin &&
+        login.date_created < delete_end && url_filter.Run(login.url)) {
+      logins_to_remove.push_back(std::move(login));
     }
   }
 
@@ -462,10 +448,10 @@ void WolvicPasswordStoreBackend::FilterAndDisableAutoSignIn(
   password_manager::LoginsResult logins =
       std::move(absl::get<password_manager::LoginsResult>(result));
   std::vector<password_manager::PasswordForm> logins_to_update;
-  for (std::unique_ptr<password_manager::PasswordForm>& login : logins) {
+  for (password_manager::PasswordForm& login : logins) {
     // Update login if it matches |origin_filer| and has autosignin enabled.
-    if (origin_filter.Run(login->url) && !login->skip_zero_click) {
-      logins_to_update.push_back(std::move(*login));
+    if (origin_filter.Run(login.url) && !login.skip_zero_click) {
+      logins_to_update.push_back(std::move(login));
       logins_to_update.back().skip_zero_click = true;
     }
   }

@@ -7,6 +7,7 @@
 #include "components/cdm/renderer/key_system_support_update.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/password_autofill_agent.h"
+#include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/visitedlink/renderer/visitedlink_reader.h"
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -45,10 +46,21 @@ void WolvicContentRendererClient::RenderFrameCreated(
 
   if (!render_frame->IsInFencedFrameTree() ||
       base::FeatureList::IsEnabled(blink::features::kFencedFramesAPIChanges)) {
-    auto* password_autofill_agent =
-        new autofill::PasswordAutofillAgent(render_frame, associated_interfaces);
-    new autofill::AutofillAgent(render_frame, password_autofill_agent,
-                      nullptr, associated_interfaces);
+    auto password_autofill_agent =
+        std::make_unique<autofill::PasswordAutofillAgent>(render_frame, associated_interfaces);
+    new autofill::AutofillAgent(
+        render_frame,
+        {
+            autofill::AutofillAgent::ExtractAllDatalists(false),
+            autofill::AutofillAgent::FocusRequiresScroll(false),
+            autofill::AutofillAgent::QueryPasswordSuggestions(false),
+            autofill::AutofillAgent::SecureContextRequired(false),
+            autofill::AutofillAgent::UserGestureRequired(false),
+            autofill::AutofillAgent::UsesKeyboardAccessoryForSuggestions(false),
+        },
+        std::move(password_autofill_agent),
+        std::unique_ptr<autofill::PasswordGenerationAgent>(),
+        associated_interfaces);
   }
 }
 
