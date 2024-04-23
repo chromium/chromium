@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
@@ -26,6 +27,7 @@ import androidx.lifecycle.LifecycleRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -68,6 +70,7 @@ public class AutofillOptionsTest {
     @Mock private PrefService mPrefs;
     @Mock private Profile mProfile;
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
+    @Mock private Runnable mRestartRunnable;
 
     private AutofillOptionsFragment mFragment;
     private AutoCloseable mCloseableMocks;
@@ -109,7 +112,8 @@ public class AutofillOptionsTest {
     public void constructedWithPrefAsDefaultForOption() {
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
 
-        PropertyModel model = new AutofillOptionsCoordinator(mFragment).initializeNow();
+        PropertyModel model =
+                new AutofillOptionsCoordinator(mFragment, Assert::fail).initializeNow();
 
         assertTrue(model.get(THIRD_PARTY_AUTOFILL_ENABLED));
     }
@@ -120,7 +124,8 @@ public class AutofillOptionsTest {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         AutofillOptionsMediator.HISTOGRAM_USE_THIRD_PARTY_FILLING, true);
-        AutofillOptionsCoordinator autofillOptions = new AutofillOptionsCoordinator(mFragment);
+        AutofillOptionsCoordinator autofillOptions =
+                new AutofillOptionsCoordinator(mFragment, mRestartRunnable);
         PropertyModel model = autofillOptions.initializeNow();
 
         // Enabling the option should be recorded once.
@@ -137,6 +142,7 @@ public class AutofillOptionsTest {
                         AutofillOptionsMediator.HISTOGRAM_USE_THIRD_PARTY_FILLING, false);
         getRadioButtonComponent().getDefaultButton().performClick();
         histogramWatcher.assertExpected();
+        verify(mRestartRunnable, times(2)).run(); // For enabling and disabling.
     }
 
     @Test
@@ -145,7 +151,7 @@ public class AutofillOptionsTest {
         doReturn(true).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
         assertEquals(getRadioButtonComponent().getSelectedOption(), DEFAULT); // Not updated!
 
-        AutofillOptionsCoordinator.createFor(mFragment); // Initial binding updates the pref.
+        AutofillOptionsCoordinator.createFor(mFragment, Assert::fail); // Update on initial binding.
 
         verifyOptionReflectedInView(USE_3P);
     }
@@ -154,7 +160,8 @@ public class AutofillOptionsTest {
     @SmallTest
     public void toggledOptionSetsPref() {
         doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
-        PropertyModel model = new AutofillOptionsCoordinator(mFragment).initializeNow();
+        PropertyModel model =
+                new AutofillOptionsCoordinator(mFragment, mRestartRunnable).initializeNow();
         assertFalse(model.get(THIRD_PARTY_AUTOFILL_ENABLED)); // Not updated yet!
 
         getRadioButtonComponent().getOptInButton().performClick();
@@ -168,7 +175,8 @@ public class AutofillOptionsTest {
     @SmallTest
     public void setPrefTogglesOptionOnResume() {
         doReturn(false).when(mPrefs).getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE);
-        AutofillOptionsCoordinator autofillOptions = new AutofillOptionsCoordinator(mFragment);
+        AutofillOptionsCoordinator autofillOptions =
+                new AutofillOptionsCoordinator(mFragment, Assert::fail);
         PropertyModel model = autofillOptions.initializeNow();
         LifecycleRegistry lifecycleRegistry = new LifecycleRegistry(mFragment);
         autofillOptions.observeLifecycle(lifecycleRegistry);
@@ -184,7 +192,7 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void setsTitleAndPref() {
-        AutofillOptionsCoordinator.createFor(mFragment); // Initial binding updates the pref.
+        AutofillOptionsCoordinator.createFor(mFragment, Assert::fail); // Update on initial binding.
 
         assertEquals(
                 mFragment.getActivity().getTitle(), getString(R.string.autofill_options_title));
@@ -235,7 +243,7 @@ public class AutofillOptionsTest {
                         AutofillOptionsReferrer.SETTINGS);
 
         // Component initialization triggers the recording.
-        AutofillOptionsCoordinator.createFor(mFragment);
+        AutofillOptionsCoordinator.createFor(mFragment, Assert::fail);
 
         histogramWatcher.assertExpected();
     }

@@ -619,7 +619,8 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             ((PasswordSettings) fragment).setBottomSheetController(mBottomSheetController);
         }
         if (fragment instanceof AutofillOptionsFragment) {
-            AutofillOptionsCoordinator.createFor((AutofillOptionsFragment) fragment);
+            AutofillOptionsCoordinator.createFor(
+                    (AutofillOptionsFragment) fragment, () -> ApplicationLifetime.terminate(true));
         }
         if (fragment instanceof TrackingProtectionSettings) {
             TrackingProtectionSettings tpFragment = ((TrackingProtectionSettings) fragment);

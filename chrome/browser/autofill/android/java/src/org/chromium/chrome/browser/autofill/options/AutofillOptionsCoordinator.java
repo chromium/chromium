@@ -48,25 +48,26 @@ public class AutofillOptionsCoordinator {
      * before completing initialization.
      *
      * @param fragment An @{link AutofillOptionsFragment} hosting all settings.
+     * @param restartRunnable A @{link Runnable} to restart Chrome when settings change.
      */
-    public static void createFor(AutofillOptionsFragment fragment) {
-        new AutofillOptionsCoordinator(fragment).initializeOnViewCreated();
+    public static void createFor(AutofillOptionsFragment fragment, Runnable restartRunnable) {
+        new AutofillOptionsCoordinator(fragment, restartRunnable).initializeOnViewCreated();
     }
 
     @VisibleForTesting
-    AutofillOptionsCoordinator(AutofillOptionsFragment fragment) {
+    AutofillOptionsCoordinator(AutofillOptionsFragment fragment, Runnable restartRunnable) {
         assert ChromeFeatureList.isEnabled(
                 AutofillFeatures.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID);
         mFragment = fragment;
-        mMediator = new AutofillOptionsMediator(mFragment.getProfile());
+        mMediator = new AutofillOptionsMediator(mFragment.getProfile(), restartRunnable);
     }
 
     /**
      * Create the model and MCP with {@link initializeNow} once the view is created.
      *
-     * The view's lifecycle is not available at this point, so observe the {@link LiveData} for it
-     * to get notified when {@link onCreateView} is called. Then stop observing the lifecycle owner
-     * and start observing the view lifecycle.
+     * <p>The view's lifecycle is not available at this point, so observe the {@link LiveData} for
+     * it to get notified when {@link onCreateView} is called. Then stop observing the lifecycle
+     * owner and start observing the view lifecycle.
      */
     private void initializeOnViewCreated() {
         mFragment

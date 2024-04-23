@@ -29,10 +29,12 @@ class AutofillOptionsMediator {
     static final String HISTOGRAM_REFERRER = "Autofill.Settings.AutofillOptionsReferrerAndroid";
 
     private final Profile mProfile;
+    private final Runnable mRestartRunnable;
     private PropertyModel mModel;
 
-    AutofillOptionsMediator(Profile profile) {
+    AutofillOptionsMediator(Profile profile, Runnable restartRunnable) {
         mProfile = profile;
+        mRestartRunnable = restartRunnable;
     }
 
     void initialize(PropertyModel model, @AutofillOptionsReferrer int referrer) {
@@ -60,6 +62,8 @@ class AutofillOptionsMediator {
         prefs().setBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE, optIntoThirdPartyFilling);
         RecordHistogram.recordBooleanHistogram(
                 HISTOGRAM_USE_THIRD_PARTY_FILLING, optIntoThirdPartyFilling);
+        // TODO: crbug.com/308551195: Guard with a message/warning/modal.
+        mRestartRunnable.run();
     }
 
     private PrefService prefs() {
