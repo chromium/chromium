@@ -5,20 +5,19 @@
 #include "chrome/browser/ash/policy/core/device_local_account_external_cache.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
-#include "base/check_is_test.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/device_local_account_extension_service_ash.h"
 #include "chrome/browser/ash/extensions/external_cache_impl.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
-#include "chrome/browser/extensions/external_loader.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -26,11 +25,13 @@
 namespace chromeos {
 
 DeviceLocalAccountExternalCache::DeviceLocalAccountExternalCache(
+    ExtensionListCallback ash_loader,
+    ExtensionListCallback lacros_loader,
     const std::string& user_id,
     const base::FilePath& cache_dir)
-    : user_id_(user_id), cache_dir_(cache_dir) {
-  loader_ = base::MakeRefCounted<DeviceLocalAccountExternalPolicyLoader>();
-}
+    : cache_dir_(cache_dir),
+      ash_loader_(ash_loader),
+      lacros_loader_(lacros_loader) {}
 
 DeviceLocalAccountExternalCache::~DeviceLocalAccountExternalCache() = default;
 
@@ -63,7 +64,8 @@ void DeviceLocalAccountExternalCache::StopCache(base::OnceClosure callback) {
   }
 
   base::Value::Dict empty_prefs;
-  loader_->OnExtensionListsUpdated(empty_prefs);
+  ash_loader_.Run(user_id_, empty_prefs.Clone());
+  lacros_loader_.Run(user_id_, empty_prefs.Clone());
 }
 
 bool DeviceLocalAccountExternalCache::IsCacheRunning() const {
@@ -72,15 +74,8 @@ bool DeviceLocalAccountExternalCache::IsCacheRunning() const {
 
 void DeviceLocalAccountExternalCache::OnExtensionListsUpdated(
     const base::Value::Dict& prefs) {
-  if (crosapi::CrosapiManager::IsInitialized()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->device_local_account_extension_service()
-        ->SetForceInstallExtensionsFromCache(user_id_, prefs.Clone());
-  } else {
-    CHECK_IS_TEST();
-  }
-  loader_->OnExtensionListsUpdated(prefs);
+  lacros_loader_.Run(user_id_, prefs.Clone());
+  ash_loader_.Run(user_id_, prefs.Clone());
 }
 
 bool DeviceLocalAccountExternalCache::IsRollbackAllowed() const {
@@ -94,11 +89,6 @@ bool DeviceLocalAccountExternalCache::CanRollbackNow() const {
     return user_id_ != user->GetAccountId().GetUserEmail();
   }
   return true;
-}
-
-scoped_refptr<extensions::ExternalLoader>
-DeviceLocalAccountExternalCache::GetExtensionLoader() {
-  return loader_;
 }
 
 base::Value::Dict DeviceLocalAccountExternalCache::GetCachedExtensions() const {
