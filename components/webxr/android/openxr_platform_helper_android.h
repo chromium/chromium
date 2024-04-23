@@ -47,6 +47,8 @@ class OpenXrPlatformHelperAndroid : public device::OpenXrPlatformHelper {
   XrResult CreateTemporaryInstance(XrInstance* instance,
                                    content::WebContents* web_contents);
 
+  void OnInstanceCreateFailure() override;
+
   void OnXrActivityReady(PlatformCreateInfoReadyCallback callback,
                          const base::android::JavaParamRef<jobject>& activity);
 

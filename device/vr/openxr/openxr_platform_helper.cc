@@ -184,6 +184,9 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance,
   XrResult result = xrCreateInstance(&instance_create_info, instance);
   if (XR_SUCCEEDED(result)) {
     xr_instance_ = *instance;
+  } else {
+    DLOG(ERROR) << __func__ << " Failed to create instance: " << result;
+    OnInstanceCreateFailure();
   }
 
   return result;
