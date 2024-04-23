@@ -1713,7 +1713,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/r8',
-              'version': 'jiR3Cmr6zLjEDaMOALv35_EoVDJbl5Mdza1IRQLevjAC',
+              'version': 'mhSwabeiU2ueQeYkj0X1JTg-6ZdtQgiVVXM1bo0yu4IC',
           },
       ],
       'condition': 'checkout_android',
