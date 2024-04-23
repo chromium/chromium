@@ -11,10 +11,23 @@
 
 namespace ash::cfm {
 
+namespace {
+
 static DataAggregatorService* g_data_aggregator_service = nullptr;
 
-constexpr base::TimeDelta kFetchFrequency = base::Seconds(30);
+constexpr base::TimeDelta kFetchFrequency = base::Minutes(1);
 constexpr base::TimeDelta kDefaultCommandPollFrequency = base::Seconds(5);
+constexpr base::TimeDelta kDefaultLogPollFrequency = base::Seconds(10);
+
+const char* kLocalCommandSources[] = {
+    "ip -brief address",
+};
+
+const char* kLocalLogSources[] = {
+    "/var/log/messages",
+};
+
+}  // namespace
 
 // static
 void DataAggregatorService::Initialize() {
@@ -150,6 +163,41 @@ void DataAggregatorService::OnLocalCommandDisconnect(
   AddLocalCommandSource(command);
 }
 
+void DataAggregatorService::AddLocalLogSource(const std::string& filepath) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CHECK(data_source_map_.count(filepath) == 0)
+      << "Local log file '" << filepath << "' was added twice.";
+
+  mojo::Remote<mojom::DataSource> remote;
+  local_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](mojo::PendingReceiver<mojom::DataSource> pending_receiver,
+             const std::string& filepath) {
+            mojo::MakeSelfOwnedReceiver(
+                std::make_unique<LogSource>(filepath, kDefaultLogPollFrequency),
+                std::move(pending_receiver));
+          },
+          remote.BindNewPipeAndPassReceiver(), filepath));
+
+  remote.set_disconnect_handler(
+      base::BindOnce(&DataAggregatorService::OnLocalLogDisconnect,
+                     base::Unretained(this), filepath));
+
+  data_source_map_[filepath] = std::move(remote);
+}
+
+void DataAggregatorService::OnLocalLogDisconnect(const std::string& filepath) {
+  // This is unlikely, but if one of our local remotes disconnects,
+  // just request to re-add it. The pointers in our local maps will
+  // be overridden, and the old objects will be destroyed.
+  LOG(WARNING) << "Local DataSource for '" << filepath << "' has disconnected; "
+               << "attempting to reconnect.";
+  data_source_map_.erase(filepath);
+  AddLocalLogSource(filepath);
+}
+
 void DataAggregatorService::OnMojoDisconnect() {
   VLOG(3) << "mojom::DataAggregator disconnected";
 }
@@ -231,9 +279,13 @@ DataAggregatorService::DataAggregatorService()
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
 
   // Add local command sources
-  std::vector<std::string> cmd_sources = {"ip -brief address"};
-  for (const auto& cmd : cmd_sources) {
+  for (auto* const cmd : kLocalCommandSources) {
     AddLocalCommandSource(cmd);
+  }
+
+  // Add local log file sources
+  for (auto* const logfile : kLocalLogSources) {
+    AddLocalLogSource(logfile);
   }
 
   StartFetchTimer();

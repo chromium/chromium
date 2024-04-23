@@ -62,6 +62,8 @@ class DataAggregatorService : public CfmObserver,
 
   void AddLocalCommandSource(const std::string& command);
   void OnLocalCommandDisconnect(const std::string& command);
+  void AddLocalLogSource(const std::string& filepath);
+  void OnLocalLogDisconnect(const std::string& filepath);
   void StartFetchTimer();
   void FetchFromAllSourcesAndEnqueue();
   void EnqueueData(const std::string& source_name,

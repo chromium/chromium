@@ -4535,6 +4535,8 @@ source_set("ash") {
       "chromebox_for_meetings/hotlog2/data_aggregator_service.h",
       "chromebox_for_meetings/hotlog2/local_data_source.cc",
       "chromebox_for_meetings/hotlog2/local_data_source.h",
+      "chromebox_for_meetings/hotlog2/log_file.cc",
+      "chromebox_for_meetings/hotlog2/log_file.h",
       "chromebox_for_meetings/hotlog2/log_source.cc",
       "chromebox_for_meetings/hotlog2/log_source.h",
       "chromebox_for_meetings/logger/cfm_logger_service.cc",

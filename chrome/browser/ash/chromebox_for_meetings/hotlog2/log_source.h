@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_LOG_SOURCE_H_
 #define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_LOG_SOURCE_H_
 
-#include <base/memory/weak_ptr.h>
-
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/chromebox_for_meetings/hotlog2/local_data_source.h"
+#include "chrome/browser/ash/chromebox_for_meetings/hotlog2/log_file.h"
 #include "chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
 
 namespace ash::cfm {
@@ -15,7 +15,7 @@ namespace ash::cfm {
 // This class tracks data from a single log file.
 class LogSource : public LocalDataSource {
  public:
-  LogSource(const std::string& source_name, base::TimeDelta poll_rate);
+  LogSource(const std::string& filepath, base::TimeDelta poll_rate);
   LogSource(const LogSource&) = delete;
   LogSource& operator=(const LogSource&) = delete;
   ~LogSource() override;
@@ -26,6 +26,11 @@ class LogSource : public LocalDataSource {
   std::vector<std::string> GetNextData() override;
 
   std::string filepath_;
+
+  // Contains a handle to the log file on disk
+  // TODO(b/320996557): this should be a collection of log files
+  // after adding rotation support.
+  LogFile log_file_;
 
   // Must be the last class member.
   base::WeakPtrFactory<LogSource> weak_ptr_factory_{this};
