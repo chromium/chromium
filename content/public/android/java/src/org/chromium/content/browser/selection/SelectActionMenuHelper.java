@@ -4,6 +4,7 @@
 
 package org.chromium.content.browser.selection;
 
+import android.app.ActivityOptions;
 import android.app.PendingIntent;
 import android.app.RemoteAction;
 import android.content.Context;
@@ -24,6 +25,7 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
@@ -420,7 +422,17 @@ public class SelectActionMenuHelper {
         }
         return v -> {
             try {
-                action.getActionIntent().send();
+                ActivityOptions options = ActivityOptions.makeBasic();
+                ApiCompatibilityUtils.setActivityOptionsBackgroundActivityStartMode(options);
+                action.getActionIntent()
+                        .send(
+                                ContextUtils.getApplicationContext(),
+                                0,
+                                null,
+                                null,
+                                null,
+                                null,
+                                options.toBundle());
             } catch (PendingIntent.CanceledException e) {
                 Log.e(TAG, "Error creating OnClickListener from PendingIntent", e);
             }
