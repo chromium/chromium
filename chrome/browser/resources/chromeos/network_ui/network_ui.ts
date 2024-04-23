@@ -100,20 +100,6 @@ class NetworkUiElement extends NetworkUiElementBase {
         },
       },
 
-      isTetheringEnabled_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
-       * Set to true while an tethering state change is requested and the
-       * callback hasn't been fired yet.
-       */
-      tetheringChangeInProgress_: {
-        type: Boolean,
-        value: false,
-      },
-
       invalidJSON_: {
         type: Boolean,
         value: false,
@@ -133,8 +119,6 @@ class NetworkUiElement extends NetworkUiElementBase {
   private isGuestModeActive_: boolean;
   private isHotspotEnabled_: boolean;
   private isWifiDirectEnabled_: boolean;
-  private isTetheringEnabled_: boolean;
-  private tetheringChangeInProgress_: boolean;
   private invalidJSON_: boolean;
   private showNetworkSelect_: boolean;
   private onHashChange_: () => void = () => {
@@ -288,18 +272,9 @@ class NetworkUiElement extends NetworkUiElementBase {
   private async getTetheringStatus_() {
     const result = await this.browserProxy_.getTetheringStatus();
     const div = this.shadowRoot!.querySelector('#tethering-status-div');
-    if (!div) {
-      return;
+    if (div) {
+      div.textContent = stringifyJson(result);
     }
-    div.textContent = stringifyJson(result);
-    const state = result.state;
-    const startingState = loadTimeData.getString('tetheringStateStarting');
-    const activeState = loadTimeData.getString('tetheringStateActive');
-    if (!!state && (state === startingState || state === activeState)) {
-      this.isTetheringEnabled_ = true;
-      return;
-    }
-    this.isTetheringEnabled_ = false;
   }
 
   private async getTetheringConfig_() {
@@ -353,19 +328,6 @@ class NetworkUiElement extends NetworkUiElementBase {
     } catch (e) {
       this.invalidJSON_ = true;
     }
-  }
-
-  private async onTetheringToggleChanged_() {
-    this.tetheringChangeInProgress_ = true;
-    const result =
-        await this.browserProxy_.setTetheringEnabled(this.isTetheringEnabled_);
-    const resultDiv = this.shadowRoot!.querySelector<HTMLElement>(
-        '#set-tethering-enabled-result');
-    assert(resultDiv);
-    resultDiv.innerText = result;
-    resultDiv.classList.toggle('error', result !== 'success');
-    this.getTetheringStatus_();
-    this.tetheringChangeInProgress_ = false;
   }
 
   private async getWifiDirectCapabilities_() {

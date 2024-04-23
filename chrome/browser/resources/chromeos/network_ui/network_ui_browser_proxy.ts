@@ -55,8 +55,6 @@ export interface NetworkUiBrowserProxy {
 
   checkTetheringReadiness(): Promise<string>;
 
-  setTetheringEnabled(enabled: boolean): Promise<string>;
-
   getWifiDirectCapabilities(): Promise<string>;
 
   getWifiDirectOwnerInfo(): Promise<string>;
@@ -155,10 +153,6 @@ export class NetworkUiBrowserProxyImpl implements NetworkUiBrowserProxy {
 
   checkTetheringReadiness(): Promise<string> {
     return sendWithPromise('checkTetheringReadiness');
-  }
-
-  setTetheringEnabled(enabled: boolean): Promise<string> {
-    return sendWithPromise('setTetheringEnabled', enabled);
   }
 
   getWifiDirectCapabilities(): Promise<string> {
