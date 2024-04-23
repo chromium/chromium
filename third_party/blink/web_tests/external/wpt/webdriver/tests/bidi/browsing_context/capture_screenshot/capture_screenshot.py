@@ -79,3 +79,26 @@ async def test_capture_with_viewport(bidi_session, new_tab, delta_width, delta_h
     result = await bidi_session.browsing_context.capture_screenshot(
         context=new_tab["context"])
     assert png_dimensions(result) == (expected_size["width"], expected_size["height"])
+
+
+@pytest.mark.parametrize("dpr", [0.5, 2])
+@pytest.mark.asyncio
+async def test_capture_with_different_dpr(bidi_session, new_tab, inline, dpr):
+    page = inline("<div style='background-color: black; width: 100px; height: 100px;'></div>")
+    await bidi_session.browsing_context.navigate(
+        context=new_tab["context"], url=page, wait="complete"
+    )
+
+    original_viewport = await get_viewport_dimensions(bidi_session, new_tab)
+
+    await bidi_session.browsing_context.set_viewport(
+        context=new_tab["context"],
+        device_pixel_ratio=dpr)
+
+    expected_size = {
+        "width": floor(original_viewport["width"] * dpr),
+        "height": floor(original_viewport["height"] * dpr)
+    }
+
+    data = await bidi_session.browsing_context.capture_screenshot(context=new_tab["context"])
+    assert png_dimensions(data) == (expected_size["width"], expected_size["height"])

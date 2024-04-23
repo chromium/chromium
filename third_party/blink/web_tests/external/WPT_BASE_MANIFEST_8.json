@@ -615,7 +615,14 @@
       ]
      ],
      "chrome-336164421-crash.html": [
-      "97b65833aa9516e1611907888b9c592aa5815eee",
+      "c45b69059bd82a95a182d6769b60f67bd0850d25",
+      [
+       null,
+       {}
+      ]
+     ],
+     "chrome-336322507-crash.html": [
+      "922c53b97741938b5c754c81e95a90a7735f9911",
       [
        null,
        {}
@@ -273714,7 +273721,7 @@
        ]
       ],
       "bounded-sizes-reftest.tentative.html": [
-       "3d24d30679e77872be2ac918ea7dd60c7d84446c",
+       "45ffb633c3dc4aab7b40e750e922abc7a27e6275",
        [
         null,
         [
@@ -369925,7 +369932,7 @@
        []
       ],
       "bounded-sizes-reftest-ref.html": [
-       "1e0104cc5ce6963f77cdc1a1670ec0cdf234c195",
+       "b186dd644581822f288d3c756d825203e2ed8330",
        []
       ],
       "display-css-property-reftest-ref.html": [
@@ -374645,7 +374652,7 @@
      []
     ],
     "OWNERS": [
-     "c4ad7cc6cae03b1453674f2b659eac0fb16b2ad4",
+     "dedd7f0a1ddcf2d0f641e2f93b69793744e8db08",
      []
     ],
     "README.md": [
@@ -484127,6 +484134,17 @@
         {}
        ]
       ],
+      "observable-inspect.any.js": [
+       "8aff741d2670db26a7a355fdd747e70082479a43",
+       [
+        "dom/observable/tentative/observable-inspect.any.html",
+        {}
+       ],
+       [
+        "dom/observable/tentative/observable-inspect.any.worker.html",
+        {}
+       ]
+      ],
       "observable-last.any.js": [
        "cd39a3700a211aad77e673a2e096ecdb2bb8c8e9",
        [
@@ -580542,7 +580560,7 @@
        ]
       ],
       "bounded-sizes.tentative.html": [
-       "405e2364f54be492033d350987d238b1b0be1b6e",
+       "2010cd0a544565493d6e443e873f81c360de653e",
        [
         null,
         {}
@@ -677465,7 +677483,7 @@
       ]
      ],
      "reshape.https.any.js": [
-      "435551b716ab378088b657a4006296eb00c55775",
+      "67491fbc1684e16bcf03cf12aaac8101f70a0175",
       [
        "webnn/validation_tests/reshape.https.any.html",
        {
@@ -679691,7 +679709,7 @@
       ]
      ],
      "RTCEncodedAudioFrame-metadata.https.html": [
-      "1e420e6f725230a540a669f1f17fd1ebeceb78f1",
+      "609467b5e3ecdc2b777321da15fb64f713985082",
       [
        null,
        {
@@ -679736,7 +679754,7 @@
       ]
      ],
      "RTCEncodedVideoFrame-metadata.https.html": [
-      "a2c684c1f1594522c893f461e4bf9072caa9f0a2",
+      "77e1ed118f21c5a47aaff1c1548e73e06dcf9666",
       [
        null,
        {
@@ -717360,14 +717378,14 @@
        },
        "capture_screenshot": {
         "capture_screenshot.py": [
-         "40497ce6ac7908239ea641b8c75a0a85c34613d7",
+         "0a75e68cbeda3badc6580d4cf82a296cc81ab28e",
          [
           null,
           {}
          ]
         ],
         "clip.py": [
-         "8300e962b92c50c019c0afd3347c5c79cdb0c0d6",
+         "67d4b0d06c431c0afddc989f0b408c5b10813d42",
          [
           null,
           {}
@@ -717774,7 +717792,7 @@
        },
        "set_viewport": {
         "device_pixel_ratio.py": [
-         "e4db779bd5dd5492af4997531fdc9c397718795b",
+         "76a4ef7ecd28c6977762404820f61c1b2dfd5dea",
          [
           null,
           {}
