@@ -121,6 +121,12 @@ void ClickOnWifiNetwork(const std::string& wifi_network_name) {
   test::OobeJS().Evaluate(NetworkElementSelector(wifi_network_name) +
                           ".click()");
 }
+
+void WaitAndClickOnPath(const test::UIPath& path) {
+  test::OobeJS().CreateVisibilityWaiter(/*visibility=*/true, path)->Wait();
+  test::OobeJS().ClickOnPath(path);
+}
+
 }  // namespace
 
 class QuickStartBrowserTest : public OobeBaseTest {
@@ -187,11 +193,7 @@ class QuickStartBrowserTest : public OobeBaseTest {
 
   void EnterQuickStartFlowFromWelcomeScreen() {
     test::WaitForWelcomeScreen();
-    test::OobeJS()
-        .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonPath)
-        ->Wait();
-
-    test::OobeJS().ClickOnPath(kQuickStartButtonPath);
+    WaitAndClickOnPath(kQuickStartButtonPath);
     OobeScreenWaiter(QuickStartView::kScreenId).Wait();
   }
 
@@ -440,18 +442,13 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTestWithBluetoothDisabled,
 
   // Clicking on the entry point when bluetooth is disabled should
   // transition to the QuickStart screen and show the dialog.
-  test::OobeJS().ClickOnPath(kQuickStartButtonPath);
+  WaitAndClickOnPath(kQuickStartButtonPath);
   OobeScreenWaiter(QuickStartView::kScreenId).Wait();
   WaitForVerificationStep();
   WaitForBluetoothDialogToOpen();
 
   // Cancelling the dialog should bring the user back.
-  test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true,
-                              kQuickStartBluetoothCancelButtonPath)
-      ->Wait();
-  test::OobeJS().ClickOnPath(kQuickStartBluetoothCancelButtonPath);
-
+  WaitAndClickOnPath(kQuickStartBluetoothCancelButtonPath);
   test::WaitForWelcomeScreen();
 }
 
@@ -468,16 +465,13 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTestWithBluetoothDisabled,
 
   // Clicking on the entry point when bluetooth is disabled should
   // transition to the QuickStart screen and show the dialog.
-  test::OobeJS().ClickOnPath(kQuickStartButtonPath);
+  WaitAndClickOnPath(kQuickStartButtonPath);
   OobeScreenWaiter(QuickStartView::kScreenId).Wait();
   WaitForVerificationStep();
   WaitForBluetoothDialogToOpen();
 
-  test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true,
-                              kQuickStartBluetoothEnableButtonPath)
-      ->Wait();
-  test::OobeJS().ClickOnPath(kQuickStartBluetoothEnableButtonPath);
+  WaitAndClickOnPath(kQuickStartBluetoothEnableButtonPath);
+
   WaitForBluetoothDialogToClose();
 }
 
@@ -486,9 +480,7 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, QRCode) {
       kScreenOpenedHistogram,
       quick_start::QuickStartMetrics::ScreenName::kQSSetUpWithAndroidPhone, 0);
   test::WaitForWelcomeScreen();
-  test::OobeJS().ExpectVisiblePath(kQuickStartButtonPath);
-
-  test::OobeJS().ClickOnPath(kQuickStartButtonPath);
+  WaitAndClickOnPath(kQuickStartButtonPath);
 
   OobeScreenWaiter(QuickStartView::kScreenId).Wait();
   connection_broker_factory_.instances().front()->InitiateConnection(
@@ -515,14 +507,11 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, QRCode) {
 
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, PinCode) {
   test::WaitForWelcomeScreen();
-  test::OobeJS().ExpectVisiblePath(kQuickStartButtonPath);
-
-  test::OobeJS().ClickOnPath(kQuickStartButtonPath);
-
+  WaitAndClickOnPath(kQuickStartButtonPath);
   OobeScreenWaiter(QuickStartView::kScreenId).Wait();
+
   connection_broker()->set_use_pin_authentication(true);
   connection_broker()->InitiateConnection("fake_device_id");
-
   WaitForVerificationStep();
 
   // <quick-start-pin> should become visible and contain the PIN.
@@ -559,11 +548,8 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, ClickingCancelReturnsToWelcome) {
       kFlowAbortedReason,
       quick_start::QuickStartMetrics::AbortFlowReason::USER_CLICKED_CANCEL, 0);
 
-  // Cancel button must be present.
-  test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true, kCancelButtonLoadingDialog)
-      ->Wait();
-  test::OobeJS().ClickOnPath(kCancelButtonLoadingDialog);
+  // Cancel flow.
+  WaitAndClickOnPath(kCancelButtonLoadingDialog);
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
 
   EnsureFlowNotActive();
@@ -582,12 +568,8 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, CancelOnQRCode) {
   connection_broker()->InitiateConnection("fake_device_id");
   WaitForVerificationStep();
 
-  // Cancel button must be present.
-  test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true,
-                              kCancelButtonVerificationDialog)
-      ->Wait();
-  test::OobeJS().ClickOnPath(kCancelButtonVerificationDialog);
+  // Cancel flow.
+  WaitAndClickOnPath(kCancelButtonVerificationDialog);
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
 
   EnsureFlowNotActive();
@@ -601,11 +583,7 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, CancelAndRestartWithNewSession) {
   SimulateUserVerification();
 
   // Cancel flow.
-  test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true,
-                              kCancelButtonVerificationDialog)
-      ->Wait();
-  test::OobeJS().ClickOnPath(kCancelButtonVerificationDialog);
+  WaitAndClickOnPath(kCancelButtonVerificationDialog);
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   EnsureFlowNotActive();
 
@@ -872,15 +850,9 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, PhoneAbortOnManualNetworkNeeded) {
 
   // Clicking on 'Back' should bring us back to the Welcome screen, and entering
   // it again should show the default strings.
-  test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true, kNetworkBackButtonPath)
-      ->Wait();
-  test::OobeJS().ClickOnPath(kNetworkBackButtonPath);
+  WaitAndClickOnPath(kNetworkBackButtonPath);
   test::WaitForWelcomeScreen();
-  test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true, kWelcomeScreenNextButton)
-      ->Wait();
-  test::OobeJS().ClickOnPath(kWelcomeScreenNextButton);
+  WaitAndClickOnPath(kWelcomeScreenNextButton);
   WaitForDefaultNetworkSubtitle();
 
   // Manually connect to a network.
@@ -898,11 +870,7 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest,
                        GaiaEntryPoint_StartAndCancelFlow) {
   SetupAndWaitForGaiaScreen();
 
-  test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonGaia)
-      ->Wait();
-  test::OobeJS().ClickOnPath(kQuickStartButtonGaia);
-
+  WaitAndClickOnPath(kQuickStartButtonGaia);
   OobeScreenWaiter(QuickStartView::kScreenId).Wait();
   EnsureFlowActive();
 
@@ -910,11 +878,9 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest,
       std::string{kScreenClosedQSSetUpWithAndroidPhone} + kReasonHistogram,
       quick_start::QuickStartMetrics::ScreenClosedReason::kUserCancelled, 0);
 
-  // Cancel button must be present.
-  test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true, kCancelButtonLoadingDialog)
-      ->Wait();
-  test::OobeJS().ClickOnPath(kCancelButtonLoadingDialog);
+  // Cancel the flow.
+  WaitAndClickOnPath(kCancelButtonLoadingDialog);
+
   histogram_tester_.ExpectBucketCount(
       std::string{kScreenClosedQSSetUpWithAndroidPhone} + kReasonHistogram,
       quick_start::QuickStartMetrics::ScreenClosedReason::kUserCancelled, 1);
@@ -926,14 +892,10 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest,
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest,
                        GaiaEntryPoint_TransfersGaiaCredentialsOnceConnected) {
   SetupAndWaitForGaiaScreen();
-
-  test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonGaia)
-      ->Wait();
-
-  test::OobeJS().ClickOnPath(kQuickStartButtonGaia);
+  WaitAndClickOnPath(kQuickStartButtonGaia);
   OobeScreenWaiter(QuickStartView::kScreenId).Wait();
   EnsureFlowActive();
+
   SimulatePhoneConnection();
   SimulateUserVerification();
 
@@ -943,27 +905,17 @@ IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest,
       ->Wait();
 
   // Cancel and return to the Gaia screen.
-  test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true,
-                              kCancelButtonGaiaTransferDialog)
-      ->Wait();
-  test::OobeJS().ClickOnPath(kCancelButtonGaiaTransferDialog);
-
-  // Returns to the Gaia screen
+  WaitAndClickOnPath(kCancelButtonGaiaTransferDialog);
   OobeScreenWaiter(GaiaScreenHandler::kScreenId).Wait();
 }
 
 // Test the correct behavior when there are no accounts on the phone.
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTest, HandleEmptyAccounts) {
   SetupAndWaitForGaiaScreen();
-
-  test::OobeJS()
-      .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonGaia)
-      ->Wait();
-
-  test::OobeJS().ClickOnPath(kQuickStartButtonGaia);
+  WaitAndClickOnPath(kQuickStartButtonGaia);
   OobeScreenWaiter(QuickStartView::kScreenId).Wait();
   EnsureFlowActive();
+
   SimulatePhoneConnection();
   SimulateUserVerification();
 
@@ -992,8 +944,8 @@ IN_PROC_BROWSER_TEST_F(QuickStartLoginScreenTest, EntryPointNotVisible) {
   EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
   OobeScreenWaiter(UserCreationView::kScreenId).Wait();
 
-  test::OobeJS().ClickOnPath({"user-creation", "selfButton"});
-  test::OobeJS().ClickOnPath({"user-creation", "nextButton"});
+  WaitAndClickOnPath({"user-creation", "selfButton"});
+  WaitAndClickOnPath({"user-creation", "nextButton"});
 
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
   base::RunLoop().RunUntilIdle();
