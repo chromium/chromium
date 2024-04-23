@@ -65,6 +65,7 @@ class NativeViewHostMac : public NativeViewHostWrapper,
   void SetVisible(bool visible) override;
   void SetParentAccessible(gfx::NativeViewAccessible) override;
   gfx::NativeViewAccessible GetParentAccessible() override;
+  ui::Layer* GetUILayer() override;
 
  private:
   // Return the NativeWidgetMacNSWindowHost for this hosted view.

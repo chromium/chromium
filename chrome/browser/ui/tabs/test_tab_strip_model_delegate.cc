@@ -126,3 +126,7 @@ bool TestTabStripModelDelegate::CanGoBack(content::WebContents* web_contents) {
 bool TestTabStripModelDelegate::IsNormalWindow() {
   return true;
 }
+
+BrowserWindowInterface* TestTabStripModelDelegate::GetBrowserWindowInterface() {
+  return nullptr;
+}

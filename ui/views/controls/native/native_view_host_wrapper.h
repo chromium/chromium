@@ -16,6 +16,7 @@ class RoundedCornersF;
 }
 
 namespace ui {
+class Layer;
 class LayerOwner;
 }
 
@@ -117,6 +118,9 @@ class NativeViewHostWrapper {
 
   // Returns the parent accessible object to the native view.
   virtual gfx::NativeViewAccessible GetParentAccessible() = 0;
+
+  // Returns the ui::Layer hosting the WebContents.
+  virtual ui::Layer* GetUILayer() = 0;
 
   // Creates a platform-specific instance of an object implementing this
   // interface.

@@ -15,6 +15,10 @@ namespace gfx {
 class RoundedCornersF;
 }
 
+namespace ui {
+class Layer;
+}  // namespace ui
+
 namespace views {
 namespace test {
 class NativeViewHostTestBase;
@@ -105,6 +109,9 @@ class VIEWS_EXPORT NativeViewHost : public View {
   // Sets the desired background color for repainting when the view is clipped.
   // Defaults to transparent color if unset.
   void SetBackgroundColorWhenClipped(std::optional<SkColor> color);
+
+  // Returns the ui::Layer backing the attached gfx::NativeView.
+  ui::Layer* GetUILayer();
 
   // Overridden from View:
   void Layout(PassKey) override;

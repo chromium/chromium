@@ -2454,6 +2454,10 @@ void BrowserView::ShowChromeLabs() {
   }
 }
 
+views::WebView* BrowserView::GetContentsWebView() {
+  return contents_web_view_;
+}
+
 bool BrowserView::AppUsesBorderlessMode() const {
   return browser()->app_controller() &&
          browser()->app_controller()->AppUsesBorderlessMode();

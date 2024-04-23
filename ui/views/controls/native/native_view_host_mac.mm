@@ -343,6 +343,10 @@ gfx::NativeViewAccessible NativeViewHostMac::GetParentAccessible() {
              : nullptr;
 }
 
+ui::Layer* NativeViewHostMac::GetUILayer() {
+  return host_->layer();
+}
+
 // static
 NativeViewHostWrapper* NativeViewHostWrapper::CreateWrapper(
     NativeViewHost* host) {

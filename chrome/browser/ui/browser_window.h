@@ -95,6 +95,7 @@ class ThemeProvider;
 
 namespace views {
 class Button;
+class WebView;
 }  // namespace views
 
 namespace web_modal {
@@ -686,6 +687,9 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Shows the Chrome Labs bubble if enabled.
   virtual void ShowChromeLabs() = 0;
+
+  // Returns the WebView backing the tab-contents area of the BrowserWindow.
+  virtual views::WebView* GetContentsWebView() = 0;
 
  protected:
   friend class BrowserCloseManager;

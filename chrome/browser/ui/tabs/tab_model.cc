@@ -95,7 +95,7 @@ base::CallbackListSubscription TabModel::RegisterWillRemoveContents(
 }
 
 bool TabModel::IsInForeground() const {
-  return owning_model()->GetActiveTab() == this;
+  return owning_model() && owning_model()->GetActiveTab() == this;
 }
 
 base::CallbackListSubscription TabModel::RegisterDidEnterForeground(
@@ -118,6 +118,10 @@ std::unique_ptr<ScopedTabModalUI> TabModel::ShowModalUI() {
 
 bool TabModel::IsInNormalWindow() const {
   return is_in_normal_window_;
+}
+
+BrowserWindowInterface* TabModel::GetBrowserWindowInterface() {
+  return owning_model_->delegate()->GetBrowserWindowInterface();
 }
 
 void TabModel::OnTabStripModelChanged(

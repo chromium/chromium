@@ -14,6 +14,8 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+class BrowserWindowInterface;
+
 namespace tabs {
 
 // A feature which wants to show tab-modal UI should call
@@ -77,6 +79,11 @@ class TabInterface {
   // A normal browser window has a tab strip and an omnibox. The returned value
   // never changes.
   virtual bool IsInNormalWindow() const = 0;
+
+  // Check that IsInForeground() is `true` before calling this method. If a tab
+  // is in the background there is no guarantee that it is associated with a
+  // browser window.
+  virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
 };
 
 }  // namespace tabs

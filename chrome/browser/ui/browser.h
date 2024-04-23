@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper_observer.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -135,7 +136,8 @@ class Browser : public TabStripModelObserver,
                 public content::PageNavigator,
                 public ThemeServiceObserver,
                 public translate::ContentTranslateDriver::TranslationObserver,
-                public ui::SelectFileDialog::Listener {
+                public ui::SelectFileDialog::Listener,
+                public BrowserWindowInterface {
  public:
   // SessionService::WindowType mirrors these values.  If you add to this
   // enum, look at SessionService::WindowType to see if it needs to be
@@ -862,6 +864,9 @@ class Browser : public TabStripModelObserver,
   // Sets or clears the flags to force showing bookmark bar.
   void SetForceShowBookmarkBarFlag(ForceShowBookmarkBarFlag flag);
   void ClearForceShowBookmarkBarFlag(ForceShowBookmarkBarFlag flag);
+
+  // BrowserWindowInterface overrides:
+  views::WebView* GetWebView() override;
 
  private:
   friend class BrowserTest;

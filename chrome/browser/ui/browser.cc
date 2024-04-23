@@ -141,6 +141,8 @@
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/unload_controller.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -989,6 +991,10 @@ void Browser::SetForceShowBookmarkBarFlag(ForceShowBookmarkBarFlag flag) {
 void Browser::ClearForceShowBookmarkBarFlag(ForceShowBookmarkBarFlag flag) {
   force_show_bookmark_bar_flags_ &= ~flag;
   UpdateBookmarkBarState(BOOKMARK_BAR_STATE_CHANGE_FORCE_SHOW);
+}
+
+views::WebView* Browser::GetWebView() {
+  return window_->GetContentsWebView();
 }
 
 void Browser::OnWindowClosing() {

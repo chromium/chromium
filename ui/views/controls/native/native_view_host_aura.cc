@@ -118,6 +118,10 @@ gfx::NativeViewAccessible NativeViewHostAura::GetParentAccessible() {
       aura::client::kParentNativeViewAccessibleKey);
 }
 
+ui::Layer* NativeViewHostAura::GetUILayer() {
+  return host_->native_view()->layer();
+}
+
 void NativeViewHostAura::NativeViewDetaching(bool destroyed) {
   // This method causes a succession of window tree changes. ScopedPause ensures
   // that occlusion is recomputed at the end of the method instead of after each

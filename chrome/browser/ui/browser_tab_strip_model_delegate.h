@@ -65,6 +65,7 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
   void GoBack(content::WebContents* web_contents) override;
   bool CanGoBack(content::WebContents* web_contents) override;
   bool IsNormalWindow() override;
+  BrowserWindowInterface* GetBrowserWindowInterface() override;
 
   void CloseFrame();
 

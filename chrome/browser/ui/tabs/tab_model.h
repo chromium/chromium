@@ -109,6 +109,7 @@ class TabModel final : public SupportsHandles<const TabModel>,
   bool CanShowModalUI() const override;
   std::unique_ptr<ScopedTabModalUI> ShowModalUI() override;
   bool IsInNormalWindow() const override;
+  BrowserWindowInterface* GetBrowserWindowInterface() override;
 
  private:
   std::unique_ptr<content::WebContents> RemoveContents();

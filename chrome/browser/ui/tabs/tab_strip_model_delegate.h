@@ -13,6 +13,7 @@
 #include "components/tab_groups/tab_group_id.h"
 
 class Browser;
+class BrowserWindowInterface;
 class GURL;
 
 namespace tabs {
@@ -182,6 +183,9 @@ class TabStripModelDelegate {
 
   // Whether the associated window is a normal browser window.
   virtual bool IsNormalWindow() = 0;
+
+  // Returns the BrowserWindow that owns the TabStripModel. Never changes.
+  virtual BrowserWindowInterface* GetBrowserWindowInterface() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_DELEGATE_H_

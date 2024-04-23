@@ -1,0 +1,10 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This is the public interface for a browser window. Most features in
+# //chrome/browser depend on this interface, and thus to prevent circular
+# dependencies this interface should not depend on anything else in //chrome.
+source_set("browser_window") {
+  sources = [ "public/browser_window_interface.h" ]
+}

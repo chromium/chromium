@@ -7,7 +7,7 @@
 # dependencies this interface should not depend on anything else in //chrome.
 source_set("tabs") {
   sources = [ "public/tab_interface.h" ]
-  deps = [ "//content" ]
+  deps = [ "//base" ]
 }
 
 # These enums should not need to depend on chrome/browser/ui. They have been

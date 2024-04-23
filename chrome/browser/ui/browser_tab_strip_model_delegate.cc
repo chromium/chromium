@@ -300,6 +300,11 @@ bool BrowserTabStripModelDelegate::IsNormalWindow() {
   return browser_->is_type_normal();
 }
 
+BrowserWindowInterface*
+BrowserTabStripModelDelegate::GetBrowserWindowInterface() {
+  return browser_;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserTabStripModelDelegate, private:
 

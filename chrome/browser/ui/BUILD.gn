@@ -2099,6 +2099,7 @@ static_library("ui") {
       "//chrome/browser/safe_browsing",
       "//chrome/browser/safe_browsing:advanced_protection",
       "//chrome/browser/support_tool:support_tool_proto",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/color:mixers",
       "//chrome/browser/ui/tabs",

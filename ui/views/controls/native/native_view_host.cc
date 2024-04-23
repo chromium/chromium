@@ -108,6 +108,10 @@ void NativeViewHost::SetBackgroundColorWhenClipped(
   background_color_when_clipped_ = color;
 }
 
+ui::Layer* NativeViewHost::GetUILayer() {
+  return native_wrapper_->GetUILayer();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // NativeViewHost, View overrides:
 
