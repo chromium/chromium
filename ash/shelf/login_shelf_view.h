@@ -139,12 +139,9 @@ class ASH_EXPORT LoginShelfView : public views::View,
   void OnFocus() override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void Layout(PassKey) override;
 
   // ShelfConfig::Observer:
   void OnShelfConfigUpdated() override;
-
-  gfx::Rect get_button_union_bounds() const { return button_union_bounds_; }
 
   // Test API. Returns true if request was successful (i.e. button was
   // clickable).
@@ -298,11 +295,6 @@ class ASH_EXPORT LoginShelfView : public views::View,
 
   // This is used in tests to wait until UI is updated.
   std::unique_ptr<TestUiUpdateDelegate> test_ui_update_delegate_;
-
-  // The bounds of all the buttons that this view is showing. Useful for
-  // letting events that target the "empty space" pass through. These
-  // coordinates are local to the view.
-  gfx::Rect button_union_bounds_;
 
   // Maintains a list of LoginShelfButton children of LoginShelfView.
   std::vector<raw_ptr<LoginShelfButton, VectorExperimental>>

@@ -431,11 +431,6 @@ void LoginShelfView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(l10n_util::GetStringUTF8(IDS_ASH_SHELF_ACCESSIBLE_NAME));
 }
 
-void LoginShelfView::Layout(PassKey) {
-  LayoutSuperclass<views::View>(this);
-  UpdateButtonUnionBounds();
-}
-
 void LoginShelfView::OnShelfConfigUpdated() {
   views::InstallRoundRectHighlightPathGenerator(
       kiosk_apps_button_, gfx::Insets(),
@@ -745,16 +740,6 @@ void LoginShelfView::UpdateUi() {
     PreferredSizeChanged();
   } else {
     DeprecatedLayoutImmediately();
-  }
-}
-
-void LoginShelfView::UpdateButtonUnionBounds() {
-  button_union_bounds_ = gfx::Rect();
-  View::Views children = GetChildrenInZOrder();
-  for (views::View* child : children) {
-    if (child->GetVisible()) {
-      button_union_bounds_.Union(child->bounds());
-    }
   }
 }
 
