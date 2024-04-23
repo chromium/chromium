@@ -510,15 +510,8 @@ config("release_crt") {
   if (is_component_build) {
     cflags = [ "/MD" ]
 
-    if (rust_prebuilt_stdlib) {
-      rustflags = [ "-Ctarget-feature=-crt-static" ]
-    } else {
-      # /MD specifies msvcrt.lib as the CRT library. Rust needs to agree, so
-      # we specify it explicitly. Once
-      # https://github.com/rust-lang/rust/issues/39016 is resolved we should
-      # instead tell rustc which CRT to use (static/dynamic + release/debug).
-      rustflags = [ "-Clink-arg=msvcrt.lib" ]
-    }
+    # The - in front of crt-static turns the feature off.
+    rustflags = [ "-Ctarget-feature=-crt-static" ]
 
     if (use_custom_libcxx) {
       # On Windows, including libcpmt[d]/msvcprt[d] explicitly links the C++
@@ -527,16 +520,7 @@ config("release_crt") {
     }
   } else {
     cflags = [ "/MT" ]
-
-    if (rust_prebuilt_stdlib) {
-      rustflags = [ "-Ctarget-feature=+crt-static" ]
-    } else {
-      # /MT specifies libcmt.lib as the CRT library. Rust needs to agree, so
-      # we specify it explicitly. Once
-      # https://github.com/rust-lang/rust/issues/39016 is resolved we should
-      # instead tell rustc which CRT to use (static/dynamic + release/debug).
-      rustflags = [ "-Clink-arg=libcmt.lib" ]
-    }
+    rustflags = [ "-Ctarget-feature=+crt-static" ]
 
     if (use_custom_libcxx) {
       ldflags = [ "/DEFAULTLIB:libcpmt.lib" ]
@@ -556,22 +540,21 @@ config("dynamic_crt") {
     # can't support prebuilt stdlib in this path until then.
     rustflags = [ "-Clink-arg=msvcrtd.lib" ]
 
+    # Disable libraries rustc links implicitly;
+    # see https://github.com/rust-lang/rust/pull/122268
+    rustflags += [
+      "-Clink-arg=/nodefaultlib:libcmt.lib",
+      "-Clink-arg=/nodefaultlib:msvcrt.lib",
+    ]
+
     if (use_custom_libcxx) {
       ldflags = [ "/DEFAULTLIB:msvcprtd.lib" ]
     }
   } else {
     cflags = [ "/MD" ]
 
-    if (rust_prebuilt_stdlib) {
-      rustflags = [ "-Ctarget-feature=-crt-static" ]
-    } else {
-      # /MD specifies msvcrt.lib as the CRT library. Rust needs to agree, so
-      # we specify it explicitly.
-      # Once https://github.com/rust-lang/rust/issues/39016 is resolved we
-      # should instead tell rustc which CRT to use (static/dynamic +
-      # release/debug).
-      rustflags = [ "-Clink-arg=msvcrt.lib" ]
-    }
+    # The - in front of crt-static turns the feature off.
+    rustflags = [ "-Ctarget-feature=-crt-static" ]
 
     if (use_custom_libcxx) {
       ldflags = [ "/DEFAULTLIB:msvcprt.lib" ]
@@ -591,22 +574,19 @@ config("static_crt") {
     # can't support prebuilt stdlib in this path until then.
     rustflags = [ "-Clink-arg=libcmtd.lib" ]
 
+    # Disable libraries rustc links implicitly;
+    # see https://github.com/rust-lang/rust/pull/122268
+    rustflags += [
+      "-Clink-arg=/nodefaultlib:libcmt.lib",
+      "-Clink-arg=/nodefaultlib:msvcrt.lib",
+    ]
+
     if (use_custom_libcxx) {
       ldflags = [ "/DEFAULTLIB:libcpmtd.lib" ]
     }
   } else {
     cflags = [ "/MT" ]
-
-    if (rust_prebuilt_stdlib) {
-      rustflags = [ "-Ctarget-feature=+crt-static" ]
-    } else {
-      # /MT specifies libcmt.lib as the CRT library. Rust needs to agree, so
-      # we specify it explicitly.
-      # Once https://github.com/rust-lang/rust/issues/39016 is resolved we
-      # should instead tell rustc which CRT to use (static/dynamic +
-      # release/debug).
-      rustflags = [ "-Clink-arg=libcmt.lib" ]
-    }
+    rustflags = [ "-Ctarget-feature=+crt-static" ]
 
     if (use_custom_libcxx) {
       ldflags = [ "/DEFAULTLIB:libcpmt.lib" ]
