@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/permissions/chip/multi_image_container.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -78,15 +77,9 @@ void PermissionChipView::AnimateExpand(base::TimeDelta duration) {
 
 void PermissionChipView::AnimateToFit(base::TimeDelta duration) {
   animation_->SetSlideDuration(duration);
-  if (base::FeatureList::IsEnabled(
-          content_settings::features::kLeftHandSideActivityIndicators)) {
-    base_width_ =
-        label()
-            ->GetPreferredSize(views::SizeBounds(label()->width(), {}))
-            .width();
-  } else {
-    base_width_ = label()->width();
-  }
+  base_width_ = label()
+                    ->GetPreferredSize(views::SizeBounds(label()->width(), {}))
+                    .width();
 
   if (label()
           ->GetPreferredSize(views::SizeBounds(label()->width(), {}))
