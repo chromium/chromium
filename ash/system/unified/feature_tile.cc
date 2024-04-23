@@ -37,6 +37,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
@@ -64,15 +65,10 @@ constexpr gfx::Insets kTitleContainerWithoutDiveInButtonMargins =
 constexpr gfx::Insets kTitleContainerWithDiveInButtonMargins = gfx::Insets();
 
 // Compact tile constants
-constexpr int kCompactWidth = 86;
 constexpr int kCompactTitleLineHeight = 14;
 constexpr gfx::Size kCompactIconButtonSize(kIconSize, kIconSize);
 constexpr gfx::Insets kCompactIconButtonMargins =
     gfx::Insets::TLBR(6, 22, 4, 22);
-constexpr gfx::Size kCompactOneRowTitleLabelSize(kCompactWidth - 24,
-                                                 kCompactTitleLineHeight);
-constexpr gfx::Size kCompactTwoRowTitleLabelSize(kCompactWidth - 24,
-                                                 kCompactTitleLineHeight * 2);
 constexpr gfx::Insets kCompactTitlesContainerMargins =
     gfx::Insets::TLBR(0, 12, 6, 12);
 
@@ -243,14 +239,14 @@ void FeatureTile::CreateChildViews() {
   title_container_->AddObserver(this);
   // Set `MaximumFlexSizeRule` to `kUnbounded` so that `title_container_` takes
   // up all of the available space in the middle of the primary tile.
-  if (!is_compact) {
-    title_container_->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(
-            views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                     views::MaximumFlexSizeRule::kUnbounded,
-                                     /*adjust_height_for_width=*/true)));
-  }
+  title_container_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::FlexSpecification(
+          is_compact ? views::LayoutOrientation::kVertical
+                     : views::LayoutOrientation::kHorizontal,
+          views::MinimumFlexSizeRule::kScaleToZero,
+          views::MaximumFlexSizeRule::kUnbounded,
+          /*adjust_height_for_width=*/true)));
 
   label_ = title_container_->AddChildView(std::make_unique<views::Label>());
   label_->SetAutoColorReadabilityEnabled(false);
@@ -691,8 +687,6 @@ void FeatureTile::UpdateDrillInArrowColor() {
 }
 
 void FeatureTile::SetCompactTileLabelPreferences(bool has_sub_label) {
-  label_->SetPreferredSize(has_sub_label ? kCompactOneRowTitleLabelSize
-                                         : kCompactTwoRowTitleLabelSize);
   label_->SetMultiLine(!has_sub_label);
   // Elide after 2 lines if there's no sub-label. Otherwise, 1 line.
   label_->SetMaxLines(has_sub_label ? 1 : 2);

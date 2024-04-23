@@ -311,21 +311,21 @@ TEST_F(FeatureTileVcDlcUiEnabledPixelTest, CompactTileCanFillContainer) {
   // Use the default, one-line compact tile that is created during test set-up.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "basic",
-      /*revision_number=*/0, widget_.get()));
+      /*revision_number=*/1, widget_.get()));
 
   // Focus the tile (and reset the focus after the screenshot is taken).
   auto* previous_focused_view = widget_->GetFocusManager()->GetFocusedView();
   widget_->GetFocusManager()->SetFocusedView(tile());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "focused",
-      /*revision_number=*/0, widget_.get()));
+      /*revision_number=*/1, widget_.get()));
   widget_->GetFocusManager()->SetFocusedView(previous_focused_view);
 
   // Toggle the tile (and reset the toggle state after the screenshot is taken).
   tile()->SetToggled(true);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "toggled",
-      /*revision_number=*/0, widget_.get()));
+      /*revision_number=*/1, widget_.get()));
   tile()->SetToggled(false);
 }
 
@@ -336,31 +336,31 @@ TEST_F(FeatureTileVcDlcUiEnabledPixelTest, DownloadInProgress) {
   SetDownloadProgress(tile(), 0);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "0_percent",
-      /*revision_number=*/0, widget_.get()));
+      /*revision_number=*/1, widget_.get()));
 
   // Set the tile's download to be 1% complete.
   SetDownloadProgress(tile(), 1);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "1_percent",
-      /*revision_number=*/0, widget_.get()));
+      /*revision_number=*/1, widget_.get()));
 
   // Set the tile's download to be 50% complete.
   SetDownloadProgress(tile(), 50);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "50_percent",
-      /*revision_number=*/0, widget_.get()));
+      /*revision_number=*/1, widget_.get()));
 
   // Set the tile's download to be 99% complete.
   SetDownloadProgress(tile(), 99);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "99_percent",
-      /*revision_number=*/0, widget_.get()));
+      /*revision_number=*/1, widget_.get()));
 
   // Set the tile's download to be 100% complete.
   SetDownloadProgress(tile(), 100);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "100_percent",
-      /*revision_number=*/0, widget_.get()));
+      /*revision_number=*/1, widget_.get()));
 }
 
 }  // namespace ash
