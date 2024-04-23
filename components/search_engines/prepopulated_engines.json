@@ -29,7 +29,7 @@
     // existing data should get a new version. Otherwise, existing data may
     // continue to be used and updates made here will not always appear.
     // Also then run tools/search_engine_choice/generate_search_engine_icons.py.
-    "kCurrentDataVersion": 158
+    "kCurrentDataVersion": 159
   },
 
   // The following engines are included in country lists and are added to the
@@ -1077,6 +1077,7 @@
       "favicon_url": "https://oceanhero.today/favicon.ico",
       "search_url": "https://oceanhero.today/web?q={searchTerms}",
       "suggest_url": "https://api.oceanhero.today/suggestions?q={searchTerms}",
+      "new_tab_url": "https://oceanhero.today/home",
       "type": "SEARCH_ENGINE_OCEANHERO",
       "id": 99
     },
