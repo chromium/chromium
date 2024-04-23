@@ -11523,6 +11523,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4952" label="Canvas2DLayersCSSFilters"/>
   <int value="4953" label="Canvas2DLayersFilterObjects"/>
   <int value="4954" label="CSSScrollStartTarget"/>
+  <int value="4955" label="FedCmContinueOnResponse"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

@@ -2315,6 +2315,10 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
   url::Origin idp_origin = url::Origin::Create(idp->config->config_url);
   // This is enforced by OnAccountSelected when we call SendTokenRequest.
   DCHECK(webid::IsFedCmAuthzEnabled(render_frame_host(), idp_origin));
+
+  GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+      &render_frame_host(), blink::mojom::WebFeature::kFedCmContinueOnResponse);
+
   // We only allow loading continue_on urls that are same-origin
   // with the IdP.
   // This isn't necessarily final, but seemed like a safer

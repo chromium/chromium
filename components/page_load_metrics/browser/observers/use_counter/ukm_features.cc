@@ -399,6 +399,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kServiceWorkerStaticRouter_Evaluate,
           WebFeature::kNavigatorCookieEnabledThirdParty,
           WebFeature::kSimplifyLoadingTransparentPlaceholderImage,
+          WebFeature::kFedCmContinueOnResponse
       }));
   return *opt_in_features;
 }
