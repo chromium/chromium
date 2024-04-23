@@ -145,10 +145,19 @@ public class StartSurfaceConfiguration {
                 && ChromeFeatureList.sMagicStackAndroid.isEnabled();
     }
 
-    /** Returns whether logo polish is enabled in the given context. */
+    /** Returns whether logo polish flag is enabled in the given context. */
     public static boolean isLogoPolishEnabled() {
         return ChromeFeatureList.sSurfacePolish.isEnabled()
                 && ChromeFeatureList.sLogoPolish.isEnabled();
+    }
+
+    /**
+     * Returns whether logo is Google doodle and logo polish is enabled in the given context.
+     *
+     * @param isLogoDoodle True if the current logo is Google doodle.
+     */
+    public static boolean isLogoPolishEnabledWithGoogleDoodle(boolean isLogoDoodle) {
+        return isLogoDoodle && isLogoPolishEnabled();
     }
 
     /**

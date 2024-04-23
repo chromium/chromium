@@ -44,6 +44,8 @@ class LogoViewBinder
             logoView.showLoadingView();
         } else if (LogoProperties.ANIMATED_LOGO == propertyKey) {
             logoView.playAnimatedLogo(model.get(LogoProperties.ANIMATED_LOGO));
+        } else if (LogoProperties.LOGO_AVAILABLE_CALLBACK == propertyKey) {
+            logoView.setLogoAvailableCallback(model.get(LogoProperties.LOGO_AVAILABLE_CALLBACK));
         } else {
             assert false : "Unhandled property detected in LogoViewBinder!";
         }

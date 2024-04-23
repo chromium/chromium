@@ -112,7 +112,7 @@ public class NewTabPageLayout extends LinearLayout {
 
     private boolean mSearchProviderHasLogo = true;
     private boolean mSearchProviderIsGoogle;
-    private boolean mShowingNonStandardLogo;
+    private boolean mShowingNonStandardGoogleLogo;
 
     private boolean mInitialized;
 
@@ -160,6 +160,7 @@ public class NewTabPageLayout extends LinearLayout {
     private boolean mIsLogoPolishEnabled;
     private @LogoSizeForLogoPolish int mLogoSizeForLogoPolish;
     private View mFakeSearchBoxLayout;
+    private Callback<Logo> mOnLogoAvailableCallback;
 
     /** Constructor for inflating from XML. */
     public NewTabPageLayout(Context context, AttributeSet attrs) {
@@ -221,7 +222,6 @@ public class NewTabPageLayout extends LinearLayout {
      *     omnibox should be colorful.
      * @param isSurfacePolishLessBrandSpaceEnabled {@code true} if the NTP surface is polished with
      *     less brand space.
-     * @param isLogoPolishEnabled {@code true} if the Logo in NTP is polished.
      * @param isTablet {@code true} if the NTP surface is in tablet mode.
      * @param tabStripHeightSupplier Supplier of the tab strip height.
      */
@@ -241,7 +241,6 @@ public class NewTabPageLayout extends LinearLayout {
             boolean isSurfacePolishEnabled,
             boolean isSurfacePolishOmniboxColorEnabled,
             boolean isSurfacePolishLessBrandSpaceEnabled,
-            boolean isLogoPolishEnabled,
             boolean isTablet,
             ObservableSupplier<Integer> tabStripHeightSupplier) {
         TraceEvent.begin(TAG + ".initialize()");
@@ -255,7 +254,9 @@ public class NewTabPageLayout extends LinearLayout {
         mIsSurfacePolishEnabled = isSurfacePolishEnabled;
         mIsSurfacePolishOmniboxColorEnabled = isSurfacePolishOmniboxColorEnabled;
         mIsSurfacePolishLessBrandSpaceEnabled = isSurfacePolishLessBrandSpaceEnabled;
-        mIsLogoPolishEnabled = isLogoPolishEnabled;
+        mIsLogoPolishEnabled =
+                StartSurfaceConfiguration.isLogoPolishEnabledWithGoogleDoodle(
+                        mSearchProviderIsGoogle && mShowingNonStandardGoogleLogo);
         mLogoSizeForLogoPolish = StartSurfaceConfiguration.getLogoSizeForLogoPolish();
         mIsTablet = isTablet;
         mTabStripHeightSupplier = tabStripHeightSupplier;
@@ -462,11 +463,19 @@ public class NewTabPageLayout extends LinearLayout {
                             BrowserUiUtils.recordModuleClickHistogram(
                                     HostSurface.NEW_TAB_PAGE, ModuleTypeOnStartAndNtp.DOODLE);
                         });
-        Callback<Logo> onLogoAvailableCallback =
+        mOnLogoAvailableCallback =
                 mCallbackController.makeCancelable(
                         (logo) -> {
                             mSnapshotTileGridChanged = true;
-                            mShowingNonStandardLogo = logo != null;
+
+                            boolean wasShowingNonStandardGoogleLogo = mShowingNonStandardGoogleLogo;
+                            mShowingNonStandardGoogleLogo = logo != null && mSearchProviderIsGoogle;
+                            if (mShowingNonStandardGoogleLogo != wasShowingNonStandardGoogleLogo) {
+                                updateLogoForLogoPolish(
+                                        StartSurfaceConfiguration
+                                                .isLogoPolishEnabledWithGoogleDoodle(
+                                                        mShowingNonStandardGoogleLogo));
+                            }
                         });
 
         // If pull up Feed position is enabled, doodle is not supported since there is not enough
@@ -494,10 +503,12 @@ public class NewTabPageLayout extends LinearLayout {
                         logoClickedCallback,
                         mLogoView,
                         shouldFetchDoodle,
-                        onLogoAvailableCallback,
+                        mOnLogoAvailableCallback,
                         /* visibilityObserver= */ null);
         mLogoCoordinator.initWithNative();
         setSearchProviderInfo(searchProviderHasLogo, searchProviderIsGoogle);
+        setSearchProviderTopMargin();
+        setSearchProviderBottomMargin();
     }
 
     private void initializeMostVisitedTilesCoordinator(
@@ -731,8 +742,9 @@ public class NewTabPageLayout extends LinearLayout {
     }
 
     /**
-     * Changes the layout depending on whether the selected search provider (e.g. Google, Bing)
-     * has a logo.
+     * Changes the layout depending on whether the selected search provider (e.g. Google, Bing) has
+     * a logo.
+     *
      * @param hasLogo Whether the search provider has a logo.
      * @param isGoogle Whether the search provider is Google.
      */
@@ -745,6 +757,15 @@ public class NewTabPageLayout extends LinearLayout {
         mSearchProviderHasLogo = hasLogo;
         mSearchProviderIsGoogle = isGoogle;
 
+        boolean isSearchProviderMarginUpdated =
+                updateLogoForLogoPolish(
+                        StartSurfaceConfiguration.isLogoPolishEnabledWithGoogleDoodle(
+                                mSearchProviderIsGoogle && mShowingNonStandardGoogleLogo));
+        if (!isSearchProviderMarginUpdated) {
+            setSearchProviderTopMargin();
+            setSearchProviderBottomMargin();
+        }
+
         updateTilesLayoutMargins();
 
         // Hide or show the views above the tile grid as needed, including search box, and
@@ -754,6 +775,30 @@ public class NewTabPageLayout extends LinearLayout {
         onUrlFocusAnimationChanged();
 
         mSnapshotTileGridChanged = true;
+    }
+
+    /**
+     * Updates the logo polish variable depending on whether the logo becomes a Google doodle.
+     * Adjusts the logo size as needed. Returns true if search provider margins have updated.
+     */
+    private boolean updateLogoForLogoPolish(boolean isLogoPolishEnabled) {
+        if (mIsLogoPolishEnabled == isLogoPolishEnabled) {
+            return false;
+        }
+
+        mIsLogoPolishEnabled = isLogoPolishEnabled;
+        LogoUtils.setLogoViewLayoutParams(
+                mLogoView,
+                getResources(),
+                mIsTablet,
+                mIsSurfacePolishLessBrandSpaceEnabled,
+                mIsLogoPolishEnabled,
+                mIsInMultiWindowModeOnTablet
+                        ? LogoSizeForLogoPolish.SMALL
+                        : mLogoSizeForLogoPolish);
+        setSearchProviderTopMargin();
+        setSearchProviderBottomMargin();
+        return true;
     }
 
     /** Updates the margins for the tile grid based on what is shown above it. */
@@ -961,12 +1006,69 @@ public class NewTabPageLayout extends LinearLayout {
         }
     }
 
-    void setSearchProviderTopMargin(int topMargin) {
-        mLogoCoordinator.setTopMargin(topMargin);
+    private void setSearchProviderTopMargin() {
+        mLogoCoordinator.setTopMargin(getLogoMargin(/* isTopMargin= */ true));
     }
 
-    void setSearchProviderBottomMargin(int bottomMargin) {
-        mLogoCoordinator.setBottomMargin(bottomMargin);
+    private void setSearchProviderBottomMargin() {
+        mLogoCoordinator.setBottomMargin(getLogoMargin(/* isTopMargin= */ false));
+    }
+
+    /**
+     * @param isTopMargin True to return the top margin; False to return bottom margin.
+     * @return The top margin or bottom margin of the logo.
+     */
+    // TODO(https://crbug.com/1329288): Remove this method when the Feed position experiment is
+    // cleaned up.
+    private int getLogoMargin(boolean isTopMargin) {
+        if (FeedPositionUtils.isFeedPullUpEnabled() && mSearchProviderHasLogo) return 0;
+
+        return isTopMargin ? getLogoTopMargin() : getLogoBottomMargin();
+    }
+
+    private int getLogoTopMargin() {
+        Resources resources = getResources();
+
+        if (mIsLogoPolishEnabled && mSearchProviderHasLogo) {
+            return LogoUtils.getTopMarginForLogoPolish(resources);
+        }
+
+        if (mIsSurfacePolishEnabled && mSearchProviderHasLogo) {
+            if (mIsSurfacePolishLessBrandSpaceEnabled && !mIsTablet) {
+                return LogoUtils.getTopMarginPolishedSmall(resources);
+
+            } else {
+                return LogoUtils.getTopMarginPolished(resources);
+            }
+        }
+
+        if (mIsTablet && mSearchProviderHasLogo) {
+            return resources.getDimensionPixelSize(R.dimen.ntp_logo_vertical_top_margin_tablet);
+        }
+
+        return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
+    }
+
+    private int getLogoBottomMargin() {
+        Resources resources = getResources();
+
+        if (mIsLogoPolishEnabled && mSearchProviderHasLogo) {
+            return LogoUtils.getBottomMarginForLogoPolish(resources);
+        }
+
+        if (mIsSurfacePolishEnabled && mSearchProviderHasLogo) {
+            if (mIsSurfacePolishLessBrandSpaceEnabled && !mIsTablet) {
+                return LogoUtils.getBottomMarginPolishedSmall(resources);
+            } else {
+                return LogoUtils.getBottomMarginPolished(resources);
+            }
+        }
+
+        if (mIsTablet && mSearchProviderHasLogo) {
+            return resources.getDimensionPixelSize(R.dimen.ntp_logo_vertical_bottom_margin_tablet);
+        }
+
+        return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
     }
 
     /**
@@ -980,6 +1082,7 @@ public class NewTabPageLayout extends LinearLayout {
 
     /**
      * Sets the listener for search box scroll changes.
+     *
      * @param listener The listener to be notified on changes.
      */
     void setSearchBoxScrollListener(OnSearchBoxScrollListener listener) {
@@ -1289,5 +1392,9 @@ public class NewTabPageLayout extends LinearLayout {
     public static boolean isInNarrowWindowOnTablet(boolean isTablet, UiConfig uiConfig) {
         return isTablet
                 && uiConfig.getCurrentDisplayStyle().horizontal < HorizontalDisplayStyle.WIDE;
+    }
+
+    public Callback<Logo> getOnLogoAvailableCallback() {
+        return mOnLogoAvailableCallback;
     }
 }

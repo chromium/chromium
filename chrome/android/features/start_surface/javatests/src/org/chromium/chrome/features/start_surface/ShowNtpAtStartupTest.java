@@ -20,6 +20,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.pm.ActivityInfo;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
@@ -472,6 +474,7 @@ public class ShowNtpAtStartupTest {
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "polish_logo_size_large/true"})
     public void testLogoSizeForLargeLogo_LogoPolish() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
+        enableDoodleLogoForTestingLogoSize();
         Resources res = mActivityTestRule.getActivity().getResources();
         int expectedLogoHeight = LogoUtils.getLogoHeightForLogoPolishWithLargeSize(res);
         int expectedTopMargin = LogoUtils.getTopMarginForLogoPolish(res);
@@ -488,6 +491,7 @@ public class ShowNtpAtStartupTest {
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "polish_logo_size_medium/true"})
     public void testLogoSizeForMediumLogo_LogoPolish() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
+        enableDoodleLogoForTestingLogoSize();
         Resources res = mActivityTestRule.getActivity().getResources();
         int expectedLogoHeight = LogoUtils.getLogoHeightForLogoPolishWithMediumSize(res);
         int expectedTopMargin = LogoUtils.getTopMarginForLogoPolish(res);
@@ -503,6 +507,7 @@ public class ShowNtpAtStartupTest {
     @EnableFeatures({ChromeFeatureList.LOGO_POLISH})
     public void testLogoSizeForSmallLogo_LogoPolish() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
+        enableDoodleLogoForTestingLogoSize();
         Resources res = mActivityTestRule.getActivity().getResources();
         int expectedLogoHeight = LogoUtils.getLogoHeightForLogoPolishWithSmallSize(res);
         int expectedTopMargin = LogoUtils.getTopMarginForLogoPolish(res);
@@ -678,6 +683,20 @@ public class ShowNtpAtStartupTest {
     @CommandLineFlags.Add({IMMEDIATE_RETURN_TEST_PARAMS})
     public void testClickSingleTabCardCloseNtpHomeSurface_MagicStack() throws IOException {
         testClickSingleTabCardCloseNtpHomeSurfaceImpl(/* magicStackEnabled= */ true);
+    }
+
+    private void enableDoodleLogoForTestingLogoSize() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
+        Logo logo =
+                new Logo(
+                        Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8),
+                        null,
+                        null,
+                        "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json");
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> ntpLayout.getOnLogoAvailableCallback().onResult(logo));
     }
 
     private void testLogoSizeImpl(
