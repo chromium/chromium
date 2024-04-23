@@ -37,7 +37,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
-#include "content/public/common/prefetch_type_win.h"
 #include "sandbox/win/src/sandbox_types.h"
 #else
 #include "content/public/browser/posix_file_descriptor_info.h"
@@ -160,12 +159,6 @@ class ChildProcessLauncherHelper
   // Returns the list of files that should be mapped in the child process.
   // Platform specific.
   std::unique_ptr<FileMappedForLaunch> GetFilesToMap();
-
-#if BUILDFLAG(IS_WIN)
-  // Returns the Prefetch string for the process type on the OS in use.
-  static std::string_view GetPrefetchSwitch(
-      const AppLaunchPrefetchType prefetch_type);
-#endif
 
   // Returns true if the process will be launched using base::LaunchOptions.
   // If false, all of the base::LaunchOptions* below will be nullptr.

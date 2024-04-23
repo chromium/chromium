@@ -68,8 +68,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "content/browser/child_process_launcher_helper.h"
-#include "content/public/common/prefetch_type_win.h"
+#include "components/app_launch_prefetch/app_launch_prefetch.h"
 #include "media/capture/capture_switches.h"
 #include "services/audio/public/mojom/audio_service.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -112,19 +111,20 @@ base::ScopedFD PassNetworkContextParentDirs(
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
-std::string_view UtilityToAppLaunchPrefetchArg(
+base::CommandLine::StringPieceType UtilityToAppLaunchPrefetchArg(
     const std::string& utility_type) {
   // Set the default prefetch type for utility processes.
-  AppLaunchPrefetchType prefetch_type = AppLaunchPrefetchType::kUtilityOther;
+  app_launch_prefetch::SubprocessType prefetch_type =
+      app_launch_prefetch::SubprocessType::kUtilityOther;
 
   if (utility_type == network::mojom::NetworkService::Name_) {
-    prefetch_type = AppLaunchPrefetchType::kUtilityNetworkService;
+    prefetch_type = app_launch_prefetch::SubprocessType::kUtilityNetworkService;
   } else if (utility_type == storage::mojom::StorageService::Name_) {
-    prefetch_type = AppLaunchPrefetchType::kUtilityStorage;
+    prefetch_type = app_launch_prefetch::SubprocessType::kUtilityStorage;
   } else if (utility_type == audio::mojom::AudioService::Name_) {
-    prefetch_type = AppLaunchPrefetchType::kUtilityAudio;
+    prefetch_type = app_launch_prefetch::SubprocessType::kUtilityAudio;
   }
-  return internal::ChildProcessLauncherHelper::GetPrefetchSwitch(prefetch_type);
+  return app_launch_prefetch::GetPrefetchSwitch(prefetch_type);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -301,7 +301,7 @@ bool UtilityProcessHost::StartProcess() {
     cmd_line->AppendSwitchASCII(switches::kLang, locale);
 
 #if BUILDFLAG(IS_WIN)
-    cmd_line->AppendArg(UtilityToAppLaunchPrefetchArg(metrics_name_));
+    cmd_line->AppendArgNative(UtilityToAppLaunchPrefetchArg(metrics_name_));
 #endif  // BUILDFLAG(IS_WIN)
 
     sandbox::policy::SetCommandLineFlagsForSandboxType(cmd_line.get(),

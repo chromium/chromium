@@ -199,6 +199,7 @@ static_library("test_support") {
     deps += [
       "//chrome/chrome_elf:test_stubs",
       "//chrome/install_static:install_static_util",
+      "//components/app_launch_prefetch",
       "//sandbox/win:sandbox",
     ]
   }

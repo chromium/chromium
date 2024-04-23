@@ -818,10 +818,6 @@ const char kNotificationInlineReply[] = "notification-inline-reply";
 // has been activated. Should contain the launch ID encoded by Chrome.
 const char kNotificationLaunchId[] = "notification-launch-id";
 
-// /prefetch:# arguments for the browser process launched in background mode and
-// as documented in prefetch_type_win.h.
-const char kPrefetchArgumentBrowserBackground[] = "/prefetch:5";
-
 // See kHideIcons.
 const char kShowIcons[] = "show-icons";
 

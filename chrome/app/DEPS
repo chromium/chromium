@@ -19,6 +19,7 @@ include_rules = [
   "+chromeos/lacros",
   "+chromeos/startup",
   "+components/about_ui",
+  "+components/app_launch_prefetch",
   "+components/component_updater",
   "+components/content_settings/core/common/content_settings_pattern.h",
   "+components/crash",

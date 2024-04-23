@@ -175,6 +175,7 @@ static_library("with_no_strings") {
       "//base/win:pe_image",
       "//build:branding_buildflags",
       "//chrome/install_static:install_static_util",
+      "//components/app_launch_prefetch",
       "//components/base32",
       "//components/metrics:client_info",
       "//components/version_info:channel",

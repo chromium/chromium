@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/notreached.h"
+#include "components/app_launch_prefetch/app_launch_prefetch.h"
 #include "components/crash/core/app/crash_switches.h"
 #include "components/crash/core/app/fallback_crash_handler_launcher_win.h"
 #include "components/crash/core/app/fallback_crash_handler_win.h"
@@ -18,7 +19,6 @@ namespace crash_reporter {
 
 namespace switches {
 const char kFallbackCrashHandler[] = "fallback-handler";
-const char kPrefetchArgument[] = "/prefetch:7";
 }
 
 const uint32_t kFallbackCrashTerminationCode = 0xFFFF8001;
@@ -52,7 +52,8 @@ bool SetupFallbackCrashHandling(const base::CommandLine& command_line) {
   }
 
   // All Chrome processes need a prefetch argument.
-  base_command_line.AppendArg(switches::kPrefetchArgument);
+  base_command_line.AppendArgNative(app_launch_prefetch::GetPrefetchSwitch(
+      app_launch_prefetch::SubprocessType::kCrashpadFallback));
 
   // Get the database path.
   base::FilePath database_path = command_line.GetSwitchValuePath("database");

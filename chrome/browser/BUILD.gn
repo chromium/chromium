@@ -6162,6 +6162,7 @@ static_library("browser") {
       "//chrome/notification_helper:constants",
       "//chrome/services/util_win/public/mojom",
       "//chrome/updater/app/server/win:updater_legacy_idl",
+      "//components/app_launch_prefetch",
       "//components/crash/core/app",
       "//components/crash/core/app:crash_export_thunk_include",
       "//components/os_crypt/async/browser:dpapi_key_provider",
