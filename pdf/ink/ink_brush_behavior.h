@@ -5,6 +5,7 @@
 #ifndef PDF_INK_INK_BRUSH_BEHAVIOR_H_
 #define PDF_INK_INK_BRUSH_BEHAVIOR_H_
 
+#include <cstdint>
 #include <optional>
 
 namespace chrome_pdf {
