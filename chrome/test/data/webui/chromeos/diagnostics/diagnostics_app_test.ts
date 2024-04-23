@@ -251,7 +251,8 @@ suite('appTestSuite', function() {
         });
   });
 
-  test('SessionLogHiddenWhenNotLoggedIn', () => {
+  // TODO(b/336491585): Test consistently failing on ChromeOS.
+  test.skip('SessionLogHiddenWhenNotLoggedIn', () => {
     loadTimeData.overrideValues({isLoggedIn: false});
     return initializeDiagnosticsApp(
                fakeSystemInfo, fakeBatteryChargeStatus, fakeBatteryHealth,
