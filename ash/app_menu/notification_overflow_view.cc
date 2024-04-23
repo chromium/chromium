@@ -139,7 +139,8 @@ void NotificationOverflowView::Layout(PassKey) {
   }
 }
 
-gfx::Size NotificationOverflowView::CalculatePreferredSize() const {
+gfx::Size NotificationOverflowView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // This view is the last element in a MenuItemView, which means it has extra
   // padding on the bottom due to the corner radius of the root MenuItemView. If
   // the corner radius changes, |kOverflowSeparatorToIconPadding| must be

@@ -58,7 +58,8 @@ class APP_MENU_EXPORT NotificationMenuView : public views::View {
   ~NotificationMenuView() override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
 
   // Whether |notifications_for_this_app_| is empty.

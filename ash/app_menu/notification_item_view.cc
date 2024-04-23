@@ -110,7 +110,8 @@ void NotificationItemView::UpdateContents(const std::u16string& title,
   proportional_icon_view_->SetImage(icon, kProportionalIconViewSize);
 }
 
-gfx::Size NotificationItemView::CalculatePreferredSize() const {
+gfx::Size NotificationItemView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(views::MenuConfig::instance().touchable_menu_min_width -
                        kBorderStrokeWidth,
                    kNotificationItemViewHeight);

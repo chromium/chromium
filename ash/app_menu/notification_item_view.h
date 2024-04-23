@@ -58,7 +58,8 @@ class APP_MENU_EXPORT NotificationItemView : public views::View {
                       const ui::ImageModel& icon);
 
   // views::View overrides:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
