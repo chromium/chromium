@@ -36,4 +36,8 @@ bool FakeShimlessRmaDelegate::IsChromeOSSystemExtensionProvider(
   return is_chromeos_system_extension_provider_;
 }
 
+base::WeakPtr<ShimlessRmaDelegate> FakeShimlessRmaDelegate::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace ash::shimless_rma

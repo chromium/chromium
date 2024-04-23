@@ -11,6 +11,10 @@
 #include "base/files/file_path.h"
 #include "base/types/expected.h"
 
+namespace extensions {
+class Extension;
+}
+
 namespace ash::shimless_rma {
 
 class FakeShimlessRmaDelegate : public ShimlessRmaDelegate {
@@ -32,6 +36,12 @@ class FakeShimlessRmaDelegate : public ShimlessRmaDelegate {
       PrepareDiagnosticsAppBrowserContextCallback callback) override;
   bool IsChromeOSSystemExtensionProvider(
       const std::string& manufacturer) override;
+  void ProcessMediaAccessRequest(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback,
+      const extensions::Extension* extension) override {}
+  base::WeakPtr<ShimlessRmaDelegate> GetWeakPtr() override;
 
   void set_is_chromeos_system_extension_provider(bool value) {
     is_chromeos_system_extension_provider_ = value;
@@ -52,6 +62,8 @@ class FakeShimlessRmaDelegate : public ShimlessRmaDelegate {
   base::FilePath last_load_swbn_path_;
   base::expected<PrepareDiagnosticsAppBrowserContextResult, std::string>
       prepare_diagnostics_app_result_{base::unexpected("Error")};
+
+  base::WeakPtrFactory<FakeShimlessRmaDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::shimless_rma

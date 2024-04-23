@@ -37,6 +37,7 @@ static_library("backend") {
     "//chromeos/dbus/power",
     "//chromeos/services/network_config/public/mojom",
     "//chromeos/version",
+    "//components/permissions:permissions",
     "//components/qr_code_generator",
     "//content/public/browser",
     "//ui/display",

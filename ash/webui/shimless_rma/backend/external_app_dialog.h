@@ -7,9 +7,11 @@
 
 #include <string>
 
+#include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "url/gurl.h"
@@ -51,6 +53,8 @@ class ExternalAppDialog : public ui::WebDialogDelegate,
     GURL content_url;
     // Callback for handling the console log from the app.
     ConsoleLogCallback on_console_log;
+    // The shimless RMA delegate for accessing //chrome functions.
+    base::WeakPtr<ShimlessRmaDelegate> shimless_rma_delegate;
   };
 
   // Shows the dialog. Shouldn't be called if last dialog opened by this
@@ -79,6 +83,10 @@ class ExternalAppDialog : public ui::WebDialogDelegate,
   // ui::WebDialogDelegate overrides:
   void GetDialogSize(gfx::Size* size) const override;
   void OnLoadingStateChanged(content::WebContents* source) override;
+  void RequestMediaAccessPermission(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback) override;
 
   // content::WebContentsObserver overrides:
   void OnDidAddMessageToConsole(
@@ -89,10 +97,14 @@ class ExternalAppDialog : public ui::WebDialogDelegate,
       const std::u16string& source_id,
       const std::optional<std::u16string>& untrusted_stack_trace) override;
 
+  // Set to true once setup for webcontent is initialized.
+  bool has_web_content_setup_ = false;
   // views::WebDialogView that owns this delegate.
   raw_ptr<views::WebDialogView> web_dialog_view_;
   // views::Widget that owns this delegate.
   raw_ptr<views::Widget> widget_;
+  // Delegate for accessing //chrome.
+  base::WeakPtr<ShimlessRmaDelegate> shimless_rma_delegate_;
   // Callback for handling the console log from the app.
   ConsoleLogCallback on_console_log_;
 };

@@ -11,11 +11,18 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "content/public/browser/media_stream_request.h"
+#include "content/public/browser/web_contents.h"
 
 namespace content {
 class BrowserContext;
+}
+
+namespace extensions {
+class Extension;
 }
 
 namespace ash::shimless_rma {
@@ -79,6 +86,17 @@ class ShimlessRmaDelegate {
   // Check if `manufacturer` provides any chromeos system extension.
   virtual bool IsChromeOSSystemExtensionProvider(
       const std::string& manufacturer) = 0;
+
+  // Request for media device access. `extension` is set to NULL if request was
+  // made from a webpage.
+  virtual void ProcessMediaAccessRequest(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback,
+      const extensions::Extension* extension) = 0;
+
+  // Gets a weak ptr reference to this object.
+  virtual base::WeakPtr<ShimlessRmaDelegate> GetWeakPtr() = 0;
 };
 
 }  // namespace ash::shimless_rma

@@ -23,6 +23,7 @@ include_rules = [
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/extension_service_test_base.h",
   "+chrome/browser/extensions/test_extension_system.h",
+  "+chrome/browser/media/webrtc/media_capture_devices_dispatcher.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/webui/ash",
   "+chrome/browser/web_applications/isolated_web_apps",

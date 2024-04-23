@@ -1633,6 +1633,7 @@ void ShimlessRmaService::Show3pDiagnosticsApp(
   params.context = shimless_app_browser_context_;
   params.app_name = shimless_3p_diag_app_name_;
   params.content_url = GURL("isolated-app://" + shimless_3p_diag_iwa_id_->id());
+  params.shimless_rma_delegate = shimless_rma_delegate_->GetWeakPtr();
   ExternalAppDialog::Show(params);
   std::move(callback).Run(
       ash::shimless_rma::mojom::Show3pDiagnosticsAppResult::kOk);

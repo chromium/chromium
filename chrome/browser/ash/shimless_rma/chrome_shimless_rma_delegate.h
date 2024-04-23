@@ -17,6 +17,10 @@ namespace content {
 class WebUI;
 }  // namespace content
 
+namespace extensions {
+class Extension;
+}  // namespace extensions
+
 namespace ash::shimless_rma {
 
 class ChromeShimlessRmaDelegate : public ShimlessRmaDelegate {
@@ -42,6 +46,12 @@ class ChromeShimlessRmaDelegate : public ShimlessRmaDelegate {
       PrepareDiagnosticsAppBrowserContextCallback callback) override;
   bool IsChromeOSSystemExtensionProvider(
       const std::string& manufacturer) override;
+  void ProcessMediaAccessRequest(
+      content::WebContents* web_contents,
+      const content::MediaStreamRequest& request,
+      content::MediaResponseCallback callback,
+      const extensions::Extension* extension) override;
+  base::WeakPtr<ShimlessRmaDelegate> GetWeakPtr() override;
 
   void SetDiagnosticsAppProfileHelperDelegateForTesting(
       DiagnosticsAppProfileHelperDelegate* delegate);

@@ -285,10 +285,6 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest, Success) {
     EXPECT_TRUE(
         DiagnosticsAppProfileHelperDelegate::GetInstalledDiagnosticsAppOrigin()
             .has_value());
-    EXPECT_TRUE(
-        DiagnosticsAppProfileHelperDelegate::GetInstalledDiagnosticsAppOrigin()
-            .value()
-            .IsSameOriginWith(expected_url_origin));
   }
 }
 

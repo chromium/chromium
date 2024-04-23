@@ -15,8 +15,10 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/permissions/permission_request_manager.h"
 #include "content/public/browser/console_message.h"
 #include "content/public/browser/file_select_listener.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -153,6 +155,8 @@ ExternalAppDialog::ExternalAppDialog(const InitParams& params)
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
 
+  shimless_rma_delegate_ = params.shimless_rma_delegate;
+
   set_can_close(true);
   set_can_resize(false);
   set_center_dialog_title_text(true);
@@ -188,7 +192,29 @@ void ExternalAppDialog::GetDialogSize(gfx::Size* size) const {
 }
 
 void ExternalAppDialog::OnLoadingStateChanged(content::WebContents* source) {
+  if (has_web_content_setup_) {
+    return;
+  }
+
+  permissions::PermissionRequestManager::CreateForWebContents(source);
   content::WebContentsObserver::Observe(source);
+  has_web_content_setup_ = true;
+}
+
+void ExternalAppDialog::RequestMediaAccessPermission(
+    content::WebContents* web_contents,
+    const content::MediaStreamRequest& request,
+    content::MediaResponseCallback callback) {
+  if (!shimless_rma_delegate_) {
+    LOG(WARNING) << "Invalid Shimless RMA Delegate";
+    std::move(callback).Run(
+        blink::mojom::StreamDevicesSet(),
+        blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED,
+        /*ui=*/nullptr);
+    return;
+  }
+  shimless_rma_delegate_->ProcessMediaAccessRequest(
+      web_contents, request, std::move(callback), /*extension=*/nullptr);
 }
 
 void ExternalAppDialog::OnDidAddMessageToConsole(
