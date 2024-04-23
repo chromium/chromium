@@ -458,7 +458,7 @@ builder(
             "ios_build_chrome_false",
         ],
     ),
-    os = os.MAC_DEFAULT,
+    os = os.MAC_ANY,
     xcode = xcode.xcode_default,
 )
 
@@ -488,6 +488,6 @@ builder(
             "ios_build_chrome_false",
         ],
     ),
-    os = os.MAC_DEFAULT,
+    os = os.MAC_ANY,
     xcode = xcode.xcode_default,
 )
