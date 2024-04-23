@@ -564,13 +564,6 @@ void RenderWidgetHostViewAura::NotifyHostAndDelegateOnWasShown(
   DCHECK(host_->is_hidden());
   DCHECK_NE(visibility_, Visibility::VISIBLE);
 
-  auto* wth = window()->GetHost();
-  if (wth && !wth->window()->GetLocalSurfaceId().is_valid()) {
-    wth->window()->AllocateLocalSurfaceId();
-    wth->compositor()->SetLocalSurfaceIdFromParent(
-        wth->window()->GetLocalSurfaceId());
-  }
-
   visibility_ = Visibility::VISIBLE;
 
   bool has_saved_frame = delegated_frame_host_->HasSavedFrame();

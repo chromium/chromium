@@ -881,6 +881,14 @@ void DesktopWindowTreeHostPlatform::OnCompositorVisibilityChanging(
   // Make sure to show the content window before the compositor has become
   // visible.
   if (visible) {
+    // The UI compositor may not have a valid local surface ID if it was set to
+    // invalid during eviction. This can happen if native occlusion is enabled.
+    // Here we ensure the invariant that a visible UI compositor will always
+    // have a valid local surface ID.
+    if (!window()->GetLocalSurfaceId().is_valid()) {
+      window()->AllocateLocalSurfaceId();
+      compositor->SetLocalSurfaceIdFromParent(window()->GetLocalSurfaceId());
+    }
     GetContentWindow()->Show();
   }
 }
