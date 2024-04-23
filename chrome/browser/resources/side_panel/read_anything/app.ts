@@ -1155,7 +1155,18 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
             utteranceText, true, this.getAccessibleTextLength(utteranceText));
         return;
       }
-      this.synth.cancel();
+      if (error.error === 'invalid-argument') {
+        // invalid-argument can be triggered when the rate, pitch, or volume
+        // is not supported by the synthesizer. Since we're only setting the
+        // speech rate, update the speech rate to the WebSpeech default of 1.
+        this.updateSpeechRate_(1);
+      }
+
+      // When we hit an error, stop speech to clear all utterances, update the
+      // button state, and highlighting in order to give visual feedback that
+      // something went wrong.
+      // TODO(b/40927698: Consider showing an error message.
+      this.stopSpeech(PauseActionSource.DEFAULT);
     };
 
     message.addEventListener('boundary', (event) => {
