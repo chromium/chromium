@@ -1814,22 +1814,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "devtools_webkit_isolated_scripts",
-    tests = {
-        "blink_web_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 5,
-            ),
-        ),
-        "blink_wpt_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 7,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "fieldtrial_android_tests",
     tests = {
         "android_browsertests_no_fieldtrial": targets.legacy_test_config(

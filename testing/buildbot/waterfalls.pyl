@@ -2970,22 +2970,6 @@
     },
   },
   {
-    'name': 'chromium.devtools-frontend',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      'DevTools Linux (chromium)': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'additional_compile_targets': ['blink_tests'],
-        'test_suites': {
-          'gtest_tests': 'blink_unittests_suite',
-          'isolated_scripts': 'devtools_webkit_isolated_scripts',
-        },
-      },
-    },
-  },
-  {
     'name': 'chromium.fuchsia',
     'mixins': ['chromium-tester-service-account'],
     'machines': {

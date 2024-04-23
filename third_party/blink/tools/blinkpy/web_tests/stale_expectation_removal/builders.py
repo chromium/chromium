@@ -86,7 +86,6 @@ class WebTestBuilders(builders.Builders):
                 'devtools_frontend_linux_blink_rel',
                 'DevTools Linux',
                 'DevTools Linux Fastbuild',
-                'DevTools Linux (chromium)',
                 # Could be used in the future, but has never run any builds.
                 'linux-exp-code-coverage',
                 'ToTMacOfficial',

@@ -1919,47 +1919,6 @@
       },
     },
 
-    'devtools_webkit_isolated_scripts': {
-      'blink_web_tests': {
-        'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--num-retries=3',
-        ],
-        'swarming': {
-          'shards': 5,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
-      },
-      'blink_wpt_tests': {
-        'results_handler': 'layout tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-          'blink_tests_write_run_histories',
-        ],
-        'args': [
-          '--num-retries=3',
-        ],
-        'swarming': {
-          'shards': 7,
-        },
-        'merge': {
-          'script': '//third_party/blink/tools/merge_web_test_results.py',
-          'args': [
-            '--verbose',
-          ],
-        },
-      },
-    },
-
     'fieldtrial_android_tests': {
       'android_browsertests_no_fieldtrial': {
         'test': 'android_browsertests',

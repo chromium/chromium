@@ -92,10 +92,6 @@
       'ToTWinOfficial64': 'clang_tot_win_official_full_symbols_static',
     },
 
-    'chromium.devtools-frontend': {
-      'DevTools Linux (chromium)': 'release_trybot_blink_do_typecheck',
-    },
-
     'chromium.infra.codesearch': {
       'codesearch-gen-chromium-android': 'codesearch_gen_chromium_android_bot_reclient',
       'codesearch-gen-chromium-chromiumos': 'codesearch_gen_chromium_chromiumos_bot_reclient',
