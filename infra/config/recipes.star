@@ -135,6 +135,11 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chrome_build/build_perf_without_rbe",
+    bootstrappable = True,
+)
+
+build_recipe(
     name = "recipe:celab",
 )
 

@@ -8,6 +8,7 @@ build/ios-build-perf-ninja
 build/ios-build-perf-siso
 build/linux-build-perf-developer
 build/linux-build-perf-ninja
+build/linux-build-perf-no-rbe
 build/linux-build-perf-siso
 build/linux-chromeos-build-perf-ninja
 build/linux-chromeos-build-perf-siso

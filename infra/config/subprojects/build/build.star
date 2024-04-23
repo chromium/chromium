@@ -668,3 +668,29 @@ This builder measures build performance for iOS developer builds, by simulating 
     reclient_jobs = 800,
     xcode = xcode.xcode_default,
 )
+
+# Experimental builder set up to track local CPU time for Chromium build. b/333389736
+ci.builder(
+    name = "linux-build-perf-no-rbe",
+    description_html = "Monitoring CPU time to build `chrome` target locally without remote executions",
+    executable = "recipe:chrome_build/build_perf_without_rbe",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    os = os.LINUX_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+        short_name = "norbe",
+    ),
+    contact_team_email = "chrome-build-team@google.com",
+    notifies = ["Chromium Build Time Watcher"],
+)

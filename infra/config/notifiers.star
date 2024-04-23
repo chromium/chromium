@@ -314,3 +314,13 @@ luci.notifier(
         body = io.read_file("templates/build_with_step_summary.template"),
     ),
 )
+
+luci.notifier(
+    name = "Chromium Build Time Watcher",
+    notify_emails = [
+        "jwata@google.com",
+        "pasthana@google.com",
+        "thakis@google.com",
+    ],
+    on_new_status = ["INFRA_FAILURE"],
+)
