@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-#include "components/tpcd/metadata/manager.h"
+#include "components/tpcd/metadata/browser/manager.h"
 #include "components/tpcd/metadata/metadata.pb.h"
 
 namespace tpcd::metadata {

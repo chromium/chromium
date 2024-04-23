@@ -24,7 +24,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
-#include "components/tpcd/metadata/manager.h"
+#include "components/tpcd/metadata/browser/manager.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class GURL;

@@ -31,7 +31,7 @@
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/tpcd/metadata/manager.h"
+#include "components/tpcd/metadata/browser/manager.h"
 #include "components/tpcd/metadata/parser.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/cookies/cookie_constants.h"

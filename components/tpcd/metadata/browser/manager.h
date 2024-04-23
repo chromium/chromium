@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_TPCD_METADATA_MANAGER_H_
-#define COMPONENTS_TPCD_METADATA_MANAGER_H_
+#ifndef COMPONENTS_TPCD_METADATA_BROWSER_MANAGER_H_
+#define COMPONENTS_TPCD_METADATA_BROWSER_MANAGER_H_
 
 #include <memory>
 
@@ -135,4 +135,4 @@ void WriteCohortDistributionMetrics(
 }  // namespace helpers
 }  // namespace tpcd::metadata
 
-#endif  // COMPONENTS_TPCD_METADATA_MANAGER_H_
+#endif  // COMPONENTS_TPCD_METADATA_BROWSER_MANAGER_H_

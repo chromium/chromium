@@ -31,7 +31,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
-#include "components/tpcd/metadata/manager.h"
+#include "components/tpcd/metadata/browser/manager.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_setting_override.h"

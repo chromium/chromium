@@ -4,6 +4,8 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
+# TODO(b/333550405): Finally move BUILD to the browser subdir.
+
 static_library("prefs") {
   sources = [
     "browser/prefs.cc",
@@ -20,8 +22,8 @@ static_library("prefs") {
 
 source_set("metadata") {
   sources = [
-    "manager.cc",
-    "manager.h",
+    "browser/manager.cc",
+    "browser/manager.h",
     "parser.cc",
     "parser.h",
   ]
@@ -72,7 +74,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "manager_unittest.cc",
+    "browser/manager_unittest.cc",
     "parser_unittest.cc",
   ]
 

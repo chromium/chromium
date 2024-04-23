@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/tpcd/metadata/manager.h"
+#include "components/tpcd/metadata/browser/manager.h"
 
 #include <cstdint>
 #include <memory>

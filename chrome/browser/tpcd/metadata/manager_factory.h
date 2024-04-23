@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_TPCD_METADATA_MANAGER_FACTORY_H_
 
 #include "chrome/browser/profiles/profile.h"
-#include "components/tpcd/metadata/manager.h"
+#include "components/tpcd/metadata/browser/manager.h"
 
 namespace tpcd::metadata {
 
