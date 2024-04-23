@@ -130,6 +130,7 @@ using base::UserMetricsAction;
   self.viewController = [[VideoDefaultBrowserPromoViewController alloc] init];
   self.viewController.actionHandler = self;
   self.viewController.showRemindMeLater = self.showRemindMeLater;
+  self.viewController.presentationController.delegate = self;
   [self.baseViewController presentViewController:self.viewController
                                         animated:YES
                                       completion:nil];
