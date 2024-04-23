@@ -170,16 +170,6 @@ ResetScreen::ResetScreen(base::WeakPtr<ResetView> view,
               : base::BindRepeating(
                     &tpm_firmware_update::GetAvailableUpdateModes)) {
   DCHECK(view_);
-  if (view_) {
-    view_->SetScreenState(ResetView::State::kRestartRequired);
-    view_->SetIsRollbackAvailable(false);
-    view_->SetIsRollbackRequested(false);
-    view_->SetIsTpmFirmwareUpdateAvailable(false);
-    view_->SetIsTpmFirmwareUpdateChecked(false);
-    view_->SetIsTpmFirmwareUpdateEditable(true);
-    view_->SetTpmFirmwareUpdateMode(tpm_firmware_update::Mode::kPowerwash);
-    view_->SetShouldShowConfirmationDialog(false);
-  }
 }
 
 ResetScreen::~ResetScreen() {
@@ -195,8 +185,9 @@ void ResetScreen::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 void ResetScreen::ShowImpl() {
-  if (view_)
-    view_->Show();
+  if (!view_) {
+    return;
+  }
 
   // Guest sign-in button should be disabled as sign-in is not possible while
   // reset screen is shown.
@@ -205,41 +196,34 @@ void ResetScreen::ShowImpl() {
         LoginScreen::Get()->GetScopedGuestButtonBlocker();
   }
 
-  bool restart_required = user_manager::UserManager::Get()->IsUserLoggedIn() ||
-                          !base::CommandLine::ForCurrentProcess()->HasSwitch(
-                              switches::kFirstExecAfterBoot);
-  if (restart_required) {
-    if (view_)
-      view_->SetScreenState(ResetView::State::kRestartRequired);
-  } else {
-    if (view_)
-      view_->SetScreenState(ResetView::State::kPowerwashProposal);
-  }
+  const bool restart_required =
+      user_manager::UserManager::Get()->IsUserLoggedIn() ||
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kFirstExecAfterBoot);
+  SetScreenState(restart_required ? State::kRestartRequired
+                                  : State::kPowerwashProposal);
 
   // Set availability of Rollback feature.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableRollbackOption)) {
-    if (view_)
-      view_->SetIsRollbackAvailable(false);
+    SetIsRollbackAvailable(false);
   } else {
     UpdateEngineClient::Get()->CanRollbackCheck(base::BindOnce(
         &ResetScreen::OnRollbackCheck, weak_ptr_factory_.GetWeakPtr()));
   }
 
   // Set availability of TPM firmware update.
-  PrefService* prefs = g_browser_process->local_state();
-  bool tpm_firmware_update_requested =
+  PrefService* const prefs = g_browser_process->local_state();
+  const bool tpm_firmware_update_requested =
       prefs->HasPrefPath(prefs::kFactoryResetTPMFirmwareUpdateMode);
   if (tpm_firmware_update_requested) {
     // If an update has been requested previously, rely on the earlier update
     // availability test to initialize the dialog. This avoids a race condition
     // where the powerwash dialog gets shown immediately after reboot before the
     // init job to determine update availability has completed.
-    if (view_) {
-      view_->SetIsTpmFirmwareUpdateAvailable(true);
-      view_->SetTpmFirmwareUpdateMode(static_cast<tpm_firmware_update::Mode>(
-          prefs->GetInteger(prefs::kFactoryResetTPMFirmwareUpdateMode)));
-    }
+    view_->SetIsTpmFirmwareUpdateAvailable(true);
+    SetTpmFirmwareUpdateMode(static_cast<tpm_firmware_update::Mode>(
+        prefs->GetInteger(prefs::kFactoryResetTPMFirmwareUpdateMode)));
   } else {
     // If a TPM firmware update hasn't previously been requested, check the
     // system to see whether to offer the checkbox to update TPM firmware. Note
@@ -251,16 +235,16 @@ void ResetScreen::ShowImpl() {
         base::Seconds(10));
   }
 
-  if (view_) {
-    view_->SetIsTpmFirmwareUpdateChecked(tpm_firmware_update_requested);
-    view_->SetIsTpmFirmwareUpdateEditable(!tpm_firmware_update_requested);
-  }
+  SetIsTpmFirmwareUpdateChecked(tpm_firmware_update_requested);
+  view_->SetIsTpmFirmwareUpdateEditable(!tpm_firmware_update_requested);
 
   // Clear prefs so the reset screen isn't triggered again the next time the
   // device is about to show the login screen.
   prefs->ClearPref(prefs::kFactoryResetRequested);
   prefs->ClearPref(prefs::kFactoryResetTPMFirmwareUpdateMode);
   prefs->CommitPendingWrite();
+
+  view_->Show();
 }
 
 void ResetScreen::HideImpl() {
@@ -290,11 +274,11 @@ void ResetScreen::OnUserAction(const base::Value::List& args) {
     return;
   }
   if (action_id == kUserActionResetShowConfirmationPressed) {
-    OnShowConfirm();
+    SetShouldShowConfirmationDialog(true);
     return;
   }
   if (action_id == kUserActionResetResetConfirmationDismissed) {
-    OnConfirmationDismissed();
+    SetConfirmationDialogClosed();
     return;
   }
   if (action_id == kUserActionTPMFirmwareUpdateLearnMore) {
@@ -304,9 +288,7 @@ void ResetScreen::OnUserAction(const base::Value::List& args) {
   if (action_id == kUserActionTpmFirmwareUpdateChecked) {
     CHECK_EQ(args.size(), 2u);
     bool checked = args[1].GetBool();
-    if (view_) {
-      view_->SetIsTpmFirmwareUpdateChecked(checked);
-    }
+    SetIsTpmFirmwareUpdateChecked(checked);
     return;
   }
   BaseScreen::OnUserAction(args);
@@ -321,13 +303,12 @@ bool ResetScreen::HandleAccelerator(LoginAcceleratorAction action) {
 }
 
 void ResetScreen::OnCancel() {
-  if (is_hidden() ||
-      (view_ && view_->GetScreenState() == ResetView::State::kRevertPromise)) {
+  if (is_hidden() || state_ == State::kRevertPromise) {
     return;
   }
+
   // Hide Rollback view for the next show.
-  if (view_ && view_->GetIsRollbackAvailable() &&
-      view_->GetIsRollbackRequested()) {
+  if (is_rollback_available_ && is_rollback_requested_) {
     OnToggleRollback();
   }
   UpdateEngineClient::Get()->RemoveObserver(this);
@@ -335,35 +316,29 @@ void ResetScreen::OnCancel() {
 }
 
 void ResetScreen::OnPowerwash() {
-  if (view_ &&
-      view_->GetScreenState() != ResetView::State::kPowerwashProposal) {
+  if (state_ != State::kPowerwashProposal) {
     return;
   }
 
-  if (view_)
-    view_->SetShouldShowConfirmationDialog(false);
+  SetShouldShowConfirmationDialog(false);
 
-  if (view_ && view_->GetIsRollbackRequested() &&
-      !view_->GetIsRollbackAvailable()) {
+  if (is_rollback_requested_ && !is_rollback_available_) {
     NOTREACHED()
         << "Rollback was checked but not available. Starting powerwash.";
   }
 
-  if (view_ && view_->GetIsRollbackAvailable() &&
-      view_->GetIsRollbackRequested()) {
-    view_->SetScreenState(ResetView::State::kRevertPromise);
+  if (is_rollback_available_ && is_rollback_requested_) {
+    SetScreenState(State::kRevertPromise);
     UpdateEngineClient::Get()->AddObserver(this);
     VLOG(1) << "Starting Rollback";
     UpdateEngineClient::Get()->Rollback();
-  } else if (view_ && view_->GetIsTpmFirmwareUpdateChecked()) {
+  } else if (is_tpm_firmware_update_checked_) {
     VLOG(1) << "Starting TPM firmware update";
     // Re-check availability with a couple seconds timeout. This addresses the
     // case where the powerwash dialog gets shown immediately after reboot and
     // the decision on whether the update is available is not known immediately.
     tpm_firmware_update_checker_.Run(
-        base::BindOnce(&StartTPMFirmwareUpdate,
-                       view_->GetTpmFirmwareUpdateMode()),
-        base::Seconds(10));
+        base::BindOnce(&StartTPMFirmwareUpdate, mode_), base::Seconds(10));
   } else {
     VLOG(1) << "Starting Powerwash";
     SessionManagerClient::Get()->StartDeviceWipe(base::DoNothing());
@@ -373,7 +348,7 @@ void ResetScreen::OnPowerwash() {
 void ResetScreen::OnRestart() {
   PrefService* prefs = g_browser_process->local_state();
   prefs->SetBoolean(prefs::kFactoryResetRequested, true);
-  if (view_ && view_->GetIsTpmFirmwareUpdateChecked()) {
+  if (is_tpm_firmware_update_checked_) {
     prefs->SetInteger(prefs::kFactoryResetTPMFirmwareUpdateMode,
                       static_cast<int>(tpm_firmware_update::Mode::kPowerwash));
   } else {
@@ -387,27 +362,17 @@ void ResetScreen::OnRestart() {
 
 void ResetScreen::OnToggleRollback() {
   // Hide Rollback if visible.
-  if (view_ && view_->GetIsRollbackAvailable() &&
-      view_->GetIsRollbackRequested()) {
+  if (is_rollback_available_ && is_rollback_requested_) {
     VLOG(1) << "Hiding rollback view on reset screen";
-    view_->SetIsRollbackRequested(false);
+    SetIsRollbackRequested(false);
     return;
   }
 
   // Show Rollback if available.
-  VLOG(1) << "Requested rollback availability"
-          << view_->GetIsRollbackAvailable();
-  if (view_->GetIsRollbackAvailable() && !view_->GetIsRollbackRequested()) {
-    view_->SetIsRollbackRequested(true);
+  VLOG(1) << "Requested rollback availability: " << is_rollback_available_;
+  if (is_rollback_available_ && !is_rollback_requested_) {
+    SetIsRollbackRequested(true);
   }
-}
-
-void ResetScreen::OnShowConfirm() {
-  view_->SetShouldShowConfirmationDialog(true);
-}
-
-void ResetScreen::OnConfirmationDismissed() {
-  view_->SetConfirmationDialogClosed();
 }
 
 void ResetScreen::ShowHelpArticle(HelpAppLauncher::HelpTopic topic) {
@@ -427,7 +392,7 @@ void ResetScreen::UpdateStatusChanged(
   if (status.current_operation() == update_engine::Operation::ERROR ||
       status.current_operation() ==
           update_engine::Operation::REPORTING_ERROR_EVENT) {
-    view_->SetScreenState(ResetView::State::kError);
+    SetScreenState(State::kError);
   } else if (status.current_operation() ==
              update_engine::Operation::UPDATED_NEED_REBOOT) {
     chromeos::PowerManagerClient::Get()->RequestRestart(
@@ -435,21 +400,71 @@ void ResetScreen::UpdateStatusChanged(
   }
 }
 
+void ResetScreen::SetIsRollbackAvailable(bool value) {
+  is_rollback_available_ = value;
+  if (view_) {
+    view_->SetIsRollbackAvailable(is_rollback_available_);
+  }
+}
+
+void ResetScreen::SetIsRollbackRequested(bool value) {
+  if (is_showing_confirmation_dialog_) {
+    return;
+  }
+
+  is_rollback_requested_ = value;
+  if (view_) {
+    view_->SetIsRollbackRequested(is_rollback_requested_);
+  }
+}
+
+void ResetScreen::SetIsTpmFirmwareUpdateChecked(bool value) {
+  is_tpm_firmware_update_checked_ = value;
+  if (view_) {
+    view_->SetIsTpmFirmwareUpdateChecked(is_tpm_firmware_update_checked_);
+  }
+}
+
+void ResetScreen::SetTpmFirmwareUpdateMode(tpm_firmware_update::Mode value) {
+  mode_ = value;
+  if (view_) {
+    view_->SetTpmFirmwareUpdateMode(mode_);
+  }
+}
+
+void ResetScreen::SetShouldShowConfirmationDialog(bool value) {
+  is_showing_confirmation_dialog_ = value;
+  if (view_) {
+    view_->SetShouldShowConfirmationDialog(is_showing_confirmation_dialog_);
+  }
+}
+
+void ResetScreen::SetConfirmationDialogClosed() {
+  is_showing_confirmation_dialog_ = false;
+}
+
+void ResetScreen::SetScreenState(State value) {
+  state_ = value;
+  if (view_) {
+    view_->SetScreenState(static_cast<int>(state_));
+  }
+}
 // Invoked from call to CanRollbackCheck upon completion of the DBus call.
 void ResetScreen::OnRollbackCheck(bool can_rollback) {
   VLOG(1) << "Callback from CanRollbackCheck, result " << can_rollback;
   const bool rollback_available =
       !ash::InstallAttributes::Get()->IsEnterpriseManaged() && can_rollback;
 
-  view_->SetIsRollbackAvailable(rollback_available);
+  SetIsRollbackAvailable(rollback_available);
 }
 
 void ResetScreen::OnTPMFirmwareUpdateAvailableCheck(
     const std::set<tpm_firmware_update::Mode>& modes) {
-  bool available = modes.count(tpm_firmware_update::Mode::kPowerwash) > 0;
+  const bool available = modes.count(tpm_firmware_update::Mode::kPowerwash) > 0;
   view_->SetIsTpmFirmwareUpdateAvailable(available);
-  if (available)
-    view_->SetTpmFirmwareUpdateMode(tpm_firmware_update::Mode::kPowerwash);
+  if (available) {
+    SetTpmFirmwareUpdateMode(tpm_firmware_update::Mode::kPowerwash);
+  }
 }
 
 }  // namespace ash

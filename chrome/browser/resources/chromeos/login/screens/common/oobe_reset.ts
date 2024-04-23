@@ -39,7 +39,7 @@ enum ResetScreenUiState {
 }
 
 /**
- * The order should be in sync with the ResetView::State enum.
+ * The order should be in sync with the ResetScreen::State enum.
  */
 const ResetScreenUiStateMapping = [
   ResetScreenUiState.RESTART_REQUIRED,
@@ -190,6 +190,10 @@ export class OobeReset extends ResetScreenElementBase {
     };
   }
 
+  static get observers(): string[] {
+    return ['onScreenStateChanged(uiStep)'];
+  }
+
   private isRollbackAvailable_: boolean;
   private isRollbackRequested_: boolean;
   private tpmUpdateAvailable_: boolean;
@@ -204,7 +208,15 @@ export class OobeReset extends ResetScreenElementBase {
   private powerwashMode_: number;
   private inRevertState_: boolean;
 
+  constructor() {
+    super();
 
+    this.isRollbackAvailable_ = false;
+    this.isRollbackRequested_ = false;
+    this.tpmUpdateAvailable_ = false;
+    this.tpmUpdateChecked_ = false;
+    this.tpmUpdateEditable_ = true;
+  }
 
   /** Overridden from LoginScreenBehavior. */
   override get EXTERNAL_API(): string[] {
@@ -229,20 +241,22 @@ export class OobeReset extends ResetScreenElementBase {
     return ResetScreenUiState;
   }
 
-
   override ready(): void {
     super.ready();
+    // Set initial states.
+    this.reset();
+    this.setShouldShowConfirmationDialog(false);
     this.initializeLoginScreen('ResetScreen');
   }
 
   reset(): void {
     this.setUIStep(ResetScreenUiState.RESTART_REQUIRED);
-    this.onScreenStateChanged();
-
     this.powerwashMode_ = PowerwashMode.POWERWASH_ONLY;
-    this.tpmUpdateAvailable_ = false;
     this.isRollbackAvailable_ = false;
     this.isRollbackRequested_ = false;
+    this.tpmUpdateAvailable_ = false;
+    this.tpmUpdateChecked_ = false;
+    this.tpmUpdateEditable_ = true;
   }
 
   /* ---------- EXTERNAL API BEGIN ---------- */
@@ -283,7 +297,6 @@ export class OobeReset extends ResetScreenElementBase {
 
   setScreenState(state: number): void {
     this.setUIStep(ResetScreenUiStateMapping[state]);
-    this.onScreenStateChanged();
   }
   /* ---------- EXTERNAL API END ---------- */
 

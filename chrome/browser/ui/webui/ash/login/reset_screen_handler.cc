@@ -77,17 +77,11 @@ void ResetScreenHandler::DeclareLocalizedValues(
 }
 
 void ResetScreenHandler::SetIsRollbackAvailable(bool value) {
-  is_rollback_available_ = value;
   CallExternalAPI("setIsRollbackAvailable", value);
 }
 
 // Only serve the request if the confirmation dialog isn't being shown.
 void ResetScreenHandler::SetIsRollbackRequested(bool value) {
-  if (is_showing_confirmation_dialog_)
-    return;
-
-  is_rollback_requested_ = value;
-
   CallExternalAPI("setIsRollbackRequested", value);
 }
 
@@ -96,7 +90,6 @@ void ResetScreenHandler::SetIsTpmFirmwareUpdateAvailable(bool value) {
 }
 
 void ResetScreenHandler::SetIsTpmFirmwareUpdateChecked(bool value) {
-  is_tpm_firmware_update_checked_ = value;
   CallExternalAPI("setIsTpmFirmwareUpdateChecked", value);
 }
 
@@ -106,46 +99,15 @@ void ResetScreenHandler::SetIsTpmFirmwareUpdateEditable(bool value) {
 
 void ResetScreenHandler::SetTpmFirmwareUpdateMode(
     tpm_firmware_update::Mode value) {
-  mode_ = value;
   CallExternalAPI("setTpmFirmwareUpdateMode", static_cast<int>(value));
 }
 
 void ResetScreenHandler::SetShouldShowConfirmationDialog(bool value) {
-  is_showing_confirmation_dialog_ = value;
   CallExternalAPI("setShouldShowConfirmationDialog", value);
 }
 
-void ResetScreenHandler::SetConfirmationDialogClosed() {
-  is_showing_confirmation_dialog_ = false;
-}
-
-void ResetScreenHandler::SetScreenState(State value) {
-  state_ = value;
-  CallExternalAPI("setScreenState", static_cast<int>(value));
-}
-
-ResetView::State ResetScreenHandler::GetScreenState() {
-  return state_;
-}
-
-tpm_firmware_update::Mode ResetScreenHandler::GetTpmFirmwareUpdateMode() {
-  return mode_;
-}
-
-bool ResetScreenHandler::GetIsRollbackAvailable() {
-  return is_rollback_available_;
-}
-
-bool ResetScreenHandler::GetIsRollbackRequested() {
-  return is_rollback_requested_;
-}
-
-bool ResetScreenHandler::GetIsTpmFirmwareUpdateChecked() {
-  return is_tpm_firmware_update_checked_;
-}
-
-void ResetScreenHandler::HandleSetTpmFirmwareUpdateChecked(bool value) {
-  is_tpm_firmware_update_checked_ = value;
+void ResetScreenHandler::SetScreenState(int value) {
+  CallExternalAPI("setScreenState", value);
 }
 
 base::WeakPtr<ResetView> ResetScreenHandler::AsWeakPtr() {

@@ -30,6 +30,13 @@ class ScopedGuestButtonBlocker;
 // will end up in the device restart.
 class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
  public:
+  enum class State {
+    kRestartRequired = 0,
+    kRevertPromise,
+    kPowerwashProposal,
+    kError,
+  };
+
   ResetScreen(base::WeakPtr<ResetView> view,
               const base::RepeatingClosure& exit_callback);
 
@@ -69,6 +76,15 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
   // UpdateEngineClient::Observer implementation:
   void UpdateStatusChanged(const update_engine::StatusResult& status) override;
 
+  void SetIsRollbackAvailable(bool value);
+  // Only serve the request if the confirmation dialog isn't being shown.
+  void SetIsRollbackRequested(bool value);
+  void SetIsTpmFirmwareUpdateChecked(bool value);
+  void SetTpmFirmwareUpdateMode(tpm_firmware_update::Mode value);
+  void SetShouldShowConfirmationDialog(bool value);
+  void SetConfirmationDialogClosed();
+  void SetScreenState(State value);
+
   void OnRollbackCheck(bool can_rollback);
   void OnTPMFirmwareUpdateAvailableCheck(
       const std::set<tpm_firmware_update::Mode>& modes);
@@ -77,8 +93,6 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
   void OnPowerwash();
   void OnRestart();
   void OnToggleRollback();
-  void OnShowConfirm();
-  void OnConfirmationDismissed();
 
   void ShowHelpArticle(HelpAppLauncher::HelpTopic topic);
 
@@ -92,6 +106,13 @@ class ResetScreen : public BaseScreen, public UpdateEngineClient::Observer {
   TpmFirmwareUpdateAvailabilityChecker tpm_firmware_update_checker_;
 
   std::unique_ptr<ScopedGuestButtonBlocker> scoped_guest_button_blocker_;
+
+  State state_ = State::kRestartRequired;
+  tpm_firmware_update::Mode mode_ = tpm_firmware_update::Mode::kPowerwash;
+  bool is_rollback_available_ = false;
+  bool is_rollback_requested_ = false;
+  bool is_tpm_firmware_update_checked_ = false;
+  bool is_showing_confirmation_dialog_ = false;
 
   base::WeakPtrFactory<ResetScreen> weak_ptr_factory_{this};
 };
