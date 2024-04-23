@@ -4263,7 +4263,7 @@ String AXNodeObject::SlowGetValueForControlIncludingContentEditable(
     Element* element = GetElement();
     return element ? element->GetInnerTextWithoutUpdate() : String();
   }
-  return GetValueForControl();
+  return GetValueForControl(visited);
 }
 
 ax::mojom::blink::Role AXNodeObject::RawAriaRole() const {
