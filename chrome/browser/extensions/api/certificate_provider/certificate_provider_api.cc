@@ -167,9 +167,6 @@ scoped_refptr<net::X509Certificate> ParseCertificateDer(
       *out_error_message = kCertificateProviderErrorECDSANotSupported;
       return nullptr;
     case net::X509Certificate::kPublicKeyTypeUnknown:
-    case net::X509Certificate::kPublicKeyTypeDSA:
-    case net::X509Certificate::kPublicKeyTypeDH:
-    case net::X509Certificate::kPublicKeyTypeECDH:
       *out_error_message = kCertificateProviderErrorUnknownKeyType;
       return nullptr;
   }

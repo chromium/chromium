@@ -15,6 +15,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -76,12 +77,15 @@ const char kLeafCert[] = "Leaf";
 const char kIntermediateCert[] = "Intermediate";
 const char kRootCert[] = "Root";
 
-// Histogram buckets for RSA/DSA/DH key sizes.
-const int kRsaDsaKeySizes[] = {512, 768, 1024, 1536, 2048, 3072, 4096, 8192,
-                               16384};
-// Histogram buckets for ECDSA/ECDH key sizes. The list is based upon the FIPS
-// 186-4 approved curves.
-const int kEccKeySizes[] = {163, 192, 224, 233, 256, 283, 384, 409, 521, 571};
+// Histogram buckets for RSA key sizes, as well as unknown key types. RSA key
+// sizes < 1024 bits should cause errors, while key sizes > 16K are not
+// supported by BoringSSL.
+const int kRsaKeySizes[] = {512,  768,  1024, 1536, 2048,
+                            3072, 4096, 8192, 16384};
+// Histogram buckets for ECDSA key sizes. The list was historically based upon
+// FIPS 186-4 approved curves, but most are impossible. BoringSSL will only ever
+// return P-224, P-256, P-384, or P-521, and the verifier will reject P-224.
+const int kEcdsaKeySizes[] = {163, 192, 224, 233, 256, 283, 384, 409, 521, 571};
 
 const char* CertTypeToString(X509Certificate::PublicKeyType cert_type) {
   switch (cert_type) {
@@ -89,17 +93,10 @@ const char* CertTypeToString(X509Certificate::PublicKeyType cert_type) {
       return "Unknown";
     case X509Certificate::kPublicKeyTypeRSA:
       return "RSA";
-    case X509Certificate::kPublicKeyTypeDSA:
-      return "DSA";
     case X509Certificate::kPublicKeyTypeECDSA:
       return "ECDSA";
-    case X509Certificate::kPublicKeyTypeDH:
-      return "DH";
-    case X509Certificate::kPublicKeyTypeECDH:
-      return "ECDH";
   }
-  NOTREACHED();
-  return "Unsupported";
+  NOTREACHED_NORETURN();
 }
 
 void RecordPublicKeyHistogram(const char* chain_position,
@@ -116,33 +113,30 @@ void RecordPublicKeyHistogram(const char* chain_position,
   base::HistogramBase* counter = nullptr;
 
   // Histogram buckets are contingent upon the underlying algorithm being used.
-  if (cert_type == X509Certificate::kPublicKeyTypeECDH ||
-      cert_type == X509Certificate::kPublicKeyTypeECDSA) {
-    // Typical key sizes match SECP/FIPS 186-3 recommendations for prime and
-    // binary curves - which range from 163 bits to 571 bits.
-    counter = base::CustomHistogram::FactoryGet(
-        histogram_name,
-        base::CustomHistogram::ArrayToCustomEnumRanges(kEccKeySizes),
-        base::HistogramBase::kUmaTargetedHistogramFlag);
-  } else {
-    // Key sizes < 1024 bits should cause errors, while key sizes > 16K are not
-    // uniformly supported by the underlying cryptographic libraries.
-    counter = base::CustomHistogram::FactoryGet(
-        histogram_name,
-        base::CustomHistogram::ArrayToCustomEnumRanges(kRsaDsaKeySizes),
-        base::HistogramBase::kUmaTargetedHistogramFlag);
+  switch (cert_type) {
+    case X509Certificate::kPublicKeyTypeECDSA:
+      counter = base::CustomHistogram::FactoryGet(
+          histogram_name,
+          base::CustomHistogram::ArrayToCustomEnumRanges(kEcdsaKeySizes),
+          base::HistogramBase::kUmaTargetedHistogramFlag);
+      break;
+    case X509Certificate::kPublicKeyTypeRSA:
+    case X509Certificate::kPublicKeyTypeUnknown:
+      counter = base::CustomHistogram::FactoryGet(
+          histogram_name,
+          base::CustomHistogram::ArrayToCustomEnumRanges(kRsaKeySizes),
+          base::HistogramBase::kUmaTargetedHistogramFlag);
+      break;
   }
   counter->Add(size_bits);
 }
 
-// Returns true if |type| is |kPublicKeyTypeRSA| or |kPublicKeyTypeDSA|, and
-// if |size_bits| is < 1024. Note that this means there may be false
-// negatives: keys for other algorithms and which are weak will pass this
-// test.
+// Returns true if |type| is |kPublicKeyTypeRSA| and if |size_bits| is < 1024.
+// Note that this means there may be false negatives: keys for other algorithms
+// and which are weak will pass this test.
 bool IsWeakKey(X509Certificate::PublicKeyType type, size_t size_bits) {
   switch (type) {
     case X509Certificate::kPublicKeyTypeRSA:
-    case X509Certificate::kPublicKeyTypeDSA:
       return size_bits < 1024;
     default:
       return false;

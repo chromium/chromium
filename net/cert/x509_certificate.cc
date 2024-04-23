@@ -635,14 +635,8 @@ void X509Certificate::GetPublicKeyInfo(const CRYPTO_BUFFER* cert_buffer,
     case EVP_PKEY_RSA:
       *type = kPublicKeyTypeRSA;
       break;
-    case EVP_PKEY_DSA:
-      *type = kPublicKeyTypeDSA;
-      break;
     case EVP_PKEY_EC:
       *type = kPublicKeyTypeECDSA;
-      break;
-    case EVP_PKEY_DH:
-      *type = kPublicKeyTypeDH;
       break;
   }
   *size_bits = base::saturated_cast<size_t>(EVP_PKEY_bits(pkey.get()));

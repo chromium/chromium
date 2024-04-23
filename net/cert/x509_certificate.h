@@ -44,10 +44,7 @@ class NET_EXPORT X509Certificate
   enum PublicKeyType {
     kPublicKeyTypeUnknown,
     kPublicKeyTypeRSA,
-    kPublicKeyTypeDSA,
     kPublicKeyTypeECDSA,
-    kPublicKeyTypeDH,
-    kPublicKeyTypeECDH
   };
 
   enum Format {
