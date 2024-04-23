@@ -1411,9 +1411,6 @@
   <message name="IDS_SETTINGS_CARET_BLINK_INTERVAL_LABEL" desc="The label for a slider that allows users to pick the blink rate of their text insertion cursor.">
     Text cursor blink rate
   </message>
-  <message name="IDS_SETTINGS_CARET_BLINK_INTERVAL_DESCRIPTION" desc="The description for a slider that allows users to pick the blink rate of their text insertion cursor, explaining that they may need to restart apps for the setting to take effect.">
-    You may need to restart your apps for cursor changes to take effect
-  </message>
   <message name="IDS_SETTINGS_CARET_BLINK_INTERVAL_OFF" desc="The label for the minimum value on a slider that turns off the caret blink rate (so the caret is always steady on).">
     Off
   </message>
