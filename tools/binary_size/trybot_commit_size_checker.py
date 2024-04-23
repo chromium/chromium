@@ -99,7 +99,7 @@ class _SizeDelta(collections.namedtuple(
 
 # See https://crbug.com/1426694
 def _MaxSizeIncrease(author, subject):
-  if 'AFDO' in subject or 'PGO Profile':
+  if 'AFDO' in subject or 'PGO Profile' in subject:
     return 1024 * 1024
   if 'Update V8' in subject:
     return 100 * 1024
