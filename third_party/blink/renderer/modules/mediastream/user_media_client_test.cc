@@ -1329,10 +1329,6 @@ TEST_F(UserMediaClientTest, CreateWithFacingModeEnvironment) {
 }
 
 TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceSingleTrack) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kStartMediaStreamCaptureIndicatorInBrowser)) {
-    EXPECT_CALL(mock_dispatcher_host_, OnStreamStarted(_));
-  }
   MediaStreamTrack* track = RequestLocalVideoTrack();
   MediaStreamComponent* component = track->Component();
   MediaStreamVideoTrack* platform_track =
@@ -1365,10 +1361,6 @@ TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceSingleTrack) {
 }
 
 TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceTwoTracks) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kStartMediaStreamCaptureIndicatorInBrowser)) {
-    EXPECT_CALL(mock_dispatcher_host_, OnStreamStarted(_));
-  }
   MediaStreamTrack* track = RequestLocalVideoTrack();
   MediaStreamComponent* component = track->Component();
   MockMediaStreamVideoCapturerSource* source =
@@ -1383,10 +1375,6 @@ TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceTwoTracks) {
   // Create a new track and verify that it uses the same source and that the
   // source's format did not change. The new track uses the same format as the
   // source by default.
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kStartMediaStreamCaptureIndicatorInBrowser)) {
-    EXPECT_CALL(mock_dispatcher_host_, OnStreamStarted(_));
-  }
   MediaStreamTrack* track2 = RequestLocalVideoTrack();
   MediaStreamComponent* component2 = track2->Component();
   CheckVideoSourceAndTrack(source, 1024, 768, 20.0, component2, 1024, 768,
@@ -1421,10 +1409,6 @@ TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceTwoTracks) {
 }
 
 TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceFailsToStopForRestart) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kStartMediaStreamCaptureIndicatorInBrowser)) {
-    EXPECT_CALL(mock_dispatcher_host_, OnStreamStarted(_));
-  }
   MediaStreamTrack* track = RequestLocalVideoTrack();
   MediaStreamComponent* component = track->Component();
   MockMediaStreamVideoCapturerSource* source =
@@ -1445,10 +1429,6 @@ TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceFailsToStopForRestart) {
 
 TEST_F(UserMediaClientTest,
        ApplyConstraintsVideoDeviceFailsToRestartAfterStop) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kStartMediaStreamCaptureIndicatorInBrowser)) {
-    EXPECT_CALL(mock_dispatcher_host_, OnStreamStarted(_));
-  }
   MediaStreamTrack* track = RequestLocalVideoTrack();
   MediaStreamComponent* component = track->Component();
   MockMediaStreamVideoCapturerSource* source =
@@ -1470,10 +1450,6 @@ TEST_F(UserMediaClientTest,
 }
 
 TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceStopped) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kStartMediaStreamCaptureIndicatorInBrowser)) {
-    EXPECT_CALL(mock_dispatcher_host_, OnStreamStarted(_));
-  }
   MediaStreamTrack* track = RequestLocalVideoTrack();
   MediaStreamComponent* component = track->Component();
   MockMediaStreamVideoCapturerSource* source =
@@ -1515,10 +1491,6 @@ TEST_F(UserMediaClientTest, ApplyConstraintsVideoDeviceStopped) {
 // set according to the renderToAssociatedSink constrainable property.
 TEST_F(UserMediaClientTest,
        RenderToAssociatedSinkTrueAssociatedOutputDeviceId) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kStartMediaStreamCaptureIndicatorInBrowser)) {
-    EXPECT_CALL(mock_dispatcher_host_, OnStreamStarted(_));
-  }
   MediaStreamComponent* component =
       RequestLocalAudioTrackWithAssociatedSink(true);
   MediaStreamAudioSource* source =
@@ -1528,10 +1500,6 @@ TEST_F(UserMediaClientTest,
 
 TEST_F(UserMediaClientTest,
        RenderToAssociatedSinkFalseAssociatedOutputDeviceId) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kStartMediaStreamCaptureIndicatorInBrowser)) {
-    EXPECT_CALL(mock_dispatcher_host_, OnStreamStarted(_));
-  }
   MediaStreamComponent* component =
       RequestLocalAudioTrackWithAssociatedSink(false);
   MediaStreamAudioSource* source =
@@ -1541,10 +1509,6 @@ TEST_F(UserMediaClientTest,
 
 TEST_F(UserMediaClientTest, IsCapturing) {
   EXPECT_FALSE(user_media_client_impl_->IsCapturing());
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kStartMediaStreamCaptureIndicatorInBrowser)) {
-    EXPECT_CALL(mock_dispatcher_host_, OnStreamStarted(_));
-  }
   MediaStreamDescriptor* descriptor = RequestLocalMediaStream();
   EXPECT_TRUE(user_media_client_impl_->IsCapturing());
 

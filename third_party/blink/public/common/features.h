@@ -1480,10 +1480,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kSpeculativeServiceWorkerWarmUpOnIdleTimeout;
 
-// Make the browser decide when to turn on the capture indicator (red button)
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kStartMediaStreamCaptureIndicatorInBrowser);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStopInBackground);
 
 // Stylus gestures for editable web content.

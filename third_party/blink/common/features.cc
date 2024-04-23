@@ -2271,10 +2271,6 @@ const base::FeatureParam<bool>
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnIdleTimeout{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_idle_timeout", true};
 
-BASE_FEATURE(kStartMediaStreamCaptureIndicatorInBrowser,
-             "StartMediaStreamCaptureIndicatorInBrowser",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Freeze scheduler task queues in background after allowed grace time.
 // "stop" is a legacy name.
 BASE_FEATURE(kStopInBackground,

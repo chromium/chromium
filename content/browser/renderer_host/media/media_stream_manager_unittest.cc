@@ -316,7 +316,6 @@ class TestMediaStreamDispatcherHost
       const std::optional<base::UnguessableToken>& session_id,
       blink::mojom::MediaStreamType type,
       bool is_secure) override {}
-  void OnStreamStarted(const std::string& label) override {}
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void SendWheel(const base::UnguessableToken& device_id,

@@ -1878,10 +1878,6 @@ void UserMediaProcessor::OnCreateNativeTracksCompleted(
   if (result == MediaStreamRequestResult::OK) {
     GetUserMediaRequestSucceeded(request_info->descriptors(),
                                  request_info->request());
-    if (!base::FeatureList::IsEnabled(
-            blink::features::kStartMediaStreamCaptureIndicatorInBrowser)) {
-      GetMediaStreamDispatcherHost()->OnStreamStarted(label);
-    }
   } else {
     GetUserMediaRequestFailed(result, constraint_name);
 

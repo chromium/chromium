@@ -3384,10 +3384,7 @@ void MediaStreamManager::HandleRequestDone(const std::string& label,
       break;
     case blink::MEDIA_GENERATE_STREAM: {
       FinalizeGenerateStreams(label, request);
-      if (base::FeatureList::IsEnabled(
-              blink::features::kStartMediaStreamCaptureIndicatorInBrowser)) {
-        OnStreamStarted(label);
-      }
+      OnStreamStarted(label);
       break;
     }
     case blink::MEDIA_GET_OPEN_DEVICE: {

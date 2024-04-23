@@ -279,9 +279,6 @@ interface MediaStreamDispatcherHost {
   SetCapturingLinkSecured(mojo_base.mojom.UnguessableToken? session_id, MediaStreamType type,
                           bool is_secure);
 
-  // Tells the browser process that the stream has been started successfully.
-  OnStreamStarted(string label);
-
   // Start/stop cropping or restricting the video track.
   //
   // Non-empty |sub_capture_target_id| sets (or changes) the target.

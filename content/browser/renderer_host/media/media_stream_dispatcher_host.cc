@@ -659,18 +659,6 @@ void MediaStreamDispatcherHost::SetCapturingLinkSecured(
       session_id.value_or(base::UnguessableToken()), type, is_secure);
 }
 
-void MediaStreamDispatcherHost::OnStreamStarted(const std::string& label) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  if (base::FeatureList::IsEnabled(
-          blink::features::kStartMediaStreamCaptureIndicatorInBrowser)) {
-    ReceivedBadMessage(render_frame_host_id_.child_id,
-                       bad_message::MSDH_ON_STREAM_STARTED_DISALLOWED);
-    return;
-  }
-  media_stream_manager_->OnStreamStarted(label);
-}
-
 void MediaStreamDispatcherHost::KeepDeviceAliveForTransfer(
     const base::UnguessableToken& session_id,
     const base::UnguessableToken& transfer_id,

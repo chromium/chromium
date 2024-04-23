@@ -131,7 +131,6 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       const std::optional<base::UnguessableToken>& session_id,
       blink::mojom::MediaStreamType type,
       bool is_secure) override;
-  void OnStreamStarted(const std::string& label) override;
   using KeepDeviceAliveForTransferCallback =
       base::OnceCallback<void(bool device_found)>;
   void KeepDeviceAliveForTransfer(
