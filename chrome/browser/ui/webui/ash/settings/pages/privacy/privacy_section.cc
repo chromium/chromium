@@ -13,7 +13,6 @@
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
@@ -664,11 +663,6 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                          chrome::kPrivacyHubGeolocationLearnMoreURL);
 
   html_source->AddString("osSettingsAppId", web_app::kOsSettingsAppId);
-
-  html_source->AddString(
-      "authPrompt", l10n_util::GetStringFUTF16(
-                        IDS_SETTINGS_IN_SESSION_AUTH_ORIGIN_NAME_PROMPT,
-                        l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME)));
 
   html_source->AddBoolean("showSecureDnsSetting", IsSecureDnsAvailable());
   html_source->AddBoolean("showSecureDnsOsSettingLink", false);
