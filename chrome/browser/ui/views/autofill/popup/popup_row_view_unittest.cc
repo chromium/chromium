@@ -123,10 +123,11 @@ class PopupRowViewTest : public ChromeViewsTestBase {
   }
 
   // Simulates the keyboard event and returns whether the event was handled.
-  bool SimulateKeyPress(int windows_key_code) {
+  bool SimulateKeyPress(int windows_key_code,
+                        int modifiers = blink::WebInputEvent::kNoModifiers) {
     content::NativeWebKeyboardEvent event(
-        blink::WebKeyboardEvent::Type::kRawKeyDown,
-        blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
+        blink::WebKeyboardEvent::Type::kRawKeyDown, modifiers,
+        ui::EventTimeForNow());
     event.windows_key_code = windows_key_code;
     return row_view().HandleKeyPressEvent(event);
   }
@@ -321,6 +322,33 @@ TEST_F(PopupRowViewTest, ReturnKeyEventsAreHandled) {
   controller().InvalidateWeakPtrs();
   EXPECT_FALSE(SimulateKeyPress(ui::VKEY_RETURN));
 }
+
+class PopupRowSuggestionAcceptanceWithModifiers
+    : public PopupRowViewTest,
+      public ::testing::WithParamInterface</*modifiers*/ int> {};
+
+TEST_P(PopupRowSuggestionAcceptanceWithModifiers, All) {
+  ShowView(/*line_number=*/0, /*has_control=*/false);
+  row_view().SetSelectedCell(CellType::kContent);
+
+  EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
+  EXPECT_FALSE(SimulateKeyPress(ui::VKEY_RETURN, GetParam()));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PopupRowSuggestionAcceptanceWithModifiers,
+                         ::testing::ValuesIn(std::vector<int>{
+                             blink::WebInputEvent::kKeyModifiers,
+                             blink::WebInputEvent::kSymbolKey,
+                             blink::WebInputEvent::kFnKey,
+                             blink::WebInputEvent::kAltGrKey,
+                             blink::WebInputEvent::kMetaKey,
+                             blink::WebInputEvent::kAltKey,
+                             blink::WebInputEvent::kControlKey,
+                             blink::WebInputEvent::kShiftKey,
+                             blink::WebInputEvent::kControlKey |
+                                 blink::WebInputEvent::kShiftKey,
+                         }));
 
 TEST_F(PopupRowViewTest,
        ShouldIgnoreMouseObservedOutsideItemBoundsCheckIsFalse_IgnoreClick) {

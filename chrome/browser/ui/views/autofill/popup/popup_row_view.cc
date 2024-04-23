@@ -405,12 +405,16 @@ bool PopupRowView::HandleKeyPressEvent(
   CHECK(GetSelectedCell());
 
   switch (event.windows_key_code) {
-    case ui::VKEY_RETURN:
-      if (*GetSelectedCell() == CellType::kContent && controller_) {
+    case ui::VKEY_RETURN: {
+      const bool kHasKeyModifierPressed =
+          event.GetModifiers() & blink::WebInputEvent::kKeyModifiers;
+      if (*GetSelectedCell() == CellType::kContent && controller_ &&
+          !kHasKeyModifierPressed) {
         controller_->AcceptSuggestion(line_number_);
         return true;
       }
       return false;
+    }
     default:
       return false;
   }
