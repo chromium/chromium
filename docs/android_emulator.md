@@ -100,6 +100,17 @@ down. This is how builders run the emulator.
           --emulator-count 4
     ```
 
+ * `--emulator-enable-network`
+
+    The test runner runs the emulator without network access by default. To have
+    it run with network access, use `--emulator-enable-network`:
+
+    ```
+    $ out/Debug/bin/run_base_unittests \
+          --avd-config tools/android/avd/proto/generic_android28.textpb \
+          --emulator-enable-network
+    ```
+
  * `--emulator-window`
 
     The test runner runs the emulator in headless mode by default. To have it run
@@ -129,6 +140,17 @@ To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
 
     > Note: `avd.py start` will start an emulator instance and then terminate.
     > To shut down the emulator, use `adb emu kill`.
+
+ * `--enable-network`
+
+    Like the test runner, `avd.py` runs the emulator without network access by
+    default. To enable network access, use `--enable-network`:
+
+    ```
+      $ tools/android/avd/avd.py start \
+          --avd-config tools/android/avd/proto/generic_android28.textpb \
+          --enable-network
+    ```
 
  * `--emulator-window`
 
