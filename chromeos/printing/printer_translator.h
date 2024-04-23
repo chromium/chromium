@@ -23,13 +23,6 @@ COMPONENT_EXPORT(CHROMEOS_PRINTING)
 std::unique_ptr<Printer> RecommendedPrinterToPrinter(
     const base::Value::Dict& pref);
 
-// Returns a new printer populated with the fields from `printer` or nullptr if
-// `printer` does not represent a valid managed printer configuration. See
-// `BulkPrintersConfiguration` and `DevicePrinters` policies.
-COMPONENT_EXPORT(CHROMEOS_PRINTING)
-std::optional<Printer> ManagedPrinterToPrinter(
-    const base::Value::Dict& printer);
-
 // Returns a JSON representation of |printer| as a CupsPrinterInfo. If the
 // printer uri cannot be parsed, the relevant fields are populated with default
 // values. CupsPrinterInfo is defined in cups_printers_browser_proxy.js.

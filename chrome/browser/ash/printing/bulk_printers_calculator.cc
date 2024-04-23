@@ -20,7 +20,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/values.h"
-#include "chromeos/printing/printer_translator.h"
+#include "chrome/browser/ash/printing/enterprise/managed_printer_translator.h"
 #include "components/device_event_log/device_event_log.h"
 
 namespace ash {
@@ -87,10 +87,17 @@ std::optional<PrinterCache> ParsePrinters(std::unique_ptr<std::string> data) {
       continue;
     }
 
-    auto printer = chromeos::ManagedPrinterToPrinter(val.GetDict());
-    if (!printer) {
+    auto managed_printer =
+        chromeos::ManagedPrinterConfigFromDict(val.GetDict());
+    if (!managed_printer) {
       PRINTER_LOG(ERROR) << "Entry in printers policy skipped ("
                          << "failed to parse printer configuration)";
+      continue;
+    }
+    auto printer = chromeos::PrinterFromManagedPrinterConfig(*managed_printer);
+    if (!printer) {
+      PRINTER_LOG(ERROR) << "Entry in printers policy skipped ("
+                         << "does not represent a printer)";
       continue;
     }
     parsed_printers.push_back(std::move(printer));

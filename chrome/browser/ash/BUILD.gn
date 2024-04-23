@@ -3052,6 +3052,8 @@ source_set("ash") {
     "printing/cups_printers_manager_factory.h",
     "printing/cups_printers_manager_proxy.cc",
     "printing/cups_printers_manager_proxy.h",
+    "printing/enterprise/managed_printer_translator.cc",
+    "printing/enterprise/managed_printer_translator.h",
     "printing/enterprise_printers_provider.cc",
     "printing/enterprise_printers_provider.h",
     "printing/fake_cups_print_job_manager.cc",
@@ -4110,6 +4112,7 @@ source_set("ash") {
     ":app_install_events_proto",
     ":attestation_proto",
     ":device_policy_remover_generated",
+    ":managed_printer_proto",
     "//apps",
     "//ash/components/arc:arc_features",
     "//ash/components/arc:arc_metrics_constants",
@@ -6130,6 +6133,7 @@ source_set("unit_tests") {
     "printing/cups_print_job_notification_unittest.cc",
     "printing/cups_printer_status_creator_unittest.cc",
     "printing/cups_printers_manager_unittest.cc",
+    "printing/enterprise/managed_printer_translator_unittest.cc",
     "printing/enterprise_printers_provider_unittest.cc",
     "printing/history/print_job_database_impl_unittest.cc",
     "printing/history/print_job_history_cleaner_unittest.cc",
@@ -6273,6 +6277,7 @@ source_set("unit_tests") {
     ":ash",
     ":attestation_proto",
     ":lock_unlock_event_proto",
+    ":managed_printer_proto",
     ":print_job_info_proto",
     ":screen_brightness_event_proto",
     ":test_support",
@@ -6949,6 +6954,10 @@ proto_library("user_activity_event_proto") {
 
 proto_library("user_event_reporter_testing_record_proto") {
   sources = [ "policy/reporting/user_event_reporter_testing_record.proto" ]
+}
+
+proto_library("managed_printer_proto") {
+  sources = [ "printing/enterprise/managed_printer_configuration.proto" ]
 }
 
 device_policy_remover_path = "$target_gen_dir/device_policy_remover.cc"
