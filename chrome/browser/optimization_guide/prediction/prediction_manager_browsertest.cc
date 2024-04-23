@@ -497,8 +497,15 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
   }
 }
 
+// TODO(crbug.com/336399137): Flaky on Linux Chromium OS ASan LSan Tests.
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ADDRESS_SANITIZER)
+#define MAYBE_TestIncognitoDoesntFetchModels \
+  DISABLED_TestIncognitoDoesntFetchModels
+#else
+#define MAYBE_TestIncognitoDoesntFetchModels TestIncognitoDoesntFetchModels
+#endif
 IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
-                       TestIncognitoDoesntFetchModels) {
+                       MAYBE_TestIncognitoDoesntFetchModels) {
   base::HistogramTester histogram_tester;
 
   SetResponseType(PredictionModelsFetcherRemoteResponseType::
