@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service_factory.h"
+#include "components/enterprise/data_controls/features.h"
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -146,6 +147,15 @@ bool IsEnterpriseLookupEnabled(Profile* profile) {
       profile->GetPrefs(), has_valid_dm_token, profile->IsOffTheRecord());
 }
 
+bool IsDesktopDataControlsEnabled() {
+  return base::FeatureList::IsEnabled(
+      data_controls::kEnableDesktopDataControls);
+}
+
+bool IsDataProtectionEnabled(Profile* profile) {
+  return IsEnterpriseLookupEnabled(profile) || IsDesktopDataControlsEnabled();
+}
+
 std::string GetIdentifier(content::BrowserContext* browser_context) {
   return enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
              browser_context)
@@ -175,7 +185,7 @@ void DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
     Callback callback) {
   if (navigation_handle->IsSameDocument() ||
       !navigation_handle->IsInPrimaryMainFrame() ||
-      !IsEnterpriseLookupEnabled(profile)) {
+      !IsDataProtectionEnabled(profile)) {
     return;
   }
 
@@ -187,15 +197,15 @@ void DataProtectionNavigationObserver::CreateForNavigationIfNeeded(
     return;
   }
 
-  // GetForProfile() return nullptr if enterprise policies are not set.
-  auto* lookup_service = safe_browsing::
-      ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetForProfile(profile);
-  if (lookup_service) {
-    enterprise_data_protection::DataProtectionNavigationObserver::
-        CreateForNavigationHandle(*navigation_handle, lookup_service,
-                                  navigation_handle->GetWebContents(),
-                                  std::move(callback));
-  }
+  // ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetForProfile() return
+  // nullptr if enterprise policies are not set.  In this case data protections
+  // will be based on data controls alone,
+  enterprise_data_protection::DataProtectionNavigationObserver::
+      CreateForNavigationHandle(
+          *navigation_handle,
+          safe_browsing::ChromeEnterpriseRealTimeUrlLookupServiceFactory::
+              GetForProfile(profile),
+          navigation_handle->GetWebContents(), std::move(callback));
 }
 
 // static
@@ -209,7 +219,7 @@ void DataProtectionNavigationObserver::GetDataProtectionSettings(
     return;
   }
 
-  if (!IsEnterpriseLookupEnabled(profile)) {
+  if (!IsDataProtectionEnabled(profile)) {
     return;
   }
 
@@ -275,7 +285,6 @@ DataProtectionNavigationObserver::DataProtectionNavigationObserver(
       pending_navigation_callback_(std::move(callback)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!pending_navigation_callback_.is_null());
-  DCHECK(lookup_service_);
 
   identifier_ = GetIdentifier(web_contents->GetBrowserContext());
   allow_screenshot_ = IsScreenshotAllowedByDataControls(
@@ -289,7 +298,7 @@ DataProtectionNavigationObserver::DataProtectionNavigationObserver(
   // main frame still points to the existing page before the navigation, not the
   // ultimate destination page of the navigation.
   is_from_cache_ = navigation_handle.IsServedFromBackForwardCache();
-  if (!is_from_cache_) {
+  if (!is_from_cache_ && lookup_service_) {
     DoLookup(lookup_service_, navigation_handle.GetURL(), identifier_,
              base::BindOnce(&DataProtectionNavigationObserver::OnLookupComplete,
                             weak_factory_.GetWeakPtr()),
@@ -316,12 +325,14 @@ void DataProtectionNavigationObserver::DidRedirectNavigation(
       navigation_handle->GetWebContents()->GetBrowserContext(),
       navigation_handle->GetURL());
 
-  DoLookup(
-      lookup_service_, navigation_handle->GetURL(),
-      GetIdentifier(navigation_handle->GetWebContents()->GetBrowserContext()),
-      base::BindOnce(&DataProtectionNavigationObserver::OnLookupComplete,
-                     weak_factory_.GetWeakPtr()),
-      navigation_handle->GetWebContents());
+  if (lookup_service_) {
+    DoLookup(
+        lookup_service_, navigation_handle->GetURL(),
+        GetIdentifier(navigation_handle->GetWebContents()->GetBrowserContext()),
+        base::BindOnce(&DataProtectionNavigationObserver::OnLookupComplete,
+                       weak_factory_.GetWeakPtr()),
+        navigation_handle->GetWebContents());
+  }
 }
 
 void DataProtectionNavigationObserver::DidFinishNavigation(
@@ -365,7 +376,7 @@ void DataProtectionNavigationObserver::DidFinishNavigation(
     OnDoLookupComplete(web_contents()->GetWeakPtr(),
                        std::move(pending_navigation_callback_), identifier_,
                        std::move(rt_lookup_response_));
-  } else {
+  } else if (lookup_service_) {
     LogVerdictSource(URLVerdictSource::kPostNavigationLookup);
     DoLookup(
         lookup_service_, navigation_handle->GetURL(), identifier_,

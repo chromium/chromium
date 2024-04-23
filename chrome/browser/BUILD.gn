@@ -6420,7 +6420,7 @@ static_library("browser") {
     deps += [ "//chrome/browser/enterprise/data_controls" ]
   }
 
-  if (enterprise_watermark) {
+  if (enterprise_watermark || enterprise_screenshot_protection) {
     sources += [
       "//chrome/browser/enterprise/data_protection/data_protection_navigation_observer.cc",
       "//chrome/browser/enterprise/data_protection/data_protection_navigation_observer.h",

@@ -10358,7 +10358,7 @@ test("unit_tests") {
     ]
   }
 
-  if (enterprise_data_controls) {
+  if (enterprise_data_controls || enterprise_screenshot_protection) {
     sources += [
       "../browser/enterprise/data_protection/data_protection_clipboard_utils_unittest.cc",
       "../browser/enterprise/data_protection/paste_allowed_request_unittest.cc",
