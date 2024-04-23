@@ -686,6 +686,7 @@ ci.builder(
             target_platform = builder_config.target_platform.LINUX,
         ),
     ),
+    gn_args = "no_reclient",
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
