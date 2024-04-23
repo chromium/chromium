@@ -1720,6 +1720,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Third-party cookie blocking disabled for site"/>
 </enum>
 
+<enum name="TpcdMetadataCohort">
+  <int value="0" label="DEFAULT"/>
+  <int value="1" label="GRACE_PERIOD_FORCED_OFF"/>
+  <int value="2" label="GRACE_PERIOD_FORCED_ON"/>
+</enum>
+
 <enum name="TpcdMetadataInstallationResult">
   <int value="0" label="kSuccessful"/>
   <int value="1" label="kMissingMetadataFile"/>

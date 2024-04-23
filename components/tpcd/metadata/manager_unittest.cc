@@ -7,12 +7,14 @@
 #include <algorithm>
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -202,7 +204,9 @@ TEST_P(ManagerTest, FireSyncCallback) {
 
 class ManagerCohortsTest
     : public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, int32_t>> {
+      public testing::WithParamInterface<std::tuple<
+          /*IsTpcdMetadataStagedRollbackEnabled:*/ bool,
+          /*content_settings::mojom::TpcdMetadataRuleSource:*/ int32_t>> {
  public:
   ManagerCohortsTest() = default;
   ~ManagerCohortsTest() override = default;
@@ -491,6 +495,30 @@ TEST_P(ManagerCohortsTest, DTRP_LT_Rand) {
   } else {
     EXPECT_EQ(picked_cohort,
               content_settings::mojom::TpcdMetadataCohort::DEFAULT);
+  }
+}
+
+TEST_P(ManagerCohortsTest, MetadataCohortDistributionUma) {
+  std::optional<uint32_t> dtrp =
+      Parser::IsDtrpEligible(GetTpcdMetadataRuleSource()) ? std::optional(0)
+                                                          : std::nullopt;
+
+  Metadata metadata;
+  MetadataEntry* me = helpers::AddEntryToMetadata(
+      metadata, "*", "*", ToRuleSourceStr(GetTpcdMetadataRuleSource()), dtrp);
+  EXPECT_TRUE(Parser::IsValidMetadata(metadata));
+
+  base::HistogramTester histogram_tester;
+  GetParser()->ParseMetadata(metadata.SerializeAsString());
+  EXPECT_EQ(GetManager()->GetGrants().size(), 1u);
+
+  if (IsTpcdMetadataStagedRollbackEnabled() && Parser::IsTestEntry(*me)) {
+    histogram_tester.ExpectUniqueSample(
+        helpers::kMetadataCohortDistributionHistogram,
+        content_settings::mojom::TpcdMetadataCohort::GRACE_PERIOD_FORCED_ON, 1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        helpers::kMetadataCohortDistributionHistogram, 0);
   }
 }
 

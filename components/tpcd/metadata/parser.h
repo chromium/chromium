@@ -42,6 +42,14 @@ enum class InstallationResult {
   kIllicitDtrp = 7,
   kMaxValue = kIllicitDtrp,
 };
+
+// Enumerates the source of the `MetadataEntry` list return by `GetMetadata()`.
+enum class MetadataSource {
+  kServer = 0,
+  kClient,
+  kFeatureParams,
+};
+
 using RecordInstallationResultCallback =
     base::OnceCallback<void(InstallationResult)>;
 
@@ -83,6 +91,9 @@ class Parser {
 
   static constexpr char const* kSourceUnspecified = "SOURCE_UNSPECIFIED";
   static constexpr char const* kSourceTest = "SOURCE_TEST";
+  inline static bool IsTestEntry(const MetadataEntry& metadata_entry) {
+    return metadata_entry.source() == kSourceTest;
+  }
   static constexpr char const* kSource1pDt = "SOURCE_1P_DT";
   static constexpr char const* kSource3pDt = "SOURCE_3P_DT";
   static constexpr char const* kSourceDogFood = "SOURCE_DOGFOOD";
@@ -103,8 +114,9 @@ class Parser {
   // Returns true if the given source of the MetadataEntry matches the defined
   // sources for which `dtrp` is expected to be set.
   static bool IsDtrpEligible(const TpcdMetadataRuleSource& rule_source);
-  static bool IsValidMetadata(const Metadata& metadata,
-                              RecordInstallationResultCallback callback);
+  static bool IsValidMetadata(
+      const Metadata& metadata,
+      RecordInstallationResultCallback callback = base::NullCallback());
 
   // Start Parser testing methods:
   MetadataEntries GetInstalledMetadataForTesting();
@@ -113,22 +125,25 @@ class Parser {
       const base::FieldTrialParams& params);
   // End Parser testing methods.
 
+  MetadataSource get_metadata_source() { return metadata_source_; }
+
  private:
   base::ObserverList<Observer>::Unchecked observers_;
   std::optional<MetadataEntries> metadata_
       GUARDED_BY_CONTEXT(sequence_checker_) = std::nullopt;
+  MetadataSource metadata_source_ = MetadataSource::kServer;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
 namespace helpers {
-void AddEntryToMetadata(
+MetadataEntry* AddEntryToMetadata(
     Metadata& metadata,
     const std::string& primary_pattern_spec,
     const std::string& secondary_pattern_spec,
     const std::string& source = Parser::kSourceTest,
     const std::optional<uint32_t>& dtrp = std::nullopt,
     const std::optional<uint32_t>& dtrp_override = std::nullopt);
-}
+}  // namespace helpers
 }  // namespace tpcd::metadata
 #endif  // COMPONENTS_TPCD_METADATA_PARSER_H_

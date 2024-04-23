@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/hash/sha1.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
@@ -185,6 +186,11 @@ ContentSettingsForOneType Manager::BuildGrantsWithPredicate(
                    : content_settings::mojom::TpcdMetadataCohort::
                          GRACE_PERIOD_FORCED_ON;
 
+      if (parser_->get_metadata_source() == MetadataSource::kServer &&
+          Parser::IsTestEntry(metadata_entry)) {
+        helpers::WriteCohortDistributionMetrics(cohort.value());
+      }
+
       if (local_state_) {
         ScopedDictPrefUpdate update(local_state_, prefs::kCohorts);
         update->Set(key_hash, static_cast<int32_t>(cohort.value()));
@@ -278,6 +284,11 @@ std::string GenerateKeyHash(const MetadataEntry& metadata_entry) {
   // The hash from SHA1 is faster to obtain than SHA256 and will be forever
   // unchanged if key is unchanged and provides lesser collision risk than MD5.
   return base::Base64Encode(base::SHA1HashString(key));
+}
+
+void WriteCohortDistributionMetrics(
+    const content_settings::mojom::TpcdMetadataCohort& cohort) {
+  base::UmaHistogramEnumeration(kMetadataCohortDistributionHistogram, cohort);
 }
 }  // namespace helpers
 
