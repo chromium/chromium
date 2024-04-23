@@ -283,19 +283,18 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
           {u"Use your microphones",
            u"You have allowed microphone on a.test:" +
                base::UTF8ToUTF16(GetOrigin().port()),
-           u"You previously didn't allow microphone on a.test:" +
-               base::UTF8ToUTF16(GetOrigin().port())}));
+           u"You previously chose don’t allow for this site"}));
 }
 
 IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
                        MAYBE_BasicFlowCamera) {
-  TestAskBlockAllowFlow("camera", {ContentSettingsType::MEDIASTREAM_CAMERA},
-                        std::queue<std::u16string>(
-                            {u"Use your cameras",
-                             u"You have allowed camera on a.test:" +
-                                 base::UTF8ToUTF16(GetOrigin().port()),
-                             u"You previously didn't allow camera on a.test:" +
-                                 base::UTF8ToUTF16(GetOrigin().port())}));
+  TestAskBlockAllowFlow(
+      "camera", {ContentSettingsType::MEDIASTREAM_CAMERA},
+      std::queue<std::u16string>(
+          {u"Use your cameras",
+           u"You have allowed camera on a.test:" +
+               base::UTF8ToUTF16(GetOrigin().port()),
+           u"You previously chose don’t allow for this site"}));
 }
 
 IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
@@ -308,8 +307,7 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
           {u"Use your cameras",
            u"You have allowed camera and microphone on a.test:" +
                base::UTF8ToUTF16(GetOrigin().port()),
-           u"You previously didn't allow camera and microphone on a.test:" +
-               base::UTF8ToUTF16(GetOrigin().port())}),
+           u"You previously chose don’t allow for this site"}),
       std::queue<std::u16string>({u"Use your microphones"}));
 }
 
@@ -325,20 +323,17 @@ IN_PROC_BROWSER_TEST_F(EmbeddedPermissionPromptInteractiveTest,
 
   TestPartialPermissionsLabel(
       CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK,
-      u"You previously didn't allow camera and microphone on a.test:" +
-          base::UTF8ToUTF16(GetOrigin().port()));
+      u"You previously chose don’t allow for this site");
   TestPartialPermissionsLabel(
       CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK,
-      u"You previously didn't allow camera and microphone on a.test:" +
-          base::UTF8ToUTF16(GetOrigin().port()));
+      u"You previously chose don’t allow for this site");
 
-  TestPartialPermissionsLabel(CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW,
-                              u"You previously didn't allow camera on a.test:" +
-                                  base::UTF8ToUTF16(GetOrigin().port()));
+  TestPartialPermissionsLabel(
+      CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW,
+      u"You previously chose don’t allow for this site");
   TestPartialPermissionsLabel(
       CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
-      u"You previously didn't allow microphone on a.test:" +
-          base::UTF8ToUTF16(GetOrigin().port()));
+      u"You previously chose don’t allow for this site");
 }
 
 class EmbeddedPermissionPromptPositioningInteractiveTest

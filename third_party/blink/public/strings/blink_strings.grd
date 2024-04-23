@@ -680,13 +680,13 @@ below:
       </message>
 
       <message name="IDS_PERMISSION_REQUEST_CAMERA" desc="Label for a permission element that will trigger a camera request">
-        Allow camera
+        Use camera
       </message>
       <message name="IDS_PERMISSION_REQUEST_MICROPHONE" desc="Label for a permission element that will trigger a microphone request">
-        Allow microphone
+        Use microphone
       </message>
       <message name="IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE" desc="Label for a permission element that will trigger a camera and microphone request">
-        Allow microphone and camera
+        Use microphone and camera
       </message>
       <message name="IDS_PERMISSION_REQUEST_GEOLOCATION" desc="Label for a permission element that will trigger a geolocation request">
         Share location

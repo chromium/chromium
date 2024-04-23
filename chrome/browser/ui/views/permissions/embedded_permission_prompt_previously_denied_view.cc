@@ -32,20 +32,7 @@ EmbeddedPermissionPromptPreviouslyDeniedView::GetAccessibleWindowTitle() const {
 
 std::u16string EmbeddedPermissionPromptPreviouslyDeniedView::GetWindowTitle()
     const {
-  const auto& requests = delegate()->Requests();
-  CHECK_GT(requests.size(), 0U);
-
-  std::u16string permission_name;
-  if (requests.size() == 2) {
-    permission_name = l10n_util::GetStringUTF16(
-        IDS_CAMERA_AND_MICROPHONE_PERMISSION_NAME_FRAGMENT);
-  } else {
-    permission_name = requests[0]->GetPermissionNameTextFragment();
-  }
-
-  return l10n_util::GetStringFUTF16(IDS_EMBEDDED_PROMPT_PREVIOUSLY_NOT_ALLOWED,
-                                    permission_name,
-                                    GetUrlIdentityObject().name);
+  return l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_PREVIOUSLY_NOT_ALLOWED);
 }
 
 void EmbeddedPermissionPromptPreviouslyDeniedView::RunButtonCallback(
