@@ -66,8 +66,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         serialized_partition_key =
             CookiePartitionKey::Serialize(*partition_key_from_string_loose);
     // The serialization should match the initial values.
+    SchemefulSite schemeful_site(url);
     CHECK_EQ(serialized_partition_key->TopLevelSite(),
-             SchemefulSite(url).Serialize());
+             schemeful_site.GetURL().SchemeIsFile()
+                 ? schemeful_site.SerializeFileSiteWithHost()
+                 : schemeful_site.Serialize());
     CHECK_EQ(serialized_partition_key->has_cross_site_ancestor(),
              has_cross_site_ancestor);
   } else {
