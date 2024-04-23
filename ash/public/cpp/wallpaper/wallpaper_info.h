@@ -72,6 +72,11 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
   bool MatchesSelection(const WallpaperInfo& other) const;
   bool MatchesAsset(const WallpaperInfo& other) const;
 
+  // Used to convert from local or remote syncable pref dict to a WallpaperInfo.
+  // Returns nullopt if the |dict| contains any invalid value which may come
+  // from future versions of the remote pref .e.g wallpaper type.
+  static std::optional<WallpaperInfo> FromDict(const base::Value::Dict& dict);
+
   // Returns the dictionary representation of the `WallpaperInfo` to be saved
   // into pref store.
   base::Value::Dict ToDict() const;

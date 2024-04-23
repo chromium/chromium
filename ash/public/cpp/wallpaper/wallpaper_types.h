@@ -88,6 +88,9 @@ enum class ColorProfileType {
   NUM_OF_COLOR_PROFILES,
 };
 
+ASH_PUBLIC_EXPORT bool IsAllowedInPrefs(WallpaperType type);
+ASH_PUBLIC_EXPORT bool IsWallpaperTypeSyncable(WallpaperType type);
+
 ASH_PUBLIC_EXPORT bool IsOnlineWallpaper(WallpaperType type);
 
 }  // namespace ash
