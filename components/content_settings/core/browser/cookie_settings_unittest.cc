@@ -27,6 +27,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
@@ -247,11 +248,10 @@ class CookieSettingsTest : public CookieSettingsTestBase,
                                /*kHostIndexedMetadataGrantsEnabled*/ bool> {
  public:
   CookieSettingsTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {content_settings::features::kUserBypassUI, {{"expiration", "0d"}}},
+        {privacy_sandbox::kTrackingProtectionSettingsLaunch, {}}};
     std::vector<base::test::FeatureRef> disabled_features;
-
-    enabled_features.push_back(
-        {content_settings::features::kUserBypassUI, {{"expiration", "0d"}}});
 
     if (IsIndexedContentSettingsEnabled()) {
       enabled_features.push_back({features::kHostIndexedMetadataGrants, {}});
@@ -282,9 +282,6 @@ class CookieSettingsTestP
   CookieSettingsTestP() {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-
-    enabled_features.push_back(
-        {content_settings::features::kUserBypassUI, {{"expiration", "0d"}}});
 
     if (Is3pcdTrialEligible()) {
       enabled_features.push_back({net::features::kTpcdTrialSettings, {}});
@@ -1907,6 +1904,20 @@ TEST_P(CookieSettingsTest, PreservesBlockingStateFrom3pcdOnOffboarding) {
   EXPECT_EQ(prefs_.GetInteger(prefs::kCookieControlsMode),
             static_cast<int>(CookieControlsMode::kBlockThirdParty));
 }
+
+// iOS always returns false
+#if !BUILDFLAG(IS_IOS)
+TEST_P(CookieSettingsTest,
+       ShouldBlockThirdPartyCookiesFalseForAllowedEnterprisePolicyIn3pcd) {
+  // Returns true by default in 3PCD.
+  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+  EXPECT_TRUE(cookie_settings_->ShouldBlockThirdPartyCookies());
+
+  // Returns false when pref for enterprise policy is set to true.
+  prefs_.SetBoolean(prefs::kAllowAll3pcToggleEnabled, true);
+  EXPECT_FALSE(cookie_settings_->ShouldBlockThirdPartyCookies());
+}
+# endif
 
 TEST_P(CookieSettingsTest, LegacyCookieAccessAllowAll) {
   settings_map_->SetDefaultContentSetting(

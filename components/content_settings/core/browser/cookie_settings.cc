@@ -369,10 +369,11 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
     return true;
   }
 
-  // Cookies should always be blocked in 3PCD experiment.
   if (tracking_protection_settings_ &&
       tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
-    return true;
+    // 3PCs are blocked by default post-3PCD unless an enterprise policy is set.
+    return !pref_change_registrar_->prefs()->GetBoolean(
+        prefs::kAllowAll3pcToggleEnabled);
   }
 
   CookieControlsMode mode = static_cast<CookieControlsMode>(
@@ -393,8 +394,10 @@ bool CookieSettings::ShouldBlockThirdPartyCookiesInternal() {
 bool CookieSettings::MitigationsEnabledFor3pcdInternal() {
   if (tracking_protection_settings_ &&
       tracking_protection_settings_->IsTrackingProtection3pcdEnabled()) {
-    // Mitigations should be on iff we are not blocking all 3PC in 3PCD.
-    return !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked();
+    // Mitigations should be on iff we are not blocking or allowing all 3PC.
+    return !tracking_protection_settings_->AreAllThirdPartyCookiesBlocked() &&
+           !tracking_protection_settings_
+                ->AreThirdPartyCookiesAllowedByEnterprise();
   }
 
   if (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled()) {
@@ -421,6 +424,8 @@ void CookieSettings::OnContentSettingChanged(
 }
 
 void CookieSettings::OnBlockAllThirdPartyCookiesChanged() {
+  OnCookiePreferencesChanged();
+
   bool new_mitigations_enabled_for_3pcd = MitigationsEnabledFor3pcdInternal();
   {
     base::AutoLock auto_lock(lock_);
@@ -439,6 +444,7 @@ void CookieSettings::OnTrackingProtection3pcdChanged() {
   DCHECK(pref_change_registrar_);
 
   bool new_tracking_protection_enabled_for_3pcd =
+      tracking_protection_settings_ &&
       tracking_protection_settings_->IsTrackingProtection3pcdEnabled();
   {
     base::AutoLock auto_lock(lock_);

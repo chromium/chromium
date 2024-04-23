@@ -52,6 +52,11 @@ TrackingProtectionSettings::TrackingProtectionSettings(
           &TrackingProtectionSettings::OnBlockAllThirdPartyCookiesPrefChanged,
           base::Unretained(this)));
   pref_change_registrar_.Add(
+      prefs::kAllowAll3pcToggleEnabled,
+      base::BindRepeating(
+          &TrackingProtectionSettings::OnBlockAllThirdPartyCookiesPrefChanged,
+          base::Unretained(this)));
+  pref_change_registrar_.Add(
       prefs::kTrackingProtection3pcdEnabled,
       base::BindRepeating(
           &TrackingProtectionSettings::OnTrackingProtection3pcdPrefChanged,
@@ -100,9 +105,19 @@ bool TrackingProtectionSettings::IsTrackingProtection3pcdEnabled() const {
 }
 
 bool TrackingProtectionSettings::AreAllThirdPartyCookiesBlocked() const {
+  if (!IsTrackingProtection3pcdEnabled() ||
+      AreThirdPartyCookiesAllowedByEnterprise()) {
+    return false;
+  }
+  return pref_service_->GetBoolean(prefs::kBlockAll3pcToggleEnabled) ||
+         is_incognito_;
+}
+
+bool TrackingProtectionSettings::AreThirdPartyCookiesAllowedByEnterprise()
+    const {
   return IsTrackingProtection3pcdEnabled() &&
-         (pref_service_->GetBoolean(prefs::kBlockAll3pcToggleEnabled) ||
-          is_incognito_);
+         base::FeatureList::IsEnabled(kTrackingProtectionSettingsLaunch) &&
+         pref_service_->GetBoolean(prefs::kAllowAll3pcToggleEnabled);
 }
 
 bool TrackingProtectionSettings::IsFingerprintingProtectionEnabled() const {

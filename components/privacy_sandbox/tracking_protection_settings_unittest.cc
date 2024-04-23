@@ -137,10 +137,43 @@ TEST_F(TrackingProtectionSettingsTest, AreAll3pcBlockedTrueInIncognito) {
 TEST_F(TrackingProtectionSettingsTest, AreAll3pcBlockedFalseOutside3pcd) {
   prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
   prefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, true);
-  EXPECT_FALSE(TrackingProtectionSettings(prefs(), host_content_settings_map(),
-                                          nullptr,
-                                          /*is_incognito=*/false)
-                   .AreAllThirdPartyCookiesBlocked());
+  EXPECT_FALSE(
+      tracking_protection_settings()->AreAllThirdPartyCookiesBlocked());
+}
+
+TEST_F(TrackingProtectionSettingsTest,
+       AreAll3pcBlockedFalseWhen3pcAllowedPrefTrue) {
+  MockTrackingProtectionSettingsObserver observer;
+  tracking_protection_settings()->AddObserver(&observer);
+
+  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+  EXPECT_CALL(observer, OnBlockAllThirdPartyCookiesChanged());
+  prefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, true);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_TRUE(tracking_protection_settings()->AreAllThirdPartyCookiesBlocked());
+  EXPECT_CALL(observer, OnBlockAllThirdPartyCookiesChanged());
+  prefs()->SetBoolean(prefs::kAllowAll3pcToggleEnabled, true);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_FALSE(
+      tracking_protection_settings()->AreAllThirdPartyCookiesBlocked());
+}
+
+TEST_F(TrackingProtectionSettingsTest,
+       Are3pcAllowedByEnterpriseTrueWhenPrefTrueIn3pcd) {
+  MockTrackingProtectionSettingsObserver observer;
+  tracking_protection_settings()->AddObserver(&observer);
+
+  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+  EXPECT_FALSE(tracking_protection_settings()
+                   ->AreThirdPartyCookiesAllowedByEnterprise());
+  EXPECT_CALL(observer, OnBlockAllThirdPartyCookiesChanged());
+  prefs()->SetBoolean(prefs::kAllowAll3pcToggleEnabled, true);
+  testing::Mock::VerifyAndClearExpectations(&observer);
+  EXPECT_TRUE(tracking_protection_settings()
+                  ->AreThirdPartyCookiesAllowedByEnterprise());
+  prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
+  EXPECT_FALSE(tracking_protection_settings()
+                   ->AreThirdPartyCookiesAllowedByEnterprise());
 }
 
 // Sets prefs
