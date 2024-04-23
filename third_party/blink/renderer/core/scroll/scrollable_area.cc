@@ -556,18 +556,27 @@ void ScrollableArea::ScrollToScrollStartTargets(
 }
 
 void ScrollableArea::ApplyScrollStart() {
-  if (const auto* scroll_start_targets = GetScrollStartTargets()) {
-    ScrollToScrollStartTargets(scroll_start_targets);
-    // scroll-start-target takes precedence over scroll-start, so we should
-    // return here.
-    return;
+  if (RuntimeEnabledFeatures::CSSScrollStartTargetEnabled()) {
+    if (const auto* scroll_start_targets = GetScrollStartTargets()) {
+      if (auto* box = GetLayoutBox()) {
+        UseCounter::Count(box->GetDocument(),
+                          WebFeature::kCSSScrollStartTarget);
+      }
+      ScrollToScrollStartTargets(scroll_start_targets);
+      // scroll-start-target takes precedence over scroll-start, so we should
+      // return here.
+      return;
+    }
   }
-  const auto& y_data = GetLayoutBox()->Style()->ScrollStartY();
-  const auto& x_data = GetLayoutBox()->Style()->ScrollStartX();
-  ScrollOffset scroll_start_offset =
-      ScrollOffsetFromScrollStartData(y_data, x_data);
-  SetScrollOffset(scroll_start_offset, mojom::blink::ScrollType::kScrollStart,
-                  mojom::blink::ScrollBehavior::kInstant);
+
+  if (RuntimeEnabledFeatures::CSSScrollStartEnabled()) {
+    const auto& y_data = GetLayoutBox()->Style()->ScrollStartY();
+    const auto& x_data = GetLayoutBox()->Style()->ScrollStartX();
+    ScrollOffset scroll_start_offset =
+        ScrollOffsetFromScrollStartData(y_data, x_data);
+    SetScrollOffset(scroll_start_offset, mojom::blink::ScrollType::kScrollStart,
+                    mojom::blink::ScrollBehavior::kInstant);
+  }
 }
 
 void ScrollableArea::ScrollBy(const ScrollOffset& delta,

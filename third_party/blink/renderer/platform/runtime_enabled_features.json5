@@ -996,6 +996,11 @@
       status: "test",
     },
     {
+      // https://drafts.csswg.org/css-scroll-snap-2#scroll-start-target
+      name: "CSSScrollStartTarget",
+      status: "experimental",
+    },
+    {
       // Flag for supporting scroll-state() and container-type: scroll-state
       // Implied by supporting at least one of the scroll-state query features.
       name: "CSSScrollStateContainerQueries",

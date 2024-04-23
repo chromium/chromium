@@ -1079,10 +1079,8 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
 
   PositionOverflowControls();
 
-  if (RuntimeEnabledFeatures::CSSScrollStartEnabled()) {
-    if (IsApplyingScrollStart()) {
-      ApplyScrollStart();
-    }
+  if (IsApplyingScrollStart()) {
+    ApplyScrollStart();
   }
 }
 

@@ -4341,6 +4341,9 @@ enum WebFeature {
   kCanvas2DLayersCSSFilters = 4952,
   kCanvas2DLayersFilterObjects = 4953,
 
+  // https://drafts.csswg.org/css-scroll-snap-2/#scroll-start-target
+  kCSSScrollStartTarget = 4954,
+
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
   // Also, run update_use_counter_feature_enum.py in
