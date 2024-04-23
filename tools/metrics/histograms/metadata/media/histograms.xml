@@ -4143,7 +4143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevicesManager.VideoDeviceEnumeration.Start"
-    enum="Boolean" expires_after="2024-05-01">
+    enum="Boolean" expires_after="2024-10-23">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
   <owner>video-cmi-apis@google.com</owner>
