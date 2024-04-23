@@ -108,6 +108,11 @@ TestCase& TestCase::NewDirectoryTree() {
   return *this;
 }
 
+TestCase& TestCase::EnableMaterializedViews() {
+  options.enable_materialized_views = true;
+  return *this;
+}
+
 // Show the startup browser. Some tests invoke the file picker dialog during
 // the test. Requesting a file picker from a background page is forbidden by
 // the apps platform, and it's a bug that these tests do so.
@@ -315,6 +320,10 @@ std::string TestCase::GetFullName() const {
 
   if (options.enable_cros_components) {
     full_name += "_CrosComponents";
+  }
+
+  if (options.enable_materialized_views) {
+    full_name += "_MaterializedViews";
   }
 
   if (options.enable_new_directory_tree) {

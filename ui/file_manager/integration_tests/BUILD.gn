@@ -43,6 +43,7 @@ ts_files = [
   "file_manager/manage_dialog.ts",
   "file_manager/metadata.ts",
   "file_manager/metrics.ts",
+  "file_manager/materialized_views.ts",
   "file_manager/my_files.ts",
   "file_manager/navigation.ts",
   "file_manager/office.ts",

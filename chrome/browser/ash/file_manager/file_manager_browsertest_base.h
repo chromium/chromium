@@ -204,6 +204,9 @@ class FileManagerBrowserTestBase
     // Whether to enable jellybean UI elements.
     bool enable_cros_components = false;
 
+    // Whether to enable the materialized views feature.
+    bool enable_materialized_views = false;
+
     // Whether to enable new directory tree implementation.
     bool enable_new_directory_tree = false;
 

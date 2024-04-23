@@ -906,18 +906,9 @@ export class RemoteCallFilesApp extends RemoteCall {
    * @param menu The name of the menu.
    * @return Promise to be fulfilled with the menu.
    */
-  async getMenu(appId: string, menu: string|string[]):
-      Promise<undefined|MenuObject> {
-    let menuId = '';
-    // TODO: Implement for other menus.
-    if (menu === 'context-menu') {
-      menuId = '#file-context-menu';
-    } else if (menu === 'tasks') {
-      menuId = '#tasks-menu';
-    }
-
+  async getMenu(appId: string, menu: string): Promise<undefined|MenuObject> {
+    const menuId = this.getMenuId(menu);
     if (!menuId) {
-      console.error(`Invalid menu '${menu}'`);
       return;
     }
 
@@ -926,6 +917,41 @@ export class RemoteCallFilesApp extends RemoteCall {
     // Query all the menu items.
     menuElement.items = await this.queryElements(appId, `${menuId} > *`);
     return menuElement;
+  }
+
+  getMenuId(menu: string) {
+    // TODO: Implement for other menus.
+    if (menu === 'context-menu') {
+      return '#file-context-menu';
+    } else if (menu === 'tasks') {
+      return '#tasks-menu';
+    }
+
+    console.error(`Invalid menu '${menu}'`);
+    return '';
+  }
+
+  async waitForMenuItem(appId: string, menu: string, commandId: string):
+      Promise<undefined|MenuObject> {
+    const menuId = this.getMenuId(menu);
+    if (!menuId) {
+      return;
+    }
+
+    const visibleMenu = `${menuId}:not([hidden])`;
+    const visibleMenuItem = `[command="${commandId}"]:not([hidden])`;
+
+    await this.waitForElement(appId, visibleMenu);
+    await this.waitForElement(appId, visibleMenuItem);
+
+    return this.getMenu(appId, menu);
+  }
+
+  async waitAndClickMenuItem(appId: string, menu: string, commandId: string) {
+    await this.waitForMenuItem(appId, menu, commandId);
+    const visibleMenuItem =
+        `[command="${commandId}"]:not([hidden]):not([disabled])`;
+    await this.waitAndClickElement(appId, visibleMenuItem);
   }
 
   /**

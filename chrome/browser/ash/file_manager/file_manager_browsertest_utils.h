@@ -62,6 +62,8 @@ struct TestCase {
 
   TestCase& EnableSinglePartitionFormat();
 
+  TestCase& EnableMaterializedViews();
+
   TestCase& NewDirectoryTree();
 
   // Show the startup browser. Some tests invoke the file picker dialog during
