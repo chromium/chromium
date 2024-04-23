@@ -4,11 +4,11 @@
 
 import '../cr_icon_button/cr_icon_button.js';
 import '../icons_lit.html.js';
-import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './cr_toolbar_search_field.js';
 
 import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './cr_toolbar.css.js';
 import {getHtml} from './cr_toolbar.html.js';
@@ -105,6 +105,17 @@ export class CrToolbarElement extends CrLitElement {
   alwaysShowLogo: boolean = false;
   protected showingSearch_: boolean;
   searchIconOverride?: string;
+  private narrowQuery_: MediaQueryList|null = null;
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('narrowThreshold')) {
+      this.narrowQuery_ =
+          window.matchMedia(`(max-width: ${this.narrowThreshold}px)`);
+      this.narrow = this.narrowQuery_.matches;
+      this.narrowQuery_.addListener(() => this.onQueryChanged_());
+    }
+  }
 
   getSearchField(): CrToolbarSearchFieldElement {
     return this.$.search;
@@ -133,8 +144,9 @@ export class CrToolbarElement extends CrLitElement {
     this.showingSearch_ = e.detail.value;
   }
 
-  protected onQueryMatchesChanged_(e: CustomEvent<{value: boolean}>) {
-    this.narrow = e.detail.value;
+  private onQueryChanged_() {
+    assert(this.narrowQuery_);
+    this.narrow = this.narrowQuery_.matches;
   }
 }
 

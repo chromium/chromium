@@ -38,10 +38,6 @@ export function getHtml(this: CrToolbarElement) {
       @showing-search-changed="${this.onShowingSearchChanged_}"
       ?autofocus="${this.autofocus}" icon-override="${this.searchIconOverride}">
   </cr-toolbar-search-field>
-  <iron-media-query query="(max-width: ${this.narrowThreshold}px)"
-      ?query-matches="${this.narrow}"
-      @query-matches-changed="${this.onQueryMatchesChanged_}">
-  </iron-media-query>
 </div>
 
 <div id="rightContent">
