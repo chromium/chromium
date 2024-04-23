@@ -7151,6 +7151,21 @@
             ]
         }
     ],
+    "EnableTcpPortRandomization": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableTcpPortRandomization"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableWatchdogReportOnlyModeOnGpuInit": [
         {
             "platforms": [

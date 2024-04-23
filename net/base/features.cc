@@ -325,6 +325,10 @@ BASE_FEATURE(kPlatformKeyProbeSHA256,
 BASE_FEATURE(kEnableGetNetworkConnectivityHintAPI,
              "EnableGetNetworkConnectivityHintAPI",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableTcpPortRandomization,
+             "EnableTcpPortRandomization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Prefetch to follow normal semantics instead of 5-minute rule

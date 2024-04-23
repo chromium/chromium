@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "net/socket/tcp_socket.h"
-#include "net/socket/tcp_socket_win.h"
 
 #include <errno.h>
 #include <mstcpip.h>
@@ -12,12 +11,15 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/win/windows_version.h"
 #include "net/base/address_list.h"
+#include "net/base/features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -35,6 +37,7 @@
 #include "net/socket/socket_net_log_params.h"
 #include "net/socket/socket_options.h"
 #include "net/socket/socket_tag.h"
+#include "net/socket/tcp_socket_win.h"
 
 namespace net {
 
@@ -854,6 +857,16 @@ int TCPSocketWin::DoConnect() {
   SockaddrStorage storage;
   if (!peer_address_->ToSockAddr(storage.addr, &storage.addr_len))
     return ERR_ADDRESS_INVALID;
+
+  // Set option to choose a random port, if the socket is not already bound.
+  // Ignore failures, which may happen if the socket was already bound.
+  if (base::win::GetVersion() >= base::win::Version::WIN10_20H1 &&
+      base::FeatureList::IsEnabled(features::kEnableTcpPortRandomization)) {
+    BOOL randomize_port = TRUE;
+    setsockopt(socket_, SOL_SOCKET, SO_RANDOMIZE_PORT,
+               reinterpret_cast<const char*>(&randomize_port),
+               sizeof(randomize_port));
+  }
 
   if (!connect(socket_, storage.addr, storage.addr_len)) {
     // Connected without waiting!

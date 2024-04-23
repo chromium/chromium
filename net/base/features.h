@@ -348,6 +348,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPlatformKeyProbeSHA256);
 // Whether or not to use the GetNetworkConnectivityHint API on modern Windows
 // versions for the Network Change Notifier.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableGetNetworkConnectivityHintAPI);
+
+// Whether or not to enable TCP port randomization via SO_RANDOMIZE_PORT on
+// Windows 20H1+.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableTcpPortRandomization);
 #endif
 
 // Prefetch to follow normal semantics instead of 5-minute rule
