@@ -51,14 +51,6 @@ String GenerateFakeUrlFromScriptId(int script_id) {
 
 }  // namespace
 
-namespace features {
-// Controls whether the AdTracker will look across async stacks to determine if
-// the currently running stack is ad related.
-BASE_FEATURE(kAsyncStackAdTagging,
-             "AsyncStackAdTagging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-}  // namespace features
-
 // static
 AdTracker* AdTracker::FromExecutionContext(
     ExecutionContext* execution_context) {
@@ -80,10 +72,7 @@ bool AdTracker::IsAdScriptExecutingInDocument(Document* document,
   return ad_tracker && ad_tracker->IsAdScriptInStack(stack_type);
 }
 
-AdTracker::AdTracker(LocalFrame* local_root)
-    : local_root_(local_root),
-      async_stack_enabled_(
-          base::FeatureList::IsEnabled(features::kAsyncStackAdTagging)) {
+AdTracker::AdTracker(LocalFrame* local_root) : local_root_(local_root) {
   local_root_->GetProbeSink()->AddAdTracker(this);
 }
 
@@ -267,9 +256,6 @@ bool AdTracker::CalculateIfAdSubresource(
 
 void AdTracker::DidCreateAsyncTask(probe::AsyncTaskContext* task_context) {
   DCHECK(task_context);
-  if (!async_stack_enabled_)
-    return;
-
   std::optional<AdScriptIdentifier> id;
   if (IsAdScriptInStack(StackType::kBottomAndTop, &id)) {
     task_context->SetAdTask(id);
@@ -278,9 +264,6 @@ void AdTracker::DidCreateAsyncTask(probe::AsyncTaskContext* task_context) {
 
 void AdTracker::DidStartAsyncTask(probe::AsyncTaskContext* task_context) {
   DCHECK(task_context);
-  if (!async_stack_enabled_)
-    return;
-
   if (task_context->IsAdTask()) {
     if (running_ad_async_tasks_ == 0) {
       DCHECK(!bottom_most_async_ad_script_.has_value());
@@ -293,9 +276,6 @@ void AdTracker::DidStartAsyncTask(probe::AsyncTaskContext* task_context) {
 
 void AdTracker::DidFinishAsyncTask(probe::AsyncTaskContext* task_context) {
   DCHECK(task_context);
-  if (!async_stack_enabled_)
-    return;
-
   if (task_context->IsAdTask()) {
     DCHECK_GE(running_ad_async_tasks_, 1);
     running_ad_async_tasks_ -= 1;

@@ -34,10 +34,6 @@ class CallFunction;
 class ExecuteScript;
 }  // namespace probe
 
-namespace features {
-CORE_EXPORT BASE_DECLARE_FEATURE(kAsyncStackAdTagging);
-}  // namespace features
-
 // Tracker for tagging resources as ads based on the call stack scripts.
 // The tracker is maintained per local root.
 class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
@@ -149,11 +145,6 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
 
   // The number of ad-related async tasks currently running in the stack.
   int running_ad_async_tasks_ = 0;
-
-  // True if the AdTracker looks not only at the current V8 stack for ad script
-  // but also at the previous asynchronous stacks that caused this current
-  // callstack to run (e.g., registered callbacks).
-  const bool async_stack_enabled_;
 };
 
 }  // namespace blink
