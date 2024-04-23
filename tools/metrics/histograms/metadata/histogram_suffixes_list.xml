@@ -3758,28 +3758,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Network.Shill.WiFi.SessionLength"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="SafeBrowsing_Settings_AccessPoint" separator=".">
-  <suffix name="Default"
-      label="The user enters the Safe Browsing settings page from a default
-             access point."/>
-  <suffix name="ParentSettings"
-      label="The user enters the Safe Browsing settings page from the parent
-             setting page."/>
-  <suffix name="SafetyCheck"
-      label="The user enters the Safe Browsing settings page from the
-             SafetyCheck page."/>
-  <suffix name="SecurityInterstitial"
-      label="The user enters the Safe Browsing settings page from the
-             security interstitial."/>
-  <suffix name="SurfaceExplorerPromoSlinger"
-      label="The user enters the Safe Browsing settings page from the Surface
-             Explorer page."/>
-  <suffix name="TailoredSecurity"
-      label="The user enters the Safe Browsing settings page from the UX
-             shown due to a change in the Tailored Security setting"/>
-  <affected-histogram name="SafeBrowsing.Settings.UserAction"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="SafeBrowsing_V4Store_Metrics" separator=".">
   <suffix name="CertCsdDownloadAllowlist" label=""/>
   <suffix name="CertCsdDownloadWhitelist" label=""/>

@@ -2535,7 +2535,7 @@ chromium-metrics-reviews@google.com.
   <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
-<histogram base="true" name="SafeBrowsing.Settings.UserAction"
+<histogram name="SafeBrowsing.Settings.UserAction.{AccessPoint}"
     enum="SafeBrowsingSettingsUserAction" expires_after="2024-09-01">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -2544,6 +2544,26 @@ chromium-metrics-reviews@google.com.
     on the enum value, logged when the page is showned to the user or when the
     user performs an action on the page.
   </summary>
+  <token key="AccessPoint">
+    <variant name="Default"
+        summary="The user enters the Safe Browsing settings page from a
+                 default access point."/>
+    <variant name="ParentSettings"
+        summary="The user enters the Safe Browsing settings page from the
+                 parent setting page."/>
+    <variant name="SafetyCheck"
+        summary="The user enters the Safe Browsing settings page from the
+                 SafetyCheck page."/>
+    <variant name="SecurityInterstitial"
+        summary="The user enters the Safe Browsing settings page from the
+                 security interstitial."/>
+    <variant name="SurfaceExplorerPromoSlinger"
+        summary="The user enters the Safe Browsing settings page from the
+                 Surface Explorer page."/>
+    <variant name="TailoredSecurity"
+        summary="The user enters the Safe Browsing settings page from the UX
+                 shown due to a change in the Tailored Security setting"/>
+  </token>
 </histogram>
 
 <histogram
