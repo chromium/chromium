@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
@@ -345,8 +346,12 @@ BASE_FEATURE(kEyeDropper,
 #endif
 );
 
+const char kEyeDropperNotSupported[] = "eye-dropper-not-supported";
+
 bool IsEyeDropperEnabled() {
-  return base::FeatureList::IsEnabled(features::kEyeDropper);
+  return base::FeatureList::IsEnabled(features::kEyeDropper) &&
+         !base::CommandLine::ForCurrentProcess()->HasSwitch(
+             kEyeDropperNotSupported);
 }
 
 // Used to enable keyboard accessible tooltips in in-page content
