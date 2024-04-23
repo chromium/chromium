@@ -4,6 +4,7 @@
 
 package org.chromium.components.tab_group_sync;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -30,6 +31,11 @@ import java.util.concurrent.TimeoutException;
  */
 @JNINamespace("tab_groups")
 public class TabGroupSyncServiceAndroidUnitTest {
+    private static final String TEST_GROUP_TITLE = "Test Group";
+    private static final String TEST_GROUP_TITLE_2 = "Test Group 2";
+    private static final String TEST_TAB_TITLE = "Test Tab";
+    private static final String TEST_URL = "https://google.com";
+
     private TabGroupSyncService mService;
     private TabGroupSyncService.Observer mObserver;
     private ArgumentCaptor<SavedTabGroup> mTabGroupCaptor =
@@ -54,11 +60,11 @@ public class TabGroupSyncServiceAndroidUnitTest {
     }
 
     @CalledByNative
-    public void testSavedTabGroupJavaConversion(SavedTabGroup group) {
+    public void testSavedTabGroupConversion(SavedTabGroup group) {
         Assert.assertNotNull(group);
         Assert.assertNotNull(group.syncId);
         Assert.assertNull(group.localId);
-        Assert.assertEquals("Some Title", group.title);
+        Assert.assertEquals(TEST_GROUP_TITLE, group.title);
         Assert.assertEquals(TabGroupColorId.RED, group.color);
         Assert.assertEquals(3, group.savedTabs.size());
 
@@ -75,7 +81,7 @@ public class TabGroupSyncServiceAndroidUnitTest {
         Assert.assertEquals(Integer.valueOf(9), tab3.localId);
         Assert.assertEquals(group.syncId, tab3.syncGroupId);
         Assert.assertEquals(Integer.valueOf(2), tab3.position);
-        Assert.assertEquals("Tab title", tab3.title);
+        Assert.assertEquals(TEST_TAB_TITLE, tab3.title);
         Assert.assertEquals(new GURL(null), tab3.url);
     }
 
@@ -83,21 +89,22 @@ public class TabGroupSyncServiceAndroidUnitTest {
     public void testOnTabGroupAdded() {
         verify(mObserver).onTabGroupAdded(mTabGroupCaptor.capture());
         SavedTabGroup group = mTabGroupCaptor.getValue();
-        Assert.assertEquals(new String("Test Group"), group.title);
+        Assert.assertEquals(new String(TEST_GROUP_TITLE), group.title);
         Assert.assertEquals(TabGroupColorId.BLUE, group.color);
     }
 
     @CalledByNative
     public void testOnTabGroupUpdated() {
-        verify(mObserver).onTabGroupAdded(mTabGroupCaptor.capture());
+        verify(mObserver).onTabGroupUpdated(mTabGroupCaptor.capture());
         SavedTabGroup group = mTabGroupCaptor.getValue();
-        Assert.assertEquals(new String("Test Group"), group.title);
+        Assert.assertEquals(new String(TEST_GROUP_TITLE), group.title);
         Assert.assertEquals(TabGroupColorId.BLUE, group.color);
     }
 
     @CalledByNative
     public void testOnTabGroupRemoved() {
         verify(mObserver).onTabGroupRemoved(eq(4));
+        verify(mObserver).onTabGroupRemoved(anyString());
     }
 
     @CalledByNative
@@ -113,7 +120,24 @@ public class TabGroupSyncServiceAndroidUnitTest {
 
     @CalledByNative
     public void testUpdateVisualData() {
-        mService.updateVisualData(4, "Updated Title", TabGroupColorId.GREEN);
+        mService.updateVisualData(4, TEST_GROUP_TITLE_2, TabGroupColorId.GREEN);
+    }
+
+    @CalledByNative
+    public void testAddTab() {
+        mService.addTab(1, 2, TEST_TAB_TITLE, new GURL(TEST_URL), 3);
+        mService.addTab(3, 4, TEST_TAB_TITLE, new GURL(TEST_URL), -1);
+    }
+
+    @CalledByNative
+    public void testUpdateTab() {
+        mService.updateTab(1, 2, TEST_TAB_TITLE, new GURL(TEST_URL), 3);
+        mService.updateTab(3, 4, TEST_TAB_TITLE, new GURL(TEST_URL), -1);
+    }
+
+    @CalledByNative
+    public void testRemoveTab() {
+        mService.removeTab(1, 2);
     }
 
     @CalledByNative
@@ -128,6 +152,15 @@ public class TabGroupSyncServiceAndroidUnitTest {
         Assert.assertNotNull(group);
 
         group = mService.getGroup(uuid2);
+        Assert.assertNull(group);
+    }
+
+    @CalledByNative
+    public void testGetGroupByLocalId(int localId1, int localId2) {
+        SavedTabGroup group = mService.getGroup(localId1);
+        Assert.assertNotNull(group);
+
+        group = mService.getGroup(localId2);
         Assert.assertNull(group);
     }
 

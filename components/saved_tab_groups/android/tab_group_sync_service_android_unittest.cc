@@ -27,6 +27,11 @@ using testing::SaveArg;
 namespace tab_groups {
 namespace {
 
+const char kTestUuid[] = "abcdefgh";
+const char16_t kTestGroupTitle[] = u"Test Group";
+const char kTestUrl[] = "https://google.com";
+const char16_t kTestTabTitle[] = u"Test Tab";
+
 class MockTabGroupSyncService : public TabGroupSyncService {
  public:
   MockTabGroupSyncService() = default;
@@ -126,11 +131,11 @@ TEST_F(TabGroupSyncServiceAndroidTest, OnInitialized) {
 
 TEST_F(TabGroupSyncServiceAndroidTest, UuidConversion) {
   auto* env = AttachCurrentThread();
-  base::Uuid uuid = base::Uuid::ParseCaseInsensitive("abcdefghKL");
+  base::Uuid uuid = base::Uuid::ParseCaseInsensitive(kTestUuid);
   auto j_uuid = UuidToJavaString(env, uuid);
-  auto uuid2 = JavaStringToUuid(
+  auto converted_uuid = JavaStringToUuid(
       env, base::android::JavaParamRef<jstring>(env, j_uuid.Release()));
-  EXPECT_EQ(uuid, uuid2);
+  EXPECT_EQ(uuid, converted_uuid);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, TabGroupIdConversion) {
@@ -149,22 +154,22 @@ TEST_F(TabGroupSyncServiceAndroidTest, TabIdConversion) {
 TEST_F(TabGroupSyncServiceAndroidTest, SaveTabGroupConversion) {
   auto* env = AttachCurrentThread();
   SavedTabGroup group = test::CreateTestSavedTabGroup();
-  group.SetTitle(u"Some Title");
+  group.SetTitle(kTestGroupTitle);
   group.SetColor(tab_groups::TabGroupColorId::kRed);
 
-  SavedTabGroupTab tab3(GURL(), u"Tab title", group.saved_guid(),
+  SavedTabGroupTab tab3(GURL(), kTestTabTitle, group.saved_guid(),
                         /*position=*/std::nullopt,
                         /*saved_tab_guid=*/std::nullopt, /*local_tab_id=*/9);
   group.AddTabLocally(tab3);
   auto j_group = TabGroupSyncConversionsBridge::CreateGroup(env, group);
-  Java_TabGroupSyncServiceAndroidUnitTest_testSavedTabGroupJavaConversion(
+  Java_TabGroupSyncServiceAndroidUnitTest_testSavedTabGroupConversion(
       AttachCurrentThread(), j_test_, j_group);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupAdded) {
   auto* env = AttachCurrentThread();
   SavedTabGroup group = test::CreateTestSavedTabGroup();
-  group.SetTitle(u"Test Group");
+  group.SetTitle(kTestGroupTitle);
   group.SetColor(tab_groups::TabGroupColorId::kBlue);
   bridge_->OnTabGroupAdded(group, TriggerSource::REMOTE);
   Java_TabGroupSyncServiceAndroidUnitTest_testOnTabGroupAdded(env, j_test_);
@@ -173,15 +178,17 @@ TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupAdded) {
 TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupUpdated) {
   auto* env = AttachCurrentThread();
   SavedTabGroup group = test::CreateTestSavedTabGroup();
-  group.SetTitle(u"Test Group");
+  group.SetTitle(kTestGroupTitle);
   group.SetColor(tab_groups::TabGroupColorId::kBlue);
-  bridge_->OnTabGroupAdded(group, TriggerSource::REMOTE);
+  bridge_->OnTabGroupUpdated(group, TriggerSource::REMOTE);
   Java_TabGroupSyncServiceAndroidUnitTest_testOnTabGroupUpdated(env, j_test_);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, OnTabGroupRemoved) {
   auto* env = AttachCurrentThread();
+  base::Uuid group_id = base::Uuid::GenerateRandomV4();
   bridge_->OnTabGroupRemoved(4);
+  bridge_->OnTabGroupRemoved(group_id);
   Java_TabGroupSyncServiceAndroidUnitTest_testOnTabGroupRemoved(env, j_test_);
 }
 
@@ -197,15 +204,53 @@ TEST_F(TabGroupSyncServiceAndroidTest, CreateGroup) {
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, RemoveGroup) {
+  auto* env = AttachCurrentThread();
+
   EXPECT_CALL(tab_group_sync_service_, RemoveGroup(Eq(4)));
-  Java_TabGroupSyncServiceAndroidUnitTest_testRemoveGroup(AttachCurrentThread(),
-                                                          j_test_);
+  Java_TabGroupSyncServiceAndroidUnitTest_testRemoveGroup(env, j_test_);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, UpdateVisualData) {
+  auto* env = AttachCurrentThread();
+
   EXPECT_CALL(tab_group_sync_service_, UpdateVisualData(Eq(4), _));
-  Java_TabGroupSyncServiceAndroidUnitTest_testUpdateVisualData(
-      AttachCurrentThread(), j_test_);
+  Java_TabGroupSyncServiceAndroidUnitTest_testUpdateVisualData(env, j_test_);
+}
+
+TEST_F(TabGroupSyncServiceAndroidTest, AddTab) {
+  auto* env = AttachCurrentThread();
+
+  GURL url(kTestUrl);
+  std::optional<int> position = 3;
+
+  EXPECT_CALL(tab_group_sync_service_,
+              AddTab(Eq(1), Eq(2), Eq(kTestTabTitle), Eq(url), Eq(position)));
+
+  EXPECT_CALL(tab_group_sync_service_, AddTab(Eq(3), Eq(4), Eq(kTestTabTitle),
+                                              Eq(url), Eq(std::nullopt)));
+  Java_TabGroupSyncServiceAndroidUnitTest_testAddTab(env, j_test_);
+}
+
+TEST_F(TabGroupSyncServiceAndroidTest, UpdateTab) {
+  auto* env = AttachCurrentThread();
+
+  GURL url(kTestUrl);
+  std::optional<int> position = 3;
+
+  EXPECT_CALL(
+      tab_group_sync_service_,
+      UpdateTab(Eq(1), Eq(2), Eq(kTestTabTitle), Eq(url), Eq(position)));
+  EXPECT_CALL(
+      tab_group_sync_service_,
+      UpdateTab(Eq(3), Eq(4), Eq(kTestTabTitle), Eq(url), Eq(std::nullopt)));
+  Java_TabGroupSyncServiceAndroidUnitTest_testUpdateTab(env, j_test_);
+}
+
+TEST_F(TabGroupSyncServiceAndroidTest, RemoveTab) {
+  auto* env = AttachCurrentThread();
+
+  EXPECT_CALL(tab_group_sync_service_, RemoveTab(Eq(1), Eq(2)));
+  Java_TabGroupSyncServiceAndroidUnitTest_testRemoveTab(env, j_test_);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, GetAllGroups) {
@@ -220,7 +265,7 @@ TEST_F(TabGroupSyncServiceAndroidTest, GetAllGroups) {
 TEST_F(TabGroupSyncServiceAndroidTest, GetGroupBySyncId) {
   auto* env = AttachCurrentThread();
   auto group1 = test::CreateTestSavedTabGroup();
-  base::Uuid uuid2 = base::Uuid::ParseCaseInsensitive("abcdefghKL");
+  base::Uuid uuid2 = base::Uuid::ParseCaseInsensitive(kTestUuid);
 
   EXPECT_CALL(tab_group_sync_service_, GetGroup(group1.saved_guid()))
       .WillOnce(Return(std::make_optional<SavedTabGroup>(group1)));
@@ -231,6 +276,21 @@ TEST_F(TabGroupSyncServiceAndroidTest, GetGroupBySyncId) {
   auto j_uuid2 = UuidToJavaString(env, uuid2);
   Java_TabGroupSyncServiceAndroidUnitTest_testGetGroupBySyncId(
       env, j_test_, j_uuid1, j_uuid2);
+}
+
+TEST_F(TabGroupSyncServiceAndroidTest, GetGroupByLocalId) {
+  auto* env = AttachCurrentThread();
+  auto group1 = test::CreateTestSavedTabGroup();
+  auto local_id_1 = test::GenerateRandomTabGroupID();
+  auto local_id_2 = test::GenerateRandomTabGroupID();
+
+  EXPECT_CALL(tab_group_sync_service_, GetGroup(local_id_1))
+      .WillOnce(Return(std::make_optional<SavedTabGroup>(group1)));
+  EXPECT_CALL(tab_group_sync_service_, GetGroup(local_id_2))
+      .WillOnce(Return(std::nullopt));
+
+  Java_TabGroupSyncServiceAndroidUnitTest_testGetGroupByLocalId(
+      env, j_test_, local_id_1, local_id_2);
 }
 
 TEST_F(TabGroupSyncServiceAndroidTest, UpdateLocalTabGroupMapping) {
