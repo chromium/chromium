@@ -979,6 +979,7 @@ ui::InputDeviceType EventDeviceInfo::GetInputDeviceTypeFromId(input_id id) {
       {0x18d1, 0x5057},  // Google, eel PID (wormdingler)
       {0x18d1, 0x505B},  // Google, Duck PID (quackingstick)
       {0x18d1, 0x5061},  // Google, Jewel PID (starmie)
+      {0x18d1, 0x5067},  // Google, Spickyrock (wugtrio)
       {0x1fd2, 0x8103},  // LG, Internal TouchScreen PID
   };
 
