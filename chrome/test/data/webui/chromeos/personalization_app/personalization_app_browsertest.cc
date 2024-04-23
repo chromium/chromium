@@ -187,7 +187,9 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest, WallpaperGridItem) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest, WallpaperImages) {
+// TODO(crbug.com/336418721): Re-enable this test flakily failing.
+IN_PROC_BROWSER_TEST_F(PersonalizationAppComponentTest,
+                       DISABLED_WallpaperImages) {
   RunTest("chromeos/personalization_app/wallpaper_images_element_test.js",
           "mocha.run()");
 }
