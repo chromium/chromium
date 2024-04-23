@@ -114,7 +114,8 @@ static const CGFloat kOffsetForConnectedCell = 16;
 // The constraints for the visible favicon.
 @property(nonatomic, strong) NSArray<NSLayoutConstraint*>* faviconContraints;
 
-// The view displayed at the top the cell containing the favicon and site name.
+// The view displayed at the top the cell containing the favicon, the site name
+// and a 3-dot menu button.
 @property(nonatomic, strong) UIView* headerView;
 
 // The favicon for the credential. Of type FaviconView when the Keyboard
@@ -130,7 +131,9 @@ static const CGFloat kOffsetForConnectedCell = 16;
 // A button showing "••••••••" to resemble a password.
 @property(nonatomic, strong) UIButton* passwordButton;
 
-// Separator line between cells, if needed.
+// Separator line. When the Keyboard Accessory Upgrade feature is enbaled, used
+// to delimit the header from the rest of the cell. When disabled, used when
+// needed to delimit cells.
 @property(nonatomic, strong) UIView* grayLine;
 
 // The delegate in charge of processing the user actions in this cell.

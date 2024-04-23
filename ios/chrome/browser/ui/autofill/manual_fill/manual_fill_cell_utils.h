@@ -141,14 +141,13 @@ UILabel* CreateLabel();
 NSMutableAttributedString* CreateHeaderAttributedString(NSString* title,
                                                         NSString* subtitle);
 
-// Creates an horizontal stack view containing an icon and a label. Used to
-// create the different manual fill cells' header.
+// Creates an horizontal stack view containing an icon, a label and a 3-dot menu
+// button. Used to create the different manual fill cells' header.
 UIStackView* CreateHeaderView(UIView* icon, UILabel* label);
 
-// Creates a gray horizontal line separator, with the same margin as the other
-// components here. The gray line is added to the given `container` and proper
-// constraints are enabled to keep the line at the bottom of the container and
-// within the horizontal safe area.
+// Creates a gray horizontal line separator. The gray line is added to the given
+// `container` and proper constraints are enabled to keep the line in the
+// desired location within the horizontal safe area.
 UIView* CreateGraySeparatorForContainer(UIView* container);
 
 // Creates a layout guide for the cell and adds it to the given 'content_view`.

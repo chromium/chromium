@@ -77,6 +77,10 @@ using base::SysNSStringToUTF8;
 @property(nonatomic, strong)
     NSMutableArray<NSLayoutConstraint*>* dynamicConstraints;
 
+// The view displayed at the top the cell containing the card icon, the card
+// label and a 3-dot menu button.
+@property(nonatomic, strong) UIView* headerView;
+
 // The label with bank name and network.
 @property(nonatomic, strong) UILabel* cardLabel;
 
@@ -118,6 +122,11 @@ using base::SysNSStringToUTF8;
 
 // Layout guide for the cell's content.
 @property(nonatomic, strong) UILayoutGuide* layoutGuide;
+
+// Separator line. When the Keyboard Accessory Upgrade feature is enbaled, used
+// to delimit the header from the rest of the cell. When disabled, used to
+// delimit cells.
+@property(nonatomic, strong) UIView* grayLine;
 
 @end
 
@@ -189,10 +198,14 @@ using base::SysNSStringToUTF8;
 
   // Create the UIViews, add them to the contentView.
   self.cardLabel = CreateLabel();
-  [self.contentView addSubview:self.cardLabel];
   self.cardIcon = [[UIImageView alloc] init];
   self.cardIcon.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.contentView addSubview:self.cardIcon];
+  [self.cardIcon setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                                   forAxis:UILayoutConstraintAxisHorizontal];
+  self.headerView = CreateHeaderView(self.cardIcon, self.cardLabel);
+  [self.contentView addSubview:self.headerView];
+  self.grayLine = CreateGraySeparatorForContainer(self.contentView);
+
   UILabel* expirationDateSeparatorLabel;
 
   // If Virtual Cards are enabled, create UIViews with the labeled chips,
@@ -242,16 +255,10 @@ using base::SysNSStringToUTF8;
 
 // Horizontally positions the UIViews.
 - (void)horizontallyArrangeViews:(UILabel*)expirationDateSeparatorLabel {
-  CreateGraySeparatorForContainer(self.contentView);
-
   NSMutableArray<NSLayoutConstraint*>* staticConstraints =
       [[NSMutableArray alloc] init];
-  AppendHorizontalConstraintsForViews(
-      staticConstraints, @[ self.cardIcon, self.cardLabel ], self.layoutGuide);
-  [NSLayoutConstraint activateConstraints:@[
-    [self.cardIcon.centerYAnchor
-        constraintEqualToAnchor:self.cardLabel.centerYAnchor]
-  ]];
+  AppendHorizontalConstraintsForViews(staticConstraints, @[ self.headerView ],
+                                      self.layoutGuide);
 
   // If Virtual Cards are enabled, position the labeled chips, else position the
   // regular buttons.
@@ -366,9 +373,14 @@ using base::SysNSStringToUTF8;
   // Holds the views whose leading anchor is constrained relative to the cell's
   // leading anchor.
   std::vector<ManualFillCellView> verticalLeadViews;
-  AddViewToVerticalLeadViews(self.cardLabel,
+  AddViewToVerticalLeadViews(self.headerView,
                              ManualFillCellView::ElementType::kOther,
                              verticalLeadViews);
+  if (IsKeyboardAccessoryUpgradeEnabled()) {
+    AddViewToVerticalLeadViews(self.grayLine,
+                               ManualFillCellView::ElementType::kSeparator,
+                               verticalLeadViews);
+  }
 
   // Holds the chip buttons related to the card that are vertical leads.
   NSMutableArray<UIView*>* cardInfoGroupVerticalLeadChips =
