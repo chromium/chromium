@@ -5144,12 +5144,6 @@ const char kDevToolsTabTargetLiteralName[] = "DevTools using Tab Target";
 const char kDevToolsTabTargetLiteralDescription[] =
     "Makes DevTools use an experimental CDP Tab target.";
 
-const char kNewConfirmationBubbleForGeneratedPasswordsName[] =
-    "New confirmation bubble for forms with generated password";
-const char kNewConfirmationBubbleForGeneratedPasswordsDescription[] =
-    "Enables new confirmation bubble flow for forms where generated password "
-    "was used.";
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Windows ---------------------------------------------------------------------

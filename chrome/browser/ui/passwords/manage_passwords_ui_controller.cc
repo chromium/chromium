@@ -283,19 +283,13 @@ void ManagePasswordsUIController::OnAutomaticPasswordSave(
     bool is_update_confirmation) {
   DestroyPopups();
   save_fallback_timer_.Stop();
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kNewConfirmationBubbleForGeneratedPasswords)) {
-    auto ui_state =
-        is_update_confirmation ? password_manager::ui::UPDATE_CONFIRMATION_STATE
-        : form_manager->GetPendingCredentials().username_value.empty()
-            ? password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE
-            : password_manager::ui::SAVE_CONFIRMATION_STATE;
-    passwords_data_.OnSubmittedGeneratedPassword(ui_state,
-                                                 std::move(form_manager));
-  } else {
-    passwords_data_.OnAutomaticPasswordSave(std::move(form_manager));
-  }
+  auto ui_state =
+      is_update_confirmation ? password_manager::ui::UPDATE_CONFIRMATION_STATE
+      : form_manager->GetPendingCredentials().username_value.empty()
+          ? password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE
+          : password_manager::ui::SAVE_CONFIRMATION_STATE;
+  passwords_data_.OnSubmittedGeneratedPassword(ui_state,
+                                               std::move(form_manager));
 
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   UpdateBubbleAndIconVisibility();

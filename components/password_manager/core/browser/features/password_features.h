@@ -61,12 +61,6 @@ BASE_DECLARE_FEATURE(kIosDetectUsernameInUff);
 // Enables saving enterprise password hashes to a local state preference.
 BASE_DECLARE_FEATURE(kLocalStateEnterprisePasswordHashes);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// Enables new confirmation bubble flow if generated password was used in a
-// form.
-BASE_DECLARE_FEATURE(kNewConfirmationBubbleForGeneratedPasswords);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 // Enables different experiments that modify content and behavior of the
 // existing generated password suggestion dropdown.

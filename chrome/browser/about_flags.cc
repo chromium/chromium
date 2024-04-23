@@ -10558,15 +10558,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillUpdateChromeSettingsLinkToGPayWeb)},
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"new-confirmation-bubble-for-generated-passwords",
-     flag_descriptions::kNewConfirmationBubbleForGeneratedPasswordsName,
-     flag_descriptions::kNewConfirmationBubbleForGeneratedPasswordsDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(password_manager::features::
-                            kNewConfirmationBubbleForGeneratedPasswords)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"upstream-trusted-reports-firmware",
      flag_descriptions::kUpstreamTrustedReportsFirmwareName,

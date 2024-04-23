@@ -68,12 +68,6 @@ BASE_FEATURE(kLocalStateEnterprisePasswordHashes,
              "LocalStateEnterprisePasswordHashes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-BASE_FEATURE(kNewConfirmationBubbleForGeneratedPasswords,
-             "NewConfirmationBubbleForGeneratedPasswords",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 BASE_FEATURE(kPasswordGenerationExperiment,
              "PasswordGenerationExperiment",

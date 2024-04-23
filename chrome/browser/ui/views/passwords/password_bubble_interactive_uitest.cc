@@ -116,8 +116,6 @@ class PasswordBubbleInteractiveUiTest : public ManagePasswordsTest {
   PasswordBubbleInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{password_manager::features::
-                                  kNewConfirmationBubbleForGeneratedPasswords,
-                              password_manager::features::
                                   kButterOnDesktopFollowup},
         /*disabled_features=*/{
             password_manager::features::kPasswordManualFallbackAvailable});

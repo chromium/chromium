@@ -95,14 +95,7 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
     view = new PasswordAutoSignInView(web_contents, anchor_view);
   } else if (model_state == password_manager::ui::SAVE_CONFIRMATION_STATE ||
              model_state == password_manager::ui::UPDATE_CONFIRMATION_STATE) {
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::
-                kNewConfirmationBubbleForGeneratedPasswords)) {
-      view = new ManagePasswordsView(web_contents, anchor_view);
-    } else {
-      view = new PasswordGenerationConfirmationView(web_contents, anchor_view,
-                                                    reason);
-    }
+    view = new ManagePasswordsView(web_contents, anchor_view);
   } else if (model_state ==
                  password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
              model_state == password_manager::ui::PENDING_PASSWORD_STATE) {
