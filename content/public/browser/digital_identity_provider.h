@@ -47,7 +47,7 @@ class CONTENT_EXPORT DigitalIdentityProvider {
       RequestStatusForMetrics status_for_metrics)>;
   virtual void Request(WebContents* web_contents,
                        const url::Origin& origin,
-                       const base::Value::Dict& request,
+                       const std::string& request,
                        DigitalIdentityCallback callback) = 0;
 
  protected:

@@ -40,7 +40,7 @@ class CONTENT_EXPORT DigitalIdentityProviderAndroid
   // Triggers a request for a digital credential.
   void Request(WebContents* web_contents,
                const url::Origin& origin,
-               const base::Value::Dict& request,
+               const std::string& request,
                DigitalIdentityCallback callback) override;
 
  private:

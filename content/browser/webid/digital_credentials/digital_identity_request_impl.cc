@@ -5,6 +5,7 @@
 #include "content/browser/webid/digital_credentials/digital_identity_request_impl.h"
 
 #include "base/functional/callback.h"
+#include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -66,8 +67,7 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
   std::move(callback_).Run(status, response);
 }
 
-base::Value::Dict BuildRequest(
-    blink::mojom::DigitalCredentialProviderPtr provider) {
+std::string BuildRequest(blink::mojom::DigitalCredentialProviderPtr provider) {
   auto result = Value::Dict();
 
   if (provider->params) {
@@ -118,8 +118,10 @@ base::Value::Dict BuildRequest(
     result.Set("publicKey", *provider->publicKey);
   }
 
-  return Value::Dict().Set("providers",
-                           Value::List().Append(std::move(result)));
+  base::Value::Dict out =
+      Value::Dict().Set("providers", Value::List().Append(std::move(result)));
+  return WriteJsonWithOptions(out, base::JSONWriter::OPTIONS_PRETTY_PRINT)
+      .value_or("");
 }
 
 void DigitalIdentityRequestImpl::Request(
@@ -164,7 +166,7 @@ void DigitalIdentityRequestImpl::Request(
     return;
   }
 
-  auto request = BuildRequest(std::move(digital_credential_provider));
+  std::string request = BuildRequest(std::move(digital_credential_provider));
   provider_->Request(
       WebContents::FromRenderFrameHost(&render_frame_host()), origin(), request,
       base::BindOnce(&DigitalIdentityRequestImpl::ShowInterstitialIfNeeded,

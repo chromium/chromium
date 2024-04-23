@@ -24,7 +24,7 @@ class MockDigitalIdentityProvider : public DigitalIdentityProvider {
   MOCK_METHOD4(Request,
                void(WebContents*,
                     const url::Origin& origin,
-                    const base::Value::Dict&,
+                    const std::string& request,
                     DigitalIdentityCallback));
 };
 

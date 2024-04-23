@@ -8,7 +8,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/json/json_writer.h"
 #include "base/values.h"
 #include "content/public/android/content_jni_headers/DigitalIdentityProvider_jni.h"
 #include "content/public/browser/web_contents.h"
@@ -36,16 +35,13 @@ DigitalIdentityProviderAndroid::~DigitalIdentityProviderAndroid() {
 
 void DigitalIdentityProviderAndroid::Request(WebContents* web_contents,
                                              const url::Origin& origin,
-                                             const base::Value::Dict& request,
+                                             const std::string& request,
                                              DigitalIdentityCallback callback) {
   callback_ = std::move(callback);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_origin =
       ConvertUTF8ToJavaString(env, origin.Serialize());
-  std::string json =
-      WriteJsonWithOptions(request, base::JSONWriter::OPTIONS_PRETTY_PRINT)
-          .value();
-  ScopedJavaLocalRef<jstring> j_request = ConvertUTF8ToJavaString(env, json);
+  ScopedJavaLocalRef<jstring> j_request = ConvertUTF8ToJavaString(env, request);
 
   base::android::ScopedJavaLocalRef<jobject> j_window = nullptr;
 

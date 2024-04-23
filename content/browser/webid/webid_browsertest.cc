@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -50,7 +51,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using ::base::test::IsJson;
 using net::EmbeddedTestServer;
 using net::HttpStatusCode;
 using net::test_server::BasicHttpResponse;
@@ -58,6 +58,7 @@ using net::test_server::HttpMethod;
 using net::test_server::HttpRequest;
 using net::test_server::HttpResponse;
 using ::testing::_;
+using ::testing::Eq;
 using ::testing::NiceMock;
 using ::testing::WithArg;
 using ::testing::WithArgs;
@@ -1003,6 +1004,19 @@ EvalJsResult RunDigitalIdentityValidRequest(
   return EvalJsAndReturnToken(execution_target, script);
 }
 
+// Leniently parses string as JSON and compares parsed JSON.
+MATCHER_P(JsonMatchesLenient, ref, "") {
+  int json_parsing_options =
+      base::JSONParserOptions::JSON_PARSE_CHROMIUM_EXTENSIONS |
+      base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS;
+  auto ref_json =
+      base::JSONReader::ReadAndReturnValueWithError(ref, json_parsing_options);
+  auto arg_json =
+      base::JSONReader::ReadAndReturnValueWithError(arg, json_parsing_options);
+  return ref_json.has_value() && arg_json.has_value() &&
+         (ref_json.value() == arg_json.value());
+}
+
 // Test that a Verifiable Credential can be requested via the JS API.
 IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
                        RequestDigitalCredentials) {
@@ -1034,7 +1048,8 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
   }
   )";
 
-  EXPECT_CALL(*digital_identity_provider, Request(_, _, IsJson(request), _))
+  EXPECT_CALL(*digital_identity_provider,
+              Request(_, _, JsonMatchesLenient(request), _))
       .WillOnce(WithArg<3>(
           [](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             std::move(callback).Run(
@@ -1075,7 +1090,8 @@ IN_PROC_BROWSER_TEST_F(WebIdDigitalCredentialsBrowserTest,
   // JSON comparison in IsJson below.
   base::RemoveChars(request, "\n ", &json);
 
-  EXPECT_CALL(*digital_identity_provider, Request(_, _, IsJson(json), _))
+  EXPECT_CALL(*digital_identity_provider,
+              Request(_, _, JsonMatchesLenient(json), _))
       .WillOnce(WithArg<3>(
           [](DigitalIdentityProvider::DigitalIdentityCallback callback) {
             std::move(callback).Run(
