@@ -37,7 +37,8 @@ void MultiprofilesIntroDialog::Show(OnAcceptCallback on_accept) {
   widget->Show();
 }
 
-gfx::Size MultiprofilesIntroDialog::CalculatePreferredSize() const {
+gfx::Size MultiprofilesIntroDialog::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(
       kDefaultWidth,
       GetLayoutManager()->GetPreferredHeightForWidth(this, kDefaultWidth));

@@ -49,7 +49,8 @@ void SessionAbortedDialog::Show(const std::string& user_email) {
   }
 }
 
-gfx::Size SessionAbortedDialog::CalculatePreferredSize() const {
+gfx::Size SessionAbortedDialog::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(
       kDefaultWidth,
       GetLayoutManager()->GetPreferredHeightForWidth(this, kDefaultWidth));

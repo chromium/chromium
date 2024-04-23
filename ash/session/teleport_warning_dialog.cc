@@ -60,7 +60,8 @@ void TeleportWarningDialog::Show(OnAcceptCallback callback) {
   widget->Show();
 }
 
-gfx::Size TeleportWarningDialog::CalculatePreferredSize() const {
+gfx::Size TeleportWarningDialog::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(
       kDefaultWidth,
       GetLayoutManager()->GetPreferredHeightForWidth(this, kDefaultWidth));
