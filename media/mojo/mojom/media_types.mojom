@@ -10,6 +10,7 @@ import "gpu/ipc/common/sync_token.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
 import "media/mojo/mojom/audio_data.mojom";
 import "media/mojo/mojom/encryption_pattern.mojom";
+import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
@@ -248,8 +249,8 @@ enum SharedImageFormatType {
 // See media/base/decrypt_config.h for descriptions.
 struct DecryptConfig {
   EncryptionScheme encryption_scheme;
-  string key_id;
-  string iv;
+  mojo_base.mojom.ByteString key_id;
+  mojo_base.mojom.ByteString iv;
   array<SubsampleEntry> subsamples;
   EncryptionPattern? encryption_pattern;
 };
