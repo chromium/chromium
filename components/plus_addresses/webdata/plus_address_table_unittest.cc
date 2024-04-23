@@ -43,8 +43,10 @@ class PlusAddressTableTest : public testing::Test {
 };
 
 TEST_F(PlusAddressTableTest, GetPlusProfiles) {
-  const PlusProfile profile1 = test::CreatePlusProfile();
-  const PlusProfile profile2 = test::CreatePlusProfile2();
+  const PlusProfile profile1 =
+      test::CreatePlusProfile(/*use_full_domain=*/true);
+  const PlusProfile profile2 =
+      test::CreatePlusProfile2(/*use_full_domain=*/true);
   ASSERT_TRUE(table_.AddOrUpdatePlusProfile(profile1));
   ASSERT_TRUE(table_.AddOrUpdatePlusProfile(profile2));
   EXPECT_THAT(table_.GetPlusProfiles(),
@@ -52,8 +54,10 @@ TEST_F(PlusAddressTableTest, GetPlusProfiles) {
 }
 
 TEST_F(PlusAddressTableTest, GetPlusProfileForId) {
-  const PlusProfile profile1 = test::CreatePlusProfile();
-  const PlusProfile profile2 = test::CreatePlusProfile2();
+  const PlusProfile profile1 =
+      test::CreatePlusProfile(/*use_full_domain=*/true);
+  const PlusProfile profile2 =
+      test::CreatePlusProfile2(/*use_full_domain=*/true);
   ASSERT_TRUE(table_.AddOrUpdatePlusProfile(profile1));
   ASSERT_TRUE(table_.AddOrUpdatePlusProfile(profile2));
   EXPECT_EQ(table_.GetPlusProfileForId(profile1.profile_id), profile1);
@@ -62,8 +66,8 @@ TEST_F(PlusAddressTableTest, GetPlusProfileForId) {
 }
 
 TEST_F(PlusAddressTableTest, AddOrUpdatePlusProfile) {
-  PlusProfile profile1 = test::CreatePlusProfile();
-  PlusProfile profile2 = test::CreatePlusProfile2();
+  PlusProfile profile1 = test::CreatePlusProfile(/*use_full_domain=*/true);
+  PlusProfile profile2 = test::CreatePlusProfile2(/*use_full_domain=*/true);
   // Add `profile1`.
   EXPECT_TRUE(table_.AddOrUpdatePlusProfile(profile1));
   EXPECT_THAT(table_.GetPlusProfiles(),
@@ -80,8 +84,10 @@ TEST_F(PlusAddressTableTest, AddOrUpdatePlusProfile) {
 }
 
 TEST_F(PlusAddressTableTest, RemovePlusProfile) {
-  const PlusProfile profile1 = test::CreatePlusProfile();
-  const PlusProfile profile2 = test::CreatePlusProfile2();
+  const PlusProfile profile1 =
+      test::CreatePlusProfile(/*use_full_domain=*/true);
+  const PlusProfile profile2 =
+      test::CreatePlusProfile2(/*use_full_domain=*/true);
   ASSERT_TRUE(table_.AddOrUpdatePlusProfile(profile1));
   ASSERT_TRUE(table_.AddOrUpdatePlusProfile(profile2));
   EXPECT_TRUE(table_.RemovePlusProfile(profile1.profile_id));
@@ -92,8 +98,10 @@ TEST_F(PlusAddressTableTest, RemovePlusProfile) {
 }
 
 TEST_F(PlusAddressTableTest, ClearPlusProfiles) {
-  ASSERT_TRUE(table_.AddOrUpdatePlusProfile(test::CreatePlusProfile()));
-  ASSERT_TRUE(table_.AddOrUpdatePlusProfile(test::CreatePlusProfile2()));
+  ASSERT_TRUE(table_.AddOrUpdatePlusProfile(
+      test::CreatePlusProfile(/*use_full_domain=*/true)));
+  ASSERT_TRUE(table_.AddOrUpdatePlusProfile(
+      test::CreatePlusProfile2(/*use_full_domain=*/true)));
   EXPECT_TRUE(table_.ClearPlusProfiles());
   EXPECT_THAT(table_.GetPlusProfiles(), testing::IsEmpty());
 }

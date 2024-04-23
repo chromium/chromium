@@ -266,7 +266,8 @@ class PlusAddressCreationRequests
   }
   void MakeCreationRequest(const PlusProfile& profile,
                            PlusAddressRequestCallback callback) {
-    url::Origin origin = url::Origin::Create(GURL("https://" + profile.facet));
+    url::Origin origin = url::Origin::Create(
+        GURL("https://" + absl::get<std::string>(profile.facet)));
     if (GetParam() == PlusAddressNetworkRequestType::kReserve) {
       client().ReservePlusAddress(origin, /*refresh=*/false,
                                   std::move(callback));
@@ -500,8 +501,9 @@ TEST_F(PlusAddressHttpClientRequests,
   const PlusProfile profile1 = test::CreatePlusProfile();
   const PlusProfile profile2 = test::CreatePlusProfile2();
 
-  PlusAddressMap expected({{profile1.facet, profile1.plus_address},
-                           {profile2.facet, profile2.plus_address}});
+  PlusAddressMap expected(
+      {{absl::get<std::string>(profile1.facet), profile1.plus_address},
+       {absl::get<std::string>(profile2.facet), profile2.plus_address}});
   // Fulfill the request and the callback should be run.
   FastForwardBy(kLatency);
   const std::string json = test::MakeListResponse({profile1, profile2});

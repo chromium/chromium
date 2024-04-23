@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_batch.h"
@@ -36,6 +37,21 @@ constexpr char kSyncEntityMetadata[] = "plus_address_sync_entity_metadata";
 // kModelType
 constexpr char kStorageKey[] = "storage_key";
 // kValue
+
+// Expects that `s` is pointing to a query result containing `kProfileId`,
+// `kFacet` and `kPlusAddress`, in that order. Attempts to construct a
+// `PlusProfile` from that data, returning nullopt if validation fails.
+std::optional<PlusProfile> PlusProfileFromStatement(sql::Statement& s) {
+  affiliations::FacetURI facet =
+      affiliations::FacetURI::FromPotentiallyInvalidSpec(s.ColumnString(1));
+  if (!facet.is_valid()) {
+    // Unless modified through external means, the facet is valid.
+    return std::nullopt;
+  }
+  return PlusProfile(/*profile_id=*/s.ColumnString(0), std::move(facet),
+                     /*plus_address=*/s.ColumnString(2),
+                     /*is_confirmed=*/true);
+}
 
 // Populates the `metadata_batch`'s model type state with the state stored for
 // `model_type`, or the default, if no state is stored.
@@ -130,10 +146,9 @@ std::vector<PlusProfile> PlusAddressTable::GetPlusProfiles() const {
           .c_str()));
   std::vector<PlusProfile> result;
   while (query.Step()) {
-    result.emplace_back(/*profile_id=*/query.ColumnString(0),
-                        /*facet=*/query.ColumnString(1),
-                        /*plus_address=*/query.ColumnString(2),
-                        /*is_confirmed=*/true);
+    if (std::optional<PlusProfile> profile = PlusProfileFromStatement(query)) {
+      result.push_back(std::move(*profile));
+    }
   }
   return result;
 }
@@ -148,10 +163,7 @@ std::optional<PlusProfile> PlusAddressTable::GetPlusProfileForId(
   if (!query.Step()) {
     return std::nullopt;
   }
-  return PlusProfile(/*profile_id=*/query.ColumnString(0),
-                     /*facet=*/query.ColumnString(1),
-                     /*plus_address=*/query.ColumnString(2),
-                     /*is_confirmed=*/true);
+  return PlusProfileFromStatement(query);
 }
 
 bool PlusAddressTable::AddOrUpdatePlusProfile(const PlusProfile& profile) {
@@ -162,7 +174,8 @@ bool PlusAddressTable::AddOrUpdatePlusProfile(const PlusProfile& profile) {
           kPlusAddressTable, kProfileId, kFacet, kPlusAddress)
           .c_str()));
   query.BindString(0, profile.profile_id);
-  query.BindString(1, profile.facet);
+  query.BindString(
+      1, absl::get<affiliations::FacetURI>(profile.facet).canonical_spec());
   query.BindString(2, profile.plus_address);
   return query.Run();
 }

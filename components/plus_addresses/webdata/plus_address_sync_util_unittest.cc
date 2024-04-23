@@ -14,7 +14,7 @@ namespace plus_addresses {
 namespace {
 
 TEST(PlusAddressSyncUtilTest, ProfileToEntityDataAndBack) {
-  PlusProfile profile = test::CreatePlusProfile();
+  PlusProfile profile = test::CreatePlusProfile(/*use_full_domain=*/true);
   syncer::EntityData entity_data = EntityDataFromPlusProfile(profile);
   EXPECT_EQ(PlusProfileFromEntityData(entity_data), profile);
 }

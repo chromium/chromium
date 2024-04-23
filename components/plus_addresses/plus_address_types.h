@@ -11,14 +11,22 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 // A common place for PlusAddress types to be defined.
 namespace plus_addresses {
 
 struct PlusProfile {
+  // When `syncer::kSyncPlusAddress` is enabled, the facet is stored as a
+  // `FacetURI`. Before sync support, the facet represents an eTLD+1, stored as
+  // a string.
+  // TODO(b/322147254): Remove variant when sync support is launched.
+  using facet_t = absl::variant<std::string, affiliations::FacetURI>;
+
   PlusProfile(std::string profile_id,
-              std::string facet,
+              facet_t facet,
               std::string plus_address,
               bool is_confirmed);
   PlusProfile(const PlusProfile&);
@@ -29,9 +37,7 @@ struct PlusProfile {
   friend bool operator==(const PlusProfile&, const PlusProfile&) = default;
 
   std::string profile_id;
-  // TODO(b/322147254): Make this an `affiliations::FacetURI` when sync support
-  // is launched. Right now, this represents an eTLD+1.
-  std::string facet;
+  facet_t facet;
   std::string plus_address;
   bool is_confirmed;
 };

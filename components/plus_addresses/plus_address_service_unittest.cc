@@ -72,8 +72,8 @@ auto IsSingleFillPlusAddressSuggestion(std::string_view address) {
                                       Suggestion::Icon::kPlusAddress));
 }
 
-url::Origin OriginFromFacet(const std::string& facet) {
-  return url::Origin::Create(GURL("https://" + facet));
+url::Origin OriginFromFacet(const plus_addresses::PlusProfile::facet_t& facet) {
+  return url::Origin::Create(GURL("https://" + absl::get<std::string>(facet)));
 }
 
 }  // namespace
@@ -619,7 +619,7 @@ TEST_F(PlusAddressServicePolling, CallsGetAllPlusAddresses) {
 
   // The service's mapping should be updated now.
   for (const PlusProfile& profile : {profile1, profile2}) {
-    SCOPED_TRACE(testing::Message() << profile.facet);
+    SCOPED_TRACE(testing::Message() << profile.plus_address);
     url::Origin origin = OriginFromFacet(profile.facet);
     EXPECT_EQ(service().GetPlusAddress(origin), profile.plus_address);
     EXPECT_TRUE(service().IsPlusAddress(profile.plus_address));
@@ -779,8 +779,10 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
 };
 
 TEST_F(PlusAddressServiceWebDataTest, OnWebDataChangedBySync) {
-  const PlusProfile profile1 = test::CreatePlusProfile();
-  const PlusProfile profile2 = test::CreatePlusProfile2();
+  const PlusProfile profile1 =
+      test::CreatePlusProfile(/*use_full_domain=*/true);
+  const PlusProfile profile2 =
+      test::CreatePlusProfile2(/*use_full_domain=*/true);
   // Simulate adding and removing profiles to the database directly, as sync
   // would. This triggers `OnWebDataChangedBySync()`. Prior to the notification,
   // `service()` has no way of knowing about this data.

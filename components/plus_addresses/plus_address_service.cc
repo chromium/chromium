@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -122,8 +123,12 @@ std::vector<PlusProfile> PlusAddressService::GetPlusProfiles() const {
 std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
     const url::Origin& origin) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const std::string facet = IsSyncingPlusAddresses() ? origin.GetURL().spec()
-                                                     : GetEtldPlusOne(origin);
+  PlusProfile::facet_t facet;
+  if (IsSyncingPlusAddresses()) {
+    facet = affiliations::FacetURI::FromCanonicalSpec(origin.GetURL().spec());
+  } else {
+    facet = GetEtldPlusOne(origin);
+  }
   // `facet` is used as the comparator, so the other fields don't matter.
   auto it = plus_profiles_.find(PlusProfile("", facet, "", false));
   if (it == plus_profiles_.end()) {
@@ -140,7 +145,7 @@ void PlusAddressService::SavePlusProfile(url::Origin origin,
   // migrated from eTLD+1 to origin, remove `profile_to_save` and simply store
   // `profile`.
   PlusProfile profile_to_save = profile;
-  if (!IsSyncingPlusAddresses()) {
+  if (absl::holds_alternative<std::string>(profile.facet)) {
     profile_to_save.facet = GetEtldPlusOne(origin);
   }
   // New plus addresses are requested directly from the PlusAddress backend. If

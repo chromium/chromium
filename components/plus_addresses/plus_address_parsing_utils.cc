@@ -9,7 +9,9 @@
 
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace plus_addresses {
@@ -28,7 +30,7 @@ namespace {
 // Returns nullopt if none of the values are parsed.
 std::optional<PlusProfile> ParsePlusProfileFromV1Dict(base::Value::Dict dict) {
   std::string profile_id;
-  std::string facet;
+  std::string facet_str;
   std::string plus_address;
   std::optional<bool> is_confirmed;
   for (std::pair<const std::string&, base::Value&> entry : dict) {
@@ -38,7 +40,7 @@ std::optional<PlusProfile> ParsePlusProfileFromV1Dict(base::Value::Dict dict) {
       continue;
     }
     if (base::MatchPattern(key, "facet") && val.is_string()) {
-      facet = std::move(val.GetString());
+      facet_str = std::move(val.GetString());
       continue;
     }
     if (base::MatchPattern(key, "*Email") && val.is_dict()) {
@@ -58,8 +60,17 @@ std::optional<PlusProfile> ParsePlusProfileFromV1Dict(base::Value::Dict dict) {
       }
     }
   }
-  if (profile_id.empty() || facet.empty() || plus_address.empty() ||
+  if (profile_id.empty() || facet_str.empty() || plus_address.empty() ||
       !is_confirmed.has_value()) {
+    return std::nullopt;
+  }
+  if (!IsSyncingPlusAddresses()) {
+    return PlusProfile(std::move(profile_id), std::move(facet_str),
+                       std::move(plus_address), *is_confirmed);
+  }
+  affiliations::FacetURI facet =
+      affiliations::FacetURI::FromPotentiallyInvalidSpec(facet_str);
+  if (!facet.is_valid()) {
     return std::nullopt;
   }
   return PlusProfile(std::move(profile_id), std::move(facet),
@@ -125,7 +136,7 @@ std::optional<PlusAddressMap> ParsePlusAddressMapFromV1List(
       // Parse the list of profiles and add the result to the mapping.
       for (PlusProfile& profile :
            ParsePlusProfilesFromV1ProfileList(std::move(first_val.GetList()))) {
-        site_to_plus_address[std::move(profile.facet)] =
+        site_to_plus_address[std::move(absl::get<std::string>(profile.facet))] =
             std::move(profile.plus_address);
       }
       return site_to_plus_address;

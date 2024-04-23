@@ -26,7 +26,7 @@ void PlusAddressAffiliationSourceAdapter::GetFacets(
   std::vector<FacetURI> facets;
   facets.reserve(profiles.size());
   for (const PlusProfile& profile : profiles) {
-    facets.push_back(FacetURI::FromCanonicalSpec(profile.facet));
+    facets.push_back(absl::get<FacetURI>(profile.facet));
   }
   std::move(response_callback).Run(std::move(facets));
 }
@@ -44,7 +44,7 @@ void PlusAddressAffiliationSourceAdapter::OnPlusAddressesChanged(
   std::vector<FacetURI> added_facets;
   std::vector<FacetURI> removed_facets;
   for (const PlusAddressDataChange& change : changes) {
-    FacetURI facet = FacetURI::FromCanonicalSpec(change.profile().facet);
+    FacetURI facet = absl::get<FacetURI>(change.profile().facet);
     switch (change.type()) {
       case PlusAddressDataChange::Type::kAdd: {
         added_facets.push_back(std::move(facet));

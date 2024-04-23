@@ -9,7 +9,7 @@
 namespace plus_addresses {
 
 PlusProfile::PlusProfile(std::string profile_id,
-                         std::string facet,
+                         facet_t facet,
                          std::string plus_address,
                          bool is_confirmed)
     : profile_id(std::move(profile_id)),

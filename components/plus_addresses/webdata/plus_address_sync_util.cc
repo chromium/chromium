@@ -5,6 +5,7 @@
 #include "components/plus_addresses/webdata/plus_address_sync_util.h"
 
 #include "base/check.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/plus_address_specifics.pb.h"
@@ -15,9 +16,11 @@ PlusProfile PlusProfileFromEntityData(const syncer::EntityData& entity_data) {
   CHECK(entity_data.specifics.has_plus_address());
   sync_pb::PlusAddressSpecifics specifics =
       entity_data.specifics.plus_address();
-  return PlusProfile(specifics.profile_id(), specifics.facet(),
-                     specifics.plus_email().email_address(),
-                     /*is_confirmed=*/true);
+  return PlusProfile(
+      specifics.profile_id(),
+      affiliations::FacetURI::FromCanonicalSpec(specifics.facet()),
+      specifics.plus_email().email_address(),
+      /*is_confirmed=*/true);
 }
 
 syncer::EntityData EntityDataFromPlusProfile(const PlusProfile& profile) {
@@ -27,7 +30,8 @@ syncer::EntityData EntityDataFromPlusProfile(const PlusProfile& profile) {
   sync_pb::PlusAddressSpecifics* specifics =
       entity_data.specifics.mutable_plus_address();
   specifics->set_profile_id(profile.profile_id);
-  specifics->set_facet(profile.facet);
+  specifics->set_facet(
+      absl::get<affiliations::FacetURI>(profile.facet).canonical_spec());
   specifics->mutable_plus_email()->set_email_address(profile.plus_address);
   return entity_data;
 }

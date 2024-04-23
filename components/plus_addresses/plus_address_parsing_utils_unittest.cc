@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/json/json_reader.h"
+#include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,7 +55,7 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
       ParsePlusProfileFromV1Create(std::move(value));
   ASSERT_TRUE(valid_result.has_value());
   EXPECT_EQ(valid_result->profile_id, kProfileId);
-  EXPECT_EQ(valid_result->facet, kFacet);
+  EXPECT_EQ(absl::get<std::string>(valid_result->facet), kFacet);
   EXPECT_EQ(valid_result->plus_address, kPlusAddress);
   EXPECT_EQ(valid_result->is_confirmed, true);
 
@@ -85,7 +86,7 @@ TEST(PlusAddressParsing, FromV1Create_ParsesSuccessfully) {
       ParsePlusProfileFromV1Create(std::move(decoded));
   ASSERT_TRUE(invalid_result.has_value());
   EXPECT_EQ(invalid_result->profile_id, kProfileId);
-  EXPECT_EQ(invalid_result->facet, kFacet);
+  EXPECT_EQ(absl::get<std::string>(invalid_result->facet), kFacet);
   EXPECT_EQ(invalid_result->plus_address, kPlusAddress);
   EXPECT_EQ(invalid_result->is_confirmed, false);
 }
