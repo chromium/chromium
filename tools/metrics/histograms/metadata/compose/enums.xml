@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="MSBB Shown"/>
   <int value="4" label="MSBB Settings Opened"/>
   <int value="5" label="MSBB Enabled In Session"/>
-  <int value="6" label="Sesstion started with selection"/>
+  <int value="6" label="Session started with selection"/>
   <int value="7" label="Create Clicked"/>
   <int value="8" label="Update Clicked"/>
   <int value="9" label="Retry Clicked"/>
@@ -145,6 +145,8 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Cancel Edit Clicked"/>
   <int value="21" label="Used a modifier">Added in M124</int>
   <int value="22" label="Redo Clicked"/>
+  <int value="23" label="Result Edited"/>
+  <int value="24" label="Edited Result Inserted"/>
 </enum>
 
 <enum name="ComposeShowStatus">

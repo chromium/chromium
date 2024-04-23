@@ -968,6 +968,7 @@ void ComposeSession::EditResult(const std::string& new_result,
     AddNewResponseToHistory(std::move(new_state));
   }
   std::move(callback).Run(true);
+  session_events_.result_edit_count += 1;
 }
 
 void ComposeSession::InitializeWithText(const std::optional<std::string>& text,
@@ -1129,6 +1130,9 @@ void ComposeSession::SetCloseReason(
     case compose::ComposeSessionCloseReason::kAcceptedSuggestion:
       final_status_ = optimization_guide::proto::FinalStatus::STATUS_INSERTED;
       session_events_.inserted_results = true;
+      if (CurrentState().has_value() && CurrentState()->is_user_edited()) {
+        session_events_.edited_result_inserted = true;
+      }
       break;
   }
 }

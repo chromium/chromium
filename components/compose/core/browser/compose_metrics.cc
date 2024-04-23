@@ -122,6 +122,10 @@ void LogComposeSessionEventCounts(std::optional<EvalLocation> eval_location,
     base::UmaHistogramEnumeration(histogram,
                                   ComposeSessionEventTypes::kRedoClicked);
   }
+  if (session_events.result_edit_count > 0) {
+    base::UmaHistogramEnumeration(histogram,
+                                  ComposeSessionEventTypes::kResultEdited);
+  }
   bool has_used_modifier = false;
   if (session_events.shorten_count > 0) {
     has_used_modifier = true;
@@ -158,6 +162,10 @@ void LogComposeSessionEventCounts(std::optional<EvalLocation> eval_location,
   if (session_events.inserted_results) {
     base::UmaHistogramEnumeration(histogram,
                                   ComposeSessionEventTypes::kInsertClicked);
+  }
+  if (session_events.edited_result_inserted) {
+    base::UmaHistogramEnumeration(
+        histogram, ComposeSessionEventTypes::kEditedResultInserted);
   }
   if (session_events.close_clicked) {
     base::UmaHistogramEnumeration(histogram,

@@ -155,8 +155,6 @@ class ComposeSession
   void EditResult(const std::string& new_result,
                   EditResultCallback callback) override;
 
-  void PrintCurrentHistoryState();
-
   // Non-ComposeSessionUntrustedPageHandler Methods
 
   // Notifies the session that a new dialog is opening and starts refreshing
