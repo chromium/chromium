@@ -9,11 +9,11 @@ Currently, the tool only supports Linux, Android, and Mac. Support for other
 platforms is planned.
 """
 
+import argparse
 import collections
 import errno
 import glob
 import multiprocessing
-import optparse
 import os
 import queue
 import re
@@ -35,15 +35,17 @@ BINARY_INFO = collections.namedtuple('BINARY_INFO',
                                      ['platform', 'arch', 'hash', 'name'])
 
 
-def GetDumpSymsBinary(build_dir=None):
+def _GetDumpSymsBinary(dump_syms_path: str, build_dir: str):
   """Returns the path to the dump_syms binary."""
-  DUMP_SYMS = 'dump_syms'
-  dump_syms_bin = os.path.join(os.path.expanduser(build_dir), DUMP_SYMS)
-  if not os.access(dump_syms_bin, os.X_OK):
-    print('Cannot find %s.' % dump_syms_bin)
+  if not dump_syms_path:
+    DUMP_SYMS = 'dump_syms'
+    dump_syms_path = os.path.join(os.path.expanduser(build_dir), DUMP_SYMS)
+
+  if not os.access(dump_syms_path, os.X_OK):
+    print(f'Cannot find {dump_syms_path}.')
     return None
 
-  return dump_syms_bin
+  return dump_syms_path
 
 
 def Resolve(path, exe_path, loader_path, rpaths):
@@ -304,7 +306,7 @@ def GenerateSymbols(options, binaries):
   exceptions_lock = threading.Lock()
 
   def _Worker():
-    dump_syms = GetDumpSymsBinary(options.build_dir)
+    dump_syms = _GetDumpSymsBinary(options.dump_syms_path, options.build_dir)
     while True:
       try:
         should_dump_syms = True
@@ -386,54 +388,45 @@ def GenerateSymbols(options, binaries):
 
 
 def main():
-  parser = optparse.OptionParser()
-  parser.add_option('', '--build-dir', default='',
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--build-dir', required=True,
                     help='The build output directory.')
-  parser.add_option('', '--symbols-dir', default='',
+  parser.add_argument('--symbols-dir', required=True,
                     help='The directory where to write the symbols file.')
-  parser.add_option('', '--binary', default='',
+  parser.add_argument('--binary', required=True,
                     help='The path of the binary to generate symbols for.')
-  parser.add_option('', '--clear', default=False, action='store_true',
+  parser.add_argument('--dump-syms-path', default='',
+                    help='The path of the dump_syms binary. If not provided, '
+                    'by default looks in --build-dir for it.')
+  parser.add_argument('--clear', default=False, action='store_true',
                     help='Clear the symbols directory before writing new '
                          'symbols.')
-  parser.add_option('-j', '--jobs', default=CONCURRENT_TASKS, action='store',
-                    type='int', help='Number of parallel tasks to run.')
-  parser.add_option('-v', '--verbose', action='store_true',
+  parser.add_argument('-j', '--jobs', default=CONCURRENT_TASKS, action='store',
+                    type=int, help='Number of parallel tasks to run.')
+  parser.add_argument('-v', '--verbose', action='store_true',
                     help='Print verbose status output.')
-  parser.add_option('', '--platform', default=sys.platform,
+  parser.add_argument('--platform', default=sys.platform,
                     help='Target platform of the binary.')
 
-  (options, _) = parser.parse_args()
+  args = parser.parse_args()
 
-  if not options.symbols_dir:
-    print("Required option --symbols-dir missing.")
+  if not os.access(args.binary, os.X_OK):
+    print(f'Cannot find {args.binary}')
     return 1
 
-  if not options.build_dir:
-    print("Required option --build-dir missing.")
-    return 1
-
-  if not options.binary:
-    print("Required option --binary missing.")
-    return 1
-
-  if not os.access(options.binary, os.X_OK):
-    print("Cannot find %s." % options.binary)
-    return 1
-
-  if options.clear:
+  if args.clear:
     try:
-      shutil.rmtree(options.symbols_dir)
+      shutil.rmtree(args.symbols_dir)
     except:
       pass
 
-  if not GetDumpSymsBinary(options.build_dir):
+  if not _GetDumpSymsBinary(args.dump_syms_path, args.build_dir):
     return 1
 
   # Build the transitive closure of all dependencies.
-  binaries = GetTransitiveDependencies(options)
+  binaries = GetTransitiveDependencies(args)
 
-  GenerateSymbols(options, binaries)
+  GenerateSymbols(args, binaries)
 
   return 0
 
