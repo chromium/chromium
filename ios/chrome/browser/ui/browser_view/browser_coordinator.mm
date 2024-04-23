@@ -151,11 +151,11 @@
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_coordinator.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_promo_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_coordinator.h"
 #import "ios/chrome/browser/ui/default_promo/default_promo_non_modal_presentation_delegate.h"
 #import "ios/chrome/browser/ui/default_promo/promo_handler/default_browser_promo_manager.h"
-#import "ios/chrome/browser/ui/default_promo/tailored_promo_coordinator.h"
 #import "ios/chrome/browser/ui/download/ar_quick_look_coordinator.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
 #import "ios/chrome/browser/ui/download/features.h"
@@ -511,9 +511,6 @@ enum class ToolbarKind {
 
 // Coordinator for presenting SKStoreProductViewController.
 @property(nonatomic, strong) StoreKitCoordinator* storeKitCoordinator;
-
-// Coordinator that manages the tailored promo modals.
-@property(nonatomic, strong) TailoredPromoCoordinator* tailoredPromoCoordinator;
 
 // The coordinator used for the Text Fragments feature.
 @property(nonatomic, strong) TextFragmentsCoordinator* textFragmentsCoordinator;
@@ -1424,9 +1421,6 @@ enum class ToolbarKind {
   [self.infobarModalOverlayContainerCoordinator stop];
   self.infobarModalOverlayContainerCoordinator = nil;
 
-  [self.tailoredPromoCoordinator stop];
-  self.tailoredPromoCoordinator = nil;
-
   [self.textFragmentsCoordinator stop];
   self.textFragmentsCoordinator = nil;
 
@@ -2019,8 +2013,6 @@ enum class ToolbarKind {
 #pragma mark - DefaultBrowserPromoCommands
 
 - (void)hidePromo {
-  [self.tailoredPromoCoordinator stop];
-  self.tailoredPromoCoordinator = nil;
   [self.defaultBrowserPromoManager stop];
   self.defaultBrowserPromoManager = nil;
 }
