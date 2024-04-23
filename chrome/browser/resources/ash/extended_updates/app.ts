@@ -6,6 +6,7 @@ import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/cros_components/button/button.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './components/android_apps_list.js';
 import './components/common_styles/oobe_dialog_host_styles.css.js';
 import './components/dialogs/oobe_adaptive_dialog.js';
 import './icons.html.js';
@@ -16,6 +17,7 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
+import type {App} from './components/android_apps_list.js';
 import {ExtendedUpdatesBrowserProxy} from './extended_updates_browser_proxy.js';
 
 export interface ExtendedUpdatesAppElement {
@@ -72,11 +74,14 @@ export class ExtendedUpdatesAppElement extends PolymerElement {
   // Shows the confirmation popup when true.
   private showPopup_: boolean;
 
+  private apps: App[];
+
   private browserProxy_: ExtendedUpdatesBrowserProxy;
 
   constructor() {
     super();
 
+    this.apps = [];
     this.browserProxy_ = ExtendedUpdatesBrowserProxy.getInstance();
   }
 

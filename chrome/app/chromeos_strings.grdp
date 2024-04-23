@@ -7524,6 +7524,15 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_EXTENDED_UPDATES_DIALOG_ANDROID_DESCRIPTION" desc="Description of the loss of Android Apps" translateable="false">
     You won’t be able to use Android apps or the Google Play Store
   </message>
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_ANDROID_APPS_LIST_DESCRIPTION_SINGULAR" desc="Description of the list of Android Apps for one app" translateable="false">
+    1 installed app will be removed
+  </message>
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_ANDROID_APPS_LIST_DESCRIPTION_PLURAL" desc="Description of the list of Android Apps for multiple apps" translateable="false">
+    <ph name="NUM_OF_APPS">$1<ex>5</ex></ph> installed apps will be removed
+  </message>
+  <message name="IDS_EXTENDED_UPDATES_DIALOG_ANDROID_APPS_LIST_NOTE" desc="Note of the loss of Android Apps" translateable="false">
+    Tip: Many Android apps are available on the web. Check the app or developer website for availability.
+  </message>
     <message name="IDS_EXTENDED_UPDATES_DIALOG_SECURITY_DESCRIPTION" desc="Description of the extended security updates"  translateable="false">
     You’ll get security updates and the latest features for 2 more years
   </message>

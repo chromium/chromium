@@ -6,6 +6,9 @@ found in the LICENSE file.
 
 <style include="oobe-dialog-host-styles cr-shared-style">
   /* Main dialog container styles. */
+  :host-context([orientation=vertical]) {
+    --oobe-adaptive-dialog-header-top-padding: 0px;
+  }
 
   #extendedUpdatesDialog {
     --oobe-adaptive-dialog-icon-size: 40px;
@@ -15,6 +18,10 @@ found in the LICENSE file.
 
   .dialog-icon {
     color: var(--cros-sys-primary);
+  }
+
+  #dialogContent {
+    border-radius: 16px;
   }
 
   #dialogHeading {
@@ -34,11 +41,11 @@ found in the LICENSE file.
   .detail-card {
     --iron-icon-width: 32px;
 
-    align-items: center;
+    align-items: start;
     background-color: var(--cros-sys-base_elevated);
     display: flex;
     flex-direction: row;
-    padding: 20px;
+    padding: 18px 60px 18px 20px;
   }
 
   #securityCard {
@@ -59,7 +66,9 @@ found in the LICENSE file.
   .detail-icon {
     color: var(--cros-sys-primary);
     flex-shrink: 0;
+    height: 32px;
     margin-right: 20px;
+    width: 32px;
   }
 
   #cancelButton {
@@ -103,7 +112,7 @@ found in the LICENSE file.
       </localized-link>
     </p>
   </div>
-  <div slot="content" class="landscape-vertical-centered">
+  <div id="dialogContent" slot="content" class="landscape-vertical-centered">
     <div id="detailsCard">
       <div id="securityCard" class="detail-card">
         <iron-icon icon="extended-updates-icons32:checked"
@@ -117,9 +126,12 @@ found in the LICENSE file.
         <iron-icon icon="extended-updates-icons32:removed"
           class="dialog-icon detail-icon" aria-hidden="true">
         </iron-icon>
-        <h2 id="androidDescription" class="detail-description">
-          $i18n{androidDescription}
-        </h2>
+        <div id="androidCardContent">
+          <h2 id="androidDescription" class="detail-description">
+            $i18n{androidDescription}
+          </h2>
+          <android-apps-list apps="[[apps]]"></android-apps-list>
+        </div>
       </div>
     </div>
   </div>
