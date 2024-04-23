@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -20,6 +21,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -37,6 +39,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.util.ColorUtils;
@@ -88,6 +91,8 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
      * @param edgeToEdgeControllerSupplier Supplies an {@link EdgeToEdgeController} to detect when
      *     the UI is being drawn edge to edge so the navigation bar color can be changed
      *     appropriately.
+     * @param snackbarManagerSupplier Supplies a {@link SnackbarManager} to watch for snackbars
+     *     being shown.
      */
     TabbedNavigationBarColorController(
             Window window,
@@ -95,7 +100,26 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+            BrowserControlsStateProvider browserControlsStateProvider,
+            @NonNull Supplier<SnackbarManager> snackbarManagerSupplier) {
+        this(
+                window,
+                tabModelSelector,
+                layoutManagerSupplier,
+                fullscreenManager,
+                edgeToEdgeControllerSupplier,
+                new BottomAttachedUiObserver(
+                        browserControlsStateProvider, snackbarManagerSupplier.get()));
+    }
+
+    @VisibleForTesting
+    TabbedNavigationBarColorController(
+            Window window,
+            TabModelSelector tabModelSelector,
+            ObservableSupplier<LayoutManager> layoutManagerSupplier,
+            FullscreenManager fullscreenManager,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            BottomAttachedUiObserver bottomAttachedUiObserver) {
         assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1;
 
         mWindow = window;
@@ -106,7 +130,7 @@ class TabbedNavigationBarColorController implements BottomAttachedUiObserver.Obs
         mLightNavigationBar =
                 mContext.getResources().getBoolean(R.bool.window_light_navigation_bar);
 
-        mBottomAttachedUiObserver = new BottomAttachedUiObserver(browserControlsStateProvider);
+        mBottomAttachedUiObserver = bottomAttachedUiObserver;
         mBottomAttachedUiObserver.addObserver(this);
 
         mTabModelSelector = tabModelSelector;

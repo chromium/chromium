@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.ObserverList;
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -39,7 +40,8 @@ public class SnackbarManager
         implements OnClickListener,
                 ActivityStateListener,
                 UnownedUserData,
-                InsetObserver.WindowInsetObserver {
+                InsetObserver.WindowInsetObserver,
+                SnackbarStateProvider {
     /** Interface that shows the ability to provide a snackbar manager. */
     public interface SnackbarManageable {
         /**
@@ -95,6 +97,7 @@ public class SnackbarManager
             };
     private final ObservableSupplierImpl<Boolean> mIsShowingSupplier =
             new ObservableSupplierImpl<>();
+    protected ObserverList<SnackbarStateProvider.Observer> mObservers = new ObserverList<>();
 
     /**
      * Constructs a SnackbarManager to show snackbars in the given window.
@@ -307,8 +310,33 @@ public class SnackbarManager
             }
         }
 
+        for (Observer observer : mObservers) {
+            if (isShowing()) {
+                observer.onSnackbarStateChanged(true, mView.getBackgroundColor());
+            } else {
+                observer.onSnackbarStateChanged(false, null);
+            }
+        }
         mIsShowingSupplier.set(isShowing());
     }
+
+    // ============================================================================================
+    // SnackbarStateProvider
+    // ============================================================================================
+
+    @Override
+    public void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
+    }
+
+    // ============================================================================================
+    // Testing
+    // ============================================================================================
 
     @VisibleForTesting
     int getDuration(Snackbar snackbar) {

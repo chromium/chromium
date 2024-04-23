@@ -7,14 +7,17 @@ package org.chromium.chrome.browser.tabbed_mode;
 import android.os.Build;
 import android.view.Window;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
 /**
  * A UI coordinator that manages the system status bar and bottom navigation bar for
@@ -37,6 +40,7 @@ public class TabbedSystemUiCoordinator {
      *     the UI is being drawn edge to edge.
      * @param browserControlsStateProvider Supplies a {@link BrowserControlsStateProvider} for the
      *     browser controls.
+     * @param snackbarManagerSupplier Supplies a {@link SnackbarManager} for snackbar management.
      */
     public TabbedSystemUiCoordinator(
             Window window,
@@ -44,7 +48,8 @@ public class TabbedSystemUiCoordinator {
             @Nullable ObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+            BrowserControlsStateProvider browserControlsStateProvider,
+            @NonNull Supplier<SnackbarManager> snackbarManagerSupplier) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             assert layoutManagerSupplier != null;
             mNavigationBarColorController =
@@ -54,7 +59,8 @@ public class TabbedSystemUiCoordinator {
                             layoutManagerSupplier,
                             fullscreenManager,
                             edgeToEdgeControllerSupplier,
-                            browserControlsStateProvider);
+                            browserControlsStateProvider,
+                            snackbarManagerSupplier);
         }
     }
 

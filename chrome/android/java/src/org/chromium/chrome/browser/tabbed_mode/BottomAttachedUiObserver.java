@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarStateProvider;
 
 /**
  * An observer class that listens for changes in UI components that are attached to the bottom of
@@ -16,7 +17,8 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
  * notifies its own observers of properties of the UI currently bordering ("attached to") the
  * navigation bar.
  */
-public class BottomAttachedUiObserver implements BrowserControlsStateProvider.Observer {
+public class BottomAttachedUiObserver
+        implements BrowserControlsStateProvider.Observer, SnackbarStateProvider.Observer {
     /**
      * An observer to be notified of changes to what kind of UI is currently bordering the bottom of
      * the screen.
@@ -33,17 +35,28 @@ public class BottomAttachedUiObserver implements BrowserControlsStateProvider.Ob
     private @Nullable @ColorInt Integer mBottomControlsColor;
     private boolean mBottomControlsAreVisible;
 
+    private final SnackbarStateProvider mSnackbarStateProvider;
+    private @Nullable @ColorInt Integer mSnackbarColor;
+    private boolean mSnackbarVisible;
+
     /**
      * Build the observer that listens to changes in the UI bordering the bottom.
      *
      * @param browserControlsStateProvider Supplies a {@link BrowserControlsStateProvider} for the
      *     browser controls.
+     * @param snackbarStateProvider Supplies a {@link SnackbarStateProvider} to watch for snackbars
+     *     being shown.
      */
-    public BottomAttachedUiObserver(BrowserControlsStateProvider browserControlsStateProvider) {
+    public BottomAttachedUiObserver(
+            BrowserControlsStateProvider browserControlsStateProvider,
+            SnackbarStateProvider snackbarStateProvider) {
         mObservers = new ObserverList<>();
 
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mBrowserControlsStateProvider.addObserver(this);
+
+        mSnackbarStateProvider = snackbarStateProvider;
+        mSnackbarStateProvider.addObserver(this);
     }
 
     /**
@@ -63,6 +76,9 @@ public class BottomAttachedUiObserver implements BrowserControlsStateProvider.Ob
     public void destroy() {
         if (mBrowserControlsStateProvider != null) {
             mBrowserControlsStateProvider.removeObserver(this);
+        }
+        if (mSnackbarStateProvider != null) {
+            mSnackbarStateProvider.removeObserver(this);
         }
     }
 
@@ -85,6 +101,9 @@ public class BottomAttachedUiObserver implements BrowserControlsStateProvider.Ob
     private @Nullable @ColorInt Integer calculateBottomAttachedColor() {
         if (mBottomControlsAreVisible) {
             return mBottomControlsColor;
+        }
+        if (mSnackbarVisible) {
+            return mSnackbarColor;
         }
         return null;
     }
@@ -126,6 +145,15 @@ public class BottomAttachedUiObserver implements BrowserControlsStateProvider.Ob
             return;
         }
         mBottomControlsAreVisible = bottomControlsAreVisible;
+        updateBottomAttachedColor();
+    }
+
+    // Snackbar
+
+    @Override
+    public void onSnackbarStateChanged(boolean isShowing, Integer color) {
+        mSnackbarVisible = isShowing;
+        mSnackbarColor = color;
         updateBottomAttachedColor();
     }
 }

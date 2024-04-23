@@ -28,7 +28,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -50,7 +49,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
     @Mock private FullscreenManager mFullscreenManager;
     private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerObservableSupplier;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
-    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private BottomAttachedUiObserver mBottomAttachedUiObserver;
     @Mock private Tab mTab;
 
     @Before
@@ -68,7 +67,6 @@ public class TabbedNavigationBarColorControllerUnitTest {
         when(mWindow.getDecorView()).thenReturn(mDecorView);
         when(mDecorView.getRootView()).thenReturn(mRootView);
         when(mRootView.getContext()).thenReturn(mContext);
-
         when(mTabModelSelector.getCurrentTab()).thenReturn(mTab);
 
         mNavColorController =
@@ -78,7 +76,7 @@ public class TabbedNavigationBarColorControllerUnitTest {
                         mLayoutManagerSupplier,
                         mFullscreenManager,
                         mEdgeToEdgeControllerObservableSupplier,
-                        mBrowserControlsStateProvider);
+                        mBottomAttachedUiObserver);
         mLayoutManagerSupplier.set(mLayoutManager);
         mEdgeToEdgeControllerObservableSupplier.set(mEdgeToEdgeController);
     }

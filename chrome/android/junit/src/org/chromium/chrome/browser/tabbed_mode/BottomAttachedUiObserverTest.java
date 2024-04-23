@@ -21,48 +21,89 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class BottomAttachedUiObserverTest {
+    private static final int BOTTOM_CONTROLS_HEIGHT = 100;
+    private static final int BROWSER_CONTROLS_COLOR = Color.RED;
+    private static final int SNACKBAR_COLOR = Color.GREEN;
 
     private BottomAttachedUiObserver mBottomAttachedUiObserver;
     private MockColorChangeObserver mColorChangeObserver;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private SnackbarManager mSnackbarManager;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mBottomAttachedUiObserver = new BottomAttachedUiObserver(mBrowserControlsStateProvider);
+
+        mBottomAttachedUiObserver =
+                new BottomAttachedUiObserver(mBrowserControlsStateProvider, mSnackbarManager);
         mColorChangeObserver = new MockColorChangeObserver();
         mBottomAttachedUiObserver.addObserver(mColorChangeObserver);
     }
 
     @Test
     public void testAdaptsColorToBrowserControls() {
-        int bottomControlsHeight = 100;
-
         mColorChangeObserver.assertColor(null);
 
         // Show bottom controls.
-        mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(Color.RED);
-        mBottomAttachedUiObserver.onBottomControlsHeightChanged(bottomControlsHeight, 0);
-        mColorChangeObserver.assertColor(Color.RED);
+        mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
+        mBottomAttachedUiObserver.onBottomControlsHeightChanged(BOTTOM_CONTROLS_HEIGHT, 0);
+        mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR);
 
         // Scroll off bottom controls partway.
-        mBottomAttachedUiObserver.onControlsOffsetChanged(0, 0, bottomControlsHeight / 2, 0, false);
-        mColorChangeObserver.assertColor(Color.RED);
+        mBottomAttachedUiObserver.onControlsOffsetChanged(
+                0, 0, BOTTOM_CONTROLS_HEIGHT / 2, 0, false);
+        mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR);
 
         // Scroll off bottom controls fully.
-        mBottomAttachedUiObserver.onControlsOffsetChanged(0, 0, bottomControlsHeight, 0, false);
+        mBottomAttachedUiObserver.onControlsOffsetChanged(0, 0, BOTTOM_CONTROLS_HEIGHT, 0, false);
         mColorChangeObserver.assertColor(null);
 
         // Scroll bottom controls back.
         mBottomAttachedUiObserver.onControlsOffsetChanged(0, 0, 0, 0, false);
-        mColorChangeObserver.assertColor(Color.RED);
+        mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR);
 
         // Hide bottom controls.
         mBottomAttachedUiObserver.onBottomControlsHeightChanged(0, 0);
         mColorChangeObserver.assertColor(null);
+    }
+
+    @Test
+    public void testAdaptsColorToSnackbars() {
+        mColorChangeObserver.assertColor(null);
+
+        // Set only the snackbar color.
+        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ false, SNACKBAR_COLOR);
+        mColorChangeObserver.assertColor(null);
+
+        // Show the snackbar.
+        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ true, SNACKBAR_COLOR);
+        mColorChangeObserver.assertColor(SNACKBAR_COLOR);
+
+        // Hide the snackbar.
+        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ false, /* color= */ null);
+        mColorChangeObserver.assertColor(null);
+    }
+
+    @Test
+    public void testColorPrioritization() {
+        mColorChangeObserver.assertColor(null);
+
+        // Show the snackbar.
+        mBottomAttachedUiObserver.onSnackbarStateChanged(/* isShowing= */ true, SNACKBAR_COLOR);
+        mColorChangeObserver.assertColor(SNACKBAR_COLOR);
+
+        // Show bottom controls.
+        mBottomAttachedUiObserver.onBottomControlsBackgroundColorChanged(BROWSER_CONTROLS_COLOR);
+        mBottomAttachedUiObserver.onBottomControlsHeightChanged(BOTTOM_CONTROLS_HEIGHT, 0);
+        mColorChangeObserver.assertColor(BROWSER_CONTROLS_COLOR);
+
+        // Hide bottom controls - should fall back to the snackbar color.
+        mBottomAttachedUiObserver.onBottomControlsHeightChanged(0, 0);
+        mColorChangeObserver.assertColor(SNACKBAR_COLOR);
     }
 
     @Test
