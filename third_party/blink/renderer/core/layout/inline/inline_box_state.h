@@ -48,7 +48,7 @@ struct CORE_EXPORT LogicalRubyColumn
   HeapVector<Member<LogicalRubyColumn>> ruby_column_list;
 
   // `ruby-position` property value.
-  RubyPosition ruby_position = RubyPosition::kBefore;
+  RubyPosition ruby_position = RubyPosition::kOver;
 
   void Trace(Visitor* visitor) const;
   unsigned EndIndex() const { return start_index + size; }

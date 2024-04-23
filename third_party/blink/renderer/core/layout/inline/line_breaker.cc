@@ -3301,7 +3301,7 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
     const LayoutObject* parent = annotation_object.Parent();
     data->position_list.push_back(parent->IsInlineRuby()
                                       ? parent->Style()->GetRubyPosition()
-                                      : RubyPosition::kBefore);
+                                      : RubyPosition::kOver);
   }
   DCHECK_EQ(data->annotation_line_list.size(), data->position_list.size());
 

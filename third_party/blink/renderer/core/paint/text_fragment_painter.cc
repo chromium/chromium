@@ -134,7 +134,7 @@ bool ShouldPaintEmphasisMark(const ComputedStyle& style,
     return true;
   }
   const LineLogicalSide ruby_logical_side =
-      parent->StyleRef().GetRubyPosition() == RubyPosition::kBefore
+      parent->StyleRef().GetRubyPosition() == RubyPosition::kOver
           ? LineLogicalSide::kOver
           : LineLogicalSide::kUnder;
   return ruby_logical_side != style.GetTextEmphasisLineLogicalSide();

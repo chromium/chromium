@@ -82,7 +82,7 @@
                 "word-break", "overflow-wrap", "-webkit-line-break",
                 "-webkit-text-security",
                 "hyphens", "hyphenate-character", "hyphenate-limit-chars",
-                "image-orientation", "-webkit-ruby-position",
+                "image-orientation", "ruby-position",
                 "TextEmphasisMark", "text-emphasis-position",
                 "TextEmphasisCustomMark", "text-orientation",
                 "text-combine-upright", "tab-size", "text-size-adjust",

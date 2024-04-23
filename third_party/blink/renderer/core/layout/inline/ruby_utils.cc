@@ -1038,7 +1038,7 @@ void RubyBlockPositionCalculator::HandleRubyLine(
         RubyLevel new_level;
         new_level.reserve(current.size() + 1);
         new_level.AppendVector(current);
-        if (depth.column->ruby_position == RubyPosition::kAfter) {
+        if (depth.column->ruby_position == RubyPosition::kUnder) {
           new_level.push_back(--depth.under_depth);
         } else {
           new_level.push_back(++depth.over_depth);

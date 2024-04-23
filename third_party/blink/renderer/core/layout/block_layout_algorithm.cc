@@ -3418,8 +3418,8 @@ void BlockLayoutAlgorithm::HandleRubyText(BlockNode ruby_text_child) {
 
   LayoutUnit ruby_text_box_top;
   const RubyPosition block_start_position = Style().IsFlippedLinesWritingMode()
-                                                ? RubyPosition::kAfter
-                                                : RubyPosition::kBefore;
+                                                ? RubyPosition::kUnder
+                                                : RubyPosition::kOver;
   if (Style().GetRubyPosition() == block_start_position) {
     LayoutUnit last_line_ruby_text_bottom = ruby_text_box.BlockEndOffset();
 

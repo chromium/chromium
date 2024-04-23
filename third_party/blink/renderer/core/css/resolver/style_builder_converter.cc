@@ -3104,16 +3104,16 @@ RubyPosition StyleBuilderConverter::ConvertRubyPosition(
     const CSSValue& value) {
   if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     CSSValueID value_id = identifier_value->GetValueID();
-    if (value_id == CSSValueID::kOver) {
-      return RubyPosition::kBefore;
+    if (value_id == CSSValueID::kBefore) {
+      return RubyPosition::kOver;
     }
-    if (value_id == CSSValueID::kUnder) {
-      return RubyPosition::kAfter;
+    if (value_id == CSSValueID::kAfter) {
+      return RubyPosition::kUnder;
     }
     return identifier_value->ConvertTo<blink::RubyPosition>();
   }
   NOTREACHED();
-  return RubyPosition::kBefore;
+  return RubyPosition::kOver;
 }
 
 StyleScrollbarColor* StyleBuilderConverter::ConvertScrollbarColor(

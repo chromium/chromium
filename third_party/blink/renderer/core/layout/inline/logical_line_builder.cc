@@ -434,13 +434,13 @@ InlineBoxState* LogicalLineBuilder::PlaceRubyColumn(
         box_states_->RubyColumnAt(ruby_column_start_index + i);
     if (!ruby_column.annotation_line_list[i].IsEmptyLine()) {
       if (!line_box[start_index].has_over_annotation &&
-          logical_column.ruby_position == RubyPosition::kBefore) {
+          logical_column.ruby_position == RubyPosition::kOver) {
         for (wtf_size_t j = start_index; j < line_box.size(); ++j) {
           line_box[j].has_over_annotation = true;
         }
       }
       if (!line_box[start_index].has_under_annotation &&
-          logical_column.ruby_position == RubyPosition::kAfter) {
+          logical_column.ruby_position == RubyPosition::kUnder) {
         for (wtf_size_t j = start_index; j < line_box.size(); ++j) {
           line_box[j].has_under_annotation = true;
         }

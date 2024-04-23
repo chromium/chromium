@@ -10112,7 +10112,14 @@ const CSSValue* WebkitRubyPosition::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return CSSIdentifierValue::Create(style.GetRubyPosition());
+  switch (style.GetRubyPosition()) {
+    case blink::RubyPosition::kOver:
+      return CSSIdentifierValue::Create(CSSValueID::kBefore);
+    case blink::RubyPosition::kUnder:
+      return CSSIdentifierValue::Create(CSSValueID::kAfter);
+  }
+  NOTREACHED();
+  return CSSIdentifierValue::Create(CSSValueID::kOver);
 }
 
 const CSSValue* RubyPosition::CSSValueFromComputedStyleInternal(
@@ -10120,14 +10127,7 @@ const CSSValue* RubyPosition::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  switch (style.GetRubyPosition()) {
-    case blink::RubyPosition::kBefore:
-      return CSSIdentifierValue::Create(CSSValueID::kOver);
-    case blink::RubyPosition::kAfter:
-      return CSSIdentifierValue::Create(CSSValueID::kUnder);
-  }
-  NOTREACHED();
-  return CSSIdentifierValue::Create(CSSValueID::kOver);
+  return CSSIdentifierValue::Create(style.GetRubyPosition());
 }
 
 const CSSValue* WebkitTapHighlightColor::ParseSingleValue(

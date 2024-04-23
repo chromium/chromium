@@ -2815,10 +2815,10 @@ TEST_F(StyleCascadeTest, RubyPositionReverseCascadeOrder) {
 }
 
 TEST_F(StyleCascadeTest, RubyPositionSurrogateCanCascadeAsOriginal) {
-  // Note: ruby-position is defined as the surrogate, and -webkit-ruby-position
+  // Note: -webkit-ruby-position is defined as the surrogate, and ruby-position
   // is the original.
-  ASSERT_TRUE(GetCSSPropertyRubyPosition().IsSurrogate());
-  ASSERT_FALSE(GetCSSPropertyWebkitRubyPosition().IsSurrogate());
+  ASSERT_FALSE(GetCSSPropertyRubyPosition().IsSurrogate());
+  ASSERT_TRUE(GetCSSPropertyWebkitRubyPosition().IsSurrogate());
 
   const struct {
     CSSValueID specified;

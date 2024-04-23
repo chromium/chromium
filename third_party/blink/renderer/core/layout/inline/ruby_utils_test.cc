@@ -59,23 +59,23 @@ TEST(RubyBlockPositionCalculatorTest, GroupLinesBothSides) {
   column_list.push_back(MakeGarbageCollected<LogicalRubyColumn>());
   column_list.back()->start_index = 1;
   column_list.back()->size = 10;
-  column_list.back()->ruby_position = RubyPosition::kBefore;
+  column_list.back()->ruby_position = RubyPosition::kOver;
   // Nested in the above, but on the opposite position.
   column_list.push_back(MakeGarbageCollected<LogicalRubyColumn>());
   column_list.back()->start_index = 2;
   column_list.back()->size = 3;
-  column_list.back()->ruby_position = RubyPosition::kAfter;
+  column_list.back()->ruby_position = RubyPosition::kUnder;
 
   // Another nested pairs, but RubyPositions are reversed.
   column_list.push_back(MakeGarbageCollected<LogicalRubyColumn>());
   column_list.back()->start_index = 20;
   column_list.back()->size = 10;
-  column_list.back()->ruby_position = RubyPosition::kAfter;
+  column_list.back()->ruby_position = RubyPosition::kOver;
   // Nested in the above, but on the opposite position.
   column_list.push_back(MakeGarbageCollected<LogicalRubyColumn>());
   column_list.back()->start_index = 22;
   column_list.back()->size = 3;
-  column_list.back()->ruby_position = RubyPosition::kBefore;
+  column_list.back()->ruby_position = RubyPosition::kUnder;
 
   RubyBlockPositionCalculator calculator;
   calculator.GroupLines(column_list);
@@ -98,13 +98,13 @@ TEST(RubyBlockPositionCalculatorTest, GroupLinesAnnotationForAnnotation) {
   column_list.push_back(MakeGarbageCollected<LogicalRubyColumn>());
   column_list.back()->start_index = 1;
   column_list.back()->size = 10;
-  column_list.back()->ruby_position = RubyPosition::kBefore;
+  column_list.back()->ruby_position = RubyPosition::kOver;
   // An annotation for the above annotation line.
   auto* sub_column = MakeGarbageCollected<LogicalRubyColumn>();
   column_list.back()->ruby_column_list.push_back(sub_column);
   sub_column->start_index = 2;
   sub_column->size = 3;
-  sub_column->ruby_position = RubyPosition::kAfter;
+  sub_column->ruby_position = RubyPosition::kUnder;
 
   RubyBlockPositionCalculator calculator;
   calculator.GroupLines(column_list);
