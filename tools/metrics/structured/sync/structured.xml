@@ -2257,6 +2257,36 @@
     </metric>
   </event>
 
+  <enum name="PickerInputFieldType">
+    <variant value="0">NONE</variant>
+    <variant value="1">PLAIN_TEXT</variant>
+    <variant value="2">RICH_TEXT</variant>
+    <variant value="3">PASSWORD</variant>
+    <variant value="4">SEARCH</variant>
+    <variant value="5">EMAIL</variant>
+    <variant value="6">NUMBER</variant>
+    <variant value="7">TELEPHONE</variant>
+    <variant value="8">URL</variant>
+    <variant value="9">DATE_TIME</variant>
+    <variant value="10">OTHER</variant>
+  </enum>
+
+  <event name="Picker.StartSession">
+    <summary>
+      Recorded when user opens the picker window and starts a session.
+    </summary>
+    <metric name="InputFieldType" type="PickerInputFieldType">
+      <summary>
+        Type of input field that was focused when the session starts.
+      </summary>
+    </metric>
+    <metric name="SelectionLength" type="int">
+      <summary>
+        Number of UTF-16 code units selected when the session starts.
+      </summary>
+    </metric>
+  </event>
+
   <event name="UserLogin">
     <summary>
       An event to signify a user is using the system.
