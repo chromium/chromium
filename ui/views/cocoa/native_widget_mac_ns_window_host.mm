@@ -1240,8 +1240,10 @@ void NativeWidgetMacNSWindowHost::OnWindowDisplayChanged(
 
 void NativeWidgetMacNSWindowHost::OnWindowWillClose() {
   Widget* widget = native_widget_mac_->GetWidget();
-  if (DialogDelegate* dialog = widget->widget_delegate()->AsDialogDelegate())
-    dialog->RemoveObserver(this);
+  if (widget && widget->widget_delegate() &&
+      widget->widget_delegate()->AsDialogDelegate()) {
+    widget->widget_delegate()->AsDialogDelegate()->RemoveObserver(this);
+  }
   native_widget_mac_->WindowDestroying();
   // Remove |this| from the parent's list of children.
   SetParent(nullptr);

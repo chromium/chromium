@@ -233,6 +233,8 @@ Widget::~Widget() {
     if (native_widget_) {
       native_widget_->Close();
     }
+    HandleWidgetDestroying();
+    HandleWidgetDestroyed();
   }
   // Destroy RootView after the native widget, so in case the WidgetDelegate is
   // a View in the RootView hierarchy it gets destroyed as a WidgetDelegate
@@ -833,8 +835,9 @@ void Widget::CloseNow() {
 
   DCHECK(native_widget_initialized_) << "Native widget is never initialized.";
 
-  if (native_widget_)
+  if (native_widget_) {
     native_widget_->CloseNow();
+  }
 }
 
 bool Widget::IsClosed() const {
@@ -1667,26 +1670,15 @@ void Widget::OnNativeWidgetDestroying() {
   // Tell the focus manager (if any) that root_view is being removed
   // in case that the focused view is under this root view.
   DCHECK(native_widget_);
-  if (GetFocusManager() && root_view_)
-    GetFocusManager()->ViewRemoved(root_view_.get());
-  for (WidgetObserver& observer : observers_)
-    observer.OnWidgetDestroying(this);
-  if (non_client_view_)
-    non_client_view_->WindowClosing();
-  widget_delegate_->WindowClosing();
+  HandleWidgetDestroying();
 }
 
 void Widget::OnNativeWidgetDestroyed() {
   // Mark the widget as closed so that DeleteDelegate() won't call
   // InvalidateLayout().
   widget_closed_ = true;
-  for (WidgetObserver& observer : observers_) {
-    observer.OnWidgetDestroyed(this);
-  }
+  HandleWidgetDestroyed();
 
-  if (widget_delegate_) {
-    widget_delegate_->DeleteDelegate();
-  }
   // Immediately reset the weak ptr. If NATIVE_WIDGET_OWNS_WIDGET destruction of
   // the NativeWidget can destroy the Widget. We don't want to touch the
   // NativeWidget during the destruction of the Widget either since some member
@@ -2312,6 +2304,37 @@ void Widget::ClearFocusFromWidget() {
 void Widget::HandleShowRequested() {
   sublevel_manager_->EnsureOwnerSublevel();
   internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetShown(this);
+}
+
+void Widget::HandleWidgetDestroying() {
+  if (native_widget_destroyed_) {
+    return;
+  }
+  if (GetFocusManager() && root_view_) {
+    GetFocusManager()->ViewRemoved(root_view_.get());
+  }
+  for (WidgetObserver& observer : observers_) {
+    observer.OnWidgetDestroying(this);
+  }
+  if (non_client_view_) {
+    non_client_view_->WindowClosing();
+  }
+  if (widget_delegate_) {
+    widget_delegate_->WindowClosing();
+  }
+}
+
+void Widget::HandleWidgetDestroyed() {
+  if (native_widget_destroyed_) {
+    return;
+  }
+  for (WidgetObserver& observer : observers_)
+    observer.OnWidgetDestroyed(this);
+
+  if (widget_delegate_) {
+    widget_delegate_->DeleteDelegate();
+  }
+  native_widget_destroyed_ = true;
 }
 
 BEGIN_METADATA_BASE(Widget)

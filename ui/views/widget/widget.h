@@ -1316,6 +1316,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // the native widget asynchronously invokes OnNativeWidgetVisibilityChanged().
   void HandleShowRequested();
 
+  // This holds the logic for handling of the destroying and destroyed
+  // notifications.
+  void HandleWidgetDestroying();
+  void HandleWidgetDestroyed();
+
   static DisableActivationChangeHandlingType
       g_disable_activation_change_handling_;
 
@@ -1399,6 +1404,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
   // Set to true if the widget is in the process of closing.
   bool widget_closed_ = false;
+
+  // Set to true after OnWidgetDestroyed called.
+  bool native_widget_destroyed_ = false;
 
   // The reason the widget was closed.
   // Note that this may be ClosedReason::kUnspecified if the deprecated Close()
