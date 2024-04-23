@@ -28,6 +28,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
+import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
+import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -119,10 +121,14 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         // is already fired when the page was navigated into for the first time.
         // We use onPageStartedHelper instead. This function correspond to
         // `didFinishNavigationInPrimaryMainFrame`.
+        OnPageStartedHelper startHelper = mContentsClient.getOnPageStartedHelper();
+        int originalCallCount = startHelper.getCallCount();
         HistoryUtils.goBackSync(
                 InstrumentationRegistry.getInstrumentation(),
                 mAwContents.getWebContents(),
-                mContentsClient.getOnPageStartedHelper());
+                startHelper);
+        Assert.assertEquals(startHelper.getUrl(), mInitialUrl);
+        Assert.assertEquals(startHelper.getCallCount(), originalCallCount + 1);
         // Wait for the page to be fully loaded
         Assert.assertEquals(
                 true, pageFullyLoadedFuture.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
@@ -243,5 +249,75 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
         // Test BFCache can still work for future navigations
         navigateForwardAndBack();
         Assert.assertTrue(isPageShowPersisted());
+    }
+
+    // TODO(crbug.com/335767367): Consider calling onPageFinished for BFCache restores.
+    // For now `onPageFinished` callback will not be called. The clients
+    // shall listen for the web messages for BFCache related events.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewBackForwardCache"})
+    public void testPageFinishEventNotCalled() throws Exception, Throwable {
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
+        navigateForward();
+        final OnPageFinishedHelper finishHelper = mContentsClient.getOnPageFinishedHelper();
+        int originalCallCount = finishHelper.getCallCount();
+        navigateBack();
+        Assert.assertEquals("\"null\"", getNotRestoredReasons());
+        Assert.assertTrue(isPageShowPersisted());
+        Assert.assertEquals(finishHelper.getCallCount(), originalCallCount);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewBackForwardCache"})
+    public void testShouldInterceptRequestNotCalled() throws Exception, Throwable {
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
+        navigateForward();
+        final TestAwContentsClient.ShouldInterceptRequestHelper helper =
+                mContentsClient.getShouldInterceptRequestHelper();
+        int originalCallCount = helper.getCallCount();
+        navigateBack();
+        Assert.assertEquals("\"null\"", getNotRestoredReasons());
+        Assert.assertTrue(isPageShowPersisted());
+        Assert.assertEquals(helper.getCallCount(), originalCallCount);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewBackForwardCache"})
+    public void testShouldOverrideUrlLoadingNotCalled() throws Exception, Throwable {
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
+        navigateForward();
+        final TestAwContentsClient.ShouldOverrideUrlLoadingHelper helper =
+                mContentsClient.getShouldOverrideUrlLoadingHelper();
+        int originalCallCount = helper.getCallCount();
+        navigateBack();
+        Assert.assertEquals("\"null\"", getNotRestoredReasons());
+        Assert.assertTrue(isPageShowPersisted());
+        Assert.assertEquals(helper.getCallCount(), originalCallCount);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewBackForwardCache"})
+    public void testOnLoadResourceNotCalled() throws Exception, Throwable {
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
+        navigateForward();
+        final TestAwContentsClient.OnLoadResourceHelper helper =
+                mContentsClient.getOnLoadResourceHelper();
+        int originalCallCount = helper.getCallCount();
+        navigateBack();
+        Assert.assertEquals("\"null\"", getNotRestoredReasons());
+        Assert.assertTrue(isPageShowPersisted());
+        Assert.assertEquals(helper.getCallCount(), originalCallCount);
     }
 }
