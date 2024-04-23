@@ -1936,12 +1936,17 @@ void AuthenticationCredentialsContainer::GetForIdentity(
   ContentSecurityPolicy* policy =
       resolver->GetExecutionContext()
           ->GetContentSecurityPolicyForCurrentWorld();
-  if (!RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(context) &&
-      identity_options.providers().size() > 1) {
-    resolver->RejectWithTypeError(
-        "Multiple providers specified but FedCmMultipleIdentityProviders "
-        "flag is disabled.");
-    return;
+  if (identity_options.providers().size() > 1) {
+    if (RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
+            context)) {
+      UseCounter::Count(resolver->GetExecutionContext(),
+                        WebFeature::kFedCmMultipleIdentityProviders);
+    } else {
+      resolver->RejectWithTypeError(
+          "Multiple providers specified but FedCmMultipleIdentityProviders "
+          "flag is disabled.");
+      return;
+    }
   }
 
   // Log the UseCounter only when the WebID flag is enabled.
