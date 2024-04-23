@@ -1,0 +1,96 @@
+This is a testharness.js-based test.
+Found 46 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] [["inserthorizontalrule",""]] "<div><b>foo</b>{}<b>bar</b></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><b>foo</b><hr><b>bar</b></div>" but got "<div><b>foo</b></div><hr><div><b>bar</b></div>"
+[FAIL] [["inserthorizontalrule",""]] "<div><b>foo[</b><b>]bar</b></div>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><b>foo</b><hr><b>bar</b></div>" but got "<div><b>foo</b></div><hr><div><b>bar</b></div>"
+[FAIL] [["stylewithcss","true"],["inserthorizontalrule",""]] "<div><b>foo</b>{<b>bar</b>}<b>baz</b></div>" queryCommandState("stylewithcss") before
+  assert_equals: Wrong result returned expected false but got true
+[FAIL] [["stylewithcss","true"],["inserthorizontalrule",""]] "<b id=abc>foo[]bar</b>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<b id=\\"abc\\">foo</b><hr><b>bar</b>" but got "<b id=\\"abc\\">foo<hr>bar</b>"
+[FAIL] [["stylewithcss","false"],["inserthorizontalrule",""]] "<b id=abc>foo[]bar</b>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<b id=\\"abc\\">foo</b><hr><b>bar</b>" but got "<b id=\\"abc\\">foo<hr>bar</b>"
+[FAIL] [["inserthorizontalrule","abc"]] "foo[bar]baz" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<hr>baz" but got "foo<hr id=\\"abc\\">baz"
+[FAIL] [["inserthorizontalrule",""]] "<a>foo[bar]baz</a>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a>foo</a><hr><a>baz</a>" but got "<a>foo<hr>baz</a>"
+[FAIL] [["inserthorizontalrule",""]] "<a href=/>foo[bar]baz</a>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"/\\">foo</a><hr><a href=\\"/\\">baz</a>" but got "<a href=\\"/\\">foo<hr>baz</a>"
+[FAIL] [["inserthorizontalrule",""]] "<abbr>foo[bar]baz</abbr>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<abbr>foo</abbr><hr><abbr>baz</abbr>" but got "<abbr>foo<hr>baz</abbr>"
+[FAIL] [["inserthorizontalrule",""]] "<bdi>foo[bar]baz</bdi>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<bdi>foo</bdi><hr><bdi>baz</bdi>" but got "<bdi>foo<hr>baz</bdi>"
+[FAIL] [["inserthorizontalrule",""]] "<bdo dir=rtl>foo[bar]baz</bdo>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<bdo dir=\\"rtl\\">foo</bdo><hr><bdo dir=\\"rtl\\">baz</bdo>" but got "<bdo dir=\\"rtl\\">foo<hr>baz</bdo>"
+[FAIL] [["inserthorizontalrule",""]] "<cite>foo[bar]baz</cite>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<cite>foo</cite><hr><cite>baz</cite>" but got "<cite>foo<hr>baz</cite>"
+[FAIL] [["inserthorizontalrule",""]] "<code>foo[bar]baz</code>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<code>foo</code><hr><code>baz</code>" but got "<code>foo<hr>baz</code>"
+[FAIL] [["inserthorizontalrule",""]] "<details>foo[bar]baz</details>": execCommand("inserthorizontalrule", false, "") return value
+  assert_equals: expected true but got false
+[FAIL] [["inserthorizontalrule",""]] "<details>foo[bar]baz</details>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<details>foo<hr>baz</details>" but got "<details>foobarbaz</details>"
+[FAIL] [["inserthorizontalrule",""]] "<dfn>foo[bar]baz</dfn>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<dfn>foo</dfn><hr><dfn>baz</dfn>" but got "<dfn>foo<hr>baz</dfn>"
+[FAIL] [["inserthorizontalrule",""]] "<h1>foo[bar]baz</h1>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<h1>foo</h1><hr><h1>baz</h1>" but got "<h1>foo<hr>baz</h1>"
+[FAIL] [["inserthorizontalrule",""]] "<h2>foo[bar]baz</h2>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<h2>foo</h2><hr><h2>baz</h2>" but got "<h2>foo<hr>baz</h2>"
+[FAIL] [["inserthorizontalrule",""]] "<h3>foo[bar]baz</h3>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<h3>foo</h3><hr><h3>baz</h3>" but got "<h3>foo<hr>baz</h3>"
+[FAIL] [["inserthorizontalrule",""]] "<h4>foo[bar]baz</h4>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<h4>foo</h4><hr><h4>baz</h4>" but got "<h4>foo<hr>baz</h4>"
+[FAIL] [["inserthorizontalrule",""]] "<h5>foo[bar]baz</h5>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<h5>foo</h5><hr><h5>baz</h5>" but got "<h5>foo<hr>baz</h5>"
+[FAIL] [["inserthorizontalrule",""]] "<h6>foo[bar]baz</h6>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<h6>foo</h6><hr><h6>baz</h6>" but got "<h6>foo<hr>baz</h6>"
+[FAIL] [["inserthorizontalrule",""]] "<hgroup>foo[bar]baz</hgroup>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<hgroup>foo</hgroup><hr><hgroup>baz</hgroup>" but got "<hgroup>foo<hr>baz</hgroup>"
+[FAIL] [["inserthorizontalrule",""]] "<hgroup><h1>foo[bar]baz</h1></hgroup>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<hgroup><h1>foo</h1></hgroup><hr><hgroup><h1>baz</h1></hgroup>" but got "<hgroup><h1>foo<hr>baz</h1></hgroup>"
+[FAIL] [["inserthorizontalrule",""]] "<kbd>foo[bar]baz</kbd>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<kbd>foo</kbd><hr><kbd>baz</kbd>" but got "<kbd>foo<hr>baz</kbd>"
+[FAIL] [["inserthorizontalrule",""]] "<mark>foo[bar]baz</mark>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<mark>foo</mark><hr><mark>baz</mark>" but got "<mark>foo<hr>baz</mark>"
+[FAIL] [["inserthorizontalrule",""]] "<pre>foo[bar]baz</pre>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<pre>foo</pre><hr><pre>baz</pre>" but got "<pre>foo<hr>baz</pre>"
+[FAIL] [["inserthorizontalrule",""]] "<q>foo[bar]baz</q>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<q>foo</q><hr><q>baz</q>" but got "<q>foo<hr>baz</q>"
+[FAIL] [["inserthorizontalrule",""]] "<ruby>foo[bar]baz<rt>quz</rt></ruby>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ruby>foo</ruby><hr><ruby>baz<rt>quz</rt></ruby>" but got "<ruby>foo<hr>baz<rt>quz</rt></ruby>"
+[FAIL] [["inserthorizontalrule",""]] "<ruby>foo<rt>bar[baz]quz</rt></ruby>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ruby>foo<rt>bar</rt></ruby><hr><ruby><rt>quz</rt></ruby>" but got "<ruby>foo<rt>bar<hr>quz</rt></ruby>"
+[FAIL] [["inserthorizontalrule",""]] "<ruby>foo<rp>bar[baz]quz</rp><rt>qoz</rt><rp>qiz</rp></ruby>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ruby>foo<rp>bar</rp></ruby><hr><ruby><rp>quz</rp><rt>qoz</rt><rp>qiz</rp></ruby>" but got "<ruby>foo<rp>barbazquz</rp><rt><hr>qoz</rt><rp>qiz</rp></ruby>"
+[FAIL] [["inserthorizontalrule",""]] "<samp>foo[bar]baz</samp>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<samp>foo</samp><hr><samp>baz</samp>" but got "<samp>foo<hr>baz</samp>"
+[FAIL] [["inserthorizontalrule",""]] "<small>foo[bar]baz</small>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<small>foo</small><hr><small>baz</small>" but got "<small>foo<hr>baz</small>"
+[FAIL] [["inserthorizontalrule",""]] "<var>foo[bar]baz</var>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<var>foo</var><hr><var>baz</var>" but got "<var>foo<hr>baz</var>"
+[FAIL] [["inserthorizontalrule",""]] "<acronym>foo[bar]baz</acronym>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<acronym>foo</acronym><hr><acronym>baz</acronym>" but got "<acronym>foo<hr>baz</acronym>"
+[FAIL] [["inserthorizontalrule",""]] "<big>foo[bar]baz</big>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<big>foo</big><hr><big>baz</big>" but got "<big>foo<hr>baz</big>"
+[FAIL] [["inserthorizontalrule",""]] "<blink>foo[bar]baz</blink>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blink>foo</blink><hr><blink>baz</blink>" but got "<blink>foo<hr>baz</blink>"
+[FAIL] [["inserthorizontalrule",""]] "<dir>foo[bar]baz</dir>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<dir>foo</dir><hr><dir>baz</dir>" but got "<dir>foo<hr>baz</dir>"
+[FAIL] [["stylewithcss","true"],["inserthorizontalrule",""]] "<font>foo[bar]baz</font>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<font>foo</font><hr><font>baz</font>" but got "<font>foo<hr>baz</font>"
+[FAIL] [["stylewithcss","false"],["inserthorizontalrule",""]] "<font>foo[bar]baz</font>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<font>foo</font><hr><font>baz</font>" but got "<font>foo<hr>baz</font>"
+[FAIL] [["inserthorizontalrule",""]] "<listing>foo[bar]baz</listing>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<listing>foo</listing><hr><listing>baz</listing>" but got "<listing>foo<hr>baz</listing>"
+[FAIL] [["inserthorizontalrule",""]] "<marquee>foo[bar]baz</marquee>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<marquee>foo</marquee><hr><marquee>baz</marquee>" but got "<marquee>foo<hr>baz</marquee>"
+[FAIL] [["inserthorizontalrule",""]] "<nobr>foo[bar]baz</nobr>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<nobr>foo</nobr><hr><nobr>baz</nobr>" but got "<nobr>foo<hr>baz</nobr>"
+[FAIL] [["inserthorizontalrule",""]] "<tt>foo[bar]baz</tt>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<tt>foo</tt><hr><tt>baz</tt>" but got "<tt>foo<hr>baz</tt>"
+[FAIL] [["inserthorizontalrule",""]] "<xmp>foo[bar]baz</xmp>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<xmp>foo</xmp><hr><xmp>baz</xmp>" but got "<xmp>foo<hr>baz</xmp>"
+[FAIL] [["inserthorizontalrule",""]] "fo[o<span contenteditable=false>bar</span>b]az" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "fo<hr><span contenteditable=\\"false\\">bar</span>az" but got "fo<hr>az"
+Harness: the test ran to completion.
+
