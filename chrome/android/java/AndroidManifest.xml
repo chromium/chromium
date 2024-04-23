@@ -570,7 +570,7 @@ by a child template that "extends" this file.
             @android:style/Theme.NoDisplay can't be used here.
         -->
         <activity android:name="org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity"
-            android:theme="@style/Theme.MaterialComponents"
+            android:theme="@style/Theme.Material3.DayNight"
             android:excludeFromRecents="true"
             android:exported="false">
         </activity>
@@ -1191,7 +1191,7 @@ by a child template that "extends" this file.
             android:excludeFromRecents="true"
             android:exported="true"
             android:noHistory="true"
-            android:theme="@style/Theme.MaterialComponents"
+            android:theme="@style/Theme.Material3.DayNight"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize" >
         </activity>
 

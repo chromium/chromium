@@ -6,5 +6,5 @@ found in the LICENSE file.
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="ThemeOverlay.BrowserUI.Fullscreen.DialogWhenLarge" parent="ThemeOverlay.MaterialComponents.Dialog"/>
+    <style name="ThemeOverlay.BrowserUI.Fullscreen.DialogWhenLarge" parent="ThemeOverlay.Material3.Dialog"/>
 </resources>

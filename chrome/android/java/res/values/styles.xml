@@ -87,6 +87,8 @@ found in the LICENSE file.
 
         <!-- Text style attributes used by the preference_material.xml layout. -->
         <item name="android:textAppearanceListItem">@style/TextAppearance.TextLarge.Primary</item>
+        <item name="android:textAppearanceListItemSmall">@style/TextAppearance.TextSmall.Primary</item>
+        <item name="android:textAppearanceListItemSecondary">@style/TextAppearance.TextMedium.Secondary</item>
         <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
     </style>
     <style name="Base.V27.Theme.Chromium.Settings" parent="Base.Theme.Chromium.Settings" />
@@ -186,7 +188,7 @@ found in the LICENSE file.
 
 
     <!-- Settings -->
-    <style name="SettingsToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
+    <style name="SettingsToolbarStyle" parent="Widget.Material3.Toolbar">
         <item name="titleTextAppearance">@style/TextAppearance.Headline.Primary</item>
         <item name="titleTextColor">?attr/colorOnSurface</item>
         <item name="navigationIconTint">?attr/colorOnSurface</item>

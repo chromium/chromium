@@ -17,6 +17,7 @@ found in the LICENSE file.
     <dimen name="dialog_padding_sides">@dimen/abc_dialog_padding_material</dimen>
 
     <!-- Toolbar dimensions -->
+    <dimen name="default_action_bar_height">56dp</dimen>
     <dimen name="toolbar_shadow_height">8dp</dimen>
     <dimen name="toolbar_hairline_height">1dp</dimen>
 

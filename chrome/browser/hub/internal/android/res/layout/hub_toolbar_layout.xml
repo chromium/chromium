@@ -38,7 +38,9 @@ found in the LICENSE file.
       android:layout_height="match_parent"
       android:layout_gravity="center"
       android:visibility="gone"
-      android:layout_marginBottom="3dp"/>
+      android:layout_marginBottom="3dp"
+      app:tabIndicator="@drawable/m3_tabs_line_indicator"
+      app:tabIndicatorFullWidth="true"/>
 
     <FrameLayout
       android:layout_width="wrap_content"

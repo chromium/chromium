@@ -123,8 +123,8 @@ found in the LICENSE file.
     <dimen name="tab_modal_scrim_vertical_margin">16dp</dimen>
 
     <!-- Should match toolbar_height_no_shadow -->
-    <dimen name="control_container_height">56dp</dimen>
-    <dimen name="custom_tabs_control_container_height">56dp</dimen>
+    <dimen name="control_container_height">@dimen/default_action_bar_height</dimen>
+    <dimen name="custom_tabs_control_container_height">@dimen/default_action_bar_height</dimen>
 
     <!-- Find in Page dimensions -->
     <dimen name="find_in_page_popup_width">375dp</dimen>

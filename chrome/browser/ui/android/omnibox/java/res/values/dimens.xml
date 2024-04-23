@@ -8,7 +8,7 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Toolbar dimensions -->
-    <dimen name="toolbar_height_no_shadow">56dp</dimen>
+    <dimen name="toolbar_height_no_shadow">@dimen/default_action_bar_height</dimen>
     <!-- toolbar_height_no_shadow_focused = toolbar_height_no_shadow + toolbar_url_focus_height_increase -->
     <dimen name="toolbar_height_no_shadow_focused">64dp</dimen>
     <dimen name="toolbar_url_focus_height_increase">8dp</dimen>

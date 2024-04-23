@@ -7,4 +7,7 @@ found in the LICENSE file.
 
 <!-- The incognito toggle toolbar button. -->
 <org.chromium.chrome.browser.toolbar.IncognitoToggleTabLayout
-    style="@style/ToolbarButton" />
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/ToolbarButton"
+    app:tabIndicator="@drawable/m3_tabs_line_indicator"
+    app:tabIndicatorFullWidth="true" />

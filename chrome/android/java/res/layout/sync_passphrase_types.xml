@@ -23,7 +23,7 @@ found in the LICENSE file.
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:text="@string/sync_passphrase_type_keystore"
-        android:textAppearance="?android:attr/textAppearanceListItemSmall" />
+        android:textAppearance="?android:attr/textAppearanceListItem" />
 
     <CheckedTextView android:id="@+id/explicit_passphrase_checkbox"
         android:layout_width="match_parent"
@@ -36,7 +36,7 @@ found in the LICENSE file.
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:text="@string/sync_passphrase_type_custom"
-        android:textAppearance="?android:attr/textAppearanceListItemSmall" />
+        android:textAppearance="?android:attr/textAppearanceListItem" />
 
     <org.chromium.ui.widget.TextViewWithClickableSpans
         android:id="@+id/reset_sync_link"
