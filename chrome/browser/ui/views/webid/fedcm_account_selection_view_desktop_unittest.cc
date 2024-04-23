@@ -1469,10 +1469,39 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
             account_selection_view_->sheet_type_);
 }
 
-// Test user triggering the use another account flow then closing the pop-up
-// from the use another account flow should dismiss the widget.
+// Test user triggering the use another account flow twice in a modal, without
+// closing the pop-up from the first use another account flow.
+TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountTwiceModal) {
+  const char kAccountId[] = "account_id";
+  IdentityProviderDisplayData idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignUp}});
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
+      accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
+
+  // Emulate the user clicking "use another account button".
+  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
+  CreateAndShowPopupWindow(*controller);
+
+  // Modal remains visible.
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+
+  // Emulate the user clicking "use another account button" again. This should
+  // not crash.
+  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
+  CreateAndShowPopupWindow(*controller);
+}
+
+// Test user triggering the use another account flow twice in a modal, with
+// closing the pop-up from the first use another account flow.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
-       UseAnotherAccountClosePopupDismissesWidget) {
+       UseAnotherAccountCloseThenReopenModal) {
   const char kAccountId[] = "account_id";
   IdentityProviderDisplayData idp_data =
       CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignUp}});
@@ -1496,10 +1525,13 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Emulate user closing the pop-up window.
   controller->OnPopupWindowDestroyed();
 
-  // Widget should be dismissed.
-  StubAccountSelectionViewDelegate* delegate =
-      static_cast<StubAccountSelectionViewDelegate*>(delegate_.get());
-  EXPECT_EQ(delegate->GetDismissReason(), DismissReason::kOther);
+  // Modal remains visible.
+  EXPECT_TRUE(dialog_widget_->IsVisible());
+
+  // Emulate the user clicking "use another account button" again. This should
+  // not crash.
+  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
+  CreateAndShowPopupWindow(*controller);
 }
 
 // Test user triggering the use another account flow then clicking on the cancel
