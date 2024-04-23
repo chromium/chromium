@@ -41,6 +41,10 @@ namespace url {
 
 namespace {
 
+using ::testing::AssertionFailure;
+using ::testing::AssertionResult;
+using ::testing::AssertionSuccess;
+
 // Used for regular URL parse cases.
 struct URLParseCase {
   const char* input;
@@ -87,26 +91,36 @@ struct FileSystemURLParseCase {
   const char* ref;
 };
 
-bool ComponentMatches(const char* input,
-                      const char* reference,
-                      const Component& component) {
+AssertionResult ComponentMatches(const char* input,
+                                 const char* reference,
+                                 const Component& component) {
   // Check that the -1 sentinel is the only allowed negative value.
-  EXPECT_TRUE(component.is_valid() || component.len == -1);
+  if (!component.is_valid() && component.len != -1) {
+    return AssertionFailure()
+           << "-1 is the only allowed negative value for len";
+  }
 
   // Begin should be valid.
-  EXPECT_LE(0, component.begin);
+  if (component.begin < 0) {
+    return AssertionFailure() << "begin must be non-negative";
+  }
 
   // A NULL reference means the component should be nonexistent.
   if (!reference)
-    return component.len == -1;
+    return component.len == -1 ? AssertionSuccess()
+                               : AssertionFailure() << "len should be -1";
   if (!component.is_valid())
-    return false;  // Reference is not NULL but we don't have anything
+    return AssertionFailure()
+           << "for a non null reference, the component should be valid";
 
-  if (strlen(reference) != static_cast<size_t>(component.len))
-    return false;  // Lengths don't match
+  if (strlen(reference) != static_cast<size_t>(component.len)) {
+    return AssertionFailure() << "lengths do not match";
+  }
 
   // Now check the actual characters.
-  return strncmp(reference, &input[component.begin], component.len) == 0;
+  return strncmp(reference, &input[component.begin], component.len) == 0
+             ? AssertionSuccess()
+             : AssertionFailure() << "characters do not match";
 }
 
 void ExpectInvalidComponent(const Component& component) {
