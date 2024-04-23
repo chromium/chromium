@@ -5,6 +5,7 @@
 import '../strings.m.js';
 import './product_selector.js';
 import './table.js';
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
@@ -26,6 +27,12 @@ export class ProductSpecificationsElement extends PolymerElement {
 
   static get properties() {
     return {
+      showEmptyState_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
       specsTable_: {
         type: Object,
         value: {},
@@ -33,8 +40,10 @@ export class ProductSpecificationsElement extends PolymerElement {
     };
   }
 
-  private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private showEmptyState_: boolean;
   private specsTable_: {columns: TableColumn[], rows: TableRow[]};
+
+  private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   constructor() {
     super();
@@ -47,6 +56,7 @@ export class ProductSpecificationsElement extends PolymerElement {
     const params = new URLSearchParams(router.getCurrentQuery());
     const urlsParam = params.get('urls');
     if (!urlsParam) {
+      this.showEmptyState_ = true;
       return;
     }
 

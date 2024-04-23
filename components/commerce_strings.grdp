@@ -466,6 +466,12 @@
   </message>
 
   <!-- For Product Specifications -->
+  <message name="IDS_PRODUCT_SPECIFICATIONS_EMPTY_STATE_TITLE_DESCRIPTION" translateable="false" desc="The description of the prompt that shows for Product Specifications when no products have been selected.">
+    Something will show here once you select something from the dropdown under this
+  </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_EMPTY_STATE_TITLE" translateable="false" desc="The title of the prompt that shows for Product Specifications when no products have been selected.">
+    Missing some info
+  </message>
   <message name="IDS_PRODUCT_SPECIFICATIONS_ENTRY_POINT_DEFAULT" translateable="false" desc="The default text for the Product Specifications entry point button.">
     Analyze pages?
   </message>

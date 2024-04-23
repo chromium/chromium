@@ -48,6 +48,13 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
                       kCommerceProductSpecificationsResourcesSize),
       IDR_COMMERCE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_HTML);
 
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"emptyStateTitle", IDS_PRODUCT_SPECIFICATIONS_EMPTY_STATE_TITLE},
+      {"emptyStateDescription",
+       IDS_PRODUCT_SPECIFICATIONS_EMPTY_STATE_TITLE_DESCRIPTION},
+  };
+  source->AddLocalizedStrings(kLocalizedStrings);
+
   source->AddString("message", "Some example content...");
   source->AddString("pageTitle", "Product Specifications");
   source->AddString("summaryTitle", "Summary");

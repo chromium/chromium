@@ -16,6 +16,6 @@ void AddProductSpecificationsColorMixer(ui::ColorProvider* provider,
   mixer[kColorProductSpecificationsButtonBackground] = {ui::kColorSysSurface2};
   mixer[kColorProductSpecificationsContentBackground] = {
       ui::kColorSysBaseContainer};
-  mixer[kColorProductSpecificationsSummaryBackground] = {
-      ui::kColorSysBaseContainerElevated};
+  mixer[kColorProductSpecificationsPageBackground] = {ui::kColorSysSurface2};
+  mixer[kColorProductSpecificationsSummaryBackground] = {ui::kColorSysSurface};
 }

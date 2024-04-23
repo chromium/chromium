@@ -1,17 +1,73 @@
-<style>
-  .summary {
+<style include="cr-hidden-style">
+  #summaryContainer {
     background-color: var(--color-product-specifications-summary-background);
-    border-radius: 8px;
-    box-sizing: border-box;
-    display: block;
-    width: 100%;
+    border-radius: 12px;
+    display: flex;
+    margin: 24px 48px 0px 48px;
     min-height: 50px;
-    padding: 16px 16px 16px 16px;
+    padding: 16px;
+    min-width: 758px;
+    width: fit-content;
+  }
+
+  :host([show-empty-state_]) #summaryContainer {
+    justify-content: center;
+  }
+
+  #empty {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 49px 141px;
+    text-align: center;
+    width: 476px;
+  }
+
+  #emptyImg {
+    height: 204px;
+    margin-top: 45px;
+    width: 100%;
+  }
+
+  #emptyTitle {
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 24px;
+    margin-top: 11px;
+  }
+
+  #emptyDescription {
+    font-size: 14px;
+    line-height: 20px;
+    margin-top: 8px;
+    width: 360px;
+  }
+
+  /* TODO(b/335696653): Update styling of product selector. */
+  product-selector {
+    --product-selector-width: 220px;
+    --product-selector-height: 38px;
+    background-color: var(--color-product-specifications-page-background);
+    border-radius: 8px;
+    height: 38px;
+    margin-bottom: 90px;
+    margin-top: 32px;
+  }
+
+  #specs {
+    padding: 16px;
   }
 </style>
-
-<div class="app">
-  <div class="summary">
+<div id="summaryContainer">
+  <div id="empty" class="summary" hidden$="[[!showEmptyState_]]">
+      <img id="emptyImg" src="images/empty_state.svg"
+          aria-labelledby="classicChromeThemeTitle">
+      </img>
+      <div id="emptyTitle">$i18n{emptyStateTitle}</div>
+      <div id="emptyDescription">$i18n{emptyStateDescription}</div>
+      <product-selector></product-selector>
+  </div>
+  <div id="specs" class="summary" hidden$="[[showEmptyState_]]">
     <product-specifications-table
         columns="[[specsTable_.columns]]"
         rows="[[specsTable_.rows]]">
