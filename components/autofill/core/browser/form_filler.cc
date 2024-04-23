@@ -433,16 +433,7 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
                                     AutofillField* autofill_field,
                                     const std::u16string& value,
                                     PopupItemId popup_item_id) {
-  if (autofill_field && action_persistence == mojom::ActionPersistence::kFill &&
-      (popup_item_id == PopupItemId::kCreditCardFieldByFieldFilling ||
-       popup_item_id == PopupItemId::kAddressFieldByFieldFilling)) {
-    // TODO(crbug.com/1345089): Only use AutofillField.
-    const FormFieldData* const filled_field = &field;
-    form_autofill_history_.AddFormFillEntry(
-        base::make_span(&filled_field, 1u),
-        base::make_span(&autofill_field, 1u),
-        GetFillingProductFromPopupItemId(popup_item_id),
-        /*is_refill=*/false);
+  if (autofill_field && action_persistence == mojom::ActionPersistence::kFill) {
     autofill_field->is_autofilled = true;
     autofill_field->AppendLogEventIfNotRepeated(FillFieldLogEvent{
         .fill_event_id = GetNextFillEventId(),
@@ -451,6 +442,17 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
         .was_autofilled_before_security_policy = ToOptionalBoolean(true),
         .had_value_after_filling = ToOptionalBoolean(true),
         .filling_method = FillingMethod::kFieldByFieldFilling});
+
+    if (popup_item_id == PopupItemId::kCreditCardFieldByFieldFilling ||
+        popup_item_id == PopupItemId::kAddressFieldByFieldFilling) {
+      // TODO(crbug.com/1345089): Only use AutofillField.
+      const FormFieldData* const filled_field = &field;
+      form_autofill_history_.AddFormFillEntry(
+          base::make_span(&filled_field, 1u),
+          base::make_span(&autofill_field, 1u),
+          GetFillingProductFromPopupItemId(popup_item_id),
+          /*is_refill=*/false);
+    }
   }
   manager_->driver().ApplyFieldAction(action_type, action_persistence,
                                       field.global_id(), value);
