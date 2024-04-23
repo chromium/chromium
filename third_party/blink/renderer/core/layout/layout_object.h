@@ -90,6 +90,7 @@ class PaintLayer;
 class StyleRequest;
 struct PaintInfo;
 struct PaintInvalidatorContext;
+struct SVGLayoutInfo;
 
 enum CursorDirective { kSetCursorBasedOnStyle, kSetCursor, kDoNotSetCursor };
 
@@ -2199,7 +2200,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
 
   // Update layout for an SVG object. Shouldn't be reached for non-SVG objects.
-  virtual void UpdateSVGLayout() {
+  virtual void UpdateSVGLayout(const SVGLayoutInfo&) {
     NOT_DESTROYED();
     NOTREACHED_NORETURN();
   }

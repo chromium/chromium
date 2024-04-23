@@ -84,7 +84,8 @@ class LayoutSVGModelObject : public LayoutObject {
   void InsertedIntoTree() override;
   void WillBeRemovedFromTree() override;
 
-  bool CheckForImplicitTransformChange(bool bbox_changed) const;
+  bool CheckForImplicitTransformChange(const SVGLayoutInfo&,
+                                       bool bbox_changed) const;
 
  private:
   // LayoutSVGModelObject subclasses should use GetElement() instead.

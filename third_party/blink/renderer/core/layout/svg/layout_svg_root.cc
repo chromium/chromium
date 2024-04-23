@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
@@ -53,8 +54,6 @@ namespace blink {
 
 LayoutSVGRoot::LayoutSVGRoot(SVGElement* node)
     : LayoutReplaced(node),
-      is_layout_size_changed_(false),
-      did_screen_scale_factor_change_(false),
       needs_boundaries_or_transform_update_(true),
       has_non_isolated_blending_descendants_(false),
       has_non_isolated_blending_descendants_dirty_(false) {}
@@ -182,18 +181,17 @@ void LayoutSVGRoot::LayoutRoot(const PhysicalRect& content_rect) {
 
   // The scale factor from the local-to-border-box transform is all that our
   // scale-dependent descendants care about.
-  did_screen_scale_factor_change_ =
+  const bool screen_scale_factor_changed =
       transform_change == SVGTransformChange::kFull;
 
   // selfNeedsLayout() will cover changes to one (or more) of viewBox,
   // current{Scale,Translate}, decorations and 'overflow'.
   const bool viewport_may_have_changed =
       SelfNeedsFullLayout() || old_content_size != content_rect.size;
-  is_layout_size_changed_ = viewport_may_have_changed;
 
-  SVGContainerLayoutInfo layout_info;
-  layout_info.scale_factor_changed = did_screen_scale_factor_change_;
-  layout_info.viewport_changed = is_layout_size_changed_;
+  SVGLayoutInfo layout_info;
+  layout_info.scale_factor_changed = screen_scale_factor_changed;
+  layout_info.viewport_changed = viewport_may_have_changed;
 
   content_.Layout(layout_info);
 

@@ -94,13 +94,13 @@ class LayoutSVGImage final : public LayoutSVGModelObject {
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
-  void UpdateSVGLayout() override;
+  void UpdateSVGLayout(const SVGLayoutInfo&) override;
   void Paint(const PaintInfo&) const override;
 
   bool UpdateBoundingBox();
   // Update LayoutObject state after layout has completed. Returns true if
   // boundaries needs to be propagated (because of a change to the transform).
-  bool UpdateAfterLayout(bool bbox_changed);
+  bool UpdateAfterSVGLayout(const SVGLayoutInfo&, bool bbox_changed);
 
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,

@@ -81,9 +81,10 @@ class LayoutSVGBlock : public LayoutNGBlockFlow {
     return true;
   }
 
-  bool CheckForImplicitTransformChange(bool bbox_changed) const;
+  bool CheckForImplicitTransformChange(const SVGLayoutInfo&,
+                                       bool bbox_changed) const;
   void UpdateTransformBeforeLayout();
-  bool UpdateTransformAfterLayout(bool bounds_changed);
+  bool UpdateTransformAfterLayout(const SVGLayoutInfo&, bool bounds_changed);
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void UpdateFromStyle() override;
 

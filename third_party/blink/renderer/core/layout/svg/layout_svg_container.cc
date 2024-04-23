@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
@@ -39,7 +40,6 @@ LayoutSVGContainer::LayoutSVGContainer(SVGElement* node)
       object_bounding_box_valid_(false),
       needs_boundaries_update_(true),
       needs_transform_update_(true),
-      did_screen_scale_factor_change_(false),
       transform_uses_reference_box_(false),
       has_non_isolated_blending_descendants_(false),
       has_non_isolated_blending_descendants_dirty_(false) {}
@@ -51,7 +51,7 @@ void LayoutSVGContainer::Trace(Visitor* visitor) const {
   LayoutSVGModelObject::Trace(visitor);
 }
 
-void LayoutSVGContainer::UpdateSVGLayout() {
+void LayoutSVGContainer::UpdateSVGLayout(const SVGLayoutInfo& layout_info) {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
@@ -64,16 +64,12 @@ void LayoutSVGContainer::UpdateSVGLayout() {
   if (needs_transform_update_) {
     transform_change = UpdateLocalTransform(gfx::RectF());
   }
-  did_screen_scale_factor_change_ =
-      transform_change == SVGTransformChange::kFull ||
-      SVGLayoutSupport::ScreenScaleFactorChanged(Parent());
 
-  SVGContainerLayoutInfo layout_info;
-  layout_info.scale_factor_changed = did_screen_scale_factor_change_;
-  layout_info.viewport_changed =
-      SVGLayoutSupport::LayoutSizeOfNearestViewportChanged(this);
+  SVGLayoutInfo child_layout_info = layout_info;
+  child_layout_info.scale_factor_changed |=
+      transform_change == SVGTransformChange::kFull;
 
-  content_.Layout(layout_info);
+  content_.Layout(child_layout_info);
 
   bool bbox_changed = false;
   if (needs_boundaries_update_) {
@@ -85,7 +81,7 @@ void LayoutSVGContainer::UpdateSVGLayout() {
   if (bbox_changed) {
     update_parent_boundaries = true;
   }
-  if (UpdateAfterLayout(transform_change, bbox_changed)) {
+  if (UpdateAfterSVGLayout(layout_info, transform_change, bbox_changed)) {
     update_parent_boundaries = true;
   }
 
@@ -99,14 +95,16 @@ void LayoutSVGContainer::UpdateSVGLayout() {
   ClearNeedsLayout();
 }
 
-bool LayoutSVGContainer::UpdateAfterLayout(SVGTransformChange transform_change,
-                                           bool bbox_changed) {
+bool LayoutSVGContainer::UpdateAfterSVGLayout(
+    const SVGLayoutInfo& layout_info,
+    SVGTransformChange transform_change,
+    bool bbox_changed) {
   // Invalidate all resources of this client if our reference box changed.
   if (EverHadLayout() && (SelfNeedsFullLayout() || bbox_changed)) {
     SVGResourceInvalidator(*this).InvalidateEffects();
   }
   if (!needs_transform_update_ && transform_uses_reference_box_) {
-    if (CheckForImplicitTransformChange(bbox_changed)) {
+    if (CheckForImplicitTransformChange(layout_info, bbox_changed)) {
       SetNeedsTransformUpdate();
     }
   }

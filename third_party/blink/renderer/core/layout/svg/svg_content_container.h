@@ -14,12 +14,7 @@ namespace blink {
 
 class HitTestLocation;
 class HitTestResult;
-
-struct SVGContainerLayoutInfo {
-  bool force_layout = false;
-  bool scale_factor_changed = false;
-  bool viewport_changed = false;
-};
+struct SVGLayoutInfo;
 
 // Content representation for an SVG container. Wraps a LayoutObjectChildList
 // with additional state related to the children of the container. Used by
@@ -29,7 +24,7 @@ class SVGContentContainer {
 
  public:
   static bool IsChildAllowed(const LayoutObject& child);
-  void Layout(const SVGContainerLayoutInfo&);
+  void Layout(const SVGLayoutInfo&);
   bool HitTest(HitTestResult&, const HitTestLocation&, HitTestPhase) const;
 
   bool UpdateBoundingBoxes(bool& object_bounding_box_valid);

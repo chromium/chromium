@@ -70,12 +70,13 @@ LayoutSVGResourceContainer::LayoutSVGResourceContainer(SVGElement* node)
 
 LayoutSVGResourceContainer::~LayoutSVGResourceContainer() = default;
 
-void LayoutSVGResourceContainer::UpdateSVGLayout() {
+void LayoutSVGResourceContainer::UpdateSVGLayout(
+    const SVGLayoutInfo& layout_info) {
   NOT_DESTROYED();
   // TODO(fs): This is only here to clear the invalidation mask, without that
   // we wouldn't need to override LayoutSVGHiddenContainer::UpdateSVGLayout().
   DCHECK(NeedsLayout());
-  LayoutSVGHiddenContainer::UpdateSVGLayout();
+  LayoutSVGHiddenContainer::UpdateSVGLayout(layout_info);
   ClearInvalidationMask();
 }
 

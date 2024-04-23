@@ -322,7 +322,7 @@ bool LayoutSVGShape::StrokeContains(const HitTestLocation& location,
   return ShapeDependentStrokeContains(location);
 }
 
-void LayoutSVGShape::UpdateSVGLayout() {
+void LayoutSVGShape::UpdateSVGLayout(const SVGLayoutInfo& layout_info) {
   NOT_DESTROYED();
 
   // The cached stroke may be affected by the ancestor transform, and so needs
@@ -341,7 +341,7 @@ void LayoutSVGShape::UpdateSVGLayout() {
   }
 
   bool update_parent_boundaries = false;
-  if (UpdateAfterLayout(bbox_changed)) {
+  if (UpdateAfterSVGLayout(layout_info, bbox_changed)) {
     update_parent_boundaries = true;
   }
 
@@ -367,7 +367,8 @@ void LayoutSVGShape::UpdateSVGLayout() {
   ClearNeedsLayout();
 }
 
-bool LayoutSVGShape::UpdateAfterLayout(bool bbox_changed) {
+bool LayoutSVGShape::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,
+                                          bool bbox_changed) {
   if (bbox_changed) {
     SetShouldDoFullPaintInvalidation();
 
@@ -379,7 +380,8 @@ bool LayoutSVGShape::UpdateAfterLayout(bool bbox_changed) {
     }
   }
   if (!needs_transform_update_ && transform_uses_reference_box_) {
-    needs_transform_update_ = CheckForImplicitTransformChange(bbox_changed);
+    needs_transform_update_ =
+        CheckForImplicitTransformChange(layout_info, bbox_changed);
     if (needs_transform_update_)
       SetNeedsPaintPropertyUpdate();
   }

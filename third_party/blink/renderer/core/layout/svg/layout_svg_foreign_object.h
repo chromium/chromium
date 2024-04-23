@@ -49,10 +49,10 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
 
  private:
   // LayoutObject override:
-  void UpdateSVGLayout() override;
+  void UpdateSVGLayout(const SVGLayoutInfo&) override;
   // Update LayoutObject state after layout has completed. Returns true if
   // boundaries needs to be propagated (because of a change to the transform).
-  bool UpdateAfterSVGLayout(bool bounds_changed);
+  bool UpdateAfterSVGLayout(const SVGLayoutInfo&, bool bounds_changed);
 
   const char* GetName() const override;
   bool IsSVGForeignObject() const final {

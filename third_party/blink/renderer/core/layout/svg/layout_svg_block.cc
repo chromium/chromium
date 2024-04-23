@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
@@ -81,13 +82,15 @@ void LayoutSVGBlock::UpdateFromStyle() {
   SetFloating(false);
 }
 
-bool LayoutSVGBlock::CheckForImplicitTransformChange(bool bbox_changed) const {
+bool LayoutSVGBlock::CheckForImplicitTransformChange(
+    const SVGLayoutInfo& layout_info,
+    bool bbox_changed) const {
   NOT_DESTROYED();
   // If the transform is relative to the reference box, check relevant
   // conditions to see if we need to recompute the transform.
   switch (StyleRef().TransformBox()) {
     case ETransformBox::kViewBox:
-      return SVGLayoutSupport::LayoutSizeOfNearestViewportChanged(this);
+      return layout_info.viewport_changed;
     case ETransformBox::kFillBox:
     case ETransformBox::kContentBox:
     case ETransformBox::kStrokeBox:
@@ -106,12 +109,15 @@ void LayoutSVGBlock::UpdateTransformBeforeLayout() {
       *GetElement(), gfx::RectF());
 }
 
-bool LayoutSVGBlock::UpdateTransformAfterLayout(bool bounds_changed) {
+bool LayoutSVGBlock::UpdateTransformAfterLayout(
+    const SVGLayoutInfo& layout_info,
+    bool bounds_changed) {
   NOT_DESTROYED();
   // If our transform depends on the reference box, we need to check if it needs
   // to be updated.
   if (!needs_transform_update_ && transform_uses_reference_box_) {
-    needs_transform_update_ = CheckForImplicitTransformChange(bounds_changed);
+    needs_transform_update_ =
+        CheckForImplicitTransformChange(layout_info, bounds_changed);
     if (needs_transform_update_)
       SetNeedsPaintPropertyUpdate();
   }

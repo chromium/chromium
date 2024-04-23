@@ -61,10 +61,6 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
     needs_boundaries_update_ = true;
   }
   void SetNeedsTransformUpdate() override;
-  bool DidScreenScaleFactorChange() const {
-    NOT_DESTROYED();
-    return did_screen_scale_factor_change_;
-  }
   bool IsObjectBoundingBoxValid() const {
     NOT_DESTROYED();
     return object_bounding_box_valid_;
@@ -104,11 +100,12 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
     NOT_DESTROYED();
     return true;
   }
-  void UpdateSVGLayout() override;
+  void UpdateSVGLayout(const SVGLayoutInfo&) override;
   // Update LayoutObject state after layout has completed. Returns true if
   // boundaries needs to be propagated (because of a change to the transform).
-  bool UpdateAfterLayout(SVGTransformChange transform_change,
-                         bool bbox_changed);
+  bool UpdateAfterSVGLayout(const SVGLayoutInfo&,
+                            SVGTransformChange transform_change,
+                            bool bbox_changed);
 
   void SetTransformUsesReferenceBox(bool transform_uses_reference_box) {
     NOT_DESTROYED();
@@ -147,7 +144,6 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
   bool object_bounding_box_valid_;
   bool needs_boundaries_update_ : 1;
   bool needs_transform_update_ : 1;
-  bool did_screen_scale_factor_change_ : 1;
   bool transform_uses_reference_box_ : 1;
   mutable bool has_non_isolated_blending_descendants_ : 1;
   mutable bool has_non_isolated_blending_descendants_dirty_ : 1;

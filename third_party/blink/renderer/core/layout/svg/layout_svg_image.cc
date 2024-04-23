@@ -147,7 +147,7 @@ bool LayoutSVGImage::UpdateBoundingBox() {
   return old_object_bounding_box != object_bounding_box_;
 }
 
-void LayoutSVGImage::UpdateSVGLayout() {
+void LayoutSVGImage::UpdateSVGLayout(const SVGLayoutInfo& layout_info) {
   NOT_DESTROYED();
   DCHECK(NeedsLayout());
 
@@ -156,7 +156,7 @@ void LayoutSVGImage::UpdateSVGLayout() {
   if (bbox_changed) {
     update_parent_boundaries = true;
   }
-  if (UpdateAfterLayout(bbox_changed)) {
+  if (UpdateAfterSVGLayout(layout_info, bbox_changed)) {
     update_parent_boundaries = true;
   }
 
@@ -169,7 +169,8 @@ void LayoutSVGImage::UpdateSVGLayout() {
   ClearNeedsLayout();
 }
 
-bool LayoutSVGImage::UpdateAfterLayout(bool bbox_changed) {
+bool LayoutSVGImage::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,
+                                          bool bbox_changed) {
   if (auto* svg_image_element = DynamicTo<SVGImageElement>(GetElement())) {
     media_element_parser_helpers::CheckUnsizedMediaViolation(
         this, svg_image_element->IsDefaultIntrinsicSize());
@@ -182,7 +183,8 @@ bool LayoutSVGImage::UpdateAfterLayout(bool bbox_changed) {
       SVGResourceInvalidator(*this).InvalidateEffects();
   }
   if (!needs_transform_update_ && transform_uses_reference_box_) {
-    needs_transform_update_ = CheckForImplicitTransformChange(bbox_changed);
+    needs_transform_update_ =
+        CheckForImplicitTransformChange(layout_info, bbox_changed);
     if (needs_transform_update_)
       SetNeedsPaintPropertyUpdate();
   }

@@ -39,11 +39,6 @@ class LayoutSVGViewportContainer final : public LayoutSVGContainer {
     return viewport_;
   }
 
-  bool IsLayoutSizeChanged() const {
-    NOT_DESTROYED();
-    return is_layout_size_changed_;
-  }
-
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutSVGViewportContainer";
@@ -63,7 +58,7 @@ class LayoutSVGViewportContainer final : public LayoutSVGContainer {
     return true;
   }
 
-  void UpdateSVGLayout() override;
+  void UpdateSVGLayout(const SVGLayoutInfo&) override;
 
   SVGTransformChange UpdateLocalTransform(
       const gfx::RectF& reference_box) override;
@@ -77,7 +72,6 @@ class LayoutSVGViewportContainer final : public LayoutSVGContainer {
 
   gfx::RectF viewport_;
   mutable AffineTransform local_to_parent_transform_;
-  bool is_layout_size_changed_ : 1;
 };
 
 template <>

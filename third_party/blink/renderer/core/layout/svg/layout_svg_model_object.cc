@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
@@ -109,13 +110,14 @@ void LayoutSVGModelObject::WillBeDestroyed() {
 }
 
 bool LayoutSVGModelObject::CheckForImplicitTransformChange(
+    const SVGLayoutInfo& layout_info,
     bool bbox_changed) const {
   NOT_DESTROYED();
   // If the transform is relative to the reference box, check relevant
   // conditions to see if we need to recompute the transform.
   switch (StyleRef().TransformBox()) {
     case ETransformBox::kViewBox:
-      return SVGLayoutSupport::LayoutSizeOfNearestViewportChanged(this);
+      return layout_info.viewport_changed;
     case ETransformBox::kFillBox:
     case ETransformBox::kContentBox:
     case ETransformBox::kStrokeBox:

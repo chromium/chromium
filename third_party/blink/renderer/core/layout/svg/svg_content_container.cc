@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_shape.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 
@@ -18,26 +19,28 @@ namespace blink {
 
 namespace {
 
-void UpdateSVGLayoutIfNeeded(LayoutObject* child) {
+void UpdateSVGLayoutIfNeeded(LayoutObject* child,
+                             const SVGLayoutInfo& layout_info) {
   if (child->NeedsLayout()) {
-    child->UpdateSVGLayout();
+    child->UpdateSVGLayout(layout_info);
   }
 }
 
-void LayoutMarkerResourcesIfNeeded(LayoutObject& layout_object) {
+void LayoutMarkerResourcesIfNeeded(LayoutObject& layout_object,
+                                   const SVGLayoutInfo& layout_info) {
   SVGElementResourceClient* client = SVGResources::GetClient(layout_object);
   if (!client)
     return;
   const ComputedStyle& style = layout_object.StyleRef();
   if (auto* marker = GetSVGResourceAsType<LayoutSVGResourceMarker>(
           *client, style.MarkerStartResource()))
-    UpdateSVGLayoutIfNeeded(marker);
+    UpdateSVGLayoutIfNeeded(marker, layout_info);
   if (auto* marker = GetSVGResourceAsType<LayoutSVGResourceMarker>(
           *client, style.MarkerMidResource()))
-    UpdateSVGLayoutIfNeeded(marker);
+    UpdateSVGLayoutIfNeeded(marker, layout_info);
   if (auto* marker = GetSVGResourceAsType<LayoutSVGResourceMarker>(
           *client, style.MarkerEndResource()))
-    UpdateSVGLayoutIfNeeded(marker);
+    UpdateSVGLayoutIfNeeded(marker, layout_info);
 }
 
 // Update a bounding box taking into account the validity of the other bounding
@@ -101,7 +104,7 @@ bool SVGContentContainer::IsChildAllowed(const LayoutObject& child) {
   return !child.IsSVGRoot();
 }
 
-void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
+void SVGContentContainer::Layout(const SVGLayoutInfo& layout_info) {
   for (LayoutObject* child = children_.FirstChild(); child;
        child = child->NextSibling()) {
     bool force_child_layout = layout_info.force_layout;
@@ -150,7 +153,7 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
     // leads to circular layout.
     // TODO(layout-dev): Do we still need this special treatment?
     if (child->IsSVGResourceContainer()) {
-      UpdateSVGLayoutIfNeeded(child);
+      UpdateSVGLayoutIfNeeded(child, layout_info);
     } else {
       DCHECK(!child->IsSVGRoot());
       if (force_child_layout) {
@@ -159,8 +162,8 @@ void SVGContentContainer::Layout(const SVGContainerLayoutInfo& layout_info) {
       }
 
       // Lay out any referenced resources before the child.
-      LayoutMarkerResourcesIfNeeded(*child);
-      UpdateSVGLayoutIfNeeded(child);
+      LayoutMarkerResourcesIfNeeded(*child, layout_info);
+      UpdateSVGLayoutIfNeeded(child, layout_info);
     }
   }
 }
