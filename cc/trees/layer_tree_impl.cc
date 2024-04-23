@@ -2577,7 +2577,9 @@ LayerTreeImpl::FindLayersUpToFirstScrollableOrOpaqueToHitTest(
           std::pair<const LayerImpl*, float>(layer, distance_to_intersection));
     } else {
       layers.push_back(layer);
-      if (layer->IsScrollerOrScrollbar() || layer->OpaqueToHitTest()) {
+      if (settings().enable_hit_test_opaqueness
+              ? layer->OpaqueToHitTest()
+              : layer->IsScrollerOrScrollbar()) {
         break;
       }
     }
@@ -2606,7 +2608,9 @@ LayerTreeImpl::FindLayersUpToFirstScrollableOrOpaqueToHitTest(
       const LayerImpl* layer = pair.first;
 
       result.push_back(layer);
-      if (layer->IsScrollerOrScrollbar() || layer->OpaqueToHitTest()) {
+      if (settings().enable_hit_test_opaqueness
+              ? layer->OpaqueToHitTest()
+              : layer->IsScrollerOrScrollbar()) {
         return result;
       }
     }

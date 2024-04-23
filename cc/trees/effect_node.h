@@ -143,6 +143,7 @@ struct CC_EXPORT EffectNode {
   // If set, the effect node tries to not trigger a render surface due to it
   // having a rounded corner.
   bool is_fast_rounded_corner : 1 = false;
+  bool node_or_ancestor_has_fast_rounded_corner : 1 = false;
   // If the node or it's parent has the filters, it sets to true.
   bool node_or_ancestor_has_filters : 1 = false;
   // All node in the subtree starting from the containing render surface, and

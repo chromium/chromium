@@ -1276,11 +1276,16 @@ InputHandler::ScrollHitTestResult InputHandler::HitTestScrollNode(
       ActiveTree().FindLayersUpToFirstScrollableOrOpaqueToHitTest(
           device_viewport_point);
 
-  const LayerImpl* first_scrollable_or_opaque_to_hit_test_layer =
-      !layers.empty() && (layers.back()->IsScrollerOrScrollbar() ||
-                          layers.back()->OpaqueToHitTest())
-          ? layers.back()
-          : nullptr;
+  const LayerImpl* first_scrollable_or_opaque_to_hit_test_layer = nullptr;
+  if (!layers.empty()) {
+    if (compositor_delegate_->GetSettings().enable_hit_test_opaqueness) {
+      if (layers.back()->OpaqueToHitTest()) {
+        first_scrollable_or_opaque_to_hit_test_layer = layers.back();
+      }
+    } else if (layers.back()->IsScrollerOrScrollbar()) {
+      first_scrollable_or_opaque_to_hit_test_layer = layers.back();
+    }
+  }
   ScrollNode* node_to_scroll = nullptr;
 
   // Go through each layer up to (and including) the scroller. Any may block

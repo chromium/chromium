@@ -166,7 +166,7 @@ class LayerTreeHostImplTest : public testing::Test,
     media::InitializeMediaLibrary();
   }
 
-  LayerTreeSettings DefaultSettings() {
+  virtual LayerTreeSettings DefaultSettings() {
     LayerListSettings settings;
     settings.minimum_occlusion_tracking_size = gfx::Size();
     settings.enable_smooth_scroll = true;
@@ -17923,6 +17923,12 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
  public:
   using ScrollStatus = InputHandler::ScrollStatus;
 
+  LayerTreeSettings DefaultSettings() override {
+    auto settings = LayerTreeHostImplTest::DefaultSettings();
+    settings.enable_hit_test_opaqueness = true;
+    return settings;
+  }
+
   void SetUp() override {
     LayerTreeHostImplTest::SetUp();
 
@@ -17949,7 +17955,9 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
     DrawFrame();
   }
 
-  void CreateScroller(uint32_t main_thread_scrolling_reasons) {
+  void CreateScroller(
+      uint32_t main_thread_scrolling_reasons,
+      HitTestOpaqueness hit_test_opaqueness = HitTestOpaqueness::kOpaque) {
     // Creates a regular compositeds scroller that comes with a ScrollNode and
     // Layer.
     gfx::Size scrollable_content_bounds(100, 100);
@@ -17958,6 +17966,7 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
     LayerImpl* layer =
         AddScrollableLayer(OuterViewportScrollLayer(), container_bounds,
                            scrollable_content_bounds);
+    layer->SetHitTestOpaqueness(hit_test_opaqueness);
     scroller_layer_ = layer;
     GetScrollNode(layer)->main_thread_scrolling_reasons =
         main_thread_scrolling_reasons;
@@ -18362,6 +18371,18 @@ TEST_F(UnifiedScrollingTest, MainThreadScrollingReasonsScrollOnCompositor) {
     ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
     EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
     EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+              status.main_thread_hit_test_reasons);
+  }
+}
+
+TEST_F(UnifiedScrollingTest, UnreliableHitTestOnNonOpaqueToHitTestScroller) {
+  CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain,
+                 HitTestOpaqueness::kMixed);
+
+  {
+    ScrollStatus status = ScrollBegin(gfx::Vector2d(0, 10));
+    EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
+    EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
               status.main_thread_hit_test_reasons);
   }
 }

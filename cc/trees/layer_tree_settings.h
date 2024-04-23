@@ -227,6 +227,10 @@ class CC_EXPORT LayerTreeSettings {
   // This is an arbitrary limit here similar to what hardware might have.
   int max_render_buffer_bounds_for_sw = 16 * 1024;
 
+  // Whether the client supports HitTestOpaqueness::kOpaque. If yes, cc will
+  // respect the flag and optimize scroll hit testing.
+  bool enable_hit_test_opaqueness = false;
+
   // Whether to use variable refresh rates when generating begin frames.
   bool enable_variable_refresh_rate = false;
 };

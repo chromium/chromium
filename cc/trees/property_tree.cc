@@ -963,6 +963,15 @@ void EffectTree::UpdateHasFilters(EffectNode* node, EffectNode* parent_node) {
   }
 }
 
+void EffectTree::UpdateHasFastRoundedCorner(EffectNode* node,
+                                            EffectNode* parent_node) {
+  node->node_or_ancestor_has_fast_rounded_corner = node->is_fast_rounded_corner;
+  if (parent_node) {
+    node->node_or_ancestor_has_fast_rounded_corner |=
+        parent_node->node_or_ancestor_has_fast_rounded_corner;
+  }
+}
+
 void EffectTree::UpdateBackfaceVisibility(EffectNode* node,
                                           EffectNode* parent_node) {
   if (parent_node && parent_node->hidden_by_backface_visibility) {
@@ -1094,6 +1103,7 @@ void EffectTree::UpdateEffects(int id) {
   UpdateIsDrawn(node, parent_node);
   UpdateEffectChanged(node, parent_node);
   UpdateHasFilters(node, parent_node);
+  UpdateHasFastRoundedCorner(node, parent_node);
   UpdateBackfaceVisibility(node, parent_node);
   UpdateHasMaskingChild(node, parent_node);
   UpdateOnlyDrawsVisibleContent(node, parent_node);

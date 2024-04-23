@@ -399,6 +399,7 @@ class CC_EXPORT EffectTree final : public PropertyTree<EffectNode> {
   void UpdateEffectChanged(EffectNode* node, EffectNode* parent_node);
 
   void UpdateHasFilters(EffectNode* node, EffectNode* parent_node);
+  void UpdateHasFastRoundedCorner(EffectNode* node, EffectNode* parent_node);
 
   typedef std::unordered_multimap<int, std::unique_ptr<viz::CopyOutputRequest>>
       CopyRequestMap;
