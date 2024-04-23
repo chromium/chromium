@@ -454,7 +454,6 @@ source_set("analytics_event_logger") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
   public_deps = [
     ":connections_log_proto",
-    ":experiments_log_proto",
     ":fast_pair_log_proto",
     ":sharing_log_proto",
   ]
@@ -1127,12 +1126,6 @@ proto_library("connections_log_proto") {
     ":connections_enums_proto",
     ":error_code_enums_proto",
   ]
-}
-
-proto_library("experiments_log_proto") {
-  proto_in_dir = "src"
-  sources = [ "${proto_in_dir}/internal/proto/analytics/experiments_log.proto" ]
-  proto_out_dir = "third_party/nearby"
 }
 
 proto_library("fast_pair_log_proto") {
