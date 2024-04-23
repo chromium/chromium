@@ -170,9 +170,9 @@ inline constexpr char kForceConfirm[] = "forceConfirm";
 // Configuration file proto
 inline constexpr char kConfigurationFile[] = "configurationFile";
 inline constexpr char kConfigurationFileSignature[] = "configFileSignature";
-inline constexpr char kConfigurationFileMinimumReleaseVerision[] =
+inline constexpr char kConfigurationFileMinimumReleaseVersion[] =
     "minimumReleaseVersion";
-inline constexpr char kConfigurationFileMaximumReleaseVerision[] =
+inline constexpr char kConfigurationFileMaximumReleaseVersion[] =
     "maximumReleaseVersion";
 inline constexpr char kConfigurationFileDestination[] = "destination";
 inline constexpr char kConfigurationFileVersionResponse[] = "version";

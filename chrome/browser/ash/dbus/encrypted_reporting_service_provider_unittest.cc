@@ -34,6 +34,8 @@ using ReportSuccessfulUploadCallback =
     ::reporting::UploadClient::ReportSuccessfulUploadCallback;
 using EncryptionKeyAttachedCallback =
     ::reporting::UploadClient::EncryptionKeyAttachedCallback;
+using UpdateConfigInMissiveCallback =
+    ::reporting::UploadClient::UpdateConfigInMissiveCallback;
 
 using UploadProvider = ::reporting::EncryptedReportingUploadProvider;
 
@@ -53,10 +55,12 @@ class TestEncryptedReportingServiceProvider
  public:
   TestEncryptedReportingServiceProvider(
       ReportSuccessfulUploadCallback report_successful_upload_cb,
-      EncryptionKeyAttachedCallback encrypted_key_cb)
+      EncryptionKeyAttachedCallback encrypted_key_cb,
+      UpdateConfigInMissiveCallback update_config_in_missive_cb)
       : EncryptedReportingServiceProvider(std::make_unique<UploadProvider>(
             report_successful_upload_cb,
             encrypted_key_cb,
+            update_config_in_missive_cb,
             /*upload_client_builder_cb=*/
             base::BindRepeating(&::reporting::FakeUploadClient::Create))) {}
 
@@ -76,6 +80,10 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
               EncryptionKeyCallback,
               (::reporting::SignedEncryptionInfo),
               ());
+  MOCK_METHOD(void,
+              ConfigFileCallback,
+              (::reporting::ListOfBlockedDestinations),
+              ());
 
  protected:
   void SetUp() override {
@@ -87,8 +95,11 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
     auto encryption_key_cb = base::BindRepeating(
         &EncryptedReportingServiceProviderTest::EncryptionKeyCallback,
         base::Unretained(this));
+    auto config_file_cb = base::BindRepeating(
+        &EncryptedReportingServiceProviderTest::ConfigFileCallback,
+        base::Unretained(this));
     service_provider_ = std::make_unique<TestEncryptedReportingServiceProvider>(
-        successful_upload_cb, encryption_key_cb);
+        successful_upload_cb, encryption_key_cb, config_file_cb);
 
     record_.set_encrypted_wrapped_record("TEST_DATA");
 

@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "base/values.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job_test_util.h"
+#include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "chrome/browser/policy/messaging_layer/upload/server_uploader.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
@@ -201,12 +203,14 @@ TEST_P(RecordHandlerImplTest, UploadRecords) {
       .force_confirm = force_confirm()};
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
+  test::TestEvent<ConfigFile> config_file_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
   handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
                           std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
-                          encryption_key_attached_event.repeating_cb());
+                          encryption_key_attached_event.repeating_cb(),
+                          config_file_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
@@ -236,12 +240,14 @@ TEST_P(RecordHandlerImplTest, MissingPriorityField) {
   const auto force_confirm_by_server = force_confirm();
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
+  test::TestEvent<ConfigFile> config_file_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
   handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
                           std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
-                          encryption_key_attached_event.repeating_cb());
+                          encryption_key_attached_event.repeating_cb(),
+                          config_file_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
@@ -265,12 +271,15 @@ TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
   const auto force_confirm_by_server = force_confirm();
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
+  test::TestEvent<ConfigFile> config_file_attached_event;
+
   test::TestEvent<CompletionResponse> responder_event;
 
   handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
                           std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
-                          encryption_key_attached_event.repeating_cb());
+                          encryption_key_attached_event.repeating_cb(),
+                          config_file_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
@@ -298,12 +307,14 @@ TEST_P(RecordHandlerImplTest, ContainsGenerationGuid) {
   const auto force_confirm_by_server = force_confirm();
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
+  test::TestEvent<ConfigFile> config_file_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
   handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
                           std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
-                          encryption_key_attached_event.repeating_cb());
+                          encryption_key_attached_event.repeating_cb(),
+                          config_file_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
@@ -336,12 +347,14 @@ TEST_P(RecordHandlerImplTest, ValidGenerationGuid) {
   const auto force_confirm_by_server = force_confirm();
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
+  test::TestEvent<ConfigFile> config_file_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
   handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
                           std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
-                          encryption_key_attached_event.repeating_cb());
+                          encryption_key_attached_event.repeating_cb(),
+                          config_file_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
@@ -371,12 +384,14 @@ TEST_P(RecordHandlerImplTest, InvalidGenerationGuid) {
   const auto force_confirm_by_server = force_confirm();
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
+  test::TestEvent<ConfigFile> config_file_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
   handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
                           std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
-                          encryption_key_attached_event.repeating_cb());
+                          encryption_key_attached_event.repeating_cb(),
+                          config_file_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
@@ -411,12 +426,14 @@ TEST_P(RecordHandlerImplTest, MissingGenerationGuidFromManagedDeviceIsOk) {
   const auto force_confirm_by_server = force_confirm();
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
+  test::TestEvent<ConfigFile> config_file_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
   handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
                           std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
-                          encryption_key_attached_event.repeating_cb());
+                          encryption_key_attached_event.repeating_cb(),
+                          config_file_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
@@ -452,12 +469,14 @@ TEST_P(RecordHandlerImplTest,
   const auto force_confirm_by_server = force_confirm();
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
+  test::TestEvent<ConfigFile> config_file_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
   handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
                           std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
-                          encryption_key_attached_event.repeating_cb());
+                          encryption_key_attached_event.repeating_cb(),
+                          config_file_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
@@ -488,12 +507,14 @@ TEST_P(RecordHandlerImplTest, MissingSequenceInformation) {
   test_records.second.back().clear_sequence_information();
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
+  test::TestEvent<ConfigFile> config_file_attached_event;
   test::TestEvent<CompletionResponse> responder_event;
 
   handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
                           std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
-                          encryption_key_attached_event.repeating_cb());
+                          encryption_key_attached_event.repeating_cb(),
+                          config_file_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
   // The result should show an error and UploadEncryptedReport should not have
@@ -512,10 +533,12 @@ TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
 
   test::TestEvent<CompletionResponse> response_event;
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
+  test::TestEvent<ConfigFile> config_file_attached_event;
   handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
                           std::move(test_records.second),
                           std::move(test_records.first), response_event.cb(),
-                          encryption_key_attached_event.repeating_cb());
+                          encryption_key_attached_event.repeating_cb(),
+                          config_file_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
@@ -548,11 +571,13 @@ TEST_P(RecordHandlerImplTest, DISABLED_UploadsGapRecordOnServerFailure) {
 
   test::TestEvent<CompletionResponse> response_event;
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
+  test::TestEvent<ConfigFile> config_file_attached_event;
 
   handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
                           std::move(test_records.second),
                           std::move(test_records.first), response_event.cb(),
-                          encryption_key_attached_event.repeating_cb());
+                          encryption_key_attached_event.repeating_cb(),
+                          config_file_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
@@ -606,7 +631,8 @@ TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
   handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
                           std::move(test_records.second),
                           std::move(test_records.first), response_event.cb(),
-                          encryption_key_attached_event.repeating_cb());
+                          encryption_key_attached_event.repeating_cb(),
+                          base::DoNothing());
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
@@ -634,7 +660,7 @@ TEST_P(RecordHandlerImplTest, AssignsRequestIdForRecordUploads) {
   handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/-1,
                           std::move(test_records.second),
                           std::move(test_records.first), responder_event.cb(),
-                          base::DoNothing());
+                          base::DoNothing(), base::DoNothing());
   task_environment_.RunUntilIdle();
 
   ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1u));
@@ -652,6 +678,59 @@ TEST_P(RecordHandlerImplTest, AssignsRequestIdForRecordUploads) {
   const auto result = responder_event.result();
   EXPECT_THAT(result, ResponseEquals(expected_response));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_P(RecordHandlerImplTest,
+       ContainsConfigFileInResponseWithExperimentEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kShouldRequestConfigurationFile);
+
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId,
+                                             kGenerationGuid, memory_resource_);
+  const auto force_confirm_by_server = force_confirm();
+
+  SuccessfulUploadResponse expected_response{
+      .sequence_information = test_records.second.back().sequence_information(),
+      .force_confirm = force_confirm()};
+
+  test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
+  test::TestEvent<ConfigFile> config_file_attached_event;
+  test::TestEvent<CompletionResponse> responder_event;
+
+  handler_->HandleRecords(need_encryption_key(), /*config_file_version=*/1,
+                          std::move(test_records.second),
+                          std::move(test_records.first), responder_event.cb(),
+                          encryption_key_attached_event.repeating_cb(),
+                          config_file_attached_event.repeating_cb());
+  task_environment_.RunUntilIdle();
+
+  ASSERT_THAT(*test_env_->url_loader_factory()->pending_requests(), SizeIs(1));
+  auto request_body = test_env_->request_body(0);
+  EXPECT_THAT(request_body, IsDataUploadRequestValid());
+  auto response = ResponseBuilder(std::move(request_body))
+                      .SetForceConfirm(force_confirm_by_server)
+                      .Build();
+  ASSERT_TRUE(response.has_value());
+  test_env_->SimulateCustomResponseForRequest(0, std::move(response.value()));
+
+  if (need_encryption_key()) {
+    EXPECT_THAT(
+        encryption_key_attached_event.result(),
+        AllOf(Property(&SignedEncryptionInfo::public_asymmetric_key,
+                       Not(IsEmpty())),
+              Property(&SignedEncryptionInfo::public_key_id, Gt(0)),
+              Property(&SignedEncryptionInfo::signature, Not(IsEmpty()))));
+  }
+
+  EXPECT_THAT(
+      config_file_attached_event.result(),
+      AllOf(Property(&ConfigFile::config_file_signature, Not(IsEmpty())),
+            Property(&ConfigFile::version, Gt(0)),
+            Property(&ConfigFile::blocked_event_configs, Not(IsEmpty()))));
+  const auto result = responder_event.result();
+  EXPECT_THAT(result, ResponseEquals(expected_response));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(
     NeedOrNoNeedKey,

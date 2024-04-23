@@ -333,7 +333,9 @@ ReportingClient::CreateLocalUploadProvider(
           StorageSelector::GetLocalReportSuccessfulUploadCb(storage_module)),
       base::BindPostTask(
           ReportQueueProvider::GetInstance()->sequenced_task_runner(),
-          StorageSelector::GetLocalEncryptionKeyAttachedCb(storage_module)));
+          StorageSelector::GetLocalEncryptionKeyAttachedCb(storage_module)),
+      // The configuration file feature is only available in CrOS.
+      /*update_config_in_missive_cb=*/base::DoNothing());
 }
 
 // static

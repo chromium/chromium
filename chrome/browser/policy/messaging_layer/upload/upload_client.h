@@ -37,6 +37,10 @@ class UploadClient {
   using UpdateConfigInMissiveCallback =
       ::reporting::UpdateConfigInMissiveCallback;
 
+  // ConfigFileAttachedCallback is called if the server attached a configuration
+  // file to the response.
+  using ConfigFileAttachedCallback = ::reporting::ConfigFileAttachedCallback;
+
   // CreatedCallback gets a result of Upload client creation (unique pointer or
   // error status).
   using CreatedCallback =
@@ -54,7 +58,8 @@ class UploadClient {
       std::vector<EncryptedRecord> record,
       ScopedReservation scoped_reservation,
       ReportSuccessfulUploadCallback report_upload_success_cb,
-      EncryptionKeyAttachedCallback encryption_key_attached_cb);
+      EncryptionKeyAttachedCallback encryption_key_attached_cb,
+      ConfigFileAttachedCallback config_file_attached_cb);
 
  protected:
   UploadClient();

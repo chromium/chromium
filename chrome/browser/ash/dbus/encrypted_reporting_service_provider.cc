@@ -312,6 +312,7 @@ bool EncryptedReportingServiceProvider::OnOriginThread() const {
 std::unique_ptr<::reporting::EncryptedReportingUploadProvider>
 EncryptedReportingServiceProvider::GetDefaultUploadProvider() {
   return std::make_unique<::reporting::EncryptedReportingUploadProvider>(
-      GetReportSuccessUploadCallback(), GetEncryptionKeyAttachedCallback());
+      GetReportSuccessUploadCallback(), GetEncryptionKeyAttachedCallback(),
+      GetUpdateConfigInMissiveCallback());
 }
 }  // namespace ash

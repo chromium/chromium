@@ -53,10 +53,12 @@ class TestRecordHandler : public ServerUploader::RecordHandler {
       std::vector<EncryptedRecord> records,
       ScopedReservation scoped_reservation,
       CompletionCallback upload_complete,
-      EncryptionKeyAttachedCallback encryption_key_attached_cb) override {
+      EncryptionKeyAttachedCallback encryption_key_attached_cb,
+      ConfigFileAttachedCallback config_file_attached_cb) override {
     HandleRecords_(need_encryption_key, config_file_version, records,
                    std::move(scoped_reservation), std::move(upload_complete),
-                   std::move(encryption_key_attached_cb));
+                   std::move(encryption_key_attached_cb),
+                   std::move(config_file_attached_cb));
   }
 
   MOCK_METHOD(void,
@@ -66,7 +68,8 @@ class TestRecordHandler : public ServerUploader::RecordHandler {
                std::vector<EncryptedRecord>&,
                ScopedReservation scoped_reservation,
                CompletionCallback,
-               EncryptionKeyAttachedCallback));
+               EncryptionKeyAttachedCallback,
+               ConfigFileAttachedCallback));
 };
 
 class ServerUploaderTestBase {
@@ -113,6 +116,7 @@ class ServerUploaderTest : public ServerUploaderTestBase,
 using TestSuccessfulUpload = MockFunction<void(SequenceInformation,
                                                /*force_confirm*/ bool)>;
 using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
+using TestConfigFileAttached = MockFunction<void(ConfigFile)>;
 
 TEST_P(ServerUploaderTest, ProcessesRecord) {
   records_.emplace_back(DummyRecord());
@@ -123,14 +127,16 @@ TEST_P(ServerUploaderTest, ProcessesRecord) {
 
   const bool force_confirm_flag = force_confirm();
   auto handler = std::make_unique<TestRecordHandler>();
-  EXPECT_CALL(*handler, HandleRecords_(_, _, _, _, _, _))
-      .WillOnce(WithArgs<0, 4, 5>(
+  EXPECT_CALL(*handler, HandleRecords_(_, _, _, _, _, _, _))
+      .WillOnce(WithArgs<0, 4, 5, 6>(
           Invoke([&force_confirm_flag](
                      bool need_encryption_key, CompletionCallback callback,
-                     EncryptionKeyAttachedCallback encryption_key_attached_cb) {
+                     EncryptionKeyAttachedCallback encryption_key_attached_cb,
+                     ConfigFileAttachedCallback config_file_attached_cb) {
             if (need_encryption_key) {
               std::move(encryption_key_attached_cb).Run(SignedEncryptionInfo());
             }
+            std::move(config_file_attached_cb).Run(ConfigFile());
             std::move(callback).Run(
                 SuccessfulUploadResponse{.force_confirm = force_confirm_flag});
           })));
@@ -146,11 +152,17 @@ TEST_P(ServerUploaderTest, ProcessesRecord) {
       base::BindRepeating(&TestEncryptionKeyAttached::Call,
                           base::Unretained(&encryption_key_attached));
 
+  StrictMock<TestConfigFileAttached> config_file_attached;
+  EXPECT_CALL(config_file_attached, Call(_)).Times(1);
+  auto config_file_attached_cb = base::BindRepeating(
+      &TestConfigFileAttached::Call, base::Unretained(&config_file_attached));
+
   test::TestEvent<CompletionResponse> callback_waiter;
   Start<ServerUploader>(need_encryption_key(), config_file_version_,
                         std::move(records_), std::move(record_reservation),
                         std::move(handler), std::move(successful_upload_cb),
                         std::move(encryption_key_attached_cb),
+                        std::move(config_file_attached_cb),
                         callback_waiter.cb(), sequenced_task_runner_);
 
   const auto response = callback_waiter.result();
@@ -182,14 +194,16 @@ TEST_P(ServerUploaderTest, ProcessesRecords) {
 
   const bool force_confirm_flag = force_confirm();
   auto handler = std::make_unique<TestRecordHandler>();
-  EXPECT_CALL(*handler, HandleRecords_(_, _, _, _, _, _))
-      .WillOnce(WithArgs<0, 4, 5>(
+  EXPECT_CALL(*handler, HandleRecords_(_, _, _, _, _, _, _))
+      .WillOnce(WithArgs<0, 4, 5, 6>(
           Invoke([&force_confirm_flag](
                      bool need_encryption_key, CompletionCallback callback,
-                     EncryptionKeyAttachedCallback encryption_key_attached_cb) {
+                     EncryptionKeyAttachedCallback encryption_key_attached_cb,
+                     ConfigFileAttachedCallback config_file_attached_cb) {
             if (need_encryption_key) {
               std::move(encryption_key_attached_cb).Run(SignedEncryptionInfo());
             }
+            std::move(config_file_attached_cb).Run(ConfigFile());
             std::move(callback).Run(
                 SuccessfulUploadResponse{.force_confirm = force_confirm_flag});
           })));
@@ -205,11 +219,17 @@ TEST_P(ServerUploaderTest, ProcessesRecords) {
       base::BindRepeating(&TestEncryptionKeyAttached::Call,
                           base::Unretained(&encryption_key_attached));
 
+  StrictMock<TestConfigFileAttached> config_file_attached;
+  EXPECT_CALL(config_file_attached, Call(_)).Times(1);
+  auto config_file_attached_cb = base::BindRepeating(
+      &TestConfigFileAttached::Call, base::Unretained(&config_file_attached));
+
   test::TestEvent<CompletionResponse> callback_waiter;
   Start<ServerUploader>(need_encryption_key(), config_file_version_,
                         std::move(records_), std::move(records_reservation),
                         std::move(handler), std::move(successful_upload_cb),
                         std::move(encryption_key_attached_cb),
+                        std::move(config_file_attached_cb),
                         callback_waiter.cb(), sequenced_task_runner_);
 
   const auto response = callback_waiter.result();
@@ -224,7 +244,7 @@ TEST_P(ServerUploaderTest, ReportsFailureToProcess) {
   EXPECT_TRUE(record_reservation.reserved());
 
   auto handler = std::make_unique<TestRecordHandler>();
-  EXPECT_CALL(*handler, HandleRecords_(_, _, _, _, _, _))
+  EXPECT_CALL(*handler, HandleRecords_(_, _, _, _, _, _, _))
       .WillOnce(WithArgs<4>(Invoke([](CompletionCallback callback) {
         std::move(callback).Run(base::unexpected(
             Status(error::FAILED_PRECONDITION, "Fail for test")));
@@ -240,11 +260,17 @@ TEST_P(ServerUploaderTest, ReportsFailureToProcess) {
       base::BindRepeating(&TestEncryptionKeyAttached::Call,
                           base::Unretained(&encryption_key_attached));
 
+  StrictMock<TestConfigFileAttached> config_file_attached;
+  EXPECT_CALL(config_file_attached, Call(_)).Times(0);
+  auto config_file_attached_cb = base::BindRepeating(
+      &TestConfigFileAttached::Call, base::Unretained(&config_file_attached));
+
   test::TestEvent<CompletionResponse> callback_waiter;
   Start<ServerUploader>(need_encryption_key(), config_file_version_,
                         std::move(records_), std::move(record_reservation),
                         std::move(handler), std::move(successful_upload_cb),
                         std::move(encryption_key_attached_cb),
+                        std::move(config_file_attached_cb),
                         callback_waiter.cb(), sequenced_task_runner_);
 
   const auto response = callback_waiter.result();
@@ -252,7 +278,7 @@ TEST_P(ServerUploaderTest, ReportsFailureToProcess) {
               Property(&Status::error_code, Eq(error::FAILED_PRECONDITION)));
 }
 
-TEST_P(ServerUploaderTest, ReprotWithZeroRecords) {
+TEST_P(ServerUploaderTest, ReportWithZeroRecords) {
   ScopedReservation no_records_reservation(0uL, memory_resource_);
   EXPECT_FALSE(no_records_reservation.reserved());
 
@@ -271,7 +297,7 @@ TEST_P(ServerUploaderTest, ReprotWithZeroRecords) {
   const bool force_confirm_flag = force_confirm();
   auto handler = std::make_unique<TestRecordHandler>();
   if (need_encryption_key()) {
-    EXPECT_CALL(*handler, HandleRecords_(_, _, _, _, _, _))
+    EXPECT_CALL(*handler, HandleRecords_(_, _, _, _, _, _, _))
         .WillOnce(WithArgs<0, 4, 5>(Invoke(
             [&force_confirm_flag](
                 bool need_encryption_key, CompletionCallback callback,
@@ -284,14 +310,20 @@ TEST_P(ServerUploaderTest, ReprotWithZeroRecords) {
                   .force_confirm = force_confirm_flag});
             })));
   } else {
-    EXPECT_CALL(*handler, HandleRecords_(_, _, _, _, _, _)).Times(0);
+    EXPECT_CALL(*handler, HandleRecords_(_, _, _, _, _, _, _)).Times(0);
   }
+
+  StrictMock<TestConfigFileAttached> config_file_attached;
+  EXPECT_CALL(config_file_attached, Call(_)).Times(0);
+  auto config_file_attached_cb = base::BindRepeating(
+      &TestConfigFileAttached::Call, base::Unretained(&config_file_attached));
 
   test::TestEvent<CompletionResponse> callback_waiter;
   Start<ServerUploader>(need_encryption_key(), config_file_version_,
                         std::move(records_), std::move(no_records_reservation),
                         std::move(handler), std::move(successful_upload_cb),
                         std::move(encryption_key_attached_cb),
+                        std::move(config_file_attached_cb),
                         callback_waiter.cb(), sequenced_task_runner_);
 
   const auto response = callback_waiter.result();
@@ -313,7 +345,7 @@ TEST_P(ServerUploaderFailureTest, ReportsFailureToUpload) {
   EXPECT_TRUE(record_reservation.reserved());
 
   auto handler = std::make_unique<TestRecordHandler>();
-  EXPECT_CALL(*handler, HandleRecords_(_, _, _, _, _, _))
+  EXPECT_CALL(*handler, HandleRecords_(_, _, _, _, _, _, _))
       .WillOnce(WithArgs<4>(Invoke([error_code](CompletionCallback callback) {
         std::move(callback).Run(
             base::unexpected(Status(error_code, "Failing for test")));
@@ -329,12 +361,18 @@ TEST_P(ServerUploaderFailureTest, ReportsFailureToUpload) {
       base::BindRepeating(&TestEncryptionKeyAttached::Call,
                           base::Unretained(&encryption_key_attached));
 
+  StrictMock<TestConfigFileAttached> config_file_attached;
+  EXPECT_CALL(config_file_attached, Call(_)).Times(0);
+  auto config_file_attached_cb = base::BindRepeating(
+      &TestConfigFileAttached::Call, base::Unretained(&config_file_attached));
+
   test::TestEvent<CompletionResponse> callback_waiter;
   Start<ServerUploader>(
       /*need_encryption_key=*/true, config_file_version_, std::move(records_),
       std::move(record_reservation), std::move(handler),
       std::move(successful_upload_cb), std::move(encryption_key_attached_cb),
-      callback_waiter.cb(), sequenced_task_runner_);
+      std::move(config_file_attached_cb), callback_waiter.cb(),
+      sequenced_task_runner_);
 
   const auto response = callback_waiter.result();
   EXPECT_THAT(response.error(), Property(&Status::code, Eq(error_code)));

@@ -108,7 +108,7 @@ StatusOr<ConfigFile> GetConfigurationProtoFromDict(
 
   // Handle the version.
   const auto config_file_version =
-      file.FindInt(json_keys::kConfigurationFileVersion);
+      file.FindInt(json_keys::kConfigurationFileVersionResponse);
   if (!config_file_version.has_value()) {
     return base::unexpected(
         Status(error::INVALID_ARGUMENT,
@@ -159,12 +159,12 @@ StatusOr<ConfigFile> GetConfigurationProtoFromDict(
     // specified, if there are then we parse them and add them to the proto.
     // This fields are optional so if they are not present it is okay.
     const auto min_version =
-        dict->FindInt(json_keys::kConfigurationFileMinimumReleaseVerision);
+        dict->FindInt(json_keys::kConfigurationFileMinimumReleaseVersion);
     if (min_version.has_value()) {
       current_config->set_minimum_release_version(min_version.value());
     }
     const auto max_version =
-        dict->FindInt(json_keys::kConfigurationFileMaximumReleaseVerision);
+        dict->FindInt(json_keys::kConfigurationFileMaximumReleaseVersion);
     if (max_version.has_value()) {
       current_config->set_maximum_release_version(max_version.value());
     }

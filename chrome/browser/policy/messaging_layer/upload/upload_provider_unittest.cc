@@ -46,10 +46,12 @@ class TestEncryptedReportingUploadProvider
  public:
   TestEncryptedReportingUploadProvider(
       UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
-      UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb)
+      UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
+      UploadClient::UpdateConfigInMissiveCallback update_config_in_missive_cb)
       : EncryptedReportingUploadProvider(
             report_successful_upload_cb,
             encryption_key_attached_cb,
+            update_config_in_missive_cb,
             /*upload_client_builder_cb=*/
             base::BindRepeating(&FakeUploadClient::Create)) {}
 };
@@ -58,6 +60,10 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
  public:
   MOCK_METHOD(void, ReportSuccessfulUpload, (SequenceInformation, bool), ());
   MOCK_METHOD(void, EncryptionKeyCallback, (SignedEncryptionInfo), ());
+  MOCK_METHOD(void,
+              UpdateConfigInMissiveCallback,
+              (ListOfBlockedDestinations),
+              ());
 
  protected:
   void SetUp() override {
@@ -70,7 +76,10 @@ class EncryptedReportingUploadProviderTest : public ::testing::Test {
             base::Unretained(this)),
         base::BindRepeating(
             &EncryptedReportingUploadProviderTest::EncryptionKeyCallback,
-            base::Unretained(this)));
+            base::Unretained(this)),
+        base::BindRepeating(&EncryptedReportingUploadProviderTest::
+                                UpdateConfigInMissiveCallback,
+                            base::Unretained(this)));
 
     record_.set_encrypted_wrapped_record("TEST_DATA");
 

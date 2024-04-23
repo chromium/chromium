@@ -40,7 +40,8 @@ class RecordHandlerImpl : public ServerUploader::RecordHandler {
       std::vector<EncryptedRecord> record,
       ScopedReservation scoped_reservation,
       CompletionCallback upload_complete,
-      EncryptionKeyAttachedCallback encryption_key_attached_cb) override;
+      EncryptionKeyAttachedCallback encryption_key_attached_cb,
+      ConfigFileAttachedCallback config_file_attached_cb) override;
 
  private:
   // Helper `ReportUploader` class handles events being uploaded.

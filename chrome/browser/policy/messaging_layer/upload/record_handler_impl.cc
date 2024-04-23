@@ -119,6 +119,7 @@ class RecordHandlerImpl::ReportUploader
           delegate_factory,
       CompletionCallback upload_complete_cb,
       EncryptionKeyAttachedCallback encryption_key_attached_cb,
+      ConfigFileAttachedCallback config_file_attached_cb,
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
 
  private:
@@ -146,6 +147,10 @@ class RecordHandlerImpl::ReportUploader
   EncryptionKeyAttachedCallback encryption_key_attached_cb_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // Configuration file delivery callback.
+  ConfigFileAttachedCallback config_file_attached_cb_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   // Set to |true| if force_confirm flag is present. |false| by default.
   bool force_confirm_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
@@ -161,6 +166,7 @@ RecordHandlerImpl::ReportUploader::ReportUploader(
         delegate_factory,
     CompletionCallback completion_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
+    ConfigFileAttachedCallback config_file_attached_cb,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
     : TaskRunnerContext<CompletionResponse>(std::move(completion_cb),
                                             sequenced_task_runner),
@@ -169,7 +175,8 @@ RecordHandlerImpl::ReportUploader::ReportUploader(
       records_(std::move(records)),
       scoped_reservation_(std::move(scoped_reservation)),
       delegate_factory_(delegate_factory),
-      encryption_key_attached_cb_(std::move(encryption_key_attached_cb)) {
+      encryption_key_attached_cb_(std::move(encryption_key_attached_cb)),
+      config_file_attached_cb_(std::move(config_file_attached_cb)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -295,16 +302,18 @@ void RecordHandlerImpl::ReportUploader::OnUploadComplete(
   // The server attaches the configuration file if it was requested
   // by the client. Adding a check to make sure to only process it if the
   // feature is enabled on the client side.
+#if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(kShouldRequestConfigurationFile)) {
     auto config_file_result = response_parser.config_file();
     if (config_file_result.has_value()) {
-      // TODO(b/289117140): Call the callback when it is in place.
+      config_file_attached_cb_.Run(std::move(config_file_result.value()));
     } else {
       base::UmaHistogramEnumeration("Browser.ERP.ConfigFileParsingError",
                                     config_file_result.error().code(),
                                     error::Code::MAX_VALUE);
     }
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Check if a record was unprocessable on the server.
   StatusOr<EncryptedRecord> failed_uploaded_record =
@@ -360,11 +369,12 @@ void RecordHandlerImpl::HandleRecords(
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
     CompletionCallback upload_complete_cb,
-    EncryptionKeyAttachedCallback encryption_key_attached_cb) {
+    EncryptionKeyAttachedCallback encryption_key_attached_cb,
+    ConfigFileAttachedCallback config_file_attached_cb) {
   Start<RecordHandlerImpl::ReportUploader>(
       need_encryption_key, config_file_version, std::move(records),
       std::move(scoped_reservation), delegate_factory_,
       std::move(upload_complete_cb), std::move(encryption_key_attached_cb),
-      sequenced_task_runner_);
+      std::move(config_file_attached_cb), sequenced_task_runner_);
 }
 }  // namespace reporting

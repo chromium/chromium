@@ -50,7 +50,8 @@ Status UploadClient::EnqueueUpload(
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
     ReportSuccessfulUploadCallback report_upload_success_cb,
-    EncryptionKeyAttachedCallback encryption_key_attached_cb) {
+    EncryptionKeyAttachedCallback encryption_key_attached_cb,
+    ConfigFileAttachedCallback config_file_attached_cb) {
   if (records.empty() && !need_encryption_key) {
     // Do nothing, just return success.
     return Status::StatusOK();
@@ -63,7 +64,8 @@ Status UploadClient::EnqueueUpload(
                             base::BindRepeating(&CreateFileUploadDelegate)),
                         std::move(report_upload_success_cb),
                         std::move(encryption_key_attached_cb),
-                        base::DoNothing(), sequenced_task_runner_);
+                        std::move(config_file_attached_cb), base::DoNothing(),
+                        sequenced_task_runner_);
   // Actual outcome is reported through callbacks; here we just confirm
   // the upload has started.
   return Status::StatusOK();

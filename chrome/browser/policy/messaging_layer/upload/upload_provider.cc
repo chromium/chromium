@@ -14,7 +14,10 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/browser/policy/messaging_layer/upload/configuration_file_controller.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
+#include "components/reporting/proto/synced/configuration_file.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/status.pb.h"
 #include "components/reporting/util/backoff_settings.h"
@@ -24,6 +27,18 @@
 
 namespace reporting {
 
+namespace {
+std::unique_ptr<ConfigurationFileController> CreateConfigurationFileController(
+    UploadClient::UpdateConfigInMissiveCallback update_config_in_missive_cb) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return std::make_unique<ConfigurationFileController>(
+      update_config_in_missive_cb);
+#else   // !BUILDFLAG(IS_CHROMEOS)
+  return nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
+}  // namespace
+
 // EncryptedReportingUploadProvider refcounted helper class.
 class EncryptedReportingUploadProvider::UploadHelper
     : public base::RefCountedDeleteOnSequence<UploadHelper> {
@@ -31,6 +46,7 @@ class EncryptedReportingUploadProvider::UploadHelper
   UploadHelper(
       UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
       UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
+      UploadClient::UpdateConfigInMissiveCallback update_config_in_missive_cb,
       UploadClientBuilderCb upload_client_builder_cb,
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
   UploadHelper(const UploadHelper& other) = delete;
@@ -58,6 +74,12 @@ class EncryptedReportingUploadProvider::UploadHelper
   void OnUploadClientResult(
       StatusOr<std::unique_ptr<UploadClient>> client_result);
 
+  // Helpers to send the configuration file gotten from the response
+  // to the `ConfigurationFileController`.
+  ConfigFileAttachedCallback GetConfigFileAttachedCallback();
+  void OnConfigFileResult(ConfigFile file);
+  void UpdateConfigFile(ConfigFile file);
+
   // Uploads encrypted records on sequenced task runner (and thus capable of
   // detecting whether upload client is ready or not). If not ready,
   // it will wait and then upload.
@@ -72,10 +94,12 @@ class EncryptedReportingUploadProvider::UploadHelper
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
   SEQUENCE_CHECKER(sequenced_task_checker_);
 
-  // Callbacks for successful upload and key delivery.
+  // Callbacks for successful upload, key delivery and configuration file
+  // attached.
   const UploadClient::ReportSuccessfulUploadCallback
       report_successful_upload_cb_;
   const UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb_;
+  UploadClient::ConfigFileAttachedCallback config_file_attached_cb_;
 
   // Callback for upload client creation.
   UploadClientBuilderCb upload_client_builder_cb_;
@@ -109,6 +133,11 @@ class EncryptedReportingUploadProvider::UploadHelper
   std::unique_ptr<UploadClient> upload_client_
       GUARDED_BY_CONTEXT(sequenced_task_checker_);
 
+  // Configuration file controller (protected by sequenced task runner). Once
+  // set, is used repeatedly.
+  std::unique_ptr<ConfigurationFileController> config_controller_
+      GUARDED_BY_CONTEXT(sequenced_task_checker_);
+
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
   base::WeakPtrFactory<UploadHelper> weak_ptr_factory_{this};
@@ -117,6 +146,7 @@ class EncryptedReportingUploadProvider::UploadHelper
 EncryptedReportingUploadProvider::UploadHelper::UploadHelper(
     UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
     UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
+    UploadClient::UpdateConfigInMissiveCallback update_config_in_missive_cb,
     UploadClientBuilderCb upload_client_builder_cb,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
     : base::RefCountedDeleteOnSequence<UploadHelper>(sequenced_task_runner),
@@ -124,7 +154,10 @@ EncryptedReportingUploadProvider::UploadHelper::UploadHelper(
       report_successful_upload_cb_(report_successful_upload_cb),
       encryption_key_attached_cb_(encryption_key_attached_cb),
       upload_client_builder_cb_(std::move(upload_client_builder_cb)),
-      backoff_entry_(GetBackoffEntry()) {
+      backoff_entry_(GetBackoffEntry()),
+      config_controller_(CreateConfigurationFileController(
+          std::move(update_config_in_missive_cb))) {
+  config_file_attached_cb_ = GetConfigFileAttachedCallback();
   DETACH_FROM_SEQUENCE(sequenced_task_checker_);
 }
 
@@ -212,9 +245,41 @@ void EncryptedReportingUploadProvider::UploadHelper::UpdateUploadClient(
     const auto result = upload_client_->EnqueueUpload(
         need_encryption_key, stored_config_file_version_, std::move(records),
         std::move(scoped_reservation), report_successful_upload_cb_,
-        encryption_key_attached_cb_);
+        encryption_key_attached_cb_, config_file_attached_cb_);
     LOG_IF(ERROR, !result.ok()) << "Upload failed, error=" << result;
   }
+}
+
+ConfigFileAttachedCallback EncryptedReportingUploadProvider::UploadHelper::
+    GetConfigFileAttachedCallback() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequenced_task_checker_);
+  return base::BindPostTask(
+      sequenced_task_runner_,
+      base::BindRepeating(
+          [](base::WeakPtr<UploadHelper> upload_helper,
+             ConfigFile file) -> void {
+            if (upload_helper) {
+              upload_helper->OnConfigFileResult(std::move(file));
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void EncryptedReportingUploadProvider::UploadHelper::OnConfigFileResult(
+    ConfigFile file) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequenced_task_checker_);
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindRepeating(&UploadHelper::UpdateConfigFile,
+                          weak_ptr_factory_.GetWeakPtr(), std::move(file)));
+}
+
+void EncryptedReportingUploadProvider::UploadHelper::UpdateConfigFile(
+    ConfigFile file) {
+  // This function is only called in ChromeOS so no nullptr check is needed.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequenced_task_checker_);
+  stored_config_file_version_ =
+      config_controller_->HandleConfigurationFile(std::move(file));
 }
 
 void EncryptedReportingUploadProvider::UploadHelper::EnqueueUpload(
@@ -256,7 +321,7 @@ void EncryptedReportingUploadProvider::UploadHelper::EnqueueUploadInternal(
       .Run(upload_client_->EnqueueUpload(
           need_encryption_key, stored_config_file_version_, std::move(records),
           std::move(scoped_reservation), report_successful_upload_cb_,
-          encryption_key_attached_cb_));
+          encryption_key_attached_cb_, config_file_attached_cb_));
 }
 
 // EncryptedReportingUploadProvider implementation.
@@ -264,10 +329,12 @@ void EncryptedReportingUploadProvider::UploadHelper::EnqueueUploadInternal(
 EncryptedReportingUploadProvider::EncryptedReportingUploadProvider(
     UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
     UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
+    UploadClient::UpdateConfigInMissiveCallback update_config_in_missive_cb,
     UploadClientBuilderCb upload_client_builder_cb)
     : helper_(base::MakeRefCounted<UploadHelper>(
           report_successful_upload_cb,
           encryption_key_attached_cb,
+          update_config_in_missive_cb,
           std::move(upload_client_builder_cb),
           base::SequencedTaskRunner::GetCurrentDefault())) {
   helper_->PostNewUploadClientRequest();

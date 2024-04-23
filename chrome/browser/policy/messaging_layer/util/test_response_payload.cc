@@ -125,12 +125,12 @@ StatusOr<base::Value::Dict> ResponseBuilder::Build() const {
     base::Value::List event_configs;
     base::Value::Dict heartbeat;
     heartbeat.Set(json_keys::kConfigurationFileDestination, "HEARTBEAT_EVENTS");
-    heartbeat.Set(json_keys::kConfigurationFileMinimumReleaseVerision, 11111);
+    heartbeat.Set(json_keys::kConfigurationFileMinimumReleaseVersion, 11111);
     event_configs.Append(std::move(heartbeat));
     base::Value::Dict login;
     login.Set(json_keys::kConfigurationFileDestination, "LOGIN_LOGOUT_EVENTS");
-    login.Set(json_keys::kConfigurationFileMinimumReleaseVerision, 22222);
-    login.Set(json_keys::kConfigurationFileMaximumReleaseVerision, 33333);
+    login.Set(json_keys::kConfigurationFileMinimumReleaseVersion, 22222);
+    login.Set(json_keys::kConfigurationFileMaximumReleaseVersion, 33333);
     event_configs.Append(std::move(login));
     base::Value::Dict lock;
     lock.Set(json_keys::kConfigurationFileDestination, "LOCK_UNLOCK_EVENTS");

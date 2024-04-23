@@ -31,7 +31,8 @@ class FakeUploadClient : public UploadClient {
       std::vector<EncryptedRecord> records,
       ScopedReservation scoped_reservation,
       ReportSuccessfulUploadCallback report_upload_success_cb,
-      EncryptionKeyAttachedCallback encryption_key_attached_cb) override;
+      EncryptionKeyAttachedCallback encryption_key_attached_cb,
+      ConfigFileAttachedCallback config_file_attached_cb) override;
 
  private:
   FakeUploadClient();
@@ -39,6 +40,7 @@ class FakeUploadClient : public UploadClient {
   void OnUploadComplete(
       ReportSuccessfulUploadCallback report_upload_success_cb,
       EncryptionKeyAttachedCallback encryption_key_attached_cb,
+      ConfigFileAttachedCallback config_file_attached_cb,
       StatusOr<UploadResponseParser> response);
 };
 

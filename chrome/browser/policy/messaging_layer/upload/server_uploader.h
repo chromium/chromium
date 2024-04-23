@@ -15,6 +15,7 @@
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/reporting/proto/synced/configuration_file.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/resources/resource_manager.h"
@@ -42,6 +43,11 @@ using EncryptionKeyAttachedCallback =
 // this callback.
 using UpdateConfigInMissiveCallback =
     base::RepeatingCallback<void(ListOfBlockedDestinations)>;
+
+// ConfigFileAttachedCallback is called if the server attached a configuration
+// file to the response. This passes the parsed response to the
+// `ConfigurationFileController`.
+using ConfigFileAttachedCallback = base::RepeatingCallback<void(ConfigFile)>;
 
 // Successful response consists of Sequence information that may be
 // accompanied with force_confirm flag.
@@ -83,7 +89,8 @@ class ServerUploader : public TaskRunnerContext<CompletionResponse> {
         std::vector<EncryptedRecord> records,
         ScopedReservation scoped_reservation,
         CompletionCallback upload_complete,
-        EncryptionKeyAttachedCallback encryption_key_attached_cb) = 0;
+        EncryptionKeyAttachedCallback encryption_key_attached_cb,
+        ConfigFileAttachedCallback config_file_attached_cb) = 0;
 
    protected:
     RecordHandler() = default;
@@ -97,6 +104,7 @@ class ServerUploader : public TaskRunnerContext<CompletionResponse> {
       std::unique_ptr<RecordHandler> handler,
       ReportSuccessfulUploadCallback report_success_upload_cb,
       EncryptionKeyAttachedCallback encryption_key_attached_cb,
+      ConfigFileAttachedCallback config_file_attached_cb,
       CompletionCallback completion_cb,
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner);
 
@@ -135,6 +143,7 @@ class ServerUploader : public TaskRunnerContext<CompletionResponse> {
   ScopedReservation scoped_reservation_ GUARDED_BY_CONTEXT(sequence_checker_);
   const ReportSuccessfulUploadCallback report_success_upload_cb_;
   const EncryptionKeyAttachedCallback encryption_key_attached_cb_;
+  const ConfigFileAttachedCallback config_file_attached_cb_;
   const std::unique_ptr<RecordHandler> handler_;
 
   SEQUENCE_CHECKER(sequence_checker_);

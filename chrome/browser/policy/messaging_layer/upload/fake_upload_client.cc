@@ -35,11 +35,13 @@ Status FakeUploadClient::EnqueueUpload(
     std::vector<EncryptedRecord> records,
     ScopedReservation scoped_reservation,
     ReportSuccessfulUploadCallback report_upload_success_cb,
-    EncryptionKeyAttachedCallback encryption_key_attached_cb) {
+    EncryptionKeyAttachedCallback encryption_key_attached_cb,
+    ConfigFileAttachedCallback config_file_attached_cb) {
   auto response_cb = base::BindOnce(&FakeUploadClient::OnUploadComplete,
                                     base::Unretained(this),
                                     std::move(report_upload_success_cb),
-                                    std::move(encryption_key_attached_cb));
+                                    std::move(encryption_key_attached_cb),
+                                    std::move(config_file_attached_cb));
   ReportingServerConnector::UploadEncryptedReport(
       need_encryption_key, config_file_version, std::move(records),
       std::move(scoped_reservation), std::move(response_cb));
@@ -49,6 +51,7 @@ Status FakeUploadClient::EnqueueUpload(
 void FakeUploadClient::OnUploadComplete(
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
+    ConfigFileAttachedCallback config_file_attached_cb,
     StatusOr<UploadResponseParser> response) {
   if (!response.has_value()) {
     return;
@@ -66,6 +69,11 @@ void FakeUploadClient::OnUploadComplete(
   if (encryption_settings.has_value()) {
     std::move(encryption_key_attached_cb)
         .Run(std::move(encryption_settings.value()));
+  }
+
+  auto config_file = response.value().config_file();
+  if (config_file.has_value()) {
+    std::move(config_file_attached_cb).Run(std::move(config_file.value()));
   }
 }
 }  // namespace reporting

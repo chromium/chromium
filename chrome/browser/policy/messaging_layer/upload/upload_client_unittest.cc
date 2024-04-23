@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 
+#include <string>
 #include <tuple>
 
 #include "base/files/file_path.h"
@@ -113,6 +114,7 @@ class UploadClientTest : public ::testing::TestWithParam<
 };
 
 using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
+using TestConfigFileAttached = MockFunction<void(ConfigFile)>;
 
 TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   static constexpr int64_t kExpectedCallTimes = 10;
@@ -167,6 +169,16 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
       base::BindRepeating(&TestEncryptionKeyAttached::Call,
                           base::Unretained(&encryption_key_attached));
 
+  StrictMock<TestConfigFileAttached> config_file_attached;
+  EXPECT_CALL(
+      config_file_attached,
+      Call(AllOf(Property(&ConfigFile::blocked_event_configs, Not(IsEmpty())),
+                 Property(&ConfigFile::version, Gt(4444)),
+                 Property(&ConfigFile::config_file_signature, Not(IsEmpty())))))
+      .Times(0);
+  auto config_file_attached_cb = base::BindRepeating(
+      &TestConfigFileAttached::Call, base::Unretained(&config_file_attached));
+
   auto test_env = std::make_unique<ReportingServerConnector::TestEnvironment>();
 
   static constexpr char matched_record_template[] =
@@ -211,7 +223,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   auto enqueue_result = upload_client->EnqueueUpload(
       need_encryption_key(), /*config_file_version=*/0, std::move(records),
       std::move(total_reservation), upload_success_event.repeating_cb(),
-      encryption_key_attached_cb);
+      encryption_key_attached_cb, std::move(config_file_attached_cb));
   EXPECT_TRUE(enqueue_result.ok());
   task_environment_.RunUntilIdle();
 

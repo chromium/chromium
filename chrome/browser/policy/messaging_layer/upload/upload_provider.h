@@ -31,6 +31,7 @@ class EncryptedReportingUploadProvider {
   EncryptedReportingUploadProvider(
       UploadClient::ReportSuccessfulUploadCallback report_successful_upload_cb,
       UploadClient::EncryptionKeyAttachedCallback encryption_key_attached_cb,
+      UploadClient::UpdateConfigInMissiveCallback update_config_in_missive_cb,
       UploadClientBuilderCb upload_client_builder_cb =
           EncryptedReportingUploadProvider::GetUploadClientBuilder());
   EncryptedReportingUploadProvider(

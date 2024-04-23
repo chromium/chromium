@@ -35,6 +35,7 @@ ServerUploader::ServerUploader(
     std::unique_ptr<RecordHandler> handler,
     ReportSuccessfulUploadCallback report_success_upload_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
+    ConfigFileAttachedCallback config_file_attached_cb,
     CompletionCallback completion_cb,
     scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner)
     : TaskRunnerContext<CompletionResponse>(std::move(completion_cb),
@@ -45,6 +46,7 @@ ServerUploader::ServerUploader(
       scoped_reservation_(std::move(scoped_reservation)),
       report_success_upload_cb_(std::move(report_success_upload_cb)),
       encryption_key_attached_cb_(std::move(encryption_key_attached_cb)),
+      config_file_attached_cb_(std::move(config_file_attached_cb)),
       handler_(std::move(handler)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -115,7 +117,8 @@ void ServerUploader::HandleRecords() {
       std::move(scoped_reservation_),
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&ServerUploader::Finalize, base::Unretained(this))),
-      std::move(encryption_key_attached_cb_));
+      std::move(encryption_key_attached_cb_),
+      std::move(config_file_attached_cb_));
 }
 
 void ServerUploader::Finalize(CompletionResponse upload_result) {
