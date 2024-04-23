@@ -195,7 +195,7 @@ TEST_P(BaseGridMediatorTest, SelectItemCommand) {
   // Previous selected index is 1.
   web::WebStateID identifier =
       browser_->GetWebStateList()->GetWebStateAt(2)->GetUniqueIdentifier();
-  [mediator_ selectItemWithID:identifier pinned:NO isFirstActionOnTabGrid:NO];
+  [mediator_ selectItemWithID:identifier pinned:NO];
   EXPECT_EQ(2, browser_->GetWebStateList()->active_index());
   EXPECT_EQ(identifier, consumer_.selectedItemID);
 }
@@ -218,20 +218,18 @@ TEST_P(BaseGridMediatorTest, SelectPinnedItemCommand) {
   ASSERT_EQ(1, browser_->GetWebStateList()->active_index());
   ASSERT_EQ(identifier_1, consumer_.selectedItemID);
 
-  [mediator_ selectItemWithID:identifier_0
-                       pinned:YES
-       isFirstActionOnTabGrid:NO];
+  [mediator_ selectItemWithID:identifier_0 pinned:YES];
 
   EXPECT_EQ(0, browser_->GetWebStateList()->active_index());
   EXPECT_EQ(identifier_0, consumer_.selectedItemID);
 
-  [mediator_ selectItemWithID:identifier_2 pinned:NO isFirstActionOnTabGrid:NO];
+  [mediator_ selectItemWithID:identifier_2 pinned:NO];
 
   EXPECT_EQ(2, browser_->GetWebStateList()->active_index());
   EXPECT_EQ(identifier_2, consumer_.selectedItemID);
 
   // Selecting the pinned one with pinned = NO fails.
-  [mediator_ selectItemWithID:identifier_0 pinned:NO isFirstActionOnTabGrid:NO];
+  [mediator_ selectItemWithID:identifier_0 pinned:NO];
 
   EXPECT_EQ(2, browser_->GetWebStateList()->active_index());
   EXPECT_EQ(identifier_2, consumer_.selectedItemID);
@@ -380,8 +378,7 @@ TEST_P(BaseGridMediatorWithPriceDropIndicatorsTest,
       browser_->GetWebStateList()->GetWebStateAt(2);
   // No need to set a null price drop - it will be null by default.
   [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()
-                       pinned:NO
-       isFirstActionOnTabGrid:NO];
+                       pinned:NO];
   EXPECT_EQ(1, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
 }
@@ -393,8 +390,7 @@ TEST_P(BaseGridMediatorWithPriceDropIndicatorsTest,
   // Add a fake price drop.
   SetFakePriceDrop(web_state_to_select);
   [mediator_ selectItemWithID:web_state_to_select->GetUniqueIdentifier()
-                       pinned:NO
-       isFirstActionOnTabGrid:NO];
+                       pinned:NO];
   EXPECT_EQ(1, user_action_tester_.GetActionCount(kHasPriceDropUserAction));
   EXPECT_EQ(0, user_action_tester_.GetActionCount(kHasNoPriceDropUserAction));
 }

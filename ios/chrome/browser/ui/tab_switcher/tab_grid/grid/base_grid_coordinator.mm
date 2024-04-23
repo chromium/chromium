@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "base/check.h"
-#import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -78,8 +77,6 @@
   self.mediator.browser = self.browser;
   self.mediator.delegate = self.gridMediatorDelegate;
   self.mediator.toolbarsMutator = self.toolbarsMutator;
-  self.mediator.tabBasedIPHBrowserAgent =
-      TabBasedIPHBrowserAgent::FromBrowser(self.browser);
 }
 
 - (void)stop {
