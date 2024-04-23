@@ -142,7 +142,6 @@ public class PageInfoViewDarkModeTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @DisabledTest(message = "https://crbug.com/335684785")
     public void testChromePage() throws IOException {
         loadUrlAndOpenPageInfo("chrome://version/");
         mRenderTestRule.render(getPageInfoView(), "PageInfo_InternalSiteDark");
