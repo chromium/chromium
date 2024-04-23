@@ -89,7 +89,8 @@ class ASH_EXPORT HelpBubbleViewAsh : public views::BubbleDialogDelegateView {
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetBoundsChanged(views::Widget* widget, const gfx::Rect&) override;
   void OnThemeChanged() override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Rect GetAnchorRect() const override;
   void GetWidgetHitTestMask(SkPath* mask) const override;
   bool WidgetHasHitTestMask() const override;

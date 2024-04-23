@@ -189,7 +189,8 @@ class DotView : public views::View {
   ~DotView() override = default;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     gfx::Size size = size_;
     const gfx::Insets* const insets = GetProperty(views::kInternalPaddingKey);
     size.Enlarge(insets->width(), insets->height());
@@ -782,13 +783,16 @@ void HelpBubbleViewAsh::OnThemeChanged() {
   }
 }
 
-gfx::Size HelpBubbleViewAsh::CalculatePreferredSize() const {
+gfx::Size HelpBubbleViewAsh::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const gfx::Size layout_manager_preferred_size =
-      View::CalculatePreferredSize();
+      View::CalculatePreferredSize(available_size);
 
   // Wrap if the width is larger than |kBubbleMaxWidthDip|.
   if (layout_manager_preferred_size.width() > kBubbleMaxWidthDip) {
-    return gfx::Size(kBubbleMaxWidthDip, GetHeightForWidth(kBubbleMaxWidthDip));
+    return gfx::Size(kBubbleMaxWidthDip,
+                     GetLayoutManager()->GetPreferredHeightForWidth(
+                         this, kBubbleMaxWidthDip));
   }
 
   if (layout_manager_preferred_size.width() < kBubbleMinWidthDip) {
