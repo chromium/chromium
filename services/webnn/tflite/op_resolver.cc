@@ -141,6 +141,8 @@ OpResolver::OpResolver() {
              /* max_version = */ 2);
   AddBuiltin(::tflite::BuiltinOperator_POW,
              ::tflite::ops::builtin::Register_POW());
+  AddBuiltin(::tflite::BuiltinOperator_PRELU,
+             ::tflite::ops::builtin::Register_PRELU());
   AddBuiltin(::tflite::BuiltinOperator_REDUCE_PROD,
              ::tflite::ops::builtin::Register_REDUCE_PROD());
   AddBuiltin(::tflite::BuiltinOperator_REDUCE_MAX,

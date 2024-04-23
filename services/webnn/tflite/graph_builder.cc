@@ -353,6 +353,10 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       ASSIGN_OR_RETURN(operator_offset, SerializePool2d(*op.get_pool2d()));
       break;
     }
+    case mojom::Operation::Tag::kPrelu: {
+      ASSIGN_OR_RETURN(operator_offset, SerializePrelu(*op.get_prelu()));
+      break;
+    }
     case mojom::Operation::Tag::kReduce: {
       ASSIGN_OR_RETURN(operator_offset, SerializeReduce(*op.get_reduce()));
       break;
@@ -412,8 +416,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("lstm is not implemented");
     case mojom::Operation::Tag::kLstmCell:
       return base::unexpected("lstmCell is not implemented");
-    case mojom::Operation::Tag::kPrelu:
-      return base::unexpected("prelu is not implemented");
     case mojom::Operation::Tag::kSoftplus:
       return base::unexpected("softplus is not implemented");
     case mojom::Operation::Tag::kSoftsign:
@@ -1338,6 +1340,32 @@ auto GraphBuilder::SerializePool2d(const mojom::Pool2d& pool2d)
       builder_, operator_code_index, builder_.CreateVector<int32_t>(op_inputs),
       builder_.CreateVector<int32_t>(op_outputs),
       ::tflite::BuiltinOptions_Pool2DOptions, pool_2d_options.Union());
+}
+
+auto GraphBuilder::SerializePrelu(const mojom::Prelu& prelu)
+    -> base::expected<OperatorOffset, std::string> {
+  // `ValidatePreluAndInferOutput` function has checked broadcastable shapes
+  // between input and slope operand, but TFLite XNNPACK delegate doesn't
+  // support to broadcast last dimension.
+  // TODO(crbug.com/335517470): Support last dimension broadcastable.
+  const mojom::Operand& input_operand = GetOperand(prelu.input_operand_id);
+  const mojom::Operand& slope_operand = GetOperand(prelu.slope_operand_id);
+  if (!input_operand.dimensions.empty() && !slope_operand.dimensions.empty() &&
+      input_operand.dimensions.back() != slope_operand.dimensions.back()) {
+    return base::unexpected(
+        "The input and slope should have the same last dimension.");
+  }
+
+  const uint32_t operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_PRELU);
+  const std::array<int32_t, 2> op_inputs = {
+      operand_to_index_map_.at(prelu.input_operand_id),
+      operand_to_index_map_.at(prelu.slope_operand_id)};
+  const std::array<int32_t, 1> op_outputs = {
+      operand_to_index_map_.at(prelu.output_operand_id)};
+  return ::tflite::CreateOperator(builder_, operator_code_index,
+                                  builder_.CreateVector<int32_t>(op_inputs),
+                                  builder_.CreateVector<int32_t>(op_outputs));
 }
 
 auto GraphBuilder::SerializeReduce(const mojom::Reduce& reduce)

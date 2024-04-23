@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] prelu float32 0D scalar
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Slope should not be a scalar."
 [FAIL] prelu float32 2D tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Expected all dimensions of slope to be 1 except the last dimension."
 [FAIL] prelu float32 3D tensors

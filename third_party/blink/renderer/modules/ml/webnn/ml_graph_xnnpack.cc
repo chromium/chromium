@@ -1403,8 +1403,7 @@ xnn_status DefineXnnNodeForPRelu(xnn_subgraph_t subgraph,
       return xnn_status_unsupported_parameter;
     }
   }
-  if (slope->Dimensions()[slope_rank - 1] !=
-      input->Dimensions()[input->Dimensions().size() - 1]) {
+  if (slope->Dimensions().back() != input->Dimensions().back()) {
     error_message = "The input and slope should have the same last dimension.";
     return xnn_status_unsupported_parameter;
   }
