@@ -4098,6 +4098,14 @@
     "expiry_milestone": 128
   },
   {
+    "name": "enable-welcome-experience",
+    "owners": [
+      "michaelcheco@google.com",
+      "cros-peripherals@google.com"
+    ],
+    "expiry_milestone": 132
+  },
+  {
     "name": "enable-welcome-tour",
     "owners": [ "//ash/user_education/OWNERS" ],
     "expiry_milestone": 130

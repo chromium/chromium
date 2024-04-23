@@ -21778,6 +21778,7 @@ from previous Chrome versions.
   <int value="270038252" label="SignInProfileCreationEnterprise:disabled"/>
   <int value="270118291" label="SyncAutofillWalletOfferData:disabled"/>
   <int value="270267831" label="enable-scripts-require-action"/>
+  <int value="270386483" label="WelcomeExperience:enabled"/>
   <int value="271437172" label="GlobalVaapiLock:enabled"/>
   <int value="272108480" label="SmbFs:enabled"/>
   <int value="272631627" label="BookmarkAppsMac:enabled"/>
@@ -22328,6 +22329,7 @@ from previous Chrome versions.
   <int value="505381354" label="FastCheckout:enabled"/>
   <int value="505561325" label="OpenXR:disabled"/>
   <int value="505804530" label="SyncAccessHandleAllSyncSurface:disabled"/>
+  <int value="506005649" label="WelcomeExperience:disabled"/>
   <int value="506015849" label="OmniboxFuzzyUrlSuggestions:disabled"/>
   <int value="506153966" label="WebAppSyncGeneratedIconUpdateFix:disabled"/>
   <int value="506680761" label="WebNFC:disabled"/>

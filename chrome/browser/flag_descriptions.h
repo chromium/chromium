@@ -4208,6 +4208,9 @@ extern const char kVmMemoryManagementServiceDescription[];
 extern const char kWakeOnWifiAllowedName[];
 extern const char kWakeOnWifiAllowedDescription[];
 
+extern const char kWelcomeExperienceName[];
+extern const char kWelcomeExperienceDescription[];
+
 extern const char kWelcomeTourName[];
 extern const char kWelcomeTourDescription[];
 

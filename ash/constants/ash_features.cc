@@ -2972,6 +2972,11 @@ BASE_FEATURE(kWallpaperPerDesk,
              "WallpaperPerDesk",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables a new Welcome Experience for first-time peripheral connections.
+BASE_FEATURE(kWelcomeExperience,
+             "WelcomeExperience",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the Welcome Tour that walks new users through ChromeOS System UI.
 BASE_FEATURE(kWelcomeTour, "WelcomeTour", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -4538,6 +4543,11 @@ bool IsWallpaperGooglePhotosSharedAlbumsEnabled() {
 
 bool IsWallpaperPerDeskEnabled() {
   return base::FeatureList::IsEnabled(kWallpaperPerDesk);
+}
+
+bool IsWelcomeExperienceEnabled() {
+  return IsPeripheralNotificationEnabled() &&
+         base::FeatureList::IsEnabled(kWelcomeExperience);
 }
 
 bool IsWelcomeTourChromeVoxSupported() {

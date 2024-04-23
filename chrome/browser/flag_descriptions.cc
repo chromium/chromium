@@ -7243,6 +7243,10 @@ const char kWakeOnWifiAllowedName[] = "Allow enabling wake on WiFi features";
 const char kWakeOnWifiAllowedDescription[] =
     "Allows wake on WiFi features in shill to be enabled.";
 
+const char kWelcomeExperienceName[] = "Welcome Experience";
+const char kWelcomeExperienceDescription[] =
+    "Enables a new Welcome Experience for first-time peripheral connections.";
+
 const char kWelcomeTourName[] = "Welcome Tour";
 const char kWelcomeTourDescription[] =
     "Enables the Welcome Tour that walks new users through ChromeOS System UI.";
