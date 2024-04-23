@@ -4268,6 +4268,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Media.MediaVideoVisibilityTracker.ComputeOcclusion.ComputeOccludingArea.TotalDuration"
+    units="microseconds" expires_after="2024-12-01">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Total duration in microseconds taken by the MediaVideoVisibilityTracker to
+    compute occluding area. The histogram is recorded every time an element
+    occluding a target HTMLVideoElement is found, during the ComputeOcclusion
+    operation.
+
+    Note that clients without high-resolution clocks will report 0 for very
+    short times.
+  </summary>
+</histogram>
+
+<histogram
     name="Media.MediaVideoVisibilityTracker.ComputeOcclusion.TotalDuration"
     units="ms" expires_after="2024-12-01">
   <owner>bkeen@google.com</owner>
@@ -4278,6 +4294,88 @@ chromium-metrics-reviews@google.com.
     MediaVideoVisibilityTracker needs to compute if a tracked HTMLVideoElement
     meets its specified visibility threshold.
   </summary>
+</histogram>
+
+<histogram
+    name="Media.MediaVideoVisibilityTracker.OccludingRectsCount.{BucketSizeIncreases}.TotalCount"
+    units="rects" expires_after="2024-12-01">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Total count of rects occluding a target HTMLVideoElement. The histogram is
+    recorded after the MediaVideoVisibilityTracker computes whether the
+    HTMLVideoElement meets the visibility threshold or not.
+
+    Count is recorded using a histogram with {BucketSizeIncreases} bucket size
+    increases.
+
+    Note that this does not represent all elements that could be considered
+    occluding, since MeetsVisibilityThreshold may return early depending on the
+    size of the occluded area and the visibility threshold.
+  </summary>
+  <token key="BucketSizeIncreases">
+    <variant name="Exponential"
+        summary="Histogram with exponential bucket size increases, for
+                 understanding the overall distribution"/>
+    <variant name="Linear"
+        summary="Histogram with linear bucket size increases, for fine
+                 grained detail"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.MediaVideoVisibilityTracker.{NodesCount}.{BucketSizeIncreases}Histogram.TotalCount"
+    units="nodes" expires_after="2024-12-01">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Total {NodesCount}, hit tested by ComputeOcclusion. The histogram is
+    recorded after the MediaVideoVisibilityTracker computes whether the
+    HTMLVideoElement meets the visibility threshold or not.
+
+    Count is recorded using a histogram with {BucketSizeIncreases} bucket size
+    increases.
+  </summary>
+  <token key="NodesCount">
+    <variant name="HitTestedNodesContributingToOcclusionCount"
+        summary="Nodes that contribute to occlusion"/>
+    <variant name="HitTestedNodesCount" summary="All hit tested nodes"/>
+    <variant name="IgnoredNodesNotOpaqueCount"
+        summary="Nodes ignored due to not being opaque"/>
+    <variant name="IgnoredNodesUserAgentShadowRootCount"
+        summary="Nodes ignored due to being in the shadow root and of user
+                 agent type"/>
+  </token>
+  <token key="BucketSizeIncreases">
+    <variant name="Exponential"
+        summary="Histogram with exponential bucket size increases, for
+                 understanding the overall distribution"/>
+    <variant name="Linear"
+        summary="Histogram with linear bucket size increases, for fine
+                 grained detail"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.MediaVideoVisibilityTracker.{PercentageCategory}.Percentage"
+    units="%" expires_after="2024-12-01">
+  <owner>bkeen@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the percentage of the total hit tested nodes that are
+    {PercentageCategory}. The histogram is recorded after the
+    MediaVideoVisibilityTracker computes whether the HTMLVideoElement meets the
+    visibility threshold or not.
+  </summary>
+  <token key="PercentageCategory">
+    <variant name="IgnoredNodesNotOpaque"
+        summary="Nodes that are ignored due to not being opaque"/>
+    <variant name="IgnoredNodesUserAgentShadowRoot"
+        summary="Nodes that are ignored due to being in the shadow root and
+                 of user agent type"/>
+    <variant name="NodesContributingToOcclusion"
+        summary="Nodes that contribute to occlusion"/>
+  </token>
 </histogram>
 
 <histogram name="Media.MicrophoneMuted" enum="MicrophoneMuteResult"

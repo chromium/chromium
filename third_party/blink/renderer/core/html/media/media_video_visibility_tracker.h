@@ -29,6 +29,25 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
     : public GarbageCollected<MediaVideoVisibilityTracker>,
       public LocalFrameView::LifecycleNotificationObserver {
  public:
+  // Struct to hold various counts, only used for metrics collection.
+  struct Metrics {
+    // Total number of hit tested nodes.
+    int total_hit_tested_nodes = 0;
+
+    // Total number of occluding rects.
+    int total_occluding_rects = 0;
+
+    // Total number of hit tested nodes that contribute to occlusion.
+    int total_hit_tested_nodes_contributing_to_occlusion = 0;
+
+    // Total number of ignored hit tested nodes that are in the shadow tree and
+    // of user agent type.
+    int total_ignored_nodes_user_agent_shadow_root = 0;
+
+    // Total number of ignored hit tested nodes that are not opaque.
+    int total_ignored_nodes_not_opaque = 0;
+  };
+
   static constexpr base::TimeDelta kMinimumAllowedHitTestInterval =
       base::Milliseconds(500);
 
@@ -63,8 +82,8 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
   void Attach();
   void Detach();
 
-  ListBasedHitTestBehavior ComputeOcclusion(const Node& node);
-  bool MeetsVisibilityThreshold(const PhysicalRect& rect);
+  ListBasedHitTestBehavior ComputeOcclusion(Metrics&, const Node& node);
+  bool MeetsVisibilityThreshold(Metrics& counters, const PhysicalRect& rect);
   void ReportVisibility(bool meets_visibility_threshold);
   void OnIntersectionChanged();
 

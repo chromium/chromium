@@ -1327,7 +1327,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
-                       ComputeOcclusionTotalDurationHistogramHasCount) {
+                       MediaVideoVisibilityTrackerHistogramSamplesHaveCount) {
   // Load a page that registers for autopip and start video playback.
   LoadAutoVideoVisibilityPipPage(browser());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -1342,7 +1342,41 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   SwitchToNewTabAndDontExpectAutopip();
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-  auto samples = histograms.GetHistogramSamplesSinceCreation(
-      "Media.MediaVideoVisibilityTracker.ComputeOcclusion.TotalDuration");
-  EXPECT_GE(samples->TotalCount(), 1);
+
+  const char* const histogram_names[] = {
+      "Media.MediaVideoVisibilityTracker.ComputeOcclusion.ComputeOccludingArea."
+      "TotalDuration",
+      "Media.MediaVideoVisibilityTracker.ComputeOcclusion.TotalDuration",
+      "Media.MediaVideoVisibilityTracker."
+      "HitTestedNodesContributingToOcclusionCount.ExponentialHistogram."
+      "TotalCount",
+      "Media.MediaVideoVisibilityTracker."
+      "HitTestedNodesContributingToOcclusionCount.LinearHistogram.TotalCount",
+      "Media.MediaVideoVisibilityTracker.HitTestedNodesCount."
+      "ExponentialHistogram.TotalCount",
+      "Media.MediaVideoVisibilityTracker.HitTestedNodesCount.LinearHistogram."
+      "TotalCount",
+      "Media.MediaVideoVisibilityTracker.IgnoredNodesNotOpaque.Percentage",
+      "Media.MediaVideoVisibilityTracker.IgnoredNodesNotOpaqueCount."
+      "ExponentialHistogram.TotalCount",
+      "Media.MediaVideoVisibilityTracker.IgnoredNodesNotOpaqueCount."
+      "LinearHistogram.TotalCount",
+      "Media.MediaVideoVisibilityTracker.IgnoredNodesUserAgentShadowRoot."
+      "Percentage",
+      "Media.MediaVideoVisibilityTracker.IgnoredNodesUserAgentShadowRootCount."
+      "ExponentialHistogram.TotalCount",
+      "Media.MediaVideoVisibilityTracker.IgnoredNodesUserAgentShadowRootCount."
+      "LinearHistogram.TotalCount",
+      "Media.MediaVideoVisibilityTracker.NodesContributingToOcclusion."
+      "Percentage",
+      "Media.MediaVideoVisibilityTracker.OccludingRectsCount."
+      "ExponentialHistogram.TotalCount",
+      "Media.MediaVideoVisibilityTracker.OccludingRectsCount.LinearHistogram."
+      "TotalCount",
+  };
+
+  for (const auto* histogram_name : histogram_names) {
+    auto samples = histograms.GetHistogramSamplesSinceCreation(histogram_name);
+    EXPECT_GE(samples->TotalCount(), 1);
+  }
 }
