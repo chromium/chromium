@@ -681,7 +681,7 @@ void ChromeBrowserMainPartsWin::RegisterApplicationRestart(
       LOG(WARNING) << "Command line too long for RegisterApplicationRestart: "
                    << command_line_string;
     } else {
-      NOTREACHED() << "RegisterApplicationRestart failed. hr: " << hr
+      LOG(WARNING) << "RegisterApplicationRestart failed. hr: " << hr
                    << ", command_line: " << command_line_string;
     }
   }
