@@ -279,13 +279,6 @@ void LogHostPermissionsAccess(const Extension& extension,
   }
 }
 
-bool ShouldCollectDevModeDataForLocation(mojom::ManifestLocation location) {
-  return location == mojom::ManifestLocation::kExternalPref ||
-         location == mojom::ManifestLocation::kExternalPrefDownload ||
-         location == mojom::ManifestLocation::kExternalRegistry ||
-         location == mojom::ManifestLocation::kUnpacked;
-}
-
 }  // namespace
 
 InstalledLoader::InstalledLoader(ExtensionService* extension_service)
@@ -521,9 +514,8 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
   ManifestVersion2And3Counts unpacked_manifest_version_counts;
 
   bool should_record_incremented_metrics = is_user_profile;
-  bool should_record_offstore_developer_mode_metrics =
-      !profile->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode) &&
-      is_user_profile;
+  bool dev_mode_enabled =
+      GetCurrentDeveloperMode(util::GetBrowserContextId(profile));
 
   const ExtensionSet& extensions = extension_registry_->enabled_extensions();
   for (ExtensionSet::const_iterator iter = extensions.begin();
@@ -567,19 +559,22 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
           UMA_HISTOGRAM_ENUMERATION("Extensions.FromWebstoreInconsistency2",
                                     BAD_UPDATE_URL, 2);
         }
-      } else if (should_record_offstore_developer_mode_metrics &&
-                 ShouldCollectDevModeDataForLocation(location)) {
-        // Record non-webstore extensions when user is not in developer
-        // mode. Only include external pref, registry, and unpacked locations.
-        base::UmaHistogramEnumeration(
-            "Extensions.NonWebstoreLocationWithDeveloperModeOff.Enabled",
-            location);
+      } else if (is_user_profile) {
+        // Record enabled non-webstore extensions based on developer mode
+        // status.
+        if (dev_mode_enabled) {
+          base::UmaHistogramEnumeration(
+              "Extensions.NonWebstoreLocationWithDeveloperModeOn.Enabled",
+              location);
+        } else {
+          base::UmaHistogramEnumeration(
+              "Extensions.NonWebstoreLocationWithDeveloperModeOff.Enabled2",
+              location);
+        }
       }
     }
 
     if (is_user_profile) {
-      bool dev_mode_enabled =
-          GetCurrentDeveloperMode(util::GetBrowserContextId(profile));
       base::UmaHistogramBoolean("Extensions.DeveloperModeEnabled",
                                 dev_mode_enabled);
     }
@@ -909,15 +904,19 @@ void InstalledLoader::RecordExtensionsMetrics(Profile* profile,
       }
     }
 
-    // Record disabled non-webstore extensions when user is not in developer
-    // mode.  Only include external pref, registry, and unpacked locations.
-    if (should_record_offstore_developer_mode_metrics &&
+    // Record disabled non-webstore extensions based on developer mode status.
+    if (is_user_profile &&
         !extension_management->UpdatesFromWebstore(*disabled_extension) &&
-        !disabled_extension->from_webstore() &&
-        ShouldCollectDevModeDataForLocation(location)) {
-      base::UmaHistogramEnumeration(
-          "Extensions.NonWebstoreLocationWithDeveloperModeOff.Disabled",
-          location);
+        !disabled_extension->from_webstore()) {
+      if (dev_mode_enabled) {
+        base::UmaHistogramEnumeration(
+            "Extensions.NonWebstoreLocationWithDeveloperModeOn.Disabled",
+            location);
+      } else {
+        base::UmaHistogramEnumeration(
+            "Extensions.NonWebstoreLocationWithDeveloperModeOff.Disabled2",
+            location);
+      }
     }
 
     if (extension_service_->allowlist()->GetExtensionAllowlistState(

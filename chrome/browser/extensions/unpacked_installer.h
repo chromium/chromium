@@ -142,6 +142,10 @@ class UnpackedInstaller
   // file IO is allowed.
   bool IndexAndPersistRulesIfNeeded(std::string* error);
 
+  // Records command-line extension metrics organized by developer mode, emitted
+  // when a command line extension is loaded.
+  void RecordCommandLineDeveloperModeMetrics();
+
   const Extension* extension() { return extension_.get(); }
 
   // The service we will report results back to.
