@@ -16,8 +16,9 @@
 #include "chrome/browser/ash/input_method/editor_helpers.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
+#include "chrome/browser/ash/input_method/editor_text_query_from_manta.h"
+#include "chrome/browser/ash/input_method/editor_text_query_from_memory.h"
 #include "chrome/browser/ash/input_method/editor_text_query_provider.h"
-#include "chrome/browser/ash/input_method/editor_text_query_provider_for_testing.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -65,9 +66,10 @@ void EditorMediator::SetUpNewEditorService() {
     system_actuator_ = std::make_unique<EditorSystemActuator>(
         profile_, system_actuator_remote.InitWithNewEndpointAndPassReceiver(),
         this);
-    text_query_provider_ = std::make_unique<TextQueryProviderForOrca>(
+    text_query_provider_ = std::make_unique<EditorTextQueryProvider>(
         text_query_provider_remote.InitWithNewEndpointAndPassReceiver(),
-        profile_, metrics_recorder_.get());
+        metrics_recorder_.get(),
+        std::make_unique<EditorTextQueryFromManta>(profile_));
     editor_client_connector_ = std::make_unique<EditorClientConnector>(
         editor_client_connector_receiver.InitWithNewEndpointAndPassRemote());
     editor_event_proxy_ = std::make_unique<EditorEventProxy>(
@@ -269,13 +271,8 @@ void EditorMediator::Shutdown() {
 
 bool EditorMediator::SetTextQueryProviderResponseForTesting(
     const std::vector<std::string>& mock_results) {
-  auto pending_receiver = text_query_provider_->Unbind();
-
-  if (!pending_receiver.has_value()) {
-    return false;
-  }
-  text_query_provider_ = std::make_unique<TextQueryProviderForTesting>(
-      std::move(pending_receiver.value()), mock_results);  // IN-TEST
+  text_query_provider_->SetProvider(
+      std::make_unique<EditorTextQueryFromMemory>(mock_results));  // IN-TEST
   return true;
 }
 

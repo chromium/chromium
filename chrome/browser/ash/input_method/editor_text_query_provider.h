@@ -10,45 +10,43 @@
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
-#include "components/manta/orca_provider.h"
+#include "components/manta/manta_service_callbacks.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 
 namespace ash::input_method {
 
 class EditorTextQueryProvider : public orca::mojom::TextQueryProvider {
  public:
-  // orca::mojom::TextQueryProvider overrides
-  void Process(orca::mojom::TextQueryRequestPtr request,
-               ProcessCallback callback) override = 0;
+  class MantaProvider {
+   public:
+    virtual ~MantaProvider() = default;
 
-  virtual std::optional<
-      mojo::PendingAssociatedReceiver<orca::mojom::TextQueryProvider>>
-  Unbind() = 0;
-};
+    virtual void Call(const std::map<std::string, std::string> params,
+                      manta::MantaGenericCallback callback) = 0;
+  };
 
-class TextQueryProviderForOrca : public EditorTextQueryProvider {
- public:
-  TextQueryProviderForOrca(
+  EditorTextQueryProvider(
       mojo::PendingAssociatedReceiver<orca::mojom::TextQueryProvider> receiver,
-      Profile* profile,
-      EditorMetricsRecorder* metrics_recorder);
+      EditorMetricsRecorder* metrics_recorder,
+      std::unique_ptr<MantaProvider> manta_provider);
 
-  ~TextQueryProviderForOrca() override;
+  ~EditorTextQueryProvider() override;
 
-  // EditorTextQueryProvider overrides
+  // orca::mojom::TextQueryProvider overrides
   void Process(orca::mojom::TextQueryRequestPtr request,
                ProcessCallback callback) override;
 
-  std::optional<mojo::PendingAssociatedReceiver<orca::mojom::TextQueryProvider>>
-  Unbind() override;
+  // Override the provider used to generate responses.
+  void SetProvider(std::unique_ptr<MantaProvider> provider);
 
  private:
   mojo::AssociatedReceiver<orca::mojom::TextQueryProvider>
       text_query_provider_receiver_;
-  std::unique_ptr<manta::OrcaProvider> orca_provider_;
 
   // not owned by this class
   raw_ptr<EditorMetricsRecorder> metrics_recorder_;
+
+  std::unique_ptr<MantaProvider> manta_provider_;
 
   // Unsigned to allow safe overflows.
   unsigned int request_id_ = 0;
