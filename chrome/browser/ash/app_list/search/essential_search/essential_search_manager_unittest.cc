@@ -19,6 +19,8 @@
 #include "net/cookies/canonical_cookie.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::test {
@@ -42,6 +44,8 @@ class EssentialSearchManagerTest : public testing::Test {
 
   void CreateEssentialSearchManager();
   void DestroyEssentialSearchManager();
+
+  net::CookieList GetCookiesInUserProfile();
 
   void ExpectSocsCookieInUserProfile(const std::string& cookie_name,
                                      const std::string& cookie_value);
@@ -84,16 +88,19 @@ void EssentialSearchManagerTest::CreateEssentialSearchManager() {
       std::make_unique<app_list::EssentialSearchManager>(profile_);
 }
 
-void EssentialSearchManagerTest::ExpectSocsCookieInUserProfile(
-    const std::string& cookie_name,
-    const std::string& cookie_value) {
+net::CookieList EssentialSearchManagerTest::GetCookiesInUserProfile() {
   base::test::TestFuture<const net::CookieList&> future;
-
   profile_->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess()
       ->GetAllCookies(future.GetCallback());
 
-  net::CookieList cookie_list = future.Take();
+  return future.Take();
+}
+
+void EssentialSearchManagerTest::ExpectSocsCookieInUserProfile(
+    const std::string& cookie_name,
+    const std::string& cookie_value) {
+  net::CookieList cookie_list = GetCookiesInUserProfile();
   EXPECT_GT(cookie_list.size(), 0u);
 
   const auto socs_cookie_iterator = base::ranges::find(
@@ -123,6 +130,72 @@ TEST_F(EssentialSearchManagerTest, OnCookieFetchedSucceed) {
   run_loop.Run();
 
   ExpectSocsCookieInUserProfile(kCookieName, kCookieValue);
+}
+
+TEST_F(EssentialSearchManagerTest, PolicyDisabledWhileUserInSession) {
+  identity_test_env_->MakePrimaryAccountAvailable(kEmail,
+                                                  signin::ConsentLevel::kSync);
+  // Enable EssentialSearchEnabled policy
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kEssentialSearchEnabled, base::Value(true));
+
+  CreateEssentialSearchManager();
+
+  // Set run loops.
+  base::RunLoop insertion_loop, deletion_loop;
+  essential_search_manager_->set_cookie_insertion_closure_for_test(
+      insertion_loop.QuitClosure());
+  essential_search_manager_->set_cookie_deletion_closure_for_test(
+      deletion_loop.QuitClosure());
+
+  // Add SOCS cookie to the user profile
+  std::string cookie_header =
+      base::StringPrintf(kValidCookieHeader, kCookieName, kCookieValue);
+  essential_search_manager_->OnCookieFetched(cookie_header);
+  insertion_loop.Run();
+
+  ExpectSocsCookieInUserProfile(kCookieName, kCookieValue);
+
+  // Disable EssentialSearchEnabled policy
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kEssentialSearchEnabled, base::Value(false));
+
+  // Wait for cookie deletion.
+  deletion_loop.Run();
+
+  // Expect SOCS cookie being removed from user profile.
+  net::CookieList cookie_list = GetCookiesInUserProfile();
+  EXPECT_THAT(cookie_list, testing::IsEmpty());
+}
+
+TEST_F(EssentialSearchManagerTest, PolicyDisabledWhileFetchingCookie) {
+  identity_test_env_->MakePrimaryAccountAvailable(kEmail,
+                                                  signin::ConsentLevel::kSync);
+  // Simulate policy being disabled while fetching the cookie.
+  profile_->GetTestingPrefService()->SetManagedPref(
+      prefs::kEssentialSearchEnabled, base::Value(false));
+
+  CreateEssentialSearchManager();
+
+  // Set run loops.
+  base::RunLoop insertion_loop, deletion_loop;
+  essential_search_manager_->set_cookie_insertion_closure_for_test(
+      insertion_loop.QuitClosure());
+  essential_search_manager_->set_cookie_deletion_closure_for_test(
+      deletion_loop.QuitClosure());
+
+  // Add SOCS cookie to the user profile.
+  std::string cookie_header =
+      base::StringPrintf(kValidCookieHeader, kCookieName, kCookieValue);
+  essential_search_manager_->OnCookieFetched(cookie_header);
+  insertion_loop.Run();
+
+  // Wait for cookie deletion.
+  deletion_loop.Run();
+
+  // Expect SOCS cookie being removed from user profile.
+  net::CookieList cookie_list = GetCookiesInUserProfile();
+  EXPECT_EQ(cookie_list.size(), 0u);
 }
 
 }  // namespace ash::test

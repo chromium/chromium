@@ -64,6 +64,12 @@ class EssentialSearchManager : public ash::SessionObserver,
         std::move(cookie_insertion_closure_for_test);
   }
 
+  void set_cookie_deletion_closure_for_test(
+      base::OnceClosure cookie_deletion_closure_for_test) {
+    cookie_deletion_closure_for_test_ =
+        std::move(cookie_deletion_closure_for_test);
+  }
+
  private:
   void MaybeFetchSocsCookie();
 
@@ -97,6 +103,10 @@ class EssentialSearchManager : public ash::SessionObserver,
 
   // Used to notify the test that the cookie was inserted in the user's profile.
   base::OnceClosure cookie_insertion_closure_for_test_;
+
+  // Used to notify the test that the cookie was deleted from the user's
+  // profile.
+  base::OnceClosure cookie_deletion_closure_for_test_;
 
   const raw_ptr<Profile> primary_profile_;
 
