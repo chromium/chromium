@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab_group_sync;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.url.GURL;
@@ -26,7 +27,7 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     public void removeObserver(Observer observer) {}
 
     @Override
-    public String createGroup(int groupId) {
+    public String createGroup(LocalTabGroupId groupId) {
         SavedTabGroup savedTabGroup = new SavedTabGroup();
         savedTabGroup.syncId = SYNC_ID_1;
         savedTabGroup.localId = groupId;
@@ -35,19 +36,21 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     }
 
     @Override
-    public void removeGroup(int groupId) {}
+    public void removeGroup(LocalTabGroupId groupId) {}
 
     @Override
-    public void updateVisualData(int tabGroupId, @NonNull String title, int color) {}
+    public void updateVisualData(LocalTabGroupId tabGroupId, @NonNull String title, int color) {}
 
     @Override
-    public void addTab(int tabGroupId, int tabId, String title, GURL url, int position) {}
+    public void addTab(
+            LocalTabGroupId tabGroupId, int tabId, String title, GURL url, int position) {}
 
     @Override
-    public void updateTab(int tabGroupId, int tabId, String title, GURL url, int position) {}
+    public void updateTab(
+            LocalTabGroupId tabGroupId, int tabId, String title, GURL url, int position) {}
 
     @Override
-    public void removeTab(int tabGroupId, int tabId) {}
+    public void removeTab(LocalTabGroupId tabGroupId, int tabId) {}
 
     @Override
     public String[] getAllGroupIds() {
@@ -60,16 +63,16 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     }
 
     @Override
-    public SavedTabGroup getGroup(int localGroupId) {
+    public SavedTabGroup getGroup(LocalTabGroupId localGroupId) {
         return mTabGroups.isEmpty() ? null : mTabGroups.get(0);
     }
 
     @Override
-    public void updateLocalTabGroupMapping(String syncId, int localId) {}
+    public void updateLocalTabGroupMapping(String syncId, LocalTabGroupId localId) {}
 
     @Override
-    public void removeLocalTabGroupMapping(int localId) {}
+    public void removeLocalTabGroupMapping(LocalTabGroupId localId) {}
 
     @Override
-    public void updateLocalTabId(int localGroupId, String syncTabId, int localTabId) {}
+    public void updateLocalTabId(LocalTabGroupId localGroupId, String syncTabId, int localTabId) {}
 }

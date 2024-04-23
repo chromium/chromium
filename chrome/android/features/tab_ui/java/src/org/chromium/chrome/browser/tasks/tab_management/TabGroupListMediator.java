@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.bookmarks.PendingRunnable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.AsyncDrawable;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -74,7 +75,7 @@ public class TabGroupListMediator {
                 }
 
                 @Override
-                public void onTabGroupRemoved(int localId) {
+                public void onTabGroupRemoved(LocalTabGroupId localId) {
                     mPendingRefresh.post();
                 }
 

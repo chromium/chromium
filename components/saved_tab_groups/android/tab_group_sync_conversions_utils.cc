@@ -21,18 +21,9 @@ namespace tab_groups {
 namespace {
 
 // Invalid IDs are represented as -1 in the JNI bridge.
-int kInvalidTabGroupId = -1;
 int kInvalidTabId = -1;
 
 }  // namespace
-
-LocalTabGroupID FromJavaTabGroupId(int group_id) {
-  return group_id;
-}
-
-jint ToJavaTabGroupId(const std::optional<LocalTabGroupID>& group_id) {
-  return group_id.value_or(kInvalidTabGroupId);
-}
 
 LocalTabID FromJavaTabId(int tab_id) {
   return tab_id;

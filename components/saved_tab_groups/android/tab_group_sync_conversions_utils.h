@@ -17,14 +17,6 @@ using base::android::ScopedJavaLocalRef;
 
 namespace tab_groups {
 
-// Converts a Java local tab group ID (root ID) to its
-// native representation.
-LocalTabGroupID FromJavaTabGroupId(int group_id);
-
-// Converts a local tab group ID in native to Java. If the tab group ID isn't
-// present, -1 will be returned.
-jint ToJavaTabGroupId(const std::optional<LocalTabGroupID>& group_id);
-
 // Converts a Java local tab ID to its native representation.
 LocalTabID FromJavaTabId(int tab_id);
 

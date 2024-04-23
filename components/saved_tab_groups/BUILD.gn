@@ -69,6 +69,7 @@ source_set("model") {
 if (is_android) {
   android_library("java") {
     sources = [
+      "android/java/src/org/chromium/components/tab_group_sync/LocalTabGroupId.java",
       "android/java/src/org/chromium/components/tab_group_sync/SavedTabGroup.java",
       "android/java/src/org/chromium/components/tab_group_sync/SavedTabGroupTab.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncConversionsBridge.java",

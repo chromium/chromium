@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController.TabCreationDelegate;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.url.GURL;
@@ -86,8 +87,8 @@ public class TabGroupSyncRemoteObserverUnitTest {
                 .mergeListOfTabsToGroup(anyList(), any(), anyBoolean(), anyBoolean());
         verify(mTabGroupModelFilter).setTabGroupColor(anyInt(), anyInt());
         verify(mTabGroupModelFilter).setTabGroupTitle(anyInt(), any());
-        verify(mTabGroupSyncService).updateLocalTabGroupMapping(any(), anyInt());
-        verify(mTabGroupSyncService, times(2)).updateLocalTabId(anyInt(), any(), anyInt());
+        verify(mTabGroupSyncService).updateLocalTabGroupMapping(any(), any());
+        verify(mTabGroupSyncService, times(2)).updateLocalTabId(any(), any(), anyInt());
     }
 
     @Test
@@ -99,7 +100,7 @@ public class TabGroupSyncRemoteObserverUnitTest {
         tabs.add(mTabModel.getTabAt(0));
         when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(rootId))).thenReturn(tabs);
         savedTabGroup.title = "Updated group";
-        savedTabGroup.localId = rootId;
+        savedTabGroup.localId = new LocalTabGroupId(rootId);
         mRemoteObserver.onTabGroupUpdated(savedTabGroup);
         verify(mTabGroupModelFilter).setTabGroupTitle(eq(rootId), eq(savedTabGroup.title));
         verify(mTabGroupModelFilter).setTabGroupColor(anyInt(), anyInt());
@@ -113,13 +114,14 @@ public class TabGroupSyncRemoteObserverUnitTest {
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTabModel.getTabAt(0));
 
-        savedTabGroup.localId = rootId;
+        savedTabGroup.localId = new LocalTabGroupId(rootId);
         when(mTabGroupModelFilter.getRelatedTabListForRootId(eq(rootId))).thenReturn(tabs);
         mRemoteObserver.onTabGroupUpdated(savedTabGroup);
         verify(mTabGroupModelFilter).setTabGroupTitle(eq(rootId), eq(savedTabGroup.title));
         verify(mTabGroupModelFilter).setTabGroupColor(anyInt(), anyInt());
         verify(mTabGroupModelFilter, times(2)).mergeTabsToGroup(anyInt(), eq(rootId));
-        verify(mTabGroupSyncService, times(2)).updateLocalTabId(eq(rootId), any(), anyInt());
+        verify(mTabGroupSyncService, times(2))
+                .updateLocalTabId(eq(new LocalTabGroupId(rootId)), any(), anyInt());
         verify(mTabModel).closeMultipleTabs(anyList(), eq(false));
     }
 
@@ -127,7 +129,7 @@ public class TabGroupSyncRemoteObserverUnitTest {
     public void testTabGroupRemoved() {
         int rootId = 1;
         mTabModel.addTab(1);
-        mRemoteObserver.onTabGroupRemoved(rootId);
+        mRemoteObserver.onTabGroupRemoved(new LocalTabGroupId(rootId));
         verify(mTabModel).closeMultipleTabs(anyList(), anyBoolean());
     }
 

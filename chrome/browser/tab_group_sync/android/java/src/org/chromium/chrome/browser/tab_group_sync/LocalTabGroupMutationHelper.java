@@ -9,6 +9,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController.TabCrea
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -74,9 +75,11 @@ public final class LocalTabGroupMutationHelper {
                 tabs, tabs.get(0), /* isSameGroup= */ true, /* notify= */ false);
 
         // Notify sync backend about IDs of the newly created group and tabs.
-        mTabGroupSyncService.updateLocalTabGroupMapping(tabGroup.syncId, groupId);
+        mTabGroupSyncService.updateLocalTabGroupMapping(
+                tabGroup.syncId, new LocalTabGroupId(groupId));
         for (String syncTabId : tabIdMappings.keySet()) {
-            mTabGroupSyncService.updateLocalTabId(groupId, syncTabId, tabIdMappings.get(syncTabId));
+            mTabGroupSyncService.updateLocalTabId(
+                    new LocalTabGroupId(groupId), syncTabId, tabIdMappings.get(syncTabId));
         }
 
         // Update shared prefs about tab group mapping.
@@ -94,7 +97,7 @@ public final class LocalTabGroupMutationHelper {
         // First close any extra tabs that aren't in sync.
         closeLocalTabsNotInSync(tabGroup);
 
-        List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(tabGroup.localId);
+        List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(tabGroup.localId.rootId);
         if (tabs.isEmpty()) {
             return;
         }
@@ -118,7 +121,7 @@ public final class LocalTabGroupMutationHelper {
 
                 mTabGroupModelFilter.mergeTabsToGroup(
                         /* sourceTabId= */ localTab.getId(),
-                        /* destinationTabId= */ tabGroup.localId);
+                        /* destinationTabId= */ tabGroup.localId.rootId);
                 mTabGroupSyncService.updateLocalTabId(
                         tabGroup.localId, savedTab.syncId, localTab.getId());
             }
@@ -127,7 +130,7 @@ public final class LocalTabGroupMutationHelper {
             getTabModel().moveTab(localTab.getId(), desiredTabIndex);
         }
 
-        updateTabGroupVisuals(tabGroup, tabGroup.localId);
+        updateTabGroupVisuals(tabGroup, tabGroup.localId.rootId);
     }
 
     private void closeLocalTabsNotInSync(SavedTabGroup savedTabGroup) {
@@ -144,7 +147,7 @@ public final class LocalTabGroupMutationHelper {
 
         List<Tab> tabsNotInSync = new ArrayList<>();
         for (Tab localTab :
-                mTabGroupModelFilter.getRelatedTabListForRootId(savedTabGroup.localId)) {
+                mTabGroupModelFilter.getRelatedTabListForRootId(savedTabGroup.localId.rootId)) {
             if (!savedTabIds.contains(localTab.getId())) {
                 tabsNotInSync.add(localTab);
             }

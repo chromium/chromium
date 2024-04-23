@@ -87,8 +87,10 @@ void TabGroupSyncServiceAndroid::OnTabGroupUpdated(const SavedTabGroup& group,
 void TabGroupSyncServiceAndroid::OnTabGroupRemoved(
     const LocalTabGroupID& local_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_TabGroupSyncServiceImpl_onTabGroupRemovedWithLocalId(
-      env, java_obj_, ToJavaTabGroupId(local_id));
+  auto j_group_id =
+      TabGroupSyncConversionsBridge::ToJavaTabGroupId(env, local_id);
+  Java_TabGroupSyncServiceImpl_onTabGroupRemovedWithLocalId(env, java_obj_,
+                                                            j_group_id);
 }
 
 void TabGroupSyncServiceAndroid::OnTabGroupRemoved(const base::Uuid& sync_id) {
@@ -100,8 +102,9 @@ void TabGroupSyncServiceAndroid::OnTabGroupRemoved(const base::Uuid& sync_id) {
 ScopedJavaLocalRef<jstring> TabGroupSyncServiceAndroid::CreateGroup(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_caller,
-    jint j_group_id) {
-  auto group_id = FromJavaTabGroupId(j_group_id);
+    const JavaParamRef<jobject>& j_group_id) {
+  auto group_id =
+      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
 
   SavedTabGroup group(std::u16string(), tab_groups::TabGroupColorId::kGrey,
                       std::vector<SavedTabGroupTab>(), std::nullopt,
@@ -113,18 +116,20 @@ ScopedJavaLocalRef<jstring> TabGroupSyncServiceAndroid::CreateGroup(
 void TabGroupSyncServiceAndroid::RemoveGroup(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_caller,
-    jint j_group_id) {
-  auto group_id = FromJavaTabGroupId(j_group_id);
+    const JavaParamRef<jobject>& j_group_id) {
+  auto group_id =
+      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
   tab_group_sync_service_->RemoveGroup(group_id);
 }
 
 void TabGroupSyncServiceAndroid::UpdateVisualData(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_caller,
-    jint j_group_id,
+    const JavaParamRef<jobject>& j_group_id,
     const JavaParamRef<jstring>& j_title,
     jint j_color) {
-  auto group_id = FromJavaTabGroupId(j_group_id);
+  auto group_id =
+      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
   auto title = ConvertJavaStringToUTF16(env, j_title);
   auto color = static_cast<tab_groups::TabGroupColorId>(j_color);
   TabGroupVisualData visual_data(title, color, /*is_collapsed=*/false);
@@ -133,12 +138,13 @@ void TabGroupSyncServiceAndroid::UpdateVisualData(
 
 void TabGroupSyncServiceAndroid::AddTab(JNIEnv* env,
                                         const JavaParamRef<jobject>& j_caller,
-                                        jint j_group_id,
+                                        const JavaParamRef<jobject>& j_group_id,
                                         jint j_tab_id,
                                         const JavaParamRef<jstring>& j_title,
                                         const JavaParamRef<jobject>& j_url,
                                         jint j_position) {
-  auto group_id = FromJavaTabGroupId(j_group_id);
+  auto group_id =
+      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
   auto tab_id = FromJavaTabId(j_tab_id);
   auto title = ConvertJavaStringToUTF16(env, j_title);
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
@@ -150,12 +156,13 @@ void TabGroupSyncServiceAndroid::AddTab(JNIEnv* env,
 void TabGroupSyncServiceAndroid::UpdateTab(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_caller,
-    jint j_group_id,
+    const JavaParamRef<jobject>& j_group_id,
     jint j_tab_id,
     const JavaParamRef<jstring>& j_title,
     const JavaParamRef<jobject>& j_url,
     jint j_position) {
-  auto group_id = FromJavaTabGroupId(j_group_id);
+  auto group_id =
+      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
   auto tab_id = FromJavaTabId(j_tab_id);
   auto title = ConvertJavaStringToUTF16(env, j_title);
   GURL url = url::GURLAndroid::ToNativeGURL(env, j_url);
@@ -167,9 +174,10 @@ void TabGroupSyncServiceAndroid::UpdateTab(
 void TabGroupSyncServiceAndroid::RemoveTab(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_caller,
-    jint j_group_id,
+    const JavaParamRef<jobject>& j_group_id,
     jint j_tab_id) {
-  auto group_id = FromJavaTabGroupId(j_group_id);
+  auto group_id =
+      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
   auto tab_id = FromJavaTabId(j_tab_id);
   tab_group_sync_service_->RemoveTab(group_id, tab_id);
 }
@@ -204,8 +212,9 @@ ScopedJavaLocalRef<jobject> TabGroupSyncServiceAndroid::GetGroupBySyncGroupId(
 ScopedJavaLocalRef<jobject> TabGroupSyncServiceAndroid::GetGroupByLocalGroupId(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_caller,
-    jint j_local_group_id) {
-  auto local_group_id = FromJavaTabGroupId(j_local_group_id);
+    const JavaParamRef<jobject>& j_local_group_id) {
+  auto local_group_id =
+      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_local_group_id);
   std::optional<SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(local_group_id);
   if (!group.has_value()) {
@@ -218,27 +227,30 @@ void TabGroupSyncServiceAndroid::UpdateLocalTabGroupMapping(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_caller,
     const JavaParamRef<jstring>& j_sync_id,
-    jint j_local_id) {
+    const JavaParamRef<jobject>& j_local_id) {
   auto sync_id = JavaStringToUuid(env, j_sync_id);
-  auto local_id = FromJavaTabGroupId(j_local_id);
+  auto local_id =
+      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_local_id);
   tab_group_sync_service_->UpdateLocalTabGroupMapping(sync_id, local_id);
 }
 
 void TabGroupSyncServiceAndroid::RemoveLocalTabGroupMapping(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_caller,
-    jint j_local_id) {
-  auto local_id = FromJavaTabGroupId(j_local_id);
+    const JavaParamRef<jobject>& j_local_id) {
+  auto local_id =
+      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_local_id);
   tab_group_sync_service_->RemoveLocalTabGroupMapping(local_id);
 }
 
 void TabGroupSyncServiceAndroid::UpdateLocalTabId(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_caller,
-    jint j_group_id,
+    const JavaParamRef<jobject>& j_group_id,
     const JavaParamRef<jstring>& j_sync_tab_id,
     jint j_local_tab_id) {
-  auto local_group_id = FromJavaTabGroupId(j_group_id);
+  auto local_group_id =
+      TabGroupSyncConversionsBridge::FromJavaTabGroupId(env, j_group_id);
   auto sync_tab_id = JavaStringToUuid(env, j_sync_tab_id);
   auto local_tab_id = FromJavaTabId(j_local_tab_id);
   tab_group_sync_service_->UpdateLocalTabId(local_group_id, sync_tab_id,

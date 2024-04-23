@@ -50,7 +50,8 @@ ScopedJavaLocalRef<jobject> JNI_TabGroupSyncConversionsBridge_createGroup(
     JNIEnv* env,
     const SavedTabGroup& group) {
   auto j_sync_id = UuidToJavaString(env, group.saved_guid());
-  auto j_local_id = ToJavaTabGroupId(group.local_group_id());
+  auto j_local_id = TabGroupSyncConversionsBridge::ToJavaTabGroupId(
+      env, group.local_group_id());
   return Java_TabGroupSyncConversionsBridge_createGroup(
       env, j_sync_id, j_local_id, ConvertUTF16ToJavaString(env, group.title()),
       static_cast<int32_t>(group.color()),
@@ -71,6 +72,24 @@ ScopedJavaLocalRef<jobject> TabGroupSyncConversionsBridge::CreateGroup(
   }
 
   return j_tab_group;
+}
+
+// static
+LocalTabGroupID TabGroupSyncConversionsBridge::FromJavaTabGroupId(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_group_id) {
+  return Java_TabGroupSyncConversionsBridge_getNativeTabGroupId(env,
+                                                                j_group_id);
+}
+
+// static
+ScopedJavaLocalRef<jobject> TabGroupSyncConversionsBridge::ToJavaTabGroupId(
+    JNIEnv* env,
+    const std::optional<LocalTabGroupID>& group_id) {
+  return group_id.has_value()
+             ? Java_TabGroupSyncConversionsBridge_createJavaTabGroupId(
+                   env, group_id.value())
+             : ScopedJavaLocalRef<jobject>();
 }
 
 }  // namespace tab_groups

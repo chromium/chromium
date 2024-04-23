@@ -19,14 +19,14 @@ public class TabGroupSyncConversionsBridge {
     @CalledByNative
     private static SavedTabGroup createGroup(
             String syncId,
-            int localId,
+            LocalTabGroupId localId,
             String title,
             int color,
             long creationTimeMs,
             long updateTimeMs) {
         SavedTabGroup group = new SavedTabGroup();
         group.syncId = syncId;
-        group.localId = localId == -1 ? null : localId;
+        group.localId = localId;
         group.title = title;
         group.color = color;
         assert group.color != -1;
@@ -59,5 +59,17 @@ public class TabGroupSyncConversionsBridge {
             group.savedTabs.add(tab);
         }
         return tab;
+    }
+
+    @CalledByNative
+    private static LocalTabGroupId createJavaTabGroupId(int groupId) {
+        assert groupId != -1;
+        return new LocalTabGroupId(groupId);
+    }
+
+    @CalledByNative
+    private static int getNativeTabGroupId(LocalTabGroupId tabGroupId) {
+        assert tabGroupId != null;
+        return tabGroupId.rootId;
     }
 }

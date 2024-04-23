@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab_group_sync;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -44,7 +45,7 @@ public class RemoteTabGroupMutationHelper {
      */
     public void createRemoteTabGroup(int groupId) {
         // Create an empty group and set visuals.
-        String syncId = mTabGroupSyncService.createGroup(groupId);
+        String syncId = mTabGroupSyncService.createGroup(new LocalTabGroupId(groupId));
         updateVisualData(groupId);
 
         // Add tabs to the group.
@@ -70,7 +71,7 @@ public class RemoteTabGroupMutationHelper {
         int color = mTabGroupModelFilter.getTabGroupColor(groupId);
         if (color == TabGroupColorUtils.INVALID_COLOR_ID) color = TabGroupColorId.GREY;
 
-        mTabGroupSyncService.updateVisualData(groupId, title, color);
+        mTabGroupSyncService.updateVisualData(new LocalTabGroupId(groupId), title, color);
     }
 
     /**
@@ -79,7 +80,7 @@ public class RemoteTabGroupMutationHelper {
      * @param groupId The local tab group ID.
      */
     public void removeGroup(int groupId) {
-        mTabGroupSyncService.removeGroup(groupId);
+        mTabGroupSyncService.removeGroup(new LocalTabGroupId(groupId));
     }
 
     /**
@@ -90,23 +91,31 @@ public class RemoteTabGroupMutationHelper {
      */
     public void onLocalGroupIdChanged(int oldGroupId, int newGroupId) {
         unmapTabGroupId(oldGroupId);
-        SavedTabGroup group = mTabGroupSyncService.getGroup(oldGroupId);
+        SavedTabGroup group = mTabGroupSyncService.getGroup(new LocalTabGroupId(oldGroupId));
         if (group == null) return;
         mapTabGroupId(newGroupId, group.syncId);
     }
 
     public void addTab(int tabGroupId, Tab tab, int position) {
         mTabGroupSyncService.addTab(
-                tabGroupId, tab.getId(), tab.getTitle(), tab.getUrl(), position);
+                new LocalTabGroupId(tabGroupId),
+                tab.getId(),
+                tab.getTitle(),
+                tab.getUrl(),
+                position);
     }
 
     public void updateTab(int tabGroupId, Tab tab, int position) {
         mTabGroupSyncService.updateTab(
-                tabGroupId, tab.getId(), tab.getTitle(), tab.getUrl(), position);
+                new LocalTabGroupId(tabGroupId),
+                tab.getId(),
+                tab.getTitle(),
+                tab.getUrl(),
+                position);
     }
 
     public void removeTab(int tabGroupId, int tabId) {
-        mTabGroupSyncService.removeTab(tabGroupId, tabId);
+        mTabGroupSyncService.removeTab(new LocalTabGroupId(tabGroupId), tabId);
     }
 
     /**
@@ -120,27 +129,29 @@ public class RemoteTabGroupMutationHelper {
     public void updateIdMappingForGroupOnStartup(
             String syncGroupId, int localGroupId, boolean updateTabIds) {
         // Update tab group ID mapping.
-        mTabGroupSyncService.updateLocalTabGroupMapping(syncGroupId, localGroupId);
+        mTabGroupSyncService.updateLocalTabGroupMapping(
+                syncGroupId, new LocalTabGroupId(localGroupId));
         if (!updateTabIds) return;
 
         // Update tab ID mapping for tabs in the group.
-        SavedTabGroup group = mTabGroupSyncService.getGroup(localGroupId);
+        SavedTabGroup group = mTabGroupSyncService.getGroup(new LocalTabGroupId(localGroupId));
         List<Integer> tabIds = mTabGroupModelFilter.getRelatedTabIds(localGroupId);
         for (int i = 0; i < group.savedTabs.size() && i < tabIds.size(); i++) {
             SavedTabGroupTab savedTab = group.savedTabs.get(i);
-            mTabGroupSyncService.updateLocalTabId(localGroupId, savedTab.syncId, tabIds.get(i));
+            mTabGroupSyncService.updateLocalTabId(
+                    new LocalTabGroupId(localGroupId), savedTab.syncId, tabIds.get(i));
         }
     }
 
     /** Adds mapping for a tab group ID to the service and persistence. */
     public void mapTabGroupId(int groupId, String syncId) {
-        mTabGroupSyncService.updateLocalTabGroupMapping(syncId, groupId);
+        mTabGroupSyncService.updateLocalTabGroupMapping(syncId, new LocalTabGroupId(groupId));
         mTabGroupModelFilter.setTabGroupSyncId(groupId, syncId);
     }
 
     /** Removes mapping for a tab group ID from service and persistence. */
     public void unmapTabGroupId(int groupId) {
-        mTabGroupSyncService.removeLocalTabGroupMapping(groupId);
+        mTabGroupSyncService.removeLocalTabGroupMapping(new LocalTabGroupId(groupId));
         mTabGroupModelFilter.setTabGroupSyncId(groupId, null);
     }
 
@@ -168,7 +179,7 @@ public class RemoteTabGroupMutationHelper {
         // from sync.
         Set<Tab> tabsToRemove = findTabsNotInCompleteGroups(tabsInGroups, groupsClosing);
         for (Tab tab : tabsToRemove) {
-            mTabGroupSyncService.removeTab(tab.getRootId(), tab.getId());
+            mTabGroupSyncService.removeTab(new LocalTabGroupId(tab.getRootId()), tab.getId());
         }
     }
 

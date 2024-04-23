@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab_group_sync;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.PageTransition;
@@ -69,6 +70,10 @@ public class NavigationObserver extends TabModelSelectorTabObserver {
         // ignored in native.
         int rootId = tab.getRootId();
         mTabGroupSyncService.updateTab(
-                rootId, tab.getId(), tab.getTitle(), tab.getUrl(), /* position= */ -1);
+                new LocalTabGroupId(rootId),
+                tab.getId(),
+                tab.getTitle(),
+                tab.getUrl(),
+                /* position= */ -1);
     }
 }

@@ -9,6 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 
+using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace tab_groups {
@@ -21,6 +22,17 @@ class TabGroupSyncConversionsBridge {
   static base::android::ScopedJavaLocalRef<jobject> CreateGroup(
       JNIEnv* env,
       const SavedTabGroup& group);
+
+  // Converts a Java local tab group ID to its native representation.
+  static LocalTabGroupID FromJavaTabGroupId(
+      JNIEnv* env,
+      const JavaParamRef<jobject>& j_group_id);
+
+  // Converts a local tab group ID in native to Java. If the tab group ID isn't
+  // present, null will be returned.
+  static ScopedJavaLocalRef<jobject> ToJavaTabGroupId(
+      JNIEnv* env,
+      const std::optional<LocalTabGroupID>& group_id);
 
  private:
   TabGroupSyncConversionsBridge() = default;

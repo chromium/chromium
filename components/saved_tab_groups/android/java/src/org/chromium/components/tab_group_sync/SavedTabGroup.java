@@ -22,12 +22,10 @@ public class SavedTabGroup {
     public String syncId;
 
     /**
-     * The ID representing the tab group locally in the tab model. Currently, it's the root ID as
-     * returned by {@link Tab#getRootId()}. In near future, it will be replaced by {@link
-     * Tab#getTabGroupId()} instead. This field can be null if the {@link SavedTabGroup} represents
-     * a tab group that isn't present local tab model yet.
+     * The ID representing the tab group locally in the tab model. This field can be null if the
+     * {@link SavedTabGroup} represents a tab group that isn't present local tab model yet.
      */
-    public @Nullable Integer localId;
+    public @Nullable LocalTabGroupId localId;
 
     /** The title of the tab group. */
     public @Nullable String title;

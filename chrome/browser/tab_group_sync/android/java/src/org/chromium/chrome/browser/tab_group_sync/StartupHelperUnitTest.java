@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -29,6 +30,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.url.GURL;
@@ -86,10 +88,11 @@ public class StartupHelperUnitTest {
         tabIds.add(mTab1.getId());
         when(mTabGroupModelFilter.getRelatedTabIds(1)).thenReturn(tabIds);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {syncId});
-        when(mTabGroupSyncService.getGroup(anyInt())).thenReturn(savedTabGroup);
+        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(1))).thenReturn(savedTabGroup);
         mStartupHelper.initializeTabGroupSync();
-        verify(mTabGroupSyncService).updateLocalTabGroupMapping(eq(syncId), eq(1));
-        verify(mTabGroupSyncService).updateLocalTabId(anyInt(), anyString(), anyInt());
+        verify(mTabGroupSyncService)
+                .updateLocalTabGroupMapping(eq(syncId), eq(new LocalTabGroupId(1)));
+        verify(mTabGroupSyncService).updateLocalTabId(any(), anyString(), anyInt());
     }
 
     @Test
@@ -102,7 +105,7 @@ public class StartupHelperUnitTest {
 
         // Initialize. It should add the group to sync and add ID mapping to prefs.
         mStartupHelper.initializeTabGroupSync();
-        verify(mTabGroupSyncService).createGroup(1);
+        verify(mTabGroupSyncService).createGroup(new LocalTabGroupId(1));
         verify(mTabGroupModelFilter)
                 .setTabGroupSyncId(eq(1), eq(TestTabGroupSyncService.SYNC_ID_1));
     }

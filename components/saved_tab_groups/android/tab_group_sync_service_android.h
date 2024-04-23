@@ -38,24 +38,25 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
 
   // Mutation methods (Java -> native).
   // Mutator methods that result in group metadata mutation.
-  ScopedJavaLocalRef<jstring> CreateGroup(JNIEnv* env,
-                                          const JavaParamRef<jobject>& j_caller,
-                                          jint j_group_id);
+  ScopedJavaLocalRef<jstring> CreateGroup(
+      JNIEnv* env,
+      const JavaParamRef<jobject>& j_caller,
+      const JavaParamRef<jobject>& j_group_id);
 
   void RemoveGroup(JNIEnv* env,
                    const JavaParamRef<jobject>& j_caller,
-                   jint j_group_id);
+                   const JavaParamRef<jobject>& j_group_id);
 
   void UpdateVisualData(JNIEnv* env,
                         const JavaParamRef<jobject>& j_caller,
-                        jint j_group_id,
+                        const JavaParamRef<jobject>& j_group_id,
                         const JavaParamRef<jstring>& j_title,
                         jint j_color);
 
   // Mutator methods that result in tab metadata mutation.
   void AddTab(JNIEnv* env,
               const JavaParamRef<jobject>& j_caller,
-              jint j_group_id,
+              const JavaParamRef<jobject>& j_group_id,
               jint j_tab_id,
               const JavaParamRef<jstring>& j_title,
               const JavaParamRef<jobject>& j_url,
@@ -63,7 +64,7 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
 
   void UpdateTab(JNIEnv* env,
                  const JavaParamRef<jobject>& j_caller,
-                 jint j_group_id,
+                 const JavaParamRef<jobject>& j_group_id,
                  jint j_tab_id,
                  const JavaParamRef<jstring>& j_title,
                  const JavaParamRef<jobject>& j_url,
@@ -71,7 +72,7 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
 
   void RemoveTab(JNIEnv* env,
                  const JavaParamRef<jobject>& j_caller,
-                 jint j_group_id,
+                 const JavaParamRef<jobject>& j_group_id,
                  jint j_tab_id);
 
   // Accessor methods.
@@ -87,19 +88,19 @@ class TabGroupSyncServiceAndroid : public base::SupportsUserData::Data,
   ScopedJavaLocalRef<jobject> GetGroupByLocalGroupId(
       JNIEnv* env,
       const JavaParamRef<jobject>& j_caller,
-      jint j_group_id);
+      const JavaParamRef<jobject>& j_group_id);
 
   // Book-keeping methods to maintain in-memory mapping of sync and local IDs.
   void UpdateLocalTabGroupMapping(JNIEnv* env,
                                   const JavaParamRef<jobject>& j_caller,
                                   const JavaParamRef<jstring>& j_sync_id,
-                                  jint j_local_id);
+                                  const JavaParamRef<jobject>& j_local_id);
   void RemoveLocalTabGroupMapping(JNIEnv* env,
                                   const JavaParamRef<jobject>& j_caller,
-                                  jint j_local_id);
+                                  const JavaParamRef<jobject>& j_local_id);
   void UpdateLocalTabId(JNIEnv* env,
                         const JavaParamRef<jobject>& j_caller,
-                        jint j_group_id,
+                        const JavaParamRef<jobject>& j_group_id,
                         const JavaParamRef<jstring>& j_sync_tab_id,
                         jint j_local_tab_id);
 

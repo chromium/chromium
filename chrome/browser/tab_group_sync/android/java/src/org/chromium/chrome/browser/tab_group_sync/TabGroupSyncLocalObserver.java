@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.List;
@@ -174,7 +175,7 @@ public final class TabGroupSyncLocalObserver {
     }
 
     private boolean groupExistsInSync(int rootId) {
-        return mTabGroupSyncService.getGroup(rootId) != null;
+        return mTabGroupSyncService.getGroup(new LocalTabGroupId(rootId)) != null;
     }
 
     private TabModel getTabModel() {

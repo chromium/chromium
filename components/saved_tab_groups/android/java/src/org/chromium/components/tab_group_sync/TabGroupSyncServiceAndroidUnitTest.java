@@ -103,41 +103,42 @@ public class TabGroupSyncServiceAndroidUnitTest {
 
     @CalledByNative
     public void testOnTabGroupRemoved() {
-        verify(mObserver).onTabGroupRemoved(eq(4));
+        verify(mObserver).onTabGroupRemoved(eq(new LocalTabGroupId(4)));
         verify(mObserver).onTabGroupRemoved(anyString());
     }
 
     @CalledByNative
     public void testCreateGroup() {
-        String uuid = mService.createGroup(4);
+        String uuid = mService.createGroup(new LocalTabGroupId(4));
         Assert.assertFalse(TextUtils.isEmpty(uuid));
     }
 
     @CalledByNative
     public void testRemoveGroup() {
-        mService.removeGroup(4);
+        mService.removeGroup(new LocalTabGroupId(4));
     }
 
     @CalledByNative
     public void testUpdateVisualData() {
-        mService.updateVisualData(4, TEST_GROUP_TITLE_2, TabGroupColorId.GREEN);
+        mService.updateVisualData(
+                new LocalTabGroupId(4), TEST_GROUP_TITLE_2, TabGroupColorId.GREEN);
     }
 
     @CalledByNative
     public void testAddTab() {
-        mService.addTab(1, 2, TEST_TAB_TITLE, new GURL(TEST_URL), 3);
-        mService.addTab(3, 4, TEST_TAB_TITLE, new GURL(TEST_URL), -1);
+        mService.addTab(new LocalTabGroupId(1), 2, TEST_TAB_TITLE, new GURL(TEST_URL), 3);
+        mService.addTab(new LocalTabGroupId(3), 4, TEST_TAB_TITLE, new GURL(TEST_URL), -1);
     }
 
     @CalledByNative
     public void testUpdateTab() {
-        mService.updateTab(1, 2, TEST_TAB_TITLE, new GURL(TEST_URL), 3);
-        mService.updateTab(3, 4, TEST_TAB_TITLE, new GURL(TEST_URL), -1);
+        mService.updateTab(new LocalTabGroupId(1), 2, TEST_TAB_TITLE, new GURL(TEST_URL), 3);
+        mService.updateTab(new LocalTabGroupId(3), 4, TEST_TAB_TITLE, new GURL(TEST_URL), -1);
     }
 
     @CalledByNative
     public void testRemoveTab() {
-        mService.removeTab(1, 2);
+        mService.removeTab(new LocalTabGroupId(1), 2);
     }
 
     @CalledByNative
@@ -156,7 +157,7 @@ public class TabGroupSyncServiceAndroidUnitTest {
     }
 
     @CalledByNative
-    public void testGetGroupByLocalId(int localId1, int localId2) {
+    public void testGetGroupByLocalId(LocalTabGroupId localId1, LocalTabGroupId localId2) {
         SavedTabGroup group = mService.getGroup(localId1);
         Assert.assertNotNull(group);
 
@@ -165,17 +166,18 @@ public class TabGroupSyncServiceAndroidUnitTest {
     }
 
     @CalledByNative
-    public void testUpdateLocalTabGroupMapping(String syncId, int localId) {
+    public void testUpdateLocalTabGroupMapping(String syncId, LocalTabGroupId localId) {
         mService.updateLocalTabGroupMapping(syncId, localId);
     }
 
     @CalledByNative
-    public void testRemoveLocalTabGroupMapping(int localId) {
+    public void testRemoveLocalTabGroupMapping(LocalTabGroupId localId) {
         mService.removeLocalTabGroupMapping(localId);
     }
 
     @CalledByNative
-    public void testUpdateLocalTabId(int localTabGroupId, String syncTabId, int localTabId) {
+    public void testUpdateLocalTabId(
+            LocalTabGroupId localTabGroupId, String syncTabId, int localTabId) {
         mService.updateLocalTabId(localTabGroupId, syncTabId, localTabId);
     }
 }

@@ -9,6 +9,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController.TabCreationDelegate;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
@@ -96,10 +97,10 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
     }
 
     @Override
-    public void onTabGroupRemoved(int localId) {
-        assert localId != -1;
+    public void onTabGroupRemoved(LocalTabGroupId localId) {
+        assert localId != null;
         mEnableLocalObserverCallback.onResult(false);
-        List<Tab> tabs = mTabGroupModelFilter.getRelatedTabList(localId);
+        List<Tab> tabs = mTabGroupModelFilter.getRelatedTabList(localId.rootId);
         getTabModel().closeMultipleTabs(tabs, /* canUndo= */ false);
         mEnableLocalObserverCallback.onResult(true);
     }

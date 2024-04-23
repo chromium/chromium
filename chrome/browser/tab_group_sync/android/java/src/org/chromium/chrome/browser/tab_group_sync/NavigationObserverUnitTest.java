@@ -24,6 +24,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.PageTransition;
@@ -91,7 +92,8 @@ public class NavigationObserverUnitTest {
                 /* isIncognito= */ false,
                 /* isGrouped= */ true);
         simulateNavigation(mTestUrl, PageTransition.LINK);
-        verify(mTabGroupSyncService).updateTab(eq(2), eq(5), eq(mTestTitle), eq(mTestUrl), eq(-1));
+        verify(mTabGroupSyncService)
+                .updateTab(eq(new LocalTabGroupId(2)), eq(5), eq(mTestTitle), eq(mTestUrl), eq(-1));
     }
 
     @Test
@@ -105,7 +107,8 @@ public class NavigationObserverUnitTest {
                 /* isIncognito= */ false,
                 /* isGrouped= */ true);
         simulateNavigation(mTestUrl, PageTransition.LINK);
-        verify(mTabGroupSyncService).updateTab(eq(2), eq(5), eq(mTestTitle), eq(mTestUrl), eq(-1));
+        verify(mTabGroupSyncService)
+                .updateTab(eq(new LocalTabGroupId(2)), eq(5), eq(mTestTitle), eq(mTestUrl), eq(-1));
 
         mockTab(
                 /* tabId= */ 6,
@@ -115,7 +118,9 @@ public class NavigationObserverUnitTest {
                 /* isIncognito= */ false,
                 /* isGrouped= */ true);
         simulateNavigation(mTestUrl, PageTransition.LINK);
-        verify(mTabGroupSyncService).updateTab(eq(3), eq(6), eq(mTestTitle), eq(mTestUrl2), eq(-1));
+        verify(mTabGroupSyncService)
+                .updateTab(
+                        eq(new LocalTabGroupId(3)), eq(6), eq(mTestTitle), eq(mTestUrl2), eq(-1));
     }
 
     @Test
