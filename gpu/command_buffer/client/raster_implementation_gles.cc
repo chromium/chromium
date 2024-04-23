@@ -169,14 +169,11 @@ void RasterImplementationGLES::CopySharedImage(
     GLsizei height,
     GLboolean unpack_flip_y,
     GLboolean unpack_premultiply_alpha) {
-  // CopySharedImage does not support legacy mailboxes so fallback to
-  // CopySubTexture.
   // We don't know if this would require rgb to yuv or yuv to rgb conversion, so
   // we check for both flags, but in reality validating command decoder doesn't
   // support either and passthrough command decoder always supports both.
   if (capabilities_.supports_yuv_to_rgb_conversion &&
-      capabilities_.supports_rgb_to_yuv_conversion &&
-      source_mailbox.IsSharedImage() && dest_mailbox.IsSharedImage()) {
+      capabilities_.supports_rgb_to_yuv_conversion) {
     if (width < 0) {
       LOG(ERROR) << "GL_INVALID_VALUE, glCopySharedImage, width < 0";
       return;
@@ -554,9 +551,7 @@ bool RasterImplementationGLES::ReadbackImagePixels(
 
 GLuint RasterImplementationGLES::CreateAndConsumeForGpuRaster(
     const gpu::Mailbox& mailbox) {
-  return mailbox.IsSharedImage()
-             ? gl_->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name)
-             : gl_->CreateAndConsumeTextureCHROMIUM(mailbox.name);
+  return gl_->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox.name);
 }
 
 GLuint RasterImplementationGLES::CreateAndConsumeForGpuRaster(
