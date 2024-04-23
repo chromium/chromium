@@ -117,9 +117,3 @@ extern const base::FeatureParam<bool>
         &kForceSigninFlowInProfilePicker, /*name=*/"reauth_use_add_session",
         /*default_value=*/false};
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-BASE_FEATURE(kPreconnectAccountCapabilitiesBeforeSignIn,
-             "PreconnectAccountCapabilitiesBeforeSignIn",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif

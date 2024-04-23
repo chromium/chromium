@@ -70,10 +70,4 @@ extern const base::FeatureParam<bool>
     kForceSigninReauthInProfilePickerUseAddSession;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-// Pre-connectes the network socket for the Account Capabilities fetch, before
-// triggering the sign in flow.
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-BASE_DECLARE_FEATURE(kPreconnectAccountCapabilitiesBeforeSignIn);
-#endif
-
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_FEATURES_H_
