@@ -2452,11 +2452,11 @@ def CheckNoDISABLETypoInTests(input_api, output_api):
         r'^\s*TEST[^(]*\([a-zA-Z0-9_]+,\s*DISABLE_[a-zA-Z0-9_]+\)',
         input_api.re.MULTILINE)
 
-    for f in input_api.AffectedFiles(False):
+    for f in input_api.AffectedFiles(include_deletes=False):
         if not 'test' in f.LocalPath() or not f.LocalPath().endswith('.cc'):
             continue
 
-        # Search for MABYE_, DISABLE_ pairs.
+        # Search for MAYBE_, DISABLE_ pairs.
         disable_lines = {}  # Maps of test name to line number.
         maybe_lines = {}
         for line_num, line in f.ChangedContents():
@@ -2511,7 +2511,7 @@ def CheckForgettingMAYBEInTests(input_api, output_api):
 
     # Read the entire files. We can't just read the affected lines, forgetting to
     # add MAYBE_ on a change would not show up otherwise.
-    for f in input_api.AffectedFiles(False):
+    for f in input_api.AffectedFiles(include_deletes=False):
         if not 'test' in f.LocalPath() or not f.LocalPath().endswith('.cc'):
             continue
         contents = input_api.ReadFile(f)
@@ -7233,7 +7233,7 @@ def CheckNoJsInIos(input_api, output_api):
     deleted_files = []
 
     # Collect filenames of all removed JS files.
-    for f in input_api.AffectedSourceFiles(_FilterFile):
+    for f in input_api.AffectedFiles(file_filter=_FilterFile):
         local_path = f.LocalPath()
 
         if input_api.os_path.splitext(local_path)[1] == '.js' and f.Action() == 'D':
@@ -7331,7 +7331,7 @@ def CheckDanglingUntriaged(input_api, output_api):
         )
 
     count = 0
-    for f in input_api.AffectedSourceFiles(FilterFile):
+    for f in input_api.AffectedFiles(file_filter=FilterFile):
         count -= sum([l.count("DanglingUntriaged") for l in f.OldContents()])
         count += sum([l.count("DanglingUntriaged") for l in f.NewContents()])
 

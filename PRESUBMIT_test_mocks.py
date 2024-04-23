@@ -104,7 +104,7 @@ class MockInputApi(object):
         yield (af, line[0], line[1])
 
   def AffectedSourceFiles(self, file_filter=None):
-    return self.AffectedFiles(file_filter=file_filter)
+    return self.AffectedFiles(file_filter=file_filter, include_deletes=False)
 
   def FilterSourceFile(self, file,
                        files_to_check=(), files_to_skip=()):
