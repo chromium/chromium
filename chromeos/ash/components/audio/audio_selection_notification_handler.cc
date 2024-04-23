@@ -151,7 +151,7 @@ void AudioSelectionNotificationHandler::ShowAudioSelectionNotification(
           base::UTF8ToUTF16(active_input_device_name.has_value()
                                 ? active_input_device_name.value()
                                 : ""),
-          base::UTF8ToUTF16(active_input_device_name.has_value()
+          base::UTF8ToUTF16(active_output_device_name.has_value()
                                 ? active_output_device_name.value()
                                 : ""));
       buttons_info.emplace_back(
