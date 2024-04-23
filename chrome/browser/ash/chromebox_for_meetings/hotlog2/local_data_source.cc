@@ -10,12 +10,6 @@
 
 namespace ash::cfm {
 
-// Maximum lines that can be in the internal buffer before we start
-// purging older records. In the working case, we should never hit
-// this limit, but we may reach it if we're unable to enqueue logs
-// via Fetch() for whatever reason (eg a network outage).
-constexpr int kMaxInternalBufferSize = 50000;  // ~7Mb
-
 LocalDataSource::LocalDataSource(base::TimeDelta poll_rate)
     : poll_rate_(poll_rate) {}
 
@@ -72,12 +66,12 @@ void LocalDataSource::FillDataBuffer() {
             std::back_inserter(data_buffer_));
 
   // We're over our limit, so purge old logs until we're not.
-  if (IsDataBufferAtMaxLimit()) {
+  if (IsDataBufferOverMaxLimit()) {
     LOG(WARNING) << "Data buffer full for '" << GetDisplayName()
                  << "'. Purging older records.";
     int dropped_records = 0;
 
-    while (IsDataBufferAtMaxLimit()) {
+    while (IsDataBufferOverMaxLimit()) {
       data_buffer_.pop_front();
       dropped_records++;
     }
@@ -86,8 +80,8 @@ void LocalDataSource::FillDataBuffer() {
   }
 }
 
-bool LocalDataSource::IsDataBufferAtMaxLimit() {
-  return data_buffer_.size() >= kMaxInternalBufferSize;
+bool LocalDataSource::IsDataBufferOverMaxLimit() {
+  return data_buffer_.size() > kMaxInternalBufferSize;
 }
 
 }  // namespace ash::cfm

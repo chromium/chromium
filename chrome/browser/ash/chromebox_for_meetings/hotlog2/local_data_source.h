@@ -13,6 +13,12 @@
 
 namespace ash::cfm {
 
+// Maximum lines that can be in the internal buffer before we start
+// purging older records. In the working case, we should never hit
+// this limit, but we may reach it if we're unable to enqueue logs
+// via Fetch() for whatever reason (eg a network outage).
+inline constexpr int kMaxInternalBufferSize = 50000;  // ~7Mb
+
 class LocalDataSource : public mojom::DataSource {
  public:
   explicit LocalDataSource(base::TimeDelta poll_rate);
@@ -20,7 +26,6 @@ class LocalDataSource : public mojom::DataSource {
   LocalDataSource& operator=(const LocalDataSource&) = delete;
   ~LocalDataSource() override;
 
- protected:
   // mojom::DataSource implementation
   void Fetch(FetchCallback callback) override;
   void AddWatchDog(mojom::DataFilterPtr filter,
@@ -28,7 +33,9 @@ class LocalDataSource : public mojom::DataSource {
                    AddWatchDogCallback callback) override;
   void Flush() override;
 
+ protected:
   void StartPollTimer();
+  void FillDataBuffer();
 
   // Returns a unique identifier for logging purposes only.
   virtual const std::string& GetDisplayName() = 0;
@@ -41,8 +48,7 @@ class LocalDataSource : public mojom::DataSource {
   virtual std::vector<std::string> GetNextData() = 0;
 
  private:
-  void FillDataBuffer();
-  bool IsDataBufferAtMaxLimit();
+  bool IsDataBufferOverMaxLimit();
 
   base::RepeatingTimer poll_timer_;
   base::TimeDelta poll_rate_;
