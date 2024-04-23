@@ -11,6 +11,7 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/system/tray/tray_constants.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -45,7 +46,7 @@ void ShowNotification(const base::Value::Dict* message,
   // TODO(estade): should SMS notifications really be shown to all users?
   notification = ash::CreateSystemNotificationPtr(
       message_center::NOTIFICATION_TYPE_SIMPLE,
-      SmsObserver::kNotificationPrefix + std::to_string(message_id),
+      SmsObserver::kNotificationPrefix + base::NumberToString(message_id),
       base::ASCIIToUTF16(message_number),
       base::CollapseWhitespace(base::UTF8ToUTF16(message_text),
                                false /* trim_sequences_with_line_breaks */),

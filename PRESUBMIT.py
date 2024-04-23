@@ -765,13 +765,6 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [
           # TODO(crbug.com/335672557): Please do not add to this list. Existing
           # uses should removed.
-          "ash/assistant/model/assistant_query_history_unittest.cc",
-          "ash/login/ui/lock_contents_view_unittest.cc",
-          "ash/login/ui/login_pin_view.cc",
-          "ash/login/ui/login_test_base.cc",
-          "ash/quick_pair/message_stream/message_stream_lookup_impl_unittest.cc",
-          "ash/system/network/sms_observer.cc",
-          "ash/system/power/power_button_controller_unittest.cc",
           "base/linux_util.cc",
           "chrome/browser/ash/app_list/app_list_syncable_service.cc",
           "chrome/browser/ash/child_accounts/time_limit_consistency_test/consistency_test.cc",

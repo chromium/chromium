@@ -15,6 +15,7 @@
 #include "ash/style/color_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
@@ -73,7 +74,7 @@ constexpr gfx::Size kButtonSize = gfx::Size(kButtonWidthDp, kButtonHeightDp);
 
 std::u16string GetButtonLabelForNumber(int value) {
   DCHECK(value >= 0 && value < int{std::size(kPinLabels)});
-  return base::ASCIIToUTF16(std::to_string(value));
+  return base::NumberToString16(value);
 }
 
 std::u16string GetButtonSubLabelForNumber(int value) {

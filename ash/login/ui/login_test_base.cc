@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "components/user_manager/known_user.h"
 #include "ui/views/widget/widget.h"
@@ -96,8 +97,8 @@ void LoginTestBase::SetUserCount(size_t count) {
 
 void LoginTestBase::AddUsers(size_t num_users) {
   for (size_t i = 0; i < num_users; i++) {
-    std::string email =
-        base::StrCat({"user", std::to_string(users_.size()), "@domain.com"});
+    std::string email = base::StrCat(
+        {"user", base::NumberToString(users_.size()), "@domain.com"});
     users_.push_back(CreateUser(email));
   }
 
@@ -112,8 +113,8 @@ void LoginTestBase::AddUserByEmail(const std::string& email) {
 
 void LoginTestBase::AddPublicAccountUsers(size_t num_public_accounts) {
   for (size_t i = 0; i < num_public_accounts; i++) {
-    std::string email =
-        base::StrCat({"user", std::to_string(users_.size()), "@domain.com"});
+    std::string email = base::StrCat(
+        {"user", base::NumberToString(users_.size()), "@domain.com"});
     users_.push_back(CreatePublicAccountUser(email));
   }
 
@@ -123,8 +124,8 @@ void LoginTestBase::AddPublicAccountUsers(size_t num_public_accounts) {
 
 void LoginTestBase::AddChildUsers(size_t num_users) {
   for (size_t i = 0; i < num_users; i++) {
-    std::string email =
-        base::StrCat({"user", std::to_string(users_.size()), "@domain.com"});
+    std::string email = base::StrCat(
+        {"user", base::NumberToString(users_.size()), "@domain.com"});
     users_.push_back(CreateChildUser(email));
   }
 

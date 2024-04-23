@@ -24,6 +24,7 @@
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
@@ -1183,8 +1184,8 @@ class PowerButtonControllerWithPositionTest
 // TODO(crbug.com/40101364).
 TEST_P(PowerButtonControllerWithPositionTest,
        DISABLED_MenuNextToPowerButtonInTabletMode) {
-  std::string display =
-      std::to_string(kDisplayWidth) + "x" + std::to_string(kDisplayHeight);
+  std::string display = base::NumberToString(kDisplayWidth) + "x" +
+                        base::NumberToString(kDisplayHeight);
   UpdateDisplay(display);
   display::test::ScopedSetInternalDisplayId set_internal(
       display_manager(), GetPrimaryDisplay().id());
@@ -1295,7 +1296,7 @@ TEST_P(PowerButtonControllerWithPositionTest,
 // display has different scale factors.
 TEST_P(PowerButtonControllerWithPositionTest, MenuShownAtPercentageOfPosition) {
   const int scale_factor = 2;
-  std::string display = "8000x2400*" + std::to_string(scale_factor);
+  std::string display = "8000x2400*" + base::NumberToString(scale_factor);
   UpdateDisplay(display);
   int64_t primary_id = GetPrimaryDisplay().id();
   display::test::ScopedSetInternalDisplayId set_internal(display_manager(),
@@ -1352,8 +1353,8 @@ TEST_P(PowerButtonControllerWithPositionTest, AdjustMenuShownForDisplaySize) {
       0.5 / (1.0f - kPowerButtonPercentage) * menu_bounds.width() - 5;
   int display_height =
       0.5 / (1.0f - kPowerButtonPercentage) * menu_bounds.height() - 5;
-  std::string display =
-      std::to_string(display_width) + "x" + std::to_string(display_height);
+  std::string display = base::NumberToString(display_width) + "x" +
+                        base::NumberToString(display_height);
   UpdateDisplay(display);
   display::test::ScopedSetInternalDisplayId set_internal(
       display_manager(), GetPrimaryDisplay().id());

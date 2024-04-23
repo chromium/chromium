@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -180,7 +181,7 @@ class MessageStreamLookupImplTest : public testing::Test,
       LOG(WARNING)
           << __func__
           << ": the maximum message stream attempts before failure is 5. "
-          << std::to_string(num_unsuccessful_attempts)
+          << num_unsuccessful_attempts
           << " were requested. 5 will be tested for failure.";
       num_unsuccessful_attempts = 5;
     }
