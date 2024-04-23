@@ -383,6 +383,13 @@ CGFloat const kTitleLogoHeight = 24;
   cell.customAccessibilityLabel = [self accessibleCardNameAtRow:indexPath.row];
   cell.accessibilityValue = [self accessibilityValueForCardAtRow:indexPath.row];
 
+  [cell setDetailText:[self descriptionAtRow:indexPath.row]];
+  [cell setIconImage:[self iconAtRow:indexPath.row]
+            tintColor:nil
+      backgroundColor:cell.backgroundColor
+         cornerRadius:kCreditCardIconCornerRadius];
+  [cell setTextLayoutConstraintAxis:UILayoutConstraintAxisVertical];
+
   cell.textLabel.text = [self suggestionAtRow:indexPath.row];
   cell.textLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
   cell.textLabel.numberOfLines = 1;
@@ -397,13 +404,6 @@ CGFloat const kTitleLogoHeight = 24;
   } else {
     cell.accessibilityIdentifier = cell.textLabel.text;
   }
-
-  [cell setDetailText:[self descriptionAtRow:indexPath.row]];
-  [cell setIconImage:[self iconAtRow:indexPath.row]
-            tintColor:nil
-      backgroundColor:cell.backgroundColor
-         cornerRadius:kCreditCardIconCornerRadius];
-  [cell setTextLayoutConstraintAxis:UILayoutConstraintAxisVertical];
 
   cell.separatorInset = [self separatorInsetForTableViewWidth:tableViewWidth
                                                   atIndexPath:indexPath];
