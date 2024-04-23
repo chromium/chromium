@@ -1412,10 +1412,6 @@ void ShapeResult::ComputeGlyphPositions(ShapeResult::RunInfo* run,
     const hb_glyph_info_t glyph = glyph_infos[start_glyph + i];
     const hb_glyph_position_t& pos = glyph_positions[start_glyph + i];
 
-    // Offset is primarily used when painting glyphs. Keep it in physical.
-    GlyphOffset offset(HarfBuzzPositionToFloat(pos.x_offset),
-                       -HarfBuzzPositionToFloat(pos.y_offset));
-
     // One out of x_advance and y_advance is zero, depending on
     // whether the buffer direction is horizontal or vertical.
     // Convert to float and negate to avoid integer-overflow for ULONG_MAX.
@@ -1430,10 +1426,16 @@ void ShapeResult::ComputeGlyphPositions(ShapeResult::RunInfo* run,
                            IsSafeToBreakBefore(glyph_infos + start_glyph, i,
                                                num_glyphs, Direction()),
                            advance};
-    run->glyph_data_.SetOffsetAt(i, offset);
+
+    // Offset is primarily used when painting glyphs. Keep it in physical.
+    if (UNLIKELY(pos.x_offset || pos.y_offset)) {
+      has_vertical_offsets |= (pos.y_offset != 0);
+      const GlyphOffset offset(HarfBuzzPositionToFloat(pos.x_offset),
+                               -HarfBuzzPositionToFloat(pos.y_offset));
+      run->glyph_data_.SetOffsetAt(i, offset);
+    }
 
     total_advance += advance;
-    has_vertical_offsets |= (offset.y() != 0);
   }
 
   run->width_ = std::max(0.0f, total_advance);
