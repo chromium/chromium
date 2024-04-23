@@ -1677,15 +1677,18 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                                       2);
 }
 
-// TODO(crbug.com/1453981): fix and re-enable on Android.
+// See crbug.com/1453981: A CL on V8 side (https://crrev.com/c/4582948) made
+// each Api call slower in Android debug mode compared to what we had before
+// because of additional DCHECKs. So we disable on Android debug builds where
+// this test times out.
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && !defined(NDEBUG)
                        DISABLED_WorkletKeys_PartiallyIterated
 #else
                        WorkletKeys_PartiallyIterated
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) && !defined(NDEBUG)
 ) {
-  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(60));
+  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(120));
 
   // The test assumes pages get deleted after navigation. To ensure this,
   // disable back/forward cache.
@@ -1777,15 +1780,18 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
                                       0);
 }
 
-// TODO(crbug.com/1453981): fix and re-enable on Android.
+// See crbug.com/1453981: A CL on V8 side (https://crrev.com/c/4582948) made
+// each Api call slower in Android debug mode compared to what we had before
+// because of additional DCHECKs. So we disable on Android debug builds where
+// this test times out.
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && !defined(NDEBUG)
                        DISABLED_WorkletEntries_PartiallyIterated
 #else
                        WorkletEntries_PartiallyIterated
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) && !defined(NDEBUG)
 ) {
-  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(60));
+  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(120));
 
   // The test assumes pages get deleted after navigation. To ensure this,
   // disable back/forward cache.
