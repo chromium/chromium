@@ -150,7 +150,7 @@ class QuickStartController
 
   // Exposes TargetDeviceBootstrapController::PrepareForUpdate() to the OOBE
   // UpdateScreen and ConsumerUpdateScreen.
-  void PrepareForUpdate();
+  void PrepareForUpdate(bool is_forced);
 
   // Resumes current session if an update is aborted on
   // the OOBE UpdateScreen or ConsumerUpdateScreen.

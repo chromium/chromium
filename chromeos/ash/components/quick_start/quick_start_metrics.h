@@ -280,6 +280,10 @@ class QuickStartMetrics {
 
   static void RecordAbortFlowReason(AbortFlowReason reason);
 
+  static void RecordUpdateStarted(bool is_forced);
+
+  static void RecordConsumerUpdateCancelled();
+
   QuickStartMetrics();
   QuickStartMetrics(const QuickStartMetrics&) = delete;
   const QuickStartMetrics& operator=(const QuickStartMetrics&) = delete;

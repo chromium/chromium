@@ -321,7 +321,7 @@ void UpdateScreen::UpdateInfoChanged(
       context()->quick_start_setup_ongoing) {
     WizardController::default_controller()
         ->quick_start_controller()
-        ->PrepareForUpdate();
+        ->PrepareForUpdate(/*is_forced=*/true);
     did_prepare_quick_start_for_update_ = true;
     view_->SetUpdateState(UpdateView::UIState::kUpdateInProgress);
     // Set that critical update applied in OOBE.
@@ -390,7 +390,7 @@ void UpdateScreen::UpdateInfoChanged(
       if (context()->quick_start_setup_ongoing) {
         WizardController::default_controller()
             ->quick_start_controller()
-            ->PrepareForUpdate();
+            ->PrepareForUpdate(/*is_forced=*/true);
         did_prepare_quick_start_for_update_ = true;
       }
       break;

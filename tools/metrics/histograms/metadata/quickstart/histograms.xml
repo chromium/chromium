@@ -109,6 +109,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickStart.ConsumerUpdateCancelled" enum="BooleanOccurred"
+    expires_after="2025-04-18">
+  <owner>bhartmire@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total number of cancelled Consumer Updates during an ongoing
+    Quick Start session. Recorded when a user cancels after an update starts
+    downloading.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.ConsumerUpdateStarted" enum="BooleanOccurred"
+    expires_after="2025-04-18">
+  <owner>bhartmire@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total number of Consumer Updates during an ongoing Quick Start
+    session. Recorded when the update starts downloading.
+  </summary>
+</histogram>
+
 <histogram name="QuickStart.EntryPoint" enum="QuickStartEntryPoint"
     expires_after="2025-04-17">
   <owner>bhartmire@google.com</owner>
@@ -187,6 +208,16 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     The reason why the Quick Start flow is aborted. Recorded when flow aborts.
+  </summary>
+</histogram>
+
+<histogram name="QuickStart.ForcedUpdateStarted" enum="BooleanOccurred"
+    expires_after="2025-04-18">
+  <owner>bhartmire@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total number of Forced Updates during an ongoing Quick Start
+    session. Recorded when the update starts downloading.
   </summary>
 </histogram>
 

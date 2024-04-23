@@ -347,11 +347,13 @@ QuickStartController::EntryPoint QuickStartController::GetExitPoint() {
   return exit_point_.value();
 }
 
-void QuickStartController::PrepareForUpdate() {
+void QuickStartController::PrepareForUpdate(bool is_forced) {
+  QuickStartMetrics::RecordUpdateStarted(is_forced);
   bootstrap_controller_->PrepareForUpdate();
 }
 
 void QuickStartController::ResumeSessionAfterCancelledUpdate() {
+  QuickStartMetrics::RecordConsumerUpdateCancelled();
   LoginDisplayHost::default_host()
       ->GetWizardContext()
       ->quick_start_setup_ongoing = true;

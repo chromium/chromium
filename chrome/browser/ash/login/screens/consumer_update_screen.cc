@@ -425,7 +425,7 @@ void ConsumerUpdateScreen::UpdateInfoChanged(
         kQuickStartTestConsumerUpdateSwitch);
     WizardController::default_controller()
         ->quick_start_controller()
-        ->PrepareForUpdate();
+        ->PrepareForUpdate(/*is_forced=*/false);
     did_prepare_quick_start_for_update_ = true;
     view_->SetUpdateState(ConsumerUpdateScreenView::UIState::kUpdateInProgress);
     // Set consumer update complete for next reboot.
@@ -459,7 +459,7 @@ void ConsumerUpdateScreen::UpdateInfoChanged(
           !did_prepare_quick_start_for_update_) {
         WizardController::default_controller()
             ->quick_start_controller()
-            ->PrepareForUpdate();
+            ->PrepareForUpdate(/*is_forced=*/false);
         did_prepare_quick_start_for_update_ = true;
       }
       [[fallthrough]];

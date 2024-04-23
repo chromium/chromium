@@ -142,6 +142,12 @@ constexpr const char kScreenClosedQSFallbackURL[] =
 constexpr const char kAbortFlowReasonHistogramName[] =
     "QuickStart.FlowAborted.Reason";
 constexpr const char kEntryPointHistogramName[] = "QuickStart.EntryPoint";
+constexpr const char kConsumerUpdateStartedHistogramName[] =
+    "QuickStart.ConsumerUpdateStarted";
+constexpr const char kConsumerUpdateCancelledHistogramName[] =
+    "QuickStart.ConsumerUpdateCancelled";
+constexpr const char kForcedUpdateStartedHistogramName[] =
+    "QuickStart.ForcedUpdateStarted";
 
 std::string MapMessageTypeToMetric(
     QuickStartMetrics::MessageType message_type) {
@@ -281,28 +287,49 @@ void QuickStartMetrics::RecordAbortFlowReason(AbortFlowReason reason) {
   base::UmaHistogramEnumeration(kAbortFlowReasonHistogramName, reason);
 }
 
-void QuickStartMetrics::RecordChallengeBytesRequested() {
-  CHECK(!challenge_bytes_fetch_timer_)
-      << "Only 1 challenge bytes request can be active at a time";
-  challenge_bytes_fetch_timer_ = std::make_unique<base::ElapsedTimer>();
+// static
+void QuickStartMetrics::RecordGaiaTransferResult(
+    bool succeeded,
+    std::optional<GaiaTransferResultFailureReason> failure_reason) {
+  if (succeeded) {
+    CHECK(!failure_reason.has_value());
+  } else {
+    CHECK(failure_reason.has_value());
+    base::UmaHistogramEnumeration(kGaiaTransferResultFailureReasonName,
+                                  failure_reason.value());
+  }
+  base::UmaHistogramBoolean(kGaiaTransferResultName, succeeded);
 }
 
-void QuickStartMetrics::RecordChallengeBytesRequestEnded(
-    const GoogleServiceAuthError& status) {
-  CHECK(challenge_bytes_fetch_timer_)
-      << "Challenge bytes request timer was not active. Unexpected "
-         "response.";
-
-  const bool is_success = status.state() == GoogleServiceAuthError::State::NONE;
-  base::UmaHistogramBoolean(kChallengeBytesFetchResultHistogramName,
-                            /*sample=*/is_success);
-  base::UmaHistogramEnumeration(kChallengeBytesFailureReasonHistogramName,
-                                /*sample=*/status.state(),
-                                GoogleServiceAuthError::NUM_STATES);
-  base::UmaHistogramTimes(kChallengeBytesFetchDurationHistogramName,
-                          challenge_bytes_fetch_timer_->Elapsed());
-  challenge_bytes_fetch_timer_.reset();
+// static
+void QuickStartMetrics::RecordEntryPoint(EntryPoint entry_point) {
+  base::UmaHistogramEnumeration(kEntryPointHistogramName, entry_point);
 }
+
+// static
+void QuickStartMetrics::RecordAuthenticationMethod(
+    AuthenticationMethod auth_method) {
+  base::UmaHistogramEnumeration(kAuthenticationMethodHistogramName,
+                                auth_method);
+}
+
+// static
+void QuickStartMetrics::RecordUpdateStarted(bool is_forced) {
+  if (is_forced) {
+    base::UmaHistogramBoolean(kForcedUpdateStartedHistogramName, true);
+  } else {
+    base::UmaHistogramBoolean(kConsumerUpdateStartedHistogramName, true);
+  }
+}
+
+// static
+void QuickStartMetrics::RecordConsumerUpdateCancelled() {
+  base::UmaHistogramBoolean(kConsumerUpdateCancelledHistogramName, true);
+}
+
+QuickStartMetrics::QuickStartMetrics() = default;
+
+QuickStartMetrics::~QuickStartMetrics() = default;
 
 void QuickStartMetrics::RecordScreenOpened(ScreenName screen) {
   base::UmaHistogramEnumeration(kScreenOpened, screen);
@@ -331,6 +358,29 @@ void QuickStartMetrics::RecordScreenClosed(ScreenName screen,
   base::UmaHistogramTimes(MapScreenNameToMetric(screen) + ".ViewDuration",
                           screen_opened_view_duration_timer_->Elapsed());
   screen_opened_view_duration_timer_.reset();
+}
+
+void QuickStartMetrics::RecordChallengeBytesRequested() {
+  CHECK(!challenge_bytes_fetch_timer_)
+      << "Only 1 challenge bytes request can be active at a time";
+  challenge_bytes_fetch_timer_ = std::make_unique<base::ElapsedTimer>();
+}
+
+void QuickStartMetrics::RecordChallengeBytesRequestEnded(
+    const GoogleServiceAuthError& status) {
+  CHECK(challenge_bytes_fetch_timer_)
+      << "Challenge bytes request timer was not active. Unexpected "
+         "response.";
+
+  const bool is_success = status.state() == GoogleServiceAuthError::State::NONE;
+  base::UmaHistogramBoolean(kChallengeBytesFetchResultHistogramName,
+                            /*sample=*/is_success);
+  base::UmaHistogramEnumeration(kChallengeBytesFailureReasonHistogramName,
+                                /*sample=*/status.state(),
+                                GoogleServiceAuthError::NUM_STATES);
+  base::UmaHistogramTimes(kChallengeBytesFetchDurationHistogramName,
+                          challenge_bytes_fetch_timer_->Elapsed());
+  challenge_bytes_fetch_timer_.reset();
 }
 
 void QuickStartMetrics::RecordAttestationCertificateRequested() {
@@ -375,36 +425,6 @@ void QuickStartMetrics::RecordGaiaAuthenticationRequestEnded(
                           gaia_authentication_timer_->Elapsed());
   gaia_authentication_timer_.reset();
 }
-
-// static
-void QuickStartMetrics::RecordGaiaTransferResult(
-    bool succeeded,
-    std::optional<GaiaTransferResultFailureReason> failure_reason) {
-  if (succeeded) {
-    CHECK(!failure_reason.has_value());
-  } else {
-    CHECK(failure_reason.has_value());
-    base::UmaHistogramEnumeration(kGaiaTransferResultFailureReasonName,
-                                  failure_reason.value());
-  }
-  base::UmaHistogramBoolean(kGaiaTransferResultName, succeeded);
-}
-
-// static
-void QuickStartMetrics::RecordEntryPoint(EntryPoint entry_point) {
-  base::UmaHistogramEnumeration(kEntryPointHistogramName, entry_point);
-}
-
-// static
-void QuickStartMetrics::RecordAuthenticationMethod(
-    AuthenticationMethod auth_method) {
-  base::UmaHistogramEnumeration(kAuthenticationMethodHistogramName,
-                                auth_method);
-}
-
-QuickStartMetrics::QuickStartMetrics() = default;
-
-QuickStartMetrics::~QuickStartMetrics() = default;
 
 void QuickStartMetrics::RecordFastPairAdvertisementStarted(
     bool succeeded,
