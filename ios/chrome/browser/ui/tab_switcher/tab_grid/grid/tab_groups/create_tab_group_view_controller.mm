@@ -170,6 +170,7 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
   tabGroupTextField.translatesAutoresizingMaskIntoConstraints = NO;
   tabGroupTextField.autocorrectionType = UITextAutocorrectionTypeNo;
   tabGroupTextField.spellCheckingType = UITextSpellCheckingTypeNo;
+  tabGroupTextField.clearButtonMode = UITextFieldViewModeWhileEditing;
   tabGroupTextField.accessibilityIdentifier =
       kCreateTabGroupTextFieldIdentifier;
   tabGroupTextField.text = _title;
