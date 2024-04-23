@@ -72,8 +72,6 @@ chrome::MessageBoxResult ShowSync(gfx::NativeWindow parent,
 
   base::AutoReset<bool> is_showing(&g_message_box_is_showing_sync, true);
   chrome::MessageBoxResult result = chrome::MESSAGE_BOX_RESULT_NO;
-  // TODO(pkotwicz): Exit message loop when the dialog is closed by some other
-  // means than |Cancel| or |Accept|. crbug.com/404385
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   MessageBoxDialog::Show(
       parent, title, message, type, yes_text, no_text, checkbox_text,
@@ -213,6 +211,15 @@ void MessageBoxDialog::OnWidgetActivationChanged(views::Widget* widget,
 
   if (!active)
     GetWidget()->Close();
+}
+
+void MessageBoxDialog::OnWidgetDestroying(views::Widget* widget) {
+  // If the native window is closing and the callback has not been invoked yet,
+  // invoke it now so that the message loop is not stuck waiting for a dialog
+  // result.
+  if (result_callback_) {
+    Done(chrome::MESSAGE_BOX_RESULT_NO);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

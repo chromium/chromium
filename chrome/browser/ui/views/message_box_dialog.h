@@ -41,6 +41,7 @@ class MessageBoxDialog : public views::DialogDelegate,
 
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
   MessageBoxDialog(const std::u16string& title,
