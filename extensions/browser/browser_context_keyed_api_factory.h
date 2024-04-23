@@ -95,8 +95,10 @@ template <typename T>
 struct BrowserContextFactoryDependencies {
   static void DeclareFactoryDependencies(
       BrowserContextKeyedAPIFactory<T>* factory) {
-    factory->DependsOn(
-        ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
+    if (ExtensionsBrowserClient::Get()) {
+      factory->DependsOn(
+          ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
+    }
   }
 };
 

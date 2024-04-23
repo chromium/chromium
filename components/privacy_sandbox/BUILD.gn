@@ -78,6 +78,7 @@ source_set("tracking_protection_settings") {
     ":privacy_sandbox_prefs",
     ":tracking_protection_onboarding",
     ":tracking_protection_prefs",
+    "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/keyed_service/core:core",
     "//components/pref_registry:pref_registry",

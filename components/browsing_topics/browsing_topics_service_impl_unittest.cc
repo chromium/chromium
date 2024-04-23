@@ -209,7 +209,7 @@ class BrowsingTopicsServiceImplTest
         /*restore_session=*/false, /*should_record_metrics=*/false);
     tracking_protection_settings_ =
         std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
-            &prefs_,
+            &prefs_, host_content_settings_map_.get(),
             /*onboarding_service=*/nullptr, /*is_incognito=*/false);
     cookie_settings_ = base::MakeRefCounted<content_settings::CookieSettings>(
         host_content_settings_map_.get(), &prefs_,

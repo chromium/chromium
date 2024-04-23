@@ -3,10 +3,14 @@
 // found in the LICENSE file.
 
 #include "components/privacy_sandbox/tracking_protection_settings.h"
+
 #include <memory>
 #include <utility>
+
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -34,14 +38,21 @@ class MockTrackingProtectionSettingsObserver
 
 class TrackingProtectionSettingsTest : public testing::Test {
  public:
-  TrackingProtectionSettingsTest() {
+  TrackingProtectionSettingsTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     content_settings::CookieSettings::RegisterProfilePrefs(prefs()->registry());
+    HostContentSettingsMap::RegisterProfilePrefs(prefs()->registry());
     RegisterProfilePrefs(prefs()->registry());
+
     onboarding_service_ = std::make_unique<TrackingProtectionOnboarding>(
         &prefs_, version_info::Channel::UNKNOWN);
   }
 
   void SetUp() override {
+    host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
+        prefs(), /*is_off_the_record=*/false, /*store_last_modified=*/false,
+        /*restore_session=*/false,
+        /*should_record_metrics=*/false);
     feature_list_.InitWithFeatures(
         {privacy_sandbox::kIpProtectionV1,
          privacy_sandbox::kFingerprintingProtectionSetting,
@@ -49,7 +60,13 @@ class TrackingProtectionSettingsTest : public testing::Test {
         {});
     tracking_protection_settings_ =
         std::make_unique<TrackingProtectionSettings>(
-            prefs(), onboarding_service_.get(), /*is_incognito=*/false);
+            prefs(), host_content_settings_map_.get(),
+            onboarding_service_.get(), /*is_incognito=*/false);
+  }
+
+  void TearDown() override {
+    host_content_settings_map_->ShutdownOnUIThread();
+    tracking_protection_settings_->Shutdown();
   }
 
   TrackingProtectionSettings* tracking_protection_settings() {
@@ -60,13 +77,19 @@ class TrackingProtectionSettingsTest : public testing::Test {
     return onboarding_service_.get();
   }
 
+  HostContentSettingsMap* host_content_settings_map() {
+    return host_content_settings_map_.get();
+  }
+
   sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
 
  private:
   sync_preferences::TestingPrefServiceSyncable prefs_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TrackingProtectionOnboarding> onboarding_service_;
+  scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   std::unique_ptr<TrackingProtectionSettings> tracking_protection_settings_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 // Gets prefs
@@ -101,20 +124,23 @@ TEST_F(TrackingProtectionSettingsTest, ReturnsTrackingProtection3pcdStatus) {
 
 TEST_F(TrackingProtectionSettingsTest, AreAll3pcBlockedTrueInIncognito) {
   prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
-  EXPECT_TRUE(
-      TrackingProtectionSettings(prefs(), nullptr, /*is_incognito=*/true)
-          .AreAllThirdPartyCookiesBlocked());
-  EXPECT_FALSE(
-      TrackingProtectionSettings(prefs(), nullptr, /*is_incognito=*/false)
-          .AreAllThirdPartyCookiesBlocked());
+  EXPECT_TRUE(TrackingProtectionSettings(prefs(), host_content_settings_map(),
+                                         nullptr,
+                                         /*is_incognito=*/true)
+                  .AreAllThirdPartyCookiesBlocked());
+  EXPECT_FALSE(TrackingProtectionSettings(prefs(), host_content_settings_map(),
+                                          nullptr,
+                                          /*is_incognito=*/false)
+                   .AreAllThirdPartyCookiesBlocked());
 }
 
 TEST_F(TrackingProtectionSettingsTest, AreAll3pcBlockedFalseOutside3pcd) {
   prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
   prefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, true);
-  EXPECT_FALSE(
-      TrackingProtectionSettings(prefs(), nullptr, /*is_incognito=*/false)
-          .AreAllThirdPartyCookiesBlocked());
+  EXPECT_FALSE(TrackingProtectionSettings(prefs(), host_content_settings_map(),
+                                          nullptr,
+                                          /*is_incognito=*/false)
+                   .AreAllThirdPartyCookiesBlocked());
 }
 
 // Sets prefs

@@ -8,12 +8,14 @@
 #include <optional>
 
 #include "base/base64.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
@@ -21,6 +23,7 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
@@ -173,12 +176,18 @@ class IpProtectionConfigProviderTest : public testing::Test {
   IpProtectionConfigProviderTest()
       : expiration_time_(base::Time::Now() + base::Hours(1)) {
     privacy_sandbox::RegisterProfilePrefs(prefs()->registry());
+    HostContentSettingsMap::RegisterProfilePrefs(prefs()->registry());
   }
 
   void SetUp() override {
+    host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
+        prefs(), /*is_off_the_record=*/false, /*store_last_modified=*/false,
+        /*restore_session=*/false, /*should_record_metrics=*/false);
     tracking_protection_settings_ =
         std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
-            prefs(), /*onboarding_service=*/nullptr, /*is_incognito=*/false);
+            prefs(),
+            /*host_content_settings_map=*/host_content_settings_map_.get(),
+            /*onboarding_service=*/nullptr, /*is_incognito=*/false);
     getter_ = std::make_unique<IpProtectionConfigProvider>(
         IdentityManager(), tracking_protection_settings_.get(), prefs(),
         /*profile=*/nullptr);
@@ -190,7 +199,11 @@ class IpProtectionConfigProviderTest : public testing::Test {
         bsa_.get());
   }
 
-  void TearDown() override { getter_->Shutdown(); }
+  void TearDown() override {
+    host_content_settings_map_->ShutdownOnUIThread();
+    tracking_protection_settings_->Shutdown();
+    getter_->Shutdown();
+  }
 
   // Get the IdentityManager for this test.
   signin::IdentityManager* IdentityManager() {
@@ -301,7 +314,7 @@ class IpProtectionConfigProviderTest : public testing::Test {
     return net::ProxyChain::ForIpProtection(servers, chain_id);
   }
 
-  TestingPrefServiceSimple* prefs() { return &prefs_; }
+  sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
 
   // Converts a mock token value and expiration time into the struct that will
   // be passed to the network service, including the formatting that the
@@ -339,9 +352,11 @@ class IpProtectionConfigProviderTest : public testing::Test {
 
   base::HistogramTester histogram_tester_;
 
-  TestingPrefServiceSimple prefs_;
+  sync_preferences::TestingPrefServiceSyncable prefs_;
   std::unique_ptr<privacy_sandbox::TrackingProtectionSettings>
       tracking_protection_settings_;
+
+  scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
 
   std::unique_ptr<IpProtectionConfigProvider> getter_;
   // Note: In the real implementation, `IpProtectionConfigProvider()` owns the
