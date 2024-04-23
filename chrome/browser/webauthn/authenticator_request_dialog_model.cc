@@ -253,21 +253,27 @@ std::u16string GetMechanismDescription(
                                       base::UTF8ToUTF16(*priority_phone_name));
   }
   int message;
+  bool enclave_enabled =
+      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
   switch (type) {
     case device::AuthenticatorType::kWinNative:
-      message = IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO;
+      message = enclave_enabled ? IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO_NEW
+                                : IDS_WEBAUTHN_SOURCE_WINDOWS_HELLO;
       break;
     case device::AuthenticatorType::kTouchID:
-      message = IDS_WEBAUTHN_SOURCE_CHROME_PROFILE;
+      message = enclave_enabled ? IDS_WEBAUTHN_SOURCE_CHROME_PROFILE_NEW
+                                : IDS_WEBAUTHN_SOURCE_CHROME_PROFILE;
       break;
     case device::AuthenticatorType::kICloudKeychain:
       // TODO(crbug.com/40265798): Use IDS_WEBAUTHN_SOURCE_CUSTOM_VENDOR for
       // third party providers.
-      message = IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN;
+      message = enclave_enabled ? IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN_NEW
+                                : IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN;
       break;
     case device::AuthenticatorType::kEnclave:
-      // TODO(derinel): Add proper strings when finalized.
-      return u"Google Password Manager (UNTRANSLATED)";
+      CHECK(enclave_enabled);
+      message = IDS_WEBAUTHN_SOURCE_GOOGLE_PASSWORD_MANAGER;
+      break;
     default:
       message = IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;
   }
