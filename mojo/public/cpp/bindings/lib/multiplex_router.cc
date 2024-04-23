@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -922,9 +923,10 @@ void MultiplexRouter::ProcessTasks(
     base::SequencedTaskRunner* current_task_runner) {
   AssertLockAcquired();
 
-  if (posted_to_process_tasks_)
+  if (posted_to_process_tasks_ || processing_tasks_)
     return;
 
+  base::AutoReset<bool> processing_tasks(&processing_tasks_, true);
   while (!tasks_.empty() && !paused_) {
     std::unique_ptr<Task> task(std::move(tasks_.front()));
     tasks_.pop_front();

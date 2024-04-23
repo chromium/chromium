@@ -341,6 +341,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) MultiplexRouter
   bool posted_to_process_tasks_ = false;
   scoped_refptr<base::SequencedTaskRunner> posted_to_task_runner_;
 
+  // Indicates whether we're currently within ProcessTasks(). Used to avoid
+  // re-entrancy into that method.
+  bool processing_tasks_ = false;
+
   bool encountered_error_ = false;
 
   // Indicates whether this router is paused, meaning it is not currently
