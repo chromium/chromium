@@ -6,3 +6,9 @@ include_rules = [
   "+ios/chrome/browser/ui/default_promo",
   "+ios/chrome/browser/ui/first_run/omnibox_position/promo",
 ]
+
+specific_include_rules = {
+  "utils\.mm" : [
+    "+ios/chrome/browser/ui/policy",
+  ]
+}

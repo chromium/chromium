@@ -14,8 +14,6 @@ source_set("promo_handler") {
   deps = [
     "//base",
     "//components/feature_engagement/public",
-    "//components/policy/core/common",
-    "//components/prefs",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/promos_manager/model",
@@ -26,9 +24,7 @@ source_set("promo_handler") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ui/default_promo",
-    "//ios/chrome/browser/ui/policy:user_policy_scene_agent",
     "//ios/chrome/browser/ui/promos_manager:promos",
   ]
 }

@@ -4,10 +4,19 @@
 
 #import "ios/chrome/browser/ui/promos_manager/utils.h"
 
+#import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/ui/policy/user_policy_util.h"
 
 bool ShouldPromoManagerDisplayPromos() {
   return GetApplicationContext()->WasLastShutdownClean();
@@ -55,5 +64,17 @@ bool IsUIAvailableForPromo(SceneState* scene_state) {
     return NO;
   }
 
-  return YES;
+  // (8) User Policy notification has priority over showing promos.
+  // This will only prevent showing a promo before policy notification but might
+  // show a promo within same user session.
+  ChromeBrowserState* browser_state =
+      scene_state.browserProviderInterface.currentBrowserProvider.browser
+          ->GetBrowserState();
+  PrefService* pref_service = browser_state->GetPrefs();
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForBrowserState(browser_state);
+  policy::UserCloudPolicyManager* user_policy_manager =
+      browser_state->GetUserCloudPolicyManager();
+  return !IsUserPolicyNotificationNeeded(auth_service, pref_service,
+                                         user_policy_manager);
 }

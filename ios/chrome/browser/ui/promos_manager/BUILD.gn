@@ -32,9 +32,14 @@ source_set("utils") {
   ]
   deps = [
     "//base",
+    "//components/policy/core/common",
+    "//components/prefs",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/policy:user_policy_scene_agent",
   ]
 }
 
@@ -116,6 +121,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:test_support",
     "//ios/chrome/browser/promos_manager/model",
@@ -124,7 +130,10 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/test:test_support",
