@@ -185,7 +185,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
       },
       feedbackEnabled_: {
         type: Boolean,
-        value: false,
+        value: true,
       },
       responseText_: {
         type: String,
@@ -657,6 +657,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.userResponseText_ = undefined;
     this.response_ = null;
     this.partialResponse_ = undefined;
+    this.feedbackEnabled_ = true;
     this.saveComposeAppState_();  // Ensure state is saved before compose call.
     this.apiProxy_.compose(this.input_, inputEdited);
   }
@@ -671,6 +672,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.userResponseText_ = undefined;
     this.response_ = null;
     this.partialResponse_ = undefined;
+    this.feedbackEnabled_ = true;
     this.saveComposeAppState_();  // Ensure state is saved before compose call.
     this.apiProxy_.rewrite(style);
     this.animator_.transitionFromResultToLoading(bodyHeight, resultHeight);
@@ -744,6 +746,13 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private isLoadingIndicatorShown_(): boolean {
     return this.loading_ && !this.hasOutput_;
+  }
+
+  // Elements related to results should be hidden when the output is empty, but
+  // not if the results are in an edited state. The latter corresponds with
+  // feedback being disabled.
+  private hideResults_(): boolean {
+    return !this.hasOutput_ && this.feedbackEnabled_;
   }
 
   private hasSuccessfulResponse_(): boolean {

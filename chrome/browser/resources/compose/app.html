@@ -606,7 +606,7 @@
         </cr-loading-gradient>
       </div>
       <div id="resultContainer" class="result-container"
-          hidden="[[!hasOutput_]]">
+          hidden="[[hideResults_(hasOutput_, feedbackEnabled_)]]">
         <div id="resultContainerInner">
           <div id="resultTextContainer" scrollable$="[[enableUiRefinements]]">
             <compose-result-text id="resultText" text-input="[[responseText_]]"
@@ -617,7 +617,7 @@
             </compose-result-text>
           </div>
           <div id="resultOptionsContainer">
-            <div id="resultOptions" inert$="[[!outputComplete_]]">
+            <div id="resultOptions" inert$="[[hideResults_(hasOutput_, feedbackEnabled_)]]">
               <select class="md-select" id="lengthMenu"
                 value="[[selectedLength_]]" aria-label="$i18n{lengthMenuTitle}"
                 on-change="onLengthChanged_" hidden="[[enableUiRefinements]]">
@@ -698,7 +698,7 @@
     </div>
 
     <div id="resultFooter" class="footer"
-        hidden$="[[!outputComplete_]]"
+        hidden$="[[hideResults_(hasOutput_, feedbackEnabled_)]]"
         inert$="[[hasPartialOutput_]]">
       <div class="footer-text">
         <div on-click="onFooterClick_">

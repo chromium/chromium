@@ -20,13 +20,13 @@
   }
 </style>
 <div id="root">
-  <div class="result-text" hidden="[[textInput.streamingEnabled]]"
-      contenteditable$="[[canEdit_()]]" on-focusout="onFocusOut_"
-      on-input="onInput_">[[textInput.text]]</div>
+  <div id="resultText" class="result-text" hidden="[[textInput.streamingEnabled]]"
+      contenteditable$="[[canEdit_()]]" on-focusin="onFocusIn_"
+      on-focusout="onFocusOut_"></div>
   <div id="partialResultText" class="result-text"
       hidden="[[!textInput.streamingEnabled]]"
-      contenteditable$="[[partialTextCanEdit_()]]" on-focusout="onFocusOut_"
-      on-input="onInput_"
+      contenteditable$="[[partialTextCanEdit_()]]" on-focusin="onFocusIn_"
+      on-focusout="onFocusOut_"
     ><template is="dom-repeat" items="[[displayedChunks_]]"
     ><span>[[item.text]]</span></template></div>
 </div>
