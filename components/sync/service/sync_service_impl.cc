@@ -1494,10 +1494,6 @@ ModelTypeSet SyncServiceImpl::GetTypesWithPendingDownloadForInitialSync()
     return ModelTypeSet();
   }
 
-  // Persistent auth errors lead to PAUSED, which implies
-  // data_type_manager_==null above.
-  CHECK(!GetAuthError().IsPersistentError());
-
   return data_type_manager_->GetTypesWithPendingDownloadForInitialSync();
 }
 
