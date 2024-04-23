@@ -1151,13 +1151,23 @@ class PasswordFactorSuccessScreenTester extends ScreenElementApi {
 }
 
 class GaiaInfoScreenTester extends ScreenElementApi {
+  private manualCredentialsButton: PolymerElementApi;
+
   constructor() {
     super('gaia-info');
     this.nextButton = new PolymerElementApi(this, '#nextButton');
+    this.manualCredentialsButton = new PolymerElementApi(this, '#manualButton');
   }
 
   override shouldSkip(): boolean {
     return loadTimeData.getBoolean('testapi_shouldSkipGaiaInfoScreen');
+  }
+
+  /**
+   * Select option to manually enter Google credentials.
+   */
+  selectManualCredentials(): void {
+    this.manualCredentialsButton.click();
   }
 }
 
