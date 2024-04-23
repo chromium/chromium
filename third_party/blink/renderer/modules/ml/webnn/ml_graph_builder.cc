@@ -1842,9 +1842,7 @@ MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
   for (wtf_size_t i = 0; i < new_shape.size(); ++i) {
     auto dim = new_shape[i];
     if (dim == 0) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kDataError,
-          "The value of new shape should not be 0.");
+      exception_state.ThrowTypeError("The value of new shape should not be 0.");
       return nullptr;
     }
     checked_newshape_number_of_elements *= dim;
@@ -1853,8 +1851,7 @@ MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
   size_t newshape_number_of_elements;
   if (!checked_newshape_number_of_elements.AssignIfValid(
           &newshape_number_of_elements)) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
+    exception_state.ThrowTypeError(
         "The number of elements implied by new shape is too large.");
     return nullptr;
   }
@@ -1862,12 +1859,10 @@ MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
   // The number of elements implied by new shape must be the same as the
   // number of elements in the input tensor.
   if (input->NumberOfElements() != newshape_number_of_elements) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        String::Format(
-            "The number of elements (%zu) implied by new shape doesn't match "
-            "the number of elements (%zu) in the input tensor.",
-            newshape_number_of_elements, input->NumberOfElements()));
+    exception_state.ThrowTypeError(String::Format(
+        "The number of elements (%zu) implied by new shape doesn't match "
+        "the number of elements (%zu) in the input tensor.",
+        newshape_number_of_elements, input->NumberOfElements()));
     return nullptr;
   }
   auto* reshape = MakeGarbageCollected<MLOperator>(
@@ -1875,8 +1870,7 @@ MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
   auto output = MLOperand::ValidateAndCreateOutput(
       this, input->DataType(), std::move(output_shape), reshape);
   if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
+    exception_state.ThrowTypeError(output.error());
     return nullptr;
   }
   reshape->Connect({input}, {output.value()});
