@@ -133,6 +133,18 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "fuchsia-cast-astro",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-cast-nelson",
+)
+
+chrome_internal_verifier(
+    builder = "fuchsia-cast-sherlock",
+)
+
+chrome_internal_verifier(
     builder = "fuchsia-fyi-astro",
 )
 
