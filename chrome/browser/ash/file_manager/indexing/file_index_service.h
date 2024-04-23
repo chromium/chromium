@@ -41,7 +41,7 @@ namespace file_manager {
 // ...
 // std::vector<FileInfo> downloaded_files = service->Search(
 //     Query({Term("label", "downloaded")});
-class FileIndexService : public KeyedService {
+class FileIndexService : public KeyedService, FileIndex {
  public:
   explicit FileIndexService(Profile* profile);
   ~FileIndexService() override;
@@ -57,18 +57,20 @@ class FileIndexService : public KeyedService {
   // say, Term("label", "pinned") only the "pinned" label is associated with
   // the given `file_info`. If you want both terms to be associated you must
   // pass both terms in a single call.
-  OpResults UpdateFile(const std::vector<Term>& terms, const FileInfo& info);
+  OpResults UpdateFile(const std::vector<Term>& terms,
+                       const FileInfo& info) override;
 
   // Augments terms associated with the file with the `terms` given as the first
   // argument. Once this operation is finished, the file can be retrieved by any
   // existing terms that were associated with it, or any new terms this call
   // added.
-  OpResults AugmentFile(const std::vector<Term>& terms, const FileInfo& info);
+  OpResults AugmentFile(const std::vector<Term>& terms,
+                        const FileInfo& info) override;
 
   // Removes the file uniquely identified by the URL from this index. This is
   // preferred way of removing files over calling the UpdateFile method with an
   // empty terms vector. Returns true if the file was found and removed.
-  OpResults RemoveFile(const GURL& url);
+  OpResults RemoveFile(const GURL& url) override;
 
   // Adds specified terms to terms associated with the file. The file must
   // already exist for this operation to succeed.
@@ -76,7 +78,7 @@ class FileIndexService : public KeyedService {
   // void AddToFile(const std::vector<Term>& terms, const FileInfo& info);
 
   // Searches the index for file info matching the specified query.
-  std::vector<FileInfo> Search(const Query& query);
+  SearchResults Search(const Query& query) override;
 
  private:
   // The actual implementation of the index used by this service.

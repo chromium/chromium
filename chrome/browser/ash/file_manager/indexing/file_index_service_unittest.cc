@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/file_manager/indexing/file_index_service.h"
+
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/time/time.h"
-#include "chrome/browser/ash/file_manager/indexing/file_index_service.h"
 #include "chrome/browser/ash/file_manager/indexing/file_info.h"
 #include "chrome/browser/ash/file_manager/indexing/query.h"
 #include "chrome/browser/ash/file_manager/indexing/term.h"
@@ -28,6 +29,15 @@ GURL MakeLocalURL(const std::string& file_name) {
 GURL MakeDriveURL(const std::string& file_name) {
   return GURL("filesystem:chrome://file-manager/external/drivefs-987654321/" +
               file_name);
+}
+
+MATCHER_P(ContainsFiles, expected_files, "") {
+  std::vector<FileInfo> result_files;
+  for (const Match& match : arg.matches) {
+    result_files.emplace_back(match.file_info);
+  }
+  return std::equal(expected_files.begin(), expected_files.end(),
+                    result_files.begin());
 }
 
 class FileIndexServiceTest : public testing::Test {
@@ -52,16 +62,18 @@ class FileIndexServiceTest : public testing::Test {
   TestingProfile profile_;
 };
 
+typedef std::vector<FileInfo> FileInfoList;
+
 TEST_F(FileIndexServiceTest, EmptySearch) {
   // Empty query on an empty index.
-  EXPECT_THAT(index_service_->Search(Query({})), testing::ElementsAre());
+  EXPECT_THAT(index_service_->Search(Query({})), ContainsFiles(FileInfoList{}));
 
   FileInfo file_info(MakeLocalURL("foo.txt"), 1024, base::Time());
   EXPECT_EQ(index_service_->UpdateFile({pinned_}, file_info),
             OpResults::kSuccess);
 
   // Empty query on an non-empty index.
-  EXPECT_THAT(index_service_->Search(Query({})), testing::ElementsAre());
+  EXPECT_THAT(index_service_->Search(Query({})), ContainsFiles(FileInfoList{}));
 }
 
 TEST_F(FileIndexServiceTest, SimpleMatch) {
@@ -70,7 +82,7 @@ TEST_F(FileIndexServiceTest, SimpleMatch) {
   EXPECT_EQ(index_service_->UpdateFile({pinned_}, file_info),
             OpResults::kSuccess);
   EXPECT_THAT(index_service_->Search(Query({pinned_})),
-              testing::ElementsAre(file_info));
+              ContainsFiles(FileInfoList{file_info}));
 }
 
 TEST_F(FileIndexServiceTest, MultiTermMatch) {
@@ -80,16 +92,14 @@ TEST_F(FileIndexServiceTest, MultiTermMatch) {
   EXPECT_EQ(index_service_->UpdateFile({pinned_, starred_}, file_info),
             OpResults::kSuccess);
 
-  std::vector<FileInfo> pinned_files = index_service_->Search(Query({pinned_}));
   EXPECT_THAT(index_service_->Search(Query({pinned_})),
-              testing::ElementsAre(file_info));
+              ContainsFiles(FileInfoList{file_info}));
 
   EXPECT_THAT(index_service_->Search(Query({starred_})),
-              testing::ElementsAre(file_info));
+              ContainsFiles(FileInfoList{file_info}));
 
-  std::vector<FileInfo> starred_and_pinned_files =
-      index_service_->Search(Query({pinned_, starred_}));
-  EXPECT_THAT(starred_and_pinned_files, testing::ElementsAre(file_info));
+  EXPECT_THAT(index_service_->Search(Query({pinned_, starred_})),
+              ContainsFiles(FileInfoList{file_info}));
 }
 
 TEST_F(FileIndexServiceTest, AugmentTerms) {
@@ -101,22 +111,22 @@ TEST_F(FileIndexServiceTest, AugmentTerms) {
 
   // Can find by downloaded.
   EXPECT_THAT(index_service_->Search(Query({downloaded_})),
-              testing::ElementsAre(file_info));
+              ContainsFiles(FileInfoList{file_info}));
   // Cannot find by starred.
   EXPECT_THAT(index_service_->Search(Query({starred_})),
-              testing::ElementsAre());
+              ContainsFiles(FileInfoList{}));
 
   EXPECT_EQ(index_service_->AugmentFile({starred_}, file_info),
             OpResults::kSuccess);
   // Can find by downloaded.
   EXPECT_THAT(index_service_->Search(Query({downloaded_})),
-              testing::ElementsAre(file_info));
+              ContainsFiles(FileInfoList{file_info}));
   // And by starred.
   EXPECT_THAT(index_service_->Search(Query({starred_})),
-              testing::ElementsAre(file_info));
+              ContainsFiles(FileInfoList{file_info}));
   // And by starred and downloaded.
   EXPECT_THAT(index_service_->Search(Query({starred_, downloaded_})),
-              testing::ElementsAre(file_info));
+              ContainsFiles(FileInfoList{file_info}));
 }
 
 TEST_F(FileIndexServiceTest, ReplaceTerms) {
@@ -126,33 +136,33 @@ TEST_F(FileIndexServiceTest, ReplaceTerms) {
   EXPECT_EQ(index_service_->UpdateFile({downloaded_}, file_info),
             OpResults::kSuccess);
   EXPECT_THAT(index_service_->Search(Query({downloaded_})),
-              testing::ElementsAre(file_info));
+              ContainsFiles(FileInfoList{file_info}));
   EXPECT_THAT(index_service_->Search(Query({starred_})),
-              testing::ElementsAre());
+              ContainsFiles(FileInfoList{}));
 
   // Just adding more labels: both downloaded and starred.
   EXPECT_EQ(index_service_->UpdateFile({downloaded_, starred_}, file_info),
             OpResults::kSuccess);
   EXPECT_THAT(index_service_->Search(Query({downloaded_})),
-              testing::ElementsAre(file_info));
+              ContainsFiles(FileInfoList{file_info}));
   EXPECT_THAT(index_service_->Search(Query({starred_})),
-              testing::ElementsAre(file_info));
+              ContainsFiles(FileInfoList{file_info}));
 
   // Remove the original "downloaded" label.
   EXPECT_EQ(index_service_->UpdateFile({starred_}, file_info),
             OpResults::kSuccess);
   EXPECT_THAT(index_service_->Search(Query({downloaded_})),
-              testing::ElementsAre());
+              ContainsFiles(FileInfoList{}));
   EXPECT_THAT(index_service_->Search(Query({starred_})),
-              testing::ElementsAre(file_info));
+              ContainsFiles(FileInfoList{file_info}));
 
   // Remove the "starred" label and add back "downloaded".
   EXPECT_EQ(index_service_->UpdateFile({downloaded_}, file_info),
             OpResults::kSuccess);
   EXPECT_THAT(index_service_->Search(Query({downloaded_})),
-              testing::ElementsAre(file_info));
+              ContainsFiles(FileInfoList{file_info}));
   EXPECT_THAT(index_service_->Search(Query({starred_})),
-              testing::ElementsAre());
+              ContainsFiles(FileInfoList({})));
 }
 
 TEST_F(FileIndexServiceTest, SearchMultipleFiles) {
@@ -165,7 +175,7 @@ TEST_F(FileIndexServiceTest, SearchMultipleFiles) {
             OpResults::kSuccess);
 
   EXPECT_THAT(index_service_->Search(Query({downloaded_})),
-              testing::ElementsAre(foo_file_info, bar_file_info));
+              ContainsFiles(FileInfoList{foo_file_info, bar_file_info}));
 }
 
 TEST_F(FileIndexServiceTest, SearchByNonexistingTerms) {
@@ -174,7 +184,7 @@ TEST_F(FileIndexServiceTest, SearchByNonexistingTerms) {
             OpResults::kSuccess);
 
   EXPECT_THAT(index_service_->Search(Query({downloaded_})),
-              testing::ElementsAre());
+              ContainsFiles(FileInfoList{}));
 }
 
 TEST_F(FileIndexServiceTest, EmptyUpdateIsInvalid) {
@@ -187,7 +197,7 @@ TEST_F(FileIndexServiceTest, EmptyUpdateIsInvalid) {
             OpResults::kArgumentError);
 
   EXPECT_THAT(index_service_->Search(Query({pinned_})),
-              testing::ElementsAre(file_info));
+              ContainsFiles(FileInfoList{file_info}));
 }
 
 TEST_F(FileIndexServiceTest, FieldSeparator) {
@@ -202,9 +212,9 @@ TEST_F(FileIndexServiceTest, FieldSeparator) {
             OpResults::kSuccess);
 
   EXPECT_THAT(index_service_->Search(Query({colon_in_field})),
-              testing::ElementsAre(foo_info));
+              ContainsFiles(FileInfoList{foo_info}));
   EXPECT_THAT(index_service_->Search(Query({colon_in_text})),
-              testing::ElementsAre(bar_info));
+              ContainsFiles(FileInfoList{bar_info}));
 }
 
 TEST_F(FileIndexServiceTest, GlobalSearch) {
@@ -224,12 +234,12 @@ TEST_F(FileIndexServiceTest, GlobalSearch) {
 
   // Searching with empty field name means global space search.
   EXPECT_THAT(index_service_->Search(Query({Term("", text)})),
-              testing::ElementsAre(labeled_info, content_info));
+              ContainsFiles(FileInfoList{labeled_info, content_info}));
   // Searching with field name, gives us unique results.
   EXPECT_THAT(index_service_->Search(Query({label_term})),
-              testing::ElementsAre(labeled_info));
+              ContainsFiles(FileInfoList{labeled_info}));
   EXPECT_THAT(index_service_->Search(Query({content_term})),
-              testing::ElementsAre(content_info));
+              ContainsFiles(FileInfoList{content_info}));
 }
 
 TEST_F(FileIndexServiceTest, MixedSearch) {
@@ -251,15 +261,15 @@ TEST_F(FileIndexServiceTest, MixedSearch) {
   // Searching with "starred tax" should return both files.
   EXPECT_THAT(
       index_service_->Search(Query({Term("", tax_text), Term("", u"starred")})),
-      testing::ElementsAre(tax_content_info, tax_label_info));
+      ContainsFiles(FileInfoList{tax_content_info, tax_label_info}));
   // Searching with with "label:starred content:tax" gives us just the file that
   // has "tax" in content.
   EXPECT_THAT(index_service_->Search(Query({starred_, tax_content_term})),
-              testing::ElementsAre(tax_content_info));
+              ContainsFiles(FileInfoList{tax_content_info}));
   // Searching with with "label:starred label:tax" gives us just the file that
   // has "tax" as a label.
   EXPECT_THAT(index_service_->Search(Query({starred_, tax_label_term})),
-              testing::ElementsAre(tax_label_info));
+              ContainsFiles(FileInfoList{tax_label_info}));
 }
 
 TEST_F(FileIndexServiceTest, RemoveFile) {
@@ -270,10 +280,10 @@ TEST_F(FileIndexServiceTest, RemoveFile) {
   EXPECT_EQ(index_service_->UpdateFile({starred_}, foo_info),
             OpResults::kSuccess);
   EXPECT_THAT(index_service_->Search(Query({starred_})),
-              testing::ElementsAre(foo_info));
+              ContainsFiles(FileInfoList{foo_info}));
   EXPECT_EQ(index_service_->RemoveFile(foo_info.file_url), OpResults::kSuccess);
   EXPECT_THAT(index_service_->Search(Query({starred_})),
-              testing::ElementsAre());
+              ContainsFiles(FileInfoList{}));
 }
 
 }  // namespace

@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ash/file_manager/indexing/file_info.h"
 #include "chrome/browser/ash/file_manager/indexing/query.h"
+#include "chrome/browser/ash/file_manager/indexing/search_results.h"
 #include "chrome/browser/ash/file_manager/indexing/term.h"
 
 namespace file_manager {
@@ -62,7 +63,7 @@ class FileIndex {
   virtual OpResults RemoveFile(const GURL& url) = 0;
 
   // Searches the index for file info matching the specified query.
-  virtual std::vector<FileInfo> Search(const Query& query) = 0;
+  virtual SearchResults Search(const Query& query) = 0;
 };
 
 }  // namespace file_manager

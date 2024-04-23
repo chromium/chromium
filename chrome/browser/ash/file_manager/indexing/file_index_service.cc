@@ -30,7 +30,7 @@ OpResults FileIndexService::RemoveFile(const GURL& url) {
 }
 
 // Searches the index for file info matching the specified query.
-std::vector<FileInfo> FileIndexService::Search(const Query& query) {
+SearchResults FileIndexService::Search(const Query& query) {
   return file_index_delegate_->Search(query);
 }
 

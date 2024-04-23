@@ -9,6 +9,8 @@
 #include <tuple>
 #include <utility>
 
+#include "chrome/browser/ash/file_manager/indexing/match.h"
+
 namespace file_manager {
 
 InmemoryFileIndex::InmemoryFileIndex() = default;
@@ -204,19 +206,20 @@ int64_t InmemoryFileIndex::PutFileInfo(int64_t url_id,
 }
 
 // Searches the index for file info matching the specified query.
-std::vector<FileInfo> InmemoryFileIndex::Search(const Query& query) {
+SearchResults InmemoryFileIndex::Search(const Query& query) {
   const std::vector<Term>& terms = query.terms();
+  SearchResults results;
   if (terms.empty()) {
     // Technically, an empty query matches every file, but we treat this
     // as empty match.
-    return {};
+    return results;
   }
   std::set<int64_t> matched_url_ids;
   bool first = true;
   for (const Term& term : terms) {
     int64_t term_id = GetTermId(term.text_bytes());
     if (term_id < 0) {
-      return {};
+      return results;
     }
     int64_t augmented_term_id;
     if (term.field().empty()) {
@@ -230,7 +233,7 @@ std::vector<FileInfo> InmemoryFileIndex::Search(const Query& query) {
     }
     auto ith_term_match = posting_lists_.find(augmented_term_id);
     if (ith_term_match == posting_lists_.end()) {
-      return {};
+      return results;
     }
     if (first) {
       matched_url_ids = ith_term_match->second;
@@ -248,15 +251,17 @@ std::vector<FileInfo> InmemoryFileIndex::Search(const Query& query) {
     }
   }
   if (matched_url_ids.empty()) {
-    return {};
+    return results;
   }
-  std::vector<FileInfo> info_list;
   for (const int64_t url_id : matched_url_ids) {
     auto file_info_it = url_id_to_file_info_.find(url_id);
     DCHECK(file_info_it != url_id_to_file_info_.end());
-    info_list.emplace_back(file_info_it->second);
+    // TODO(b:327535200): Add true score.
+    results.matches.emplace_back(Match(1, file_info_it->second));
   }
-  return info_list;
+  // TODO(b:327535200): Correctly compute total_matches.
+  results.total_matches = results.matches.size();
+  return results;
 }
 
 }  // namespace file_manager

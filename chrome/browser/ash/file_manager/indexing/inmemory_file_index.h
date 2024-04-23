@@ -45,7 +45,7 @@ class InmemoryFileIndex : public FileIndex {
 
   // Overrides base implementation to search in-memory maps for files that match
   // the specified query.
-  std::vector<FileInfo> Search(const Query& query) override;
+  SearchResults Search(const Query& query) override;
 
  private:
   // Builds a map from field name to unique term IDs.
