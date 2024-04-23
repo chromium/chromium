@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_UI_LENS_LENS_OVERLAY_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_LENS_OVERLAY_CONTROLLER_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
@@ -131,6 +128,23 @@ class LensOverlayController : public LensSearchboxClient,
     // Showing an overlay with results.
     kOverlayAndResults,
 
+    // The UI has been made inactive / backgrounded and is hidden. This differs
+    // from kSuspended as the overlay and web view are not freed and could be
+    // immediately reshown.
+    kBackground,
+
+    // The UI is currently storing all necessary state for a potential
+    // restoration of the overlay view. This frees the overlay and associated
+    // views. The following is stored in order to restore the overlay if the
+    // user returns:
+    // - Screenshot bitmap
+    // - The currently selected region, if any
+    // - Any overlay objects passed from query controller
+    // - Any text passed from query controller
+    // - the latest interaction response
+    // TODO(b/335516480): Implement suspended state.
+    kSuspended,
+
     // Will be kOff soon.
     kClosing,
   };
@@ -138,7 +152,9 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Returns the screenshot currently being displayed on this overlay. If no
   // screenshot is showing, will return nullptr.
-  const SkBitmap& current_screenshot() { return current_screenshot_; }
+  const SkBitmap& current_screenshot() {
+    return initialization_data_->current_screenshot_;
+  }
 
   // Returns the side panel coordinator
   lens::LensOverlaySidePanelCoordinator* side_panel_coordinator() {
@@ -198,6 +214,61 @@ class LensOverlayController : public LensSearchboxClient,
       signin::IdentityManager* identity_manager);
 
  private:
+  // Data class for constructing overlay and storing overlay state for
+  // kSuspended state.
+  struct OverlayInitializationData {
+   public:
+    // This is data used to initialize the overlay after the WebUI has been
+    // bound to the overlay controller. The only required fields are the
+    // screenshot and data URI, as the overlay does not require any server
+    // response data for use. Adding response data allows for restoration of
+    // state after the overlay WebUI was torn down.
+    OverlayInitializationData(
+        const SkBitmap& screenshot,
+        const std::string& data_uri,
+        std::vector<lens::mojom::OverlayObjectPtr> objects =
+            std::vector<lens::mojom::OverlayObjectPtr>(),
+        lens::mojom::TextPtr text = lens::mojom::TextPtr(),
+        const lens::proto::LensOverlayInteractionResponse&
+            interaction_response = lens::proto::LensOverlayInteractionResponse()
+                                       .default_instance(),
+        lens::mojom::CenterRotatedBoxPtr selected_region =
+            lens::mojom::CenterRotatedBoxPtr());
+    ~OverlayInitializationData();
+
+    // Whether there is any full image response data present.
+    bool has_full_image_response() const {
+      return !text_.is_null() || !objects_.empty();
+    }
+
+    // The screenshot that is currently being rendered by the WebUI.
+    SkBitmap current_screenshot_;
+    std::string current_screenshot_data_uri_;
+
+    // The latest stored interaction response from the server.
+    lens::proto::LensOverlayInteractionResponse interaction_response_;
+
+    // The selected region. Stored so that it can be used for multiple
+    // requests, such as if the user changes the text query without changing
+    // the region. Cleared if the user makes a text-only or object selection
+    // query.
+    lens::mojom::CenterRotatedBoxPtr selected_region_;
+
+    // Text returned from the full image response.
+    lens::mojom::TextPtr text_;
+
+    // Overlay objects returned from the full image response.
+    std::vector<lens::mojom::OverlayObjectPtr> objects_;
+
+    // The last search box text, used in conjunction with the current region
+    // to construct Lens requests.
+    std::optional<std::string> last_search_box_text_ = std::nullopt;
+
+    // The additional query parameters to pass to the query controller for
+    // generating urls, set by the search box.
+    std::map<std::string, std::string> additional_search_query_params_;
+  };
+
   class UnderlyingWebContentsObserver;
 
   // Called once a screenshot has been captured. This should trigger transition
@@ -209,6 +280,13 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Called when the UI needs to create the overlay widget.
   void ShowOverlayWidget();
+
+  // Backgrounds the UI by hiding the overlay.
+  void BackgroundUI();
+
+  // Initializes the overlay UI after it has been created with data fetched
+  // before its creation.
+  void InitializeOverlayUI(const OverlayInitializationData& init_data);
 
   // Creates InitParams for the overlay widget based on the window bounds.
   views::Widget::InitParams CreateWidgetInitParams();
@@ -295,9 +373,8 @@ class LensOverlayController : public LensSearchboxClient,
   // clean up stale pointers. Only valid while `overlay_widget_` is showing.
   std::vector<views::WebView*> glued_webviews_;
 
-  // The screenshot that is currently being rendered by the WebUI.
-  SkBitmap current_screenshot_;
-  std::string current_screenshot_data_uri_;
+  // The assembly data needed for the overlay to be created and shown.
+  std::unique_ptr<OverlayInitializationData> initialization_data_;
 
   // A pending url to be loaded in the side panel. Needed when the side
   // panel is not bound at the time of a text request.
@@ -310,14 +387,6 @@ class LensOverlayController : public LensSearchboxClient,
   // A pending thumbnail URI to be loaded in the side panel. Needed when the
   // side panel is not bound at the time of a region request.
   std::optional<std::string> pending_thumbnail_uri_ = std::nullopt;
-
-  // The last search box text, used in conjunction with the current region
-  // to construct Lens requests.
-  std::optional<std::string> last_search_box_text_ = std::nullopt;
-
-  // The additional query parameters to pass to the query controller for
-  // generating urls, set by the search box.
-  std::map<std::string, std::string> additional_search_query_params_;
 
   // Connections to and from the overlay WebUI. Only valid while
   // `overlay_widget_` is showing, and after the WebUI has started executing JS
@@ -354,12 +423,6 @@ class LensOverlayController : public LensSearchboxClient,
   std::unique_ptr<lens::LensOverlayQueryController>
       lens_overlay_query_controller_;
 
-  // The selected region. Stored so that it can be used for multiple
-  // requests, such as if the user changes the text query without changing
-  // the region. Cleared if the user makes a text-only or object selection
-  // query.
-  lens::mojom::CenterRotatedBoxPtr selected_region_;
-
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
@@ -372,9 +435,6 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Prevents other features from showing tab-modal UI.
   std::unique_ptr<tabs::ScopedTabModalUI> scoped_tab_modal_ui_;
-
-  // The latest stored interaction response from the server.
-  lens::proto::LensOverlayInteractionResponse latest_interaction_response_;
 
   // Must be the last member.
   base::WeakPtrFactory<LensOverlayController> weak_factory_{this};

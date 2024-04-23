@@ -255,10 +255,14 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
   }
 
   // Lens overlay takes a screenshot of the tab. In order to take a screenshot
-  // the tab must not be about:blank and must be painted.
-  void WaitForPaint() {
+  // the tab must not be about:blank and must be painted. By default opens in
+  // the current tab.
+  void WaitForPaint(
+      WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB,
+      int browser_test_flags = ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP) {
     const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url, disposition, browser_test_flags));
     ASSERT_TRUE(base::test::RunUntil([&]() {
       return browser()
           ->tab_strip_model()
@@ -530,10 +534,14 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   // After flushing the mojo calls, the data should be present.
   EXPECT_FALSE(
       fake_controller->fake_overlay_page_.last_received_objects_.empty());
-  EXPECT_TRUE(kTestOverlayObject->Equals(
-      *fake_controller->fake_overlay_page_.last_received_objects_[0]));
-  EXPECT_TRUE(kTestText->Equals(
-      *fake_controller->fake_overlay_page_.last_received_text_));
+
+  auto* object =
+      fake_controller->fake_overlay_page_.last_received_objects_[0].get();
+  auto* text = fake_controller->fake_overlay_page_.last_received_text_.get();
+  EXPECT_TRUE(object);
+  EXPECT_TRUE(text);
+  EXPECT_TRUE(kTestOverlayObject->Equals(*object));
+  EXPECT_TRUE(kTestText->Equals(*text));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -564,6 +572,44 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   EXPECT_TRUE(controller->GetLensResponseForTesting().has_suggest_signals());
   EXPECT_EQ(controller->GetLensResponseForTesting().suggest_signals(),
             kTestSuggestSignals);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       BackgroundAndForegroundUI) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Grab the index of the currently active tab so we can return to it later.
+  int active_controller_tab_index =
+      browser()->tab_strip_model()->active_index();
+
+  // Showing UI should eventually result in overlay state.
+  controller->ShowUI();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  EXPECT_TRUE(controller->GetOverlayWidgetForTesting()->IsVisible());
+
+  // Opening a new tab should background the overlay UI.
+  WaitForPaint(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+               ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
+                   ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kBackground; }));
+  EXPECT_FALSE(controller->GetOverlayWidgetForTesting()->IsVisible());
+
+  // Returning back to the previous tab should show the overlay UI again.
+  browser()->tab_strip_model()->ActivateTabAt(active_controller_tab_index);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  EXPECT_TRUE(controller->GetOverlayWidgetForTesting()->IsVisible());
 }
 
 }  // namespace
