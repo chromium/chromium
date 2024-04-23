@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Long Animation Frame Timing: source location for inline scripts</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+<img id=image onload="busy_wait()">
+<script>
+  promise_test(async () => {
+    document.querySelector("#image").src = "/images/green.png";
+    const script = await loaf_with_inline_script("event-listener");
+    assert_equals(script.sourceURL, location.href);
+    assert_equals(script.sourceFunctionName, "onload");
+    assert_greater_than(script.sourceCharPosition, 0);
+  }, "Source location should be available for event handlers");
+</script>
+</body>

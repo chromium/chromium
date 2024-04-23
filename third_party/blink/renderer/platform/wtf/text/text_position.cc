@@ -68,7 +68,7 @@ TextPosition TextPosition::FromOffsetAndLineEndings(
       line_index > 0 ? line_endings.at(line_index - 1) + 1 : 0;
   int column = offset - line_start_offset;
   return TextPosition(OrdinalNumber::FromZeroBasedInt(line_index),
-                      OrdinalNumber::FromZeroBasedInt(column));
+                      OrdinalNumber::FromZeroBasedInt(column), offset);
 }
 
 }  // namespace WTF

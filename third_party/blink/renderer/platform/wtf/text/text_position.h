@@ -76,8 +76,8 @@ class TextPosition final {
   DISALLOW_NEW();
 
  public:
-  TextPosition(OrdinalNumber line, OrdinalNumber column)
-      : line_(line), column_(column) {}
+  TextPosition(OrdinalNumber line, OrdinalNumber column, unsigned offset = 0)
+      : line_(line), column_(column), offset_(offset) {}
 
   // Use MinimumPosition() instead.
   TextPosition() = delete;
@@ -110,6 +110,11 @@ class TextPosition final {
 
   OrdinalNumber line_;
   OrdinalNumber column_;
+
+  // This is used by long animation frames to expose character position of
+  // inline scripts
+  // (https://w3c.github.io/long-animation-frames/#dom-performancescripttiming-sourcecharposition)
+  unsigned offset_ = 0;
 };
 
 WTF_EXPORT std::unique_ptr<Vector<wtf_size_t>> GetLineEndings(const String&);
