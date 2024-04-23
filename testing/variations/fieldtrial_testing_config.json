@@ -358,6 +358,22 @@
             ]
         }
     ],
+    "AndroidDesktopWindowing": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DragDropTabTearing",
+                        "TabStripLayoutOptimization"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidHatsNext": [
         {
             "platforms": [
@@ -19247,21 +19263,6 @@
                     },
                     "enable_features": [
                         "IPH_TabSearch"
-                    ]
-                }
-            ]
-        }
-    ],
-    "TabStripLayoutOptimization": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabStripLayoutOptimization"
                     ]
                 }
             ]
