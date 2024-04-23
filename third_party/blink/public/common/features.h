@@ -422,9 +422,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDropInputEventsBeforeFirstPaint);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDroppedTouchSequenceIncludesTouchEnd);
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kEagerCacheStorageSetupForServiceWorkers);
-
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEditingNG);
 
 // Enables establishing the GPU channel asnchronously when requesting a new

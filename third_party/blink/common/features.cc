@@ -785,12 +785,6 @@ BASE_FEATURE(kDroppedTouchSequenceIncludesTouchEnd,
              "DroppedTouchSequenceIncludesTouchEnd",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable eagerly setting up a CacheStorage interface pointer and
-// passing it to service workers on startup as an optimization.
-BASE_FEATURE(kEagerCacheStorageSetupForServiceWorkers,
-             "EagerCacheStorageSetupForServiceWorkers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEstablishGpuChannelAsync,
              "EstablishGpuChannelAsync",
 #if BUILDFLAG(IS_ANDROID)

@@ -87,9 +87,8 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
     blink::WebRuntimeFeatures::EnableFeatureFromString(feature, true);
   }
 
-  DCHECK(!params->provider_info->cache_storage ||
-         base::FeatureList::IsEnabled(
-             blink::features::kEagerCacheStorageSetupForServiceWorkers));
+  // `cache_storage` may be null if COEP is not enabled, we cannot bind
+  // eagerly in that case.
   mojo::PendingRemote<blink::mojom::CacheStorage> cache_storage =
       std::move(params->provider_info->cache_storage);
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>

@@ -1267,24 +1267,12 @@ IN_PROC_BROWSER_TEST_F(UserAgentServiceWorkerBrowserTest, NavigatorUserAgent) {
   run_loop.Run();
 }
 
-class ServiceWorkerEagerCacheStorageSetupTest
-    : public ServiceWorkerBrowserTest {
- public:
-  ServiceWorkerEagerCacheStorageSetupTest() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kEagerCacheStorageSetupForServiceWorkers);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Regression test for https://crbug.com/1077916.
 // Update the service worker by registering a worker with different script url.
 // This test makes sure the worker can handle the fetch event using CacheStorage
 // API.
 // TODO(crbug.com/40695132): flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerEagerCacheStorageSetupTest,
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
                        DISABLED_UpdateOnScriptUrlChange) {
   StartServerAndNavigateToSetup();
   EXPECT_TRUE(NavigateToURL(shell(),
