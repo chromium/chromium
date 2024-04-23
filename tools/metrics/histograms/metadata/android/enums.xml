@@ -1266,6 +1266,28 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="QUERY_TILES"/>
 </enum>
 
+<enum name="PageSummaryModelDownloadEvents">
+  <int value="0" label="Download Started"/>
+  <int value="1" label="Download Succeeded"/>
+  <int value="2" label="Download Failed"/>
+</enum>
+
+<enum name="PageSummaryModelExecutionResults">
+  <int value="0" label="Successful"/>
+  <int value="1" label="Input filtered"/>
+  <int value="2" label="Output filtered"/>
+  <int value="3" label="Request too large"/>
+  <int value="4" label="Canceled"/>
+  <int value="5" label="Unknown Error"/>
+</enum>
+
+<enum name="PageSummaryModelState">
+  <int value="0" label="Not Available"/>
+  <int value="1" label="Available"/>
+  <int value="2" label="Downloadable"/>
+  <int value="3" label="Downloading"/>
+</enum>
+
 <enum name="PageSummaryShareSheetVisibility">
   <int value="0" label="Shown"/>
   <int value="1" label="Not shown, model not available"/>

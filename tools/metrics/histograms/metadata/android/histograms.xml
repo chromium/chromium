@@ -3052,6 +3052,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.PageSummary.DownloadEvents"
+    enum="PageSummaryModelDownloadEvents" expires_after="2024-06-30">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Records events related to downloading the page summary model. Only recorded
+    when the PageInfoSharing feature is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Android.PageSummary.ModelResult"
+    enum="PageSummaryModelExecutionResults" expires_after="2024-06-30">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>Records the result of executing the page summary model.</summary>
+</histogram>
+
+<histogram name="Android.PageSummary.ModelStateOnStartup"
+    enum="PageSummaryModelState" expires_after="2024-06-30">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Records the availability of the page summary model on startup. Only recorded
+    when the PageInfoSharing feature is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Android.PageSummary.PercentageOfInputUsed" units="%"
+    expires_after="2024-06-30">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Records the percentage of input that the model used to generate a summary.
+  </summary>
+</histogram>
+
 <histogram name="Android.PageSummary.Share.IsVisibleInShareSheet"
     enum="PageSummaryShareSheetVisibility" expires_after="2024-06-30">
   <owner>salg@google.com</owner>
@@ -3063,13 +3099,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.PageSummary.Share.SheetEvents"
-    enum="PageSummarySheetEvents" expires_after="2024-06-30">
+<histogram name="Android.PageSummary.StartToEndLatency" units="ms"
+    expires_after="2024-06-30">
   <owner>salg@google.com</owner>
   <owner>ssid@google.com</owner>
   <summary>
-    Records ocurrences of various UI events related to the page summary sharing
-    sheet (open sheet, dismiss sheet, send feedback, etc.).
+    Records the total amount of time between the start and end of model
+    execution for the page summary model.
+  </summary>
+</histogram>
+
+<histogram name="Android.PageSummary.StartToStreamLatency" units="ms"
+    expires_after="2024-06-30">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Records the amount of time between the start of execution and the start of
+    result streaming for the page summary model.
+  </summary>
+</histogram>
+
+<histogram name="Android.PageSummary.StreamToEndLatency" units="ms"
+    expires_after="2024-06-30">
+  <owner>salg@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Records the amount of time between the start of result streaming and the end
+    of model execution for the page summary model.
   </summary>
 </histogram>
 
