@@ -181,8 +181,7 @@
   "CROS_TROGDOR_PUBLIC_LKGM": {
     "skylab": {
       "cros_board": "trogdor",
-      "cros_chrome_version": "124.0.6366.0",
-      "cros_img": "trogdor-public/R125-15826.0.0",
+      "use_lkgm": true,
       "bucket": "chromiumos-image-archive"
     },
     "enabled": true,
@@ -200,8 +199,7 @@
     "skylab": {
       "cros_board": "volteer",
       "cros_model": "voxel",
-      "cros_chrome_version": "124.0.6366.0",
-      "cros_img": "volteer-public/R125-15826.0.0",
+      "use_lkgm": true,
       "bucket": "chromiumos-image-archive",
       "dut_pool": "chromium",
       "public_builder": "cros_test_platform_public",

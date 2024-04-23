@@ -1382,7 +1382,6 @@
         "bucket": "chromiumos-image-archive",
         "ci_only": true,
         "cros_board": "volteer",
-        "cros_img": "volteer-public/R125-15826.0.0",
         "cros_model": "voxel",
         "dut_pool": "chromium",
         "name": "chromeos_integration_tests VOLTEER_PUBLIC_LKGM",
@@ -1390,6 +1389,7 @@
         "public_builder_bucket": "testplatform-public",
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "use_lkgm": true,
         "variant_id": "VOLTEER_PUBLIC_LKGM"
       }
     ]
@@ -1548,7 +1548,6 @@
         "bucket": "chromiumos-image-archive",
         "ci_only": true,
         "cros_board": "volteer",
-        "cros_img": "volteer-public/R125-15826.0.0",
         "cros_model": "voxel",
         "dut_pool": "chromium",
         "name": "lacros_all_tast_tests VOLTEER_PUBLIC_LKGM",
@@ -1564,6 +1563,7 @@
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 10800,
+        "use_lkgm": true,
         "variant_id": "VOLTEER_PUBLIC_LKGM"
       }
     ]
@@ -1592,17 +1592,16 @@
         "autotest_name": "chromium",
         "bucket": "chromiumos-image-archive",
         "cros_board": "trogdor",
-        "cros_img": "trogdor-public/R125-15826.0.0",
         "name": "chromeos_integration_tests TROGDOR_PUBLIC_LKGM",
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
+        "use_lkgm": true,
         "variant_id": "TROGDOR_PUBLIC_LKGM"
       },
       {
         "autotest_name": "tast.lacros-from-gcs",
         "bucket": "chromiumos-image-archive",
         "cros_board": "trogdor",
-        "cros_img": "trogdor-public/R125-15826.0.0",
         "name": "lacros_all_tast_tests TROGDOR_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
@@ -1614,6 +1613,7 @@
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "test_level_retries": 2,
         "timeout_sec": 10800,
+        "use_lkgm": true,
         "variant_id": "TROGDOR_PUBLIC_LKGM"
       }
     ]
