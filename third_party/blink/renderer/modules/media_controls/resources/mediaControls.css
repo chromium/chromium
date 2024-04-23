@@ -213,6 +213,14 @@ video::-internal-media-controls-picture-in-picture-button {
 
   /* Cursor: pointer will cause a highlight when touch on it, this will disable it */
   -webkit-tap-highlight-color: transparent;
+
+  /* These buttons form the anchor for anchor positioning. */
+  anchor-name: --internal-media-control-button-anchor;
+
+  /* TODO(crbug.com/40281992) Once anchor-scope is implemented, verify that this
+     anchor name is not observable outside the media element tree.
+     https://drafts.csswg.org/css-anchor-position-1/#anchor-scope */
+  anchor-scope: --internal-media-control-button-anchor;
 }
 
 /*
@@ -901,6 +909,8 @@ video::-internal-media-controls-overflow-menu-list {
   border:0;
   padding: 0;
   /* Anchor the popover on the bottom right corner. */
+  position-anchor: --internal-media-control-button-anchor;
+  inset: auto;
   bottom: calc(anchor(bottom) + 4px) !important;
   right: calc(anchor(right) + 4px) !important;
 }

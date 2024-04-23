@@ -214,7 +214,6 @@ MediaControlPopupMenuElement::MediaControlPopupMenuElement(
   setTabIndex(0);
 
   setAttribute(html_names::kPopoverAttr, keywords::kAuto);
-  SetElementAttribute(html_names::kAnchorAttr, PopupAnchor());
   SetIsWanted(false);
 }
 
