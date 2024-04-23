@@ -647,6 +647,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
       sk_sp<PaintFilter> filter,
       cc::PaintCanvas& canvas) const;
 
+  void AddLayerFilterUserCount(const V8CanvasFilterInput*);
+
   // Pops from the top of the state stack, inverts transform, restores the
   // PaintCanvas, and validates the state stack. Helper for Restore and
   // EndLayer.

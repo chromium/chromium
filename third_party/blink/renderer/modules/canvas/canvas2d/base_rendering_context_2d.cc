@@ -234,6 +234,8 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
   sk_sp<PaintFilter> filter;
   if (const V8CanvasFilterInput* filter_input = CHECK_DEREF(options).filter();
       filter_input != nullptr) {
+    AddLayerFilterUserCount(filter_input);
+
     HTMLCanvasElement* canvas_for_filter = HostAsHTMLCanvasElement();
     FilterOperations filter_operations = CanvasFilter::CreateFilterOperations(
         *filter_input, AccessFont(canvas_for_filter), canvas_for_filter,
@@ -284,6 +286,20 @@ void BaseRenderingContext2D::beginLayer(ScriptState* script_state,
   DCHECK(!layer_state.ShouldDrawShadows());
   setGlobalAlpha(1.0);
   setGlobalCompositeOperation("source-over");
+}
+
+void BaseRenderingContext2D::AddLayerFilterUserCount(
+    const V8CanvasFilterInput* filter_input) {
+  UseCounter::Count(GetTopExecutionContext(),
+                    WebFeature::kCanvas2DLayersFilters);
+  if (filter_input->GetContentType() ==
+      V8CanvasFilterInput::ContentType::kString) {
+    UseCounter::Count(GetTopExecutionContext(),
+                      WebFeature::kCanvas2DLayersCSSFilters);
+  } else {
+    UseCounter::Count(GetTopExecutionContext(),
+                      WebFeature::kCanvas2DLayersFilterObjects);
+  }
 }
 
 class ScopedResetCtm {

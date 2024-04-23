@@ -4337,6 +4337,9 @@ enum WebFeature {
 
   kV8WebView_GetExperimentalMediaIntegrityTokenProvider_Method = 4949,
   kV8MediaIntegrityTokenProvider_RequestToken_Method = 4950,
+  kCanvas2DLayersFilters = 4951,
+  kCanvas2DLayersCSSFilters = 4952,
+  kCanvas2DLayersFilterObjects = 4953,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

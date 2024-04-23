@@ -11519,6 +11519,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4949"
       label="V8WebView_GetExperimentalMediaIntegrityTokenProvider_Method"/>
   <int value="4950" label="V8MediaIntegrityTokenProvider_RequestToken_Method"/>
+  <int value="4951" label="Canvas2DLayersFilters"/>
+  <int value="4952" label="Canvas2DLayersCSSFilters"/>
+  <int value="4953" label="Canvas2DLayersFilterObjects"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
