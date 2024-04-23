@@ -38,7 +38,7 @@ class PressureObserverOptions;
 class PressureRecord;
 class ScriptState;
 
-class PressureObserver final : public ScriptWrappable {
+class MODULES_EXPORT PressureObserver final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -73,6 +73,10 @@ class PressureObserver final : public ScriptWrappable {
   void OnBindingSucceeded(V8PressureSource::Enum);
   void OnBindingFailed(V8PressureSource::Enum, DOMExceptionCode);
   void OnConnectionError();
+
+  ChangeRateMonitor& change_rate_monitor_for_testing() {
+    return change_rate_monitor_;
+  }
 
  private:
   // Verifies if the latest update was at least longer than the sample period.
