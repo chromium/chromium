@@ -9165,6 +9165,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE_BUT_VOICES_EXIST" desc="Label for status text when no space on disk prevents a voice from downloading from the Read Aloud language menu but there are already installed voices for the language.">
         For higher quality voices, clear space on your device
       </message>
+      <message name="IDS_READING_MODE_VOICE_DOWNLOADED_TITLE" desc="Title for a notification to alert the user that a high quality TTS voice data file has been downloaded.">
+        High-quality <ph name="LANGUAGE">$1<ex>English</ex></ph> voice files downloaded
+      </message>
+      <message name="IDS_READING_MODE_VOICE_DOWNLOADED_MESSAGE" desc="Message for a notification to alert the user that a high quality TTS voice data file has been downloaded.">
+        Voice files are shared among users to save disk space
+      </message>
       <message name="IDS_READING_MODE_SIDE_PANEL_PROMO"
                desc="Text for the in-product-help bubble shown for the reading mode bubble.">
         To show a simplified view of this page, open the side panel and select Reading mode
