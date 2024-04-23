@@ -110,6 +110,7 @@ chrome_grit_defines = [
   "enable_extensions=$enable_extensions",
   "enable_hangout_services_extension=$enable_hangout_services_extension",
   "enable_ink=$enable_ink",
+  "enable_pdf_ink2=$enable_pdf_ink2",
   "enable_nacl=$enable_nacl",
   "enable_dice_support=$enable_dice_support",
   "enable_pdf=$enable_pdf",

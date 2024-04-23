@@ -211,6 +211,13 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         value: false,
       },
 
+      // <if expr="enable_pdf_ink2">
+      pdfInk2Enabled_: {
+        type: Boolean,
+        value: false,
+      },
+      // </if>
+
       // <if expr="enable_screen_ai_service">
       pdfOcrEnabled_: {
         type: Boolean,
@@ -277,6 +284,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private navigator_: PdfNavigator|null = null;
   private pageNo_: number;
   private pdfAnnotationsEnabled_: boolean;
+  // <if expr="enable_pdf_ink2">
+  private pdfInk2Enabled_: boolean = false;
+  // </if>
   // <if expr="enable_screen_ai_service">
   private pdfOcrEnabled_: boolean;
   // </if>
@@ -715,6 +725,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     this.pdfAnnotationsEnabled_ =
         loadTimeData.getBoolean('pdfAnnotationsEnabled');
+    // <if expr="enable_pdf_ink2">
+    this.pdfInk2Enabled_ = loadTimeData.getBoolean('pdfInk2Enabled');
+    // </if>
     // <if expr="enable_screen_ai_service">
     this.pdfOcrEnabled_ = loadTimeData.getBoolean('pdfOcrEnabled');
     // </if>

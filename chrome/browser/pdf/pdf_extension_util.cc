@@ -25,13 +25,18 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/api/mime_handler_private.h"
-#include "pdf/pdf_features.h"
+#include "pdf/buildflags.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+#include "base/feature_list.h"
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "ui/accessibility/accessibility_features.h"
@@ -230,6 +235,11 @@ void AddAdditionalData(bool enable_printing,
   printing_enabled = enable_printing;
   annotations_enabled = enable_annotations;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  annotations_enabled = enable_annotations;
+  dict->Set("pdfInk2Enabled",
+            base::FeatureList::IsEnabled(chrome_pdf::features::kPdfInk2));
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
   dict->Set("printingEnabled", printing_enabled);
   dict->Set("pdfAnnotationsEnabled", annotations_enabled);
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
