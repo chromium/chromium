@@ -27,9 +27,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
@@ -43,7 +41,6 @@ import java.util.List;
 /** Tests for {@link DropdownItemViewInfoListManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE})
 public class DropdownItemViewInfoListManagerUnitTest {
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
     public @Rule TestRule mProcessor = new Features.JUnitProcessor();
@@ -72,8 +69,6 @@ public class DropdownItemViewInfoListManagerUnitTest {
         mContext = ContextUtils.getApplicationContext();
         mManager = new DropdownItemViewInfoListManager(mSuggestionModels, mContext);
         mManager.onNativeInitialized();
-
-        Assert.assertTrue(OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext));
     }
 
     /**
