@@ -72,27 +72,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="BrowsingTopics.EpochTopicsCalculation.Hanging.DaysSinceSessionStart"
-    units="days" expires_after="2024-10-03">
+<histogram name="BrowsingTopics.EpochTopicsCalculation.Hanging.RetryNumber"
+    units="retry number" expires_after="2024-10-22">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
-    Records the duration in days between the profile session start and the topic
-    calculation start. Recorded when a topic calculation is detected to be
-    hanging (i.e. an async operation did not finish within 30 seconds).
-  </summary>
-</histogram>
-
-<histogram
-    name="BrowsingTopics.EpochTopicsCalculation.Hanging.SecondsSinceSessionStart"
-    units="seconds" expires_after="2024-10-03">
-  <owner>yaoxia@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    Records the duration in seconds between the profile session start and the
-    topic calculation start. Recorded when a topic calculation is detected to be
-    hanging (i.e. an async operation did not finish within 30 seconds).
+    Records the number of consecutive retries for a topic calculation (initial
+    attempt = 0). Recorded when a topic calculation times out.
   </summary>
 </histogram>
 
@@ -124,25 +110,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="BrowsingTopics.EpochTopicsCalculation.Started.DaysSinceSessionStart"
-    units="days" expires_after="2024-10-03">
+<histogram name="BrowsingTopics.EpochTopicsCalculation.Started.RetryNumber"
+    units="retry number" expires_after="2024-10-22">
   <owner>yaoxia@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
-    Records the duration in days between the profile session start and the topic
-    calculation start. Recorded when a topic calculation starts.
-  </summary>
-</histogram>
-
-<histogram
-    name="BrowsingTopics.EpochTopicsCalculation.Started.PreviousTimeoutCount"
-    units="days" expires_after="2024-10-15">
-  <owner>yaoxia@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    Records the number of previous successively hanging calculations. Recorded
-    when a topic calculation starts.
+    Records the number of consecutive retries for a topic calculation (initial
+    attempt = 0). Recorded when a topic calculation starts.
   </summary>
 </histogram>
 

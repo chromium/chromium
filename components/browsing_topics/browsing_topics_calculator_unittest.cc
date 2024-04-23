@@ -460,40 +460,7 @@ TEST_F(BrowsingTopicsCalculatorTest,
       /*expected_bucket_count=*/1);
 }
 
-TEST_F(BrowsingTopicsCalculatorTest, StartedAndHangingTimingMetrics) {
-  base::HistogramTester histograms;
-
-  history_service_->SetQueryResultDelay(base::Seconds(35));
-
-  test_annotator_.UseModelInfo(
-      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build());
-
-  base::ElapsedTimer timer;
-  EpochTopics result = CalculateTopics(
-      /*epochs=*/{},
-      /*session_start_time=*/base::Time::Now() - base::Seconds(10));
-
-  EXPECT_EQ(timer.Elapsed(), base::Seconds(30));
-  EXPECT_TRUE(result.empty());
-  EXPECT_EQ(result.calculator_result_status(),
-            CalculatorResultStatus::kHangingAfterHistoryRequested);
-
-  histograms.ExpectUniqueSample(
-      "BrowsingTopics.EpochTopicsCalculation.FirstTry.CalculatorResultStatus",
-      CalculatorResultStatus::kHangingAfterHistoryRequested,
-      /*expected_bucket_count=*/1);
-  histograms.ExpectUniqueSample(
-      "BrowsingTopics.EpochTopicsCalculation.Hanging.SecondsSinceSessionStart",
-      /*sample=*/10, /*expected_bucket_count=*/1);
-  histograms.ExpectUniqueSample(
-      "BrowsingTopics.EpochTopicsCalculation.Hanging.DaysSinceSessionStart",
-      /*sample=*/0, /*expected_bucket_count=*/1);
-  histograms.ExpectUniqueSample(
-      "BrowsingTopics.EpochTopicsCalculation.Started.DaysSinceSessionStart",
-      /*sample=*/0, /*expected_bucket_count=*/1);
-}
-
-TEST_F(BrowsingTopicsCalculatorTest, TimeoutRetryMetrics) {
+TEST_F(BrowsingTopicsCalculatorTest, TimeoutRetrySuccessMetrics) {
   base::HistogramTester histograms;
 
   test_annotator_.UseModelInfo(
@@ -511,7 +478,7 @@ TEST_F(BrowsingTopicsCalculatorTest, TimeoutRetryMetrics) {
             CalculatorResultStatus::kSuccess);
 
   histograms.ExpectUniqueSample(
-      "BrowsingTopics.EpochTopicsCalculation.Started.PreviousTimeoutCount",
+      "BrowsingTopics.EpochTopicsCalculation.Started.RetryNumber",
       /*sample=*/2, /*expected_bucket_count=*/1);
   histograms.ExpectUniqueSample(
       "BrowsingTopics.EpochTopicsCalculation.TimeoutRetry."
@@ -521,6 +488,40 @@ TEST_F(BrowsingTopicsCalculatorTest, TimeoutRetryMetrics) {
   histograms.ExpectTotalCount(
       "BrowsingTopics.EpochTopicsCalculation.FirstTry.CalculatorResultStatus",
       /*expected_count=*/0);
+  histograms.ExpectTotalCount(
+      "BrowsingTopics.EpochTopicsCalculation.Hanging.RetryNumber",
+      /*expected_count=*/0);
+}
+
+TEST_F(BrowsingTopicsCalculatorTest, TimeoutRetryHangingMetrics) {
+  base::HistogramTester histograms;
+
+  test_annotator_.SetModelRequestDelay(base::Seconds(35));
+  test_annotator_.UseModelInfo(
+      *optimization_guide::TestModelInfoBuilder().SetVersion(1).Build());
+
+  base::ElapsedTimer timer;
+  EpochTopics result = CalculateTopics(
+      /*epochs=*/{},
+      /*session_start_time=*/base::Time::Now() - base::Seconds(10),
+      /*previous_timeout_count=*/2);
+
+  EXPECT_EQ(timer.Elapsed(), base::Seconds(30));
+  EXPECT_TRUE(result.empty());
+  EXPECT_EQ(result.calculator_result_status(),
+            CalculatorResultStatus::kHangingAfterModelRequested);
+
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.EpochTopicsCalculation.Started.RetryNumber",
+      /*sample=*/2, /*expected_bucket_count=*/1);
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.EpochTopicsCalculation.Hanging.RetryNumber",
+      /*sample=*/2, /*expected_bucket_count=*/1);
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.EpochTopicsCalculation.TimeoutRetry."
+      "CalculatorResultStatus",
+      CalculatorResultStatus::kHangingAfterModelRequested,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(BrowsingTopicsCalculatorTest, TerminatedBeforeComplete) {

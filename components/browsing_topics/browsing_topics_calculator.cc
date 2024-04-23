@@ -88,14 +88,9 @@ void RecordCalculatorResultMetrics(
 
   if (DoesCalculationFailDueToHanging(*status)) {
     base::UmaHistogramExactLinear(
-        "BrowsingTopics.EpochTopicsCalculation.Hanging.DaysSinceSessionStart",
-        calculation_start_time_since_session_start.InDays(),
+        "BrowsingTopics.EpochTopicsCalculation.Hanging.RetryNumber",
+        previous_timeout_count,
         /*exclusive_max=*/30);
-    base::UmaHistogramExactLinear(
-        "BrowsingTopics.EpochTopicsCalculation.Hanging."
-        "SecondsSinceSessionStart",
-        calculation_start_time_since_session_start.InSeconds(),
-        /*exclusive_max=*/60);
   }
 
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
@@ -224,12 +219,7 @@ BrowsingTopicsCalculator::BrowsingTopicsCalculator(
       previous_timeout_count_(previous_timeout_count),
       session_start_time_(session_start_time) {
   base::UmaHistogramExactLinear(
-      "BrowsingTopics.EpochTopicsCalculation.Started.DaysSinceSessionStart",
-      (calculation_time_ - session_start_time_).InDays(),
-      /*exclusive_max=*/30);
-
-  base::UmaHistogramExactLinear(
-      "BrowsingTopics.EpochTopicsCalculation.Started.PreviousTimeoutCount",
+      "BrowsingTopics.EpochTopicsCalculation.Started.RetryNumber",
       previous_timeout_count,
       /*exclusive_max=*/30);
 
