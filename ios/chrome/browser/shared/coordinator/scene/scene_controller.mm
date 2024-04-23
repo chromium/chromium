@@ -300,8 +300,11 @@ void InjectNTP(Browser* browser) {
   item->SetURL(GURL(kChromeUINewTabURL));
   items.push_back(std::move(item));
   web_state->GetNavigationManager()->Restore(0, std::move(items));
-  NewTabPageTabHelper::CreateForWebState(web_state.get());
-  NewTabPageTabHelper::FromWebState(web_state.get())->SetShowStartSurface(true);
+  if (!browser->GetBrowserState()->IsOffTheRecord()) {
+    NewTabPageTabHelper::CreateForWebState(web_state.get());
+    NewTabPageTabHelper::FromWebState(web_state.get())
+        ->SetShowStartSurface(true);
+  }
   browser->GetWebStateList()->InsertWebState(
       std::move(web_state),
       WebStateList::InsertionParams::Automatic().Activate());
