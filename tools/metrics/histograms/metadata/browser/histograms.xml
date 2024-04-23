@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.ConfigFileParsingError"
-    enum="EnterpriseCloudReportingStatusCode" expires_after="2024-06-01">
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2025-04-01">
   <owner>albertojuarez@google.com</owner>
   <owner>src/components/reporting/OWNERS</owner>
   <summary>
@@ -106,7 +106,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.ConfigFileSignatureVerificationError"
-    enum="EnterpriseCloudReportingStatusCode" expires_after="2024-06-01">
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2025-04-01">
   <owner>albertojuarez@google.com</owner>
   <owner>src/components/reporting/OWNERS</owner>
   <summary>
