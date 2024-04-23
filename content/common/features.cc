@@ -475,12 +475,6 @@ const base::FeatureParam<std::string>
         &kServiceWorkerBypassFetchHandlerHashStrings,
         "script_checksum_to_bypass", ""};
 
-// Signed Exchange Reporting for distributors
-// https://www.chromestatus.com/feature/5687904902840320
-BASE_FEATURE(kSignedExchangeReportingForDistributors,
-             "SignedExchangeReportingForDistributors",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, ensures that an unlocked process cannot access data for
 // sites that require a dedicated process.
 BASE_FEATURE(kSiteIsolationCitadelEnforcement,
