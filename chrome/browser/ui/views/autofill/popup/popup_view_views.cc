@@ -146,6 +146,7 @@ PopupViewViews::PopupViewViews(
     views::Widget* parent_widget)
     : PopupBaseView(controller,
                     parent_widget,
+                    views::Widget::InitParams::Activatable::kDefault,
                     base::i18n::IsRTL() ? kDefaultSubPopupSidesRTL
                                         : kDefaultSubPopupSides,
                     /*show_arrow_pointer=*/false),

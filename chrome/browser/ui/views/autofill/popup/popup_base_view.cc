@@ -109,13 +109,15 @@ int PopupBaseView::GetHorizontalPadding() {
 // The widget that the PopupBaseView will be attached to.
 class PopupBaseView::Widget : public views::Widget {
  public:
-  explicit Widget(PopupBaseView* autofill_popup_base_view) {
+  explicit Widget(PopupBaseView* autofill_popup_base_view,
+                  views::Widget::InitParams::Activatable activatable) {
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
     params.delegate = autofill_popup_base_view;
     params.parent = autofill_popup_base_view->GetParentNativeView();
     // Ensure the popup border is not painted on an opaque background.
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
+    params.activatable = activatable;
     Init(std::move(params));
     AddObserver(popup_base_view());
 
@@ -210,10 +212,12 @@ class PopupBaseView::Widget : public views::Widget {
 PopupBaseView::PopupBaseView(
     base::WeakPtr<AutofillPopupViewDelegate> delegate,
     views::Widget* parent_widget,
+    views::Widget::InitParams::Activatable new_widget_activatable,
     base::span<const views::BubbleArrowSide> preferred_popup_sides,
     bool show_arrow_pointer)
     : delegate_(delegate),
       parent_widget_(parent_widget),
+      new_widget_activatable_(new_widget_activatable),
       preferred_popup_sides_(
           {preferred_popup_sides.begin(), preferred_popup_sides.end()}),
       show_arrow_pointer_(show_arrow_pointer) {}
@@ -246,7 +250,7 @@ bool PopupBaseView::DoShow() {
 
     // The widget is destroyed by the corresponding NativeWidget, so we don't
     // have to worry about deletion.
-    new PopupBaseView::Widget(this);
+    new PopupBaseView::Widget(this, new_widget_activatable_);
   }
 
   GetWidget()->GetRootView()->SetBorder(CreateBorder());

@@ -41,7 +41,9 @@ PasswordCrossDomainConfirmationPopupViewViews::
         const std::u16string& password_origin,
         base::OnceClosure confirmation_callback,
         base::OnceClosure cancel_callback)
-    : autofill::PopupBaseView(delegate, parent_widget) {
+    : autofill::PopupBaseView(delegate,
+                              parent_widget,
+                              views::Widget::InitParams::Activatable::kYes) {
   SetBackground(
       views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
 

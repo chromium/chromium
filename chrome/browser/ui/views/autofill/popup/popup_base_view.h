@@ -68,6 +68,8 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
  protected:
   PopupBaseView(base::WeakPtr<AutofillPopupViewDelegate> delegate,
                 views::Widget* parent_widget,
+                views::Widget::InitParams::Activatable new_widget_activatable =
+                    views::Widget::InitParams::Activatable::kDefault,
                 base::span<const views::BubbleArrowSide> preferred_popup_sides =
                     kDefaultPreferredPopupSides,
                 bool show_arrow_pointer = true);
@@ -145,6 +147,9 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
 
   // The widget of the window that triggered this popup. Weak reference.
   raw_ptr<views::Widget> parent_widget_ = nullptr;
+
+  // The corresponding parameter for newly created widget (in `DoShow()`).
+  const views::Widget::InitParams::Activatable new_widget_activatable_;
 
   const std::vector<views::BubbleArrowSide> preferred_popup_sides_;
 
