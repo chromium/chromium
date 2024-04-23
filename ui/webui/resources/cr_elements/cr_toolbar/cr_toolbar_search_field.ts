@@ -146,11 +146,12 @@ export class CrToolbarSearchFieldElement extends
     }
   }
 
-  private showSearch_(e: Event) {
+  private async showSearch_(e: Event) {
     if (e.target !== this.shadowRoot!.querySelector('#clearSearch')) {
       this.showingSearch = true;
     }
     if (this.narrow) {
+      await this.updateComplete; // Wait for input to become focusable.
       this.focus_();
     }
   }

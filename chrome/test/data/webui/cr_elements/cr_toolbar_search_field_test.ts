@@ -51,12 +51,16 @@ suite('cr-toolbar-search-field', function() {
     assertFalse(didFire, 'Should not have fired search-changed event');
   });
 
-  test('opens and closes correctly', function() {
+  test('opens and closes correctly in narrow mode', async function() {
+    const searchInput = field.getSearchInput();
     field.narrow = true;
+    await field.updateComplete;
+    assertTrue(field.hasAttribute('narrow'));
     assertFalse(field.showingSearch);
+
     field.click();
+    await field.updateComplete;
     assertTrue(field.showingSearch);
-    const searchInput = /** @type {!HTMLElement} */ (field.$.searchInput);
     assertEquals(searchInput, field.shadowRoot!.activeElement);
 
     pressAndReleaseKeyOn(searchInput, 27, '', 'Escape');
