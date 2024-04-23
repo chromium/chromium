@@ -19,16 +19,25 @@ namespace fuzz {
 
 namespace {
 
+base::Value MakeValue(const JunkValue::Field& field) {
+  if (field.has_int_value()) {
+    return base::Value(field.int_value());
+  }
+  if (field.has_string_value()) {
+    return base::Value(field.string_value());
+  }
+  if (field.has_float_value()) {
+    return std::isfinite(field.float_value()) ? base::Value(field.float_value())
+                                              : base::Value();
+  }
+  CHECK(field.has_bool_value());
+  return base::Value(field.bool_value());
+}
+
 base::Value::Dict MakeDict(const JunkValue& junk) {
   base::Value::Dict result;
-  for (int i = 0; i < junk.field_size(); i++) {
-    const auto& field = junk.field(i);
-    base::Value field_value =
-        field.has_int_value()      ? base::Value(field.int_value())
-        : field.has_string_value() ? base::Value(field.string_value())
-        : field.has_float_value()  ? base::Value(field.float_value())
-                                   : base::Value(field.bool_value());
-    result.Set(field.name(), std::move(field_value));
+  for (const auto& field : junk.field()) {
+    result.Set(field.name(), MakeValue(field));
   }
   return result;
 }
