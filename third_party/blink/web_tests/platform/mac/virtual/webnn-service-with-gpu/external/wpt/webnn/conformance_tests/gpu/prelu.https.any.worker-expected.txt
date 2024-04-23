@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] prelu float32 0D scalar
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] prelu float32 1D constant tensors
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': This operator is not implemented."
 [FAIL] prelu float32 1D tensors

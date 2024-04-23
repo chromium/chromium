@@ -165797,58 +165797,6 @@
        {}
       ]
      ],
-     "cascade-highlight-001.html": [
-      "6068a076f0da862b834982b60fc1d46c94c72b46",
-      [
-       null,
-       [
-        [
-         "/css/css-pseudo/cascade-highlight-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "cascade-highlight-002.html": [
-      "50be805f011c223caf99fc55d0052161428eeb3f",
-      [
-       null,
-       [
-        [
-         "/css/css-pseudo/cascade-highlight-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "cascade-highlight-004.html": [
-      "56abba71569c05dfbc3244c330414b53d1866c5a",
-      [
-       null,
-       [
-        [
-         "/css/css-pseudo/cascade-highlight-004-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "cascade-highlight-005.html": [
-      "2c6ba60270ca78659647c98ba94aca95ff6de541",
-      [
-       null,
-       [
-        [
-         "/css/css-pseudo/reference/cascade-highlight-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
      "file-selector-button-001.html": [
       "48b2852de820f61ce5344584ab1ff3aa2313adcf",
       [
@@ -166590,236 +166538,368 @@
        {}
       ]
      ],
-     "highlight-cascade-001.html": [
-      "f237e9eca7321123c6d9de5f40cd95a5cab62fc9",
-      [
-       null,
+     "highlight-cascade": {
+      "cascade-highlight-001.html": [
+       "f441adf3b90058d9691a7bbb53d1bf7b38a783ba",
        [
+        null,
         [
-         "/css/css-pseudo/highlight-cascade-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "highlight-cascade-003.html": [
-      "61bc46d4c50feab4f275e6d0785bf729c4239b27",
-      [
-       null,
-       [
-        [
-         "/css/css-pseudo/highlight-cascade-003-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "highlight-cascade-004.html": [
-      "eb181096ce1ee035aa10e21e6f35fba58c5c7acb",
-      [
-       null,
-       [
-        [
-         "/css/css-pseudo/highlight-cascade-004-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "highlight-cascade-005.html": [
-      "008f56aded9f2b7be43e346189f5a7b552065064",
-      [
-       null,
-       [
-        [
-         "/css/css-pseudo/highlight-cascade-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "highlight-cascade-006.xhtml": [
-      "fb6d07f8f0b6b420a3fcf71480055756b09a1901",
-      [
-       null,
-       [
-        [
-         "/css/css-pseudo/highlight-cascade-006-ref.xhtml",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "highlight-cascade-008.html": [
-      "d6f07439801b8aedad942e227bb5e5fee621aa4b",
-      [
-       null,
-       [
-        [
-         "/css/css-pseudo/highlight-cascade-008-ref.html",
-         "=="
-        ]
-       ],
-       {
-        "fuzzy": [
          [
-          null,
+          "/css/css-pseudo/highlight-cascade/cascade-highlight-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "cascade-highlight-002.html": [
+       "d10bdb9b042f86eef15d06ffafc7e5f775bf0569",
+       [
+        null,
+        [
+         [
+          "/css/css-pseudo/highlight-cascade/cascade-highlight-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "cascade-highlight-004.html": [
+       "295321a1720b9af445b1a294721f79b7ca7928e7",
+       [
+        null,
+        [
+         [
+          "/css/css-pseudo/highlight-cascade/cascade-highlight-004-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "cascade-highlight-005.html": [
+       "25ad85fe70788088d5fbd0a0ba87b26e629a2d08",
+       [
+        null,
+        [
+         [
+          "/css/css-pseudo/highlight-cascade/cascade-highlight-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "highlight-cascade-001.html": [
+       "18b3635b3f7ac6c347f8c91fc57acaadbbf50dfc",
+       [
+        null,
+        [
+         [
+          "/css/css-pseudo/highlight-cascade/highlight-cascade-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "highlight-cascade-003.html": [
+       "b29f37528c0b649ed9df2f9ad162b9262197e32b",
+       [
+        null,
+        [
+         [
+          "/css/css-pseudo/highlight-cascade/highlight-cascade-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "highlight-cascade-004.html": [
+       "f3155bcec6b3ecb9f15013e031ae2506940633a4",
+       [
+        null,
+        [
+         [
+          "/css/css-pseudo/highlight-cascade/highlight-cascade-004-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "highlight-cascade-005.html": [
+       "958bdf65447e5399460a621dc7b328915596102f",
+       [
+        null,
+        [
+         [
+          "/css/css-pseudo/highlight-cascade/highlight-cascade-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "highlight-cascade-006.xhtml": [
+       "4a37af7c255356c788c1c4e32be47fffa1f2ad98",
+       [
+        null,
+        [
+         [
+          "/css/css-pseudo/highlight-cascade/highlight-cascade-006-ref.xhtml",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "highlight-cascade-008.html": [
+       "720e2f0469d056475e0d502a19546e6fbfb4567c",
+       [
+        null,
+        [
+         [
+          "/css/css-pseudo/highlight-cascade/highlight-cascade-008-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
           [
+           null,
            [
-            0,
-            255
-           ],
-           [
-            0,
-            10
+            [
+             0,
+             255
+            ],
+            [
+             0,
+             10
+            ]
            ]
           ]
          ]
-        ]
-       }
-      ]
-     ],
-     "highlight-currentcolor-painting-properties-001.html": [
-      "76d80d228a0482acfd8d1c57591eca540b445e6f",
-      [
-       null,
+        }
+       ]
+      ],
+      "highlight-currentcolor-painting-properties-001.html": [
+       "efdb9016bc213cd4502557fd4f8eb6b77487c172",
        [
+        null,
         [
-         "/css/css-pseudo/highlight-currentcolor-painting-properties-001-ref.html",
-         "=="
-        ]
-       ],
-       {
-        "fuzzy": [
          [
-          null,
+          "/css/css-pseudo/highlight-cascade/highlight-currentcolor-painting-properties-001-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
           [
+           null,
            [
-            0,
-            50
-           ],
-           [
-            0,
-            150
+            [
+             0,
+             50
+            ],
+            [
+             0,
+             150
+            ]
            ]
           ]
          ]
-        ]
-       }
-      ]
-     ],
-     "highlight-currentcolor-painting-properties-002.html": [
-      "ac3677c1cff258088942b00dd9bc0f903df5cb35",
-      [
-       null,
+        }
+       ]
+      ],
+      "highlight-currentcolor-painting-properties-002.html": [
+       "d02dc9e8c5ba3de05bdc6178944808f97f1a0264",
        [
+        null,
         [
-         "/css/css-pseudo/highlight-currentcolor-painting-properties-002-ref.html",
-         "=="
-        ]
-       ],
-       {
-        "fuzzy": [
          [
-          null,
+          "/css/css-pseudo/highlight-cascade/highlight-currentcolor-painting-properties-002-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
           [
+           null,
            [
-            0,
-            50
-           ],
-           [
-            0,
-            150
+            [
+             0,
+             50
+            ],
+            [
+             0,
+             150
+            ]
            ]
           ]
          ]
-        ]
-       }
-      ]
-     ],
-     "highlight-currentcolor-painting-text-shadow-001.html": [
-      "141556f935b8e38f0352fd0a0c32212f2c62debf",
-      [
-       null,
+        }
+       ]
+      ],
+      "highlight-currentcolor-painting-text-shadow-001.html": [
+       "c82da8c380ed2f8f13909e001a8f4e170983dbe5",
        [
+        null,
         [
-         "/css/css-pseudo/highlight-currentcolor-painting-text-shadow-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "highlight-currentcolor-painting-text-shadow-002.html": [
-      "77858729afaf8c55b435094baceb5959b67d3d46",
-      [
-       null,
+         [
+          "/css/css-pseudo/highlight-cascade/highlight-currentcolor-painting-text-shadow-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "highlight-currentcolor-painting-text-shadow-002.html": [
+       "870243f5013b4a90f72787ee01c1631f374def1a",
        [
+        null,
         [
-         "/css/css-pseudo/highlight-currentcolor-painting-text-shadow-002-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "highlight-currentcolor-root-explicit-default-001.html": [
-      "a1512f014df4a38b81ac4c60cb1e2383542a60bd",
-      [
-       null,
+         [
+          "/css/css-pseudo/highlight-cascade/highlight-currentcolor-painting-text-shadow-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "highlight-currentcolor-root-explicit-default-001.html": [
+       "1869f8ab53fbc1434497ddd49a3b5a0d04b9e486",
        [
+        null,
         [
-         "/css/css-pseudo/highlight-currentcolor-root-explicit-default-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "highlight-currentcolor-root-explicit-default-002.html": [
-      "fc5698faa1e794bde4ca69cf6b83a5f9868d1171",
-      [
-       null,
+         [
+          "/css/css-pseudo/highlight-cascade/highlight-currentcolor-root-explicit-default-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "highlight-currentcolor-root-explicit-default-002.html": [
+       "fe6d80be2e93ec9991209b19743655bbb0beb82f",
        [
+        null,
         [
-         "/css/css-pseudo/highlight-currentcolor-root-explicit-default-002-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "highlight-currentcolor-root-implicit-default-001.html": [
-      "ecf787b9b41a3c684ea2d1175aafa9049c097f84",
-      [
-       null,
+         [
+          "/css/css-pseudo/highlight-cascade/highlight-currentcolor-root-explicit-default-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "highlight-currentcolor-root-implicit-default-001.html": [
+       "ecf787b9b41a3c684ea2d1175aafa9049c097f84",
        [
+        null,
         [
-         "/css/css-pseudo/highlight-currentcolor-root-implicit-default-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "highlight-currentcolor-root-implicit-default-002.html": [
-      "420cc5ba15e2f83e475db36f9574e2401a5c1217",
-      [
-       null,
+         [
+          "/css/css-pseudo/highlight-cascade/highlight-currentcolor-root-implicit-default-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "highlight-currentcolor-root-implicit-default-002.html": [
+       "420cc5ba15e2f83e475db36f9574e2401a5c1217",
        [
+        null,
         [
-         "/css/css-pseudo/highlight-currentcolor-root-implicit-default-ref.html",
-         "=="
-        ]
-       ],
-       {}
+         [
+          "/css/css-pseudo/highlight-cascade/highlight-currentcolor-root-implicit-default-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "highlight-paired-cascade-001.html": [
+       "7f370238dfa450d6d0f3f9fe9ed24202bb06fcf6",
+       [
+        null,
+        [
+         [
+          "/css/css-pseudo/highlight-cascade/highlight-paired-cascade-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "highlight-paired-cascade-002.html": [
+       "626fc57558d1eae8593e58e1ace2fbda7b47ed59",
+       [
+        null,
+        [
+         [
+          "/css/css-pseudo/highlight-cascade/highlight-paired-cascade-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "highlight-paired-cascade-003.html": [
+       "8c621cc777c187902f286e977568f0aced8dde52",
+       [
+        null,
+        [
+         [
+          "/css/css-pseudo/highlight-cascade/highlight-paired-cascade-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "highlight-paired-cascade-004.html": [
+       "0a73d006b559fc16cde5b09a1d8af9d2c1248088",
+       [
+        null,
+        [
+         [
+          "/css/css-pseudo/highlight-cascade/highlight-paired-cascade-004-notref.html",
+          "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "highlight-paired-cascade-005.html": [
+       "4ee6db3a091536c6b2fbc15314728743c01230bf",
+       [
+        null,
+        [
+         [
+          "/css/css-pseudo/highlight-cascade/highlight-paired-cascade-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "highlight-paired-cascade-006.html": [
+       "bef3601ccbf833890a3284cd25e3232b9fe72517",
+       [
+        null,
+        [
+         [
+          "/css/css-pseudo/highlight-cascade/highlight-paired-cascade-006-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
-     ],
+     },
      "highlight-custom-properties-dynamic-001.html": [
       "836ef546fa60509b98e43429ec42cb05293fb562",
       [
@@ -166945,84 +167025,6 @@
        [
         [
          "/css/css-pseudo/highlight-painting-soft-hyphens-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "highlight-paired-cascade-001.html": [
-      "09e5abf9a3285ff219044a84b61bbc239f405689",
-      [
-       null,
-       [
-        [
-         "/css/css-pseudo/highlight-paired-cascade-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "highlight-paired-cascade-002.html": [
-      "affbe9562975c351f848bdc927c1cdcc56e118f5",
-      [
-       null,
-       [
-        [
-         "/css/css-pseudo/highlight-paired-cascade-002-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "highlight-paired-cascade-003.html": [
-      "250e320210c65f6b8538adf849362d5e34da634a",
-      [
-       null,
-       [
-        [
-         "/css/css-pseudo/highlight-paired-cascade-003-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "highlight-paired-cascade-004.html": [
-      "61e2b7d7f0735e75a34b043354a60ac58659083b",
-      [
-       null,
-       [
-        [
-         "/css/css-pseudo/highlight-paired-cascade-004-notref.html",
-         "!="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "highlight-paired-cascade-005.html": [
-      "50677c811e78fc81496d462e00fc4977e5d29ff9",
-      [
-       null,
-       [
-        [
-         "/css/css-pseudo/highlight-paired-cascade-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "highlight-paired-cascade-006.html": [
-      "20c03282c81a03df93d912080ede2bb5fc8e64ed",
-      [
-       null,
-       [
-        [
-         "/css/css-pseudo/highlight-paired-cascade-006-ref.html",
          "=="
         ]
        ],
@@ -291420,7 +291422,13 @@
     },
     "resources": {
      "helpers.js": [
-      "dd9e191c4dbcbe4ee53034310639bc76a9307285",
+      "ad80c28847f3a6802a56527e11d89a2829ecc8f9",
+      []
+     ]
+    },
+    "user-activation": {
+     "README.md": [
+      "b9aa9a212342470c1e4c4e5b15b38197600297e7",
       []
      ]
     }
@@ -295050,7 +295058,7 @@
       ]
      },
      "fedcm-helper.sub.js": [
-      "f0031fa531afff7bd90a95f37561b7955b6c3a7f",
+      "c954541187f2cc80df99d4a625d601953df97067",
       []
      ],
      "fedcm-iframe-level2.html": [
@@ -326893,14 +326901,6 @@
       "c15156138e6a7e2e42af3621362911cbd69dda24",
       []
      ],
-     "cascade-highlight-001-ref.html": [
-      "25dbeadb2ee2dbf6d7f568eb6e15443715e77360",
-      []
-     ],
-     "cascade-highlight-004-ref.html": [
-      "e755283a32dc1332c29d61342edd6802d2be52fc",
-      []
-     ],
      "file-selector-button-001-notref.html": [
       "e137ba05103d71203dc09083fa71fbbed1b21617",
       []
@@ -327069,58 +327069,96 @@
       "ecdb308f2f426af4f2763fabb30f7244f42fcf62",
       []
      ],
-     "highlight-cascade-001-ref.html": [
-      "a18690962fcd4e73d5832f76e7afb8ee681ae24e",
-      []
-     ],
-     "highlight-cascade-003-ref.html": [
-      "256c28ba0c068630cf675698e019b656a6c56da7",
-      []
-     ],
-     "highlight-cascade-004-ref.html": [
-      "f9bf83f9c1d63b50b61b96a4edadc1241d3c640b",
-      []
-     ],
-     "highlight-cascade-005-ref.html": [
-      "20d2b0bdb3a1dc84e9d285e0b1d350dde45320f3",
-      []
-     ],
-     "highlight-cascade-006-ref.xhtml": [
-      "df0a56123e033dd4536bc0425353c82bd2d0156b",
-      []
-     ],
-     "highlight-cascade-008-ref.html": [
-      "c87ddcf93c9ae7f0a63fe305e5155e3549fc9ee7",
-      []
-     ],
-     "highlight-currentcolor-painting-properties-001-ref.html": [
-      "93e2002f4aa2bde2c0d1adbb13e0dfd2abf82421",
-      []
-     ],
-     "highlight-currentcolor-painting-properties-002-ref.html": [
-      "11ca501065e5567345ef6ac0541515d45ff20184",
-      []
-     ],
-     "highlight-currentcolor-painting-text-shadow-001-ref.html": [
-      "d6ee33cda749a55a89b28c5f253d2d956d8081e8",
-      []
-     ],
-     "highlight-currentcolor-painting-text-shadow-002-ref.html": [
-      "fb2696a55a1da63de8bc7962ddf7d20a4f31a861",
-      []
-     ],
-     "highlight-currentcolor-root-explicit-default-001-ref.html": [
-      "794796a88f6a7b1e19c2cf9f8336838722b998b4",
-      []
-     ],
-     "highlight-currentcolor-root-explicit-default-002-ref.html": [
-      "31759483174842e7dcc6d0fcb1cea8883f593c06",
-      []
-     ],
-     "highlight-currentcolor-root-implicit-default-ref.html": [
-      "67ecb8df640f72e1725e42a648f2c6e1f33490e2",
-      []
-     ],
+     "highlight-cascade": {
+      "cascade-highlight-001-ref.html": [
+       "2a2907b10a4ab04072ce5e03e2e50e4cdacc371d",
+       []
+      ],
+      "cascade-highlight-004-ref.html": [
+       "9b8507c4cc89dda1e80604e6e97fe9eaef814200",
+       []
+      ],
+      "cascade-highlight-005-ref.html": [
+       "d1e597e05b8434bbb9b769cc62841662df0481b1",
+       []
+      ],
+      "highlight-cascade-001-ref.html": [
+       "b96ffce5ab3245807c7328454dee48cdd289ee2a",
+       []
+      ],
+      "highlight-cascade-003-ref.html": [
+       "68964149baf0d6f1f173b7497d3c6623e125f5a4",
+       []
+      ],
+      "highlight-cascade-004-ref.html": [
+       "5845e936209920ccfe2af2e0cd0fe9bb2b1fa348",
+       []
+      ],
+      "highlight-cascade-005-ref.html": [
+       "f0ea3faa764f9aa05a71e33950402082cd44afe1",
+       []
+      ],
+      "highlight-cascade-006-ref.xhtml": [
+       "643dd793254ab9602d2d12189baf562a17de7aa8",
+       []
+      ],
+      "highlight-cascade-008-ref.html": [
+       "70b9d958b5fcb61973cde1955c9118348911307a",
+       []
+      ],
+      "highlight-currentcolor-painting-properties-001-ref.html": [
+       "d3a3d49797a0ed723efe8024b37d400202df6886",
+       []
+      ],
+      "highlight-currentcolor-painting-properties-002-ref.html": [
+       "6f9066cba8a4108f9285fc427812cb57ebdb6a66",
+       []
+      ],
+      "highlight-currentcolor-painting-text-shadow-001-ref.html": [
+       "1ab60db5c8ec47e2ae2765a57ecfccd7f7d14fc5",
+       []
+      ],
+      "highlight-currentcolor-painting-text-shadow-002-ref.html": [
+       "6452a34d0e7826d0795c782ba39d7cd50c206cf2",
+       []
+      ],
+      "highlight-currentcolor-root-explicit-default-001-ref.html": [
+       "70ce6b59a49a000dd30cd03f36910bad9f67a7a1",
+       []
+      ],
+      "highlight-currentcolor-root-explicit-default-002-ref.html": [
+       "b64b007c64b66c556efe33c865468e10b1b4a887",
+       []
+      ],
+      "highlight-currentcolor-root-implicit-default-ref.html": [
+       "67ecb8df640f72e1725e42a648f2c6e1f33490e2",
+       []
+      ],
+      "highlight-paired-cascade-001-ref.html": [
+       "102b07b4814b6092f0307b8374997cb8edbb25be",
+       []
+      ],
+      "highlight-paired-cascade-002-ref.html": [
+       "19d731af02c99248ce321b4a3ddd36ac6af5ac01",
+       []
+      ],
+      "highlight-paired-cascade-003-ref.html": [
+       "638ae00c6858d7971a74ffbbc1b12e80f90fd849",
+       []
+      ],
+      "highlight-paired-cascade-004-notref.html": [
+       "72490b1461d6d4008edec59dd53b12f686a14c2d",
+       []
+      ],
+      "highlight-paired-cascade-005-ref.html": [
+       "862d06e6f648b5b4feeb5ec3294b605af1322dda",
+       []
+      ],
+      "highlight-paired-cascade-006-ref.html": [
+       "638ae00c6858d7971a74ffbbc1b12e80f90fd849",
+       []
+      ]
+     },
      "highlight-custom-properties-dynamic-001-ref.html": [
       "836874df056a8a934c38aeebd7ace9d404b312b1",
       []
@@ -327155,30 +327193,6 @@
      ],
      "highlight-painting-soft-hyphens-001-ref.html": [
       "f1485ca9226683ac303facb5dadbd38b475c042e",
-      []
-     ],
-     "highlight-paired-cascade-001-ref.html": [
-      "14687acb841d2b85becead81a0c82b4e4b5b8e9d",
-      []
-     ],
-     "highlight-paired-cascade-002-ref.html": [
-      "48eb9911a104c7b74bbafaefbe19cd23c3ce5d7f",
-      []
-     ],
-     "highlight-paired-cascade-003-ref.html": [
-      "18885fdc898a4ccc260db6056f7c102ffd661c69",
-      []
-     ],
-     "highlight-paired-cascade-004-notref.html": [
-      "63472b67589c2b2bfd1c74d40b3dd0974e1a0e83",
-      []
-     ],
-     "highlight-paired-cascade-005-ref.html": [
-      "0ac5c02b203bc0b84438e960cd5d015e47303982",
-      []
-     ],
-     "highlight-paired-cascade-006-ref.html": [
-      "18885fdc898a4ccc260db6056f7c102ffd661c69",
       []
      ],
      "highlight-styling-001-ref.html": [
@@ -327482,10 +327496,6 @@
       ],
       "active-selection-041-notref.html": [
        "17d69f306d77411f2ef0a7dab682b119c5b59e50",
-       []
-      ],
-      "cascade-highlight-005-ref.html": [
-       "d1e597e05b8434bbb9b769cc62841662df0481b1",
        []
       ],
       "first-letter-digraph-ref.html": [
@@ -362478,11 +362488,7 @@
        "8759362bdf006f09472ca105c02f37115d4f6a15",
        []
       ]
-     },
-     "usvstring-reflection.https-expected.txt": [
-      "9caafcd800940b591927e001baa4953329e47094",
-      []
-     ]
+     }
     },
     "editing": {
      "DIR_METADATA": [
@@ -396734,11 +396740,11 @@
       []
      ],
      "prelu.https.any-expected.txt": [
-      "79119ad94bf46d75c61a7e9afab8d73ca112f2ce",
+      "8a8c89dacdbd3ff814009334b8a9b90a8f75987c",
       []
      ],
      "prelu.https.any.worker-expected.txt": [
-      "79119ad94bf46d75c61a7e9afab8d73ca112f2ce",
+      "8a8c89dacdbd3ff814009334b8a9b90a8f75987c",
       []
      ],
      "reduction.https.any-expected.txt": [
@@ -396981,7 +396987,7 @@
        []
       ],
       "prelu.json": [
-       "cf79bee7a9d72ff233de9554240392219abe4d17",
+       "14a7c412dd77e184be76b39bd616891d91855376",
        []
       ],
       "reciprocal.json": [
@@ -426524,7 +426530,7 @@
    },
    "close-watcher": {
     "abortsignal.html": [
-     "9229b37cf665d0db49d1a0b42349f00f5a2edcec",
+     "ec360f483d43a1ae5e02ec17d5c8b750a9211734",
      [
       null,
       {
@@ -426533,7 +426539,7 @@
      ]
     ],
     "basic.html": [
-     "9951e54031c794d19bb3a7742e99c063dda89bb8",
+     "79a91e127ef6846427d63ff0c21fe42dcb9611de",
      [
       null,
       {
@@ -426552,7 +426558,7 @@
       ]
      ],
      "keypress.html": [
-      "8dd58b064d7178184511a465e24b39220424abc2",
+      "c3bfcc0c3305cfd75f8f6de0572954967af20d24",
       [
        null,
        {
@@ -426561,7 +426567,7 @@
       ]
      ],
      "keyup.html": [
-      "341012d6bc8b54eef9956912e8ebf09769fe9982",
+      "7c75ef7969caffcde9cb74258a6d038a73281a70",
       [
        null,
        {
@@ -426570,7 +426576,7 @@
       ]
      ],
      "not-user-activation.html": [
-      "ac29f84f06cd25eea8a56ea59a346c25849d8721",
+      "a8d5d22fcf8ee3431c5a78ae19ad7f179e225140",
       [
        null,
        {
@@ -426605,7 +426611,7 @@
      ]
     ],
     "inside-event-listeners.html": [
-     "ac037fc147fa888f4e4bdf923c64076ba04c2922",
+     "47f431e25036748f2e5106549660f8c9bb8cf483",
      [
       null,
       {
@@ -426615,7 +426621,7 @@
     ],
     "user-activation": {
      "n-activate-preventDefault.html": [
-      "531ef425998cb3d88f82b29c5f875f68e8c86195",
+      "f413448718e9d1dcd05e37af780c341d7f923833",
       [
        "close-watcher/user-activation/n-activate-preventDefault.html?CloseWatcher",
        {
@@ -426630,7 +426636,7 @@
       ]
      ],
      "n-activate.html": [
-      "babcf54c3c160dd48a85919543b37fc0657b6741",
+      "d8253ba7656bb1ca69fe6c3e652007527eaa09ad",
       [
        "close-watcher/user-activation/n-activate.html?CloseWatcher",
        {
@@ -426645,7 +426651,7 @@
       ]
      ],
      "n-closerequest-n.html": [
-      "2424af7820e5ab442e314d7a82fbcddc60369913",
+      "54ccdd1abe2cac3d0ea60103f00007b4cfe36d15",
       [
        "close-watcher/user-activation/n-closerequest-n.html?CloseWatcher",
        {
@@ -426660,7 +426666,7 @@
       ]
      ],
      "n-destroy-n.html": [
-      "c26f87dd6f81352bdc6f678015d3645ef33f61e3",
+      "e0a94f490e887174d2822d16e9dd3bff02efcd1a",
       [
        "close-watcher/user-activation/n-destroy-n.html?CloseWatcher",
        {
@@ -426675,7 +426681,7 @@
       ]
      ],
      "n.html": [
-      "fe04e0dc1b9efb91a131d5150641367d41b4d3fa",
+      "af8f972ee61f482f9c56fd14471468dbc8d06829",
       [
        "close-watcher/user-activation/n.html?CloseWatcher",
        {
@@ -426689,8 +426695,17 @@
        }
       ]
      ],
+     "nn-CloseWatcher.html": [
+      "016745dfbb41fde8361addfe9be5aa0348270c8e",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "nn-activate-CloseWatcher.html": [
-      "8045f30b482647d9364876d812e3eeb5b0cb9116",
+      "45718e51a88cbafbd53ccf8e596c2dbaef532f42",
       [
        null,
        {
@@ -426699,7 +426714,7 @@
       ]
      ],
      "nn-activate-dialog.html": [
-      "5cc866044ce26cd7b94fb8bb3b125d0e651eb276",
+      "eaffb4d9a7bdb461cc52288d2649004a2b0ac3a7",
       [
        null,
        {
@@ -426707,23 +426722,35 @@
        }
       ]
      ],
-     "nn.html": [
-      "beb63f1b4f531cd68405e666480987c9a876c479",
+     "nn-dialog.html": [
+      "0d086a525ef3c1c1d958a6889ba8ccb838e7eaad",
       [
-       "close-watcher/user-activation/nn.html?CloseWatcher",
-       {
-        "testdriver": true
-       }
-      ],
-      [
-       "close-watcher/user-activation/nn.html?dialog",
+       null,
        {
         "testdriver": true
        }
       ]
      ],
      "nnn-CloseWatcher-dialog-popover.html": [
-      "f8b9061d019fae0191b4528978b1275a87efda03",
+      "38dd6073121db403b4b18ff7d500c841309cf23f",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "nnn-CloseWatcher.html": [
+      "5d2f07e6173d79ec7e2c8df5fe470d7cd05dfb01",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "nnn-dialog.html": [
+      "f1c071dbb3ec16f600fa68838b105a03c3493613",
       [
        null,
        {
@@ -426740,23 +426767,8 @@
        }
       ]
      ],
-     "nnn.html": [
-      "9b604e91db2dd2f4967551c9aadd323125e4dc51",
-      [
-       "close-watcher/user-activation/nnn.html?CloseWatcher",
-       {
-        "testdriver": true
-       }
-      ],
-      [
-       "close-watcher/user-activation/nnn.html?dialog",
-       {
-        "testdriver": true
-       }
-      ]
-     ],
      "ny-activate-preventDefault.html": [
-      "5ffb64b1134b3e4741a05f1453a37bab77613e04",
+      "7cd1c2e5080a61a8a6a7e19ef716f14883acd89a",
       [
        "close-watcher/user-activation/ny-activate-preventDefault.html?CloseWatcher",
        {
@@ -426771,7 +426783,7 @@
       ]
      ],
      "ny.html": [
-      "226912233e21aeb6df69d652c53cd1fe22bacc98",
+      "49f50a123e9d448ab2bbc4d9728490945c85d1da",
       [
        "close-watcher/user-activation/ny.html?CloseWatcher",
        {
@@ -426795,7 +426807,7 @@
       ]
      ],
      "nyn.html": [
-      "ec5153c7674a1efd37e27eacbc15420ced861f13",
+      "b227d566d4c5d51c5517ed712f37fafaf8fbb11b",
       [
        "close-watcher/user-activation/nyn.html?CloseWatcher",
        {
@@ -426810,7 +426822,7 @@
       ]
      ],
      "nynn-destroy.html": [
-      "8519c8a2a94067b89482e7374425757dd6bee83d",
+      "fb04109994dc247e406fc5f3246f1a5dcbb80529",
       [
        "close-watcher/user-activation/nynn-destroy.html?CloseWatcher",
        {
@@ -426825,7 +426837,7 @@
       ]
      ],
      "nynn.html": [
-      "f6e74a0ba1104e065f2f1b90ca57af752a6abc06",
+      "ed9203db665ca56b2924d1456b815219f467c8fb",
       [
        "close-watcher/user-activation/nynn.html?CloseWatcher",
        {
@@ -426839,38 +426851,44 @@
        }
       ]
      ],
-     "nyyn.html": [
-      "f3987c1a2145055b0405fc5c5e592936a00826b1",
+     "nyyn-CloseWatcher.html": [
+      "4f60ef3c4baf524791abf750775b33cf1cbc0fee",
       [
-       "close-watcher/user-activation/nyyn.html?CloseWatcher",
-       {
-        "testdriver": true
-       }
-      ],
-      [
-       "close-watcher/user-activation/nyyn.html?dialog",
+       null,
        {
         "testdriver": true
        }
       ]
      ],
-     "nyyyn.html": [
-      "6cb8f3a4456925429c4ccfe2b4b06c108e8b2b92",
+     "nyyn-dialog.html": [
+      "44926fd5c3e13a188df8c3c37c0a26af3ce67561",
       [
-       "close-watcher/user-activation/nyyyn.html?CloseWatcher",
+       null,
        {
         "testdriver": true
        }
-      ],
+      ]
+     ],
+     "nyyyn-CloseWatcher.html": [
+      "e2565a82a309cbc987e5927a74267880fbca5c28",
       [
-       "close-watcher/user-activation/nyyyn.html?dialog",
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "nyyyn-dialog.html": [
+      "86361124d302f265bcc8aa9912f99c95973c7a2d",
+      [
+       null,
        {
         "testdriver": true
        }
       ]
      ],
      "y.html": [
-      "ee58a92293ab9831c7d8e6c93ed89595155f858d",
+      "78c432de3888eed80fcaf1cdd3d3c03e1a2b3257",
       [
        "close-watcher/user-activation/y.html?CloseWatcher",
        {
@@ -426885,7 +426903,7 @@
       ]
      ],
      "yn-activate.html": [
-      "af7289aa28e14f05a02fdcdde251f001ddb23699",
+      "d62b4df425098ab21b9ffbe622bb34660d856874",
       [
        "close-watcher/user-activation/yn-activate.html?CloseWatcher",
        {
@@ -426900,7 +426918,7 @@
       ]
      ],
      "yn.html": [
-      "8f7e90e2d85c8d847ec4e93a7252b39997caf5a1",
+      "578f43de25e0547afc50c2091d795a16da1d6be2",
       [
        "close-watcher/user-activation/yn.html?CloseWatcher",
        {
@@ -426914,23 +426932,26 @@
        }
       ]
      ],
-     "ynn.html": [
-      "8cc7f5bfb66c735780ee451c87f4dedb8173b33a",
+     "ynn-CloseWatcher.html": [
+      "50b5a8131d11b385ad5a81b5a5f3757ebf5061b5",
       [
-       "close-watcher/user-activation/ynn.html?CloseWatcher",
+       null,
        {
         "testdriver": true
        }
-      ],
+      ]
+     ],
+     "ynn-dialog.html": [
+      "c10e94dc7350ea70e1f06f2bf9d1fa348c6f7f76",
       [
-       "close-watcher/user-activation/ynn.html?dialog",
+       null,
        {
         "testdriver": true
        }
       ]
      ],
      "yy.html": [
-      "0aa03cdd050ca8101714cc1b8e2c3fb2d240d281",
+      "9c0f21be22f2235223b7d005882a2bc21e0a6f5d",
       [
        "close-watcher/user-activation/yy.html?CloseWatcher",
        {
@@ -426945,7 +426966,7 @@
       ]
      ],
      "yyn.html": [
-      "b87cf7a7e342e7b9967bb1f429e95b79fb1a8fc7",
+      "2f753774446dc815974de7e29c401c8bc570813a",
       [
        "close-watcher/user-activation/yyn.html?CloseWatcher",
        {
@@ -426960,7 +426981,7 @@
       ]
      ],
      "yyy-CloseWatcher-dialog-popover.html": [
-      "f0a1cb06d101cd7da389b11bab1d7fe7108addf2",
+      "8650fb3b7c489b4554d010accf154b279a15feb5",
       [
        null,
        {
@@ -426969,7 +426990,7 @@
       ]
      ],
      "yyy-activate-CloseWatcher-dialog-popover.html": [
-      "ed41d1bc3210c1ddcb07c31ce4ff3a55cbd8cdd3",
+      "a58dd0751bb988670f05757489964266f55f4890",
       [
        null,
        {
@@ -426987,7 +427008,7 @@
       ]
      ],
      "yyy.html": [
-      "f16767a86bdfcf62b62d9ac69947fd93d084d1f4",
+      "eaf8944bcec8c188f2db5fd70aadafe72883e81c",
       [
        "close-watcher/user-activation/yyy.html?CloseWatcher",
        {
@@ -438479,6 +438500,15 @@
      ]
     ],
     "fedcm-multi-idp": {
+     "fedcm-multi-idp-basic.https.html": [
+      "d855e0ad8dcf4eb86ce4bf3016337540bfafd45c",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "single-get-after-onload.https.html": [
       "de6a7c5371cc839a41c89318e5f8b0ad00b107e0",
       [
@@ -459213,62 +459243,64 @@
        {}
       ]
      ],
-     "highlight-cascade-007.html": [
-      "de0322d91037848f821af8b3db194016069b5238",
-      [
-       null,
-       {}
+     "highlight-cascade": {
+      "highlight-cascade-007.html": [
+       "df79d8dff51ae23a75a7a4ef593f673ea596f36d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "highlight-cascade-009.html": [
+       "e95de9a78156c51ddd001b8a5b9a1dac3517da83",
+       [
+        null,
+        {}
+       ]
+      ],
+      "highlight-currentcolor-computed-inheritance.html": [
+       "d67ae828818aab04a61d7e55cbdfb23222277f93",
+       [
+        null,
+        {}
+       ]
+      ],
+      "highlight-currentcolor-computed-visited.html": [
+       "207cb7b7dd1301672d550f63b2b91827bd57c6f1",
+       [
+        null,
+        {}
+       ]
+      ],
+      "highlight-currentcolor-computed.html": [
+       "97c31809dfc76cd3fdbd051e66fd7ec162f3708e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "highlight-pseudos-computed.html": [
+       "4a274e1bbd8506b7803f621f3f947c24be3780e3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "highlight-pseudos-inheritance-computed-001.html": [
+       "84c4045a54c76f88e8ab59e8be4a0e601a580f2f",
+       [
+        null,
+        {}
+       ]
+      ],
+      "highlight-pseudos-visited-computed-001.html": [
+       "a2b18effccdcf78576da26003ea58985325f999b",
+       [
+        null,
+        {}
+       ]
       ]
-     ],
-     "highlight-cascade-009.html": [
-      "ccc917b08c8e3fd56fbe294c9a52ecdca891e398",
-      [
-       null,
-       {}
-      ]
-     ],
-     "highlight-currentcolor-computed-inheritance.html": [
-      "d67ae828818aab04a61d7e55cbdfb23222277f93",
-      [
-       null,
-       {}
-      ]
-     ],
-     "highlight-currentcolor-computed-visited.html": [
-      "207cb7b7dd1301672d550f63b2b91827bd57c6f1",
-      [
-       null,
-       {}
-      ]
-     ],
-     "highlight-currentcolor-computed.html": [
-      "97c31809dfc76cd3fdbd051e66fd7ec162f3708e",
-      [
-       null,
-       {}
-      ]
-     ],
-     "highlight-pseudos-computed.html": [
-      "4a274e1bbd8506b7803f621f3f947c24be3780e3",
-      [
-       null,
-       {}
-      ]
-     ],
-     "highlight-pseudos-inheritance-computed-001.html": [
-      "84c4045a54c76f88e8ab59e8be4a0e601a580f2f",
-      [
-       null,
-       {}
-      ]
-     ],
-     "highlight-pseudos-visited-computed-001.html": [
-      "a2b18effccdcf78576da26003ea58985325f999b",
-      [
-       null,
-       {}
-      ]
-     ],
+     },
      "idlharness.html": [
       "514d31f6b39ef066df52c113e68232119cb6927d",
       [
@@ -567054,7 +567086,7 @@
       ]
      ],
      "usvstring-reflection.https.html": [
-      "775cb49281eb4565a5b2109e5e94e4cc9834f500",
+      "d8d830dc59714555811fc9e49dbece35d084a8ab",
       [
        null,
        {}

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] RTCDataChannel.send: unpaired surrogate codepoint should be replaced with U+FFFD.
-  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'negotiated')"
-Harness: the test ran to completion.
-
