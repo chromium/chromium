@@ -472,6 +472,11 @@ void PickerController::SetCapsLockEnabled(bool enabled) {
   GetImeKeyboard().SetCapsLockEnabled(enabled);
 }
 
+void PickerController::GetSuggestedEditorResults(
+    SuggestedEditorResultsCallback callback) {
+  client_->GetSuggestedEditorResults(std::move(callback));
+}
+
 PickerAssetFetcher* PickerController::GetAssetFetcher() {
   return asset_fetcher_.get();
 }

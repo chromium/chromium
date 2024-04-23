@@ -219,6 +219,11 @@ void PickerView::SelectSuggestedZeroStateResult(
   SelectSearchResult(result);
 }
 
+void PickerView::GetSuggestedZeroStateEditorResults(
+    SuggestedEditorResultsCallback callback) {
+  delegate_->GetSuggestedEditorResults(std::move(callback));
+}
+
 gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
                                       PickerLayoutType layout_type) {
   return GetPickerViewBounds(anchor_bounds, layout_type, size(),
@@ -279,7 +284,7 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
     StartSearch(search_request_data->text);
   } else if (const PickerSearchResult::EditorData* editor_data =
                  std::get_if<PickerSearchResult::EditorData>(&result.data())) {
-    delegate_->ShowEditor(/*preset_query_id=*/std::nullopt,
+    delegate_->ShowEditor(editor_data->preset_query_id,
                           editor_data->freeform_text);
   } else {
     delegate_->InsertResultOnNextFocus(result);

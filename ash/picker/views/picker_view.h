@@ -69,6 +69,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   void SelectZeroStateCategory(PickerCategory category) override;
   void SelectSuggestedZeroStateResult(
       const PickerSearchResult& result) override;
+  void GetSuggestedZeroStateEditorResults(
+      SuggestedEditorResultsCallback callback) override;
 
   // Returns the target bounds for this Picker view. The target bounds try to
   // vertically align `search_field_view_` with `anchor_bounds`. `anchor_bounds`

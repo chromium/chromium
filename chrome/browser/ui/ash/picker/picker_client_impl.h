@@ -71,6 +71,8 @@ class PickerClientImpl
                        CrosSearchResultsCallback callback) override;
   void StopCrosQuery() override;
   ShowEditorCallback CacheEditorContext() override;
+  void GetSuggestedEditorResults(
+      SuggestedEditorResultsCallback callback) override;
   void GetRecentLocalFileResults(RecentFilesCallback callback) override;
   void GetRecentDriveFileResults(RecentFilesCallback callback) override;
   void GetSuggestedLinkResults(SuggestedLinksCallback callback) override;

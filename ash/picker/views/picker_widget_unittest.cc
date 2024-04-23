@@ -43,6 +43,8 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   void ShowEditor(std::optional<std::string> preset_query_id,
                   std::optional<std::string> freeform_text) override {}
   void SetCapsLockEnabled(bool enabled) override {}
+  void GetSuggestedEditorResults(
+      SuggestedEditorResultsCallback callback) override {}
   PickerAssetFetcher* GetAssetFetcher() override { return nullptr; }
 };
 

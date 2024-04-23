@@ -12,6 +12,7 @@
 #include "ash/picker/picker_test_util.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_zero_state_view_delegate.h"
 #include "ash/public/cpp/picker/picker_category.h"
@@ -26,6 +27,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -39,10 +41,19 @@ using ::testing::IsEmpty;
 using ::testing::IsNull;
 using ::testing::Key;
 using ::testing::Not;
+using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::VariantWith;
 
 constexpr int kPickerWidth = 320;
+
+template <class V, class Matcher>
+auto AsView(Matcher matcher) {
+  return ResultOf(
+      "AsViewClass",
+      [](views::View* view) { return views::AsViewClass<V>(view); },
+      Pointee(matcher));
+}
 
 constexpr base::span<const PickerCategory> kAllCategories = {(PickerCategory[]){
     PickerCategory::kEditorWrite,
@@ -62,6 +73,10 @@ class MockZeroStateViewDelegate : public PickerZeroStateViewDelegate {
   MOCK_METHOD(void,
               SelectSuggestedZeroStateResult,
               (const PickerSearchResult&),
+              (override));
+  MOCK_METHOD(void,
+              GetSuggestedZeroStateEditorResults,
+              (SuggestedEditorResultsCallback),
               (override));
 };
 
@@ -181,6 +196,60 @@ TEST_F(PickerZeroStateViewTest, DoesntShowClipboardItems) {
   widget->Show();
 
   EXPECT_THAT(view->SuggestedSectionForTesting(), IsNull());
+}
+
+TEST_F(PickerZeroStateViewTest,
+       DoesntShowEditorRewriteCategoryForEmptySuggestions) {
+  MockZeroStateViewDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, GetSuggestedZeroStateEditorResults)
+      .WillOnce([](MockZeroStateViewDelegate::SuggestedEditorResultsCallback
+                       callback) { std::move(callback).Run({}); });
+  PickerZeroStateView view(&mock_delegate, {{PickerCategory::kEditorRewrite}},
+                           false, kPickerWidth);
+
+  EXPECT_THAT(
+      view.section_views_for_testing(),
+      ElementsAre(Pair(
+          PickerCategoryType::kEditorRewrite,
+          Pointee(Property("GetVisible", &views::View::GetVisible, false)))));
+}
+
+TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItems) {
+  MockZeroStateViewDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, GetSuggestedZeroStateEditorResults)
+      .WillOnce([](MockZeroStateViewDelegate::SuggestedEditorResultsCallback
+                       callback) {
+        std::move(callback).Run({
+            PickerSearchResult::Editor(
+                PickerSearchResult::EditorData::Mode::kRewrite,
+                /*display_name=*/u"a",
+                /*category=(*/ std::nullopt, "query_a",
+                /*freeform_text=*/std::nullopt),
+            PickerSearchResult::Editor(
+                PickerSearchResult::EditorData::Mode::kRewrite,
+                /*display_name=*/u"b",
+                /*category=(*/ std::nullopt, "query_b",
+                /*freeform_text=*/std::nullopt),
+        });
+      });
+  PickerZeroStateView view(&mock_delegate, {{PickerCategory::kEditorRewrite}},
+                           false, kPickerWidth);
+
+  EXPECT_THAT(
+      view.section_views_for_testing(),
+      ElementsAre(Pair(
+          PickerCategoryType::kEditorRewrite,
+          Pointee(AllOf(
+              Property("GetVisible", &views::View::GetVisible, true),
+              Property(
+                  "item_views_for_testing",
+                  &PickerSectionView::item_views_for_testing,
+                  ElementsAre(
+                      AsView<PickerListItemView>(Property(
+                          &PickerListItemView::GetPrimaryTextForTesting, u"a")),
+                      AsView<PickerListItemView>(Property(
+                          &PickerListItemView::GetPrimaryTextForTesting,
+                          u"b")))))))));
 }
 
 }  // namespace

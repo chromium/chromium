@@ -15,10 +15,16 @@ class PickerSearchResult;
 // Delegate for `PickerZeroStateView`.
 class ASH_EXPORT PickerZeroStateViewDelegate {
  public:
+  using SuggestedEditorResultsCallback =
+      base::OnceCallback<void(std::vector<PickerSearchResult>)>;
+
   virtual void SelectZeroStateCategory(PickerCategory category) = 0;
 
   virtual void SelectSuggestedZeroStateResult(
       const PickerSearchResult& result) = 0;
+
+  virtual void GetSuggestedZeroStateEditorResults(
+      SuggestedEditorResultsCallback callback) = 0;
 };
 
 }  // namespace ash

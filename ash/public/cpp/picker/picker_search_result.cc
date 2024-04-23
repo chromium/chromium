@@ -104,9 +104,16 @@ bool PickerSearchResult::CategoryData::operator==(const CategoryData&) const =
     default;
 
 PickerSearchResult::EditorData::EditorData(
-    PickerSearchResult::EditorData::Mode mode,
+    Mode mode,
+    std::u16string display_name,
+    std::optional<chromeos::editor_menu::PresetQueryCategory> category,
+    std::optional<std::string> preset_query_id,
     std::optional<std::string> freeform_text)
-    : mode(mode), freeform_text(std::move(freeform_text)) {}
+    : mode(mode),
+      display_name(std::move(display_name)),
+      category(std::move(category)),
+      preset_query_id(std::move(preset_query_id)),
+      freeform_text(std::move(freeform_text)) {}
 
 PickerSearchResult::EditorData::EditorData(
     const PickerSearchResult::EditorData&) = default;
@@ -210,8 +217,13 @@ PickerSearchResult PickerSearchResult::Category(PickerCategory category) {
 
 PickerSearchResult PickerSearchResult::Editor(
     PickerSearchResult::EditorData::Mode mode,
+    std::u16string display_name,
+    std::optional<chromeos::editor_menu::PresetQueryCategory> category,
+    std::optional<std::string> text_query_id,
     std::optional<std::string> freeform_text) {
-  return PickerSearchResult(EditorData(mode, std::move(freeform_text)));
+  return PickerSearchResult(
+      EditorData(mode, std::move(display_name), std::move(category),
+                 std::move(text_query_id), std::move(freeform_text)));
 }
 
 bool PickerSearchResult::operator==(const PickerSearchResult&) const = default;

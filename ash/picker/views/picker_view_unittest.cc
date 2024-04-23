@@ -117,6 +117,8 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   void SetCapsLockEnabled(bool enabled) override {
     caps_lock_enabled_ = enabled;
   }
+  void GetSuggestedEditorResults(
+      SuggestedEditorResultsCallback callback) override {}
 
   PickerAssetFetcher* GetAssetFetcher() override { return &asset_fetcher_; }
 

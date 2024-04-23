@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-shared.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -163,6 +164,45 @@ ash::input_method::EditorMediator* GetEditorMediator(Profile* profile) {
 
   return ash::input_method::EditorMediatorFactory::GetInstance()->GetForProfile(
       profile);
+}
+
+// TODO: b/326847990 - Remove this once it's moved to mojom traits.
+chromeos::editor_menu::PresetQueryCategory FromMojoPresetQueryCategory(
+    const crosapi::mojom::EditorPanelPresetQueryCategory category) {
+  using EditorPanelPresetQueryCategory =
+      crosapi::mojom::EditorPanelPresetQueryCategory;
+  using PresetQueryCategory = chromeos::editor_menu::PresetQueryCategory;
+
+  switch (category) {
+    case EditorPanelPresetQueryCategory::kUnknown:
+      return PresetQueryCategory::kUnknown;
+    case EditorPanelPresetQueryCategory::kShorten:
+      return PresetQueryCategory::kShorten;
+    case EditorPanelPresetQueryCategory::kElaborate:
+      return PresetQueryCategory::kElaborate;
+    case EditorPanelPresetQueryCategory::kRephrase:
+      return PresetQueryCategory::kRephrase;
+    case EditorPanelPresetQueryCategory::kFormalize:
+      return PresetQueryCategory::kFormalize;
+    case EditorPanelPresetQueryCategory::kEmojify:
+      return PresetQueryCategory::kEmojify;
+    case EditorPanelPresetQueryCategory::kProofread:
+      return PresetQueryCategory::kProofread;
+  }
+}
+
+std::vector<ash::PickerSearchResult> GetEditorResultsFromPanelContext(
+    crosapi::mojom::EditorPanelContextPtr panel_context) {
+  std::vector<ash::PickerSearchResult> results;
+  for (const crosapi::mojom::EditorPanelPresetTextQueryPtr& query :
+       panel_context->preset_text_queries) {
+    results.push_back(ash::PickerSearchResult::Editor(
+        ash::PickerSearchResult::EditorData::Mode::kRewrite,
+        base::UTF8ToUTF16(query->name),
+        FromMojoPresetQueryCategory(query->category), query->text_query_id,
+        /*freeform_text=*/""));
+  }
+  return results;
 }
 
 }  // namespace
@@ -323,6 +363,23 @@ PickerClientImpl::ShowEditorCallback PickerClientImpl::CacheEditorContext() {
 
   return base::BindOnce(&PickerClientImpl::ShowEditor,
                         weak_factory_.GetWeakPtr());
+}
+
+void PickerClientImpl::GetSuggestedEditorResults(
+    SuggestedEditorResultsCallback callback) {
+  ash::input_method::EditorMediator* editor_mediator =
+      GetEditorMediator(profile_);
+  if (editor_mediator == nullptr ||
+      editor_mediator->GetEditorMode() ==
+          ash::input_method::EditorMode::kBlocked ||
+      editor_mediator->panel_manager() == nullptr) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  editor_mediator->panel_manager()->GetEditorPanelContext(
+      base::BindOnce(GetEditorResultsFromPanelContext)
+          .Then(std::move(callback)));
 }
 
 void PickerClientImpl::GetRecentLocalFileResults(RecentFilesCallback callback) {

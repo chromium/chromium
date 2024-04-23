@@ -84,6 +84,7 @@ include_rules = [
   "+chromeos/ash/components/proximity_auth",
   "+chromeos/ash/components/string_matching",
   "+chromeos/ash/components/system",
+  "+chromeos/components/editor_menu",
   "+chromeos/components/mahi",
   "+chromeos/components/quick_answers",
   "+chromeos/components/security_token_pin",

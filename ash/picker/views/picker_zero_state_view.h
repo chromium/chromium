@@ -74,6 +74,9 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
 
   void OnFetchSuggestedResults(std::vector<PickerSearchResult> result);
 
+  void OnFetchZeroStateEditorResults(PickerCategory category,
+                                     std::vector<PickerSearchResult> result);
+
   raw_ptr<PickerZeroStateViewDelegate> delegate_;
 
   // The section list view, contains the section views.

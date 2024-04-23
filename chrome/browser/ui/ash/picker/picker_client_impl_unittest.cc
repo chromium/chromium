@@ -540,6 +540,41 @@ TEST_F(PickerClientImplEditorTest, CacheEditorContextCachesCaretBounds) {
             gfx::Rect(1, 2, 3, 4));
 }
 
+TEST_F(PickerClientImplEditorTest, GetSuggestedEditorResults) {
+  base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  GetEditorMediator(profile()).OverrideEditorModeForTesting(
+      ash::input_method::EditorMode::kRewrite);
+  ui::FakeTextInputClient text_input_client(&ime(),
+                                            {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  text_input_client.Focus();
+
+  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  client.GetSuggestedEditorResults(future.GetCallback());
+
+  EXPECT_TRUE(future.Wait());
+  // TODO: b/331286774 - Add expectation for the suggested editor results once
+  // EditorServiceConnector is injectable.
+}
+
+TEST_F(PickerClientImplEditorTest,
+       GetSuggestedEditorResultsReturnsNothingWhenBlocked) {
+  base::test::ScopedFeatureList features(chromeos::features::kOrcaDogfood);
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  GetEditorMediator(profile()).OverrideEditorModeForTesting(
+      ash::input_method::EditorMode::kBlocked);
+  ui::FakeTextInputClient text_input_client(&ime(),
+                                            {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  text_input_client.Focus();
+
+  base::test::TestFuture<std::vector<ash::PickerSearchResult>> future;
+  client.GetSuggestedEditorResults(future.GetCallback());
+
+  EXPECT_THAT(future.Get(), IsEmpty());
+}
+
 // TODO: b/325540366 - Add PickerClientImpl tests.
 
 }  // namespace

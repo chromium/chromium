@@ -27,6 +27,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chromeos/components/editor_menu/public/cpp/icon.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -110,7 +111,21 @@ PickerZeroStateView::PickerZeroStateView(
         u"", kClipboardRecency);
   }
 
+  if (base::Contains(available_categories, PickerCategory::kEditorRewrite)) {
+    GetOrCreateSectionView(PickerCategory::kEditorRewrite)->SetVisible(false);
+
+    delegate_->GetSuggestedZeroStateEditorResults(base::BindOnce(
+        &PickerZeroStateView::OnFetchZeroStateEditorResults,
+        weak_ptr_factory_.GetWeakPtr(), PickerCategory::kEditorRewrite));
+  }
+
   for (PickerCategory category : available_categories) {
+    // kEditorRewrite is not visible in the zero-state, since it's replaced with
+    // the rewrite suggestions.
+    if (category == PickerCategory::kEditorRewrite) {
+      continue;
+    }
+
     auto item_view = std::make_unique<PickerListItemView>(
         base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
                             weak_ptr_factory_.GetWeakPtr(), category));
@@ -118,6 +133,7 @@ PickerZeroStateView::PickerZeroStateView(
     item_view->SetLeadingIcon(GetIconForPickerCategory(category));
     GetOrCreateSectionView(category)->AddListItem(std::move(item_view));
   }
+
   SetPseudoFocusedView(section_list_view_->GetTopItem());
 }
 
@@ -314,6 +330,35 @@ void PickerZeroStateView::OnFetchSuggestedResults(
       suggested_section_view_->AddListItem(std::move(item_view));
     }
   }
+  SetPseudoFocusedView(section_list_view_->GetTopItem());
+}
+
+void PickerZeroStateView::OnFetchZeroStateEditorResults(
+    PickerCategory category,
+    std::vector<PickerSearchResult> results) {
+  if (results.empty()) {
+    return;
+  }
+
+  PickerSectionView* section_view = GetOrCreateSectionView(category);
+  for (const PickerSearchResult& result : results) {
+    const auto* editor_data =
+        std::get_if<PickerSearchResult::EditorData>(&result.data());
+    CHECK(editor_data);
+
+    auto item_view = std::make_unique<PickerListItemView>(
+        base::BindRepeating(&PickerZeroStateView::OnSuggestedResultSelected,
+                            weak_ptr_factory_.GetWeakPtr(), result));
+    item_view->SetPrimaryText(editor_data->display_name);
+    if (editor_data->category.has_value()) {
+      item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+          chromeos::editor_menu::GetIconForPresetQueryCategory(
+              *editor_data->category),
+          cros_tokens::kCrosSysOnSurface));
+    }
+    section_view->AddListItem(std::move(item_view));
+  }
+  section_view->SetVisible(true);
   SetPseudoFocusedView(section_list_view_->GetTopItem());
 }
 

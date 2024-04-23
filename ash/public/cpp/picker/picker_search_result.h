@@ -18,6 +18,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
+namespace chromeos::editor_menu {
+enum class PresetQueryCategory;
+}
+
 namespace ash {
 
 // Represents a search result, which might be text or other types of media.
@@ -165,9 +169,17 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     enum class Mode { kWrite, kRewrite };
 
     Mode mode;
+    std::u16string display_name;
+    std::optional<chromeos::editor_menu::PresetQueryCategory> category;
+    std::optional<std::string> preset_query_id;
     std::optional<std::string> freeform_text;
 
-    EditorData(Mode mode, std::optional<std::string> freeform_text);
+    EditorData(
+        Mode mode,
+        std::u16string display_name,
+        std::optional<chromeos::editor_menu::PresetQueryCategory> category,
+        std::optional<std::string> preset_query_id,
+        std::optional<std::string> freeform_text);
     EditorData(const EditorData&);
     EditorData& operator=(const EditorData&);
     ~EditorData();
@@ -225,8 +237,12 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                                       base::FilePath file_path);
   static PickerSearchResult DriveFile(std::u16string title, const GURL& url);
   static PickerSearchResult Category(PickerCategory category);
-  static PickerSearchResult Editor(PickerSearchResult::EditorData::Mode mode,
-                                   std::optional<std::string> freeform_text);
+  static PickerSearchResult Editor(
+      EditorData::Mode mode,
+      std::u16string display_name,
+      std::optional<chromeos::editor_menu::PresetQueryCategory> category,
+      std::optional<std::string> preset_query_id,
+      std::optional<std::string> freeform_text);
 
   const Data& data() const;
 

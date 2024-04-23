@@ -40,6 +40,10 @@ class ASH_PUBLIC_EXPORT MockPickerClient : public PickerClient {
   MOCK_METHOD(void, StopCrosQuery, (), (override));
   MOCK_METHOD(ShowEditorCallback, CacheEditorContext, (), (override));
   MOCK_METHOD(void,
+              GetSuggestedEditorResults,
+              (SuggestedEditorResultsCallback callback),
+              (override));
+  MOCK_METHOD(void,
               GetRecentLocalFileResults,
               (RecentFilesCallback),
               (override));

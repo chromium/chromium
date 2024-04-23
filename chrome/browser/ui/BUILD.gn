@@ -3937,6 +3937,7 @@ static_library("ui") {
       "//chromeos/ash/services/multidevice_setup/public/cpp:url_provider",
       "//chromeos/ash/services/nearby/public/mojom",
       "//chromeos/ash/services/recording/public/mojom",
+      "//chromeos/components/editor_menu/public/cpp",
       "//chromeos/components/in_session_auth",
       "//chromeos/components/kiosk",
       "//chromeos/components/mahi/public/cpp:cpp",

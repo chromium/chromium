@@ -24,6 +24,8 @@ class ASH_EXPORT PickerViewDelegate {
  public:
   using SearchResultsCallback = base::RepeatingCallback<void(
       std::vector<PickerSearchResultsSection> results)>;
+  using SuggestedEditorResultsCallback =
+      base::OnceCallback<void(std::vector<PickerSearchResult> results)>;
 
   virtual ~PickerViewDelegate() {}
 
@@ -62,6 +64,9 @@ class ASH_EXPORT PickerViewDelegate {
 
   // Sets the current caps lock state.
   virtual void SetCapsLockEnabled(bool enabled) = 0;
+
+  virtual void GetSuggestedEditorResults(
+      SuggestedEditorResultsCallback callback) = 0;
 
   virtual PickerAssetFetcher* GetAssetFetcher() = 0;
 };
