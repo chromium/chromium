@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/metrics/model/chrome_browser_state_client.h"
+#import "ios/chrome/browser/metrics/model/demographics_client.h"
 
 #import "base/time/default_clock.h"
 #import "base/time/default_tick_clock.h"
@@ -18,13 +18,13 @@
 
 namespace metrics {
 
-class ChromeBrowserStateClientTest : public PlatformTest {
+class DemographicsClientTest : public PlatformTest {
  public:
-  ChromeBrowserStateClientTest()
+  DemographicsClientTest()
       : scoped_browser_state_manager_(
             std::make_unique<TestChromeBrowserStateManager>(
                 TestChromeBrowserState::Builder().Build())) {}
-  ~ChromeBrowserStateClientTest() override {}
+  ~DemographicsClientTest() override {}
 
   void SetUp() override { PlatformTest::SetUp(); }
 
@@ -33,7 +33,7 @@ class ChromeBrowserStateClientTest : public PlatformTest {
   IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
 };
 
-TEST_F(ChromeBrowserStateClientTest, GetNetworkTime) {
+TEST_F(DemographicsClientTest, GetNetworkTime) {
   // Set initial time of the network clock.
   base::TimeDelta resolution = base::Milliseconds(17);
   base::TimeDelta latency = base::Milliseconds(50);
@@ -43,23 +43,23 @@ TEST_F(ChromeBrowserStateClientTest, GetNetworkTime) {
       clock.Now() - latency / 2, resolution, latency, tick_clock.NowTicks());
 
   // Verify network clock gives non-null time.
-  ChromeBrowserStateClient profile_client;
-  EXPECT_FALSE(profile_client.GetNetworkTime().is_null());
+  DemographicsClient demographic_client;
+  EXPECT_FALSE(demographic_client.GetNetworkTime().is_null());
 }
 
-TEST_F(ChromeBrowserStateClientTest, GetSyncService) {
-  ChromeBrowserStateClient profile_client;
+TEST_F(DemographicsClientTest, GetSyncService) {
+  DemographicsClient demographic_client;
   // Verify if it possible to retrieve the instance of the SyncService
   // associated with the ChromeBrowserState.
-  EXPECT_TRUE(profile_client.GetSyncService());
+  EXPECT_TRUE(demographic_client.GetSyncService());
 }
 
-TEST_F(ChromeBrowserStateClientTest, GetNumberOfProfilesOnDisk) {
-  ChromeBrowserStateClient profile_client;
+TEST_F(DemographicsClientTest, GetNumberOfProfilesOnDisk) {
+  DemographicsClient demographic_client;
   // On ChromeBrowserState was created and registered with the
   // ChromeBrowserStateManager, check the client returns the correct
   // value.
-  EXPECT_EQ(1, profile_client.GetNumberOfProfilesOnDisk());
+  EXPECT_EQ(1, demographic_client.GetNumberOfProfilesOnDisk());
 }
 
 }  // namespace metrics

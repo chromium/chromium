@@ -65,7 +65,7 @@
 #import "components/version_info/version_info.h"
 #import "google_apis/google_api_keys.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
-#import "ios/chrome/browser/metrics/model/chrome_browser_state_client.h"
+#import "ios/chrome/browser/metrics/model/demographics_client.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_default_browser_metrics_provider.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_signin_and_sync_status_metrics_provider.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_stability_metrics_provider.h"
@@ -150,8 +150,7 @@ IOSChromeMetricsServiceClient::IOSChromeMetricsServiceClient(
     variations::SyntheticTrialRegistry* synthetic_trial_registry)
     : metrics_state_manager_(state_manager),
       synthetic_trial_registry_(synthetic_trial_registry),
-      stability_metrics_provider_(nullptr),
-      weak_ptr_factory_(this) {
+      stability_metrics_provider_(nullptr) {
   DCHECK(thread_checker_.CalledOnValidThread());
   notification_listeners_active_ = RegisterForNotifications();
 }
@@ -283,7 +282,7 @@ void IOSChromeMetricsServiceClient::Initialize() {
     ukm_service_ = std::make_unique<ukm::UkmService>(
         local_state, this,
         std::make_unique<metrics::DemographicMetricsProvider>(
-            std::make_unique<metrics::ChromeBrowserStateClient>(),
+            std::make_unique<metrics::DemographicsClient>(),
             metrics::MetricsLogUploader::MetricServiceType::UKM));
     // As this is startup, there the UKM previous state is the same as the
     // present state.
@@ -350,11 +349,9 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<translate::TranslateRankerMetricsProvider>());
 
-  // TODO(crbug.com/325255648):The demographics metrics provider should be
-  // registered for each browser state.
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::DemographicMetricsProvider>(
-          std::make_unique<metrics::ChromeBrowserStateClient>(),
+          std::make_unique<metrics::DemographicsClient>(),
           metrics::MetricsLogUploader::MetricServiceType::UMA));
 
   std::vector<ChromeBrowserState*> loaded_browser_states =

@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("chrome_browser_state_client") {
+source_set("demographics_client") {
   sources = [
-    "chrome_browser_state_client.h",
-    "chrome_browser_state_client.mm",
+    "demographics_client.h",
+    "demographics_client.mm",
   ]
   deps = [
     "//base",
@@ -94,8 +94,8 @@ source_set("model") {
   public_deps = [ "//components/ukm/ios:ukm_url_recorder" ]
   deps = [
     ":accessor",
-    ":chrome_browser_state_client",
     ":constants",
+    ":demographics_client",
     "//base",
     "//components/browser_sync",
     "//components/crash/core/common",
@@ -167,7 +167,7 @@ source_set("model") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "chrome_browser_state_client_unittest.mm",
+    "demographics_client_unittest.mm",
     "incognito_usage_app_state_agent_unittest.mm",
     "ios_chrome_default_browser_metrics_provider_unittest.mm",
     "ios_chrome_metrics_service_accessor_unittest.mm",
@@ -182,8 +182,8 @@ source_set("unit_tests") {
   ]
   deps = [
     ":accessor",
-    ":chrome_browser_state_client",
     ":constants",
+    ":demographics_client",
     ":model",
     "//base",
     "//base/test:test_support",
