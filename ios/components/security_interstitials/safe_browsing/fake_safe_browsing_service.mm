@@ -104,6 +104,22 @@ FakeSafeBrowsingService::CreateUrlChecker(
   return std::make_unique<FakeSafeBrowsingUrlCheckerImpl>(request_destination);
 }
 
+std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
+FakeSafeBrowsingService::CreateSyncChecker(
+    network::mojom::RequestDestination request_destination,
+    web::WebState* web_state,
+    SafeBrowsingClient* client) {
+  return std::make_unique<FakeSafeBrowsingUrlCheckerImpl>(request_destination);
+}
+
+std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>
+FakeSafeBrowsingService::CreateAsyncChecker(
+    network::mojom::RequestDestination request_destination,
+    web::WebState* web_state,
+    SafeBrowsingClient* client) {
+  return std::make_unique<FakeSafeBrowsingUrlCheckerImpl>(request_destination);
+}
+
 bool FakeSafeBrowsingService::CanCheckUrl(const GURL& url) const {
   return url.SchemeIsHTTPOrHTTPS() || url.SchemeIs(url::kFtpScheme) ||
          url.SchemeIsWSOrWSS();

@@ -94,6 +94,34 @@ class TestUrlCheckerClient {
     }
   }
 
+  void CheckUrlWithSyncChecker(const GURL& url) {
+    result_pending_ = true;
+    url_checker_ = safe_browsing_service_->CreateSyncChecker(
+        network::mojom::RequestDestination::kDocument, &web_state_,
+        safe_browsing_client_);
+    if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+      CheckUrlOnSBThread(url);
+    } else {
+      web::GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&TestUrlCheckerClient::CheckUrlOnSBThread,
+                                    base::Unretained(this), url));
+    }
+  }
+
+  void CheckUrlWithAsyncChecker(const GURL& url) {
+    result_pending_ = true;
+    url_checker_ = safe_browsing_service_->CreateAsyncChecker(
+        network::mojom::RequestDestination::kDocument, &web_state_,
+        safe_browsing_client_);
+    if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+      CheckUrlOnSBThread(url);
+    } else {
+      web::GetIOThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&TestUrlCheckerClient::CheckUrlOnSBThread,
+                                    base::Unretained(this), url));
+    }
+  }
+
   void CheckSubFrameUrl(const GURL& url) {
     result_pending_ = true;
     url_checker_ = safe_browsing_service_->CreateUrlChecker(
@@ -359,6 +387,72 @@ TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePages) {
   EXPECT_FALSE(client.url_is_unsafe());
 }
 
+TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePagesWithSyncChecker) {
+  // Verify that queries to the Safe Browsing database owned by
+  // SafeBrowsingService receive responses.
+  TestUrlCheckerClient client(safe_browsing_service_.get(),
+                              browser_state_.get(), &safe_browsing_client_);
+  GURL safe_url = GURL(kSafePage);
+  client.CheckUrlWithSyncChecker(safe_url);
+  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+    EXPECT_TRUE(client.result_pending());
+    client.WaitForResult();
+  }
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_FALSE(client.url_is_unsafe());
+
+  GURL unsafe_url = GURL(kMalwarePage);
+  MarkUrlAsMalware(unsafe_url);
+  client.CheckUrlWithSyncChecker(unsafe_url);
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_TRUE(client.url_is_unsafe());
+
+  // Disable Safe Browsing, and ensure that unsafe URLs are no longer flagged.
+  pref_service_->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  client.CheckUrlWithSyncChecker(unsafe_url);
+  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+    EXPECT_TRUE(client.result_pending());
+    client.WaitForResult();
+  }
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_FALSE(client.url_is_unsafe());
+}
+
+TEST_F(SafeBrowsingServiceTest, SafeAndUnsafePagesWithAsyncChecker) {
+  // Verify that queries to the Safe Browsing database owned by
+  // SafeBrowsingService receive responses.
+  TestUrlCheckerClient client(safe_browsing_service_.get(),
+                              browser_state_.get(), &safe_browsing_client_);
+  GURL safe_url = GURL(kSafePage);
+  client.CheckUrlWithAsyncChecker(safe_url);
+  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+    EXPECT_TRUE(client.result_pending());
+    client.WaitForResult();
+  }
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_FALSE(client.url_is_unsafe());
+
+  GURL unsafe_url = GURL(kMalwarePage);
+  MarkUrlAsMalware(unsafe_url);
+  client.CheckUrlWithAsyncChecker(unsafe_url);
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_TRUE(client.url_is_unsafe());
+
+  // Disable Safe Browsing, and ensure that unsafe URLs are no longer flagged.
+  pref_service_->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  client.CheckUrlWithAsyncChecker(unsafe_url);
+  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+    EXPECT_TRUE(client.result_pending());
+    client.WaitForResult();
+  }
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_FALSE(client.url_is_unsafe());
+}
+
 // Verifies that safe and unsafe URLs are identified correctly when real-time
 // lookups are enabled, and that opting out of real-time checks works as
 // expected.
@@ -397,6 +491,98 @@ TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePages) {
   pref_service_->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
   client.CheckUrl(unsafe_url);
+  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+    EXPECT_TRUE(client.result_pending());
+    client.WaitForResult();
+  }
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_FALSE(client.url_is_unsafe());
+}
+
+// Verifies that safe and unsafe URLs are identified correctly for when a sync
+// checker is used. A sync checker shouldn't be able to detect unsafe pages
+// related to real time checks.
+TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePagesWithSyncChecker) {
+  TestUrlCheckerClient client(safe_browsing_service_.get(),
+                              browser_state_.get(), &safe_browsing_client_);
+
+  // Wait for an initial result to make sure the Safe Browsing database has
+  // been initialized, before calling into functions that mark URLs as safe
+  // or unsafe in the database.
+  GURL safe_url(kSafePage);
+  client.CheckUrlWithSyncChecker(safe_url);
+  client.WaitForResult();
+
+  // Opt into real-time checks.
+  pref_service_->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+
+  MarkUrlAsRealTimeSafe(safe_url);
+  client.CheckUrlWithSyncChecker(safe_url);
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_FALSE(client.url_is_unsafe());
+
+  GURL unsafe_url(kMalwarePage);
+  MarkUrlAsRealTimeUnsafe(unsafe_url);
+  client.CheckUrlWithSyncChecker(unsafe_url);
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_FALSE(client.url_is_unsafe());
+
+  // Opt out of real-time checks, and ensure that unsafe URLs continue to be
+  // unflagged.
+  pref_service_->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+  client.CheckUrlWithSyncChecker(unsafe_url);
+  if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
+    EXPECT_TRUE(client.result_pending());
+    client.WaitForResult();
+  }
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_FALSE(client.url_is_unsafe());
+}
+
+// Verifies that safe and unsafe URLs are identified correctly for when an async
+// checker is used. An async checker should detect unsafe pages related to real
+// time checks.
+TEST_F(SafeBrowsingServiceTest, RealTimeSafeAndUnsafePagesWithAsyncChecker) {
+  TestUrlCheckerClient client(safe_browsing_service_.get(),
+                              browser_state_.get(), &safe_browsing_client_);
+
+  // Wait for an initial result to make sure the Safe Browsing database has
+  // been initialized, before calling into functions that mark URLs as safe
+  // or unsafe in the database.
+  GURL safe_url(kSafePage);
+  client.CheckUrlWithAsyncChecker(safe_url);
+  client.WaitForResult();
+
+  // Opt into real-time checks.
+  pref_service_->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+
+  MarkUrlAsRealTimeSafe(safe_url);
+  client.CheckUrlWithAsyncChecker(safe_url);
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_FALSE(client.url_is_unsafe());
+
+  GURL unsafe_url(kMalwarePage);
+  MarkUrlAsRealTimeUnsafe(unsafe_url);
+  client.CheckUrlWithAsyncChecker(unsafe_url);
+  EXPECT_TRUE(client.result_pending());
+  client.WaitForResult();
+  EXPECT_FALSE(client.result_pending());
+  EXPECT_TRUE(client.url_is_unsafe());
+
+  // Opt out of real-time checks, and ensure that unsafe URLs are no longer
+  // flagged.
+  pref_service_->SetBoolean(
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+  client.CheckUrlWithAsyncChecker(unsafe_url);
   if (!base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
     EXPECT_TRUE(client.result_pending());
     client.WaitForResult();
