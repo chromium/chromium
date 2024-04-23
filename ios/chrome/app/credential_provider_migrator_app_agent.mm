@@ -12,57 +12,74 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 
-@interface CredentialProviderAppAgent ()
+@interface CredentialProviderMigratorAppAgent ()
 
-// `migrator` is in charge of migrating the password when Chrome comes to
-// foreground.
-@property(nonatomic, strong) CredentialProviderMigrator* migrator;
+// Keep track of the migration status of each browser state.
+@property(nonatomic, strong) NSMutableSet<NSString*>* migratingTracker;
 
 @end
 
-@implementation CredentialProviderAppAgent
+@implementation CredentialProviderMigratorAppAgent
 
+// Migrate the password when Chrome comes to foreground.
 - (void)appDidEnterForeground {
-  if (self.migrator) {
-    return;
-  }
   NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
-  SceneState* anyScene = self.appState.foregroundScenes.firstObject;
-  DCHECK(anyScene);
-  // TODO(crbug.com/326036404): Clean this up for multiple browser states -- run
-  // the migration for every browser state.
-  ChromeBrowserState* browserState =
-      anyScene.browserProviderInterface.mainBrowserProvider.browser
-          ->GetBrowserState();
-  DCHECK(browserState);
-  password_manager::PasswordForm::Store defaultStore =
-      password_manager::features_util::GetDefaultPasswordStore(
-          browserState->GetPrefs(),
-          SyncServiceFactory::GetForBrowserState(browserState));
-  scoped_refptr<password_manager::PasswordStoreInterface> storeToSave =
-      defaultStore == password_manager::PasswordForm::Store::kAccountStore
-          ? IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-                browserState, ServiceAccessType::IMPLICIT_ACCESS)
-          : IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-                browserState, ServiceAccessType::IMPLICIT_ACCESS);
   NSUserDefaults* userDefaults = app_group::GetGroupUserDefaults();
-  self.migrator =
-      [[CredentialProviderMigrator alloc] initWithUserDefaults:userDefaults
-                                                           key:key
-                                                 passwordStore:storeToSave];
-  __weak __typeof__(self) weakSelf = self;
-  [self.migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
-    DCHECK(success);
-    weakSelf.migrator = nil;
-  }];
+
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  if (!self.migratingTracker) {
+    self.migratingTracker =
+        [NSMutableSet setWithCapacity:loadedBrowserStates.size()];
+  }
+
+  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+    NSString* browserStatePathString =
+        [NSString stringWithCString:browserState->GetStatePath()
+                                        .BaseName()
+                                        .MaybeAsASCII()
+                                        .c_str()
+                           encoding:NSASCIIStringEncoding];
+    // Do nothing if the migration for a browser state already started.
+    if ([self.migratingTracker containsObject:browserStatePathString]) {
+      continue;
+    }
+
+    password_manager::PasswordForm::Store defaultStore =
+        password_manager::features_util::GetDefaultPasswordStore(
+            browserState->GetPrefs(),
+            SyncServiceFactory::GetForBrowserState(browserState));
+    scoped_refptr<password_manager::PasswordStoreInterface> storeToSave =
+        defaultStore == password_manager::PasswordForm::Store::kAccountStore
+            ? IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+                  browserState, ServiceAccessType::IMPLICIT_ACCESS)
+            : IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+                  browserState, ServiceAccessType::IMPLICIT_ACCESS);
+    CredentialProviderMigrator* migrator =
+        [[CredentialProviderMigrator alloc] initWithUserDefaults:userDefaults
+                                                             key:key
+                                                   passwordStore:storeToSave];
+    [self.migratingTracker addObject:browserStatePathString];
+    __weak __typeof__(self) weakSelf = self;
+    [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
+      DCHECK(success) << error.localizedDescription;
+      if (weakSelf) {
+        [weakSelf.migratingTracker removeObject:browserStatePathString];
+      }
+    }];
+  }
 }
 
 @end
