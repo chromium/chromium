@@ -63,10 +63,14 @@ document.head.appendChild(template.content);
 
 # Template for Lit icon HTML files.
 _LIT_ICONS_TEMPLATE = """import '%(scheme)s//resources/cr_elements/cr_icon/cr_iconset.js';
-import {html, render} from '%(scheme)s//resources/lit/v3_0/lit.rollup.js';
+import {getTrustedHTML} from '%(scheme)s//resources/js/static_types.js';
 
-const iconsetHtml = html`%(content)s`;
-render(iconsetHtml, document.head);
+const div = document.createElement('div');
+div.innerHTML = getTrustedHTML`%(content)s`;
+const iconsets = div.querySelectorAll('cr-iconset');
+for (const iconset of iconsets) {
+  document.head.appendChild(iconset);
+}
 """
 
 # Tokens used to detect whether the underlying custom element is based on

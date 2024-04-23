@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 import type {PrintPreviewDestinationListItemElement} from 'chrome://print/print_preview.js';
-import {Destination, DestinationOrigin, NativeLayerCrosImpl, PrinterStatusReason, PrinterStatusSeverity} from 'chrome://print/print_preview.js';
+import {Destination, DestinationOrigin, getTrustedHTML, NativeLayerCrosImpl, PrinterStatusReason, PrinterStatusSeverity} from 'chrome://print/print_preview.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';

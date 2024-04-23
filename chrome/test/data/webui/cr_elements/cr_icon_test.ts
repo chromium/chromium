@@ -2,20 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import '//resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/cr_icon/cr_iconset.js';
+import '//resources/cr_elements/icons.html.js';
+
+import type {CrIconElement} from '//resources/cr_elements/cr_icon/cr_icon.js';
+import {getTrustedHTML} from '//resources/js/static_types.js';
 import {html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {html as litHtml, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-
-import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/cr_icon/cr_iconset.js';
-import 'chrome://resources/cr_elements/icons.html.js';
-
-import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-
-// clang-format on
 
 suite('cr-icon', function() {
   let icon: CrIconElement;
@@ -23,7 +19,8 @@ suite('cr-icon', function() {
   suiteSetup(function() {
     // Add a test cr-iconset to the page. Necessary since there are not yet
     // any cr-iconsets in prod that can be imported instead.
-    const iconsetHtml = litHtml`
+    const div = document.createElement('div');
+    div.innerHTML = getTrustedHTML`
       <cr-iconset name="cr-test" size="24">
         <svg>
           <defs>
@@ -36,7 +33,7 @@ suite('cr-icon', function() {
           </defs>
         </svg>
       </cr-iconset>`;
-    render(iconsetHtml, document.head);
+    document.head.appendChild(div.querySelector('cr-iconset')!);
   });
 
   setup(async () => {
@@ -112,7 +109,8 @@ suite('cr-icon', function() {
     let svg = icon.shadowRoot!.querySelector('svg');
     assertFalse(!!svg);
 
-    const iconsetHtml = litHtml`
+    const div = document.createElement('div');
+    div.innerHTML = getTrustedHTML`
       <cr-iconset name="cr-test-late" size="24">
         <svg>
           <defs>
@@ -120,7 +118,7 @@ suite('cr-icon', function() {
           </defs>
         </svg>
       </cr-iconset>`;
-    render(iconsetHtml, document.head);
+    document.head.appendChild(div.querySelector('cr-iconset')!);
 
     await microtasksFinished();
     svg = icon.shadowRoot!.querySelector('svg');
@@ -141,7 +139,8 @@ suite('cr-icon', function() {
     document.head.appendChild(template.content);
 
     // Add a cr-iconset with the same name.
-    const iconsetHtml = litHtml`
+    const div = document.createElement('div');
+    div.innerHTML = getTrustedHTML`
       <cr-iconset name="cr20-test" size="20">
         <svg>
           <defs>
@@ -151,7 +150,7 @@ suite('cr-icon', function() {
           </defs>
         </svg>
       </cr-iconset>`;
-    render(iconsetHtml, document.head);
+    document.head.appendChild(div.querySelector('cr-iconset')!);
 
     icon.icon = 'cr20-test:arrow';
     await microtasksFinished();

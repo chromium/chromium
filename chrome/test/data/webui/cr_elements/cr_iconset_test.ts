@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {html, render, CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-
 import 'chrome://resources/cr_elements/cr_icon/cr_iconset.js';
-import {IconsetMap} from 'chrome://resources/cr_elements/cr_icon/iconset_map.js';
 
 import type {CrIconsetElement} from 'chrome://resources/cr_elements/cr_icon/cr_iconset.js';
+import {IconsetMap} from 'chrome://resources/cr_elements/cr_icon/iconset_map.js';
+import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-
-// clang-format on
 
 suite('cr-iconset', function() {
   let iconset: CrIconsetElement;
@@ -27,7 +24,8 @@ suite('cr-iconset', function() {
   customElements.define(TestElement.is, TestElement);
 
   suiteSetup(function() {
-    const iconsetHtml = html`
+    const div = document.createElement('div');
+    div.innerHTML = getTrustedHTML`
       <cr-iconset name="cr-test" size="24">
         <svg>
           <defs>
@@ -40,7 +38,7 @@ suite('cr-iconset', function() {
           </defs>
         </svg>
       </cr-iconset>`;
-    render(iconsetHtml, document.head);
+    document.head.appendChild(div.querySelector('cr-iconset')!);
   });
 
   setup(async () => {

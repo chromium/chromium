@@ -5,7 +5,7 @@
 import 'chrome://print/print_preview.js';
 
 import type {PrintPreviewNumberSettingsSectionElement} from 'chrome://print/print_preview.js';
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
+import {getTrustedHTML} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {triggerInputEvent} from './print_preview_test_utils.js';
