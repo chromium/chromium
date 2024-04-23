@@ -41,17 +41,11 @@
 
 ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
     ExclusiveAccessBubbleViewsContext* context,
-    const GURL& url,
-    ExclusiveAccessBubbleType bubble_type,
-    bool notify_download,
-    ExclusiveAccessBubbleHideCallback bubble_first_hide_callback)
-    : ExclusiveAccessBubble(context->GetExclusiveAccessManager(),
-                            url,
-                            bubble_type,
-                            notify_download),
+    const ExclusiveAccessBubbleParams& params,
+    ExclusiveAccessBubbleHideCallback first_hide_callback)
+    : ExclusiveAccessBubble(context->GetExclusiveAccessManager(), params),
       bubble_view_context_(context),
-      popup_(nullptr),
-      bubble_first_hide_callback_(std::move(bubble_first_hide_callback)),
+      first_hide_callback_(std::move(first_hide_callback)),
       animation_(new gfx::SlideAnimation(this)) {
   // Create the contents view.
   auto content_view = std::make_unique<SubtleNotificationView>();
@@ -81,7 +75,7 @@ ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
   browser_fullscreen_exit_accelerator_ = accelerator.GetShortcutText();
 #endif
 
-  UpdateViewContent(bubble_type_);
+  UpdateViewContent(params_.type);
 
   // Initialize the popup.
   popup_ = SubtleNotificationView::CreatePopupWidget(
@@ -132,37 +126,37 @@ ExclusiveAccessBubbleViews::~ExclusiveAccessBubbleViews() {
   CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
-void ExclusiveAccessBubbleViews::UpdateContent(
-    const GURL& url,
-    ExclusiveAccessBubbleType bubble_type,
-    ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
-    bool notify_download,
-    bool force_update) {
-  DCHECK(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != bubble_type || notify_download);
-  if (bubble_type_ == bubble_type && url_ == url && !force_update)
+void ExclusiveAccessBubbleViews::Update(
+    const ExclusiveAccessBubbleParams& params,
+    ExclusiveAccessBubbleHideCallback first_hide_callback) {
+  DCHECK(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != params.type ||
+         params.has_download);
+  if (params_.type == params.type && params_.url == params.url &&
+      !params.force_update) {
     return;
+  }
 
   // Show the notification about overriding only if requesting a download
   // notification, a notification was visible earlier, and the earlier
   // notification was either a non-download one, or was one about an override
   // itself.
-  notify_overridden_ = notify_download &&
+  notify_overridden_ = params.has_download &&
                        (IsVisible() || animation_->IsShowing()) &&
-                       (!notify_download_ || notify_overridden_);
-  notify_download_ = notify_download;
+                       (!params_.has_download || notify_overridden_);
+  params_.has_download = params.has_download;
 
   // Bubble maybe be re-used after timeout.
   RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason::kInterrupted);
 
-  bubble_first_hide_callback_ = std::move(bubble_first_hide_callback);
+  first_hide_callback_ = std::move(first_hide_callback);
 
-  url_ = url;
+  params_.url = params.url;
   // When a request to notify about a download is made, the bubble type
   // should be preserved from the old value, and not be updated.
-  if (!notify_download) {
-    bubble_type_ = bubble_type;
+  if (!params.has_download) {
+    params_.type = params.type;
   }
-  UpdateViewContent(bubble_type_);
+  UpdateViewContent(params_.type);
 
   view_->SizeToPreferredSize();
   popup_->SetBounds(GetPopupRect());
@@ -223,11 +217,13 @@ void ExclusiveAccessBubbleViews::UpdateBounds() {
 
 void ExclusiveAccessBubbleViews::UpdateViewContent(
     ExclusiveAccessBubbleType bubble_type) {
-  DCHECK(notify_download_ || EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != bubble_type);
+  DCHECK(params_.has_download ||
+         EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != bubble_type);
 
   std::u16string accelerator;
   bool should_show_browser_acc =
-      (notify_download_ && bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) ||
+      (params_.has_download &&
+       bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) ||
       exclusive_access_bubble::IsExclusiveAccessModeBrowserFullscreen(
           bubble_type);
   if (should_show_browser_acc &&
@@ -377,6 +373,7 @@ void ExclusiveAccessBubbleViews::OnWidgetVisibilityChanged(
 
 void ExclusiveAccessBubbleViews::RunHideCallbackIfNeeded(
     ExclusiveAccessBubbleHideReason reason) {
-  if (bubble_first_hide_callback_)
-    std::move(bubble_first_hide_callback_).Run(reason);
+  if (first_hide_callback_) {
+    std::move(first_hide_callback_).Run(reason);
+  }
 }

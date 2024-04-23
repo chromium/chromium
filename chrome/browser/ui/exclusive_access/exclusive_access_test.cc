@@ -103,7 +103,7 @@ void ExclusiveAccessTest::TearDownOnMainThread() {
 // static
 bool ExclusiveAccessTest::IsBubbleDownloadNotification(
     ExclusiveAccessBubble* bubble) {
-  return bubble->notify_download_;
+  return bubble->params_.has_download;
 }
 
 bool ExclusiveAccessTest::RequestKeyboardLock(bool esc_key_locked) {

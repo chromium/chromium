@@ -303,8 +303,7 @@ void FullscreenController::EnterFullscreenModeForTab(
     // We need to update the fullscreen exit bubble, e.g., going from browser
     // fullscreen to tab fullscreen will need to show different content.
     tab_fullscreen_ = true;
-    exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
-        ExclusiveAccessBubbleHideCallback());
+    exclusive_access_manager()->UpdateBubble(base::NullCallback());
   }
 
   // This is only a change between Browser and Tab fullscreen. We generate
@@ -432,9 +431,8 @@ void FullscreenController::WindowFullscreenStateChanged() {
   } else {
     toggled_into_fullscreen_ = true;
     if (!chrome::IsRunningInAppMode()) {
-      exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
-          ExclusiveAccessBubbleHideCallback(),
-          /*force_update=*/true);
+      exclusive_access_manager()->UpdateBubble(base::NullCallback(),
+                                               /*force_update=*/true);
     }
     if (!fullscreen_start_time_) {
       fullscreen_start_time_ = base::TimeTicks::Now();
@@ -546,8 +544,7 @@ void FullscreenController::NotifyTabExclusiveAccessLost() {
     state_prior_to_tab_fullscreen_ = STATE_INVALID;
     tab_fullscreen_ = false;
     web_contents->ExitFullscreen(will_cause_resize);
-    exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
-        ExclusiveAccessBubbleHideCallback());
+    exclusive_access_manager()->UpdateBubble(base::NullCallback());
   }
 }
 
@@ -658,9 +655,7 @@ void FullscreenController::ExitFullscreenModeInternal() {
 #endif
   exclusive_access_manager()->context()->ExitFullscreen();
   extension_caused_fullscreen_ = GURL();
-
-  exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
-      ExclusiveAccessBubbleHideCallback());
+  exclusive_access_manager()->UpdateBubble(base::NullCallback());
 }
 
 bool FullscreenController::MaybeToggleFullscreenWithinTab(

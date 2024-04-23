@@ -117,15 +117,10 @@ void DownloadDisplayController::OnNewItem(bool show_animation) {
   UpdateButtonStateFromUpdateService();
   if (display_->ShouldShowExclusiveAccessBubble()) {
     fullscreen_notification_shown_ = true;
-    ExclusiveAccessContext* exclusive_access_context =
-        browser_->exclusive_access_manager()->context();
-    // exclusive_access_context can be null in tests.
-    if (exclusive_access_context) {
-      exclusive_access_context->UpdateExclusiveAccessExitBubbleContent(
-          GURL(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
-          ExclusiveAccessBubbleHideCallback(),
-          /*notify_download=*/true,
-          /*force_update=*/true);
+    // ExclusiveAccessContext can be null in tests.
+    if (auto* context = browser_->exclusive_access_manager()->context()) {
+      context->UpdateExclusiveAccessBubble(
+          {.has_download = true, .force_update = true}, base::NullCallback());
     }
   } else {
     DownloadDisplay::IconUpdateInfo updates;

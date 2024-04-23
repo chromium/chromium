@@ -51,8 +51,11 @@ class ExclusiveAccessManager {
   ExclusiveAccessContext* context() const { return exclusive_access_context_; }
 
   ExclusiveAccessBubbleType GetExclusiveAccessExitBubbleType() const;
-  void UpdateExclusiveAccessExitBubbleContent(ExclusiveAccessBubbleHideCallback,
-                                              bool force_update = false);
+  // Asks the ExclusiveAccessContext to show, hide, or update the bubble.
+  // `first_hide_callback` is called when the bubble is stifled or first hidden.
+  // `force_update` will reshow the bubble even if there are no content changes.
+  void UpdateBubble(ExclusiveAccessBubbleHideCallback first_hide_callback,
+                    bool force_update = false);
 
   GURL GetExclusiveAccessBubbleURL() const;
 

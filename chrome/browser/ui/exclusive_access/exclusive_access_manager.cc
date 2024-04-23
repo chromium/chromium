@@ -108,14 +108,14 @@ ExclusiveAccessManager::GetExclusiveAccessExitBubbleType() const {
   return EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE;
 }
 
-void ExclusiveAccessManager::UpdateExclusiveAccessExitBubbleContent(
-    ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
+void ExclusiveAccessManager::UpdateBubble(
+    ExclusiveAccessBubbleHideCallback first_hide_callback,
     bool force_update) {
-  GURL url = GetExclusiveAccessBubbleURL();
-  ExclusiveAccessBubbleType bubble_type = GetExclusiveAccessExitBubbleType();
-  exclusive_access_context_->UpdateExclusiveAccessExitBubbleContent(
-      url, bubble_type, std::move(bubble_first_hide_callback),
-      /*notify_download=*/false, force_update);
+  exclusive_access_context_->UpdateExclusiveAccessBubble(
+      {.url = GetExclusiveAccessBubbleURL(),
+       .type = GetExclusiveAccessExitBubbleType(),
+       .force_update = force_update},
+      std::move(first_hide_callback));
 }
 
 GURL ExclusiveAccessManager::GetExclusiveAccessBubbleURL() const {
@@ -179,10 +179,9 @@ bool ExclusiveAccessManager::HandleUserKeyEvent(
                          base::Unretained(this)));
       show_exit_bubble_timer_.Start(
           FROM_HERE, kShowExitBubbleTime,
-          base::BindOnce(
-              &ExclusiveAccessManager::UpdateExclusiveAccessExitBubbleContent,
-              base::Unretained(this), base::DoNothing(),
-              /*force_update=*/true));
+          base::BindOnce(&ExclusiveAccessManager::UpdateBubble,
+                         base::Unretained(this), base::NullCallback(),
+                         /*force_update=*/true));
     }
     // If the keyboard lock is enabled and requires press-and-hold Esc to exit,
     // do not pass the event to other controllers. Returns false as we don't

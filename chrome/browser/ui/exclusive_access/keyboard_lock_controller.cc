@@ -176,10 +176,10 @@ void KeyboardLockController::LockKeyboard(
   keyboard_lock_state_ = new_lock_state;
   SetTabWithExclusiveAccess(web_contents.get());
   if (reshow_exit_bubble) {
-    exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
+    exclusive_access_manager()->UpdateBubble(
         bubble_hide_callback_for_test_
             ? base::BindOnce(bubble_hide_callback_for_test_)
-            : ExclusiveAccessBubbleHideCallback());
+            : base::NullCallback());
   }
 }
 
@@ -191,8 +191,7 @@ void KeyboardLockController::UnlockKeyboard() {
 
   exclusive_access_tab()->GotResponseToKeyboardLockRequest(false);
   SetTabWithExclusiveAccess(nullptr);
-  exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
-      ExclusiveAccessBubbleHideCallback());
+  exclusive_access_manager()->UpdateBubble(base::NullCallback());
 }
 
 void KeyboardLockController::HandleUserHeldEscapeDeprecated() {
@@ -218,8 +217,8 @@ void KeyboardLockController::ReShowExitBubbleIfNeeded() {
 
   esc_keypress_tracker_.push_back(now);
   if (esc_keypress_tracker_.size() >= kEscRepeatCountToTriggerUiReshow) {
-    exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
-        ExclusiveAccessBubbleHideCallback(), /*force_update=*/true);
+    exclusive_access_manager()->UpdateBubble(base::NullCallback(),
+                                             /*force_update=*/true);
     esc_keypress_tracker_.clear();
 
     if (esc_repeat_triggered_for_test_)

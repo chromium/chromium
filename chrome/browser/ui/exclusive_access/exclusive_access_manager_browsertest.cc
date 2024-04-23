@@ -136,12 +136,8 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessManagerPressAndHoldEscTest,
   EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());
 
   // Setting the bubble type to none will hide the bubble.
-  GetExclusiveAccessManager()
-      ->context()
-      ->UpdateExclusiveAccessExitBubbleContent(
-          GURL(), ExclusiveAccessBubbleType::EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
-          base::DoNothing(),
-          /*notify_download=*/false, /*force_update=*/true);
+  GetExclusiveAccessManager()->context()->UpdateExclusiveAccessBubble(
+      {.force_update = true}, base::NullCallback());
   EXPECT_FALSE(IsExclusiveAccessBubbleDisplayed());
 
   // The bubble is not shown after a short press on Esc key.

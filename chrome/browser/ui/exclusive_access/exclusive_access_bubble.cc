@@ -34,13 +34,9 @@ const int ExclusiveAccessBubble::kSimplifiedPopupTopPx = 45;
 
 ExclusiveAccessBubble::ExclusiveAccessBubble(
     ExclusiveAccessManager* manager,
-    const GURL& url,
-    ExclusiveAccessBubbleType bubble_type,
-    bool notify_download)
+    const ExclusiveAccessBubbleParams& params)
     : manager_(manager),
-      url_(url),
-      bubble_type_(bubble_type),
-      notify_download_(notify_download),
+      params_(params),
       hide_timeout_(
           FROM_HERE,
           base::Milliseconds(kInitialDelayMs),
@@ -61,7 +57,8 @@ ExclusiveAccessBubble::ExclusiveAccessBubble(
           base::Milliseconds(1000 / kPositionCheckHz),
           base::BindRepeating(&ExclusiveAccessBubble::CheckMousePointerPosition,
                               base::Unretained(this))) {
-  DCHECK(notify_download_ || EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != bubble_type_);
+  DCHECK(params.has_download ||
+         params.type != EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE);
 }
 
 ExclusiveAccessBubble::~ExclusiveAccessBubble() = default;
@@ -75,7 +72,7 @@ void ExclusiveAccessBubble::OnUserInput() {
   bool first_input_reshow =
       reshow_on_first_input_ && !has_seen_user_input_ &&
       base::FeatureList::IsEnabled(blink::features::kFullscreenPopupWindows) &&
-      bubble_type_ ==
+      params_.type ==
           ExclusiveAccessBubbleType::
               EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION;
   reshow_on_first_input_ = false;
@@ -114,7 +111,7 @@ void ExclusiveAccessBubble::CheckMousePointerPosition() {
     // display than the bubble, set a flag to re-show the bubble once input is
     // detected.
     if (!has_seen_user_input_ && !reshow_on_first_input_ &&
-        bubble_type_ ==
+        params_.type ==
             ExclusiveAccessBubbleType::
                 EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION) {
       display::Screen* screen = display::Screen::GetScreen();
@@ -130,7 +127,7 @@ void ExclusiveAccessBubble::CheckMousePointerPosition() {
 std::u16string ExclusiveAccessBubble::GetInstructionText(
     const std::u16string& accelerator) const {
   return exclusive_access_bubble::GetInstructionTextForType(
-      bubble_type_, accelerator, notify_download_, notify_overridden_);
+      params_.type, accelerator, params_.has_download, notify_overridden_);
 }
 
 bool ExclusiveAccessBubble::IsHideTimeoutRunning() const {

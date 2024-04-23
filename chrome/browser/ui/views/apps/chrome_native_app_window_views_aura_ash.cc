@@ -396,15 +396,12 @@ void ChromeNativeAppWindowViewsAuraAsh::SetFullscreen(int fullscreen_types) {
   // In a managed guest session, display a toast with instructions on exiting
   // fullscreen.
   if (chromeos::IsManagedGuestSession()) {
-    UpdateExclusiveAccessExitBubbleContent(
-        GURL(),
-        fullscreen_types & (AppWindow::FULLSCREEN_TYPE_HTML_API |
-                            AppWindow::FULLSCREEN_TYPE_WINDOW_API)
-            ? EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION
-            : EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
-        ExclusiveAccessBubbleHideCallback(),
-        /*notify_download=*/false,
-        /*force_update=*/false);
+    UpdateExclusiveAccessBubble(
+        {.type = fullscreen_types & (AppWindow::FULLSCREEN_TYPE_HTML_API |
+                                     AppWindow::FULLSCREEN_TYPE_WINDOW_API)
+                     ? EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION
+                     : EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE},
+        base::NullCallback());
   }
 
   // Autohide the shelf instead of hiding it completely for OS fullscreen.
@@ -477,31 +474,26 @@ void ChromeNativeAppWindowViewsAuraAsh::ExitFullscreen() {
   NOTREACHED_NORETURN();
 }
 
-void ChromeNativeAppWindowViewsAuraAsh::UpdateExclusiveAccessExitBubbleContent(
-    const GURL& url,
-    ExclusiveAccessBubbleType bubble_type,
-    ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
-    bool notify_download,
-    bool force_update) {
-  if (bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE && !notify_download) {
+void ChromeNativeAppWindowViewsAuraAsh::UpdateExclusiveAccessBubble(
+    const ExclusiveAccessBubbleParams& params,
+    ExclusiveAccessBubbleHideCallback first_hide_callback) {
+  if (params.type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE &&
+      !params.has_download) {
     exclusive_access_bubble_.reset();
-    if (bubble_first_hide_callback) {
-      std::move(bubble_first_hide_callback)
+    if (first_hide_callback) {
+      std::move(first_hide_callback)
           .Run(ExclusiveAccessBubbleHideReason::kNotShown);
     }
     return;
   }
 
   if (exclusive_access_bubble_) {
-    exclusive_access_bubble_->UpdateContent(
-        url, bubble_type, std::move(bubble_first_hide_callback),
-        notify_download, force_update);
+    exclusive_access_bubble_->Update(params, std::move(first_hide_callback));
     return;
   }
 
   exclusive_access_bubble_ = std::make_unique<ExclusiveAccessBubbleViews>(
-      this, url, bubble_type, notify_download,
-      std::move(bubble_first_hide_callback));
+      this, params, std::move(first_hide_callback));
 }
 
 bool ChromeNativeAppWindowViewsAuraAsh::IsExclusiveAccessBubbleDisplayed()

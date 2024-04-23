@@ -1955,12 +1955,9 @@ void BrowserView::ExitFullscreen() {
                     display::kInvalidDisplayId);
 }
 
-void BrowserView::UpdateExclusiveAccessExitBubbleContent(
-    const GURL& url,
-    ExclusiveAccessBubbleType bubble_type,
-    ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
-    bool notify_download,
-    bool force_update) {
+void BrowserView::UpdateExclusiveAccessBubble(
+    const ExclusiveAccessBubbleParams& params,
+    ExclusiveAccessBubbleHideCallback first_hide_callback) {
   // Trusted pinned mode does not allow to escape. So do not show the bubble.
   bool is_trusted_pinned =
       platform_util::IsBrowserLockedFullscreen(browser_.get());
@@ -1968,25 +1965,25 @@ void BrowserView::UpdateExclusiveAccessExitBubbleContent(
   // Immersive mode allows the toolbar to be shown, so do not show the bubble.
   // However, do show the bubble in a managed guest session (see
   // crbug.com/741069).
-  bool immersive_not_public =
-      ShouldUseImmersiveFullscreenForUrl(url) && !IsManagedGuestSession();
+  bool immersive_not_public = ShouldUseImmersiveFullscreenForUrl(params.url) &&
+                              !IsManagedGuestSession();
 
   // Whether we should remove the bubble if it exists, or not show the bubble.
   // TODO(jamescook): Figure out what to do with mouse-lock.
   bool should_close_bubble = is_trusted_pinned;
-  if (!notify_download) {
+  if (!params.has_download) {
     should_close_bubble = should_close_bubble ||
                           // ...TYPE_NONE indicates deleting the bubble, except
-                          // when used with notify_download.
-                          bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE ||
+                          // when used with download.
+                          params.type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE ||
                           // Immersive mode logic for downloads is handled by
                           // the download controller.
                           immersive_not_public;
   }
 
   if (should_close_bubble) {
-    if (bubble_first_hide_callback) {
-      std::move(bubble_first_hide_callback)
+    if (first_hide_callback) {
+      std::move(first_hide_callback)
           .Run(ExclusiveAccessBubbleHideReason::kNotShown);
     }
 
@@ -2010,15 +2007,12 @@ void BrowserView::UpdateExclusiveAccessExitBubbleContent(
   }
 
   if (exclusive_access_bubble_) {
-    exclusive_access_bubble_->UpdateContent(
-        url, bubble_type, std::move(bubble_first_hide_callback),
-        notify_download, force_update);
+    exclusive_access_bubble_->Update(params, std::move(first_hide_callback));
     return;
   }
 
   exclusive_access_bubble_ = std::make_unique<ExclusiveAccessBubbleViews>(
-      this, url, bubble_type, notify_download,
-      std::move(bubble_first_hide_callback));
+      this, params, std::move(first_hide_callback));
 }
 
 bool BrowserView::IsExclusiveAccessBubbleDisplayed() const {

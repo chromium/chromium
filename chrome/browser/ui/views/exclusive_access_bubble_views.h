@@ -16,7 +16,6 @@
 #include "ui/views/widget/widget_observer.h"
 
 class ExclusiveAccessBubbleViewsContext;
-class GURL;
 namespace gfx {
 class SlideAnimation;
 }
@@ -37,10 +36,8 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
  public:
   ExclusiveAccessBubbleViews(
       ExclusiveAccessBubbleViewsContext* context,
-      const GURL& url,
-      ExclusiveAccessBubbleType bubble_type,
-      bool notify_download,
-      ExclusiveAccessBubbleHideCallback bubble_first_hide_callback);
+      const ExclusiveAccessBubbleParams& params,
+      ExclusiveAccessBubbleHideCallback first_hide_callback);
 
   ExclusiveAccessBubbleViews(const ExclusiveAccessBubbleViews&) = delete;
   ExclusiveAccessBubbleViews& operator=(const ExclusiveAccessBubbleViews&) =
@@ -48,17 +45,8 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
 
   ~ExclusiveAccessBubbleViews() override;
 
-  // |force_update| indicates the caller wishes to show the bubble contents
-  // regardless of whether the contents have changed. |notify_download|
-  // indicates if the notification should be about a new download. Note that
-  // bubble_type may be an invalid one for notify_download, as we want to
-  // preserve the current type.
-  void UpdateContent(
-      const GURL& url,
-      ExclusiveAccessBubbleType bubble_type,
-      ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
-      bool notify_download,
-      bool force_update);
+  void Update(const ExclusiveAccessBubbleParams& params,
+              ExclusiveAccessBubbleHideCallback first_hide_callback);
 
   // Repositions |popup_| if it is visible.
   void RepositionIfVisible();
@@ -120,7 +108,7 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
   // Classic mode: Bubble may show & hide multiple times. The callback only runs
   // for the first hide.
   // Simplified mode: Bubble only hides once.
-  ExclusiveAccessBubbleHideCallback bubble_first_hide_callback_;
+  ExclusiveAccessBubbleHideCallback first_hide_callback_;
 
   // Animation controlling showing/hiding of the exit bubble.
   std::unique_ptr<gfx::SlideAnimation> animation_;

@@ -31,13 +31,9 @@ class Rect;
 class ExclusiveAccessBubble : public gfx::AnimationDelegate {
  public:
   ExclusiveAccessBubble(ExclusiveAccessManager* manager,
-                        const GURL& url,
-                        ExclusiveAccessBubbleType bubble_type,
-                        bool notify_download);
-
+                        const ExclusiveAccessBubbleParams& params);
   ExclusiveAccessBubble(const ExclusiveAccessBubble&) = delete;
   ExclusiveAccessBubble& operator=(const ExclusiveAccessBubble&) = delete;
-
   ~ExclusiveAccessBubble() override;
 
   // Informs the ExclusiveAccessBubble of some user input, which may update
@@ -91,7 +87,6 @@ class ExclusiveAccessBubble : public gfx::AnimationDelegate {
   // bubble on or off the screen as appropriate.
   void CheckMousePointerPosition();
 
-
   // This string *may* contain the name of the key surrounded in pipe characters
   // ('|'), which should be drawn graphically as a key, not displayed literally.
   // |accelerator| is the name of the key to exit fullscreen mode.
@@ -102,14 +97,8 @@ class ExclusiveAccessBubble : public gfx::AnimationDelegate {
   // The Manager associated with this bubble.
   const raw_ptr<ExclusiveAccessManager> manager_;
 
-  // The host the bubble is for, can be empty.
-  GURL url_;
-
-  // The type of the bubble; controls e.g. which buttons to show.
-  ExclusiveAccessBubbleType bubble_type_;
-
-  // The bubble should notify about downloads
-  bool notify_download_ = false;
+  // Cached content and traits for this bubble.
+  ExclusiveAccessBubbleParams params_;
 
   // The bubble should notify about overriding another ExclusiveAccessBubble
   bool notify_overridden_ = false;

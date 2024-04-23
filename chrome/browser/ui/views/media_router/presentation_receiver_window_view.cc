@@ -299,10 +299,8 @@ void PresentationReceiverWindowView::EnterFullscreen(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   OnFullscreenChanged();
 #endif
-  UpdateExclusiveAccessExitBubbleContent(url, bubble_type,
-                                         ExclusiveAccessBubbleHideCallback(),
-                                         /*notify_download=*/false,
-                                         /*force_update=*/false);
+  UpdateExclusiveAccessBubble({.url = url, .type = bubble_type},
+                              base::NullCallback());
 }
 
 void PresentationReceiverWindowView::ExitFullscreen() {
@@ -312,42 +310,38 @@ void PresentationReceiverWindowView::ExitFullscreen() {
 #endif
 }
 
-void PresentationReceiverWindowView::UpdateExclusiveAccessExitBubbleContent(
-    const GURL& url,
-    ExclusiveAccessBubbleType bubble_type,
-    ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
-    bool notify_download,
-    bool force_update) {
+void PresentationReceiverWindowView::UpdateExclusiveAccessBubble(
+    const ExclusiveAccessBubbleParams& params,
+    ExclusiveAccessBubbleHideCallback first_hide_callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, we will not show the toast for the normal browser fullscreen
   // mode.  The 'F11' text is confusing since how to access F11 on a Chromebook
   // is not common knowledge and there is also a dedicated fullscreen toggle
   // button available.
-  if ((!notify_download && bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) ||
-      url.is_empty()) {
+  if ((!params.has_download &&
+       params.type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) ||
+      params.url.is_empty()) {
 #else
-  if (!notify_download && bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) {
+  if (!params.has_download &&
+      params.type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) {
 #endif
     // |exclusive_access_bubble_.reset()| will trigger callback for current
     // bubble with |ExclusiveAccessBubbleHideReason::kInterrupted| if available.
     exclusive_access_bubble_.reset();
-    if (bubble_first_hide_callback) {
-      std::move(bubble_first_hide_callback)
+    if (first_hide_callback) {
+      std::move(first_hide_callback)
           .Run(ExclusiveAccessBubbleHideReason::kNotShown);
     }
     return;
   }
 
   if (exclusive_access_bubble_) {
-    exclusive_access_bubble_->UpdateContent(
-        url, bubble_type, std::move(bubble_first_hide_callback),
-        notify_download, force_update);
+    exclusive_access_bubble_->Update(params, std::move(first_hide_callback));
     return;
   }
 
   exclusive_access_bubble_ = std::make_unique<ExclusiveAccessBubbleViews>(
-      this, url, bubble_type, notify_download,
-      std::move(bubble_first_hide_callback));
+      this, params, std::move(first_hide_callback));
 }
 
 bool PresentationReceiverWindowView::IsExclusiveAccessBubbleDisplayed() const {

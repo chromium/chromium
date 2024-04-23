@@ -31,11 +31,11 @@ enum Shortcut {
 
 struct InstructionTextTestCase {
   std::string test_name;
-  ExclusiveAccessBubbleType bubble_type;
+  ExclusiveAccessBubbleType type;
   UserGoal goal;
   Shortcut shortcut;
   bool enable_feature;
-  bool notify_download = false;
+  bool has_download = false;
 };
 
 std::u16string GetUserGoalText(UserGoal goal) {
@@ -78,10 +78,10 @@ class ExclusiveAccessBubbleViewsTest
 
   void SetUp() override {
     TestWithBrowserView::SetUp();
+    ExclusiveAccessBubbleParams params{
+        .type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION};
     bubble_view_ = std::make_unique<ExclusiveAccessBubbleViews>(
-        browser_view(), GURL(),
-        EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION,
-        /*notify_download=*/false, base::DoNothing());
+        browser_view(), params, base::NullCallback());
   }
 
   void TearDown() override {
@@ -89,19 +89,16 @@ class ExclusiveAccessBubbleViewsTest
     TestWithBrowserView::TearDown();
   }
 
-  void UpdateExclusiveAccessBubbleType(ExclusiveAccessBubbleType bubble_type,
-                                       bool notify_download = false) {
-    // When `notify_download` is True, `bubble_type` is preserved from the
-    // old value, and not updated. So the test needs to set the `bubble_type`
-    // by making another update without notifying download.
-    if (notify_download) {
-      bubble_view_->UpdateContent(GURL(), bubble_type, base::DoNothing(),
-                                  /*notify_download=*/false,
-                                  /*force_update=*/true);
+  void UpdateExclusiveAccessBubbleType(ExclusiveAccessBubbleType type,
+                                       bool has_download = false) {
+    // When `has_download` is true, the existing bubble type is not updated.
+    // In that case, set the type first, then signify the download bit.
+    ExclusiveAccessBubbleParams params{.type = type, .force_update = true};
+    bubble_view_->Update(params, base::NullCallback());
+    if (has_download) {
+      params.has_download = true;
+      bubble_view_->Update(params, base::NullCallback());
     }
-    bubble_view_->UpdateContent(GURL(), bubble_type, base::DoNothing(),
-                                notify_download,
-                                /*force_update=*/true);
   }
 
   std::u16string GetFullscreenAcceleratorString() {
@@ -144,8 +141,7 @@ class ExclusiveAccessBubbleViewsTest
 
 TEST_P(ExclusiveAccessBubbleViewsTest, UpdateViewContent) {
   const InstructionTextTestCase& test_case = GetParam();
-  UpdateExclusiveAccessBubbleType(
-      test_case.bubble_type, /*notify_download=*/test_case.notify_download);
+  UpdateExclusiveAccessBubbleType(test_case.type, test_case.has_download);
   EXPECT_EQ(GetInstructionViewText(),
             CreateInstructionText(test_case.goal, test_case.shortcut));
 }

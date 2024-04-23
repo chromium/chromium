@@ -40,21 +40,18 @@ class ExclusiveAccessContext {
   // the preference's state. Only supported on Mac.
   virtual void UpdateFullscreenToolbar() {}
 
-  // Enters fullscreen and update exit bubble.
+  // Enters fullscreen and updates the exclusive access bubble.
   virtual void EnterFullscreen(const GURL& url,
                                ExclusiveAccessBubbleType bubble_type,
                                const int64_t display_id) = 0;
 
-  // Exits fullscreen and update exit bubble.
+  // Exits fullscreen and updates the exclusive access bubble.
   virtual void ExitFullscreen() = 0;
 
-  // Updates the content of exclusive access exit bubble content.
-  virtual void UpdateExclusiveAccessExitBubbleContent(
-      const GURL& url,
-      ExclusiveAccessBubbleType bubble_type,
-      ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
-      bool notify_download,
-      bool force_update) = 0;
+  // Updates the exclusive access bubble.
+  virtual void UpdateExclusiveAccessBubble(
+      const ExclusiveAccessBubbleParams& params,
+      ExclusiveAccessBubbleHideCallback first_hide_callback) = 0;
 
   virtual bool IsExclusiveAccessBubbleDisplayed() const = 0;
 

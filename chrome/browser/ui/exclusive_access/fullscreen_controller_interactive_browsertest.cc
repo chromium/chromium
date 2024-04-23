@@ -1535,13 +1535,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
   base::RunLoop run_loop;
   ExclusiveAccessBubbleHideCallback callback = base::BindLambdaForTesting(
       [&run_loop](ExclusiveAccessBubbleHideReason) { run_loop.Quit(); });
-  browser()
-      ->exclusive_access_manager()
-      ->context()
-      ->UpdateExclusiveAccessExitBubbleContent(
-          browser()->exclusive_access_manager()->GetExclusiveAccessBubbleURL(),
-          EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE, std::move(callback),
-          /*notify_download=*/false, /*force_update=*/false);
+  browser()->exclusive_access_manager()->context()->UpdateExclusiveAccessBubble(
+      {}, std::move(callback));
   run_loop.Run();
   EXPECT_FALSE(IsExclusiveAccessBubbleDisplayed());
 

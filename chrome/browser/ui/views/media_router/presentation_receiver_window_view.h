@@ -94,12 +94,9 @@ class PresentationReceiverWindowView final
                        ExclusiveAccessBubbleType bubble_type,
                        const int64_t display_id) final;
   void ExitFullscreen() final;
-  void UpdateExclusiveAccessExitBubbleContent(
-      const GURL& url,
-      ExclusiveAccessBubbleType bubble_type,
-      ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
-      bool notify_download,
-      bool force_update) final;
+  void UpdateExclusiveAccessBubble(
+      const ExclusiveAccessBubbleParams& params,
+      ExclusiveAccessBubbleHideCallback first_hide_callback) override;
   bool IsExclusiveAccessBubbleDisplayed() const final;
   void OnExclusiveAccessUserInput() final;
   content::WebContents* GetActiveWebContents() final;

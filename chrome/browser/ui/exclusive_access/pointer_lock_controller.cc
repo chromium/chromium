@@ -99,8 +99,7 @@ void PointerLockController::NotifyTabExclusiveAccessLost() {
     UnlockPointer();
     SetTabWithExclusiveAccess(nullptr);
     pointer_lock_state_ = POINTERLOCK_UNLOCKED;
-    exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
-        ExclusiveAccessBubbleHideCallback());
+    exclusive_access_manager()->UpdateBubble(base::NullCallback());
   }
 }
 
@@ -132,8 +131,7 @@ void PointerLockController::ExitExclusiveAccessToPreviousState() {
   SetTabWithExclusiveAccess(nullptr);
 
   if (!ShouldSuppressBubbleReshowForStateChange()) {
-    exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
-        ExclusiveAccessBubbleHideCallback());
+    exclusive_access_manager()->UpdateBubble(base::NullCallback());
   }
 }
 
@@ -183,7 +181,7 @@ void PointerLockController::LockPointer(
   }
 
   if (!ShouldSuppressBubbleReshowForStateChange()) {
-    exclusive_access_manager()->UpdateExclusiveAccessExitBubbleContent(
+    exclusive_access_manager()->UpdateBubble(
         base::BindOnce(&PointerLockController::OnBubbleHidden,
                        weak_ptr_factory_.GetWeakPtr(), web_contents.get()));
   }
