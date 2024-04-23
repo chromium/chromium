@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "pdf/ink/ink_stroke.h"
+
 namespace chrome_pdf {
 
 // static
