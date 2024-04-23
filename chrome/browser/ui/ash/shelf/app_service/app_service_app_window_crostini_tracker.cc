@@ -8,6 +8,7 @@
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/wm/window_state.h"
 #include "base/containers/flat_tree.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -158,17 +159,27 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
   if (display_id == display::kInvalidDisplayId)
     return;
 
-  display::Display new_display;
-  if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id,
-                                                             &new_display)) {
+  display::Display registered_display;
+  if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(
+          display_id, &registered_display)) {
     return;
   }
 
-  display::Display old_display =
+  display::Display current_display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window);
 
-  if (new_display != old_display)
-    MoveWindowFromOldDisplayToNewDisplay(window, old_display, new_display);
+  if (registered_display != current_display) {
+    auto* state = ash::WindowState::Get(window);
+    // 'window' is about to unminimize.
+    if (state && !state->IsMinimized()) {
+      MoveWindowFromOldDisplayToNewDisplay(window, current_display,
+                                           registered_display);
+      // 'window' is about to minimize. Therefore we take this opportunity to
+      // re-register it to the current display it is shown upon.
+    } else {
+      crostini_app_display_.Register(shelf_app_id, current_display.id());
+    }
+  }
 }
 
 void AppServiceAppWindowCrostiniTracker::OnWindowDestroying(

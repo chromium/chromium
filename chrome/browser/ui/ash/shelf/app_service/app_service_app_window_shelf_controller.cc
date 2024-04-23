@@ -290,6 +290,10 @@ void AppServiceAppWindowShelfController::OnWindowVisibilityChanged(
   app_service_instance_helper_->OnInstances(GetAppId(shelf_id.app_id), window,
                                             shelf_id.launch_id, state);
 
+  if (crostini_tracker_) {
+    crostini_tracker_->OnWindowVisibilityChanged(window, shelf_id.app_id);
+  }
+
   // Only register the visible non-browser |window| for the active user.
   if (!visible || shelf_id.app_id == app_constants::kChromeAppId ||
       !proxy_->InstanceRegistry().Exists(window)) {
@@ -297,9 +301,6 @@ void AppServiceAppWindowShelfController::OnWindowVisibilityChanged(
   }
 
   RegisterWindow(window, shelf_id);
-
-  if (crostini_tracker_)
-    crostini_tracker_->OnWindowVisibilityChanged(window, shelf_id.app_id);
 
   // This will match both the Plugin VM App window and installer.
   if (shelf_id.app_id == plugin_vm::kPluginVmShelfAppId) {
