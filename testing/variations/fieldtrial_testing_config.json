@@ -19077,24 +19077,6 @@
             ]
         }
     ],
-    "TabAndLinkDragDropAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabAndLinkDragDropAndroid"
-                    ],
-                    "disable_features": [
-                        "TabDragDropAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabAudioMuting": [
         {
             "platforms": [
