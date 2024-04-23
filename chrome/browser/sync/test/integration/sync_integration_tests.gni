@@ -61,6 +61,7 @@ if (!is_android) {
     "//chrome/browser/sync/test/integration/web_apps_sync_test_base.h",
 
     # Tests with two clients can't run on Android.
+    "//chrome/browser/sync/test/integration/two_client_app_settings_sync_test.cc",
     "//chrome/browser/sync/test/integration/two_client_autocomplete_sync_test.cc",
     "//chrome/browser/sync/test/integration/two_client_autofill_sync_test.cc",
     "//chrome/browser/sync/test/integration/two_client_bookmarks_sync_test.cc",
@@ -68,7 +69,7 @@ if (!is_android) {
     "//chrome/browser/sync/test/integration/two_client_custom_passphrase_sync_test.cc",
     "//chrome/browser/sync/test/integration/two_client_dictionary_sync_test.cc",
     "//chrome/browser/sync/test/integration/two_client_extension_apps_sync_test.cc",
-    "//chrome/browser/sync/test/integration/two_client_extension_settings_and_app_settings_sync_test.cc",
+    "//chrome/browser/sync/test/integration/two_client_extension_settings_sync_test.cc",
     "//chrome/browser/sync/test/integration/two_client_extensions_sync_test.cc",
     "//chrome/browser/sync/test/integration/two_client_history_sync_test.cc",
     "//chrome/browser/sync/test/integration/two_client_passwords_sync_test.cc",

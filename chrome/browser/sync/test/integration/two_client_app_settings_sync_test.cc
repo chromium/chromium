@@ -65,15 +65,15 @@ void MutateSomeSettings(
   }
 }
 
-class TwoClientExtensionSettingsAndAppSettingsSyncTest
+class TwoClientAppSettingsSyncTest
     : public AppsSyncTestBase {
  public:
-  TwoClientExtensionSettingsAndAppSettingsSyncTest()
+  TwoClientAppSettingsSyncTest()
       : AppsSyncTestBase(TWO_CLIENT) {}
-  ~TwoClientExtensionSettingsAndAppSettingsSyncTest() override = default;
+  ~TwoClientAppSettingsSyncTest() override = default;
 
   bool UseVerifier() override {
-    // TODO(crbug.com/1137735): rewrite tests to not use verifier.
+    // TODO(crbug.com/40724949): rewrite tests to not use verifier.
     return true;
   }
 
@@ -222,15 +222,7 @@ testing::AssertionResult StartWithDifferentSettingsTest(
   return testing::AssertionSuccess();
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsAndAppSettingsSyncTest,
-                       ExtensionsStartWithSameSettings) {
-  ASSERT_TRUE(SetupClients());
-  ASSERT_PRED3(StartWithSameSettingsTest, InstallExtensionForAllProfiles(0),
-               InstallExtensionForAllProfiles(1),
-               InstallExtensionForAllProfiles(2));
-}
-
-IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsAndAppSettingsSyncTest,
+IN_PROC_BROWSER_TEST_F(TwoClientAppSettingsSyncTest,
                        AppsStartWithSameSettings) {
   ASSERT_TRUE(SetupClients());
   ASSERT_PRED3(StartWithSameSettingsTest, InstallHostedAppForAllProfiles(0),
@@ -238,15 +230,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsAndAppSettingsSyncTest,
                InstallHostedAppForAllProfiles(2));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsAndAppSettingsSyncTest,
-                       ExtensionsStartWithDifferentSettings) {
-  ASSERT_TRUE(SetupClients());
-  ASSERT_PRED3(
-      StartWithDifferentSettingsTest, InstallExtensionForAllProfiles(0),
-      InstallExtensionForAllProfiles(1), InstallExtensionForAllProfiles(2));
-}
-
-IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsAndAppSettingsSyncTest,
+IN_PROC_BROWSER_TEST_F(TwoClientAppSettingsSyncTest,
                        AppsStartWithDifferentSettings) {
   ASSERT_TRUE(SetupClients());
   ASSERT_PRED3(
@@ -263,7 +247,7 @@ class TwoClientAppSettingsOsSyncTest : public SyncTest {
   ~TwoClientAppSettingsOsSyncTest() override = default;
 
   bool UseVerifier() override {
-    // TODO(crbug.com/1137735): rewrite tests to not use verifier.
+    // TODO(crbug.com/40724949): rewrite tests to not use verifier.
     return true;
   }
 };
