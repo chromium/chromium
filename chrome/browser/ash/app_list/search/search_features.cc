@@ -63,7 +63,7 @@ BASE_FEATURE(kLauncherImageSearchIndexingLimit,
 
 BASE_FEATURE(kLauncherSystemInfoAnswerCards,
              "LauncherSystemInfoAnswerCards",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(b/330386392): kLauncherGameSearch can be removed because if there's no
 // payload, there will be no result.
