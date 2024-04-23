@@ -38,8 +38,12 @@ GinJavaBridgeDispatcherHost::GinJavaBridgeDispatcherHost(
       WebContentsObserver(web_contents),
       retained_object_set_(base::android::AttachCurrentThread(),
                            retained_object_set),
-      mojo_enabled_(
-          base::FeatureList::IsEnabled(features::kGinJavaBridgeMojo)) {
+      mojo_enabled_(base::FeatureList::IsEnabled(features::kGinJavaBridgeMojo)),
+      mojo_skip_clear_on_main_document_(
+          mojo_enabled_ &&
+          base::FeatureList::IsEnabled(
+              features::
+                  kGinJavaBridgeMojoSkipClearObjectsOnMainDocumentReady)) {
   DCHECK(!retained_object_set.is_null());
 }
 
@@ -424,6 +428,11 @@ void GinJavaBridgeDispatcherHost::SetAllowObjectContentsInspection(bool allow) {
 
 void GinJavaBridgeDispatcherHost::PrimaryMainDocumentElementAvailable() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // If we are skipping clearing on main document return early.
+  if (mojo_skip_clear_on_main_document_) {
+    return;
+  }
   // Called when the window object has been cleared in the main frame.
   // That means, all sub-frames have also been cleared, so only named
   // objects survived.

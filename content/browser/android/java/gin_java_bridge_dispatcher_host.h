@@ -173,6 +173,7 @@ class GinJavaBridgeDispatcherHost
       remotes_;
 
   const bool mojo_enabled_;
+  const bool mojo_skip_clear_on_main_document_;
 };
 
 }  // namespace content

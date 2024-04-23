@@ -407,6 +407,10 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.GIN_JAVA_BRIDGE_MOJO,
                 "Enable the mojo based GIN java bridge implementation."),
         Flag.baseFeature(
+                ContentFeatures.GIN_JAVA_BRIDGE_MOJO_SKIP_CLEAR_OBJECTS_ON_MAIN_DOCUMENT_READY,
+                "Skips clearing objects on main document ready. Only relevant if mojo "
+                        + "implementation of GIN java bridge is used."),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_X_REQUESTED_WITH_HEADER_CONTROL,
                 "Restricts insertion of XRequestedWith header on outgoing requests "
                         + "to those that have been allow-listed through the appropriate "

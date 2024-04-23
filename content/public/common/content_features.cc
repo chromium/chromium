@@ -1155,6 +1155,12 @@ BASE_FEATURE(kGinJavaBridgeMojo,
              "GinJavaBridgeMojo",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Skips clearing objects on main document ready. Only has an impact
+// when gin java bridge is enabled.
+BASE_FEATURE(kGinJavaBridgeMojoSkipClearObjectsOnMainDocumentReady,
+             "GinJavaBridgeMojoSkipClearObjectsOnMainDocumentReady",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Reduce the priority of GPU process when in background so it is more likely
 // to be killed first if the OS needs more memory.
 BASE_FEATURE(kReduceGpuPriorityOnBackground,
