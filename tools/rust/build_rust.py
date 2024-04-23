@@ -293,6 +293,7 @@ class XPy:
     runs. '''
 
     def __init__(self, zlib_path, libxml2_dirs, debian_sysroot, verbose):
+        self._debian_sysroot = debian_sysroot
         self._env = collections.defaultdict(str, os.environ)
         self._verbose = verbose
         self._llvm_bins_path = os.path.join(RUST_HOST_LLVM_INSTALL_DIR, 'bin')
@@ -375,7 +376,9 @@ class XPy:
             self._env['CXXFLAGS'] += f' {sysroot_cflag}'
             self._env['LDFLAGS'] += f' {sysroot_cflag}'
 
-            self._env['RUSTFLAGS'] += f' -Clink-arg={sysroot_cflag}'
+            self._env['RUSTFLAGS_BOOTSTRAP'] += f' -Clink-arg={sysroot_cflag}'
+            self._env[
+                'RUSTFLAGS_NOT_BOOTSTRAP'] += f' -Clink-arg={sysroot_cflag}'
 
             # pkg-config will by default look for system-wide libs. This tells
             # it to look exclusively in the sysroot instead.
@@ -443,6 +446,19 @@ changelog-seen = 2'''
         # ...and apply substitutions, writing to config.toml in Rust tree.
         with open(os.path.join(RUST_SRC_DIR, 'config.toml'), 'w') as output:
             output.write(template.substitute(subs))
+
+        if self._debian_sysroot:
+            # Similarly, generate a Cargo config.toml in CARGO_HOME_DIR.
+            with open(RUST_CARGO_CONFIG_TEMPLATE_PATH, 'r') as input:
+                template = string.Template(input.read())
+
+            subs = {}
+            subs['DEBIAN_SYSROOT'] = quote_string(str(self._debian_sysroot))
+
+            os.makedirs(CARGO_HOME_DIR)
+            with open(os.path.join(CARGO_HOME_DIR, 'config.toml'),
+                      'w') as output:
+                output.write(template.substitute(subs))
 
     def run(self, sub, args):
         ''' Run x.py subcommand with specified args. '''
