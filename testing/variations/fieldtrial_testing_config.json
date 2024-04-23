@@ -9908,6 +9908,21 @@
             ]
         }
     ],
+    "IOSStickyAutofillAndPasswordInfobars": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillStickyInfobarIos"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSTFLiteLanguageDetection": [
         {
             "platforms": [
