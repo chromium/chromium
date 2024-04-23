@@ -342,6 +342,8 @@ blink_mac_builder(
             "minimal_symbols",
         ],
     ),
+    cores = None,
+    cpu = cpu.ARM64,
 )
 
 blink_mac_builder(
