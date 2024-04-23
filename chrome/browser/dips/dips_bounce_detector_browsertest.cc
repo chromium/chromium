@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -70,6 +71,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -2837,6 +2839,49 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
       ->GetDefaultStoragePartition()
       ->GetDedicatedWorkerService()
       ->RemoveObserver(logger);
+}
+
+// Tests that currently only work consistently when the trigger is (any) bounce.
+// TODO(crbug.com/336161248) Make these tests use stateful bounces.
+class DIPSBounceTriggerBrowserTest : public DIPSBounceDetectorBrowserTest {
+ protected:
+  DIPSBounceTriggerBrowserTest() {
+    enabled_features_.push_back(
+        {features::kDIPS, {{"triggering_action", "bounce"}}});
+  }
+
+  void SetUpOnMainThread() override {
+    DIPSBounceDetectorBrowserTest::SetUpOnMainThread();
+    // DIPS will only record bounces if 3PCs are blocked.
+    chrome_test_utils::GetProfile(this)->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            content_settings::CookieControlsMode::kBlockThirdParty));
+
+    // Ensure prepopulation terminates before the test starts.
+    DIPSService::Get(GetActiveWebContents()->GetBrowserContext())
+        ->WaitForInitCompleteForTesting();
+  }
+};
+
+// Verifies that a HTTP 204 (No Content) response is treated like a bounce.
+IN_PROC_BROWSER_TEST_F(DIPSBounceTriggerBrowserTest, NoContent) {
+  content::WebContents* web_contents = GetActiveWebContents();
+
+  GURL committed_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, committed_url));
+
+  RedirectChainObserver observer(
+      DIPSService::Get(web_contents->GetBrowserContext()), committed_url);
+  GURL nocontent_url = embedded_test_server()->GetURL("b.test", "/nocontent");
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents, nocontent_url, committed_url));
+  observer.Wait();
+
+  base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
+  DIPSService::Get(web_contents->GetBrowserContext())
+      ->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
+  ASSERT_THAT(deleted_sites.Get(), ElementsAre("b.test"));
 }
 
 class DIPSThrottlingBrowserTest : public DIPSBounceDetectorBrowserTest {
