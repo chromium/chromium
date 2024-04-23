@@ -369,12 +369,12 @@ module experimental.mojom;
 feature kUseElevators {
   const string name = "UseElevators";
   const bool default_state = false;
-}
+};
 
 [RuntimeFeature=kUseElevators]
 interface Elevator {
   // This interface cannot be bound or called if the feature is disabled.
-}
+};
 
 interface Building {
   // This method cannot be called if the feature is disabled.
@@ -383,7 +383,7 @@ interface Building {
 
   // This method can be called.
   RingDoorbell(int volume);
-}
+};
 ```
 
 ### Interfaces
