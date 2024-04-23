@@ -533,9 +533,11 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features.Append(GenerateFeatureFlag(
       "japanesefunctionrow",
       base::FeatureList::IsEnabled(ash::features::kJapaneseFunctionRow)));
-  features.Append(
-      GenerateFeatureFlag("usemlservicefornonlongformhandwriting",
-                          IsOndeviceHandwritingEnabledViaCommandLine()));
+  features.Append(GenerateFeatureFlag(
+      "usemlservicefornonlongformhandwriting",
+      base::FeatureList::IsEnabled(
+          ash::features::kUseMlServiceForNonLongformHandwritingOnAllBoards) ||
+          IsOndeviceHandwritingEnabledViaCommandLine()));
 
   results.Set("features", std::move(features));
 
