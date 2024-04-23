@@ -19702,6 +19702,8 @@ from previous Chrome versions.
   <int value="-657656374" label="AppListBubble:disabled"/>
   <int value="-656743717" label="HelpAppDiscoverTab:enabled"/>
   <int value="-655608107" label="MediaAppCustomColors:enabled"/>
+  <int value="-655294302"
+      label="UseMlServiceForNonLongformHandwritingOnAllBoards:disabled"/>
   <int value="-654705905" label="ShortcutCustomizationApp:enabled"/>
   <int value="-654196854" label="PasswordsKeyboardAccessory:enabled"/>
   <int value="-654111091" label="NavBarColorMatchesTabBackground:disabled"/>
@@ -24066,6 +24068,8 @@ from previous Chrome versions.
   <int value="1285905715" label="WebXRHitTest:enabled"/>
   <int value="1286195560" label="enable-download-warning-improvements"/>
   <int value="1286692760" label="NtpMiddleSlotPromoDismissal:enabled"/>
+  <int value="1287511314"
+      label="UseMlServiceForNonLongformHandwritingOnAllBoards:enabled"/>
   <int value="1287625114" label="EnableIncognitoShortcutOnDesktop:disabled"/>
   <int value="1287947083" label="WebAssemblyCodeProtectionPku:enabled"/>
   <int value="1288612648" label="PluginVmFullscreen:enabled"/>

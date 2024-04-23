@@ -6846,6 +6846,13 @@ const char kLanguagePacksInSettingsDescription[] =
     "Enables the UI and logic to manage Language Packs in Settings. This is "
     "used for languages and input methods.";
 
+const char kUseMlServiceForNonLongformHandwritingOnAllBoardsName[] =
+    "Use ML Service for non-Longform handwriting on all boards";
+const char kUseMlServiceForNonLongformHandwritingOnAllBoardsDescription[] =
+    "Use ML Service (and DLC Language Packs) for non-Longform handwriting in "
+    "Chrome OS 1P Virtual Keyboard on all boards. When this flag is OFF, such "
+    "usage exists on certain boards only.";
+
 const char kLauncherContinueSectionWithRecentsName[] =
     "Launcher continue section with recent drive files";
 const char kLauncherContinueSectionWithRecentsDescription[] =

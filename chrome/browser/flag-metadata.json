@@ -8389,6 +8389,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "use-ml-service-for-non-longform-handwriting-on-all-boards",
+    "owners": [ "tranbaoduy@chromium.org", "mlcui@google.com", "cros-borders-eng@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "use-multi-plane-format-for-hardware-video",
     "owners": [ "hitawala@chromium.org", "vasilyt@chromium.org" ],
     "expiry_milestone": 130

@@ -6422,6 +6422,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLanguagePacksInSettingsName,
      flag_descriptions::kLanguagePacksInSettingsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kLanguagePacksInSettings)},
+    {"use-ml-service-for-non-longform-handwriting-on-all-boards",
+     flag_descriptions::kUseMlServiceForNonLongformHandwritingOnAllBoardsName,
+     flag_descriptions::
+         kUseMlServiceForNonLongformHandwritingOnAllBoardsDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         ash::features::kUseMlServiceForNonLongformHandwritingOnAllBoards)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"block-insecure-private-network-requests",
