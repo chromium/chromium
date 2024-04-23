@@ -261,7 +261,8 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
     const CastCRL* fallback_crl,
     CRLPolicy crl_policy,
     bssl::TrustStore* trust_store) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+  if (base::CommandLine::InitializedForCurrentProcess() &&
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kCastLogDeviceCertChain)) {
     VLOG(3) << "Cast Cert Chain for validation:\n"
             << CastCertificateChainAsPEM(certs);
