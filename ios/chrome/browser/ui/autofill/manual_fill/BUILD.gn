@@ -65,7 +65,6 @@ source_set("manual_fill") {
     "//ios/chrome/browser/shared/ui/table_view:table_view",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/sync/model",
-    "//ios/chrome/browser/ui/autofill/bottom_sheet:bottom_sheet_link_coordinator",
     "//ios/chrome/browser/ui/autofill/manual_fill:manual_fill_ui",
     "//ios/chrome/browser/ui/settings/password:common",
     "//ios/chrome/browser/ui/settings/password:features",
