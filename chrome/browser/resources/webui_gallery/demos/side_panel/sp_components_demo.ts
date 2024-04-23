@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/icons_lit.html.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_slider/cr_slider.js';
 import '//resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import '//resources/cr_elements/md_select.css.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//webui-gallery/shared/sp_empty_state.js';
 import '//webui-gallery/shared/sp_footer.js';
 import '//webui-gallery/shared/sp_heading.js';

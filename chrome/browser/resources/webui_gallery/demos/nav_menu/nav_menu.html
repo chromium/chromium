@@ -3,7 +3,7 @@
       selected="{{selectedIndex}}" on-click="onSelectorClick_">
   <template is="dom-repeat" items="[[menuItems_]]">
     <a role="menuitem" href="[[item.path]]" class="cr-nav-menu-item">
-      <iron-icon icon="[[item.icon]]" hidden$="[[!showIcons]]"></iron-icon>
+      <cr-icon icon="[[item.icon]]" hidden$="[[!showIcons]]"></cr-icon>
       [[item.name]]
       <template is="dom-if" if="[[showRipples]]">
         <cr-ripple></cr-ripple>

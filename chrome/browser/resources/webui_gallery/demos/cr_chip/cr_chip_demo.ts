@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_chip/cr_chip.js';
-import '//resources/cr_elements/icons.html.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/icons_lit.html.js';
 import '../demo.css.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
