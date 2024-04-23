@@ -13,7 +13,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkPathMeasure.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -84,15 +83,14 @@ SkPath CreateRoundedRectPath(const gfx::RectF& rect, float corner_radius) {
   top_left_end.offset(corner_radius, 0.f);
 
   // Build path in the order specified above.
-  return SkPathBuilder()
+  return SkPath()
       .moveTo(top_center)
       .arcTo(top_right, top_right_end, corner_radius)
       .arcTo(bottom_right, bottom_right_end, corner_radius)
       .arcTo(bottom_left, bottom_left_end, corner_radius)
       .arcTo(top_left, top_left_end, corner_radius)
       .close()
-      .offset(rect.x(), rect.y())
-      .detach();
+      .offset(rect.x(), rect.y());
 }
 
 // Returns the size for the inner icon given `layer` dimensions.

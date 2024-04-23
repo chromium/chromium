@@ -13,7 +13,7 @@
 #include "ash/wm/window_restore/pine_item_view.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/i18n/number_formatting.h"
-#include "third_party/skia/include/core/SkPathBuilder.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
@@ -129,7 +129,7 @@ void PineScreenshotIconRowView::OnBoundsChanged(
   const int cutout_curve2_end_y = 2 * pine::kPreviewContainerRadius;
 
   auto clip_path =
-      SkPathBuilder()
+      SkPath()
           // Start from the top-left point.
           .moveTo(top_left)
           // Draw the first concave arc at the top-left and a horizontal line
@@ -149,8 +149,7 @@ void PineScreenshotIconRowView::OnBoundsChanged(
           // Draw the bottom-left rounded corner and the vertical line
           // connecting it to the top-left point.
           .arcTo(bottom_left, top_left, pine::kPreviewContainerRadius)
-          .close()
-          .detach();
+          .close();
   SetClipPath(clip_path);
 }
 

@@ -34,7 +34,6 @@
 #include "chromeos/components/mahi/public/cpp/views/experiment_badge.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -440,7 +439,7 @@ class MahiScrollView : public views::ScrollView,
     const auto cutout_curve3_end_y = cutout_curve2_end_y - kCutoutConvexRadius;
 
     auto clip_path =
-        SkPathBuilder()
+        SkPath()
             // Start just after the curve of the top-left rounded corner.
             .moveTo(0.f, radius)
             // Draw the bottom-left rounded corner and a vertical line
@@ -467,8 +466,7 @@ class MahiScrollView : public views::ScrollView,
             // Draw the top-left rounded corner and a horizontal line connecting
             // it to the top-right corner.
             .arcTo(top_left, top_left + vertical_offset, radius)
-            .close()
-            .detach();
+            .close();
     SetClipPath(clip_path);
   }
 
