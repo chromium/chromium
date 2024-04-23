@@ -126,9 +126,6 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // owner, for reception by the embedder script.
   void DispatchFencedEvent(const WTF::String& event_type);
 
-  // Defines attribute event listener `onfencedtreeclick`.
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(fencedtreeclick, kFencedtreeclick)
-
  private:
   // This method will only navigate the underlying frame if the element
   // `isConnected()`. It will be deferred if the page is currently prerendering.

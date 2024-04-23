@@ -256,6 +256,7 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   DEFINE_ATTRIBUTE_EVENT_LISTENER(emptied, kEmptied)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(ended, kEnded)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(error, kError)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(fencedtreeclick, kFencedtreeclick)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(focus, kFocus)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(formdata, kFormdata)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(gotpointercapture, kGotpointercapture)
