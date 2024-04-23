@@ -43,7 +43,7 @@ std::unique_ptr<InputDeviceInformation> InputDeviceInfoHelper::GetDeviceInfo(
 
   const base::FilePath sys_path = ui::GetInputPathInSys(path);
 
-  bool findKeyboard = false;
+  bool find_keyboard = false;
   int keyboard_id;
   const auto& keyboards =
       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices();
@@ -54,7 +54,7 @@ std::unique_ptr<InputDeviceInformation> InputDeviceInfoHelper::GetDeviceInfo(
         keyboard.vendor_id == info->event_device_info.vendor_id() &&
         keyboard.product_id == info->event_device_info.product_id()) {
       keyboard_id = keyboard.id;
-      findKeyboard = true;
+      find_keyboard = true;
     }
   }
   info->path = path;
@@ -62,7 +62,7 @@ std::unique_ptr<InputDeviceInformation> InputDeviceInfoHelper::GetDeviceInfo(
   info->connection_type = InputDataProvider::ConnectionTypeFromInputDeviceType(
       info->event_device_info.device_type());
   info->input_device = ui::InputDevice(
-      findKeyboard ? keyboard_id : id, info->event_device_info.device_type(),
+      find_keyboard ? keyboard_id : id, info->event_device_info.device_type(),
       info->event_device_info.name(), info->event_device_info.phys(), sys_path,
       info->event_device_info.vendor_id(), info->event_device_info.product_id(),
       info->event_device_info.version());

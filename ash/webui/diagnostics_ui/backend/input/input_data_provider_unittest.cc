@@ -569,14 +569,18 @@ class FakeInputDeviceInfoHelper : public InputDeviceInfoHelper {
     } else if (base_name == "event14") {
       device_caps = ui::kBaskingTouchScreen;
       EXPECT_EQ(14, id);
+    } else if (base_name == "event15") {
+      device_caps = ui::kSplitModifierKeyboard;
+      info->keyboard_type =
+          ui::KeyboardCapability::DeviceType::kDeviceInternalKeyboard;
+      info->keyboard_top_row_layout =
+          ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom;
+      EXPECT_EQ(15, id);
     } else if (base_name == kSillyDeviceName) {
       // Simulate a device that is properly described, but has a malformed
       // device name.
       EXPECT_EQ(98, id);
       device_caps = ui::kLinkKeyboard;
-    } else if (base_name == "event15") {
-      device_caps = ui::kSplitModifierKeyboard;
-      EXPECT_EQ(15, id);
     } else if (base_name == "event99") {
       EXPECT_EQ(99, id);
       // Simulate a device that couldn't be opened or have its info determined
@@ -895,14 +899,7 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_SplitModifierKeyboard) {
   ASSERT_TRUE(future.IsReady());
 }
 
-// TODO(crbug.com/336373314): the test is flaky on ChromeOS Msan builders.
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_FilterOutSplitModifierKeyboard \
-  DISABLED_FilterOutSplitModifierKeyboard
-#else
-#define MAYBE_FilterOutSplitModifierKeyboard FilterOutSplitModifierKeyboard
-#endif
-TEST_F(InputDataProviderTest, MAYBE_FilterOutSplitModifierKeyboard) {
+TEST_F(InputDataProviderTest, FilterOutSplitModifierKeyboard) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
   auto ignore_modifier_split_secret_key =
