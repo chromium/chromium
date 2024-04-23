@@ -201,6 +201,17 @@ TEST_F(AutofillPopupControllerImplTest,
 }
 
 TEST_F(AutofillPopupControllerImplTest,
+       PopupDoesntHideOnEndEditingFromRendererIfViewIsFocused) {
+  ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
+
+  EXPECT_CALL(*client().popup_view(), HasFocus).WillOnce(Return(true));
+  EXPECT_CALL(*client().popup_view(), Hide).Times(0);
+  client().popup_controller(manager()).Hide(PopupHidingReason::kEndEditing);
+
+  Mock::VerifyAndClearExpectations(client().popup_view());
+}
+
+TEST_F(AutofillPopupControllerImplTest,
        RemoveAutocompleteSuggestion_IgnoresClickOutsideCheck) {
   ShowSuggestions(manager(), {PopupItemId::kAutocompleteEntry,
                               PopupItemId::kAutocompleteEntry});
