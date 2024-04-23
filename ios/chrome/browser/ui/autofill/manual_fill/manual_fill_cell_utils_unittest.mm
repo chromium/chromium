@@ -142,7 +142,7 @@ TEST_F(ManualFillTestUtilsTest, TestLayViewsHorizontallyWhenPossible) {
       [expected_vertical_lead_views addObject:views[i]];
       row_width = view_widths[i];
     }
-    row_width += kCellViewsHorizontalSpacing;
+    row_width += GetHorizontalSpacingBetweenChips();
   }
 
   EXPECT_TRUE(

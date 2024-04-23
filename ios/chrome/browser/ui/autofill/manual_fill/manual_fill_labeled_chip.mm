@@ -11,7 +11,6 @@
 
 namespace {
 static const CGFloat kLabelButtonSpacing = 2;
-static const CGFloat kHorizontalSpacing = 16;
 }  // namespace
 
 @implementation ManualFillLabeledChip {
@@ -54,7 +53,7 @@ static const CGFloat kHorizontalSpacing = 16;
 
     UIStackView* dateStackView = [[UIStackView alloc] initWithFrame:CGRectZero];
     dateStackView.translatesAutoresizingMaskIntoConstraints = NO;
-    dateStackView.spacing = kHorizontalSpacing;
+    dateStackView.spacing = GetHorizontalSpacingBetweenChips();
     dateStackView.axis = UILayoutConstraintAxisHorizontal;
     [dateStackView addArrangedSubview:monthButton];
     [dateStackView addArrangedSubview:[self createExpirationSeparatorLabel]];

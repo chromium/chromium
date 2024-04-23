@@ -34,6 +34,10 @@ constexpr CGFloat kHeaderViewMinHeight = 44;
 // Height of the grey separator.
 constexpr CGFloat kSeparatorHeight = 1;
 
+// Horizontal spacing between views. Used when the Keyboard Accessory Upgrade
+// feature is disabled.
+constexpr CGFloat kHorizontalSpacing = 16;
+
 // Vertical spacing between views. Used when the Keyboard Accessory Upgrade
 // feature is disabled.
 constexpr CGFloat kVerticalSpacing = 8;
@@ -42,9 +46,9 @@ constexpr CGFloat kVerticalSpacing = 8;
 // cell and the chip groups.
 constexpr CGFloat kGenericVerticalSpacingBetweenViews = 16;
 
-// Small vertical spacing between views. Used to visually group chips together
-// and as vertical padding for the cell's header.
-constexpr CGFloat kSmallVerticalSpacingBetweenViews = 4;
+// Small vertical and horizontal spacing between views. Used to visually group
+// chips together and as vertical padding for the cell's header.
+constexpr CGFloat kSmallSpacingBetweenViews = 4;
 
 // Vertical spacing between two labeled chip buttons.
 constexpr CGFloat kVerticalSpacingBetweenLabeledChips = 8;
@@ -86,7 +90,7 @@ CGFloat GetVerticalSpacingForElementType(
       return kVerticalSpacingBetweenLabeledChips;
     case ManualFillCellView::ElementType::kSeparator:
     case ManualFillCellView::ElementType::kOtherChipButton:
-      return kSmallVerticalSpacingBetweenViews;
+      return kSmallSpacingBetweenViews;
   }
 }
 
@@ -145,7 +149,11 @@ ExtendedTouchTargetButton* CreateThreeDotMenuButton() {
 
 const CGFloat kCellMargin = 16;
 const CGFloat kChipsHorizontalMargin = -1;
-const CGFloat kCellViewsHorizontalSpacing = 16;
+
+CGFloat GetHorizontalSpacingBetweenChips() {
+  return IsKeyboardAccessoryUpgradeEnabled() ? kSmallSpacingBetweenViews
+                                             : kHorizontalSpacing;
+}
 
 UIButton* CreateChipWithSelectorAndTarget(SEL action, id target) {
   UIButton* button = [ChipButton buttonWithType:UIButtonTypeCustom];
@@ -247,7 +255,8 @@ void AppendHorizontalConstraintsForViews(
 
   BOOL is_first_view = YES;
   for (UIView* view in views) {
-    CGFloat spacing = is_first_view ? margin : kCellViewsHorizontalSpacing;
+    CGFloat spacing =
+        is_first_view ? margin : GetHorizontalSpacingBetweenChips();
     [constraints
         addObject:[view.leadingAnchor constraintEqualToAnchor:previous_anchor
                                                      constant:spacing]];
@@ -302,7 +311,7 @@ void LayViewsHorizontallyWhenPossible(
 
     if (fits_horizontally) {
       [horizontal_views addObject:view];
-      available_width -= (view_width + kCellViewsHorizontalSpacing);
+      available_width -= (view_width + GetHorizontalSpacingBetweenChips());
     } else {
       LayViewsHorizontally(horizontal_views, guide, constraints,
                            vertical_lead_views);
@@ -310,8 +319,8 @@ void LayViewsHorizontallyWhenPossible(
       // Start new row of views.
       [horizontal_views removeAllObjects];
       [horizontal_views addObject:view];
-      available_width =
-          GetLayoutGuideWidth(guide) - view_width - kCellViewsHorizontalSpacing;
+      available_width = GetLayoutGuideWidth(guide) - view_width -
+                        GetHorizontalSpacingBetweenChips();
     }
   }
 
@@ -445,7 +454,7 @@ UILayoutGuide* AddLayoutGuideToContentView(UIView* content_view,
 
   id<LayoutGuideProvider> safe_area = content_view.safeAreaLayoutGuide;
   CGFloat top_margin = cell_has_header && IsKeyboardAccessoryUpgradeEnabled()
-                           ? kSmallVerticalSpacingBetweenViews
+                           ? kSmallSpacingBetweenViews
                            : kCellMargin;
   CGFloat bottom_margin =
       IsKeyboardAccessoryUpgradeEnabled() ? kCellMargin : kCellBottomMargin;

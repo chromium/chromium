@@ -15,10 +15,6 @@ extern const CGFloat kCellMargin;
 // Left and right margins for the chips.
 extern const CGFloat kChipsHorizontalMargin;
 
-// Horizontal spacing between views used in
-// `AppendHorizontalConstraintsForViews`.
-extern const CGFloat kCellViewsHorizontalSpacing;
-
 // Options for `AppendHorizontalConstraintsForViews`.
 typedef NS_OPTIONS(NSUInteger, AppendConstraints) {
   AppendConstraintsNone = 0,
@@ -59,6 +55,9 @@ struct ManualFillCellView {
     return !(*this == rhs);
   }
 };
+
+// Returns the horizontal spacing to use between the different chip buttons.
+CGFloat GetHorizontalSpacingBetweenChips();
 
 // Creates a blank button in chip style, for the given `action` and `target`.
 UIButton* CreateChipWithSelectorAndTarget(SEL action, id target);
