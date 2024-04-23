@@ -212,7 +212,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                     // occur, and we'll need to manually update the bottom indicator here.
                     if (!mInReorderMode) {
                         finishAnimations();
-                        rebuildStripViews();
+                        buildBottomIndicator();
                         mRenderHost.requestRender();
                     }
                 }
@@ -234,7 +234,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                             || mTabGroupModelFilter.getTabGroupCount()
                                     != mStripGroupTitles.length) {
                         finishAnimations();
-                        rebuildStripViews();
+                        buildBottomIndicator();
                         mRenderHost.requestRender();
                     }
                 }
