@@ -86,6 +86,11 @@ bool WebGLShaderPixelLocalStorage::ValidatePLSClearCommand(
       !ValidatePLSPlaneIndex(context, function_name, plane)) {
     return false;
   }
+  if (!base::CheckAdd(src_offset, 4u).IsValid()) {
+    context->SynthesizeGLError(GL_INVALID_VALUE, function_name,
+                               "clear offset is too large");
+    return false;
+  }
   if (src_length < src_offset + 4u) {
     context->SynthesizeGLError(GL_INVALID_VALUE, function_name,
                                "clear value must contain at least 4 elements");
