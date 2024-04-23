@@ -6,7 +6,7 @@ import 'chrome-untrusted://lens/post_selection_renderer.js';
 
 import {BrowserProxyImpl} from 'chrome-untrusted://lens/browser_proxy.js';
 import type {PostSelectionBoundingBox, PostSelectionRendererElement} from 'chrome-untrusted://lens/post_selection_renderer.js';
-import {PERIMETER_SELECTION_PADDING_PX} from 'chrome-untrusted://lens/post_selection_renderer.js';
+import {PERIMETER_SELECTION_PADDING_PX, RESTING_CORNER_LENGTH_PX} from 'chrome-untrusted://lens/post_selection_renderer.js';
 import type {GestureEvent} from 'chrome-untrusted://lens/selection_utils.js';
 import {GestureState} from 'chrome-untrusted://lens/selection_utils.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -19,7 +19,7 @@ import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
 const TEST_WIDTH = 800;
 const TEST_HEIGHT = 500;
-const MIN_BOX_SIZE = 44;
+const MIN_BOX_SIZE = RESTING_CORNER_LENGTH_PX * 2;
 
 function normalizeX(x: number): number {
   return x / TEST_WIDTH;
@@ -54,8 +54,6 @@ suite('PostSelectionRenderer', () => {
     postSelectionRenderer.style.display = 'block';
     postSelectionRenderer.style.width = `${TEST_WIDTH}px`;
     postSelectionRenderer.style.height = `${TEST_HEIGHT}px`;
-    postSelectionRenderer.style.setProperty(
-        '--corner-length', `${MIN_BOX_SIZE / 2}px`);
 
     document.body.appendChild(postSelectionRenderer);
     return waitAfterNextRender(postSelectionRenderer);

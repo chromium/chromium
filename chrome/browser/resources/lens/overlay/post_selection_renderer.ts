@@ -35,6 +35,10 @@ enum DragTarget {
 // far. Exported for testing.
 export const PERIMETER_SELECTION_PADDING_PX = 4;
 
+// The value for the corner length when the animation finishes and the box is
+// in a resting state. Exported for testing.
+export const RESTING_CORNER_LENGTH_PX = 22;
+
 // Takes the value between 0-1 and returns a string in the from '__%';
 // TODO(b/333620724): Move to a separate file and reuse across codebase.
 function toPercent(value: number): string {
@@ -94,16 +98,6 @@ export class PostSelectionRendererElement extends PolymerElement {
   // The original bounds from the start of a drag.
   private originalBounds:
       PostSelectionBoundingBox = {left: 0, top: 0, width: 0, height: 0};
-  // The px value of the size of the corner selection, extracted from the CSS
-  // variable. Undefined if the value has yet to be extracted from the CSS.
-  private cornerLength?: number;
-
-  constructor() {
-    super();
-
-    // Setup CSS Houdini API
-    CSS.paintWorklet.addModule('post_selection_paint_worklet.js');
-  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -298,6 +292,7 @@ export class PostSelectionRendererElement extends PolymerElement {
     this.width = e.detail.width;
 
     this.rerender();
+    this.triggerNewBoxAnimation();
   }
 
   private rerender() {
@@ -306,6 +301,29 @@ export class PostSelectionRendererElement extends PolymerElement {
     this.style.setProperty('--selection-height', toPercent(this.height));
     this.style.setProperty('--selection-top', toPercent(this.top));
     this.style.setProperty('--selection-left', toPercent(this.left));
+  }
+
+  private triggerNewBoxAnimation() {
+    const parentBoundingRect = this.getBoundingClientRect();
+    this.animate(
+        [
+          {
+            [`--post-selection-corner-horizontal-length`]:
+                `${parentBoundingRect.width * this.width / 2}px`,
+            [`--post-selection-corner-vertical-length`]:
+                `${parentBoundingRect.height * this.height / 2}px`,
+          },
+          {
+            [`--post-selection-corner-horizontal-length`]:
+                `${RESTING_CORNER_LENGTH_PX}px`,
+            [`--post-selection-corner-vertical-length`]:
+                `${RESTING_CORNER_LENGTH_PX}px`,
+          },
+        ],
+        {
+          duration: 450,
+          easing: 'cubic-bezier(0.2, 0.0, 0, 1.0)',
+        });
   }
 
   // Returns if the current bounds should be sent to Lens.
@@ -366,12 +384,7 @@ export class PostSelectionRendererElement extends PolymerElement {
 
   // Gets the minimum size the selected region can be. Public for testing.
   private getMinBoxSize(): number {
-    if (!this.cornerLength) {
-      // Cache the corner length to avoid multiple calls to computedStyleMap().
-      this.cornerLength =
-          parseInt(this.computedStyleMap().get('--corner-length')!.toString());
-    }
-    return this.cornerLength * 2;
+    return RESTING_CORNER_LENGTH_PX * 2;
   }
 }
 
@@ -383,3 +396,32 @@ declare global {
 
 customElements.define(
     PostSelectionRendererElement.is, PostSelectionRendererElement);
+
+// Setup CSS Houdini API
+CSS.paintWorklet.addModule('post_selection_paint_worklet.js');
+
+// Variables controlling the rendered post selection
+CSS.registerProperty({
+  name: '--post-selection-corner-horizontal-length',
+  syntax: '<length>',
+  inherits: true,
+  initialValue: '22px',
+});
+CSS.registerProperty({
+  name: '--post-selection-corner-vertical-length',
+  syntax: '<length>',
+  inherits: true,
+  initialValue: '22px',
+});
+CSS.registerProperty({
+  name: '--post-selection-corner-width',
+  syntax: '<length>',
+  inherits: true,
+  initialValue: '4px',
+});
+CSS.registerProperty({
+  name: '--post-selection-corner-radius',
+  syntax: '<length>',
+  inherits: true,
+  initialValue: '12px',
+});

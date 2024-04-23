@@ -1,10 +1,11 @@
 <style>
   :host {
     /* Variables controlling the rendered post selection */
-    --corner-length: 22px;
-    --corner-radius: 12px;
-    --corner-width: 4px;
-    --corner-hitbox-max-size: 40px;
+    --post-selection-corner-horizontal-length: 22px;
+    --post-selection-corner-vertical-length: 22px;
+    --post-selection-corner-radius: 12px;
+    --post-selection-corner-width: 4px;
+    --post-selection-corner-hitbox-max-size: 40px;
     position: relative;
   }
 
@@ -34,11 +35,13 @@
   #selectionCorners {
     background-image: paint(post-selection);
     cursor: all-scroll;
-    height: calc(var(--selection-height) + (2 * var(--corner-width)));
-    left: calc(var(--selection-left) - var(--corner-width));
+    height: calc(var(--selection-height) +
+                    (2 * var(--post-selection-corner-width)));
+    left: calc(var(--selection-left) - var(--post-selection-corner-width));
     position: absolute;
-    top: calc(var(--selection-top) - var(--corner-width));
-    width: calc(var(--selection-width) + (2 * var(--corner-width)));
+    top: calc(var(--selection-top) - var(--post-selection-corner-width));
+    width: calc(var(--selection-width) +
+                   (2 * var(--post-selection-corner-width)));
   }
 
   .draggable {
@@ -47,10 +50,10 @@
 
   .corner-hit-box {
     height: 50%;
-    max-height: var(--corner-hitbox-max-size);
-    max-width: var(--corner-hitbox-max-size);
-    min-height: var(--corner-length);
-    min-width: var(--corner-length);
+    max-height: var(--post-selection-corner-hitbox-max-size);
+    max-width: var(--post-selection-corner-hitbox-max-size);
+    min-height: var(--post-selection-corner-length);
+    min-width: var(--post-selection-corner-length);
     position: absolute;
     width: 50%;
     z-index: 5; /* Position above words. */

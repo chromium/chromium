@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '//resources/js/assert.js';
+import {assert, assertInstanceof} from '//resources/js/assert.js';
 
 class PostSelectionWorklet {
+  // TODO(b/335858693): Ideally, there should not be different corner lengths,
+  // and instead should handle this using an inputted percent value. However,
+  // this adds extra complexity to the rendering logic.
   static get inputProperties() {
     return [
-      `--corner-length`,
-      `--corner-radius`,
-      `--corner-width`,
+      `--post-selection-corner-horizontal-length`,
+      `--post-selection-corner-vertical-length`,
+      `--post-selection-corner-radius`,
+      `--post-selection-corner-width`,
     ];
   }
 
@@ -17,19 +21,39 @@ class PostSelectionWorklet {
       ctx: PaintRenderingContext2D, size: PaintSize,
       properties: StylePropertyMapReadOnly) {
     // Get inputted properties.
-    const cornerLengthProp = properties.get('--corner-length');
-    const cornerWidthProp = properties.get('--corner-width');
-    const cornerRadiusProp = properties.get('--corner-radius');
-    assert(cornerLengthProp);
-    assert(cornerWidthProp);
-    assert(cornerRadiusProp);
+    const cornerLengthHorizontalProp =
+        properties.get('--post-selection-corner-horizontal-length');
+    const cornerLengthVerticalProp =
+        properties.get('--post-selection-corner-vertical-length');
+    const cornerWidthProp = properties.get('--post-selection-corner-width');
+    const cornerRadiusProp = properties.get('--post-selection-corner-radius');
+
+    // Ensure the values are in the correct format
+    assertInstanceof(cornerLengthHorizontalProp, CSSUnitValue);
+    assertInstanceof(cornerLengthVerticalProp, CSSUnitValue);
+    assertInstanceof(cornerWidthProp, CSSUnitValue);
+    assertInstanceof(cornerRadiusProp, CSSUnitValue);
+    assert(
+        cornerLengthHorizontalProp.unit === 'px',
+        '--post-selection-corner-horizontal-length must be a pixel value');
+    assert(
+        cornerLengthVerticalProp.unit === 'px',
+        '--post-selection-corner-vertical-length must be a pixel value');
+    assert(
+        cornerWidthProp.unit === 'px',
+        '--post-selection-corner-width must be a pixel value');
+    assert(
+        cornerRadiusProp.unit === 'px',
+        '--post-selection-corner-radius must be a pixel value');
 
     // Convert properties to integers so they are easier to use.
-    const cornerLength = Number.parseInt(cornerLengthProp.toString());
-    const cornerWidth = Number.parseInt(cornerWidthProp.toString());
+    const cornerLengthHorizontal = cornerLengthHorizontalProp.value;
+    const cornerLengthVertical = cornerLengthVerticalProp.value;
+
+    const cornerWidth = cornerWidthProp.value;
     // Handle cases where radius is larger than width or height
     const cornerRadius = Math.min(
-        Number.parseInt(cornerRadiusProp.toString()),
+        cornerRadiusProp.value,
         Math.abs(size.width / 2),
         Math.abs(size.height / 2),
     );
@@ -40,7 +64,8 @@ class PostSelectionWorklet {
     const maxX = size.width - (cornerWidth / 2) - 1;
     const maxY = size.height - (cornerWidth / 2) - 1;
 
-    if (cornerLength <= 0 || cornerWidth <= 0) {
+    if (cornerLengthHorizontal <= 0 || cornerLengthVertical <= 0 ||
+        cornerWidth <= 0) {
       return;
     }
 
@@ -48,24 +73,24 @@ class PostSelectionWorklet {
     ctx.beginPath;
 
     // Top-Left Corner
-    ctx.moveTo(minX, cornerLength);
-    ctx.arcTo(minX, minY, cornerLength, minY, cornerRadius);
-    ctx.lineTo(cornerLength, minY);
+    ctx.moveTo(minX, cornerLengthVertical);
+    ctx.arcTo(minX, minY, cornerLengthHorizontal, minY, cornerRadius);
+    ctx.lineTo(cornerLengthHorizontal, minY);
 
     // Top-Right
-    ctx.moveTo(maxX - cornerLength, minY);
-    ctx.arcTo(maxX, minY, maxX, cornerLength, cornerRadius);
-    ctx.lineTo(maxX, cornerLength);
+    ctx.moveTo(maxX - cornerLengthHorizontal, minY);
+    ctx.arcTo(maxX, minY, maxX, cornerLengthVertical, cornerRadius);
+    ctx.lineTo(maxX, cornerLengthVertical);
 
     // Bottom-Right
-    ctx.moveTo(maxX, maxY - cornerLength);
-    ctx.arcTo(maxX, maxY, maxX - cornerLength, maxY, cornerRadius);
-    ctx.lineTo(maxX - cornerLength, maxY);
+    ctx.moveTo(maxX, maxY - cornerLengthVertical);
+    ctx.arcTo(maxX, maxY, maxX - cornerLengthHorizontal, maxY, cornerRadius);
+    ctx.lineTo(maxX - cornerLengthHorizontal, maxY);
 
     // Bottom-Left
-    ctx.moveTo(minX + cornerLength, maxY);
-    ctx.arcTo(minX, maxY, minX, maxY - cornerLength, cornerRadius);
-    ctx.lineTo(minX, maxY - cornerLength);
+    ctx.moveTo(minX + cornerLengthHorizontal, maxY);
+    ctx.arcTo(minX, maxY, minX, maxY - cornerLengthVertical, cornerRadius);
+    ctx.lineTo(minX, maxY - cornerLengthVertical);
 
     ctx.strokeStyle = 'white';
     ctx.stroke();
