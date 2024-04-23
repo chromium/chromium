@@ -7213,7 +7213,6 @@ crbug.com/324111880 virtual/ruby-lb/fast/ruby/float-overhang-from-ruby-text.html
 crbug.com/324111880 virtual/ruby-lb/fast/ruby/select-ruby.html [ Failure ]
 crbug.com/324111880 virtual/ruby-lb/paint/invalidation/ruby-flipped-blocks.html [ Failure ]
 crbug.com/324111880 virtual/ruby-lb/virtual/text-antialias/emphasis-avoid-ruby.html [ Failure ]
-crbug.com/324111880 virtual/ruby-lb/virtual/text-antialias/whitespace/justification-expansion-crash.html [ Crash ]
 # RubyLineBreakable; Passing in the virtual suite though failing in non-virtual
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/empty-ruby-text-container-float.html [ Pass ]
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-ruby/ruby-base-different-size.html [ Pass ]

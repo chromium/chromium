@@ -577,7 +577,8 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
 
   const ComputedStyle& style = layout_object.StyleRef();
   const bool should_not_preserve_newline =
-      layout_object.IsSVGInlineText() || UNLIKELY(is_text_combine_);
+      UNLIKELY(layout_object.IsSVGInlineText() || is_text_combine_ ||
+               ruby_text_nesting_level_ > 0);
 
   RestoreTrailingCollapsibleSpaceIfRemoved();
 
@@ -953,7 +954,7 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendPreserveWhitespace(
     UChar c = string[start];
     if (IsControlItemCharacter(c)) {
       if (c == kNewlineCharacter) {
-        if (UNLIKELY(is_text_combine_)) {
+        if (UNLIKELY(is_text_combine_ || ruby_text_nesting_level_ > 0)) {
           start++;
           AppendTextItem(TransformedString(" "), layout_object);
           continue;
