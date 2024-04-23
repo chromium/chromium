@@ -616,7 +616,7 @@ void HarfBuzzShaper::ExtractShapeResults(
 bool HarfBuzzShaper::CollectFallbackHintChars(
     const Deque<ReshapeQueueItem>& reshape_queue,
     bool needs_hint_list,
-    Vector<UChar32>& hint) const {
+    HintCharList& hint) const {
   if (reshape_queue.empty()) {
     return false;
   }
@@ -633,15 +633,15 @@ bool HarfBuzzShaper::CollectFallbackHintChars(
     CHECK_LE((it->start_index_ + it->num_characters_), text_.length());
     if (text_.Is8Bit()) {
       for (unsigned i = 0; i < it->num_characters_; i++) {
-        hint.push_back(text_[it->start_index_ + i]);
+        const UChar hint_char = text_[it->start_index_ + i];
+        hint.push_back(hint_char);
         num_chars_added++;
         // Determine if we can take a shortcut and not fill the hint list
         // further: We can do that if we do not need a hint list, and we have
         // managed to find a character with a definite script since
         // FontFallbackIterator needs a character with a determined script to
         // perform meaningful system fallback.
-        if (!needs_hint_list &&
-            Character::HasDefiniteScript(text_[it->start_index_ + i])) {
+        if (!needs_hint_list && Character::HasDefiniteScript(hint_char)) {
           return true;
         }
       }
@@ -791,7 +791,7 @@ void HarfBuzzShaper::ShapeSegment(
       kReshapeQueueRange, segment.start, segment.end - segment.start));
 
   bool font_cycle_queued = false;
-  Vector<UChar32> fallback_chars_hint;
+  HintCharList fallback_chars_hint;
   // Reserve sufficient capacity to avoid multiple reallocations, only when a
   // full hint list is needed.
   if (fallback_iterator.NeedsHintList()) {

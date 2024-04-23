@@ -40,7 +40,7 @@ TEST_P(TestReset, TestResetWithFallbackPriority) {
   FontFallbackIterator fallback_iterator_reset =
       test_font.CreateFontFallbackIterator(fallback_priorities);
 
-  Vector<UChar32> fallback_chars_hint;
+  FontFallbackIterator::HintCharList fallback_chars_hint;
   fallback_iterator_reset.Next(fallback_chars_hint);
   fallback_iterator_reset.Reset();
 

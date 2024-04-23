@@ -32,7 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_SHAPER_H_
 
 #include "base/functional/callback.h"
-
+#include "third_party/blink/renderer/platform/fonts/font_fallback_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/run_segmenter.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_options.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
@@ -127,6 +127,8 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
   ~HarfBuzzShaper() = default;
 
  private:
+  using HintCharList = FontFallbackIterator::HintCharList;
+
   // Shapes a single seqment, as identified by the RunSegmenterRange parameter,
   // one or more times taking font fallback into account. The start and end
   // parameters are for the entire text run, not the segment, and are used to
@@ -148,7 +150,7 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
 
   bool CollectFallbackHintChars(const Deque<ReshapeQueueItem>&,
                                 bool needs_hint_list,
-                                Vector<UChar32>& hint) const;
+                                HintCharList& hint) const;
 
   void CommitGlyphs(RangeContext*,
                     const SimpleFontData* current_font,

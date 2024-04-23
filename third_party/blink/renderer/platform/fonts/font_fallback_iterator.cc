@@ -46,7 +46,7 @@ bool FontFallbackIterator::AlreadyLoadingRangeForHintChar(UChar32 hint_char) {
 }
 
 bool FontFallbackIterator::RangeSetContributesForHint(
-    const Vector<UChar32>& hint_list,
+    const HintCharList& hint_list,
     const FontDataForRangeSet* segmented_face) {
   for (auto* it = hint_list.begin(); it != hint_list.end(); ++it) {
     if (segmented_face->Contains(*it)) {
@@ -75,7 +75,7 @@ void FontFallbackIterator::WillUseRange(const AtomicString& family,
 
 FontDataForRangeSet* FontFallbackIterator::UniqueOrNext(
     FontDataForRangeSet* candidate,
-    const Vector<UChar32>& hint_list) {
+    const HintCharList& hint_list) {
   if (!candidate->HasFontData())
     return Next(hint_list);
 
@@ -117,8 +117,7 @@ bool FontFallbackIterator::NeedsHintList() const {
   return font_data->IsSegmented();
 }
 
-FontDataForRangeSet* FontFallbackIterator::Next(
-    const Vector<UChar32>& hint_list) {
+FontDataForRangeSet* FontFallbackIterator::Next(const HintCharList& hint_list) {
   if (fallback_stage_ == kOutOfLuck)
     return MakeGarbageCollected<FontDataForRangeSet>();
 
@@ -248,7 +247,8 @@ const SimpleFontData* FontFallbackIterator::FallbackPriorityFont(UChar32 hint) {
   return font_data;
 }
 
-static inline unsigned ChooseHintIndex(const Vector<UChar32>& hint_list) {
+static inline unsigned ChooseHintIndex(
+    const FontFallbackIterator::HintCharList& hint_list) {
   // crbug.com/618178 has a test case where no Myanmar font is ever found,
   // because the run starts with a punctuation character with a script value of
   // common. Our current font fallback code does not find a very meaningful
@@ -269,7 +269,7 @@ static inline unsigned ChooseHintIndex(const Vector<UChar32>& hint_list) {
 }
 
 const SimpleFontData* FontFallbackIterator::UniqueSystemFontForHintList(
-    const Vector<UChar32>& hint_list) {
+    const HintCharList& hint_list) {
   // When we're asked for a fallback for the same characters again, we give up
   // because the shaper must have previously tried shaping with the font
   // already.
