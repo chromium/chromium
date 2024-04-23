@@ -116,8 +116,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest, MAYBE_RestoreTab) {
   Browser* restored_browser = BrowserList::GetInstance()->get(1);
 
   EXPECT_EQ(kDesiredNumberOfTabs, restored_browser->tab_strip_model()->count());
-  EXPECT_EQ(kDesiredNumberOfTabs - 1,
-            restored_browser->tab_strip_model()->active_index());
+  EXPECT_EQ(0, restored_browser->tab_strip_model()->active_index());
 
   // All tabs should be loaded by BackgroundTabLoadingPolicy.
   for (int i = 0; i < kDesiredNumberOfTabs; i++) {
@@ -156,8 +155,7 @@ IN_PROC_BROWSER_TEST_F(BackgroundTabLoadingBrowserTest,
   Browser* restored_browser = BrowserList::GetInstance()->get(1);
 
   EXPECT_EQ(kDesiredNumberOfTabs, restored_browser->tab_strip_model()->count());
-  EXPECT_EQ(kDesiredNumberOfTabs - 1,
-            restored_browser->tab_strip_model()->active_index());
+  EXPECT_EQ(0, restored_browser->tab_strip_model()->active_index());
 
   // These tabs should be loaded by BackgroundTabLoadingPolicy.
   EnsureTabFinishedRestoring(

@@ -4,11 +4,16 @@
 
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 
+#include <numeric>
+#include <unordered_set>
+
+#include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
@@ -17,6 +22,7 @@
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/saved_tab_groups/features.h"
@@ -271,6 +277,94 @@ std::vector<content::WebContents*> SavedTabGroupUtils::GetWebContentsesInGroup(
     contentses.push_back(browser->tab_strip_model()->GetWebContentsAt(index));
   }
   return contentses;
+}
+
+std::unordered_set<std::string> SavedTabGroupUtils::GetURLsInSavedTabGroup(
+    const tab_groups::SavedTabGroupKeyedService& saved_tab_group_service,
+    const base::Uuid& saved_id) {
+  const tab_groups::SavedTabGroup* const saved_group =
+      saved_tab_group_service.model()->Get(saved_id);
+  CHECK(saved_group);
+
+  std::unordered_set<std::string> saved_urls;
+  for (const tab_groups::SavedTabGroupTab& saved_tab :
+       saved_group->saved_tabs()) {
+    saved_urls.emplace(saved_tab.url().spec());
+  }
+
+  return saved_urls;
+}
+
+void SavedTabGroupUtils::MoveGroupToExistingWindow(
+    Browser* source_browser,
+    Browser* target_browser,
+    const tab_groups::TabGroupId& local_group_id,
+    const base::Uuid& saved_group_id) {
+  CHECK(source_browser);
+  CHECK(target_browser);
+  tab_groups::SavedTabGroupKeyedService* const service =
+      SavedTabGroupServiceFactory::GetForProfile(source_browser->profile());
+  CHECK(service);
+
+  // Find the grouped tabs in `source_browser`.
+  gfx::Range tabs_to_move = source_browser->tab_strip_model()
+                                ->group_model()
+                                ->GetTabGroup(local_group_id)
+                                ->ListTabs();
+  int num_tabs_to_move = tabs_to_move.length();
+
+  std::vector<int> tab_indicies_to_move(num_tabs_to_move);
+  std::iota(tab_indicies_to_move.begin(), tab_indicies_to_move.end(),
+            tabs_to_move.start());
+
+  // Disconnect the group and move the tabs to `target_browser`.
+  service->DisconnectLocalTabGroup(local_group_id);
+  chrome::MoveTabsToExistingWindow(source_browser, target_browser,
+                                   tab_indicies_to_move);
+
+  // Tabs should be in `target_browser` now. Regroup them.
+  int total_tabs = target_browser->tab_strip_model()->count();
+  int first_tab_moved = total_tabs - num_tabs_to_move;
+  std::vector<int> tabs_to_add_to_group(num_tabs_to_move);
+  std::iota(tabs_to_add_to_group.begin(), tabs_to_add_to_group.end(),
+            first_tab_moved);
+
+  // Add group the tabs using the same local id, and reconnect everything.
+  target_browser->tab_strip_model()->AddToGroupForRestore(tabs_to_add_to_group,
+                                                          local_group_id);
+  service->ConnectLocalTabGroup(local_group_id, saved_group_id);
+}
+
+void SavedTabGroupUtils::FocusFirstTabOrWindowInOpenGroup(
+    tab_groups::TabGroupId local_group_id) {
+  Browser* browser_for_activation =
+      SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group_id);
+
+  // Only activate the tab group's first tab, if it exists in any browser's
+  // tabstrip model and it is not in the active tab in the tab group.
+  CHECK(browser_for_activation);
+  TabGroup* tab_group =
+      browser_for_activation->tab_strip_model()->group_model()->GetTabGroup(
+          local_group_id);
+
+  std::optional<int> first_tab = tab_group->GetFirstTab();
+  std::optional<int> last_tab = tab_group->GetLastTab();
+  int active_index = browser_for_activation->tab_strip_model()->active_index();
+  CHECK(first_tab.has_value());
+  CHECK(last_tab.has_value());
+  CHECK_GE(active_index, 0);
+
+  if (active_index >= first_tab.value() && active_index <= last_tab) {
+    browser_for_activation->window()->Activate();
+    return;
+  }
+
+  browser_for_activation->ActivateContents(
+      browser_for_activation->tab_strip_model()->GetWebContentsAt(
+          first_tab.value()));
+
+  base::RecordAction(
+      base::UserMetricsAction("TabGroups_SavedTabGroups_Focused"));
 }
 
 // static

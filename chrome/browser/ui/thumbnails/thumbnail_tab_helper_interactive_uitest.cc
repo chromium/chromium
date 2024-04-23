@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
   browser2 = GetBrowser(1);
 
   EXPECT_EQ(kTabCount, browser2->tab_strip_model()->count());
-  EXPECT_EQ(kTabCount - 1, browser2->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser2->tab_strip_model()->active_index());
 
   // These tabs shouldn't want to be loaded.
   for (int tab_idx = 1; tab_idx < kTabCount - 1; ++tab_idx) {

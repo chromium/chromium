@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/sessions/core/live_tab_context.h"
+#include "components/sessions/core/tab_restore_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/ui_base_types.h"

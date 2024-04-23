@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_UTILS_H_
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_UTILS_H_
 
+#include <unordered_set>
+
 #include "base/uuid.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -88,7 +91,25 @@ class SavedTabGroupUtils {
   static std::vector<content::WebContents*> GetWebContentsesInGroup(
       tab_groups::TabGroupId group_id);
 
-  // Returns whether the tab's URL is viable for saving in a saved tab group.
+  // Returns the set of urls currently stored in the saved tab group.
+  static std::unordered_set<std::string> GetURLsInSavedTabGroup(
+      const tab_groups::SavedTabGroupKeyedService& saved_tab_group_service,
+      const base::Uuid& saved_id);
+
+  // Moves an open saved tab group from `source_browser` to `target_browser`.
+  static void MoveGroupToExistingWindow(
+      Browser* source_browser,
+      Browser* target_browser,
+      const tab_groups::TabGroupId& local_group_id,
+      const base::Uuid& saved_group_id);
+
+  // Activates the first tab in the saved group. If a tab in the group is
+  // already activated, then we focus the window the group belongs to instead.
+  static void FocusFirstTabOrWindowInOpenGroup(
+      tab_groups::TabGroupId local_group_id);
+
+  // Returns whether the tab's URL is viable for saving in a saved tab
+  // group.
   static bool IsURLValidForSavedTabGroups(const GURL& gurl);
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

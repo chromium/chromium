@@ -124,7 +124,8 @@ SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
 
   // Activate the first tab in a group if it is already open.
   if (saved_group->local_group_id().has_value()) {
-    FocusFirstTabOrWindowInOpenGroup(saved_group->local_group_id().value());
+    tab_groups::SavedTabGroupUtils::FocusFirstTabOrWindowInOpenGroup(
+        saved_group->local_group_id().value());
     return saved_group->local_group_id().value();
   }
 
@@ -482,38 +483,6 @@ SavedTabGroupKeyedService::GetWebContentsToTabGuidMappingForOpening(
     web_contents.emplace(created_contents, saved_tab.saved_tab_guid());
   }
   return web_contents;
-}
-
-void SavedTabGroupKeyedService::FocusFirstTabOrWindowInOpenGroup(
-    tab_groups::TabGroupId local_group_id) {
-  Browser* browser_for_activation =
-      SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group_id);
-
-  // Only activate the tab group's first tab, if it exists in any browser's
-  // tabstrip model and it is not in the active tab in the tab group.
-  CHECK(browser_for_activation);
-  TabGroup* tab_group =
-      browser_for_activation->tab_strip_model()->group_model()->GetTabGroup(
-          local_group_id);
-
-  std::optional<int> first_tab = tab_group->GetFirstTab();
-  std::optional<int> last_tab = tab_group->GetLastTab();
-  int active_index = browser_for_activation->tab_strip_model()->active_index();
-  CHECK(first_tab.has_value());
-  CHECK(last_tab.has_value());
-  CHECK_GE(active_index, 0);
-
-  if (active_index >= first_tab.value() && active_index <= last_tab) {
-    browser_for_activation->window()->Activate();
-    return;
-  }
-
-  browser_for_activation->ActivateContents(
-      browser_for_activation->tab_strip_model()->GetWebContentsAt(
-          first_tab.value()));
-
-  base::RecordAction(
-      base::UserMetricsAction("TabGroups_SavedTabGroups_Focused"));
 }
 
 const TabStripModel* SavedTabGroupKeyedService::GetTabStripModelWithTabGroupId(

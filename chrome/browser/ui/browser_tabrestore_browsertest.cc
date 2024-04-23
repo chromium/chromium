@@ -108,8 +108,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, RecentTabsMenuTabDisposition) {
     }
   }
 
-  // The middle tab only should have visible disposition.
-  CheckVisbility(restored_browser->tab_strip_model(), 1);
+  // Only the first tab should have visible disposition.
+  CheckVisbility(restored_browser->tab_strip_model(), 0);
 }
 
 // Expect a selected restored tab to start loading synchronously.
@@ -212,6 +212,6 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, DelegateRestoreTabDisposition) {
     }
   }
 
-  // The middle tab only should have visible disposition.
-  CheckVisbility(browser->tab_strip_model(), 1);
+  // Only the first tab should have visible disposition.
+  CheckVisbility(browser->tab_strip_model(), 0);
 }

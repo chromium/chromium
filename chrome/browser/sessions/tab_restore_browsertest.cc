@@ -453,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowAndTab) {
 
   // Restore the first window. The expected_tabstrip_index (second argument)
   // indicates the expected active tab.
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(1, starting_tab_count + 1));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(1, 0));
   Browser* browser = GetBrowser(1);
   EXPECT_EQ(starting_tab_count + 2, browser->tab_strip_model()->count());
 
@@ -565,24 +565,24 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowBounds) {
 }
 
 // Close a group not at the end of the current window, then restore it. The
-// group should be in its original position.
+// group should be at the end of the tabstrip.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroup) {
   AddSomeTabs(browser(), 3);
   tab_groups::TabGroupId group =
       browser()->tab_strip_model()->AddToNewGroup({1, 2});
   CloseGroup(group);
-  ASSERT_NO_FATAL_FAILURE(RestoreGroup(group, 0, 1));
+  ASSERT_NO_FATAL_FAILURE(RestoreGroup(group, 0, 2));
 
   EXPECT_EQ(browser()
                 ->tab_strip_model()
                 ->group_model()
                 ->GetTabGroup(group)
                 ->ListTabs(),
-            gfx::Range(1, 3));
+            gfx::Range(2, 4));
 }
 
 // Close a grouped tab, then the entire group. Restore both. The group should be
-// in its original position, with the tab in its original position as well.
+// opened at the end of the tabstrip.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupedTabThenGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
   AddSomeTabs(browser(), 3);
@@ -591,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupedTabThenGroup) {
 
   CloseTab(1);
   CloseGroup(group);
-  ASSERT_NO_FATAL_FAILURE(RestoreGroup(group, 0, 0));
+  ASSERT_NO_FATAL_FAILURE(RestoreGroup(group, 0, 1));
   ASSERT_NO_FATAL_FAILURE(RestoreTab(0, 1));
 
   EXPECT_EQ(browser()
@@ -599,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupedTabThenGroup) {
                 ->group_model()
                 ->GetTabGroup(group)
                 ->ListTabs(),
-            gfx::Range(0, 3));
+            gfx::Range(1, 4));
 }
 
 // Close a group that contains all tabs in a window, resulting in the window
@@ -618,9 +618,11 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupInNewWindow) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
   ASSERT_EQ(2u, active_browser_list_->size());
 
-  // Close the original group, which closes the original window.
-  CloseGroup(group);
-  ui_test_utils::WaitForBrowserToClose();
+  // Close the original group, which closes the original window. We spawn a new
+  // tab if the group is the only element in the browser and is closing. This
+  // prevents the browser from actually closing, so we close it manually
+  // instead.
+  CloseBrowserSynchronously(browser());
   EXPECT_EQ(1u, active_browser_list_->size());
 
   // Restore the original group, which should create a new window.
@@ -732,7 +734,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupWithUnloadHandlerRejected) {
                 ->group_model()
                 ->GetTabGroup(group)
                 ->ListTabs(),
-            gfx::Range(1, 3));
+            gfx::Range(2, 4));
   EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
 
   // Close the tab with the unload handler, otherwise it will prevent test
@@ -1007,7 +1009,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindow) {
   EXPECT_EQ(initial_tab_count + 2, browser->tab_strip_model()->count());
   EXPECT_TRUE(content::WaitForLoadStop(tab_added_waiter.Wait()));
 
-  EXPECT_EQ(initial_tab_count + 1, browser->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser->tab_strip_model()->active_index());
   content::WebContents* restored_tab =
       browser->tab_strip_model()->GetWebContentsAt(initial_tab_count + 1);
   EnsureTabFinishedRestoring(restored_tab);
@@ -1178,18 +1180,18 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
   browser2 = GetBrowser(1);
 
   EXPECT_EQ(tabs_count, browser2->tab_strip_model()->count());
-  EXPECT_EQ(tabs_count - 1, browser2->tab_strip_model()->active_index());
+  EXPECT_EQ(0, browser2->tab_strip_model()->active_index());
+
   // These two tabs should be loaded by TabLoader.
-  EnsureTabFinishedRestoring(
-      browser2->tab_strip_model()->GetWebContentsAt(tabs_count - 1));
   EnsureTabFinishedRestoring(browser2->tab_strip_model()->GetWebContentsAt(0));
+  EnsureTabFinishedRestoring(browser2->tab_strip_model()->GetWebContentsAt(1));
 
   // The following isn't necessary but just to be sure there is no any async
   // task that could have an impact on the expectations below.
   content::RunAllPendingInMessageLoop();
 
   // These tabs shouldn't want to be loaded.
-  for (int tab_idx = 1; tab_idx < tabs_count - 1; ++tab_idx) {
+  for (int tab_idx = 2; tab_idx < tabs_count; ++tab_idx) {
     auto* contents = browser2->tab_strip_model()->GetWebContentsAt(tab_idx);
     EXPECT_FALSE(contents->IsLoading());
     EXPECT_TRUE(contents->GetController().NeedsReload());
@@ -1261,7 +1263,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithName) {
   EXPECT_EQ(1u, active_browser_list_->size());
 
   // Restore the first browser.
-  ASSERT_NO_FATAL_FAILURE(RestoreTab(1, 1));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(1, 0));
   Browser* browser = GetBrowser(1);
   EXPECT_EQ("foobar", browser->user_title());
 }
@@ -1301,8 +1303,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreSingleGroupedTab) {
 }
 
 // Closing the last tab in a collapsed group then restoring will place the group
-// back expanded with its metadata.
-IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreCollapsedGroupTab_ExpandsGroup) {
+// back collapsed with its metadata.
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreCollapsedGroupTab) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   const int tab_count = AddSomeTabs(browser(), 1);
@@ -1336,13 +1338,12 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreCollapsedGroupTab_ExpandsGroup) {
   ASSERT_TRUE(data);
   EXPECT_EQ(data->title(), visual_data.title());
   EXPECT_EQ(data->color(), visual_data.color());
-  EXPECT_FALSE(data->is_collapsed());
+  EXPECT_TRUE(data->is_collapsed());
 }
 
-// Closing a tab in a collapsed group then restoring the tab will expand the
+// Closing a tab in a collapsed group then restoring the tab will not expand the
 // group upon restore.
-IN_PROC_BROWSER_TEST_F(TabRestoreTest,
-                       RestoreTabIntoCollapsedGroup_ExpandsGroup) {
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoCollapsedGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   const int tab_count = AddSomeTabs(browser(), 2);
@@ -1374,11 +1375,11 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
                                                    ->visual_data();
   EXPECT_EQ(data->title(), visual_data.title());
   EXPECT_EQ(data->color(), visual_data.color());
-  EXPECT_FALSE(data->is_collapsed());
+  EXPECT_TRUE(data->is_collapsed());
 }
 
 // Closing a tab in a group then updating the metadata before restoring will
-// place the group back without updating the metadata.
+// place the group back and update the metadata.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoGroup) {
   ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
@@ -1408,8 +1409,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoGroup) {
                           ->GetTabGroupForTab(closed_tab_index)
                           .value());
   const tab_groups::TabGroupVisualData* data = group->visual_data();
-  EXPECT_EQ(data->title(), visual_data_2.title());
-  EXPECT_EQ(data->color(), visual_data_2.color());
+  EXPECT_EQ(data->title(), visual_data_1.title());
+  EXPECT_EQ(data->color(), visual_data_1.color());
 }
 
 // Closing a tab in a group then moving the group to a new window before
@@ -1721,7 +1722,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
 
   // Restore closed group. This should record kTimeBetweenGroupClosedAndRestored
   // histogram.
-  ASSERT_NO_FATAL_FAILURE(RestoreGroup(group, 0, 1));
+  ASSERT_NO_FATAL_FAILURE(RestoreGroup(group, 0, 2));
 
   EXPECT_EQ(
       histogram_tester.GetAllSamples(kTimeBetweenGroupClosedAndRestored).size(),
@@ -1888,7 +1889,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoredWindowHasNewGroupIds) {
   ASSERT_EQ(3, third_browser->tab_strip_model()->count());
 
   // The group ID should be new.
-  EXPECT_NE(original_group,
+  EXPECT_EQ(original_group,
             third_browser->tab_strip_model()->GetTabGroupForTab(1));
 }
 
@@ -2109,7 +2110,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest, RestoreSavedGroup) {
   ASSERT_TRUE(service->model()->Contains(group));
 
   // Close the group.
-  browser()->tab_strip_model()->CloseAllTabsInGroup(group);
+  // browser()->tab_strip_model()->CloseAllTabsInGroup(group);
+  CloseGroup(group);
 
   // Restore the group.
   chrome::RestoreTab(browser());
@@ -2136,10 +2138,10 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest, RestoreSavedGroup) {
             gfx::Range(1, 3));
 }
 
-// Close a saved group, then restore it. The group should continue to be saved
-// and update its color to match the restored entry.
+// Close a saved group and restore it. The group should not have updated its
+// color to match the restored entry.
 IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
-                       RestoreSavedGroupUpdatesColor) {
+                       RestoreSavedGroupDoesNotUpdateVisualData) {
   AddTabs(browser(), 2);
   tab_groups::SavedTabGroupKeyedService* service =
       tab_groups::SavedTabGroupServiceFactory::GetForProfile(
@@ -2165,20 +2167,23 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
   // Close the group.
   browser()->tab_strip_model()->CloseAllTabsInGroup(group);
 
-  // Update the color of the saved group.
-  tab_groups::TabGroupVisualData new_visual_data(
-      u"This is a new title", tab_groups::TabGroupColorId::kCyan);
+  // Update the visual data of the saved group.
+  std::u16string new_title = u"This is a new title";
+  tab_groups::TabGroupColorId new_color = tab_groups::TabGroupColorId::kCyan;
+  tab_groups::TabGroupVisualData new_visual_data(new_title, new_color);
   service->model()->UpdateVisualData(saved_group_id, &new_visual_data);
 
   // Restore it.
   chrome::RestoreTab(browser());
 
-  // Check that the restored group has the old group color.
+  // Check that the restored group keeps the new visual data.
   const tab_groups::SavedTabGroup* const saved_group =
       service->model()->Get(saved_group_id);
   CHECK(saved_group);
-  EXPECT_EQ(original_title, saved_group->title());
-  EXPECT_EQ(original_color, saved_group->color());
+  EXPECT_NE(original_title, saved_group->title());
+  EXPECT_NE(original_color, saved_group->color());
+  EXPECT_EQ(new_title, saved_group->title());
+  EXPECT_EQ(new_color, saved_group->color());
 }
 
 // Verify that any tabs that exist in the restored group but not the saved group
@@ -2443,6 +2448,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
   chrome::RestoreTab(browser());
   saved_group = *service->model()->Get(saved_group_id);
 
+  ASSERT_EQ(
+      1u, browser()->tab_strip_model()->group_model()->ListTabGroups().size());
   // Verify that the second tab was added to the group.
   EXPECT_EQ(2u, saved_group.saved_tabs().size());
 
@@ -2666,15 +2673,15 @@ IN_PROC_BROWSER_TEST_F(TabRestoreSavedGroupsTest,
   const std::vector<tab_groups::TabGroupId>& second_browser_group_ids =
       second_browser->tab_strip_model()->group_model()->ListTabGroups();
 
-  // Verify there is only 1 saved group, the first browser has 2 tabs (tabs no
-  // in the group), and the second browser has 3 tabs (1 tab group).
+  // Verify there is only 1 saved group, the first browser has 4 tabs (how it
+  // was originally), and the second browser has 1 tab (new tab page).
   EXPECT_EQ(1, service->model()->Count());
-  EXPECT_EQ(2, first_browser->tab_strip_model()->count());
-  EXPECT_EQ(3, second_browser->tab_strip_model()->count());
+  EXPECT_EQ(4, first_browser->tab_strip_model()->count());
+  EXPECT_EQ(1, second_browser->tab_strip_model()->count());
 
-  EXPECT_TRUE(first_browser_group_ids.empty());
-  EXPECT_EQ(1u, second_browser_group_ids.size());
-  EXPECT_TRUE(service->model()->Contains(second_browser_group_ids[0]));
+  EXPECT_TRUE(second_browser_group_ids.empty());
+  EXPECT_EQ(1u, first_browser_group_ids.size());
+  EXPECT_TRUE(service->model()->Contains(first_browser_group_ids[0]));
   EXPECT_TRUE(service->model()->Contains(saved_group_id));
 
   tab_groups::SavedTabGroup saved_group =
