@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.chrome.browser.tab.Tab.INVALID_TIMESTAMP;
 import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.tab.state.ArchivePersistedTabData;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -15,6 +18,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Responsible for moving tabs to/from the archived {@link TabModel}. */
@@ -71,10 +76,29 @@ public class TabArchiver implements TabWindowManager.Observer {
         // After the class is fully initialized, observe the tab models of all running CTAs. This
         // will scan all current/future tabs for inactivity and archive those eligible.
         mTabWindowManager.addObserver(this);
+
+        // Trigger auto-deletion after archiving tabs.
+        deleteEligibleArchivedTabs();
     }
 
+    /** Delete eligible archived tabs. */
     public void deleteEligibleArchivedTabs() {
-        // TODO(crbug.com/331413918): Implement auto-deletion of tabs.
+        if (!mTabArchiveSettings.isAutoDeleteEnabled()) return;
+
+        List<Tab> tabs = new ArrayList<>();
+        for (int i = 0; i < mArchivedTabModel.getCount(); i++) {
+            tabs.add(mArchivedTabModel.getTabAt(i));
+        }
+
+        for (Tab tab : tabs) {
+            ArchivePersistedTabData.from(
+                    tab,
+                    (archivePersistedTabData) -> {
+                        if (isArchivedTabEligibleForDeletion(archivePersistedTabData)) {
+                            mArchivedTabModel.closeTab(tab);
+                        }
+                    });
+        }
     }
 
     /**
@@ -94,12 +118,24 @@ public class TabArchiver implements TabWindowManager.Observer {
      *
      * @param tabModel The {@link TabModel} the tab currently belongs to.
      * @param tab The {@link Tab} to unarchive.
+     * @return The archived {@link Tab}.
      */
-    public void archiveAndRemoveTab(TabModel tabModel, Tab tab) {
+    public Tab archiveAndRemoveTab(TabModel tabModel, Tab tab) {
         ThreadUtils.assertOnUiThread();
         TabState tabState = TabStateExtractor.from(tab);
-        mArchivedTabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
+        Tab newTab = mArchivedTabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
         tabModel.closeTab(tab);
+
+        ArchivePersistedTabData.from(
+                newTab,
+                (archivePersistedTabData) -> {
+                    // Persisted tab data requires a true supplier before saving to disk.
+                    archivePersistedTabData.registerIsTabSaveEnabledSupplier(
+                            new ObservableSupplierImpl<>(true));
+                    archivePersistedTabData.setArchivedTimeMs(mClock.currentTimeMillis());
+                });
+
+        return newTab;
     }
 
     /**
@@ -128,8 +164,6 @@ public class TabArchiver implements TabWindowManager.Observer {
     }
 
     private void archiveEligibleTabsFromTabModelSelector(TabModelSelector selector) {
-        // TODO: Consider moving this logic into a dedicated class.
-        // Only regular tabs are eligible for archive.
         TabModel model = selector.getModel(/* isIncognito= */ false);
         for (int i = 0; i < model.getCount(); ) {
             Tab tab = model.getTabAt(i);
@@ -142,10 +176,23 @@ public class TabArchiver implements TabWindowManager.Observer {
     }
 
     private boolean isTabEligibleForArchive(Tab tab) {
-        long tabTimestamp = tab.getTimestampMillis();
-        if (tabTimestamp == Tab.INVALID_TIMESTAMP) return false;
+        return isTimestampWithinTargetHours(
+                tab.getTimestampMillis(), mTabArchiveSettings.getArchiveTimeDeltaHours());
+    }
 
-        long tabAgeHours = TimeUnit.MILLISECONDS.toHours(mClock.currentTimeMillis() - tabTimestamp);
-        return tabAgeHours >= mTabArchiveSettings.getArchiveTimeDeltaHours();
+    private boolean isArchivedTabEligibleForDeletion(
+            ArchivePersistedTabData archivePersistedTabData) {
+        if (archivePersistedTabData == null) return false;
+
+        return isTimestampWithinTargetHours(
+                archivePersistedTabData.getArchivedTimeMs(),
+                mTabArchiveSettings.getAutoDeleteTimeDeltaHours());
+    }
+
+    private boolean isTimestampWithinTargetHours(long timestampMillis, int targetHours) {
+        if (timestampMillis == INVALID_TIMESTAMP) return false;
+
+        long ageHours = TimeUnit.MILLISECONDS.toHours(mClock.currentTimeMillis() - timestampMillis);
+        return ageHours >= targetHours;
     }
 }
