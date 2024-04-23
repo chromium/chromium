@@ -844,6 +844,9 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Zoom Out"/>
   <int value="7" label="Previous page"/>
   <int value="8" label="Next Page"/>
+  <int value="9" label="Left Click"/>
+  <int value="10" label="Right Click"/>
+  <int value="11" label="Middle Click"/>
 </enum>
 
 <enum name="DpSuccessMetric">
