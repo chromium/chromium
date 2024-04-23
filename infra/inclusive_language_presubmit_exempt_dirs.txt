@@ -726,8 +726,8 @@ third_party/rust/chromium_crates_io/vendor/strum-0.25.0/src 1 1
 third_party/rust/chromium_crates_io/vendor/strum_macros-0.25.3 1 1
 third_party/rust/chromium_crates_io/vendor/syn-1.0.109 1 1
 third_party/rust/chromium_crates_io/vendor/syn-1.0.109/src 4 2
-third_party/rust/chromium_crates_io/vendor/syn-2.0.59 1 1
-third_party/rust/chromium_crates_io/vendor/syn-2.0.59/src 2 1
+third_party/rust/chromium_crates_io/vendor/syn-2.0.60 1 1
+third_party/rust/chromium_crates_io/vendor/syn-2.0.60/src 2 1
 third_party/rust/chromium_crates_io/vendor/termcolor-1.4.1/.github/workflows 3 1
 third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.12 1 1
 third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.12/.github/workflows 2 1

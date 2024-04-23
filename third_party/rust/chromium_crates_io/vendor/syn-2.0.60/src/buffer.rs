@@ -346,11 +346,13 @@ impl<'a> Cursor<'a> {
         self.span()
     }
 
-    /// Skip over the next token without cloning it. Returns `None` if this
-    /// cursor points to eof.
+    /// Skip over the next token that is not a None-delimited group, without
+    /// cloning it. Returns `None` if this cursor points to eof.
     ///
     /// This method treats `'lifetimes` as a single token.
-    pub(crate) fn skip(self) -> Option<Cursor<'a>> {
+    pub(crate) fn skip(mut self) -> Option<Cursor<'a>> {
+        self.ignore_none();
+
         let len = match self.entry() {
             Entry::End(_) => return None,
 

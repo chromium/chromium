@@ -310,11 +310,11 @@ fn suffix() {
 
 #[test]
 fn test_deep_group_empty() {
-    let tokens = TokenStream::from_iter(vec![TokenTree::Group(Group::new(
+    let tokens = TokenStream::from_iter([TokenTree::Group(Group::new(
         Delimiter::None,
-        TokenStream::from_iter(vec![TokenTree::Group(Group::new(
+        TokenStream::from_iter([TokenTree::Group(Group::new(
             Delimiter::None,
-            TokenStream::from_iter(vec![TokenTree::Literal(Literal::string("hi"))]),
+            TokenStream::from_iter([TokenTree::Literal(Literal::string("hi"))]),
         ))]),
     ))]);
 

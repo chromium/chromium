@@ -48,7 +48,7 @@ fn test_leading_vert() {
 #[test]
 fn test_group() {
     let group = Group::new(Delimiter::None, quote!(Some(_)));
-    let tokens = TokenStream::from_iter(vec![TokenTree::Group(group)]);
+    let tokens = TokenStream::from_iter([TokenTree::Group(group)]);
     let pat = Pat::parse_single.parse2(tokens).unwrap();
 
     snapshot!(pat, @r###"

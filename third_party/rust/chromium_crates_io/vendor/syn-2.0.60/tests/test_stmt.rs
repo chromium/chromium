@@ -57,10 +57,10 @@ fn test_raw_invalid() {
 
 #[test]
 fn test_none_group() {
-    // <Ø async fn f() {} Ø>
-    let tokens = TokenStream::from_iter(vec![TokenTree::Group(Group::new(
+    // «∅ async fn f() {} ∅»
+    let tokens = TokenStream::from_iter([TokenTree::Group(Group::new(
         Delimiter::None,
-        TokenStream::from_iter(vec![
+        TokenStream::from_iter([
             TokenTree::Ident(Ident::new("async", Span::call_site())),
             TokenTree::Ident(Ident::new("fn", Span::call_site())),
             TokenTree::Ident(Ident::new("f", Span::call_site())),

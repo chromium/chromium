@@ -10,7 +10,7 @@ use syn::{parse_quote, Expr, Type, TypePath};
 #[test]
 fn parse_interpolated_leading_component() {
     // mimics the token stream corresponding to `$mod::rest`
-    let tokens = TokenStream::from_iter(vec![
+    let tokens = TokenStream::from_iter([
         TokenTree::Group(Group::new(Delimiter::None, quote! { first })),
         TokenTree::Punct(Punct::new(':', Spacing::Joint)),
         TokenTree::Punct(Punct::new(':', Spacing::Alone)),

@@ -103,12 +103,12 @@ fn test_junk_after_in() {
 #[test]
 fn test_inherited_vis_named_field() {
     // mimics `struct S { $vis $field: () }` where $vis is empty
-    let tokens = TokenStream::from_iter(vec![
+    let tokens = TokenStream::from_iter([
         TokenTree::Ident(Ident::new("struct", Span::call_site())),
         TokenTree::Ident(Ident::new("S", Span::call_site())),
         TokenTree::Group(Group::new(
             Delimiter::Brace,
-            TokenStream::from_iter(vec![
+            TokenStream::from_iter([
                 TokenTree::Group(Group::new(Delimiter::None, TokenStream::new())),
                 TokenTree::Group(Group::new(Delimiter::None, quote!(f))),
                 TokenTree::Punct(Punct::new(':', Spacing::Alone)),
@@ -141,12 +141,12 @@ fn test_inherited_vis_named_field() {
 #[test]
 fn test_inherited_vis_unnamed_field() {
     // mimics `struct S($vis $ty);` where $vis is empty
-    let tokens = TokenStream::from_iter(vec![
+    let tokens = TokenStream::from_iter([
         TokenTree::Ident(Ident::new("struct", Span::call_site())),
         TokenTree::Ident(Ident::new("S", Span::call_site())),
         TokenTree::Group(Group::new(
             Delimiter::Parenthesis,
-            TokenStream::from_iter(vec![
+            TokenStream::from_iter([
                 TokenTree::Group(Group::new(Delimiter::None, TokenStream::new())),
                 TokenTree::Group(Group::new(Delimiter::None, quote!(str))),
             ]),
