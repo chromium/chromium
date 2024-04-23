@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
+#include "third_party/nearby/src/internal/interop/fake_device_provider.h"
 #include "third_party/nearby/src/presence/fake_presence_client.h"
 #include "third_party/nearby/src/presence/fake_presence_service.h"
 #include "third_party/nearby/src/presence/presence_client_impl.h"
@@ -478,6 +479,12 @@ TEST_F(NearbyPresenceTest, GetLocalSharedCredentials_Failure) {
             run_loop.Quit();
           }));
   run_loop.Run();
+}
+
+TEST_F(NearbyPresenceTest, GetLocalDeviceProvider) {
+  ::nearby::FakeDeviceProvider fake_device_provider;
+  fake_presence_service_->SetDeviceProvider(&fake_device_provider);
+  EXPECT_TRUE(nearby_presence_->GetLocalDeviceProvider());
 }
 
 }  // namespace ash::nearby::presence

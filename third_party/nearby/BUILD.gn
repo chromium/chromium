@@ -949,10 +949,12 @@ source_set("presence_test") {
     ":nearby_defines",
   ]
   sources = [
+    "src/internal/interop/fake_device_provider.cc",
     "src/presence/fake_presence_client.cc",
     "src/presence/fake_presence_service.cc",
   ]
   public = [
+    "src/internal/interop/fake_device_provider.h",
     "src/presence/fake_presence_client.h",
     "src/presence/fake_presence_service.h",
   ]

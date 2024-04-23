@@ -180,9 +180,11 @@ NearbyConnections& NearbyConnections::GetInstance() {
 
 NearbyConnections::NearbyConnections(
     mojo::PendingReceiver<mojom::NearbyConnections> nearby_connections,
+    NearbyDeviceProvider* presence_device_provider,
     nearby::api::LogMessage::Severity min_log_severity,
     base::OnceClosure on_disconnect)
     : nearby_connections_(this, std::move(nearby_connections)),
+      presence_local_device_provider_(presence_device_provider),
       thread_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
   nearby::api::LogMessage::SetMinLogSeverity(min_log_severity);
 
@@ -753,6 +755,12 @@ void NearbyConnections::DisconnectFromDeviceV3(
 
             RemovePresenceDevice(service_id, remote_device->endpoint_id);
           });
+}
+
+void NearbyConnections::RegisterServiceWithPresenceDeviceProvider(
+    const std::string& service_id) {
+  CHECK(presence_local_device_provider_);
+  GetCore(service_id)->RegisterDeviceProvider(presence_local_device_provider_);
 }
 
 base::File NearbyConnections::ExtractInputFile(int64_t payload_id) {

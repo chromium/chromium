@@ -399,4 +399,9 @@ void FakeNearbyConnections::DisconnectFromDeviceV3(
   NOTIMPLEMENTED();
 }
 
+void FakeNearbyConnections::RegisterServiceWithPresenceDeviceProvider(
+    const std::string& service_id) {
+  NOTIMPLEMENTED();
+}
+
 }  // namespace data_migration

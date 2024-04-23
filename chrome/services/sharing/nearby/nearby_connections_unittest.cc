@@ -42,6 +42,7 @@
 #include "third_party/nearby/src/connections/v3/connection_result.h"
 #include "third_party/nearby/src/connections/v3/connections_device.h"
 #include "third_party/nearby/src/connections/v3/listeners.h"
+#include "third_party/nearby/src/internal/interop/fake_device_provider.h"
 
 namespace nearby::connections {
 
@@ -311,9 +312,8 @@ class NearbyConnectionsTest : public testing::Test {
     auto service_controller_router =
         std::make_unique<testing::NiceMock<MockServiceControllerRouter>>();
     service_controller_router_ptr_ = service_controller_router.get();
-
     nearby_connections_ = std::make_unique<NearbyConnections>(
-        remote_.BindNewPipeAndPassReceiver(),
+        remote_.BindNewPipeAndPassReceiver(), &fake_device_provider_,
         nearby::api::LogMessage::Severity::kInfo,
         base::BindOnce(&NearbyConnectionsTest::OnDisconnect,
                        base::Unretained(this)));
@@ -724,6 +724,7 @@ class NearbyConnectionsTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   mojo::Remote<mojom::NearbyConnections> remote_;
+  FakeDeviceProvider fake_device_provider_;
   bluetooth::FakeAdapter bluetooth_adapter_;
   ::sharing::MockWebRtcDependencies webrtc_dependencies_;
   std::unique_ptr<ash::network_config::CrosNetworkConfigTestHelper>
@@ -1890,6 +1891,12 @@ TEST_F(NearbyConnectionsTest, BandwidthChangedV3CallbackSucceeds) {
   request_connection_run_loop.Run();
   client_proxy->OnBandwidthChanged(kEndpointId, Medium::BLUETOOTH);
   bandwidth_changed_run_loop.Run();
+}
+
+// TODO(b/330183112): Add test infratructure support to better handle
+// verification of `Core` attributes.
+TEST_F(NearbyConnectionsTest, RegisterServiceWithPresenceDeviceProvider) {
+  nearby_connections_->RegisterServiceWithPresenceDeviceProvider(kServiceId);
 }
 
 }  // namespace nearby::connections

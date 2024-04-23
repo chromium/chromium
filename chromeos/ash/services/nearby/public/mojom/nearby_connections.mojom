@@ -514,4 +514,12 @@ interface NearbyConnections {
   DisconnectFromDeviceV3(string service_id,
                          ash.nearby.presence.mojom.PresenceDevice remote_device)
       => (Status status);
+
+  // Registers Nearby Presence's `LocalDeviceProvider` with the Nearby
+  // Connections Core associated with the given `service_id`. The registered
+  // `PresenceDeviceProvider` is used on future `ConnectV3()` calls made by
+  // Nearby Connections. A LocalDeviceProvider provides a representation of
+  // the local device (ChromeOS) as a NearbyDevice and is used for
+  // authentication during connection attempts.
+  RegisterServiceWithPresenceDeviceProvider(string service_id);
 };

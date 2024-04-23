@@ -200,6 +200,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DATA_MIGRATION)
       const std::string& service_id,
       ash::nearby::presence::mojom::PresenceDevicePtr remote_device,
       DisconnectFromDeviceV3Callback callback) override;
+  void RegisterServiceWithPresenceDeviceProvider(
+      const std::string& service_id) override;
 
   const std::string remote_endpoint_id_;
   bool is_advertising_ = false;
