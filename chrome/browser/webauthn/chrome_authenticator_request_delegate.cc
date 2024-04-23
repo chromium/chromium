@@ -1092,6 +1092,10 @@ bool ChromeAuthenticatorRequestDelegate::EmbedderControlsAuthenticatorDispatch(
     // There is no UI to handle request dispatch.
     return false;
   }
+  if (authenticator.GetType() == device::AuthenticatorType::kEnclave) {
+    return false;
+  }
+
   if (is_conditional_ &&
       (dialog_model_->step() ==
            AuthenticatorRequestDialogModel::Step::kConditionalMediation ||
@@ -1101,9 +1105,6 @@ bool ChromeAuthenticatorRequestDelegate::EmbedderControlsAuthenticatorDispatch(
     // will dispatch to any plugged in authenticators after the user selects an
     // option.
     return true;
-  }
-  if (authenticator.GetType() == device::AuthenticatorType::kEnclave) {
-    return false;
   }
   auto transport = authenticator.AuthenticatorTransport();
   return !transport ||  // Windows
