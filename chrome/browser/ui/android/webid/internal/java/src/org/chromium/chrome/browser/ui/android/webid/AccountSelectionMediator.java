@@ -265,7 +265,10 @@ class AccountSelectionMediator {
 
     private void updateBackPressBehavior() {
         mBottomSheetContent.setCustomBackPressBehavior(
-                !mWasDismissed && mSelectedAccount != null && mAccounts.size() != 1
+                !mWasDismissed
+                                && mSelectedAccount != null
+                                && mAccounts.size() != 1
+                                && mHeaderType != HeaderType.VERIFY
                         ? this::handleBackPress
                         : null);
     }

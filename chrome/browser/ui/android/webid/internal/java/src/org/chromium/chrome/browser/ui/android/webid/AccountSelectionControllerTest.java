@@ -594,6 +594,26 @@ public class AccountSelectionControllerTest {
     }
 
     @Test
+    public void testNotShowAccountPickerOnVerifyingUiDismiss() {
+        when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
+        mMediator.showAccounts(
+                TEST_ETLD_PLUS_ONE,
+                TEST_ETLD_PLUS_ONE_1,
+                TEST_ETLD_PLUS_ONE_2,
+                Arrays.asList(ANA, NEW_USER),
+                IDP_METADATA,
+                CLIENT_ID_METADATA,
+                /* isAutoReauthn= */ false,
+                /* rpContext= */ "signin",
+                /* requestPermission= */ true);
+        assertEquals(2, mSheetAccountItems.size());
+        mMediator.onAccountSelected(ANA);
+
+        pressBack();
+        assertTrue(mMediator.wasDismissed());
+    }
+
+    @Test
     public void testCallsDelegateAndHidesOnAutoReauthn() {
         when(mMockBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mMediator.showAccounts(
