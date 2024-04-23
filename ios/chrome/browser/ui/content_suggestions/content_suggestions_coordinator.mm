@@ -432,15 +432,6 @@
       ->SetIsShownOnStartSurface(false);
 }
 
-- (void)moduleWasRemoved {
-  [self.NTPDelegate updateFeedLayout];
-}
-
-- (UIEdgeInsets)safeAreaInsetsForDiscoverFeed {
-  return [self.browser->GetSceneState()
-              .window.rootViewController.view safeAreaInsets];
-}
-
 - (void)didTapMagicStackEditButton {
   _magicStackHalfSheetTableViewController =
       [[MagicStackHalfSheetTableViewController alloc] init];

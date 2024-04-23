@@ -16,7 +16,6 @@ class WebState;
 @class ContentSuggestionsViewController;
 @class MagicStackCollectionViewController;
 @protocol NewTabPageControllerDelegate;
-@protocol NewTabPageDelegate;
 @protocol NewTabPageMetricsDelegate;
 
 // Coordinator to manage the Suggestions UI via a
@@ -44,9 +43,6 @@ class WebState;
 // this.
 @property(nonatomic, strong, readonly)
     ContentSuggestionsMediator* contentSuggestionsMediator;
-
-// Delegate for NTP related actions.
-@property(nonatomic, weak) id<NewTabPageDelegate> NTPDelegate;
 
 // Delegate used to communicate Content Suggestions events to the delegate.
 @property(nonatomic, weak) id<ContentSuggestionsDelegate> delegate;

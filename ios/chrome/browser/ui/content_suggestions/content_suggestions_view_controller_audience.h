@@ -15,14 +15,6 @@ enum class SafetyCheckItemType;
 // Notifies the audience of the UIKit viewWillDisappear: callback.
 - (void)viewWillDisappear;
 
-// Notifies the audience that a module was removed.
-- (void)moduleWasRemoved;
-
-// Returns current safe area insets for the window owning this discover feed.
-// TODO:(crbug.com/1285378) Remove this after Content Suggestions header is
-// moved out the Content Suggestions CollectionView.
-- (UIEdgeInsets)safeAreaInsetsForDiscoverFeed;
-
 // Notifies the audience to present the Set Up List Show More Menu.
 - (void)showSetUpListShowMoreMenu;
 
