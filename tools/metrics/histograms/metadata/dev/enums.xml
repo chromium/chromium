@@ -807,18 +807,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="4" label="Other"/>
 </enum>
 
-<enum name="DevToolsBadgeActivated">
-  <int value="0" label="Grid"/>
-  <int value="1" label="Subgrid"/>
-  <int value="2" label="Flex"/>
-  <int value="3" label="Ad"/>
-  <int value="4" label="Scroll snap"/>
-  <int value="5" label="Container"/>
-  <int value="6" label="Slot"/>
-  <int value="7" label="Top layer"/>
-  <int value="8" label="Reveal"/>
-</enum>
-
 <enum name="DevToolsBreakpointEditDialogRevealedFrom">
   <int value="0" label="Breakpoint sidebar context menu"/>
   <int value="1" label="Breakpoint sidebar edit button"/>
