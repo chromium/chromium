@@ -504,6 +504,7 @@ chromium-metrics-reviews@google.com.
   <owner>titouan@chromium.org</owner>
   <owner>lyf@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
+  <owner>src/chrome/browser/private_network_access/OWNERS</owner>
   <summary>
     Records whether a failed PNA check could have been avoided by inferring the
     request's target IP address space by recognizing that the request URL's host
@@ -512,10 +513,11 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PrivateNetworkAccess.PrivateIpResolveMatch"
-    enum="Boolean" expires_after="2024-05-05">
+    enum="Boolean" expires_after="2024-09-16">
   <owner>titouan@chromium.org</owner>
   <owner>lyf@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
+  <owner>src/chrome/browser/private_network_access/OWNERS</owner>
   <summary>
     Records whether a request to a literal private IP address resolved to that
     private IP address. Recorded at most once per call to
