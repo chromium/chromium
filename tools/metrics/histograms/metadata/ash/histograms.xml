@@ -7231,7 +7231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.InLaserPointerMode" units="ms"
-    expires_after="2024-06-01">
+    expires_after="2024-10-06">
   <owner>dmblack@google.com</owner>
   <owner>alexandrahill@google.com</owner>
   <summary>
@@ -7241,7 +7241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.InMagnifyMode" units="ms"
-    expires_after="2024-06-01">
+    expires_after="2024-10-06">
   <owner>dmblack@google.com</owner>
   <owner>alexandrahill@google.com</owner>
   <summary>
@@ -7251,7 +7251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.ModeCancellation"
-    enum="PaletteModeCancelType" expires_after="2024-06-01">
+    enum="PaletteModeCancelType" expires_after="2024-10-06">
   <owner>dmblack@google.com</owner>
   <owner>alexandrahill@google.com</owner>
   <summary>
@@ -7271,7 +7271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.Usage.AutoOpened" enum="PaletteTrayOptions"
-    expires_after="2024-06-01">
+    expires_after="2024-10-06">
   <owner>dmblack@google.com</owner>
   <owner>alexandrahill@google.com</owner>
   <summary>
@@ -7281,7 +7281,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.Usage.Shortcut" enum="PaletteTrayOptions"
-    expires_after="2024-06-01">
+    expires_after="2024-10-06">
   <owner>dmblack@google.com</owner>
   <owner>alexandrahill@google.com</owner>
   <summary>

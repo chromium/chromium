@@ -29,7 +29,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Ash.HoldingSpaceWallpaperNudge.Duration" units="ms"
-    expires_after="2024-09-15">
+    expires_after="2024-10-06">
   <owner>dmblack@google.com</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -39,7 +39,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.HoldingSpaceWallpaperNudge.Eligible" enum="Boolean"
-    expires_after="2024-09-15">
+    expires_after="2024-10-06">
   <owner>dmblack@google.com</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.HoldingSpaceWallpaperNudge.IneligibleReason"
     enum="HoldingSpaceWallpaperNudgeIneligibleReason"
-    expires_after="2024-09-15">
+    expires_after="2024-10-06">
   <owner>dmblack@google.com</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -60,7 +60,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.HoldingSpaceWallpaperNudge.Interaction.Count"
-    enum="HoldingSpaceWallpaperNudgeInteraction" expires_after="2024-09-15">
+    enum="HoldingSpaceWallpaperNudgeInteraction" expires_after="2024-10-06">
   <owner>dmblack@google.com</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.HoldingSpaceWallpaperNudge.Interaction.FirstTime.{Interaction}"
-    units="ms" expires_after="2024-09-15">
+    units="ms" expires_after="2024-10-06">
   <owner>dmblack@google.com</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -107,7 +107,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.HoldingSpaceWallpaperNudge.Interaction.FirstTimeBucket.{Interaction}"
-    enum="TimeBucket" expires_after="2024-09-15">
+    enum="TimeBucket" expires_after="2024-10-06">
   <owner>dmblack@google.com</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -143,7 +143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.HoldingSpaceWallpaperNudge.Shown" units="count"
-    expires_after="2024-09-15">
+    expires_after="2024-10-06">
   <owner>dmblack@google.com</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -153,7 +153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.HoldingSpaceWallpaperNudge.ShownBeforeFirstPin"
-    units="count" expires_after="2024-06-01">
+    units="count" expires_after="2024-10-06">
   <owner>dmblack@google.com</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -164,7 +164,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.HoldingSpaceWallpaperNudge.SuppressedReason"
     enum="HoldingSpaceWallpaperNudgeSuppressedReason"
-    expires_after="2024-09-29">
+    expires_after="2024-10-06">
   <owner>dmblack@google.com</owner>
   <owner>teresachow@google.com</owner>
   <summary>
