@@ -62,15 +62,8 @@ public class SearchBoxContainerView extends LinearLayout {
             }
 
             TextView searchBoxTextView = findViewById(R.id.search_box_text);
-            if (mIsSurfacePolishOmniboxColorEnabled) {
-                searchBoxTextView.setTextAppearance(
-                        getContext(),
-                        R.style.TextAppearance_SearchBoxText_NewTabPage_SurfacePolishColorful);
-            } else {
-                searchBoxTextView.setTextAppearance(
-                        getContext(),
-                        R.style.TextAppearance_SearchBoxText_NewTabPage_SurfacePolishNeutral);
-            }
+            searchBoxTextView.setTextAppearance(
+                    getContext(), R.style.TextAppearance_SearchBoxText_NewTabPage_SurfacePolish);
             Typeface typeface = Typeface.create("google-sans-medium", Typeface.NORMAL);
             searchBoxTextView.setTypeface(typeface);
         }

@@ -32,7 +32,6 @@ android_resources("java_resources") {
     "java/res/color/default_icon_color_dark_tint_list.xml",
     "java/res/color/default_icon_color_disabled.xml",
     "java/res/color/default_icon_color_light_tint_list.xml",
-    "java/res/color/default_icon_color_on_accent1_container_tint_list.xml",
     "java/res/color/default_icon_color_secondary_light_tint_list.xml",
     "java/res/color/default_icon_color_secondary_tint_list.xml",
     "java/res/color/default_icon_color_tint_list.xml",

@@ -287,7 +287,6 @@ public class ToolbarPhone extends ToolbarLayout
     private boolean mInLayoutTransition;
 
     private final boolean mIsSurfacePolishEnabled;
-    private final boolean mIsSurfacePolishOmniboxColorEnabled;
 
     // For both Start Surface and NTP, when the surface polish flag is enabled, we will change the
     // appearance (G logo background, search text color and style) of the real search box after it's
@@ -320,9 +319,6 @@ public class ToolbarPhone extends ToolbarLayout
     public ToolbarPhone(Context context, AttributeSet attrs) {
         super(context, attrs);
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
-        mIsSurfacePolishOmniboxColorEnabled =
-                mIsSurfacePolishEnabled
-                        && StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR.getValue();
         mToolbarSidePadding = OmniboxResourceProvider.getToolbarSidePadding(context);
         mToolbarSidePaddingForRealOmnibox =
                 mIsSurfacePolishEnabled
@@ -333,7 +329,8 @@ public class ToolbarPhone extends ToolbarLayout
         mHomeSurfaceToolbarBackgroundColor =
                 ChromeColors.getSurfaceColor(
                         getContext(), R.dimen.home_surface_background_color_elevation);
-        if (mIsSurfacePolishOmniboxColorEnabled) {
+        if (mIsSurfacePolishEnabled
+                && StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR.getValue()) {
             float homeSurfaceLocationBarBackgroundColorAlpha =
                     ResourcesCompat.getFloat(
                             getResources(),
@@ -383,7 +380,6 @@ public class ToolbarPhone extends ToolbarLayout
     @Override
     public void setLocationBarCoordinator(LocationBarCoordinator locationBarCoordinator) {
         mLocationBar = locationBarCoordinator;
-        mLocationBar.setIsSurfacePolishOmniboxColorEnabled(mIsSurfacePolishOmniboxColorEnabled);
         initLocationBarBackground();
     }
 
@@ -2680,7 +2676,6 @@ public class ToolbarPhone extends ToolbarLayout
         mLocationBar.updateUrlBarHintTextColor(useDefaultUrlBarAndUrlActionContainerAppearance);
         mLocationBar.updateUrlActionContainerEndMargin(
                 useDefaultUrlBarAndUrlActionContainerAppearance);
-        mLocationBar.updateButtonTints();
     }
 
     private void updateVisualsForLocationBarState() {

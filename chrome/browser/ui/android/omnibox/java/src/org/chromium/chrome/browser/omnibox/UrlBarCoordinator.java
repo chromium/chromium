@@ -316,10 +316,10 @@ public class UrlBarCoordinator
     }
 
     /**
-     * @see UrlBarMediator#setUrlBarHintTextColorForSurfacePolish(boolean)
+     * @see UrlBarMediator#setUrlBarHintTextColorForSurfacePolish()
      */
-    public void setUrlBarHintTextColorForSurfacePolish(boolean useColorfulOmniboxType) {
-        mMediator.setUrlBarHintTextColorForSurfacePolish(useColorfulOmniboxType);
+    public void setUrlBarHintTextColorForSurfacePolish() {
+        mMediator.setUrlBarHintTextColorForSurfacePolish();
     }
 
     /**

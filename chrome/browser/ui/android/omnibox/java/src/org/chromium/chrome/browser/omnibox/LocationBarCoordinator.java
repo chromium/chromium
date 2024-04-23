@@ -807,21 +807,6 @@ public class LocationBarCoordinator
     }
 
     /**
-     * @see LocationBarMediator#setIsSurfacePolishOmniboxColorEnabled(boolean)
-     */
-    public void setIsSurfacePolishOmniboxColorEnabled(boolean isSurfacePolishOmniboxColorEnabled) {
-        mLocationBarMediator.setIsSurfacePolishOmniboxColorEnabled(
-                isSurfacePolishOmniboxColorEnabled);
-    }
-
-    /**
-     * @see LocationBarMediator#updateButtonTints(boolean)
-     */
-    public void updateButtonTints() {
-        mLocationBarMediator.updateButtonTints();
-    }
-
-    /**
      * @see LocationBarMediator#updateUrlBarHintTextColor(boolean)
      */
     public void updateUrlBarHintTextColor(boolean useDefaultUrlBarHintTextColor) {

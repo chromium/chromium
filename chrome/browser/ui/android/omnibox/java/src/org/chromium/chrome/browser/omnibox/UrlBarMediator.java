@@ -383,19 +383,10 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate, UrlBar.Url
         setBrandedColorScheme(brandedColorScheme);
     }
 
-    /**
-     * Sets search box hint text color for Surface Polish. The color may be colorOnSurface or
-     * colorOnPrimaryContainer, depending on useColorfulOmniboxType.
-     *
-     * @param useColorfulOmniboxType True if the surface polish flag and omnibox color variant are
-     *     both enabled and we need to use the colorful type for the url bar hint color.
-     */
-    void setUrlBarHintTextColorForSurfacePolish(boolean useColorfulOmniboxType) {
+    /** Sets search box hint text color to be colorOnSurface for Surface Polish. */
+    void setUrlBarHintTextColorForSurfacePolish() {
         mIsHintTextFixedForStartOrNtp = true;
-        final @ColorInt int hintTextColor =
-                useColorfulOmniboxType
-                        ? SemanticColorUtils.getDefaultTextColorOnAccent1Container(mContext)
-                        : SemanticColorUtils.getDefaultTextColor(mContext);
+        final @ColorInt int hintTextColor = SemanticColorUtils.getDefaultTextColor(mContext);
         mModel.set(UrlBarProperties.HINT_TEXT_COLOR, hintTextColor);
     }
 
