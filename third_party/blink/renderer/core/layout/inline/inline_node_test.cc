@@ -266,7 +266,17 @@ TEST_F(InlineNodeTest, CollectInlinesUTF16) {
   SetupHtml("t", u"<div id=t>Hello \u3042</div>");
   InlineNodeForTest node = CreateInlineNode();
   node.CollectInlines();
-  // |CollectInlines()| sets |IsBidiEnabled()| for any UTF-16 strings.
+  EXPECT_FALSE(node.IsBidiEnabled());
+  node.SegmentText();
+  EXPECT_FALSE(node.IsBidiEnabled());
+}
+
+TEST_F(InlineNodeTest, CollectInlinesMaybeRtl) {
+  // U+10000 "LINEAR B SYLLABLE B008 A" is strong LTR.
+  SetupHtml("t", u"<div id=t>Hello \U00010000</div>");
+  InlineNodeForTest node = CreateInlineNode();
+  node.CollectInlines();
+  // |CollectInlines()| sets |IsBidiEnabled()| for any surrogate pairs.
   EXPECT_TRUE(node.IsBidiEnabled());
   // |SegmentText()| analyzes the string and resets |IsBidiEnabled()| if all
   // characters are LTR.

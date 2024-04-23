@@ -1547,11 +1547,6 @@ void InlineItemsBuilderTemplate<MappingBuilder>::Exit(LayoutObject* node) {
 }
 
 template <typename MappingBuilder>
-bool InlineItemsBuilderTemplate<MappingBuilder>::MayBeBidiEnabled() const {
-  return !text_.Is8Bit() || HasBidiControls();
-}
-
-template <typename MappingBuilder>
 void InlineItemsBuilderTemplate<MappingBuilder>::DidFinishCollectInlines(
     InlineNodeData* data) {
   data->text_content = ToString();
@@ -1560,7 +1555,8 @@ void InlineItemsBuilderTemplate<MappingBuilder>::DidFinishCollectInlines(
   // point the string may or may not contain RTL characters.
   // |SegmentText()| will analyze the text and reset |is_bidi_enabled_| if it
   // doesn't contain any RTL characters.
-  data->is_bidi_enabled_ = MayBeBidiEnabled();
+  data->is_bidi_enabled_ =
+      HasBidiControls() || Character::MaybeBidiRtl(data->text_content);
   data->has_floats_ = has_floats_;
   data->has_initial_letter_box_ = has_initial_letter_box_;
   data->has_ruby_ = has_ruby_;

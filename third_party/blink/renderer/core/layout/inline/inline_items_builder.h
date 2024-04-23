@@ -251,8 +251,6 @@ class InlineItemsBuilderTemplate {
 
   void Exit(LayoutObject*);
 
-  bool MayBeBidiEnabled() const;
-
   bool ShouldInsertBreakOpportunityAfterLeadingPreservedSpaces(
       StringView,
       const ComputedStyle&,

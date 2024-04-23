@@ -4,10 +4,13 @@
 
 #include "third_party/blink/renderer/platform/text/character.h"
 
+#include <ubidi_props.h>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/text/emoji_segmentation_category.h"
 #include "third_party/blink/renderer/platform/text/emoji_segmentation_category_inline_header.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -28,6 +31,7 @@ testing::AssertionResult IsCJKIdeographOrSymbolWithMessage(UChar32 codepoint) {
 // Test Unicode-derived functions work as intended.
 // These functions may need to be adjusted if Unicode changes.
 TEST(CharacterTest, Derived) {
+  StringBuilder builder;
   for (UChar32 ch = 0; ch < kMaxCodepoint; ++ch) {
     if (Character::IsEmojiEmojiDefault(ch)) {
       EXPECT_TRUE(IsCJKIdeographOrSymbolWithMessage(ch));
@@ -46,6 +50,17 @@ TEST(CharacterTest, Derived) {
     if (!Character::MaybeHanKerningOpenOrCloseFast(ch)) {
       DCHECK(!Character::MaybeHanKerningOpenSlow(ch));
       DCHECK(!Character::MaybeHanKerningCloseSlow(ch));
+    }
+
+    // Test UTF-16 functions.
+    const UCharDirection bidi = ubidi_getClass(ch);
+    if (bidi == UCharDirection::U_RIGHT_TO_LEFT ||
+        bidi == UCharDirection::U_RIGHT_TO_LEFT_ARABIC ||
+        Character::IsBidiControl(ch)) {
+      builder.Clear();
+      builder.Append(ch);
+      const String utf16 = builder.ToString();
+      DCHECK(Character::MaybeBidiRtl(utf16));
     }
   }
 }
