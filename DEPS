@@ -5701,5 +5701,6 @@ recursedeps = [
   # clank has its own DEPS file, does not need to be in trybot_analyze_config
   # since the roller does not run tests.
   'src/clank',
+  'src/components/optimization_guide/internal',
   'src/ios_internal',
 ]
