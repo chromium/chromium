@@ -14,8 +14,8 @@ namespace affiliations {
 class FacetURI;
 
 // The class identifies sources for which affiliations data is needed. The
-// AffiliationsPrefetcher manages the various sources and interacts with the
-// AffiliationsService to obtain the necessary affiliation data.
+// `AffiliationPrefetcher` manages the various sources and interacts with the
+// `AffiliationService` to obtain the necessary affiliation data.
 class AffiliationSource {
  public:
   using ResultCallback =
