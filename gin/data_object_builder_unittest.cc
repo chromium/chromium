@@ -70,16 +70,16 @@ TEST_F(DataObjectBuilderTest, DoesNotInvokeSetters) {
   ASSERT_TRUE(object_constructor.As<v8::Function>()
                   ->Get(context, StringToSymbol(isolate, "prototype"))
                   .ToLocal(&object_prototype));
-  ASSERT_TRUE(
-      object_prototype.As<v8::Object>()
-          ->SetAccessor(context, StringToSymbol(isolate, "key"),
-                        [](v8::Local<v8::Name>,
-                           const v8::PropertyCallbackInfo<v8::Value>&) {},
-                        [](v8::Local<v8::Name>, v8::Local<v8::Value>,
-                           const v8::PropertyCallbackInfo<void>&) {
-                          ADD_FAILURE() << "setter should not be invoked";
-                        })
-          .ToChecked());
+  ASSERT_TRUE(object_prototype.As<v8::Object>()
+                  ->SetNativeDataProperty(
+                      context, StringToSymbol(isolate, "key"),
+                      [](v8::Local<v8::Name>,
+                         const v8::PropertyCallbackInfo<v8::Value>&) {},
+                      [](v8::Local<v8::Name>, v8::Local<v8::Value>,
+                         const v8::PropertyCallbackInfo<void>&) {
+                        ADD_FAILURE() << "setter should not be invoked";
+                      })
+                  .ToChecked());
 
   // Create an object.
   DataObjectBuilder(isolate).Set("key", 42).Build();
