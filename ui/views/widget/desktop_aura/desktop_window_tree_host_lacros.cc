@@ -14,6 +14,7 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
+#include "ui/aura/window_targeter.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
@@ -240,13 +241,22 @@ void DesktopWindowTreeHostLacros::DestroyNonClientEventFilter() {
 }
 
 void DesktopWindowTreeHostLacros::UpdateWindowHints() {
-  if (!GetWidget()->non_client_view()) {
-    return;
-  }
-
   const float scale = device_scale_factor();
   const gfx::Size widget_size_px =
       platform_window()->GetBoundsInPixels().size();
+
+  // Content window can have a window_targeter that allows located events fall
+  // to the window underneath it. There is no window underneath the content
+  // window from aura's point of view so wayland platform needs to know about
+  // it.
+  gfx::Rect hit_test_rect_mouse_dp{platform_window()->GetBoundsInDIP().size()};
+  if (GetContentWindow()->targeter()) {
+    gfx::Rect hit_test_rect_touch_dp = gfx::Rect{hit_test_rect_mouse_dp};
+    GetContentWindow()->targeter()->GetHitTestRects(
+        GetContentWindow(), &hit_test_rect_mouse_dp, &hit_test_rect_touch_dp);
+  }
+  const gfx::Rect hit_test_rect_px =
+      ConvertRectToPixels(hit_test_rect_mouse_dp);
 
   auto* wayland_extension = ui::GetWaylandExtension(*platform_window());
 
@@ -269,7 +279,7 @@ void DesktopWindowTreeHostLacros::UpdateWindowHints() {
       return gfx::ToEnclosingRectIgnoringError(rect);
     };
 
-    cc::Region region(gfx::Rect{widget_size_px});
+    cc::Region region(hit_test_rect_px);
     const int width = widget_size_px.width(), height = widget_size_px.height();
 
     const float upper_left_px = window_radii.upper_left() * scale;
@@ -292,7 +302,7 @@ void DesktopWindowTreeHostLacros::UpdateWindowHints() {
   } else {
     GetContentWindow()->layer()->SetRoundedCornerRadius({});
     GetContentWindow()->layer()->SetIsFastRoundedCorner(false);
-    input_region.push_back({{}, widget_size_px});
+    input_region.push_back(hit_test_rect_px);
   }
   // TODO(crbug.com/1306688): Instead of setting in pixels, set in dp.
   platform_window()->SetInputRegion(input_region);

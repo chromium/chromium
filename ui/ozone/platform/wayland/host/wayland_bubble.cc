@@ -71,6 +71,13 @@ void WaylandBubble::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
   }
 }
 
+void WaylandBubble::SetInputRegion(
+    std::optional<std::vector<gfx::Rect>> region_px) {
+  if (accept_events_) {
+    root_surface()->set_input_region(region_px);
+  }
+}
+
 void WaylandBubble::Activate() {
   if (subsurface_ && activatable_ && parent_window()) {
     parent_window()->ActivateBubble(this);
@@ -174,10 +181,11 @@ bool WaylandBubble::OnInitialize(PlatformWindowInitProperties properties,
   set_ui_scale(parent_window()->ui_scale());
 
   activatable_ = properties.activatable;
+  accept_events_ = properties.accept_events;
 
   // For now kBubbles draw their own shadow, not setting input_region means
   // shadow trap input as well.
-  if (!properties.accept_events) {
+  if (!accept_events_) {
     root_surface()->set_input_region(
         std::optional<std::vector<gfx::Rect>>({gfx::Rect()}));
   }
