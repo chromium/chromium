@@ -1,0 +1,17 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module payments.facilitated.mojom;
+
+// Interface to validate the format of PIX codes. Called by a browser process
+// into a utility process.
+interface PixCodeValidator {
+  // Validates that the format of the `input_text` conforms to the dynamic PIX
+  // code format, which is based on the EMVCo QR code format. A valid PIX code
+  // string consists of a concatenation of sections, each one comprising:
+  // 1) Two chars of section identifier (between "00" and "99").
+  // 2) Two chars of section value length (between "01" and "99").
+  // 3) The section value of length indicated in (2).
+  ValidatePixCode(string input_text) => (bool? is_valid_pix_code);
+};

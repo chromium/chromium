@@ -6,12 +6,18 @@
 #define COMPONENTS_FACILITATED_PAYMENTS_CORE_UTIL_PIX_CODE_VALIDATOR_H_
 
 #include <string>
+#include <utility>
+
+#include "base/functional/callback_forward.h"
+#include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"
 
 namespace payments::facilitated {
 
-class PixCodeValidator {
+class PixCodeValidator : public mojom::PixCodeValidator {
  public:
-  PixCodeValidator() = delete;
+  PixCodeValidator();
+  ~PixCodeValidator() override;
+
   PixCodeValidator& operator=(const PixCodeValidator& other) = delete;
   PixCodeValidator(const PixCodeValidator& other) = delete;
 
@@ -27,6 +33,12 @@ class PixCodeValidator {
   //
   // This function does not validate the value of the CRC16.
   static bool IsValidPixCode(std::string_view code);
+
+ private:
+  // mojom::PixValidator implementation:
+  void ValidatePixCode(
+      const std::string& input_text,
+      base::OnceCallback<void(std::optional<bool>)> callback) override;
 };
 
 }  // namespace payments::facilitated

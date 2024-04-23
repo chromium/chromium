@@ -4,6 +4,7 @@
 
 #include "components/facilitated_payments/core/util/pix_code_validator.h"
 
+#include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -63,6 +64,10 @@ bool ContainsValidSections(std::string_view input) {
 
 }  // namespace
 
+PixCodeValidator::PixCodeValidator() = default;
+
+PixCodeValidator::~PixCodeValidator() = default;
+
 // static
 bool PixCodeValidator::IsValidPixCode(std::string_view code) {
   if (code.empty()) {
@@ -120,6 +125,12 @@ bool PixCodeValidator::IsValidPixCode(std::string_view code) {
   }
 
   return contains_pix_code_indicator;
+}
+
+void PixCodeValidator::ValidatePixCode(
+    const std::string& input_text,
+    base::OnceCallback<void(std::optional<bool>)> callback) {
+  std::move(callback).Run(IsValidPixCode(input_text));
 }
 
 }  // namespace payments::facilitated

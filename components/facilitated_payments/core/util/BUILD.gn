@@ -10,6 +10,10 @@ static_library("util") {
     "pix_code_validator.h",
   ]
 
+  public_deps = [
+    "//components/facilitated_payments/core/mojom:pix_code_validator_mojom",
+  ]
+
   deps = [
     "//base",
     "//third_party/re2",
