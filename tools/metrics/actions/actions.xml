@@ -25454,6 +25454,19 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileWebsiteSettingsOpenedFromWebApkSnackbar">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <description>Please enter the description of the metric.</description>
+</action>
+
+<action name="MobileWebsiteSettingsOpenedFromWebapkSnackbar">
+  <owner>dembski@google.com</owner>
+  <description>
+    Page Info for Tracking Protection opened via the PWA trigger (user bypass
+    mitigation heuristic).
+  </description>
+</action>
+
 <action name="MobileWillEnterForeground">
   <owner>olivierrobin@chromium.org</owner>
   <owner>marq@chromium.org</owner>

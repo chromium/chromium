@@ -210,6 +210,14 @@ BASE_DECLARE_FEATURE(kTrackingProtectionSettingsLaunch);
 // enqueued).
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionNoticeRequestTracking);
+
+// Enables UserBypass logic for Progressive Web Apps on Android
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kTrackingProtectionUserBypassPwa);
+
+// Triggers UserBypass logic for Progressive Web Apps on Android
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kTrackingProtectionUserBypassPwaTrigger);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Enables visibility for toggles on the top-level Ad Privacy page.

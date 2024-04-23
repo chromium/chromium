@@ -985,6 +985,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/privacy_sandbox/ChromeIpProtectionDelegate.java",
   "java/src/org/chromium/chrome/browser/privacy_sandbox/ChromeTrackingProtectionDelegate.java",
   "java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionNoticeController.java",
+  "java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionSnackbarController.java",
   "java/src/org/chromium/chrome/browser/provider/BaseColumns.java",
   "java/src/org/chromium/chrome/browser/provider/BookmarkColumns.java",
   "java/src/org/chromium/chrome/browser/provider/ChromeBrowserProviderImpl.java",

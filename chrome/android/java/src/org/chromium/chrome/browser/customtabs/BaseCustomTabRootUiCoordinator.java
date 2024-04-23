@@ -60,11 +60,14 @@ import org.chromium.chrome.browser.history.HistoryManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.page_info.ChromePageInfo;
+import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.page_insights.PageInsightsConfigRequest;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.page_insights.proto.Config.PageInsightsConfig;
 import org.chromium.chrome.browser.page_insights.proto.IntentParams.PageInsightsIntentParams;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxDialogController;
+import org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionSnackbarController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudIPHController;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
@@ -87,6 +90,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFacto
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -701,7 +705,32 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                                 getToolbarManager().getMenuButtonView(),
                                                 mAppMenuCoordinator.getAppMenuHandler());
                             }
+
+                            if (!didShowPrompt
+                                    && ChromeFeatureList.isEnabled(
+                                            ChromeFeatureList
+                                                    .TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER)
+                                    && mActivityType == ActivityType.WEB_APK) {
+                                new TrackingProtectionSnackbarController(
+                                                getPageInfoSnackbarOnAction(),
+                                                mSnackbarManagerSupplier)
+                                        .showSnackbar(mActivityType);
+                            }
                         }));
+    }
+
+    private Runnable getPageInfoSnackbarOnAction() {
+        return () ->
+                new ChromePageInfo(
+                                mModalDialogManagerSupplier,
+                                null,
+                                OpenedFromSource.WEBAPK_SNACKBAR,
+                                getMerchantTrustSignalsCoordinatorSupplier()::get,
+                                getEphemeralTabCoordinatorSupplier(),
+                                mTabCreatorManagerSupplier
+                                        .get()
+                                        .getTabCreator(mProfileSupplier.get().isOffTheRecord()))
+                        .show(mActivityTabProvider.get(), ChromePageInfoHighlight.noHighlight());
     }
 
     CustomTabHeightStrategy getCustomTabSizeStrategyForTesting() {

@@ -488,6 +488,10 @@ public abstract class ChromeFeatureList {
     public static final String TRACKING_PROTECTION_3PCD = "TrackingProtection3pcd";
     public static final String TRACKING_PROTECTION_SETTINGS_LAUNCH =
             "TrackingProtectionSettingsLaunch";
+    public static final String TRACKING_PROTECTION_USER_BYPASS_PWA =
+            "TrackingProtectionUserBypassPwa";
+    public static final String TRACKING_PROTECTION_USER_BYPASS_PWA_TRIGGER =
+            "TrackingProtectionUserBypassPwaTrigger";
     public static final String TRANSLATE_MESSAGE_UI = "TranslateMessageUI";
     public static final String TRANSLATE_TFLITE = "TFLiteLanguageDetectionEnabled";
     public static final String SHARED_PASSWORD_NOTIFICATION_UI = "SharedPasswordNotificationUI";

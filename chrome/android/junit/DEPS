@@ -1,6 +1,7 @@
 include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionSnackbarController.java",
   "!clank/java/src/org/chromium/chrome/browser/AppHooksImpl.java",
   "+chrome/browser/android/lifecycle",
   "+components/image_fetcher",

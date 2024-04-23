@@ -177,6 +177,14 @@ BASE_FEATURE(kPrivacySandboxRelatedWebsiteSetsUi,
 BASE_FEATURE(kTrackingProtectionNoticeRequestTracking,
              "TrackingProtectionNoticeRequestTracking",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTrackingProtectionUserBypassPwa,
+             "TrackingProtectionUserBypassPwa",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTrackingProtectionUserBypassPwaTrigger,
+             "TrackingProtectionUserBypassPwaTrigger",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kPsRedesignAdPrivacyPage,

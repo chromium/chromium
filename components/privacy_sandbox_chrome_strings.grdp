@@ -2271,6 +2271,12 @@
   <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_DESCRIPTION" desc="Describes how Tracking Protection in Chrome works. Part of the Tracking Protection settings page." formatter_data="android_java">
     Chrome limits the amount of information sites can use to track you as you browse. You can change your settings to choose your own level of protection.
   </message>
+  <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_TITLE" desc="Title of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
+    App not working?
+  </message>
+  <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_ACTION" desc="Action of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
+    Change protections
+  </message>
 
   <!-- Tracking Protection: Onboarding -->
   <message name="IDS_TRACKING_PROTECTION_ONBOARDING_NOTICE_TITLE" desc="Title of the tracking protection onboarding notice" formatter_data="android_java">
