@@ -146,6 +146,17 @@ enum class DebugEvent {
   kSetPrintSettings6 = 9,
   kSetPrintSettings7 = 10,
   kSetPrintSettings8 = 11,
+  kInitWithFrame1 = 12,
+  kInitWithFrame2 = 13,
+  kInitWithNode = 14,
+  kRequestPrintPreviewScripted = 15,
+  kRequestPrintPreviewUserInitiatedEntireFrame = 16,
+  kRequestPrintPreviewUserInitiatedSelection = 17,
+  kRequestPrintPreviewUserInitiatedContextNode = 18,
+  kPrintPreviewForPlugin = 19,
+  kPrintPreviewForNonPlugin = 20,
+  kPrintPreviewIsModifiable = 21,
+  kPrintPreviewIsNotModifiable = 22,
 };
 
 constexpr size_t kDebugEventMaxCount = 10;
@@ -1282,6 +1293,7 @@ void PrintRenderFrameHelper::ScriptedPrint(bool user_initiated) {
   if (g_is_preview_enabled) {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
     print_in_progress_ = true;
+    RecordDebugEvent(DebugEvent::kInitWithFrame1);
     print_preview_context_.InitWithFrame(web_frame);
     RequestPrintPreview(PrintPreviewRequestType::kScripted,
                         /*already_notified_frame=*/false);
@@ -1489,6 +1501,7 @@ void PrintRenderFrameHelper::InitiatePrintPreview(
   }
 
   print_in_progress_ = true;
+  RecordDebugEvent(DebugEvent::kInitWithFrame2);
   print_preview_context_.InitWithFrame(frame);
   RequestPrintPreview(has_selection
                           ? PrintPreviewRequestType::kUserInitiatedSelection
@@ -2052,6 +2065,7 @@ void PrintRenderFrameHelper::PrintNode(const blink::WebNode& node) {
   if (g_is_preview_enabled) {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
     print_in_progress_ = true;
+    RecordDebugEvent(DebugEvent::kInitWithNode);
     print_preview_context_.InitWithNode(node);
     RequestPrintPreview(PrintPreviewRequestType::kUserInitiatedContextNode,
                         /*already_notified_frame=*/false);
@@ -2663,6 +2677,7 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
       //    nested run loop.
       // 2. ShowScriptedPrintPreview() shows preview once the document has been
       //    loaded.
+      RecordDebugEvent(DebugEvent::kRequestPrintPreviewScripted);
       is_scripted_preview_delayed_ = true;
       if (is_loading_) {
         // Wait for DidStopLoading, for two reasons:
@@ -2702,6 +2717,8 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
       return;
     }
     case PrintPreviewRequestType::kUserInitiatedEntireFrame: {
+      RecordDebugEvent(
+          DebugEvent::kRequestPrintPreviewUserInitiatedEntireFrame);
       // See comment under PRINT_PREVIEW_SCRIPTED.
       if (is_loading_) {
         WaitForLoad(type);
@@ -2711,12 +2728,15 @@ void PrintRenderFrameHelper::RequestPrintPreview(PrintPreviewRequestType type,
       break;
     }
     case PrintPreviewRequestType::kUserInitiatedSelection: {
+      RecordDebugEvent(DebugEvent::kRequestPrintPreviewUserInitiatedSelection);
       DCHECK(has_selection);
       DCHECK(!print_preview_context_.IsPlugin());
       params->selection_only = has_selection;
       break;
     }
     case PrintPreviewRequestType::kUserInitiatedContextNode: {
+      RecordDebugEvent(
+          DebugEvent::kRequestPrintPreviewUserInitiatedContextNode);
       // See comment under PRINT_PREVIEW_SCRIPTED.
       if (is_loading_) {
         WaitForLoad(type);
@@ -3071,6 +3091,10 @@ void PrintRenderFrameHelper::PrintPreviewContext::ClearContext() {
 void PrintRenderFrameHelper::PrintPreviewContext::CalculatePluginAttributes() {
   is_plugin_ = !!source_frame()->GetPluginToPrint(source_node_);
   is_modifiable_ = !IsPrintingPdfFrame(source_frame(), source_node_);
+  RecordDebugEvent(is_plugin_ ? DebugEvent::kPrintPreviewForPlugin
+                              : DebugEvent::kPrintPreviewForNonPlugin);
+  RecordDebugEvent(is_modifiable_ ? DebugEvent::kPrintPreviewIsModifiable
+                                  : DebugEvent::kPrintPreviewIsNotModifiable);
 }
 
 void PrintRenderFrameHelper::SetPrintPagesParams(
