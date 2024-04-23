@@ -542,7 +542,16 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
   if (!popup_)
     return;
 
+  // SetNativePopupIsVisible(true) will start matching :open, and we need to run
+  // a style update before we show the native popup because select:open rules in
+  // the UA sheet need to remove display:none from a <datalist> which may be
+  // wrapping the <option>s.
   SetNativePopupIsVisible(true);
+  if (RuntimeEnabledFeatures::CSSPseudoOpenClosedEnabled()) {
+    select_->GetDocument().UpdateStyleAndLayoutForNode(
+        select_, DocumentUpdateReason::kPagePopup);
+  }
+
   ObserveTreeMutation();
 
   popup_->Show(type);
@@ -578,6 +587,10 @@ bool MenuListSelectType::PopupIsVisible() const {
 
 void MenuListSelectType::SetNativePopupIsVisible(bool popup_is_visible) {
   native_popup_is_visible_ = popup_is_visible;
+  if (RuntimeEnabledFeatures::CSSPseudoOpenClosedEnabled()) {
+    select_->PseudoStateChanged(CSSSelector::kPseudoOpen);
+    select_->PseudoStateChanged(CSSSelector::kPseudoClosed);
+  }
   if (auto* layout_object = select_->GetLayoutObject()) {
     // Invalidate paint to ensure that the focus ring is updated.
     layout_object->SetShouldDoFullPaintInvalidation();

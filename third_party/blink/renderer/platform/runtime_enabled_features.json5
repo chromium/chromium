@@ -3755,6 +3755,9 @@
       // button and listbox respectively.
       name: "StylableSelect",
       status: "experimental",
+      // :open is used in the UA stylesheet for StylableSelect, so this feature
+      // will not work properly without CSSPseudoOpenClosed.
+      depends_on: ["CSSPseudoOpenClosed"],
     },
     {
       name: "StylusHandwriting",

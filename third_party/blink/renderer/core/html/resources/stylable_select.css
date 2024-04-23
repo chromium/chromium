@@ -122,3 +122,11 @@ select::select-fallback-datalist:-internal-popover-in-top-layer::backdrop {
   pointer-events: none !important;
   background-color: transparent;
 }
+
+select:open > datalist {
+  /* This rule is needed in order to make appearance:auto selects with
+   * <option>s inside an author provided <datalist> still render the <option>s
+   * by default because the <datalist> will have display:none on it by default.
+   */
+  display: block;
+}

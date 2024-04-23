@@ -389,6 +389,7 @@ testing/data/popup/select_event_remove_on_click.html
 testing/data/popup/select_mid_screen.html
 testing/data/popup/select_rtl.html
 testing/data/popup/select_rtl_width.html
+testing/data/popup/select_with_datalist.html
 testing/data/postmessage_test.html
 testing/data/prerender/any_prerender.html
 testing/data/prerender/multiple_prerenders.html
