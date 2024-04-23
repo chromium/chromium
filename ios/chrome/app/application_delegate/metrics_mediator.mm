@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
@@ -310,6 +311,10 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
 + (void)recordStartupPinnedTabCount:(int)tabCount;
 // Logs the number of tabs with UMAHistogramCount100 and allows testing.
 + (void)recordStartupTabCount:(int)tabCount;
+// Logs the number of tab groups with UmaHistogramCounts1M.
++ (void)recordStartupTabGroupCount:(int)tabGroupCount;
+// Logs the number of tabs per group with UMAHistogramCount10000.
++ (void)recordStartupTabsPerGroupCount:(int)tabsPerGroupCount;
 // Logs the number of tabs with UMAHistogramCount100 and allows testing.
 + (void)recordResumeTabCount:(int)tabCount;
 // Logs the number of NTP tabs with UMAHistogramCount100 and allows testing.
@@ -393,6 +398,7 @@ BOOL _credentialExtensionWasUsed = NO;
   RecordAndResetUkmLogSizeOnSuccessCounter();
 
   int tabCount = 0;
+  int tabGroupCount = 0;
   int pinnedTabCount = 0;
   int NTPTabCount = 0;
   int liveNTPTabCount = 0;
@@ -428,6 +434,11 @@ BOOL _credentialExtensionWasUsed = NO;
             ->GetWebStateList();
     const int webStateListCount = webStateList->count();
     const int inactiveWebStateListCount = inactiveWebStateList->count();
+
+    for (const TabGroup* group : webStateList->GetGroups()) {
+      tabGroupCount++;
+      [self recordStartupTabsPerGroupCount:group->range().count()];
+    }
 
     tabCount += webStateListCount + inactiveWebStateListCount;
     pinnedTabCount += webStateList->pinned_tabs_count();
@@ -496,6 +507,7 @@ BOOL _credentialExtensionWasUsed = NO;
     [self recordStartupAbsoluteInactiveTabCount:absoluteInactiveTabCount];
     [self recordStartupPinnedTabCount:pinnedTabCount];
     [self recordStartupTabCount:tabCount];
+    [self recordStartupTabGroupCount:tabGroupCount];
     [self recordStartupNTPTabCount:NTPTabCount];
     [self recordStartupOldTabCount:oldTabCount];
     [self recordStartupDuplicatedTabCount:duplicatedTabCount];
@@ -767,6 +779,15 @@ BOOL _credentialExtensionWasUsed = NO;
   // TODO(crbug.com/1519707): Evaluate and remove old histogram.
   base::UmaHistogramCounts100("Tabs.CountAtStartup", tabCount);
   base::UmaHistogramCounts1M("Tabs.CountAtStartup2", tabCount);
+}
+
++ (void)recordStartupTabGroupCount:(int)tabGroupCount {
+  base::UmaHistogramCounts1M("TabGroups.CountAtStartup", tabGroupCount);
+}
+
++ (void)recordStartupTabsPerGroupCount:(int)tabsPerGroupCount {
+  base::UmaHistogramCounts10000("TabGroups.TabsPerGroupCountAtStartup",
+                                tabsPerGroupCount);
 }
 
 + (void)recordResumeTabCount:(int)tabCount {
