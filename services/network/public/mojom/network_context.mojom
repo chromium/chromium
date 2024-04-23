@@ -1674,6 +1674,11 @@ interface NetworkContext {
   // Sets cookie deprecation label.
   SetCookieDeprecationLabel(string? label);
 
+  // Clients should revoke network access for nonces using
+  // `StoragePartitionImpl::RevokeNetworkForNoncesInNetworkContext` instead of
+  // this function. This is because `RevokeNetworkForNoncesInNetworkContext`
+  // replicates the nonces so that they can be restored in case of a
+  // `NetworkService` crash.
   // Register that all network requests with nonces in `nonces` as their
   // partition nonce should be blocked. Used for fenced frames network
   // revocation:

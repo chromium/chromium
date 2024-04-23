@@ -9251,11 +9251,11 @@ void RenderFrameHostImpl::DisableUntrustedNetworkInFencedFrame(
   // Register the nonce in the network service's data structure to deny network
   // access.
   CHECK(properties->partition_nonce().has_value());
-  StoragePartition* storage_partition = GetStoragePartition();
+  StoragePartitionImpl* storage_partition = GetStoragePartition();
   // TODO(crbug.com/41488151): Audit all existing transient IsolationInfo
   // constructors to ensure that they are tagged with the relevant partition
   // nonce.
-  storage_partition->GetNetworkContext()->RevokeNetworkForNonces(
+  storage_partition->RevokeNetworkForNoncesInNetworkContext(
       {
           properties->partition_nonce()->GetValueIgnoringVisibility(),
           GetPage().credentialless_iframes_nonce(),

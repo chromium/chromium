@@ -6,8 +6,10 @@
 #define CONTENT_BROWSER_STORAGE_PARTITION_IMPL_H_
 
 #include <stdint.h>
+
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -43,6 +45,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/cert_verifier_service_updater.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_context_client.mojom.h"
 #include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/quota/quota_client_type.h"
@@ -484,6 +487,16 @@ class CONTENT_EXPORT StoragePartitionImpl
           receiver,
       std::unique_ptr<NavigationStateKeepAlive> handle);
 
+  // Forward the call to `NetworkContext::RevokeNetworkForNonces` and save the
+  // nonces in StoragePartitionImpl. Clients should revoke network access for
+  // nonces using this function instead of calling
+  // `NetworkContext::RevokeNetworkForNonces` directly. This is because this
+  // function saves the nonces so that they can be restored in case of a
+  // `NetworkService` crash.
+  void RevokeNetworkForNoncesInNetworkContext(
+      const std::vector<base::UnguessableToken>& nonces,
+      network::mojom::NetworkContext::RevokeNetworkForNoncesCallback callback);
+
   enum class ContextType {
     kRenderFrameHostContext,
     kNavigationRequestContext,
@@ -847,6 +860,11 @@ class CONTENT_EXPORT StoragePartitionImpl
 #if DCHECK_IS_ON()
   bool on_browser_context_will_be_destroyed_called_ = false;
 #endif
+
+  // A copy of the network revocation nonces in `NetworkContext`. It is used for
+  // restoring the network revocation states of fenced frames when there is a
+  // `NetworkService` crash.
+  std::set<base::UnguessableToken> network_revocation_nonces_;
 
   base::WeakPtrFactory<StoragePartitionImpl> weak_factory_{this};
 };

@@ -3097,7 +3097,10 @@ void NetworkContext::RevokeNetworkForNonces(
     }
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
   }
-  std::move(callback).Run();
+
+  if (callback) {
+    std::move(callback).Run();
+  }
 }
 
 void NetworkContext::ExemptUrlFromNetworkRevocationForNonce(

@@ -9,7 +9,6 @@
 #include <functional>
 #include <memory>
 #include <optional>
-#include <set>
 #include <utility>
 #include <vector>
 
@@ -1263,6 +1262,17 @@ void StoragePartitionImpl::RegisterKeepAliveHandle(
         receiver,
     std::unique_ptr<NavigationStateKeepAlive> handle) {
   keep_alive_handles_receiver_set_.Add(std::move(handle), std::move(receiver));
+}
+
+void StoragePartitionImpl::RevokeNetworkForNoncesInNetworkContext(
+    const std::vector<base::UnguessableToken>& nonces,
+    network::mojom::NetworkContext::RevokeNetworkForNoncesCallback callback) {
+  GetNetworkContext()->RevokeNetworkForNonces(nonces, std::move(callback));
+
+  // Save nonces in `StoragePartitionImpl`. When there is a crash of
+  // `NetworkService`, the network revocation nonces of `NetworkContext` will be
+  // restored using this.
+  network_revocation_nonces_.insert(std::begin(nonces), std::end(nonces));
 }
 
 // static
@@ -3364,6 +3374,15 @@ void StoragePartitionImpl::InitNetworkContext() {
       network_context_owner_->network_context.BindNewPipeAndPassReceiver(),
       std::move(context_params));
   DCHECK(network_context_owner_->network_context);
+
+  // Restore the saved network revocation nonces. This allows fenced frames'
+  // untrusted network access states to be persisted in case of a
+  // `NetworkService` crash.
+  std::vector<base::UnguessableToken> nonces(
+      std::begin(network_revocation_nonces_),
+      std::end(network_revocation_nonces_));
+  network_context_owner_->network_context->RevokeNetworkForNonces(
+      nonces, base::NullCallback());
 
   network_context_client_receiver_.reset();
   network_context_owner_->network_context->SetClient(
