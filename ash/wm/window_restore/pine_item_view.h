@@ -22,7 +22,7 @@ namespace ash {
 // app. Or represents the only opened browser window and its favicons inside the
 // screenshot preview.
 //
-// TODO(sammiequon): Add ASCII art.
+// TODO(hewer): Add ASCII art.
 class ASH_EXPORT PineItemView : public views::BoxLayoutView {
   METADATA_HEADER(PineItemView, views::BoxLayoutView)
 

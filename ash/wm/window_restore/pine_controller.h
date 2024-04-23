@@ -88,7 +88,6 @@ class ASH_EXPORT PineController : public OverviewObserver,
   // Stores the data needed to display the pine dialog. Created on login, and
   // deleted after the user interacts with the dialog. If the user exits
   // overview, this will persist until a window is opened.
-  // TODO(sammiequon): Delete this object when an app window is created.
   std::unique_ptr<PineContentsData> pine_contents_data_;
 
   base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
