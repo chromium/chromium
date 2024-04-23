@@ -664,7 +664,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   histograms.ExpectUniqueSample(
       "PasswordManager.PasswordFilling.AuthenticationResult", false, 1);
   histograms.ExpectUniqueSample(
-      "PasswordManager.PasswordFilling.AuthenticationTime", kMockElapsedTime,
+      "PasswordManager.PasswordFilling.AuthenticationTime2", kMockElapsedTime,
       1);
 }
 
@@ -708,7 +708,7 @@ TEST_F(PasswordManualFallbackFlowTest,
   histograms.ExpectUniqueSample(
       "PasswordManager.PasswordFilling.AuthenticationResult", true, 1);
   histograms.ExpectUniqueSample(
-      "PasswordManager.PasswordFilling.AuthenticationTime", kMockElapsedTime,
+      "PasswordManager.PasswordFilling.AuthenticationTime2", kMockElapsedTime,
       1);
 }
 
@@ -828,7 +828,7 @@ TEST_F(PasswordManualFallbackFlowTest, NoFillingIfAuthFails) {
   histograms.ExpectUniqueSample(
       "PasswordManager.PasswordFilling.AuthenticationResult", false, 1);
   histograms.ExpectUniqueSample(
-      "PasswordManager.PasswordFilling.AuthenticationTime", kMockElapsedTime,
+      "PasswordManager.PasswordFilling.AuthenticationTime2", kMockElapsedTime,
       1);
 }
 
@@ -893,7 +893,7 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthSucceeds) {
   histograms.ExpectUniqueSample(
       "PasswordManager.PasswordFilling.AuthenticationResult", true, 1);
   histograms.ExpectUniqueSample(
-      "PasswordManager.PasswordFilling.AuthenticationTime", kMockElapsedTime,
+      "PasswordManager.PasswordFilling.AuthenticationTime2", kMockElapsedTime,
       1);
 }
 

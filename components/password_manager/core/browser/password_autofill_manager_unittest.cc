@@ -1756,7 +1756,7 @@ TEST_F(PasswordAutofillManagerTest, MetricsRecordedForBiometricAuth) {
   histograms.ExpectUniqueSample(
       "PasswordManager.PasswordFilling.AuthenticationResult", true, 1);
   histograms.ExpectUniqueSample(
-      "PasswordManager.PasswordFilling.AuthenticationTime", kMockElapsedTime,
+      "PasswordManager.PasswordFilling.AuthenticationTime2", kMockElapsedTime,
       1);
 }
 

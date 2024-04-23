@@ -292,9 +292,9 @@ void PasswordManualFallbackFlow::MaybeAuthenticateBeforeFilling(
         l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH, origin);
 #endif
     authenticator_->AuthenticateWithMessage(
-        message, metrics_util::TimeCallback(
+        message, metrics_util::TimeCallbackMediumTimes(
                      std::move(on_reath_complete),
-                     "PasswordManager.PasswordFilling.AuthenticationTime"));
+                     "PasswordManager.PasswordFilling.AuthenticationTime2"));
   }
 }
 

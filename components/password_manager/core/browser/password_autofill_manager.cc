@@ -289,9 +289,10 @@ void PasswordAutofillManager::DidAcceptSuggestion(
             IDS_PASSWORD_MANAGER_FILLING_REAUTH, origin);
 #endif
         authenticator_->AuthenticateWithMessage(
-            message, metrics_util::TimeCallback(
-                         std::move(on_reath_complete),
-                         "PasswordManager.PasswordFilling.AuthenticationTime"));
+            message,
+            metrics_util::TimeCallbackMediumTimes(
+                std::move(on_reath_complete),
+                "PasswordManager.PasswordFilling.AuthenticationTime2"));
       }
       break;
   }

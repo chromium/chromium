@@ -1182,8 +1182,8 @@ void PasswordsPrivateDelegateImpl::AuthenticateUser(
     base::TimeDelta auth_validity_period,
     const std::u16string& message,
     AuthResultCallback auth_callback) {
-  auto callback = password_manager::metrics_util::TimeCallback(
-      std::move(auth_callback), "PasswordManager.Settings.AuthenticationTime");
+  auto callback = password_manager::metrics_util::TimeCallbackMediumTimes(
+      std::move(auth_callback), "PasswordManager.Settings.AuthenticationTime2");
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
   std::move(callback).Run(true);

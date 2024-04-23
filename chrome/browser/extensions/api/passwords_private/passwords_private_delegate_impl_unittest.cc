@@ -1949,7 +1949,7 @@ TEST_F(PasswordsPrivateDelegateImplMockTaskEnvironmentTest,
   delegate->RequestCredentialsDetails({0}, callback.Get(), web_contents_ptr);
 
   histogram_tester().ExpectUniqueTimeSample(
-      "PasswordManager.Settings.AuthenticationTime", base::Seconds(10), 1);
+      "PasswordManager.Settings.AuthenticationTime2", base::Seconds(10), 1);
 }
 
 TEST_F(PasswordsPrivateDelegateImplMockTaskEnvironmentTest,

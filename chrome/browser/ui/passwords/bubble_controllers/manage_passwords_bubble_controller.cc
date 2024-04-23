@@ -250,9 +250,9 @@ void ManagePasswordsBubbleController::AuthenticateUserAndDisplayDetailsOf(
       weak_ptr_factory_.GetWeakPtr(), std::move(password_form),
       std::move(completion));
   delegate_->AuthenticateUserWithMessage(
-      message, metrics_util::TimeCallback(
+      message, metrics_util::TimeCallbackMediumTimes(
                    std::move(on_reath_complete),
-                   "PasswordManager.ManagementBubble.AuthenticationTime"));
+                   "PasswordManager.ManagementBubble.AuthenticationTime2"));
 }
 
 bool ManagePasswordsBubbleController::UsernameExists(

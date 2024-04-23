@@ -319,7 +319,7 @@ TEST_F(ManagePasswordsBubbleControllerTest,
   controller()->AuthenticateUserAndDisplayDetailsOf(selected_form,
                                                     mock_callback.Get());
   histogram_tester.ExpectUniqueTimeSample(
-      "PasswordManager.ManagementBubble.AuthenticationTime",
+      "PasswordManager.ManagementBubble.AuthenticationTime2",
       base::Seconds(kTimeToAuth), 1);
   EXPECT_EQ(controller()->get_currently_selected_password(), selected_form);
 }
