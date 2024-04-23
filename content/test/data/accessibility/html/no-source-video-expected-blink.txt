@@ -12,10 +12,6 @@ rootWebArea
 ++++++++++++++genericContainer
 ++++++++++++++++button name='play' restriction=disabled
 ++++++++++++++++++genericContainer
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='0:00'
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='/ 0:00'
 ++++++++++++++++genericContainer ignored
 ++++++++++++++++genericContainer
 ++++++++++++++++++genericContainer
@@ -30,42 +26,10 @@ rootWebArea
 ++++++++++menu ignored invisible
 ++++++++++menu ignored invisible
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Play'
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Fullscreen'
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Download'
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Mute'
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Cast'
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Captions'
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Playback speed'
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible name='Picture in picture'

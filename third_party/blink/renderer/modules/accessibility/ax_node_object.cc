@@ -5371,7 +5371,7 @@ void AXNodeObject::AddPopupChildren() {
 void AXNodeObject::AddPseudoElementChildrenFromLayoutTree() {
   // Children are added this way only for pseudo-element subtrees.
   // See AXObject::ShouldUseLayoutObjectTraversalForChildren().
-  if (!GetLayoutObject()) {
+  if (!IsVisible() || !GetLayoutObject()) {
     DCHECK(GetNode());
     DCHECK(GetNode()->IsPseudoElement());
     return;  // Can't add children for hidden or display-locked pseudo elements.

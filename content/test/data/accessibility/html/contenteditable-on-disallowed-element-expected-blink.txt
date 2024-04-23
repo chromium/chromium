@@ -29,10 +29,6 @@ rootWebArea focusable
 ++++++++++++++genericContainer
 ++++++++++++++++button inputType='button' restriction=disabled
 ++++++++++++++++++genericContainer
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++++++++++++genericContainer ignored
 ++++++++++++++++genericContainer
 ++++++++++++++++++genericContainer
@@ -47,43 +43,11 @@ rootWebArea focusable
 ++++++++++menu ignored invisible
 ++++++++++menu ignored invisible
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++++++++menuItem ignored invisible
-++++++++++++++button ignored invisible
-++++++++++++++genericContainer ignored invisible
-++++++++++++++++genericContainer ignored invisible
-++++++++++++++++++staticText ignored invisible
 ++++++progressIndicator editable focusable multiline nonAtomicTextFieldRoot=true minValueForRange=0.00 maxValueForRange=1.00

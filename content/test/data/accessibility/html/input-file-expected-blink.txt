@@ -3,4 +3,3 @@ rootWebArea
 ++++genericContainer
 ++++++button inputType='file' name='Choose File: No file chosen' value='No file chosen'
 ++++++++button invisible inputType='button' name='Choose File'
-++++++++++staticText ignored invisible name='Choose File'
