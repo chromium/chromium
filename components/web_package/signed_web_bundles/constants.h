@@ -13,6 +13,10 @@ namespace web_package {
 inline constexpr std::string_view kEd25519PublicKeyAttributeName =
     "ed25519PublicKey";
 
+// CBOR attribute name for ECDSA P-256 SHA-256 public keys.
+inline constexpr std::string_view kEcdsaP256PublicKeyAttributeName =
+    "ecdsaP256SHA256PublicKey";
+
 }  // namespace web_package
 
 #endif  // COMPONENTS_WEB_PACKAGE_SIGNED_WEB_BUNDLES_CONSTANTS_H_

@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "net/http/http_request_headers.h"
@@ -148,11 +149,17 @@ base::expected<IsolatedWebAppUrlInfo, std::string> Install(
 web_package::SignedWebBundleId CreateSignedWebBundleIdFromKeyPair(
     const web_package::WebBundleSigner::KeyPair& key_pair) {
   return absl::visit(
-      base::Overloaded{[](const web_package::WebBundleSigner::Ed25519KeyPair&
-                              ed25519_key_pair) {
-        return web_package::SignedWebBundleId::CreateForEd25519PublicKey(
-            ed25519_key_pair.public_key);
-      }},
+      base::Overloaded{
+          [](const web_package::WebBundleSigner::Ed25519KeyPair&
+                 ed25519_key_pair) {
+            return web_package::SignedWebBundleId::CreateForEd25519PublicKey(
+                ed25519_key_pair.public_key);
+          },
+          [](const web_package::WebBundleSigner::EcdsaP256KeyPair&
+                 ecdsa_p256_key_pair) {
+            return web_package::SignedWebBundleId::CreateForEcdsaP256PublicKey(
+                ecdsa_p256_key_pair.public_key);
+          }},
       key_pair);
 }
 

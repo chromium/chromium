@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/overloaded.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -28,6 +29,7 @@
 #include "components/cbor/values.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/constants.h"
+#include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
@@ -281,17 +283,21 @@ class SignedWebBundleSignatureVerifierTest
       const auto& signature =
           signature_stack_entry.GetArray()[1].GetBytestring();
 
-      auto public_key = absl::visit(
-          base::Overloaded{[&](const WebBundleSigner::Ed25519KeyPair& key_pair)
-                               -> PublicKey {
-            auto ed25519_public_key = *Ed25519PublicKey::Create(
-                base::FindOrNull(attributes.GetMap(),
-                                 cbor::Value(kEd25519PublicKeyAttributeName))
-                    ->GetBytestring());
-            EXPECT_EQ(ed25519_public_key, key_pair.public_key);
-            return ed25519_public_key;
-          }},
-          key_pair);
+      auto public_key =
+          absl::visit(base::Overloaded{
+                          [&](const WebBundleSigner::Ed25519KeyPair& key_pair)
+                              -> PublicKey {
+                            auto ed25519_public_key = *Ed25519PublicKey::Create(
+                                base::FindOrNull(
+                                    attributes.GetMap(),
+                                    cbor::Value(kEd25519PublicKeyAttributeName))
+                                    ->GetBytestring());
+                            EXPECT_EQ(ed25519_public_key, key_pair.public_key);
+                            return ed25519_public_key;
+                          },
+                          [&](const WebBundleSigner::EcdsaP256KeyPair& key_pair)
+                              -> PublicKey { NOTREACHED_NORETURN(); }},
+                      key_pair);
 
       raw_signature_stack.push_back(MakeSignatureStackEntry(
           public_key, signature, complete_entry_cbor, attributes_cbor));

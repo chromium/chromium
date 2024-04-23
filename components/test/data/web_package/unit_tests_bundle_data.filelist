@@ -16,4 +16,5 @@
 //components/test/data/web_package/simple.har
 //components/test/data/web_package/simple_b2.wbn
 //components/test/data/web_package/simple_b2_signed.swbn
+//components/test/data/web_package/simple_b2_signed_ecdsa_p256_sha256.swbn
 //components/test/data/web_package/simple_b2_signed_tampered.swbn

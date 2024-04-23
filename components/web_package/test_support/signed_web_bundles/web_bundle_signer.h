@@ -10,6 +10,7 @@
 #include "base/containers/enum_set.h"
 #include "base/containers/span.h"
 #include "components/cbor/values.h"
+#include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 
 namespace web_package {
@@ -84,7 +85,31 @@ class WebBundleSigner {
     bool produce_invalid_signature;
   };
 
-  using KeyPair = absl::variant<Ed25519KeyPair>;
+  struct EcdsaP256KeyPair {
+    static EcdsaP256KeyPair CreateRandom(
+        bool produce_invalid_signature = false);
+
+    EcdsaP256KeyPair(
+        base::span<const uint8_t, EcdsaP256PublicKey::kLength> public_key_bytes,
+        base::span<const uint8_t, 32> private_key_bytes,
+        bool produce_invalid_signature = false);
+
+    EcdsaP256KeyPair(const EcdsaP256KeyPair&);
+    EcdsaP256KeyPair& operator=(const EcdsaP256KeyPair&);
+
+    EcdsaP256KeyPair(EcdsaP256KeyPair&&) noexcept;
+    EcdsaP256KeyPair& operator=(EcdsaP256KeyPair&&) noexcept;
+
+    ~EcdsaP256KeyPair();
+
+    EcdsaP256PublicKey public_key;
+    // We don't have a wrapper for private keys since they are only used in
+    // tests.
+    std::array<uint8_t, 32> private_key;
+    bool produce_invalid_signature;
+  };
+
+  using KeyPair = absl::variant<Ed25519KeyPair, EcdsaP256KeyPair>;
 
   // Creates an integrity block with the given signature stack entries.
   static cbor::Value CreateIntegrityBlock(
