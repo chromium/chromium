@@ -5,7 +5,6 @@
 import 'chrome://read-later.top-chrome/shared/sp_empty_state.js';
 import 'chrome://read-later.top-chrome/shared/sp_footer.js';
 import 'chrome://read-later.top-chrome/shared/sp_heading.js';
-import 'chrome://read-later.top-chrome/shared/sp_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/icons_lit.html.js';

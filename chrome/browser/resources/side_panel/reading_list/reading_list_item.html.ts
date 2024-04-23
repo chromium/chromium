@@ -1,3 +1,12 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import type {ReadingListItemElement} from './reading_list_item.js';
+
+export function getHtml(this: ReadingListItemElement) {
+  return html`<!--_html_template_start_-->
 <cr-url-list-item id="crUrlListItem"
     title="${this.data.title}"
     description="${this.data.displayUrl}"
@@ -20,3 +29,5 @@
       @click="${this.onItemDeleteClick_}" title="$i18n{tooltipDelete}">
   </cr-icon-button>
 </cr-url-list-item>
+<!--_html_template_end_-->`;
+}

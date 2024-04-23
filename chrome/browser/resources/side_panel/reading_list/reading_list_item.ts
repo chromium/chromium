@@ -53,8 +53,16 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
     };
   }
 
-  data: ReadLaterEntry;
-  buttonRipples: boolean;
+  data: ReadLaterEntry = {
+    title: '',
+    url: {url: ''},
+    displayUrl: '',
+    updateTime: 0n,
+    read: false,
+    displayTimeSinceUpdate: '',
+  };
+
+  buttonRipples: boolean = false;
   private apiProxy_: ReadingListApiProxy =
       ReadingListApiProxyImpl.getInstance();
 
@@ -116,20 +124,18 @@ export class ReadingListItemElement extends ReadingListItemElementBase {
       case 'Enter':
         this.onClick_(e);
         break;
-      case 'ArrowRight':
-        if (focusedIndex >= focusableElements.length - 1) {
-          focusableElements[0].focus();
-        } else {
-          focusableElements[focusedIndex + 1].focus();
-        }
+      case 'ArrowRight': {
+        const index =
+            focusedIndex >= focusableElements.length - 1 ? 0 : focusedIndex + 1;
+        focusableElements[index]!.focus();
         break;
-      case 'ArrowLeft':
-        if (focusedIndex <= 0) {
-          focusableElements[focusableElements.length - 1].focus();
-        } else {
-          focusableElements[focusedIndex - 1].focus();
-        }
+      }
+      case 'ArrowLeft': {
+        const index =
+            focusedIndex <= 0 ? focusableElements.length - 1 : focusedIndex - 1;
+        focusableElements[index]!.focus();
         break;
+      }
       default:
         assertNotReached();
     }

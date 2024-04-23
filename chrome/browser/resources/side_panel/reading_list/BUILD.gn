@@ -15,12 +15,14 @@ build_webui("build") {
     "images/read_later_empty.svg",
   ]
 
-  web_component_files = [
+  non_web_component_files = [
+    "reading_list_api_proxy.ts",
+    "reading_list_app.html.ts",
     "reading_list_app.ts",
+    "reading_list_item.html.ts",
     "reading_list_item.ts",
   ]
 
-  non_web_component_files = [ "reading_list_api_proxy.ts" ]
   css_files = [
     "reading_list_app.css",
     "reading_list_item.css",
@@ -36,7 +38,6 @@ build_webui("build") {
   ts_deps = [
     "../shared:build_ts",
     "//third_party/lit/v3_0:build_ts",
-    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
