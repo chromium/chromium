@@ -18,6 +18,15 @@
 
 namespace chromeos::editor_menu {
 
+namespace {
+
+bool IsEditorOrMahiDefaultMenu(CardType card_type) {
+  return card_type == CardType::kEditorMenu ||
+         card_type == CardType::kMahiDefaultMenu;
+}
+
+}  // namespace
+
 PreTargetHandler::PreTargetHandler(views::View* view, const CardType& type)
     : view_(view), card_type_(type) {
   Init();
@@ -176,10 +185,13 @@ void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
   // the last and the first menu items of the active menu by commandeering the
   // selection from these terminal items.
 
-  // VKEY_UP/VKEY_DOWN will move focus between Quick Answers (or Editor Menu)
-  // and context menu UIs. One difference is that When focus is moved to Editor
-  // Menu, it will get activated, and the context menu will be dismissed.
-  // VKEY_LEFT/VKEY_RIGHT will move focus inside Quick Answers UI.
+  // - VKEY_UP/VKEY_DOWN will move focus between the tracked view and the
+  // context menu UIs if the tracking view is of type `kDefault`.
+  // - VKEY_LEFT/VKEY_RIGHT will move focus inside the tracked view if the view
+  // is in focus.
+  // - VKEY_TAB will move the focus to the tracked view if it is an Editor
+  // Menu or Mahi default menu. Note that in this case the card will get
+  // activated, and the context menu will be dismissed.
   auto key_code = key_event->key_code();
   switch (key_code) {
     case ui::VKEY_UP:
@@ -237,7 +249,7 @@ void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
 
       // Focus |view_| if compatible key-event should transfer the selection to
       // it from within the menu.
-      if (view_should_gain_focus && card_type_ != CardType::kEditorMenu) {
+      if (view_should_gain_focus && !IsEditorOrMahiDefaultMenu(card_type_)) {
         // Track currently focused view to restore back to later and send focus
         // to |view_|.
         external_focus_tracker_->SetFocusManager(focus_manager);
@@ -256,7 +268,7 @@ void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
       return;
     }
     case ui::VKEY_TAB: {
-      if (card_type_ == CardType::kEditorMenu && !view_has_pane_focus) {
+      if (IsEditorOrMahiDefaultMenu(card_type_) && !view_has_pane_focus) {
         view_.view()->RequestFocus();
         key_event->StopPropagation();
       }

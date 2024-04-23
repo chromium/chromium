@@ -17,7 +17,9 @@ enum class CardType {
   // Currently `kDefault` can be either Quick Answers or Mahi Menu.
   kDefault = 0,
 
-  kEditorMenu = 1
+  kEditorMenu = 1,
+
+  kMahiDefaultMenu = 2,
 };
 
 // Spacing between the editor menu and the anchor view (context menu).
