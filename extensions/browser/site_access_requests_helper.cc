@@ -8,6 +8,7 @@
 
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
 
@@ -21,7 +22,10 @@ SiteAccessRequestsHelper::SiteAccessRequestsHelper(
     : content::WebContentsObserver(web_contents),
       permissions_manager_(permissions_manager),
       web_contents_(web_contents),
-      tab_id_(tab_id) {}
+      tab_id_(tab_id) {
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(web_contents->GetBrowserContext()));
+}
 
 SiteAccessRequestsHelper::~SiteAccessRequestsHelper() = default;
 
@@ -66,6 +70,18 @@ bool SiteAccessRequestsHelper::HasRequest(const ExtensionId& extension_id) {
 
 bool SiteAccessRequestsHelper::HasRequests() {
   return !requesting_extensions_.empty();
+}
+
+void SiteAccessRequestsHelper::OnExtensionUnloaded(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    UnloadedExtensionReason reason) {
+  RemoveRequest(extension->id());
+
+  if (!HasRequests()) {
+    permissions_manager_->DeleteSiteAccessRequestHelperFor(tab_id_);
+    // IMPORTANT: This object is now deleted and is unsafe to use.
+  }
 }
 
 void SiteAccessRequestsHelper::DidFinishNavigation(

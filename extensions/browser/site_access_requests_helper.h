@@ -5,7 +5,9 @@
 #ifndef EXTENSIONS_BROWSER_SITE_ACCESS_REQUESTS_HELPER_H_
 #define EXTENSIONS_BROWSER_SITE_ACCESS_REQUESTS_HELPER_H_
 
+#include "base/scoped_observation.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 
@@ -21,7 +23,8 @@ class PermissionsManager;
 // them on cross-origin navigations.
 // This class should only be used by PermissionsManager since it's an
 // implementation detail that was pulled out for legibility.
-class SiteAccessRequestsHelper : public content::WebContentsObserver {
+class SiteAccessRequestsHelper : public ExtensionRegistryObserver,
+                                 public content::WebContentsObserver {
  public:
   using PassKey = base::PassKey<PermissionsManager>;
 
@@ -53,13 +56,15 @@ class SiteAccessRequestsHelper : public content::WebContentsObserver {
   bool HasRequests();
 
  private:
+  // ExtensionRegistryObserver:
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const Extension* extension,
+                           UnloadedExtensionReason reason) override;
+
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;
-
-  // TODO(crbug.com/330588494): Remove site access request, if existent, for
-  // unloaded extension.
 
   // PermissionsManager owns this object, thus `permissions_manager_` will
   // always be valid.
@@ -71,6 +76,10 @@ class SiteAccessRequestsHelper : public content::WebContentsObserver {
   std::set<ExtensionId> requesting_extensions_;
 
   // TODO(crbug.com/330588494): Moves dismissed extensions from TabHelper.
+
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 };
 
 }  // namespace extensions

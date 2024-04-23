@@ -20,6 +20,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/permissions_manager.h"
+#include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/test/permissions_manager_waiter.h"
 
@@ -260,6 +261,55 @@ TEST_F(SiteAccessRequestsHelperUnittest,
   // Request should be removed since extension has granted site access.
   EXPECT_FALSE(
       permissions_manager()->HasSiteAccessRequest(tab_id, extension->id()));
+}
+
+// Test request is removed when extension is unloaded.
+TEST_F(SiteAccessRequestsHelperUnittest,
+       RequestRemovedWhenExtensionIsUnloaded) {
+  auto extension_A =
+      InstallExtensionAndWithholdHostPermissions("Extension A", "<all_urls>");
+  auto extension_B =
+      InstallExtensionAndWithholdHostPermissions("Extension B", "<all_urls>");
+
+  content::WebContents* web_contents =
+      AddTab(GURL("http://www.same-origin.com/a"));
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  // Add site access request for both extensions.
+  permissions_manager()->AddSiteAccessRequest(web_contents, tab_id,
+                                              *extension_A);
+  permissions_manager()->AddSiteAccessRequest(web_contents, tab_id,
+                                              *extension_B);
+  ASSERT_TRUE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension_A->id()));
+  ASSERT_TRUE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension_B->id()));
+
+  // Uninstall extension A. Verify only extension B should have a site access
+  // request.
+  service()->UninstallExtension(
+      extension_A->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+  EXPECT_FALSE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension_A->id()));
+  EXPECT_TRUE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension_B->id()));
+
+  // Disable extension B. Verify no extension should have a site access request.
+  service()->DisableExtension(extension_B->id(),
+                              extensions::disable_reason::DISABLE_USER_ACTION);
+  EXPECT_FALSE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension_A->id()));
+  EXPECT_FALSE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension_B->id()));
+
+  // Enable extension B. Verify no extension has a site access request. Request
+  // is not persisted when extension is re-enabled, the extension needs to add
+  // the request again.
+  service()->EnableExtension(extension_B->id());
+  EXPECT_FALSE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension_A->id()));
+  EXPECT_FALSE(
+      permissions_manager()->HasSiteAccessRequest(tab_id, extension_B->id()));
 }
 
 }  // namespace extensions
