@@ -24,6 +24,12 @@ enum class EventRecordingState {
   kMaxValue = kLogSizeExceeded,
 };
 
+inline constexpr std::string_view kExternalMetricsProducedHistogramPrefix =
+    "StructuredMetrics.ExternalMetricsProduced2.";
+
+inline constexpr std::string_view kExternalMetricsDroppedHistogramPrefix =
+    "StructuredMetrics.ExternalMetricsDropped2.";
+
 void LogEventRecordingState(EventRecordingState state);
 
 // Log how many structured metrics events were contained in a call to
