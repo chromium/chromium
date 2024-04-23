@@ -142,7 +142,7 @@ usage() {
   echo "usage: $(basename $0) [-a target_arch] -c channel -d branding"
   echo "                      [-f] [-o 'dir'] -s 'dir' -t target_os"
   echo "-a arch      deb package architecture"
-  echo "-c channel   the package channel (unstable, beta, stable)"
+  echo "-c channel   the package channel (canary, unstable, beta, stable)"
   echo "-d brand     either chromium or google_chrome"
   echo "-f           indicates that this is an official build"
   echo "-h           this help message"
@@ -165,6 +165,12 @@ verify_channel() {
     dev|unstable|alpha )
       CHANNEL=unstable
       RELEASENOTES="https://chromereleases.googleblog.com/search/label/Dev%20updates"
+      ;;
+    # Canary is released twice a day automatically, so no release notes
+    # attached.
+    canary )
+      CHANNEL=canary
+      RELEASENOTES="N/A"
       ;;
     * )
       echo

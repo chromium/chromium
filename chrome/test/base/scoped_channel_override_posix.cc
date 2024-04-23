@@ -45,6 +45,10 @@ std::string GetVersionExtra(ScopedChannelOverride::Channel channel) {
       return "beta";
     case ScopedChannelOverride::Channel::kDev:
       return "unstable";
+#if BUILDFLAG(IS_LINUX)
+    case ScopedChannelOverride::Channel::kCanary:
+      return "canary";
+#endif  // BUILDFLAG(IS_LINUX)
   }
 }
 
