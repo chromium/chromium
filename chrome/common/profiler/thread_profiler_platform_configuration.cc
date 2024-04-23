@@ -215,13 +215,14 @@ AndroidPlatformConfiguration::GetEnableRates(
         *release_channel == version_info::Channel::BETA);
 
   if (*release_channel == version_info::Channel::BETA) {
-    // For 85% of population always disable profiling.
-    // For 15% of population
-    // - 1/3 within the subgroup, i.e. 5% of total population, enable profiling.
+    // For 25% of population always disable profiling.
+    // For 75% of population
+    // - 1/3 within the subgroup, i.e. 25% of total population, enable
+    // profiling.
     // - 1/3 within the subgroup, enable profiling with Java name hashing.
     // - 1/3 within the subgroup, disable profiling.
-    // This results a total of 10% enable rate.
-    return RelativePopulations{85, 0, 15};
+    // This results a total of 50% enable rate.
+    return RelativePopulations{25, 0, 75};
   }
   // For 1% of population always enable profiling.
   // For 99% of population
