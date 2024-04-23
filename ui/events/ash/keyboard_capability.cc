@@ -994,6 +994,15 @@ bool KeyboardCapability::HasRightAltKey(const KeyboardDevice& keyboard) const {
          keyboard.has_assistant_key;
 }
 
+bool KeyboardCapability::HasRightAltKey(int device_id) const {
+  auto keyboard = FindKeyboardWithId(device_id);
+  if (!keyboard) {
+    return false;
+  }
+
+  return HasRightAltKey(*keyboard);
+}
+
 void KeyboardCapability::OnDeviceListsComplete() {
   TrimKeyboardInfoMap();
 }

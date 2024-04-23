@@ -353,6 +353,7 @@ class KeyboardCapability : public InputDeviceEventObserver {
 
   // Check if the RightAlt key exists on the given keyboard.
   bool HasRightAltKey(const KeyboardDevice& keyboard) const;
+  bool HasRightAltKey(int device_id) const;
 
   // Finds the keyboard with the corresponding  `device_id` and checks its
   // `DeviceType` to determine if it's a ChromeOS keyboard.
