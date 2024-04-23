@@ -65,9 +65,17 @@ def split_interface_name(interface: str):
   Returns:
       a dict containing the actual interface name and its namespace.
   """
+  components = interface.split('.')
+  ns_id = snake_to_camel_case('_'.join(components[:-1]))
+  # The camel casing used by protobuf is slightly different than the one used
+  # by Mojo interfaces. See `str.title()` vs `str.capitalize()`.
+  # For example, 'MyInterface2xVeryCool' should become `MyInterface2XVeryCool'
+  # (notice the capital 'X').
+  interface_id = snake_to_camel_case(camel_to_snake_case(components[-1]))
   return {
-    "name": interface.split(".")[-1],
-    "namespace": "::".join(interface.split(".")[:-1]),
+    "identifier": f"{ns_id}{interface_id}",
+    "name": components[-1],
+    "namespace": "::".join(components[:-1]),
   }
 
 def snake_to_camel_case(snake_str: str) -> str:
@@ -79,7 +87,24 @@ def snake_to_camel_case(snake_str: str) -> str:
   Returns:
      `snake_str` converted to a camel case identifier.
   """
-  return "".join(x.capitalize() for x in snake_str.lower().split("_"))
+  return "".join(x.title() for x in snake_str.lower().split("_"))
+
+
+def camel_to_snake_case(name: str) -> str:
+  """Camel case to snake case conversion.
+
+  Args:
+      name: the camel case identifier
+
+  Returns:
+      `name` converted to a snake case identifier.
+  """
+  # This regex matches an uppercase character that is not the first character.
+  # It then inserts an underscore character at the matched positions. Since
+  # this regex uses negative lookback and positive lookahead, it doesn't
+  # consume characters, and thus the `sub` method won't replace any existing
+  # character but only add the '_'.
+  return re.sub(r"(?<!^)(?=[A-Z])", "_", name).lower()
 
 def main():
   parser = argparse.ArgumentParser(

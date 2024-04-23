@@ -5,6 +5,26 @@
 # in this function. This only demonstrates how this could be done.
 context_browser_exposed_interfaces = [
   [
+    "//chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom",
+    "access_code_cast.mojom.PageHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/app_home/app_home.mojom",
+    "app_home.mojom.PageHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//ui/webui/resources/cr_components/app_management/app_management.mojom",
+    "app_management.mojom.PageHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//content/browser/attribution_reporting/attribution_internals.mojom",
+    "attribution_internals.mojom.Factory",
+    "Remote",
+  ],
+  [
     "//third_party/blink/public/mojom/interest_group/ad_auction_service.mojom",
     "blink.mojom.AdAuctionService",
     "Remote",
@@ -35,13 +55,13 @@ context_browser_exposed_interfaces = [
     "Remote",
   ],
   [
-    "//third_party/blink/public/mojom/blob/blob_url_store.mojom",
-    "blink.mojom.BlobURLStore",
+    "//third_party/blink/public/mojom/badging/badging.mojom",
+    "blink.mojom.BadgeService",
     "Remote",
   ],
   [
-    "//third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom",
-    "blink.mojom.BroadcastChannelProvider",
+    "//third_party/blink/public/mojom/blob/blob_url_store.mojom",
+    "blink.mojom.BlobURLStore",
     "Remote",
   ],
   [
@@ -137,11 +157,6 @@ context_browser_exposed_interfaces = [
   [
     "//third_party/blink/public/mojom/webid/federated_auth_request.mojom",
     "blink.mojom.FederatedAuthRequest",
-    "Remote",
-  ],
-  [
-    "//third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom",
-    "blink.mojom.FileBackedBlobFactory",
     "Remote",
   ],
   [
@@ -365,6 +380,11 @@ context_browser_exposed_interfaces = [
     "Remote",
   ],
   [
+    "//third_party/blink/public/mojom/printing/web_printing.mojom",
+    "blink.mojom.WebPrintingService",
+    "Remote",
+  ],
+  [
     "//third_party/blink/public/mojom/sensor/web_sensor_provider.mojom",
     "blink.mojom.WebSensorProvider",
     "Remote",
@@ -385,6 +405,61 @@ context_browser_exposed_interfaces = [
     "Remote",
   ],
   [
+    "//third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom",
+    "blink.test.mojom.VirtualAuthenticatorManager",
+    "Remote",
+  ],
+  [
+    "//ui/webui/resources/js/browser_command/browser_command.mojom",
+    "browser_command.mojom.CommandHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//components/browsing_topics/mojom/browsing_topics_internals.mojom",
+    "browsing_topics.mojom.PageHandler",
+    "Remote",
+  ],
+  [
+    "//chrome/common/cart/commerce_hints.mojom",
+    "cart.mojom.CommerceHintObserver",
+    "Remote",
+  ],
+  [
+    "//ui/webui/resources/cr_components/certificate_manager/certificate_manager_v2.mojom",
+    "certificate_manager_v2.mojom.CertificateManagerPageHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//chrome/common/open_search_description_document_handler.mojom",
+    "chrome.mojom.OpenSearchDescriptionDocumentHandler",
+    "Remote",
+  ],
+  [
+    "//ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom",
+    "color_change_listener.mojom.PageHandler",
+    "Remote",
+  ],
+  [
+    "//components/commerce/core/internals/mojom/commerce_internals.mojom",
+    "commerce.mojom.CommerceInternalsHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/connectors_internals/connectors_internals.mojom",
+    "connectors_internals.mojom.PageHandler",
+    "Remote",
+  ],
+  [
+    "//ui/webui/resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom",
+    "customize_color_scheme_mode.mojom.CustomizeColorSchemeModeHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//ui/webui/resources/cr_components/customize_themes/customize_themes.mojom",
+    "customize_themes.mojom.CustomizeThemesHandlerFactory",
+    "Remote",
+  ],
+  [
     "//services/device/public/mojom/battery_monitor.mojom",
     "device.mojom.BatteryMonitor",
     "Remote",
@@ -399,12 +474,11 @@ context_browser_exposed_interfaces = [
     "device.mojom.GamepadMonitor",
     "Remote",
   ],
-
-  # [
-  #   "//services/device/public/mojom/pressure_manager.mojom",
-  #   "device.mojom.PressureManager",
-  #   "Remote",
-  # ],
+  [
+    "//services/device/public/mojom/pressure_manager.mojom",
+    "device.mojom.PressureManager",
+    "Remote",
+  ],
   [
     "//device/vr/public/mojom/vr_service.mojom",
     "device.mojom.VRService",
@@ -416,8 +490,88 @@ context_browser_exposed_interfaces = [
     "Remote",
   ],
   [
+    "//chrome/browser/ui/webui/discards/discards.mojom",
+    "discards.mojom.DetailsProvider",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/discards/discards.mojom",
+    "discards.mojom.GraphDump",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/discards/site_data.mojom",
+    "discards.mojom.SiteDataProvider",
+    "Remote",
+  ],
+  [
+    "//components/dom_distiller/content/common/mojom/distillability_service.mojom",
+    "dom_distiller.mojom.DistillabilityService",
+    "Remote",
+  ],
+  [
+    "//components/dom_distiller/content/common/mojom/distiller_javascript_service.mojom",
+    "dom_distiller.mojom.DistillerJavaScriptService",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/downloads/downloads.mojom",
+    "downloads.mojom.PageHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//extensions/common/api/mime_handler.mojom",
+    "extensions.mime_handler.BeforeUnloadControl",
+    "Remote",
+  ],
+  [
+    "//extensions/common/api/mime_handler.mojom",
+    "extensions.mime_handler.MimeHandlerService",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom",
+    "file_suggestion.mojom.FileSuggestionHandler",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/new_tab_page/foo/foo.mojom",
+    "foo.mojom.FooHandler",
+    "Remote",
+  ],
+  [
     "//third_party/blink/public/mojom/handwriting/handwriting.mojom",
     "handwriting.mojom.HandwritingRecognitionService",
+    "Remote",
+  ],
+  [
+    "//ui/webui/resources/cr_components/help_bubble/help_bubble.mojom",
+    "help_bubble.mojom.HelpBubbleHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//ui/webui/resources/cr_components/history_clusters/history_clusters.mojom",
+    "history_clusters.mojom.PageHandler",
+    "Remote",
+  ],
+  [
+    "//components/history_clusters/history_clusters_internals/webui/history_clusters_internals.mojom",
+    "history_clusters_internals.mojom.PageHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//services/image_annotation/public/mojom/image_annotation.mojom",
+    "image_annotation.mojom.Annotator",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/lens/core/mojom/lens.mojom",
+    "lens.mojom.LensPageHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/lens/core/mojom/search_bubble.mojom",
+    "lens.mojom.SearchBubblePageHandlerFactory",
     "Remote",
   ],
   [
@@ -426,8 +580,18 @@ context_browser_exposed_interfaces = [
     "Remote",
   ],
   [
+    "//media/mojo/mojom/interface_factory.mojom",
+    "media.mojom.InterfaceFactory",
+    "Remote",
+  ],
+  [
     "//media/mojo/mojom/key_system_support.mojom",
     "media.mojom.KeySystemSupport",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/media/media_engagement_score_details.mojom",
+    "media.mojom.MediaEngagementScoreDetailsProvider",
     "Remote",
   ],
   [
@@ -461,6 +625,11 @@ context_browser_exposed_interfaces = [
     "Remote",
   ],
   [
+    "//media/mojo/mojom/speech_recognition.mojom",
+    "media.mojom.SpeechRecognitionRecognizerClient",
+    "Remote",
+  ],
+  [
     "//media/capture/mojom/video_capture.mojom",
     "media.mojom.VideoCaptureHost",
     "Remote",
@@ -468,6 +637,11 @@ context_browser_exposed_interfaces = [
   [
     "//media/mojo/mojom/video_decode_perf_history.mojom",
     "media.mojom.VideoDecodePerfHistory",
+    "Remote",
+  ],
+  [
+    "//media/mojo/mojom/video_encoder_metrics_provider.mojom",
+    "media.mojom.VideoEncoderMetricsProvider",
     "Remote",
   ],
   [
@@ -481,18 +655,63 @@ context_browser_exposed_interfaces = [
     "Remote",
   ],
   [
+    "//ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom",
+    "metrics_reporter.mojom.PageMetricsHost",
+    "Remote",
+  ],
+  [
     "//media/midi/midi_service.mojom",
     "midi.mojom.MidiSessionProvider",
     "Remote",
   ],
   [
-    "//components/ml/mojom/ml_service.mojom",
-    "ml.model_loader.mojom.MLService",
+    "//chrome/browser/ui/webui/bluetooth_internals/bluetooth_internals.mojom",
+    "mojom.BluetoothInternalsHandler",
     "Remote",
   ],
   [
-    "//content/common/input/input_injector.mojom",
-    "content.mojom.InputInjector",
+    "//chrome/browser/ui/webui/location_internals/location_internals.mojom",
+    "mojom.LocationInternalsHandler",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/omnibox/omnibox.mojom",
+    "mojom.OmniboxPageHandler",
+    "Remote",
+  ],
+  [
+    "//content/browser/process_internals/process_internals.mojom",
+    "mojom.ProcessInternalsHandler",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/reset_password/reset_password.mojom",
+    "mojom.ResetPasswordHandler",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/usb_internals/usb_internals.mojom",
+    "mojom.UsbInternalsPageHandler",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom",
+    "mojom.WebAppInternalsHandler",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/app_service_internals/app_service_internals.mojom",
+    "mojom.app_service_internals.AppServiceInternalsPageHandler",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom",
+    "mojom.user_education_internals.UserEducationInternalsPageHandler",
+    "Remote",
+  ],
+  [
+    "//ui/webui/resources/cr_components/most_visited/most_visited.mojom",
+    "most_visited.mojom.MostVisitedPageHandlerFactory",
     "Remote",
   ],
   [
@@ -516,6 +735,41 @@ context_browser_exposed_interfaces = [
     "Remote",
   ],
   [
+    "//components/network_hints/common/network_hints.mojom",
+    "network_hints.mojom.NetworkHintsHandler",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom",
+    "new_tab_page.mojom.PageHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party.mojom",
+    "new_tab_page_third_party.mojom.PageHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/new_tab_page/modules/v2/history_clusters/history_clusters_v2.mojom",
+    "ntp.history_clusters_v2.mojom.PageHandler",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption.mojom",
+    "ntp.tab_resumption.mojom.PageHandler",
+    "Remote",
+  ],
+  [
+    "//components/optimization_guide/optimization_guide_internals/webui/optimization_guide_internals.mojom",
+    "optimization_guide_internals.mojom.PageHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//components/page_image_service/mojom/page_image_service.mojom",
+    "page_image_service.mojom.PageImageServiceHandler",
+    "Remote",
+  ],
+  [
     "//third_party/blink/public/mojom/payments/payment_credential.mojom",
     "payments.mojom.PaymentCredential",
     "Remote",
@@ -528,6 +782,66 @@ context_browser_exposed_interfaces = [
   [
     "//third_party/blink/public/mojom/payments/payment_request.mojom",
     "payments.mojom.PaymentRequest",
+    "Remote",
+  ],
+  [
+    "//components/performance_manager/public/mojom/coordination_unit.mojom",
+    "performance_manager.mojom.DocumentCoordinationUnit",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/new_tab_page/modules/photos/photos.mojom",
+    "photos.mojom.PhotosHandler",
+    "Remote",
+  ],
+  [
+    "//components/no_state_prefetch/common/prerender_canceler.mojom",
+    "prerender.mojom.PrerenderCanceler",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_internals.mojom",
+    "privacy_sandbox_internals.mojom.PageHandler",
+    "Remote",
+  ],
+  [
+    "//content/browser/private_aggregation/private_aggregation_internals.mojom",
+    "private_aggregation_internals.mojom.Factory",
+    "Remote",
+  ],
+  [
+    "//chrome/common/accessibility/read_anything.mojom",
+    "read_anything.mojom.UntrustedPageHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/side_panel/reading_list/reading_list.mojom",
+    "reading_list.mojom.PageHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//services/screen_ai/public/mojom/screen_ai_service.mojom",
+    "screen_ai.mojom.Screen2xMainContentExtractor",
+    "Remote",
+  ],
+  [
+    "//services/screen_ai/public/mojom/screen_ai_service.mojom",
+    "screen_ai.mojom.ScreenAIAnnotator",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom",
+    "search_engine_choice.mojom.PageHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//ui/webui/resources/cr_components/searchbox/searchbox.mojom",
+    "searchbox.mojom.PageHandler",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/segmentation_internals/segmentation_internals.mojom",
+    "segmentation_internals.mojom.PageHandlerFactory",
     "Remote",
   ],
   [
@@ -546,32 +860,146 @@ context_browser_exposed_interfaces = [
     "Remote",
   ],
   [
-    "//services/metrics/public/mojom/ukm_interface.mojom",
-    "ukm.mojom.UkmRecorderFactory",
+    "//ui/webui/resources/cr_components/commerce/shopping_service.mojom",
+    "shopping_service.mojom.ShoppingServiceHandlerFactory",
     "Remote",
   ],
-
-  #[
-  #  "//services/webnn/public/mojom/webnn_context_provider.mojom",
-  #  "webnn.mojom.WebNNContextProvider",
-  #  "Remote",
-  #],
+  [
+    "//chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search.mojom",
+    "side_panel.customize_chrome.mojom.WallpaperSearchHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/side_panel/bookmarks/bookmarks.mojom",
+    "side_panel.mojom.BookmarksPageHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom",
+    "side_panel.mojom.CustomizeChromePageHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//components/site_engagement/core/mojom/site_engagement_details.mojom",
+    "site_engagement.mojom.SiteEngagementDetailsProvider",
+    "Remote",
+  ],
+  [
+    "//components/spellcheck/common/spellcheck.mojom",
+    "spellcheck.mojom.SpellCheckHost",
+    "Remote",
+  ],
+  [
+    "//content/browser/indexed_db/indexed_db_internals.mojom",
+    "storage.mojom.IdbInternalsHandler",
+    "Remote",
+  ],
+  [
+    "//storage/browser/quota/quota_internals.mojom",
+    "storage.mojom.QuotaInternalsHandler",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/suggest_internals/suggest_internals.mojom",
+    "suggest_internals.mojom.PageHandler",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/tab_search/tab_search.mojom",
+    "tab_search.mojom.PageHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//chrome/browser/ui/webui/tab_strip/tab_strip.mojom",
+    "tab_strip.mojom.PageHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//ui/webui/resources/cr_components/theme_color_picker/theme_color_picker.mojom",
+    "theme_color_picker.mojom.ThemeColorPickerHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//content/browser/tracing/trace_report/trace_report.mojom",
+    "trace_report.mojom.TraceReportHandlerFactory",
+    "Remote",
+  ],
+  [
+    "//components/translate/content/common/translate.mojom",
+    "translate.mojom.ContentTranslateDriver",
+    "Remote",
+  ],
+  [
+    "//content/browser/xr/webxr_internals/mojom/webxr_internals.mojom",
+    "webxr.mojom.WebXrInternalsHandler",
+    "Remote",
+  ],
 ]
 
 process_browser_exposed_interfaces = [
+  [
+    "//third_party/blink/public/mojom/mediastream/aec_dump.mojom",
+    "blink.mojom.AecDumpManager",
+    "Remote",
+  ],
   [
     "//third_party/blink/public/mojom/blob/blob_registry.mojom",
     "blink.mojom.BlobRegistry",
     "Remote",
   ],
   [
-    "//content/common/render_message_filter.mojom",
-    "content.mojom.RenderMessageFilter",
+    "//third_party/blink/public/mojom/dom_storage/dom_storage.mojom",
+    "blink.mojom.DomStorageProvider",
     "Remote",
   ],
   [
-    "//services/device/public/mojom/time_zone_monitor.mojom",
-    "device.mojom.TimeZoneMonitor",
+    "//third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom",
+    "blink.mojom.EmbeddedFrameSinkProvider",
+    "Remote",
+  ],
+  [
+    "//third_party/blink/public/mojom/gpu/gpu.mojom",
+    "blink.mojom.GpuDataManager",
+    "Remote",
+  ],
+  [
+    "//third_party/blink/public/mojom/hyphenation/hyphenation.mojom",
+    "blink.mojom.Hyphenation",
+    "Remote",
+  ],
+  [
+    "//third_party/blink/public/mojom/mediastream/media_stream.mojom",
+    "blink.mojom.MediaStreamTrackMetricsHost",
+    "Remote",
+  ],
+  [
+    "//third_party/blink/public/mojom/mime/mime_registry.mojom",
+    "blink.mojom.MimeRegistry",
+    "Remote",
+  ],
+  [
+    "//third_party/blink/public/mojom/plugins/plugin_registry.mojom",
+    "blink.mojom.PluginRegistry",
+    "Remote",
+  ],
+  [
+    "//third_party/blink/public/mojom/webdatabase/web_database.mojom",
+    "blink.mojom.WebDatabaseHost",
+    "Remote",
+  ],
+  [
+    "//content/common/field_trial_recorder.mojom",
+    "content.mojom.FieldTrialRecorder",
+    "Remote",
+  ],
+  [
+    "//content/common/media/media_log_records.mojom",
+    "content.mojom.MediaInternalLogRecords",
+    "Remote",
+  ],
+  [
+    "//content/common/render_message_filter.mojom",
+    "content.mojom.RenderMessageFilter",
     "Remote",
   ],
   [
@@ -585,58 +1013,29 @@ process_browser_exposed_interfaces = [
     "Remote",
   ],
   [
-    "//third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom",
-    "blink.mojom.EmbeddedFrameSinkProvider",
+    "//services/device/public/mojom/time_zone_monitor.mojom",
+    "device.mojom.TimeZoneMonitor",
     "Remote",
   ],
-  [
-    "//services/viz/public/mojom/compositing/compositing_mode_watcher.mojom",
-    "viz.mojom.CompositingModeReporter",
-    "Remote",
-  ],
-  [
-    "//third_party/blink/public/mojom/dom_storage/dom_storage.mojom",
-    "blink.mojom.DomStorageProvider",
-    "Remote",
-  ],
-  [
-    "//third_party/blink/public/mojom/webdatabase/web_database.mojom",
-    "blink.mojom.WebDatabaseHost",
-    "Remote",
-  ],
+
+  # [
+  #   "//media/mojo/mojom/interface_factory.mojom",
+  #   "media.mojom.InterfaceFactory",
+  #   "Remote",
+  # ],
+  # [
+  #   "//media/mojo/mojom/video_encoder_metrics_provider.mojom",
+  #   "media.mojom.VideoEncoderMetricsProvider",
+  #   "Remote",
+  # ],
   [
     "//services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom",
     "memory_instrumentation.mojom.CoordinatorConnector",
     "Remote",
   ],
   [
-    "//third_party/blink/public/mojom/mime/mime_registry.mojom",
-    "blink.mojom.MimeRegistry",
-    "Remote",
-  ],
-  [
-    "//third_party/blink/public/mojom/hyphenation/hyphenation.mojom",
-    "blink.mojom.Hyphenation",
-    "Remote",
-  ],
-  [
-    "//third_party/blink/public/mojom/font_unique_name_lookup/font_unique_name_lookup.mojom",
-    "blink.mojom.FontUniqueNameLookup",
-    "Remote",
-  ],
-  [
-    "//services/viz/public/mojom/gpu.mojom",
-    "viz.mojom.Gpu",
-    "Remote",
-  ],
-  [
-    "//third_party/blink/public/mojom/gpu/gpu.mojom",
-    "blink.mojom.GpuDataManager",
-    "Remote",
-  ],
-  [
-    "//third_party/blink/public/mojom/mediastream/media_stream.mojom",
-    "blink.mojom.MediaStreamTrackMetricsHost",
+    "//components/metrics/public/mojom/call_stack_profile_collector.mojom",
+    "metrics.mojom.CallStackProfileCollector",
     "Remote",
   ],
   [
@@ -645,28 +1044,28 @@ process_browser_exposed_interfaces = [
     "Remote",
   ],
   [
-    "//content/common/media/media_log_records.mojom",
-    "content.mojom.MediaInternalLogRecords",
+    "//components/performance_manager/public/mojom/coordination_unit.mojom",
+    "performance_manager.mojom.ProcessCoordinationUnit",
     "Remote",
   ],
   [
-    "//content/common/field_trial_recorder.mojom",
-    "content.mojom.FieldTrialRecorder",
+    "//components/safe_browsing/content/common/safe_browsing.mojom",
+    "safe_browsing.mojom.ExtensionWebRequestReporter",
     "Remote",
   ],
   [
-    "//media/mojo/mojom/interface_factory.mojom",
-    "media.mojom.InterfaceFactory",
+    "//components/safe_browsing/content/common/safe_browsing.mojom",
+    "safe_browsing.mojom.SafeBrowsing",
     "Remote",
   ],
   [
-    "//media/mojo/mojom/video_encoder_metrics_provider.mojom",
-    "media.mojom.VideoEncoderMetricsProvider",
+    "//services/viz/public/mojom/compositing/compositing_mode_watcher.mojom",
+    "viz.mojom.CompositingModeReporter",
     "Remote",
   ],
   [
-    "//third_party/blink/public/mojom/mediastream/aec_dump.mojom",
-    "blink.mojom.AecDumpManager",
+    "//services/viz/public/mojom/gpu.mojom",
+    "viz.mojom.Gpu",
     "Remote",
   ],
 ]

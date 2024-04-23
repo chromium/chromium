@@ -28,13 +28,13 @@ class RendererTestcase
   void SetUp(base::OnceClosure done_closure) override;
   void TearDown(base::OnceClosure done_closure) override;
 {% for interface in context_interfaces %}
-  void HandleNew{{interface.name}}Action(
+  void HandleNew{{interface.identifier}}Action(
       uint32_t id,
       base::OnceClosure done_closure) override;
 {% endfor %}
 
 {% for interface in process_interfaces %}
-  void HandleNew{{interface.name}}Action(
+  void HandleNew{{interface.identifier}}Action(
       uint32_t id,
       base::OnceClosure done_closure) override;
 {% endfor %}
@@ -75,7 +75,7 @@ scoped_refptr<base::SequencedTaskRunner> GetFuzzerTaskRunnerImpl() {
 }  // anonymous namespace
 
 {% for interface in context_interfaces %}
-void RendererTestcase::HandleNew{{interface.name}}Action(
+void RendererTestcase::HandleNew{{interface.identifier}}Action(
     uint32_t id,
     base::OnceClosure done_closure) {
   NewContextInterface<{{interface.namespace}}::{{interface.name}}>(id, std::move(done_closure));
@@ -83,7 +83,7 @@ void RendererTestcase::HandleNew{{interface.name}}Action(
 {% endfor %}
 
 {% for interface in process_interfaces %}
-void RendererTestcase::HandleNew{{interface.name}}Action(
+void RendererTestcase::HandleNew{{interface.identifier}}Action(
     uint32_t id,
     base::OnceClosure done_closure) {
   NewProcessInterface<{{interface.namespace}}::{{interface.name}}>(id, std::move(done_closure));
