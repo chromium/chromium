@@ -20,6 +20,7 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
@@ -58,6 +59,7 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /** Displays and manages the content view / list UI for browsing history. */
 public class HistoryContentManager implements SignInStateObserver, PrefObserver {
@@ -131,6 +133,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     private String mAppId;
     private AppFilterCoordinator mAppFilterSheet;
     private AppInfo mCurrentApp;
+    private PackageManager mPackageManager;
 
     /**
      * Creates a new HistoryContentManager.
@@ -186,6 +189,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                         || UiUtils.isHardwareKeyboardAttached();
         mAppId = appId;
         mLaunchedForApp = launchedForApp;
+        mPackageManager = mActivity.getPackageManager();
         mSelectionDelegate =
                 selectionDelegate != null
                         ? selectionDelegate
@@ -293,7 +297,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      */
     boolean buildAppInfoList(List<String> appIds) {
         mAppInfoList.clear();
-        PackageManager pm = mActivity.getPackageManager();
+        PackageManager pm = mPackageManager;
         for (String appId : appIds) {
             try {
                 var icon = pm.getApplicationIcon(appId);
@@ -607,8 +611,24 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         // Search mode starts with the soft keyboard open. Hide it first for the sheet
         // to appear at the bottom as expected.
         mHideSoftKeyboard.run();
+        if (mAppFilterSheet == null) {
+            mAppFilterSheet =
+                    new AppFilterCoordinator(
+                            mActivity,
+                            mActivity.getWindow().getDecorView(),
+                            mBottomSheetController.get(),
+                            this::onAppUpdated,
+                            mAppInfoList);
+        }
+        mAppFilterSheet.openSheet();
+    }
 
-        // TODO: Open app filter sheet.
+    /** Callback from app filter sheet, with the newly chosen app to filter. */
+    @VisibleForTesting
+    void onAppUpdated(@Nullable AppInfo appInfo) {
+        if (Objects.equals(mCurrentApp, appInfo)) return;
+        mCurrentApp = appInfo;
+        getAdapter().updateHistory(mCurrentApp);
     }
 
     /** Removes the list header. */
@@ -672,5 +692,17 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     public static void setScrollToLoadDisabledForTesting(boolean isScrollToLoadDisabled) {
         sIsScrollToLoadDisabledForTests = isScrollToLoadDisabled;
         ResettersForTesting.register(() -> sIsScrollToLoadDisabledForTests = null);
+    }
+
+    void setPackageManagerForTesting(PackageManager packageManager) {
+        mPackageManager = packageManager;
+    }
+
+    void setAppFilterSheetForTesting(AppFilterCoordinator appFilterSheet) {
+        mAppFilterSheet = appFilterSheet;
+    }
+
+    AppInfo getAppInfoForTesting() {
+        return mCurrentApp;
     }
 }

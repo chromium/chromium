@@ -1047,6 +1047,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/flags:java",
       "//chrome/browser/fullscreen/android:java",
       "//chrome/browser/gsa:java",
+      "//chrome/browser/history:java",
       "//chrome/browser/history_clusters:java",
       "//chrome/browser/hub:factory_java",
       "//chrome/browser/hub:java",

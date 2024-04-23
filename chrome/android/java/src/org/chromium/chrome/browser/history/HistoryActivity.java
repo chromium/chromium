@@ -6,16 +6,21 @@ package org.chromium.chrome.browser.history;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 
 /** Activity for displaying the browsing history manager. */
 public class HistoryActivity extends SnackbarActivity {
@@ -38,7 +43,7 @@ public class HistoryActivity extends SnackbarActivity {
         Profile profile = getProfileProvider().getOriginalProfile();
         HistoryUmaRecorder historyUmaRecorder =
                 appSpecificHistory ? new AppHistoryUmaRecorder() : new HistoryUmaRecorder();
-        boolean showAppFilter = !appSpecificHistory;
+        boolean showAppFilter = !appSpecificHistory && !isIncognito;
         mHistoryManager =
                 new HistoryManager(
                         this,
@@ -61,7 +66,34 @@ public class HistoryActivity extends SnackbarActivity {
     }
 
     private void createBottomSheetController(ViewGroup contentView) {
-        // TODO: Create bottomsheet controller for HistoryActivity.
+        ViewGroup sheetContainer =
+                (ViewGroup)
+                        LayoutInflater.from(this).inflate(R.layout.bottom_sheet_container, null);
+        ScrimCoordinator scrim =
+                new ScrimCoordinator(
+                        this,
+                        new ScrimCoordinator.SystemUiScrimDelegate() {
+                            @Override
+                            public void setStatusBarScrimFraction(float scrimFraction) {}
+
+                            @Override
+                            public void setNavigationBarScrimFraction(float scrimFraction) {}
+                        },
+                        contentView,
+                        getColor(R.color.default_scrim_color));
+        mBottomSheetController =
+                BottomSheetControllerFactory.createBottomSheetController(
+                        () -> scrim,
+                        (sheet) -> {},
+                        getWindow(),
+                        KeyboardVisibilityDelegate.getInstance(),
+                        () -> sheetContainer,
+                        () -> 0);
+
+        // HistoryActivity needs its own container for bottom sheet. Add it as a child of the
+        // layout enclosing the history list layout so they'll be siblings. HistoryPage doesn't
+        // need this since it may share the one from tabbed browser activity.
+        contentView.addView(sheetContainer);
     }
 
     @Override

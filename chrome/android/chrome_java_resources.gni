@@ -468,6 +468,7 @@ chrome_java_resources = [
   "java/res/layout/bookmark_widget.xml",
   "java/res/layout/bookmark_widget_icons_only.xml",
   "java/res/layout/bookmark_widget_item.xml",
+  "java/res/layout/bottom_sheet_container.xml",
   "java/res/layout/clear_browsing_data_button.xml",
   "java/res/layout/clear_browsing_data_tabs.xml",
   "java/res/layout/clear_browsing_important_dialog_listview.xml",

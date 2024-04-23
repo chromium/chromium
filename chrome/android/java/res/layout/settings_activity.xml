@@ -41,9 +41,5 @@ found in the LICENSE file.
         android:visibility="gone" />
 
     <!-- Container for displaying a bottom sheet. -->
-    <FrameLayout
-        android:id="@+id/sheet_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clipChildren="false" />
+    <include layout="@layout/bottom_sheet_container"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

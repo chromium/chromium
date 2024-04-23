@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
 import org.chromium.chrome.browser.history.HistoryProvider.BrowsingHistoryObserver;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter;
@@ -397,6 +398,21 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mAppFilterChip.getPrimaryTextView().setText(R.string.history_filter_by_app);
         mAppFilterChip.addDropdownIcon();
         return historyAppFilterContainer;
+    }
+
+    void updateHistory(AppInfo appInfo) {
+        if (appInfo == null) {
+            mAppId = null;
+            mAppFilterChip.getPrimaryTextView().setText(R.string.history_filter_by_app);
+            mAppFilterChip.setSelected(false);
+            mAppFilterChip.setIcon(ChipView.INVALID_ICON_ID, false);
+        } else {
+            mAppId = appInfo.id;
+            mAppFilterChip.getPrimaryTextView().setText(appInfo.label);
+            mAppFilterChip.setSelected(true);
+            mAppFilterChip.setIcon(R.drawable.ic_check_googblue_24dp, true);
+        }
+        search(EMPTY_QUERY);
     }
 
     ViewGroup getPrivacyDisclaimerContainer(ViewGroup parent) {

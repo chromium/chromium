@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
@@ -19,6 +20,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build.VERSION_CODES;
 import android.provider.Browser;
 import android.view.MenuItem;
@@ -59,6 +61,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.history.AppFilterCoordinator.AppInfo;
 import org.chromium.chrome.browser.history.HistoryManagerToolbar.InfoHeaderPref;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -129,6 +132,8 @@ public class HistoryUITest {
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJni;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private HistoryAdapter mMockAdapter;
+    @Mock private PackageManager mPackageManager;
+    @Mock private AppFilterCoordinator mAppFilterSheet;
 
     public static Matcher<Intent> hasData(GURL uri) {
         return IntentMatchers.hasData(uri.getSpec());
@@ -458,6 +463,7 @@ public class HistoryUITest {
         Assert.assertTrue(mHistoryProvider.isQueryAppsTriggered());
         mAdapter.setClearBrowsingDataButtonVisibilityForTest(false);
         mAdapter.setPrivacyDisclaimer();
+        mContentManager.setPackageManagerForTesting(mPackageManager);
         Assert.assertFalse(mAdapter.hasListHeader());
         performMenuAction(R.id.search_menu_id);
 
@@ -473,7 +479,50 @@ public class HistoryUITest {
         result.add("org.chromium.chrome.ernie");
         result.add("org.chromium.chrome.bert");
         mAdapter.onQueryAppsComplete(result);
-        Assert.assertFalse(mAdapter.getAppFilterButtonForTest().isEnabled());
+        Assert.assertTrue(mAdapter.getAppFilterButtonForTest().isEnabled());
+    }
+
+    @EnableFeatures(ChromeFeatureList.APP_SPECIFIC_HISTORY)
+    @Config(sdk = VERSION_CODES.UPSIDE_DOWN_CAKE)
+    @Test
+    @SmallTest
+    public void testSearch_AppFilterSheet() {
+        mContentManager.setPackageManagerForTesting(mPackageManager);
+        mContentManager.setAppFilterSheetForTesting(mAppFilterSheet);
+
+        performMenuAction(R.id.search_menu_id);
+
+        var result = new ArrayList<String>();
+        String appId1 = "org.chromium.chrome.ernie";
+        String appId2 = "org.chromium.chrome.bert";
+        result.add(appId1);
+        result.add(appId2);
+        mAdapter.onQueryAppsComplete(result);
+
+        mContentManager.onAppFilterClicked();
+        verify(mAppFilterSheet).openSheet();
+
+        // Verify ContentManager is updated with the selected app info.
+        AppInfo selected = new AppInfo("Ernie", null, appId1);
+        mContentManager.onAppUpdated(selected);
+        Assert.assertEquals(
+                "The expected app 'Ernie' was not chosen",
+                mContentManager.getAppInfoForTesting(),
+                selected);
+
+        AppInfo selected2 = new AppInfo("Bert", null, appId2);
+        mContentManager.onAppUpdated(selected2);
+        Assert.assertEquals(
+                "The expected app 'Bert' was not chosen",
+                mContentManager.getAppInfoForTesting(),
+                selected2);
+
+        // Revert to full history.
+        mContentManager.onAppUpdated(null);
+        Assert.assertEquals(
+                "The history was not reverted to full",
+                mContentManager.getAppInfoForTesting(),
+                null);
     }
 
     @Test
