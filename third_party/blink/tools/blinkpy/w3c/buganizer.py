@@ -176,10 +176,7 @@ class BuganizerClient:
             issues = response.get('issues', []) if response else []
             return issues
         except Exception as e:
-            logging.error(
-                '[BuganizerClient] Failed to GetIssueList '
-                'error: %s', str(e))
-            return {'error': str(e)}
+            raise BuganizerError(f'failed to get issue list: {e}') from e
 
     def GetIssueComments(self, issue_id: IssueID):
         """Makes a request to the issue tracker to get all the comments."""

@@ -2925,12 +2925,15 @@ class VirtualTestSuite(object):
         elif skip_base_tests is None:
             skip_base_tests = []
         assert isinstance(skip_base_tests, list)
+        self.prefix = prefix
         self.full_prefix = 'virtual/' + prefix + '/'
         self.platforms = [x.lower() for x in platforms]
         self.bases = bases
         self.exclusive_tests = exclusive_tests
         self.skip_base_tests = skip_base_tests
+        self.expires = expires
         self.args = sorted(args)
+        self.owners = owners
         # always put --enable-threaded-compositing at the end of list, so that after appending
         # this parameter due to crrev.com/c/4599846, we do not need to restart content shell
         # if the parameter set is same.

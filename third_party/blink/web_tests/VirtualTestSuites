@@ -19,8 +19,9 @@
   "    `exclusive_tests` list will be skipped on all platforms, too.          ",
   " args: A list of command line switches that will be passed to the test     ",
   "     driver for the tests under this virtual suite.                        ",
-  " expires: An expiration date or 'never' if the test suite is not expected  ",
-  "     to expire. Tests will not be run starting from the expiration date.   ",
+  " expires: An expiration date formatted as either `%b %d, %Y` (Jan 1, 2000) ",
+  "     or `%B %d, %Y` (January 1, 2000). If the suite is not supposed to     ",
+  "     expire, use `never`. A bug will be filed for removing expired suites. ",
 
   {
     "prefix": "pna-permission",
