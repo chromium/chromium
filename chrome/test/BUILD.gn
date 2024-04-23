@@ -12022,6 +12022,7 @@ if (!is_android) {
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/common",
       "//chrome/renderer",
+      "//components/app_constants",
       "//components/bookmarks/browser",
       "//components/bookmarks/test",
       "//components/browser_sync",
