@@ -235,6 +235,16 @@ TEST_F(TabGroupSyncServiceTest, UpdateLocalTabGroupMapping) {
                                  group_1_.saved_tabs());
 }
 
+TEST_F(TabGroupSyncServiceTest, RemoveLocalTabGroupMapping) {
+  auto retrieved_group = tab_group_sync_service_->GetGroup(local_group_id_1_);
+  EXPECT_TRUE(retrieved_group.has_value());
+
+  tab_group_sync_service_->RemoveLocalTabGroupMapping(local_group_id_1_);
+
+  retrieved_group = tab_group_sync_service_->GetGroup(local_group_id_1_);
+  EXPECT_FALSE(retrieved_group.has_value());
+}
+
 TEST_F(TabGroupSyncServiceTest, AddTab) {
   auto local_tab_id_2 = test::GenerateRandomTabID();
   tab_group_sync_service_->AddTab(local_group_id_1_, local_tab_id_2,
@@ -244,6 +254,26 @@ TEST_F(TabGroupSyncServiceTest, AddTab) {
   auto group = tab_group_sync_service_->GetGroup(group_1_.saved_guid());
   EXPECT_TRUE(group.has_value());
   EXPECT_EQ(2u, group->saved_tabs().size());
+}
+
+TEST_F(TabGroupSyncServiceTest, AddUpdateRemoveTabWithUnknownGroupId) {
+  auto unknown_group_id = test::GenerateRandomTabGroupID();
+  auto local_tab_id = test::GenerateRandomTabID();
+  tab_group_sync_service_->AddTab(unknown_group_id, local_tab_id,
+                                  u"random tab title", GURL("www.google.com"),
+                                  std::nullopt);
+
+  auto group = tab_group_sync_service_->GetGroup(unknown_group_id);
+  EXPECT_FALSE(group.has_value());
+
+  tab_group_sync_service_->UpdateTab(unknown_group_id, local_tab_id,
+                                     u"random tab title",
+                                     GURL("www.google.com"), std::nullopt);
+
+  group = tab_group_sync_service_->GetGroup(unknown_group_id);
+  EXPECT_FALSE(group.has_value());
+
+  tab_group_sync_service_->RemoveTab(unknown_group_id, local_tab_id);
 }
 
 TEST_F(TabGroupSyncServiceTest, RemoveTab) {
@@ -306,9 +336,18 @@ TEST_F(TabGroupSyncServiceTest, UpdateLocalTabId) {
   EXPECT_EQ(local_tab_id_2, updated_tab->local_tab_id().value());
 }
 
-TEST_F(TabGroupSyncServiceTest, OnInitialized) {
+TEST_F(TabGroupSyncServiceTest, AddObserverBeforeInitialize) {
   EXPECT_CALL(*observer_, OnInitialized()).Times(1);
   model_->LoadStoredEntries(std::vector<sync_pb::SavedTabGroupSpecifics>());
+}
+
+TEST_F(TabGroupSyncServiceTest, AddObserverAfterInitialize) {
+  EXPECT_CALL(*observer_, OnInitialized()).Times(1);
+  model_->LoadStoredEntries(std::vector<sync_pb::SavedTabGroupSpecifics>());
+
+  auto observer2 = std::make_unique<MockTabGroupSyncServiceObserver>();
+  EXPECT_CALL(*observer2, OnInitialized()).Times(1);
+  tab_group_sync_service_->AddObserver(observer2.get());
 }
 
 TEST_F(TabGroupSyncServiceTest, OnTabGroupAdded) {
