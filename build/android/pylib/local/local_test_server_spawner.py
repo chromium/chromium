@@ -35,12 +35,12 @@ def _WaitUntil(predicate, max_attempts=5):
 
 
 class PortForwarderAndroid(chrome_test_server_spawner.PortForwarder):
-
-  def __init__(self, device):
+  def __init__(self, device, tool):
     self.device = device
+    self.tool = tool
 
   def Map(self, port_pairs):
-    forwarder.Forwarder.Map(port_pairs, self.device)
+    forwarder.Forwarder.Map(port_pairs, self.device, self.tool)
 
   def GetDevicePortForHostPort(self, host_port):
     return forwarder.Forwarder.DevicePortForHostPort(host_port)
@@ -60,11 +60,12 @@ class PortForwarderAndroid(chrome_test_server_spawner.PortForwarder):
 
 class LocalTestServerSpawner(test_server.TestServer):
 
-  def __init__(self, port, device):
+  def __init__(self, port, device, tool):
     super().__init__()
     self._device = device
     self._spawning_server = chrome_test_server_spawner.SpawningServer(
-        port, PortForwarderAndroid(device), MAX_TEST_SERVER_INSTANCES)
+        port, PortForwarderAndroid(device, tool), MAX_TEST_SERVER_INSTANCES)
+    self._tool = tool
 
   @property
   def server_address(self):
@@ -84,7 +85,8 @@ class LocalTestServerSpawner(test_server.TestServer):
     self._device.WriteFile(
         '%s/net-test-server-config' % self._device.GetExternalStoragePath(),
         test_server_config)
-    forwarder.Forwarder.Map([(self.port, self.port)], self._device)
+    forwarder.Forwarder.Map(
+        [(self.port, self.port)], self._device, self._tool)
     self._spawning_server.Start()
 
   #override

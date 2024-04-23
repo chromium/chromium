@@ -270,9 +270,6 @@ def AddCommonOptions(parser):
                       help='If present, store test results on this path.')
   parser.add_argument('--isolated-script-test-perf-output',
                       help='If present, store chartjson results on this path.')
-  parser.add_argument('--timeout-scale',
-                      type=float,
-                      help='Factor by which timeouts should be scaled.')
 
   AddTestLauncherOptions(parser)
 
@@ -332,7 +329,12 @@ def AddDeviceOptions(parser):
       '--recover-devices',
       action='store_true',
       help='Attempt to recover devices prior to the final retry. Warning: '
-      'this will cause all devices to reboot.')
+           'this will cause all devices to reboot.')
+  parser.add_argument(
+      '--tool',
+      dest='tool',
+      help='Run the test under a tool '
+           '(use --tool help to list them)')
 
   parser.add_argument(
       '--upload-logcats-file',
@@ -648,6 +650,10 @@ def AddInstrumentationTestOptions(parser):
       help=('Not actually used for instrumentation tests, but can be used as '
             'a proxy for determining if the current run is a retry without '
             'patch.'))
+  parser.add_argument(
+      '--timeout-scale',
+      type=float,
+      help='Factor by which timeouts should be scaled.')
   parser.add_argument(
       '--is-unit-test',
       action='store_true',

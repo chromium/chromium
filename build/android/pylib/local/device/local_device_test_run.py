@@ -19,6 +19,7 @@ from devil.android import device_errors
 from devil.android.sdk import version_codes
 from devil.android.tools import device_recovery
 from devil.utils import signal_handler
+from pylib import valgrind_tools
 from pylib.base import base_test_result
 from pylib.base import test_collection
 from pylib.base import test_exception
@@ -47,6 +48,7 @@ class LocalDeviceTestRun(test_run.TestRun):
 
   def __init__(self, env, test_instance):
     super().__init__(env, test_instance)
+    self._tools = {}
     # This is intended to be filled by a child class.
     self._installed_packages = []
     env.SetPreferredAbis(test_instance.GetPreferredAbis())
@@ -357,6 +359,12 @@ class LocalDeviceTestRun(test_run.TestRun):
     # UnitTests Batches as single tests.
     return ('Batch' not in annotations
             or annotations['Batch']['value'] != 'UnitTests')
+
+  def GetTool(self, device):
+    if str(device) not in self._tools:
+      self._tools[str(device)] = valgrind_tools.CreateTool(
+          self._env.tool, device)
+    return self._tools[str(device)]
 
   def _CreateShardsForDevices(self, tests):
     raise NotImplementedError

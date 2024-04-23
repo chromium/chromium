@@ -1,0 +1,8 @@
+Name: asan_device_setup.sh
+License: Apache 2.0
+Version: fbb9132e71a2
+URL: https://reviews.llvm.org/source/llvm-github/browse/main/compiler-rt/lib/asan/scripts/asan_device_setup
+Security Critical: no
+Shipped: no
+
+asan_device_setup.sh is a verbatim copy of asan_device_setup in the LLVM trunk.
