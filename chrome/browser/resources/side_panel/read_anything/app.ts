@@ -1129,6 +1129,11 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const endBoundary = isTextTooLong ?
         this.getAccessibleTextLength(utteranceText) :
         utteranceText.length;
+    this.playTextWithBoundaries(utteranceText, isTextTooLong, endBoundary);
+  }
+
+  private playTextWithBoundaries(
+      utteranceText: string, isTextTooLong: boolean, endBoundary: number) {
     const message =
         new SpeechSynthesisUtterance(utteranceText.substring(0, endBoundary));
 
@@ -1136,6 +1141,18 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // TODO(crbug.com/1474951): Add more sophisticated error handling.
       if (error.error === 'interrupted') {
         // SpeechSynthesis.cancel() was called, therefore, do nothing.
+        return;
+      }
+
+      if (error.error === 'text-too-long') {
+        // This is unlikely to happen, as the length limit on most voices
+        // is quite long. However, if we do hit a limit, we should just use
+        // the accessible text length boundaries to shorten the text. Even
+        // if this gives a much smaller sentence than TTS would have supported,
+        // this is still preferable to no speech.
+        this.synth.cancel();
+        this.playTextWithBoundaries(
+            utteranceText, true, this.getAccessibleTextLength(utteranceText));
         return;
       }
       this.synth.cancel();
