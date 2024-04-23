@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/env.h"
 #include "ui/base/interaction/interactive_test.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace {
 
@@ -67,11 +69,13 @@ constexpr char kCampaignsNudge[] = R"(
                 "url": "https://www.google.com",
                 "disposition": 0
               }
-            }
+            },
+            "shouldMarkDismissed": true
           },
           "secondaryButton": {
             "label": "No",
-            "action": {}
+            "action": {},
+            "shouldMarkDismissed": true
           }
         }
       }
@@ -90,7 +94,9 @@ base::FilePath GetCampaignsFilePath(const base::ScopedTempDir& dir) {
 
 class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
  public:
-  CampaignsManagerInteractiveUiTest() {
+  CampaignsManagerInteractiveUiTest()
+      : animation_duration_(
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kGrowthCampaignsInConsumerSession);
     CHECK(temp_dir_.CreateUniqueTempDir());
@@ -137,6 +143,14 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
   }
 
  protected:
+  auto CheckHistogramCounts(const std::string& name,
+                            int sample,
+                            int expected_count) {
+    return Do([=]() {
+      histogram_tester_.ExpectUniqueSample(name, sample, expected_count);
+    });
+  }
+
   feature_engagement::test::MockTracker* GetMockTracker() {
     return static_cast<feature_engagement::test::MockTracker*>(
         feature_engagement::TrackerFactory::GetInstance()->GetForBrowserContext(
@@ -148,6 +162,8 @@ class CampaignsManagerInteractiveUiTest : public InteractiveAshTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::CallbackListSubscription create_services_subscription_;
+  base::HistogramTester histogram_tester_;
+  ui::ScopedAnimationDurationScaleMode animation_duration_;
   base::WeakPtrFactory<CampaignsManagerInteractiveUiTest> weak_ptr_factory_{
       this};
 };
@@ -218,10 +234,19 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiNudgeTest,
   aura::Env* env = aura::Env::GetInstance();
   ASSERT_TRUE(env);
 
-  RunTestSequence(InAnyContext(Steps(LaunchSystemWebApp(
-                      ash::SystemWebAppType::PERSONALIZATION))),
-                  WaitForWindowWithTitle(env, u"Wallpaper & style"),
-                  WaitForShow(ash::SystemNudgeView::kBubbleIdForTesting));
+  RunTestSequence(
+      InAnyContext(
+          Steps(LaunchSystemWebApp(ash::SystemWebAppType::PERSONALIZATION))),
+      WaitForWindowWithTitle(env, u"Wallpaper & style"),
+      WaitForShow(ash::SystemNudgeView::kBubbleIdForTesting), FlushEvents(),
+      InAnyContext(Steps(
+          CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 100, 1),
+          CheckHistogramCounts(
+              "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500", 100, 0),
+          CheckHistogramCounts(
+              "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 100, 0),
+          CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100,
+                               0))));
 }
 
 IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiNudgeTest,
@@ -232,7 +257,12 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiNudgeTest,
   RunTestSequence(
       InAnyContext(Steps(LaunchSystemWebApp(ash::SystemWebAppType::SETTINGS))),
       WaitForWindowWithTitle(env, u"Settings"),
-      EnsureNotPresent(ash::SystemNudgeView::kBubbleIdForTesting));
+      EnsureNotPresent(ash::SystemNudgeView::kBubbleIdForTesting),
+      FlushEvents(),
+      InAnyContext(Steps(
+          CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 100, 0),
+          CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100,
+                               0))));
 }
 
 IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiNudgeTest,
@@ -246,7 +276,15 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiNudgeTest,
       WaitForShow(ash::SystemNudgeView::kBubbleIdForTesting), FlushEvents(),
       PressButton(ash::SystemNudgeView::kPrimaryButtonIdForTesting),
       WaitForHide(ash::SystemNudgeView::kBubbleIdForTesting),
-      WaitForWindowWithTitle(env, u"www.google.com"));
+      WaitForWindowWithTitle(env, u"www.google.com"), FlushEvents(),
+      InAnyContext(Steps(
+          CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 100, 1),
+          CheckHistogramCounts(
+              "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500", 100, 1),
+          CheckHistogramCounts(
+              "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 100, 0),
+          CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100,
+                               1))));
 }
 
 IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiNudgeTest,
@@ -259,5 +297,13 @@ IN_PROC_BROWSER_TEST_F(CampaignsManagerInteractiveUiNudgeTest,
           Steps(LaunchSystemWebApp(ash::SystemWebAppType::PERSONALIZATION))),
       WaitForShow(ash::SystemNudgeView::kBubbleIdForTesting), FlushEvents(),
       PressButton(ash::SystemNudgeView::kSecondaryButtonIdForTesting),
-      WaitForHide(ash::SystemNudgeView::kBubbleIdForTesting));
+      WaitForHide(ash::SystemNudgeView::kBubbleIdForTesting), FlushEvents(),
+      InAnyContext(Steps(
+          CheckHistogramCounts("Ash.Growth.Ui.Impression.Campaigns500", 100, 1),
+          CheckHistogramCounts(
+              "Ash.Growth.Ui.ButtonPressed.Button0.Campaigns500", 100, 0),
+          CheckHistogramCounts(
+              "Ash.Growth.Ui.ButtonPressed.Button1.Campaigns500", 100, 1),
+          CheckHistogramCounts("Ash.Growth.Ui.Dismissed.Campaigns500", 100,
+                               1))));
 }
