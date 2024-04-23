@@ -228,6 +228,5 @@ pylib/utils/logging_utils.py
 pylib/utils/repo_utils.py
 pylib/utils/test_filter.py
 pylib/utils/time_profile.py
-pylib/valgrind_tools.py
 test_runner.py
 tombstones.py
