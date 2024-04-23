@@ -2792,6 +2792,25 @@ void EnclaveManager::ClearCachedKeysForTesting() {
   hardware_key_ = nullptr;
 }
 
+void EnclaveManager::ResetForTesting() {
+  store_keys_count_ = 0;
+  user_verifying_key_ = nullptr;
+  hardware_key_ = nullptr;
+  secret_.clear();
+  secret_version_ = -1;
+  pending_actions_.clear();
+  load_callbacks_.clear();
+  state_machine_.reset();
+  pending_keys_.reset();
+  currently_writing_ = false;
+  pending_write_ = std::nullopt;
+  identity_observer_.reset();
+  primary_account_info_.reset();
+  user_ = nullptr;
+  local_state_.reset();
+  loading_ = false;
+}
+
 // static
 std::string EnclaveManager::MakeWrappedPINForTesting(
     base::span<const uint8_t> security_domain_secret,
@@ -3076,7 +3095,7 @@ void EnclaveManager::DoWriteState(std::string serialized) {
             std::string encrypted;
             return OSCrypt::EncryptString(contents, &encrypted) &&
                    base::ImportantFileWriter::WriteFileAtomically(path,
-                                                                  contents);
+                                                                  encrypted);
           },
           file_path_, std::move(serialized)),
       base::BindOnce(&EnclaveManager::WriteStateComplete,

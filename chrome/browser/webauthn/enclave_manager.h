@@ -224,6 +224,10 @@ class EnclaveManager : public KeyedService {
   // Release the cached HW and UV key references.
   void ClearCachedKeysForTesting();
 
+  // Reset the EnclaveManager to simulate creating a new one in initialized
+  // state.
+  void ResetForTesting();
+
   // Create a wrapped PIN, suitable for putting into a simulated security domain
   // member.
   static std::string MakeWrappedPINForTesting(

@@ -224,12 +224,18 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     explicit DelegateObserver(EnclaveAuthenticatorBrowserTest* test_instance)
         : test_instance_(test_instance) {
       run_loop_ = std::make_unique<base::RunLoop>();
+      destruction_run_loop_ = std::make_unique<base::RunLoop>();
     }
     virtual ~DelegateObserver() = default;
 
     void WaitForUI() {
       run_loop_->Run();
       run_loop_ = std::make_unique<base::RunLoop>();
+    }
+
+    void WaitForDelegateDestruction() {
+      destruction_run_loop_->Run();
+      destruction_run_loop_ = std::make_unique<base::RunLoop>();
     }
 
     void SetPendingTrustedVaultConnection(
@@ -248,6 +254,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
 
     void OnDestroy(ChromeAuthenticatorRequestDelegate* delegate) override {
       test_instance_->UpdateRequestDelegate(nullptr);
+      destruction_run_loop_->QuitWhenIdle();
     }
 
     std::vector<std::unique_ptr<device::cablev2::Pairing>>
@@ -275,6 +282,7 @@ class EnclaveAuthenticatorBrowserTest : public SyncTest {
     raw_ptr<EnclaveAuthenticatorBrowserTest> test_instance_;
     std::unique_ptr<trusted_vault::TrustedVaultConnection> pending_connection_;
     std::unique_ptr<base::RunLoop> run_loop_;
+    std::unique_ptr<base::RunLoop> destruction_run_loop_;
   };
 
   class ModelObserver : public AuthenticatorRequestDialogModel::Observer {
@@ -934,6 +942,73 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   EXPECT_EQ(browser()->profile()->GetPrefs()->GetInteger(
                 webauthn::pref_names::kEnclaveFailedPINAttemptsCount),
             0);
+}
+
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       GpmPinRegistrationPersistAcrossRestart) {
+  /* Test script:
+   *  - Prerequisites:
+   *       Enclave not registered
+   *       No existing security domain secrets
+   *       Existing user account with password sync enabled
+   *       Platform UV unavailable
+   * 1. Modal MakeCredential request invoked by RP
+   * 2. Mechanism selection appears; test chooses enclave credential
+   * 3. UI for onboarding appears; test accepts it
+   * 4. Test selects a GPM PIN
+   * 5. Device registration with enclave succeeds
+   * 6. MakeCredential succeeds
+   * 7. Test clears the EnclaveManager state to force load from disk
+   * 8. Modal MakeCredential request invoked by RP
+   * 9. Mechanism selection appears; test chooses enclave credential
+   */
+  trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult
+      registration_state_result;
+  registration_state_result.state = trusted_vault::
+      DownloadAuthenticationFactorsRegistrationStateResult::State::kEmpty;
+  SetMockVaultConnectionOnRequestDelegate(std::move(registration_state_result));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kEmpty);
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogController::Step::kGPMOnboarding);
+  SimulateEnclaveMechanismSelection();
+  model_observer()->WaitForStep();
+
+  dialog_model()->OnGPMOnboardingAccepted();
+  EXPECT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+
+  delegate_observer()->WaitForDelegateDestruction();
+
+  EnclaveManagerFactory::GetForProfile(browser()->profile())->ResetForTesting();
+
+  EXPECT_EQ(
+      EnclaveManagerFactory::GetForProfile(browser()->profile())->is_loaded(),
+      false);
+
+  // Checks that a following request goes straight to ready state.
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvDiscouraged);
+  delegate_observer()->WaitForUI();
+  EXPECT_EQ(request_delegate()
+                ->enclave_controller_for_testing()
+                ->account_state_for_testing(),
+            GPMEnclaveController::AccountState::kReady);
 }
 
 #endif  // !defined(MEMORY_SANITIZER)
