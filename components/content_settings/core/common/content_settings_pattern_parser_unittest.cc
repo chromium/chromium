@@ -280,10 +280,10 @@ TEST(ContentSettingsPatternParserTest, ParseFilePatterns) {
 }
 
 TEST(ContentSettingsPatternParserTest, ParseChromePatterns) {
-  // The schemes chrome-extension:// and chrome-search:// are valid,
-  // and chrome-not-search:// is not, because the former two are registered
-  // as non-domain wildcard non-port schemes in components_test_suite.cc,
-  // and the last one isn't.
+  // The schemes chrome-extension://, chrome-search:// and isolated-app:// are
+  // valid, and chrome-not-search:// is not, because the former three are
+  // registered as non-domain wildcard non-port schemes in
+  // components_test_suite.cc, and the last one isn't.
   ::testing::StrictMock<MockBuilder> builder;
 
   // Valid chrome-extension:// URL.
@@ -312,6 +312,20 @@ TEST(ContentSettingsPatternParserTest, ParseChromePatterns) {
       .WillOnce(::testing::Return(&builder));
   content_settings::PatternParser::Parse(
       "chrome-search://local-ntp/local-ntp.html", &builder);
+  ::testing::Mock::VerifyAndClear(&builder);
+
+  // Valid isolated-app:// URL.
+  EXPECT_CALL(builder, WithScheme("isolated-app"))
+      .Times(1)
+      .WillOnce(::testing::Return(&builder));
+  EXPECT_CALL(builder, WithHost("pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic"))
+      .Times(1)
+      .WillOnce(::testing::Return(&builder));
+  EXPECT_CALL(builder, WithPath("/"))
+      .Times(1)
+      .WillOnce(::testing::Return(&builder));
+  content_settings::PatternParser::Parse(
+      "isolated-app://pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic/", &builder);
   ::testing::Mock::VerifyAndClear(&builder);
 
   // Not a non-domain wildcard non-port scheme implies a port is parsed.

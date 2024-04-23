@@ -43,7 +43,7 @@ namespace {
 // to extensions and chrome/common.
 const char* const kNonWildcardDomainNonPortSchemes[] = {
     "chrome-extension", "chrome-search", "chrome", "chrome-untrusted",
-    "devtools"};
+    "devtools", "isolated-app"};
 
 class ComponentsTestSuite : public base::TestSuite {
  public:
@@ -62,6 +62,7 @@ class ComponentsTestSuite : public base::TestSuite {
     url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
     url::AddStandardScheme("chrome-search", url::SCHEME_WITH_HOST);
     url::AddStandardScheme("chrome-distiller", url::SCHEME_WITH_HOST);
+    url::AddStandardScheme("isolated-app", url::SCHEME_WITH_HOST);
 
 #if BUILDFLAG(USE_BLINK)
     gl::GLSurfaceTestSupport::InitializeOneOff();

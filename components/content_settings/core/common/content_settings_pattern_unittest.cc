@@ -471,6 +471,25 @@ TEST(ContentSettingsPatternTest, FromString_ExtensionPatterns) {
                       "chrome-extension://peoadpeiejnhkmpaakpnompolbglelel/")));
 }
 
+TEST(ContentSettingsPatternTest, FromString_IsolatedAppPatterns) {
+  EXPECT_TRUE(
+      Pattern("isolated-app://"
+              "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic/")
+          .IsValid());
+  EXPECT_EQ(
+      "isolated-app://"
+      "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic/",
+      Pattern("isolated-app://"
+              "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic/")
+          .ToString());
+  EXPECT_TRUE(
+      Pattern("isolated-app://"
+              "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic/")
+          .Matches(GURL(
+              "isolated-app://"
+              "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic/")));
+}
+
 TEST(ContentSettingsPatternTest, FromString_SearchPatterns) {
   EXPECT_TRUE(Pattern("chrome-search://local-ntp/").IsValid());
   EXPECT_EQ("chrome-search://local-ntp/",
@@ -587,6 +606,9 @@ TEST(ContentSettingsPatternTest, FromString_WithWildcards) {
   EXPECT_TRUE(Pattern("http://*:8080").IsValid());
   EXPECT_TRUE(Pattern("*://*").IsValid());
   EXPECT_STREQ("*", Pattern("*://*").ToString().c_str());
+
+  EXPECT_FALSE(Pattern("chrome-extension://*").IsValid());
+  EXPECT_FALSE(Pattern("isolated-app://*").IsValid());
 }
 
 TEST(ContentSettingsPatternTest, FromString_Canonicalized) {
@@ -991,6 +1013,10 @@ TEST(ContentSettingsPatternTest, Schemes) {
             Pattern("chrome-untrusted://sample/").GetScheme());
   EXPECT_EQ(ContentSettingsPattern::SCHEME_DEVTOOLS,
             Pattern("devtools://devtools/").GetScheme());
+  EXPECT_EQ(ContentSettingsPattern::SCHEME_ISOLATEDAPP,
+            Pattern("isolated-app://"
+                    "pt2jysa7yu326m2cbu5mce4rrajvguagronrsqwn5dhbaris6eaaaaic/")
+                .GetScheme());
 }
 
 TEST(ContentSettingsPatternTest, MatchesSingleOrigin) {

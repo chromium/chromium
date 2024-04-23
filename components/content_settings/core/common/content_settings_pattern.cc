@@ -36,7 +36,8 @@ const char* const kSchemeNames[] = {"wildcard",         "other",
                                     url::kHttpScheme,   url::kHttpsScheme,
                                     url::kFileScheme,   "chrome-extension",
                                     "chrome-search",    "chrome",
-                                    "chrome-untrusted", "devtools"};
+                                    "chrome-untrusted", "devtools",
+                                    "isolated-app"};
 
 static_assert(std::size(kSchemeNames) == ContentSettingsPattern::SCHEME_MAX,
               "kSchemeNames should have SCHEME_MAX elements");

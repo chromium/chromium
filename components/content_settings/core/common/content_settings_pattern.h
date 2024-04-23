@@ -80,6 +80,7 @@ class ContentSettingsPattern {
     SCHEME_CHROME,
     SCHEME_CHROMEUNTRUSTED,
     SCHEME_DEVTOOLS,
+    SCHEME_ISOLATEDAPP,
     SCHEME_MAX,
   };
 
