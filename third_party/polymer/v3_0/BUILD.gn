@@ -5,8 +5,11 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/include_polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/resources/tools/minify_js.gni")
+
+assert(include_polymer)
 
 js_files = [
   "iron-a11y-announcer/iron-a11y-announcer.js",
