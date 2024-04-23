@@ -128,6 +128,7 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   void ShowPaymentMethodSettings() override;
   void CreditCardSuggestionSelected(std::string unique_id,
                                     bool is_virtual) override;
+  void IbanSuggestionSelected(Iban::Guid guid) override;
   void OnDismissed(bool dismissed_by_user) override;
 
   void LogMetricsAfterSubmission(const FormStructure& submitted_form) override;

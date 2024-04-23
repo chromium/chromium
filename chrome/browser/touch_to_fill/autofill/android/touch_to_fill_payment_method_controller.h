@@ -67,6 +67,9 @@ class TouchToFillPaymentMethodController
       JNIEnv* env,
       base::android::JavaParamRef<jstring> unique_id,
       bool is_virtual) override;
+  void IbanSuggestionSelected(
+      JNIEnv* env,
+      base::android::JavaParamRef<jstring> guid) override;
 
   TouchToFillKeyboardSuppressor& keyboard_suppressor_for_test() {
     return keyboard_suppressor_;

@@ -43,6 +43,7 @@
 #include "components/autofill/core/browser/crowdsourcing/mock_autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_data_importer_test_api.h"
@@ -483,6 +484,7 @@ class MockTouchToFillDelegate : public TouchToFillDelegate {
               CreditCardSuggestionSelected,
               (std::string unique_id, bool is_virtual),
               (override));
+  MOCK_METHOD(void, IbanSuggestionSelected, (Iban::Guid guid), (override));
   MOCK_METHOD(void, OnDismissed, (bool dismissed_by_user), (override));
   MOCK_METHOD(void,
               LogMetricsAfterSubmission,

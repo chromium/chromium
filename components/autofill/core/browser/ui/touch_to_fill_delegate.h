@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -48,6 +49,8 @@ class TouchToFillDelegate {
   virtual void ShowPaymentMethodSettings() = 0;
   virtual void CreditCardSuggestionSelected(std::string unique_id,
                                             bool is_virtual) = 0;
+  // TODO(b/334098318): Extend this method to support server IBAN.
+  virtual void IbanSuggestionSelected(Iban::Guid guid) = 0;
   virtual void OnDismissed(bool dismissed_by_user) = 0;
 
   virtual void LogMetricsAfterSubmission(

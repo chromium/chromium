@@ -67,6 +67,14 @@ class TouchToFillPaymentMethodControllerBridge
         }
     }
 
+    @Override
+    public void ibanSuggestionSelected(String guid) {
+        if (mNativeTouchToFillPaymentMethodViewController != 0) {
+            TouchToFillPaymentMethodControllerBridgeJni.get()
+                    .ibanSuggestionSelected(mNativeTouchToFillPaymentMethodViewController, guid);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void onDismissed(
@@ -80,5 +88,7 @@ class TouchToFillPaymentMethodControllerBridge
                 long nativeTouchToFillPaymentMethodViewController,
                 String uniqueId,
                 boolean isVirtual);
+
+        void ibanSuggestionSelected(long nativeTouchToFillPaymentMethodViewController, String guid);
     }
 }

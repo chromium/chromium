@@ -147,6 +147,15 @@ void TouchToFillPaymentMethodController::CreditCardSuggestionSelected(
   }
 }
 
+void TouchToFillPaymentMethodController::IbanSuggestionSelected(
+    JNIEnv* env,
+    base::android::JavaParamRef<jstring> guid) {
+  if (delegate_) {
+    delegate_->IbanSuggestionSelected(
+        Iban::Guid((*env).GetStringUTFChars(guid, nullptr)));
+  }
+}
+
 base::android::ScopedJavaLocalRef<jobject>
 TouchToFillPaymentMethodController::GetJavaObject() {
   if (!java_object_) {

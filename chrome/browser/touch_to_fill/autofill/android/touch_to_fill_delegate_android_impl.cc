@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #include "components/autofill/core/browser/ui/popup_hiding_reasons.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -292,6 +293,24 @@ void TouchToFillDelegateAndroidImpl::CreditCardSuggestionSelected(
         query_form_, query_field_, *card,
         {.trigger_source = AutofillTriggerSource::kTouchToFillCreditCard});
   }
+}
+
+void TouchToFillDelegateAndroidImpl::IbanSuggestionSelected(Iban::Guid guid) {
+  HideTouchToFill();
+
+  manager_->client().GetIbanAccessManager()->FetchValue(
+      Suggestion::BackendId(Suggestion::Guid(guid.value())),
+      base::BindOnce(
+          [](base::WeakPtr<TouchToFillDelegateAndroidImpl> delegate,
+             const std::u16string& value) {
+            if (delegate) {
+              delegate->manager_->FillOrPreviewField(
+                  mojom::ActionPersistence::kFill,
+                  mojom::FieldActionType::kReplaceAll, delegate->query_form_,
+                  delegate->query_field_, value, PopupItemId::kIbanEntry);
+            }
+          },
+          GetWeakPtr()));
 }
 
 void TouchToFillDelegateAndroidImpl::OnDismissed(bool dismissed_by_user) {

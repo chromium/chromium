@@ -164,12 +164,15 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
   }
 
   // Helper method to add an IBAN and create an IBAN form.
-  void ConfigureForIbans() {
+  std::string ConfigureForIbans() {
     Iban iban;
     iban.set_value(std::u16string(test::kIbanValue16));
-    autofill_client_.GetPersonalDataManager()->AddAsLocalIban(std::move(iban));
+    std::string guid = autofill_client_.GetPersonalDataManager()
+                           ->test_payments_data_manager()
+                           .AddAsLocalIban(std::move(iban));
     form_ = test::CreateTestIbanFormData(/*value=*/"");
     form_.fields[0].set_is_focusable(true);
+    return guid;
   }
 
   void OnFormsSeen() {
@@ -327,7 +330,7 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
        HideTouchToFillHidesIfShown) {
   TryToShowTouchToFill(/*expected_success=*/true);
 
-  EXPECT_CALL(autofill_client_, HideTouchToFillCreditCard).Times(1);
+  EXPECT_CALL(autofill_client_, HideTouchToFillCreditCard);
   touch_to_fill_delegate_->HideTouchToFill();
   EXPECT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 }
@@ -336,7 +339,7 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
        ResetHidesTouchToFillIfShown) {
   TryToShowTouchToFill(/*expected_success=*/true);
 
-  EXPECT_CALL(autofill_client_, HideTouchToFillCreditCard).Times(1);
+  EXPECT_CALL(autofill_client_, HideTouchToFillCreditCard);
   touch_to_fill_delegate_->Reset();
   EXPECT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 }
@@ -762,7 +765,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
 
   TryToShowTouchToFill(/*expected_success=*/true);
 
-  EXPECT_CALL(autofill_client_, HideTouchToFillCreditCard).Times(1);
+  EXPECT_CALL(autofill_client_, HideTouchToFillCreditCard);
   touch_to_fill_delegate_->CreditCardSuggestionSelected(credit_card.guid(),
                                                         false);
 }
@@ -824,6 +827,22 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   ON_CALL(*browser_autofill_manager_, GetAutofillField(_, _))
       .WillByDefault(Return(nullptr));
   IntendsToShowTouchToFill(/*expected_success=*/true);
+}
+
+TEST_F(TouchToFillDelegateAndroidImplUnitTest, IbanSelectionClosesTheSheet) {
+  std::string guid = ConfigureForIbans();
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  EXPECT_CALL(autofill_client_, HideTouchToFillCreditCard);
+  touch_to_fill_delegate_->IbanSuggestionSelected(Iban::Guid(guid));
+}
+
+TEST_F(TouchToFillDelegateAndroidImplUnitTest, IbanSelectionFillsIbanForm) {
+  std::string guid = ConfigureForIbans();
+  TryToShowTouchToFill(/*expected_success=*/true);
+
+  EXPECT_CALL(*(autofill_client_.GetMockIbanAccessManager()), FetchValue);
+  touch_to_fill_delegate_->IbanSuggestionSelected(Iban::Guid(guid));
 }
 
 }  // namespace autofill

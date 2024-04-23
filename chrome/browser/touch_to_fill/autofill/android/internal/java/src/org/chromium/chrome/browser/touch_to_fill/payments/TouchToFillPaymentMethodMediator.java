@@ -217,7 +217,10 @@ class TouchToFillPaymentMethodMediator {
         RecordHistogram.recordCount100Histogram(TOUCH_TO_FILL_INDEX_SELECTED, mCards.indexOf(card));
     }
 
-    public void onSelectedIban(Iban iban) {}
+    public void onSelectedIban(Iban iban) {
+        if (!mInputProtector.shouldInputBeProcessed()) return;
+        mDelegate.ibanSuggestionSelected(iban.getGuid());
+    }
 
     private PropertyModel createCardModel(
             CreditCard card,

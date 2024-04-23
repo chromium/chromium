@@ -33,6 +33,13 @@ interface TouchToFillPaymentMethodComponent {
          * @param isVirtual A boolean to identify if the card is a virtual card.
          */
         void creditCardSuggestionSelected(String uniqueId, boolean isVirtual);
+
+        /**
+         * Called when the user selects an IBAN.
+         *
+         * @param guid GUID of the IBAN.
+         */
+        void ibanSuggestionSelected(String guid);
     }
 
     /**
