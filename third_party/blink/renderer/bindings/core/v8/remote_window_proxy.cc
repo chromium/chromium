@@ -139,8 +139,7 @@ void RemoteWindowProxy::SetupWindowPrototypeChain() {
 
   // The global proxy object.  Note this is not the global object.
   v8::Local<v8::Object> global_proxy = global_proxy_.Get(GetIsolate());
-  V8DOMWrapper::SetNativeInfo(GetIsolate(), global_proxy, wrapper_type_info,
-                              window);
+  V8DOMWrapper::SetNativeInfo(GetIsolate(), global_proxy, window);
   CHECK(global_proxy == window->AssociateWithWrapper(GetIsolate(), world_,
                                                      wrapper_type_info,
                                                      global_proxy));
@@ -148,8 +147,7 @@ void RemoteWindowProxy::SetupWindowPrototypeChain() {
   // The global object, aka window wrapper object.
   v8::Local<v8::Object> window_wrapper =
       global_proxy->GetPrototype().As<v8::Object>();
-  V8DOMWrapper::SetNativeInfo(GetIsolate(), window_wrapper, wrapper_type_info,
-                              window);
+  V8DOMWrapper::SetNativeInfo(GetIsolate(), window_wrapper, window);
 }
 
 }  // namespace blink

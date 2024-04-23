@@ -906,6 +906,14 @@ void V8ScriptValueSerializer::ThrowDataCloneError(
                             kDoNotExternalize));
 }
 
+v8::Maybe<bool> V8ScriptValueSerializer::IsHostObject(
+    v8::Isolate* isolate,
+    v8::Local<v8::Object> object) {
+  // TODO(328117814): upstream this check to v8 so we don't need to call
+  // delegate for this.
+  return v8::Just(object->IsApiWrapper());
+}
+
 v8::Maybe<bool> V8ScriptValueSerializer::WriteHostObject(
     v8::Isolate* isolate,
     v8::Local<v8::Object> object) {

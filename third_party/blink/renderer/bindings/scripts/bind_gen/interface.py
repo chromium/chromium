@@ -5984,22 +5984,6 @@ def make_indexed_and_named_property_callbacks_and_install_node(cg_context):
     cg_context = cg_context.make_copy(
         v8_callback_type=CodeGenContext.V8_OTHER_CALLBACK)
 
-    if cg_context.class_like.identifier == "WindowProperties":
-        install_node.extend([
-            TextNode("""\
-// Normally, prototype objects don't have internal fields (which are
-// primarily used to hold a ScriptWrapapble pointer) because a single
-// prototype object is shared by multiple platforms objects. However,
-// WindowProperties (also known as the "named properties object") is special.
-// It is always exactly 1:1 with a LocalDOMWindow, and we want the ability to
-// look up that LocalDOMWindow from the given prototype object
-// (V8's Holder()), so it is uniquely permitted to have internal fields on a
-// prototype object.\
-"""),
-            TextNode("${prototype_object_template}->SetInternalFieldCount("
-                     "kV8DefaultWrapperInternalFieldCount);")
-        ])
-
     if props.own_named_getter and "Global" not in interface.extended_attributes:
         add_callback(*make_named_property_getter_callback(
             cg_context.make_copy(named_property_getter=props.named_getter,

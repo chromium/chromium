@@ -120,8 +120,6 @@ void SetupIDLInterfaceTemplate(
   prototype_template->Set(
       v8::Symbol::GetToStringTag(isolate), class_string,
       static_cast<v8::PropertyAttribute>(v8::ReadOnly | v8::DontEnum));
-
-  instance_template->SetInternalFieldCount(kV8DefaultWrapperInternalFieldCount);
 }
 
 void SetupIDLNamespaceTemplate(
@@ -152,8 +150,6 @@ void SetupIDLObservableArrayBackingListTemplate(
     v8::Local<v8::FunctionTemplate> interface_template) {
   interface_template->SetClassName(
       V8AtomicString(isolate, wrapper_type_info->interface_name));
-
-  instance_template->SetInternalFieldCount(kV8DefaultWrapperInternalFieldCount);
 }
 
 void SetupIDLIteratorTemplate(
@@ -196,8 +192,6 @@ void SetupIDLIteratorTemplate(
   prototype_template->Set(
       v8::Symbol::GetToStringTag(isolate), v8_class_string,
       static_cast<v8::PropertyAttribute>(v8::ReadOnly | v8::DontEnum));
-
-  instance_template->SetInternalFieldCount(kV8DefaultWrapperInternalFieldCount);
 }
 
 std::optional<size_t> FindIndexInEnumStringTable(
@@ -322,8 +316,6 @@ v8::MaybeLocal<v8::Value> CreateLegacyFactoryFunctionFunction(
             .As<v8::FunctionTemplate>();
     function_template->Inherit(interface_template);
     function_template->SetClassName(V8AtomicString(isolate, func_name));
-    function_template->InstanceTemplate()->SetInternalFieldCount(
-        kV8DefaultWrapperInternalFieldCount);
     per_isolate_data->AddV8Template(world, callback_key, function_template);
   }
 

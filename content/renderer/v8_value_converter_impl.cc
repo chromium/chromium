@@ -559,7 +559,7 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Object(
   // See also http://crbug.com/330559.
   base::Value::Dict result;
 
-  if (val->InternalFieldCount())
+  if (val->IsApiWrapper())
     return std::make_unique<base::Value>(std::move(result));
 
   v8::Local<v8::Array> property_names;

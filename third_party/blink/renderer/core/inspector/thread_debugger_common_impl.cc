@@ -659,15 +659,7 @@ double ThreadDebuggerCommonImpl::currentTimeMS() {
 
 bool ThreadDebuggerCommonImpl::isInspectableHeapObject(
     v8::Local<v8::Object> object) {
-  if (object->InternalFieldCount() < kV8DefaultWrapperInternalFieldCount)
-    return true;
-  v8::Local<v8::Value> wrapper =
-      object->GetInternalField(kV8DOMWrapperObjectIndex).As<v8::Value>();
-  // Skip wrapper boilerplates which are like regular wrappers but don't have
-  // native object.
-  if (!wrapper.IsEmpty() && wrapper->IsUndefined())
-    return false;
-  return true;
+  return !object->IsApiWrapper() || V8DOMWrapper::IsWrapper(isolate_, object);
 }
 
 static void ReturnDataCallback(

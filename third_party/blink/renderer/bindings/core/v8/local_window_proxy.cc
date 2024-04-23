@@ -312,8 +312,7 @@ void LocalWindowProxy::SetupWindowPrototypeChain() {
   v8::Local<v8::Object> global_proxy = context->Global();
   CHECK(global_proxy_ == global_proxy);
   // Use the global proxy as window wrapper object.
-  V8DOMWrapper::SetNativeInfo(GetIsolate(), global_proxy, wrapper_type_info,
-                              window);
+  V8DOMWrapper::SetNativeInfo(GetIsolate(), global_proxy, window);
   CHECK(global_proxy_ == window->AssociateWithWrapper(GetIsolate(), world_,
                                                       wrapper_type_info,
                                                       global_proxy));
@@ -321,8 +320,7 @@ void LocalWindowProxy::SetupWindowPrototypeChain() {
   // The global object, aka window wrapper object.
   v8::Local<v8::Object> window_wrapper =
       global_proxy->GetPrototype().As<v8::Object>();
-  V8DOMWrapper::SetNativeInfo(GetIsolate(), window_wrapper, wrapper_type_info,
-                              window);
+  V8DOMWrapper::SetNativeInfo(GetIsolate(), window_wrapper, window);
 
   // The prototype object of Window interface.
   v8::Local<v8::Object> window_prototype =
@@ -333,8 +331,7 @@ void LocalWindowProxy::SetupWindowPrototypeChain() {
   v8::Local<v8::Object> window_properties =
       window_prototype->GetPrototype().As<v8::Object>();
   CHECK(!window_properties.IsEmpty());
-  V8DOMWrapper::SetNativeInfo(GetIsolate(), window_properties,
-                              wrapper_type_info, window);
+  V8DOMWrapper::SetNativeInfo(GetIsolate(), window_properties, window);
 
   // [CachedAccessor=kWindowProxy]
   V8PrivateProperty::GetCachedAccessor(

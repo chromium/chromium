@@ -15,9 +15,6 @@ namespace {
 void InstallCallableHolderTemplate(v8::Isolate*,
                                    const DOMWrapperWorld&,
                                    v8::Local<v8::Template> interface_template) {
-  v8::Local<v8::ObjectTemplate> instance_template =
-      interface_template.As<v8::FunctionTemplate>()->InstanceTemplate();
-  instance_template->SetInternalFieldCount(kV8DefaultWrapperInternalFieldCount);
 }
 
 const WrapperTypeInfo callable_holder_info = {

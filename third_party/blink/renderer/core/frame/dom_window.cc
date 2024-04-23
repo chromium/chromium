@@ -109,7 +109,7 @@ v8::Local<v8::Object> DOMWindow::AssociateWithWrapper(
   // half-initialized context.
   if (world->DomDataStore().Set</*entered_context=*/false>(
           isolate, this, wrapper_type_info, wrapper)) {
-    V8DOMWrapper::SetNativeInfo(isolate, wrapper, wrapper_type_info, this);
+    V8DOMWrapper::SetNativeInfo(isolate, wrapper, this);
     DCHECK(V8DOMWrapper::HasInternalFieldsSet(isolate, wrapper));
   }
   return wrapper;

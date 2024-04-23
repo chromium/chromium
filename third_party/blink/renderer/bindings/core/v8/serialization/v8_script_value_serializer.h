@@ -115,6 +115,10 @@ class CORE_EXPORT V8ScriptValueSerializer
 
   // v8::ValueSerializer::Delegate
   void ThrowDataCloneError(v8::Local<v8::String> message) override;
+
+  bool HasCustomHostObject(v8::Isolate* isolate) override { return true; }
+  v8::Maybe<bool> IsHostObject(v8::Isolate* isolate,
+                               v8::Local<v8::Object> object) override;
   v8::Maybe<bool> WriteHostObject(v8::Isolate*,
                                   v8::Local<v8::Object> message) override;
   v8::Maybe<uint32_t> GetSharedArrayBufferId(

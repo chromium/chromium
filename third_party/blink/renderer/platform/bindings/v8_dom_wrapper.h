@@ -68,7 +68,6 @@ class V8DOMWrapper {
                              v8::Local<v8::Object> wrapper);
   static void SetNativeInfo(v8::Isolate* isolate,
                             v8::Local<v8::Object> wrapper,
-                            const WrapperTypeInfo* wrapper_type_info,
                             ScriptWrappable* script_wrappable);
   static void ClearNativeInfo(v8::Isolate*, v8::Local<v8::Object>);
 
@@ -83,23 +82,15 @@ class V8DOMWrapper {
 inline void V8DOMWrapper::SetNativeInfo(
     v8::Isolate* isolate,
     v8::Local<v8::Object> wrapper,
-    const WrapperTypeInfo* wrapper_type_info,
     ScriptWrappable* wrappable) {
-  DCHECK_GE(wrapper->InternalFieldCount(), 2);
   DCHECK(wrappable);
-  DCHECK(wrapper_type_info);
-  int indices[] = {kV8DOMWrapperObjectIndex, kV8DOMWrapperTypeIndex};
-  void* values[] = {wrappable, const_cast<WrapperTypeInfo*>(wrapper_type_info)};
-  wrapper->SetAlignedPointerInInternalFields(std::size(indices), indices,
-                                             values);
+  DCHECK(!WrapperTypeInfo::HasLegacyInternalFieldsSet(wrapper));
+  v8::Object::Wrap<kDOMWrappersTag>(isolate, wrapper, wrappable);
 }
 
 inline void V8DOMWrapper::ClearNativeInfo(v8::Isolate* isolate,
                                           v8::Local<v8::Object> wrapper) {
-  int indices[] = {kV8DOMWrapperObjectIndex, kV8DOMWrapperTypeIndex};
-  void* values[] = {nullptr, nullptr};
-  wrapper->SetAlignedPointerInInternalFields(std::size(indices), indices,
-                                             values);
+  v8::Object::Wrap<kDOMWrappersTag>(isolate, wrapper, nullptr);
 }
 
 inline v8::Local<v8::Object> V8DOMWrapper::AssociateObjectWithWrapper(
@@ -110,7 +101,7 @@ inline v8::Local<v8::Object> V8DOMWrapper::AssociateObjectWithWrapper(
   RUNTIME_CALL_TIMER_SCOPE(
       isolate, RuntimeCallStats::CounterId::kAssociateObjectWithWrapper);
   if (DOMDataStore::SetWrapper(isolate, impl, wrapper_type_info, wrapper)) {
-    SetNativeInfo(isolate, wrapper, wrapper_type_info, impl);
+    SetNativeInfo(isolate, wrapper, impl);
     DCHECK(HasInternalFieldsSet(isolate, wrapper));
   }
   SECURITY_CHECK(ToScriptWrappable(isolate, wrapper) == impl);
