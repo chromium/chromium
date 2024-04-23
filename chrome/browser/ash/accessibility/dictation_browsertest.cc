@@ -17,6 +17,7 @@
 #include "ash/system/notification_center/notification_center_test_api.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/statistics_recorder.h"
@@ -121,6 +122,9 @@ static const char* kEnglishDictationCommands[] = {
     "select from phrase to another phrase",
     "move to the next sentence",
     "move to the previous sentence"};
+
+constexpr auto kOfflineNotSupportedLocaleSet =
+    base::MakeFixedFlatSet<std::string_view>({"af-ZA", "kn-IN"});
 
 PrefService* GetActiveUserPrefs() {
   return ProfileManager::GetActiveUserProfile()->GetPrefs();
@@ -286,7 +290,6 @@ class DictationTestBase : public AccessibilityFeatureBrowserTest,
   }
 
   DictationTestUtils* utils() { return utils_.get(); }
-
  private:
   std::unique_ptr<DictationTestUtils> utils_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -329,13 +332,16 @@ IN_PROC_BROWSER_TEST_P(DictationTest, GetAllSupportedLocales) {
     bool installed = it.second.installed;
     if (speech_recognition_type() == speech::SpeechRecognitionType::kOnDevice &&
         locale == speech::kUsEnglishLocale) {
-      // Currently, the only locale supported by SODA is en-US. It should work
-      // offline and be installed.
+      // We are certain that en_US works offline, so that must be true. There
+      // are others too (depending on flags) but we can't test them.  We can be
+      // certain that we haven't installed them though.
       EXPECT_TRUE(works_offline);
       EXPECT_TRUE(installed);
     } else {
-      EXPECT_FALSE(works_offline);
-      EXPECT_FALSE(installed);
+      EXPECT_FALSE(installed) << " for locale " << locale;
+      if (base::Contains(kOfflineNotSupportedLocaleSet, locale)) {
+        EXPECT_FALSE(works_offline) << " for locale " << locale;
+      }
     }
   }
 
@@ -352,13 +358,16 @@ IN_PROC_BROWSER_TEST_P(DictationTest, GetAllSupportedLocales) {
     bool works_offline = it.second.works_offline;
     bool installed = it.second.installed;
     if (locale == speech::kUsEnglishLocale) {
-      // en-US should be marked as "works offline", but it shouldn't be
-      // installed.
+      // We are certain that en_US works offline, so that must be true. There
+      // are others too (depending on flags) but we can't test them.  We can be
+      // certain that we haven't installed them though.
       EXPECT_TRUE(works_offline);
       EXPECT_FALSE(installed);
     } else {
-      EXPECT_FALSE(works_offline);
-      EXPECT_FALSE(installed);
+      EXPECT_FALSE(installed) << " for locale " << locale;
+      if (base::Contains(kOfflineNotSupportedLocaleSet, locale)) {
+        EXPECT_FALSE(works_offline) << " for locale " << locale;
+      }
     }
   }
 }

@@ -332,11 +332,12 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest,
     bool works_offline = dict.FindBool("worksOffline").value();
     bool installed = dict.FindBool("installed").value();
     if (locale == speech::kUsEnglishLocale) {
-      ASSERT_TRUE(works_offline);
-      ASSERT_TRUE(installed);
+      EXPECT_TRUE(works_offline);
+      EXPECT_TRUE(installed);
     } else {
-      ASSERT_FALSE(works_offline);
-      ASSERT_FALSE(installed);
+      // Some locales other than en-us can be installed offline, but should not
+      // be.
+      EXPECT_FALSE(installed) << " for locale " << locale;
     }
   }
 }
