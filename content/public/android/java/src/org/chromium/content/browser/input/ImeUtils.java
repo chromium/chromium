@@ -142,8 +142,16 @@ public class ImeUtils {
 
         if ((inputFlags & WebTextInputFlags.HAS_BEEN_PASSWORD_FIELD) != 0
                 && (outAttrs.inputType & InputType.TYPE_NUMBER_VARIATION_PASSWORD) == 0) {
-            outAttrs.inputType =
-                    InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD;
+            // When input password is visible to user, Blink will send inputType as
+            // TextInputType.TEXT, When it is changed back to non-visible password,
+            // inputType is TextInputType.PASSWORD.
+            if (inputType == TextInputType.TEXT) {
+                outAttrs.inputType =
+                        InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
+            } else if (inputType == TextInputType.PASSWORD) {
+                outAttrs.inputType =
+                        InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD;
+            }
         }
 
         outAttrs.initialSelStart = initialSelStart;
