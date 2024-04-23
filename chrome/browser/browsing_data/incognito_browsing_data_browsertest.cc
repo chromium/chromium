@@ -40,7 +40,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -71,9 +70,6 @@ class IncognitoBrowsingDataBrowserTest
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     enabled_features.push_back(media::kExternalClearKeyForTesting);
 #endif
-    // WebSQL is disabled by default as of M119 (crbug/695592). Enable feature
-    // in tests during deprecation trial and enterprise policy support.
-    enabled_features.push_back(blink::features::kWebSQLAccess);
     InitFeatureLists(std::move(enabled_features), {});
   }
 
@@ -133,8 +129,8 @@ class IncognitoBrowsingDataBrowserTest
     EXPECT_FALSE(HasDataForType(type, GetActiveWebContents(incognito_browser)));
   }
 
-  // Test that storage systems like filesystem and websql, where just an access
-  // creates an empty store, are counted and deleted correctly.
+  // Test that storage systems like filesystem, where just an access creates an
+  // empty store, are counted and deleted correctly.
   void TestEmptySiteData(const std::string& type) {
     Browser* regular_browser = GetRegularBrowser();
     Browser* incognito_browser = GetIncognitoBrowser();
@@ -339,29 +335,6 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
   EXPECT_TRUE(is_power_efficient);
 }
 
-// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_Database DISABLED_Database
-#else
-#define MAYBE_Database Database
-#endif
-// Verify database is reset after Incognito restart.
-IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MAYBE_Database) {
-  GURL url = embedded_test_server()->GetURL("/simple_database.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
-
-  RunScriptAndCheckResult("createTable()", "done");
-  RunScriptAndCheckResult("insertRecord('text')", "done");
-  RunScriptAndCheckResult("getRecords()", "text");
-
-  RestartIncognitoBrowser();
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), url));
-  RunScriptAndCheckResult("createTable()", "done");
-  RunScriptAndCheckResult("insertRecord('text2')", "done");
-  RunScriptAndCheckResult("getRecords()", "text2");
-}
-
 // Verifies that cache is reset after restarting Incognito.
 IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, Cache) {
   // Load several resources.
@@ -472,28 +445,6 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
   TestEmptySiteData("FileSystem");
 }
 
-// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_WebSqlDeletion DISABLED_WebSqlDeletion
-#else
-#define MAYBE_WebSqlDeletion WebSqlDeletion
-#endif
-IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MAYBE_WebSqlDeletion) {
-  TestSiteData("WebSql");
-}
-
-// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_EmptyWebSqlDeletion DISABLED_EmptyWebSqlDeletion
-#else
-#define MAYBE_EmptyWebSqlDeletion EmptyWebSqlDeletion
-#endif
-// Test that empty websql dbs are deleted correctly.
-IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
-                       MAYBE_EmptyWebSqlDeletion) {
-  TestEmptySiteData("WebSql");
-}
-
 IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, IndexedDbDeletion) {
   TestSiteData("IndexedDb");
 }
@@ -543,18 +494,12 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MediaLicenseDeletion) {
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 const std::vector<std::string> kStorageTypes{
-    "Cookie", "LocalStorage",  "FileSystem",   "SessionStorage", "IndexedDb",
-    "WebSql", "ServiceWorker", "CacheStorage", "MediaLicense"};
+    "Cookie",    "LocalStorage",  "FileSystem",   "SessionStorage",
+    "IndexedDb", "ServiceWorker", "CacheStorage", "MediaLicense"};
 
-// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_StorageDoesntWriteToDisk DISABLED_StorageDoesntWriteToDisk
-#else
-#define MAYBE_StorageDoesntWriteToDisk StorageDoesntWriteToDisk
-#endif
 // Test that storage doesn't leave any traces on disk.
 IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest,
-                       MAYBE_StorageDoesntWriteToDisk) {
+                       StorageDoesntWriteToDisk) {
   // Checking leveldb content fails in most cases. See https://crbug.com/1238325
   ASSERT_EQ(0, CheckUserDirectoryForString(kLocalHost, {},
                                            /*check_leveldb_content=*/false));

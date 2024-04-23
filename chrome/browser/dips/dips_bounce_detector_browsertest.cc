@@ -79,7 +79,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/metrics_proto/ukm/source.pb.h"
 #include "url/gurl.h"
@@ -417,10 +416,6 @@ class DIPSBounceDetectorBrowserTest
       : prerender_test_helper_(base::BindRepeating(
             &DIPSBounceDetectorBrowserTest::GetActiveWebContents,
             base::Unretained(this))) {
-    // WebSQL is disabled by default as of M119 (crbug/695592). Enable feature
-    // in tests during deprecation trial and enterprise policy support.
-    enabled_features_.push_back({blink::features::kWebSQLAccess, {}});
-
     enabled_features_.push_back(
         {network::features::kSkipTpcdMitigationsForAds,
          {{"SkipTpcdMitigationsForAdsHeuristics", "true"}}});
@@ -2324,11 +2319,6 @@ IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
 
 IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
                        DiscardFencedFrameCookieClientAccess) {
-  // `StorageType::DATABASE` is disallowed in fenced frames.
-  if (GetParam() == StorageType::DATABASE) {
-    GTEST_SKIP();
-  }
-
   std::vector<std::string> redirects;
   StartAppendingRedirectsTo(&redirects);
 
@@ -2407,14 +2397,11 @@ IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
 
 // WeLocks accesses aren't monitored by the `PageSpecificContentSettings` as
 // they are not persistent.
-// TODO(crbug.com/1449328): Remove `StorageType::DATABASE` once deprecation is
-// complete.
 // TODO(crbug.com/1449328): Remove `StorageType::FILE_SYSTEM` once deprecation
 // is complete.
 INSTANTIATE_TEST_SUITE_P(All,
                          DIPSSiteDataAccessDetectorTest,
-                         ::testing::Values(StorageType::DATABASE,
-                                           StorageType::LOCAL_STORAGE,
+                         ::testing::Values(StorageType::LOCAL_STORAGE,
                                            StorageType::SESSION_STORAGE,
                                            StorageType::CACHE,
                                            StorageType::FILE_SYSTEM,

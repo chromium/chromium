@@ -470,10 +470,6 @@ class BrowsingDataModelBrowserTest
         {blink::features::kFledge, {}},
         {blink::features::kFencedFrames, {}},
         {blink::features::kBrowsingTopics, {}},
-        // WebSQL is disabled by default as of M119 (crbug/695592).
-        // Enable feature in tests during deprecation trial and enterprise
-        // policy support.
-        {blink::features::kWebSQLAccess, {}},
         {net::features::kThirdPartyStoragePartitioning, {}},
         {network::features::kCompressionDictionaryTransportBackend, {}},
         {network::features::kCompressionDictionaryTransport, {}},
@@ -1002,7 +998,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   ASSERT_EQ(browsing_data_model->size(), 0u);
 
   std::vector<std::string> quota_storage_data_types = {
-      "ServiceWorker", "IndexedDb", "FileSystem", "WebSql"};
+      "ServiceWorker", "IndexedDb", "FileSystem"};
 
   for (auto data_type : quota_storage_data_types) {
     SetDataForType(data_type, web_contents());
@@ -1190,7 +1186,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   // as a new access report and repopulates the model, this way we keep it from
   // affecting other quota storage types test.
   std::vector<std::string> quota_storage_data_types = {
-      "IndexedDb", "FileSystem", "WebSql", "ServiceWorker"};
+      "IndexedDb", "FileSystem", "ServiceWorker"};
 
   for (auto data_type : quota_storage_data_types) {
     // Re-Navigate to the page for every data type, to prevent any cached data

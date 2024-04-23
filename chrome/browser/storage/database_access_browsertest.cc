@@ -42,15 +42,19 @@ class WebSqlAccessBrowserTest : public InProcessBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(WebSqlAccessBrowserTest, DefaultDisabled) {
+// WebSQL is disabled everywhere except Android WebView (crbug.com/333756088).
+#if !BUILDFLAG(IS_ANDROID)
+#define MAYBE_DefaultDisabled DISABLED_DefaultDisabled
+#else
+#define MAYBE_DefaultDisabled DefaultDisabled
+#endif
+IN_PROC_BROWSER_TEST_F(WebSqlAccessBrowserTest, MAYBE_DefaultDisabled) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
   EXPECT_FALSE(hasWebSQLAccess(web_contents));
 }
 
-// WebSQL should be accessible when blink::features::kWebSQLAccess is enabled by
-// Origin Trial or chrome://flags.
 class WebSqlAccessEnabledBrowserTest : public WebSqlAccessBrowserTest {
  public:
   WebSqlAccessEnabledBrowserTest() = default;
@@ -59,7 +63,15 @@ class WebSqlAccessEnabledBrowserTest : public WebSqlAccessBrowserTest {
   base::test::ScopedFeatureList feature_list_{blink::features::kWebSQLAccess};
 };
 
-IN_PROC_BROWSER_TEST_F(WebSqlAccessEnabledBrowserTest, FeatureFlagEnabled) {
+// WebSQL is disabled everywhere except Android WebView (crbug.com/333756088).
+#if !BUILDFLAG(IS_ANDROID)
+#define MAYBE_FeatureFlagEnabled DISABLED_FeatureFlagEnabled
+#else
+#define MAYBE_FeatureFlagEnabled FeatureFlagEnabled
+#endif
+// WebSQL should be accessible when blink::features::kWebSQLAccess is enabled.
+IN_PROC_BROWSER_TEST_F(WebSqlAccessEnabledBrowserTest,
+                       MAYBE_FeatureFlagEnabled) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
