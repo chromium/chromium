@@ -23,7 +23,12 @@ IceTransportAdapterImpl::IceTransportAdapterImpl(
     SetupIceTransportChannel();
 }
 
-IceTransportAdapterImpl::~IceTransportAdapterImpl() = default;
+IceTransportAdapterImpl::~IceTransportAdapterImpl() {
+  if (!ice_transport_channel()) {
+    return;
+  }
+  ice_transport_channel()->RemoveGatheringStateCallback(this);
+}
 
 void IceTransportAdapterImpl::StartGathering(
     const cricket::IceParameters& local_parameters,
@@ -79,8 +84,10 @@ void IceTransportAdapterImpl::SetupIceTransportChannel() {
     LOG(ERROR) << "SetupIceTransportChannel called, but ICE transport released";
     return;
   }
-  ice_transport_channel()->SignalGatheringState.connect(
-      this, &IceTransportAdapterImpl::OnGatheringStateChanged);
+  ice_transport_channel()->AddGatheringStateCallback(this,
+      [this](cricket::IceTransportInternal* transport) {
+        OnGatheringStateChanged(transport);
+      });
   ice_transport_channel()->SignalCandidateGathered.connect(
       this, &IceTransportAdapterImpl::OnCandidateGathered);
   ice_transport_channel()->SignalIceTransportStateChanged.connect(
