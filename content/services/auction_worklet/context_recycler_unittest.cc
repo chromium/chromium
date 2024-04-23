@@ -273,6 +273,24 @@ class ContextRecyclerTest : public testing::Test {
     }
   }
 
+  // URL of length url::kMaxURLChars.
+  const std::string& almost_too_long_url() {
+    if (!almost_too_long_url_) {
+      almost_too_long_url_ = "https://report.test/";
+      *almost_too_long_url_ +=
+          std::string(url::kMaxURLChars - almost_too_long_url_->size(), '1');
+    }
+    return *almost_too_long_url_;
+  }
+
+  // URL of length url::kMaxURLChars + 1.
+  const std::string& too_long_url() {
+    if (!too_long_url_) {
+      too_long_url_ = almost_too_long_url() + "2";
+    }
+    return *too_long_url_;
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   const GURL bidding_logic_url_{"https://example.test/script.js"};
@@ -280,6 +298,12 @@ class ContextRecyclerTest : public testing::Test {
   std::unique_ptr<AuctionV8Helper::FullIsolateScope> v8_scope_;
   std::unique_ptr<AuctionV8Helper::TimeLimit> time_limit_;
   std::unique_ptr<AuctionV8Helper::TimeLimitScope> time_limit_scope_;
+
+  // URLs of length url::kMaxURLChars and url::kMaxURLChars + 1. These are
+  // constructed only as needed, since working with URLs this large is fairly
+  // resource intensive.
+  std::optional<std::string> almost_too_long_url_;
+  std::optional<std::string> too_long_url_;
 };
 
 // Test with no binding objects, just context creation.
@@ -355,12 +379,32 @@ TEST_F(ContextRecyclerTest, ForDebuggingOnlyBindings) {
 // Exercise RegisterAdBeaconBindings, and make sure they reset properly.
 TEST_F(ContextRecyclerTest, RegisterAdBeaconBindings) {
   const char kScript[] = R"(
-    function test(num) {
+    function AddNumBeacons(num) {
       let obj = {};
       for (let i = num; i < num * 2; ++i) {
         obj['f' + i] = 'https://example2.test/' + i;
       }
       registerAdBeacon(obj);
+    }
+
+    function RegisterBeaconsTwiceForUrl(url) {
+      registerAdBeacon({call1: url});
+      registerAdBeacon({call2: url});
+    }
+
+    function AddTwoBeaconsForUrl(url) {
+      registerAdBeacon({
+          f1: url,
+          f2: url
+      });
+    }
+
+    function AddThreeBeaconsIncludingOneForUrl(url) {
+      registerAdBeacon({
+          f1: 'https://example2.test/1',
+          f2: url,
+          f3: 'https://example2.test/3',
+      });
     }
   )";
 
@@ -376,7 +420,7 @@ TEST_F(ContextRecyclerTest, RegisterAdBeaconBindings) {
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
-    Run(scope, script, "test", error_msgs,
+    Run(scope, script, "AddNumBeacons", error_msgs,
         gin::ConvertToV8(helper_->isolate(), 1));
     EXPECT_THAT(error_msgs, ElementsAre());
     EXPECT_THAT(
@@ -387,13 +431,86 @@ TEST_F(ContextRecyclerTest, RegisterAdBeaconBindings) {
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
-    Run(scope, script, "test", error_msgs,
+    Run(scope, script, "AddNumBeacons", error_msgs,
         gin::ConvertToV8(helper_->isolate(), 2));
     EXPECT_THAT(error_msgs, ElementsAre());
     EXPECT_THAT(
         context_recycler.register_ad_beacon_bindings()->TakeAdBeaconMap(),
         ElementsAre(Pair("f2", GURL("https://example2.test/2")),
                     Pair("f3", GURL("https://example2.test/3"))));
+  }
+
+  // Calling RegisterBeaconsTwiceForUrl() twice throws an exception. The result
+  // from the first call is returned.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "RegisterBeaconsTwiceForUrl", error_msgs,
+        gin::ConvertToV8(helper_->isolate(),
+                         std::string("https://example2.test/")));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:12 Uncaught TypeError: "
+                    "registerAdBeacon may be called at most once."));
+    EXPECT_THAT(
+        context_recycler.register_ad_beacon_bindings()->TakeAdBeaconMap(),
+        ElementsAre(Pair("call1", "https://example2.test/")));
+  }
+
+  // URLs that are the max URL length should be passed along without issues.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "AddTwoBeaconsForUrl", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), almost_too_long_url()));
+    EXPECT_THAT(error_msgs, ElementsAre());
+    EXPECT_THAT(
+        context_recycler.register_ad_beacon_bindings()->TakeAdBeaconMap(),
+        ElementsAre(Pair("f1", almost_too_long_url()),
+                    Pair("f2", almost_too_long_url())));
+  }
+
+  // URLs that are longer than the max URL length should be ignored.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "AddTwoBeaconsForUrl", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), too_long_url()));
+    EXPECT_THAT(error_msgs, ElementsAre());
+    EXPECT_THAT(
+        context_recycler.register_ad_beacon_bindings()->TakeAdBeaconMap(),
+        ElementsAre());
+  }
+
+  // If there are a mix of URLs that are too long and URLs that are not, the
+  // URLs that are too long should be ignored, leaving only the URLs that are
+  // not too long.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "AddThreeBeaconsIncludingOneForUrl", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), too_long_url()));
+    EXPECT_THAT(error_msgs, ElementsAre());
+    EXPECT_THAT(
+        context_recycler.register_ad_beacon_bindings()->TakeAdBeaconMap(),
+        ElementsAre(Pair("f1", GURL("https://example2.test/1")),
+                    Pair("f3", GURL("https://example2.test/3"))));
+  }
+
+  // Even with a URL that is too long, calling RegisterBeaconsTwiceForUrl()
+  // twice still throws an exception.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "RegisterBeaconsTwiceForUrl", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), too_long_url()));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:12 Uncaught TypeError: "
+                    "registerAdBeacon may be called at most once."));
+    EXPECT_THAT(
+        context_recycler.register_ad_beacon_bindings()->TakeAdBeaconMap(),
+        ElementsAre());
   }
 }
 
@@ -473,19 +590,15 @@ TEST_F(ContextRecyclerTest, ReportBindings) {
   }
   EXPECT_FALSE(context_recycler.report_bindings()->report_url().has_value());
 
-  std::string almost_too_long_url = "https://report.test/";
-  almost_too_long_url +=
-      std::string(url::kMaxURLChars - almost_too_long_url.size(), '1');
-  std::string too_long_url = almost_too_long_url + "2";
   // URLs that are the max URL length should be passed along without issues.
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
     Run(scope, script, "sendReportOnce", error_msgs,
-        gin::ConvertToV8(helper_->isolate(), almost_too_long_url));
+        gin::ConvertToV8(helper_->isolate(), almost_too_long_url()));
     EXPECT_THAT(error_msgs, ElementsAre());
     ASSERT_TRUE(context_recycler.report_bindings()->report_url().has_value());
-    EXPECT_EQ(almost_too_long_url,
+    EXPECT_EQ(almost_too_long_url(),
               context_recycler.report_bindings()->report_url()->spec());
   }
   EXPECT_FALSE(context_recycler.report_bindings()->report_url().has_value());
@@ -496,7 +609,7 @@ TEST_F(ContextRecyclerTest, ReportBindings) {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
     Run(scope, script, "sendReportOnce", error_msgs,
-        gin::ConvertToV8(helper_->isolate(), too_long_url));
+        gin::ConvertToV8(helper_->isolate(), too_long_url()));
     EXPECT_THAT(error_msgs, ElementsAre());
     EXPECT_FALSE(context_recycler.report_bindings()->report_url().has_value());
   }
@@ -508,7 +621,7 @@ TEST_F(ContextRecyclerTest, ReportBindings) {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
     Run(scope, script, "sendReportTwice", error_msgs,
-        gin::ConvertToV8(helper_->isolate(), too_long_url));
+        gin::ConvertToV8(helper_->isolate(), too_long_url()));
     EXPECT_THAT(
         error_msgs,
         ElementsAre("https://example.test/script.js:8 Uncaught TypeError: "

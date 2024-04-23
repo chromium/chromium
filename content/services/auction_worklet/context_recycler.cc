@@ -65,7 +65,7 @@ void ContextRecycler::AddSharedStorageBindings(
 void ContextRecycler::AddRegisterAdBeaconBindings() {
   DCHECK(!register_ad_beacon_bindings_);
   register_ad_beacon_bindings_ =
-      std::make_unique<RegisterAdBeaconBindings>(v8_helper_);
+      std::make_unique<RegisterAdBeaconBindings>(v8_helper_, v8_logger_.get());
   AddBindings(register_ad_beacon_bindings_.get());
 }
 

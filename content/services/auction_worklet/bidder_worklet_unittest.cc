@@ -8914,9 +8914,9 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       GURL("https://win.url"));
 }
 
-// Test the case the debugging report URLs are just below and exactly match the
-// max URL length. When the length is hit, no errors are produced, but the debug
-// report URLs are ignored.
+// Test the case the debugging report URLs are exactly match and are just above
+// the max URL length. When the length is hit, no errors are produced, but the
+// debug report URLs are ignored.
 TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyReportsLengthLimit) {
   std::string almost_too_long_loss_report_url = "https://loss.url/";
@@ -9352,6 +9352,111 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught TypeError: registerAdBeacon(): invalid "
        "reporting url."});
+}
+
+TEST_F(BidderWorkletTest, ReportWinRegisterAdBeaconLongUrl) {
+  // Copying large URLs can cause flaky generateBid() timeouts with the default
+  // value, even on the standard debug bots.
+  browser_signal_reporting_timeout_ = TestTimeouts::action_max_timeout();
+
+  std::string almost_too_long_beacon_url = "https://long.url.test/";
+  almost_too_long_beacon_url +=
+      std::string(url::kMaxURLChars - almost_too_long_beacon_url.size(), '1');
+  std::string too_long_beacon_url = almost_too_long_beacon_url + "2";
+
+  ScopedInspectorSupport inspector_support(v8_helper_.get());
+
+  // A single beacon URL that is too long.
+  {
+    AddJavascriptResponse(
+        &url_loader_factory_, interest_group_bidding_url_,
+        CreateReportWinScript(base::StringPrintf(
+            R"(registerAdBeacon({a:"%s"}))", too_long_beacon_url.c_str())));
+
+    BidderWorklet* worklet_impl;
+    auto worklet =
+        CreateWorklet(interest_group_bidding_url_,
+                      /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+    int id = worklet_impl->context_group_id_for_testing();
+    TestChannel* channel =
+        inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+    base::RunLoop run_loop;
+    RunReportWinExpectingResultAsync(
+        worklet_impl, /*expected_report_url=*/std::nullopt,
+        /*expected_ad_beacon_map=*/{},
+        /*expected_ad_macro_map=*/{},
+        /*expected_pa_requests=*/{},
+        /*expected_reporting_latency_timeout=*/false,
+        /*expected_errors=*/{}, run_loop.QuitClosure());
+    run_loop.Run();
+
+    channel->WaitForAndValidateConsoleMessage(
+        "warning", /*json_args=*/
+        base::StringPrintf(
+            "[{\"type\":\"string\", \"value\":\"registerAdBeacon(): passed URL "
+            "of length %" PRIuS " but accepts URLs of at most length %" PRIuS
+            ".\"}]",
+            too_long_beacon_url.size(), url::kMaxURLChars),
+        /*stack_trace_size=*/1, /*function=*/"reportWin",
+        interest_group_bidding_url_, /*line_number=*/10);
+
+    channel->ExpectNoMoreConsoleEvents();
+  }
+
+  // 3 beacon URLs, two of which are too long. The other one should make it
+  // through, while the two that are too long should each display a separate
+  // warning.
+  {
+    AddJavascriptResponse(
+        &url_loader_factory_, interest_group_bidding_url_,
+        CreateReportWinScript(base::StringPrintf(
+            R"(registerAdBeacon({a:"%s", b:"%s", c:"%s"}))",
+            too_long_beacon_url.c_str(), almost_too_long_beacon_url.c_str(),
+            (too_long_beacon_url + "3").c_str())));
+
+    BidderWorklet* worklet_impl;
+    auto worklet =
+        CreateWorklet(interest_group_bidding_url_,
+                      /*pause_for_debugger_on_start=*/false, &worklet_impl);
+
+    int id = worklet_impl->context_group_id_for_testing();
+    TestChannel* channel =
+        inspector_support.ConnectDebuggerSessionAndRuntimeEnable(id);
+
+    base::RunLoop run_loop;
+    RunReportWinExpectingResultAsync(
+        worklet_impl, /*expected_report_url=*/std::nullopt,
+        /*expected_ad_beacon_map=*/{{"b", GURL(almost_too_long_beacon_url)}},
+        /*expected_ad_macro_map=*/{},
+        /*expected_pa_requests=*/{},
+        /*expected_reporting_latency_timeout=*/false,
+        /*expected_errors=*/{}, run_loop.QuitClosure());
+    run_loop.Run();
+
+    channel->WaitForAndValidateConsoleMessage(
+        "warning", /*json_args=*/
+        base::StringPrintf(
+            "[{\"type\":\"string\", \"value\":\"registerAdBeacon(): passed URL "
+            "of length %" PRIuS " but accepts URLs of at most length %" PRIuS
+            ".\"}]",
+            too_long_beacon_url.size(), url::kMaxURLChars),
+        /*stack_trace_size=*/1, /*function=*/"reportWin",
+        interest_group_bidding_url_, /*line_number=*/10);
+
+    channel->WaitForAndValidateConsoleMessage(
+        "warning", /*json_args=*/
+        base::StringPrintf(
+            "[{\"type\":\"string\", \"value\":\"registerAdBeacon(): passed URL "
+            "of length %" PRIuS " but accepts URLs of at most length %" PRIuS
+            ".\"}]",
+            too_long_beacon_url.size() + 1, url::kMaxURLChars),
+        /*stack_trace_size=*/1, /*function=*/"reportWin",
+        interest_group_bidding_url_, /*line_number=*/10);
+
+    channel->ExpectNoMoreConsoleEvents();
+  }
 }
 
 class BidderWorkletSharedStorageAPIDisabledTest : public BidderWorkletTest {

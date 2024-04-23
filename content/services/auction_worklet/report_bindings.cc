@@ -84,7 +84,7 @@ void ReportBindings::SendReportTo(
 
   // There's no spec for max URL length, so don't throw in that case. Instead,
   // leave the report URL empty and display a warning.
-  if (url.spec().size() > url::mojom::kMaxURLChars) {
+  if (url.spec().size() > url::kMaxURLChars) {
     // Don't print out full URL in this case, since it will fill the entire
     // console.
     bindings->v8_logger_->LogConsoleWarning(
