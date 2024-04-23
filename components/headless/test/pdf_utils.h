@@ -25,7 +25,6 @@ class PDFPageBitmap {
   PDFPageBitmap();
   ~PDFPageBitmap();
 
-  bool Render(const std::string& pdf_data, int page_index);
   bool Render(base::span<const uint8_t> pdf_data, int page_index);
 
   uint32_t GetPixelRGB(const gfx::Point& pt) const;

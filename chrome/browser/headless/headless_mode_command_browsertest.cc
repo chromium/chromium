@@ -509,12 +509,12 @@ IN_PROC_BROWSER_TEST_F(HeadlessModePrintToPdfCommandBrowserTest,
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  std::string pdf_data;
-  ASSERT_TRUE(base::ReadFileToString(print_to_pdf_filename_, &pdf_data))
-      << print_to_pdf_filename_;
+  std::optional<std::vector<uint8_t>> pdf_data =
+      base::ReadFileToBytes(print_to_pdf_filename_);
+  ASSERT_TRUE(pdf_data.has_value()) << print_to_pdf_filename_;
 
   PDFPageBitmap page_bitmap;
-  ASSERT_TRUE(page_bitmap.Render(pdf_data, /*page_index=*/0));
+  ASSERT_TRUE(page_bitmap.Render(pdf_data.value(), /*page_index=*/0));
 
   // Expect blue rectangle on white background.
   EXPECT_TRUE(page_bitmap.CheckColoredRect(SkColorSetRGB(0x00, 0x00, 0xff),
@@ -540,12 +540,12 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeLazyLoadingPrintToPdfCommandBrowserTest,
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  std::string pdf_data;
-  ASSERT_TRUE(base::ReadFileToString(print_to_pdf_filename_, &pdf_data))
-      << print_to_pdf_filename_;
+  std::optional<std::vector<uint8_t>> pdf_data =
+      base::ReadFileToBytes(print_to_pdf_filename_);
+  ASSERT_TRUE(pdf_data.has_value()) << print_to_pdf_filename_;
 
   PDFPageBitmap page_bitmap;
-  ASSERT_TRUE(page_bitmap.Render(pdf_data, /*page_index=*/4));
+  ASSERT_TRUE(page_bitmap.Render(pdf_data.value(), /*page_index=*/4));
 
   // Expect green rectangle on white background.
   EXPECT_TRUE(page_bitmap.CheckColoredRect(SkColorSetRGB(0x00, 0x64, 0x00),
@@ -594,11 +594,11 @@ IN_PROC_BROWSER_TEST_P(HeadlessModeTaggedPrintToPdfCommandBrowserTest,
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  std::string pdf_data;
-  ASSERT_TRUE(base::ReadFileToString(print_to_pdf_filename_, &pdf_data))
-      << print_to_pdf_filename_;
+  std::optional<std::vector<uint8_t>> pdf_data =
+      base::ReadFileToBytes(print_to_pdf_filename_);
+  ASSERT_TRUE(pdf_data.has_value()) << print_to_pdf_filename_;
 
-  auto pdf_span = base::as_bytes(base::make_span(pdf_data));
+  auto pdf_span = base::as_bytes(base::make_span(pdf_data.value()));
 
   int num_pages;
   ASSERT_TRUE(chrome_pdf::GetPDFDocInfo(pdf_span, &num_pages,
