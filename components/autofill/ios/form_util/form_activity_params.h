@@ -4,10 +4,11 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_FORM_UTIL_FORM_ACTIVITY_PARAMS_H_
 #define COMPONENTS_AUTOFILL_IOS_FORM_UTIL_FORM_ACTIVITY_PARAMS_H_
 
-#include <string>
+#import <set>
+#import <string>
 
-#include "base/values.h"
-#include "components/autofill/core/common/unique_ids.h"
+#import "base/values.h"
+#import "components/autofill/core/common/unique_ids.h"
 
 namespace web {
 class ScriptMessage;
@@ -113,10 +114,10 @@ struct FormRemovalParams : public BaseFormActivityParams {
   ~FormRemovalParams() override;
 
   // Renderer ids of removed forms;
-  std::vector<FormRendererId> removed_forms;
+  std::set<FormRendererId> removed_forms;
 
   // Renderer ids of removed unowned fields.
-  std::vector<FieldRendererId> removed_unowned_fields;
+  std::set<FieldRendererId> removed_unowned_fields;
 
   static bool FromMessage(const web::ScriptMessage& message,
                           FormRemovalParams* params);

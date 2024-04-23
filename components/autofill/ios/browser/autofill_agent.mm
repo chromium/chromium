@@ -401,7 +401,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 
 - (void)updateFieldManagerForClearedIDs:(NSString*)jsonString
                                 inFrame:(web::WebFrame*)frame {
-  std::optional<std::vector<FieldRendererId>> clearingResults =
+  std::optional<std::set<FieldRendererId>> clearingResults =
       autofill::ExtractIDs<FieldRendererId>(jsonString);
 
   if (clearingResults) {

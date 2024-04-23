@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_UTIL_H_
 
 #import <optional>
-#import <vector>
+#import <set>
 
 #import "base/unguessable_token.h"
 #import "base/values.h"
@@ -102,14 +102,14 @@ void ExecuteJavaScriptFunction(const std::string& name,
 // string.
 // - IDType: Identifier type must be constructable from uint32_t.
 template <typename IDType>
-std::optional<std::vector<IDType>> ExtractIDs(NSString* json_string) {
+std::optional<std::set<IDType>> ExtractIDs(NSString* json_string) {
   std::unique_ptr<base::Value> ids_value = ParseJson(json_string);
 
   if (!ids_value || !ids_value->is_list()) {
     return std::nullopt;
   }
 
-  std::vector<IDType> ids;
+  std::set<IDType> ids;
 
   for (const auto& unique_id : ids_value->GetList()) {
     if (!unique_id.is_string()) {
@@ -119,7 +119,7 @@ std::optional<std::vector<IDType>> ExtractIDs(NSString* json_string) {
     if (!base::StringToUint(unique_id.GetString(), &id_num)) {
       return std::nullopt;
     }
-    ids.push_back(IDType(id_num));
+    ids.insert(IDType(id_num));
   }
 
   return ids;

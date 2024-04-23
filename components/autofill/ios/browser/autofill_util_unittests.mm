@@ -22,9 +22,9 @@ using base::ASCIIToUTF16;
 
 TEST_F(AutofillUtilTest, ExtractIDs) {
   NSString* valid_ids = @"[\"1\",\"2\"]";
-  std::vector<FieldRendererId> expected_result = {FieldRendererId(1),
-                                                  FieldRendererId(2)};
-  std::optional<std::vector<FieldRendererId>> extracted_ids =
+  std::set<FieldRendererId> expected_result = {FieldRendererId(1),
+                                               FieldRendererId(2)};
+  std::optional<std::set<FieldRendererId>> extracted_ids =
       ExtractIDs<FieldRendererId>(valid_ids);
   EXPECT_TRUE(extracted_ids);
   EXPECT_EQ(expected_result, *extracted_ids);

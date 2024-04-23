@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #import <memory>
+#import <set>
 #import <utility>
 
 #import "base/ios/ios_util.h"
@@ -324,9 +325,8 @@ class PasswordControllerTest : public PlatformTest {
                                                    inFrame:frame];
   }
 
-  void SimulateFormRemovalObserverSignal(
-      std::vector<FormRendererId> form_ids,
-      std::vector<FieldRendererId> field_ids) {
+  void SimulateFormRemovalObserverSignal(std::set<FormRendererId> form_ids,
+                                         std::set<FieldRendererId> field_ids) {
     password_manager::PasswordManagerJavaScriptFeature* feature =
         password_manager::PasswordManagerJavaScriptFeature::GetInstance();
     WebFrame* frame =
@@ -1953,10 +1953,10 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnRemovedForm) {
     EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePassword)
         .WillOnce(MoveArgAndReturn<0>(&form_manager_to_save, true));
 
-    std::vector<FieldRendererId> removed_ids;
+    std::set<FieldRendererId> removed_ids;
     if (!has_form_tag) {
-      removed_ids.push_back(FieldRendererId(1));
-      removed_ids.push_back(FieldRendererId(2));
+      removed_ids.insert(FieldRendererId(1));
+      removed_ids.insert(FieldRendererId(2));
     }
 
     SimulateFormRemovalObserverSignal({form_id}, removed_ids);

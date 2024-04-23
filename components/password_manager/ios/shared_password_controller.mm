@@ -949,7 +949,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
 // Checks that all fields with |fieldIds| have user input recorded by
 // the FieldDataManager.
-- (BOOL)allFieldsContainUserInput:(const std::vector<FieldRendererId>&)fieldIds
+- (BOOL)allFieldsContainUserInput:(const std::set<FieldRendererId>&)fieldIds
                  fieldDataManager:
                      (const autofill::FieldDataManager&)fieldDataManager {
   return base::ranges::all_of(fieldIds, [&fieldDataManager](auto fieldId) {
@@ -1021,7 +1021,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   _passwordManager->OnPasswordFormRemoved(driver, driver->field_data_manager(),
                                           params.removed_forms.empty()
                                               ? FormRendererId()
-                                              : params.removed_forms[0]);
+                                              : *params.removed_forms.begin());
 }
 
 @end
