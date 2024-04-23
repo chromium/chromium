@@ -131,7 +131,8 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
 
   // RulesetMatcherBase override:
   std::optional<RequestAction> GetAllowAllRequestsAction(
-      const RequestParams& params) const override;
+      const RequestParams& params,
+      RulesetMatchingStage stage) const override;
   std::optional<RequestAction> GetActionIgnoringAncestors(
       const RequestParams& params,
       RulesetMatchingStage stage) const override;

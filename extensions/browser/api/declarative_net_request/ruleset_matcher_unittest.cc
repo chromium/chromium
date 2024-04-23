@@ -1540,6 +1540,11 @@ TEST_F(RulesetMatcherResponseHeadersTest, OnHeadersReceivedAction) {
                             CreateTemporarySource(), &matcher));
   ASSERT_TRUE(matcher);
 
+  EXPECT_EQ(2u, matcher->GetRulesCount());
+  EXPECT_EQ(1u, matcher->GetRulesCount(RulesetMatchingStage::kOnBeforeRequest));
+  EXPECT_EQ(1u,
+            matcher->GetRulesCount(RulesetMatchingStage::kOnHeadersReceived));
+
   // The request should be blocked if matched with `before_request_rule`.
   RequestAction expected_before_request_action =
       CreateRequestActionForTesting(RequestAction::Type::COLLAPSE, kMinValidID);

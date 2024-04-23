@@ -1185,6 +1185,7 @@ int WebRequestEventRouter::OnHeadersReceived(
           *should_collapse_initiator = true;
           return net::ERR_BLOCKED_BY_CLIENT;
         case DNRRequestAction::Type::ALLOW:
+        case DNRRequestAction::Type::ALLOW_ALL_REQUESTS:
           DCHECK_EQ(1u, actions.size());
           OnDNRActionMatched(browser_context, *request, action);
           break;
@@ -1206,7 +1207,6 @@ int WebRequestEventRouter::OnHeadersReceived(
                   *action.redirect_url, **override_response_headers,
                   preserve_fragment_on_redirect_url);
           return net::OK;
-        case DNRRequestAction::Type::ALLOW_ALL_REQUESTS:
         case DNRRequestAction::Type::MODIFY_HEADERS:
           // TODO(crbug.com/40727004): Implement support for allow all request
           // and modify header rules that match on response headers.

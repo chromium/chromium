@@ -104,10 +104,12 @@ size_t ExtensionUrlPatternIndexMatcher::GetHeadersReceivedRulesCount() const {
 
 std::optional<RequestAction>
 ExtensionUrlPatternIndexMatcher::GetAllowAllRequestsAction(
-    const RequestParams& params) const {
+    const RequestParams& params,
+    RulesetMatchingStage stage) const {
   const flat_rule::UrlRule* rule = GetMatchingRule(
-      params, before_request_matchers_, flat::IndexType_allow_all_requests,
+      params, GetMatchersForStage(stage), flat::IndexType_allow_all_requests,
       FindRuleStrategy::kHighestPriority);
+  ;
   if (!rule)
     return std::nullopt;
 
@@ -136,19 +138,9 @@ std::optional<RequestAction>
 ExtensionUrlPatternIndexMatcher::GetActionIgnoringAncestors(
     const RequestParams& params,
     RulesetMatchingStage stage) const {
-  switch (stage) {
-    case RulesetMatchingStage::kOnBeforeRequest:
-      return GetMaxPriorityAction(
-          GetActionHelper(params, before_request_matchers_),
-          GetAllowAllRequestsAction(params));
-    case RulesetMatchingStage::kOnHeadersReceived:
-      // TODO(crbug.com/1141166): Investigate how matching allowAllRequests
-      // rules from other request stages may affect which action to return.
-      return GetActionHelper(params, headers_received_matchers_);
-  }
-
-  NOTREACHED();
-  return std::nullopt;
+  return GetMaxPriorityAction(
+      GetActionHelper(params, GetMatchersForStage(stage)),
+      GetAllowAllRequestsAction(params, stage));
 }
 
 std::optional<RequestAction> ExtensionUrlPatternIndexMatcher::GetActionHelper(
@@ -221,6 +213,20 @@ ExtensionUrlPatternIndexMatcher::GetAllMatchingRules(
       flat_rule::ActivationType_NONE, params.method, params.is_third_party,
       kDisableGenericRules, params.embedder_conditions_matcher,
       disabled_rule_ids_);
+}
+
+const std::vector<url_pattern_index::UrlPatternIndexMatcher>&
+ExtensionUrlPatternIndexMatcher::GetMatchersForStage(
+    RulesetMatchingStage stage) const {
+  switch (stage) {
+    case RulesetMatchingStage::kOnBeforeRequest:
+      return before_request_matchers_;
+    case RulesetMatchingStage::kOnHeadersReceived:
+      return headers_received_matchers_;
+  }
+
+  NOTREACHED();
+  return before_request_matchers_;
 }
 
 void ExtensionUrlPatternIndexMatcher::SetDisabledRuleIds(

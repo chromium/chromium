@@ -13,6 +13,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/declarative_net_request/request_params.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
@@ -250,19 +251,39 @@ void RulesetMatcherBase::OnDidFinishNavigation(
   // Hence we need not listen to OnRenderFrameCreated.
   DCHECK(host);
 
-  // TODO(crbug.com/1141166): Investigate if allowAllRequest rule should be
-  // supported based on response headers or if response headers are visible at
-  // this stage.
   RequestParams params(host, navigation_handle->IsPost(),
                        /*response_headers=*/nullptr);
 
   // Find the highest priority allowAllRequests action corresponding to this
-  // frame.
-  std::optional<RequestAction> parent_action =
-      GetAllowlistedFrameAction(params.parent_routing_id);
-  std::optional<RequestAction> frame_action = GetAllowAllRequestsAction(params);
+  // frame for rules that match in the onBeforeRequest request stage.
+  std::optional<RequestAction> frame_action =
+      GetAllowAllRequestsAction(params, RulesetMatchingStage::kOnBeforeRequest);
+
+  // The only navigation requests that match DNR rules in the OnHeadersReceived
+  // request phase are HTTP/HTTPS and will have response headers. So in this
+  // method, if a navigation request:
+  //  - has response headers, then match it against rules for both the
+  //    `kOnBeforeRequest` and `kOnHeadersReceived` stages.
+  //  - has no response headers, then only match against rule for the
+  //    `kOnBeforeRequest` stage.
+  // TODO(crbug.com/331846139): Add filtering logic to limit which requests can
+  // be matched here, similar to what's done in the webrequest event router for
+  // OnBeforeRequest and OnHeadersReceived.
+  if (navigation_handle->GetResponseHeaders()) {
+    RequestParams params_with_headers(host, navigation_handle->IsPost(),
+                                      navigation_handle->GetResponseHeaders());
+    // Take the matching allowAllRequests action with the highest priority
+    // between all ruleset matching stages that this navigation request can be
+    // matched against.
+    frame_action = GetMaxPriorityAction(
+        std::move(frame_action),
+        GetAllowAllRequestsAction(params_with_headers,
+                                  RulesetMatchingStage::kOnHeadersReceived));
+  }
+
   std::optional<RequestAction> action =
-      GetMaxPriorityAction(std::move(parent_action), std::move(frame_action));
+      GetMaxPriorityAction(GetAllowlistedFrameAction(params.parent_routing_id),
+                           std::move(frame_action));
 
   content::GlobalRenderFrameHostId frame_id = host->GetGlobalId();
   allowlisted_frames_.erase(frame_id);

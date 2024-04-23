@@ -151,9 +151,10 @@ std::vector<RequestAction> RegexRulesMatcher::GetModifyHeadersActions(
 }
 
 std::optional<RequestAction> RegexRulesMatcher::GetAllowAllRequestsAction(
-    const RequestParams& params) const {
+    const RequestParams& params,
+    RulesetMatchingStage stage) const {
   const std::vector<RegexRuleInfo>& potential_matches =
-      before_request_matcher_.GetPotentialMatches(params);
+      GetMatcherForStage(stage).GetPotentialMatches(params);
   auto info = base::ranges::find_if(
       potential_matches, [&params](const RegexRuleInfo& info) {
         return info.regex_rule->action_type() ==

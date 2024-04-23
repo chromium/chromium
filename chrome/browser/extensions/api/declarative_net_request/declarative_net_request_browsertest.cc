@@ -591,6 +591,24 @@ class DeclarativeNetRequestBrowserTest
     navigation_observer.Wait();
   }
 
+  // Verifies whether the frame with name `frame_name` is collapsed.
+  void TestFrameCollapse(const std::string& frame_name, bool expect_collapsed) {
+    SCOPED_TRACE(base::StringPrintf("Testing frame %s", frame_name.c_str()));
+    content::RenderFrameHost* frame = GetFrameByName(frame_name);
+    ASSERT_TRUE(frame);
+
+    EXPECT_EQ(!expect_collapsed, WasFrameWithScriptLoaded(frame));
+
+    constexpr char kScript[] = R"(
+        var iframe = document.getElementsByName('%s')[0];
+        var collapsed = iframe.clientWidth === 0 && iframe.clientHeight === 0;
+        collapsed;
+    )";
+    EXPECT_EQ(expect_collapsed,
+              content::EvalJs(GetPrimaryMainFrame(),
+                              base::StringPrintf(kScript, frame_name.c_str())));
+  }
+
   // Calls getMatchedRules for |extension_id| and optionally, the |tab_id| and
   // returns comma separated pairs of rule_id and tab_id, with each pair
   // delimited by '|'. Matched Rules are sorted in ascending order by ruleId,
@@ -2560,25 +2578,6 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, ImageCollapsed) {
 // Ensures that any <iframe> elements whose document load is blocked by the API,
 // are collapsed.
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, IFrameCollapsed) {
-  // Verifies whether the frame with name |frame_name| is collapsed.
-  auto test_frame_collapse = [this](const std::string& frame_name,
-                                    bool expect_collapsed) {
-    SCOPED_TRACE(base::StringPrintf("Testing frame %s", frame_name.c_str()));
-    content::RenderFrameHost* frame = GetFrameByName(frame_name);
-    ASSERT_TRUE(frame);
-
-    EXPECT_EQ(!expect_collapsed, WasFrameWithScriptLoaded(frame));
-
-    constexpr char kScript[] = R"(
-        var iframe = document.getElementsByName('%s')[0];
-        var collapsed = iframe.clientWidth === 0 && iframe.clientHeight === 0;
-        collapsed;
-    )";
-    EXPECT_EQ(expect_collapsed,
-              content::EvalJs(GetPrimaryMainFrame(),
-                              base::StringPrintf(kScript, frame_name.c_str())));
-  };
-
   const std::string kFrameName1 = "frame1";
   const std::string kFrameName2 = "frame2";
   const GURL page_url = embedded_test_server()->GetURL(
@@ -2590,8 +2589,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, IFrameCollapsed) {
   ASSERT_TRUE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
   {
     SCOPED_TRACE("No extension loaded");
-    test_frame_collapse(kFrameName1, false);
-    test_frame_collapse(kFrameName2, false);
+    TestFrameCollapse(kFrameName1, false);
+    TestFrameCollapse(kFrameName2, false);
   }
 
   // Now load an extension which blocks all requests with "frame=1" in its url.
@@ -2604,8 +2603,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, IFrameCollapsed) {
   ASSERT_TRUE(WasFrameWithScriptLoaded(GetPrimaryMainFrame()));
   {
     SCOPED_TRACE("Extension loaded initial");
-    test_frame_collapse(kFrameName1, true);
-    test_frame_collapse(kFrameName2, false);
+    TestFrameCollapse(kFrameName1, true);
+    TestFrameCollapse(kFrameName2, false);
   }
 
   // Now interchange the "src" of the two frames. This should cause
@@ -2616,8 +2615,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, IFrameCollapsed) {
   NavigateFrame(kFrameName2, frame_url_1);
   {
     SCOPED_TRACE("Extension loaded src swapped");
-    test_frame_collapse(kFrameName1, false);
-    test_frame_collapse(kFrameName2, true);
+    TestFrameCollapse(kFrameName1, false);
+    TestFrameCollapse(kFrameName2, true);
   }
 
   // Remove the frames from the DOM, swap the "src" of the frames,
@@ -2627,8 +2626,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, IFrameCollapsed) {
   RemoveNavigateAndReAddFrame(kFrameName2, frame_url_2);
   {
     SCOPED_TRACE("Removed src-swapped and readded to DOM");
-    test_frame_collapse(kFrameName1, true);
-    test_frame_collapse(kFrameName2, false);
+    TestFrameCollapse(kFrameName1, true);
+    TestFrameCollapse(kFrameName2, false);
   }
 
   // Remove the frames from the DOM again, but this time add them back
@@ -2638,8 +2637,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, IFrameCollapsed) {
   RemoveNavigateAndReAddFrame(kFrameName2, frame_url_2);
   {
     SCOPED_TRACE("Removed and readded to DOM");
-    test_frame_collapse(kFrameName1, true);
-    test_frame_collapse(kFrameName2, false);
+    TestFrameCollapse(kFrameName1, true);
+    TestFrameCollapse(kFrameName2, false);
   }
 }
 
@@ -7406,7 +7405,7 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
        std::vector<TestHeaderCondition>(
            {TestHeaderCondition("nonsense-header", {}, {})})},
 
-      // For abc.com, there is a block rule in onBeforeRequest and an allow rule
+      // For ghi.com, there is a block rule in onBeforeRequest and an allow rule
       // with a higher priority in onHeadersReceived. Any request to ghi.com
       // should be blocked because there is enough info to match the block rule
       // in onBeforeRequest, without the request ever continuing onto later
@@ -7499,6 +7498,179 @@ IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
     const GURL& final_url = web_contents()->GetLastCommittedURL();
     EXPECT_EQ(test_case.expected_final_url, final_url);
   }
+}
+
+// Test that frames where response header matched allowAllRequests rules will
+// prevent lower priority matched rules from taking action on requests made
+// under these frames.
+IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest, AllowAllRequests) {
+  std::vector<TestHeaderCondition> blank_header_condition =
+      std::vector<TestHeaderCondition>(
+          {TestHeaderCondition("nonsense-header", {}, {})});
+
+  struct RuleData {
+    int id;
+    int priority;
+    std::string action_type;
+    std::string filter;
+    bool is_regex_rule = false;
+    std::optional<std::vector<std::string>> resource_types = std::nullopt;
+    std::optional<std::vector<TestHeaderCondition>>
+        excluded_response_header_condition = std::nullopt;
+  } rule_data[] = {
+      // Create 3 allowAllRequests rules:
+      // One with priority 3 that matches the main frame, in the onBeforeRequest
+      // stage.
+      {1, 3, "allowAllRequests", "page_with_two_frames.html", false,
+       std::vector<std::string>({"main_frame"})},
+      // One with priority 5 that matches both frame 1 and 2, in the
+      // onHeadersReceived stage.
+      {2, 5, "allowAllRequests", "frame=(1|2)", true,
+       std::vector<std::string>({"sub_frame"}), blank_header_condition},
+      // One with priority 7 that matches frame 2, in the onBeforeRequest stage.
+      {3, 7, "allowAllRequests", "frame=2", true,
+       std::vector<std::string>({"sub_frame"})},
+
+      // Create 3 block rules, each blocking only a particular image file, with
+      // different priorities.
+      {4, 2, "block", "image.png", true, std::vector<std::string>({"image"})},
+      {5, 4, "block", "image_2.png", true, std::vector<std::string>({"image"})},
+      {6, 6, "block", "image_3.png", true, std::vector<std::string>({"image"})},
+  };
+
+  std::vector<TestRule> rules;
+  for (const auto& rule : rule_data) {
+    TestRule test_rule = CreateGenericRule();
+    test_rule.id = rule.id;
+    test_rule.priority = rule.priority;
+    test_rule.action->type = rule.action_type;
+    test_rule.condition->url_filter.reset();
+    if (rule.is_regex_rule) {
+      test_rule.condition->regex_filter = rule.filter;
+    } else {
+      test_rule.condition->url_filter = rule.filter;
+    }
+    test_rule.condition->resource_types = rule.resource_types;
+
+    if (rule.excluded_response_header_condition) {
+      test_rule.condition->excluded_response_headers =
+          rule.excluded_response_header_condition;
+    }
+
+    rules.push_back(std::move(test_rule));
+  }
+
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(std::move(rules)));
+
+  // Navigate to a page with two sub frames.
+  GURL page_url = embedded_test_server()->GetURL("example.com",
+                                                 "/page_with_two_frames.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+
+  // Attempts to add an image element for the image denoted by `image_path` to
+  // the specified `frame`. Returns true if the image was successfully added and
+  // loaded and false otherwise (e.g. if the image was not loaded/collapsed) if
+  // it was blocked by a DNR rule.
+  auto test_image_added = [](content::RenderFrameHost* frame,
+                             const std::string& image_path) {
+    const char kTestImageScript[] = R"(
+      var img = document.createElement('img');
+      new Promise(resolve => {
+        img.addEventListener('load', () => {
+          resolve(true);
+        });
+        img.addEventListener('error', () => {
+          resolve(false);
+        });
+
+        img.src = '%s';
+        document.body.appendChild(img);
+      });
+    )";
+
+    return content::EvalJs(
+               frame, base::StringPrintf(kTestImageScript, image_path.c_str()))
+        .ExtractBool();
+  };
+
+  // Attempt to add images onto the main frame. Only `image.png` should be added
+  // since the allowAllRequests rule with id 1 exceeds the priority of the block
+  // rule for `image.png`.
+  content::RenderFrameHost* main_frame = GetPrimaryMainFrame();
+  EXPECT_TRUE(test_image_added(main_frame, "subresources/image.png"));
+  EXPECT_FALSE(test_image_added(main_frame, "subresources/image_2.png"));
+  EXPECT_FALSE(test_image_added(main_frame, "subresources/image_3.png"));
+
+  // Attempt to add images onto `frame_1`. `image.png` and `image_2.png` should
+  // be added since the max priority matching allowAllRequests rule for
+  // `frame_1` has id 2 (it "wins" over the rule with id 1 that has a lower
+  // priority), and its priority exceeds that of the block rules for `image.png`
+  // and `image_2.png`.
+  content::RenderFrameHost* frame_1 = GetFrameByName("frame1");
+  EXPECT_TRUE(test_image_added(frame_1, "subresources/image.png"));
+  EXPECT_TRUE(test_image_added(frame_1, "subresources/image_2.png"));
+  EXPECT_FALSE(test_image_added(frame_1, "subresources/image_3.png"));
+
+  // Attempt to add images onto `frame_2`. All 3 images should be loaded since
+  // the max priority allowAllRequests rule for this frame out-prioritizes all
+  // block rules.
+  content::RenderFrameHost* frame_2 = GetFrameByName("frame2");
+  EXPECT_TRUE(test_image_added(frame_2, "subresources/image.png"));
+  EXPECT_TRUE(test_image_added(frame_2, "subresources/image_2.png"));
+  EXPECT_TRUE(test_image_added(frame_2, "subresources/image_3.png"));
+}
+
+// Test that an onBeforeRequest block rule for a frame will still override an
+// onHeadersReceived allowAllRequests rule with a higher priority.
+IN_PROC_BROWSER_TEST_P(DNRMatchResponseHeadersBrowserTest,
+                       AllowAllRequests_BlockedFrame) {
+  // Add a block rule for google.com sub frames.
+  TestRule block_frame_rule = CreateGenericRule(kMinValidID);
+  block_frame_rule.action->type = "block";
+  block_frame_rule.condition->url_filter = "google.com";
+  block_frame_rule.condition->resource_types =
+      std::vector<std::string>({"sub_frame"});
+
+  // Add an allowAllRequests rule that is matched in onHeadersReceived, for all
+  // sub frames.
+  TestRule allow_frame_rule = CreateGenericRule(kMinValidID + 1);
+  allow_frame_rule.priority = kMinValidPriority + 22;
+  allow_frame_rule.action->type = "allowAllRequests";
+  allow_frame_rule.condition->url_filter = "|https*";
+  allow_frame_rule.condition->resource_types =
+      std::vector<std::string>({"sub_frame"});
+  allow_frame_rule.condition->excluded_response_headers =
+      std::vector<TestHeaderCondition>(
+          {TestHeaderCondition("nonsense-header", {}, {})});
+
+  std::vector<TestRule> rules;
+  rules.push_back(std::move(block_frame_rule));
+  rules.push_back(std::move(allow_frame_rule));
+
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(std::move(rules)));
+
+  const GURL page_url = embedded_test_server()->GetURL(
+      "example.com", "/page_with_two_frames.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+
+  const std::string kFrameName1 = "frame1";
+  const std::string kFrameName2 = "frame2";
+
+  // Navigate frame1 to example.com: it shouldn't be collapsed since
+  // `block_frame_rule` does not match it.
+  NavigateFrame(kFrameName1,
+                embedded_test_server()->GetURL(
+                    "example.com", "/pages_with_script/index.html"));
+
+  // Navigate frame2 to google.com: it should be collapsed since
+  // `block_frame_rule` matches it and prevents `allow_frame_rule` from matching
+  // despite the latter rule's higher priority.
+  NavigateFrame(kFrameName2,
+                embedded_test_server()->GetURL(
+                    "google.com", "/pages_with_script/index.html"));
+
+  TestFrameCollapse(kFrameName1, false);
+  TestFrameCollapse(kFrameName2, true);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
