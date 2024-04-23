@@ -1057,7 +1057,7 @@ void SequenceManagerImpl::ReclaimMemory() {
   LazyNow lazy_now(main_thread_clock());
   for (auto it = main_thread_only().active_queues.begin();
        it != main_thread_only().active_queues.end();) {
-    auto* const queue = (*it++).get();
+    auto* const queue = *it++;
     ReclaimMemoryFromQueue(queue, &lazy_now);
   }
 }

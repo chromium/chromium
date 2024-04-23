@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 
 namespace base {
 class TimeDelta;
@@ -48,7 +48,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ControlMessageProxy {
   void RunFlushForTestingClosure();
 
   // Not owned.
-  const raw_ptr<InterfaceEndpointClient> owner_;
+  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of speedometer3).
+  RAW_PTR_EXCLUSION InterfaceEndpointClient* const owner_;
   bool encountered_error_ = false;
 
   base::OnceClosure pending_flush_callback_;

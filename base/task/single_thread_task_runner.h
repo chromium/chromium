@@ -11,7 +11,7 @@
 #include "base/base_export.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace blink::scheduler {
@@ -115,7 +115,9 @@ class BASE_EXPORT SingleThreadTaskRunner : public SequencedTaskRunner {
                          MayAlreadyExist);
 
     scoped_refptr<SingleThreadTaskRunner> task_runner_;
-    raw_ptr<CurrentDefaultHandle> previous_handle_;
+    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of
+    // speedometer3).
+    RAW_PTR_EXCLUSION CurrentDefaultHandle* previous_handle_ = nullptr;
     SequencedTaskRunner::CurrentDefaultHandle sequenced_handle_;
   };
 

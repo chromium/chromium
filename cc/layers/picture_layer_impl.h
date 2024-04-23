@@ -15,6 +15,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_impl.h"
@@ -236,7 +237,8 @@ class CC_EXPORT PictureLayerImpl
   // node, has a will-change hint for one of the transform properties.
   bool AffectedByWillChangeTransformHint() const;
 
-  raw_ptr<PictureLayerImpl> twin_layer_ = nullptr;
+  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of speedometer3).
+  RAW_PTR_EXCLUSION PictureLayerImpl* twin_layer_ = nullptr;
 
   std::unique_ptr<PictureLayerTilingSet> tilings_ =
       CreatePictureLayerTilingSet();

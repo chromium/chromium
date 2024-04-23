@@ -21,6 +21,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
@@ -328,7 +329,9 @@ class BASE_EXPORT SequenceManagerImpl
     //   internal scheduling code does not expect queues to be pulled
     //   from underneath.
 
-    std::set<raw_ptr<internal::TaskQueueImpl, SetExperimental>> active_queues;
+    // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of
+    // speedometer3).
+    RAW_PTR_EXCLUSION std::set<internal::TaskQueueImpl*> active_queues;
 
     std::map<internal::TaskQueueImpl*, std::unique_ptr<internal::TaskQueueImpl>>
         queues_to_delete;

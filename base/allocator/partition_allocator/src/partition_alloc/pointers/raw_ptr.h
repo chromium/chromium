@@ -61,12 +61,26 @@ class Scheduler;
 }
 namespace base::internal {
 class DelayTimerBase;
+class JobTaskSource;
 }
 namespace base::test {
 struct RawPtrCountingImplForTest;
 }
 namespace content::responsiveness {
 class Calculator;
+}
+namespace v8 {
+class JobTask;
+}
+namespace blink::scheduler {
+class MainThreadTaskQueue;
+class NonMainThreadTaskQueue;
+}  // namespace blink::scheduler
+namespace base::sequence_manager::internal {
+class TaskQueueImpl;
+}
+namespace mojo {
+class Connector;
 }
 
 namespace partition_alloc::internal {
@@ -166,8 +180,9 @@ struct IsSupportedType<T, std::enable_if_t<std::is_function_v<T>>> {
 };
 
 // This section excludes some types from raw_ptr<T> to avoid them from being
-// used inside base::Unretained in performance sensitive places. These were
-// identified from sampling profiler data. See crbug.com/1287151 for more info.
+// used inside base::Unretained in performance sensitive places.
+// The ones below were identified from sampling profiler data. See
+// crbug.com/1287151 for more info.
 template <>
 struct IsSupportedType<cc::Scheduler> {
   static constexpr bool value = false;
@@ -178,6 +193,32 @@ struct IsSupportedType<base::internal::DelayTimerBase> {
 };
 template <>
 struct IsSupportedType<content::responsiveness::Calculator> {
+  static constexpr bool value = false;
+};
+// The ones below were identified from speedometer3. See crbug.com/335556942 for
+// more info.
+template <>
+struct IsSupportedType<v8::JobTask> {
+  static constexpr bool value = false;
+};
+template <>
+struct IsSupportedType<blink::scheduler::MainThreadTaskQueue> {
+  static constexpr bool value = false;
+};
+template <>
+struct IsSupportedType<base::sequence_manager::internal::TaskQueueImpl> {
+  static constexpr bool value = false;
+};
+template <>
+struct IsSupportedType<base::internal::JobTaskSource> {
+  static constexpr bool value = false;
+};
+template <>
+struct IsSupportedType<mojo::Connector> {
+  static constexpr bool value = false;
+};
+template <>
+struct IsSupportedType<blink::scheduler::NonMainThreadTaskQueue> {
   static constexpr bool value = false;
 };
 
