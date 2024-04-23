@@ -406,11 +406,6 @@ bool IsTabGroupInGridEnabled() {
   }
   return base::FeatureList::IsEnabled(kTabGroupsInGrid);
 }
-
-BASE_FEATURE(kIOSExternalActionURLs,
-             "IOSExternalActionURLs",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDisableLensCamera,
              "DisableLensCamera",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -737,10 +732,6 @@ bool ShouldHideIrrelevantModules() {
 int TimeUntilShowingCompactedSetUpList() {
   return base::GetFieldTrialParamByFeatureAsInt(
       kMagicStack, kSetUpListCompactedTimeThresholdDays, 0);
-}
-
-bool IsExternalActionSchemeHandlingEnabled() {
-  return base::FeatureList::IsEnabled(kIOSExternalActionURLs);
 }
 
 BASE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch,

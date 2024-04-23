@@ -5082,11 +5082,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "ios-external-action-urls",
-    "owners": ["nicolasmacbeth@google.com", "bling-mony-pod@google.com"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "ios-iph-for-safari-switcher",
     "owners": [ "huitingyu@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 121

@@ -383,10 +383,6 @@ BASE_DECLARE_FEATURE(kTabGroupsIPad);
 // Whether the Tab Groups should be enabled in the Grid.
 bool IsTabGroupInGridEnabled();
 
-// Feature flag to enable the handling of external actions passed to Chrome.
-// Enabled by default.
-BASE_DECLARE_FEATURE(kIOSExternalActionURLs);
-
 // Feature flag to disable Lens LVF features.
 BASE_DECLARE_FEATURE(kDisableLensCamera);
 
@@ -579,9 +575,6 @@ bool ShouldHideIrrelevantModules();
 // How many days before showing the Compacted Set Up List module configuration
 // in the Magic Stack.
 int TimeUntilShowingCompactedSetUpList();
-
-// Helper for whether the external action handling flag is enabled.
-bool IsExternalActionSchemeHandlingEnabled();
 
 // Kill switch for disabling the navigations when the application is in
 // foreground inactive state after opening an external app.

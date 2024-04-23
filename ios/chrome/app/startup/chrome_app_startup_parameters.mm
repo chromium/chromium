@@ -375,8 +375,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     // so this assignment should not DCHECK, no matter what the URL is.
     startupParameters.postOpeningAction = postOpeningAction;
     return startupParameters;
-  } else if (IsExternalActionSchemeHandlingEnabled() &&
-             [self isChromeExternalActionURL:completeURL]) {
+  } else if ([self isChromeExternalActionURL:completeURL]) {
     base::RecordAction(
         base::UserMetricsAction("MobileExternalActionURLOpened"));
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,

@@ -486,10 +486,6 @@ extern const char kIOSEditMenuSearchWithDescription[];
 extern const char kIOSEditMenuHideSearchWebName[];
 extern const char kIOSEditMenuHideSearchWebDescription[];
 
-// Title and description for the flag to enable handling external action URLs.
-extern const char kIOSExternalActionURLsName[];
-extern const char kIOSExternalActionURLsDescription[];
-
 // Title and description for the flag to enable the keyboard accessory upgrade.
 extern const char kIOSKeyboardAccessoryUpgradeName[];
 extern const char kIOSKeyboardAccessoryUpgradeDescription[];

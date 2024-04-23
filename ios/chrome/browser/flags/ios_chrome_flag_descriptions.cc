@@ -562,10 +562,6 @@ extern const char kIOSEditMenuHideSearchWebName[] =
 extern const char kIOSEditMenuHideSearchWebDescription[] =
     "Hides the Search Web entry in edit menu.";
 
-extern const char kIOSExternalActionURLsName[] = "iOS external action URLs";
-extern const char kIOSExternalActionURLsDescription[] =
-    "When enabled, the browser will support handling external action URLs.";
-
 const char kIOSKeyboardAccessoryUpgradeName[] =
     "Enable the keyboard accessory upgrade on iOS";
 const char kIOSKeyboardAccessoryUpgradeDescription[] =
