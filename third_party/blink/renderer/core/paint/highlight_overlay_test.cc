@@ -57,7 +57,8 @@ TEST_F(HighlightOverlayTest, ComputeLayers) {
   TextPaintStyle text_style;
   PaintController* controller = MakeGarbageCollected<PaintController>();
   GraphicsContext context(*controller);
-  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
+  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
+                       /*descendant_painting_blocked=*/false);
 
   EXPECT_EQ(HighlightOverlay::ComputeLayers(GetDocument(), text, style,
                                             text_style, paint_info, nullptr,
@@ -141,7 +142,8 @@ TEST_F(HighlightOverlayTest, ComputeEdges) {
   UpdateAllLifecyclePhasesForTest();
   PaintController* controller = MakeGarbageCollected<PaintController>();
   GraphicsContext context(*controller);
-  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
+  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
+                       /*descendant_painting_blocked=*/false);
 
   const ComputedStyle& br_style = br->GetLayoutObject()->StyleRef();
   const ComputedStyle& text_style = text->GetLayoutObject()->StyleRef();
@@ -308,7 +310,8 @@ TEST_F(HighlightOverlayTest, ComputeParts) {
   UpdateAllLifecyclePhasesForTest();
 
   GraphicsContext context(*MakeGarbageCollected<PaintController>());
-  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
+  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
+                       /*descendant_painting_blocked=*/false);
 
   const ComputedStyle& text_style = text->GetLayoutObject()->StyleRef();
   TextPaintStyle paint_style;

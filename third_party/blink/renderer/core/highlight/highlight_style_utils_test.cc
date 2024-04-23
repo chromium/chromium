@@ -60,7 +60,8 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextInputShadow) {
 
   PaintController* controller = MakeGarbageCollected<PaintController>();
   GraphicsContext context(*controller);
-  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
+  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
+                       /*descendant_painting_blocked=*/false);
   TextPaintStyle paint_style;
 
   paint_style = HighlightStyleUtils::HighlightPaintingStyle(
@@ -110,7 +111,8 @@ TEST_F(HighlightStyleUtilsTest, SelectedTextIsRespected) {
 
   PaintController* controller = MakeGarbageCollected<PaintController>();
   GraphicsContext context(*controller);
-  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
+  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
+                       /*descendant_painting_blocked=*/false);
   TextPaintStyle paint_style;
   Color background_color;
 
@@ -203,7 +205,8 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingAll) {
 
   auto* controller = MakeGarbageCollected<PaintController>();
   GraphicsContext context(*controller);
-  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
+  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
+                       /*descendant_painting_blocked=*/false);
   TextPaintStyle paint_style;
 
   auto* div_text = div_node->firstChild();
@@ -282,7 +285,8 @@ TEST_F(HighlightStyleUtilsTest, CurrentColorReportingSome) {
 
   auto* controller = MakeGarbageCollected<PaintController>();
   GraphicsContext context(*controller);
-  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
+  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
+                       /*descendant_painting_blocked=*/false);
   TextPaintStyle paint_style;
 
   auto* div_text =
@@ -341,7 +345,8 @@ TEST_F(HighlightStyleUtilsTest, CustomPropertyInheritance) {
 
   PaintController* controller = MakeGarbageCollected<PaintController>();
   GraphicsContext context(*controller);
-  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
+  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
+                       /*descendant_painting_blocked=*/false);
   TextPaintStyle paint_style;
   const ComputedStyle& div_style = div_node->ComputedStyleRef();
 

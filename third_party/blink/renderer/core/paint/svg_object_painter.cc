@@ -87,6 +87,7 @@ void SVGObjectPainter::PaintResourceSubtree(GraphicsContext& context,
   DCHECK(!layout_object_.SelfNeedsFullLayout());
 
   PaintInfo info(context, CullRect::Infinite(), PaintPhase::kForeground,
+                 layout_object_.ChildPaintBlockedByDisplayLock(),
                  PaintFlag::kOmitCompositingInfo |
                      PaintFlag::kPaintingResourceSubtree | additional_flags);
   layout_object_.Paint(info);

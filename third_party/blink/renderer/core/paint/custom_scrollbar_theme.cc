@@ -210,8 +210,10 @@ void CustomScrollbarTheme::PaintIntoRect(
     const LayoutCustomScrollbarPart& layout_custom_scrollbar_part,
     GraphicsContext& graphics_context,
     const PhysicalRect& rect) {
-  PaintInfo paint_info(graphics_context, CullRect(ToPixelSnappedRect(rect)),
-                       PaintPhase::kForeground);
+  PaintInfo paint_info(
+      graphics_context, CullRect(ToPixelSnappedRect(rect)),
+      PaintPhase::kForeground,
+      layout_custom_scrollbar_part.ChildPaintBlockedByDisplayLock());
   ObjectPainter(layout_custom_scrollbar_part)
       .PaintAllPhasesAtomically(paint_info);
 }

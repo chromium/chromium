@@ -193,6 +193,7 @@ PaintRecord LayoutSVGResourceClipper::CreatePaintRecord() {
   // - stroke is set to the initial stroke paint server (none)
   PaintInfo info(
       builder.Context(), CullRect::Infinite(), PaintPhase::kForeground,
+      ChildPaintBlockedByDisplayLock(),
       PaintFlag::kPaintingClipPathAsMask | PaintFlag::kPaintingResourceSubtree);
 
   for (const SVGElement& child_element :

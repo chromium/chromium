@@ -293,9 +293,10 @@ void SVGShapePainter::PaintMarker(const PaintInfo& paint_info,
       object_painter.ResolveContextPaint(
           layout_svg_shape_.StyleRef().StrokePaint()),
       transform);
-  PaintInfo marker_paint_info(builder.Context(), CullRect::Infinite(),
-                              paint_info.phase, paint_info.GetPaintFlags(),
-                              &marker_context_paints);
+  PaintInfo marker_paint_info(
+      builder.Context(), CullRect::Infinite(), paint_info.phase,
+      paint_info.DescendantPaintingBlocked(), paint_info.GetPaintFlags(),
+      &marker_context_paints);
   SVGContainerPainter(marker).Paint(marker_paint_info);
   builder.EndRecording(*canvas);
 

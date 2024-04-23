@@ -34,11 +34,13 @@ class TextPainterTest : public RenderingTest {
   const LayoutText& GetLayoutText() { return *layout_text_; }
 
   PaintInfo CreatePaintInfoForBackground(GraphicsContext& context) {
-    return PaintInfo(context, CullRect(), PaintPhase::kSelfBlockBackgroundOnly);
+    return PaintInfo(context, CullRect(), PaintPhase::kSelfBlockBackgroundOnly,
+                     /*descendant_painting_blocked=*/false);
   }
 
   PaintInfo CreatePaintInfoForTextClip(GraphicsContext& context) {
-    return PaintInfo(context, CullRect(), PaintPhase::kTextClip);
+    return PaintInfo(context, CullRect(), PaintPhase::kTextClip,
+                     /*descendant_painting_blocked=*/false);
   }
 
  protected:

@@ -404,9 +404,10 @@ void PaintLayerPainter::PaintFragmentWithPhase(
       context.GetPaintController(), chunk_properties, paint_layer_,
       DisplayItem::PaintPhaseToDrawingType(phase));
 
-  PaintInfo paint_info(context, cull_rect, phase, paint_flags);
-  if (paint_layer_.GetLayoutObject().ChildPaintBlockedByDisplayLock())
-    paint_info.SetDescendantPaintingBlocked(true);
+  PaintInfo paint_info(
+      context, cull_rect, phase,
+      paint_layer_.GetLayoutObject().ChildPaintBlockedByDisplayLock(),
+      paint_flags);
 
   if (physical_fragment) {
     BoxFragmentPainter(*physical_fragment).Paint(paint_info);
