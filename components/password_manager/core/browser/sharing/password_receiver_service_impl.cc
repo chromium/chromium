@@ -224,7 +224,6 @@ PasswordReceiverServiceImpl::PasswordReceiverServiceImpl(
       profile_password_store_(profile_password_store),
       account_password_store_(account_password_store) {
   CHECK(pref_service_);
-  CHECK(profile_password_store_);
 
   // |sync_bridge_| can be empty in tests.
   if (sync_bridge_) {

@@ -67,7 +67,8 @@ class PasswordReceiverServiceImpl : public PasswordReceiverService,
   // Due to the dependency of keyed servivces, the SyncService is only
   // constructed *after* the construction of the PasswordReceiverService, and
   // hence SyncService is provided later in OnSyncServiceInitialized().
-  // `sync_bridge` may be null in tests.
+  // `sync_bridge`, `profile_password_store` and `account_password_store` may be
+  // nullptr in tests.
   explicit PasswordReceiverServiceImpl(
       const PrefService* pref_service,
       std::unique_ptr<IncomingPasswordSharingInvitationSyncBridge> sync_bridge,
@@ -97,6 +98,7 @@ class PasswordReceiverServiceImpl : public PasswordReceiverService,
 
   std::unique_ptr<IncomingPasswordSharingInvitationSyncBridge> sync_bridge_;
 
+  // Both stores can be nullptr in tests.
   raw_ptr<PasswordStoreInterface> profile_password_store_;
   raw_ptr<PasswordStoreInterface> account_password_store_;
 
