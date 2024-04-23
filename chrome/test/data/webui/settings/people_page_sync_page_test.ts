@@ -15,7 +15,7 @@ import type {CrDialogElement} from 'chrome://settings/lazy_load.js';
 import type {IronCollapseElement} from 'chrome://settings/lazy_load.js';
 import type {CrButtonElement, CrRadioButtonElement, CrRadioGroupElement} from 'chrome://settings/settings.js';
 import {MetricsBrowserProxyImpl} from 'chrome://settings/settings.js';
-import {OpenWindowProxyImpl, PageStatus, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {OpenWindowProxyImpl, PageStatus, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
@@ -72,7 +72,7 @@ suite('SyncSettings', function() {
     // enabled.
     webUIListenerCallback('sync-prefs-changed', getSyncAllPrefs());
     syncPage.set('syncStatus', {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       supervisedUser: false,
       statusAction: StatusAction.NO_ACTION,
     });
@@ -146,7 +146,7 @@ suite('SyncSettings', function() {
         syncPage.shadowRoot!.querySelector<HTMLElement>('#other-sync-items')!;
 
     syncPage.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       disabled: false,
       hasError: false,
       statusAction: StatusAction.NO_ACTION,
@@ -172,7 +172,7 @@ suite('SyncSettings', function() {
 
     // Test sync paused state.
     syncPage.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       disabled: false,
       hasError: true,
       statusAction: StatusAction.REAUTHENTICATE,
@@ -184,7 +184,7 @@ suite('SyncSettings', function() {
 
     // Test passphrase error state.
     syncPage.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       disabled: false,
       hasError: true,
       statusAction: StatusAction.ENTER_PASSPHRASE,
@@ -200,7 +200,7 @@ suite('SyncSettings', function() {
         syncPage.shadowRoot!.querySelector<HTMLElement>('#sync-section')!;
 
     syncPage.syncStatus = {
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_OUT,
       disabled: false,
       hasError: false,
       statusAction: StatusAction.NO_ACTION,
@@ -217,7 +217,7 @@ suite('SyncSettings', function() {
         syncPage.shadowRoot!.querySelector<HTMLElement>('#sync-section')!;
 
     syncPage.syncStatus = {
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_IN,
       disabled: true,
       hasError: false,
       statusAction: StatusAction.NO_ACTION,
@@ -617,7 +617,7 @@ suite('SyncSettings', function() {
 
   test('EnterExistingPassphraseDoesNotExistIfSignedOut', async function() {
     syncPage.syncStatus = {
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_IN,
       disabled: false,
       hasError: true,
       statusAction: StatusAction.ENTER_PASSPHRASE,
@@ -751,7 +751,7 @@ suite('SyncSettings', function() {
     syncPage.syncStatus = {
       syncSystemEnabled: true,
       firstSetupInProgress: true,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
     };
     flush();
@@ -774,7 +774,7 @@ suite('SyncSettings', function() {
     syncPage.syncStatus = {
       syncSystemEnabled: true,
       firstSetupInProgress: true,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
     };
     flush();
@@ -796,7 +796,7 @@ suite('SyncSettings', function() {
     syncPage.syncStatus = {
       syncSystemEnabled: true,
       firstSetupInProgress: true,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
     };
     flush();
@@ -846,7 +846,7 @@ suite('SyncSettings', function() {
     syncPage.syncStatus = {
       syncSystemEnabled: true,
       firstSetupInProgress: true,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
     };
     flush();
@@ -895,7 +895,7 @@ suite('SyncSettings', function() {
     syncPage.syncStatus = {
       syncSystemEnabled: true,
       firstSetupInProgress: true,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
     };
     flush();
@@ -942,7 +942,7 @@ suite('SyncSettings', function() {
     syncPage.syncStatus = {
       syncSystemEnabled: true,
       firstSetupInProgress: true,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
     };
     flush();
@@ -1027,7 +1027,7 @@ suite('EEAChoiceCountry', function() {
     // enabled.
     webUIListenerCallback('sync-prefs-changed', getSyncAllPrefs());
     syncPage.set('syncStatus', {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       supervisedUser: false,
       statusAction: StatusAction.NO_ACTION,
     });
@@ -1110,7 +1110,7 @@ suite('LinkedServicesDisabled', function() {
     // enabled.
     webUIListenerCallback('sync-prefs-changed', getSyncAllPrefs());
     syncPage.set('syncStatus', {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       supervisedUser: false,
       statusAction: StatusAction.NO_ACTION,
     });

@@ -18,10 +18,17 @@ export interface StoredAccount {
 }
 
 /**
- * TODO(crbug.com/40838076): signedIn doesn't indicate if the user is signed-in,
- * but instead if the user is syncing.
- * TODO(crbug.com/40707088): signedIn actually means having primary account with
- * sync consent. Rename to make this clear.
+ * Equivalent to C++ counterpart.
+ * @see chrome/browser/ui/webui/settings/people_handler.h
+ */
+export enum SignedInState {
+  SIGNED_OUT = 0,
+  SIGNED_IN = 1,
+  SYNCING = 2,
+  SIGNED_IN_PAUSED = 3,
+}
+
+/**
  * @see chrome/browser/ui/webui/settings/people_handler.cc
  */
 export interface SyncStatus {
@@ -33,13 +40,12 @@ export interface SyncStatus {
   hasUnrecoverableError?: boolean;
   managed?: boolean;
   firstSetupInProgress?: boolean;
-  signedIn?: boolean;
+  signedInState?: SignedInState;
   signedInUsername?: string;
   statusActionText?: string;
   statusText?: string;
   supervisedUser?: boolean;
   syncSystemEnabled?: boolean;
-  signinPaused?: boolean;
 }
 
 /**

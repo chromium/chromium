@@ -23,7 +23,7 @@ import './account_manager_settings_card.js';
 import './additional_accounts_settings_card.js';
 
 import {ProfileInfo, ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
-import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {SignedInState, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {getImage} from 'chrome://resources/js/icon.js';
@@ -404,7 +404,8 @@ export class OsSettingsPeoplePageElement extends
 
     // When ChromeOSAccountManager is disabled, fall back to using the sync
     // username ("alice@gmail.com") as the profile label.
-    if (!this.isAccountManagerEnabled_ && syncStatus && syncStatus.signedIn &&
+    if (!this.isAccountManagerEnabled_ && syncStatus &&
+        syncStatus.signedInState === SignedInState.SYNCING &&
         syncStatus.signedInUsername) {
       this.profileLabel_ = syncStatus.signedInUsername;
     }
@@ -430,10 +431,6 @@ export class OsSettingsPeoplePageElement extends
       return loadTimeData.getString('osProfileName');
     }
     return this.profileName_;
-  }
-
-  private showSignin_(syncStatus: SyncStatus): boolean {
-    return loadTimeData.getBoolean('signinAllowed') && !(syncStatus.signedIn);
   }
 
   private onAuthTokenChanged_(): void {

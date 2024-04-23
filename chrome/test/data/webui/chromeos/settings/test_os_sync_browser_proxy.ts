@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ChromeSigninUserChoice, ChromeSigninUserChoiceInfo, PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncPrefs, SyncStatus} from 'chrome://os-settings/os_settings.js';
+import {ChromeSigninUserChoice, ChromeSigninUserChoiceInfo, PageStatus, SignedInState, StatusAction, StoredAccount, SyncBrowserProxy, SyncPrefs, SyncStatus} from 'chrome://os-settings/os_settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestSyncBrowserProxy extends TestBrowserProxy implements
@@ -10,7 +10,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   private impressionCount_: number = 0;
   private storedAccounts_: StoredAccount[] = [];
   private syncStatus_: SyncStatus = {
-    signedIn: true,
+    signedInState: SignedInState.SYNCING,
     signedInUsername: 'fakeUsername',
     statusAction: StatusAction.NO_ACTION,
   };

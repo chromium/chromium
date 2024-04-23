@@ -155,10 +155,11 @@ void ParseConfigurationArguments(const base::Value::List& args,
                                  SyncConfigInfo* config,
                                  const base::Value** callback_id) {
   const std::string& json = args[1].GetString();
-  if ((*callback_id = &args[0]) && !json.empty())
+  if ((*callback_id = &args[0]) && !json.empty()) {
     CHECK(GetConfiguration(json, config));
-  else
+  } else {
     NOTREACHED();
+  }
 }
 
 std::string GetSyncErrorAction(SyncStatusActionType action_type) {
@@ -229,6 +230,25 @@ bool IsSigninPaused(signin::IdentityManager* identity_manager) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
+settings::SignedInState GetSignedInState(
+    signin::IdentityManager* identity_manager) {
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    return settings::SignedInState::Syncing;
+  }
+
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+            identity_manager->GetPrimaryAccountId(
+                signin::ConsentLevel::kSignin))) {
+      return settings::SignedInState::SignedInPaused;
+    }
+
+    return settings::SignedInState::SignedIn;
+  }
+
+  return settings::SignedInState::SignedOut;
+}
+
 }  // namespace
 
 namespace settings {
@@ -245,8 +265,9 @@ PeopleHandler::PeopleHandler(Profile* profile)
 
 PeopleHandler::~PeopleHandler() {
   // Early exit if running unit tests (no actual WebUI is attached).
-  if (!web_ui())
+  if (!web_ui()) {
     return;
+  }
 
   // Remove this class as an observer to prevent calls back into this class
   // while destroying.
@@ -362,15 +383,17 @@ void PeopleHandler::OnJavascriptAllowed() {
 
   signin::IdentityManager* identity_manager(
       IdentityManagerFactory::GetInstance()->GetForProfile(profile_));
-  if (identity_manager)
+  if (identity_manager) {
     identity_manager_observation_.Observe(identity_manager);
+  }
 
   // This is intentionally not using GetSyncService(), to go around the
   // Profile::IsSyncAllowed() check.
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
-  if (sync_service)
+  if (sync_service) {
     sync_service_observation_.Observe(sync_service);
+  }
 }
 
 void PeopleHandler::OnJavascriptDisallowed() {
@@ -530,16 +553,18 @@ base::Value::List PeopleHandler::GetStoredAccountsList() {
   }
 
   // Guest mode does not have a primary account (or an IdentityManager).
-  if (profile_->IsGuestSession())
+  if (profile_->IsGuestSession()) {
     return base::Value::List();
+  }
   // If DICE is disabled for this profile or unsupported on this platform (e.g.
   // Chrome OS) or Lacros main profile (sync with a different account than the
   // device account is not allowed), then show only the primary account,
   // whether or not that account has consented to sync.
   AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
       identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin));
-  if (!primary_account_info.IsEmpty())
+  if (!primary_account_info.IsEmpty()) {
     accounts.Append(GetAccountValue(identity_manager, primary_account_info));
+  }
   return accounts;
 }
 
@@ -634,15 +659,17 @@ void PeopleHandler::HandleShowSyncSetupUI(const base::Value::List& args) {
 
   syncer::SyncService* service = GetSyncService();
 
-  if (service && !sync_blocker_)
+  if (service && !sync_blocker_) {
     sync_blocker_ = service->GetSetupInProgressHandle();
+  }
 
   // Mark Sync as requested by the user. It might already be requested, but
   // it's not if this is either the first time the user is setting up Sync, or
   // Sync was set up but then was reset via the dashboard. This also pokes the
   // SyncService to start up immediately, i.e. bypass deferred startup.
-  if (service)
+  if (service) {
     service->SetSyncFeatureRequested();
+  }
 
   GetLoginUIService()->SetLoginUI(this);
 
@@ -834,8 +861,9 @@ void PeopleHandler::HandleStartKeyRetrieval(const base::Value::List& args) {
 #endif
 
   Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   OpenTabForSyncKeyRetrieval(
       browser, syncer::TrustedVaultUserActionTriggerForUMA::kSettings);
@@ -919,12 +947,14 @@ void PeopleHandler::CloseSyncSetup() {
 void PeopleHandler::InitializeSyncBlocker() {
   DCHECK(web_ui());
   WebContents* web_contents = web_ui()->GetWebContents();
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   syncer::SyncService* service = GetSyncService();
-  if (!service)
+  if (!service) {
     return;
+  }
 
   // The user opened settings directly to the syncSetup sub-page, because they
   // clicked "Settings" in the browser sync consent dialog or because they
@@ -948,8 +978,9 @@ void PeopleHandler::OnPrimaryAccountChanged(
       // SetupInProgressHandle right now to avoid a temporary "missing Sync
       // confirmation" error in the avatar menu. See crbug.com/928696.
       syncer::SyncService* service = GetSyncService();
-      if (service && !sync_blocker_)
+      if (service && !sync_blocker_) {
         sync_blocker_ = service->GetSetupInProgressHandle();
+      }
       UpdateSyncStatus();
       break;
     }
@@ -1057,21 +1088,16 @@ base::Value::Dict PeopleHandler::GetSyncStatusDictionary() const {
                   GetSyncErrorAction(status_labels.action_type));
 
   sync_status.Set("managed", disallowed_by_policy);
-  // TODO(crbug.com/40745012): audit js usages of |disabled| and |signedIn|
-  // fields, update it to use the right field, comments around and conditions
-  // here. Perhaps removal of one of these to fields is possible.
+  // TODO(crbug.com/40745012): audit js usages of |disabled| and |signedInState|
+  // (sync part) fields, update it to use the right field, comments around and
+  // conditions here. Perhaps removal of one of these to fields is possible.
   sync_status.Set("disabled", !service || disallowed_by_policy);
-  // NOTE: This means signed-in for *sync*. It can be false when the user is
-  // signed-in to the content area or to the browser.
-  sync_status.Set("signedIn", identity_manager->HasPrimaryAccount(
-                                  signin::ConsentLevel::kSync));
+  sync_status.Set("signedInState",
+                  static_cast<int>(GetSignedInState(identity_manager)));
   sync_status.Set("signedInUsername",
                   signin_ui_util::GetAuthenticatedUsername(profile_));
   sync_status.Set("hasUnrecoverableError",
                   service && service->HasUnrecoverableError());
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  sync_status.Set("signinPaused", IsSigninPaused(identity_manager));
-#endif
   return sync_status;
 }
 
@@ -1171,8 +1197,9 @@ void PeopleHandler::UpdateStoredAccounts() {
 void PeopleHandler::MarkFirstSetupComplete() {
   syncer::SyncService* service = GetSyncService();
   // The sync service may be nullptr if it has been just disabled by policy.
-  if (!service)
+  if (!service) {
     return;
+  }
 
   // Sync is usually already requested at this point, but it might not be if
   // Sync was reset from the dashboard while this page was open. (In most
@@ -1203,13 +1230,15 @@ void PeopleHandler::MarkFirstSetupComplete() {
 
 void PeopleHandler::MaybeMarkSyncConfiguring() {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (IsProfileAuthNeededOrHasErrors())
+  if (IsProfileAuthNeededOrHasErrors()) {
     return;
+  }
 #endif
   syncer::SyncService* service = GetSyncService();
   // The sync service may be nullptr if it has been just disabled by policy.
-  if (service && service->IsEngineInitialized())
+  if (service && service->IsEngineInitialized()) {
     configuring_sync_ = true;
+  }
 }
 
 bool PeopleHandler::IsProfileAuthNeededOrHasErrors() {

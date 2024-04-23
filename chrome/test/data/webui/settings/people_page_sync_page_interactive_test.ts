@@ -8,7 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrInputElement, SettingsSyncPageElement} from 'chrome://settings/lazy_load.js';
-import {Router, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {Router, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import type {SyncRoutes} from './sync_test_util.js';
@@ -33,7 +33,7 @@ suite('sync-page-test', function() {
 
   test('autofocus passphrase input', function() {
     syncPage.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       disabled: false,
       hasError: true,
       statusAction: StatusAction.ENTER_PASSPHRASE,

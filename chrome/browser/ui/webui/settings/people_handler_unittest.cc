@@ -99,10 +99,7 @@ syncer::UserSelectableTypeSet GetAllTypes() {
   return syncer::UserSelectableTypeSet::All();
 }
 
-enum SyncAllDataConfig {
-  SYNC_ALL_DATA,
-  CHOOSE_WHAT_TO_SYNC
-};
+enum SyncAllDataConfig { SYNC_ALL_DATA, CHOOSE_WHAT_TO_SYNC };
 
 // Create a json-format string with the key/value pairs appropriate for a call
 // to HandleSetDatatypes().
@@ -1586,10 +1583,11 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPausedThenSignout) {
     ASSERT_TRUE(values_list[last_index]->is_dict());
     const base::Value::Dict& sync_status_values =
         values_list[last_index]->GetDict();
-    std::optional<bool> signenPaused =
-        sync_status_values.FindBool("signinPaused");
-    ASSERT_TRUE(signenPaused.has_value());
-    EXPECT_TRUE(signenPaused.value());
+    std::optional<int> signedInState =
+        sync_status_values.FindInt("signedInState");
+    ASSERT_TRUE(signedInState.has_value());
+    EXPECT_EQ(static_cast<SignedInState>(signedInState.value()),
+              SignedInState::SignedInPaused);
   }
 
   // Simulates pressing on the "Sign out" Button in the Sign in Paused state,
@@ -1605,10 +1603,11 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPausedThenSignout) {
     ASSERT_TRUE(values_list[last_index]->is_dict());
     const base::Value::Dict& sync_status_values =
         values_list[last_index]->GetDict();
-    std::optional<bool> signenPaused =
-        sync_status_values.FindBool("signinPaused");
-    ASSERT_TRUE(signenPaused.has_value());
-    EXPECT_FALSE(signenPaused.value());
+    std::optional<int> signedInState =
+        sync_status_values.FindInt("signedInState");
+    ASSERT_TRUE(signedInState.has_value());
+    EXPECT_EQ(static_cast<SignedInState>(signedInState.value()),
+              SignedInState::SignedOut);
   }
 }
 
@@ -1630,10 +1629,12 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPausedThenReauth) {
     ASSERT_TRUE(values_list[last_index]->is_dict());
     const base::Value::Dict& sync_status_values =
         values_list[last_index]->GetDict();
-    std::optional<bool> signinPaused =
-        sync_status_values.FindBool("signinPaused");
-    ASSERT_TRUE(signinPaused.has_value());
-    EXPECT_TRUE(signinPaused.value());
+    std::optional<int> signedInState =
+        sync_status_values.FindInt("signedInState");
+    ASSERT_TRUE(signedInState.has_value());
+    EXPECT_EQ(static_cast<SignedInState>(signedInState.value()),
+              SignedInState::SignedInPaused);
+    ;
   }
 
   // Simulates pressing on the "Verify it's you" button in the Sign in Paused
@@ -1648,10 +1649,11 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPausedThenReauth) {
     ASSERT_TRUE(values_list[last_index]->is_dict());
     const base::Value::Dict& sync_status_values =
         values_list[last_index]->GetDict();
-    std::optional<bool> signinPaused =
-        sync_status_values.FindBool("signinPaused");
-    ASSERT_TRUE(signinPaused.has_value());
-    EXPECT_FALSE(signinPaused.value());
+    std::optional<int> signedInState =
+        sync_status_values.FindInt("signedInState");
+    ASSERT_TRUE(signedInState.has_value());
+    EXPECT_EQ(static_cast<SignedInState>(signedInState.value()),
+              SignedInState::SignedIn);
   }
 }
 
@@ -1672,10 +1674,11 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPausedValueWithSync) {
     ASSERT_TRUE(values_list[last_index]->is_dict());
     const base::Value::Dict& sync_status_values =
         values_list[last_index]->GetDict();
-    std::optional<bool> signinPaused =
-        sync_status_values.FindBool("signinPaused");
-    ASSERT_TRUE(signinPaused.has_value());
-    EXPECT_FALSE(signinPaused.value());
+    std::optional<int> signedInState =
+        sync_status_values.FindInt("signedInState");
+    ASSERT_TRUE(signedInState.has_value());
+    EXPECT_EQ(static_cast<SignedInState>(signedInState.value()),
+              SignedInState::Syncing);
   }
 
   // Invalidate the account while it is syncing.
@@ -1690,10 +1693,11 @@ TEST_F(PeopleHandlerWithExplicitBrowserSigninTest, SigninPausedValueWithSync) {
     ASSERT_TRUE(values_list[last_index]->is_dict());
     const base::Value::Dict& sync_status_values =
         values_list[last_index]->GetDict();
-    std::optional<bool> signinPaused =
-        sync_status_values.FindBool("signinPaused");
-    ASSERT_TRUE(signinPaused.has_value());
-    EXPECT_FALSE(signinPaused.value());
+    std::optional<int> signedInState =
+        sync_status_values.FindInt("signedInState");
+    ASSERT_TRUE(signedInState.has_value());
+    EXPECT_EQ(static_cast<SignedInState>(signedInState.value()),
+              SignedInState::Syncing);
   }
 }
 

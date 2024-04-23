@@ -20,7 +20,7 @@ import '../icons.html.js';
 import '../settings_shared.css.js';
 
 import type {SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -771,7 +771,8 @@ export class SettingsClearBrowsingDataDialogElement extends
     if (this.unoDesktopEnabled_) {
       showFooter = this.isSignedIn_;
     } else {
-      showFooter = !!this.syncStatus && !!this.syncStatus!.signedIn;
+      showFooter = !!this.syncStatus &&
+          this.syncStatus.signedInState === SignedInState.SYNCING;
     }
     // </if>
     return showFooter;
@@ -782,7 +783,8 @@ export class SettingsClearBrowsingDataDialogElement extends
    */
   private showSigninInfo_(): boolean {
     return this.unoDesktopEnabled_ && this.isSignedIn_ &&
-        (!this.syncStatus || !this.syncStatus.signedIn);
+        (!this.syncStatus ||
+         this.syncStatus.signedInState !== SignedInState.SYNCING);
   }
 
   /**

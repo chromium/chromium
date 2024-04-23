@@ -8,7 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsPersonalizationOptionsElement} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, PrivacyPageVisibility, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, PrivacyPageBrowserProxyImpl, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, PrivacyPageBrowserProxyImpl, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 // <if expr="not is_chromeos">
@@ -70,14 +70,14 @@ suite('AllBuilds', function() {
     assertFalse(isChildVisible(testElement, '#driveSuggestControl'));
 
     testElement.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
     };
     flush();
     assertTrue(isChildVisible(testElement, '#driveSuggestControl'));
 
     testElement.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.REAUTHENTICATE,
     };
     flush();
@@ -86,7 +86,7 @@ suite('AllBuilds', function() {
 
   test('DriveSearchSuggestControlDeprecated', function() {
     testElement.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
     };
     flush();
@@ -100,7 +100,7 @@ suite('AllBuilds', function() {
 
   test('DriveSearchSuggestControlNoSyncRequirement', function() {
     testElement.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.REAUTHENTICATE,
     };
     flush();
@@ -109,7 +109,7 @@ suite('AllBuilds', function() {
     loadTimeData.overrideValues({'driveSuggestNoSyncRequirement': true});
     buildTestElement();
     testElement.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.REAUTHENTICATE,
     };
     flush();
@@ -195,7 +195,7 @@ suite('AllBuilds', function() {
     assertTrue(isVisible(toggle));
 
     testElement.syncStatus = {
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_OUT,
       statusAction: StatusAction.NO_ACTION,
     };
     // Check initial setup.
@@ -230,7 +230,7 @@ suite('AllBuilds', function() {
     assertTrue(toggle.checked);
 
     testElement.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
     };
     // When the user is signed in, clicking the toggle should open the
@@ -342,7 +342,7 @@ suite('AllBuilds', function() {
         '#priceEmailNotificationsToggle'));
 
     testElement.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
     };
     flush();

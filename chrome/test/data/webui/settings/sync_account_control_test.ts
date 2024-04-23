@@ -11,7 +11,7 @@ import {assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 // </if>
 
 import type {SettingsSyncAccountControlElement} from 'chrome://settings/settings.js';
-import {MAX_SIGNIN_PROMO_IMPRESSION, Router, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {MAX_SIGNIN_PROMO_IMPRESSION, Router, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -26,15 +26,19 @@ suite('SyncAccountControl', function() {
   let browserProxy: TestSyncBrowserProxy;
   let testElement: SettingsSyncAccountControlElement;
 
-  function forcePromoResetWithCount(count: number, signedIn: boolean) {
+  function forcePromoResetWithCount(count: number, syncing: boolean) {
     browserProxy.setImpressionCount(count);
-    // Flipping syncStatus.signedIn will force promo state to be reset.
+    // Flipping syncStatus.signedInState will force promo state to be reset.
+    const opposite_syncing =
+        syncing ? SignedInState.SIGNED_OUT : SignedInState.SYNCING;
+    const sync_state =
+        syncing ? SignedInState.SYNCING : SignedInState.SIGNED_OUT;
     testElement.syncStatus = {
-      signedIn: !signedIn,
+      signedInState: opposite_syncing,
       statusAction: StatusAction.NO_ACTION,
     };
     testElement.syncStatus = {
-      signedIn: signedIn,
+      signedInState: sync_state,
       statusAction: StatusAction.NO_ACTION,
     };
   }
@@ -47,7 +51,7 @@ suite('SyncAccountControl', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('settings-sync-account-control');
     testElement.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'foo@foo.com',
       statusAction: StatusAction.NO_ACTION,
     };
@@ -86,7 +90,8 @@ suite('SyncAccountControl', function() {
     forcePromoResetWithCount(0, false);
     const banner = testElement.shadowRoot!.querySelector('#banner');
     assertTrue(isVisible(banner));
-    // Flipping signedIn in forcePromoResetWithCount should increment count.
+    // Changing `signedInState` in forcePromoResetWithCount should increment
+    // count.
     await browserProxy.whenCalled('incrementPromoImpressionCount');
     forcePromoResetWithCount(MAX_SIGNIN_PROMO_IMPRESSION + 1, false);
     assertFalse(isVisible(banner));
@@ -108,7 +113,7 @@ suite('SyncAccountControl', function() {
 
   test('promo header is visible', function() {
     testElement.syncStatus = {
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_OUT,
       signedInUsername: '',
       statusAction: StatusAction.NO_ACTION,
     };
@@ -120,7 +125,7 @@ suite('SyncAccountControl', function() {
 
   test('not signed in and no stored accounts', async function() {
     testElement.syncStatus = {
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_OUT,
       signedInUsername: '',
       statusAction: StatusAction.NO_ACTION,
     };
@@ -153,7 +158,7 @@ suite('SyncAccountControl', function() {
     loadTimeData.overrideValues({isSecondaryUser: true});
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_OUT,
       signedInUsername: '',
       statusAction: StatusAction.NO_ACTION,
       hasError: false,
@@ -250,7 +255,7 @@ suite('SyncAccountControl', function() {
     loadTimeData.overrideValues({turnOffSyncAllowedForManagedProfiles: false});
 
     testElement.syncStatus = {
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_IN,
       disabled: false,
       hasError: false,
       domain: 'domain',
@@ -266,7 +271,7 @@ suite('SyncAccountControl', function() {
     loadTimeData.overrideValues({turnOffSyncAllowedForManagedProfiles: true});
 
     testElement.syncStatus = {
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_IN,
       disabled: false,
       hasError: false,
       domain: 'domain',
@@ -285,7 +290,7 @@ suite('SyncAccountControl', function() {
     loadTimeData.overrideValues({isSecondaryUser: false});
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_OUT,
       signedInUsername: '',
       statusAction: StatusAction.NO_ACTION,
       hasError: false,
@@ -317,7 +322,7 @@ suite('SyncAccountControl', function() {
   test('signed in, no error', function() {
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       statusAction: StatusAction.NO_ACTION,
       hasError: false,
@@ -362,7 +367,7 @@ suite('SyncAccountControl', function() {
   test('signed in, has error', function() {
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       hasError: true,
       hasUnrecoverableError: false,
@@ -388,7 +393,7 @@ suite('SyncAccountControl', function() {
 
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       hasError: true,
       hasUnrecoverableError: false,
@@ -411,7 +416,7 @@ suite('SyncAccountControl', function() {
 
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       statusAction: StatusAction.NO_ACTION,
       hasError: false,
@@ -433,7 +438,7 @@ suite('SyncAccountControl', function() {
 
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       statusAction: StatusAction.REAUTHENTICATE,
       hasError: true,
@@ -454,7 +459,7 @@ suite('SyncAccountControl', function() {
 
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       statusAction: StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS,
       hasError: true,
@@ -481,7 +486,7 @@ suite('SyncAccountControl', function() {
 
   test('signed in, setup in progress', function() {
     testElement.syncStatus = {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       statusAction: StatusAction.NO_ACTION,
       statusText: 'Setup in progress...',
@@ -508,7 +513,7 @@ suite('SyncAccountControl', function() {
 
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       statusAction: StatusAction.NO_ACTION,
       hasError: false,
@@ -522,7 +527,7 @@ suite('SyncAccountControl', function() {
     testElement.embeddedInSubpage = true;
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       hasError: true,
       hasUnrecoverableError: false,
@@ -535,7 +540,7 @@ suite('SyncAccountControl', function() {
     testElement.embeddedInSubpage = true;
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       hasError: true,
       hasUnrecoverableError: true,
@@ -548,7 +553,7 @@ suite('SyncAccountControl', function() {
     testElement.embeddedInSubpage = true;
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       hasError: true,
       hasUnrecoverableError: false,
@@ -562,7 +567,7 @@ suite('SyncAccountControl', function() {
     testElement.embeddedInSubpage = true;
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       hasError: true,
       hasUnrecoverableError: true,
@@ -577,7 +582,7 @@ suite('SyncAccountControl', function() {
     testElement.hideButtons = true;
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       statusAction: StatusAction.NO_ACTION,
       hasError: false,
@@ -590,7 +595,7 @@ suite('SyncAccountControl', function() {
 
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       hasError: true,
       hasUnrecoverableError: false,
@@ -602,7 +607,7 @@ suite('SyncAccountControl', function() {
 
     testElement.syncStatus = {
       firstSetupInProgress: false,
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       signedInUsername: 'bar@bar.com',
       hasError: true,
       hasUnrecoverableError: false,
@@ -642,8 +647,7 @@ suite('SyncAccountControl', function() {
     // Signed in but not syncing.
     testElement.syncStatus = {
       statusAction: StatusAction.NO_ACTION,
-      signedIn: false,
-      signinPaused: false,
+      signedInState: SignedInState.SIGNED_IN,
     };
 
     assertTrue(isChildVisible(testElement, '#avatar-row'));
@@ -658,8 +662,7 @@ suite('SyncAccountControl', function() {
     // Set Signed in Paused state.
     testElement.syncStatus = {
       statusAction: StatusAction.NO_ACTION,
-      signedIn: false,
-      signinPaused: true,
+      signedInState: SignedInState.SIGNED_IN_PAUSED,
     };
 
     assertTrue(isChildVisible(testElement, '#avatar-row'));

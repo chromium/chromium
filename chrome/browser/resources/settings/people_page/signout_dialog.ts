@@ -22,7 +22,7 @@ import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {microTask, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
 import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {SignedInState, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
@@ -122,7 +122,9 @@ export class SettingsSignoutDialogElement extends
    * Polymer observer for syncStatus.
    */
   private syncStatusChanged_() {
-    if (!this.syncStatus!.signedIn && this.$.dialog.open) {
+    if (!!this.syncStatus &&
+        this.syncStatus.signedInState !== SignedInState.SYNCING &&
+        this.$.dialog.open) {
       this.$.dialog.close();
     }
   }

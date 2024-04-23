@@ -20,7 +20,7 @@ import {loadTimeData} from 'chrome://settings/settings.js';
 // </if>
 
 import type {SettingsPeoplePageElement} from 'chrome://settings/settings.js';
-import {pageVisibility, ProfileInfoBrowserProxyImpl, Router, routes, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {pageVisibility, ProfileInfoBrowserProxyImpl, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // <if expr="not is_chromeos">
 import {assertLT} from 'chrome://webui-test/chai_assert.js';
@@ -132,7 +132,7 @@ suite('SigninDisallowedTests', function() {
 
     // Control element doesn't exist when policy forbids sync.
     simulateSyncStatus({
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_IN,
       syncSystemEnabled: true,
       statusAction: StatusAction.NO_ACTION,
     });
@@ -182,7 +182,7 @@ suite('SyncStatusTests', function() {
     assertFalse(!!peoplePage.shadowRoot!.querySelector('#profile-row'));
 
     simulateSyncStatus({
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_IN,
       syncSystemEnabled: true,
       statusAction: StatusAction.NO_ACTION,
     });
@@ -232,7 +232,7 @@ suite('SyncStatusTests', function() {
     // Google Account being shown.
     simulateStoredAccounts([{email: 'foo@foo.com'}]);
     simulateSyncStatus({
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_IN,
       hasError: false,
       statusAction: StatusAction.NO_ACTION,
     });
@@ -243,7 +243,7 @@ suite('SyncStatusTests', function() {
     // Google Account being shown.
     simulateStoredAccounts([{email: 'foo@foo.com'}]);
     simulateSyncStatus({
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_IN,
       hasError: true,
       statusAction: StatusAction.NO_ACTION,
     });
@@ -254,7 +254,7 @@ suite('SyncStatusTests', function() {
     // Google Account being shown.
     simulateStoredAccounts([{email: 'foo@foo.com'}]);
     simulateSyncStatus({
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       hasError: false,
       statusAction: StatusAction.NO_ACTION,
     });
@@ -265,7 +265,7 @@ suite('SyncStatusTests', function() {
     // the Google Account being shown.
     simulateStoredAccounts([{email: 'foo@foo.com'}]);
     simulateSyncStatus({
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       hasError: true,
       statusAction: StatusAction.NO_ACTION,
     });
@@ -326,7 +326,7 @@ suite('SyncStatusTests', function() {
       turnOffSyncAllowedForManagedProfiles: false,
     });
     simulateSyncStatus({
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       domain: 'example.com',
       syncSystemEnabled: true,
       statusAction: StatusAction.NO_ACTION,
@@ -371,7 +371,7 @@ suite('SyncStatusTests', function() {
       turnOffSyncAllowedForManagedProfiles: true,
     });
     simulateSyncStatus({
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       domain: 'example.com',
       syncSystemEnabled: true,
       statusAction: StatusAction.NO_ACTION,
@@ -478,7 +478,7 @@ suite('SyncStatusTests', function() {
                                   'settings-signout-dialog')!.$.dialog.open);
 
     simulateSyncStatus({
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_OUT,
       statusAction: StatusAction.NO_ACTION,
     });
 
@@ -522,7 +522,7 @@ suite('SyncSettings', function() {
 
     // Make sures the subpage opens even when logged out or has errors.
     simulateSyncStatus({
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_OUT,
       statusAction: StatusAction.REAUTHENTICATE,
     });
 

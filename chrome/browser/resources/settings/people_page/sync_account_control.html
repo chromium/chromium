@@ -116,10 +116,11 @@
     </style>
     <!-- TODO(jamescook): Show the promo on Chrome OS if the user is signed-in
          but has sync disabled. -->
-    <div id="banner" hidden="[[shouldHideBanner_(syncStatus.signedIn)]]"
+    <div id="banner" hidden="[[shouldHideBanner_(syncStatus.signedInState)]]"
         part="banner"></div>
     <div class="cr-row first"
-        id="promo-header" hidden="[[shouldHideBanner_(syncStatus.signedIn)]]">
+        id="promo-header" hidden="[[shouldHideBanner_(
+              syncStatus.signedInState)]]">
       <div class="flex cr-padded-text">
         <div id="promo-title" part="title">
           [[getLabel_(promoLabelWithAccount,
@@ -141,7 +142,8 @@
         <div id="avatar-container">
           <img class="account-icon" alt=""
               src="[[getAccountImageSrc_(shownAccount_.avatarImage)]]">
-          <div id="sync-icon-container" hidden="[[!syncStatus.signedIn]]"
+          <div id="sync-icon-container"
+              hidden="[[!isSyncing_(syncStatus.signedInState)]]"
               class$="[[getSyncIconStyle_(
                   syncStatus.hasError, syncStatus.statusAction,
                   syncStatus.disabled)]]">
@@ -162,26 +164,27 @@
           <div class="secondary text-elide">
             [[getAccountLabel_(
                 '$i18nPolymer{signedInTo}', '$i18nPolymer{syncingTo}',
-                shownAccount_.email, syncStatus.hasError, syncStatus.signedIn,
-                syncStatus.disabled, syncStatus.firstSetupInProgress,
-                shownAccount_.isPrimaryAccount, syncStatus.signinPaused)]]
+                shownAccount_.email, syncStatus.hasError,
+                syncStatus.signedInState, syncStatus.disabled,
+                syncStatus.firstSetupInProgress,
+                shownAccount_.isPrimaryAccount)]]
           </div>
         </div>
 <!-- Chrome OS does not allow switching users for sync. -->
 <if expr="not chromeos_ash">
         <cr-icon-button class="icon-arrow-dropdown cr-button-gap"
-            hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedIn,
+            hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedInState,
                 syncStatus.domain, syncStatus.signinPaused)]]"
             on-click="onMenuButtonClick_" id="dropdown-arrow"
             aria-label="$i18n{useAnotherAccount}">
         </cr-icon-button>
         <div class="separator"
-            hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedIn,
+            hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedInState,
                 syncStatus.domain, syncStatus.signinPaused)]]">
         </div>
 </if>
         <cr-button id="sync-button" class="action-button cr-button-gap"
-            hidden="[[shouldHideSyncButton_(syncStatus.signedIn,
+            hidden="[[shouldHideSyncButton_(syncStatus.signedInState,
                 syncStatus.signinPaused)]]"
             on-click="onSyncButtonClick_"
             disabled="[[shouldDisableSyncButton_(showSetupButtons_,
@@ -191,7 +194,7 @@
         </cr-button>
         <cr-button id="turn-off"
             class="cr-button-gap"
-            hidden="[[!shouldShowTurnOffButton_(syncStatus.signedIn,
+            hidden="[[!shouldShowTurnOffButton_(syncStatus.signedInState,
                 syncStatus.domain, showSetupButtons_)]]"
             on-click="onTurnOffButtonClick_"
             disabled="[[syncStatus.firstSetupInProgress]]">
@@ -227,7 +230,7 @@
 <!-- Chrome OS does not allow switching users for sync. -->
 <if expr="not chromeos_ash">
       <template is="dom-if"
-          if="[[shouldAllowAccountSwitch_(syncStatus.signedIn,
+          if="[[shouldAllowAccountSwitch_(syncStatus.signedInState,
               syncStatus.domain, syncStatus.signinPaused)]]" restamp>
         <cr-action-menu id="menu" auto-reposition
             role-description="$i18n{menu}">

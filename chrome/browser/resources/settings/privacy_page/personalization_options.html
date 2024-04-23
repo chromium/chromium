@@ -138,7 +138,8 @@
       </settings-toggle-button>
     </template>
     <template is="dom-if" if="[[shouldShowDriveSuggest_(
-        syncStatus, syncStatus.signedIn, syncStatus.statusAction)]]" restamp>
+        syncStatus, syncStatus.signedInState, syncStatus.statusAction)]]"
+        restamp>
       <settings-toggle-button id="driveSuggestControl" class="hr"
           pref="{{prefs.documentsuggest.enabled}}"
           label="$i18n{driveSuggestPref}"
@@ -147,7 +148,7 @@
     </template>
 
     <template is="dom-if" if="[[showPriceEmailNotificationsToggle_(
-        syncStatus, syncStatus.signedIn)]]" restamp>
+        syncStatus, syncStatus.signedInState)]]" restamp>
       <settings-toggle-button id="priceEmailNotificationsToggle"
           class="hr"
           label="$i18n{priceEmailNotificationsPref}"

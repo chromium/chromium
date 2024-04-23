@@ -21,7 +21,7 @@ import './privacy_guide_welcome_fragment.js';
 import './step_indicator.js';
 
 import type {SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {SignedInState, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
@@ -496,7 +496,8 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
 
   private isSyncOn_(): boolean {
     assert(this.syncStatus_);
-    return !!this.syncStatus_.signedIn && !this.syncStatus_.hasError;
+    return this.syncStatus_.signedInState === SignedInState.SYNCING &&
+        !this.syncStatus_.hasError;
   }
 
   private shouldShowCookiesCard_(): boolean {

@@ -8,7 +8,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SettingsPrivacyGuidePageElement} from 'chrome://settings/lazy_load.js';
 import {CookiePrimarySetting, PrivacyGuideStep, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {Router, routes, StatusAction} from 'chrome://settings/settings.js';
+import {Router, routes, SignedInState, StatusAction} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -57,8 +57,10 @@ export function setupSync({
   if (typedUrlsSynced) {
     assertTrue(syncOn);
   }
+  const signedInState =
+      syncOn ? SignedInState.SYNCING : SignedInState.SIGNED_OUT;
   syncBrowserProxy.testSyncStatus = {
-    signedIn: syncOn,
+    signedInState: signedInState,
     hasError: false,
     statusAction: StatusAction.NO_ACTION,
   };
@@ -107,7 +109,7 @@ export function shouldShowSafeBrowsingCard(
 export function shouldShowHistorySyncCard(
     syncBrowserProxy: TestSyncBrowserProxy): boolean {
   return !syncBrowserProxy.testSyncStatus ||
-      !!syncBrowserProxy.testSyncStatus.signedIn;
+      syncBrowserProxy.testSyncStatus.signedInState === SignedInState.SYNCING;
 }
 
 // Bundles functionality to create the page object for tests.

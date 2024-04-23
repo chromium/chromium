@@ -340,7 +340,7 @@
         </div>
       </div>
       <template is="dom-if"
-          if="[[shouldShowFooter_(isSignedIn_, syncStatus.signedIn)]]"
+          if="[[shouldShowFooter_(isSignedIn_, syncStatus.signedInState)]]"
           restamp>
         <div slot="footer">
           <settings-sync-account-control sync-status="[[syncStatus]]"
@@ -349,11 +349,13 @@
           <div class="divider"></div>
           <div id="footer-description" on-click="onSyncDescriptionLinkClicked_">
             <span id="signin-info"
-                hidden="[[!showSigninInfo_(isSignedIn_, syncStatus.signedIn)]]">
+                hidden="[[!showSigninInfo_(isSignedIn_,
+                    syncStatus.signedInState)]]">
               $i18nRaw{clearBrowsingDataSignedIn}
             </span>
             <span id="sync-info"
-                hidden="[[!showSyncInfo_(isSignedIn_, syncStatus.signedIn)]]">
+                hidden="[[!showSyncInfo_(isSignedIn_,
+                    syncStatus.signedInState)]]">
               $i18nRaw{clearBrowsingDataWithSync}
             </span>
             <span id="sync-paused-info" hidden="[[!isSyncPaused_]]">

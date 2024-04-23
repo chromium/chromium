@@ -81,7 +81,8 @@
 <!-- When the user is signed-in, the settings-sync-account-control is always
 shown on non-ChromeOS platforms -->
 <if expr="chromeos_ash">
-                <div class="secondary" hidden="[[!syncStatus.signedIn]]">
+                <div class="secondary" hidden="[[!isSyncing_(
+                      syncStatus.signedInState)]]">
                   [[syncStatus.signedInUsername]]
                 </div>
 </if>

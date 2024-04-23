@@ -9,7 +9,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {ClearBrowsingDataResult, SettingsCheckboxElement, SettingsClearBrowsingDataDialogElement, SettingsHistoryDeletionDialogElement, SettingsPasswordsDeletionDialogElement} from 'chrome://settings/lazy_load.js';
 import {ClearBrowsingDataBrowserProxyImpl, TimePeriodExperiment, TimePeriod} from 'chrome://settings/lazy_load.js';
 import type {CrButtonElement, SettingsDropdownMenuElement} from 'chrome://settings/settings.js';
-import {loadTimeData, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {loadTimeData, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible, isVisible, eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -182,7 +182,7 @@ suite('ClearBrowsingDataDesktop', function() {
   test('ClearBrowsingDataSyncAccountInfoDesktop', function() {
     // Not syncing: the footer is hidden.
     webUIListenerCallback('sync-status-changed', {
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_IN,
       hasError: false,
     });
     flush();
@@ -193,7 +193,7 @@ suite('ClearBrowsingDataDesktop', function() {
     // <if expr="not is_chromeos">
     // Syncing: the footer is shown, with the normal sync info.
     webUIListenerCallback('sync-status-changed', {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       hasError: false,
     });
     flush();
@@ -206,7 +206,7 @@ suite('ClearBrowsingDataDesktop', function() {
 
     // Sync is paused.
     webUIListenerCallback('sync-status-changed', {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       hasError: true,
       statusAction: StatusAction.REAUTHENTICATE,
     });
@@ -218,7 +218,7 @@ suite('ClearBrowsingDataDesktop', function() {
 
     // Sync passphrase error.
     webUIListenerCallback('sync-status-changed', {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       hasError: true,
       statusAction: StatusAction.ENTER_PASSPHRASE,
     });
@@ -230,7 +230,7 @@ suite('ClearBrowsingDataDesktop', function() {
 
     // Other sync error.
     webUIListenerCallback('sync-status-changed', {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       hasError: true,
       statusAction: StatusAction.NO_ACTION,
     });
@@ -246,7 +246,7 @@ suite('ClearBrowsingDataDesktop', function() {
   // <if expr="not is_chromeos">
   test('ClearBrowsingDataPauseSyncDesktop', function() {
     webUIListenerCallback('sync-status-changed', {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       hasError: false,
     });
     flush();
@@ -264,7 +264,7 @@ suite('ClearBrowsingDataDesktop', function() {
 
   test('ClearBrowsingDataStartSignInDesktop', function() {
     webUIListenerCallback('sync-status-changed', {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       hasError: true,
       statusAction: StatusAction.REAUTHENTICATE,
     });
@@ -283,7 +283,7 @@ suite('ClearBrowsingDataDesktop', function() {
 
   test('ClearBrowsingDataHandlePassphraseErrorDesktop', function() {
     webUIListenerCallback('sync-status-changed', {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       hasError: true,
       statusAction: StatusAction.ENTER_PASSPHRASE,
     });
@@ -995,7 +995,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
     // Not syncing.
     webUIListenerCallback('sync-status-changed', {
-      signedIn: false,
+      signedInState: SignedInState.SIGNED_IN,
       hasError: false,
     });
     flush();
@@ -1004,7 +1004,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
     // Syncing.
     webUIListenerCallback('sync-status-changed', {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       hasError: false,
     });
     flush();
@@ -1013,7 +1013,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
     // Sync passphrase error.
     webUIListenerCallback('sync-status-changed', {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       hasError: true,
       statusAction: StatusAction.ENTER_PASSPHRASE,
     });
@@ -1023,7 +1023,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
 
     // Other sync error.
     webUIListenerCallback('sync-status-changed', {
-      signedIn: true,
+      signedInState: SignedInState.SYNCING,
       hasError: true,
       statusAction: StatusAction.NO_ACTION,
     });

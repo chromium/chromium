@@ -29,7 +29,7 @@ import {assert} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ChromeSigninUserChoiceInfo, SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
-import {ChromeSigninUserChoice, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {ChromeSigninUserChoice, SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {MetricsReporting, PrivacyPageBrowserProxy} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
 import {PrivacyPageBrowserProxyImpl} from '/shared/settings/privacy_page/privacy_page_browser_proxy.js';
@@ -189,7 +189,8 @@ export class SettingsPersonalizationOptionsElement extends
   private showPriceEmailNotificationsToggle_(): boolean {
     // Only show the toggle when the user signed in.
     return loadTimeData.getBoolean('changePriceEmailNotificationsEnabled') &&
-        !!this.syncStatus && !!this.syncStatus.signedIn;
+        !!this.syncStatus &&
+        this.syncStatus.signedInState === SignedInState.SYNCING;
   }
 
   private getPriceEmailNotificationsPrefDesc_(): string {
@@ -339,12 +340,14 @@ export class SettingsPersonalizationOptionsElement extends
       return true;
     }
 
-    return !!this.syncStatus && !!this.syncStatus.signedIn &&
+    return !!this.syncStatus &&
+        this.syncStatus.signedInState === SignedInState.SYNCING &&
         this.syncStatus.statusAction !== StatusAction.REAUTHENTICATE;
   }
 
   private onSigninAllowedChange_() {
-    if (this.syncStatus.signedIn && !this.$.signinAllowedToggle.checked) {
+    if (this.syncStatus.signedInState === SignedInState.SYNCING &&
+        !this.$.signinAllowedToggle.checked) {
       // Switch the toggle back on and show the signout dialog.
       this.$.signinAllowedToggle.checked = true;
       this.showSignoutDialog_ = true;

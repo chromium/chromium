@@ -5,7 +5,7 @@
 // clang-format off
 import type {StoredAccount, SyncBrowserProxy, SyncPrefs, SyncStatus} from 'chrome://settings/settings.js';
 import type {ChromeSigninUserChoiceInfo} from 'chrome://settings/settings.js';
-import {PageStatus, StatusAction, ChromeSigninUserChoice} from 'chrome://settings/settings.js';
+import {PageStatus, SignedInState, StatusAction, ChromeSigninUserChoice} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 // clang-format on
@@ -15,7 +15,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   private impressionCount_: number = 0;
   private resolveGetSyncStatus_: Function|null = null;
   private syncStatus_: SyncStatus|null = {
-    signedIn: true,
+    signedInState: SignedInState.SYNCING,
     signedInUsername: 'fakeUsername',
     statusAction: StatusAction.NO_ACTION,
   };
