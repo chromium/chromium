@@ -86,10 +86,6 @@ namespace media {
 
 namespace {
 
-BASE_FEATURE(kPCVRAddSharedImageRasterUsageWithNonOOPR,
-             "PCVRAddSharedImageRasterUsageWithNonOOPR",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This class keeps the last image drawn.
 // We delete the temporary resource if it is not used for 3 seconds.
 const int kTemporaryResourceDeletionDelay = 3;  // Seconds;
@@ -1736,26 +1732,15 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     yuv_cache_.raster_context_provider = raster_context_provider;
     yuv_cache_.size = video_frame->coded_size();
 
-    // We read out the contents of the intermediate SI into the destination GL
-    // texture via the GLES2 interface.
-    uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ;
-
-    // We copy the contents of the source VideoFrame *into* the
-    // intermediate SI over the raster interface - the usage bits depend on
-    // whether OOP-Raster is enabled.
+    // We copy the contents of the source VideoFrame into the intermediate SI
+    // over the raster interface and read out the contents of the intermediate
+    // SI into the destination GL texture via the GLES2 interface.
+    uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
+                     gpu::SHARED_IMAGE_USAGE_GLES2_READ;
     if (raster_context_provider->ContextCapabilities().gpu_rasterization) {
-      usage |= gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-               gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+      usage |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     } else {
       usage |= gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
-      // RASTER_WRITE usage should be included as these SharedImages are written
-      // via raster, but historically this usage was included only for OOP-R.
-      // Currently in the process of adding with a killswitch.
-      // TODO(crbug.com/1524353): Remove this killswitch post-safe rollout.
-      if (base::FeatureList::IsEnabled(
-              kPCVRAddSharedImageRasterUsageWithNonOOPR)) {
-        usage = usage | gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
-      }
     }
 
     yuv_cache_.shared_image = sii->CreateSharedImage(
