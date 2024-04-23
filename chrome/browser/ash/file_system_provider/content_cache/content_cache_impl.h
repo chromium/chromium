@@ -98,7 +98,7 @@ class ContentCacheImpl : public ContentCache {
                           std::vector<bool> prune_success);
 
   // Generates the absolute path on disk from the supplied `item_id`.
-  const base::FilePath GetPathOnDiskFromContext(int64_t item_id);
+  const base::FilePath GetPathOnDiskFromId(int64_t item_id);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -142,7 +142,7 @@ bool ContentCacheImpl::StartReadBytes(
           << file.version_tag << "', offset = '" << offset << "', length = '"
           << length << "'}";
 
-  const auto it = lru_cache_.Get(file.file_path);
+  ContentLRUCache::iterator it = lru_cache_.Get(file.file_path);
   if (it == lru_cache_.end()) {
     VLOG(1) << "Cache miss: entire file is not in cache";
     return false;
@@ -180,7 +180,7 @@ bool ContentCacheImpl::StartReadBytes(
           << "'} is available";
   io_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&ReadBytesBlocking, GetPathOnDiskFromContext(ctx.id),
+      base::BindOnce(&ReadBytesBlocking, GetPathOnDiskFromId(ctx.id),
                      base::WrapRefCounted(buffer), offset, length),
       base::BindOnce(&ContentCacheImpl::OnBytesRead,
                      weak_ptr_factory_.GetWeakPtr(), file.file_path,
@@ -284,7 +284,7 @@ bool ContentCacheImpl::StartWriteBytes(const OpenedCloudFile& file,
     io_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(std::move(write_bytes_callback),
-                       GetPathOnDiskFromContext(ctx.id)),
+                       GetPathOnDiskFromId(ctx.id)),
         std::move(on_bytes_written_callback));
   }
 
@@ -309,7 +309,7 @@ void ContentCacheImpl::OnFileIdGenerated(
   io_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(std::move(write_bytes_callback),
-                     GetPathOnDiskFromContext(*inserted_id)),
+                     GetPathOnDiskFromId(*inserted_id)),
       std::move(on_bytes_written_callback));
 }
 
@@ -343,7 +343,7 @@ void ContentCacheImpl::OnBytesWritten(const base::FilePath& file_path,
   std::move(callback).Run(result);
 }
 
-const base::FilePath ContentCacheImpl::GetPathOnDiskFromContext(int64_t id) {
+const base::FilePath ContentCacheImpl::GetPathOnDiskFromId(int64_t id) {
   return root_dir_.Append(base::NumberToString(id));
 }
 
