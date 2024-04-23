@@ -148,11 +148,6 @@ BASE_FEATURE(kArcFuseBoxFileSharing,
              "ArcFuseBoxFileSharing",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether to enable support for ARC Input Overlay Alpha v2.
-BASE_FEATURE(kArcInputOverlayAlphaV2,
-             "ArcInputOverlayAlphaV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether to enable support for ARC ADB sideloading for managed
 // accounts and/or devices.
 BASE_FEATURE(kArcManagedAdbSideloadingSupport,
@@ -3240,10 +3235,6 @@ bool IsAppNotificationsPageEnabled() {
 
 bool IsArcFuseBoxFileSharingEnabled() {
   return base::FeatureList::IsEnabled(kArcFuseBoxFileSharing);
-}
-
-bool IsArcInputOverlayAlphaV2Enabled() {
-  return base::FeatureList::IsEnabled(kArcInputOverlayAlphaV2);
 }
 
 bool IsAssistantNativeIconsEnabled() {

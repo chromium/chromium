@@ -4089,9 +4089,6 @@ extern const char kRunVideoCaptureServiceInBrowserProcessDescription[];
 extern const char kArcWindowPredictorName[];
 extern const char kArcWindowPredictorDescription[];
 
-extern const char kArcInputOverlayNameAlphaV2[];
-extern const char kArcInputOverlayDescriptionAlphaV2[];
-
 extern const char kScalableIphDebugName[];
 extern const char kScalableIphDebugDescription[];
 

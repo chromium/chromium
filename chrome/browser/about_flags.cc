@@ -7517,13 +7517,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kUseFakeDeviceForMediaStream)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"arc-input-overlay-alpha-v2",
-     flag_descriptions::kArcInputOverlayNameAlphaV2,
-     flag_descriptions::kArcInputOverlayDescriptionAlphaV2, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kArcInputOverlayAlphaV2)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 #if !BUILDFLAG(USE_VAAPI)
     {"chromeos-direct-video-decoder",

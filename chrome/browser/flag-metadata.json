@@ -302,16 +302,6 @@
     "owners": [ "lingyufeng@chromium.org", "arc-user-focus@google.com" ],
     "expiry_milestone": 125
   },
-  {
-    "name": "arc-input-overlay-alpha-v2",
-    "owners": [ "cuicuiruan@google.com", "pjlee@google.com", "arc-gaming@google.com" ],
-    "expiry_milestone": 125
-  },
-  {
-    "name": "arc-input-overlay-beta",
-    "owners": [ "cuicuiruan@google.com", "arc-gaming@google.com" ],
-    "expiry_milestone": 130
-  },
   { "name": "arc-instant-response-window-open",
     "owners": [ "sstan@chromium.org", "mduggan@chromium.org" ],
     "expiry_milestone": 120

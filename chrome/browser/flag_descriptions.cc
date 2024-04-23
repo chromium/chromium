@@ -7046,11 +7046,6 @@ const char kArcWindowPredictorName[] = "Enable ARC window predictor";
 const char kArcWindowPredictorDescription[] =
     "Enables the window state and bounds predictor for ARC task windows";
 
-const char kArcInputOverlayNameAlphaV2[] = "Enable ARC Input Overlay Alpha V2";
-const char kArcInputOverlayDescriptionAlphaV2[] =
-    "Enable menu and action reposition feature for Gaming Input Overlay based "
-    "on Alpha.";
-
 const char kScalableIphDebugName[] = "Scalable Iph Debug";
 const char kScalableIphDebugDescription[] =
     "Enables debug feature of Scalable Iph";
