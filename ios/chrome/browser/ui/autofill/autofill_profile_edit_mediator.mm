@@ -26,31 +26,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }  // namespace
 
-@interface AutofillProfileEditMediator ()
-
-// Used for editing autofill profile.
-@property(nonatomic, assign) autofill::PersonalDataManager* personalDataManager;
-
-// This property is for an interface which sends a response about saving the
-// edited profile.
-@property(nonatomic, weak) id<AutofillProfileEditMediatorDelegate> delegate;
-
-// The fetched country list.
-@property(nonatomic, strong) NSArray<CountryItem*>* allCountries;
-
-// The country code that has been selected.
-@property(nonatomic, strong) NSString* selectedCountryCode;
-
-// YES, when the mediator belongs to the migration prompt.
-@property(nonatomic, assign, readonly) BOOL isMigrationPrompt;
-
-// If YES, a migration button would be shown for the profile.
-@property(nonatomic, assign, readonly) BOOL showMigrateToAccountButton;
-
-@end
-
 @implementation AutofillProfileEditMediator {
   raw_ptr<autofill::AutofillProfile> _autofillProfile;
+
+  // Used for editing autofill profile.
+  autofill::PersonalDataManager* _personalDataManager;
+
+  // This property is for an interface which sends a response about saving the
+  // edited profile.
+  __weak id<AutofillProfileEditMediatorDelegate> _delegate;
+
+  // The fetched country list.
+  NSArray<CountryItem*>* _allCountries;
+
+  // The country code that has been selected.
+  NSString* _selectedCountryCode;
+
+  // YES, when the mediator belongs to the migration prompt.
+  BOOL _isMigrationPrompt;
 }
 
 - (instancetype)initWithDelegate:
@@ -83,8 +76,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _consumer = consumer;
 
   [self sendAutofillProfileDataToConsumer];
-  if (self.selectedCountryCode) {
-    [self updateRequirementsForCountryCode:self.selectedCountryCode];
+  if (_selectedCountryCode) {
+    [self updateRequirementsForCountryCode:_selectedCountryCode];
   } else {
     [self updateRequirementsForCountry:base::SysUTF16ToNSString(
                                            _autofillProfile->GetInfo(
@@ -99,7 +92,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - Public
 
 - (void)didSelectCountry:(CountryItem*)countryItem {
-  if ([self.selectedCountryCode isEqualToString:countryItem.countryCode]) {
+  if ([_selectedCountryCode isEqualToString:countryItem.countryCode]) {
     return;
   }
 
@@ -130,13 +123,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - AutofillProfileEditTableViewControllerDelegate
 
 - (void)willSelectCountryWithCurrentlySelectedCountry:(NSString*)country {
-  [self.delegate
-      willSelectCountryWithCurrentlySelectedCountry:country
-                                        countryList:self.allCountries];
+  [_delegate willSelectCountryWithCurrentlySelectedCountry:country
+                                               countryList:_allCountries];
 }
 
 - (void)didSaveProfileFromModal {
-  [self.delegate didSaveProfile];
+  [_delegate didSaveProfile];
 }
 
 - (BOOL)fieldValueEmptyOnProfileLoadForType:
@@ -171,7 +163,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)viewDidDisappear {
-  [self.delegate autofillEditProfileMediatorDidFinish:self];
+  [_delegate autofillEditProfileMediatorDidFinish:self];
+}
+
+- (NSString*)selectedCountryCode {
+  return _selectedCountryCode;
 }
 
 #pragma mark - Private
@@ -192,7 +188,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // search option.
   for (size_t i = 1; i < countriesVector.size(); ++i) {
     if (countriesVector[i].get()) {
-      if (([self isAccountProfile] || self.isMigrationPrompt) &&
+      if (([self isAccountProfile] || _isMigrationPrompt) &&
           !_personalDataManager->IsCountryEligibleForAccountStorage(
               countriesVector[i]->country_code())) {
         continue;
@@ -207,14 +203,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [countryItems addObject:countryItem];
     }
   }
-  self.allCountries = countryItems;
+  _allCountries = countryItems;
 }
 
 // Fetches and updates the required fields for the `countryCode`.
 - (void)updateRequirementsForCountryCode:(NSString*)countryCode {
-  self.selectedCountryCode = countryCode;
-  for (CountryItem* countryItem in self.allCountries) {
-    if ([self.selectedCountryCode isEqualToString:countryItem.countryCode]) {
+  _selectedCountryCode = countryCode;
+  for (CountryItem* countryItem in _allCountries) {
+    if ([_selectedCountryCode isEqualToString:countryItem.countryCode]) {
       countryItem.accessoryType = UITableViewCellAccessoryCheckmark;
     } else {
       countryItem.accessoryType = UITableViewCellAccessoryNone;
@@ -226,9 +222,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Fetches and updates the required fields for the `country`.
 - (void)updateRequirementsForCountry:(NSString*)country {
-  for (CountryItem* countryItem in self.allCountries) {
+  for (CountryItem* countryItem in _allCountries) {
     if ([country isEqualToString:countryItem.text]) {
-      self.selectedCountryCode = countryItem.countryCode;
+      _selectedCountryCode = countryItem.countryCode;
       countryItem.accessoryType = UITableViewCellAccessoryCheckmark;
     } else {
       countryItem.accessoryType = UITableViewCellAccessoryNone;
@@ -239,10 +235,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 // Informs the consumer about the required fields corresponding to the
-// `self.selectedCountryCode`.
+// `_selectedCountryCode`.
 - (void)sendRequirementsToConsumer {
   autofill::AutofillCountry country(
-      base::SysNSStringToUTF8(self.selectedCountryCode),
+      base::SysNSStringToUTF8(_selectedCountryCode),
       GetApplicationContext()->GetApplicationLocale());
   [self.consumer setLine1Required:country.requires_line1()];
   [self.consumer setCityRequired:country.requires_city()];
