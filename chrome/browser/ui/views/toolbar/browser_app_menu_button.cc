@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_otr_state.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -192,6 +193,9 @@ bool BrowserAppMenuButton::IsLabelPresentAndVisible() const {
 SkColor BrowserAppMenuButton::GetForegroundColor(ButtonState state) const {
   if (features::IsChromeRefresh2023() && IsLabelPresentAndVisible()) {
     const auto* const color_provider = GetColorProvider();
+    if (type_and_severity_.use_primary_colors) {
+      return color_provider->GetColor(kColorAppMenuExpandedForegroundPrimary);
+    }
     return color_provider->GetColor(kColorAppMenuExpandedForegroundDefault);
   }
 
@@ -238,24 +242,8 @@ void BrowserAppMenuButton::UpdateTextAndHighlightColor() {
     text = l10n_util::GetStringUTF16(IDS_APP_MENU_BUTTON_ERROR);
   }
 
-  std::optional<SkColor> color;
-  const auto* const color_provider = GetColorProvider();
-  switch (type_and_severity_.severity) {
-    case AppMenuIconController::Severity::NONE:
-      break;
-    case AppMenuIconController::Severity::LOW:
-      color = color_provider->GetColor(kColorAppMenuHighlightSeverityLow);
-      break;
-    case AppMenuIconController::Severity::MEDIUM:
-      color = color_provider->GetColor(kColorAppMenuHighlightSeverityMedium);
-      break;
-    case AppMenuIconController::Severity::HIGH:
-      color = color_provider->GetColor(kColorAppMenuHighlightSeverityHigh);
-      break;
-  }
-
   SetTooltipText(l10n_util::GetStringUTF16(tooltip_message_id));
-  SetHighlight(text, color);
+  SetHighlight(text, GetHighlightColor());
 }
 
 bool BrowserAppMenuButton::ShouldPaintBorder() const {
@@ -277,9 +265,30 @@ void BrowserAppMenuButton::UpdateLayoutInsets() {
 std::optional<SkColor> BrowserAppMenuButton::GetHighlightTextColor() const {
   if (features::IsChromeRefresh2023() && IsLabelPresentAndVisible()) {
     const auto* const color_provider = GetColorProvider();
+    if (type_and_severity_.use_primary_colors) {
+      return color_provider->GetColor(kColorAppMenuExpandedForegroundPrimary);
+    }
     return color_provider->GetColor(kColorAppMenuExpandedForegroundDefault);
   }
   return std::nullopt;
+}
+
+std::optional<SkColor> BrowserAppMenuButton::GetHighlightColor() const {
+  const auto* const color_provider = GetColorProvider();
+  if (features::IsChromeRefresh2023() &&
+      type_and_severity_.use_primary_colors) {
+    return color_provider->GetColor(kColorAppMenuHighlightPrimary);
+  }
+  switch (type_and_severity_.severity) {
+    case AppMenuIconController::Severity::NONE:
+      return std::nullopt;
+    case AppMenuIconController::Severity::LOW:
+      return color_provider->GetColor(kColorAppMenuHighlightSeverityLow);
+    case AppMenuIconController::Severity::MEDIUM:
+      return color_provider->GetColor(kColorAppMenuHighlightSeverityMedium);
+    case AppMenuIconController::Severity::HIGH:
+      return color_provider->GetColor(kColorAppMenuHighlightSeverityHigh);
+  }
 }
 
 void BrowserAppMenuButton::OnTouchUiChanged() {

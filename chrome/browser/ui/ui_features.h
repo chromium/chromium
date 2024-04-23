@@ -73,6 +73,9 @@ extern const base::FeatureParam<int> kRepromptDurationMultiplier;
 // The duration after which the app menu prompt should not longer be shown.
 extern const base::FeatureParam<base::TimeDelta> kDefaultBrowserAppMenuDuration;
 
+// Whether the app menu chip should use more prominent colors.
+extern const base::FeatureParam<bool> kAppMenuChipColorPrimary;
+
 BASE_DECLARE_FEATURE(kExtensionsMenuInAppMenu);
 bool IsExtensionMenuInRootAppMenu();
 

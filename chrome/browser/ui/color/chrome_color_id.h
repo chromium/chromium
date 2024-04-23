@@ -22,7 +22,9 @@
   E_CPONLY(kColorAppMenuHighlightSeverityHigh) \
   E_CPONLY(kColorAppMenuHighlightSeverityMedium) \
   E_CPONLY(kColorAppMenuHighlightDefault) \
+  E_CPONLY(kColorAppMenuHighlightPrimary) \
   E_CPONLY(kColorAppMenuExpandedForegroundDefault) \
+  E_CPONLY(kColorAppMenuExpandedForegroundPrimary) \
   E_CPONLY(kColorAppMenuChipInkDropHover) \
   E_CPONLY(kColorAppMenuChipInkDropRipple) \
   /* Avatar colors. */ \
