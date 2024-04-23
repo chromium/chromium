@@ -3,8 +3,13 @@
     white-space: pre-wrap;
     word-wrap: break-word;
     user-select: text;
+    outline: none;
     /*One line high, to avoid resizing after first word is added.*/
     min-height: 1lh;
+  }
+
+  :host([editing-enabled_]) .result-text {
+    cursor: text;
   }
 
   @keyframes text-fade-in {
@@ -20,9 +25,9 @@
   }
 </style>
 <div id="root">
-  <div id="resultText" class="result-text" hidden="[[textInput.streamingEnabled]]"
-      contenteditable$="[[canEdit_()]]" on-focusin="onFocusIn_"
-      on-focusout="onFocusOut_"></div>
+  <div id="resultText" class="result-text"
+      hidden="[[textInput.streamingEnabled]]" contenteditable$="[[canEdit_()]]"
+      on-focusin="onFocusIn_" on-focusout="onFocusOut_"></div>
   <div id="partialResultText" class="result-text"
       hidden="[[!textInput.streamingEnabled]]"
       contenteditable$="[[partialTextCanEdit_()]]" on-focusin="onFocusIn_"

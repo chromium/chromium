@@ -132,6 +132,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
         value: false,
         observer: 'onIsEditingSubmittedInputChanged_',
       },
+      isEditingResultText_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
       isEditSubmitEnabled_: {
         type: Boolean,
         value: true,
@@ -301,6 +306,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private input_: string;
   private inputParams_: ConfigurableParams;
   private isEditingSubmittedInput_: boolean;
+  private isEditingResultText_: boolean;
   private isEditSubmitEnabled_: boolean;
   private isSubmitEnabled_: boolean;
   private loading_: boolean;
@@ -868,6 +874,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
         this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
       }
     });
+  }
+
+  private onSetResultFocus_(e: CustomEvent<boolean>) {
+    this.isEditingResultText_ = e.detail;
   }
 
   private saveComposeAppState_() {
