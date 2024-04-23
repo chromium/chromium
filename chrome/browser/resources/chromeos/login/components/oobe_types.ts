@@ -87,8 +87,9 @@ export namespace OobeTypes {
    * Parameters passed to show PIN setup screen
    */
   export interface PinSetupScreenParameters {
-    auth_token: string;
-    is_child_account: boolean;
+    authToken: string;
+    isChildAccount: boolean;
+    hasLoginSupport: boolean;
   }
 
   /**

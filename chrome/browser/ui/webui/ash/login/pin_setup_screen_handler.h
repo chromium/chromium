@@ -23,7 +23,9 @@ class PinSetupScreenView {
   virtual ~PinSetupScreenView() = default;
 
   // Shows the contents of the screen, using |token| to access QuickUnlock API.
-  virtual void Show(const std::string& token, bool is_child_account) = 0;
+  virtual void Show(const std::string& token,
+                    bool is_child_account,
+                    bool has_login_support) = 0;
 
   virtual void SetLoginSupportAvailable(bool available) = 0;
 
@@ -49,7 +51,9 @@ class PinSetupScreenHandler final : public BaseScreenHandler,
       ::login::LocalizedValuesBuilder* builder) override;
 
   // PinSetupScreenView:
-  void Show(const std::string& token, bool is_child_account) override;
+  void Show(const std::string& token,
+            bool is_child_account,
+            bool has_login_support) override;
   void SetLoginSupportAvailable(bool available) override;
   base::WeakPtr<PinSetupScreenView> AsWeakPtr() override;
 

@@ -159,11 +159,9 @@ void PinSetupScreen::ShowImpl() {
   bool is_child_account =
       user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 
-  if (view_)
-    view_->Show(token, is_child_account);
-
-  quick_unlock::PinBackend::GetInstance()->HasLoginSupport(base::BindOnce(
-      &PinSetupScreen::OnHasLoginSupport, weak_ptr_factory_.GetWeakPtr()));
+  if (view_) {
+    view_->Show(token, is_child_account, has_login_support_.value_or(false));
+  }
 }
 
 void PinSetupScreen::HideImpl() {
@@ -198,9 +196,10 @@ void PinSetupScreen::ClearAuthData(WizardContext& context) {
 }
 
 void PinSetupScreen::OnHasLoginSupport(bool login_available) {
-  if (view_)
-    view_->SetLoginSupportAvailable(login_available);
   has_login_support_ = login_available;
+  if (!is_hidden() && view_) {
+    view_->SetLoginSupportAvailable(has_login_support_.value());
+  }
 }
 
 void PinSetupScreen::OnTokenTimedOut() {

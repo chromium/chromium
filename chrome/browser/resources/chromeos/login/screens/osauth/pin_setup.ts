@@ -139,8 +139,9 @@ class PinSetup extends PinSetupBase {
 
   onBeforeShow(data: OobeTypes.PinSetupScreenParameters): void {
     this.getPinKeyboard().resetState();
-    this.authToken = data.auth_token;
-    this.isChildAccount = data.is_child_account;
+    this.authToken = data.authToken;
+    this.isChildAccount = data.isChildAccount;
+    this.hasLoginSupport = data.hasLoginSupport;
   }
 
   /**
