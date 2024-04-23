@@ -5,6 +5,7 @@
 #import "ios/chrome/test/app/mock_reauthentication_module.h"
 
 #import "base/check.h"
+#import "base/test/ios/wait_util.h"
 
 // Type of the block used for delivering mocked reauth results.
 typedef void (^ReauthenticationResultHandler)(ReauthenticationResult success);
@@ -68,8 +69,15 @@ typedef void (^ReauthenticationResultHandler)(ReauthenticationResult success);
 }
 
 - (void)returnMockedReauthenticationResult {
-  DCHECK(!self.shouldReturnSynchronously);
-  DCHECK(self.reauthResultHandler);
+  CHECK(!self.shouldReturnSynchronously);
+
+  // Some test cases set the handler after UI events (e.g. animations).
+  // Avoid race conditions by waiting until the handler is set.
+  __weak __typeof(self) weakSelf = self;
+  CHECK(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^{
+        return [weakSelf reauthResultHandler] != nullptr;
+      }));
 
   self.reauthResultHandler(_expectedResult);
   self.reauthResultHandler = nil;
