@@ -405,7 +405,7 @@ BASE_FEATURE(kFedCmMetricsEndpoint,
 // time.
 BASE_FEATURE(kFedCmMultipleIdentityProviders,
              "FedCmMultipleIdentityProviders",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM API with the Selective Disclosure API at the same
 // time.

@@ -49,12 +49,8 @@ IdentityCredential* IdentityCredential::Create(const String& token,
   if (!RuntimeEnabledFeatures::FedCmAutoSelectedFlagEnabled()) {
     is_auto_selected = false;
   }
-  const String& selected_idp_config_url =
-      RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled()
-          ? config_url
-          : WTF::g_empty_string;
   return MakeGarbageCollected<IdentityCredential>(token, is_auto_selected,
-                                                  selected_idp_config_url);
+                                                  config_url);
 }
 
 bool IdentityCredential::IsRejectingPromiseDueToCSP(

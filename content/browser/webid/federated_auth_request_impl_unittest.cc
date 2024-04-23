@@ -4827,7 +4827,8 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpLoggedOut) {
       ->idp_signin_statuses_[OriginFromString(kProviderTwoUrlFull)] = false;
 
   RequestExpectations expectations = {
-      RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kErrorNotSignedInWithIdp,
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
