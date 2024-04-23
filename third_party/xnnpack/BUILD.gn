@@ -30,16 +30,12 @@ config("xnnpack_config") {
   ]
 
   defines = [
+    "CHROMIUM",
+
     # Don't enable this without first talking to Chrome Security!
     # XNNPACK runs in the browser process. The hardening and fuzzing needed
     # to ensure JIT can be used safely is not in place yet.
     "XNN_ENABLE_JIT=0",
-
-    # TODO: b/327013106 - Before enabling this and removing
-    # --define=xnn_enable_avx512amx=false from the generation script, ensure
-    # the detection has been updated to remove use of syscall() or that the
-    # function has been allowed in the sandbox.
-    "XNN_ENABLE_AVX512AMX=0",
 
     "XNN_ENABLE_ASSEMBLY=1",
     "XNN_ENABLE_GEMM_M_SPECIALIZATION=1",
@@ -68,6 +64,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi",
     ":amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni",
     ":amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni",
+    ":amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-amx-tile-amx-int8",
     ":amalgam_f16c-fma-no-avx2",
     ":amalgam_f16c-no-avx2-no-fma",
     ":amalgam_sse2-no-sse3",
@@ -87,6 +84,7 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":amalgam_avx512f_standalone",
     ":amalgam_f16c-fma-avx2_standalone",
     ":amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vbmi_standalone",
+    ":amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-amx-tile-amx-int8_standalone",
     ":amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni_standalone",
     ":amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni_standalone",
     ":amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl_standalone",
@@ -683,6 +681,75 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ]
 
     sources = [ "src/src/amalgam/gen/avx512vnnigfni.c" ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool:pthreadpool_standalone",
+    ]
+
+    public_configs = [ ":xnnpack_config" ]
+
+    if (!(is_android && use_order_profiling)) {
+      assert_no_deps = [ "//base" ]
+    }
+  }
+
+  source_set(
+      "amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-amx-tile-amx-int8") {
+    cflags = [
+      "-mamx-int8",
+      "-mamx-tile",
+      "-mavx512bw",
+      "-mavx512cd",
+      "-mavx512dq",
+      "-mavx512f",
+      "-mavx512vl",
+      "-mavx512vnni",
+      "-mf16c",
+      "-mfma",
+      "-mgfni",
+    ]
+
+    sources = [ "src/src/amalgam/gen/avx512amx.c" ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
+
+    deps = [
+      "//third_party/cpuinfo",
+      "//third_party/fp16",
+      "//third_party/fxdiv",
+      "//third_party/pthreadpool",
+    ]
+
+    public_configs = [ ":xnnpack_config" ]
+  }
+
+  # This is a target that cannot depend on //base.
+  source_set(
+      "amalgam_f16c-fma-avx512f-avx512cd-avx512bw-avx512dq-avx512vl-avx512vnni-gfni-amx-tile-amx-int8_standalone") {
+    cflags = [
+      "-mamx-int8",
+      "-mamx-tile",
+      "-mavx512bw",
+      "-mavx512cd",
+      "-mavx512dq",
+      "-mavx512f",
+      "-mavx512vl",
+      "-mavx512vnni",
+      "-mf16c",
+      "-mfma",
+      "-mgfni",
+    ]
+
+    sources = [ "src/src/amalgam/gen/avx512amx.c" ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
