@@ -226,9 +226,6 @@
   <message name="IDS_CELLULAR_SETUP_ESIM_FINAL_PAGE_ERROR_MESSAGE" desc="Message displayed under title in final screen of eSIM cellular setup when ChromeOS encountered an error installing eSIM profiles.">
     Couldn't install eSIM profile. For help, please contact your carrier.
   </message>
-  <message name="IDS_CELLULAR_SETUP_ESIM_PROFILE_DETECT_MESSAGE" desc="Message displayed during loading page in eSIM setup flow when looking for eSIM profiles.">
-    Looking for available profiles...
-  </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PROFILE_LOADING_TITLE" desc="Title message displayed during loading page in eSIM setup flow when looking for eSIM profiles.">
     Looking for available eSIM profiles
   </message>
@@ -240,9 +237,6 @@
   </message>
   <message name="IDS_CELLULAR_SETUP_CONFIRMATION_CODE_PAGE_TITLE" desc="Title message informing user that they can enter confirmation code in the text box below.">
     Enter confirmation code
-  </message>
-  <message name="IDS_CELLULAR_SETUP_ESIM_PROFILE_DETECT_DURING_ACTIVE_CELLULAR_CONNECTION_MESSAGE" desc="Message displayed during loading page in eSIM setup flow when looking for eSIM profiles informing the user that cellular setup may disconnect their current cellular network connection.">
-    Looking for available profiles. This may cause your mobile network to disconnect for a few minutes.
   </message>
   <message name="IDS_CELLULAR_SETUP_PROFILE_LIST_PAGE_MESSAGE" desc="Label informing the user that they are able to select multiple eSIM profiles for downloading.">
     We've found multiple profiles available to download. Select the ones you would like to download before proceeding.

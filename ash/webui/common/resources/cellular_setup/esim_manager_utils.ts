@@ -8,18 +8,6 @@ import {ESimProfileProperties, ESimProfileRemote, EuiccRemote, ProfileState} fro
 import {getESimManagerRemote} from './mojo_interface_provider.js';
 
 /**
- * Fetches the EUICC's eSIM profiles with status 'Pending'.
- */
-export async function getPendingESimProfiles(euicc: EuiccRemote):
-    Promise<ESimProfileRemote[]> {
-  const response = await euicc.getProfileList();
-
-  return filterByProfileProperties(response.profiles, properties => {
-    return properties.state === ProfileState.kPending;
-  });
-}
-
-/**
  * Fetches the EUICC's eSIM profiles with status not 'Pending'.
  */
 export async function getNonPendingESimProfiles(euicc: EuiccRemote):

@@ -21,7 +21,6 @@ import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ESimOperationResult, ProfileInstallResult} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
@@ -35,9 +34,8 @@ import type {FakeEuicc} from './fake_esim_manager_remote.js';
 import {FakeESimManagerRemote} from './fake_esim_manager_remote.js';
 import {MockMetricsPrivate} from './mock_metrics_private.js';
 
-const suiteSuffix = 'smdsSupportEnabled';
 
-suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
+suite(`CrComponentsEsimFlowUiTest`, function() {
   const ACTIVATION_CODE_VALID = 'LPA:1$ACTIVATION_CODE';
 
   let eSimPage: EsimFlowUiElement;
@@ -99,12 +97,6 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
         wifiGuidPrefix + '_guid', ConnectionStateType.kNotConnected);
   }
 
-  function setSmdsSupportEnabled(value: boolean): void {
-    loadTimeData.overrideValues({
-      'isSmdsSupportEnabled': value,
-    });
-  }
-
   setup(async function() {
     networkConfigRemote = new FakeNetworkConfig();
 
@@ -119,8 +111,6 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
     document.addEventListener('focus-default-button', () => {
       focusDefaultButtonEventFired = true;
     });
-
-    setSmdsSupportEnabled(true);
 
     eSimPage = document.createElement('esim-flow-ui');
     eSimPage.delegate = new FakeCellularSetupDelegate();

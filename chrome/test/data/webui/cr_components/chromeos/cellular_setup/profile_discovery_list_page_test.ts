@@ -32,12 +32,6 @@ suite('CrComponentsProfileDiscoveryListPageTest', function() {
     });
   }
 
-  function setSmdsSupportEnabled(value: boolean): void {
-    loadTimeData.overrideValues({
-      'isSmdsSupportEnabled': value,
-    });
-  }
-
   async function init(isCarrierLocked: boolean) {
     networkConfigRemote.setDeviceStateForTest({
       ipv4Address: undefined,
@@ -73,8 +67,6 @@ suite('CrComponentsProfileDiscoveryListPageTest', function() {
 
     eSimManagerRemote = new FakeESimManagerRemote();
     setESimManagerRemoteForTesting(eSimManagerRemote);
-
-    setSmdsSupportEnabled(true);
   });
 
   [true, false].forEach(isCarrierLocked => {

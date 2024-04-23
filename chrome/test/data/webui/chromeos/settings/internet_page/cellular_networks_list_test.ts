@@ -149,32 +149,14 @@ suite('<cellular-networks-list>', () => {
         .querySelector<PaperSpinnerLiteElement>('#inhibitedSpinner');
   }
 
-  [{
-    isSmdsSupportEnabled: false,
-    isInstantHotspotRebrandEnabled: false,
-  },
-   {
-     isSmdsSupportEnabled: true,
-     isInstantHotspotRebrandEnabled: false,
-   },
-   {
-     isSmdsSupportEnabled: false,
-     isInstantHotspotRebrandEnabled: true,
-   },
-   {
-     isSmdsSupportEnabled: true,
-     isInstantHotspotRebrandEnabled: true,
-   },
-  ].forEach(({isSmdsSupportEnabled, isInstantHotspotRebrandEnabled}) => {
+  [true, false].forEach((isInstantHotspotRebrandEnabled) => {
     test(
-        `Tether, cellular and eSIM profiles with smds support enabled: ${
-            isSmdsSupportEnabled}, instant hotspot rebrand enabled: ${
+        `Tether, cellular and eSIM profiles instant hotspot rebrand enabled: ${
             isInstantHotspotRebrandEnabled}`,
         async () => {
           eSimManagerRemote.addEuiccForTest(2);
           loadTimeData.overrideValues({
             isInstantHotspotRebrandEnabled,
-            isSmdsSupportEnabled,
           });
 
           await init();
@@ -212,12 +194,7 @@ suite('<cellular-networks-list>', () => {
 
           assertEquals(2, eSimNetworkList.networks.length);
           assertEquals(2, pSimNetworkList.networks.length);
-
-          if (isSmdsSupportEnabled) {
-            assertEquals(0, eSimNetworkList.customItems.length);
-          } else {
-            assertEquals(2, eSimNetworkList.customItems.length);
-          }
+          assertEquals(0, eSimNetworkList.customItems.length);
 
           const tetherNetworkList =
               cellularNetworkList.shadowRoot!.querySelector<NetworkListElement>(
@@ -253,46 +230,9 @@ suite('<cellular-networks-list>', () => {
             eSimCellularEvent.detail.pageName,
         );
       });
-
-  [true, false].forEach(isSmdsSupportEnabled => {
-    test('Install pending eSIM profile depending on feature flag', async () => {
-      loadTimeData.overrideValues({isSmdsSupportEnabled});
-      eSimManagerRemote.addEuiccForTest(1);
-      await init();
-      await addESimSlot();
-
-      cellularNetworkList.isConnectedToNonCellularNetwork = true;
-      await flushTasks();
-
-      let eSimNetworkList = queryEsimNetworkList();
-      if (isSmdsSupportEnabled) {
-        assertNull(eSimNetworkList);
-        return;
-      }
-
-      assertTrue(!!eSimNetworkList);
-      const installButton =
-          eSimNetworkList.shadowRoot!.querySelector('network-list-item')!
-              .shadowRoot!.querySelector<HTMLElement>('#installButton');
-      assertTrue(!!installButton);
-      installButton.click();
-      await flushTasks();
-
-      // eSIM network list should now be hidden and link showing.
-      eSimNetworkList = queryEsimNetworkList();
-      assertNull(eSimNetworkList);
-      const noEsimNetworksMessageLink =
-          getNoEsimNetworksMessageWithLinkElement().shadowRoot!.querySelector(
-              'a');
-      assertTrue(!!noEsimNetworksMessageLink);
-    });
-  });
-
-  [true, false].forEach(isSmdsSupportEnabled => {
     test(
         'Hide eSIM section when no EUICC is found or no eSIM slots',
         async () => {
-          loadTimeData.overrideValues({isSmdsSupportEnabled});
           await init();
 
           const eSimNetwork = OncMojo.getDefaultManagedProperties(
@@ -328,7 +268,6 @@ suite('<cellular-networks-list>', () => {
           // The list should be hidden again.
           assertNull(queryEsimNetworkList());
         });
-  });
 
   test('Hide pSIM section when no pSIM slots', async () => {
     await init();
@@ -387,68 +326,6 @@ suite('<cellular-networks-list>', () => {
     assertNull(cellularNetworkList.shadowRoot!.querySelector(
         '#tetherNetworksNotSetup'));
   });
-
-  test(
-      'Allow only managed cellular networks should hide pending eSIM networks',
-      async () => {
-        loadTimeData.overrideValues({isSmdsSupportEnabled: false});
-        eSimManagerRemote.addEuiccForTest(1);
-        await init();
-        // Pending profiles are never shown in the UI when SM-DS Support is
-        // enabled.
-        await addESimSlot();
-        setGlobalPolicy({
-          allowOnlyPolicyCellularNetworks: false,
-        });
-        await flushTasks();
-
-        let eSimNetworkList = queryEsimNetworkList();
-        assertTrue(!!eSimNetworkList);
-        const installButton =
-            eSimNetworkList.shadowRoot!.querySelector('network-list-item')!
-                .shadowRoot!.querySelector('#installButton');
-        assertTrue(!!installButton);
-
-        setGlobalPolicy({
-          allowOnlyPolicyCellularNetworks: true,
-        });
-        eSimManagerRemote.addEuiccForTest(1);
-        await addESimSlot();
-
-        eSimNetworkList = queryEsimNetworkList();
-        assertNull(eSimNetworkList);
-      });
-
-  test(
-      'Fire show toast event if download profile clicked without ' +
-          'non-cellular connection.',
-      async () => {
-        loadTimeData.overrideValues({isSmdsSupportEnabled: false});
-        eSimManagerRemote.addEuiccForTest(1);
-        await init();
-        // Pending profiles are never shown in the UI when SM-DS Support is
-        // enabled.
-        await addESimSlot();
-        cellularNetworkList.isConnectedToNonCellularNetwork = false;
-        await flushTasks();
-
-        const eSimNetworkList = queryEsimNetworkList();
-        assertTrue(!!eSimNetworkList);
-
-        const installButton =
-            eSimNetworkList.shadowRoot!.querySelector('network-list-item')!
-                .shadowRoot!.querySelector<HTMLElement>('#installButton');
-        assertTrue(!!installButton);
-
-        const showErrorToastPromise =
-            eventToPromise('show-error-toast', cellularNetworkList);
-        installButton.click();
-
-        const showErrorToastEvent = await showErrorToastPromise;
-        assertEquals(
-            showErrorToastEvent.detail,
-            cellularNetworkList.i18n('eSimNoConnectionErrorToast'));
-      });
 
   test('No network eSIM', async () => {
     eSimManagerRemote.addEuiccForTest(0);
