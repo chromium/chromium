@@ -10,9 +10,6 @@
 #include <utility>
 
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
-#include "chrome/browser/apps/app_service/publisher_host.h"
-#include "components/services/app_service/public/cpp/run_on_os_login_types.h"
-#include "ui/gfx/native_widget_types.h"
 
 // Avoid including this header file directly. Instead:
 //  - for forward declarations, use app_service_proxy_forward.h
@@ -22,6 +19,8 @@
 class Profile;
 
 namespace apps {
+
+class PublisherHost;
 
 // Singleton (per Profile) proxy and cache of an App Service's apps in Chrome
 // browser.

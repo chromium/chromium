@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -160,7 +159,7 @@ void StandaloneBrowserApps::OpenNativeSettings(const std::string& app_id) {
 
 void StandaloneBrowserApps::StopApp(const std::string& app_id) {
   DCHECK_EQ(app_constants::kLacrosAppId, app_id);
-  if (!web_app::IsWebAppsCrosapiEnabled()) {
+  if (!crosapi::browser_util::IsLacrosEnabled()) {
     return;
   }
   DCHECK(browser_app_instance_registry_);

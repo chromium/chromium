@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_item_controller.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -93,7 +92,7 @@ AppServiceProxyAsh::AppServiceProxyAsh(Profile* profile)
                                   IconCache::GarbageCollectionPolicy::kEager),
       icon_reader_(profile),
       icon_writer_(profile) {
-  if (web_app::IsWebAppsCrosapiEnabled()) {
+  if (crosapi::browser_util::IsLacrosEnabled()) {
     browser_app_instance_tracker_ =
         std::make_unique<apps::BrowserAppInstanceTracker>(profile_,
                                                           app_registry_cache_);
@@ -185,8 +184,7 @@ void AppServiceProxyAsh::Initialize() {
   }
 
   if (crosapi::browser_util::IsLacrosEnabled() &&
-      ash::ProfileHelper::IsPrimaryProfile(profile_) &&
-      web_app::IsWebAppsCrosapiEnabled()) {
+      ash::ProfileHelper::IsPrimaryProfile(profile_)) {
     auto* browser_manager = crosapi::BrowserManager::Get();
     // In unit tests, it is possible that the browser manager is not created.
     if (browser_manager) {

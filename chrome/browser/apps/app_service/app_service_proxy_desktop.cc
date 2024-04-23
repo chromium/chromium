@@ -4,11 +4,7 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy_desktop.h"
 
-#include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "components/services/app_service/public/cpp/app_types.h"
-#include "components/services/app_service/public/cpp/features.h"
+#include "chrome/browser/apps/app_service/publisher_host.h"
 
 namespace apps {
 

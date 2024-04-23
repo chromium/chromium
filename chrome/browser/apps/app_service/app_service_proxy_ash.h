@@ -153,8 +153,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
   // Set whether resize lock is enabled for the app identified by |app_id|.
   void SetResizeLocked(const std::string& app_id, bool locked);
 
-  // Sets |extension_apps_| and |web_apps_| to observe the ARC apps to set the
-  // badge on the equivalent Chrome app's icon, when ARC is available.
+  // Inform |publisher_host_| that ARC is active.
   void SetArcIsRegistered();
 
   // apps::AppServiceProxyBase overrides:

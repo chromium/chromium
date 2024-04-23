@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -24,10 +25,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
-#include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -128,7 +125,7 @@ apps::AppTypeName GetAppTypeNameForChromeApp(Profile* profile,
 }
 
 apps::AppTypeName GetWebAppTypeName() {
-  return web_app::IsWebAppsCrosapiEnabled()
+  return crosapi::browser_util::IsLacrosEnabled()
              ? apps::AppTypeName::kStandaloneBrowserWebApp
              : apps::AppTypeName::kWeb;
 }
@@ -160,7 +157,7 @@ constexpr int kUsageTimeBuckets = 50;
 AppTypeName GetAppTypeNameForWebApp(Profile* profile,
                                     const std::string& app_id,
                                     apps::LaunchContainer container) {
-  AppTypeName default_type_name = web_app::IsWebAppsCrosapiEnabled()
+  AppTypeName default_type_name = crosapi::browser_util::IsLacrosEnabled()
                                       ? AppTypeName::kStandaloneBrowser
                                       : AppTypeName::kChromeBrowser;
   AppTypeName type_name = default_type_name;
@@ -251,7 +248,7 @@ bool IsAshBrowserWindow(aura::Window* window) {
 }
 
 bool IsLacrosBrowserWindow(Profile* profile, aura::Window* window) {
-  if (!web_app::IsWebAppsCrosapiEnabled()) {
+  if (!crosapi::browser_util::IsLacrosEnabled()) {
     return false;
   }
 
