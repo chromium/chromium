@@ -23,7 +23,7 @@ build_webui_tests("build_webui_tests") {
     "diagnostics_app_input_hiding_test.ts",
     "diagnostics_app_test.ts",
     "diagnostics_network_icon_test.ts",
-    "diagnostics_sticky_banner_test.js",
+    "diagnostics_sticky_banner_test.ts",
     "diagnostics_test_utils.js",
     "diagnostics_utils_test.js",
     "drawing_provider_test.js",
