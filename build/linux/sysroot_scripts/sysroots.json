@@ -1,48 +1,41 @@
 {
     "bullseye_amd64": {
-        "Key": "20230611T210420Z-2",
         "Sha1Sum": "ec989b96c5f1e235182e5f2a5c9d23b3eb4101e0",
         "SysrootDir": "debian_bullseye_amd64-sysroot",
         "Tarball": "debian_bullseye_amd64_sysroot.tar.xz",
         "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
     },
     "bullseye_arm64": {
-        "Key": "20230611T210420Z-2",
         "Sha1Sum": "f65e4d81b81d19f4354ed1bb22afeb1f3949a446",
         "SysrootDir": "debian_bullseye_arm64-sysroot",
         "Tarball": "debian_bullseye_arm64_sysroot.tar.xz",
         "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
     },
     "bullseye_armel": {
-        "Key": "20230611T210420Z-2",
         "Sha1Sum": "e27b133d817fd141d6eacdc7db749dfaf7ae6b41",
         "SysrootDir": "debian_bullseye_armel-sysroot",
         "Tarball": "debian_bullseye_armel_sysroot.tar.xz",
         "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
     },
     "bullseye_armhf": {
-        "Key": "20230611T210420Z-2",
         "Sha1Sum": "023be791a65b04d6201f2d60052742683230050b",
         "SysrootDir": "debian_bullseye_armhf-sysroot",
         "Tarball": "debian_bullseye_armhf_sysroot.tar.xz",
         "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
     },
     "bullseye_i386": {
-        "Key": "20230611T210420Z-2",
         "Sha1Sum": "0997cb9c140089cee06252fcb656042526cdac8e",
         "SysrootDir": "debian_bullseye_i386-sysroot",
         "Tarball": "debian_bullseye_i386_sysroot.tar.xz",
         "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
     },
     "bullseye_mips64el": {
-        "Key": "20230611T210420Z-2",
         "Sha1Sum": "868d8bfdbf9bd69ea0013fed4a97fa44fbc98a21",
         "SysrootDir": "debian_bullseye_mips64el-sysroot",
         "Tarball": "debian_bullseye_mips64el_sysroot.tar.xz",
         "URL": "https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain"
     },
     "bullseye_mipsel": {
-        "Key": "20230611T210420Z-2",
         "Sha1Sum": "ece6684704ee0c3944f1903c39fa798ee9d7f57e",
         "SysrootDir": "debian_bullseye_mipsel-sysroot",
         "Tarball": "debian_bullseye_mipsel_sysroot.tar.xz",

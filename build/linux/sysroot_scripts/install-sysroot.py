@@ -36,19 +36,20 @@ from urllib.request import urlopen
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_DIR = os.path.dirname(os.path.dirname(os.path.dirname(SCRIPT_DIR)))
 
-VALID_ARCHS = ('amd64', 'i386', 'armhf', 'arm64', 'armel', 'mipsel', 'mips64el')
+VALID_ARCHS = ("amd64", "i386", "armhf", "arm64", "armel", "mipsel",
+               "mips64el")
 
 ARCH_TRANSLATIONS = {
-    'x64': 'amd64',
-    'x86': 'i386',
-    'arm': 'armhf',
-    'mips': 'mipsel',
-    'mips64': 'mips64el',
+    "x64": "amd64",
+    "x86": "i386",
+    "arm": "armhf",
+    "mips": "mipsel",
+    "mips64": "mips64el",
 }
 
 DEFAULT_SYSROOTS_PATH = os.path.join(os.path.relpath(SCRIPT_DIR, SRC_DIR),
-                                     'sysroots.json')
-DEFAULT_TARGET_PLATFORM = 'bullseye'
+                                     "sysroots.json")
+DEFAULT_TARGET_PLATFORM = "bullseye"
 
 
 class Error(Exception):
@@ -57,7 +58,7 @@ class Error(Exception):
 
 def GetSha1(filename):
     sha1 = hashlib.sha1()
-    with open(filename, 'rb') as f:
+    with open(filename, "rb") as f:
         while True:
             # Read in 1mb chunks, so it doesn't all have to be loaded into
             # memory.
@@ -69,19 +70,18 @@ def GetSha1(filename):
 
 
 def main(args):
-    parser = optparse.OptionParser('usage: %prog [OPTIONS]',
+    parser = optparse.OptionParser("usage: %prog [OPTIONS]",
                                    description=__doc__)
-    parser.add_option('--sysroots-json-path',
-                      help='The location of sysroots.json file')
-    parser.add_option('--arch',
-                      help='Sysroot architecture: %s' % ', '.join(VALID_ARCHS))
+    parser.add_option("--sysroots-json-path",
+                      help="The location of sysroots.json file")
+    parser.add_option("--arch",
+                      help="Sysroot architecture: %s" % ", ".join(VALID_ARCHS))
     parser.add_option(
-        '--all',
-        action='store_true',
-        help='Install all sysroot images (useful when updating the'
-        ' images)')
-    parser.add_option('--print-key',
-                      help='Print the hash of the sysroot for the given arch.')
+        "--all",
+        action="store_true",
+        help="Install all sysroot images (useful when updating the"
+        " images)",
+    )
     options, _ = parser.parse_args(args)
 
     if options.sysroots_json_path:
@@ -89,20 +89,17 @@ def main(args):
     else:
         sysroots_json_path = DEFAULT_SYSROOTS_PATH
 
-    if options.print_key:
-        arch = options.print_key
-        print(
-            GetSysrootDict(sysroots_json_path, DEFAULT_TARGET_PLATFORM,
-                           ARCH_TRANSLATIONS.get(arch, arch))['Key'])
-        return 0
     if options.arch:
-        InstallSysroot(sysroots_json_path, DEFAULT_TARGET_PLATFORM,
-                       ARCH_TRANSLATIONS.get(options.arch, options.arch))
+        InstallSysroot(
+            sysroots_json_path,
+            DEFAULT_TARGET_PLATFORM,
+            ARCH_TRANSLATIONS.get(options.arch, options.arch),
+        )
     elif options.all:
         for arch in VALID_ARCHS:
             InstallSysroot(sysroots_json_path, DEFAULT_TARGET_PLATFORM, arch)
     else:
-        print('You much specify one of the options.')
+        print("You much specify one of the options.")
         return 1
 
     return 0
@@ -110,45 +107,45 @@ def main(args):
 
 def GetSysrootDict(sysroots_json_path, target_platform, target_arch):
     if target_arch not in VALID_ARCHS:
-        raise Error('Unknown architecture: %s' % target_arch)
+        raise Error("Unknown architecture: %s" % target_arch)
 
     sysroots_file = os.path.join(SRC_DIR, sysroots_json_path)
     sysroots = json.load(open(sysroots_file))
-    sysroot_key = '%s_%s' % (target_platform, target_arch)
+    sysroot_key = "%s_%s" % (target_platform, target_arch)
     if sysroot_key not in sysroots:
-        raise Error('No sysroot for: %s %s' % (target_platform, target_arch))
+        raise Error("No sysroot for: %s %s" % (target_platform, target_arch))
     return sysroots[sysroot_key]
 
 
 def InstallSysroot(sysroots_json_path, target_platform, target_arch):
     sysroot_dict = GetSysrootDict(sysroots_json_path, target_platform,
                                   target_arch)
-    tarball_filename = sysroot_dict['Tarball']
-    tarball_sha1sum = sysroot_dict['Sha1Sum']
-    url_prefix = sysroot_dict['URL']
+    tarball_filename = sysroot_dict["Tarball"]
+    tarball_sha1sum = sysroot_dict["Sha1Sum"]
+    url_prefix = sysroot_dict["URL"]
     # TODO(thestig) Consider putting this elsewhere to avoid having to recreate
     # it on every build.
     linux_dir = os.path.dirname(SCRIPT_DIR)
-    sysroot = os.path.join(linux_dir, sysroot_dict['SysrootDir'])
+    sysroot = os.path.join(linux_dir, sysroot_dict["SysrootDir"])
 
-    url = '%s/%s/%s' % (url_prefix, tarball_sha1sum, tarball_filename)
+    url = "%s/%s/%s" % (url_prefix, tarball_sha1sum, tarball_filename)
 
-    stamp = os.path.join(sysroot, '.stamp')
+    stamp = os.path.join(sysroot, ".stamp")
     # This file is created by first class GCS deps. If this file exists,
     # clear the entire directory and download with this script instead
     if os.path.exists(stamp) and not glob.glob(
-            os.path.join(sysroot, '.*_is_first_class_gcs')):
+            os.path.join(sysroot, ".*_is_first_class_gcs")):
         with open(stamp) as s:
             if s.read() == url:
                 return
 
-    print('Installing Debian %s %s root image: %s' % \
-        (target_platform, target_arch, sysroot))
+    print("Installing Debian %s %s root image: %s" %
+          (target_platform, target_arch, sysroot))
     if os.path.isdir(sysroot):
         shutil.rmtree(sysroot)
     os.mkdir(sysroot)
     tarball = os.path.join(sysroot, tarball_filename)
-    print('Downloading %s' % url)
+    print("Downloading %s" % url)
     sys.stdout.flush()
     sys.stderr.flush()
     for _ in range(3):
@@ -160,21 +157,21 @@ def InstallSysroot(sysroots_json_path, target_platform, target_arch):
         except Exception:  # Ignore exceptions.
             pass
     else:
-        raise Error('Failed to download %s' % url)
+        raise Error("Failed to download %s" % url)
     sha1sum = GetSha1(tarball)
     if sha1sum != tarball_sha1sum:
-        raise Error('Tarball sha1sum is wrong.'
-                    'Expected %s, actual: %s' % (tarball_sha1sum, sha1sum))
-    subprocess.check_call(['tar', 'mxf', tarball, '-C', sysroot])
+        raise Error("Tarball sha1sum is wrong."
+                    "Expected %s, actual: %s" % (tarball_sha1sum, sha1sum))
+    subprocess.check_call(["tar", "mxf", tarball, "-C", sysroot])
     os.remove(tarball)
 
-    with open(stamp, 'w') as s:
+    with open(stamp, "w") as s:
         s.write(url)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         sys.exit(main(sys.argv[1:]))
     except Error as e:
-        sys.stderr.write(str(e) + '\n')
+        sys.stderr.write(str(e) + "\n")
         sys.exit(1)
