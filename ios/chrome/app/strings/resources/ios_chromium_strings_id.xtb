@@ -99,12 +99,8 @@ Untuk setelan lainnya yang menggunakan data guna meningkatkan pengalaman Chromiu
 <translation id="3855938650519180865">Yang Baru di Chromium</translation>
 <translation id="3886689467633467988">Login ke situs ini dan Chromium untuk mendapatkan bookmark Anda dan lainnya di semua perangkat.</translation>
 <translation id="3904484643286601695">Anda dapat memperbarui pilihan kapan saja di Setelan Chromium.</translation>
-<translation id="394413318816989199">Enkripsi frasa sandi tidak mencakup alamat dan metode pembayaran.
-
-Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Membuka dan Menjalankan Pemeriksaan Keamanan di Chromium.</translation>
 <translation id="4043291146360695975">Sandi hanya disimpan ke Pengelola Sandi di perangkat ini.</translation>
-<translation id="4076589763479456892">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Tidak didukung di Chromium Beta</translation>
 <translation id="4106512142782407609">Login sebagai <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@ Hal-hal yang perlu dipertimbangkan:
 <translation id="6337530241089703714">Pilih apakah akan menghapus data Chromium dari perangkat ini atau menyimpannya</translation>
 <translation id="6348483005826990855">3. Pilih Chromium</translation>
 <translation id="6383607155624074112">Akses Chromium lebih cepat dari Dock Layar Utama Anda</translation>
-<translation id="6407399265324739055">Metode pembayaran dan alamat tidak akan dienkripsi. Histori penjelajahan dari Chromium tidak akan disinkronkan.
-
-Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi Anda. Frasa sandi tidak dikirim ke atau disimpan oleh Google. Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium jadi semakin baik! Versi baru telah tersedia.</translation>
 <translation id="6433172051771630690">Tips untuk mengoptimalkan penggunaan Chromium.</translation>
 <translation id="6502321914804101924">Logout dari Chromium</translation>
@@ -263,9 +256,6 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="8458950033462118672">Anda dapat membuka link di Chromium secara otomatis dengan menjadikan Chromium sebagai Aplikasi Browser Default Anda.</translation>
 <translation id="858114650497379505">Anda dapat menggunakan sandi yang Anda simpan ke Pengelola Sandi di aplikasi lain pada iPhone.</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Semua hak dilindungi undang-undang.</translation>
-<translation id="8618440443578628179">Enkripsi frasa sandi tidak mencakup alamat dan metode pembayaran dari Google Pay.
-
-Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Memastikan Anda tetap aman di Chromium dan dapat digunakan untuk meningkatkan keamanan Anda di aplikasi Google lainnya saat login.</translation>
 <translation id="8663480472502753423">Pastikan Chromium selalu terupdate</translation>
 <translation id="8685813584220679697">Login ke situs ini dan Chromium.</translation>

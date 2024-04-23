@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{ທ່ານສາມາດຊອກຫາແຖບທີ່ປິດໄປແລ້ວໄດ້ໃນແຖບຫຼ້າສຸດຢູ່ພາຍໃຕ້ເມນູຫຼັກຂອງ Chrome. ແຖບບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານຈະໃຊ້ບໍ່ໄດ້.}other{ທ່ານສາມາດຊອກຫາແຖບທີ່ປິດໄປແລ້ວໄດ້ໃນແຖບຫຼ້າສຸດຢູ່ພາຍໃຕ້ເມນູຫຼັກຂອງ Chrome. ແຖບບໍ່ເປີດເຜີຍຕົວຕົນ # ແຖບຂອງທ່ານຈະໃຊ້ບໍ່ໄດ້.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ແຖບ}other{<ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
 <translation id="6549021453810473782">ເບິ່ງຂໍ້ມູນຮ້ານຄ້າ</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ຍ້າຍແຖບໄປຊ້າຍ</translation>
 <translation id="6615455863669487791">ສະ​ແດງຂ້ອຍ</translation>
 <translation id="661742612106409204">ທ່ານສາມາດຊອກຫາແຖບທີ່ປິດໄປແລ້ວໄດ້ໃນແຖບຫຼ້າສຸດຢູ່ພາຍໃຕ້ເມນູຫຼັກຂອງ Chrome.</translation>

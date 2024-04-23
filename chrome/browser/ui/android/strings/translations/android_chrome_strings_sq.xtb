@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">Regjistrimi i ekranit</translation>
 <translation id="1108938384783527433">Sinkronizimi i historikut</translation>
 <translation id="1111673857033749125">Faqeshënuesit e ruajtur në pajisjet e tua të tjera do të shfaqen këtu.</translation>
-<translation id="1113057722807951993">Enkriptimi me frazën e kalimit nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay.
-
-Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">Shfaq pamjen e thjeshtuar</translation>
 <translation id="1126809382673880764">Nuk të mbron kundër faqeve të internetit, shkarkimeve dhe shtesave të rrezikshme. Do të vazhdosh të marrësh mbrojtje për "Shfletimin e sigurt", aty ku ofrohet, në shërbimet e tjera të Google, si Gmail dhe "Kërko".</translation>
 <translation id="1129510026454351943">Detajet: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e 
 <translation id="3290249595466894471">Dërgon gjithashtu një shembull të vogël të faqeve, shkarkimeve, aktivitetit të shtesave dhe informacioneve të sistemit për të ndihmuar në zbulimin e kërcënimeve të reja</translation>
 <translation id="3293181007446299124">Historiku yt i shfletimit ruhet privat në pajisjen tënde dhe raportet dërgohen me një vonesë për të mbrojtur identitetin tënd</translation>
 <translation id="3303414029551471755">Të vazhdohet me shkarkimin e përmbajtjes?</translation>
+<translation id="3303855915957856445">Nuk u gjetën rezultate kërkimi</translation>
 <translation id="3305130791745726624">Dërgo te pajisjet</translation>
 <translation id="3305795716056605962">Përkthe faqet nga butoni "Opsione të tjera"</translation>
 <translation id="3334729583274622784">Do ta ndryshosh prapashtesën e skedarit?</translation>
@@ -529,7 +527,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e 
 <translation id="3847319713229060696">Ndihmo në përmirësimin e sigurisë për të gjithë</translation>
 <translation id="3856096718352044181">Verifiko që ky është një ofrues i vlefshëm ose provo përsëri më vonë</translation>
 <translation id="3858860766373142691">Emri</translation>
-<translation id="3872520701277728051">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Kopjo tekstin</translation>
 <translation id="3894427358181296146">Shto dosje</translation>
 <translation id="3899682235662194879">Mbylli të gjitha skedat "e fshehta"</translation>
@@ -873,8 +870,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5590372121997663538">Kujtoje këtë kompjuter</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
 <translation id="5599455543593328020">Modaliteti "i fshehtë"</translation>
-<translation id="5605283439565877834">Mënyrat e pagesës dhe adresat nga Google Pay nuk do të enkriptohen. Historiku i shfletimit nga Chrome nuk do të sinkronizohet.
-Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron të ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Nuk ka asnjë fjalëkalim të ruajtur</translation>
 <translation id="5620928963363755975">Gjej skedarët dhe faqet e tua te "Shkarkimet" nga butoni "Më shumë opsione"</translation>
 <translation id="562289928968387744">Menaxho reagimet</translation>
@@ -1103,7 +1098,6 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="6672697278890207089">Fut frazën tënde të kalimit</translation>
 <translation id="6672917148207387131">Shto <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">Për të nisur sinkronizimin, fut frazën e kalimit</translation>
-<translation id="6676840375528380067">Të pastrohen të dhënat e tua të Chrome nga kjo pajisje?</translation>
 <translation id="6676927815633975364">Identifikohu në këtë sajt dhe në Chrome</translation>
 <translation id="6684809838922667136">Bëje Chrome më të mirë</translation>
 <translation id="670498945988402717">Kontrolluar dje</translation>
@@ -1305,7 +1299,6 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7626032353295482388">Mirë se vjen në Chrome</translation>
 <translation id="7630202231528827509">URL-ja e ofruesit</translation>
 <translation id="7638584964844754484">Shprehje kalimi e pasaktë</translation>
-<translation id="7641339528570811325">Pastro të dhënat e shfletimit...</translation>
 <translation id="7646772052135772216">Sinkronizimi i fjalëkalimeve nuk po funksionon</translation>
 <translation id="7655240423373329753">7 ditët e fundit</translation>
 <translation id="7655900163790317559">Po aktivizon Bluetooth-in…</translation>
@@ -1384,7 +1377,6 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="7995059495660416932">Do ta shikosh përmbajtjen kur të ofrohet</translation>
 <translation id="799576009106109668">Do të shfletosh më shpejt sepse përmbajtja ngarkohet në mënyrë proaktive bazuar në vizitën aktuale në faqen e uebit</translation>
 <translation id="8004582292198964060">Shfletuesi</translation>
-<translation id="8013372441983637696">Pastro po ashtu të dhënat e tua të Chrome nga kjo pajisje</translation>
 <translation id="8015452622527143194">Ktheje gjithçka në faqe në madhësinë e parazgjedhur</translation>
 <translation id="8026238112629815203">Ne e kemi ndryshuar mënyrën se si ruhen fjalëkalimet në këtë pajisje</translation>
 <translation id="8027863900915310177">Zgjidh ku do ta shkarkosh</translation>
@@ -1511,7 +1503,6 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="8562452229998620586">Fjalëkalimet e ruajtura do të shfaqen këtu.</translation>
 <translation id="8570677896027847510">Skedari nuk mund të shkarkohet në mënyrë të sigurt</translation>
 <translation id="8571213806525832805">4 javët e fundit</translation>
-<translation id="8583805026567836021">Po pastron të dhënat e llogarisë</translation>
 <translation id="859046281437143747">Monitoro çmimin nga butoni "Opsione të tjera"</translation>
 <translation id="860043288473659153">Emri i mbajtësit të kartës</translation>
 <translation id="8602358303461588329">"Identifikohu në Chrome", i mbyllur</translation>
@@ -1641,6 +1632,5 @@ Për shembull, disa uebsajte mund t'i përgjigjen kësaj kërkese duke të tregu
 <translation id="983192555821071799">Mbyll të gjitha skedat</translation>
 <translation id="987264212798334818">Të përgjithshme</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> skeda</translation>
-<translation id="993520549480398880">Gjithashtu, pastro faqeshënuesit, historikun dhe të tjera nga kjo makinë</translation>
 <translation id="996149300115483134">Menyja e kartave të furnizimit është mbyllur</translation>
 </translationbundle>

@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">Capture d'écran</translation>
 <translation id="1108938384783527433">Synchronisation de l'historique</translation>
 <translation id="1111673857033749125">Les favoris enregistrés sur vos autres appareils s'affichent ici.</translation>
-<translation id="1113057722807951993">Le chiffrement par phrase secrète n'inclut pas les modes de paiement ni les adresses Google Pay.
-
-Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">Afficher la vue simplifiée</translation>
 <translation id="1126809382673880764">Ce mode ne vous protège pas contre les téléchargements, les extensions et les sites Web dangereux. Le cas échéant, vous bénéficierez toujours de la protection offerte par la navigation sécurisée dans d'autres services Google, tels que Gmail et la recherche.</translation>
 <translation id="1129510026454351943">Détails°: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="3290249595466894471">Un petit échantillon de pages, de téléchargements, d'informations système et d'activité des extensions est aussi envoyé afin d'identifier de nouvelles menaces</translation>
 <translation id="3293181007446299124">Votre historique de navigation reste privé sur votre appareil, et les rapports sont transmis avec un certain retard pour protéger votre identité</translation>
 <translation id="3303414029551471755">Poursuivre et télécharger le contenu ?</translation>
+<translation id="3303855915957856445">Aucun résultat de recherche n'a été trouvé.</translation>
 <translation id="3305130791745726624">Envoyer sur des appareils</translation>
 <translation id="3305795716056605962">Traduisez les pages à l'aide du bouton "Plus d'options"</translation>
 <translation id="3334729583274622784">Modifier l'extension du fichier ?</translation>
@@ -529,7 +527,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="3847319713229060696">Contribuer à améliorer la sécurité sur le Web pour tous</translation>
 <translation id="3856096718352044181">Veuillez vérifier qu'il s'agit d'un fournisseur valide ou réessayer plus tard</translation>
 <translation id="3858860766373142691">Nom</translation>
-<translation id="3872520701277728051">Si vous avez oublié votre phrase secrète ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
 <translation id="3894427358181296146">Ajouter un dossier</translation>
 <translation id="3899682235662194879">Fermer tous les onglets de navigation privée</translation>
@@ -873,8 +870,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5590372121997663538">Mémoriser cet ordinateur</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
 <translation id="5599455543593328020">Mode Navigation privée</translation>
-<translation id="5605283439565877834">Les adresses et les modes de paiement Google Pay ne seront pas chiffrés. L'historique de navigation de Chrome ne sera pas synchronisé.
-Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. Google ne reçoit pas ni n'enregistre votre phrase secrète. Si vous l'avez oubliée ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Aucun mot de passe enregistré</translation>
 <translation id="5620928963363755975">Recherchez vos fichiers et vos pages dans les téléchargements, à partir du bouton "Plus d'options"</translation>
 <translation id="562289928968387744">Gérer les réactions</translation>
@@ -1103,7 +1098,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6672697278890207089">Saisissez votre mot de passe multiterme.</translation>
 <translation id="6672917148207387131">Ajouter <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">Pour lancer la synchronisation, saisissez votre phrase secrète</translation>
-<translation id="6676840375528380067">Supprimer vos données Chrome sur cet appareil ?</translation>
 <translation id="6676927815633975364">Connectez-vous à ce site et à Chrome</translation>
 <translation id="6684809838922667136">Améliorer Chrome</translation>
 <translation id="670498945988402717">Vérification effectuée hier</translation>
@@ -1305,7 +1299,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7626032353295482388">Bienvenue dans Chrome</translation>
 <translation id="7630202231528827509">URL du fournisseur</translation>
 <translation id="7638584964844754484">Phrase secrète incorrecte.</translation>
-<translation id="7641339528570811325">Effacer les données de navigation</translation>
 <translation id="7646772052135772216">La synchronisation du mot de passe ne fonctionne pas</translation>
 <translation id="7655240423373329753">sept derniers jours</translation>
 <translation id="7655900163790317559">Activation du Bluetooth…</translation>
@@ -1384,7 +1377,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7995059495660416932">Vous verrez le contenu lorsqu'il sera disponible</translation>
 <translation id="799576009106109668">Vous naviguerez plus rapidement, car le contenu sera chargé de manière proactive en fonction de la page Web que vous êtes en train de consulter</translation>
 <translation id="8004582292198964060">Navigateur</translation>
-<translation id="8013372441983637696">Supprimer également vos données Chrome sur cet appareil</translation>
 <translation id="8015452622527143194">Rétablir taille par défaut des éléments de la page</translation>
 <translation id="8026238112629815203">Nous avons modifié la manière dont les mots de passe sont enregistrés sur cet appareil</translation>
 <translation id="8027863900915310177">Choisir l'emplacement du téléchargement</translation>
@@ -1511,7 +1503,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8562452229998620586">Les mots de passe enregistrés s'affichent ici.</translation>
 <translation id="8570677896027847510">Impossible de télécharger le fichier de façon sécurisée</translation>
 <translation id="8571213806525832805">4 dernières semaines</translation>
-<translation id="8583805026567836021">Suppression des données du compte</translation>
 <translation id="859046281437143747">Effectuez le suivi du prix via le bouton "Plus d'options"</translation>
 <translation id="860043288473659153">Nom du titulaire de la carte</translation>
 <translation id="8602358303461588329">Se connecter à Chrome, fermé.</translation>
@@ -1641,6 +1632,5 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="983192555821071799">Fermer tous les onglets</translation>
 <translation id="987264212798334818">Général</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> onglets</translation>
-<translation id="993520549480398880">Effacer aussi de cette voiture les favoris, l'historique et plus</translation>
 <translation id="996149300115483134">Le menu de la carte de flux est fermé</translation>
 </translationbundle>

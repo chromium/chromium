@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">スクリーン キャプチャ</translation>
 <translation id="1108938384783527433">履歴の同期</translation>
 <translation id="1111673857033749125">他のデバイスに保存されているブックマークがここに表示されます。</translation>
-<translation id="1113057722807951993">Google Pay のお支払い方法と住所は、パスフレーズによる暗号化の対象には含まれません。
-
-この設定を変更するには、<ph name="BEGIN_LINK" />アカウントの Chrome データを消去<ph name="END_LINK" />します。</translation>
 <translation id="1113597929977215864">簡易表示する</translation>
 <translation id="1126809382673880764">危険なウェブサイト、ダウンロード、拡張機能から保護されていません。セーフ ブラウジングによる保護は、Gmail や Google 検索など他の Google サービスで利用可能な場合は、引き続き有効です。</translation>
 <translation id="1129510026454351943">詳細: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -439,6 +436,7 @@
 <translation id="3290249595466894471">また、新たな脅威を発見するため、ページ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルも送信します</translation>
 <translation id="3293181007446299124">閲覧履歴はプライバシーを保つためデバイスに保存され、レポートはユーザーを特定できないように遅れて送信されます</translation>
 <translation id="3303414029551471755">コンテンツのダウンロードに進みますか？</translation>
+<translation id="3303855915957856445">一致する結果は見つかりませんでした</translation>
 <translation id="3305130791745726624">デバイスに送信</translation>
 <translation id="3305795716056605962">[その他のオプション] からページを翻訳できます</translation>
 <translation id="3334729583274622784">ファイル拡張子を変更しますか？</translation>
@@ -530,7 +528,6 @@
 <translation id="3847319713229060696">すべてのユーザーのウェブ上のセキュリティ強化に協力する</translation>
 <translation id="3856096718352044181">有効なプロバイダであることを確認するか、しばらくしてからもう一度お試しください</translation>
 <translation id="3858860766373142691">名前</translation>
-<translation id="3872520701277728051">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chrome データを消去<ph name="END_LINK" />してください。</translation>
 <translation id="3892148308691398805">テキストをコピー</translation>
 <translation id="3894427358181296146">フォルダの追加</translation>
 <translation id="3899682235662194879">すべてのシークレット タブを閉じる</translation>
@@ -874,8 +871,6 @@
 <translation id="5590372121997663538">このパソコンの情報を保持する</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="5599455543593328020">シークレット モード</translation>
-<translation id="5605283439565877834">Google Pay のお支払い方法と住所は暗号化されません。また、Chrome の閲覧履歴は同期されません。
-パスフレーズを知っているユーザーだけが暗号化されたデータを見ることができます。パスフレーズは Google には送信されず、保存されることもありません。パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />Google アカウントから Chrome データを消去<ph name="END_LINK" />してください。</translation>
 <translation id="5620163320393916465">保存されているパスワードはありません</translation>
 <translation id="5620928963363755975">[その他のオプション] から [ダウンロード] を開いて自分のファイルやページを探すことができます</translation>
 <translation id="562289928968387744">リアクションを管理</translation>
@@ -1104,7 +1099,6 @@
 <translation id="6672697278890207089">パスフレーズの入力</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> を追加</translation>
 <translation id="6674571176963658787">同期を開始するには、パスフレーズを入力してください</translation>
-<translation id="6676840375528380067">Chrome データをこのデバイスから削除しますか？</translation>
 <translation id="6676927815633975364">このサイトと Chrome にログインします</translation>
 <translation id="6684809838922667136">Chrome の品質を向上</translation>
 <translation id="670498945988402717">前回の確認: 昨日</translation>
@@ -1306,7 +1300,6 @@
 <translation id="7626032353295482388">Chrome へようこそ</translation>
 <translation id="7630202231528827509">プロバイダの URL</translation>
 <translation id="7638584964844754484">パスフレーズが正しくありません</translation>
-<translation id="7641339528570811325">閲覧履歴データを削除…</translation>
 <translation id="7646772052135772216">パスワード同期が機能していません</translation>
 <translation id="7655240423373329753">過去 7 日間</translation>
 <translation id="7655900163790317559">Bluetooth をオンにしています…</translation>
@@ -1385,7 +1378,6 @@
 <translation id="7995059495660416932">利用可能になると、コンテンツが表示されます</translation>
 <translation id="799576009106109668">表示中のウェブページに基づいてコンテンツが事前に読み込まれるので、すばやくブラウジングできます</translation>
 <translation id="8004582292198964060">ブラウザ</translation>
-<translation id="8013372441983637696">Chrome データをこのデバイスから削除する</translation>
 <translation id="8015452622527143194">ページ上のすべての要素をデフォルトのサイズに戻す</translation>
 <translation id="8026238112629815203">このデバイスのパスワードの保存方法を変更しました</translation>
 <translation id="8027863900915310177">保存先を選択してください</translation>
@@ -1513,7 +1505,6 @@
 <translation id="8562452229998620586">保存したパスワードはこちらに表示されます。</translation>
 <translation id="8570677896027847510">ファイルを安全にダウンロードできません</translation>
 <translation id="8571213806525832805">過去 4 週間</translation>
-<translation id="8583805026567836021">アカウント データをクリア中</translation>
 <translation id="859046281437143747">[その他のオプション] から価格をトラッキングできます</translation>
 <translation id="860043288473659153">カード名義人</translation>
 <translation id="8602358303461588329">Chrome にログイン、の画面が閉じられました。</translation>
@@ -1643,6 +1634,5 @@
 <translation id="983192555821071799">すべてのタブを閉じる</translation>
 <translation id="987264212798334818">全般</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> 個のタブ</translation>
-<translation id="993520549480398880">この車のブックマーク、履歴、その他の設定も削除する</translation>
 <translation id="996149300115483134">フィードカード メニューは閉じています</translation>
 </translationbundle>

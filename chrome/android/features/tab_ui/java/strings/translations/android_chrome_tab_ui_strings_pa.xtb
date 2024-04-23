@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{ਤੁਸੀਂ Chrome ਦੇ ਮੁੱਖ ਮੀਨੂ ਦੇ ਅਧੀਨ 'ਹਾਲੀਆ ਟੈਬਾਂ' ਵਿੱਚ ਆਪਣੀਆਂ ਬੰਦ ਕੀਤੀਆਂ ਟੈਬਾਂ ਲੱਭ ਸਕਦੇ ਹੋ। ਤੁਹਾਡੀ ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਉਪਲਬਧ ਨਹੀਂ ਹੋਵੇਗੀ।}one{ਤੁਸੀਂ Chrome ਦੇ ਮੁੱਖ ਮੀਨੂ ਦੇ ਅਧੀਨ 'ਹਾਲੀਆ ਟੈਬਾਂ' ਵਿੱਚ ਆਪਣੀਆਂ ਬੰਦ ਕੀਤੀਆਂ ਟੈਬਾਂ ਲੱਭ ਸਕਦੇ ਹੋ। ਤੁਹਾਡੀ # ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਉਪਲਬਧ ਨਹੀਂ ਹੋਵੇਗੀ।}other{ਤੁਸੀਂ Chrome ਦੇ ਮੁੱਖ ਮੀਨੂ ਦੇ ਅਧੀਨ 'ਹਾਲੀਆ ਟੈਬਾਂ' ਵਿੱਚ ਆਪਣੀਆਂ ਬੰਦ ਕੀਤੀਆਂ ਟੈਬਾਂ ਲੱਭ ਸਕਦੇ ਹੋ। ਤੁਹਾਡੀਆਂ # ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਉਪਲਬਧ ਨਹੀਂ ਹੋਣਗੀਆਂ।}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ਟੈਬ}one{<ph name="TABS_COUNT_MANY" /> ਟੈਬ}other{<ph name="TABS_COUNT_MANY" /> ਟੈਬਾਂ}}</translation>
 <translation id="6549021453810473782">ਸਟੋਰ ਜਾਣਕਾਰੀ ਦੇਖੋ</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ਟੈਬ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਲਿਜਾਓ</translation>
 <translation id="6615455863669487791">ਮੈਨੂੰ ਦਿਖਾਓ</translation>
 <translation id="661742612106409204">ਤੁਸੀਂ Chrome ਦੇ ਮੁੱਖ ਮੀਨੂ ਦੇ ਅਧੀਨ 'ਹਾਲੀਆ ਟੈਬਾਂ' ਵਿੱਚ ਆਪਣੀਆਂ ਬੰਦ ਕੀਤੀਆਂ ਟੈਬਾਂ ਲੱਭ ਸਕਦੇ ਹੋ।</translation>

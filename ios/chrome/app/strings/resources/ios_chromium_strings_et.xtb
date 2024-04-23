@@ -99,12 +99,8 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chromiu
 <translation id="3855938650519180865">Mis on Chromiumis uut?</translation>
 <translation id="3886689467633467988">Logige sisse sellele saidile ja Chromiumi, et teie järjehoidjad ja muu sisu oleksid saadaval kõigis seadmetes.</translation>
 <translation id="3904484643286601695">Chromiumi seadetes saate igal ajal oma valikuid värskendada.</translation>
-<translation id="394413318816989199">Parooliga krüpteerimine ei hõlma makseviise ja aadresse.
-
-Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi andmed<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Avab ja käitab Chromiumi ohutuskontrolli.</translation>
 <translation id="4043291146360695975">Paroolid salvestatakse rakendusse Paroolihaldur ainult selles seadmes.</translation>
-<translation id="4076589763479456892">Kui unustasite parooli või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi andmed<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Ei toetata Chromiumi beetaversioonis</translation>
 <translation id="4106512142782407609">Sisse logitud kasutajana <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@ Tasub teada
 <translation id="6337530241089703714">Valige, kas soovite oma Chromiumi andmed sellest seadmest kustutada või need säilitada</translation>
 <translation id="6348483005826990855">3. Valige Chromium</translation>
 <translation id="6383607155624074112">Avage Chromium kiiremini oma avakuva dokist</translation>
-<translation id="6407399265324739055">Makseviise ja aadresse ei krüpteerita. Chromiumi sirvimisajalugu ei sünkroonita.
-
-Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Parooli ei saadeta Google’ile ja Google ei salvesta seda. Kui parooli unustate või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi andmed<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium muutus just veelgi paremaks! Saadaval on uus versioon.</translation>
 <translation id="6433172051771630690">Nõuanded Chromiumi kasutamiseks.</translation>
 <translation id="6502321914804101924">Chromium on väljalogitud</translation>
@@ -263,9 +256,6 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="8458950033462118672">Saate Chromiumis linke avada automaatselt, muutes selle oma vaikebrauserirakenduseks.</translation>
 <translation id="858114650497379505">Saate paroolihaldurisse salvestatud paroole oma iPhone'i muudes rakendustes kasutada.</translation>
 <translation id="8586442755830160949">Autoriõigus <ph name="YEAR" /> The Chromium Authors. Kõik õigused on kaitstud.</translation>
-<translation id="8618440443578628179">Parooliga krüpteerimine ei hõlma Google Pay makseviise ja aadresse.
-
-Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi andmed<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Kaitseb teid Chromiumis ja seda võidakse kasutada teie turvalisuse suurendamiseks muudes Google'i rakendustes, kui olete sisse logitud.</translation>
 <translation id="8663480472502753423">Hoidke Chromium ajakohasena</translation>
 <translation id="8685813584220679697">Logige sellele saidile ja Chromiumisse sisse.</translation>

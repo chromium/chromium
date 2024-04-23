@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{আপুনি Chromeৰ মুখ্য মেনুখনত থকা শেহতীয়া টেবসমূহত আপোনাৰ বন্ধ কৰা টেবসমূহ বিচাৰি পাব পাৰে। আপোনাৰ ইনক’গ্নিট’ টেবটো উপলব্ধ নহ’ব।}one{আপুনি Chromeৰ মুখ্য মেনুখনত থকা শেহতীয়া টেবসমূহত আপোনাৰ বন্ধ কৰা টেবসমূহ বিচাৰি পাব পাৰে। আপোনাৰ # টা ইনক’গ্নিট’ টেব উপলব্ধ নহ’ব।}other{আপুনি Chromeৰ মুখ্য মেনুখনত থকা শেহতীয়া টেবসমূহত আপোনাৰ বন্ধ কৰা টেবসমূহ বিচাৰি পাব পাৰে। আপোনাৰ # টা ইনক’গ্নিট’ টেব উপলব্ধ নহ’ব।}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা টেব}one{<ph name="TABS_COUNT_MANY" /> টা টেব}other{<ph name="TABS_COUNT_MANY" /> টা টেব}}</translation>
 <translation id="6549021453810473782">ষ্ট’ৰৰ তথ্য চাওক</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /> টা</translation>
 <translation id="6562820390860419811">টেবটো বাওঁফাললৈ নিয়ক</translation>
 <translation id="6615455863669487791">মোক দেখুৱাওক</translation>
 <translation id="661742612106409204">আপুনি Chromeৰ মুখ্য মেনুখনত থকা শেহতীয়া টেবসমূহত আপোনাৰ বন্ধ কৰা টেবসমূহ বিচাৰি পাব পাৰে।</translation>

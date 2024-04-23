@@ -75,7 +75,6 @@ Aspetti da considerare:
 <translation id="2736805085127235148">Le notifiche di Chrome sono attualmente disattivate nelle impostazioni del dispositivo.</translation>
 <translation id="2750626042242931740">Puoi aggiornare le tue selezioni in qualsiasi momento nelle Impostazioni di Chrome.</translation>
 <translation id="2767464022270041271">Nessuna password salvata. Gestore delle password di Google può controllare le tue password quando le salvi.</translation>
-<translation id="2789947168960170215">Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="2869959624320573933">Accedi a Chrome</translation>
 <translation id="2876628302275096482">Scopri di più su <ph name="BEGIN_LINK" />come Chrome mantiene privati i tuoi dati<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Apri le Impostazioni di Chrome</translation>
@@ -190,9 +189,6 @@ I dati sono criptati con la tua passphrase. Inseriscila per utilizzare e salvare
 <translation id="6648150602980899529">Stai per eseguire l'accesso con un account gestito da <ph name="DOMAIN" /> e consentire al relativo amministratore di avere il controllo dei tuoi dati di Chrome. I tuoi dati verranno associati definitivamente a questo account. Se esci da Chrome, i dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
 <translation id="6683891932310469419">Apre la pagina della cronologia di Chrome.</translation>
 <translation id="6709398533399187136">La tua password è stata compromessa nell'ambito di una violazione dei dati. Gestore delle password di Google consiglia di cambiarla subito.</translation>
-<translation id="6815466750807582739">I metodi di pagamento e gli indirizzi non verranno criptati. La cronologia di navigazione di Chrome non verrà sincronizzata.
-
-Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphrase non viene inviata a Google o memorizzata da Google. Se dimentichi la passphrase o vuoi modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Apri le Impostazioni di Chrome in iOS, quindi tocca "App browser predefinita" e seleziona Chrome.</translation>
 <translation id="686691656039982452">Puoi <ph name="BEGIN_LINK" />gestire quali dati di Chrome salvare<ph name="END_LINK" /> nel tuo Account Google.
 
@@ -277,9 +273,6 @@ I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" 
 <translation id="8808828119384186784">Impostazioni di Chrome</translation>
 <translation id="8850736900032787670">Accedi a Chrome per ricevere contenuti personalizzati in base ai tuoi interessi.</translation>
 <translation id="8855781063981781621">Per disattivare la Modalità di blocco in Chrome, disattivala sul tuo iPad.</translation>
-<translation id="8856877214925961642">La crittografia delle passphrase non include metodi di pagamento e indirizzi.
-
-Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Gestore delle password di Google non ha potuto controllare tutte le password. Riprova domani.</translation>
 <translation id="8865415417596392024">Dati di Chrome nel tuo account</translation>
 <translation id="8874688701962049679">Suggerimenti per usare al meglio Chrome.</translation>

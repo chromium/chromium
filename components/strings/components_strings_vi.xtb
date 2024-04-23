@@ -162,6 +162,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1282358575813748144">Thuyền và tàu bè</translation>
 <translation id="1283977499362032052">Lý lịch nghề nghiệp và danh mục đầu tư</translation>
 <translation id="1285320974508926690">Không bao giờ dịch trang web này</translation>
+<translation id="1291249564161469503">Khoá bàn phím</translation>
 <translation id="1292571435393770077">Khay 16</translation>
 <translation id="1292701964462482250">"Phần mềm trên máy tính của bạn đang ngăn không cho Chrome kết nối an toàn với web" (chỉ trên máy tính Windows)</translation>
 <translation id="1293797321964802402">Phong bì 9 x 11 inch</translation>
@@ -572,6 +573,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2046951263634619614">Nhà bán lẻ sách</translation>
 <translation id="2048261947532620704">Đang dịch trang</translation>
 <translation id="2053111141626950936">Các trang viết bằng <ph name="LANGUAGE" /> sẽ không được dịch.</translation>
+<translation id="2056492565825767809">Khoá con trỏ chuột</translation>
 <translation id="2056658168519009885">Các trang web có thể yêu cầu Chrome cung cấp thông tin để giúp cá nhân hoá quảng cáo bạn thấy.</translation>
 <translation id="2059166748188874810">Thành phố tự trị</translation>
 <translation id="2059202684901022309">22 x 34 inch</translation>
@@ -1069,6 +1071,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3052964831964880138">Giảm giá <ph name="PRICE_DROP" /> đối với <ph name="PRODUCT_NAME" /></translation>
 <translation id="3054512251683174387">Chrome tự động xoá những chủ đề đã tồn tại hơn 4 tuần. Khi bạn tiếp tục duyệt web, chủ đề đã bị xoá có thể xuất hiện lại trong danh sách. Bạn cũng có thể chặn những chủ đề mà bạn không muốn Chrome chia sẻ với các trang web. Tìm hiểu thêm về quản lý quyền riêng tư trong quảng cáo trên Chrome.</translation>
 <translation id="3061707000357573562">Dịch vụ vá lỗi</translation>
+<translation id="3062655045399308513">Xoá dữ liệu duyệt web...</translation>
 <translation id="306573536155379004">Đã bắt đầu trò chơi.</translation>
 <translation id="3067505415088964188">Giá thấp</translation>
 <translation id="3076865167425975822">Hệ điều hành</translation>
@@ -2025,6 +2028,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4885256590493466218">Thanh toán bằng <ph name="CARD_DETAIL" /> khi thanh toán</translation>
 <translation id="4887406273302438710">Bảo vệ mật khẩu bằng Windows Hello</translation>
 <translation id="4890070067176768718">Quản trị viên của bạn đã cho phép <ph name="PERMISSION" /> trên <ph name="ORIGIN" /></translation>
+<translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn phím Tab rồi nhấn Enter để xoá nhật ký duyệt web, cookie, bộ nhớ đệm và các dữ liệu khác trong phần cài đặt của Chrome</translation>
 <translation id="4892518386797173871">Phía sau</translation>
 <translation id="4895019427244614047">Xoá địa chỉ</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -2592,6 +2596,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6014851866995737824">Chính sách bị bỏ qua vì thiếu danh sách "bật" hoặc "tắt".</translation>
 <translation id="6015796118275082299">Năm</translation>
 <translation id="6017514345406065928">Xanh lục</translation>
+<translation id="6018650639991193045">Xoá nhật ký duyệt web, cookie, bộ nhớ đệm và các dữ liệu khác trong phần cài đặt của Chrome</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (được đồng bộ hóa)</translation>
 <translation id="6028591542479806248">Quản lý thông báo qua email và thiết bị di động</translation>
 <translation id="6028833024483927901">Ẩm thực thế giới</translation>
@@ -2765,6 +2770,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="634500758737709758">Đường đi</translation>
 <translation id="6348220984832452017">Biến thể đang hoạt động</translation>
 <translation id="6349101878882523185">Cài đặt <ph name="APP_NAME" /></translation>
+<translation id="6351658970066645919">Xoá dữ liệu duyệt web</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Không có}=1{1 mật khẩu (cho <ph name="DOMAIN_LIST" />, đã đồng bộ hóa)}=2{2 mật khẩu (cho <ph name="DOMAIN_LIST" />, đã đồng bộ hóa)}other{# mật khẩu (cho <ph name="DOMAIN_LIST" />, đã đồng bộ hóa)}}</translation>
 <translation id="6355392890578844978">Không có công ty hay tổ chức nào quản lý trình duyệt này. Hoạt động trên thiết bị này có thể được quản lý ở bên ngoài Chromium. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">chỉnh sửa phương thức thanh toán</translation>
@@ -3492,6 +3498,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7682287625158474539">Địa chỉ gửi hàng</translation>
 <translation id="7682451652090915298">Bóng bầu dục Anh</translation>
 <translation id="7684683146428206649">Kim loại</translation>
+<translation id="7684817988830401358">Nút Xoá dữ liệu duyệt web, hãy nhấn nút này để xoá nhật ký duyệt web, cookie, bộ nhớ đệm và các dữ liệu khác trong phần cài đặt của Chrome</translation>
 <translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> đã bị chặn do chính sách}other{<ph name="FILE_COUNT" /> tệp đã bị chặn do chính sách}}</translation>
 <translation id="7687186412095877299">Điền vào biểu mẫu thanh toán bằng phương thức thanh toán đã lưu</translation>
 <translation id="7687305263118037187">Hết giờ thử lại</translation>
@@ -3604,6 +3611,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">CVC của thẻ này sẽ được mã hoá và lưu vào thiết bị của bạn để giúp bạn thanh toán nhanh hơn</translation>
 <translation id="7937554595067888181">Hết hạn vào <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="7938490694919717008">Cho biết những phần thưởng và lợi ích nào áp dụng cho thẻ của bạn tại thời điểm thanh toán <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Tìm hiểu về lợi ích của thẻ<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Chứng chỉ của máy chủ chưa hợp lệ.</translation>
 <translation id="7941628148012649605">Phong bì Chou 4</translation>
 <translation id="794169214536209644">Kẹo và mứt</translation>
@@ -3993,6 +4001,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8662463432865928030">Bất động sản thương mại</translation>
 <translation id="8663226718884576429">Tóm tắt đơn hàng, <ph name="TOTAL_LABEL" />, chi tiết khác</translation>
 <translation id="8663909737634214500">Đĩa quang</translation>
+<translation id="8664326323360157684">Xoá dữ liệu duyệt web...</translation>
 <translation id="8671519637524426245">Giá trị <ph name="SECURE_DNS_SALT" /> không đáp ứng các yêu cầu về kích thước.</translation>
 <translation id="867224526087042813">Chữ ký</translation>
 <translation id="8672535691554698269">Mạng máy tính</translation>
@@ -4289,6 +4298,7 @@ Thông tin chi tiết bổ sung:
 <translation id="949314938206378263">Bạn đã yêu cầu truy cập trang web này. Cha/mẹ bạn có thể trả lời trong Family Link.</translation>
 <translation id="950736567201356821">Đục 3 lỗ trên cùng</translation>
 <translation id="961663415146723894">Đóng gáy dưới cùng</translation>
+<translation id="961856697154696964">Xoá dữ liệu duyệt web</translation>
 <translation id="961930410699694996">Đã cho phép sử dụng thông tin vị trí cho lần này</translation>
 <translation id="962484866189421427">Nội dung này có thể tìm cách cài đặt ứng dụng lừa đảo giả mạo nội dung khác hoặc thu thập dữ liệu có thể được dùng để theo dõi bạn. <ph name="BEGIN_LINK" />Vẫn hiển thị<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Dựa trên luật tại khu vực của bạn, Chromium sẽ yêu cầu bạn chọn công cụ tìm kiếm mặc định. Đây là những công cụ tìm kiếm phổ biến tại khu vực của bạn và được hiển thị theo thứ tự ngẫu nhiên.</translation>

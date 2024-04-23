@@ -99,12 +99,8 @@
 <translation id="3855938650519180865">Novosti v Chromiumu</translation>
 <translation id="3886689467633467988">Prijavite se na tem spletnem mestu in v Chromiumu, če želite dostopati do zaznamkov in drugega v vseh napravah.</translation>
 <translation id="3904484643286601695">Izbire lahko kadar koli posodobite v nastavitvah za Chromium.</translation>
-<translation id="394413318816989199">Šifriranje gesla ne vključuje plačilnih sredstev in naslovov.
-
-Če želite spremeniti to nastavitev, <ph name="BEGIN_LINK" />izbrišite podatke iz Chromiuma v računu<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Odpre in izvede varnostno preverjanje v Chromiumu.</translation>
 <translation id="4043291146360695975">Gesla so shranjena v upravitelju gesel samo v tej napravi.</translation>
-<translation id="4076589763479456892">Če ste pozabili geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chromiuma v računu<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Ni podprto v Chromiumu Beta</translation>
 <translation id="4106512142782407609">Prijavljeni ste kot <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@ Kaj je treba upoštevati:
 <translation id="6337530241089703714">Izberite, ali želite izbrisati podatke v Chromiumu iz te naprave ali jih obdržati.</translation>
 <translation id="6348483005826990855">3. Izberite Chromium</translation>
 <translation id="6383607155624074112">Hitrejši dostop do Chromiuma iz vrstice Dock na začetnem zaslonu</translation>
-<translation id="6407399265324739055">Plačilna sredstva in naslovi ne bodo šifrirani. Zgodovina brskanja v Chromiumu se ne bo sinhronizirala.
-
-Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni poslano Googlu in ga Google ne hrani. Če pozabite geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chromiuma v računu<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium je izboljšan! Na voljo je nova različica.</translation>
 <translation id="6433172051771630690">Nasveti, kako najbolje izkoristiti Chromium.</translation>
 <translation id="6502321914804101924">Chromium je odjavljen</translation>
@@ -263,9 +256,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="8458950033462118672">Če nastavite Chromium kot privzeto aplikacijo za brskanje, lahko samodejno odpirate povezave v njem.</translation>
 <translation id="858114650497379505">Gesla, ki ste jih shranili v upravitelju gesel, lahko uporabite v drugih aplikacijah v iPhonu.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ustvarjalci Chromiuma. Vse pravice pridržane.</translation>
-<translation id="8618440443578628179">Šifriranje gesla ne vključuje plačilnih sredstev in naslovov iz Googla Pay.
-
-Če želite spremeniti to nastavitev, <ph name="BEGIN_LINK" />izbrišite podatke iz Chromiuma v računu<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Skrbi za vašo varnost v Chromiumu in ga je mogoče uporabiti za okrepitev varnosti v drugih Googlovih aplikacijah, ko ste prijavljeni.</translation>
 <translation id="8663480472502753423">Posodobitev Chromiuma</translation>
 <translation id="8685813584220679697">Prijavite se na tem spletnem mestu in v Chromium.</translation>

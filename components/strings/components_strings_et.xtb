@@ -935,6 +935,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2759825833388495838">sisestada rakenduses <ph name="APP_NAME" /> teie parooli</translation>
 <translation id="2764001903315068341">Koomiksid</translation>
 <translation id="2765217105034171413">Väike</translation>
+<translation id="2768397283109119044">Proovisite jõuda domeenile <ph name="DOMAIN" />, kuid server esitas sellele nimele väljastatud kehtetu sertifikaadi. Nimi on reserveeritud IP-aadress või sisemine hostinimi.</translation>
 <translation id="2770159525358613612">Proovige oma failid uuesti üles laadida</translation>
 <translation id="277133753123645258">Tarneviis</translation>
 <translation id="2773388851563527404">Chrome piirab enamikul saitidel kolmanda osapoole küpsisefailide kasutamist. Kolmanda osapoole küpsisefailid on sellel saidil siiski lubatud, kuna need sõltuvad nende pakutavatest põhiteenustest. Avage seaded, et <ph name="LINK" />.</translation>
@@ -1716,6 +1717,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4265872034478892965">Lubas administraator</translation>
 <translation id="4269029136757623689">Majapidamisventilaatorid</translation>
 <translation id="4269264543938335308">Ujumisriided</translation>
+<translation id="4269599248168651462">Serveri sertifikaat väljastatakse korduvale nimele.</translation>
 <translation id="4270541775497538019">Virnastaja 6</translation>
 <translation id="4275830172053184480">Taaskäivitage seade</translation>
 <translation id="4276974990916607331">Tänan, ei</translation>
@@ -4118,6 +4120,7 @@ Lisateave:
 <translation id="8919740778133505789">Sportautod</translation>
 <translation id="8919895429178014996">Kõigi üksuste peitmine</translation>
 <translation id="8922013791253848639">Luba sellel saidil alati reklaamid</translation>
+<translation id="8924109546403192898">Kui Chrome märgistab turvalisusega seotud sündmused, saadetakse teie administraatorile asjakohased andmed sündmuste kohta. See võib hõlmata Chrome'is külastatud lehtede URL-e, selliste lehtede URL-e, millelt andmeid kopeerisite, failinimesid või metaandmeid, brauseri või vahelehe kokkujooksmisi ning kasutajanime, mida kasutate veebipõhistesse rakendustesse, seadmesse ja Chrome'i sisselogimiseks.</translation>
 <translation id="892588693504540538">Auk ülal paremal</translation>
 <translation id="8926389886865778422">Ära enam küsi</translation>
 <translation id="8932102934695377596">Teie kell on taga</translation>

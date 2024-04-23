@@ -100,12 +100,8 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="3855938650519180865">Item Baharu dalam Chromium</translation>
 <translation id="3886689467633467988">Log masuk laman ini dan Chromium untuk mendapatkan penanda halaman anda dan banyak lagi pada semua peranti anda.</translation>
 <translation id="3904484643286601695">Anda boleh mengemaskinikan pilihan anda pada bila-bila masa dalam Tetapan Chromium.</translation>
-<translation id="394413318816989199">Penyulitan ungkapan laluan tidak termasuk kaedah pembayaran dan alamat.
-
-Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chromium dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Buka dan Jalankan Pemeriksaan Keselamatan dalam Chromium.</translation>
 <translation id="4043291146360695975">Kata laluan disimpan pada Pengurus Kata Laluan pada peranti ini sahaja.</translation>
-<translation id="4076589763479456892">Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chromium dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Tidak disokong pada Chromium Beta</translation>
 <translation id="4106512142782407609">Log masuk sebagai <ph name="EMAIL" />.
 
@@ -197,9 +193,6 @@ Perkara yang perlu dipertimbangkan:
 <translation id="6337530241089703714">Pilih sama ada anda hendak mengosongkan data Chromium anda daripada peranti ini atau mengekalkan data tersebut</translation>
 <translation id="6348483005826990855">3. Pilih Chromium</translation>
 <translation id="6383607155624074112">Akses Chromium lebih pantas daripada Dok Skrin Utama anda</translation>
-<translation id="6407399265324739055">Kaedah pembayaran dan alamat tidak akan disulitkan. Sejarah penyemakan imbas daripada Chromium tidak akan disegerakkan.
-
-Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersulit anda. Ungkapan laluan tidak dihantar kepada atau disimpan oleh Google. Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chromium dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium telah dipertingkatkan! Versi baharu kini boleh didapati.</translation>
 <translation id="6433172051771630690">Petua tentang memanfaatkan Chromium sepenuhnya.</translation>
 <translation id="6502321914804101924">Chromium Dilog keluar</translation>
@@ -266,9 +259,6 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersul
 <translation id="8458950033462118672">Anda boleh membuka pautan dalam Chromium secara automatik dengan menjadikan Chromium sebagai Apl Penyemak Imbas Lalai anda.</translation>
 <translation id="858114650497379505">Anda boleh menggunakan kata laluan yang anda simpan pada Pengurus Kata Laluan dalam apl lain pada iPhone anda.</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Hak cipta terpelihara.</translation>
-<translation id="8618440443578628179">Penyulitan ungkapan laluan tidak termasuk kaedah pembayaran dan alamat daripada Google Pay.
-
-Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chromium dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Memastikan anda selamat pada Chromium dan mungkin digunakan untuk meningkatkan keselamatan anda dalam apl Google yang lain apabila anda log masuk.</translation>
 <translation id="8663480472502753423">Pastikan Chromium terkini</translation>
 <translation id="8685813584220679697">Log masuk ke laman ini dan Chromium.</translation>

@@ -99,12 +99,8 @@
 <translation id="3855938650519180865">‏מה חדש ב-Chromium</translation>
 <translation id="3886689467633467988">‏יש לך אפשרות להיכנס לאתר הזה ול-Chromium כדי שהסימניות, הסיסמאות ונתונים נוספים יופיעו בכל המכשירים שלך.</translation>
 <translation id="3904484643286601695">‏תמיד אפשר לבחור אפשרויות אחרות בהגדרות Chromium.</translation>
-<translation id="394413318816989199">‏הצפנה בעזרת ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות.
-
-כדי לשנות את ההגדרה הזו, עליך <ph name="BEGIN_LINK" />לנקות את נתוני Chromium בחשבון<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">‏פתיחה והפעלה של 'טיימר לדיווח על מצב מסוכן' ב-Chromium.</translation>
 <translation id="4043291146360695975">סיסמאות נשמרות במנהל הסיסמאות במכשיר הזה בלבד.</translation>
-<translation id="4076589763479456892">‏אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך לנקות את נתוני Chromium בחשבון<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">‏אין תמיכה ב-Chromium בטא</translation>
 <translation id="4106512142782407609">‏נכנסת לחשבון בתור <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@
 <translation id="6337530241089703714">‏האם למחוק את נתוני Chromium ממכשיר זה או לשמור אותם?</translation>
 <translation id="6348483005826990855">‏3. בוחרים באפשרות Chromium</translation>
 <translation id="6383607155624074112">‏גישה מהירה יותר ל-Chromium דרך ה-Dock של מסך הבית</translation>
-<translation id="6407399265324739055">‏אמצעי תשלום וכתובות לא יוצפנו. היסטוריית הגלישה ב-Chromium לא תסונכרן.
-
-רק מי שיודע את ביטוי הסיסמה יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google ולא מאוחסן ב-Google. אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך לנקות את נתוני Chromium בחשבון<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">‏‫Chromium ממשיך להשתפר! קיימת גרסה חדשה.</translation>
 <translation id="6433172051771630690">‏טיפים שיעזרו לך ליהנות מהמיטב של Chromium.</translation>
 <translation id="6502321914804101924">‏יצאת מהחשבון ב-Chromium</translation>
@@ -263,9 +256,6 @@
 <translation id="8458950033462118672">‏אפשר לפתוח קישורים ב-Chromium באופן אוטומטי. כדי לעשות זאת, מגדירים אותו כדפדפן ברירת המחדל.</translation>
 <translation id="858114650497379505">‏יש לך אפשרות להשתמש בסיסמאות ששמרת במנהל הסיסמאות באפליקציות אחרות ב-iPhone.</translation>
 <translation id="8586442755830160949">‏Copyright <ph name="YEAR" /> The Chromium Authors. כל הזכויות שמורות.</translation>
-<translation id="8618440443578628179">‏הצפנה של ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות מ-Google Pay.
-
-כדי לשנות את ההגדרה הזו, עליך <ph name="BEGIN_LINK" />לנקות את נתוני Chromium בחשבון<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">‏מגן עליך ב‑Chromium ועשוי לשפר את רמת האבטחה באפליקציות אחרות של Google. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
 <translation id="8663480472502753423">‏Chromium יתעדכן באופן קבוע</translation>
 <translation id="8685813584220679697">‏יש להיכנס לאתר הזה ול-Chromium.</translation>

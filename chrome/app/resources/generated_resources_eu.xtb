@@ -5617,7 +5617,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5271578170655641944">Google Drive atzitzeko baimena kendu nahi duzu?</translation>
 <translation id="5273806377963980154">Editatu gunearen URLa</translation>
 <translation id="5275084684151588738">Erabiltzailearen hiztegiak</translation>
-<translation id="5275100789567222478">Aktibatu bateriari % <ph name="PERCENT" /> edo gutxiago gelditzen zaionean soilik</translation>
 <translation id="5275338516105640560">Gordetako fitxa taldeen botoia</translation>
 <translation id="5275352920323889391">Txakurra</translation>
 <translation id="527605719918376753">Desaktibatu fitxaren audioa</translation>
@@ -6226,7 +6225,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5746169159649715125">Gorde PDF gisa</translation>
 <translation id="5747785204778348146">Garatzailea; egoera ezegonkorra</translation>
 <translation id="5747809636523347288">It&amp;satsi eta joan "<ph name="URL" />" helbidera</translation>
-<translation id="5748137879145720682">Aktibatu ordenagailua deskonektatuta dagoenean</translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Egiaztatu konexioa partekatzeko aukeraren erabilgarritasuna</translation>
 <translation id="5753570386948603678">Ezabatu historiatik</translation>

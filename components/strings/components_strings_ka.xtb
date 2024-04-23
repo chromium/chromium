@@ -3196,7 +3196,6 @@
 <translation id="7163295244162773898">{0,plural, =1{გსურთ კონფიდენციალური ფაილის კოპირება?}other{გსურთ კონფიდენციალური ფაილების კოპირება?}}</translation>
 <translation id="7168625890036931112">„<ph name="DATA_CONTROLS_RESTRICTION" />“ არ არის მხარდაჭერილი შეზღუდვა ამ პლატფორმაზე</translation>
 <translation id="717330890047184534">GAIA ID:</translation>
-<translation id="7173338713290252554">ფასის ისტორია ვებში</translation>
 <translation id="7174545416324379297">გაერთიანებული</translation>
 <translation id="7175097078723125014">არჩეული იყო მისამართის რედაქტირების ვარიანტი</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> და <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> სხვა}other{<ph name="SHIPPING_OPTION_PREVIEW" /> და <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> სხვა}}</translation>

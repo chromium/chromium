@@ -99,12 +99,8 @@ For more settings that use data to improve your Chromium experience, go to <ph n
 <translation id="3855938650519180865">What's new in Chromium</translation>
 <translation id="3886689467633467988">Sign in to this site and Chromium to get your bookmarks and more on all your devices.</translation>
 <translation id="3904484643286601695">You can update your selections at any time in Chromium settings.</translation>
-<translation id="394413318816989199">Passphrase encryption doesn't include payment methods and addresses.
-
-To change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your account<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Opens and Runs Safety Check in Chromium.</translation>
 <translation id="4043291146360695975">Passwords are saved to Password Manager on this device only.</translation>
-<translation id="4076589763479456892">If you forgot your passphrase or want to change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your account<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Not supported on Chromium beta</translation>
 <translation id="4106512142782407609">Signed in as <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@ Things to consider:
 <translation id="6337530241089703714">Choose whether to clear your Chromium data from this device or keep it</translation>
 <translation id="6348483005826990855">3. Select Chromium</translation>
 <translation id="6383607155624074112">Access Chromium faster from your Home screen dock</translation>
-<translation id="6407399265324739055">Payment methods and addresses won't be encrypted. Browsing history from Chromium won't sync.
-
-Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your account<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium just got better! A new version is available.</translation>
 <translation id="6433172051771630690">Tips on getting the most out of Chromium.</translation>
 <translation id="6502321914804101924">Chromium is signed out</translation>
@@ -263,9 +256,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="8458950033462118672">You can open links in Chromium automatically by making it your default browser app.</translation>
 <translation id="858114650497379505">You can use the passwords that you saved to Password Manager in other apps on your iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
-<translation id="8618440443578628179">Passphrase encryption doesn't include payment methods and addresses from Google Pay.
-
-To change this setting, <ph name="BEGIN_LINK" />clear the Chromium data in your account<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Keeps you safe on Chromium and may be used to improve your security in other Google apps when you are signed in.</translation>
 <translation id="8663480472502753423">Keep Chromium up to date</translation>
 <translation id="8685813584220679697">Sign in to this site and Chromium.</translation>

@@ -99,12 +99,8 @@
 <translation id="3855938650519180865">Chromium 新功能</translation>
 <translation id="3886689467633467988">登入這個網站和 Chromium，即可在所有裝置上存取書籤及其他設定。</translation>
 <translation id="3904484643286601695">你隨時可以在 Chromium 設定中更新所選項目。</translation>
-<translation id="394413318816989199">通關密語加密的資料不包括付款方式和地址。
-
-如要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chromium 資料<ph name="END_LINK" />。</translation>
 <translation id="4005283307739974863">在 Chromium 中開啟並執行安全檢查。</translation>
 <translation id="4043291146360695975">密碼只會儲存至這部裝置上的密碼管理工具。</translation>
-<translation id="4076589763479456892">如果忘記通關密語或想要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chromium 資料<ph name="END_LINK" />。</translation>
 <translation id="4099085513035183040">Chromium Beta 版不支援這項功能</translation>
 <translation id="4106512142782407609">目前登入的帳戶是 <ph name="EMAIL" />。
 
@@ -194,9 +190,6 @@
 <translation id="6337530241089703714">選擇是否要清除你在這部裝置上的 Chromium 資料</translation>
 <translation id="6348483005826990855">3. 選取「Chromium」</translation>
 <translation id="6383607155624074112">從主畫面 Dock 更快存取 Chromium</translation>
-<translation id="6407399265324739055">系統將不會加密付款方式和地址，也不會同步 Chromium 中的瀏覽記錄。
-
-只有知道通關密語的人才能讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果忘記通關密語或想要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chromium 資料<ph name="END_LINK" />。</translation>
 <translation id="6424492062988593837">Chromium 現在變得更進步了！歡迎你升級使用新版本。</translation>
 <translation id="6433172051771630690">可協助你充分運用 Chromium 的各項提示。</translation>
 <translation id="6502321914804101924">你已登出 Chromium</translation>
@@ -263,9 +256,6 @@
 <translation id="8458950033462118672">只要將 Chromium 設為預設瀏覽器應用程式，即可自動在 Chromium 中開啟連結。</translation>
 <translation id="858114650497379505">你可以在 iPhone 上的其他應用程式，使用儲存至密碼管理員的密碼。</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
-<translation id="8618440443578628179">通關密語加密資料不包括 Google Pay 中的付款方式和地址。
-
-如要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chromium 資料<ph name="END_LINK" />。</translation>
 <translation id="865600487977764604">在已登入帳戶的狀態下，能確保你持續享有安全無虞的 Chromium 使用體驗，也有助於提升其他 Google 應用程式的安全機制。</translation>
 <translation id="8663480472502753423">取得 Chromium 最新版本</translation>
 <translation id="8685813584220679697">登入這個網站和 Chromium。</translation>

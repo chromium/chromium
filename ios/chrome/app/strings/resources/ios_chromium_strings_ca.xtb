@@ -99,12 +99,8 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="3855938650519180865">Novetats de Chromium</translation>
 <translation id="3886689467633467988">Inicia la sessió en aquest lloc web i a Chromium per accedir a les teves adreces d'interès i més contingut en tots els teus dispositius.</translation>
 <translation id="3904484643286601695">Pots actualitzar les teves seleccions en qualsevol moment a Configuració de Chromium.</translation>
-<translation id="394413318816989199">L'encriptació de frases de contrasenya no inclou les formes de pagament ni les adreces.
-
-Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chromium del compte<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Obre i executa la comprovació de seguretat a Chromium.</translation>
 <translation id="4043291146360695975">Les contrasenyes es desen al gestor de contrasenyes només en aquest dispositiu.</translation>
-<translation id="4076589763479456892">Si has oblidat la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chromium del compte<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">No s'admeten a la versió beta de Chromium</translation>
 <translation id="4106512142782407609">Has iniciat la sessió com a <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@ Aspectes que cal tenir en compte:
 <translation id="6337530241089703714">Tria si vols esborrar les teves dades de Chromium d'aquest dispositiu o si vols conservar-les</translation>
 <translation id="6348483005826990855">3. Selecciona Chromium</translation>
 <translation id="6383607155624074112">Accedeix a Chromium més de pressa des de la base de la pantalla d'inici</translation>
-<translation id="6407399265324739055">Les formes de pagament i les adreces no s'encriptaran. L'historial de navegació de Chromium no se sincronitzarà.
-
-Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chromium del compte<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chrome ara és millor. Hi ha una versió nova disponible.</translation>
 <translation id="6433172051771630690">Consells per treure el màxim partit de Chromium.</translation>
 <translation id="6502321914804101924">S'ha tancat la sessió de Chromium</translation>
@@ -263,9 +256,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="8458950033462118672">Pots obrir enllaços automàticament a Chromium establint-lo com la teva aplicació de navegador predeterminada.</translation>
 <translation id="858114650497379505">Pots utilitzar les contrasenyes que has desat al gestor de contrasenyes en altres aplicacions de l'iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Els autors de Chromium. Tots els drets reservats.</translation>
-<translation id="8618440443578628179">L'encriptació de frases de contrasenya no inclou les formes de pagament ni les adreces de Google Pay.
-
-Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chromium del compte<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Et protegeix a Chromium i és possible que s'utilitzi per millorar la teva seguretat en altres aplicacions de Google quan tinguis la sessió iniciada.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualitzat</translation>
 <translation id="8685813584220679697">Inicia la sessió en aquest lloc web i a Chromium.</translation>

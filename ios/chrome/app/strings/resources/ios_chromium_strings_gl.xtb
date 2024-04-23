@@ -99,12 +99,8 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="3855938650519180865">Novidades de Chromium</translation>
 <translation id="3886689467633467988">Inicia sesión neste sitio e en Chromium para acceder aos teus marcadores e a máis contido en todos os teus dispositivos.</translation>
 <translation id="3904484643286601695">Podes modificar a túa selección en calquera momento na configuración de Chromium.</translation>
-<translation id="394413318816989199">A encriptación mediante frase de acceso non inclúe os enderezos nin os métodos de pago.
-
-Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chromium da túa conta<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Abre e executa Comprobación de seguranza en Chromium.</translation>
 <translation id="4043291146360695975">Os contrasinais gárdanse no xestor de contrasinais só neste dispositivo.</translation>
-<translation id="4076589763479456892">Se esqueciches a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chromium da túa conta<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Non compatible na versión beta de Chromium</translation>
 <translation id="4106512142782407609">Tes a sesión iniciada como <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@ Cuestións que debes ter en conta:
 <translation id="6337530241089703714">Indicar se queres borrar ou conservar os teus datos de Chromium neste dispositivo</translation>
 <translation id="6348483005826990855">3. Selecciona Chromium</translation>
 <translation id="6383607155624074112">Accede a Chromium máis rápido desde a barra de aplicacións da pantalla de inicio</translation>
-<translation id="6407399265324739055">Os enderezos e os métodos de pago non se encriptarán. Tampouco se sincronizará o historial de navegación de Chromium.
-
-Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Google non a recibirá nin a almacenará). Se esqueces a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chromium da túa conta<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium introduciu melloras. Está dispoñible unha nova versión.</translation>
 <translation id="6433172051771630690">Consellos para tirar o máximo proveito de Chromium.</translation>
 <translation id="6502321914804101924">Pechaches a sesión en Chromium</translation>
@@ -263,9 +256,6 @@ Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Goo
 <translation id="8458950033462118672">Poderás abrir ligazóns con Chromium automaticamente se fas que sexa a túa aplicación de navegador predeterminada.</translation>
 <translation id="858114650497379505">Podes utilizar os contrasinais que gardaches no xestor de contrasinais noutras aplicacións do teu iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" />, os autores de Chromium. Reservados todos os dereitos.</translation>
-<translation id="8618440443578628179">A encriptación mediante frase de acceso non inclúe os métodos de pago nin os enderezos de Google Pay.
-
-Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chromium da túa conta<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Protéxete en Chromium e pode utilizarse para mellorar a túa seguranza noutras aplicacións de Google cando teñas a sesión iniciada.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualizado</translation>
 <translation id="8685813584220679697">Inicia sesión neste sitio e en Chromium.</translation>

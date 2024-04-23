@@ -99,12 +99,8 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chromium“ f
 <translation id="3855938650519180865">„Chromium“ naujienos</translation>
 <translation id="3886689467633467988">Prisijunkite prie šios svetainės ir „Chromium“, kad gautumėte žymes ir kt. visuose savo įrenginiuose.</translation>
 <translation id="3904484643286601695">Pasirinkimus galite bet kada atnaujinti „Chromium“ nustatymuose.</translation>
-<translation id="394413318816989199">Slaptafrazės šifruotė neapima mokėjimo metodų ir adresų.
-
-Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chromium“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Atidaroma ir vykdoma saugos patikra naršyklėje „Chromium“.</translation>
 <translation id="4043291146360695975">Slaptažodžiai saugomi Slaptažodžių tvarkytuvėje tik šiame įrenginyje.</translation>
-<translation id="4076589763479456892">Jei pamiršote slaptafrazę ar norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chromium“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Nepalaikoma „Chromium“ beta versijoje</translation>
 <translation id="4106512142782407609">Prisijungta kaip <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@ Duomenys užšifruoti naudojant slaptafrazę. Įveskite ją, kad galėtumėte na
 <translation id="6337530241089703714">Pasirinkite, ar norite išvalyti „Chromium“ duomenis iš šio įrenginio ar juos palikti</translation>
 <translation id="6348483005826990855">3. Pasirinkite „Chromium“</translation>
 <translation id="6383607155624074112">Greičiau pasiekite „Chromium“ naudodami pagrindinio ekrano doką</translation>
-<translation id="6407399265324739055">Mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chromium“ nebus sinchronizuojama.
-
-Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. Slaptafrazė nesiunčiama ir nesaugoma „Google“. Jei pamiršite slaptafrazę ar norėsite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chromium“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">„Chromium“ patobulėjo! Galima nauja versija.</translation>
 <translation id="6433172051771630690">Patarimai, kaip išnaudoti visas „Chromium“ galimybes.</translation>
 <translation id="6502321914804101924">Atsijungta nuo „Chromium“</translation>
@@ -263,9 +256,6 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="8458950033462118672">Galite automatiškai atidaryti nuorodas naršyklėje „Chromium“, nustatę ją kaip numatytąją naršyklės programą.</translation>
 <translation id="858114650497379505">Galite naudoti Slaptažodžių tvarkytuvėje išsaugotus slaptažodžius kitose „iPhone“ programose.</translation>
 <translation id="8586442755830160949">Autorių teisės priklauso „Chromium“ autoriams, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>
-<translation id="8618440443578628179">Slaptafrazės šifruotė neapima mokėjimo metodų ir adresų iš „Google Pay“.
-
-Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chromium“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Apsaugo jus naršyklėje „Chromium“ ir gali būti naudojama apsaugai kitose „Google“ programose pagerinti, kai esate prisijungę.</translation>
 <translation id="8663480472502753423">Atnaujinkite „Chromium“</translation>
 <translation id="8685813584220679697">Prisijunkite prie šios svetainės ir „Chromium“.</translation>

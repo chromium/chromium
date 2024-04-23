@@ -99,12 +99,8 @@ Chromium təcrübənizi təkmilləşdirmək məqsədilə data istifadə edən di
 <translation id="3855938650519180865">Chromium-da yeniliklər</translation>
 <translation id="3886689467633467988">Əlfəcinləri və s. bütün cihazlarda əldə etmək üçün bu sayta və Chromium-a daxil olun.</translation>
 <translation id="3904484643286601695">Chromium ayarlarında seçimləri yeniləyə bilərsiniz.</translation>
-<translation id="394413318816989199">Parol ifadəsi şifrələməsinə ödəniş metodu və ünvanlar daxil deyil.
-
-Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chromium datasını silin<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Chromium-da Təhlükəsizlik yoxlanışını açır və icra edir.</translation>
 <translation id="4043291146360695975">Parollar yalnız bu cihazda Parol Menecerində saxlanılır.</translation>
-<translation id="4076589763479456892">Parol ifadəsini unutsanız, yaxud bu ayarı dəyişmək istəsəniz, <ph name="BEGIN_LINK" />hesabda Chromium datasını silin<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Chromium Beta'da dəstəklənmir</translation>
 <translation id="4106512142782407609"><ph name="EMAIL" /> kimi daxil olunub.
 
@@ -194,9 +190,6 @@ Nəzərə alın ki:
 <translation id="6337530241089703714">Chromium datanızınız bu cihazdan silinməsi və ya saxlanmasını seçin</translation>
 <translation id="6348483005826990855">3. Chromium seçin</translation>
 <translation id="6383607155624074112">Ana ekran dokundan Chromium-a daha tez giriş edin</translation>
-<translation id="6407399265324739055">Ödəniş metodu və ünvanlar şifrələnməyəcək. Chromium-dan baxış tarixçəsi sinxronlaşdırılmayacaq.
-
-Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Google parol ifadəsini əldə etmir və ya saxlamır. Parol ifadəsini unutsanız, yaxud bu ayarı dəyişmək istəsəniz, <ph name="BEGIN_LINK" />hesabda Chromium datasını silin<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium yeniləndi! Yeni versiya əlçatandır.</translation>
 <translation id="6433172051771630690">Chromium-dan maksimum yararlanmaq üçün məsləhətlər.</translation>
 <translation id="6502321914804101924">Chromium-dan çıxılıb</translation>
@@ -263,9 +256,6 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="8458950033462118672">Defolt brauzer tətbiqi edərək keçidləri Chromium-da avtomatik aça bilərsiniz.</translation>
 <translation id="858114650497379505">Parol Menecerində saxladığınız parolları iPhone'dakı digər tətbiqlərdə istifadə edə bilərsiniz.</translation>
 <translation id="8586442755830160949">Müəlliflik Hüququ <ph name="YEAR" /> Chromium Müəllifləri. Bütün hüquqlar qorunur.</translation>
-<translation id="8618440443578628179">Parol ifadəsi şifrələməsinə Google Pay-dən ödəniş metodu və ünvanlar daxil deyil.
-
-Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chromium datasını silin<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Daxil olduğunuzda Chromium'da sizi qoruyur və digər Google tətbiqlərində təhlükəsizliyinizi artırmaq üçün istifadə edilə bilər.</translation>
 <translation id="8663480472502753423">Chromium'u yeni saxlayın</translation>
 <translation id="8685813584220679697">Bu sayta və Chromium'a daxil olun.</translation>

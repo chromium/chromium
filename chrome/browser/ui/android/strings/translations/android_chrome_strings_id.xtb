@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">Screenshot</translation>
 <translation id="1108938384783527433">Sinkronisasi histori</translation>
 <translation id="1111673857033749125">Bookmark yang tersimpan di perangkat lainnya akan muncul di sini.</translation>
-<translation id="1113057722807951993">Enkripsi frasa sandi tidak mencakup alamat dan metode pembayaran dari Google Pay.
-
-Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">Buka tampilan sederhana</translation>
 <translation id="1126809382673880764">Tidak melindungi Anda terhadap situs, download, dan ekstensi berbahaya. Anda akan tetap mendapatkan perlindungan Safe Browsing, jika tersedia, di layanan Google lainnya, seperti Gmail dan Penelusuran.</translation>
 <translation id="1129510026454351943">Detail: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="3290249595466894471">Juga mengirimkan sedikit contoh halaman, download, aktivitas ekstensi, dan informasi sistem untuk membantu menemukan ancaman baru</translation>
 <translation id="3293181007446299124">Histori penjelajahan Anda tetap bersifat pribadi di perangkat Anda dan laporan dikirim dengan penundaan untuk melindungi identitas Anda</translation>
 <translation id="3303414029551471755">Lanjutkan untuk mendownload konten?</translation>
+<translation id="3303855915957856445">Hasil penelusuran tidak ditemukan</translation>
 <translation id="3305130791745726624">Kirim ke perangkat</translation>
 <translation id="3305795716056605962">Terjemahkan halaman dari tombol Opsi Lainnya</translation>
 <translation id="3334729583274622784">Ubah ekstensi file?</translation>
@@ -529,7 +527,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="3847319713229060696">Bantu tingkatkan keamanan di web untuk semuanya</translation>
 <translation id="3856096718352044181">Verifikasi bahwa ini adalah penyedia yang valid atau coba lagi nanti</translation>
 <translation id="3858860766373142691">Nama</translation>
-<translation id="3872520701277728051">Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Salin teks</translation>
 <translation id="3894427358181296146">Tambah folder</translation>
 <translation id="3899682235662194879">Tutup semua tab Samaran</translation>
@@ -873,8 +870,6 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5590372121997663538">Ingat komputer ini</translation>
 <translation id="5596627076506792578">Opsi lainnya</translation>
 <translation id="5599455543593328020">Mode Samaran</translation>
-<translation id="5605283439565877834">Metode pembayaran dan alamat dari Google Pay tidak akan dienkripsi. Histori penjelajahan dari Chrome tidak akan disinkronkan.
-Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi Anda. Frasa sandi tidak dikirim ke atau disimpan oleh Google. Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Tidak ada sandi yang tersimpan</translation>
 <translation id="5620928963363755975">Temukan file dan halaman di Download dari tombol Opsi Lainnya</translation>
 <translation id="562289928968387744">Kelola reaksi</translation>
@@ -1103,7 +1098,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6672697278890207089">Masukkan frasa sandi Anda</translation>
 <translation id="6672917148207387131">Tambahkan <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">Untuk memulai sinkronisasi, masukkan frasa sandi</translation>
-<translation id="6676840375528380067">Hapus data Chrome Anda dari perangkat ini?</translation>
 <translation id="6676927815633975364">Login ke situs ini dan Chrome</translation>
 <translation id="6684809838922667136">Buat Chrome menjadi lebih baik</translation>
 <translation id="670498945988402717">Diperiksa kemarin</translation>
@@ -1305,7 +1299,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7626032353295482388">Selamat Datang di Chrome</translation>
 <translation id="7630202231528827509">URL Penyedia</translation>
 <translation id="7638584964844754484">Frasa sandi salah</translation>
-<translation id="7641339528570811325">Hapus data penjelajahan...</translation>
 <translation id="7646772052135772216">Sinkronisasi sandi tidak berfungsi</translation>
 <translation id="7655240423373329753">7 hari terakhir</translation>
 <translation id="7655900163790317559">Mengaktifkan Bluetooth …</translation>
@@ -1384,7 +1377,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7995059495660416932">Anda akan melihat konten saat tersedia</translation>
 <translation id="799576009106109668">Anda akan menjelajah lebih cepat karena konten dimuat secara proaktif berdasarkan halaman web yang sedang Anda buka</translation>
 <translation id="8004582292198964060">Browser</translation>
-<translation id="8013372441983637696">Hapus juga data Chrome Anda dari perangkat ini</translation>
 <translation id="8015452622527143194">Mengembalikan semua di halaman ke ukuran default</translation>
 <translation id="8026238112629815203">Kami mengubah cara sandi disimpan di perangkat ini</translation>
 <translation id="8027863900915310177">Pilih lokasi untuk mendownload</translation>
@@ -1511,7 +1503,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8562452229998620586">Sandi yang disimpan akan muncul di sini.</translation>
 <translation id="8570677896027847510">File tidak dapat didownload dengan aman</translation>
 <translation id="8571213806525832805">4 minggu terakhir</translation>
-<translation id="8583805026567836021">Menghapus data akun</translation>
 <translation id="859046281437143747">Pantau harga dari tombol opsi Lainnya</translation>
 <translation id="860043288473659153">Nama pemegang kartu</translation>
 <translation id="8602358303461588329">Login ke Chrome, ditutup.</translation>
@@ -1641,6 +1632,5 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="983192555821071799">Tutup semua tab</translation>
 <translation id="987264212798334818">Umum</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> tab</translation>
-<translation id="993520549480398880">Hapus juga bookmark, histori, dan data lainnya dari mobil ini</translation>
 <translation id="996149300115483134">Menu kartu feed ditutup</translation>
 </translationbundle>

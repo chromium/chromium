@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">Bildschirmaufnahme</translation>
 <translation id="1108938384783527433">Verlauf synchronisieren</translation>
 <translation id="1111673857033749125">Hier werden die Lesezeichen angezeigt, die auf deinen anderen Geräten gespeichert sind.</translation>
-<translation id="1113057722807951993">Die Passphrasenverschlüsselung enthält keine Zahlungsmethoden oder Adressen von Google Pay.
-
-Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chrome-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">Vereinfachte Ansicht anzeigen</translation>
 <translation id="1126809382673880764">Du wirst nicht vor schädlichen Websites, Downloads und Erweiterungen geschützt. Sofern verfügbar, bist du in anderen Google-Diensten, wie Gmail und der Google Suche, durch Safe Browsing geschützt.</translation>
 <translation id="1129510026454351943">Details: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="3290249595466894471">Sendet außerdem eine kleine Auswahl von Seiten, Downloads, Erweiterungsaktivitäten und Systeminformationen, um die Erkennung neuer Bedrohungen zu verbessern</translation>
 <translation id="3293181007446299124">Dein Browserverlauf wird sicher auf deinem Gerät gespeichert und Berichte werden mit einer Verzögerung gesendet, um deine Identität zu schützen</translation>
 <translation id="3303414029551471755">Inhalt herunterladen?</translation>
+<translation id="3303855915957856445">Keine Suchergebnisse gefunden</translation>
 <translation id="3305130791745726624">An Geräte senden</translation>
 <translation id="3305795716056605962">Seiten über die Schaltfläche „Weitere Optionen“ übersetzen lassen</translation>
 <translation id="3334729583274622784">Dateiendung ändern?</translation>
@@ -529,7 +527,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="3847319713229060696">Dabei helfen, das Web für alle sicherer zu machen</translation>
 <translation id="3856096718352044181">Vergewissere dich, dass dies ein gültiger Provider ist, oder versuche es später noch einmal</translation>
 <translation id="3858860766373142691">Name</translation>
-<translation id="3872520701277728051">Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chrome-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Text kopieren</translation>
 <translation id="3894427358181296146">Ordner hinzufügen</translation>
 <translation id="3899682235662194879">Alle Inkognitotabs schließen</translation>
@@ -873,8 +870,6 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5590372121997663538">Diesen Computer merken</translation>
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="5599455543593328020">Inkognitomodus</translation>
-<translation id="5605283439565877834">Zahlungsmethoden und Adressen bei Google Pay werden nicht verschlüsselt. Der Chrome-Browserverlauf wird nicht synchronisiert.
-Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chrome-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Keine gespeicherten Passwörter</translation>
 <translation id="5620928963363755975">Deine Dateien und Seiten findest du durch Auswahl der Schaltfläche "Weitere Optionen" unter "Downloads"</translation>
 <translation id="562289928968387744">Reaktionen verwalten</translation>
@@ -1103,7 +1098,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6672697278890207089">Passphrase eingeben</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> hinzufügen</translation>
 <translation id="6674571176963658787">Gib deine Passphrase ein, um die Synchronisierung zu starten</translation>
-<translation id="6676840375528380067">Deine Chrome-Daten vom Gerät löschen?</translation>
 <translation id="6676927815633975364">Auf dieser Website und in Chrome anmelden</translation>
 <translation id="6684809838922667136">Chrome verbessern</translation>
 <translation id="670498945988402717">Gestern geprüft</translation>
@@ -1305,7 +1299,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7626032353295482388">Willkommen bei Chrome</translation>
 <translation id="7630202231528827509">Anbieter-URL</translation>
 <translation id="7638584964844754484">Falsche Passphrase</translation>
-<translation id="7641339528570811325">Browserdaten löschen…</translation>
 <translation id="7646772052135772216">Passwortsynchronisierung funktioniert nicht</translation>
 <translation id="7655240423373329753">den letzten 7 Tagen</translation>
 <translation id="7655900163790317559">Bluetooth wird aktiviert…</translation>
@@ -1384,7 +1377,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7995059495660416932">Inhalte werden angezeigt, sobald sie verfügbar sind</translation>
 <translation id="799576009106109668">Du kannst schneller im Web surfen, da Inhalte basierend auf deinen Seitenaufrufen proaktiv geladen werden</translation>
 <translation id="8004582292198964060">Browser</translation>
-<translation id="8013372441983637696">Meine Chrome-Daten auch von diesem Gerät löschen</translation>
 <translation id="8015452622527143194">Gesamten Seiteninhalt auf Standardgröße zurücksetzen</translation>
 <translation id="8026238112629815203">Die Passwortspeicherung auf diesem Gerät wurde geändert</translation>
 <translation id="8027863900915310177">Speicherort auswählen</translation>
@@ -1511,7 +1503,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8562452229998620586">Deine gespeicherten Passwörter kannst du hier sehen.</translation>
 <translation id="8570677896027847510">Datei kann nicht sicher heruntergeladen werden</translation>
 <translation id="8571213806525832805">Letzte 4 Wochen</translation>
-<translation id="8583805026567836021">Kontodaten werden gelöscht</translation>
 <translation id="859046281437143747">Über die Schaltfläche „Weitere Optionen“ kannst du den Preis beobachten</translation>
 <translation id="860043288473659153">Name des Karteninhabers</translation>
 <translation id="8602358303461588329">In Chrome anmelden, geschlossen.</translation>
@@ -1641,6 +1632,5 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="983192555821071799">Alle Tabs schließen</translation>
 <translation id="987264212798334818">Allgemein</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> Tabs</translation>
-<translation id="993520549480398880">Auch Lesezeichen, Verlauf und mehr aus diesem Auto löschen</translation>
 <translation id="996149300115483134">Feedkartenmenü ist geschlossen</translation>
 </translationbundle>

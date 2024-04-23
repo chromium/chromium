@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">Skärmavbildning</translation>
 <translation id="1108938384783527433">Synkronisera historiken</translation>
 <translation id="1111673857033749125">Här visas bokmärken som du har sparat på andra enheter.</translation>
-<translation id="1113057722807951993">Betalningsmetoder och adresser från Google Pay omfattas inte av lösenfraskryptering.
-
-Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">Använd förenklad visning</translation>
 <translation id="1126809382673880764">Skyddar inte mot farliga webbplatser, nedladdningar och tillägg. Där funktionen är tillgänglig får du fortfarande skydd med Säker webbsökning i andra tjänster från Google, till exempel Gmail och Sök.</translation>
 <translation id="1129510026454351943">Mer information: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="3290249595466894471">Ett litet urval av sidor, nedladdning, tilläggsaktivitet och systeminformation skickas även för att upptäcka nya hot</translation>
 <translation id="3293181007446299124">Webbhistoriken förblir privat på enheten och rapporter skickas med en fördröjning för att skydda din identitet</translation>
 <translation id="3303414029551471755">Vill du ladda ned innehållet?</translation>
+<translation id="3303855915957856445">Inga sökresultat hittades</translation>
 <translation id="3305130791745726624">Skicka till enheter</translation>
 <translation id="3305795716056605962">Översätt sidor via knappen Fler alternativ</translation>
 <translation id="3334729583274622784">Vill du ändra filnamnstillägget?</translation>
@@ -530,7 +528,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="3847319713229060696">Hjälp till att förbättra säkerheten på webben för alla</translation>
 <translation id="3856096718352044181">Verifiera att detta är en giltig leverantör eller försök igen senare</translation>
 <translation id="3858860766373142691">Namn</translation>
-<translation id="3872520701277728051">Om du har glömt lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chrome-datan i kontot<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Kopiera text</translation>
 <translation id="3894427358181296146">Lägg till mapp</translation>
 <translation id="3899682235662194879">Stäng alla inkognitoflikar</translation>
@@ -874,8 +871,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5590372121997663538">Kom ihåg den här datorn</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="5599455543593328020">Inkognitoläge</translation>
-<translation id="5605283439565877834">Betalningsmetoder och adresser från Google Pay krypteras inte. Webbhistorik från Chrome synkroniseras inte.
-Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du kontots Chrome-data<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Inga sparade lösenord</translation>
 <translation id="5620928963363755975">Du hittar filerna och sidorna i Nedladdningar via knappen Fler alternativ</translation>
 <translation id="562289928968387744">Hantera reaktioner</translation>
@@ -1104,7 +1099,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6672697278890207089">Ange din lösenfras</translation>
 <translation id="6672917148207387131">Lägg till <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">Ange din lösenfras för att starta synkroniseringen</translation>
-<translation id="6676840375528380067">Vill du rensa din data i Chrome från den här enheten?</translation>
 <translation id="6676927815633975364">Logga in på den här webbplatsen och i Chrome</translation>
 <translation id="6684809838922667136">Gör Chrome bättre</translation>
 <translation id="670498945988402717">Genomsöktes i går</translation>
@@ -1306,7 +1300,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7626032353295482388">Välkommen till Chrome</translation>
 <translation id="7630202231528827509">Leverantörens webbadress</translation>
 <translation id="7638584964844754484">Felaktig lösenfras</translation>
-<translation id="7641339528570811325">Rensa webbinformation …</translation>
 <translation id="7646772052135772216">Det går inte att synkronisera lösenord</translation>
 <translation id="7655240423373329753">de senaste sju dagarna</translation>
 <translation id="7655900163790317559">Bluetooth aktiveras …</translation>
@@ -1385,7 +1378,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7995059495660416932">Innehåll visas när det blir tillgängligt</translation>
 <translation id="799576009106109668">Du surfar snabbare eftersom innehåll läses in proaktivt baserat på den webbsida du besöker för tillfället</translation>
 <translation id="8004582292198964060">Webbläsare</translation>
-<translation id="8013372441983637696">Rensa även Chrome-data från enheten</translation>
 <translation id="8015452622527143194">Återställ allt på sidan till standardstorlek</translation>
 <translation id="8026238112629815203">Vi har ändrat hur lösenord sparas på den här enheten</translation>
 <translation id="8027863900915310177">Välj plats för nedladdningen</translation>
@@ -1512,7 +1504,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8562452229998620586">Sparade lösenord visas här.</translation>
 <translation id="8570677896027847510">Det går inte att ladda ned filen på ett säkert sätt</translation>
 <translation id="8571213806525832805">Senaste fyra veckorna</translation>
-<translation id="8583805026567836021">Rensar kontouppgifter</translation>
 <translation id="859046281437143747">Bevaka pris via knappen Flera alternativ</translation>
 <translation id="860043288473659153">Namn på kortinnehavare</translation>
 <translation id="8602358303461588329">Logga in i Chrome, stängt.</translation>
@@ -1642,6 +1633,5 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="983192555821071799">Stäng alla flikar</translation>
 <translation id="987264212798334818">Allmänt</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> flikar</translation>
-<translation id="993520549480398880">Rensa även bokmärken, historik med mera från den här bilen</translation>
 <translation id="996149300115483134">Menyn med flödeskort är stängd</translation>
 </translationbundle>

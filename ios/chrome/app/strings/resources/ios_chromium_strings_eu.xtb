@@ -99,12 +99,8 @@ Chromium-en erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikust
 <translation id="3855938650519180865">Chromium-en berritasunak</translation>
 <translation id="3886689467633467988">Hasi saioa webgune honetan eta Chromium-en, zure laster-markak eta bestelako elementuak gailu guztietan eduki ditzazun.</translation>
 <translation id="3904484643286601695">Hautatu duzuna aldatzeko, joan Chromium-en ezarpenetara.</translation>
-<translation id="394413318816989199">Pasaesaldi bidezko enkriptatzearen kanpoan utzi dira ordainketa-metodoak eta helbideak.
-
-Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chromium-eko datuak<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Chromium-en segurtasun-egiaztapena irekitzen eta exekutatzen du.</translation>
 <translation id="4043291146360695975">Pasahitzak gailu honetan soilik gordetzen dira Pasahitz-kudeatzailea zerbitzuan.</translation>
-<translation id="4076589763479456892">Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />garbitu kontuko Chromium-eko datuak<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Ez da bateragarria Chromium Beta-rekin</translation>
 <translation id="4106512142782407609"><ph name="EMAIL" /> gisa hasi duzu saioa.
 
@@ -194,9 +190,6 @@ Kontuan hartu beharrekoak:
 <translation id="6337530241089703714">Erabaki Chromium-eko datuak garbitu nahi dituzun ala ez gailu honetatik</translation>
 <translation id="6348483005826990855">3. Hautatu Chromium.</translation>
 <translation id="6383607155624074112">Sartu Chromium-en bizkorrago orri nagusiko zintaren bidez</translation>
-<translation id="6407399265324739055">Ordainketa-metodoak eta helbideak ez dira enkriptatuko. Chromium-eko arakatze-historia ez da sinkronizatuko.
-
-Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Google-k ez du jasoko pasaesaldia, ezta gordeko ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />garbitu kontuko Chromium-eko datuak<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium hobetu egin dugu! Bertsio berria duzu erabilgarri.</translation>
 <translation id="6433172051771630690">Chromium-i etekinik handiena ateratzeko aholkuak.</translation>
 <translation id="6502321914804101924">Chromium-en saioa amaituta dago</translation>
@@ -263,9 +256,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="8458950033462118672">Ezarri Chromium arakatzaile lehenetsi gisa eta ireki estekak bertan automatikoki.</translation>
 <translation id="858114650497379505">iPhone-ko beste aplikazio batzuk erabiltzen ari zinela Pasahitz-kudeatzailea zerbitzuan gorde zenituen pasahitzak erabil ditzakezu.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Chromium-en egileak. Eskubide guztiak erreserbatuta.</translation>
-<translation id="8618440443578628179">Pasaesaldi bidezko enkriptatzearen kanpoan utzi dira Google Pay-ko ordainketa-metodoak eta helbideak.
-
-Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chromium-eko datuak<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Babestuta mantentzen zaitu Chromium-en, eta segurtasuna areagotzeko erabil daiteke Google-ren beste aplikazio batzuetan saioa hasita daukazunean.</translation>
 <translation id="8663480472502753423">Mantendu Chromium eguneratuta</translation>
 <translation id="8685813584220679697">Hasi saioa webgune honetan eta Chromium-en.</translation>

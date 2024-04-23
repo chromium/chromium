@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">Piga Picha ya Skrini</translation>
 <translation id="1108938384783527433">Usawazishaji wa historia</translation>
 <translation id="1111673857033749125">Alamisho zilizohifadhiwa katika vifaa vyako vingine zitaonekana hapa.</translation>
-<translation id="1113057722807951993">Usimbaji fiche wa kauli ya siri haujumuishi njia za kulipa na anwani kutoka Google Pay.
-
-Ili kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kwenye akaunti yako<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">Onyesha mwonekano rahisi</translation>
 <translation id="1126809382673880764">Haikulindi dhidi ya tovuti, viendelezi na faili hatari zinazopakuliwa. Bado utapata ulinzi wa kipengele cha Kuvinjari Salama, kinapopatikana, katika huduma nyingine za Google kama vile Gmail na Tafuta na Google.</translation>
 <translation id="1129510026454351943">Maelezo: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@ Ili kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="3290249595466894471">Hutuma pia sampuli ndogo ya kurasa, vipakuliwa, shughuli za viendelezi na maelezo ya mfumo ili kusaidia kugundua matukio mapya hatari</translation>
 <translation id="3293181007446299124">Historia yako ya kuvinjari huwekwa kwa faragha kwenye kifaa chako na ripoti huchelewa kutumwa ili kulinda utambulisho wako</translation>
 <translation id="3303414029551471755">Ungependa kuendelea kupakua maudhui?</translation>
+<translation id="3303855915957856445">Hakuna matokeo ya utafutaji yaliyopatikana</translation>
 <translation id="3305130791745726624">Tuma kwenye vifaa</translation>
 <translation id="3305795716056605962">Tafsiri kurasa kwenye kitufe cha Chaguo Zaidi</translation>
 <translation id="3334729583274622784">Ungependa kubadilisha kiendelezi cha faili?</translation>
@@ -529,7 +527,6 @@ Ili kubadilisha mpangilio huu, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="3847319713229060696">Tusaidie kuboresha usalama wa kila mtu kwenye wavuti</translation>
 <translation id="3856096718352044181">Tafadhali thibitisha kuwa huyu ni mtoa huduma sahihi au ujaribu tena baadaye</translation>
 <translation id="3858860766373142691">Jina</translation>
-<translation id="3872520701277728051">Ikiwa ulisahau kauli yako ya siri au ungependa kubadilisha mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kwenye akaunti yako<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Nakili maandishi</translation>
 <translation id="3894427358181296146">Ongeza folda</translation>
 <translation id="3899682235662194879">Funga vichupo vyote fiche</translation>
@@ -873,8 +870,6 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="5590372121997663538">Kumbuka kompyuta hii</translation>
 <translation id="5596627076506792578">Chaguo zaidi</translation>
 <translation id="5599455543593328020">Hali fiche</translation>
-<translation id="5605283439565877834">Njia za kulipa na anwani zilizo kwenye Google Pay hazitasimbwa kwa njia fiche. Historia ya kuvinjari kwenye Chrome haitasawazishwa.
-Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa kwa njia fiche. Kauli ya siri haitumwi kwa au kuhifadhiwa na Google. Ukisahau kauli yako ya siri au ukitaka kubadilisha mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kwenye akaunti yako<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Hakuna manenosiri yaliyohifadhiwa</translation>
 <translation id="5620928963363755975">Tafuta faili na kurasa zako katika Vipakuliwa kwenye kitufe cha Chaguo Nyingine</translation>
 <translation id="562289928968387744">Dhibiti maoni</translation>
@@ -1103,7 +1098,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6672697278890207089">Weka kauli yako ya siri</translation>
 <translation id="6672917148207387131">Weka <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">Ili uanze kusawazisha, weka kauli yako ya siri</translation>
-<translation id="6676840375528380067">Ungependa kufuta data yako yote ya Chrome kwenye kifaa hiki?</translation>
 <translation id="6676927815633975364">Ingia katika akaunti kwenye tovuti hii na kwenye Chrome</translation>
 <translation id="6684809838922667136">Boresha Chrome</translation>
 <translation id="670498945988402717">Ilikaguliwa jana</translation>
@@ -1305,7 +1299,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="7626032353295482388">Karibu kwenye Chrome</translation>
 <translation id="7630202231528827509">URL ya mtoa huduma</translation>
 <translation id="7638584964844754484">Kaulisiri si sahihi</translation>
-<translation id="7641339528570811325">Futa data ya kuvinjari...</translation>
 <translation id="7646772052135772216">Kipengele cha usawazishaji wa nenosiri hakifanyi kazi</translation>
 <translation id="7655240423373329753">siku 7 zilizopita</translation>
 <translation id="7655900163790317559">Inawasha Bluetooth…</translation>
@@ -1384,7 +1377,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="7995059495660416932">Utaona maudhui yatakapopatikana</translation>
 <translation id="799576009106109668">Utavinjari kwa haraka zaidi kwa sababu maudhui hupakiwa kabla hujayaomba, kulingana na jinsi unavyotembelea ukurasa wa wavuti ulioufungua</translation>
 <translation id="8004582292198964060">Kivinjari</translation>
-<translation id="8013372441983637696">Pia, futa data yako ya Chrome kwenye kifaa hiki</translation>
 <translation id="8015452622527143194">Rejesha kila kitu katika ukubwa wa kawaida</translation>
 <translation id="8026238112629815203">Tulibadilisha jinsi manenosiri yanavyohifadhiwa kwenye kifaa hiki</translation>
 <translation id="8027863900915310177">Chagua ambako utahifadhi faili ya kupakuliwa</translation>
@@ -1511,7 +1503,6 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="8562452229998620586">Manenosiri yaliyohifadhiwa yataonekana hapa.</translation>
 <translation id="8570677896027847510">Faili haiwezi kupakuliwa kwa usalama</translation>
 <translation id="8571213806525832805">Wiki 4 zilizopita</translation>
-<translation id="8583805026567836021">Inafuta data ya akaunti</translation>
 <translation id="859046281437143747">Fuatilia bei kupitia kitufe cha Chaguo zaidi</translation>
 <translation id="860043288473659153">Jina la mmiliki wa kadi</translation>
 <translation id="8602358303461588329">Ingia katika akaunti kwenye Chrome, imefungwa.</translation>
@@ -1641,6 +1632,5 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="983192555821071799">Funga vichupo vyote</translation>
 <translation id="987264212798334818">Jumla</translation>
 <translation id="992745192656291733">Vichupo <ph name="TAB_COUNT" /></translation>
-<translation id="993520549480398880">Futa pia alamisho, historia na zaidi kwenye gari hili</translation>
 <translation id="996149300115483134">Menyu ya kadi ya mipasho imefungwa</translation>
 </translationbundle>

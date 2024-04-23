@@ -99,12 +99,8 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="3855938650519180865">Novidades do Chromium</translation>
 <translation id="3886689467633467988">Inicie sessão neste site e no Chromium para obter os seus marcadores e muito mais em todos os seus dispositivos.</translation>
 <translation id="3904484643286601695">Pode atualizar as suas seleções em qualquer altura nas definições do Chromium.</translation>
-<translation id="394413318816989199">A encriptação da frase de acesso não inclui métodos de pagamento nem moradas
-
-Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Abre e executa a verificação de segurança no Chromium.</translation>
 <translation id="4043291146360695975">As palavras-passe são guardadas no Gestor de palavras-passe apenas neste dispositivo.</translation>
-<translation id="4076589763479456892">Se se esqueceu da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Opção não suportada no Chromium Beta.</translation>
 <translation id="4106512142782407609">Com sessão iniciada como <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@ Aspetos a considerar:
 <translation id="6337530241089703714">Escolha se quer limpar os seus dados do Chromium deste dispositivo ou mantê-los</translation>
 <translation id="6348483005826990855">3. Selecione o Chromium</translation>
 <translation id="6383607155624074112">Aceda ao Chromium mais rapidamente a partir da dock do ecrã principal</translation>
-<translation id="6407399265324739055">Os métodos de pagamento e as moradas não são encriptados. O histórico de navegação do Chromium não é sincronizado.
-
-Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google não recebe nem armazena a frase de acesso. Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">O Chromium ficou ainda melhor! Está disponível uma nova versão.</translation>
 <translation id="6433172051771630690">Sugestões para tirar o máximo partido do Chromium.</translation>
 <translation id="6502321914804101924">Sessão terminada no Chromium</translation>
@@ -263,9 +256,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="8458950033462118672">Pode abrir links no Chromium automaticamente predefinindo-o como a sua app de navegador.</translation>
 <translation id="858114650497379505">Pode utilizar as palavras-passe que guardou no Gestor de palavras-passe noutras apps no seu iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Os autores do Chromium. Todos os direitos reservados.</translation>
-<translation id="8618440443578628179">A encriptação da frase de acesso não inclui métodos de pagamento nem moradas do Google Pay.
-
-Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Mantém a sua segurança no Chromium e pode ser usada para melhorar a sua segurança noutras apps Google quando tem sessão iniciada</translation>
 <translation id="8663480472502753423">Mantenha o Chromium atualizado.</translation>
 <translation id="8685813584220679697">Inicie sessão neste site e no Chromium.</translation>

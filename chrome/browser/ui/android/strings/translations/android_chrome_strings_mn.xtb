@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">Дэлгэцийн зураг авах</translation>
 <translation id="1108938384783527433">Түүхийг синк хийх</translation>
 <translation id="1111673857033749125">Таны бусад төхөөрөмжид хадгалсан хавчуурга энд харагдах болно</translation>
-<translation id="1113057722807951993">Нэвтрэх үгний шифрлэлтэд Google Pay-н төлбөрийн хэрэгсэл болон хаягууд багтахгүй.
-
-Энэ тохиргоог өөрчлөхийн тулд <ph name="BEGIN_LINK" />бүртгэлийнхээ Chrome-н өгөгдлийг арилгана уу<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">Хялбаршуулсан харагдцыг харуулах</translation>
 <translation id="1126809382673880764">Таныг аюултай вебсайт, таталт болон өргөтгөлөөс хамгаалахгүй. Гэхдээ та Аюулгүй үзэх хамгаалалтыг Gmail, Хайлт зэрэг Google-н боломжтой бусад үйлчилгээнд авсан хэвээр байна.</translation>
 <translation id="1129510026454351943">Дэлгэрэнгүй: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@
 <translation id="3290249595466894471">Шинэ аюул заналыг олж илрүүлэхэд туслахын тулд хуудас, татаж авсан файл, өргөтгөлийн үйл ажиллагаа болон системийн мэдээллийн багахан хэсгийг мөн илгээнэ.</translation>
 <translation id="3293181007446299124">Таны хөтчийн түүхийг төхөөрөмж дээр тань нууцалж, таныг таних мэдээллийг хамгаалах үүднээс тайлангуудыг саатуулан илгээдэг</translation>
 <translation id="3303414029551471755">Контентыг татаж авах үйлдлийг эхлүүлэх үү?</translation>
+<translation id="3303855915957856445">Хайлтын илэрц олдсонгүй</translation>
 <translation id="3305130791745726624">Төхөөрөмжүүд рүү илгээх</translation>
 <translation id="3305795716056605962">Бусад сонголт товчлуураас хуудаснуудыг орчуулна уу</translation>
 <translation id="3334729583274622784">Файлын өргөтгөлийг өөрчлөх үү?</translation>
@@ -529,7 +527,6 @@
 <translation id="3847319713229060696">Хүн бүрийн төлөө вебийн аюулгүй байдлыг сайжруулахад туслах</translation>
 <translation id="3856096718352044181">Энэ нь хүчинтэй нийлүүлэгч болохыг бататгах эсвэл дараа дахин оролдоно уу</translation>
 <translation id="3858860766373142691">Нэр</translation>
-<translation id="3872520701277728051">Хэрэв та нэвтрэх үгээ мартсан эсвэл энэ тохиргоог өөрчлөхийг хүсвэл <ph name="BEGIN_LINK" />бүртгэлийнхээ Chrome-н өгөгдлийг арилгана уу<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Текстийг хуулах</translation>
 <translation id="3894427358181296146">Хавтас нэмэх</translation>
 <translation id="3899682235662194879">Бүх Нууцлалтай табыг хаах</translation>
@@ -873,8 +870,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5590372121997663538">Энэ компьютерыг сануулах</translation>
 <translation id="5596627076506792578">Бусад сонголт</translation>
 <translation id="5599455543593328020">нууцлалын горим</translation>
-<translation id="5605283439565877834">Google Pay-н төлбөрийн хэрэгсэл болон хаягуудыг шифрлэхгүй. Chrome-н хөтчийн түүхийг синк хийхгүй.
-Зөвхөн таны нэвтрэх үгтэй хэн нэгэн шифрлэгдсэн өгөгдлийг тань унших боломжтой. Нэвтрэх үгийг Google-д илгээдэггүй эсвэл хадгалдаггүй. Хэрэв та нэвтрэх үгээ мартсан эсвэл энэ тохиргоог өөрчлөхийг хүсвэл <ph name="BEGIN_LINK" />бүртгэлийнхээ Chrome-н өгөгдлийг арилгана уу<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Хадгалсан ямар ч нууц үг байхгүй байна</translation>
 <translation id="5620928963363755975">Файл, хуудсаа Бусад сонголт товчлуурын Таталт хэсгээс хайна уу</translation>
 <translation id="562289928968387744">Хариу үйлдлийг удирдах</translation>
@@ -1103,7 +1098,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6672697278890207089">Нэвтрэх үгээ оруулна уу</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> нэмэх</translation>
 <translation id="6674571176963658787">Синк хийж эхлэхийн тулд нэвтрэх үгээ оруулна уу</translation>
-<translation id="6676840375528380067">Энэ төхөөрөмжөөс Chrome-н өгөгдлөө устгах уу?</translation>
 <translation id="6676927815633975364">Энэ сайт болон Chrome-д нэвтэрнэ үү</translation>
 <translation id="6684809838922667136">Chrome-г сайжруулаарай</translation>
 <translation id="670498945988402717">Өчигдөр шалгасан</translation>
@@ -1305,7 +1299,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7626032353295482388">Chrome-д тавтай морил</translation>
 <translation id="7630202231528827509">Үйлчилгээ үзүүлэгчийн URL</translation>
 <translation id="7638584964844754484">Нэвтрэх хэллэг буруу байна</translation>
-<translation id="7641339528570811325">Хайлтын өгөгдлийг цэвэрлэх...</translation>
 <translation id="7646772052135772216">Нууц үгийг синк хийх ажиллахгүй байна</translation>
 <translation id="7655240423373329753">сүүлийн 7 хоног</translation>
 <translation id="7655900163790317559">Bluetooth-г асааж байна…</translation>
@@ -1384,7 +1377,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7995059495660416932">Та контентыг боломжтой болсон үед нь харна</translation>
 <translation id="799576009106109668">Контентыг таны одоогийн веб хуудасны зочилсон байдалд тулгуурлан идэвхтэй ачаалсан тул та илүү хурдан үзнэ</translation>
 <translation id="8004582292198964060">Хөтөч</translation>
-<translation id="8013372441983637696">Энэ төхөөрөмжөөс Chrome-н өгөгдлийг мөн адил устгах</translation>
 <translation id="8015452622527143194">Бүгдийг өгөгдмөл хэмжээнд нь буцаах</translation>
 <translation id="8026238112629815203">Бид энэ төхөөрөмжид нууц үгнүүдийг хэрхэн хадгалдаг болохыг өөрчилсөн</translation>
 <translation id="8027863900915310177">Хаана татаж авахыг сонгох</translation>
@@ -1511,7 +1503,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8562452229998620586">Хадгалагдсан нууц үгнүүд энд гарч ирнэ.</translation>
 <translation id="8570677896027847510">Файлыг аюулгүйгээр татах боломжгүй</translation>
 <translation id="8571213806525832805">Сүүлийн 4 долоо хоног</translation>
-<translation id="8583805026567836021">Бүртгэлийн өгөгдлийг цэвэрлэж байна</translation>
 <translation id="859046281437143747">Бусад сонголт товчлуураас үнэ хянаарай</translation>
 <translation id="860043288473659153">Карт эзэмшигчийн нэр</translation>
 <translation id="8602358303461588329">Chrome-д нэвтэрнэ үү, хаасан.</translation>
@@ -1641,6 +1632,5 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="983192555821071799">Бүх табыг хаах</translation>
 <translation id="987264212798334818">Ерөнхий</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> таб</translation>
-<translation id="993520549480398880">Мөн хавчуурга, түүх болон бусад зүйлийг энэ автомашинаас арилгах</translation>
 <translation id="996149300115483134">Сувгийн картын цэсийг хаасан байна</translation>
 </translationbundle>

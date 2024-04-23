@@ -99,12 +99,8 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="3855938650519180865">Co nowego w Chromium</translation>
 <translation id="3886689467633467988">Zaloguj się na tej stronie i w Chromium, aby mieć dostęp do zakładek i innych opcji na wszystkich swoich urządzeniach.</translation>
 <translation id="3904484643286601695">Wybrane opcje możesz zmienić w dowolnym momencie w ustawieniach Chromium.</translation>
-<translation id="394413318816989199">Szyfrowanie za pomocą hasła wielowyrazowego nie obejmuje form płatności ani adresów.
-
-Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Otwiera i uruchamia kontrolę zabezpieczeń w Chromium.</translation>
 <translation id="4043291146360695975">Hasła są zapisywane w Menedżerze haseł tylko na tym urządzeniu.</translation>
-<translation id="4076589763479456892">Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Nieobsługiwane w Chromium Beta</translation>
 <translation id="4106512142782407609">Zalogowano jako <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@ Pamiętaj, że:
 <translation id="6337530241089703714">Zdecyduj, czy chcesz usunąć swoje dane z Chromium z tego urządzenia czy je na nim zachować</translation>
 <translation id="6348483005826990855">3. Wybierz Chromium</translation>
 <translation id="6383607155624074112">Szybszy dostęp do Chromium z Docka na ekranie głównym</translation>
-<translation id="6407399265324739055">Formy płatności i adresy nie będą zaszyfrowane. Historia przeglądania z Chromium nie będzie synchronizowana.
-
-Twoje zaszyfrowane dane może odczytać tylko osoba znająca Twoje hasło wielowyrazowe. To hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli je zapomnisz lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium jest teraz jeszcze lepsze! Dostępna jest nowa wersja.</translation>
 <translation id="6433172051771630690">Wskazówki na temat pełnego wykorzystania możliwości Chromium.</translation>
 <translation id="6502321914804101924">Wylogowano z Chromium</translation>
@@ -263,9 +256,6 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca Twoje hasło wielow
 <translation id="8458950033462118672">Ustaw Chromium jako przeglądarkę domyślną, aby linki otwierały się w niej automatycznie.</translation>
 <translation id="858114650497379505">Haseł zapisanych w menedżerze haseł możesz używać w innych aplikacjach na iPhonie.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autorzy Chromium. Wszelkie prawa zastrzeżone.</translation>
-<translation id="8618440443578628179">Szyfrowanie za pomocą haseł wielowyrazowych nie obejmuje form płatności ani adresów w Google Pay.
-
-Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Dba o Twoje bezpieczeństwo w Chromium i może też je poprawiać w innych aplikacjach Google, gdy się w nich zalogujesz.</translation>
 <translation id="8663480472502753423">Zawsze używaj aktualnej wersji Chromium</translation>
 <translation id="8685813584220679697">Zaloguj się w na tej stronie i w Chromium.</translation>

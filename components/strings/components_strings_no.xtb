@@ -162,6 +162,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1282358575813748144">Båter og fartøy</translation>
 <translation id="1283977499362032052">CV-er og porteføljer</translation>
 <translation id="1285320974508926690">Oversett aldri dette nettstedet</translation>
+<translation id="1291249564161469503">Lås tastaturet</translation>
 <translation id="1292571435393770077">Skuff 16</translation>
 <translation id="1292701964462482250">«Det er programvare på datamaskinen din som hindrer Chrome i å koble trygt til Internett» (bare på Windows-datamaskiner)</translation>
 <translation id="1293797321964802402">Konvolutt 9 x 11 tommer</translation>
@@ -572,6 +573,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2046951263634619614">Bokhandlere</translation>
 <translation id="2048261947532620704">Oversetter siden</translation>
 <translation id="2053111141626950936">Sider på <ph name="LANGUAGE" /> oversettes ikke.</translation>
+<translation id="2056492565825767809">Lås musepekeren</translation>
 <translation id="2056658168519009885">Nettsteder kan be Chrome om informasjon for å tilpasse annonsene du ser.</translation>
 <translation id="2059166748188874810">Kommune</translation>
 <translation id="2059202684901022309">22 x 34 tommer</translation>
@@ -1069,6 +1071,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> avslag på <ph name="PRODUCT_NAME" /></translation>
 <translation id="3054512251683174387">Chrome sletter automatisk emner som er eldre enn fire uker. Når du fortsetter å bla gjennom, kan det hende at emner dukker opp på listen igjen. Alternativt kan du blokkere emner som du ikke vil at Chrome skal dele med nettsteder. Finn ut hvordan du administrerer annonsepersonvernet ditt i Chrome.</translation>
 <translation id="3061707000357573562">Feilrettingstjeneste</translation>
+<translation id="3062655045399308513">Slett nettlesingsdata…</translation>
 <translation id="306573536155379004">Spillet er startet.</translation>
 <translation id="3067505415088964188">Prisen er lav</translation>
 <translation id="3076865167425975822">Operativsystemer</translation>
@@ -2025,6 +2028,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4885256590493466218">Betal med <ph name="CARD_DETAIL" /> i kassen</translation>
 <translation id="4887406273302438710">Beskytt passord med Windows Hello</translation>
 <translation id="4890070067176768718">Administratoren din har tillatt <ph name="PERMISSION" /> på <ph name="ORIGIN" /></translation>
+<translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å slette nettleserloggen, informasjonskapsler, bufferen med mer i Chrome-innstillingene</translation>
 <translation id="4892518386797173871">Bak</translation>
 <translation id="4895019427244614047">Slett adressen</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -2592,6 +2596,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6014851866995737824">Ignorert fordi enten «enable»-listen (aktiveringslisten) eller «disable»-listen (deaktiveringslisten) mangler.</translation>
 <translation id="6015796118275082299">År</translation>
 <translation id="6017514345406065928">Grønn</translation>
+<translation id="6018650639991193045">Slett nettleserloggen, informasjonskapsler, bufferen med mer i Chrome-innstillingene</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" /> og <ph name="TYPE_3" /> (synkronisert)</translation>
 <translation id="6028591542479806248">Administrer mobilvarsler og e-postvarsler</translation>
 <translation id="6028833024483927901">Internasjonal mat</translation>
@@ -2765,6 +2770,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="634500758737709758">Veibeskrivelser</translation>
 <translation id="6348220984832452017">Aktive variasjoner</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
+<translation id="6351658970066645919">Slett nettlesingsdata</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ingen}=1{1 passord (for <ph name="DOMAIN_LIST" /> – synkronisert)}=2{2 passord (for <ph name="DOMAIN_LIST" /> – synkronisert)}other{# passord (for <ph name="DOMAIN_LIST" /> – synkronisert)}}</translation>
 <translation id="6355392890578844978">Denne nettleseren administreres ikke av et selskap eller en annen organisasjon. Aktiviteten på denne enheten kan bli administrert utenfor Chromium. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">redigere betalingsmåter</translation>
@@ -3491,6 +3497,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7682287625158474539">Forsendelse</translation>
 <translation id="7682451652090915298">Rugby</translation>
 <translation id="7684683146428206649">Metall</translation>
+<translation id="7684817988830401358">Knappen «Slett nettlesingsdata» – aktiver for å slette nettleserloggen, informasjonskapsler, bufferen med mer i Chrome-innstillingene</translation>
 <translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> er blokkert på grunn av regler}other{<ph name="FILE_COUNT" /> filer er blokkert på grunn av regler}}</translation>
 <translation id="7687186412095877299">Fyll ut betalingsskjemaer med de lagrede betalingsmåtene dine</translation>
 <translation id="7687305263118037187">Tidsavbrudd for forsøk</translation>
@@ -3603,6 +3610,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">Verifiseringskoden for kortet blir kryptert og lagret på enheten din for raskere betaling</translation>
 <translation id="7937554595067888181">Utløper <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="7938490694919717008">Vis hvilke belønninger og fordeler som er tilgjengelige for kortene dine, når du betaler. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />Finn ut mer om kortfordeler<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">Tjenerens sertifikat er ikke gyldig ennå.</translation>
 <translation id="7941628148012649605">Chou 4-konvolutt</translation>
 <translation id="794169214536209644">Godteri og søtsaker</translation>
@@ -3991,6 +3999,7 @@ Mer informasjon:
 <translation id="8662463432865928030">Næringseiendommer</translation>
 <translation id="8663226718884576429">Bestillingssammendrag, <ph name="TOTAL_LABEL" />, mer informasjon</translation>
 <translation id="8663909737634214500">Optisk disk</translation>
+<translation id="8664326323360157684">Slett nettlesingsdata…</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" />-verdien oppfyller ikke størrelseskravene.</translation>
 <translation id="867224526087042813">Signatur</translation>
 <translation id="8672535691554698269">Datamaskinnettverk</translation>
@@ -4288,6 +4297,7 @@ Mer informasjon:
 <translation id="949314938206378263">Du ba om å få besøke dette nettstedet. Forelderen din kan svare i Family Link.</translation>
 <translation id="950736567201356821">Tre hull topp</translation>
 <translation id="961663415146723894">Innbinding bunn</translation>
+<translation id="961856697154696964">Slett nettlesingsdata</translation>
 <translation id="961930410699694996">Posisjon er tillatt denne gangen</translation>
 <translation id="962484866189421427">Dette innholdet kan prøve å installere villedende apper som gir seg ut for å være noe annet, eller samle inn data som kan brukes til å spore deg. <ph name="BEGIN_LINK" />Vis det likevel<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">På grunn av en lov i regionen din ber vi deg om å velge en standardsøkemotor for Chromium. Disse søkemotorene er populære i regionen din og vises i tilfeldig rekkefølge.</translation>

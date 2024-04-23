@@ -98,12 +98,8 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chromium verwendet w
 <translation id="3855938650519180865">Jetzt neu bei Chromium</translation>
 <translation id="3886689467633467988">Melde dich bei dieser Website und in Chromium an, um deine Lesezeichen und mehr auf allen deinen Geräten abzurufen.</translation>
 <translation id="3904484643286601695">Du kannst deine Auswahl jederzeit in den Chromium-Einstellungen ändern.</translation>
-<translation id="394413318816989199">Die Passphrasenverschlüsselung erstreckt sich nicht auf Zahlungsmethoden und Adressen.
-
-Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chromium-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Dadurch wird der Sicherheitscheck in Chromium geöffnet und ausgeführt.</translation>
 <translation id="4043291146360695975">Passwörter werden auf diesem Gerät nur im Passwortmanager gespeichert.</translation>
-<translation id="4076589763479456892">Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chromium-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Wird von Chromium Beta nicht unterstützt</translation>
 <translation id="4106512142782407609">Angemeldet als <ph name="EMAIL" />.
 
@@ -193,9 +189,6 @@ Wichtige Hinweise:
 <translation id="6337530241089703714">Möchtest du deine Chromium-Daten von diesem Gerät löschen oder sie behalten?</translation>
 <translation id="6348483005826990855">3. Chromium auswählen</translation>
 <translation id="6383607155624074112">Über das Startbildschirm-Dock schneller auf Chromium zugreifen</translation>
-<translation id="6407399265324739055">Zahlungsmethoden und Adressen werden nicht verschlüsselt. Der Chromium-Browserverlauf wird nicht synchronisiert.
-
-Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls du deine Passphrase vergessen hast oder diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chromium-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium ist jetzt noch besser! Es ist eine neue Version verfügbar.</translation>
 <translation id="6433172051771630690">Tipps erhalten, wie du Chromium noch besser nutzen kannst.</translation>
 <translation id="6502321914804101924">Von Chromium abgemeldet</translation>
@@ -262,9 +255,6 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="8458950033462118672">Wenn du Chromium als Standard-Browser-App festlegst, werden Links automatisch dort geöffnet.</translation>
 <translation id="858114650497379505">Du kannst die im Passwortmanager gespeicherten Passwörter in anderen Apps auf deinem iPhone verwenden.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Die Chromium-Autoren. Alle Rechte vorbehalten.</translation>
-<translation id="8618440443578628179">Die Passphrasenverschlüsselung enthält keine Zahlungsmethoden oder Adressen von Google Pay.
-
-Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die Chromium-Daten in deinem Konto<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Schützt dich in Chromium und erhöht möglicherweise die Sicherheit in anderen Google-Apps, wenn du angemeldet bist.</translation>
 <translation id="8663480472502753423">Chromium auf dem neuesten Stand halten</translation>
 <translation id="8685813584220679697">Melde dich bei dieser Website und in Chromium an.</translation>

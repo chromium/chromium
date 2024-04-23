@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">સ્ક્રીન કૅપ્ચર</translation>
 <translation id="1108938384783527433">ઇતિહાસ સિંક કરો</translation>
 <translation id="1111673857033749125">તમારા અન્ય ડિવાઇસ પર સાચવેલા બુકમાર્ક અહીં દેખાશે.</translation>
-<translation id="1113057722807951993">પાસફ્રેઝ એન્ક્રિપ્શનમાં Google Payની ચુકવણી પદ્ધતિઓ અને સરનામાં શામેલ હોતા નથી.
-
-આ સેટિંગ બદલવા માટે, <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાં Chrome ડેટા સાફ કરો<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">સરળ દૃશ્ય બતાવો</translation>
 <translation id="1126809382673880764">જોખમકારક વેબસાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે તમારું રક્ષણ કરતું નથી. Gmail અને Search જેવી Googleની અન્ય સેવાઓમાં, જ્યાં ઉપલબ્ધ હોય, ત્યાં તમને હજી પણ Safe Browsing સંરક્ષણ મળશે.</translation>
 <translation id="1129510026454351943">વિગતો: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@
 <translation id="3290249595466894471">નવા જોખમો શોધવામાં સહાય કરવા માટે પેજનો નાનો નમૂનો, ડાઉનલોડ, એક્સ્ટેન્શનની પ્રવૃત્તિ અને સિસ્ટમની માહિતી પણ મોકલે છે</translation>
 <translation id="3293181007446299124">તમારા બ્રાઉઝિંગ ઇતિહાસને તમારા ડિવાઇસમાં ખાનગી રાખવામાં આવે છે અને તમારી ઓળખને સુરક્ષિત રાખવા માટે રિપોર્ટને થોડા વિલંબ પછી મોકલવામાં આવે છે</translation>
 <translation id="3303414029551471755">કન્ટેન્ટ ડાઉનલોડ કરવા માટે આગળ વધીએ?</translation>
+<translation id="3303855915957856445">કોઈ શોધ પરિણામો મળ્યાં નથી</translation>
 <translation id="3305130791745726624">ડિવાઇસ પર મોકલો</translation>
 <translation id="3305795716056605962">'વધુ વિકલ્પો' બટન વડે પેજનો અનુવાદ કરો</translation>
 <translation id="3334729583274622784">ફાઇલનું એક્સ્ટેંશન બદલવું છે?</translation>
@@ -529,7 +527,6 @@
 <translation id="3847319713229060696">વેબ પરની દરેક વ્યક્તિ માટે સુરક્ષાને બહેતર બનાવવા સહાય કરો</translation>
 <translation id="3856096718352044181">કૃપા કરીને ચકાસણી કરો કે આ માન્ય પ્રદાતા છે અથવા પછીથી ફરી પ્રયાસ કરો</translation>
 <translation id="3858860766373142691">નામ</translation>
-<translation id="3872520701277728051">જો તમે તમારો પાસફ્રેઝ ભૂલી ગયા હો અથવા આ સેટિંગ બદલવા માગતા હો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chromeનો ડેટા સાફ કરો<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">ટેક્સ્ટ કૉપિ કરો</translation>
 <translation id="3894427358181296146">ફોલ્ડર ઉમેરો</translation>
 <translation id="3899682235662194879">બધી છૂપી ટૅબ બંધ કરો</translation>
@@ -873,8 +870,6 @@
 <translation id="5590372121997663538">આ કમ્પ્યુટર પર યાદ રાખો</translation>
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
 <translation id="5599455543593328020">છૂપો મોડ</translation>
-<translation id="5605283439565877834">Google Payમાંથી ચુકવણી પદ્ધતિઓ અને સરનામા એન્ક્રિપ્ટ કરવામાં આવશે નહીં. Chromeમાંથી બ્રાઉઝિંગ ઇતિહાસ સિંક થશે નહીં.
-તમારો પાસફ્રેઝ ધરાવતી કોઈ વ્યક્તિ જ તમારો એન્ક્રિપ્ટેડ ડેટા વાંચી શકે છે. Googleને પાસફ્રેઝ મોકલવામાં આવતો નથી કે તેમાં સ્ટોર કરવામાં આવતો નથી. જો તમે તમારો પાસફ્રેઝ ભૂલી જાઓ અથવા આ સેટિંગ બદલવા માગતા હો, તો <ph name="BEGIN_LINK" />તમારા એકાઉન્ટમાંનો Chromeનો ડેટા સાફ કરો<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">કોઈ સાચવેલો પાસવર્ડ નથી</translation>
 <translation id="5620928963363755975">ડાઉનલોડમાં વધુ વિકલ્પો બટનની મદદથી તમારી ફાઇલો અને પેજ શોધો</translation>
 <translation id="562289928968387744">પ્રતિક્રિયાઓ મેનેજ કરો</translation>
@@ -1103,7 +1098,6 @@
 <translation id="6672697278890207089">તમારો પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> ઉમેરો</translation>
 <translation id="6674571176963658787">સિંક કરવાનું શરૂ કરવા માટે, તમારો પાસફ્રેઝ દાખલ કરો</translation>
-<translation id="6676840375528380067">આ ડિવાઇસમાંથી તમારા Chrome ડેટાને સાફ કરીએ?</translation>
 <translation id="6676927815633975364">આ સાઇટ અને Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="6684809838922667136">Chromeને બહેતર બનાવો</translation>
 <translation id="670498945988402717">ગઈકાલે ચેક કર્યું</translation>
@@ -1305,7 +1299,6 @@
 <translation id="7626032353295482388">Chrome પર આપનું સ્વાગત છે</translation>
 <translation id="7630202231528827509">પ્રદાતા URL</translation>
 <translation id="7638584964844754484">ખોટો પાસફ્રેઝ</translation>
-<translation id="7641339528570811325">બ્રાઉઝિંગ ડેટા સાફ કરો…</translation>
 <translation id="7646772052135772216">પાસવર્ડ સિંક કાર્ય કરતું નથી</translation>
 <translation id="7655240423373329753">છેલ્લા 7 દિવસ</translation>
 <translation id="7655900163790317559">બ્લૂટૂથ ચાલુ કરી રહ્યાં છીએ…</translation>
@@ -1384,7 +1377,6 @@
 <translation id="7995059495660416932">જ્યારે કન્ટેન્ટ ઉપલબ્ધ થશે, ત્યારે તમને તે દેખાશે</translation>
 <translation id="799576009106109668">તમે વધુ ઝડપથી બ્રાઉઝ કરશો કારણ કે વેબપેજની તમારી વર્તમાન મુલાકાતના આધારે કન્ટેન્ટ સક્રિય રીતે લોડ કરવામાં આવે છે</translation>
 <translation id="8004582292198964060">બ્રાઉઝર</translation>
-<translation id="8013372441983637696">આ ડિવાઇસમાંથી તમારો Chrome ડેટા પણ સાફ કરો</translation>
 <translation id="8015452622527143194">પેજ પરનું બધું કન્ટેન્ટ પાછું ડિફૉલ્ટ કદમાં બદલો</translation>
 <translation id="8026238112629815203">અમે આ ડિવાઇસ પર પાસવર્ડ સાચવવાની રીત બદલી છે</translation>
 <translation id="8027863900915310177">ડાઉનલોડ કરવાની જગ્યા પસંદ કરો</translation>
@@ -1511,7 +1503,6 @@
 <translation id="8562452229998620586">તમારા સાચવેલા પાસવર્ડ્સ અહીં દેખાશે.</translation>
 <translation id="8570677896027847510">ફાઇલ સુરક્ષિત રીતે ડાઉનલોડ કરી શકાતી નથી</translation>
 <translation id="8571213806525832805">છેલ્લા 4 અઠવાડિયા</translation>
-<translation id="8583805026567836021">એકાઉન્ટ ડેટા સાફ કરી રહ્યું છે</translation>
 <translation id="859046281437143747">વધુ વિકલ્પોના બટન પરથી કિંમત ટ્રૅક કરો</translation>
 <translation id="860043288473659153">કાર્ડધારકનું નામ</translation>
 <translation id="8602358303461588329">Chromeમાં સાઇન ઇન કરવાની શીટ બંધ કરવામાં આવી.</translation>
@@ -1641,6 +1632,5 @@
 <translation id="983192555821071799">બધા ટેબ્સ બંધ કરો</translation>
 <translation id="987264212798334818">સામાન્ય</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> ટૅબ</translation>
-<translation id="993520549480398880">આ કારમાંથી બુકમાર્ક, ઇતિહાસ અને બીજું ઘણું પણ સાફ કરો</translation>
 <translation id="996149300115483134">ફીડ કાર્ડ મેનૂ બંધ છે</translation>
 </translationbundle>

@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">Screen Capture</translation>
 <translation id="1108938384783527433">Pag-sync ng history</translation>
 <translation id="1111673857033749125">Dito lalabas ang mga naka-save na bookmark sa iba mo pang mga device.</translation>
-<translation id="1113057722807951993">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address mula sa Google Pay.
-
-Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">Ipakita ang pinasimpleng view</translation>
 <translation id="1126809382673880764">Hindi ka pinoprotektahan laban sa mga mapanganib na website, download, at extension. Magkakaroon ka pa rin ng proteksyon ng Ligtas na Pag-browse, kung available, sa iba pang serbisyo ng Google, tulad ng Gmail at Search.</translation>
 <translation id="1129510026454351943">Mga Detalye: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -424,6 +421,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="3220943972464248773">Para ma-sync ang iyong mga password, i-verify na ikaw ito</translation>
 <translation id="3226612997184048185">Kung sine-save mo rin ang iyong mga bookmark sa Google Account mo, puwede mong subaybayan sa Chrome ang mga presyo ng produkto at puwede kang maabisuhan kapag bumaba ang presyo</translation>
 <translation id="3227557059438308877">Google Chrome bilang Security Key</translation>
+<translation id="3232293466644486101">I-delete ang data mula sa pag-browse…</translation>
 <translation id="3232754137068452469">Web App</translation>
 <translation id="3236059992281584593">1 minuto na lang ang natitira</translation>
 <translation id="3237087289225714896">Karaniwang pag-preload:</translation>
@@ -441,6 +439,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="3290249595466894471">Nagpapadala rin ng maliit na sample ng mga page, download, aktibidad ng extension, at impormasyon ng system para makatulong na tumuklas ng mga bagong banta</translation>
 <translation id="3293181007446299124">Pinapanatiling pribado ang iyong history ng pag-browse sa device mo at inaantala ang pagpapadala ng mga ulat para maprotektahan ang iyong pagkakakilanlan</translation>
 <translation id="3303414029551471755">Magpatuloy na i-download ang content?</translation>
+<translation id="3303855915957856445">Walang nakitang resulta ng paghahanap</translation>
 <translation id="3305130791745726624">Ipadala sa mga device</translation>
 <translation id="3305795716056605962">Magsalin ng mga page mula sa button na Higit pang Opsyon</translation>
 <translation id="3334729583274622784">Baguhin ang file extension?</translation>
@@ -532,7 +531,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="3847319713229060696">Tumulong na pahusayin ang seguridad sa web para sa lahat</translation>
 <translation id="3856096718352044181">Paki-verify na valid na provider ito o subukan ulit sa ibang pagkakataon</translation>
 <translation id="3858860766373142691">Pangalan</translation>
-<translation id="3872520701277728051">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Kopyahin ang text</translation>
 <translation id="3894427358181296146">Magdagdag ng folder</translation>
 <translation id="3899682235662194879">Isara ang lahat ng tab na Incognito</translation>
@@ -877,8 +875,6 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5590372121997663538">Tandaan ang computer na ito</translation>
 <translation id="5596627076506792578">Higit pang opsyon</translation>
 <translation id="5599455543593328020">Incognito mode</translation>
-<translation id="5605283439565877834">Hindi mae-encrypt ang mga paraan ng pagbabayad at address mula sa Google Pay. Hindi masi-sync ang history ng pag-browse mula sa Chrome.
-Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data. Hindi ipinapadala sa o hindi sino-store ng Google ang passphrase. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Walang naka-save na password</translation>
 <translation id="5620928963363755975">Hanapin ang iyong mga file at page sa Mga Download mula sa button na Higit Pang Opsyon</translation>
 <translation id="562289928968387744">Pamahalaan ang mga reaksyon</translation>
@@ -1108,7 +1104,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6672697278890207089">Ipasok ang iyong passphrase</translation>
 <translation id="6672917148207387131">Idagdag ang <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">Para simulan ang pag-sync, ilagay ang iyong passphrase</translation>
-<translation id="6676840375528380067">I-clear ang iyong data sa Chrome sa device na ito?</translation>
 <translation id="6676927815633975364">Mag-sign in sa site na ito at sa Chrome</translation>
 <translation id="6684809838922667136">Pahusayin ang Chrome</translation>
 <translation id="670498945988402717">Nagsuri kahapon</translation>
@@ -1312,7 +1307,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7626032353295482388">Welcome sa Chrome</translation>
 <translation id="7630202231528827509">URL ng provider</translation>
 <translation id="7638584964844754484">Maling passphrase</translation>
-<translation id="7641339528570811325">I-clear ang data sa pag-browse...</translation>
 <translation id="7646772052135772216">Hindi gumagana ang pag-sync ng password</translation>
 <translation id="7655240423373329753">nakaraang 7 araw</translation>
 <translation id="7655900163790317559">Ino-on ang Bluetooth…</translation>
@@ -1391,7 +1385,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7995059495660416932">Makikita mo ang content kapag naging available ito</translation>
 <translation id="799576009106109668">Makakapag-browse ka nang mas mabilis dahil aktibong naglo-load ng content batay sa kasalukuyan mong pagbisita sa webpage</translation>
 <translation id="8004582292198964060">Browser</translation>
-<translation id="8013372441983637696">I-clear din ang iyong data ng Chrome sa device na ito</translation>
 <translation id="8015452622527143194">Ibalik ang lahat ng nasa page sa default na sukat</translation>
 <translation id="8026238112629815203">Binago namin kung paano sine-save ang mga password sa device na ito</translation>
 <translation id="8027863900915310177">Piliin kung saan ida-download</translation>
@@ -1520,7 +1513,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8562452229998620586">Lalabas dito ang mga naka-save na password.</translation>
 <translation id="8570677896027847510">Hindi secure na mada-download ang mga file</translation>
 <translation id="8571213806525832805">Huling 4 na linggo</translation>
-<translation id="8583805026567836021">Kini-clear ang data ng account</translation>
 <translation id="859046281437143747">Subaybayan ang presyo mula sa button na Higit pang opsyon</translation>
 <translation id="860043288473659153">Pangalan ng cardholder</translation>
 <translation id="8602358303461588329">Nakasara ang pag-sign in sa Chrome.</translation>
@@ -1653,6 +1645,5 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="987264212798334818">Pangkalahatan</translation>
 <translation id="988091779042748639">Para i-delete ang history ng pag-browse sa Incognito mula sa iyong device, isara ang lahat ng tab na Incognito.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> (na) tab</translation>
-<translation id="993520549480398880">Mag-clear din ng mga bookmark, history, at higit pa sa kotseng ito</translation>
 <translation id="996149300115483134">Nakasara ang menu ng feed card</translation>
 </translationbundle>

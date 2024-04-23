@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">ਸਕ੍ਰੀਨ ਕੈਪਚਰ</translation>
 <translation id="1108938384783527433">ਇਤਿਹਾਸ ਸਿੰਕ</translation>
 <translation id="1111673857033749125">ਤੁਹਾਡੀਆਂ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਬੁੱਕਮਾਰਕ ਇੱਥੇ ਵਿਖਾਈ ਦੇਣਗੇ।</translation>
-<translation id="1113057722807951993">ਪਾਸਫਰੇਜ਼ ਇਨਕ੍ਰਿਪਸ਼ਨ ਵਿੱਚ Google Pay ਦੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਪਤੇ ਸ਼ਾਮਲ ਨਹੀਂ ਹਨ।
-
-ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣ ਲਈ, <ph name="BEGIN_LINK" />ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟੇ ਨੂੰ ਕਲੀਅਰ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="1113597929977215864">ਸਰਲੀਕਿਰਤ ਦ੍ਰਿਸ਼ ਦਿਖਾਓ</translation>
 <translation id="1126809382673880764">ਤੁਹਾਨੂੰ ਖਤਰਨਾਕ ਵੈੱਬਸਾਈਟਾਂ, ਡਾਊਨਲੋਡਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਰੱਖਿਆ ਜਾਂਦਾ। ਹੋਰ Google ਸੇਵਾਵਾਂ ਜਿਵੇਂ ਕਿ Gmail ਅਤੇ Search ਵਿੱਚ ਜਿੱਥੇ ਵੀ ਉਪਲਬਧ ਹੋਵੇ ਤੁਹਾਨੂੰ ਫਿਰ ਵੀ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਹੋਵੇਗੀ।</translation>
 <translation id="1129510026454351943">ਵੇਰਵੇ: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -174,10 +171,12 @@
 <translation id="1933845786846280168">ਚੁਣੀ ਗਈ ਟੈਬ</translation>
 <translation id="1943432128510653496">ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="1944535645109964458">ਕੋਈ ਪਾਸਕੀ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
+<translation id="1957557050935255529">PDF ਨੂੰ ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…</translation>
 <translation id="1959679933317802873">ਸਮੱਗਰੀ ਲਈ ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="1960290143419248813">Chrome ਅੱਪਡੇਟਾਂ ਹੁਣ Android ਦੇ ਇਸ ਵਰਜਨ ਲਈ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ</translation>
 <translation id="1963976881984600709">ਮਿਆਰੀ ਸੁਰੱਖਿਆ</translation>
 <translation id="1966710179511230534">ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਸਾਈਨ-ਇਨ ਵੇਰਵੇ ਅੱਪਡੇਟ ਕਰੋ।</translation>
+<translation id="1969037871259811890">ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟੇ ਨੂੰ ਮਿਟਾਉਣ ਨਾਲ ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਤੋਂ ਸਾਈਨ-ਆਊਟ ਨਹੀਂ ਹੋਵੋਗੇ। ਅਜਿਹਾ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK1" />Chrome ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰੋ<ph name="END_LINK1" />।</translation>
 <translation id="197288927597451399">Keep</translation>
 <translation id="1973912524893600642">ਡਾਟਾ ਰੱਖੋ</translation>
 <translation id="1974060860693918893">ਉੱਨਤ</translation>
@@ -338,6 +337,7 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 ਦਿਨ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}one{# ਦਿਨ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}other{# ਦਿਨ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}}</translation>
 <translation id="2842985007712546952">ਪੇਰੈਂਟ ਫੋਲਡਰ</translation>
 <translation id="2853415089995957805">Chrome ਉਨ੍ਹਾਂ ਪੰਨਿਆਂ ਨੂੰ ਪ੍ਰੀਲੋਡ ਕਰ ਦਿੰਦਾ ਹੈ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਹਾਡੇ ਜਾਣ ਦੀ ਸੰਭਾਵਨਾ ਹੁੰਦੀ ਹੈ, ਤਾਂ ਜੋ ਤੁਹਾਡੇ ਜਾਣ 'ਤੇ ਉਹ ਹੋਰ ਤੇਜ਼ੀ ਨਾਲ ਲੋਡ ਹੋ ਸਕਣ</translation>
+<translation id="2855243985454069333">ਸਿੰਕ ਕੀਤੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਇਤਿਹਾਸ ਮਿਟਾਉਂਦਾ ਹੈ</translation>
 <translation id="2856503607207334158">ਸਾਈਨ-ਇਨ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="2860954141821109167">ਪੱਕਾ ਕਰੋ ਕਿ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਫ਼ੋਨ ਐਪ ਚਾਲੂ ਹੋਵੇ</translation>
 <translation id="2861923151411510142">ਕੁਝ Chrome ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਹੁਣ ਉਪਲਬਧ ਨਹੀਂ ਰਹਿਣਗੀਆਂ</translation>
@@ -421,6 +421,7 @@
 <translation id="3220943972464248773">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਦਾ ਸਿੰਕ ਕਰਨ ਲਈ, ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="3226612997184048185">ਜੇ ਤੁਸੀਂ ਵੀ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਨੂੰ ਰੱਖਿਅਤ ਕਰਦੇ ਹੋ ਤਾਂ, ਤੁਸੀਂ Chrome ਵਿੱਚ ਉਤਪਾਦਾਂ ਦੀਆਂ ਕੀਮਤਾਂ ਨੂੰ ਟਰੈਕ ਕਰ ਸਕਦੇ ਹੋ ਅਤੇ ਕੀਮਤਾਂ ਡਿੱਗਣ 'ਤੇ ਸੂਚਨਾ ਪ੍ਰਾਪਤ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="3227557059438308877">Google Chrome ਨੂੰ ਤੁਹਾਡੇ ਫ਼ੋਨ ਦੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਜੋਂ ਵਰਤਣਾ</translation>
+<translation id="3232293466644486101">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ…</translation>
 <translation id="3232754137068452469">ਵੈੱਬ ਐਪ</translation>
 <translation id="3236059992281584593">1 ਮਿੰਟ ਬਾਕੀ</translation>
 <translation id="3237087289225714896">ਮਿਆਰੀ ਪ੍ਰੀਲੋਡਿੰਗ:</translation>
@@ -438,6 +439,7 @@
 <translation id="3290249595466894471">ਨਵੇਂ ਖਤਰਿਆਂ ਨੂੰ ਖੋਜਣ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ ਪੰਨਿਆਂ, ਡਾਊਨਲੋਡਾਂ, ਐਕਸਟੈਂਸ਼ਨ ਸਰਗਰਮੀ ਅਤੇ ਸਿਸਟਮ ਜਾਣਕਾਰੀ ਦਾ ਇੱਕ ਛੋਟਾ ਨਮੂਨਾ ਵੀ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="3293181007446299124">ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਨਿੱਜੀ ਰੱਖਿਆ ਜਾਂਦਾ ਹੈ ਅਤੇ ਤੁਹਾਡੀ ਪਛਾਣ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ ਰਿਪੋਰਟਾਂ ਨੂੰ ਦੇਰੀ ਨਾਲ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="3303414029551471755">ਕੀ ਸਮੱਗਰੀ ਡਾਊਨਲੋਡ ਕਰਨਾ ਜਾਰੀ ਰੱਖਣਾ ਹੈ?</translation>
+<translation id="3303855915957856445">ਕੋਈ ਖੋਜ ਨਤੀਜੇ ਨਹੀਂ ਮਿਲੇ</translation>
 <translation id="3305130791745726624">ਡੀਵਾਈਸਾਂ 'ਤੇ ਭੇਜੋ</translation>
 <translation id="3305795716056605962">'ਹੋਰ ਵਿਕਲਪ' ਬਟਨ ਤੋਂ ਪੰਨਿਆਂ ਦਾ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="3334729583274622784">ਕੀ ਫ਼ਾਈਲ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬਦਲਣਾ ਹੈ?</translation>
@@ -529,7 +531,6 @@
 <translation id="3847319713229060696">ਵੈੱਬ 'ਤੇ ਸੁਰੱਖਿਆ ਨੂੰ ਹਰੇਕ ਲਈ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ</translation>
 <translation id="3856096718352044181">ਕਿਰਪਾ ਕਰਕੇ ਪੁਸ਼ਟੀ ਕਰੋ ਕਿ ਇਹ ਇੱਕ ਵੈਧ ਪ੍ਰਦਾਨਕ ਹੈ ਜਾਂ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="3858860766373142691">ਨਾਮ</translation>
-<translation id="3872520701277728051">ਜੇ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਭੁੱਲ ਗਏ ਹੋ ਜਾਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ <ph name="BEGIN_LINK" />ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟੇ ਨੂੰ ਕਲੀਅਰ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="3892148308691398805">ਲਿਖਤ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="3894427358181296146">ਫੋਲਡਰ ਜੋੜੋ</translation>
 <translation id="3899682235662194879">ਸਾਰੀਆਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਬੰਦ ਕਰੋ</translation>
@@ -706,6 +707,7 @@
 <translation id="4738836084190194332">ਆਖਰੀ ਵਾਰ ਸਮਕਾਲੀ ਕੀਤੀ: <ph name="WHEN" /></translation>
 <translation id="474121291218385686">ਐਪ ਮੁਤਾਬਕ ਫਿਲਟਰ ਕਰੋ</translation>
 <translation id="4741753828624614066">ਤੁਹਾਨੂੰ ਪਤਾ ਬਾਰ ਵਿੱਚ ਬਿਹਤਰ ਸੁਝਾਅ ਪ੍ਰਾਪਤ ਹੋਣਗੇ</translation>
+<translation id="4742795653798179840">Chrome ਡਾਟਾ ਮਿਟਾਇਆ ਗਿਆ</translation>
 <translation id="4742970037960872810">ਹਾਈਲਾਈਟ ਹਟਾਓ</translation>
 <translation id="4749960740855309258">ਇੱਕ ਨਵੀਂ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
 <translation id="4750356170202299988">ਘੱਟ ਉਮਰ ਦੇ ਬੱਚਿਆਂ ਲਈ ਸਮੱਗਰੀ</translation>
@@ -873,8 +875,6 @@
 <translation id="5590372121997663538">ਇਸ ਕੰਪਿਊਟਰ ਨੂੰ ਯਾਦ ਰੱਖੋ</translation>
 <translation id="5596627076506792578">ਹੋਰ ਚੋਣਾਂ</translation>
 <translation id="5599455543593328020">ਇਨਕੋਗਨਿਟੋ ਮੋਡ</translation>
-<translation id="5605283439565877834">Google Pay ਦੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਪਤਿਆਂ ਨੂੰ ਇਨਕ੍ਰਿਪਟ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ। Chrome ਦੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨੂੰ ਸਿੰਕ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।
-ਸਿਰਫ਼ ਤੁਹਾਡੇ ਪਾਸਫਰੇਜ਼ ਨਾਲ ਹੀ ਕੋਈ ਤੁਹਾਡੇ ਇਨਕ੍ਰਿਪਟਡ ਡਾਟੇ ਨੂੰ ਪੜ੍ਹ ਸਕਦਾ ਹੈ। ਪਾਸਫਰੇਜ਼ Google ਨੂੰ ਨਹੀਂ ਭੇਜਿਆ ਜਾਂਦਾ ਜਾਂ ਇਸ ਵੱਲੋਂ ਸਟੋਰ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ। ਜੇ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਭੁੱਲ ਜਾਂਦੇ ਹੋ ਜਾਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ <ph name="BEGIN_LINK" />ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ Chrome ਡਾਟੇ ਨੂੰ ਕਲੀਅਰ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="5620163320393916465">ਕੋਈ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਨਹੀਂ</translation>
 <translation id="5620928963363755975">'ਹੋਰ ਵਿਕਲਪ' ਬਟਨ ਤੋਂ ਡਾਊਨਲੋਡਾਂ ਵਿੱਚ ਆਪਣੀਆਂ ਫ਼ਾਈਲਾਂ ਅਤੇ ਪੰਨਿਆਂ ਨੂੰ ਲੱਭੋ</translation>
 <translation id="562289928968387744">ਪ੍ਰਤਿਕਿਰਿਆਵਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -921,6 +921,7 @@
 <translation id="5810288467834065221">ਕਾਪੀਰਾਈਟ <ph name="YEAR" /> Google LLC. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
 <translation id="5814749351757353073">ਆਪਣੀਆਂ ਮਨਪਸੰਦ ਸਾਈਟਾਂ ਦਾ ਅਨੁਸਰਣ ਕਰਨਾ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="5822875253699806474">ਜੋ ਸਾਈਟਾਂ ਤੁਸੀਂ ਦੇਖੀਆਂ ਹਨ ਉਨ੍ਹਾਂ 'ਤੇ ਤੇਜ਼ੀ ਨਾਲ ਵਾਪਸ ਜਾਣ ਲਈ, ਆਪਣੀਆਂ ਟੈਬਾਂ ਅਤੇ ਇਤਿਹਾਸ ਨੂੰ ਸਿੰਕ ਕਰੋ</translation>
+<translation id="5828921839638612740">ਤੁਸੀਂ ਡਾਟੇ ਨੂੰ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਮਿਟਾ ਸਕਦੇ ਹੋ</translation>
 <translation id="5829586821381540080"><ph name="FOLDER_NAME" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="583281660410589416">ਅਗਿਆਤ</translation>
 <translation id="5833984609253377421">ਲਿੰਕ ਸਾਂਝਾ ਕਰੋ</translation>
@@ -1103,7 +1104,6 @@
 <translation id="6672697278890207089">ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6674571176963658787">ਸਿੰਕ ਸ਼ੁਰੂ ਕਰਨ ਲਈ, ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਦਾਖਲ ਕਰੋ</translation>
-<translation id="6676840375528380067">ਕੀ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਤੁਹਾਡਾ Chrome ਡਾਟਾ ਕਲੀਅਰ ਕਰਨਾ ਹੈ?</translation>
 <translation id="6676927815633975364">ਇਸ ਸਾਈਟ ਅਤੇ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
 <translation id="6684809838922667136">Chrome ਨੂੰ ਬਿਹਤਰ ਬਣਾਓ</translation>
 <translation id="670498945988402717">ਬੀਤੇ ਕੱਲ੍ਹ ਜਾਂਚ ਕੀਤੀ ਗਈ</translation>
@@ -1112,6 +1112,7 @@
 <translation id="6715020873764921614">ਕੀ ਤੁਸੀਂ ਫਿਰ ਵੀ <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="6719634564325948108">ਕੀ QR ਕੋਡ ਨਾਲ ਕਨੈਕਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="6723740634201835758">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ</translation>
+<translation id="6734310707649923383">ਤੁਸੀਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਪੰਨਿਆਂ ਨੂੰ ਦੇਖ ਸਕਦੇ ਹੋ ਜਾਂ ਆਪਣੇ ਇਤਿਹਾਸ ਵਿੱਚੋਂ ਉਨ੍ਹਾਂ ਨੂੰ ਮਿਟਾ ਸਕਦੇ ਹੋ</translation>
 <translation id="6738867403308150051">ਡਾਊਨਲੋਡ ਕਰ ਰਿਹਾ ਹੈ…</translation>
 <translation id="67404633032079629">ਤੁਹਾਡਾ ਕੁਝ ਵੈੱਬ ਇਤਿਹਾਸ ਸ਼ਾਇਦ ਇੱਥੇ ਦਿਖਾਈ ਨਾ ਦੇਵੇ। ਪੂਰਾ ਵੈੱਬ ਇਤਿਹਾਸ ਦੇਖਣ ਲਈ, 'ਪੂਰਾ Chrome ਇਤਿਹਾਸ ਖੋਲ੍ਹੋ' 'ਤੇ ਟੈਪ ਕਰੋ।</translation>
 <translation id="674388916582496364">ਤੁਹਾਡੇ ਅਨੁਭਵ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ, ਤੁਹਾਡੀ ਦਿਲਚਸਪੀ ਵਾਲੀਆਂ ਚੀਜ਼ਾਂ ਨੂੰ ਯਾਦ ਰੱਖਣਾ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਲਈ ਆਮ ਗੱਲ ਹੈ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ ਜਾਂਦੇ ਹੋ। ਸਾਈਟਾਂ ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ ਬਾਰੇ Chrome ਵਿੱਚ ਜਾਣਕਾਰੀ ਵੀ ਸਟੋਰ ਕਰ ਸਕਦੀਆਂ ਹਨ।</translation>
@@ -1247,6 +1248,7 @@
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{1 ਚੁਣੀ ਗਈ ਆਈਟਮ ਸਾਂਝੀ ਕਰੋ}one{# ਚੁਣੀਆਂ ਗਈਆਂ ਆਈਟਮਾਂ ਸਾਂਝੀਆਂ ਕਰੋ}other{# ਚੁਣੀਆਂ ਗਈਆਂ ਆਈਟਮਾਂ ਸਾਂਝੀਆਂ ਕਰੋ}}</translation>
 <translation id="7359002509206457351">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਤੱਕ ਪਹੁੰਚ</translation>
 <translation id="7363349185727752629">ਤੁਹਾਡੀ ਪਰਦੇਦਾਰੀ ਵਿਕਲਪਾਂ ਦੀ ਗਾਈਡ</translation>
+<translation id="7364103838544876661">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਉਣ ਲਈ ਹੋਰ ਵਿਕਲਪ</translation>
 <translation id="7375125077091615385">ਪ੍ਰਕਾਰ:</translation>
 <translation id="7376560087009844242">ਕਿਸੇ ਪੰਨੇ ਦੀ ਹੋਰ ਲਿਖਤ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਨਾਲ, 'ਖੋਜਣ ਲਈ ਸਪਰਸ਼ ਕਰੋ' ਵਰਤਣ ਵੇਲੇ ਸ਼ਾਇਦ ਤੁਹਾਨੂੰ ਬਿਹਤਰ ਨਤੀਜੇ ਦਿਖਾਈ ਦੇਣ। ਤੁਸੀਂ ਇਸਨੂੰ ਬਦਲਣ ਲਈ ਕਦੇ ਵੀ <ph name="BEGIN_LINK" />ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> 'ਤੇ ਜਾ ਸਕਦੇ ਹੋ।</translation>
 <translation id="7379900596734708416">ਸਾਈਟਾਂ ਲਈ ਗੂੜ੍ਹਾ ਥੀਮ ਉਪਲਬਧ ਹੈ</translation>
@@ -1305,7 +1307,6 @@
 <translation id="7626032353295482388">Chrome ਵਿੱਚ ਸੁਆਗਤ ਹੈ</translation>
 <translation id="7630202231528827509">ਪ੍ਰਦਾਨਕ URL</translation>
 <translation id="7638584964844754484">ਗਲਤ ਪਾਸਫਰੇਜ਼</translation>
-<translation id="7641339528570811325">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਕਲੀਅਰ ਕਰੋ...</translation>
 <translation id="7646772052135772216">ਪਾਸਵਰਡ ਸਿੰਕ ਕੰਮ ਨਹੀਂ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="7655240423373329753">ਪਿਛਲੇ 7 ਦਿਨ</translation>
 <translation id="7655900163790317559">ਬਲੂਟੁੱਥ ਚਾਲੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…</translation>
@@ -1384,7 +1385,6 @@
 <translation id="7995059495660416932">ਸਮੱਗਰੀ ਉਪਲਬਧ ਹੋਣ 'ਤੇ ਤੁਹਾਨੂੰ ਦਿਸੇਗੀ</translation>
 <translation id="799576009106109668">ਤੁਸੀਂ ਤੇਜ਼ੀ ਨਾਲ ਬ੍ਰਾਊਜ਼ ਕਰੋਗੇ ਕਿਉਂਕਿ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਮੌਜੂਦਾ ਵੈੱਬ-ਪੰਨੇ ਦੇ ਆਧਾਰ 'ਤੇ ਸਮੱਗਰੀ ਚੁਸਤੀ ਨਾਲ ਲੋਡ ਕੀਤੀ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="8004582292198964060">ਬ੍ਰਾਊਜ਼ਰ</translation>
-<translation id="8013372441983637696">ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਤੁਹਾਡਾ Chrome ਡਾਟਾ ਵੀ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="8015452622527143194">ਪੰਨੇ 'ਤੇ ਹਰੇਕ ਚੀਜ਼ ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਆਕਾਰ 'ਚ ਵਾਪਸ ਪਰਤਾਓ</translation>
 <translation id="8026238112629815203">ਅਸੀਂ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="8027863900915310177">ਡਾਊਨਲੋਡ ਕਰਨ ਲਈ ਕੋਈ ਥਾਂ ਚੁਣੋ</translation>
@@ -1436,6 +1436,7 @@
 <translation id="8215740705341534369">ਸਾਈਡ ਸ਼ੀਟ</translation>
 <translation id="8218622182176210845">ਆਪਣੇ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8221401890884589479">ਤੁਹਾਨੂੰ ਜੋ ਸਾਈਟਾਂ ਨਹੀਂ ਚਾਹੀਦੀਆਂ, ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਨੂੰ ਬਲਾਕ ਕਰ ਸਕਦੇ ਹੋ। Chrome 30 ਦਿਨਾਂ ਤੋਂ ਵੱਧ ਪੁਰਾਣੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਵੀ ਸੂਚੀ ਤੋਂ ਸਵੈਚਲਿਤ-ਮਿਟਾਉਂਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
+<translation id="8221985041778490865">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="8223642481677794647">ਫ਼ੀਡ ਕਾਰਡ ਮੀਨੂ</translation>
 <translation id="8236097722223016103">ਬੁੱਕਮਾਰਕਾਂ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8237871086242677046">ਪੰਨੇ ਦੀਆਂ ਅੰਦਰੂਨੀ-ਝਾਤਾਂ ਵਾਲੀ ਹੇਠਲੀ ਸ਼ੀਟ</translation>
@@ -1467,6 +1468,7 @@
 <translation id="8413126021676339697">ਪੂਰਾ ਇਤਿਹਾਸ ਦਿਖਾਓ</translation>
 <translation id="8413795581997394485">ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ, ਡਾਊਨਲੋਡਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਰੱਖਦਾ ਹੈ ਜਿਨ੍ਹਾਂ ਨੂੰ ਖਤਰਨਾਕ ਮੰਨਿਆ ਜਾਂਦਾ ਹੈ। ਜਦੋਂ ਤੁਸੀਂ ਕਿਸੇ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ, Chrome ਤੁਹਾਡੇ IP ਪਤੇ ਨੂੰ ਲੁਕਾਉਣ ਵਾਲੇ ਪਰਦੇਦਾਰੀ ਸਰਵਰ ਰਾਹੀਂ Google ਨੂੰ URL ਦਾ ਭਰਮਾਊ ਹਿੱਸਾ ਭੇਜਦਾ ਹੈ। ਜੇ ਸਾਈਟ 'ਤੇ ਕੁਝ ਸ਼ੱਕੀ ਸਮੱਗਰੀ ਮਿਲਦੀ ਹੈ, ਤਾਂ ਪੂਰੇ URL ਅਤੇ ਪੰਨੇ ਦੀ ਥੋੜ੍ਹੀ ਸਮੱਗਰੀ ਨੂੰ ਵੀ ਭੇਜਿਆ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="8414396119627470038"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ਨਾਲ <ph name="SITE_ETLD_PLUS_ONE" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
+<translation id="8419144699778179708">ਇਤਿਹਾਸ ਮਿਟ ਜਾਂਦਾ ਹੈ, ਜਿਸ ਵਿੱਚ ਖੋਜ ਬਾਕਸ ਵਿਚਲਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਵੀ ਸ਼ਾਮਲ ਹੈ</translation>
 <translation id="8419244640277402268">ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8422250855136581222">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਕੋਈ ਟੈਬ ਨਹੀਂ</translation>
 <translation id="8424781820952413435">ਪੰਨਾ ਭੇਜਿਆ ਗਿਆ। ਇਸਨੂੰ ਦੇਖਣ ਲਈ, ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ Chrome ਖੋਲ੍ਹੋ</translation>
@@ -1511,7 +1513,6 @@
 <translation id="8562452229998620586">ਸੁਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਇੱਥੇ ਦਿਖਾਈ ਦੇਣਗੇ।</translation>
 <translation id="8570677896027847510">ਫ਼ਾਈਲ ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="8571213806525832805">ਪਿਛਲੇ 4 ਹਫ਼ਤੇ</translation>
-<translation id="8583805026567836021">ਖਾਤੇ ਦਾ ਡਾਟਾ ਹਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="859046281437143747">'ਹੋਰ ਵਿਕਲਪ' ਬਟਨ ਤੋਂ ਕੀਮਤ ਨੂੰ ਟਰੈਕ ਕਰੋ</translation>
 <translation id="860043288473659153">ਕਾਰਡਧਾਰਕ ਦਾ ਨਾਮ</translation>
 <translation id="8602358303461588329">Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ, ਬੰਦ ਕੀਤਾ ਗਿਆ।</translation>
@@ -1630,17 +1631,19 @@
 <translation id="926205370408745186">ਡਿਜੀਟਲ ਜੀਵਨਸ਼ੈਲੀ ਤੋਂ ਆਪਣੀ Chrome ਸਰਗਰਮੀ ਹਟਾਓ</translation>
 <translation id="927968626442779827">Google Chrome 'ਤੇ ਲਾਈਟ ਮੋਡ ਵਰਤੋ</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> ਦਾ ਅਨੁਸਰਣ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
+<translation id="930124987204876019">ਇਤਿਹਾਸ, ਕੁਕੀਜ਼, ਸਾਈਟ ਡਾਟਾ, ਕੈਸ਼ੇ ਮਿਟਾਓ…</translation>
 <translation id="93533588269984624">ਸਾਰੇ ਪਾਸਵਰਡ ਤੁਹਾਡੇ ਡੀਵਾਈਸ 'ਤੇ ਡਾਊਨਲੋਡ ਕੀਤੇ ਜਾਣਗੇ ਅਤੇ <ph name="CHROME_CHANNEL" /> ਤੋਂ ਹਟਾ ਦਿੱਤੇ ਜਾਣਗੇ</translation>
 <translation id="938850635132480979">ਗੜਬੜ: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">ਪਾਸਫਰੇਜ਼ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="952301137339791907">ਪੰਨੇ ਦੀਆਂ ਅੰਦਰੂਨੀ-ਝਾਤਾਂ ਵਾਲੀ ਹੇਠਲੀ ਸ਼ੀਟ ਖੁੱਲ੍ਹੀ ਹੈ</translation>
 <translation id="95817756606698420">Chrome ਚੀਨ ਵਿੱਚ ਖੋਜ ਲਈ <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦਾ ਹੈ। ਤੁਸੀਂ ਇਸ ਨੂੰ <ph name="BEGIN_LINK" />ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚੋਂ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
+<translation id="961856697154696964">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ</translation>
 <translation id="96681097142096641">ਕੀ ਸਰਲ ਬਣਾਏ ਪੰਨੇ ਨੂੰ ਦੇਖਣਾ ਹੈ?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> ਮਿੰਟ ਬਾਕੀ</translation>
 <translation id="981121421437150478">ਆਫ਼ਲਾਈਨ</translation>
 <translation id="983192555821071799">ਸਾਰੀਆਂ ਟੈਬਸ ਬੰਦ ਕਰੋ</translation>
 <translation id="987264212798334818">ਸਧਾਰਨ</translation>
+<translation id="988091779042748639">ਆਪਣੇ ਡੀਵਾਈਸ ਤੋਂ ਇਨਕੋਗਨਿਟੋ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨੂੰ ਮਿਟਾਉਣ ਲਈ, ਸਾਰੀਆਂ ਇਨਕੋਗਨਿਟੋ ਟੈਬਾਂ ਬੰਦ ਕਰੋ।</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> ਟੈਬਾਂ</translation>
-<translation id="993520549480398880">ਇਸਦੇ ਨਾਲ ਹੀ ਇਸ ਕਾਰ ਤੋਂ ਬੁੱਕਮਾਰਕ, ਇਤਿਹਾਸ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="996149300115483134">ਫ਼ੀਡ ਕਾਰਡ ਮੀਨੂ ਬੰਦ ਹੈ</translation>
 </translationbundle>

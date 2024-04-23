@@ -23,7 +23,6 @@
 <translation id="1105960400813249514">螢幕擷取</translation>
 <translation id="1108938384783527433">同步處理歷史記錄</translation>
 <translation id="1111673857033749125">儲存在您其他裝置上的書籤會顯示在這裡。</translation>
-<translation id="1113057722807951993">通關密語加密的資料不包括 Google Pay 的付款方式和地址。如要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="1113597929977215864">顯示「簡易檢視」模式</translation>
 <translation id="1126809382673880764">無法封鎖不安全的網站、下載內容和擴充功能。在 Gmail 和 Google 搜尋等其他 Google 服務中，安全瀏覽功能的防護機制仍然會發揮作用 (在適用情況下)。</translation>
 <translation id="1129510026454351943">詳細資料：<ph name="ERROR_DESCRIPTION" /></translation>
@@ -436,6 +435,7 @@
 <translation id="3290249595466894471">另外也會傳送少量網頁、下載內容、擴充功能活動和系統資訊，協助找出新的威脅</translation>
 <translation id="3293181007446299124">在裝置端保留瀏覽記錄，僅供你本人存取。系統會延遲一段時間才傳送報告，保護你的身分</translation>
 <translation id="3303414029551471755">繼續下載這項內容？</translation>
+<translation id="3303855915957856445">找不到相符的搜尋結果</translation>
 <translation id="3305130791745726624">傳送到裝置</translation>
 <translation id="3305795716056605962">透過「更多選項」按鈕翻譯頁面</translation>
 <translation id="3334729583274622784">是否要變更副檔名？</translation>
@@ -527,7 +527,6 @@
 <translation id="3847319713229060696">協助我們改善所有人的網路安全性</translation>
 <translation id="3856096718352044181">請驗證供應商是否有效，或稍後再試</translation>
 <translation id="3858860766373142691">名稱</translation>
-<translation id="3872520701277728051">如果忘記通關密語或想要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="3892148308691398805">複製文字</translation>
 <translation id="3894427358181296146">新增資料夾</translation>
 <translation id="3899682235662194879">關閉所有無痕分頁</translation>
@@ -871,8 +870,6 @@
 <translation id="5590372121997663538">記住這部電腦</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5599455543593328020">無痕模式</translation>
-<translation id="5605283439565877834">系統將不會加密你在 Google Pay 中的付款方式和地址，也不會同步 Chrome 中的瀏覽記錄。
-只有知道通關密語的人才能讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="5620163320393916465">未儲存任何密碼</translation>
 <translation id="5620928963363755975">透過「更多選項」按鈕前往「下載」主畫面尋找你的檔案和網頁</translation>
 <translation id="562289928968387744">管理回應</translation>
@@ -1101,7 +1098,6 @@
 <translation id="6672697278890207089">請輸入你的複雜密碼</translation>
 <translation id="6672917148207387131">新增 <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">如要開始同步處理，請輸入通關密語</translation>
-<translation id="6676840375528380067">要清除你在這個裝置上的 Chrome 資料嗎？</translation>
 <translation id="6676927815633975364">登入這個網站和 Chrome</translation>
 <translation id="6684809838922667136">讓 Chrome 更臻完美</translation>
 <translation id="670498945988402717">昨天已檢查</translation>
@@ -1303,7 +1299,6 @@
 <translation id="7626032353295482388">歡迎使用 Chrome</translation>
 <translation id="7630202231528827509">供應商網址</translation>
 <translation id="7638584964844754484">通關密語不正確</translation>
-<translation id="7641339528570811325">清除瀏覽資料…</translation>
 <translation id="7646772052135772216">密碼同步功能無法正常運作</translation>
 <translation id="7655240423373329753">最近 7 天</translation>
 <translation id="7655900163790317559">即將開啟藍牙…</translation>
@@ -1382,7 +1377,6 @@
 <translation id="7995059495660416932">目前沒有內容，請耐心等候</translation>
 <translation id="799576009106109668">系統會根據你目前造訪的網頁主動載入內容，幫助你加快瀏覽速度</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
-<translation id="8013372441983637696">一併清除你在這個裝置上的 Chrome 資料</translation>
 <translation id="8015452622527143194">將網頁上的所有內容都回復為預設大小</translation>
 <translation id="8026238112629815203">我們調整了這部裝置的密碼儲存方式</translation>
 <translation id="8027863900915310177">選擇下載位置</translation>
@@ -1509,7 +1503,6 @@
 <translation id="8562452229998620586">已儲存的密碼會顯示在這裡。</translation>
 <translation id="8570677896027847510">無法安全下載檔案</translation>
 <translation id="8571213806525832805">過去 4 週</translation>
-<translation id="8583805026567836021">正在清除帳戶資料</translation>
 <translation id="859046281437143747">透過 [更多] 選項按鈕追蹤價格</translation>
 <translation id="860043288473659153">持卡人姓名</translation>
 <translation id="8602358303461588329">登入 Chrome，帳戶挑選器已關閉。</translation>
@@ -1639,6 +1632,5 @@
 <translation id="983192555821071799">關閉所有分頁</translation>
 <translation id="987264212798334818">一般</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> 個分頁</translation>
-<translation id="993520549480398880">一併清除車上的書籤、歷史記錄和其他資料</translation>
 <translation id="996149300115483134">已關閉動態消息資訊卡選單</translation>
 </translationbundle>

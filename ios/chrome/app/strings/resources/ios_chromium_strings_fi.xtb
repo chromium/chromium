@@ -99,12 +99,8 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, niin n
 <translation id="3855938650519180865">Uutta Chromiumissa</translation>
 <translation id="3886689467633467988">Kirjaudu tälle sivustolle ja Chromiumiin, niin voit käyttää kirjanmerkkejä ja muita asetuksia kaikilla laitteillasi.</translation>
 <translation id="3904484643286601695">Voit muuttaa valintoja milloin tahansa Chromiumin asetuksista.</translation>
-<translation id="394413318816989199">Tunnuslauseella ei salata maksutapoja ja osoitteita.
-
-Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chromium-data<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Avaa ja suorittaa turvatarkistuksen Chromiumissa.</translation>
 <translation id="4043291146360695975">Salasanat tallennetaan Salasanojen ylläpitoon vain tällä laitteella.</translation>
-<translation id="4076589763479456892">Jos unohdit tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chromium-data<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Ei tueta Chromium Betassa</translation>
 <translation id="4106512142782407609">Kirjautuneena käyttäjänä <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@ Huomioitavaa:
 <translation id="6337530241089703714">Valitse, haluatko poistaa Chromium-datasi tältä laitteelta vai säilyttää sen</translation>
 <translation id="6348483005826990855">3. Valitse Chromium</translation>
 <translation id="6383607155624074112">Käytä Chromiumia nopeammin aloitusnäytön alapalkista</translation>
-<translation id="6407399265324739055">Maksutapoja ja osoitteita ei salata. Chromiumin selaushistoriaa ei synkronoida.
-
-Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chromium-data<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromiumista tuli juuri entistä parempi! Uusi versio on saatavilla.</translation>
 <translation id="6433172051771630690">Näillä vinkeillä saat Chromiumista mahdollisimman paljon irti.</translation>
 <translation id="6502321914804101924">Olet kirjautunut ulos Chromiumista</translation>
@@ -263,9 +256,6 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="8458950033462118672">Voit avata linkkejä Chromiumissa automaattisesti tekemällä siitä oletusselainsovelluksesi.</translation>
 <translation id="858114650497379505">Voit käyttää Salasanojen ylläpitoon tallennettuja salasanoja muissa iPhonesi sovelluksissa.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Kaikki oikeudet pidätetään.</translation>
-<translation id="8618440443578628179">Tunnuslauseella ei salata Google Payn maksutapoja ja osoitteita.
-
-Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chromium-data<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Pitää sinut turvassa Chromiumissa ja voi parantaa suojaustasi muissa Google-sovelluksissa, kun olet sisäänkirjautuneena.</translation>
 <translation id="8663480472502753423">Pidä Chromium ajan tasalla</translation>
 <translation id="8685813584220679697">Kirjaudu tälle sivustolle ja Chromiumiin.</translation>

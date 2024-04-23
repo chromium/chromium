@@ -5629,7 +5629,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5271578170655641944">Poistetaanko Google Driven pääsy?</translation>
 <translation id="5273806377963980154">Muokkaa sivuston URL-osoitetta</translation>
 <translation id="5275084684151588738">Käyttäjän sanakirjat</translation>
-<translation id="5275100789567222478">Laita päälle vain, kun akkua on jäljellä <ph name="PERCENT" /> % tai vähemmän</translation>
 <translation id="5275338516105640560">Välilehtiryhmän painike tallennettu</translation>
 <translation id="5275352920323889391">Koira</translation>
 <translation id="527605719918376753">Mykistä välilehti</translation>
@@ -6240,7 +6239,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5746169159649715125">Tallenna PDF-muodossa</translation>
 <translation id="5747785204778348146">Kehittäjä – epävakaa</translation>
 <translation id="5747809636523347288">Liitä ja avaa <ph name="URL" /></translation>
-<translation id="5748137879145720682">Laita päälle, kun tietokoneeni virtajohto irrotetaan</translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Tarkista valmius yhteyden jakamiseen</translation>
 <translation id="5753570386948603678">Poista historiasta</translation>

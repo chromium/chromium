@@ -75,7 +75,6 @@ Nəzərə alın ki:
 <translation id="2736805085127235148">Hazırda Chrome bildirişləri cihaz ayarlarında deaktivdir.</translation>
 <translation id="2750626042242931740">Chrome ayarlarında seçimləri yeniləyə bilərsiniz.</translation>
 <translation id="2767464022270041271">Yadda saxlanmış parol yoxdur. Parollarınızı yadda saxladıqda Google Parol Meneceri onları yoxlaya bilər.</translation>
-<translation id="2789947168960170215">Parol ifadəsini unutsanız, yaxud bu ayarı dəyişmək istəsəniz, <ph name="BEGIN_LINK" />hesabda Chrome datasını silin<ph name="END_LINK" />.</translation>
 <translation id="2869959624320573933">Chrome'a daxil olun</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Chrome-un datanı məxfi saxlaması<ph name="END_LINK" /> haqqında ətraflı</translation>
 <translation id="2952581218264071393">1. Chrome Ayarlarını açın</translation>
@@ -190,9 +189,6 @@ Data parol ifadəsi ilə şifrələnib. Google Hesabında Chrome datasını isti
 <translation id="6648150602980899529"><ph name="DOMAIN" /> tərəfindən idarə olunan hesab ilə daxil olursunuz və onun administratoruna Chrome datanız üzərində nəzarəti verirsiniz. Datanız həmişəlik bu hesab ilə əlaqələndiriləcək. Chrome'dan çıxmaq datanızı bu cihazdan siləcək, lakin data Google Hesabında qalacaq.</translation>
 <translation id="6683891932310469419">Chrome tarixçəsi səhifəsini açır.</translation>
 <translation id="6709398533399187136">Parolunuz data pozulması zamanı ələ keçirilib. Google Parol Meneceri onu indi dəyişmənizi tövsiyə edir.</translation>
-<translation id="6815466750807582739">Ödəniş metodu və ünvanlar şifrələnməyəcək. Chrome-dan baxış tarixçəsi sinxronlaşdırılmayacaq.
-
-Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Google parol ifadəsini əldə etmir və ya saxlamır. Parol ifadəsini unutsanız, yaxud bu ayarı dəyişmək istəsəniz, <ph name="BEGIN_LINK" />hesabda Chrome datasını silin<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">iOS-da Chrome ayarlarını açın, "Defolt brauzer tətbiqi" üzərinə toxunun və Chrome seçin.</translation>
 <translation id="686691656039982452">Google Hesabında <ph name="BEGIN_LINK" />yadda saxlanan Chrome datasını idarə edə bilərsiniz<ph name="END_LINK" />.
 
@@ -277,9 +273,6 @@ Data <ph name="TIME" /> tarixində parol ifadəsi ilə şifrələnib. Google Hes
 <translation id="8808828119384186784">Chrome Ayarları</translation>
 <translation id="8850736900032787670">Maraqlarınıza əsasən fərdiləşdirilmiş kontent qəbul etmək üçün Chrome-a daxil olun.</translation>
 <translation id="8855781063981781621">Chrome-da Kilidləmə rejimini deaktiv etmək üçün onu iPad-də söndürün.</translation>
-<translation id="8856877214925961642">Parol ifadəsi şifrələməsinə ödəniş metodu və ünvanlar daxil deyil.
-
-Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını silin<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google Parol Meneceri bütün parolları yoxlaya bilmədi. Sabah yenidən cəhd edin.</translation>
 <translation id="8865415417596392024">Hesabdakı Chrome datası</translation>
 <translation id="8874688701962049679">Chrome-dan maksimum yararlanmaq üçün məsləhətlər.</translation>

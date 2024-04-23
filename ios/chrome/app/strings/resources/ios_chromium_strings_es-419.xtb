@@ -99,12 +99,8 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="3855938650519180865">Novedades de Chromium</translation>
 <translation id="3886689467633467988">Accede a este sitio y a Chromium para obtener tus favoritos y mucho más en todos tus dispositivos.</translation>
 <translation id="3904484643286601695">Puedes actualizar tus selecciones en cualquier momento en la configuración de Chromium.</translation>
-<translation id="394413318816989199">La encriptación de la frase de contraseña no incluye formas de pago ni direcciones.
-
-Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Abre y ejecuta la Verificación de seguridad en Chromium.</translation>
 <translation id="4043291146360695975">Las contraseñas se guardan en el Administrador de contraseñas solo en este dispositivo.</translation>
-<translation id="4076589763479456892">Si olvidaste tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">No es compatible en la versión beta de Chromium</translation>
 <translation id="4106512142782407609">Accediste como <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@ Aspectos que debes tener en cuenta:
 <translation id="6337530241089703714">Decidir si quieres borrar o conservar los datos de Chromium que tienes almacenados en este dispositivo</translation>
 <translation id="6348483005826990855">3. Selecciona Chromium.</translation>
 <translation id="6383607155624074112">Accede a Chromium más rápido desde el Dock de la pantalla de inicio</translation>
-<translation id="6407399265324739055">No se encriptarán las formas de pago ni las direcciones. No se sincronizará el historial de navegación de Chromium.
-
-Solo alguien con tu frase de contraseña puede leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si olvidas tu frase de contraseña o quieres cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">¡Chromium mejoró! Hay una nueva versión disponible.</translation>
 <translation id="6433172051771630690">Sugerencias para aprovechar Chromium al máximo.</translation>
 <translation id="6502321914804101924">Saliste de Chromium</translation>
@@ -263,9 +256,6 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="8458950033462118672">Si quieres abrir vínculos de forma automática en Chromium, elígelo como la app de navegador predeterminada.</translation>
 <translation id="858114650497379505">Puedes usar las contraseñas que guardaste en el Administrador de contraseñas en otras apps de tu iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Los autores de Chromium. Todos los derechos reservados.</translation>
-<translation id="8618440443578628179">La encriptación con la frase de contraseña no incluye formas de pago ni direcciones de Google Pay.
-
-Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra los datos de Chromium de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Te protege en Chromium y puede usarse para mejorar tu seguridad en otras apps de Google cuando accedes a tu cuenta.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualizado</translation>
 <translation id="8685813584220679697">Accede a este sitio y a Chromium.</translation>

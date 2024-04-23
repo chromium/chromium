@@ -99,12 +99,8 @@
 <translation id="3855938650519180865">Chromium 的新功能</translation>
 <translation id="3886689467633467988">登入此網站和 Chromium，即可在所有裝置上存取書籤及其他設定。</translation>
 <translation id="3904484643286601695">你可隨時在 Chromium 設定中更新所選項目。</translation>
-<translation id="394413318816989199">密碼短語加密的資料不包括付款方法和地址。
-
-如要變更此設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chromium 資料<ph name="END_LINK" />。</translation>
 <translation id="4005283307739974863">在 Chromium 中開啟並執行「安全檢查」。</translation>
 <translation id="4043291146360695975">密碼只會儲存至此裝置上的「密碼管理工具」。</translation>
-<translation id="4076589763479456892">如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chromium 資料<ph name="END_LINK" />。</translation>
 <translation id="4099085513035183040">Chromium Beta 版本上不支援此功能</translation>
 <translation id="4106512142782407609">已使用 <ph name="EMAIL" /> 的身分登入。
 
@@ -194,9 +190,6 @@
 <translation id="6337530241089703714">選擇要從此裝置上清除 Chromium 資料，還是要保留資料</translation>
 <translation id="6348483005826990855">3. 選取 [Chromium]</translation>
 <translation id="6383607155624074112">從主畫面 Dock 更快存取 Chromium</translation>
-<translation id="6407399265324739055">系統將不會加密你的付款方法和地址，Chromium 上的瀏覽記錄將不會同步。
-
-只有知道密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 亦不會儲存密碼短語。如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chromium 資料<ph name="END_LINK" />。</translation>
 <translation id="6424492062988593837">Chromium 現在更進一步！歡迎您升級使用新版本。</translation>
 <translation id="6433172051771630690">可協助你充分運用 Chromium 的各項提示。</translation>
 <translation id="6502321914804101924">你已登出 Chromium</translation>
@@ -263,9 +256,6 @@
 <translation id="8458950033462118672">將 Chromium 設定為「預設瀏覽器應用程式」，即可自動以 Chromium 開啟連結。</translation>
 <translation id="858114650497379505">您可在 iPhone 上的其他應用程式使用您儲存到「密碼管理工具」的密碼。</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
-<translation id="8618440443578628179">密碼短語加密的資料不包括 Google Pay 的付款方法和地址。
-
-如要變更此設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chromium 資料<ph name="END_LINK" />。</translation>
 <translation id="865600487977764604">確保您登入使用 Chromium 的安全，並可提升您在其他 Google 應用程式的安全性。</translation>
 <translation id="8663480472502753423">取得 Chromium 最新更新</translation>
 <translation id="8685813584220679697">登入此網站和 Chromium。</translation>

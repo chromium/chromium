@@ -98,12 +98,8 @@
 <translation id="3855938650519180865">በChromium ውስጥ ምን አዲስ ነገር አለ</translation>
 <translation id="3886689467633467988">በሁሉም መሣሪያዎችዎ ላይ የእርስዎን ዕልባቶች እና ሌሎችም ለማግኘት ወደዚህ ጣቢያ እና Chromium ይግቡ።</translation>
 <translation id="3904484643286601695">ምርጫዎችዎን በማንኛውም ጊዜ በChromium ቅንብሮች ውስጥ ማዘመን ይችላሉ።</translation>
-<translation id="394413318816989199">የይለፍ ሐረግ ምስጠራ የመክፈያ ዘዴዎችን እና አድራሻዎችን አያካትትም።
-
-ይህን ቅንብር ለመለወጥ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChromium ውሂብ ያጽዱ<ph name="END_LINK" />።</translation>
 <translation id="4005283307739974863">በChromium ውስጥ የደህንነት ፍተሻን ይከፍታል እና ያሄዳል።</translation>
 <translation id="4043291146360695975">የይለፍ ቃላት የሚቀመጡት በዚህ መሣሪያ ላይ ብቻ ባለው የይለፍ ቃል አስተዳዳሪ ላይ ነው።</translation>
-<translation id="4076589763479456892">የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ፣ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChromium ውሂብ ያጽዱ<ph name="END_LINK" />።</translation>
 <translation id="4099085513035183040">በChromium ቅድመ-ይሁንታ ላይ አይደገፍም</translation>
 <translation id="4106512142782407609">እንደ <ph name="EMAIL" /> ሆነው ገብተዋል።
 
@@ -193,9 +189,6 @@
 <translation id="6337530241089703714">የChromium ውሂብዎን ከዚህ መሣሪያ ይጸዳ ወይም ይቆይ እንደሆነ ይምረጡ</translation>
 <translation id="6348483005826990855">3. Chromiumን ይምረጡ</translation>
 <translation id="6383607155624074112">Chromiumን ከመነሻ ማያ ገጽዎ መትከያ በፍጥነት ይድረሱበት</translation>
-<translation id="6407399265324739055">የመክፈያ ዘዴዎች እና አድራሻዎች አይሰምሩም። የChromium የአሰሳ ታሪክ አይሰምርም።
-
-የእርስዎን የተመሰጠረ ውሂብ ማንበብ የሚችለው የይለፍ ሐረግዎ ያለው ሰው ብቻ ነው። የይለፍ ሐረጉ ወደ Google አይላክም ወይም በGoogle አይከማችም። የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChrome ውሂብ ያጽዱ<ph name="END_LINK" />።</translation>
 <translation id="6424492062988593837">Chromium አሁን ተሻሽሏል! አዲስ ስሪት አለ።</translation>
 <translation id="6433172051771630690">ከChromium ምርጡን ለማግኘት ጠቃሚ ምክሮች።</translation>
 <translation id="6502321914804101924">Chromium ዘግቶ ወጥቷል</translation>
@@ -262,9 +255,6 @@
 <translation id="8458950033462118672">በChromium ውስጥ አገናኞችን በራስ-ሰር በመክፈት እንደ ነባሪ የአሳሽ መተግበሪያዎ ማድረግ ይችላሉ።</translation>
 <translation id="858114650497379505">በእርስዎ iPhone ላይ ባሉ ሌሎች መተግበሪያዎች ውስጥ ወደ የይለፍ ቃል አስተዳዳሪ ያስቀመጧቸውን የይለፍ ቃላት መጠቀም ይችላሉ።</translation>
 <translation id="8586442755830160949">የቅጂ መብት <ph name="YEAR" /> የChromium ደራሲያን። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
-<translation id="8618440443578628179">የይለፍ ሐረግ ምስጠራ ከGoogle Pay የመክፈያ ዘዴዎችን እና አድራሻዎችን አያካትትም።
-
-ይህን ቅንብር ለመለወጥ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChromium ውሂብ ያጽዱ<ph name="END_LINK" />።</translation>
 <translation id="865600487977764604">በChromium ላይ ደህንነትዎን ይጠብቃል እና በመለያ በገቡባቸው ሌሎች የGoogle መተግበሪያዎች ላይ ደህንነትዎን ለማሻሻል ሥራ ላይ ሊውል ይችላል።</translation>
 <translation id="8663480472502753423">Chromiumን እንደተዘመነ ያቆዩ</translation>
 <translation id="8685813584220679697">ወደዚህ ጣቢያ እና Chromium ይግቡ።</translation>

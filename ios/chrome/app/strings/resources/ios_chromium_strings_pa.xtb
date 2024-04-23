@@ -73,6 +73,7 @@
 <translation id="2918709798697875261">ਤੁਹਾਡੀ ਸੰਸਥਾ ਲਈ ਤੁਹਾਨੂੰ Chromium ਤੋਂ ਸਾਈਨ-ਆਊਟ ਰਹਿਣ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="2942241131342758843">ਲਿੰਕਾਂ ਨੂੰ ਖੋਲ੍ਹਣ, ਵਿਜੇਟਾਂ ਤੋਂ ਖੋਜ ਕਰਨ ਅਤੇ ਹੋਰ ਐਪਾਂ ਵਿੱਚ ਆਟੋਫਿਲ ਪਾਸਵਰਡਾਂ ਲਈ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ Chromium ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="2977470724722393594">Chromium ਅੱਪ ਟੂ ਡੇਟ ਹੈ</translation>
+<translation id="3044857325852340337">Chromium ਡਾਟਾ ਮਿਟਾਇਆ ਗਿਆ</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium ਨਵੇਂ ਟੈਬ ਪੰਨੇ 'ਤੇ ਇਸ ਪੈਕੇਜ ਨੂੰ ਟਰੈਕ ਕਰਨ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ।}one{Chromium ਨਵੇਂ ਟੈਬ ਪੰਨੇ 'ਤੇ ਇਸ ਪੈਕੇਜ ਨੂੰ ਟਰੈਕ ਕਰਨ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ।}other{Chromium ਨਵੇਂ ਟੈਬ ਪੰਨੇ 'ਤੇ ਇਨ੍ਹਾਂ ਪੈਕੇਜਾਂ ਨੂੰ ਟਰੈਕ ਕਰਨ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰ ਸਕਦਾ ਹੈ।}}</translation>
 <translation id="3102849287235003384">ਸਾਰੀਆਂ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ ਆਪਣੇ Google ਖਾਤੇ ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK" />Chromium ਤੋਂ ਸਾਈਨ-ਆਊਟ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="3219277919172823720">Chromium ਵਿੱਚ ਅਵਾਜ਼ ਨਾਲ ਖੋਜੋ</translation>
@@ -99,12 +100,8 @@
 <translation id="3855938650519180865">Chromium ਵਿੱਚ ਨਵਾਂ ਕੀ ਹੈ</translation>
 <translation id="3886689467633467988">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਇਸ ਸਾਈਟ ਅਤੇ Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="3904484643286601695">ਤੁਸੀਂ ਕਦੇ ਵੀ Chromium ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੀਆਂ ਚੋਣਾਂ ਨੂੰ ਅੱਪਡੇਟ ਕਰ ਸਕਦੇ ਹੋ।</translation>
-<translation id="394413318816989199">ਪਾਸਫਰੇਜ਼ ਇਨਕ੍ਰਿਪਸ਼ਨ ਵਿੱਚ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਪਤੇ ਸ਼ਾਮਲ ਨਹੀਂ ਹਨ।
-
-ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣ ਲਈ, <ph name="BEGIN_LINK" />ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ Chromium ਡਾਟੇ ਨੂੰ ਕਲੀਅਰ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="4005283307739974863">ਇਸ ਨਾਲ Chromium ਵਿੱਚ ਸੁਰੱਖਿਆ ਜਾਂਚ ਖੁੱਲ੍ਹਦੀ ਅਤੇ ਚੱਲਦੀ ਹੈ।</translation>
 <translation id="4043291146360695975">ਪਾਸਵਰਡ ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਹਨ।</translation>
-<translation id="4076589763479456892">ਜੇ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਭੁੱਲ ਗਏ ਹੋ ਜਾਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ <ph name="BEGIN_LINK" />ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ Chromium ਡਾਟੇ ਨੂੰ ਕਲੀਅਰ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="4099085513035183040">Chromium ਬੀਟਾ 'ਤੇ ਸਮਰਥਿਤ ਨਹੀਂ</translation>
 <translation id="4106512142782407609"><ph name="EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਗਿਆ।
 
@@ -124,6 +121,7 @@
 <translation id="4633738821577273991">ਇਸ Chromium ਪ੍ਰੋਫਾਈਲ ਲਈ ਵੀ ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="4638625642619341392">Chromium ਨੂੰ ਇੱਥੋਂ ਡਾਊਨਲੋਡ ਕਰੋ।</translation>
 <translation id="4654936625574199632">ਐਪ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ, Chromium ਵਰਤੋਂ ਅਤੇ ਕ੍ਰੈਸ਼ ਡਾਟਾ Google ਨੂੰ ਭੇਜਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਪ੍ਰਬੰਧਨ ਕਰੋ<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Chromium ਤੋਂ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ</translation>
 <translation id="4681781466797808448">Chromium ਸਕੈਨਰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4736424910885271643">ਤੁਹਾਡੇ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="HOSTED_DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਇਸ ਲਈ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਤੁਹਾਡਾ Chromium ਡਾਟਾ ਕਲੀਅਰ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="4773487571745795781">ਤੁਸੀਂ Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
@@ -191,12 +189,10 @@
 <translation id="6324041800010509197">Chromium ਵਿੱਚ ਟੈਬ ਗਰਿੱਡ 'ਤੇ ਜਾਓ</translation>
 <translation id="6325378625795868881">ਸੁਨੇਹੇ ਅਤੇ ਹੋਰ ਐਪਾਂ ਵਿਚਲੇ ਲਿੰਕਾਂ 'ਤੇ ਟੈਪ ਕਰ ਕੇ ਕਿਸੇ ਵੇਲੇ ਵੀ Chromium ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="632825460376924298">Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨ ਦਿਓ</translation>
+<translation id="6332129548244419716">Chromium ਤੋਂ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ।</translation>
 <translation id="6337530241089703714">ਚੁਣੋ ਕਿ ਕੀ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਆਪਣਾ Chromium ਡਾਟਾ ਕਲੀਅਰ ਕਰਨਾ ਹੈ ਜਾਂ ਇਸਨੂੰ ਰੱਖਣਾ ਹੈ</translation>
 <translation id="6348483005826990855">3. Chromium ਚੁਣੋ</translation>
 <translation id="6383607155624074112">ਆਪਣੇ ਹੋਮ ਸਕ੍ਰੀਨ ਡੌਕ ਤੋਂ Chromium ਤੱਕ ਵਧੇਰੇ ਤੇਜ਼ੀ ਨਾਲ ਪਹੁੰਚ ਕਰੋ</translation>
-<translation id="6407399265324739055">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਪਤਿਆਂ ਨੂੰ ਇਨਕ੍ਰਿਪਟ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ। Chromium ਦੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਨੂੰ ਸਿੰਕ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।
-
-ਸਿਰਫ਼ ਤੁਹਾਡੇ ਪਾਸਫਰੇਜ਼ ਨਾਲ ਹੀ ਕੋਈ ਤੁਹਾਡੇ ਇਨਕ੍ਰਿਪਟਡ ਡਾਟੇ ਨੂੰ ਪੜ੍ਹ ਸਕਦਾ ਹੈ। ਪਾਸਫਰੇਜ਼ Google ਨੂੰ ਨਹੀਂ ਭੇਜਿਆ ਜਾਂਦਾ ਜਾਂ ਇਸ ਵੱਲੋਂ ਸਟੋਰ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ। ਜੇ ਤੁਸੀਂ ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਭੁੱਲ ਜਾਂਦੇ ਹੋ ਜਾਂ ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣਾ ਚਾਹੁੰਦੇ ਹੋ, ਤਾਂ <ph name="BEGIN_LINK" />ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ Chromium ਡਾਟੇ ਨੂੰ ਕਲੀਅਰ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="6424492062988593837">Chromium ਬਿਹਤਰ ਬਣ ਗਿਆ ਹੈ! ਇੱਕ ਨਵਾਂ ਵਰਜਨ ਉਪਲਬਧ ਹੈ।</translation>
 <translation id="6433172051771630690">Chromium ਦਾ ਵੱਧ ਤੋਂ ਵੱਧ ਲਾਹਾ ਲੈਣ ਸੰਬੰਧੀ ਨੁਕਤੇ।</translation>
 <translation id="6502321914804101924">Chromium ਸਾਈਨ-ਆਊਟ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
@@ -263,9 +259,6 @@
 <translation id="8458950033462118672">ਤੁਸੀਂ Chromium ਨੂੰ ਆਪਣੀ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਬ੍ਰਾਊਜ਼ਰ ਐਪ ਬਣਾ ਕੇ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਇਸ ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹ ਸਕਦੇ ਹੋ।</translation>
 <translation id="858114650497379505">ਤੁਸੀਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੇ iPhone 'ਤੇ ਹੋਰ ਐਪਾਂ ਵਿੱਚ ਪਾਸਵਰਡ ਪ੍ਰਬੰਧਕ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="8586442755830160949">ਕਾਪੀਰਾਈਟ <ph name="YEAR" /> The Chromium Authors. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
-<translation id="8618440443578628179">ਪਾਸਫਰੇਜ਼ ਇਨਕ੍ਰਿਪਸ਼ਨ ਵਿੱਚ Google Pay ਦੀਆਂ ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਅਤੇ ਪਤੇ ਸ਼ਾਮਲ ਨਹੀਂ ਹਨ।
-
-ਇਸ ਸੈਟਿੰਗ ਨੂੰ ਬਦਲਣ ਲਈ, <ph name="BEGIN_LINK" />ਆਪਣੇ ਖਾਤੇ ਵਿੱਚ Chromium ਡਾਟੇ ਨੂੰ ਕਲੀਅਰ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="865600487977764604">ਤੁਹਾਡੇ ਸਾਈਨ-ਇਨ ਹੋਣ 'ਤੇ, ਤੁਹਾਨੂੰ Chromium ਵਿੱਚ ਸੁਰੱਖਿਅਤ ਰੱਖਿਆ ਜਾਂਦਾ ਹੈ ਅਤੇ ਸ਼ਾਇਦ ਹੋਰ Google ਐਪਾਂ ਵਿੱਚ ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ ਵਰਤਿਆ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="8663480472502753423">Chromium ਨੂੰ ਅੱਪ-ਟੂ-ਡੇਟ ਰੱਖੋ</translation>
 <translation id="8685813584220679697">ਇਸ ਸਾਈਟ ਅਤੇ Chromium ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>

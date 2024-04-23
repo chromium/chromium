@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">צילום מסך</translation>
 <translation id="1108938384783527433">סנכרון ההיסטוריה</translation>
 <translation id="1111673857033749125">סימניות שנשמרו במכשירים האחרים שלך יופיעו כאן.</translation>
-<translation id="1113057722807951993">‏הצפנה של ביטוי סיסמה לא כוללת אמצעי תשלום וכתובות מ-Google Pay.
-
-כדי לשנות את ההגדרה הזו, עליך <ph name="BEGIN_LINK" />לנקות את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">צפייה בתצוגה נקייה</translation>
 <translation id="1126809382673880764">‏במצב הזה המערכת לא מגינה עליך מפני אתרים, הורדות ותוספים מסוכנים. גלישה בטוחה עדיין תגן עליך בשירותים אחרים של Google שבהם היא זמינה, כמו Gmail והחיפוש.</translation>
 <translation id="1129510026454351943">פרטים: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@
 <translation id="3290249595466894471">בנוסף, נשלחת דגימה קטנה שכוללת דפים, הורדות, פעילות של תוספים ופרטי מערכת כדי לאתר איומים חדשים</translation>
 <translation id="3293181007446299124">היסטוריית הגלישה נשמרת באופן פרטי במכשיר, והדוחות נשלחים לאחר השהיה כדי להגן על הפרטיות שלך.</translation>
 <translation id="3303414029551471755">האם להוריד את התוכן?</translation>
+<translation id="3303855915957856445">לא נמצאו תוצאות חיפוש</translation>
 <translation id="3305130791745726624">שליחה למכשיר</translation>
 <translation id="3305795716056605962">תרגום הדפים באמצעות הלחצן 'אפשרויות נוספות'</translation>
 <translation id="3334729583274622784">לשנות את סיומת הקובץ?</translation>
@@ -529,7 +527,6 @@
 <translation id="3847319713229060696">סיוע לשיפור האבטחה באינטרנט לטובת כולם</translation>
 <translation id="3856096718352044181">יש לאמת שהספק הזה חוקי או לנסות שוב מאוחר יותר</translation>
 <translation id="3858860766373142691">שם</translation>
-<translation id="3872520701277728051">‏אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך לנקות את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">העתקת הטקסט</translation>
 <translation id="3894427358181296146">הוספת תיקייה</translation>
 <translation id="3899682235662194879">סגירה של כל כרטיסיות המצב האנונימי</translation>
@@ -870,8 +867,6 @@
 <translation id="5590372121997663538">אני רוצה להשאיר את החיבור פעיל במחשב הזה</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5599455543593328020">מצב אנונימי</translation>
-<translation id="5605283439565877834">‏אמצעי תשלום וכתובות שנשמרו ב-Google Pay לא יוצפנו. היסטוריית הגלישה ב-Chrome לא תסונכרן.
-רק מי שיודע את ביטוי הסיסמה יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google ולא מאוחסן ב-Google. אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך לנקות את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">אין סיסמאות שמורות</translation>
 <translation id="5620928963363755975">איתור הקבצים והדפים שלך ב'הורדות' דרך הלחצן 'אפשרויות נוספות'</translation>
 <translation id="562289928968387744">ניהול התגובות</translation>
@@ -1100,7 +1095,6 @@
 <translation id="6672697278890207089">הזן את משפט הסיסמה</translation>
 <translation id="6672917148207387131">הוספה של <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">כדי להתחיל לסנכרן צריך להזין את ביטוי הסיסמה</translation>
-<translation id="6676840375528380067">‏למחוק את נתוני Chrome שלך מהמכשיר הזה?</translation>
 <translation id="6676927815633975364">‏כניסה לאתר הזה ול-Chrome</translation>
 <translation id="6684809838922667136">‏משפרים את Chrome</translation>
 <translation id="670498945988402717">התבצעה בדיקה אתמול</translation>
@@ -1300,7 +1294,6 @@
 <translation id="7626032353295482388">‏ברוך בואך אל Chrome</translation>
 <translation id="7630202231528827509">‏כתובת ה-URL של הספק</translation>
 <translation id="7638584964844754484">ביטוי סיסמה שגוי</translation>
-<translation id="7641339528570811325">מחיקת נתוני הגלישה...</translation>
 <translation id="7646772052135772216">סנכרון הסיסמאות לא פועל</translation>
 <translation id="7655240423373329753">7 הימים האחרונים</translation>
 <translation id="7655900163790317559">‏הפעלת ה-Bluetooth מתבצעת…</translation>
@@ -1378,7 +1371,6 @@
 <translation id="7995059495660416932">תוכן יוצג לך ברגע שיהיה זמין</translation>
 <translation id="799576009106109668">מהירות הגלישה תגבר כי התוכן ייטען באופן יזום, על סמך הביקור הנוכחי שלך בדף האינטרנט</translation>
 <translation id="8004582292198964060">דפדפן</translation>
-<translation id="8013372441983637696">‏יש לנקות גם את נתוני Chrome מהמכשיר הזה</translation>
 <translation id="8015452622527143194">כל מה שמופיע בדף ישתנה לגודל ברירת המחדל</translation>
 <translation id="8026238112629815203">שינינו את האופן שבו סיסמאות נשמרות במכשיר הזה</translation>
 <translation id="8027863900915310177">בחירת המיקום להורדה</translation>
@@ -1505,7 +1497,6 @@
 <translation id="8562452229998620586">הסיסמאות השמורות יופיעו כאן.</translation>
 <translation id="8570677896027847510">לא ניתן להוריד את הקובץ באופן מאובטח</translation>
 <translation id="8571213806525832805">מארבעת השבועות האחרונים</translation>
-<translation id="8583805026567836021">נתוני החשבון נמחקים</translation>
 <translation id="859046281437143747">אפשר לעקוב אחר המחיר באמצעות לחצן האפשרויות הנוספות</translation>
 <translation id="860043288473659153">שם בעל הכרטיס</translation>
 <translation id="8602358303461588329">‏כניסה ל-Chrome, סגור.</translation>
@@ -1635,6 +1626,5 @@
 <translation id="983192555821071799">סגירת כל הכרטיסיות</translation>
 <translation id="987264212798334818">כללי</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> כרטיסיות</translation>
-<translation id="993520549480398880">ניתן לנקות גם את הסימניות, ההיסטוריה ונתונים נוספים במכונית הזו</translation>
 <translation id="996149300115483134">תפריט כרטיס הפיד סגור</translation>
 </translationbundle>

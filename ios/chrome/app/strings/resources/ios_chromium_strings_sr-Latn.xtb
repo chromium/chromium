@@ -99,12 +99,8 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chromium-a po
 <translation id="3855938650519180865">Šta je novo u Chromium-u</translation>
 <translation id="3886689467633467988">Prijavite se na ovaj sajt i u Chromium da bi vam obeleživači i drugi sadržaj bili dostupni na svim uređajima.</translation>
 <translation id="3904484643286601695">Uvek možete da ažurirate izabrane opcije u podešavanjima Chromium-a.</translation>
-<translation id="394413318816989199">Šifrovanje pomoću pristupne fraze ne obuhvata načine plaćanja i adrese.
-
-Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chromium podatke na nalogu<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Otvara i pokreće Proveru bezbednosti u Chromium-u.</translation>
 <translation id="4043291146360695975">Lozinke se čuvaju u Menadžeru lozinki samo na ovom uređaju.</translation>
-<translation id="4076589763479456892">Ako ste zaboravili pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chromium podatke na nalogu<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Nije podržano u verziji Chromium beta</translation>
 <translation id="4106512142782407609">Prijavljeni ste kao <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@ Podaci se šifruju pomoću pristupne fraze. Unesite je da biste koristili i sa�
 <translation id="6337530241089703714">Odaberite da li ćete obrisati Chromium podatke sa ovog uređaja ili ih zadržati</translation>
 <translation id="6348483005826990855">3. Izaberite Chromium</translation>
 <translation id="6383607155624074112">Brže pristupajte Chromium-u sa fiksiranog početnog ekrana</translation>
-<translation id="6407399265324739055">Načini plaćanja i adrese neće biti šifrovani. Istorija pregledanja iz Chromium-a se neće sinhronizovati.
-
-Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti se čuva na Google-u. Ako zaboravite pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chromium podatke na nalogu<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium je upravo postao bolji! Dostupna je nova verzija.</translation>
 <translation id="6433172051771630690">Saveti kako da na najbolji način koristite Chromium.</translation>
 <translation id="6502321914804101924">Chromium je odjavljen</translation>
@@ -263,9 +256,6 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="8458950033462118672">Možete da automatski otvarate linkove u Chromium-u tako što ćete ga podesiti kao podrazumevanu aplikaciju za pregledanje.</translation>
 <translation id="858114650497379505">Možete da koristite lozinke koje ste sačuvali u Menadžeru lozinki u drugim aplikacijama na iPhone-u.</translation>
 <translation id="8586442755830160949">Autorska prava <ph name="YEAR" />. Autori Chromium-a. Sva prava zadržana.</translation>
-<translation id="8618440443578628179">Šifrovanje pomoću pristupne fraze ne obuhvata načine plaćanja i adrese iz Google Pay-a.
-
-Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chromium podatke na nalogu<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Štiti vas u Chrome-u i može da se koristi za poboljšanje bezbednosti u drugim Google aplikacijama kada ste prijavljeni.</translation>
 <translation id="8663480472502753423">Redovno ažuriraju Chromium</translation>
 <translation id="8685813584220679697">Prijavite se na ovaj sajt i u Chromium.</translation>

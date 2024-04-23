@@ -937,6 +937,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2759825833388495838">isikan kata laluan anda pada <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Komik</translation>
 <translation id="2765217105034171413">Kecil</translation>
+<translation id="2768397283109119044">Anda cuba mencapai <ph name="DOMAIN" /> tetapi pelayan memberikan sijil yang tidak sah kepada nama itu. Nama tersebut ialah alamat IP yang dikhaskan atau nama hos dalaman.</translation>
 <translation id="2770159525358613612">Cuba muat naik semula fail anda</translation>
 <translation id="277133753123645258">Kaedah penghantaran</translation>
 <translation id="2773388851563527404">Chrome mengehadkan kebanyakan laman daripada menggunakan kuki pihak ketiga. Namun, kuki pihak ketiga dibenarkan pada laman ini kerana kuki tersebut bergantung pada Chrome untuk memberikan perkhidmatan asas. Lawati tetapan untuk <ph name="LINK" />.</translation>
@@ -1720,6 +1721,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4265872034478892965">Dibenarkan oleh pentadbir anda</translation>
 <translation id="4269029136757623689">Kipas Rumah</translation>
 <translation id="4269264543938335308">Pakaian renang</translation>
+<translation id="4269599248168651462">Sijil pelayan dikeluarkan kepada nama bukan unik.</translation>
 <translation id="4270541775497538019">Petak 6</translation>
 <translation id="4275830172053184480">Mulakan semula peranti anda</translation>
 <translation id="4276974990916607331">Tidak perlu</translation>
@@ -4129,6 +4131,7 @@ Butiran tambahan:
 <translation id="8919740778133505789">Kereta Sport</translation>
 <translation id="8919895429178014996">Sembunyikan semua item</translation>
 <translation id="8922013791253848639">Sentiasa benarkan iklan di tapak ini</translation>
+<translation id="8924109546403192898">Apabila peristiwa keselamatan dibenderakan oleh Chrome, data yang berkaitan tentang peristiwa tersebut akan dihantar kepada pentadbir anda. Data ini boleh termasuk URL halaman yang anda lawati dalam Chrome, URL halaman yang anda menyalin data, nama fail atau metadata, penyemak imbas atau tab ranap dan nama pengguna yang digunakan untuk log masuk ke aplikasi berasaskan web, peranti dan Chrome anda.</translation>
 <translation id="892588693504540538">Tebukan atas sebelah kanan</translation>
 <translation id="8926389886865778422">Jangan tanya lagi</translation>
 <translation id="8932102934695377596">Jam anda di belakang</translation>

@@ -99,12 +99,8 @@ Veri kullanarak Chromium deneyiminizi iyileştiren daha fazla ayar görmek için
 <translation id="3855938650519180865">Chromium'daki Yenilikler</translation>
 <translation id="3886689467633467988">Yer işaretlerinize ve daha fazlasına tüm cihazlarınızdan ulaşmak için bu sitede ve Chromium'da oturum açın.</translation>
 <translation id="3904484643286601695">Seçimlerinizi istediğiniz zaman Chromium Ayarları'ndan güncelleyebilirsiniz.</translation>
-<translation id="394413318816989199">Parolayla şifreleme, ödeme yöntemlerini ve adresleri kapsamaz.
-
-Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chromium verilerini temizleyin<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Chromium'da Güvenlik Kontrolü'nü açar ve yürütür.</translation>
 <translation id="4043291146360695975">Şifreler yalnızca bu cihazda Şifre Yöneticisi'ne kaydedilir.</translation>
-<translation id="4076589763479456892">Parolanızı unuttuysanız veya bu ayarı değiştirmek istiyorsanız <ph name="BEGIN_LINK" />hesabınızdaki Chromium verilerini temizleyin<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Chromium Beta'da desteklenmiyor</translation>
 <translation id="4106512142782407609"><ph name="EMAIL" /> olarak oturum açtınız.
 
@@ -194,9 +190,6 @@ Dikkate alınması gereken noktalar:
 <translation id="6337530241089703714">Chromium verilerinizi bu cihazdan temizlemeyi veya saklamayı seçin</translation>
 <translation id="6348483005826990855">3. Chromium'u seçin</translation>
 <translation id="6383607155624074112">Ana ekran yuvanızdan Chromium'a daha hızlı erişin</translation>
-<translation id="6407399265324739055">Ödeme yöntemleri ve adresler şifrelenmez. Chromium'daki tarama geçmişi senkronize edilmez.
-
-Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Parola Google'a gönderilmez veya Google tarafından saklanmaz. Parolanızı unutursanız veya bu ayarı değiştirmek isterseniz <ph name="BEGIN_LINK" />hesabınızdaki Chromium verilerini temizleyin<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium daha da iyi hale geldi! Yeni bir sürüm var.</translation>
 <translation id="6433172051771630690">Chromium'dan en iyi şekilde yararlanma ipuçları.</translation>
 <translation id="6502321914804101924">Chromium oturumu kapatıldı</translation>
@@ -263,9 +256,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="8458950033462118672">Varsayılan tarayıcı uygulamanız yaparak bağlantıları Chromium'da otomatik bir şekilde açabilirsiniz.</translation>
 <translation id="858114650497379505">Şifre Yöneticisi'ne kaydettiğiniz şifreleri iPhone'unuzdaki diğer uygulamalarda kullanabilirsiniz.</translation>
 <translation id="8586442755830160949">Telif Hakkı <ph name="YEAR" /> The Chromium Authors. Tüm hakları saklıdır.</translation>
-<translation id="8618440443578628179">Parolayla şifreleme, Google Pay'deki ödeme yöntemlerini ve adresleri kapsamaz.
-
-Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chromium verilerini temizleyin<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Chromium'da güvende kalmanızı sağlar ve oturum açtığınızda diğer Google uygulamalarında güvenliğinizi artırmak için kullanılabilir.</translation>
 <translation id="8663480472502753423">Chromium'u güncel tutun</translation>
 <translation id="8685813584220679697">Bu sitede ve Chromium'da oturum açın.</translation>

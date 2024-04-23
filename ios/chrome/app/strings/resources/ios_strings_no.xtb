@@ -102,6 +102,7 @@
 <translation id="152234381334907219">Aldri lagret</translation>
 <translation id="1523341279170789507">Tillat alle informasjonskapsler</translation>
 <translation id="1524563461097350801">Nei takk</translation>
+<translation id="1539173178539798367">Skjul Slett nettlesingsdata</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
 <translation id="1545749641540134597">Skann en QR-kode</translation>
 <translation id="1552525382687785070">Administratoren din har slått av synkronisering</translation>
@@ -320,6 +321,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 
 Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om hvordan du sletter søkeloggen din.</translation>
 <translation id="2697526135132990015">Logg av og slett data</translation>
+<translation id="269819437389494246">Du kan se sidene du har besøkt, eller slette dem fra loggen</translation>
 <translation id="2700241355396984822">Alternativer for konfigurering av tillatelser</translation>
 <translation id="2702801445560668637">Leseliste</translation>
 <translation id="2704606927547763573">Kopiert</translation>
@@ -393,6 +395,7 @@ Søkemotoren din er <ph name="DSE_NAME" />. Se eventuelt instruksjonene deres om
 <translation id="3039722182465315531">Ikke logg på</translation>
 <translation id="3053332585453689122">Sender nettadressene du besøker, samt et lite utvalg av sideinnhold, nedlastinger, utvidelsesaktivitet og systeminformasjon, til Google Safe Browsing for å sjekke om nettadressene er skadelige.</translation>
 <translation id="3054631738875941048">Skjul Legg til på leselisten</translation>
+<translation id="3064295814838126921">Sletter nettlesingsdata …</translation>
 <translation id="3074499504015191586">Oversett hele siden</translation>
 <translation id="3076846064362030967">Du blir ikke logget av Google-kontoen din. <ph name="BEGIN_LINK" />Andre typer aktiviteter<ph name="END_LINK" /> kan bli lagret i Google-kontoen din når du er pålogget. Du kan slette dem når som helst.
 
@@ -858,6 +861,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5490005495580364134">Blokkér alle informasjonskapsler (anbefales ikke)</translation>
 <translation id="5497202150450073388">Forsøkt levert. Kommer til å prøve på nytt</translation>
 <translation id="5511959326926949696">Ekstrem, valgfri beskyttelse for nettleseren din. Den skal bare brukes hvis du mener at du kan bli offer for et svært sofistikert cyberangrep.</translation>
+<translation id="5512759250809559631">Meny → Logg → Slett nettlesingsdata</translation>
 <translation id="5513681519188741830">For <ph name="TIME" /> t siden</translation>
 <translation id="5525269841082836315">Opprett en passordfrase</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} svakt passord}other{{COUNT} svake passord}}</translation>
@@ -933,6 +937,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5859715514067755465">Fremover</translation>
 <translation id="5860033963881614850">Av</translation>
 <translation id="5860491529813859533">Slå på</translation>
+<translation id="5889333064153755823">Slett nettlesingsdata</translation>
 <translation id="5896576662943111387">Bygget for iOS</translation>
 <translation id="5897749768294722429">For å komme raskt tilbake til nettsteder du har besøkt, synkroniser fanene og loggen.</translation>
 <translation id="5897956970858271241">Besøk den kopierte linken</translation>
@@ -1030,6 +1035,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6346549652287021269">Vil du starte en ny nedlasting?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Denne adressen slettes fra Google-kontoen din (<ph name="USER_EMAIL" />) og denne enheten.}other{Disse adressene slettes fra Google-kontoen din (<ph name="USER_EMAIL" />) og denne enheten.}}</translation>
 <translation id="634878792104344809">Synkroniser blant annet passord og logg på alle enhetene dine</translation>
+<translation id="6351658970066645919">Slett nettlesingsdata</translation>
 <translation id="63519665078626091">For å bruke Nettinspektør, koble til Safari på datamaskinen med en kabel og åpne iPad på Utvikle-menyen. Du kan aktivere denne menyen i Avansert-delen i Safari-innstillingene på datamaskinen.</translation>
 <translation id="6355820205320395730">Svake passord er enkle å gjette. Sørg for at du lager sterke passord. <ph name="BEGIN_LINK" />Se flere sikkerhetstips.<ph name="END_LINK" /></translation>
 <translation id="6361681885917591592">Ferdig</translation>
@@ -1151,6 +1157,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="687135068089457384">Vis Innstillinger</translation>
 <translation id="6873263987691478642">Delt visning</translation>
 <translation id="6882836635272038266">Standardbeskyttelse mot nettsteder, nedlastinger og utvidelser som anses som farlige.</translation>
+<translation id="6887173972066406796">Bekreft sletting av nettlesingsdata</translation>
 <translation id="6888009575607455378">Er du sikker på at du vil forkaste endringene?</translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6897187120838603299">Passordet blir lagret på enheten din.</translation>
@@ -1345,6 +1352,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7930998711684428189">Advarer deg hvis passord blir avdekket i databrudd.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Eksportér passord</translation>
+<translation id="7939856641500914040">Slett nettlesingsdata…</translation>
 <translation id="794799177247607889">Stopp loggføringen</translation>
 <translation id="7959441099968534758">GÅ TIL FEEDEN</translation>
 <translation id="7961015016161918242">Aldri</translation>

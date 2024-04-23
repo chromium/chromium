@@ -23,7 +23,6 @@
 <translation id="1105960400813249514">屏幕截图</translation>
 <translation id="1108938384783527433">历史记录同步</translation>
 <translation id="1111673857033749125">您在其他设备上保存的书签将列在此处。</translation>
-<translation id="1113057722807951993">口令加密不涵盖 Google Pay 中的付款方式和地址。若要更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="1113597929977215864">显示简化版视图</translation>
 <translation id="1126809382673880764">不会保护您免受危险网站、下载内容和扩展程序的侵害。在 Gmail 和 Google 搜索等其他 Google 服务中，若安全浏览保护可用，您仍将获得该保护。</translation>
 <translation id="1129510026454351943">错误详情：<ph name="ERROR_DESCRIPTION" /></translation>
@@ -436,6 +435,7 @@
 <translation id="3290249595466894471">还会发送网页、下载内容、扩展程序活动和系统信息的少量样本，以帮助发现新威胁</translation>
 <translation id="3293181007446299124">您的浏览记录会私密地保留在您的设备上，并且系统会延迟发送报告以保护您的身份信息</translation>
 <translation id="3303414029551471755">要开始下载该内容吗？</translation>
+<translation id="3303855915957856445">未找到任何搜索结果</translation>
 <translation id="3305130791745726624">发送到设备</translation>
 <translation id="3305795716056605962">通过“更多选项”按钮翻译网页</translation>
 <translation id="3334729583274622784">更改文件扩展名？</translation>
@@ -527,7 +527,6 @@
 <translation id="3847319713229060696">帮助我们为所有人改善网络安全环境</translation>
 <translation id="3856096718352044181">请检查并确保这是一个有效的提供商，或者稍后重试</translation>
 <translation id="3858860766373142691">名称</translation>
-<translation id="3872520701277728051">如果您忘记了口令或想更改此设置，请<ph name="BEGIN_LINK" />清除账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="3892148308691398805">复制文字</translation>
 <translation id="3894427358181296146">添加文件夹</translation>
 <translation id="3899682235662194879">关闭所有无痕模式标签页</translation>
@@ -871,8 +870,6 @@
 <translation id="5590372121997663538">记住这台计算机</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5599455543593328020">无痕模式</translation>
-<translation id="5605283439565877834">Google Pay 中的付款方式和地址不会加密。Chrome 中的浏览记录不会同步。
-只有知道您口令的人能读取您的加密数据。该口令不会发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="5620163320393916465">尚未保存任何密码</translation>
 <translation id="5620928963363755975">通过“更多选项”按钮在“下载内容”中查找您的文件和网页</translation>
 <translation id="562289928968387744">管理回应</translation>
@@ -1101,7 +1098,6 @@
 <translation id="6672697278890207089">请输入密码</translation>
 <translation id="6672917148207387131">添加 <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">若要开始同步，请输入您的密码</translation>
-<translation id="6676840375528380067">从这部设备中清除您的 Chrome 数据？</translation>
 <translation id="6676927815633975364">登录此网站和 Chrome</translation>
 <translation id="6684809838922667136">帮助改善 Chrome</translation>
 <translation id="670498945988402717">昨天检查过</translation>
@@ -1303,7 +1299,6 @@
 <translation id="7626032353295482388">欢迎使用 Chrome</translation>
 <translation id="7630202231528827509">提供商网址</translation>
 <translation id="7638584964844754484">密码不正确</translation>
-<translation id="7641339528570811325">清除浏览数据…</translation>
 <translation id="7646772052135772216">无法同步密码</translation>
 <translation id="7655240423373329753">过去 7 天</translation>
 <translation id="7655900163790317559">正在开启蓝牙…</translation>
@@ -1382,7 +1377,6 @@
 <translation id="7995059495660416932">待内容可显示后，您即会看到相应内容</translation>
 <translation id="799576009106109668">您的浏览速度会更快，因为系统会根据您当前访问的网页主动加载内容</translation>
 <translation id="8004582292198964060">浏览器</translation>
-<translation id="8013372441983637696">同时从此设备中清除您的 Chrome 数据</translation>
 <translation id="8015452622527143194">将网页上的所有内容恢复到默认大小</translation>
 <translation id="8026238112629815203">我们更改了此设备上的密码保存方式</translation>
 <translation id="8027863900915310177">选择要下载到何处</translation>
@@ -1509,7 +1503,6 @@
 <translation id="8562452229998620586">已保存的密码将显示在这里。</translation>
 <translation id="8570677896027847510">无法安全地下载文件</translation>
 <translation id="8571213806525832805">过去 4 周</translation>
-<translation id="8583805026567836021">清除账号数据</translation>
 <translation id="859046281437143747">通过“更多选项”按钮跟踪价格</translation>
 <translation id="860043288473659153">持卡人姓名</translation>
 <translation id="8602358303461588329">登录 Chrome，已关闭。</translation>
@@ -1639,6 +1632,5 @@
 <translation id="983192555821071799">关闭所有标签页</translation>
 <translation id="987264212798334818">常规</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> 个标签页</translation>
-<translation id="993520549480398880">也从这部车载设备中清除书签、历史记录等信息</translation>
 <translation id="996149300115483134">动态卡片上的菜单已关闭</translation>
 </translationbundle>

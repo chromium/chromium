@@ -75,7 +75,6 @@ Du bør tenke på følgende:
 <translation id="2736805085127235148">Chrome-varsler er nå slått av i enhetsinnstillingene.</translation>
 <translation id="2750626042242931740">Du kan når som helst oppdatere valgene dine i Chrome-innstillingene.</translation>
 <translation id="2767464022270041271">Ingen lagrede passord. Google Passordlagring kan sjekke passordene dine når du lagrer dem.</translation>
-<translation id="2789947168960170215">Hvis du har glemt passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="2869959624320573933">Logg på Chrome</translation>
 <translation id="2876628302275096482">Finn ut mer om <ph name="BEGIN_LINK" />hvordan Chrome holder dataene dine private<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Åpne Chrome-innstillingene.</translation>
@@ -117,10 +116,12 @@ Du bør tenke på følgende:
 <translation id="417201473131094001">Støttes ikke i Chrome Canary</translation>
 <translation id="424864128008805179">Vil du logge av Chrome?</translation>
 <translation id="4251174643044751591">Åpner innstillingssiden for betalingsmåter i Chrome.</translation>
+<translation id="4286914711740227883">Slett nettlesingsdata i Chrome</translation>
 <translation id="4453284704333523777">Administrer Chrome-innstillinger</translation>
 <translation id="4523886039239821078">Noen tillegg fører til at Chrome krasjer. Avinstaller:</translation>
 <translation id="4633328489441962921">Chrome kan ikke se etter oppdateringer</translation>
 <translation id="4636900170638246267">Logg på dette nettstedet og Chrome.</translation>
+<translation id="4742795653798179840">Slettede Chrome-data</translation>
 <translation id="4761869838909035636">Kjør Chrome-sikkerhetssjekk</translation>
 <translation id="4798859546468762093">For å få personlig tilpasning og andre funksjoner må du inkludere Chrome i <ph name="FEATURE_NAME_1" /> og <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">For å bidra til å gjøre appen bedre sender Chrome bruks- og krasjrelaterte data til Google. <ph name="BEGIN_LINK" />Administrer<ph name="END_LINK" /></translation>
@@ -131,6 +132,7 @@ Du bør tenke på følgende:
 <translation id="4840404732697892756">Google Passordlagring kan sjekke passordene dine når du logger på med Google-kontoen din.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome kan hjelpe deg med å spore denne pakken på Ny fane-siden.}other{Chrome kan hjelpe deg med å spore disse pakkene på Ny fane-siden.}}</translation>
 <translation id="4903674399067644695">På dette kortet ser du forslag til hvordan du får mest mulig ut av Chrome.</translation>
+<translation id="4919069428879420545">Slett nettlesingsdata i Chrome.</translation>
 <translation id="49200511069271369">Organisasjonen din, <ph name="DOMAIN" />, administrerer kontoen du logger på, og hvordan Chrome kan brukes. Administratoren kan konfigurere eller begrense visse funksjoner.</translation>
 <translation id="498985224078955265">For å sende denne fanen til en annen enhet, logg på Chrome på begge enhetene.</translation>
 <translation id="5030102366287574140">Chrome kan beskytte deg mot databrudd, utrygge nettsteder med mer.</translation>
@@ -190,9 +192,6 @@ Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og la
 <translation id="6648150602980899529">Du logger på med en konto som administreres av <ph name="DOMAIN" />, og du gir administratoren for dette domenet kontroll over Chrome-dataene dine. Dataene dine blir permanent knyttet til denne kontoen. Når du logger av Chrome, slettes dataene dine fra denne enheten, men de lagres fortsatt i Google-kontoen din.</translation>
 <translation id="6683891932310469419">Åpner Chrome-loggsiden din.</translation>
 <translation id="6709398533399187136">Passordet ditt har vært avdekket i et databrudd. Google Passordlagring anbefaler at du endrer det nå.</translation>
-<translation id="6815466750807582739">Betalingsmåter og adresser krypteres ikke. Nettleserloggen fra Chrome synkroniseres ikke.
-
-Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordfrasen blir verken sendt til eller lagret av Google. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Åpne Chrome-innstillingene i iOS, trykk på «Standard nettleserapp», og velg Chrome.</translation>
 <translation id="686691656039982452">Du kan <ph name="BEGIN_LINK" />administrere hvilke Chrome-data som lagres<ph name="END_LINK" /> i Google-kontoen din.
 
@@ -277,9 +276,6 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="8808828119384186784">Chrome-innstillinger</translation>
 <translation id="8850736900032787670">For å få personlig tilpasset innhold basert på interessene dine, logg på Chrome.</translation>
 <translation id="8855781063981781621">For å deaktivere låsingsmodus i Chrome, slå den av på iPad.</translation>
-<translation id="8856877214925961642">Kryptering med passordfrase inkluderer ikke betalingsmåter eller adresser.
-
-For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google Passordlagring kunne ikke sjekke alle passordene. Prøv på nytt i morgen.</translation>
 <translation id="8865415417596392024">Chrome-data i kontoen din</translation>
 <translation id="8874688701962049679">Tips for å få mest mulig ut av Chrome.</translation>

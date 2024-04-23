@@ -5633,7 +5633,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5271578170655641944">Remove Google Drive access?</translation>
 <translation id="5273806377963980154">Edit site URL</translation>
 <translation id="5275084684151588738">User dictionaries</translation>
-<translation id="5275100789567222478">Turn on only when my battery is at <ph name="PERCENT" />% or lower</translation>
 <translation id="5275338516105640560">Saved tab group button</translation>
 <translation id="5275352920323889391">Dog</translation>
 <translation id="527605719918376753">Mute tab</translation>
@@ -6244,7 +6243,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5746169159649715125">Save as PDF</translation>
 <translation id="5747785204778348146">Developer - unstable</translation>
 <translation id="5747809636523347288">Paste and go to <ph name="URL" /></translation>
-<translation id="5748137879145720682">Turn on when my computer is unplugged</translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Check tethering readiness</translation>
 <translation id="5753570386948603678">Delete from history</translation>

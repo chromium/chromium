@@ -99,12 +99,8 @@ Për më shumë cilësime që përdorin të dhënat për të përmirësuar përv
 <translation id="3855938650519180865">Ç'të reja ka në Chromium</translation>
 <translation id="3886689467633467988">Identifikohu në këtë sajt dhe Chromium për të marrë faqeshënuesit etj. në të gjitha pajisjet e tua.</translation>
 <translation id="3904484643286601695">Mund t'i përditësosh zgjedhjet e tua në çdo kohë te "Cilësimet" e Chromium.</translation>
-<translation id="394413318816989199">Enkriptimi me frazën e kalimit nuk përfshin mënyrat e pagesës dhe adresat.
-
-Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Hap dhe ekzekuton kontrollin e sigurisë në Chromium.</translation>
 <translation id="4043291146360695975">Fjalëkalimet ruhen në "Menaxherin e fjalëkalimeve" vetëm në këtë pajisje.</translation>
-<translation id="4076589763479456892">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Nuk mbështetet në Chromium Beta</translation>
 <translation id="4106512142782407609">Identifikuar si <ph name="EMAIL" />.
 
@@ -193,9 +189,6 @@ Gjëra për të pasur parasysh:
 <translation id="6337530241089703714">Zgjidh nëse do t'i pastrosh të dhënat e Chromium nga kjo pajisje apo do t'i mbash ato</translation>
 <translation id="6348483005826990855">3. Zgjidh Chromium</translation>
 <translation id="6383607155624074112">Qasu më shpejt në Chromium nga stacioni i ekranit bazë</translation>
-<translation id="6407399265324739055">Mënyrat e pagesës dhe adresat nuk do të enkriptohen. Historiku i shfletimit nga Chromium nuk do të sinkronizohet.
-
-Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron të ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium sapo është përmirësuar! Ofrohet një version i ri.</translation>
 <translation id="6433172051771630690">Këshilla për të përfituar sa më shumë nga Chromium.</translation>
 <translation id="6502321914804101924">Ke dalë nga Chromium</translation>
@@ -262,9 +255,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="8458950033462118672">Mund t'i hapësh automatikisht lidhjet në Chromium duke e bërë atë aplikacionin e parazgjedhur të shfletuesit.</translation>
 <translation id="858114650497379505">Fjalëkalimet që ke ruajtur në "Menaxherin e fjalëkalimeve" mund t'i përdorësh në aplikacione të tjera në iPhone.</translation>
 <translation id="8586442755830160949">Të drejtat e autorit <ph name="YEAR" /> Autorët e Chromium. Të gjitha të drejtat të rezervuara.</translation>
-<translation id="8618440443578628179">Enkriptimi me frazën e kalimit nuk përfshin mënyrat e pagesës dhe adresat nga Google Pay.
-
-Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Të mban të sigurt në Chrome dhe mund të përdoret për të përmirësuar sigurinë tënde në aplikacionet e tjera të Google kur je i/e identifikuar.</translation>
 <translation id="8663480472502753423">Mbaje Chromium të përditësuar</translation>
 <translation id="8685813584220679697">Identifikohu në këtë sajt dhe në Chromium.</translation>

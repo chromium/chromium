@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">Snímanie obrazovky</translation>
 <translation id="1108938384783527433">Synchronizácia histórie</translation>
 <translation id="1111673857033749125">Tu sa zobrazia záložky, ktoré ste uložili na iných zariadeniach.</translation>
-<translation id="1113057722807951993">Šifrovanie pomocou prístupovej frázy nezahŕňa spôsoby platby ani adresy zo služby Google Pay.
-
-Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">Aktivovať zjednodušené zobrazenie</translation>
 <translation id="1126809382673880764">Nechráni vás pred nebezpečnými webmi, stiahnutými súbormi ani rozšíreniami. Ochrana Bezpečného prehliadania vám bude poskytovaná v náležitých prípadoch v ďalších službách Googlu, ako sú napríklad Gmail alebo Vyhľadávanie.</translation>
 <translation id="1129510026454351943">Podrobnosti: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="3290249595466894471">Odosiela aj malú vzorku stránok, stiahnutých súborov, aktivity rozšírení a informácií o systéme, čím pomáha zisťovať nové hrozby</translation>
 <translation id="3293181007446299124">Vaša história prehliadania je v zariadení uchovaná v súkromí a hlásenia sa z dôvodu ochrany vašej totožnosti odosielajú s oneskorením</translation>
 <translation id="3303414029551471755">Pokračovať a stiahnuť obsah?</translation>
+<translation id="3303855915957856445">Nič sa nenašlo</translation>
 <translation id="3305130791745726624">Odoslať do zariadení</translation>
 <translation id="3305795716056605962">Tlačidlo na preklad stránok v ponuke Ďalšie možnosti</translation>
 <translation id="3334729583274622784">Chcete zmeniť príponu súboru?</translation>
@@ -529,7 +527,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="3847319713229060696">Pomôžte zlepšiť zabezpečenie na internete pre všetkých</translation>
 <translation id="3856096718352044181">Overte, že ide o platného poskytovateľa, alebo to skúste znova</translation>
 <translation id="3858860766373142691">Názov</translation>
-<translation id="3872520701277728051">Ak ste zabudli prístupovú frázu alebo chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Kopírovať text</translation>
 <translation id="3894427358181296146">Pridanie priečinka</translation>
 <translation id="3899682235662194879">Zavrieť všetky karty inkognito</translation>
@@ -873,8 +870,6 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5590372121997663538">Zapamätať si tento počítač</translation>
 <translation id="5596627076506792578">Ďalšie možnosti</translation>
 <translation id="5599455543593328020">Režim inkognito</translation>
-<translation id="5605283439565877834">Spôsoby platby a adresy v službe Google Pay nebudú šifrované. História prehliadania z Chromu sa nebude synchronizovať.
-Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Žiadne uložené heslá</translation>
 <translation id="5620928963363755975">Stiahnuté súbory a stránky nájdete po použití tlačidla Ďalšie možnosti</translation>
 <translation id="562289928968387744">Spravovať reakcie</translation>
@@ -1103,7 +1098,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6672697278890207089">Zadajte svoju prístupovú frázu</translation>
 <translation id="6672917148207387131">Pridať <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">Ak chcete spustiť synchronizáciu, zadajte prístupovú frázu</translation>
-<translation id="6676840375528380067">Chcete vymazať údaje Chromu z tohto zariadenia?</translation>
 <translation id="6676927815633975364">Prihlásiť sa na tomto webe a v Chrome</translation>
 <translation id="6684809838922667136">Zlepšite Chrome</translation>
 <translation id="670498945988402717">Kontrola prebehla včera</translation>
@@ -1305,7 +1299,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7626032353295482388">Víta vás prehliadač Chrome</translation>
 <translation id="7630202231528827509">Webová adresa poskytovateľa</translation>
 <translation id="7638584964844754484">Nesprávna prístupová fráza</translation>
-<translation id="7641339528570811325">Vymazať dáta prehliadania…</translation>
 <translation id="7646772052135772216">Synchronizácia hesiel nefunguje</translation>
 <translation id="7655240423373329753">posledných 7 dní</translation>
 <translation id="7655900163790317559">Zapína sa Bluetooth…</translation>
@@ -1384,7 +1377,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="7995059495660416932">Obsah sa zobrazí, keď bude k dispozícii</translation>
 <translation id="799576009106109668">Prehliadanie sa zrýchli, pretože obsah bude proaktívne načítaný na základe vašej návštevy aktuálnej webovej stránky</translation>
 <translation id="8004582292198964060">Prehliadač</translation>
-<translation id="8013372441983637696">Tiež vymazať údaje Chromu z tohto zariadenia</translation>
 <translation id="8015452622527143194">Vrátenie obsahu stránky na predvolenú veľkosť</translation>
 <translation id="8026238112629815203">Zmenili sme spôsob ukladania hesiel v tomto zariadení</translation>
 <translation id="8027863900915310177">Vyberte, kam sa má súbor stiahnuť</translation>
@@ -1511,7 +1503,6 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="8562452229998620586">Tu sa zobrazia uložené heslá.</translation>
 <translation id="8570677896027847510">Súbor sa nedá bezpečne stiahnuť</translation>
 <translation id="8571213806525832805">Posledné 4 týždne</translation>
-<translation id="8583805026567836021">Prebieha vymazávanie údajov účtu</translation>
 <translation id="859046281437143747">Tlačidlo na sledovanie ceny v ponuke ďalších možností</translation>
 <translation id="860043288473659153">Meno držiteľa karty</translation>
 <translation id="8602358303461588329">Prihlásenie sa do Chromu, zavreté.</translation>
@@ -1641,6 +1632,5 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="983192555821071799">Zavrieť všetky karty</translation>
 <translation id="987264212798334818">Všeobecné</translation>
 <translation id="992745192656291733">Karty: <ph name="TAB_COUNT" /></translation>
-<translation id="993520549480398880">Vymazať aj záložky, históriu a ďalší obsah z tohto auta</translation>
 <translation id="996149300115483134">Ponuka karty feedu je zatvorená</translation>
 </translationbundle>

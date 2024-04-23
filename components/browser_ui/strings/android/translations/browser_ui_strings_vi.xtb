@@ -31,7 +31,6 @@
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1633720957382884102">Các trang web liên quan</translation>
 <translation id="1644574205037202324">Nhật ký</translation>
-<translation id="1647582022260550163">Bạn có chắc chắn muốn đặt lại quyền, xóa cookie và dữ liệu trang web không?</translation>
 <translation id="1652197001188145583">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng thiết bị NFC. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng thiết bị NFC.</translation>
 <translation id="1660204651932907780">Cho phép các trang web phát âm thanh (được đề xuất)</translation>
 <translation id="1677097821151855053">Cookie và dữ liệu trang web khác được dùng để ghi nhớ thông tin của bạn, chẳng hạn như giúp bạn đăng nhập hoặc cá nhân hóa quảng cáo. Để quản lý cookie cho tất cả trang web, hãy xem phần <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" />.</translation>
@@ -134,6 +133,7 @@
 <translation id="3198916472715691905">Dữ liệu đã lưu trữ: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Để cho phép <ph name="APP_NAME" /> gửi thông báo cho bạn, hãy bật cả thông báo trong phần <ph name="BEGIN_LINK" />Cài đặt Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Micrô</translation>
+<translation id="3232293466644486101">Xoá dữ liệu duyệt web…</translation>
 <translation id="3242646949159196181">Khi bạn bật tuỳ chọn này, các trang web có thể phát âm thanh. Khi bạn tắt tuỳ chọn này, các trang web không thể phát âm thanh.</translation>
 <translation id="3277252321222022663">Cho phép các trang web sử dụng cảm biến của thiết bị (nên dùng)</translation>
 <translation id="3285500645985761267">Cho phép các trang web liên quan xem hoạt động của bạn trong nhóm</translation>

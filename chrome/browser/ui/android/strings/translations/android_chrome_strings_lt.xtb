@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">Ekrano fiksavimas</translation>
 <translation id="1108938384783527433">Istorijos sinchronizavimas</translation>
 <translation id="1111673857033749125">Čia bus rodomos kituose įrenginiuose išsaugotos žymės.</translation>
-<translation id="1113057722807951993">Slaptafrazės šifruotė neapima mokėjimo metodų ir adresų iš „Google Pay“.
-
-Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">Rodyti supaprastintą rodinį</translation>
 <translation id="1126809382673880764">Neapsaugo jūsų nuo pavojingų svetainių, atsisiuntimų ir plėtinių. Kai yra galimybė, vis tiek gausite saugaus naršymo pranešimus kitose „Google“ paslaugose, pvz., „Gmail“ ir paieškoje.</translation>
 <translation id="1129510026454351943">Išsami informacija: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="3290249595466894471">Taip pat siunčia nedaug puslapių, atsisiuntimų, plėtinių veiklos ir sistemos informacijos, kad padėtų aptikti naujas grėsmes</translation>
 <translation id="3293181007446299124">Naršymo istorija saugoma privačiai įrenginyje, o ataskaitos siunčiamos su delsa, siekiant apsaugoti jūsų tapatybę</translation>
 <translation id="3303414029551471755">Tęsti turinio atsisiuntimo procesą?</translation>
+<translation id="3303855915957856445">Nerasta jokių paieškos rezultatų</translation>
 <translation id="3305130791745726624">Siųsti į įrenginius</translation>
 <translation id="3305795716056605962">Verskite puslapius naudodami mygtuką „Daugiau parinkčių“</translation>
 <translation id="3334729583274622784">Pakeisti failo plėtinį?</translation>
@@ -529,7 +527,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chro
 <translation id="3847319713229060696">Pagalba didinant visų naudotojų saugą žiniatinklyje</translation>
 <translation id="3856096718352044181">Patvirtinkite, kad tai yra tinkamas paslaugų teikėjas, arba vėliau bandykite dar kartą</translation>
 <translation id="3858860766373142691">Pavadinimas</translation>
-<translation id="3872520701277728051">Jei pamiršote slaptafrazę ar norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Kopijuoti tekstą</translation>
 <translation id="3894427358181296146">Aplanko pridėjimas</translation>
 <translation id="3899682235662194879">Uždaryti visus inkognito skirtukus</translation>
@@ -873,8 +870,6 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="5590372121997663538">Atsiminti šį kompiuterį</translation>
 <translation id="5596627076506792578">Daugiau parinkčių</translation>
 <translation id="5599455543593328020">Inkognito režimas</translation>
-<translation id="5605283439565877834">„Google Pay“ mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chrome“ nebus sinchronizuojama.
-Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. Slaptafrazė nesiunčiama ir nesaugoma „Google“. Jei pamiršite slaptafrazę ar norėsite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Nėra išsaugotų slaptažodžių</translation>
 <translation id="5620928963363755975">Suraskite failus ir puslapius „Atsisiuntimų“ skiltyje spustelėję mygtuką „Daugiau parinkčių“</translation>
 <translation id="562289928968387744">Tvarkyti reakcijas</translation>
@@ -1103,7 +1098,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6672697278890207089">Įveskite slaptafrazę</translation>
 <translation id="6672917148207387131">Pridėti <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">Jei norite pradėti sinchronizuoti, įveskite slaptafrazę</translation>
-<translation id="6676840375528380067">Išvalyti jūsų „Chrome“ duomenis iš šio įrenginio?</translation>
 <translation id="6676927815633975364">Prisijunkite prie šios svetainės ir „Chrome“</translation>
 <translation id="6684809838922667136">„Chrome“ tobulinimas</translation>
 <translation id="670498945988402717">Tikrinta vakar</translation>
@@ -1305,7 +1299,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7626032353295482388">Sveiki, tai „Chrome“</translation>
 <translation id="7630202231528827509">Tiekėjo URL</translation>
 <translation id="7638584964844754484">Neteisinga slaptafrazė</translation>
-<translation id="7641339528570811325">Valyti naršymo duomenis...</translation>
 <translation id="7646772052135772216">Slaptažodžio sinchronizavimas neveikia</translation>
 <translation id="7655240423373329753">pastarosios septynios dienos</translation>
 <translation id="7655900163790317559">Įjungiamas „Bluetooth“…</translation>
@@ -1384,7 +1377,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7995059495660416932">Matysite turinį, kai jis bus pasiekiamas</translation>
 <translation id="799576009106109668">Naršysite greičiau, nes turinys įkeliamas proaktyviai remiantis tinklalapiu, kuriame šiuo metu lankotės</translation>
 <translation id="8004582292198964060">Naršyklė</translation>
-<translation id="8013372441983637696">Taip pat išvalyti jūsų „Chrome“ duomenis iš šio įrenginio</translation>
 <translation id="8015452622527143194">Grąžinti numatytąjį puslapio turinio dydį</translation>
 <translation id="8026238112629815203">Pakeitėme slaptažodžių išsaugojimo šiame įrenginyje būdą</translation>
 <translation id="8027863900915310177">Pasirinkite, kur atsisiųsti</translation>
@@ -1511,7 +1503,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8562452229998620586">Čia bus rodomi išsaugoti slaptažodžiai.</translation>
 <translation id="8570677896027847510">Negalima saugiai atsisiųsti failo</translation>
 <translation id="8571213806525832805">Pastarosios 4 savaitės</translation>
-<translation id="8583805026567836021">Valomi paskyros duomenys</translation>
 <translation id="859046281437143747">Stebėkite kainas naudodami mygtuką „Daugiau parinkčių“</translation>
 <translation id="860043288473659153">Kortelės savininko vardas</translation>
 <translation id="8602358303461588329">Prisijungimo prie „Chrome“ puslapis uždarytas.</translation>
@@ -1641,6 +1632,5 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="983192555821071799">Uždar. visų skirtukų lapus</translation>
 <translation id="987264212798334818">Bendra</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> skirtuk.</translation>
-<translation id="993520549480398880">Taip pat išvalyti žymes, istoriją ir kt. iš šio automobilio</translation>
 <translation id="996149300115483134">Sklaidos kanalo kortelės meniu uždarytas</translation>
 </translationbundle>

@@ -99,12 +99,8 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="3855938650519180865">Novidades do Chromium</translation>
 <translation id="3886689467633467988">Faça login neste site e no Chromium para conferir seus favoritos e muito mais em todos os seus dispositivos.</translation>
 <translation id="3904484643286601695">Você pode atualizar suas escolhas a qualquer momento nas configurações do Chromium.</translation>
-<translation id="394413318816989199">A criptografia por senha longa não inclui formas de pagamento e endereços.
-
-Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Abre e realiza a Confirmação de segurança no Chromium.</translation>
 <translation id="4043291146360695975">As senhas são salvas no Gerenciador de senhas somente neste dispositivo.</translation>
-<translation id="4076589763479456892">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Indisponível no Chromium Beta</translation>
 <translation id="4106512142782407609">Login feito como <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@ Considerações:
 <translation id="6337530241089703714">Você quer apagar ou manter os dados do Chromium neste dispositivo?</translation>
 <translation id="6348483005826990855">3. Selecione o Chromium</translation>
 <translation id="6383607155624074112">Acesse o Chromium com mais rapidez no Dock da tela de início</translation>
-<translation id="6407399265324739055">Formas de pagamento e endereços não serão criptografados. O histórico de navegação do Chromium não será sincronizado.
-
-Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senha longa não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">O Chromium ficou ainda melhor! Uma nova versão está disponível.</translation>
 <translation id="6433172051771630690">Dicas para aproveitar o Chromium ao máximo.</translation>
 <translation id="6502321914804101924">A conta foi desconectada do Chromium</translation>
@@ -263,9 +256,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="8458950033462118672">Defina o Chromium como seu navegador padrão para abrir links nele automaticamente.</translation>
 <translation id="858114650497379505">Você pode usar as senhas armazenadas no Gerenciador de senhas em outros apps do iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autores do Chromium. Todos os direitos reservados.</translation>
-<translation id="8618440443578628179">A criptografia por senha longa não inclui formas de pagamento e endereços do Google Pay.
-
-Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Protege você no Chromium e pode ser usado para melhorar a segurança em outros apps do Google quando sua conta está conectada.</translation>
 <translation id="8663480472502753423">Manter o Chromium atualizado</translation>
 <translation id="8685813584220679697">Faça login neste site e no Chromium.</translation>

@@ -162,6 +162,7 @@
 <translation id="1282358575813748144">डुङ्गा तथा वाटरक्राफ्ट</translation>
 <translation id="1283977499362032052">रिजुमे तथा पोर्टफोलियो</translation>
 <translation id="1285320974508926690">यो साइट कहिले पनि अनुवाद नगर्नुहोस्</translation>
+<translation id="1291249564161469503">तपाईंको किबोर्ड लक गर्ने</translation>
 <translation id="1292571435393770077">ट्रे १६</translation>
 <translation id="1292701964462482250">"तपाईंको कम्प्युटरमा रहेको सफ्टवेयरले Chrome लाई सुरक्षित रूपमा वेबमा जडान हुनबाट रोकिरहेको छ" (Windows कम्प्युटरहरू मात्र)</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 in</translation>
@@ -572,6 +573,7 @@
 <translation id="2046951263634619614">पुस्तकका खुद्रा बिक्रेताहरू</translation>
 <translation id="2048261947532620704">पेज अनुवाद गरिँदै छ</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> भाषाका पृष्ठहरू अनुवाद गरिने छैनन्।</translation>
+<translation id="2056492565825767809">तपाईंको माउस पोइन्टर लक गर्ने</translation>
 <translation id="2056658168519009885">साइटहरूले तपाईंलाई देखाइने विज्ञापनहरू पर्सनलाइज गर्न Chrome सँग जानकारी माग्न सक्छन्।</translation>
 <translation id="2059166748188874810">नगरपालिका</translation>
 <translation id="2059202684901022309">२२ x ३४ इन्च</translation>
@@ -1069,6 +1071,7 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> को मूल्य <ph name="PRICE_DROP" /> घटेको छ</translation>
 <translation id="3054512251683174387">Chrome ले ४ हप्ताभन्दा पुराना विषयहरू स्वतः मेटाउँछ। तपाईंले विभिन्न साइटहरू ब्राउज गरिराख्ने क्रममा कुनै विषय यो सूचीमा फेरि देखिन सक्छ। अथवा तपाईं Chrome ले कुनै विषय साइटहरूसँग सेयर नगरोस् भन्ने चाहनुहुन्छ भने तपाईं उक्त विषय ब्लक गर्न सक्नुहुन्छ। Chrome मा विज्ञापनको गोपनीयता व्यवस्थापन गर्ने सम्बन्धमा थप जान्नुहोस्।</translation>
 <translation id="3061707000357573562">प्याचसम्बन्धी सेवा</translation>
+<translation id="3062655045399308513">ब्राउजिङ डेटा मेटाउनुहोस्...</translation>
 <translation id="306573536155379004">गेम सुरु भएको छ।</translation>
 <translation id="3067505415088964188">सस्तो मूल्य</translation>
 <translation id="3076865167425975822">आपरेटिङ सिस्टमहरू</translation>
@@ -2023,6 +2026,7 @@
 <translation id="4885256590493466218">चेकआउटका बेला <ph name="CARD_DETAIL" /> प्रयोग गरी भुक्तानी गर्नुहोस्</translation>
 <translation id="4887406273302438710">Windows Hello मार्फत पासवर्डहरू सुरक्षित राख्नुहोस्</translation>
 <translation id="4890070067176768718">तपाईंका एड्मिनले <ph name="ORIGIN" /> मा <ph name="PERMISSION" /> प्रयोग गर्ने अनुमति दिनुभएको छ</translation>
+<translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सेटिङमा गई आफ्नो ब्राउजिङ हिस्ट्री, कुकी, क्यास तथा अन्य कुरा मेटाउन "ट्याब" थिच्नुहोस् अनि "इन्टर" थिच्नुहोस्</translation>
 <translation id="4892518386797173871">पछाडिको भाग</translation>
 <translation id="4895019427244614047">ठेगाना मेटाउनुहोस्</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -2590,6 +2594,7 @@
 <translation id="6014851866995737824">"अन गर्नु पर्ने कुराहरूको सूची" वा "अफ गर्नु पर्ने कुराहरूको सूची" मध्ये कुनै एउटा सूची समावेश नगरिएको हुनाले यो नीति बेवास्ता गरिएको छ।</translation>
 <translation id="6015796118275082299">वर्ष</translation>
 <translation id="6017514345406065928">हरियो</translation>
+<translation id="6018650639991193045">Chrome का सेटिङमा गई आफ्नो ब्राउजिङ हिस्ट्री, कुकी, क्यास र अन्य कुरा मेटाउनुहोस्</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (सिंक गरिएको)</translation>
 <translation id="6028591542479806248">मोबाइल तथा इमेलमार्फत पठाइने सूचनाहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="6028833024483927901">विश्वभरिका परिकार</translation>
@@ -2763,6 +2768,7 @@
 <translation id="634500758737709758">जाने बाटो</translation>
 <translation id="6348220984832452017">प्रयोग गर्न मिल्ने संस्करणहरू</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> स्थापना गर्नुहोस्</translation>
+<translation id="6351658970066645919">ब्राउजिङ डेटा मेटाउनुहोस्</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{कुनै पनि होइन}=1{<ph name="DOMAIN_LIST" /> को १ पासवर्ड (सिंक गरिएको छ)}=2{<ph name="DOMAIN_LIST" /> का २ पासवर्डहरू (सिंक गरिएका छन्)}other{<ph name="DOMAIN_LIST" /> का # पासवर्डहरू (सिंक गरिएका छन्)}}</translation>
 <translation id="6355392890578844978">कुनै कम्पनी वा अन्य सङ्गठनले यो ब्राउजर व्यवस्थापन गर्दैन। यो डिभाइसमा गरिएका क्रियाकलाप Chromium बाहिरबाट व्यवस्थापन गरिन सक्छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">भुक्तानी विधिहरू परिवर्तन गर्नुहोस्</translation>
@@ -3490,6 +3496,7 @@
 <translation id="7682287625158474539">सिपिङ</translation>
 <translation id="7682451652090915298">रग्बी</translation>
 <translation id="7684683146428206649">मेटल</translation>
+<translation id="7684817988830401358">"ब्राउजिङ डेटा मेटाउनुहोस्" बटन, Chrome का सेटिङमा गई आफ्नो ब्राउजिङ हिस्ट्री, कुकी, क्यास र अन्य कुरा मेटाउन यो बटन एक्टिभेट गर्नुहोस्</translation>
 <translation id="7684928361160505327">{0,plural, =1{नीतिका कारण <ph name="FILE_NAME" /> लाई रोक लगाइएको छ}other{नीतिका कारण <ph name="FILE_COUNT" /> वटा फाइललाई रोक लगाइएको छ}}</translation>
 <translation id="7687186412095877299">आफ्ना सुरक्षित गरिएका भुक्तानी विधिहरूका सहयोगले भुक्तानी फारमहरू भर्नुहोस्</translation>
 <translation id="7687305263118037187">पुन: प्रयास गर्ने समय समाप्त भयो</translation>
@@ -3602,6 +3609,7 @@
 <translation id="7935318582918952113">DOM डिस्टिलर</translation>
 <translation id="7937163678541954811">तपाईं छिटोछरितो रूपमा चेक आउट गर्न सक्नुहोस् भन्नाका लागि यो कार्डको CVC इन्क्रिप्ट गरिने छ र तपाईंको डिभाइसमा सेभ गरिने छ</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" /> मा म्याद समाप्त हुन्छ</translation>
+<translation id="7938490694919717008">चेकआउट गर्दा तपाईंका कार्डका कुन कुन रिवार्ड तथा लाभ उपलब्ध छन् भन्ने कुरा देखाउनुहोस् <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />कार्डका लाभहरूका बारेमा थप जान्नुहोस्<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">सर्भरको प्रमाणपत्र</translation>
 <translation id="7941628148012649605">Envelope Chou 4</translation>
 <translation id="794169214536209644">क्यान्डी तथा चकलेट</translation>
@@ -3990,6 +3998,7 @@
 <translation id="8662463432865928030">व्यावसायिक प्रोपर्टी</translation>
 <translation id="8663226718884576429">अर्डरको सारांश, <ph name="TOTAL_LABEL" />, थप विवरण</translation>
 <translation id="8663909737634214500">अप्टिकल डिस्क</translation>
+<translation id="8664326323360157684">ब्राउजिङ डेटा मेटाउनुहोस्...</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> को मान आकारसम्बन्धी मापदण्डबमोजिम छैन।</translation>
 <translation id="867224526087042813">हस्ताक्षर</translation>
 <translation id="8672535691554698269">कम्प्युटर नेटवर्कहरू</translation>
@@ -4286,6 +4295,7 @@
 <translation id="949314938206378263">तपाईंले यो साइटमा जाने अनुमति माग्नुभएको छ। तपाईंका अभिभावक Family Link मार्फत अनुमति दिन वा नदिन सक्छन्।</translation>
 <translation id="950736567201356821">सिरानमा तीन प्वाल</translation>
 <translation id="961663415146723894">फेदको बाइन्ड</translation>
+<translation id="961856697154696964">ब्राउजिङ डेटा मेटाउनुहोस्</translation>
 <translation id="961930410699694996">अहिले लोकेसन प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="962484866189421427">यो सामग्रीले आफूलाई अर्कै रूपमा प्रस्तुत गर्ने भ्रामक एपहरूको स्थापना गर्न वा तपाईंलाई ट्र्याक गर्ने कार्यमा प्रयोग गर्न सकिने डेटाको सङ्कलन गर्ने प्रयास गर्न सक्छ। <ph name="BEGIN_LINK" />जे भए पनि देखाउनुहोस्<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">तपाईंको क्षेत्रमा लागू हुने कानुनका आधारमा Chromium ले तपाईंलाई डिफल्ट सर्च इन्जिन छनौट गर्न लगाउँछ। यी सर्च इन्जिनहरू तपाईंको क्षेत्रमा लोकप्रिय छन् र अनियमित क्रममा देखाइन्छन्।</translation>

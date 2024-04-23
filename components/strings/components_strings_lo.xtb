@@ -162,6 +162,7 @@
 <translation id="1282358575813748144">ເຮືອ ແລະ ການຂັບຂີ່ເຮືອ</translation>
 <translation id="1283977499362032052">ປະຫວັດ ແລະ ພອດໂຟລິໂອ</translation>
 <translation id="1285320974508926690">ຢ່າແປເວັບ​ໄຊ​ທ໌ນີ້</translation>
+<translation id="1291249564161469503">ລັອກແປ້ນພິມຂອງທ່ານ</translation>
 <translation id="1292571435393770077">ຖາດ 16</translation>
 <translation id="1292701964462482250">"ຊອບແວຢູ່ໃນຄອມພິວເຕີຂອງທ່ານກຳລັງປ້ອງກັນບໍ່ໃຫ້ Chrome ເຊື່ອມຕໍ່ກັບເວັບໄຊໄດ້ຢ່າງປອດໄພ" (ຄອມພິວເຕີ Windows ເທົ່ານັ້ນ)</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 ນິ້ວ</translation>
@@ -572,6 +573,7 @@
 <translation id="2046951263634619614">ຮ້ານຂາຍປຶ້ມລາຍຍ່ອຍ</translation>
 <translation id="2048261947532620704">ກຳລັງແປພາສາໜ້ານີ້</translation>
 <translation id="2053111141626950936">ລະບົບຈະບໍ່ແປໜ້າເປັນ <ph name="LANGUAGE" />.</translation>
+<translation id="2056492565825767809">ລັອກເຄີເຊີເມົ້າຂອງທ່ານ</translation>
 <translation id="2056658168519009885">ເວັບໄຊສາມາດຂໍຂໍ້ມູນຈາກ Chrome ເພື່ອຊ່ວຍປັບແຕ່ງໂຄສະນາທີ່ທ່ານເຫັນໃຫ້ເປັນແບບສ່ວນຕົວ.</translation>
 <translation id="2059166748188874810">ເທດສະບານ</translation>
 <translation id="2059202684901022309">22 x 34 ນິ້ວ</translation>
@@ -1070,6 +1072,7 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ຫຼຸດລາຄາ <ph name="PRICE_DROP" /></translation>
 <translation id="3054512251683174387">Chrome ຈະລຶບເວັບໄຊທີ່ດົນກວ່າ 4 ອາທິດໂດຍອັດຕະໂນມັດ. ເມື່ອທ່ານເລືອກເບິ່ງໄປເລື້ອຍໆ, ຫົວຂໍ້ໃດໜຶ່ງກໍອາດກັບມາປາກົດຢູ່ໃນລາຍຊື່ອີກຄັ້ງ. ຫຼື ທ່ານສາມາດບລັອກຫົວຂໍ້ທີ່ທ່ານບໍ່ຕ້ອງການໃຫ້ Chrome ແບ່ງປັນກັບເວັບໄຊຕ່າງໆໄດ້. ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການຈັດການຄວາມເປັນສ່ວນຕົວກ່ຽວກັບຕົວໂຄສະນາຂອງທ່ານໃນ Chrome.</translation>
 <translation id="3061707000357573562">ການບໍລິການແກ້ບັນຫາ</translation>
+<translation id="3062655045399308513">ລຶບຂໍ້ມູນການທ່ອງເວັບ...</translation>
 <translation id="306573536155379004">ເລີ່ມເກມແລ້ວ.</translation>
 <translation id="3067505415088964188">ລາຄາຕ່ຳ</translation>
 <translation id="3076865167425975822">ລະບົບປະຕິບັດການ</translation>
@@ -2027,6 +2030,7 @@
 <translation id="4885256590493466218">ຈ່າຍດ້ວຍ <ph name="CARD_DETAIL" /> ຢູ່ຈຸດຈ່າຍເງິນ</translation>
 <translation id="4887406273302438710">ປົກປ້ອງລະຫັດຜ່ານດ້ວຍ Windows Hello</translation>
 <translation id="4890070067176768718">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ອະນຸຍາດ <ph name="PERMISSION" /> ຢູ່ <ph name="ORIGIN" /></translation>
+<translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອລຶບປະຫວັດການທ່ອງເວັບ, ຄຸກກີ້, ແຄສ ແລະ ອື່ນໆຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="4892518386797173871">ຫຼັງ</translation>
 <translation id="4895019427244614047">ລຶບທີ່ຢູ່</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -2594,6 +2598,7 @@
 <translation id="6014851866995737824">ບໍ່ສົນໃຈເນື່ອງຈາກບໍ່ມີລາຍຊື່ "ເປີດການນຳໃຊ້" ຫຼື "ປິດການນຳໃຊ້".</translation>
 <translation id="6015796118275082299">ປີ</translation>
 <translation id="6017514345406065928">ສີ​ຂຽວ</translation>
+<translation id="6018650639991193045">ລຶບປະຫວັດການທ່ອງເວັບ, ຄຸກກີ້, ແຄສ ແລະ ອື່ນໆຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (ຊິ້ງຂໍ້ມູນແລ້ວ)</translation>
 <translation id="6028591542479806248">ຈັດການການແຈ້ງເຕືອນມືຖື ແລະ ອີເມວ</translation>
 <translation id="6028833024483927901">ອາຫານນານາຊາດ</translation>
@@ -2767,6 +2772,7 @@
 <translation id="634500758737709758">ເສັ້ນທາງ</translation>
 <translation id="6348220984832452017">ຮູບແບບທີ່ນຳໃຊ້ຢູ່</translation>
 <translation id="6349101878882523185">ຕິດຕັ້ງ <ph name="APP_NAME" /></translation>
+<translation id="6351658970066645919">ລຶບຂໍ້ມູນການທ່ອງເວັບ</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ບໍ່ມີ}=1{1 ລະຫັດຜ່ານ (ສຳລັບ <ph name="DOMAIN_LIST" />, ຊິ້ງຂໍ້ມູນແລ້ວ)}=2{2 ລະຫັດຜ່ານ (ສຳລັບ <ph name="DOMAIN_LIST" />, ຊິ້ງຂໍ້ມູນແລ້ວ)}other{# ລະຫັດຜ່ານ (ສຳລັບ <ph name="DOMAIN_LIST" />, ຊິ້ງຂໍ້ມູນແລ້ວ)}}</translation>
 <translation id="6355392890578844978">ໂປຣແກຣມທ່ອງເວັບນີ້ບໍ່ໄດ້ຖືກຈັດການໂດຍບໍລິສັດ ຫຼື ອົງການອື່ນ. ການເຄື່ອນໄຫວຢູ່ອຸປະກອນນີ້ອາດຖືກຈັດການຢູ່ນອກ Chromium ໄດ້. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">ແກ້ໄຂວິທີການຈ່າຍເງິນ</translation>
@@ -3196,7 +3202,6 @@
 <translation id="7163295244162773898">{0,plural, =1{ສຳເນົາໄຟລ໌ຄວາມລັບບໍ?}other{ສຳເນົາໄຟລ໌ຄວາມລັບບໍ?}}</translation>
 <translation id="7168625890036931112">"<ph name="DATA_CONTROLS_RESTRICTION" />" ບໍ່ແມ່ນການຈຳກັດທີ່ຮອງຮັບຢູ່ແພລດຟອມນີ້</translation>
 <translation id="717330890047184534">Gaia ID:</translation>
-<translation id="7173338713290252554">ປະ​ຫວັດ​ລາຄາທົ່ວເວັບ</translation>
 <translation id="7174545416324379297">ຮວມເຂົ້າກັນແລ້ວ</translation>
 <translation id="7175097078723125014">ເລືອກຕົວເລືອກແກ້ໄຂທີ່ຢູ່ແລ້ວ</translation>
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ທີ່ຢູ່}other{<ph name="SHIPPING_OPTION_PREVIEW" /> ແລະ ອີກ <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ທີ່ຢູ່}}</translation>
@@ -3495,6 +3500,7 @@
 <translation id="7682287625158474539">ການຈັດສົ່ງ</translation>
 <translation id="7682451652090915298">ຣັກບີ</translation>
 <translation id="7684683146428206649">ໂລຫະ</translation>
+<translation id="7684817988830401358">ລຶບປຸ່ມຂໍ້ມູນການທ່ອງເວັບ, ເປີດການນຳໃຊ້ເພື່ອລຶບປະຫວັດການທ່ອງເວັບ, ຄຸກກີ້, ແຄສ ແລະ ອື່ນໆຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> ຖືກບລັອກເນື່ອງຈາກນະໂຍບາຍ}other{<ph name="FILE_COUNT" /> ໄຟລ໌ຖືກບລັອກເນື່ອງຈາກນະໂຍບາຍ}}</translation>
 <translation id="7687186412095877299">ປະກອບຂໍ້ມູນແບບຟອມການຈ່າຍເງິນດ້ວຍວິທີການຈ່າຍເງິນທີ່ບັນທຶກໄວ້ຂອງທ່ານ</translation>
 <translation id="7687305263118037187">ການລອງໃໝ່ໝົດເວລາ</translation>
@@ -3607,6 +3613,7 @@
 <translation id="7935318582918952113">ເຄື່ອງກັ່ນ DOM</translation>
 <translation id="7937163678541954811">CVC ຂອງບັດນີ້ຈະຖືກເຂົ້າລະຫັດ ແລະ ບັນທຶກໄວ້ໃນອຸປະກອນຂອງທ່ານເພື່ອການຈ່າຍເງິນທີ່ໄວຂຶ້ນ</translation>
 <translation id="7937554595067888181">ໝົດອາຍຸໃນວັນທີ <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="7938490694919717008">ສະແດງຮາງວັນ ແລະ ສິດທິປະໂຫຍດທີ່ບັດຂອງທ່ານມີເມື່ອຈ່າຍເງິນ <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ສຶກສາກ່ຽວກັບສິດທິປະໂຫຍດຂອງບັດ<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">ໃບຢັ້ງຢືນຂອງເຊີບເວີໃຊ້ບໍ່ໄດ້ເທື່ອ.</translation>
 <translation id="7941628148012649605">Envelope Chou 4</translation>
 <translation id="794169214536209644">ເຂົ້າໜົມ ແລະ ຂອງຫວານ</translation>
@@ -3995,6 +4002,7 @@
 <translation id="8662463432865928030">ອາຄານທາງການຄ້າ</translation>
 <translation id="8663226718884576429">ສັງຮວມຄຳສັ່ງຊື້, <ph name="TOTAL_LABEL" />, ລາຍລະອຽດເພີ່ມເຕີມ</translation>
 <translation id="8663909737634214500">ອັອບຕິຄອລດິສ</translation>
+<translation id="8664326323360157684">ລຶບຂໍ້ມູນການທ່ອງເວັບ...</translation>
 <translation id="8671519637524426245">ຄ່າ <ph name="SECURE_DNS_SALT" /> ບໍ່ເປັນໄປຕາມຂໍ້ກຳນົດດ້ານຂະໜາດ.</translation>
 <translation id="867224526087042813">ລາຍເຊັນ</translation>
 <translation id="8672535691554698269">ລະບົບເຄືອຂ່າຍຄອມພິວເຕີ</translation>
@@ -4293,6 +4301,7 @@
 <translation id="949314938206378263">ທ່ານໄດ້ຂໍເຂົ້າເບິ່ງເວັບໄຊນີ້. ຜູ້ປົກຄອງຂອງທ່ານສາມາດຕອບກັບໃນ Family Link.</translation>
 <translation id="950736567201356821">ເຈາະຮູຢູ່ເທິງສຸດສາມຮູ</translation>
 <translation id="961663415146723894">ຫຍິບເຫຼັ້ມລຸ່ມສຸດ</translation>
+<translation id="961856697154696964">ລຶບຂໍ້ມູນການທ່ອງເວັບ</translation>
 <translation id="961930410699694996">ຂະນະນີ້ອະນຸຍາດສະຖານທີ່ແລ້ວ</translation>
 <translation id="962484866189421427">ເນື້ອຫານີ້ອາດຈະພະຍາຍາມຕິດຕັ້ງແອັບຫຼອກລວງທີ່ປອມເປັນສິ່ງອື່ນ ຫຼື ເກັບກຳຂໍ້ມູນທີ່ອາດຈະຖືກໃຊ້ເພື່ອຕິດຕາມທ່ານ. <ph name="BEGIN_LINK" />ຢືນຢັນການສະແດງ<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">ໂດຍອີງຕາມກົດໝາຍໃນພາກພື້ນຂອງທ່ານ, Chromium ຈະຂໍໃຫ້ທ່ານເລືອກໂປຣແກຣມຊອກຫາເລີ່ມຕົ້ນຂອງທ່ານ. ໂປຣແກຣມຊອກຫາເຫຼົ່ານີ້ໄດ້ຮັບຄວາມນິຍົມໃນພາກພື້ນຂອງທ່ານ ແລະ ສະແດງແບບສຸ່ມລຳດັບ.</translation>

@@ -5631,7 +5631,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5271578170655641944">Megvonja a Google Drive-hozzáférést?</translation>
 <translation id="5273806377963980154">Webhely URL-jének módosítása</translation>
 <translation id="5275084684151588738">Felhasználói szótárak</translation>
-<translation id="5275100789567222478">Bekapcsolás csak akkor, ha az akkumulátor töltöttsége <ph name="PERCENT" />% vagy ennél alacsonyabb</translation>
 <translation id="5275338516105640560">Mentett lapcsoport gomb</translation>
 <translation id="5275352920323889391">Kutya</translation>
 <translation id="527605719918376753">Lap némítása</translation>
@@ -6243,7 +6242,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5746169159649715125">Mentés PDF-ként</translation>
 <translation id="5747785204778348146">Fejlesztői – nem stabil</translation>
 <translation id="5747809636523347288"><ph name="URL" /> be&amp;illesztése és felkeresése</translation>
-<translation id="5748137879145720682">Bekapcsolás, amikor a számítógép nincs áramforráshoz csatlakoztatva</translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Internetmegosztási készenlét ellenőrzése</translation>
 <translation id="5753570386948603678">Törlés az előzmények közül</translation>

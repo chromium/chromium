@@ -31,7 +31,6 @@
 <translation id="1620510694547887537">Fotoaparat</translation>
 <translation id="1633720957382884102">Povezane web-lokacije</translation>
 <translation id="1644574205037202324">Povijest</translation>
-<translation id="1647582022260550163">Jeste li sigurni da želite poništiti dopuštenja i izbrisati kolačiće i podatke web-lokacije?</translation>
 <translation id="1652197001188145583">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu NFC uređaja. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati NFC uređaje.</translation>
 <translation id="1660204651932907780">Web-lokacije mogu reproducirati zvuk (preporučeno)</translation>
 <translation id="1677097821151855053">Kolačići i drugi podaci web-lokacije koriste se kako bi vas web-lokacija zapamtila, na primjer kako bi vas prijavila na račun ili vam prilagodila oglase. Da biste upravljali kolačićima za sve web-lokacije, idite na <ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" />.</translation>
@@ -134,6 +133,7 @@
 <translation id="3198916472715691905">Pohranjeni podaci: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Da bi vam aplikacija <ph name="APP_NAME" /> slati obavijesti, uključite obavijesti i u <ph name="BEGIN_LINK" />Androidovim postavkama<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3232293466644486101">Brisanje podataka o pregledavanju…</translation>
 <translation id="3242646949159196181">Kad je ta postavka uključena, web-lokacije mogu reproducirati zvuk. Kad je ta postavka isključena, web-lokacije ne mogu reproducirati zvuk.</translation>
 <translation id="3277252321222022663">Dopuštanje pristupa senzorima za web-lokacije (preporučeno)</translation>
 <translation id="3285500645985761267">Dopustite povezanim web-lokacijama da vide vaše aktivnosti u grupi</translation>

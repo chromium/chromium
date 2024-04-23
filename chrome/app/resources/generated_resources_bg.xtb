@@ -5630,7 +5630,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5271578170655641944">Искате ли да премахнете достъпа до Google Диск?</translation>
 <translation id="5273806377963980154">Редактиране на URL адреса на сайта</translation>
 <translation id="5275084684151588738">Потребителски речници</translation>
-<translation id="5275100789567222478">Включване само когато нивото на батерията е <ph name="PERCENT" />% или по-малко</translation>
 <translation id="5275338516105640560">Бутон за запазената група раздели</translation>
 <translation id="5275352920323889391">Куче</translation>
 <translation id="527605719918376753">Спиране на звука на раздела</translation>
@@ -6242,7 +6241,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5746169159649715125">Запазване като PDF файл</translation>
 <translation id="5747785204778348146">За програмисти – нестабилен</translation>
 <translation id="5747809636523347288">Пост&amp;авяне и отваряне на <ph name="URL" /></translation>
-<translation id="5748137879145720682">Включване, когато компютърът ми е изключен от захранването</translation>
 <translation id="5750288053043553775">0</translation>
 <translation id="5751345516399502412">Проверка на готовността за тетъринг</translation>
 <translation id="5753570386948603678">Изтриване от историята</translation>

@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">Captura de pantalla</translation>
 <translation id="1108938384783527433">Sincronització de l'historial</translation>
 <translation id="1111673857033749125">Les adreces d'interès desades als altres dispositius es mostraran aquí.</translation>
-<translation id="1113057722807951993">L'encriptació de frases de contrasenya no inclou les formes de pagament ni les adreces de Google Pay.
-
-Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">Mostra la visualització simplificada</translation>
 <translation id="1126809382673880764">No et protegeix contra baixades, extensions ni llocs web perillosos. Continuaràs obtenint protecció mitjançant Navegació segura, sempre que estigui disponible, en altres serveis de Google, com ara Gmail i la Cerca.</translation>
 <translation id="1129510026454351943">Detalls: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="3290249595466894471">També envia una petita mostra de pàgines, baixades, activitat d'extensions i informació del sistema per ajudar a detectar amenaces noves</translation>
 <translation id="3293181007446299124">L'historial de navegació es desa en privat al teu dispositiu i els informes s'envien amb retard per protegir la teva identitat</translation>
 <translation id="3303414029551471755">Voleu baixar el contingut?</translation>
+<translation id="3303855915957856445">No s'ha trobat cap resultat de la cerca</translation>
 <translation id="3305130791745726624">Envia als dispositius</translation>
 <translation id="3305795716056605962">Tradueix pàgines des del botó Més opcions</translation>
 <translation id="3334729583274622784">Vols canviar l'extensió del fitxer?</translation>
@@ -529,7 +527,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="3847319713229060696">Ajuda a millorar la seguretat al web per a tothom</translation>
 <translation id="3856096718352044181">Verifica que aquest és un proveïdor vàlid o torna-ho a provar més tard</translation>
 <translation id="3858860766373142691">Nom</translation>
-<translation id="3872520701277728051">Si has oblidat la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Copia el text</translation>
 <translation id="3894427358181296146">Afegeix una carpeta</translation>
 <translation id="3899682235662194879">Tanca totes les pestanyes d'incògnit</translation>
@@ -873,8 +870,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les
 <translation id="5590372121997663538">Recorda aquest ordinador</translation>
 <translation id="5596627076506792578">Més opcions</translation>
 <translation id="5599455543593328020">Mode d'incògnit</translation>
-<translation id="5605283439565877834">Les formes de pagament i les adreces de Google Pay no s'encriptaran. L'historial de navegació de Chrome no se sincronitzarà.
-Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">No hi ha cap contrasenya desada</translation>
 <translation id="5620928963363755975">Per veure els teus fitxers i les teves pàgines, toca el botó Més opcions i ves a la secció Baixades</translation>
 <translation id="562289928968387744">Gestiona les reaccions</translation>
@@ -1103,7 +1098,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6672697278890207089">Introduïu la vostra contrasenya</translation>
 <translation id="6672917148207387131">Afegeix <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">Per iniciar la sincronització, introdueix la frase de contrasenya</translation>
-<translation id="6676840375528380067">Vols esborrar les dades de Chrome del dispositiu?</translation>
 <translation id="6676927815633975364">Inicia la sessió en aquest lloc web i a Chrome</translation>
 <translation id="6684809838922667136">Millora Chrome</translation>
 <translation id="670498945988402717">Es va comprovar ahir</translation>
@@ -1305,7 +1299,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7626032353295482388">Et donem la benvinguda a Chrome</translation>
 <translation id="7630202231528827509">URL del proveïdor</translation>
 <translation id="7638584964844754484">La frase de contrasenya és incorrecta</translation>
-<translation id="7641339528570811325">Esborra les dades de navegació…</translation>
 <translation id="7646772052135772216">La sincronització de contrasenyes no funciona</translation>
 <translation id="7655240423373329753">7 darrers dies</translation>
 <translation id="7655900163790317559">S'està activant el Bluetooth…</translation>
@@ -1384,7 +1377,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7995059495660416932">Veuràs contingut quan estigui disponible</translation>
 <translation id="799576009106109668">Navegaràs més de pressa perquè el contingut es carrega de forma proactiva en funció de la pàgina web que estiguis visitant</translation>
 <translation id="8004582292198964060">Navegador</translation>
-<translation id="8013372441983637696">Esborra també les teves dades de Chrome d'aquest dispositiu</translation>
 <translation id="8015452622527143194">Restableix la mida de tots els elements de la pàgina</translation>
 <translation id="8026238112629815203">Hem canviat la manera com es desen les contrasenyes en aquest dispositiu</translation>
 <translation id="8027863900915310177">Tria on vols fer la baixada</translation>
@@ -1511,7 +1503,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8562452229998620586">Les contrasenyes desades apareixeran aquí.</translation>
 <translation id="8570677896027847510">El fitxer no es pot baixar de manera segura</translation>
 <translation id="8571213806525832805">4 darreres setmanes</translation>
-<translation id="8583805026567836021">S'estan esborrant les dades del compte</translation>
 <translation id="859046281437143747">Fes un seguiment del preu des del botó Més opcions</translation>
 <translation id="860043288473659153">Nom del titular de la targeta</translation>
 <translation id="8602358303461588329">S'ha tancat Inicia la sessió a Chrome.</translation>
@@ -1641,6 +1632,5 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="983192555821071799">Tanca totes les pestanyes</translation>
 <translation id="987264212798334818">General</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> pestanyes</translation>
-<translation id="993520549480398880">Esborra també les adreces d'interès, l'historial i altres dades d'aquest cotxe</translation>
 <translation id="996149300115483134">El menú de la targeta del tauler està tancat</translation>
 </translationbundle>

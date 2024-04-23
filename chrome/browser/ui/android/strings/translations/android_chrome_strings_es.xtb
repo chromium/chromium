@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">Captura de pantalla</translation>
 <translation id="1108938384783527433">Sincronización del historial</translation>
 <translation id="1111673857033749125">Aquí aparecen los marcadores que hayas guardado en otros dispositivos.</translation>
-<translation id="1113057722807951993">El cifrado con frase de contraseña no incluye los métodos de pago ni las direcciones de Google Pay.
-
-Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">Mostrar vista simplificada</translation>
 <translation id="1126809382673880764">No te protege frente a descargas, extensiones ni sitios web peligrosos. Seguirás disfrutando de protección con la función Navegación segura, si está disponible, en otros servicios de Google, como Gmail y la Búsqueda.</translation>
 <translation id="1129510026454351943">Detalles: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="3290249595466894471">También envía una pequeña muestra de páginas, descargas, actividad de extensiones e información del sistema para ayudar a detectar nuevas amenazas.</translation>
 <translation id="3293181007446299124">Tu historial de navegación se conservará en tu dispositivo y será privado, y los informes se enviarán con retraso para proteger tu identidad.</translation>
 <translation id="3303414029551471755">¿Quieres continuar para descargar el contenido?</translation>
+<translation id="3303855915957856445">No se han encontrado resultados de búsqueda</translation>
 <translation id="3305130791745726624">Enviar a dispositivos</translation>
 <translation id="3305795716056605962">Traducir páginas desde el botón Más opciones</translation>
 <translation id="3334729583274622784">¿Cambiar la extensión del archivo?</translation>
@@ -529,7 +527,6 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de t
 <translation id="3847319713229060696">Ayudar a mejorar la seguridad de todos los usuarios en la Web</translation>
 <translation id="3856096718352044181">Verifica que este sea un proveedor válido o inténtalo de nuevo más tarde.</translation>
 <translation id="3858860766373142691">Nombre</translation>
-<translation id="3872520701277728051">Si has olvidado tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3894427358181296146">Añadir carpeta</translation>
 <translation id="3899682235662194879">Cerrar todas las pestañas de incógnito</translation>
@@ -873,8 +870,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="5590372121997663538">Recordar este ordenador</translation>
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5599455543593328020">Modo Incógnito</translation>
-<translation id="5605283439565877834">Los métodos de pago y las direcciones de Google Pay no se cifrarán. El historial de navegación de Chrome no se sincronizará.
-Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifrados. La frase de contraseña no se enviará a Google, que tampoco la almacenará. Si olvidas tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">No hay ninguna contraseña guardada</translation>
 <translation id="5620928963363755975">Encuentra tus archivos y páginas en la sección Descargas con el botón Más opciones</translation>
 <translation id="562289928968387744">Gestionar reacciones</translation>
@@ -1103,7 +1098,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6672697278890207089">Introduce tu frase de contraseña</translation>
 <translation id="6672917148207387131">Añadir <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">Para iniciar la sincronización, escribe tu frase de contraseña</translation>
-<translation id="6676840375528380067">¿Quieres borrar tus datos de Chrome en este dispositivo?</translation>
 <translation id="6676927815633975364">Inicia sesión en este sitio y en Chrome</translation>
 <translation id="6684809838922667136">Mejorar Chrome</translation>
 <translation id="670498945988402717">Comprobado ayer</translation>
@@ -1305,7 +1299,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7626032353295482388">Te damos la bienvenida a Chrome</translation>
 <translation id="7630202231528827509">URL del proveedor</translation>
 <translation id="7638584964844754484">Frase de contraseña incorrecta</translation>
-<translation id="7641339528570811325">Borrar datos de navegación…</translation>
 <translation id="7646772052135772216">La sincronización de contraseñas no funciona</translation>
 <translation id="7655240423373329753">los últimos 7 días</translation>
 <translation id="7655900163790317559">Activando Bluetooth…</translation>
@@ -1384,7 +1377,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7995059495660416932">Verás contenido cuando esté disponible</translation>
 <translation id="799576009106109668">Navegarás más rápido porque el contenido se cargará de forma proactiva en función de la página web en la que estés</translation>
 <translation id="8004582292198964060">Navegador</translation>
-<translation id="8013372441983637696">Borrar también los datos de Chrome de este dispositivo</translation>
 <translation id="8015452622527143194">Restaura el tamaño predeterminado del contenido</translation>
 <translation id="8026238112629815203">Hemos cambiado la forma de guardar contraseñas en este dispositivo</translation>
 <translation id="8027863900915310177">Elige dónde descargarlo</translation>
@@ -1511,7 +1503,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8562452229998620586">Las contraseñas guardadas aparecerán aquí.</translation>
 <translation id="8570677896027847510">El archivo no se puede descargar de forma segura</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
-<translation id="8583805026567836021">Borrando datos de cuenta</translation>
 <translation id="859046281437143747">Sigue el precio desde el botón Más opciones</translation>
 <translation id="860043288473659153">Nombre del titular de la tarjeta</translation>
 <translation id="8602358303461588329">Inicia sesión en Chrome, cerrado.</translation>
@@ -1641,6 +1632,5 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="983192555821071799">Cerrar todas las pestañas</translation>
 <translation id="987264212798334818">General</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> pestañas</translation>
-<translation id="993520549480398880">Borrar también de este coche los marcadores, el historial y otros datos</translation>
 <translation id="996149300115483134">El menú de la tarjeta del feed está cerrado</translation>
 </translationbundle>

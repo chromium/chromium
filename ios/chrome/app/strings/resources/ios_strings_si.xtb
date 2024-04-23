@@ -131,6 +131,7 @@
 <translation id="1653432787084483144">{count,plural, =1{ඔබේ යතුරු පුවරුවට ඉහළින් {count} සුරැකි මුරපදයක් ඇත.}one{ඔබේ යතුරු පුවරුවට ඉහළින් සුරැකි මුරපද {count}ක් ඇත.}other{ඔබේ යතුරු පුවරුවට ඉහළින් සුරැකි මුරපද {count}ක් ඇත.}}</translation>
 <translation id="1657011748321897393">ඔබ ජාලයට සම්බන්ධ වී නැති නිසා බෙදා ගැනීම අසාර්ථක විය.</translation>
 <translation id="165877110639533037">විවෘත පටිති නැත</translation>
+<translation id="1668001730617725852">නව පටිති සමූහයක් තුළ විවෘත කරන්න</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> සිට <ph name="TARGET_LANGUAGE" /> ට</translation>
 <translation id="1683483432843341018">ජංගම අඩවිය ඉල්ලන්න</translation>
 <translation id="1687475363370981210">සියල්ල කියවූ ලෙස ලකුණු කරන්න</translation>
@@ -1206,6 +1207,7 @@
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> සමගින් අප්‍රකට ටැබ අගුලු හරින්න</translation>
 <translation id="7173114856073700355">සැකසීම් විවෘත කරන්න</translation>
 <translation id="7186568385131859684">Google සේවා පුරා ඔබේ වෙනත් දත්ත සමහ බ්‍රවුස් කිරීමේ ඉතිහාසය භාවිත කෙරෙන ආකාරය පාලන කරන්න</translation>
+<translation id="7187190640134722091">සමූහය සාදන්න</translation>
 <translation id="7189598951263744875">බෙදා ගන්න…</translation>
 <translation id="719133302483559673">ඔබේ ලැදිකම් සහ මනාප කළමනා කරන්න.</translation>
 <translation id="7192050974311852563">ලොග් කිරීම අරඹන්න</translation>
@@ -1603,6 +1605,7 @@
 <translation id="9109699888944026290">{count,plural, =1{මෙම අඩවිය සඳහා නව මුරපදය}one{මෙම අඩවිය සඳහා නව මුරපද}other{මෙම අඩවිය සඳහා නව මුරපද}}</translation>
 <translation id="9120217828624527905">පූර්ණ පිටු පරිවර්තනය වෙත මාරු වන්න</translation>
 <translation id="9124387962554796433">සෙවීම සහ අනෙකුත් Google සේවා පුද්ගලිකකරණය කිරීමට Google ඔබගේ ඉතිහාසය භාවිත කළ හැකිය</translation>
+<translation id="913036870884277353">වෙනත් යෙදුම් තුළ පහසුවෙන් සබැඳි විවෘත කරන්න.</translation>
 <translation id="9137526406337347448">Google සේවා</translation>
 <translation id="9144931028079269381">කියවීමේ ලැයිස්තුව සඟවන්න</translation>
 <translation id="9148126808321036104">නැවත පිවිසෙන්න</translation>

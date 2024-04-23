@@ -97,12 +97,8 @@
 <translation id="3855938650519180865">Что нового в Chromium</translation>
 <translation id="3886689467633467988">Войдите на этот сайт и в Chromium, чтобы синхронизировать закладки и другую информацию на своих устройствах.</translation>
 <translation id="3904484643286601695">Изменить список выбранных уведомлений можно в любой момент в настройках Chromium.</translation>
-<translation id="394413318816989199">Способы оплаты и адреса не шифруются кодовой фразой.
-
-Чтобы это изменить, <ph name="BEGIN_LINK" />удалите данные Chromium из аккаунта<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Начнется проверка безопасности в Chromium.</translation>
 <translation id="4043291146360695975">Пароли сохраняются в Менеджере паролей только на этом устройстве.</translation>
-<translation id="4076589763479456892">Если вы забыли кодовую фразу или хотите ее изменить, <ph name="BEGIN_LINK" />удалите данные Chromium из аккаунта<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Проверка не поддерживается в бета-версии Chromium</translation>
 <translation id="4106512142782407609">Вы вошли как <ph name="EMAIL" />.
 
@@ -192,9 +188,6 @@
 <translation id="6337530241089703714">Удалить данные Chromium с этого устройства?</translation>
 <translation id="6348483005826990855">3. Выберите Chromium.</translation>
 <translation id="6383607155624074112">Добавьте Chromium на панель Dock для быстрого доступа</translation>
-<translation id="6407399265324739055">Способы оплаты и адреса не будут шифроваться, а история браузера Chromium – синхронизироваться.
-
-Прочесть ваши зашифрованные данные сможет только тот, кто знает кодовую фразу. Она не отправляется компании Google и не хранится на ее серверах. Если вы забыли кодовую фразу или хотите изменить эти настройки, <ph name="BEGIN_LINK" />удалите данные Chromium из аккаунта<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium становится лучше! Доступна новая версия.</translation>
 <translation id="6433172051771630690">Советы по эффективной работе с Chromium.</translation>
 <translation id="6502321914804101924">Вы вышли из Chromium</translation>
@@ -261,9 +254,6 @@
 <translation id="8458950033462118672">Чтобы автоматически открывать ссылки в Chromium, сделайте его браузером по умолчанию</translation>
 <translation id="858114650497379505">Вы можете использовать пароли, сохраненные в Менеджере паролей, для других приложений на своем устройстве iPhone.</translation>
 <translation id="8586442755830160949">© The Chromium Authors, <ph name="YEAR" /> . Все права защищены.</translation>
-<translation id="8618440443578628179">Шифрование кодовой фразой не применяется к способам оплаты и адресам из Google Pay.
-
-Чтобы это изменить, <ph name="BEGIN_LINK" />удалите данные Chromium из аккаунта<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Защищает вас в браузере Chrome и может использоваться для повышения безопасности в других приложениях Google, когда выполнен вход в аккаунт.</translation>
 <translation id="8663480472502753423">Обновить Chromium до последней версии</translation>
 <translation id="8685813584220679697">Войдите на этот сайт и в Chromium.</translation>

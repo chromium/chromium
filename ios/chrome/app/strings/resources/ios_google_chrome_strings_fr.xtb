@@ -75,7 +75,6 @@ Points à prendre en compte :
 <translation id="2736805085127235148">Les notifications Chrome sont actuellement désactivées dans les paramètres de votre appareil.</translation>
 <translation id="2750626042242931740">Vous pouvez modifier vos sélections à tout moment dans les paramètres Chrome.</translation>
 <translation id="2767464022270041271">Aucun mot de passe enregistré. Le Gestionnaire de mots de passe de Google peut vérifier vos mots de passe lorsque vous les enregistrez.</translation>
-<translation id="2789947168960170215">Si vous avez oublié votre phrase secrète ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="2869959624320573933">Connectez-vous à Chrome</translation>
 <translation id="2876628302275096482">Découvrez <ph name="BEGIN_LINK" />comment Chrome protège la confidentialité de vos données<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Accédez aux paramètres de Chrome</translation>
@@ -190,9 +189,6 @@ Vos données sont chiffrées avec votre phrase secrète. Saisissez-la pour utili
 <translation id="6648150602980899529">Vous vous connectez avec un compte géré par <ph name="DOMAIN" />, ce qui permettra à son administrateur de contrôler vos données Chrome. Celles-ci seront définitivement associées à ce compte. Si vous vous déconnectez de Chrome, vos données seront supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
 <translation id="6683891932310469419">Ouvre votre historique Chrome.</translation>
 <translation id="6709398533399187136">Votre mot de passe a été compromis lors d'une violation des données. Le Gestionnaire de mots de passe de Google vous recommande de le modifier immédiatement.</translation>
-<translation id="6815466750807582739">Les adresses et les modes de paiement ne seront pas chiffrés. L'historique de navigation de Chrome ne sera pas synchronisé.
-
-Seule une personne connaissant votre phrase secrète peut lire vos données chiffrées. Google ne reçoit pas ni n'enregistre votre phrase secrète. Si vous l'avez oubliée ou si vous souhaitez modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Ouvrez les paramètres Chrome dans iOS, appuyez sur "Appli du navigateur par défaut", puis sélectionnez Chrome.</translation>
 <translation id="686691656039982452">Vous pouvez <ph name="BEGIN_LINK" />gérer les données Chrome à enregistrer<ph name="END_LINK" /> dans votre compte Google.
 
@@ -277,9 +273,6 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
 <translation id="8808828119384186784">Paramètres de Chrome</translation>
 <translation id="8850736900032787670">Pour recevoir des contenus personnalisés en fonction de vos centres d'intérêt, connectez-vous à Chrome.</translation>
 <translation id="8855781063981781621">Pour désactiver le mode Blocage dans Chrome, désactivez-le sur votre iPad.</translation>
-<translation id="8856877214925961642">Le chiffrement par phrase secrète n'inclut pas les modes de paiement ni les adresses.
-
-Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome de votre compte<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Le Gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez demain.</translation>
 <translation id="8865415417596392024">Données Chrome de votre compte</translation>
 <translation id="8874688701962049679">Conseils pour exploiter tout le potentiel de Chrome.</translation>

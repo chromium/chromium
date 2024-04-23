@@ -75,7 +75,6 @@ Mga bagay na dapat isaalang-alang:
 <translation id="2736805085127235148">Kasalukuyang naka-off ang mga notification sa Chrome sa mga setting ng iyong device.</translation>
 <translation id="2750626042242931740">Puwede mong i-update ang iyong mga pinili anumang oras sa Mga Setting ng Chrome.</translation>
 <translation id="2767464022270041271">Walang naka-save na password. Masusuri ng Google Password Manager ang iyong mga password kapag na-save mo ang mga ito.</translation>
-<translation id="2789947168960170215">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="2869959624320573933">Mag-sign In sa Chrome</translation>
 <translation id="2876628302275096482">Matuto pa tungkol sa kung <ph name="BEGIN_LINK" />paano pinapanatiling pribado ng Chrome ang iyong data<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Buksan ang Mga Setting ng Chrome</translation>
@@ -193,9 +192,6 @@ Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at 
 <translation id="6648150602980899529">Nagsa-sign in ka gamit ang isang account na pinamamahalaan ng <ph name="DOMAIN" /> at binibigyan mo ang administrator nito ng kontrol sa iyong data sa Chrome. Permanenteng mauugnay ang iyong data sa account na ito. Made-delete ang data mo sa device na ito kapag nag-sign out ka sa Chrome, ngunit mananatili itong naka-store sa iyong Google Account.</translation>
 <translation id="6683891932310469419">Bubuksan ang iyong Page ng History sa Chrome.</translation>
 <translation id="6709398533399187136">Na-expose ang password mo sa isang paglabag sa data. Inirerekomenda ng Google Password Manager na palitan na ito ngayon.</translation>
-<translation id="6815466750807582739">Hindi mae-encrypt ang mga paraan ng pagbabayad at address. Hindi masi-sync ang history ng pag-browse mula sa Chrome.
-
-Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data. Hindi ipinapadala sa o sino-store ng Google ang passphrase. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Buksan ang Mga Setting ng Chrome sa iOS, pagkatapos ay i-tap ang "Default na Browser App" at piliin ang Chrome.</translation>
 <translation id="686691656039982452">Puwede mong <ph name="BEGIN_LINK" />pamahalaan kung anong data ng Chrome ang nase-save<ph name="END_LINK" /> sa iyong Google Account.
 
@@ -280,9 +276,6 @@ Na-encrypt ang iyong data gamit ang passphrase mo noong <ph name="TIME" />. Ilag
 <translation id="8808828119384186784">Mga Setting ng Chrome</translation>
 <translation id="8850736900032787670">Para makatanggap ng naka-personalize na content batay sa iyong mga interes, mag-sign in sa Chrome.</translation>
 <translation id="8855781063981781621">Para i-disable ang Lockdown Mode sa Chrome, i-off ito sa iyong iPad.</translation>
-<translation id="8856877214925961642">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address.
-
-Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Hindi masuri ng Google Password Manager ang lahat ng password. Subukan ulit bukas.</translation>
 <translation id="8865415417596392024">Data ng Chrome sa iyong account</translation>
 <translation id="8874688701962049679">Mga tip para masulit ang Chrome.</translation>

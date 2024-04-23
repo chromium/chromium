@@ -75,7 +75,6 @@ Co je třeba zvážit:
 <translation id="2736805085127235148">Oznámení prohlížeče Chrome jsou aktuálně v nastavení zařízení vypnutá.</translation>
 <translation id="2750626042242931740">Svůj výběr můžete v nastavení Chromu kdykoli aktualizovat.</translation>
 <translation id="2767464022270041271">Nemáte žádná uložená hesla. Správce hesel Google může hesla zkontrolovat, pouze když si je uložíte.</translation>
-<translation id="2789947168960170215">Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="2869959624320573933">Přihlaste se do Chromu</translation>
 <translation id="2876628302275096482"><ph name="BEGIN_LINK" />Další informace o tom, jak Chrome uchovává vaše data v soukromí<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Otevřít nastavení Chromu</translation>
@@ -190,9 +189,6 @@ Vaše data jsou šifrována pomocí heslové fráze. Pokud chcete používat a 
 <translation id="6648150602980899529">Přihlašujete se pomocí účtu spravovaného doménou <ph name="DOMAIN" /> a poskytujete jeho správci kontrolu nad svými daty prohlížeče Chrome. Vaše data budou trvale přidružena k tomuto účtu. Odhlášením z Chromu svá data smažete z tohoto zařízení, ve vašem účtu Google však uložena zůstanou.</translation>
 <translation id="6683891932310469419">Otevře stránku Historie Chromu.</translation>
 <translation id="6709398533399187136">Vaše heslo bylo vyzrazeno při porušení zabezpečení údajů. Správce hesel Google doporučuje ihned ho změnit.</translation>
-<translation id="6815466750807582739">Platební metody a adresy nebudou šifrovány. Historie prohlížení v Chromu se nebude synchronizovat.
-
-Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">V systému iOS otevřete Nastavení Chromu, klepněte na Výchozí prohlížeč a vyberte Chrome.</translation>
 <translation id="686691656039982452">Můžete <ph name="BEGIN_LINK" />spravovat, která data prohlížeče Chrome se ukládají<ph name="END_LINK" /> do účtu Google.
 
@@ -277,9 +273,6 @@ Vaše data byla <ph name="TIME" /> zašifrována pomocí heslové fráze. Pokud 
 <translation id="8808828119384186784">Nastavení Chromu</translation>
 <translation id="8850736900032787670">Pokud chcete dostávat personalizovaný obsah na základě svých zájmů, přihlaste se do Chromu.</translation>
 <translation id="8855781063981781621">Pokud chcete v Chromu deaktivovat režim blokování, vypněte ho na svém iPadu.</translation>
-<translation id="8856877214925961642">Šifrování pomocí heslové fráze se nevztahuje na platební metody a adresy.
-
-Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chrome ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Správci hesel Google se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra.</translation>
 <translation id="8865415417596392024">Data Chromu ve vašem účtu</translation>
 <translation id="8874688701962049679">Tipy, jak Chrome využít na maximum.</translation>

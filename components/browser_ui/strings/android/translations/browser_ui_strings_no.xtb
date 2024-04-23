@@ -31,7 +31,6 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Relaterte nettsteder</translation>
 <translation id="1644574205037202324">Logg</translation>
-<translation id="1647582022260550163">Er du sikker på at du vil tilbakestille tillatelser og slette informasjonskapsler og nettstedsdata?</translation>
 <translation id="1652197001188145583">Når dette er på, kan nettsteder be om å få bruke NFC-enheter. Når dette er av, kan ikke nettsteder bruke NFC-enheter.</translation>
 <translation id="1660204651932907780">Tillat nettsteder å spille av lyd (anbefales)</translation>
 <translation id="1677097821151855053">Informasjonskapsler og andre nettstedsdata brukes til å huske deg, for eksempel for å logge deg på eller for å vise deg personlig tilpassede annonser. For å administrere informasjonskapsler for alle nettsteder, se <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
@@ -134,6 +133,7 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> lagrede data</translation>
 <translation id="321187648315454507">For at <ph name="APP_NAME" /> skal kunne sende deg varsler, må du også slå på varsler i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3232293466644486101">Slett nettlesingsdata…</translation>
 <translation id="3242646949159196181">Når dette er på, kan nettsteder spille av lyd. Når dette er av, kan ikke nettsteder spille av lyd.</translation>
 <translation id="3277252321222022663">Gi nettsteder tilgang til sensorer (anbefalt)</translation>
 <translation id="3285500645985761267">Tillat relaterte nettsteder å se aktiviteten din i gruppen</translation>

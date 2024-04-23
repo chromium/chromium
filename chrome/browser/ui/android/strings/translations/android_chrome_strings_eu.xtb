@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">Pantaila-argazkia</translation>
 <translation id="1108938384783527433">Historiaren sinkronizazioa</translation>
 <translation id="1111673857033749125">Beste gailuetan gordeta dituzun laster-markak hemen agertuko dira.</translation>
-<translation id="1113057722807951993">Pasaesaldi bidezko enkriptatzearen kanpoan utzi dira Google Pay-ko ordainketa-metodoak eta helbideak.
-
-Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">Erakutsi ikuspegi sinplifikatua</translation>
 <translation id="1126809382673880764">Ez zaitu babesten webgune, deskarga eta luzapen kaltegarrien aurka. Erabilgarri dagoenean, arakatze seguruaren babesa jasotzen jarraituko duzu Google-ren beste zerbitzu batzuetan (Gmail-en eta Bilaketa zerbitzuan, esaterako).</translation>
 <translation id="1129510026454351943">Xehetasunak: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="3290249595466894471">Gainera, orrien, deskargen, luzapenen jardueren eta sistemaren informazioaren lagin txikiak bidaltzen ditu mehatxu berriak aurkitu ahal izateko.</translation>
 <translation id="3293181007446299124">Arakatze-historia pribatu mantentzen da gailuan eta txostenak beranduago bidaltzen dira, zure identitatea babesteko.</translation>
 <translation id="3303414029551471755">Aurrera egin eta edukia deskargatu nahi duzu?</translation>
+<translation id="3303855915957856445">Ez da aurkitu bilaketa-emaitzarik</translation>
 <translation id="3305130791745726624">Bidali gailuetara</translation>
 <translation id="3305795716056605962">Itzuli orriak Aukera gehiago botoiaren bidez</translation>
 <translation id="3334729583274622784">Fitxategi-luzapena aldatu nahi duzu?</translation>
@@ -529,7 +527,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="3847319713229060696">Hobetu sareko segurtasuna denontzat</translation>
 <translation id="3856096718352044181">Egiaztatu hornitzaile horrek balio duela edo saiatu berriro geroago</translation>
 <translation id="3858860766373142691">Izena</translation>
-<translation id="3872520701277728051">Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Kopiatu testua</translation>
 <translation id="3894427358181296146">Gehitu karpeta</translation>
 <translation id="3899682235662194879">Itxi ezkutuko moduko fitxa guztiak</translation>
@@ -873,8 +870,6 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5590372121997663538">Gogoratu ordenagailu hau</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
 <translation id="5599455543593328020">Ezkutuko modua</translation>
-<translation id="5605283439565877834">Google Pay-ko ordainketa-metodoak eta helbideak ez dira enkriptatuko. Chrome-ko arakatze-historia ez da sinkronizatuko.
-Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Google-k ez du jasoko pasaesaldia, ezta gordeko ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Ez dago pasahitzik gordeta</translation>
 <translation id="5620928963363755975">Bilatu Deskargak atalean dituzun fitxategiak eta orriak Aukera gehiago botoia sakatuta</translation>
 <translation id="562289928968387744">Kudeatu erreakzioak</translation>
@@ -1103,7 +1098,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6672697278890207089">Idatzi pasaesaldia</translation>
 <translation id="6672917148207387131">Gehitu <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">Sinkronizatzen hasteko, idatzi pasaesaldia</translation>
-<translation id="6676840375528380067">Gailu honetan dituzun Chrome-ko datuak garbitu nahi dituzu?</translation>
 <translation id="6676927815633975364">Hasi saioa webgune honetan eta Chrome-n</translation>
 <translation id="6684809838922667136">Hobetu Chrome</translation>
 <translation id="670498945988402717">Atzo egiaztatu zuen</translation>
@@ -1305,7 +1299,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7626032353295482388">Ongi etorri Chrome-ra</translation>
 <translation id="7630202231528827509">Hornitzailearen URLa</translation>
 <translation id="7638584964844754484">Pasaesaldi okerra</translation>
-<translation id="7641339528570811325">Garbitu arakatze-datuak…</translation>
 <translation id="7646772052135772216">Pasahitzen sinkronizazioa ez dabil</translation>
 <translation id="7655240423373329753">Azken 7 egunetako</translation>
 <translation id="7655900163790317559">Bluetootha aktibatzen…</translation>
@@ -1384,7 +1377,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7995059495660416932">Erabilgarri dagoenean ikusiko duzu edukia</translation>
 <translation id="799576009106109668">Bizkorrago arakatuko duzu, edukia proaktiboki kargatuko delako bisitatzen ari zaren web-orriaren arabera.</translation>
 <translation id="8004582292198964060">Arakatzailea</translation>
-<translation id="8013372441983637696">Garbitu Chrome-ren datuak gailu honetatik ere</translation>
 <translation id="8015452622527143194">Berrezarri orriko eduki guztia tamaina lehenetsian</translation>
 <translation id="8026238112629815203">Pasahitzak gailu honetan gordetzeko modua aldatu dugu</translation>
 <translation id="8027863900915310177">Aukeratu nora deskargatu nahi duzun</translation>
@@ -1511,7 +1503,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8562452229998620586">Gordetako pasahitzak hemen agertuko dira.</translation>
 <translation id="8570677896027847510">Ezin da segurtasunez deskargatu fitxategia</translation>
 <translation id="8571213806525832805">Azken lau asteetakoak</translation>
-<translation id="8583805026567836021">Kontuko datuak garbitzen</translation>
 <translation id="859046281437143747">Erabili Aukera gehiago botoia prezioaren jarraipena egiten hasteko</translation>
 <translation id="860043288473659153">Txartelaren titularraren izena</translation>
 <translation id="8602358303461588329">Hasi saioa Chrome-n, itxita.</translation>
@@ -1641,6 +1632,5 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="983192555821071799">Itxi fitxa guztiak</translation>
 <translation id="987264212798334818">Orokorra</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> fitxa</translation>
-<translation id="993520549480398880">Garbitu laster-markak, historia eta beste datu batzuk ere autotik</translation>
 <translation id="996149300115483134">Jarioko txartelaren menua itxita dago</translation>
 </translationbundle>

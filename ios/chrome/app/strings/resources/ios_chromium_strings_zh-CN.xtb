@@ -99,12 +99,8 @@
 <translation id="3855938650519180865">Chromium 中的新变化</translation>
 <translation id="3886689467633467988">登录此网站和 Chromium 即可获取您在所有设备上保存的书签及其他信息。</translation>
 <translation id="3904484643286601695">您可以随时在 Chromium 设置中更新您的选择。</translation>
-<translation id="394413318816989199">口令加密不涵盖付款方式和地址。
-
-如要更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chromium 数据<ph name="END_LINK" />。</translation>
 <translation id="4005283307739974863">在 Chromium 中打开并运行安全检查。</translation>
 <translation id="4043291146360695975">系统会将密码仅保存到此设备上的密码管理器中。</translation>
-<translation id="4076589763479456892">如果您忘记了口令或想更改此设置，请<ph name="BEGIN_LINK" />清除账号中的 Chromium 数据<ph name="END_LINK" />。</translation>
 <translation id="4099085513035183040">在 Chromium Beta 版中不受支持</translation>
 <translation id="4106512142782407609">目前登录的账号是 <ph name="EMAIL" />。
 
@@ -194,9 +190,6 @@
 <translation id="6337530241089703714">请选择是要清除还是要保留您在此设备上存储的 Chromium 数据</translation>
 <translation id="6348483005826990855">3. 选择“Chromium”</translation>
 <translation id="6383607155624074112">从主屏幕上的程序坞更快速地访问 Chromium</translation>
-<translation id="6407399265324739055">付款方式和地址不会加密。Chromium 中的浏览记录不会同步。
-
-只有知道您口令的人能读取您的加密数据。该口令不会被发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chromium 数据<ph name="END_LINK" />。</translation>
 <translation id="6424492062988593837">Chromium 刚刚经过了改进！新版本已推出。</translation>
 <translation id="6433172051771630690">有关充分利用 Chromium 的提示。</translation>
 <translation id="6502321914804101924">已退出 Chromium</translation>
@@ -263,7 +256,6 @@
 <translation id="8458950033462118672">只需将 Chromium 设为默认浏览器应用，便可自动在 Chromium 中打开链接。</translation>
 <translation id="858114650497379505">您可在 iPhone 上的其他应用内使用已保存至密码管理器的密码。</translation>
 <translation id="8586442755830160949">版权所有<ph name="YEAR" /> The Chromium Authors。保留所有权利。</translation>
-<translation id="8618440443578628179">口令加密不涵盖 Google Pay 中的付款方式和地址。如要更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chromium 数据<ph name="END_LINK" />。</translation>
 <translation id="865600487977764604">保护您在 Chromium 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用。</translation>
 <translation id="8663480472502753423">让 Chromium 保持最新状态</translation>
 <translation id="8685813584220679697">登录此网站和 Chromium。</translation>

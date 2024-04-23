@@ -99,12 +99,8 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chromium-upplifuni
 <translation id="3855938650519180865">Nýjungar í Chromium</translation>
 <translation id="3886689467633467988">Skráðu þig inn á þetta vefsvæði og Chromium til að fá bókamerkin þín og fleira í öll tækin þín.</translation>
 <translation id="3904484643286601695">Þú getur uppfært valið þitt hvenær sem er í stillingum Chromium.</translation>
-<translation id="394413318816989199">Dulkóðun aðgangsorða felur ekki í sér greiðslumáta og vefföng.
-
-Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chromium-gögnin á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Opnar og keyrir öryggisathugun í Chromium.</translation>
 <translation id="4043291146360695975">Aðgangsorð eru aðeins vistuð í aðgangsorðastjórnun í þessu tæki.</translation>
-<translation id="4076589763479456892">Ef þú gleymdir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chromium-gögnin á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Ekki stutt í Chromium Beta</translation>
 <translation id="4106512142782407609">Skráð(ur) inn sem <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@ Hafðu í huga:
 <translation id="6337530241089703714">Veldu hvort þú vilt hreinsa gögn Chromium úr þessu tæki eða geyma þau</translation>
 <translation id="6348483005826990855">3. Veldu Chromium</translation>
 <translation id="6383607155624074112">Opnaðu Chromium hraðar úr heimaskjásdokkunni þinni</translation>
-<translation id="6407399265324739055">Greiðslumátar og vefföng eru ekki dulkóðuð. Vafraferill Chromium samstillist ekki.
-
-Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuðu gögnin þín. Aðgangsorðið er hvorki sent til né vistað hjá Google. Ef þú gleymir aðgangsorðinu eða vilt breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chromium-gögnin á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium er nú enn betra! Ný útgáfa er í boði.</translation>
 <translation id="6433172051771630690">Ráð um að fá sem mest út úr Chromium.</translation>
 <translation id="6502321914804101924">Þú ert skráð(ur) út af Chromium</translation>
@@ -263,9 +256,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="8458950033462118672">Þú getur opnað tengla sjálfkrafa í Chromium með því að stilla það sem sjálfgefið vafraforrit.</translation>
 <translation id="858114650497379505">Þú getur notað aðgangsorðin sem þú vistaðir í aðgangsorðastjórnun í öðrum forritum í iPhone.</translation>
 <translation id="8586442755830160949">Höfundarréttur <ph name="YEAR" /> höfundar Chromium. Allur réttur áskilinn.</translation>
-<translation id="8618440443578628179">Dulkóðun aðgangsorða felur ekki í sér greiðslumáta og heimilisföng á Google Pay.
-
-Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chromium-gögnin á reikningnum þínum<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Gætir öryggis þíns í Chromium og kann að vera notað til að auka öryggi þitt í öðrum Google forritum þegar þú hefur skráð þig inn.</translation>
 <translation id="8663480472502753423">Haltu Chromium uppfærðu</translation>
 <translation id="8685813584220679697">Skráðu þig inn á þetta vefsvæði og Chromium.</translation>

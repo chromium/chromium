@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">Screenshot</translation>
 <translation id="1108938384783527433">Synkronisering af historik</translation>
 <translation id="1111673857033749125">Bogmærker, der er gemt på dine andre enheder, vises her.</translation>
-<translation id="1113057722807951993">Kryptering med adgangssætning omfatter ikke betalingsmetoder og adresser fra Google Pay.
-
-Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">Se enkel visning</translation>
 <translation id="1126809382673880764">Beskytter dig ikke mod skadelige websites, downloads og udvidelser. Du er stadig beskyttet med Beskyttet browsing i andre Google-tjenester som f.eks. Gmail og Søgning, hvor dette er tilgængeligt.</translation>
 <translation id="1129510026454351943">Info: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="3290249595466894471">Der sendes også et mindre antal sider, downloads, udvidelsesaktivitet og systemoplysninger for at identificere nye trusler</translation>
 <translation id="3293181007446299124">Din browserhistorik holdes privat på din enhed, og rapporter sendes med forsinkelse for at beskytte din identitet</translation>
 <translation id="3303414029551471755">Vil du fortsætte og downloade indholdet?</translation>
+<translation id="3303855915957856445">Der blev ikke fundet nogen søgeresultater</translation>
 <translation id="3305130791745726624">Send til enheder</translation>
 <translation id="3305795716056605962">Oversæt sider via knappen Flere valgmuligheder</translation>
 <translation id="3334729583274622784">Vil du ændre filtypen?</translation>
@@ -529,7 +527,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="3847319713229060696">Vær med til at forbedre sikkerheden på nettet for alle</translation>
 <translation id="3856096718352044181">Verificer, at dette er en gyldig udbyder, eller prøv igen senere</translation>
 <translation id="3858860766373142691">Navn</translation>
-<translation id="3872520701277728051">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />rydde Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Kopiér tekst</translation>
 <translation id="3894427358181296146">Tilføj mappe</translation>
 <translation id="3899682235662194879">Luk alle inkognitofaner</translation>
@@ -873,8 +870,6 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5590372121997663538">Husk denne computer</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="5599455543593328020">Inkognitotilstand</translation>
-<translation id="5605283439565877834">Betalingsmetoder og adresser fra Google Pay krypteres ikke. Browserhistorik fra Chrome synkroniseres ikke.
-Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssætningen bliver ikke sendt til eller gemt af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />rydde Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Der er ingen gemte adgangskoder</translation>
 <translation id="5620928963363755975">Find dine filer og sider i Downloads via knappen Flere valgmuligheder</translation>
 <translation id="562289928968387744">Administrer reaktioner</translation>
@@ -1103,7 +1098,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6672697278890207089">Angiv din adgangssætning</translation>
 <translation id="6672917148207387131">Tilføj <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">Angiv din adgangssætning for at starte synkroniseringen</translation>
-<translation id="6676840375528380067">Vil du rydde dine Chrome-data på denne enhed?</translation>
 <translation id="6676927815633975364">Log ind på dette website og Chrome</translation>
 <translation id="6684809838922667136">Gør Chrome bedre</translation>
 <translation id="670498945988402717">Tjekket i går</translation>
@@ -1305,7 +1299,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7626032353295482388">Velkommen til Chrome</translation>
 <translation id="7630202231528827509">Udbyderens webadresse</translation>
 <translation id="7638584964844754484">Forkert adgangssætning</translation>
-<translation id="7641339528570811325">Ryd browserdata…</translation>
 <translation id="7646772052135772216">Synkronisering af adgangskoder fungerer ikke</translation>
 <translation id="7655240423373329753">de seneste 7 dage</translation>
 <translation id="7655900163790317559">Aktiverer Bluetooth…</translation>
@@ -1384,7 +1377,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7995059495660416932">Du får vist indhold, når det bliver tilgængeligt</translation>
 <translation id="799576009106109668">Du får hurtigere browsing, da indholdet indlæses proaktivt på baggrund af den webside, du aktuelt er på</translation>
 <translation id="8004582292198964060">Browser</translation>
-<translation id="8013372441983637696">Ryd også dine Chrome-data fra enheden</translation>
 <translation id="8015452622527143194">Nulstil alt på siden til standardstørrelsen</translation>
 <translation id="8026238112629815203">Vi har ændret, hvordan adgangskoder gemmes på denne enhed</translation>
 <translation id="8027863900915310177">Vælg, hvor downloadfilen skal gemmes</translation>
@@ -1511,7 +1503,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8562452229998620586">Dine gemte adgangskoder vises her.</translation>
 <translation id="8570677896027847510">Filen kan ikke downloades sikkert</translation>
 <translation id="8571213806525832805">Seneste 4 uger</translation>
-<translation id="8583805026567836021">Kontodataene ryddes</translation>
 <translation id="859046281437143747">Hold øje med prisen ved hjælp af knappen Flere valgmuligheder</translation>
 <translation id="860043288473659153">Kortholderens navn</translation>
 <translation id="8602358303461588329">Log ind i Chrome, lukket.</translation>
@@ -1641,6 +1632,5 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="983192555821071799">Luk alle faner</translation>
 <translation id="987264212798334818">Generelt</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> faner</translation>
-<translation id="993520549480398880">Ryd også bogmærker, historik m.m. fra denne bil</translation>
 <translation id="996149300115483134">Feedkortmenuen er lukket</translation>
 </translationbundle>

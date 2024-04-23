@@ -31,7 +31,6 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Srodne web lokacije</translation>
 <translation id="1644574205037202324">Historija</translation>
-<translation id="1647582022260550163">Jeste li sigurni da želite poništiti odobrenja i obrisati kolačiće i podatke web lokacije?</translation>
 <translation id="1652197001188145583">Kada je postavka uključena, web lokacije mogu zatražiti da koriste NFC uređaje. Kada je postavka isključena, web lokacije ne mogu koristiti NFC uređaje.</translation>
 <translation id="1660204651932907780">Dozvolite web lokacijama da reproduciraju zvuk (preporučeno)</translation>
 <translation id="1677097821151855053">Kolačići i drugi podaci web lokacije se koriste da vas web lokacija zapamti, naprimjer radi vaše prijave ili personaliziranja oglasa. Da upravljate kolačićima za sve web lokacije, pogledajte <ph name="BEGIN_LINK" />Postavke<ph name="END_LINK" />.</translation>
@@ -134,6 +133,7 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> pohranjenih podataka</translation>
 <translation id="321187648315454507">Da dozvolite da vam aplikacija <ph name="APP_NAME" /> šalje obavještenja, također uključite obavještenja u <ph name="BEGIN_LINK" />Postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3232293466644486101">Brisanje podataka o pregledavanju…</translation>
 <translation id="3242646949159196181">Kada je postavka uključena, web lokacije mogu reproducirati zvuk. Kada je postavka isključena, web lokacije ne mogu reproducirati zvuk.</translation>
 <translation id="3277252321222022663">Dozvolite web lokacijama pristup senzorima (preporučeno)</translation>
 <translation id="3285500645985761267">Dozvolite srodnim web lokacijama da vide vašu aktivnost u grupi</translation>

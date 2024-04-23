@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">Képernyőrögzítés</translation>
 <translation id="1108938384783527433">Előzmények szinkronizálása</translation>
 <translation id="1111673857033749125">A más eszközökön mentett könyvjelzők itt jelennek meg.</translation>
-<translation id="1113057722807951993">Az összetett jelszóval való titkosítás nem tartalmazza a Google Payben megadott fizetési módokat és címeket.
-
-A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">Egyszerűsített nézet megjelenítése</translation>
 <translation id="1126809382673880764">Nem védi meg Önt a veszélyes webhelyek, letöltések vagy bővítmények ellen. Ahol lehetséges (más Google-szolgáltatásokban, például a Gmailben és a Keresőben) továbbra is megkapja a Biztonságos Böngészés által nyújtott védelmet.</translation>
 <translation id="1129510026454351943">Részletek: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="3290249595466894471">Elküldi továbbá az oldalakkal, letöltésekkel, bővítményekkel és rendszerrel kapcsolatos adatok egy kisebb mintáját annak érdekében, hogy a jövőben könnyebben felismerhessük az új fenyegetéseket.</translation>
 <translation id="3293181007446299124">Böngészési előzményeit privát módon tárolja a rendszer az eszközén, és személyazonosságának védelme érdekében késleltetve küldi el a rendszer a jelentéseket.</translation>
 <translation id="3303414029551471755">Biztosan letölti a tartalmat?</translation>
+<translation id="3303855915957856445">Nincs találat</translation>
 <translation id="3305130791745726624">Küldés eszközre</translation>
 <translation id="3305795716056605962">Oldalfordításhoz használja a További lehetőségek gombot</translation>
 <translation id="3334729583274622784">Módosítja a fájl kiterjesztését?</translation>
@@ -529,7 +527,6 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="3847319713229060696">Segítsen nekünk abban, hogy mindenkinek biztonságosabbá tegyük az internetezést</translation>
 <translation id="3856096718352044181">Ellenőrizze a szolgáltató érvényességét, vagy próbálkozzon újra.</translation>
 <translation id="3858860766373142691">Név</translation>
-<translation id="3872520701277728051">Ha elfelejtette az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Szöveg másolása</translation>
 <translation id="3894427358181296146">Mappa hozzáadása</translation>
 <translation id="3899682235662194879">Összes inkognitó lap bezárása</translation>
@@ -873,8 +870,6 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5590372121997663538">A számítógép megjegyzése</translation>
 <translation id="5596627076506792578">További lehetőségek</translation>
 <translation id="5599455543593328020">Inkognitó mód</translation>
-<translation id="5605283439565877834">A Google Payből származó fizetési módok és címek nem lesznek titkosítva. A Chrome böngészési előzményei nem lesznek szinkronizálva.
-Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titkosított adatait. Az összetett jelszót nem kapja meg, és nem is tárolja a Google. Ha elfelejti az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Nincsenek mentett jelszavak</translation>
 <translation id="5620928963363755975">A fájlokat és oldalakat a További lehetőségek gomb Letöltések menüpontjában találja meg</translation>
 <translation id="562289928968387744">Reakciók kezelése</translation>
@@ -1103,7 +1098,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6672697278890207089">Adja meg összetett jelszavát</translation>
 <translation id="6672917148207387131">A(z) <ph name="DOMAIN" /> hozzáadása</translation>
 <translation id="6674571176963658787">A szinkronizálás megkezdéséhez adja meg összetett jelszavát.</translation>
-<translation id="6676840375528380067">Törli Chrome-adatait az eszközről?</translation>
 <translation id="6676927815633975364">Bejelentkezés erre a webhelyre és a Chrome-ba</translation>
 <translation id="6684809838922667136">A Chrome fejlesztése</translation>
 <translation id="670498945988402717">Tegnap volt ellenőrizve</translation>
@@ -1305,7 +1299,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7626032353295482388">A Chrome üdvözli Önt!</translation>
 <translation id="7630202231528827509">Szolgáltatói URL</translation>
 <translation id="7638584964844754484">Hibás összetett jelszó</translation>
-<translation id="7641339528570811325">Böngészési adatok törlése…</translation>
 <translation id="7646772052135772216">Nem működik a jelszavak szinkronizálása</translation>
 <translation id="7655240423373329753">az utóbbi 7 nap</translation>
 <translation id="7655900163790317559">Bluetooth bekapcsolása…</translation>
@@ -1384,7 +1377,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7995059495660416932">A tartalmakat akkor láthatja, amikor hozzáférhetővé válnak</translation>
 <translation id="799576009106109668">Gyorsabban böngészhet, mivel a rendszer proaktív módon tölti be a tartalmat az aktuálisan felkeresett weboldal alapján.</translation>
 <translation id="8004582292198964060">Böngésző</translation>
-<translation id="8013372441983637696">Az Ön Chrome-adatai is törlődjenek erről az eszközről</translation>
 <translation id="8015452622527143194">Minden visszaállítása alapértelmezett méretűre</translation>
 <translation id="8026238112629815203">Módosítottuk a jelszavak mentésének módját ezen az eszközön</translation>
 <translation id="8027863900915310177">Letöltés helyének kiválasztása</translation>
@@ -1511,7 +1503,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8562452229998620586">A mentett jelszavak itt jelennek meg.</translation>
 <translation id="8570677896027847510">A fájlt nem lehet biztonságosan letölteni</translation>
 <translation id="8571213806525832805">Az elmúlt 4 hétből</translation>
-<translation id="8583805026567836021">Fiókadatok törlése</translation>
 <translation id="859046281437143747">Az ár követéséhez nyomja meg a További műveletek gombot</translation>
 <translation id="860043288473659153">Kártyatulajdonos neve</translation>
 <translation id="8602358303461588329">Bejelentkezés a Chrome-ba, bezárva.</translation>
@@ -1641,6 +1632,5 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="983192555821071799">Az összes lap bezárása</translation>
 <translation id="987264212798334818">Általános</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> lap</translation>
-<translation id="993520549480398880">A könyvjelzők, előzmények és egyebek törlése erről az autóról</translation>
 <translation id="996149300115483134">A hírcsatornakártya menüje be van csukva</translation>
 </translationbundle>

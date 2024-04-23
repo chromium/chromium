@@ -99,12 +99,8 @@ Gaan na <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer in
 <translation id="3855938650519180865">Wat is nuut in Chromium</translation>
 <translation id="3886689467633467988">Meld by hierdie werf en Chromium aan om jou boekmerke en meer op al jou toestelle te kry.</translation>
 <translation id="3904484643286601695">Jy kan enige tyd jou keuses in Chromium-instellings opdateer.</translation>
-<translation id="394413318816989199">Wagfrase-enkripsie sluit nie betaalmetodes en adresse in nie.
-
-<ph name="BEGIN_LINK" />Vee die Chromium-data in jou rekening uit<ph name="END_LINK" /> as jy hierdie instelling wil verander.</translation>
 <translation id="4005283307739974863">Maak veiligheidskontrole in Chromium oop en laat dit loop.</translation>
 <translation id="4043291146360695975">Wagwoorde word slegs op hierdie toestel in Wagwoordbestuurder gestoor.</translation>
-<translation id="4076589763479456892"><ph name="BEGIN_LINK" />Vee die Chromium-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet het of hierdie instelling wil verander.</translation>
 <translation id="4099085513035183040">Nie op Chromium Beta gesteun nie</translation>
 <translation id="4106512142782407609">Aangemeld as <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@ Dinge om in ag te neem:
 <translation id="6337530241089703714">Kies of jy jou Chromium-data van hierdie toestel wil verwyder, of dit wil hou</translation>
 <translation id="6348483005826990855">3. Kies Chromium</translation>
 <translation id="6383607155624074112">Kry vinniger toegang tot Chromium vanaf jou tuisskermdok</translation>
-<translation id="6407399265324739055">Betaalmetodes en adresse sal nie geënkripteer word nie. Blaaigeskiedenis van Chromium af sal nie sinkroniseer nie.
-
-Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google toe gestuur of deur Google geberg nie. <ph name="BEGIN_LINK" />Vee die Chromium-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet of hierdie instelling wil verander.</translation>
 <translation id="6424492062988593837">Chromium het pas beter geword! 'n Nuwe weergawe is beskikbaar.</translation>
 <translation id="6433172051771630690">Wenke om die meeste uit Chromium te kry.</translation>
 <translation id="6502321914804101924">Chromium is afgemeld</translation>
@@ -263,9 +256,6 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="8458950033462118672">Jy kan skakels in Chromium outomaties oopmaak deur dit jou verstekblaaierapp te maak.</translation>
 <translation id="858114650497379505">Jy kan die wagwoorde wat jy in Wagwoordbestuurder gestoor het in ander programme op jou iPhone gebruik.</translation>
 <translation id="8586442755830160949">Kopiereg <ph name="YEAR" /> Die Chromium-outeurs. Alle regte voorbehou.</translation>
-<translation id="8618440443578628179">Wagfrase-enkripsie sluit nie betaalmetodes en adresse van Google Pay af in nie.
-
-<ph name="BEGIN_LINK" />Vee die Chromium-data in jou rekening uit<ph name="END_LINK" /> as jy hierdie instelling wil verander.</translation>
 <translation id="865600487977764604">Hou jou veilig op Chromium en kan gebruik word om jou sekuriteit in ander Google-programme te verbeter wanneer jy aangemeld is.</translation>
 <translation id="8663480472502753423">Hou Chromium op datum</translation>
 <translation id="8685813584220679697">Meld by hierdie werf en Chromium aan.</translation>

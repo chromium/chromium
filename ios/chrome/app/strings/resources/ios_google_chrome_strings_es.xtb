@@ -75,7 +75,6 @@ Notas importantes:
 <translation id="2736805085127235148">Las notificaciones de Chrome están desactivadas actualmente en los ajustes del dispositivo.</translation>
 <translation id="2750626042242931740">Puedes cambiar tu selección en cualquier momento desde la configuración de Chrome.</translation>
 <translation id="2767464022270041271">No hay contraseñas guardadas. El Gestor de contraseñas de Google puede comprobar tus contraseñas cuando las guardas.</translation>
-<translation id="2789947168960170215">Si has olvidado tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="2869959624320573933">Inicia sesión en Chrome</translation>
 <translation id="2876628302275096482">Más información sobre <ph name="BEGIN_LINK" />cómo protege Chrome la privacidad de tus datos<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Abre la configuración de Chrome.</translation>
@@ -190,9 +189,6 @@ Tus datos se han cifrado con tu frase de contraseña. Introdúcela para usar y g
 <translation id="6648150602980899529">Estás iniciando sesión con una cuenta gestionada por <ph name="DOMAIN" />, lo que significa que vas a proporcionar a su administrador el control sobre tus datos de Chrome. Los datos se van a vincular de forma permanente a esta cuenta. Si cierras sesión en Chrome, se eliminarán los datos de este dispositivo pero permanecerán almacenados en tu cuenta de Google.</translation>
 <translation id="6683891932310469419">Abre la página del historial de Chrome.</translation>
 <translation id="6709398533399187136">Tu contraseña se ha visto expuesta en una brecha de seguridad de datos. El Gestor de contraseñas de Google te recomienda que cambies esa contraseña ahora.</translation>
-<translation id="6815466750807582739">Los métodos de pago y las direcciones no se cifrarán. El historial de navegación de Chrome no se sincronizará.
-
-Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifrados. La frase de contraseña no se enviará a Google, que tampoco la almacenará. Si olvidas tu frase de contraseña o quieres cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">En iOS, ve a Ajustes, selecciona Chrome, toca "App del navegador por omisión" y elige Chrome.</translation>
 <translation id="686691656039982452">Puedes <ph name="BEGIN_LINK" />gestionar qué datos de Chrome se guardan<ph name="END_LINK" /> en tu cuenta de Google.
 
@@ -277,9 +273,6 @@ Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Intr
 <translation id="8808828119384186784">Configuración de Chrome</translation>
 <translation id="8850736900032787670">Para recibir contenido personalizado según tus intereses, inicia sesión en Chrome.</translation>
 <translation id="8855781063981781621">Para inhabilitar el modo Bloqueo de seguridad en Chrome, desactívalo en tu iPad.</translation>
-<translation id="8856877214925961642">El cifrado con frase de contraseña no incluye los métodos de pago ni las direcciones.
-
-Para cambiar este ajuste, <ph name="BEGIN_LINK" />borra los datos de Chrome de tu cuenta<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">El Gestor de contraseñas de Google no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
 <translation id="8865415417596392024">Datos de Chrome en tu cuenta</translation>
 <translation id="8874688701962049679">Consejos para sacar el máximo partido a Chrome.</translation>

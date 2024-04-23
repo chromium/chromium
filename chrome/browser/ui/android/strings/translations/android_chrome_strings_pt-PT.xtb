@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">Ecrã a ser capturado...</translation>
 <translation id="1108938384783527433">Sincronização do histórico</translation>
 <translation id="1111673857033749125">Os marcadores guardados nos seus outros dispositivos são apresentados aqui.</translation>
-<translation id="1113057722807951993">A encriptação da frase de acesso não inclui métodos de pagamento nem moradas do Google Pay.
-
-Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">Mostrar vista simplificada</translation>
 <translation id="1126809382673880764">Não protege contra transferências, extensões ou Websites perigosos. Continuará a obter a proteção da Navegação segura, quando disponível, noutros Serviços Google, como o Gmail e a Pesquisa.</translation>
 <translation id="1129510026454351943">Detalhes: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="3290249595466894471">Envia também um pequeno exemplo de páginas, transferências, atividade de extensões e informações do sistema para ajudar a detetar novas ameaças</translation>
 <translation id="3293181007446299124">O seu histórico de navegação é mantido no dispositivo e os relatórios são enviados com um atraso para proteger a sua identidade</translation>
 <translation id="3303414029551471755">Quer transferir o conteúdo?</translation>
+<translation id="3303855915957856445">Não foram encontrados resultados da pesquisa</translation>
 <translation id="3305130791745726624">Enviar para dispositivos</translation>
 <translation id="3305795716056605962">Traduza páginas a partir do botão Mais opções</translation>
 <translation id="3334729583274622784">Quer alterar a extensão de ficheiro?</translation>
@@ -529,7 +527,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="3847319713229060696">Ajudar a melhorar a segurança na Web para todos</translation>
 <translation id="3856096718352044181">Confirme que se trata de um fornecedor válido ou tente novamente mais tarde.</translation>
 <translation id="3858860766373142691">Nome</translation>
-<translation id="3872520701277728051">Se se esqueceu da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3894427358181296146">Adicionar pasta</translation>
 <translation id="3899682235662194879">Fechar todos os separadores de navegação anónima</translation>
@@ -873,8 +870,6 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5590372121997663538">Memorizar este computador</translation>
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5599455543593328020">Modo de navegação anónima</translation>
-<translation id="5605283439565877834">Os métodos de pagamento e as moradas do Google Pay não são encriptados. O histórico de navegação do Chrome não é sincronizado.
-Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google não recebe nem armazena a frase de acesso. Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Não existem palavras-passe guardadas.</translation>
 <translation id="5620928963363755975">Encontre os seus ficheiros e páginas nas Transferências através do botão Mais opções.</translation>
 <translation id="562289928968387744">Gerir reações</translation>
@@ -1103,7 +1098,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6672697278890207089">Introduza a frase de acesso</translation>
 <translation id="6672917148207387131">Adicionar <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">Para iniciar a sincronização, introduza a sua frase de acesso</translation>
-<translation id="6676840375528380067">Quer limpar os dados do Chrome deste dispositivo?</translation>
 <translation id="6676927815633975364">Inicie sessão neste site e no Chrome</translation>
 <translation id="6684809838922667136">Melhore o Chrome</translation>
 <translation id="670498945988402717">Última verificação ontem</translation>
@@ -1305,7 +1299,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7626032353295482388">Bem-vindo ao Chrome</translation>
 <translation id="7630202231528827509">URL do fornecedor</translation>
 <translation id="7638584964844754484">Frase de acesso incorreta</translation>
-<translation id="7641339528570811325">Limpar dados de navegação…</translation>
 <translation id="7646772052135772216">A sincronização de palavras-passe não está a funcionar</translation>
 <translation id="7655240423373329753">últimos 7 dias</translation>
 <translation id="7655900163790317559">A ativar o Bluetooth…</translation>
@@ -1384,7 +1377,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7995059495660416932">É apresentado conteúdo quando este ficar disponível</translation>
 <translation id="799576009106109668">Irá navegar mais depressa porque os conteúdos são carregados proativamente com base na página Web que está a visitar</translation>
 <translation id="8004582292198964060">Navegador</translation>
-<translation id="8013372441983637696">Limpar também os dados do Chrome deste dispositivo</translation>
 <translation id="8015452622527143194">Repor tamanho predefinido dos itens na página</translation>
 <translation id="8026238112629815203">Alterámos a forma como as palavras-passe são guardadas neste dispositivo</translation>
 <translation id="8027863900915310177">Escolha a localização da transferência</translation>
@@ -1511,7 +1503,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8562452229998620586">As palavras-passe guardadas aparecem aqui.</translation>
 <translation id="8570677896027847510">Não é possível transferir o ficheiro em segurança</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
-<translation id="8583805026567836021">A limpar os dados da conta</translation>
 <translation id="859046281437143747">Monitorize o preço a partir do botão Mais opções</translation>
 <translation id="860043288473659153">Nome do titular do cartão</translation>
 <translation id="8602358303461588329">Iniciar sessão no Chrome, fechado.</translation>
@@ -1641,6 +1632,5 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="983192555821071799">Fechar todos os separadores</translation>
 <translation id="987264212798334818">Geral</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> separadores</translation>
-<translation id="993520549480398880">Limpar também os marcadores, o histórico e mais dados deste carro</translation>
 <translation id="996149300115483134">O menu do cartão do feed está fechado.</translation>
 </translationbundle>

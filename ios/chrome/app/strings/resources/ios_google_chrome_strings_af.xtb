@@ -75,7 +75,6 @@ Dinge om in ag te neem:
 <translation id="2736805085127235148">Chrome-kennisgewings is tans in jou toestelinstellings afgeskakel.</translation>
 <translation id="2750626042242931740">Jy kan enige tyd jou keuses in Chrome-instellings opdateer.</translation>
 <translation id="2767464022270041271">Geen gestoorde wagwoorde nie. Google Wagwoordbestuurder kan jou wagwoorde nagaan wanneer jy hulle stoor.</translation>
-<translation id="2789947168960170215"><ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet het of hierdie instelling wil verander.</translation>
 <translation id="2869959624320573933">Meld by Chrome aan</translation>
 <translation id="2876628302275096482">Kom meer te wete oor <ph name="BEGIN_LINK" />hoe Chrome jou data privaat hou<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Maak Chrome-instellings oop</translation>
@@ -190,9 +189,6 @@ Jou data is met jou wagfrase geënkripteer. Voer dit in om Chrome-data in jou Go
 <translation id="6648150602980899529">Jy meld tans aan met 'n rekening wat deur <ph name="DOMAIN" /> bestuur word en gee sy administrateur beheer oor jou Chrome-data. Jou data sal permanent met hierdie rekening verbind word. As jy uit Chrome afmeld, sal jou data van hierdie toestel af uitgevee word, maar dit sal steeds in jou Google-rekening geberg word.</translation>
 <translation id="6683891932310469419">Maak jou Chrome-geskiedenisbladsy oop.</translation>
 <translation id="6709398533399187136">Jou wagwoord is in 'n dataskending blootgestel. Google Wagwoordbestuurder beveel aan dat jy dit nou verander.</translation>
-<translation id="6815466750807582739">Betaalmetodes en adresse sal nie geënkripteer word nie. Blaaigeskiedenis van Chrome af sal nie sinkroniseer nie.
-
-Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word nie na Google toe gestuur of deur Google geberg nie. <ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> indien jy jou wagfrase vergeet of hierdie instelling wil verander.</translation>
 <translation id="6851982868877411675">Maak Chrome-instellings in iOS oop, en tik dan op “Verstekblaaier-app” en kies Chrome.</translation>
 <translation id="686691656039982452">Jy kan <ph name="BEGIN_LINK" />bestuur watter Chrome-data gestoor word<ph name="END_LINK" /> in jou Google-rekening.
 
@@ -277,9 +273,6 @@ Jou data is op <ph name="TIME" /> met jou wagfrase geënkripteer. Voer dit in om
 <translation id="8808828119384186784">Chrome-instellings</translation>
 <translation id="8850736900032787670">Meld by Chrome aan om gepersonaliseerde inhoud op grond van jou belangstellings te ontvang.</translation>
 <translation id="8855781063981781621">Skakel snelsluitmodus op jou iPhone af as jy dit in Chrome wil deaktiveer.</translation>
-<translation id="8856877214925961642">Wagfrase-enkripsie sluit nie betaalmetodes en adresse in nie.
-
-<ph name="BEGIN_LINK" />Vee die Chrome-data in jou rekening uit<ph name="END_LINK" /> as jy hierdie instelling wil verander.</translation>
 <translation id="8857676124663337448">Google Wagwoordbestuurder kon nie alle wagwoorde nagaan nie. Probeer môre weer.</translation>
 <translation id="8865415417596392024">Chrome-data in jou rekening</translation>
 <translation id="8874688701962049679">Wenke om die meeste uit Chrome te kry.</translation>

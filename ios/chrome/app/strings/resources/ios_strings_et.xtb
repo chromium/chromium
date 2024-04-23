@@ -130,6 +130,7 @@
 <translation id="1653432787084483144">{count,plural, =1{{count} salvestatud parool on klaviatuuri kohal saadaval.}other{{count} salvestatud parooli on klaviatuuri kohal saadaval.}}</translation>
 <translation id="1657011748321897393">Jagamine ebaõnnestus võrguühenduse puudumise tõttu.</translation>
 <translation id="165877110639533037">Avatud vahelehti ei ole</translation>
+<translation id="1668001730617725852">Ava uues vahelehegrupis</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> &gt; <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Mobiilisaidi taotlemine</translation>
 <translation id="1687475363370981210">Märgi kõik loetuks</translation>
@@ -1199,6 +1200,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7162168282402939716">Ava inkognito vahelehed meetodiga <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Ava seaded</translation>
 <translation id="7186568385131859684">Hallake, kuidas kasutatakse sirvimisajalugu teie muude andmetega Google'i teenustes</translation>
+<translation id="7187190640134722091">Grupi loomine</translation>
 <translation id="7189598951263744875">Jaga ...</translation>
 <translation id="719133302483559673">Hallake oma huvisid ja eelistusi.</translation>
 <translation id="7192050974311852563">Alusta logimist</translation>
@@ -1595,6 +1597,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="9109699888944026290">{count,plural, =1{Uus parool selle saidi jaoks}other{Uued paroolid selle saidi jaoks}}</translation>
 <translation id="9120217828624527905">Terve lehe tõlkimise sisselülitamine</translation>
 <translation id="9124387962554796433">Google võib kasutada teie ajalugu otsingu ja muude Google'i teenuste isikupärastamiseks.</translation>
+<translation id="913036870884277353">Saate teistes rakendustes hõlpsalt linke avada.</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9144931028079269381">Peida valik „Lugemisloend“</translation>
 <translation id="9148126808321036104">Logige uuesti sisse</translation>

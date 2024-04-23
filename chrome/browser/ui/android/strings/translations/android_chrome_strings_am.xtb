@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">የማያ ገፅ ቀረጻ</translation>
 <translation id="1108938384783527433">ታሪክ አስምር</translation>
 <translation id="1111673857033749125">በሌሎች መሣሪያዎችዎ ላይ የተቀመጡ ዕልባቶችዎ እዚህ ብቅ ይላሉ።</translation>
-<translation id="1113057722807951993">የይለፍ ሐረግ ምስጠራ ከGoogle Pay የመክፈያ ዘዴዎችን እና አድራሻዎችን አያካትትም።
-
-ይህን ቅንብር ለመለወጥ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChrome ውሂብ ያጽዱ<ph name="END_LINK" />።</translation>
 <translation id="1113597929977215864">የተቃለለ እይታን አሳይ</translation>
 <translation id="1126809382673880764">እርስዎን አደገኛ ከሆኑ የድር ጣቢያዎች፣ ማውረዶች እና ቅጥያዎች አይጠብቀዎትም። አሁንም የሚገኝ በሆነበት ጊዜ እንደ Gmail እና ፍለጋ ባሉ ሌሎች የGoogle አገልግሎቶች ላይ የጥንቃቄ አሰሳ ጥበቃን ያገኛሉ።</translation>
 <translation id="1129510026454351943">ዝርዝሮች፦ <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@
 <translation id="3290249595466894471">አዲስ ስጋቶችን ፈልጎ ለማግኘት እንዲያግዝ በተጨማሪም የገጾች፣ ውርዶች፣ የቅጥያ እንቅስቃሴ እና የሥርዓት መረጃ ትንሽ ናሙና ይልካል</translation>
 <translation id="3293181007446299124">የእርስዎ የአሰሳ ታሪክ በመሣሪያዎ ላይ የግል ሆኖ ይቆያል እና ማንነትዎን ለመጠበቅ ሪፖርቶች ዘግይተው ይላካሉ</translation>
 <translation id="3303414029551471755">ይዘቱን ማውረድ ይቀጥል?</translation>
+<translation id="3303855915957856445">ምንም የፍለጋ ውጤቶች አልተገኙም</translation>
 <translation id="3305130791745726624">ወደ መሣሪያዎች ላክ</translation>
 <translation id="3305795716056605962">ከተጨማሪ አማራጮች አዝራር ውስጥ ገጾችን ይተርጉሙ</translation>
 <translation id="3334729583274622784">የፋይል ቅጥያ ይቀየር?</translation>
@@ -529,7 +527,6 @@
 <translation id="3847319713229060696">ድር ላይ ለሁሉም ሰው ደህንነት እንዲሻሻል ያግዙ</translation>
 <translation id="3856096718352044181">ይህ ልክ የሆነ አገልግሎት አቅራቢ መሆኑን እባክዎ ያረጋግጡ ወይም ቆይተው እንደገና ይሞክሩ</translation>
 <translation id="3858860766373142691">ስም</translation>
-<translation id="3872520701277728051">የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChrome ውሂብ ያጽዱ<ph name="END_LINK" />።</translation>
 <translation id="3892148308691398805">ጽሁፍ ቅዳ</translation>
 <translation id="3894427358181296146">አቃፊ ያክሉ</translation>
 <translation id="3899682235662194879">ሁሉንም ማንነት የማያሳውቅ ትሮች ይዝጉ</translation>
@@ -873,8 +870,6 @@
 <translation id="5590372121997663538">ይህን ኮምፒዩተር አስታውስ</translation>
 <translation id="5596627076506792578">ተጨማሪ አማራጮች</translation>
 <translation id="5599455543593328020">ማንነት የማያሳውቅ ሁነታ</translation>
-<translation id="5605283439565877834">የGoogle Pay የመክፈያ ዘዴዎች እና አድራሻዎች አይመሰጠሩም። የChrome የአሰሳ ታሪክ አይሰምርም።
-የእርስዎን የተመሰጠረ ውሂብ ማንበብ የሚችለው የይለፍ ሐረግዎ ያለው ሰው ብቻ ነው። የይለፍ ሐረጉ ወደ Google አይላክም ወይም በGoogle አይከማችም። የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ <ph name="BEGIN_LINK" />በመለያዎ ውስጥ ያለውን የChrome ውሂብ ያጽዱ<ph name="END_LINK" />።</translation>
 <translation id="5620163320393916465">ምንም የተቀመጡ የይለፍ ቃላት የሉም</translation>
 <translation id="5620928963363755975">ከተጨማሪ አማራጮች አዝራር ሆነው የእርስዎን ፋይሎች እና ገጾች በውርዶች ውስጥ ያግኙ</translation>
 <translation id="562289928968387744">አጸፋ ምላሾችን ያቀናብሩ</translation>
@@ -1103,7 +1098,6 @@
 <translation id="6672697278890207089">የእርስዎን የይለፍ ሐረግ ያስገቡ</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" />ን አክል</translation>
 <translation id="6674571176963658787">ስምረትን ለመጀመር የይለፍ ሐረግዎን ያስገቡ</translation>
-<translation id="6676840375528380067">የChrome ውሂብዎ ከዚህ መሣሪያ ላይ ይጽዳ?</translation>
 <translation id="6676927815633975364">ወደዚህ ጣቢያ እና ወደ Chrome ይግቡ</translation>
 <translation id="6684809838922667136">Chromeን የተሻለ ያድርጉት</translation>
 <translation id="670498945988402717">ትላንትና ተፈትሿል</translation>
@@ -1305,7 +1299,6 @@
 <translation id="7626032353295482388">ወደ Chrome እንኳን ደህና መጡ</translation>
 <translation id="7630202231528827509">የአቅራቢ ዩአርኤል</translation>
 <translation id="7638584964844754484">ትክክል ያልሆነ የይለፍ ሐረግ</translation>
-<translation id="7641339528570811325">የአሰሳ ውሂብን አጽዳ…</translation>
 <translation id="7646772052135772216">የይለፍ ቃል ስምረት እየሠራ አይደለም</translation>
 <translation id="7655240423373329753">ካለፉት 7 ቀናት</translation>
 <translation id="7655900163790317559">ብሉቱዝን በማብራት ላይ…</translation>
@@ -1384,7 +1377,6 @@
 <translation id="7995059495660416932">ይዘት የሚገኝ ሲሆን ይመለከቱታል</translation>
 <translation id="799576009106109668">አሁን ባለው የድረ-ገፅ ጉብኝትዎ ላይ በመመስረት ይዘቱ በንቃት ስለተጫነ በፍጥነት ያስሱታል</translation>
 <translation id="8004582292198964060">አሳሽ</translation>
-<translation id="8013372441983637696">በተጨማሪ ከዚህ መሣሪያ ላይ የእርስዎን Chrome ውሂብ ያጽዱት</translation>
 <translation id="8015452622527143194">በገጹ ላይ ያለውን ሁሉንም ነገር ወደ ነባሪ መጠን መልስ</translation>
 <translation id="8026238112629815203">በዚህ መሳሪያ ላይ የይለፍ ቃላት እንዴት እንደሚቀመጡ ቀይረናል</translation>
 <translation id="8027863900915310177">የት እንደሚያወርዱ ይምረጡ</translation>
@@ -1511,7 +1503,6 @@
 <translation id="8562452229998620586">የተቀመጡ ይለፍ ቃላት እዚህ ይመጣሉ።</translation>
 <translation id="8570677896027847510">ፋይል ደህንነቱ በተጠበቀ ሁኔታ ሊወርድ አይችልም</translation>
 <translation id="8571213806525832805">ባለፉት 4 ሳምንቶች</translation>
-<translation id="8583805026567836021">የመለያ ውሂብን በማጽዳት ላይ</translation>
 <translation id="859046281437143747">ከተጨማሪ አማራጮች አዝራር ዋጋን ይከታተሉ</translation>
 <translation id="860043288473659153">የካርድ ያዢ ስም</translation>
 <translation id="8602358303461588329">ወደ Chrome መግባት፣ ተዘግቷል።</translation>
@@ -1641,6 +1632,5 @@
 <translation id="983192555821071799">ሁሉንም ትሮች ይዝጉ</translation>
 <translation id="987264212798334818">አጠቃላይ</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> ትሮች</translation>
-<translation id="993520549480398880">እንዲሁም እልባቶችን፣ ታሪኮችን እና ሌሎችንም ከዚህ መኪና ያጽዱ</translation>
 <translation id="996149300115483134">የምግብ ካርድ ምናሌ ተዘግቷል</translation>
 </translationbundle>

@@ -99,12 +99,8 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chromium, ewch i <ph
 <translation id="3855938650519180865">Beth sy'n newydd yn Chromium</translation>
 <translation id="3886689467633467988">Mewngofnodwch i'r wefan hon a Chromium i gael eich nodau tudalen a rhagor ar eich holl ddyfeisiau.</translation>
 <translation id="3904484643286601695">Gallwch ddiweddaru'ch dewisiadau unrhyw bryd yn y Gosodiadau Chromium.</translation>
-<translation id="394413318816989199">Nid yw amgryptio cyfrinymadrodd yn cynnwys dulliau talu a chyfeiriadau.
-
-I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chromium yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Yn Agor a Rhedeg Gwiriad Diogelwch yn Chromium.</translation>
 <translation id="4043291146360695975">Mae cyfrineiriau'n cael eu cadw i'r Rheolwr Cyfrineiriau ar y ddyfais hon yn unig.</translation>
-<translation id="4076589763479456892">Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chromium yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Ni chefnogir ar Feta Chromium</translation>
 <translation id="4106512142782407609">Wedi mewngofnodi fel <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@ Pethau i'w hystyried:
 <translation id="6337530241089703714">Dewiswch a ddylid clirio eich data Chromium o'r ddyfais hon neu eu cadw</translation>
 <translation id="6348483005826990855">3. Dewiswch Chromium</translation>
 <translation id="6383607155624074112">Cael Mynediad at Chromium yn gyflymach o'ch Doc Sgrîn Hafan</translation>
-<translation id="6407399265324739055">Ni fydd dulliau talu a chyfeiriadau yn cael eu hamgryptio. Ni fydd hanes pori o Chromium yn cysoni.
-
-Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamgryptio. Nid yw'r cyfrinymadrodd yn cael ei anfon at Google na'i storio. Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chromium yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Mae Chromium newydd fynd hyd yn oed yn well! Mae fersiwn newydd ar gael.</translation>
 <translation id="6433172051771630690">Awgrymiadau i fanteisio i'r eithaf ar Chromium.</translation>
 <translation id="6502321914804101924">Mae Chromium wedi'i Allgofnodi</translation>
@@ -263,9 +256,6 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="8458950033462118672">Gallwch agor dolenni yn Chromium yn awtomatig drwy ei osod fel eich Ap Porwr Diofyn.</translation>
 <translation id="858114650497379505">Gallwch ddefnyddio'r cyfrineiriau a gadwyd gennych i'r Rheolwr Cyfrineiriau mewn apiau eraill ar eich iPhone.</translation>
 <translation id="8586442755830160949">Hawlfraint <ph name="YEAR" /> Awduron Chromium. Cedwir Pob Hawl.</translation>
-<translation id="8618440443578628179">Nid yw amgryptio cyfrinymadrodd yn cynnwys dulliau talu a chyfeiriadau gan Google Pay.
-
-I newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chromium yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Yn eich cadw'n ddiogel ar Chromium a gellir ei ddefnyddio i wella'ch diogelwch mewn apiau Google eraill pan fyddwch wedi'ch mewngofnodi.</translation>
 <translation id="8663480472502753423">Cadwch Chromium yn gyfredol</translation>
 <translation id="8685813584220679697">Mewngofnodi i'r wefan hon a Chromium.</translation>

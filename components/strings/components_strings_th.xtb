@@ -162,6 +162,7 @@
 <translation id="1282358575813748144">เรือและยานพาหนะทางน้ำ</translation>
 <translation id="1283977499362032052">ประวัติย่อและประวัติการทำงาน</translation>
 <translation id="1285320974508926690">ไม่ต้องแปลเว็บไซต์นี้</translation>
+<translation id="1291249564161469503">ล็อกแป้นพิมพ์ของคุณ</translation>
 <translation id="1292571435393770077">ถาด 16</translation>
 <translation id="1292701964462482250">"ซอฟต์แวร์ในคอมพิวเตอร์ของคุณทำให้ Chrome เชื่อมต่อกับเว็บอย่างปลอดภัยไม่ได้" (คอมพิวเตอร์ที่ใช้ระบบปฏิบัติการ Windows เท่านั้น)</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 นิ้ว</translation>
@@ -572,6 +573,7 @@
 <translation id="2046951263634619614">ร้านหนังสือ</translation>
 <translation id="2048261947532620704">กำลังแปลหน้าเว็บ</translation>
 <translation id="2053111141626950936">ระบบจะไม่แปลหน้าเว็บภาษา<ph name="LANGUAGE" /></translation>
+<translation id="2056492565825767809">ล็อกเคอร์เซอร์เมาส์ของคุณ</translation>
 <translation id="2056658168519009885">เว็บไซต์ต่างๆ สามารถขอข้อมูลจาก Chrome เพื่อใช้ในการปรับเปลี่ยนโฆษณาที่คุณเห็นให้เหมาะกับคุณ</translation>
 <translation id="2059166748188874810">เทศบาล</translation>
 <translation id="2059202684901022309">22 x 34 นิ้ว</translation>
@@ -1069,6 +1071,7 @@
 <translation id="3052964831964880138">ลดราคา <ph name="PRICE_DROP" /> สำหรับ <ph name="PRODUCT_NAME" /></translation>
 <translation id="3054512251683174387">Chrome จะลบหัวข้อที่นานเกิน 4 สัปดาห์โดยอัตโนมัติ เมื่อคุณท่องเว็บไปเรื่อยๆ บางหัวข้อก็อาจกลับมาอยู่ในรายการอีกครั้ง หรือคุณจะบล็อกหัวข้อที่ไม่ต้องการให้ Chrome แชร์กับเว็บไซต์ต่างๆ ก็ได้ ดูข้อมูลเพิ่มเติมเกี่ยวกับการจัดการความเป็นส่วนตัวเกี่ยวกับโฆษณาใน Chrome</translation>
 <translation id="3061707000357573562">แพตช์บริการ</translation>
+<translation id="3062655045399308513">ลบข้อมูลการท่องเว็บ...</translation>
 <translation id="306573536155379004">เกมเริ่มแล้ว</translation>
 <translation id="3067505415088964188">ราคาต่ำ</translation>
 <translation id="3076865167425975822">ระบบปฏิบัติการ</translation>
@@ -2024,6 +2027,7 @@
 <translation id="4885256590493466218">ชำระเงินด้วย <ph name="CARD_DETAIL" /> ที่จุดชำระเงิน</translation>
 <translation id="4887406273302438710">ปกป้องรหัสผ่านด้วย Windows Hello</translation>
 <translation id="4890070067176768718">ผู้ดูแลระบบอนุญาต <ph name="PERMISSION" /> ใน <ph name="ORIGIN" /></translation>
+<translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อลบประวัติการท่องเว็บ คุกกี้ แคช และอื่นๆ ในการตั้งค่า Chrome</translation>
 <translation id="4892518386797173871">หลัง</translation>
 <translation id="4895019427244614047">ลบที่อยู่</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> และ <ph name="TYPE_3" /></translation>
@@ -2591,6 +2595,7 @@
 <translation id="6014851866995737824">ไม่สนใจเนื่องจากไม่มีรายการ "เปิดใช้" หรือ "ปิดใช้"</translation>
 <translation id="6015796118275082299">ปี</translation>
 <translation id="6017514345406065928">สีเขียว</translation>
+<translation id="6018650639991193045">ลบประวัติการท่องเว็บ คุกกี้ แคช และอื่นๆ ในการตั้งค่า Chrome</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" /> <ph name="TYPE_2" /> <ph name="TYPE_3" /> (ซิงค์แล้ว)</translation>
 <translation id="6028591542479806248">จัดการการแจ้งเตือนในอุปกรณ์เคลื่อนที่และการแจ้งเตือนทางอีเมล</translation>
 <translation id="6028833024483927901">อาหารจากทั่วโลก</translation>
@@ -2764,6 +2769,7 @@
 <translation id="634500758737709758">เส้นทาง</translation>
 <translation id="6348220984832452017">รูปแบบที่ใช้งานอยู่</translation>
 <translation id="6349101878882523185">ติดตั้ง <ph name="APP_NAME" /></translation>
+<translation id="6351658970066645919">ลบข้อมูลการท่องเว็บ</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ไม่มี}=1{มีรหัสผ่าน 1 รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}=2{มีรหัสผ่าน 2 รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}other{มีรหัสผ่าน # รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}}</translation>
 <translation id="6355392890578844978">เบราว์เซอร์นี้ไม่ได้จัดการโดยบริษัทหรือองค์กรอื่นๆ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chromium <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">แก้ไขวิธีการชำระเงิน</translation>
@@ -3491,6 +3497,7 @@
 <translation id="7682287625158474539">จัดส่ง</translation>
 <translation id="7682451652090915298">รักบี้</translation>
 <translation id="7684683146428206649">โลหะ</translation>
+<translation id="7684817988830401358">ปุ่มลบข้อมูลการท่องเว็บ เปิดใช้งานเพื่อลบประวัติการท่องเว็บ คุกกี้ แคช และอื่นๆ ในการตั้งค่า Chrome</translation>
 <translation id="7684928361160505327">{0,plural, =1{<ph name="FILE_NAME" /> ถูกบล็อกเนื่องจากนโยบาย}other{ไฟล์ <ph name="FILE_COUNT" /> รายการถูกบล็อกเนื่องจากนโยบาย}}</translation>
 <translation id="7687186412095877299">กรอกแบบฟอร์มการชำระเงินด้วยวิธีการชำระเงินที่คุณบันทึกไว้</translation>
 <translation id="7687305263118037187">การลองใหม่หมดเวลา</translation>
@@ -3603,6 +3610,7 @@
 <translation id="7935318582918952113">DOM Distiller</translation>
 <translation id="7937163678541954811">ระบบจะเข้ารหัส CVC ของบัตรนี้และบันทึกลงในอุปกรณ์ของคุณเพื่อการชำระเงินที่เร็วขึ้น</translation>
 <translation id="7937554595067888181">หมดอายุ <ph name="EXPIRATION_DATE_ABBR" /></translation>
+<translation id="7938490694919717008">แสดงรางวัลและสิทธิประโยชน์ที่ใช้กับบัตรของคุณได้เมื่อชำระเงิน <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />ดูข้อมูลเกี่ยวกับสิทธิประโยชน์ของบัตร<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">ใบรับรองของเซิร์ฟเวอร์ยังไม่ถูกต้อง</translation>
 <translation id="7941628148012649605">Envelope Chou 4</translation>
 <translation id="794169214536209644">ลูกอมและขนมหวาน</translation>
@@ -3992,6 +4000,7 @@
 <translation id="8662463432865928030">อาคารพาณิชย์</translation>
 <translation id="8663226718884576429">สรุปคำสั่งซื้อ <ph name="TOTAL_LABEL" /> รายละเอียดเพิ่มเติม</translation>
 <translation id="8663909737634214500">แผ่นเก็บข้อมูล</translation>
+<translation id="8664326323360157684">ลบข้อมูลการท่องเว็บ...</translation>
 <translation id="8671519637524426245">ค่า <ph name="SECURE_DNS_SALT" /> ไม่เป็นไปตามข้อกำหนดด้านขนาด</translation>
 <translation id="867224526087042813">ลายเซ็น</translation>
 <translation id="8672535691554698269">เครือข่ายคอมพิวเตอร์</translation>
@@ -4288,6 +4297,7 @@
 <translation id="949314938206378263">คุณขอเข้าชมเว็บไซต์นี้ ผู้ปกครองจะตอบกลับได้ใน Family Link</translation>
 <translation id="950736567201356821">เจาะรูด้านบน 3 รู</translation>
 <translation id="961663415146723894">เย็บเล่มด้านล่าง</translation>
+<translation id="961856697154696964">ลบข้อมูลการท่องเว็บ</translation>
 <translation id="961930410699694996">อนุญาตให้ใช้ตำแหน่งในครั้งนี้</translation>
 <translation id="962484866189421427">เนื้อหานี้อาจพยายามติดตั้งแอปที่หลอกลวงซึ่งปลอมเป็นเนื้อหาอย่างอื่นหรือรวบรวมข้อมูลที่อาจนำไปใช้ติดตามคุณ <ph name="BEGIN_LINK" />แสดงเนื้อหา<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">Chromium จะขอให้คุณเลือกเครื่องมือค้นหาเริ่มต้นตามกฎหมายในภูมิภาคของคุณ เครื่องมือค้นหาเหล่านี้ได้รับความนิยมในภูมิภาคดังกล่าว และแสดงแบบสุ่มลำดับ</translation>

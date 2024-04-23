@@ -99,12 +99,8 @@ Az adatokat a Chromium-élmény javítására használó további beállítások
 <translation id="3855938650519180865">A Chromium újdonságai</translation>
 <translation id="3886689467633467988">Jelentkezzen be erre a webhelyre és a Chromiumba, hogy az összes eszközén hozzáférhessen könyvjelzőihez és még sok minden máshoz.</translation>
 <translation id="3904484643286601695">A kiválasztott értesítéseket bármikor módosíthatja a Chromium beállításaiban.</translation>
-<translation id="394413318816989199">Az összetett jelszavas titkosítás nem tartalmazza a fizetési módokat és a címeket.
-
-A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chromium-adatokat<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Megnyitja és futtatja a biztonsági ellenőrzést a Chromiumban.</translation>
 <translation id="4043291146360695975">A jelszavakat csak ezen az eszközön menti a rendszer a Jelszókezelőbe.</translation>
-<translation id="4076589763479456892">Ha elfelejtette az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chromium-adatokat<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">A Chromium bétaverziója nem támogatja</translation>
 <translation id="4106512142782407609">Bejelentkezve a következőként: <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@ Megjegyzések:
 <translation id="6337530241089703714">Döntse el, hogy törli-e a Chromium adatait erről az eszközről, vagy megtartja őket</translation>
 <translation id="6348483005826990855">3. Válassza ki a Chromium böngészőt.</translation>
 <translation id="6383607155624074112">Gyorsabb hozzáférés a Chromiumhoz a Főképernyő Dockjáról</translation>
-<translation id="6407399265324739055">A fizetési módok és a címek nem lesznek titkosítva. A Chromium böngészési előzményei nem lesznek szinkronizálva.
-
-Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titkosított adatait. Az összetett jelszót nem kapja meg, és nem is tárolja a Google. Ha elfelejti az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chromium-adatokat<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">A Chromium most még jobb lett! Új verzió áll rendelkezésre.</translation>
 <translation id="6433172051771630690">Tippek arra vonatkozóan, hogy miként hozhatja ki a legtöbbet a Chromiumból.</translation>
 <translation id="6502321914804101924">Kijelentkezve a Chromiumból</translation>
@@ -263,9 +256,6 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="8458950033462118672">Ha szeretné, hogy automatikusan a Chromium nyissa meg a linkeket, állítsa be alapértelmezett böngészőként.</translation>
 <translation id="858114650497379505">A Jelszókezelőbe mentett jelszavakat használhatja más alkalmazásokban iPhone eszközén.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – A Chromium szerzői. Minden jog fenntartva.</translation>
-<translation id="8618440443578628179">Az összetett jelszóval való titkosítás nem tartalmazza a Google Payben megadott fizetési módokat és címeket.
-
-A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chromium-adatokat<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Gondoskodik a biztonságáról a Chromiumban, és használható a biztonság növelésére más Google-alkalmazásokban, amikor Ön be van jelentkezve.</translation>
 <translation id="8663480472502753423">Chromium böngészője legyen mindig naprakész</translation>
 <translation id="8685813584220679697">Jelentkezzen be erre a webhelyre és a Chromiumba.</translation>

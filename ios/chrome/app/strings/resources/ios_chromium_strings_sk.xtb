@@ -99,12 +99,8 @@
 <translation id="3855938650519180865">Novinky v prehliadači Chromium</translation>
 <translation id="3886689467633467988">Prihláste sa na tomto webe a v prehliadači Chromium, aby ste mali svoje záložky a ďalšie položky vo všetkých svojich zariadeniach.</translation>
 <translation id="3904484643286601695">Svoje voľby môžete kedykoľvek aktualizovať v nastaveniach prehliadača Chromium.</translation>
-<translation id="394413318816989199">Šifrovanie pomocou prístupovej frázy nezahŕňa spôsoby platby ani adresy.
-
-Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehliadača Chromium vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Otvorí a spustí kontrolu bezpečnosti v prehliadači Chromium.</translation>
 <translation id="4043291146360695975">Heslá sa ukladajú do správcu hesiel iba v tomto zariadení.</translation>
-<translation id="4076589763479456892">Ak ste zabudli prístupovú frázu alebo chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehliadača Chromium vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Nepodporované vo verzii Chromium Beta</translation>
 <translation id="4106512142782407609">Prihlásili ste sa ako <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="6337530241089703714">Vyberte, či chcete údaje prehliadača Chromium v tomto zariadení vymazať alebo ponechať</translation>
 <translation id="6348483005826990855">3. Vyberte Chromium</translation>
 <translation id="6383607155624074112">Získajte prístup k prehliadaču Chromium rýchlejšie z ponuky aplikácií na ploche</translation>
-<translation id="6407399265324739055">Spôsoby platby a adresy nebudú šifrované. História prehliadania z prehliadača Chromium sa nebude synchronizovať.
-
-Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehliadača Chromium vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Systém Chromium bol práve vylepšený. K dispozícii je nová verzia.</translation>
 <translation id="6433172051771630690">Tipy, ako využívať Chromium naplno</translation>
 <translation id="6502321914804101924">Prehliadač Chromium je odhlásený</translation>
@@ -263,9 +256,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="8458950033462118672">Ak nastavíte Chromium ako predvolený prehliadač, budete v ňom môcť automaticky otvárať odkazy.</translation>
 <translation id="858114650497379505">Heslá, ktoré ste uložili do správcu hesiel, môžete v iPhone použiť v iných aplikáciách.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autori Chromium. Všetky práva vyhradené.</translation>
-<translation id="8618440443578628179">Šifrovanie pomocou prístupovej frázy nezahŕňa spôsoby platby ani adresy zo služby Google Pay.
-
-Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehliadača Chromium vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Chráni vás v prehliadači Chromium a môže zlepšiť zabezpečenie v ďalších aplikáciách Googlu, keď sa prihlásite.</translation>
 <translation id="8663480472502753423">Udržujte prehliadač Chromium aktuálny</translation>
 <translation id="8685813584220679697">Prihláste sa na tomto webe a v prehliadači Chromium.</translation>

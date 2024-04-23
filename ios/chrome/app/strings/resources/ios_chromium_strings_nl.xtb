@@ -99,12 +99,8 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="3855938650519180865">Nieuw in Chromium</translation>
 <translation id="3886689467633467988">Log in op deze site en bij Chromium om onder andere je bookmarks op al je apparaten te gebruiken.</translation>
 <translation id="3904484643286601695">Je kunt je selecties op elk moment updaten in de Chromium-instellingen.</translation>
-<translation id="394413318816989199">Versleuteling van wachtwoordzinnen omvat geen betaalmethoden en adressen.
-
-Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chromium-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Opent de Veiligheidscheck in Chromium en voert deze uit.</translation>
 <translation id="4043291146360695975">Wachtwoorden worden alleen opgeslagen in Wachtwoordmanager op dit apparaat.</translation>
-<translation id="4076589763479456892">Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chromium-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Niet ondersteund in Chromium (bèta)</translation>
 <translation id="4106512142782407609">Ingelogd als <ph name="EMAIL" />.
 
@@ -194,9 +190,6 @@ Aandachtspunten:
 <translation id="6337530241089703714">Kies of je je Chromium-gegevens voor dit apparaat wilt verwijderen of behouden</translation>
 <translation id="6348483005826990855">3. Selecteer Chromium</translation>
 <translation id="6383607155624074112">Open Chromium sneller via het dock op het startscherm</translation>
-<translation id="6407399265324739055">Betaalmethoden en adressen worden niet versleuteld. De browsegeschiedenis in Chromium wordt niet gesynchroniseerd.
-
-Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet gestuurd naar of opgeslagen door Google. Als je je wachtwoordzin vergeet of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chromium-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium is nu nog beter! Er is een nieuwe versie beschikbaar.</translation>
 <translation id="6433172051771630690">Tips om het maximale uit Chromium te halen.</translation>
 <translation id="6502321914804101924">Je bent uitgelogd bij Chromium</translation>
@@ -263,9 +256,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="8458950033462118672">Je kunt links automatisch openen in Chromium door Chromium in te stellen als je standaard browser-app.</translation>
 <translation id="858114650497379505">Je kunt de wachtwoorden die je in Wachtwoordmanager hebt opgeslagen, gebruiken in andere apps op je iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> De auteurs van Chromium. Alle rechten voorbehouden.</translation>
-<translation id="8618440443578628179">Betaalmethoden en adressen van Google Pay vallen niet onder versleuteling met een wachtwoordzin.
-
-Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chromium-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Beschermt je op Chromium en kan worden gebruikt om de beveiliging in andere Google-apps te verbeteren als je bent ingelogd.</translation>
 <translation id="8663480472502753423">Houd Chromium up-to-date</translation>
 <translation id="8685813584220679697">Log in bij deze site en Chromium.</translation>

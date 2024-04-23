@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">Schermopname</translation>
 <translation id="1108938384783527433">Geschiedenissynchronisatie</translation>
 <translation id="1111673857033749125">Hier zie je bookmarks die je op andere apparaten hebt opgeslagen.</translation>
-<translation id="1113057722807951993">Betaalmethoden en adressen van Google Pay vallen niet onder versleuteling met een wachtwoordzin.
-
-Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">Vereenvoudigde weergave bekijken</translation>
 <translation id="1126809382673880764">Beschermt je niet tegen gevaarlijke websites, downloads en extensies. Je wordt voor andere services, zoals Gmail en Zoeken, nog steeds beschermd door Safe Browsing als dat beschikbaar is.</translation>
 <translation id="1129510026454351943">Details: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="3290249595466894471">Stuurt ook een klein gedeelte pagina's, downloads, extensie-activiteit en systeeminformatie om nieuwe dreigingen te kunnen vinden</translation>
 <translation id="3293181007446299124">Je browsegeschiedenis blijft privé op je apparaat en rapporten worden met vertraging verstuurd om je identiteit te beschermen</translation>
 <translation id="3303414029551471755">Doorgaan met het downloaden van de content?</translation>
+<translation id="3303855915957856445">Geen zoekresultaten gevonden</translation>
 <translation id="3305130791745726624">Naar apparaten sturen</translation>
 <translation id="3305795716056605962">Vertaal pagina's via de knop Meer opties</translation>
 <translation id="3334729583274622784">Bestandsextensie wijzigen?</translation>
@@ -529,7 +527,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="3847319713229060696">Helpen om het internet voor iedereen veiliger te maken</translation>
 <translation id="3856096718352044181">Controleer of dit een geldige provider is of probeer het later opnieuw</translation>
 <translation id="3858860766373142691">Naam</translation>
-<translation id="3872520701277728051">Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">Tekst kopiëren</translation>
 <translation id="3894427358181296146">Map toevoegen</translation>
 <translation id="3899682235662194879">Alle incognitotabbladen sluiten</translation>
@@ -873,8 +870,6 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5590372121997663538">Deze computer onthouden</translation>
 <translation id="5596627076506792578">Meer opties</translation>
 <translation id="5599455543593328020">Incognitomodus</translation>
-<translation id="5605283439565877834">Betaalmethoden en adressen van Google Pay worden niet versleuteld. De browsegeschiedenis in Chrome wordt niet gesynchroniseerd.
-Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet gestuurd naar of opgeslagen door Google. Als je je wachtwoordzin vergeet of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-gegevens in je account<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">Geen opgeslagen wachtwoorden</translation>
 <translation id="5620928963363755975">Vind je bestanden en pagina's in 'Downloads' via de knop 'Meer opties'</translation>
 <translation id="562289928968387744">Reacties beheren</translation>
@@ -1103,7 +1098,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6672697278890207089">Je wachtwoordzin invoeren</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> toevoegen</translation>
 <translation id="6674571176963658787">Geef je wachtwoordzin op om de synchronisatie te starten</translation>
-<translation id="6676840375528380067">Je Chrome-gegevens van dit apparaat wissen?</translation>
 <translation id="6676927815633975364">Log in bij deze site en Chrome</translation>
 <translation id="6684809838922667136">Chrome verbeteren</translation>
 <translation id="670498945988402717">Gisteren gecheckt</translation>
@@ -1305,7 +1299,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7626032353295482388">Welkom bij Chrome</translation>
 <translation id="7630202231528827509">Provider-URL</translation>
 <translation id="7638584964844754484">Onjuiste wachtwoordzin</translation>
-<translation id="7641339528570811325">Browsegegevens wissen</translation>
 <translation id="7646772052135772216">Wachtwoordsynchronisatie werkt niet</translation>
 <translation id="7655240423373329753">afgelopen 7 dagen</translation>
 <translation id="7655900163790317559">Bluetooth aanzetten…</translation>
@@ -1384,7 +1377,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7995059495660416932">Je ziet content zodra deze beschikbaar komt</translation>
 <translation id="799576009106109668">Je browst sneller, omdat content proactief wordt geladen op basis van je huidige webpagina</translation>
 <translation id="8004582292198964060">Browser</translation>
-<translation id="8013372441983637696">Je Chrome-gegevens ook wissen op dit apparaat</translation>
 <translation id="8015452622527143194">Standaardgrootte van alles op de pagina herstellen</translation>
 <translation id="8026238112629815203">We hebben de manier gewijzigd waarop wachtwoorden worden opgeslagen op dit apparaat</translation>
 <translation id="8027863900915310177">Kies waar je wilt downloaden</translation>
@@ -1511,7 +1503,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8562452229998620586">Opgeslagen wachtwoorden zie je hier.</translation>
 <translation id="8570677896027847510">Bestand kan niet beveiligd worden gedownload</translation>
 <translation id="8571213806525832805">Afgelopen 4 weken</translation>
-<translation id="8583805026567836021">Accountgegevens wissen</translation>
 <translation id="859046281437143747">Volg de prijs via de knop Meer opties</translation>
 <translation id="860043288473659153">Naam kaarthouder</translation>
 <translation id="8602358303461588329">Inloggen bij Chrome, gesloten.</translation>
@@ -1641,6 +1632,5 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="983192555821071799">Alle tabbladen sluiten</translation>
 <translation id="987264212798334818">Algemeen</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> tabbladen</translation>
-<translation id="993520549480398880">Ook bookmarks, geschiedenis en meer wissen uit deze auto</translation>
 <translation id="996149300115483134">Feedkaartmenu is gesloten</translation>
 </translationbundle>

@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{คุณค้นหาแท็บที่ปิดไปได้ในแท็บล่าสุดในส่วนเมนูหลักของ Chrome แท็บที่ไม่ระบุตัวตนจะไม่พร้อมใช้งาน}other{คุณค้นหาแท็บที่ปิดไปได้ในแท็บล่าสุดในส่วนเมนูหลักของ Chrome แท็บที่ไม่ระบุตัวตน # แท็บจะไม่พร้อมใช้งาน}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> แท็บ}other{<ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="6549021453810473782">ดูข้อมูลร้านค้า</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ย้ายแท็บไปทางซ้าย</translation>
 <translation id="6615455863669487791">แสดงให้ฉันเห็น</translation>
 <translation id="661742612106409204">คุณค้นหาแท็บที่ปิดไปได้ในแท็บล่าสุดในส่วนเมนูหลักของ Chrome</translation>

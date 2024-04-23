@@ -98,12 +98,8 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="3855938650519180865">Novinky v prohlížeči Chromium</translation>
 <translation id="3886689467633467988">Když se na tento web a do prohlížeče Chromium přihlásíte, budete mít své záložky a další položky k dispozici na všech svých zařízeních.</translation>
 <translation id="3904484643286601695">Svůj výběr můžete v nastavení prohlížeče Chromium kdykoli aktualizovat.</translation>
-<translation id="394413318816989199">Šifrování pomocí heslové fráze se nevztahuje na platební metody a adresy.
-
-Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chromium ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Otevře a spustí bezpečnostní kontrolu v prohlížeči Chromium.</translation>
 <translation id="4043291146360695975">Hesla se ukládají pouze do Správce hesel na tomto zařízení.</translation>
-<translation id="4076589763479456892">Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chromium ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">V beta verzi prohlížeče Chromium není podporováno</translation>
 <translation id="4106512142782407609">Jste přihlášeni jako <ph name="EMAIL" />.
 
@@ -193,9 +189,6 @@ Co je třeba zvážit:
 <translation id="6337530241089703714">Zvolte, zda z tohoto zařízení chcete vymazat data prohlížeče Chromium, nebo je ponechat</translation>
 <translation id="6348483005826990855">3. Vyberte Chromium.</translation>
 <translation id="6383607155624074112">Získejte rychlejší přístup k prohlížeči Chromium z Docku na ploše</translation>
-<translation id="6407399265324739055">Platební metody a adresy nebudou šifrovány. Historie prohlížení v prohlížeči Chromium se nebude synchronizovat.
-
-Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chromium ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium je opět o něco lepší. K dispozici je nová verze.</translation>
 <translation id="6433172051771630690">Tipy, jak Chromium využít na maximum.</translation>
 <translation id="6502321914804101924">Prohlížeč Chromium je odhlášen</translation>
@@ -262,9 +255,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="8458950033462118672">Pokud chcete odkazy otevírat automaticky v prohlížeči Chromium, nastavte ho jako výchozí prohlížeč.</translation>
 <translation id="858114650497379505">Hesla, která jste si uložili do Správce hesel, můžete používat v jiných aplikacích na svém iPhonu.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autoři prohlížeče Chromium. Všechna práva vyhrazena.</translation>
-<translation id="8618440443578628179">Šifrování pomocí heslové fráze se nevztahuje na platební metody a adresy z Google Pay.
-
-Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data prohlížeče Chromium ve svém účtu<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Zajišťuje vám bezpečí v prohlížeči Chromium a může zvýšit vaši bezpečnost v jiných aplikacích Google, když jste přihlášeni.</translation>
 <translation id="8663480472502753423">Udržují prohlížeč Chromium aktuální</translation>
 <translation id="8685813584220679697">Přihlaste se na tento web a do prohlížeče Chromium.</translation>

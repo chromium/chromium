@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">التقاط الشاشة</translation>
 <translation id="1108938384783527433">مزامنة السجلّ</translation>
 <translation id="1111673857033749125">ستظهر هنا الإشارات التي تم حفظها على أجهزتك الأخرى.</translation>
-<translation id="1113057722807951993">‏عند استخدام عبارة مرور، لا يتم تشفير طُرق الدفع والعناوين من Google Pay.
-
-لتغيير هذه الإعدادات، يُرجى <ph name="BEGIN_LINK" />محو بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="1113597929977215864">إظهار العرض المبسَّط</translation>
 <translation id="1126809382673880764">‏لا يوفّر لك هذا الوضع حماية من الإضافات أو عمليات التنزيل أو المواقع الإلكترونية الضارة. وستظل تستفيد من ميزة "التصفّح الآمن" عند توفّرها في خدمات Google الأخرى، مثل Gmail و"بحث Google".</translation>
 <translation id="1129510026454351943">التفاصيل: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -440,6 +437,7 @@
 <translation id="3290249595466894471">يُرسِل هذا الوضع أيضًا عددًا قليلاً من الصفحات وعمليات التنزيل وأنشطة الإضافات ومعلومات النظام للمساعدة في اكتشاف التهديدات الجديدة.</translation>
 <translation id="3293181007446299124">يتم الحفاظ على خصوصية سجلّ التصفُّح في جهازك ويتم تأخير إرسال التقارير بهدف حماية هويتك.</translation>
 <translation id="3303414029551471755">هل ترغب في الاستمرار في تنزيل المحتوى؟</translation>
+<translation id="3303855915957856445">لم يتم العثور على أي نتائج بحث</translation>
 <translation id="3305130791745726624">الإرسال إلى الأجهزة</translation>
 <translation id="3305795716056605962">يمكنك ترجمة الصفحات بالنقر على زر "خيارات إضافية".</translation>
 <translation id="3334729583274622784">هل تريد تغيير امتداد الملف؟</translation>
@@ -531,7 +529,6 @@
 <translation id="3847319713229060696">المساعدة في تحسين الأمان على الإنترنت من أجل الجميع</translation>
 <translation id="3856096718352044181">يُرجى إثبات صلاحية مقدّم الخدمة أو المحاولة مجددًا.</translation>
 <translation id="3858860766373142691">الاسم</translation>
-<translation id="3872520701277728051">‏إذا نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />محو بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="3892148308691398805">نسخ النص</translation>
 <translation id="3894427358181296146">إضافة مجلد</translation>
 <translation id="3899682235662194879">إغلاق جميع علامات التبويب في وضع التصفُّح المتخفي</translation>
@@ -875,8 +872,6 @@
 <translation id="5590372121997663538">تذكّر جهاز الكمبيوتر هذا</translation>
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5599455543593328020">وضع "التصفّح المتخفي"</translation>
-<translation id="5605283439565877834">‏لن يتم تشفير طُرق الدفع والعناوين من Google Pay. ولن تتم مزامنة سجلّ التصفُّح من Chrome.
-ولا يمكن لأحد الوصول إلى بياناتك المشفّرة بدون استخدام عبارة المرور الخاصة بك. ولا تحصل Google على عبارة المرور هذه أو تخزّنها. في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />محو بيانات Chrome في حسابك<ph name="END_LINK" />.</translation>
 <translation id="5620163320393916465">ما مِن كلمات مرور محفوظة.</translation>
 <translation id="5620928963363755975">العثور على الملفات والصفحات في "المحتوى الذي تم تنزيله" من الزر "مزيد من الخيارات"</translation>
 <translation id="562289928968387744">إدارة التفاعلات</translation>
@@ -1105,7 +1100,6 @@
 <translation id="6672697278890207089">إدخال عبارة المرور</translation>
 <translation id="6672917148207387131">إضافة <ph name="DOMAIN" /></translation>
 <translation id="6674571176963658787">لبدء المزامنة، يجب إدخال عبارة المرور.</translation>
-<translation id="6676840375528380067">‏هل تريد محو بيانات Chrome من هذا الجهاز؟</translation>
 <translation id="6676927815633975364">‏تسجيل الدخول إلى هذا الموقع الإلكتروني وإلى متصفِّح Chrome</translation>
 <translation id="6684809838922667136">‏تحسين أداء متصفِّح Chrome</translation>
 <translation id="670498945988402717">تمّ إجراء عملية التحقُّق أمس.</translation>
@@ -1308,7 +1302,6 @@
 <translation id="7626032353295482388">‏مرحبًا بك في Chrome‏</translation>
 <translation id="7630202231528827509">‏عنوان URL خاص بمقدِّم الخدمة</translation>
 <translation id="7638584964844754484">عبارة مرور غير صحيحة</translation>
-<translation id="7641339528570811325">محو بيانات التصفّح...</translation>
 <translation id="7646772052135772216">مزامنة كلمات المرور لا تعمل</translation>
 <translation id="7655240423373329753">آخر 7 أيام</translation>
 <translation id="7655900163790317559">جارٍ تفعيل البلوتوث…</translation>
@@ -1387,7 +1380,6 @@
 <translation id="7995059495660416932">سيظهر لك المحتوى عند توفّره.</translation>
 <translation id="799576009106109668">ستتمكّن من التصفُّح بشكلٍ أسرع لأنه يتم تحميل المحتوى مسبقًا استنادًا إلى زيارتك الحالية لصفحة الويب</translation>
 <translation id="8004582292198964060">المتصفّح</translation>
-<translation id="8013372441983637696">‏محو بيانات Chrome من هذا الجهاز أيضًا</translation>
 <translation id="8015452622527143194">إعادة كامل محتوى الصفحة إلى الحجم التلقائي</translation>
 <translation id="8026238112629815203">تم تغيير طريقة حفظ كلمات المرور على هذا الجهاز</translation>
 <translation id="8027863900915310177">اختيار مكان التنزيل</translation>
@@ -1515,7 +1507,6 @@
 <translation id="8562452229998620586">ستظهر هنا كلمات المرور المحفوظة.</translation>
 <translation id="8570677896027847510">تعذَّر تنزيل الملف بشكل آمن</translation>
 <translation id="8571213806525832805">الأسابيع الـ4 الأخيرة</translation>
-<translation id="8583805026567836021">محو بيانات الحساب</translation>
 <translation id="859046281437143747">يمكنك تتبُّع سعر المنتج من خلال الزر "خيارات إضافية".</translation>
 <translation id="860043288473659153">اسم حامل البطاقة</translation>
 <translation id="8602358303461588329">‏تسجيل الدخول إلى Chrome، تم إغلاق البطاقة السفلية.</translation>
@@ -1645,6 +1636,5 @@
 <translation id="983192555821071799">إغلاق جميع علامات التبويب</translation>
 <translation id="987264212798334818">عام</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> علامة تبويب</translation>
-<translation id="993520549480398880">محو الإشارات المرجعية والسجلّ وغير ذلك من هذه السيارة أيضًا</translation>
 <translation id="996149300115483134">قائمة بطاقات الخلاصة مغلقة</translation>
 </translationbundle>

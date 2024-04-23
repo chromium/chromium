@@ -74,7 +74,6 @@ Gjëra për të pasur parasysh:
 <translation id="2736805085127235148">Njoftimet e Chrome janë çaktivizuar aktualisht te cilësimet e pajisjes sate.</translation>
 <translation id="2750626042242931740">Mund t'i përditësosh zgjedhjet e tua në çdo kohë te "Cilësimet" e Chrome.</translation>
 <translation id="2767464022270041271">Nuk ka asnjë fjalëkalim të ruajtur. "Menaxheri i fjalëkalimeve i Google" mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato.</translation>
-<translation id="2789947168960170215">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="2869959624320573933">Identifikohu në Chrome</translation>
 <translation id="2876628302275096482">Mëso më shumë se <ph name="BEGIN_LINK" />si Chrome i mban private të dhënat e tua<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. Hap "Cilësimet" e Chrome</translation>
@@ -189,9 +188,6 @@ Të dhënat e tua janë të enkriptuara me frazën tënde të kalimit. Fute atë
 <translation id="6648150602980899529">Po identifikohesh me një llogari të menaxhuar nga <ph name="DOMAIN" /> dhe po i jep administratorit të saj kontroll mbi të dhënat e tua të Chrome. Duke dalë nga Chrome do të fshihen të dhënat e tua nga kjo pajisje, por do të mbeten të ruajtura në llogarinë tënde të Google.</translation>
 <translation id="6683891932310469419">Hap faqen e historikut të Chrome.</translation>
 <translation id="6709398533399187136">Fjalëkalimi yt është ekspozuar në një nxjerrje të paautorizuar të të dhënave. "Menaxheri i fjalëkalimeve i Google" rekomandon ta ndryshosh tani.</translation>
-<translation id="6815466750807582739">Mënyrat e pagesës dhe adresat nuk do të enkriptohen. Historiku i shfletimit nga Chrome nuk do të sinkronizohet.
-
-Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të enkriptuara. Fraza e kalimit nuk dërgohet apo ruhet nga Google. Nëse e harron frazën tënde të kalimit apo dëshiron të ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Hap "Cilësimet" e Chrome në iOS dhe më pas trokit te "Default Browser App" dhe zgjidh Chrome.</translation>
 <translation id="686691656039982452">Mund <ph name="BEGIN_LINK" />të menaxhosh se çfarë të dhënash të Chrome ruhen<ph name="END_LINK" /> në "Llogarinë tënde të Google".
 
@@ -276,9 +272,6 @@ Të dhënat e tua janë enkriptuar me frazën tënde të kalimit më <ph name="T
 <translation id="8808828119384186784">Cilësimet e Chrome</translation>
 <translation id="8850736900032787670">Për të marrë përmbajtje të personalizuara bazuar në interesat e tu, identifikohu në Chrome.</translation>
 <translation id="8855781063981781621">Për të çaktivizuar Lockdown Mode në Chrome, çaktivizoje atë në iPad.</translation>
-<translation id="8856877214925961642">Enkriptimi me frazën e kalimit nuk përfshin mënyrat e pagesës dhe adresat.
-
-Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e Chrome në llogarinë tënde<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">"Menaxheri i fjalëkalimeve i Google" nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo përsëri nesër.</translation>
 <translation id="8865415417596392024">Të dhënat e Chrome në llogarinë tënde</translation>
 <translation id="8874688701962049679">Këshilla për të përfituar sa më shumë nga Chrome.</translation>

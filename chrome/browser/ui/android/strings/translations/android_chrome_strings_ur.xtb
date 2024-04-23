@@ -23,9 +23,6 @@
 <translation id="1105960400813249514">اسکرین کیپچر</translation>
 <translation id="1108938384783527433">سرگزشت سِنک کریں</translation>
 <translation id="1111673857033749125">آپ کے دیگر آلات پر محفوظ کردہ بُک مارکس یہاں ظاہر ہوں گے۔</translation>
-<translation id="1113057722807951993">‏پاس فریز کی مرموز کاری میں Google Pay سے ادائیگی کے طریقے اور پتے شامل نہیں ہیں۔
-
-اس ترتیب کو تبدیل کرنے کے لیے، <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو صاف کریں<ph name="END_LINK" />۔</translation>
 <translation id="1113597929977215864">سادہ منظر دکھائیں</translation>
 <translation id="1126809382673880764">‏خطرناک ویب سائٹس، ڈاؤن لوڈز اور ایکسٹینشنز سے آپ کی حفاظت نہیں کرتی ہے۔ آپ کو اب بھی Gmail اور تلاش جیسی Google کی دیگر سروسز میں جہاں بھی دستیاب ہوگا محفوظ براؤزنگ کا تحفظ ملے گا۔</translation>
 <translation id="1129510026454351943">تفصیلات: <ph name="ERROR_DESCRIPTION" /></translation>
@@ -438,6 +435,7 @@
 <translation id="3290249595466894471">نئے خطرات کا پتہ لگانے میں مدد کے لیے صفحات، ڈاؤن لوڈز، ایکسٹینشن کی سرگرمی اور سسٹم کی معلومات کا چھوٹا سا نمونہ بھی بھیجتا ہے</translation>
 <translation id="3293181007446299124">آپ کی براؤزنگ کی سرگزشت کو آپ کے آلے پر نجی رکھا جاتا ہے اور رپورٹس کو تاخیر سے بھیجا جاتا ہے تاکہ آپ کی شناخت کی حفاظ کی جائے</translation>
 <translation id="3303414029551471755">مواد ڈاؤن لوڈ کرنے کیلئے آگے بڑھیں؟</translation>
+<translation id="3303855915957856445">تلاش کے کوئی نتائج نہیں ملے</translation>
 <translation id="3305130791745726624">آلات پر بھیجیں</translation>
 <translation id="3305795716056605962">مزید اختیارات کے بٹن سے صفحات کا ترجمہ کریں</translation>
 <translation id="3334729583274622784">فائل ایکسٹینشن تبدیل کریں؟</translation>
@@ -529,7 +527,6 @@
 <translation id="3847319713229060696">سبھی کے لیے ویب پر سیکیورٹی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="3856096718352044181">براہ کرم توثیق کریں کہ یہ درست فراہم کنندہ ہے یا بعد میں دوبارہ کوشش کریں</translation>
 <translation id="3858860766373142691">نام</translation>
-<translation id="3872520701277728051">‏اگر آپ اپنا پاس فریز بھول گئے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو صاف کریں<ph name="END_LINK" />۔</translation>
 <translation id="3892148308691398805">ٹیکسٹ کاپی کریں</translation>
 <translation id="3894427358181296146">فولڈر کا اضافہ کریں</translation>
 <translation id="3899682235662194879">سبھی پوشیدگی ٹیبز بند کریں</translation>
@@ -873,8 +870,6 @@
 <translation id="5590372121997663538">اس کمپیوٹر کو یاد رکھیں</translation>
 <translation id="5596627076506792578">مزید اختیارات</translation>
 <translation id="5599455543593328020">پوشیدگی وضع</translation>
-<translation id="5605283439565877834">‏Google Pay سے ادائیگی کے طریقے اور پتے مرموز نہیں ہوں گے۔ Chrome سے براؤزنگ کی سرگزشت مطابقت پذیر نہیں ہوگی۔
-صرف پاس فریز کا حامل شخص ہی آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا، نہ ہی وہ اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو صاف کریں<ph name="END_LINK" />۔</translation>
 <translation id="5620163320393916465">کوئی محفوظ کردہ پاس ورڈز نہیں</translation>
 <translation id="5620928963363755975">مزید اختیارات بٹن سے اپنی فائلیں اور صفحات ڈاؤن لوڈز میں تلاش کریں</translation>
 <translation id="562289928968387744">ردعمل کا نظم کریں</translation>
@@ -1103,7 +1098,6 @@
 <translation id="6672697278890207089">اپنا پاس فریز درج کریں</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> شامل کریں</translation>
 <translation id="6674571176963658787">مطابقت پذیری شروع کرنے کے لیے، اپنا پاس فریز درج کریں</translation>
-<translation id="6676840375528380067">‏اس آلہ سے آپ کا Chrome ڈیٹا صاف کریں؟</translation>
 <translation id="6676927815633975364">‏اس سائٹ اور Chrome پر سائن ان کریں</translation>
 <translation id="6684809838922667136">‏Chrome کو بہتر بنائیں</translation>
 <translation id="670498945988402717">گزشتہ کل چیک کیا گیا</translation>
@@ -1305,7 +1299,6 @@
 <translation id="7626032353295482388">‏Chrome میں خوش آمدید</translation>
 <translation id="7630202231528827509">‏URL فراہم کنندہ</translation>
 <translation id="7638584964844754484">غلط پاس فریز</translation>
-<translation id="7641339528570811325">براؤزنگ ڈیٹا صاف کریں…</translation>
 <translation id="7646772052135772216">پاس ورڈ کی مطابقت پذیری کام نہیں کر رہی ہے</translation>
 <translation id="7655240423373329753">گزشتہ 7 دن</translation>
 <translation id="7655900163790317559">بلوٹوتھ آن ہو رہا ہے…</translation>
@@ -1384,7 +1377,6 @@
 <translation id="7995059495660416932">مواد دستیاب ہونے پر آپ کو دکھائی دے گا</translation>
 <translation id="799576009106109668">آپ تیزی سے براؤز کریں گے کیونکہ مواد آپ کے موجودہ ویب صفحہ کے ملاحظہ کی بنیاد پر فعال طور پر لوڈ ہوتا ہے</translation>
 <translation id="8004582292198964060">براؤزر</translation>
-<translation id="8013372441983637696">‏اس آلہ سے اپنا Chrome ڈیٹا بھی صاف کریں</translation>
 <translation id="8015452622527143194">صفحہ پر موجود ہر چیز کو واپس ڈیفالٹ سائز پر کریں</translation>
 <translation id="8026238112629815203">ہم نے اس آلے پر پاس ورڈز کو محفوظ کرنے کا طریقہ تبدیل کر دیا ہے</translation>
 <translation id="8027863900915310177">منتخب کریں کہ کہاں پر ڈاؤن لوڈ کرنا ہے</translation>
@@ -1511,7 +1503,6 @@
 <translation id="8562452229998620586">محفوظ کردہ پاس ورڈز یہاں نمودار ہوں گے۔</translation>
 <translation id="8570677896027847510">فائل کو محفوظ طریقے سے ڈاؤن لوڈ نہیں کیا جا سکتا</translation>
 <translation id="8571213806525832805">گزشتہ 4 ہفتے</translation>
-<translation id="8583805026567836021">اکاؤنٹ ڈیٹا صاف کرنا</translation>
 <translation id="859046281437143747">مزید اختیارات والے بٹن سے قیمت ٹریک کریں</translation>
 <translation id="860043288473659153">کارڈ کے حامل کا نام</translation>
 <translation id="8602358303461588329">‏بند کیے گئے Chrome میں سائن ان کریں۔</translation>
@@ -1641,6 +1632,5 @@
 <translation id="983192555821071799">سبھی ٹیبز بند کریں</translation>
 <translation id="987264212798334818">عمومی</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> ٹیبز</translation>
-<translation id="993520549480398880">اس کار سے بُک مارکس اور سرگزشت وغیرہ صاف کريں</translation>
 <translation id="996149300115483134">فیڈ کارڈ مینیو بند ہے</translation>
 </translationbundle>

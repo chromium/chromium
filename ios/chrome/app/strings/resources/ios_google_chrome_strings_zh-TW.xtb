@@ -75,7 +75,6 @@
 <translation id="2736805085127235148">目前未在裝置設定中開啟 Chrome 通知。</translation>
 <translation id="2750626042242931740">你隨時可以在 Chrome 設定中更新所選項目。</translation>
 <translation id="2767464022270041271">尚未儲存任何密碼。你必須先儲存密碼，才能使用 Google 密碼管理工具的檢查功能。</translation>
-<translation id="2789947168960170215">如果忘記通關密語或想要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="2869959624320573933">登入 Chrome</translation>
 <translation id="2876628302275096482">進一步瞭解 <ph name="BEGIN_LINK" />Chrome 如何保護你的資料隱私<ph name="END_LINK" /></translation>
 <translation id="2952581218264071393">1. 開啟 Chrome 設定</translation>
@@ -190,9 +189,6 @@
 <translation id="6648150602980899529">您即將使用由 <ph name="DOMAIN" /> 所管理的帳戶登入，並授權該網域的管理員控管您的 Chrome 資料。您的資料會與這個帳戶建立永久連結。登出 Chrome 後，系統會將您的資料從這個裝置上刪除，但繼續保留在您的 Google 帳戶中。</translation>
 <translation id="6683891932310469419">開啟 Chrome 歷史記錄頁面。</translation>
 <translation id="6709398533399187136">你的密碼因為資料侵害事件遭到外洩，Google 密碼管理工具建議你立即變更這組密碼。</translation>
-<translation id="6815466750807582739">系統將不會加密付款方式和地址，也不會同步 Chrome 中的瀏覽記錄。
-
-只有知道通關密語的人才能讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果忘記通關密語或想要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="6851982868877411675">在 iOS 設定中開啟 Chrome，然後依序輕觸「預設瀏覽器 App」和「Chrome」。</translation>
 <translation id="686691656039982452">你可以前往 Google 帳戶<ph name="BEGIN_LINK" />管理要儲存哪些 Chrome 資料<ph name="END_LINK" />。
 
@@ -277,9 +273,6 @@
 <translation id="8808828119384186784">Chrome 設定</translation>
 <translation id="8850736900032787670">如要接收符合興趣的個人化內容，請登入 Chrome。</translation>
 <translation id="8855781063981781621">如要停用 Chrome 的鎖定模式，請在 iPad 上將該模式關閉。</translation>
-<translation id="8856877214925961642">通關密語加密的資料不包括付款方式和地址。
-
-如要變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="8857676124663337448">Google 密碼管理工具無法檢查所有密碼，請明天再試。</translation>
 <translation id="8865415417596392024">你帳戶中的 Chrome 資料</translation>
 <translation id="8874688701962049679">可協助你充分運用 Chrome 的各項提示。</translation>

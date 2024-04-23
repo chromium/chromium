@@ -73,6 +73,7 @@
 <translation id="2918709798697875261">ອົງການຂອງທ່ານກຳນົດໃຫ້ທ່ານສືບຕໍ່ອອກຈາກລະບົບ Chromium.</translation>
 <translation id="2942241131342758843">ໃຊ້ Chromium ເປັນຄ່າເລີ່ມຕົ້ນເພື່ອເປີດລິ້ງ, ຊອກຫາຈາກວິດເຈັດ ແລະ ການຕື່ມຂໍ້ມູນລະຫັດຜ່ານອັດຕະໂນມັດໃນແອັບອື່ນໆ</translation>
 <translation id="2977470724722393594">Chromium ແມ່ນເວີຊັນໃໝ່ຫຼ້າສຸດແລ້ວ</translation>
+<translation id="3044857325852340337">ລຶບຂໍ້ມູນ Chromium ແລ້ວ</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium ສາມາດຊ່ວຍທ່ານຕິດຕາມພັດສະດຸນີ້ໃນໜ້າແຖບໃໝ່ໄດ້.}other{Chromium ສາມາດຊ່ວຍທ່ານຕິດຕາມພັດສະດຸເຫຼົ່ານີ້ໃນໜ້າແຖບໃໝ່ໄດ້.}}</translation>
 <translation id="3102849287235003384">ເພື່ອອອກຈາກລະບົບບັນຊີ Google ຂອງທ່ານຢູ່ເວັບໄຊທ໌ທັງໝົດ, ກະລຸນາ <ph name="BEGIN_LINK" />ອອກຈາກລະບົບ Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">ຊອກຫາດ້ວຍສຽງໃນ Chromium</translation>
@@ -99,12 +100,8 @@
 <translation id="3855938650519180865">ມີຫຍັງໃໝ່ໃນ Chromium</translation>
 <translation id="3886689467633467988">ເຂົ້າສູ່ລະບົບເວັບໄຊນີ້ ແລະ Chromium ເພື່ອຮັບບຸກມາກຂອງທ່ານ ແລະ ອື່ນໆຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ.</translation>
 <translation id="3904484643286601695">ທ່ານສາມາດອັບເດດສິ່ງທີ່ທ່ານເລືອກໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ Chromium.</translation>
-<translation id="394413318816989199">ການເຂົ້າລະຫັດດ້ວຍລະຫັດຜ່ານບໍ່ຮວມເຖິງວິທີການຈ່າຍເງິນ ແລະ ທີ່ຢູ່.
-
-ເພື່ອປ່ຽນການຕັ້ງຄ່ານີ້, ໃຫ້ <ph name="BEGIN_LINK" />ລຶບລ້າງຂໍ້ມູນ Chromium ໃນບັນຊີຂອງທ່ານ<ph name="END_LINK" /> ກ່ອນ.</translation>
 <translation id="4005283307739974863">ເປີດ ແລະ ເອີ້ນໃຊ້ການກວດສອບຄວາມປອດໄພໃນ Chromium.</translation>
 <translation id="4043291146360695975">ລະຫັດຜ່ານແມ່ນຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານຢູ່ອຸປະກອນນີ້ເທົ່ານັ້ນ.</translation>
-<translation id="4076589763479456892">ຫາກທ່ານລືມລະຫັດຜ່ານຂອງທ່ານ ຫຼື ຕ້ອງການປ່ຽນການຕັ້ງຄ່ານີ້, ໃຫ້ <ph name="BEGIN_LINK" />ລຶບລ້າງຂໍ້ມູນ Chromium ໃນບັນຊີຂອງທ່ານ<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">ບໍ່ຮອງຮັບໃນ Chromium Beta</translation>
 <translation id="4106512142782407609">ເຂົ້າສູ່ລະບົບເປັນ <ph name="EMAIL" />.
 
@@ -124,6 +121,7 @@
 <translation id="4633738821577273991">ຮັບSafe Browsing ທີ່ປັບປຸງດີຂຶ້ນສຳລັບໂປຣໄຟລ໌ Chromium ນີ້ນຳ</translation>
 <translation id="4638625642619341392">ດາວໂຫຼດ Chromium ຢູ່ບ່ອນນີ້.</translation>
 <translation id="4654936625574199632">ເພື່ອຊ່ວຍປັບປຸງແອັບ, Chromium ຈະສົ່ງລາຍງານການໃຊ້ ແລະ ການຫຼົ້ມໄປໃຫ້ Google. <ph name="BEGIN_LINK" />ຈັດການ<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">ລຶບຂໍ້ມູນການທ່ອງເວັບໃນ Chromium</translation>
 <translation id="4681781466797808448">ເປີດເຄື່ອງສະແກນ Chromium</translation>
 <translation id="4736424910885271643">ບັນຊີຂອງທ່ານຖືກຈັດການໂດຍ <ph name="HOSTED_DOMAIN" />, ດັ່ງນັ້ນຂໍ້ມູນ Chromium ຂອງທ່ານຈະຖືກລຶບລ້າງຈາກອຸປະກອນນີ້</translation>
 <translation id="4773487571745795781">ທ່ານປິດການເຂົ້າສູ່ລະບົບ Chromium ໄວ້.</translation>
@@ -190,12 +188,10 @@
 <translation id="6324041800010509197">ເຂົ້າເບິ່ງໂຄງຮ່າງຕາຕະລາງຂອງແຖບໃນ Chromium</translation>
 <translation id="6325378625795868881">ໃຊ້ Chromium ໄດ້ທຸກເວລາທີ່ທ່ານແຕະລິ້ງໃນຂໍ້ຄວາມ ແລະ ແອັບອື່ນໆ.</translation>
 <translation id="632825460376924298">ອະນຸຍາດການເຂົ້າສູ່ລະບົບ Chromium</translation>
+<translation id="6332129548244419716">ລຶບຂໍ້ມູນການທ່ອງເວັບໃນ Chromium.</translation>
 <translation id="6337530241089703714">ເລືອກວ່າຈະລຶບລ້າງຂໍ້ມູນ Chromium ຂອງທ່ານອອກຈາກອຸປະກອນນີ້ ຫຼື ເກັບມັນໄວ້</translation>
 <translation id="6348483005826990855">3. ເລືອກ Chromium</translation>
 <translation id="6383607155624074112">ເຂົ້າເຖິງ Chromium ໄດ້ໄວຂຶ້ນຈາກຈຸດຈອດໂຮມສະກຣີນຂອງທ່ານ</translation>
-<translation id="6407399265324739055">ວິທີການຈ່າຍເງິນ ແລະ ທີ່ຢູ່ຈະບໍ່ຖືກເຂົ້າລະຫັດໄວ້. ປະຫວັດການທ່ອງເວັບຈາກ Chromium ຈະບໍ່ຊິ້ງຂໍ້ມູນ.
-
-ມີພຽງບຸກຄົນທີ່ມີລະຫັດຜ່ານຂອງທ່ານເທົ່ານັ້ນທີ່ສາມາດອ່ານຂໍ້ມູນທີ່ໄດ້ຖືກເຂົ້າລະຫັດໄວ້ຂອງທ່ານ. Google ຈະບໍ່ໄດ້ຮັບ ຫຼື ຈັດເກັບລະຫັດຜ່ານດັ່ງກ່າວໄວ້. ຫາກທ່ານລືມລະຫັດຜ່ານຂອງທ່ານ ຫຼື ຕ້ອງການປ່ຽນການຕັ້ງຄ່ານີ້, ໃຫ້ <ph name="BEGIN_LINK" />ລຶບລ້າງຂໍ້ມູນ Chromium ໃນບັນຊີຂອງທ່ານ<ph name="END_LINK" /> ກ່ອນ.</translation>
 <translation id="6424492062988593837">Chromium ​ດີກ​ວ່າເກົ່າແລ້ວ​! ມີລຸ້ນ​ໃຫມ່​ໃຫ້​​ໃຊ້​.</translation>
 <translation id="6433172051771630690">ເຄັດລັບໃນການໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chromium.</translation>
 <translation id="6502321914804101924">ອອກຈາກລະບົບ Chromium ແລ້ວ</translation>
@@ -262,9 +258,6 @@
 <translation id="8458950033462118672">ທ່ານສາມາດເປີດລິ້ງຕ່າງໆໃນ Chromium ໂດຍອັດຕະໂນມັດໂດຍການເຮັດໃຫ້ມັນເປັນແອັບໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ.</translation>
 <translation id="858114650497379505">ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ທ່ານບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານໃນແອັບອື່ນຢູ່ iPhone ຂອງທ່ານໄດ້.</translation>
 <translation id="8586442755830160949">ລິຂະສິດ <ph name="YEAR" /> ຜູ້ຂຽນ Chromium. ສະຫງວນສິດທັງໝົດ.</translation>
-<translation id="8618440443578628179">ການເຂົ້າລະຫັດດ້ວຍລະຫັດຜ່ານບໍ່ຮວມເຖິງວິທີການຈ່າຍເງິນ ແລະ ທີ່ຢູ່ຈາກ Google Pay.
-
-ເພື່ອປ່ຽນການຕັ້ງຄ່ານີ້, ໃຫ້ <ph name="BEGIN_LINK" />ລຶບລ້າງຂໍ້ມູນ Chromium ໃນບັນຊີຂອງທ່ານ<ph name="END_LINK" /> ກ່ອນ.</translation>
 <translation id="865600487977764604">ຮັກສາຄວາມປອດໄພຂອງທ່ານຢູ່ Chromium ແລະ ອາດຖືກໃຊ້ເພື່ອປັບປຸງຄວາມປອດໄພຂອງທ່ານໃນແອັບ Google ອື່ນໆເມື່ອທ່ານເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="8663480472502753423">ຮັກສາໃຫ້ Chromium ໃໝ່ຫຼ້າສຸດ</translation>
 <translation id="8685813584220679697">ເຂົ້າສູ່ລະບົບຫາເວັບໄຊນີ້ ແລະ Chromium.</translation>

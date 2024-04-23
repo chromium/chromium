@@ -100,12 +100,8 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="3855938650519180865">Ano'ng Bago sa Chromium</translation>
 <translation id="3886689467633467988">Mag-sign in sa site na ito at sa Chromium para makuha mo ang iyong mga bookmark at higit pa sa lahat ng device mo.</translation>
 <translation id="3904484643286601695">Puwede mong i-update ang iyong mga pinili anumang oras sa Mga Setting ng Chromium.</translation>
-<translation id="394413318816989199">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address.
-
-Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="4005283307739974863">Magbubukas at Magpapatakbo ng Pag-check sa Kaligtasan sa Chromium.</translation>
 <translation id="4043291146360695975">Sine-save ang mga password sa Password Manager sa device lang na ito.</translation>
-<translation id="4076589763479456892">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="4099085513035183040">Hindi sinusuportahan sa Chromium Beta</translation>
 <translation id="4106512142782407609">Naka-sign in bilang <ph name="EMAIL" />.
 
@@ -197,9 +193,6 @@ Mga bagay na dapat isaalang-alang:
 <translation id="6337530241089703714">Piliin kung iki-clear ang iyong data sa Chromium sa device na ito o kung papanatilihin ito</translation>
 <translation id="6348483005826990855">3. Piliin ang Chromium</translation>
 <translation id="6383607155624074112">Mas mabilis na i-access ang Chromium mula sa Dock ng iyong Home Screen</translation>
-<translation id="6407399265324739055">Hindi mae-encrypt ang mga paraan ng pagbabayad at address. Hindi masi-sync ang history ng pag-browse mula sa Chromium.
-
-Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data. Hindi ipinapadala sa o sino-store ng Google ang passphrase. Kung makalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Naging mas mahusay na ang Chromium! Available na ang bagong bersyon.</translation>
 <translation id="6433172051771630690">Mga tip para masulit ang Chromium.</translation>
 <translation id="6502321914804101924">Naka-sign out ang Chromium</translation>
@@ -266,9 +259,6 @@ Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data
 <translation id="8458950033462118672">Awtomatiko mong mabubuksan ang mga link sa Chromium sa pamamagitan ng pagtatakda nito bilang iyong Default na Browser App.</translation>
 <translation id="858114650497379505">Puwede mong gamitin ang mga password na na-save mo sa Password Manager sa iba pang app sa iyong iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ang Mga May-akda ng Chromium. Nakalaan ang lahat ng karapatan.</translation>
-<translation id="8618440443578628179">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address mula sa Google Pay.
-
-Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="865600487977764604">Pinapanatili kang ligtas sa Chromium at puwedeng gamitin para paigtingin ang iyong seguridad sa iba pang Google app kapag naka-sign in ka.</translation>
 <translation id="8663480472502753423">Panatilihing up to date ang Chromium</translation>
 <translation id="8685813584220679697">Mag-sign in sa site na ito at sa Chromium.</translation>
