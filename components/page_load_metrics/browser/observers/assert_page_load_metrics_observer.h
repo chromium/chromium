@@ -210,6 +210,7 @@ class AssertPageLoadMetricsObserver final
   void OnV8MemoryChanged(const std::vector<page_load_metrics::MemoryUpdate>&
                              memory_updates) override {}
   void OnSharedStorageWorkletHostCreated() override {}
+  void OnSharedStorageSelectURLCalled() override {}
 
   // Reference implementations duplicated from PageLoadMetricsObserver
   ObservePolicy ShouldObserveMimeTypeByDefault(

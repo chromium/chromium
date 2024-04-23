@@ -52,13 +52,19 @@ SharedStoragePageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
 }
 
 void SharedStoragePageLoadMetricsObserver::OnSharedStorageWorkletHostCreated() {
-  base::CheckedNumeric<int> count = worklet_hosts_created_count_;
-  worklet_hosts_created_count_ =
-      (++count).ValueOrDefault(std::numeric_limits<int>::max());
+  worklet_hosts_created_count_++;
+}
+
+void SharedStoragePageLoadMetricsObserver::OnSharedStorageSelectURLCalled() {
+  select_url_call_count_++;
 }
 
 void SharedStoragePageLoadMetricsObserver::RecordSessionEndHistograms(
     const page_load_metrics::mojom::PageLoadTiming& main_frame_timing) {
   base::UmaHistogramCounts10000("Storage.SharedStorage.Worklet.NumPerPage",
-                                worklet_hosts_created_count_);
+                                worklet_hosts_created_count_.ValueOrDefault(
+                                    std::numeric_limits<int>::max()));
+  base::UmaHistogramCounts10000(
+      "Storage.SharedStorage.Worklet.SelectURL.CallsPerPage",
+      select_url_call_count_.ValueOrDefault(std::numeric_limits<int>::max()));
 }

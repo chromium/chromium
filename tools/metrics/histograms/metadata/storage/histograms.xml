@@ -1232,6 +1232,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.Worklet.SelectURL.CallsPerPage"
+    units="SelectURLCallsPerPage" expires_after="2024-09-29">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Number of calls made to `selectURL()` by frames on a given page. Recorded in
+    `SharedStoragePageLoadMetricsObserver::RecordSessionEndHistograms()`. When
+    `SharedStoragePageLoadMetricsObserver` exists, this histogram is recorded
+    for all `selectURL()` calls that are forwarded to the browser process from
+    the renderer, i.e. those that invoke
+    `SharedStorageWorkletHost::SelectURL()`, except for those where
+    `SharedStorageWorkletHost`'s pointer to its associated `PageImpl` is
+    nullptr.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.Worklet.Timing.Append" units="ms"
     expires_after="2024-07-31">
   <owner>cammie@chromium.org</owner>

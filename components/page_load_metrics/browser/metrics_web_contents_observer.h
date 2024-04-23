@@ -167,6 +167,10 @@ class MetricsWebContentsObserver
   // Called when a `SharedStorageWorkletHost` is created for `rfh`.
   void OnSharedStorageWorkletHostCreated(content::RenderFrameHost* rfh);
 
+  // Called when `sharedStorage.selectURL()` is called for some frame on a page
+  // whose main frame is `main_rfh`.
+  void OnSharedStorageSelectURLCalled(content::RenderFrameHost* main_rfh);
+
   // Returns the time this MetricsWebContentsObserver was created.
   base::TimeTicks GetCreated();
 

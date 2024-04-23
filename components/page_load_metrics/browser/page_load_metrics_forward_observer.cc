@@ -429,4 +429,11 @@ void PageLoadMetricsForwardObserver::OnSharedStorageWorkletHostCreated() {
   parent_observer_->OnSharedStorageWorkletHostCreated();
 }
 
+void PageLoadMetricsForwardObserver::OnSharedStorageSelectURLCalled() {
+  if (!parent_observer_) {
+    return;
+  }
+  parent_observer_->OnSharedStorageSelectURLCalled();
+}
+
 }  // namespace page_load_metrics

@@ -446,6 +446,10 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   // Called when a `SharedStorageWorkletHost` is created.
   void OnSharedStorageWorkletHostCreated();
 
+  // Called when `sharedStorage.selectURL()` is called for some frame on the
+  // page tracked.
+  void OnSharedStorageSelectURLCalled();
+
   // Checks if this tracker is for outermost pages.
   bool IsOutermostTracker() const { return !parent_tracker_; }
 

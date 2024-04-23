@@ -946,6 +946,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void OnSharedStorageWorkletHostCreated(
       content::RenderFrameHost* rfh) override;
 
+  void OnSharedStorageSelectURLCalled(
+      content::RenderFrameHost* main_rfh) override;
+
   bool ShouldSendOutermostOriginToRenderer(
       const url::Origin& outermost_origin) override;
 

@@ -129,6 +129,8 @@ constexpr char kTimingWorkletEntriesHistogram[] =
     "Storage.SharedStorage.Worklet.Timing.Entries.Next";
 constexpr char kWorkletNumPerPageHistogram[] =
     "Storage.SharedStorage.Worklet.NumPerPage";
+constexpr char kSelectUrlCallsPerPageHistogram[] =
+    "Storage.SharedStorage.Worklet.SelectURL.CallsPerPage";
 constexpr char kTimingRemainingBudgetHistogram[] =
     "Storage.SharedStorage.Worklet.Timing.RemainingBudget";
 constexpr char kPrivateAggregationHostPipeResultHistogram[] =
@@ -555,7 +557,7 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
       return result.error.empty();
     }
     EXPECT_TRUE(
-        ExecJs(GetActiveWebContents(),
+        ExecJs(execution_target,
                content::JsReplace("window.resolveSelectURLToConfig = $1;",
                                   ResolveSelectURLToConfig())));
 
@@ -567,7 +569,7 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
             ->GetStoragePartition();
     content::TestSelectURLFencedFrameConfigObserver config_observer(
         storage_partition);
-    content::EvalJsResult result = EvalJs(GetActiveWebContents(), R"(
+    content::EvalJsResult result = EvalJs(execution_target, R"(
         (async function() {
           window.select_url_result = await sharedStorage.selectURL(
             'test-operation',
@@ -1137,16 +1139,19 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
                          GetSharedStorageSelectURLDisabledErrorMessage()));
     VerifyDebugErrorMessage(run_url_op_result.error);
 
-    // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
+    // Navigate away to record `kWorkletNumPerPageHistogram`,
+    // `kSelectUrlCallsPerPageHistogram` histograms.
     EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                        GURL(url::kAboutBlankURL)));
-    WaitForHistograms({kErrorTypeHistogram, kWorkletNumPerPageHistogram});
+    WaitForHistograms({kErrorTypeHistogram, kWorkletNumPerPageHistogram,
+                       kSelectUrlCallsPerPageHistogram});
     histogram_tester_.ExpectBucketCount(
         kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 1);
     histogram_tester_.ExpectBucketCount(
         kErrorTypeHistogram,
         blink::SharedStorageWorkletErrorType::kSelectURLWebVisible, 1);
     histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
+    histogram_tester_.ExpectUniqueSample(kSelectUrlCallsPerPageHistogram, 1, 1);
     return;
   }
 
@@ -1169,17 +1174,20 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, RunURLSelectionOperation) {
       "Finish executing \'test-url-selection-operation\'",
       base::UTF16ToUTF8(run_url_op_console_observer.messages()[0].message));
 
-  // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
+  // Navigate away to record `kWorkletNumPerPageHistogram`,
+  // `kSelectUrlCallsPerPageHistogram` histograms.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms({kErrorTypeHistogram, kTimingDocumentAddModuleHistogram,
                      kTimingDocumentSelectUrlHistogram,
-                     kWorkletNumPerPageHistogram});
+                     kWorkletNumPerPageHistogram,
+                     kSelectUrlCallsPerPageHistogram});
   histogram_tester_.ExpectUniqueSample(
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
   histogram_tester_.ExpectTotalCount(kTimingDocumentSelectUrlHistogram, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(kSelectUrlCallsPerPageHistogram, 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, Set) {
@@ -2517,11 +2525,13 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
         })()
       )"));
 
-  // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
+  // Navigate away to record `kWorkletNumPerPageHistogram`,
+  // `kSelectUrlCallsPerPageHistogram` histograms.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms({kTimingDocumentAddModuleHistogram, kErrorTypeHistogram,
-                     kWorkletNumPerPageHistogram});
+                     kWorkletNumPerPageHistogram,
+                     kSelectUrlCallsPerPageHistogram});
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
   histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
@@ -2529,6 +2539,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(kSelectUrlCallsPerPageHistogram, 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
@@ -2572,11 +2583,13 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
         })()
       )"));
 
-  // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
+  // Navigate away to record `kWorkletNumPerPageHistogram`,
+  // `kSelectUrlCallsPerPageHistogram` histograms.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms({kTimingDocumentAddModuleHistogram, kErrorTypeHistogram,
-                     kWorkletNumPerPageHistogram});
+                     kWorkletNumPerPageHistogram,
+                     kSelectUrlCallsPerPageHistogram});
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
   histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
@@ -2584,6 +2597,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(kSelectUrlCallsPerPageHistogram, 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, SelectUrl_ScriptError) {
@@ -2626,11 +2640,13 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, SelectUrl_ScriptError) {
         })()
       )"));
 
-  // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
+  // Navigate away to record `kWorkletNumPerPageHistogram`,
+  // `kSelectUrlCallsPerPageHistogram` histograms.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms({kTimingDocumentAddModuleHistogram, kErrorTypeHistogram,
-                     kWorkletNumPerPageHistogram});
+                     kWorkletNumPerPageHistogram,
+                     kSelectUrlCallsPerPageHistogram});
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
   histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
@@ -2638,6 +2654,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, SelectUrl_ScriptError) {
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(kSelectUrlCallsPerPageHistogram, 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
@@ -2681,11 +2698,13 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
         })()
       )"));
 
-  // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
+  // Navigate away to record `kWorkletNumPerPageHistogram`,
+  // `kSelectUrlCallsPerPageHistogram` histograms.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms({kTimingDocumentAddModuleHistogram, kErrorTypeHistogram,
-                     kWorkletNumPerPageHistogram});
+                     kWorkletNumPerPageHistogram,
+                     kSelectUrlCallsPerPageHistogram});
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
   histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
@@ -2693,6 +2712,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(kSelectUrlCallsPerPageHistogram, 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
@@ -2736,11 +2756,13 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
         })()
       )"));
 
-  // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
+  // Navigate away to record `kWorkletNumPerPageHistogram`,
+  // `kSelectUrlCallsPerPageHistogram` histograms.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms({kTimingDocumentAddModuleHistogram, kErrorTypeHistogram,
-                     kWorkletNumPerPageHistogram});
+                     kWorkletNumPerPageHistogram,
+                     kSelectUrlCallsPerPageHistogram});
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
   histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
@@ -2748,6 +2770,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(kSelectUrlCallsPerPageHistogram, 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
@@ -2791,11 +2814,13 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
         })()
       )"));
 
-  // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
+  // Navigate away to record `kWorkletNumPerPageHistogram`,
+  // `kSelectUrlCallsPerPageHistogram` histograms.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms({kTimingDocumentAddModuleHistogram, kErrorTypeHistogram,
-                     kWorkletNumPerPageHistogram});
+                     kWorkletNumPerPageHistogram,
+                     kSelectUrlCallsPerPageHistogram});
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 1);
   histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
@@ -2803,6 +2828,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
+  histogram_tester_.ExpectUniqueSample(kSelectUrlCallsPerPageHistogram, 1, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
@@ -3079,7 +3105,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       sharedStorage.set('key0', 'value0');
       console.log('Finished script');
     )",
-                                     "Finished script"));
+                                     "Finished script",
+                                     /*use_select_url=*/true));
 
   content::RenderFrameHost* iframe = CreateIframe(
       main_frame, https_server()->GetURL(kCrossOriginHost, kSimplePagePath));
@@ -3089,7 +3116,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       sharedStorage.set('key0', 'value0');
       console.log('Finished script');
     )",
-                                     "Finished script"));
+                                     "Finished script",
+                                     /*use_select_url=*/true));
 
   content::RenderFrameHost* nested_iframe = CreateIframe(
       iframe, https_server()->GetURL(kThirdOriginHost, kSimplePagePath));
@@ -3099,18 +3127,23 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       sharedStorage.set('key0', 'value0');
       console.log('Finished script');
     )",
-                                     "Finished script"));
+                                     "Finished script",
+                                     /*use_select_url=*/true));
 
-  // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
+  // Navigate away to record `kWorkletNumPerPageHistogram`,
+  // `kSelectUrlCallsPerPageHistogram` histograms.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
                                      GURL(url::kAboutBlankURL)));
   WaitForHistograms({kErrorTypeHistogram, kTimingDocumentAddModuleHistogram,
-                     kTimingDocumentRunHistogram, kWorkletNumPerPageHistogram});
+                     kTimingDocumentSelectUrlHistogram,
+                     kWorkletNumPerPageHistogram,
+                     kSelectUrlCallsPerPageHistogram});
   histogram_tester_.ExpectUniqueSample(
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 6);
   histogram_tester_.ExpectTotalCount(kTimingDocumentAddModuleHistogram, 3);
-  histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 3);
+  histogram_tester_.ExpectTotalCount(kTimingDocumentSelectUrlHistogram, 3);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 3, 1);
+  histogram_tester_.ExpectUniqueSample(kSelectUrlCallsPerPageHistogram, 3, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

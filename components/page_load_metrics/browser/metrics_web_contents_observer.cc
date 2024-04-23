@@ -1353,6 +1353,17 @@ void MetricsWebContentsObserver::OnSharedStorageWorkletHostCreated(
   }
 }
 
+void MetricsWebContentsObserver::OnSharedStorageSelectURLCalled(
+    content::RenderFrameHost* main_rfh) {
+  if (!main_rfh) {
+    return;
+  }
+
+  if (PageLoadTracker* tracker = GetPageLoadTracker(main_rfh)) {
+    tracker->OnSharedStorageSelectURLCalled();
+  }
+}
+
 base::TimeTicks MetricsWebContentsObserver::GetCreated() {
   return created_;
 }

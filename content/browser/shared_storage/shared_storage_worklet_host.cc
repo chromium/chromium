@@ -323,6 +323,10 @@ void SharedStorageWorkletHost::SelectURL(
     return;
   }
 
+  // Increment the page load metrics counter for selectURL calls.
+  GetContentClient()->browser()->OnSharedStorageSelectURLCalled(
+      &(page_->GetMainDocument()));
+
   // TODO(https://crbug.com/1505448): `document_service_` can somehow be null.
   if (!document_service_) {
     std::move(callback).Run(

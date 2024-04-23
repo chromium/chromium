@@ -251,6 +251,7 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
   void OnV8MemoryChanged(
       const std::vector<MemoryUpdate>& memory_updates) override {}
   void OnSharedStorageWorkletHostCreated() override {}
+  void OnSharedStorageSelectURLCalled() override {}
 
  private:
   raw_ptr<PageLoadMetricsObserverDelegate, DanglingUntriaged> delegate_ =

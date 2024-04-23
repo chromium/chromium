@@ -602,6 +602,10 @@ class PageLoadMetricsObserverInterface {
   // Called when a `SharedStorageWorkletHost` is created.
   virtual void OnSharedStorageWorkletHostCreated() = 0;
 
+  // Called when `sharedStorage.selectURL()` is called for some frame on the
+  // page tracked.
+  virtual void OnSharedStorageSelectURLCalled() = 0;
+
  private:
   base::WeakPtrFactory<PageLoadMetricsObserverInterface> weak_factory_{this};
 };

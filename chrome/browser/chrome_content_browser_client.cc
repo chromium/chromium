@@ -8003,6 +8003,15 @@ void ChromeContentBrowserClient::OnSharedStorageWorkletHostCreated(
   }
 }
 
+void ChromeContentBrowserClient::OnSharedStorageSelectURLCalled(
+    content::RenderFrameHost* main_rfh) {
+  if (auto* observer =
+          page_load_metrics::MetricsWebContentsObserver::FromWebContents(
+              WebContents::FromRenderFrameHost(main_rfh))) {
+    observer->OnSharedStorageSelectURLCalled(main_rfh);
+  }
+}
+
 bool ChromeContentBrowserClient::ShouldSendOutermostOriginToRenderer(
     const url::Origin& outermost_origin) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
