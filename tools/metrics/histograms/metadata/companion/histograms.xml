@@ -324,7 +324,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Companion.VisualQuery.MostShoppy.SensitivityClassificationScore"
-    units="percentile" expires_after="2024-08-18">
+    units="percentile" expires_after="2024-10-20">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>
@@ -338,7 +338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Companion.VisualQuery.MostShoppy.ShoppingClassificationScore"
-    units="percentile" expires_after="2024-08-18">
+    units="percentile" expires_after="2024-10-20">
   <owner>srna@google.com</owner>
   <owner>pstjuste@google.com</owner>
   <owner>src/chrome/browser/companion/OWNERS</owner>

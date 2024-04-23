@@ -434,7 +434,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.AppHelpIsLoaded" enum="Boolean" expires_after="2024-08-18">
+<histogram name="GPU.AppHelpIsLoaded" enum="Boolean" expires_after="2024-10-20">
   <owner>zmo@chromium.org</owner>
   <owner>spvw@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
@@ -727,7 +727,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="GPU.DirectComposition.SwapChainCreationResult3.SoftwareProtected.{SoftwareProtectedType}"
-    enum="Hresult" expires_after="2024-08-18">
+    enum="Hresult" expires_after="2024-10-20">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -743,7 +743,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="GPU.DirectComposition.SwapChainCreationResult3.{GPUProtectedVideoType}"
-    enum="Hresult" expires_after="2024-08-18">
+    enum="Hresult" expires_after="2024-10-20">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -767,7 +767,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.DirectComposition.VideoPresentationMode"
-    enum="DirectCompositionVideoPresentationMode" expires_after="2024-08-18">
+    enum="DirectCompositionVideoPresentationMode" expires_after="2024-10-20">
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>magchen@chromium.org</owner>
@@ -1849,7 +1849,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.FrameSink.GpuBusyDuration" units="microseconds"
-    expires_after="2024-08-18">
+    expires_after="2024-10-20">
   <owner>sashamcintosh@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>

@@ -1674,7 +1674,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableString.TotalParkingThreadTime.5min" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2024-10-20">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -1686,7 +1686,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableString.TotalUnparkingTime.5min" units="ms"
-    expires_after="2024-06-30">
+    expires_after="2024-10-20">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>

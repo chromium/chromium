@@ -1373,7 +1373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.IsDefaultBrowser{NumberOfDays}" enum="Boolean"
-    expires_after="2024-08-18">
+    expires_after="2024-10-20">
   <owner>sebsg@chromium.org</owner>
   <owner>gujen@chromium.org</owner>
   <summary>
@@ -2737,7 +2737,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PushNotification.APNSDeviceRegistration"
-    enum="BooleanSuccess" expires_after="2024-08-18">
+    enum="BooleanSuccess" expires_after="2024-10-20">
   <owner>ajuma@google.com</owner>
   <owner>danieltwhite@google.com</owner>
   <summary>
@@ -3053,7 +3053,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SafetyCheck.MagicStack.ModuleExistsInModuleOrder"
-    enum="BooleanMatched" expires_after="2024-08-18">
+    enum="BooleanMatched" expires_after="2024-10-20">
   <owner>bwwilliams@google.com</owner>
   <owner>thegreenfrog@google.com</owner>
   <summary>
@@ -3389,7 +3389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToPhotos" enum="IOSSaveToPhotosType"
-    expires_after="2024-08-04">
+    expires_after="2024-10-20">
   <owner>qpubert@google.com</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -3472,7 +3472,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SaveToPhotos.UploadSuccessLatency" units="ms"
-    expires_after="2024-08-04">
+    expires_after="2024-10-20">
   <owner>qpubert@google.com</owner>
   <owner>djean@chromium.org</owner>
   <summary>
@@ -4031,7 +4031,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabSwitcher.PinnedTabs.DragDropTabs"
-    enum="IOSTabSwitcherDragDropTabs" expires_after="2024-07-21">
+    enum="IOSTabSwitcherDragDropTabs" expires_after="2024-10-20">
   <owner>ewannpv@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>

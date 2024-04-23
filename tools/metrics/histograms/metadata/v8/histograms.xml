@@ -214,7 +214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.BackgroundThread"
-    units="microseconds" expires_after="2024-08-18">
+    units="microseconds" expires_after="2024-10-20">
   <owner>leszeks@chromium.org</owner>
   <owner>rmcilroy@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>

@@ -289,7 +289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ERP.RecordProcessedByServer" enum="Boolean"
-    expires_after="2024-08-21">
+    expires_after="2024-10-20">
   <owner>jrhilke@google.com</owner>
   <owner>src/components/reporting/OWNERS</owner>
   <summary>
@@ -424,7 +424,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Browser.MainThreadsCongestion.ExtensionContentScripts.{NumExtensions}"
-    units="janks" expires_after="2024-08-18">
+    units="janks" expires_after="2024-10-20">
   <owner>joenotcharles@google.com</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

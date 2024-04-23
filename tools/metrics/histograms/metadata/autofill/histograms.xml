@@ -729,7 +729,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.Autocomplete.NotOff.FillingAcceptance{AutofillFormType}"
-    enum="BooleanAutofillFillingAcceptance" expires_after="2024-07-14">
+    enum="BooleanAutofillFillingAcceptance" expires_after="2024-10-20">
   <owner>schwering@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -3758,7 +3758,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.PreFilledFieldClassifications.{FormType}"
-    enum="AutofillPreFilledFieldClassifications" expires_after="2024-08-18">
+    enum="AutofillPreFilledFieldClassifications" expires_after="2024-10-20">
   <owner>bwolfgang@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4106,7 +4106,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.ProfileTokenQuality.StoredObservationTypes.{Type}"
     enum="AutofillProfileTokenQualityObservationType"
-    expires_after="2024-08-18">
+    expires_after="2024-10-20">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -4239,7 +4239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.RendererFillSkipReason" enum="RendererFillSkipReason"
-    expires_after="2024-07-12">
+    expires_after="2024-10-20">
   <owner>jihadghanna@chromium.org</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
