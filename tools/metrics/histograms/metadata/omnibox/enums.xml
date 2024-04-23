@@ -40,6 +40,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Navigation occurred"/>
 </enum>
 
+<enum name="BooleanNonNull">
+  <int value="0" label="Null"/>
+  <int value="1" label="Non-null"/>
+</enum>
+
 <enum name="BooleanOffered">
   <int value="0" label="Not offered"/>
   <int value="1" label="Offered"/>
