@@ -250,15 +250,14 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
         });
 
     enclave::EnclaveAuthenticator authenticator(
-        std::move(ui_request), /*save_passkey_callback=*/
+        std::move(ui_request),
         base::BindLambdaForTesting([&]() -> network::mojom::NetworkContext* {
           return network_context_.get();
         }));
 
     std::vector<device::PublicKeyCredentialParams::CredentialInfo>
         pub_key_params;
-    pub_key_params.emplace_back(
-        device::PublicKeyCredentialParams::CredentialInfo());
+    pub_key_params.emplace_back();
 
     device::MakeCredentialOptions ctap_options;
     ctap_options.json = JSONFromString(R"({
