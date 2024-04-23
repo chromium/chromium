@@ -760,11 +760,6 @@ BASE_FEATURE(kDispatchBeforeUnloadOnFreeze,
              "DispatchBeforeUnloadOnFreeze",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable Display Locking JavaScript APIs.
-BASE_FEATURE(kDisplayLocking,
-             "DisplayLocking",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Kill switch for not WebGL DrawingBuffer using SharedImage without
 // GpuMemoryBuffer (overlay or low latency canvas).
 BASE_FEATURE(kDrawingBufferWithoutGpuMemoryBuffer,
