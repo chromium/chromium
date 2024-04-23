@@ -12,6 +12,7 @@ Network.requestWillBeSent{
     request : {
         headers : {
             Accept : */*
+            Accept-Language : en-us
             Referer : https://127.0.0.1:8443/inspector-protocol/resources/inspector-protocol-page.html
             User-Agent : <string>
             sec-ch-ua : "content_shell";v="999"

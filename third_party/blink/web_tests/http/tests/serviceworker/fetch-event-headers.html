@@ -31,8 +31,8 @@ promise_test(function(t) {
           header_names.sort();
           assert_array_equals(
             header_names,
-            ["accept", "sec-ch-ua", "sec-ch-ua-mobile", "sec-ch-ua-platform",
-             "upgrade-insecure-requests", "user-agent"],
+            ["accept", "accept-language", "sec-ch-ua", "sec-ch-ua-mobile",
+            "sec-ch-ua-platform", "upgrade-insecure-requests", "user-agent"],
             'event.request has the expected headers.');
 
           return service_worker_unregister_and_done(t, scope);

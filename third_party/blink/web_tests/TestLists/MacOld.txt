@@ -81,7 +81,6 @@ virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/window-open.h
 virtual/oopr-canvas2d/fast/canvas/OffscreenCanvas-2d-drawImage.html
 virtual/produce-compile-hints/external/wpt/fetch/api/basic/scheme-blob.sub.any.html
 virtual/produce-compile-hints/external/wpt/fetch/api/basic/scheme-blob.sub.any.worker.html
-virtual/reduce-accept-language/http/tests/inspector-protocol/network/navigate-iframe-in2out.js
 virtual/scalefactor200/fast/hidpi/static/validation-bubble-appearance-hidpi.html
 virtual/stable/webexposed/global-interface-listing-platform-specific.html
 virtual/text-antialias/basic/001.html

@@ -13,6 +13,7 @@ Network.requestWillBeSent{
         hasPostData : true
         headers : {
             Accept : */*
+            Accept-Language : en-us
             Content-Type : text/plain;charset=UTF-8
             Referer : https://127.0.0.1:8443/inspector-protocol/resources/inspector-protocol-page.html
             User-Agent : <string>

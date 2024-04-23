@@ -91,11 +91,10 @@ promise_test(async () => {
         testRunner.setAcceptLanguages(data.accept_languages);
         await languageChangePromise;
 
-        assert_equals(navigator.languages.length, data.languages.length);
+        // ReduceAcceptLanguage experiment turns on, only returns one language.
+        assert_equals(navigator.languages.length, 1);
         assert_equals(navigator.language, data.languages[0]);
-        for (var j = 0; j < navigator.languages.length; ++j) {
-            assert_equals(navigator.languages[j], data.languages[j]);
-        }
+        assert_equals(navigator.languages[0], data.languages[0]);
     }
 }, "Test that navigator.languages reflects the accept languages value.");
 

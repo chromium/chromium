@@ -1,0 +1,4 @@
+Tests the default Accept-Language header
+
+HTTP Accept-Language header should be: en-us,en
+

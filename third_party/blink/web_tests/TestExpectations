@@ -5551,7 +5551,6 @@ crbug.com/324293120 [ Debug Linux ] external/wpt/webstorage/event_case_sensitive
 crbug.com/324536287 external/wpt/soft-navigation-heuristics/interaction-with-paint-before-back.tentative.html [ Failure Pass ]
 
 # Suppress http/tests/inspector-protocol/network/navigate-iframe-in2out.js test cluster
-crbug.com/1413112 [ Mac10.15 ] virtual/reduce-accept-language/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
 crbug.com/1413726 [ Mac ] http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
 
 # Sheriff 2022-10-07
