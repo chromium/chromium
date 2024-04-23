@@ -513,9 +513,6 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(BlinkFeatures.EXPAND_COMPOSITED_CULL_RECT),
         Flag.baseFeature(BlinkFeatures.SCROLLBAR_COLOR),
         Flag.baseFeature(
-                ContentFeatures.SURFACE_SYNC_FULLSCREEN_KILLSWITCH,
-                "Disable to turn off the new SurfaceSync Fullscreen path."),
-        Flag.baseFeature(
                 ContentFeatures.PERSISTENT_ORIGIN_TRIALS,
                 "If enabled, servers will be able to use persistent origin trials "
                         + "on this device."),

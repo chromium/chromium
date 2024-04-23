@@ -978,13 +978,6 @@ BASE_FEATURE(kSuppressDifferentOriginSubframeJSDialogs,
              "SuppressDifferentOriginSubframeJSDialogs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// To disable the updated fullscreen handling of the companion Viz
-// SurfaceSyncThrottling flag. Disabling this will restore the base
-// SurfaceSyncThrottling path.
-BASE_FEATURE(kSurfaceSyncFullscreenKillswitch,
-             "SurfaceSyncFullscreenKillswitch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Dispatch touch events to "SyntheticGestureController" for events from
 // Devtool Protocol Input.dispatchTouchEvent to simulate touch events close to
 // real OS events.

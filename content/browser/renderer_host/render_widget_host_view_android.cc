@@ -210,11 +210,6 @@ TakeContentToVisibleTimeRequest(RenderWidgetHostImpl* host) {
   return host->GetVisibleTimeRequestTrigger().TakeRequest();
 }
 
-bool IsFullscreenSurfaceSyncSupported() {
-  return base::FeatureList::IsEnabled(
-      features::kSurfaceSyncFullscreenKillswitch);
-}
-
 }  // namespace
 
 // static
@@ -347,8 +342,6 @@ void RenderWidgetHostViewAndroid::ScreenStateChangeHandler::
 }
 
 void RenderWidgetHostViewAndroid::ScreenStateChangeHandler::WasEvicted() {
-  if (!IsFullscreenSurfaceSyncSupported())
-    return;
   // Reset the world upon eviction. We will re-esatblish the world when we next
   // become visible and begin embedding content again. This should not call
   // HandleScreenStateChanges, as we explicitly to not want to do any syncing
@@ -358,8 +351,6 @@ void RenderWidgetHostViewAndroid::ScreenStateChangeHandler::WasEvicted() {
 
 void RenderWidgetHostViewAndroid::ScreenStateChangeHandler::
     WasShownAfterEviction() {
-  if (!IsFullscreenSurfaceSyncSupported())
-    return;
   // The screen state can change while we were evicted. Reset the world for
   // future changes.
   BeginScreenStateChange();
@@ -763,7 +754,6 @@ bool RenderWidgetHostViewAndroid::SynchronizeVisualProperties(
     const std::optional<viz::LocalSurfaceId>& child_local_surface_id,
     bool reuse_current_local_surface_id,
     bool ignore_ack) {
-  if (IsFullscreenSurfaceSyncSupported()) {
     // Always merge the child_id, even if we cannot sync at this time.
     if (child_local_surface_id)
       local_surface_id_allocator_.UpdateFromChild(*child_local_surface_id);
@@ -773,14 +763,6 @@ bool RenderWidgetHostViewAndroid::SynchronizeVisualProperties(
 
     if (!child_local_surface_id && !reuse_current_local_surface_id)
       local_surface_id_allocator_.GenerateId();
-  } else {
-    if (!CanSynchronizeVisualProperties())
-      return false;
-    if (child_local_surface_id)
-      local_surface_id_allocator_.UpdateFromChild(*child_local_surface_id);
-    else
-      local_surface_id_allocator_.GenerateId();
-  }
 
   // If we still have an invalid viz::LocalSurfaceId, then we are hidden and
   // evicted. This will have been triggered by a child acknowledging a previous
@@ -797,8 +779,9 @@ bool RenderWidgetHostViewAndroid::SynchronizeVisualProperties(
         host()->delegate()->IsFullscreen());
   }
 
-  if (IsFullscreenSurfaceSyncSupported() && ignore_ack)
+  if (ignore_ack) {
     return host()->SynchronizeVisualPropertiesIgnoringPendingAck();
+  }
   return host()->SynchronizeVisualProperties();
 }
 
@@ -1702,9 +1685,6 @@ bool RenderWidgetHostViewAndroid::CanSynchronizeVisualProperties() {
     return false;
   }
 
-  if (!IsFullscreenSurfaceSyncSupported())
-    return true;
-
   return screen_state_change_handler_.CanSynchronizeVisualProperties();
 }
 
@@ -1985,18 +1965,10 @@ bool RenderWidgetHostViewAndroid::UpdateControls(
 
 void RenderWidgetHostViewAndroid::OnDidUpdateVisualPropertiesComplete(
     const cc::RenderFrameMetadata& metadata) {
-  if (IsFullscreenSurfaceSyncSupported()) {
     // Eviction and rotation handling has been updated, and is no longer tied to
     // child update. No more need to unthrottle here.
     SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
                                 metadata.local_surface_id);
-  } else {
-    // If the Renderer is updating visual properties, do not block merging and
-    // updating on rotation.
-    base::AutoReset<bool> in_rotation(&in_rotation_, false);
-    SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                metadata.local_surface_id);
-  }
 
   if (delegated_frame_host_) {
     delegated_frame_host_->SetTopControlsVisibleHeight(
@@ -2677,8 +2649,6 @@ bool RenderWidgetHostViewAndroid::RequiresDoubleTapGestureEvents() const {
 }
 
 void RenderWidgetHostViewAndroid::OnSizeChanged() {
-  if (!IsFullscreenSurfaceSyncSupported())
-    return;
   screen_state_change_handler_.OnVisibleViewportSizeChanged(view_.GetSize());
   // The display feature depends on the view size so we need to recompute it.
   ComputeDisplayFeature();
@@ -2694,7 +2664,6 @@ void RenderWidgetHostViewAndroid::OnPhysicalBackingSizeChanged(
                               deadline_override.value())
                         : ui::DelegatedFrameHostAndroid::ResizeTimeoutFrames();
 
-  if (IsFullscreenSurfaceSyncSupported()) {
     if (screen_state_change_handler_.OnPhysicalBackingSizeChanged(
             view_.GetPhysicalBackingSize(), deadline_in_frames)) {
       return;
@@ -2703,26 +2672,6 @@ void RenderWidgetHostViewAndroid::OnPhysicalBackingSizeChanged(
     SynchronizeVisualProperties(
         cc::DeadlinePolicy::UseSpecifiedDeadline(deadline_in_frames),
         std::nullopt);
-  } else {
-    // Cache the current rotation state so that we can start embedding with the
-    // latest visual properties from SynchronizeVisualProperties().
-    bool in_rotation = in_rotation_;
-    if (in_rotation)
-      EndRotationBatching();
-    // When exiting fullscreen it is possible that
-    // OnSynchronizedDisplayPropertiesChanged is either called out-of-order, or
-    // not at all. If so we treat this as the start of the rotation.
-    //
-    // TODO(jonross): Build a unified screen state observer to replace all of
-    // the individual signals used by RenderWidgetHostViewAndroid.
-    if (fullscreen_rotation_ && !host()->delegate()->IsFullscreen())
-      BeginRotationBatching();
-    SynchronizeVisualProperties(
-        cc::DeadlinePolicy::UseSpecifiedDeadline(deadline_in_frames),
-        std::nullopt);
-    if (in_rotation)
-      BeginRotationEmbed();
-  }
 }
 
 void RenderWidgetHostViewAndroid::OnRootWindowVisibilityChanged(bool visible) {
@@ -2951,33 +2900,10 @@ void RenderWidgetHostViewAndroid::TakeFallbackContentFrom(
 
 void RenderWidgetHostViewAndroid::OnSynchronizedDisplayPropertiesChanged(
     bool rotation) {
-  if (IsFullscreenSurfaceSyncSupported()) {
     if (screen_state_change_handler_.OnScreenInfoChanged(GetScreenInfo()))
       return;
     SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
                                 std::nullopt);
-  } else {
-    if (rotation) {
-      if (!in_rotation_) {
-        // If this is a new rotation confirm the rotation state to prepare for
-        // future exiting. As OnSynchronizedDisplayPropertiesChanged is not
-        // always called when exiting.
-        // TODO(jonross): Build a unified screen state observer to replace all
-        // of the individual signals used by RenderWidgetHostViewAndroid.
-        fullscreen_rotation_ =
-            host()->delegate()->IsFullscreen() && is_showing_;
-        BeginRotationBatching();
-      } else if (fullscreen_rotation_) {
-        // If exiting fullscreen triggers a rotation, begin embedding now, as we
-        // have previously had OnPhysicalBackingSizeChanged called.
-        fullscreen_rotation_ = false;
-        EndRotationBatching();
-        BeginRotationEmbed();
-      }
-    }
-    SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                std::nullopt);
-  }
 }
 
 std::optional<SkColor> RenderWidgetHostViewAndroid::GetBackgroundColor() {
@@ -3292,35 +3218,24 @@ void RenderWidgetHostViewAndroid::
 
 void RenderWidgetHostViewAndroid::EnterFullscreenMode(
     const blink::mojom::FullscreenOptions& options) {
-  if (!IsFullscreenSurfaceSyncSupported())
-    return;
   screen_state_change_handler_.EnterFullscreenMode();
 }
 
 void RenderWidgetHostViewAndroid::ExitFullscreenMode() {
-  if (!IsFullscreenSurfaceSyncSupported())
-    return;
   screen_state_change_handler_.ExitFullscreenMode();
 }
 
 void RenderWidgetHostViewAndroid::LockOrientation(
     device::mojom::ScreenOrientationLockType orientation) {
-  if (!IsFullscreenSurfaceSyncSupported())
-    return;
   screen_state_change_handler_.LockOrientation(orientation);
 }
 
 void RenderWidgetHostViewAndroid::UnlockOrientation() {
-  if (!IsFullscreenSurfaceSyncSupported())
-    return;
   screen_state_change_handler_.UnlockOrientation();
 }
 
 void RenderWidgetHostViewAndroid::SetHasPersistentVideo(
     bool has_persistent_video) {
-  if (!IsFullscreenSurfaceSyncSupported())
-    return;
-
   screen_state_change_handler_.SetHasPersistentVideo(has_persistent_video);
 }
 

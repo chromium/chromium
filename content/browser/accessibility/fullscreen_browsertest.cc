@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -19,7 +18,7 @@ namespace content {
 
 class AccessibilityFullscreenBrowserTest : public ContentBrowserTest {
  public:
-  AccessibilityFullscreenBrowserTest();
+  AccessibilityFullscreenBrowserTest() = default;
   ~AccessibilityFullscreenBrowserTest() override = default;
 
  protected:
@@ -42,17 +41,7 @@ class AccessibilityFullscreenBrowserTest : public ContentBrowserTest {
     }
     return links_in_children;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-AccessibilityFullscreenBrowserTest::AccessibilityFullscreenBrowserTest() {
-  // The FakeFullscreenDelegate does not send the layout signals used to
-  // complete SurfaceSync for Fullscreen.
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kSurfaceSyncFullscreenKillswitch);
-}
 
 namespace {
 
