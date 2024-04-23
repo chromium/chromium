@@ -4,6 +4,10 @@
 
 #include "components/performance_manager/graph/worker_node_impl.h"
 
+#include <ostream>
+#include <vector>
+
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
@@ -20,6 +24,8 @@
 namespace performance_manager {
 
 namespace {
+
+using ::testing::ElementsAre;
 
 class WorkerNodeImplTest : public GraphTestHarness {
  public:
@@ -290,6 +296,39 @@ TEST_F(WorkerNodeImplTest, ObserverWorks) {
   graph()->RemoveWorkerNodeObserver(&obs);
 }
 
+enum class NotificationMethod {
+  kOnWorkerNodeAdded,
+  kOnBeforeWorkerNodeRemoved,
+  kOnFinalResponseURLDetermined,
+  kOnClientFrameAdded,
+  kOnBeforeClientFrameRemoved,
+  kOnClientWorkerAdded,
+  kOnBeforeClientWorkerRemoved,
+  kOnPriorityAndReasonChanged,
+};
+
+std::ostream& operator<<(std::ostream& os, NotificationMethod method) {
+  switch (method) {
+    case NotificationMethod::kOnWorkerNodeAdded:
+      return os << "OnWorkerNodeAdded";
+    case NotificationMethod::kOnBeforeWorkerNodeRemoved:
+      return os << "OnBeforeWorkerNodeRemoved";
+    case NotificationMethod::kOnFinalResponseURLDetermined:
+      return os << "OnFinalResponseURLDetermined";
+    case NotificationMethod::kOnClientFrameAdded:
+      return os << "OnClientFrameAdded";
+    case NotificationMethod::kOnBeforeClientFrameRemoved:
+      return os << "OnBeforeClientFrameRemoved";
+    case NotificationMethod::kOnClientWorkerAdded:
+      return os << "OnClientWorkerAdded";
+    case NotificationMethod::kOnBeforeClientWorkerRemoved:
+      return os << "OnBeforeClientWorkerRemoved";
+    case NotificationMethod::kOnPriorityAndReasonChanged:
+      return os << "OnPriorityAndReasonChanged";
+  }
+  return os << "Unknown:" << static_cast<int>(method);
+}
+
 // A more complicated observer that tests the consistency of client
 // relationships.
 class TestWorkerNodeObserver : public WorkerNodeObserver {
@@ -302,47 +341,50 @@ class TestWorkerNodeObserver : public WorkerNodeObserver {
   ~TestWorkerNodeObserver() override = default;
 
   void OnWorkerNodeAdded(const WorkerNode* worker_node) override {
+    methods_called_.push_back(NotificationMethod::kOnWorkerNodeAdded);
     EXPECT_TRUE(client_frames_.insert({worker_node, {}}).second);
     EXPECT_TRUE(client_workers_.insert({worker_node, {}}).second);
   }
   void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) override {
-    EXPECT_TRUE(client_frames_.empty());
-    EXPECT_TRUE(client_workers_.empty());
+    methods_called_.push_back(NotificationMethod::kOnBeforeWorkerNodeRemoved);
+    EXPECT_TRUE(client_frames_.at(worker_node).empty());
+    EXPECT_TRUE(client_workers_.at(worker_node).empty());
     EXPECT_EQ(client_frames_.erase(worker_node), 1u);
     EXPECT_EQ(client_workers_.erase(worker_node), 1u);
   }
   void OnFinalResponseURLDetermined(const WorkerNode* worker_node) override {
-    on_final_response_url_determined_called_ = true;
+    methods_called_.push_back(
+        NotificationMethod::kOnFinalResponseURLDetermined);
   }
   void OnClientFrameAdded(const WorkerNode* worker_node,
                           const FrameNode* client_frame_node) override {
+    methods_called_.push_back(NotificationMethod::kOnClientFrameAdded);
     auto& client_frames = client_frames_.find(worker_node)->second;
     EXPECT_TRUE(client_frames.insert(client_frame_node).second);
   }
   void OnBeforeClientFrameRemoved(const WorkerNode* worker_node,
                                   const FrameNode* client_frame_node) override {
+    methods_called_.push_back(NotificationMethod::kOnBeforeClientFrameRemoved);
     auto& client_frames = client_frames_.find(worker_node)->second;
     EXPECT_EQ(client_frames.erase(client_frame_node), 1u);
   }
   void OnClientWorkerAdded(const WorkerNode* worker_node,
                            const WorkerNode* client_worker_node) override {
+    methods_called_.push_back(NotificationMethod::kOnClientWorkerAdded);
     auto& client_workers = client_workers_.find(worker_node)->second;
     EXPECT_TRUE(client_workers.insert(client_worker_node).second);
   }
   void OnBeforeClientWorkerRemoved(
       const WorkerNode* worker_node,
       const WorkerNode* client_worker_node) override {
+    methods_called_.push_back(NotificationMethod::kOnBeforeClientWorkerRemoved);
     auto& client_workers = client_workers_.find(worker_node)->second;
     EXPECT_EQ(client_workers.erase(client_worker_node), 1u);
   }
   void OnPriorityAndReasonChanged(
       const WorkerNode* worker_node,
       const PriorityAndReason& previous_value) override {
-    on_priority_and_reason_changed_called_ = true;
-  }
-
-  bool on_final_response_url_determined_called() const {
-    return on_final_response_url_determined_called_;
+    methods_called_.push_back(NotificationMethod::kOnPriorityAndReasonChanged);
   }
 
   const base::flat_map<
@@ -359,12 +401,12 @@ class TestWorkerNodeObserver : public WorkerNodeObserver {
     return client_workers_;
   }
 
-  bool on_priority_and_reason_changed_called() const {
-    return on_priority_and_reason_changed_called_;
+  std::vector<NotificationMethod> methods_called() const {
+    return methods_called_;
   }
 
  private:
-  bool on_final_response_url_determined_called_ = false;
+  std::vector<NotificationMethod> methods_called_;
 
   base::flat_map<const WorkerNode*,
                  base::flat_set<raw_ptr<const FrameNode, CtnExperimental>>>
@@ -372,8 +414,6 @@ class TestWorkerNodeObserver : public WorkerNodeObserver {
   base::flat_map<const WorkerNode*,
                  base::flat_set<raw_ptr<const WorkerNode, CtnExperimental>>>
       client_workers_;
-
-  bool on_priority_and_reason_changed_called_ = false;
 };
 
 // Same as the AddWorkerNodes test, but the graph is verified through the
@@ -410,6 +450,29 @@ TEST_F(WorkerNodeImplTest, Observer_AddWorkerNodes) {
   service_worker->RemoveClientFrame(frame.get());
   shared_worker->RemoveClientFrame(frame.get());
   dedicated_worker->RemoveClientFrame(frame.get());
+
+  service_worker.reset();
+  shared_worker.reset();
+  dedicated_worker.reset();
+
+  EXPECT_THAT(worker_node_observer.methods_called(),
+              ElementsAre(
+                  // 3 workers created
+                  NotificationMethod::kOnWorkerNodeAdded,
+                  NotificationMethod::kOnWorkerNodeAdded,
+                  NotificationMethod::kOnWorkerNodeAdded,
+                  // 3 client frames added
+                  NotificationMethod::kOnClientFrameAdded,
+                  NotificationMethod::kOnClientFrameAdded,
+                  NotificationMethod::kOnClientFrameAdded,
+                  // 3 client frames removed
+                  NotificationMethod::kOnBeforeClientFrameRemoved,
+                  NotificationMethod::kOnBeforeClientFrameRemoved,
+                  NotificationMethod::kOnBeforeClientFrameRemoved,
+                  // 3 workers deleted
+                  NotificationMethod::kOnBeforeWorkerNodeRemoved,
+                  NotificationMethod::kOnBeforeWorkerNodeRemoved,
+                  NotificationMethod::kOnBeforeWorkerNodeRemoved));
 
   graph()->RemoveWorkerNodeObserver(&worker_node_observer);
 }
@@ -455,6 +518,29 @@ TEST_F(WorkerNodeImplTest, Observer_ClientsOfServiceWorkers) {
   service_worker->RemoveClientWorker(dedicated_worker.get());
   service_worker->RemoveClientFrame(frame.get());
 
+  service_worker.reset();
+  shared_worker.reset();
+  dedicated_worker.reset();
+
+  EXPECT_THAT(worker_node_observer.methods_called(),
+              ElementsAre(
+                  // 3 workers created
+                  NotificationMethod::kOnWorkerNodeAdded,
+                  NotificationMethod::kOnWorkerNodeAdded,
+                  NotificationMethod::kOnWorkerNodeAdded,
+                  // 3 clients added
+                  NotificationMethod::kOnClientFrameAdded,
+                  NotificationMethod::kOnClientWorkerAdded,
+                  NotificationMethod::kOnClientWorkerAdded,
+                  // 3 client frames removed
+                  NotificationMethod::kOnBeforeClientWorkerRemoved,
+                  NotificationMethod::kOnBeforeClientWorkerRemoved,
+                  NotificationMethod::kOnBeforeClientFrameRemoved,
+                  // 3 workers deleted
+                  NotificationMethod::kOnBeforeWorkerNodeRemoved,
+                  NotificationMethod::kOnBeforeWorkerNodeRemoved,
+                  NotificationMethod::kOnBeforeWorkerNodeRemoved));
+
   graph()->RemoveWorkerNodeObserver(&worker_node_observer);
 }
 
@@ -466,9 +552,14 @@ TEST_F(WorkerNodeImplTest, Observer_OnFinalResponseURLDetermined) {
   auto worker = CreateNode<WorkerNodeImpl>(WorkerNode::WorkerType::kDedicated,
                                            process.get());
 
-  EXPECT_FALSE(worker_node_observer.on_final_response_url_determined_called());
+  EXPECT_FALSE(
+      base::Contains(worker_node_observer.methods_called(),
+                     NotificationMethod::kOnFinalResponseURLDetermined));
   worker->OnFinalResponseURLDetermined(GURL("testurl.com"));
-  EXPECT_TRUE(worker_node_observer.on_final_response_url_determined_called());
+
+  EXPECT_THAT(worker_node_observer.methods_called(),
+              ElementsAre(NotificationMethod::kOnWorkerNodeAdded,
+                          NotificationMethod::kOnFinalResponseURLDetermined));
 
   graph()->RemoveWorkerNodeObserver(&worker_node_observer);
 }
@@ -481,12 +572,16 @@ TEST_F(WorkerNodeImplTest, Observer_OnPriorityAndReasonChanged) {
   auto worker = CreateNode<WorkerNodeImpl>(WorkerNode::WorkerType::kDedicated,
                                            process.get());
 
-  EXPECT_FALSE(worker_node_observer.on_priority_and_reason_changed_called());
+  EXPECT_FALSE(base::Contains(worker_node_observer.methods_called(),
+                              NotificationMethod::kOnPriorityAndReasonChanged));
   static const PriorityAndReason kPriorityAndReason(base::TaskPriority::HIGHEST,
                                                     "this is a reason!");
   worker->SetPriorityAndReason(kPriorityAndReason);
-  EXPECT_TRUE(worker_node_observer.on_priority_and_reason_changed_called());
   EXPECT_EQ(worker->GetPriorityAndReason(), kPriorityAndReason);
+
+  EXPECT_THAT(worker_node_observer.methods_called(),
+              ElementsAre(NotificationMethod::kOnWorkerNodeAdded,
+                          NotificationMethod::kOnPriorityAndReasonChanged));
 
   graph()->RemoveWorkerNodeObserver(&worker_node_observer);
 }
