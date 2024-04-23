@@ -88,7 +88,7 @@ void RunGetClassificationResultCallback(
       result.ordered_labels.empty() ? "" : result.ordered_labels[0];
 
   bool is_ready =
-      result.status != segmentation_platform::PredictionStatus::kNotReady;
+      result.status == segmentation_platform::PredictionStatus::kSucceeded;
   int button_variant = static_cast<int32_t>(
       ActionLabelToAdaptiveToolbarButtonVariant(button_to_show));
 

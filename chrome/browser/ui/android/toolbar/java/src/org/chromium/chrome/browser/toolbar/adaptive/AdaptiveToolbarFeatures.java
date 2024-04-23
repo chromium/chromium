@@ -306,6 +306,7 @@ public class AdaptiveToolbarFeatures {
     /**
      * Returns whether the UI can be shown only after the backend is ready and has sufficient
      * information for result computation.
+     * Default value is false, so the UI will be shown even if the model isn't ready.
      */
     static boolean showUiOnlyAfterReady() {
         if (sShowUiOnlyAfterReadyForTesting != null) return sShowUiOnlyAfterReadyForTesting;
@@ -313,7 +314,7 @@ public class AdaptiveToolbarFeatures {
         return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
                 VARIATION_PARAM_SHOW_UI_ONLY_AFTER_READY,
-                true);
+                false);
     }
 
     static void setDefaultSegmentForTesting(String defaultSegment) {

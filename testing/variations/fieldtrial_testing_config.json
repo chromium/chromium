@@ -13256,17 +13256,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Segmentation_Auto_Finale_20220418",
-                    "params": {
-                        "default_segment": "new-tab",
-                        "disable_ui": "false",
-                        "ignore_segmentation_results": "false",
-                        "min_version_adaptive": "3",
-                        "segment_selection_ttl_days": "56",
-                        "show_ui_only_after_ready": "true"
-                    },
+                    "name": "Segmentation_5_Button_ML_Model_Aggressive_20240409",
                     "enable_features": [
-                        "AdaptiveButtonInTopToolbarCustomizationV2"
+                        "AdaptiveButtonInTopToolbarAddToBookmarks",
+                        "AdaptiveButtonInTopToolbarCustomizationV2",
+                        "AdaptiveButtonInTopToolbarTranslate",
+                        "SegmentationPlatformAdaptiveToolbarV2Feature"
                     ]
                 }
             ]
