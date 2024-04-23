@@ -332,7 +332,6 @@ def dev_list():
 # List of required run-time libraries
 def lib_list():
   packages = [
-      "libasound2",
       "libatk1.0-0",
       "libatspi2.0-0",
       "libc6",
@@ -401,7 +400,10 @@ def lib_list():
   elif package_exists("libffi6"):
     packages.append("libffi6")
 
-  if package_exists("libpng16-16"):
+  # Workaround for dependency On Ubuntu 24.04 LTS (noble)
+  if distro_codename() == "noble":
+    packages.append("libpng16-16t64")
+  elif package_exists("libpng16-16"):
     packages.append("libpng16-16")
   else:
     packages.append("libpng12-0")
@@ -425,8 +427,10 @@ def lib_list():
   # Work around for dependency On Ubuntu 24.04 LTS (noble)
   if distro_codename() == "noble":
     packages.append("libncurses6")
+    packages.append("libasound2t64")
   else:
     packages.append("libncurses5")
+    packages.append("libasound2")
 
   return packages
 
