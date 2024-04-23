@@ -76,7 +76,7 @@ public class MinorModeHelper implements IdentityManager.Observer {
         int NUM_ENTRIES = 4;
     };
 
-    @interface SyncButtonClicked {
+    public @interface SyncButtonClicked {
         // These values are persisted to logs. Entries should not be renumbered and
         // numeric values should never be reused.
         int SYNC_OPT_IN_EQUAL_WEIGHTED = 0;
