@@ -6,6 +6,8 @@
 
 #include "base/check.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -15,6 +17,7 @@
 #include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
+#include "url/gurl.h"
 
 namespace privacy_sandbox {
 
@@ -132,6 +135,46 @@ bool TrackingProtectionSettings::IsIpProtectionEnabled() const {
 
 bool TrackingProtectionSettings::IsDoNotTrackEnabled() const {
   return pref_service_->GetBoolean(prefs::kEnableDoNotTrack);
+}
+
+void TrackingProtectionSettings::AddTrackingProtectionException(
+    const GURL& first_party_url,
+    bool is_user_bypass_exception) {
+  content_settings::ContentSettingConstraints constraints;
+  if (is_user_bypass_exception) {
+    constraints.set_lifetime(
+        content_settings::features::kUserBypassUIExceptionExpiration.Get());
+  }
+
+  host_content_settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url),
+      ContentSettingsType::TRACKING_PROTECTION, CONTENT_SETTING_ALLOW,
+      constraints);
+}
+
+void TrackingProtectionSettings::RemoveTrackingProtectionException(
+    const GURL& first_party_url) {
+  // Exceptions added via `AddTrackingProtectionException` are site scoped. This
+  // resets both origin scoped and site scoped exceptions.
+  auto pattern =
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url);
+  content_settings::SettingInfo info;
+  host_content_settings_map_->GetContentSetting(
+      GURL(), first_party_url, ContentSettingsType::TRACKING_PROTECTION, &info);
+  if (!info.secondary_pattern.HasDomainWildcard()) {
+    pattern = info.secondary_pattern;
+  }
+  host_content_settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(), pattern,
+      ContentSettingsType::TRACKING_PROTECTION, CONTENT_SETTING_DEFAULT);
+}
+
+bool TrackingProtectionSettings::HasTrackingProtectionException(
+    const GURL& first_party_url) const {
+  return host_content_settings_map_->GetContentSetting(
+             GURL(), first_party_url,
+             ContentSettingsType::TRACKING_PROTECTION) == CONTENT_SETTING_ALLOW;
 }
 
 void TrackingProtectionSettings::OnEnterpriseControlForPrefsChanged() {

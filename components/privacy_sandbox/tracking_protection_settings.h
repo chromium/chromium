@@ -64,6 +64,19 @@ class TrackingProtectionSettings
       TrackingProtectionOnboarding::OnboardingStatus onboarding_status)
       override;
 
+  // Adds a Tracking Protection site-scoped (wildcarded) exception for a given
+  // url. `is_user_bypass_exception` should be true if the exception was set via
+  // user bypass and will therefore be temporary.
+  void AddTrackingProtectionException(const GURL& first_party_url,
+                                      bool is_user_bypass_exception = false);
+
+  // Removes a Tracking Protection exception for a given url.
+  // This removes both site-scoped (wildcarded) and origin-scoped exceptions.
+  void RemoveTrackingProtectionException(const GURL& first_party_url);
+
+  // Returns whether a given url has a tracking protection exception.
+  bool HasTrackingProtectionException(const GURL& first_party_url) const;
+
  private:
   void OnEnterpriseControlForPrefsChanged();
 

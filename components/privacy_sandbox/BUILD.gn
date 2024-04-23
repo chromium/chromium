@@ -83,6 +83,7 @@ source_set("tracking_protection_settings") {
     "//components/keyed_service/core:core",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
+    "//url:url",
   ]
 
   public_deps = [ "//base" ]

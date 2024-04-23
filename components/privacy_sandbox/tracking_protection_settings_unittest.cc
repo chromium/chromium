@@ -11,6 +11,8 @@
 #include "base/test/task_environment.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -47,6 +49,8 @@ class TrackingProtectionSettingsTest : public testing::Test {
     onboarding_service_ = std::make_unique<TrackingProtectionOnboarding>(
         &prefs_, version_info::Channel::UNKNOWN);
   }
+
+  GURL GetTestUrl() { return GURL("http://cool.things.com"); }
 
   void SetUp() override {
     host_content_settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
@@ -174,6 +178,86 @@ TEST_F(TrackingProtectionSettingsTest,
   prefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled, false);
   EXPECT_FALSE(tracking_protection_settings()
                    ->AreThirdPartyCookiesAllowedByEnterprise());
+}
+
+TEST_F(TrackingProtectionSettingsTest,
+       HasTrackingProtectionExceptionReturnsTrueForAllow) {
+  host_content_settings_map()->SetContentSettingCustomScope(
+      ContentSettingsPattern::ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromURL(GetTestUrl()),
+      ContentSettingsType::TRACKING_PROTECTION,
+      ContentSetting::CONTENT_SETTING_ALLOW);
+  EXPECT_TRUE(tracking_protection_settings()->HasTrackingProtectionException(
+      GetTestUrl()));
+}
+
+TEST_F(TrackingProtectionSettingsTest,
+       HasTrackingProtectionExceptionReturnsFalseByDefault) {
+  EXPECT_FALSE(tracking_protection_settings()->HasTrackingProtectionException(
+      GetTestUrl()));
+}
+
+TEST_F(TrackingProtectionSettingsTest,
+       AddTrackingProtectionExceptionAddsContentSetting) {
+  tracking_protection_settings()->AddTrackingProtectionException(
+      GetTestUrl(), /*is_user_bypass_exception=*/false);
+
+  content_settings::SettingInfo info;
+  EXPECT_EQ(host_content_settings_map()->GetContentSetting(
+                GURL(), GetTestUrl(), ContentSettingsType::TRACKING_PROTECTION,
+                &info),
+            CONTENT_SETTING_ALLOW);
+
+  EXPECT_TRUE(info.metadata.expiration().is_null());
+}
+
+TEST_F(
+    TrackingProtectionSettingsTest,
+    AddTrackingProtectionExceptionAddsContentSettingWithUserBypassException) {
+  tracking_protection_settings()->AddTrackingProtectionException(
+      GetTestUrl(), /*is_user_bypass_exception=*/true);
+
+  content_settings::SettingInfo info;
+  EXPECT_EQ(host_content_settings_map()->GetContentSetting(
+                GURL(), GetTestUrl(), ContentSettingsType::TRACKING_PROTECTION,
+                &info),
+            CONTENT_SETTING_ALLOW);
+
+  EXPECT_FALSE(info.metadata.expiration().is_null());
+}
+
+TEST_F(TrackingProtectionSettingsTest,
+       RemoveTrackingProtectionExceptionRemovesContentSetting) {
+  host_content_settings_map()->SetContentSettingCustomScope(
+      ContentSettingsPattern::ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(GetTestUrl()),
+      ContentSettingsType::TRACKING_PROTECTION,
+      ContentSetting::CONTENT_SETTING_ALLOW);
+  tracking_protection_settings()->RemoveTrackingProtectionException(
+      GetTestUrl());
+
+  EXPECT_EQ(host_content_settings_map()->GetContentSetting(
+                GURL(), GetTestUrl(), ContentSettingsType::TRACKING_PROTECTION),
+            CONTENT_SETTING_BLOCK);
+}
+
+TEST_F(TrackingProtectionSettingsTest,
+       AddThenRemoveTrackingProtectionExceptionResetsContentSetting) {
+  tracking_protection_settings()->AddTrackingProtectionException(
+      GetTestUrl(), /*is_user_bypass_exception=*/false);
+
+  content_settings::SettingInfo info;
+  EXPECT_EQ(host_content_settings_map()->GetContentSetting(
+                GURL(), GetTestUrl(), ContentSettingsType::TRACKING_PROTECTION,
+                &info),
+            CONTENT_SETTING_ALLOW);
+
+  tracking_protection_settings()->RemoveTrackingProtectionException(
+      GetTestUrl());
+
+  EXPECT_EQ(host_content_settings_map()->GetContentSetting(
+                GURL(), GetTestUrl(), ContentSettingsType::TRACKING_PROTECTION),
+            CONTENT_SETTING_BLOCK);
 }
 
 // Sets prefs
