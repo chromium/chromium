@@ -36,6 +36,10 @@ bool ReadTokenBinary(const base::win::RegKey& key,
     VLOG(2) << "ReadValue failed: " << error;
     return false;
   }
+  if (size == 0) {
+    VLOG(2) << "The token is empty.";
+    return false;
+  }
   if (size > DMStorage::kMaxDmTokenLength) {
     VLOG(2) << "Value is too large: " << size;
     return false;
