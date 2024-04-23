@@ -96,19 +96,30 @@ inline const InlineCursor& InlineCursorForBlockFlow(
 }
 
 // Check if text-emphasis and ruby annotation text are on different sides.
-// See InlineTextBox::GetEmphasisMarkPosition().
 //
 // TODO(layout-dev): The current behavior is compatible with the legacy layout.
 // However, the specification asks to draw emphasis marks over ruby annotation
 // text.
 // https://drafts.csswg.org/css-text-decor-4/#text-emphasis-position-property
+// > If emphasis marks are applied to characters for which ruby is drawn in the
+// > same position as the emphasis mark, the emphasis marks are placed outside
+// > the ruby.
 bool ShouldPaintEmphasisMark(const ComputedStyle& style,
-                             const LayoutObject& layout_object) {
+                             const LayoutObject& layout_object,
+                             const FragmentItem& text_item) {
   if (style.GetTextEmphasisMark() == TextEmphasisMark::kNone)
     return false;
   // Note: We set text-emphasis-style:none for combined text and we paint
   // emphasis mark at left/right side of |LayoutTextCombine|.
   DCHECK(!IsA<LayoutTextCombine>(layout_object.Parent()));
+
+  if (RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
+    if (style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver) {
+      return !text_item.HasOverAnnotation();
+    }
+    return !text_item.HasUnderAnnotation();
+  }
+
   const LayoutObject* containing_block = layout_object.ContainingBlock();
   if (!containing_block || !containing_block->IsRubyBase())
     return true;
@@ -486,7 +497,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   // 2. Now paint the foreground, including text and decorations.
   // TODO(dazabani@igalia.com): suppress text proper where one or more highlight
   // overlays are active, but paint shadows in full <https://crbug.com/1147859>
-  if (ShouldPaintEmphasisMark(style, *layout_object)) {
+  if (ShouldPaintEmphasisMark(style, *layout_object, text_item)) {
     text_painter.SetEmphasisMark(style.TextEmphasisMarkString(),
                                  style.GetTextEmphasisPosition());
   }

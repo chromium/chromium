@@ -168,6 +168,8 @@ FragmentItem::FragmentItem(LogicalLineItem&& line_item,
           line_item.text_content,
           ToPhysicalSize(line_item.MarginSize(), writing_mode),
           line_item.is_hidden_for_paint);
+      has_over_annotation_ = line_item.has_over_annotation;
+      has_under_annotation_ = line_item.has_under_annotation;
       return;
     }
 
@@ -176,6 +178,8 @@ FragmentItem::FragmentItem(LogicalLineItem&& line_item,
                      line_item.text_offset,
                      ToPhysicalSize(line_item.MarginSize(), writing_mode),
                      line_item.is_hidden_for_paint);
+    has_over_annotation_ = line_item.has_over_annotation;
+    has_under_annotation_ = line_item.has_under_annotation;
     return;
   }
 
@@ -213,6 +217,8 @@ FragmentItem::FragmentItem(const FragmentItem& source)
       style_variant_(source.style_variant_),
       is_hidden_for_paint_(source.is_hidden_for_paint_),
       text_direction_(source.text_direction_),
+      has_over_annotation_(source.has_over_annotation_),
+      has_under_annotation_(source.has_under_annotation_),
       ink_overflow_type_(static_cast<unsigned>(InkOverflow::Type::kNotSet)),
       is_dirty_(source.is_dirty_),
       is_last_for_node_(source.is_last_for_node_) {
@@ -252,6 +258,8 @@ FragmentItem::FragmentItem(FragmentItem&& source)
       style_variant_(source.style_variant_),
       is_hidden_for_paint_(source.is_hidden_for_paint_),
       text_direction_(source.text_direction_),
+      has_over_annotation_(source.has_over_annotation_),
+      has_under_annotation_(source.has_under_annotation_),
       ink_overflow_type_(source.ink_overflow_type_),
       is_dirty_(source.is_dirty_),
       is_last_for_node_(source.is_last_for_node_) {

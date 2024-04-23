@@ -272,6 +272,9 @@ struct LogicalLineItem {
   bool has_only_bidi_trailing_spaces = false;
 
   bool is_hidden_for_paint = false;
+
+  bool has_over_annotation = false;
+  bool has_under_annotation = false;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream& stream,

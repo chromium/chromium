@@ -432,6 +432,20 @@ InlineBoxState* LogicalLineBuilder::PlaceRubyColumn(
   for (wtf_size_t i = 0; i < ruby_column.annotation_line_list.size(); ++i) {
     LogicalRubyColumn& logical_column =
         box_states_->RubyColumnAt(ruby_column_start_index + i);
+    if (!ruby_column.annotation_line_list[i].IsEmptyLine()) {
+      if (!line_box[start_index].has_over_annotation &&
+          logical_column.ruby_position == RubyPosition::kBefore) {
+        for (wtf_size_t j = start_index; j < line_box.size(); ++j) {
+          line_box[j].has_over_annotation = true;
+        }
+      }
+      if (!line_box[start_index].has_under_annotation &&
+          logical_column.ruby_position == RubyPosition::kAfter) {
+        for (wtf_size_t j = start_index; j < line_box.size(); ++j) {
+          line_box[j].has_under_annotation = true;
+        }
+      }
+    }
     logical_column.size = column_base_size;
     PlaceRubyAnnotation(item_result, i, ruby_column.annotation_line_list[i],
                         logical_column);
