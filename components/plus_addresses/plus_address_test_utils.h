@@ -10,11 +10,17 @@
 
 namespace plus_addresses::test {
 
-// Returns a fully populated, confirmed PlusProfile.
-PlusProfile CreatePlusProfile();
+// Returns a fully populated, confirmed PlusProfile. If `use_full_domain` is
+// true, a full domain (as opposed to eTLD+1) is used as facet.
+// TODO(b/322147254): Remove parameter once plus addresses starts fully relying
+// on sync data.
+PlusProfile CreatePlusProfile(bool use_full_domain = false);
 // Returns a fully populated, confirmed PlusProfile different from
-// `CreatePlusProfile()`.
-PlusProfile CreatePlusProfile2();
+// `CreatePlusProfile()`. If `use_full_domain` is true, a full domain (as
+// opposed to eTLD+1) is used as facet.
+// TODO(b/322147254): Remove parameter once plus addresses starts fully relying
+// on sync data.
+PlusProfile CreatePlusProfile2(bool use_full_domain = false);
 
 // Used in testing the GetOrCreate, Reserve, and Create network requests.
 std::string MakeCreationResponse(const PlusProfile& profile);

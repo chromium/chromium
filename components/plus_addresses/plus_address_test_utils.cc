@@ -10,16 +10,16 @@
 
 namespace plus_addresses::test {
 
-PlusProfile CreatePlusProfile() {
+PlusProfile CreatePlusProfile(bool use_full_domain) {
   return PlusProfile(/*profile_id=*/"123",
-                     /*facet=*/"foo.com",
+                     /*facet=*/use_full_domain ? "https://foo.com" : "foo.com",
                      /*plus_address=*/"plus+foo@plus.plus",
                      /*is_confirmed=*/true);
 }
 
-PlusProfile CreatePlusProfile2() {
+PlusProfile CreatePlusProfile2(bool use_full_domain) {
   return PlusProfile(/*profile_id=*/"234",
-                     /*facet=*/"bar.com",
+                     /*facet=*/use_full_domain ? "https://bar.com" : "bar.com",
                      /*plus_address=*/"plus+bar@plus.plus",
                      /*is_confirmed=*/true);
 }

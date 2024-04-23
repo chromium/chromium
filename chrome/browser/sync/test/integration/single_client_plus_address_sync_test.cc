@@ -139,7 +139,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest, InitialSync) {
   // Start syncing with an existing `plus_profile` on the server.
-  const PlusProfile plus_profile = CreatePlusProfile();
+  const PlusProfile plus_profile = CreatePlusProfile(/*use_full_domain=*/true);
   InjectEntityToServer(EntityDataFromPlusProfile(plus_profile).specifics);
   ASSERT_TRUE(SetupSync());
   EXPECT_TRUE(PlusProfileChecker(GetPlusAddressService(),
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest, InitialSync) {
 IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest, IncrementalUpdate_Add) {
   ASSERT_TRUE(SetupSync());
   // Simulate creating a new `plus_profile` on the server after sync started.
-  const PlusProfile plus_profile = CreatePlusProfile();
+  const PlusProfile plus_profile = CreatePlusProfile(/*use_full_domain=*/true);
   InjectEntityToServer(EntityDataFromPlusProfile(plus_profile).specifics);
   EXPECT_TRUE(PlusProfileChecker(GetPlusAddressService(),
                                  testing::UnorderedElementsAre(plus_profile))
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest, IncrementalUpdate_Add) {
 
 IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest,
                        IncrementalUpdate_Update) {
-  PlusProfile plus_profile = CreatePlusProfile();
+  PlusProfile plus_profile = CreatePlusProfile(/*use_full_domain=*/true);
   InjectEntityToServer(EntityDataFromPlusProfile(plus_profile).specifics);
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(PlusProfileChecker(GetPlusAddressService(),
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest,
 
 IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest,
                        IncrementalUpdate_Remove) {
-  const PlusProfile plus_profile = CreatePlusProfile();
+  const PlusProfile plus_profile = CreatePlusProfile(/*use_full_domain=*/true);
   InjectEntityToServer(EntityDataFromPlusProfile(plus_profile).specifics);
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(PlusProfileChecker(GetPlusAddressService(),
@@ -191,7 +191,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest,
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSyncTest, Signout_DataCleared) {
   InjectEntityToServer(
-      EntityDataFromPlusProfile(CreatePlusProfile()).specifics);
+      EntityDataFromPlusProfile(CreatePlusProfile(/*use_full_domain=*/true))
+          .specifics);
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(PlusProfileChecker(GetPlusAddressService(),
                                  testing::Not(testing::IsEmpty()))

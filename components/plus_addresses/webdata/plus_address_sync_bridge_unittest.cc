@@ -124,9 +124,12 @@ TEST_F(PlusAddressSyncBridgeTest, IsEntityDataValid) {
   syncer::EntityData entity;
   sync_pb::PlusAddressSpecifics* specifics =
       entity.specifics.mutable_plus_address();
-  // Missing a profile ID.
+  // Missing a profile ID and facet.
   EXPECT_FALSE(bridge().IsEntityDataValid(entity));
   specifics->set_profile_id("123");
+  specifics->set_facet("invalid facet");
+  EXPECT_FALSE(bridge().IsEntityDataValid(entity));
+  specifics->set_facet("https://test.example");
   EXPECT_TRUE(bridge().IsEntityDataValid(entity));
 }
 
