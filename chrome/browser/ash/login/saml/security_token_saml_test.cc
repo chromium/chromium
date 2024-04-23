@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/users/test_users.h"
+#include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/scoped_test_system_nss_key_slot_mixin.h"
 #include "chrome/browser/certificate_provider/test_certificate_provider_extension.h"
@@ -98,6 +99,9 @@ void SecurityTokenSamlTest::SetUpCommandLine(base::CommandLine* command_line) {
 }
 
 void SecurityTokenSamlTest::SetUpOnMainThread() {
+  // Without this tests are flaky. TODO(b/333450354): Determine why and fix.
+  SetDelayNetworkCallsForTesting(true);
+
   OobeBaseTest::SetUpOnMainThread();
   // Make sure the Gaia login frame is loaded before any other run loop is
   // executed, in order to avoid flakiness due to spurious error screens.
