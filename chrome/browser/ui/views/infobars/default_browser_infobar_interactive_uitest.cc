@@ -152,19 +152,6 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
           EnsureNotPresent(AppMenuModel::kSetBrowserAsDefaultMenuItem)));
 }
 
-IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
-                       RemovesAllBrowserPromptsOnAccept) {
-  DefaultBrowserPromptManager::GetInstance()->MaybeShowPrompt();
-  RunTestSequence(
-      WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      WaitForShow(ConfirmInfoBar::kInfoBarElementId),
-      PressButton(ConfirmInfoBar::kOkButtonElementId),
-      WaitForHide(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
-      SelectTab(kTabStripElementId, 0),
-      WaitForHide(ConfirmInfoBar::kInfoBarElementId));
-}
-
 // Linux test environment doesn't allow setting default via the
 // chrome://settings/defaultBrowser page.
 #if !BUILDFLAG(IS_LINUX)

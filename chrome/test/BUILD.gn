@@ -11181,6 +11181,7 @@ if (!is_android && !is_chromeos_device) {
     if (!is_chromeos) {
       sources += [
         "../browser/password_manager/web_app_profile_switcher_interactive_uitest.cc",
+        "../browser/ui/startup/default_browser_prompt_interactive_uitest.cc",
         "../browser/ui/views/infobars/default_browser_infobar_interactive_uitest.cc",
       ]
     }
