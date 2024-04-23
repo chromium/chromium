@@ -15,6 +15,9 @@ PlatformWindowInitProperties::PlatformWindowInitProperties(
 PlatformWindowInitProperties::PlatformWindowInitProperties(
     PlatformWindowInitProperties&& props) = default;
 
+PlatformWindowInitProperties& PlatformWindowInitProperties::operator=(
+    PlatformWindowInitProperties&&) = default;
+
 PlatformWindowInitProperties::~PlatformWindowInitProperties() = default;
 
 }  // namespace ui

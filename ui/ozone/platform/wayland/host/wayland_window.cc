@@ -28,6 +28,7 @@
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target_iterator.h"
 #include "ui/events/event_utils.h"
@@ -880,7 +881,16 @@ bool WaylandWindow::Initialize(PlatformWindowInitProperties properties) {
   // This can happen when a test doesn't set `properties.bounds`, but there have
   // also been crashes in production because of this (crbug.com/1435478).
   if (state.bounds_dip.IsEmpty()) {
-    state.bounds_dip = gfx::Rect(0, 0, 1, 1);
+    // If bounds are not specified, place the window on the appropriate display,
+    // if supported.
+    auto* screen = display::Screen::GetScreen();
+    DCHECK(screen) << "A TestScreen must be instantiated for tests creating "
+                      "windows with no initial bounds.";
+    const gfx::Point origin =
+        IsScreenCoordinatesEnabled()
+            ? screen->GetDisplayForNewWindows().work_area().CenterPoint()
+            : gfx::Point(0, 0);
+    state.bounds_dip = gfx::Rect(origin, {1, 1});
   }
 
   // Properties contain DIP bounds but the buffer scale is initially 1 so it's

@@ -69,6 +69,7 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   explicit PlatformWindowInitProperties(const gfx::Rect& bounds);
 
   PlatformWindowInitProperties(PlatformWindowInitProperties&& props);
+  PlatformWindowInitProperties& operator=(PlatformWindowInitProperties&&);
 
   ~PlatformWindowInitProperties();
 

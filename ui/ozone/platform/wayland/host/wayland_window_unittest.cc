@@ -3,13 +3,6 @@
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
-#include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
-
-#include <cstddef>
-#include <memory>
-#include <utility>
-#include <vector>
 
 #include <cursor-shape-v1-client-protocol.h>
 #include <cursor-shapes-unstable-v1-client-protocol.h>
@@ -17,9 +10,15 @@
 #include <wayland-server-core.h>
 #include <xdg-shell-server-protocol.h>
 
+#include <cstddef>
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/nix/xdg_util.h"
 #include "base/run_loop.h"
@@ -28,6 +27,7 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_command_line.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +36,8 @@
 #include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/display.h"
+#include "ui/display/scoped_display_for_new_windows.h"
+#include "ui/display/test/test_screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -3562,6 +3564,8 @@ TEST_P(WaylandWindowTest, PopupPassesSetAnchorInformation) {
 }
 
 TEST_P(WaylandWindowTest, SetBoundsResizesEmptySizes) {
+  display::test::TestScreen test_screen_{/*create_display=*/true,
+                                         /*register_screen=*/true};
   auto* toplevel_window = window_.get();
   toplevel_window->SetBoundsInDIP(gfx::Rect(666, 666));
 
@@ -5343,15 +5347,111 @@ TEST_P(WaylandWindowTest,
   VerifyAndClearExpectations();
 }
 
+// Test that creates a screen with two displays, with work areas configured to
+// be side-by-side horizontally.
+class MultiDisplayWaylandWindowTest : public WaylandWindowTest {
+ public:
+  static constexpr int64_t kPrimaryDisplayId = 1;
+  static constexpr int64_t kSecondaryDisplayId = 2;
+  static constexpr gfx::Rect kPrimaryDisplayBounds{0, 0, 800, 600};
+  static constexpr gfx::Rect kSecondaryDisplayBounds{800, 0, 800, 600};
+
+  // WaylandWindowTest:
+  void SetUp() override {
+    test_screen_.display_list().AddDisplay(
+        display::Display(kPrimaryDisplayId, kPrimaryDisplayBounds),
+        display::DisplayList::Type::PRIMARY);
+    test_screen_.display_list().AddDisplay(
+        display::Display(kSecondaryDisplayId, kSecondaryDisplayBounds),
+        display::DisplayList::Type::NOT_PRIMARY);
+    EXPECT_EQ(2, test_screen_.GetNumDisplays());
+    WaylandWindowTest::SetUp();
+  }
+
+ private:
+  display::test::TestScreen test_screen_{/*create_display=*/false,
+                                         /*register_screen=*/true};
+};
+
+// Asserts new windows have their bounds set on the display for new windows if
+// init bounds are unspecified.
+TEST_P(MultiDisplayWaylandWindowTest, SetsNewWindowBoundsToCorrectDisplay) {
+  MockWaylandPlatformWindowDelegate delegate;
+
+  // Set the secondary display as the new window target.
+  std::optional<display::ScopedDisplayForNewWindows> scoped_display_new_windows;
+  scoped_display_new_windows.emplace(kSecondaryDisplayId);
+
+  // Init a new window with empty init bounds.
+  auto init_properties = PlatformWindowInitProperties(gfx::Rect(0, 0));
+  auto window = delegate.CreateWaylandWindow(connection_.get(),
+                                             std::move(init_properties));
+  ASSERT_TRUE(window);
+
+  // Assert the window is placed on the display for new windows, if supported.
+  gfx::Rect bounds_dip = window->GetBoundsInDIP();
+  EXPECT_EQ(gfx::Size(1, 1), bounds_dip.size());
+  if (window->IsScreenCoordinatesEnabled()) {
+    EXPECT_TRUE(kSecondaryDisplayBounds.Contains(bounds_dip));
+  } else {
+    EXPECT_EQ(gfx::Rect(0, 0, 1, 1), bounds_dip);
+  }
+
+  // Set the primary display as the new window target.
+  scoped_display_new_windows.emplace(kPrimaryDisplayId);
+  init_properties = PlatformWindowInitProperties(gfx::Rect(0, 0));
+
+  // Init a new window with empty init bounds.
+  window = delegate.CreateWaylandWindow(connection_.get(),
+                                        std::move(init_properties));
+  ASSERT_TRUE(window);
+
+  // Assert the window is placed on the display for new windows, if supported.
+  bounds_dip = window->GetBoundsInDIP();
+  EXPECT_EQ(gfx::Size(1, 1), bounds_dip.size());
+  if (window->IsScreenCoordinatesEnabled()) {
+    EXPECT_TRUE(kPrimaryDisplayBounds.Contains(bounds_dip));
+  } else {
+    EXPECT_EQ(gfx::Rect(0, 0, 1, 1), bounds_dip);
+  }
+}
+
+// Asserts new windows ignore the display for new windows if bounds have been
+// explicitly specified.
+TEST_P(MultiDisplayWaylandWindowTest, NewWindowsRespectInitParamBounds) {
+  MockWaylandPlatformWindowDelegate delegate;
+
+  // Set the secondary display as the new window target.
+  const display::ScopedDisplayForNewWindows scoped_display_new_windows(
+      kSecondaryDisplayId);
+
+  // Init a new window with non-empty bounds.
+  constexpr gfx::Rect kInitBounds(100, 100, 100, 100);
+  const auto window = delegate.CreateWaylandWindow(
+      connection_.get(), PlatformWindowInitProperties(kInitBounds));
+  ASSERT_TRUE(window);
+
+  // Assert the window is placed at the specified bounds, ignoring the display
+  // for new windows.
+  EXPECT_EQ(kInitBounds, window->GetBoundsInDIP());
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
                          WaylandWindowTest,
                          Values(wl::ServerConfig{}));
-
+INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
+                         MultiDisplayWaylandWindowTest,
+                         Values(wl::ServerConfig{}));
 #else
 INSTANTIATE_TEST_SUITE_P(
     XdgVersionStableTestWithAuraShell,
     WaylandWindowTest,
+    Values(wl::ServerConfig{
+        .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
+INSTANTIATE_TEST_SUITE_P(
+    XdgVersionStableTestWithAuraShell,
+    MultiDisplayWaylandWindowTest,
     Values(wl::ServerConfig{
         .enable_aura_shell = wl::EnableAuraShellProtocol::kEnabled}));
 #endif
