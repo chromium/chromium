@@ -1311,7 +1311,9 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsA11yPageTtsVoiceSubpage) {
   RunSettingsTest("os_a11y_page/tts_voice_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsAboutPage_AllBuilds) {
+// TODO(crbug.com/336428443): Flaky for OsSettingsRevampWayfindingDisabled.
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       DISABLED_OsAboutPage_AllBuilds) {
   RunSettingsTest("os_about_page/os_about_page_test.js",
                   "runMochaSuite('<os-about-page> AllBuilds')");
 }
