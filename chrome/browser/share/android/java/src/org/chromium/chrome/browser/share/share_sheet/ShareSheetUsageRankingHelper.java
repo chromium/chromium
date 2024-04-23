@@ -18,6 +18,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper;
 import org.chromium.chrome.browser.share.ShareHelper;
+import org.chromium.chrome.browser.share.ShareMetricsUtils.ShareCustomAction;
 import org.chromium.chrome.browser.share.ShareRankingBridge;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
@@ -279,6 +280,7 @@ public class ShareSheetUsageRankingHelper {
                 /* accessibilityDescription= */ null,
                 (shareParams) -> {
                     ShareSheetCoordinator.recordShareMetrics(
+                            ShareCustomAction.INVALID,
                             "SharingHubAndroid.MoreSelected",
                             mLinkGenerationStatusForMetrics,
                             mLinkToggleMetricsDetails,

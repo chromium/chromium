@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeProvidedSharingOptionsProviderBase;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
+import org.chromium.chrome.browser.share.ShareMetricsUtils.ShareCustomAction;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
@@ -38,8 +39,6 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
     // ComponentName used for Chrome share options in ShareParams.TargetChosenCallback
     public static final ComponentName CHROME_PROVIDED_FEATURE_COMPONENT_NAME =
             new ComponentName("CHROME", "CHROME_FEATURE");
-    private static final String USER_ACTION_LONG_SCREENSHOT_SELECTED =
-            "SharingHubAndroid.LongScreenshotSelected";
 
     private final ShareSheetBottomSheetContent mBottomSheetContent;
     private final long mShareStartTime;
@@ -138,6 +137,7 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
                 option.iconContentDescription,
                 (view) -> {
                     ShareSheetCoordinator.recordShareMetrics(
+                            option.shareActionType,
                             option.featureNameForMetrics,
                             mLinkGenerationStatusForMetrics,
                             mLinkToggleMetricsDetails,
@@ -164,6 +164,7 @@ public class ChromeProvidedSharingOptionsProvider extends ChromeProvidedSharingO
                         ContentType.HIGHLIGHTED_TEXT,
                         ContentType.IMAGE)
                 .setIcon(R.drawable.long_screenshot, R.string.sharing_long_screenshot)
+                .setShareActionType(ShareCustomAction.LONG_SCREENSHOT)
                 .setFeatureNameForMetrics(USER_ACTION_LONG_SCREENSHOT_SELECTED)
                 .setDisableForMultiWindow(true)
                 .setOnClickCallback(

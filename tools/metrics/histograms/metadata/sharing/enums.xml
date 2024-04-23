@@ -83,6 +83,21 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<enum name="ShareCustomAction">
+  <int value="0" label="COPY"/>
+  <int value="1" label="COPY_IMAGE"/>
+  <int value="2" label="COPY_TEXT"/>
+  <int value="3" label="COPY_URL"/>
+  <int value="4" label="LONG_SCREENSHOT"/>
+  <int value="5" label="PRINT"/>
+  <int value="6" label="QR_CODE"/>
+  <int value="7" label="SEND_TAB_TO_SELF"/>
+  <int value="8" label="COPY_HIGHLIGHT_WITHOUT_LINK"/>
+  <int value="9" label="COPY_IMAGE_WITH_LINK"/>
+  <int value="10" label="PAGE_INFO"/>
+  <int value="11" label="REMOVE_PAGE_INFO"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

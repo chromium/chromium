@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.share.share_sheet;
 
 import android.app.Activity;
-import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.text.TextUtils;
 import android.view.View;
@@ -29,6 +28,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper;
+import org.chromium.chrome.browser.share.ShareMetricsUtils;
+import org.chromium.chrome.browser.share.ShareMetricsUtils.ShareCustomAction;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextMetricsHelper;
@@ -50,7 +51,6 @@ import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -392,14 +392,8 @@ public class ShareSheetCoordinator
                 activity, params, contentTypes, saveLastUsed, callback);
     }
 
-    class ResolveInfoPackageNameComparator implements Comparator<ResolveInfo> {
-        @Override
-        public int compare(ResolveInfo a, ResolveInfo b) {
-            return a.activityInfo.packageName.compareTo(b.activityInfo.packageName);
-        }
-    }
-
     static void recordShareMetrics(
+            @ShareCustomAction int shareActionType,
             String featureName,
             @LinkGeneration int linkGenerationStatus,
             LinkToggleMetricsDetails linkToggleMetricsDetails,
@@ -407,6 +401,9 @@ public class ShareSheetCoordinator
             Profile profile) {
         recordShareMetrics(featureName, linkGenerationStatus, linkToggleMetricsDetails, profile);
         recordTimeToShare(shareStartTime);
+        if (shareActionType != ShareCustomAction.INVALID) {
+            ShareMetricsUtils.recordShareUserAction(shareActionType, shareStartTime);
+        }
     }
 
     private static void recordSharedHighlightingUsage(Profile profile) {

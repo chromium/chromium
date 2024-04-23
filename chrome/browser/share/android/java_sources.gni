@@ -10,6 +10,7 @@ share_java_sources = [
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/ChromeProvidedSharingOptionsProviderBase.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/SaveBitmapDelegate.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/ShareContentTypeHelper.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/ShareMetricsUtils.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/android_share_sheet/AndroidCustomActionProvider.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/android_share_sheet/AndroidShareSheetController.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextBridge.java",

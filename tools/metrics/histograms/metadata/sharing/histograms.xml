@@ -472,6 +472,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sharing.SharingHubAndroid.CustomAction"
+    enum="ShareCustomAction" expires_after="2024-10-22">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Records the custom action when the user clicked one on the share sheet.
+    Recorded for both Chrome's sharing hub and Android's share sheet on U+.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.SharingHubAndroid.Opened" enum="ShareOrigin"
     expires_after="2024-09-29">
   <owner>wenyufu@chromium.org</owner>
@@ -491,6 +501,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the index of the third party app selected from the bottom row of the
     sharing hub.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SharingHubAndroid.TimeToCustomAction" units="ms"
+    expires_after="2024-10-22">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Records the amount of time taken for the user to select a custom action
+    after initiating a share. Can record multiple times if the custom action
+    redirect the user back to the share sheet, but each time only record the
+    duration between share sheet shown until user click an action. Recorded for
+    both Chrome's sharing hub and Android's share sheet on U+.
   </summary>
 </histogram>
 

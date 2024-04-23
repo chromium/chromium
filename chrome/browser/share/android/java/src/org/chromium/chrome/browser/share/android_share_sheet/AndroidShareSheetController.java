@@ -51,6 +51,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<Profile> mProfileSupplier;
     private final Callback<Tab> mPrintCallback;
+    private long mShareStartTime;
 
     private @Nullable LinkToTextCoordinator mLinkToTextCoordinator;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
@@ -122,6 +123,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
     @Override
     public void showThirdPartyShareSheet(
             ShareParams params, ChromeShareExtras chromeShareExtras, long shareStartTime) {
+        mShareStartTime = shareStartTime;
         // When using Android share sheet, always have the custom actions available for the share
         // sheet. This is a workaround of share sheet triggered by share custom actions e.g. long
         // screenshot.
@@ -131,6 +133,7 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
     @Override
     public void showShareSheet(
             ShareParams params, ChromeShareExtras chromeShareExtras, long shareStartTime) {
+        mShareStartTime = shareStartTime;
         showShareSheetWithCustomAction(params, chromeShareExtras, true);
     }
 
@@ -169,7 +172,8 @@ public class AndroidShareSheetController implements ChromeOptionShareCallback {
                             chromeShareExtras,
                             isInMultiWindow,
                             mLinkToTextCoordinator,
-                            mDeviceLockActivityLauncher);
+                            mDeviceLockActivityLauncher,
+                            mShareStartTime);
             if (actionProvider.getCustomActions().size() > 0) {
                 provider = actionProvider;
             }

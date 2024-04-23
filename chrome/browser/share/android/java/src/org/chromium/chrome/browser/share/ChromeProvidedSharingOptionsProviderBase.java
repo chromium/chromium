@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.ShareContentTypeHelper.ContentType;
+import org.chromium.chrome.browser.share.ShareMetricsUtils.ShareCustomAction;
 import org.chromium.chrome.browser.share.qrcode.QrCodeCoordinator;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
@@ -52,6 +53,8 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
             "SharingHubAndroid.SendTabToSelfSelected";
     private static final String USER_ACTION_QR_CODE_SELECTED = "SharingHubAndroid.QRCodeSelected";
     private static final String USER_ACTION_PRINT_SELECTED = "SharingHubAndroid.PrintSelected";
+    protected static final String USER_ACTION_LONG_SCREENSHOT_SELECTED =
+            "SharingHubAndroid.LongScreenshotSelected";
 
     protected final Activity mActivity;
     protected final WindowAndroid mWindowAndroid;
@@ -115,6 +118,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
 
     /** Data structure carries details on how a first party option should be used. */
     protected static class FirstPartyOption {
+        public final @ShareCustomAction int shareActionType;
         public final int icon;
         public final int iconLabel;
         public final String iconContentDescription;
@@ -126,6 +130,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         public final boolean disableForMultiWindow;
 
         private FirstPartyOption(
+                @ShareCustomAction int shareActionType,
                 int icon,
                 int iconLabel,
                 String iconContentDescription,
@@ -135,6 +140,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                 Collection<Integer> contentTypesToDisableFor,
                 Collection<Integer> detailedContentTypesToDisableFor,
                 boolean disableForMultiWindow) {
+            this.shareActionType = shareActionType;
             this.icon = icon;
             this.iconLabel = iconLabel;
             this.iconContentDescription = iconContentDescription;
@@ -151,6 +157,8 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         private int mIcon;
         private int mIconLabel;
         private String mIconContentDescription;
+        // Use a default invalid enum, forcing client to set it.
+        private @ShareCustomAction int mShareActionType = ShareCustomAction.NUM_ENTRIES;
         private String mFeatureNameForMetrics;
         private Callback<View> mOnClickCallback;
         private boolean mDisableForMultiWindow;
@@ -162,6 +170,11 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
             mContentTypesInBuilder = contentTypes;
             mContentTypesToDisableFor = new Integer[] {};
             mDetailedContentTypesToDisableFor = new Integer[] {};
+        }
+
+        public FirstPartyOptionBuilder setShareActionType(@ShareCustomAction int shareActionType) {
+            mShareActionType = shareActionType;
+            return this;
         }
 
         public FirstPartyOptionBuilder setIcon(int icon, int iconLabel) {
@@ -203,8 +216,10 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         }
 
         public FirstPartyOption build() {
+            assert mShareActionType != ShareCustomAction.NUM_ENTRIES : "ShareActionType not set.";
             assert mOnClickCallback != null;
             return new FirstPartyOption(
+                    mShareActionType,
                     mIcon,
                     mIconLabel,
                     mIconContentDescription,
@@ -309,6 +324,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                         ContentType.LINK_PAGE_VISIBLE, ContentType.LINK_PAGE_NOT_VISIBLE)
                 .setContentTypesToDisableFor(ContentType.LINK_AND_TEXT, ContentType.IMAGE_AND_LINK)
                 .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy_url)
+                .setShareActionType(ShareCustomAction.COPY_URL)
                 .setFeatureNameForMetrics(USER_ACTION_COPY_URL_SELECTED)
                 .setOnClickCallback(
                         (view) -> {
@@ -327,6 +343,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     protected FirstPartyOption createCopyImageFirstPartyOption() {
         return new FirstPartyOptionBuilder(ContentType.IMAGE, ContentType.IMAGE_AND_LINK)
                 .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy_image)
+                .setShareActionType(ShareCustomAction.COPY_IMAGE)
                 .setFeatureNameForMetrics(USER_ACTION_COPY_IMAGE_SELECTED)
                 .setOnClickCallback(
                         (view) -> {
@@ -342,6 +359,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     private FirstPartyOption createCopyFirstPartyOption() {
         return new FirstPartyOptionBuilder(ContentType.LINK_AND_TEXT)
                 .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy)
+                .setShareActionType(ShareCustomAction.COPY)
                 .setFeatureNameForMetrics(USER_ACTION_COPY_SELECTED)
                 .setOnClickCallback(
                         (view) -> {
@@ -358,6 +376,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
         return new FirstPartyOptionBuilder(ContentType.TEXT, ContentType.HIGHLIGHTED_TEXT)
                 .setContentTypesToDisableFor(ContentType.LINK_AND_TEXT)
                 .setIcon(R.drawable.ic_content_copy_black, R.string.sharing_copy_text)
+                .setShareActionType(ShareCustomAction.COPY_TEXT)
                 .setFeatureNameForMetrics(USER_ACTION_COPY_TEXT_SELECTED)
                 .setOnClickCallback(
                         (view) -> {
@@ -377,6 +396,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                         ContentType.IMAGE)
                 .setDetailedContentTypesToDisableFor(DetailedContentType.SCREENSHOT)
                 .setIcon(R.drawable.send_tab, R.string.sharing_send_tab_to_self)
+                .setShareActionType(ShareCustomAction.SEND_TAB_TO_SELF)
                 .setFeatureNameForMetrics(USER_ACTION_SEND_TAB_TO_SELF_SELECTED)
                 .setOnClickCallback(
                         (view) -> {
@@ -401,6 +421,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                         ContentType.IMAGE)
                 .setDetailedContentTypesToDisableFor(DetailedContentType.SCREENSHOT)
                 .setIcon(R.drawable.qr_code, R.string.qr_code_share_icon_label)
+                .setShareActionType(ShareCustomAction.QR_CODE)
                 .setFeatureNameForMetrics(USER_ACTION_QR_CODE_SELECTED)
                 .setOnClickCallback(
                         (view) -> {
@@ -415,6 +436,7 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
     private FirstPartyOption createPrintingFirstPartyOption() {
         return new FirstPartyOptionBuilder(ContentType.LINK_PAGE_VISIBLE)
                 .setIcon(R.drawable.sharing_print, R.string.print_share_activity_title)
+                .setShareActionType(ShareCustomAction.PRINT)
                 .setFeatureNameForMetrics(USER_ACTION_PRINT_SELECTED)
                 .setOnClickCallback(
                         (view) -> {
