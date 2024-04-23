@@ -287,8 +287,8 @@ void DocumentLoadTiming::MarkCommitNavigationEnd() {
 
 void DocumentLoadTiming::SetActivationStart(base::TimeTicks activation_start) {
   activation_start_ = activation_start;
-  TRACE_EVENT_MARK_WITH_TIMESTAMP1("blink.user_timing", "activationtart",
-                                   activation_start, "frame",
+  TRACE_EVENT_MARK_WITH_TIMESTAMP1("blink.user_timing", "activationStart",
+                                   activation_start_, "frame",
                                    GetFrameIdForTracing(GetFrame()));
   NotifyDocumentTimingChanged();
 }
