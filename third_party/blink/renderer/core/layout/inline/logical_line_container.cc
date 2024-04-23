@@ -18,7 +18,6 @@ void LogicalLineContainer::Trace(Visitor* visitor) const {
 
 void LogicalLineContainer::Clear() {
   base_line_->clear();
-  annotation_metrics_list_.clear();
   for (auto& line : annotation_line_list_) {
     line->clear();
   }
@@ -27,7 +26,6 @@ void LogicalLineContainer::Clear() {
 
 void LogicalLineContainer::Shrink() {
   base_line_->Shrink(0);
-  annotation_metrics_list_.Shrink(0);
   for (auto& line : annotation_line_list_) {
     line->clear();
   }
