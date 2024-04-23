@@ -4,7 +4,6 @@
 
 #include "components/plus_addresses/affiliations/plus_address_affiliation_source_adapter.h"
 
-#include "base/strings/strcat.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -16,7 +15,7 @@ using affiliations::FacetURI;
 
 PlusAddressAffiliationSourceAdapter::PlusAddressAffiliationSourceAdapter(
     PlusAddressService* service)
-    : service_(*service) {}
+    : service_(service) {}
 
 PlusAddressAffiliationSourceAdapter::~PlusAddressAffiliationSourceAdapter() =
     default;
@@ -27,12 +26,8 @@ void PlusAddressAffiliationSourceAdapter::GetFacets(
   std::vector<FacetURI> facets;
   facets.reserve(profiles.size());
   for (const PlusProfile& profile : profiles) {
-    // TODO(b/324553908): Filter only valid facets once the service starts
-    // working with full domains.
-    facets.push_back(FacetURI::FromPotentiallyInvalidSpec(
-        base::StrCat({"https://", profile.facet})));
+    facets.push_back(FacetURI::FromCanonicalSpec(profile.facet));
   }
-
   std::move(response_callback).Run(std::move(facets));
 }
 
@@ -40,7 +35,40 @@ void PlusAddressAffiliationSourceAdapter::StartObserving(
     AffiliationSource::Observer* observer) {
   CHECK(!observer_);
   observer_ = observer;
-  // TODO(b/324553908): Observe plus addresses changes.
+  service_observation_.Observe(service_.get());
+}
+
+void PlusAddressAffiliationSourceAdapter::OnPlusAddressesChanged(
+    const std::vector<PlusAddressDataChange>& changes) {
+  CHECK(observer_);
+  std::vector<FacetURI> added_facets;
+  std::vector<FacetURI> removed_facets;
+  for (const PlusAddressDataChange& change : changes) {
+    FacetURI facet = FacetURI::FromCanonicalSpec(change.profile().facet);
+    switch (change.type()) {
+      case PlusAddressDataChange::Type::kAdd: {
+        added_facets.push_back(std::move(facet));
+        break;
+      }
+      case PlusAddressDataChange::Type::kRemove: {
+        removed_facets.push_back(std::move(facet));
+        break;
+      }
+    }
+  }
+
+  // When a plus address is updated, `changes` will contain both a kRemove and
+  // kAdd change for that facet. Cached affiliation data should not be deleted
+  // in this case. A simple solution is to call `added` events always before
+  // `removed` -- the trimming logic will detect that there is an active
+  // prefetch and not delete the corresponding data.
+  if (!added_facets.empty()) {
+    observer_->OnFacetsAdded(added_facets);
+  }
+
+  if (!removed_facets.empty()) {
+    observer_->OnFacetsRemoved(removed_facets);
+  }
 }
 
 }  // namespace plus_addresses

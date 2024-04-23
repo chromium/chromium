@@ -5,19 +5,19 @@
 #ifndef COMPONENTS_PLUS_ADDRESSES_AFFILIATIONS_PLUS_ADDRESS_AFFILIATION_SOURCE_ADAPTER_H_
 #define COMPONENTS_PLUS_ADDRESSES_AFFILIATIONS_PLUS_ADDRESS_AFFILIATION_SOURCE_ADAPTER_H_
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/affiliations/core/browser/affiliation_source.h"
+#include "components/plus_addresses/plus_address_service.h"
 
 namespace plus_addresses {
-
-class PlusAddressService;
 
 // This class represents a source for plus addresses related data requiring
 // affiliation updates. It utilizes PlusAddressService's information and
 // monitors changes to notify observers.
 class PlusAddressAffiliationSourceAdapter
-    : public affiliations::AffiliationSource {
+    : public affiliations::AffiliationSource,
+      public PlusAddressService::Observer {
  public:
   explicit PlusAddressAffiliationSourceAdapter(PlusAddressService* service);
   ~PlusAddressAffiliationSourceAdapter() override;
@@ -26,9 +26,17 @@ class PlusAddressAffiliationSourceAdapter
   void GetFacets(AffiliationSource::ResultCallback response_callback) override;
   void StartObserving(AffiliationSource::Observer* observer) override;
 
+  // PlusAddressService::Observer:
+  void OnPlusAddressesChanged(
+      const std::vector<PlusAddressDataChange>& changes) override;
+
  private:
-  const raw_ref<PlusAddressService> service_;
+  // The observer (i.e. the AffiliationsService) owns and outlives the adapter.
   raw_ptr<AffiliationSource::Observer> observer_ = nullptr;
+
+  const raw_ptr<PlusAddressService> service_;
+  base::ScopedObservation<PlusAddressService, PlusAddressService::Observer>
+      service_observation_{this};
 };
 
 }  // namespace plus_addresses
