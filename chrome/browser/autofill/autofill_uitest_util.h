@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_AUTOFILL_AUTOFILL_UITEST_UTIL_H_
 
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 class Profile;
@@ -32,10 +33,11 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile);
 // and prepares ContentAutofillDriver's and AutofillDriverRouter's state to
 // process events such as `AutofillDriver::PopupHidden()` triggered by the
 // popup.
-void GenerateTestAutofillPopup(ContentAutofillDriver& driver,
-                               Profile* profile,
-                               gfx::RectF element_bounds = gfx::RectF(100.0f,
-                                                                      100.0f));
+[[nodiscard]] testing::AssertionResult GenerateTestAutofillPopup(
+    ContentAutofillDriver& driver,
+    Profile* profile,
+    bool expect_popup_to_be_shown,
+    gfx::RectF element_bounds = gfx::RectF(100.0f, 100.0f));
 
 }  // namespace autofill
 

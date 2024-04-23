@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -20,6 +21,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
+#include "components/autofill/core/browser/test_autofill_external_delegate.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -71,9 +73,11 @@ void WaitForPersonalDataManagerToBeLoaded(Profile* base_profile) {
     WaitForPersonalDataChange(base_profile);
 }
 
-void GenerateTestAutofillPopup(ContentAutofillDriver& driver,
-                               Profile* profile,
-                               gfx::RectF element_bounds) {
+[[nodiscard]] testing::AssertionResult GenerateTestAutofillPopup(
+    ContentAutofillDriver& driver,
+    Profile* profile,
+    bool expect_popup_to_be_shown,
+    gfx::RectF element_bounds) {
   FormData form;
   form.url = GURL("https://foo.com/bar");
   form.fields = {test::CreateTestFormField(
@@ -98,8 +102,18 @@ void GenerateTestAutofillPopup(ContentAutofillDriver& driver,
   driver.renderer_events().AskForValuesToFill(
       form, form.fields.front(), element_bounds,
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
-  ASSERT_TRUE(waiter.Wait());
-  ASSERT_EQ(1u, driver.GetAutofillManager().form_structures().size());
+  testing::AssertionResult waiter_assertion_result = waiter.Wait();
+  if (!waiter_assertion_result) {
+    return waiter_assertion_result
+           << " " << __func__
+           << "(): TestAutofillManagerWaiter assertion failed";
+  }
+  if (driver.GetAutofillManager().form_structures().size() != 1u) {
+    return testing::AssertionFailure()
+           << " " << __func__
+           << "(): driver.GetAutofillManager().form_structures().size() != 1u";
+  }
+
   // `form.host_frame` and `form.url` have only been set by
   // ContentAutofillDriver::AskForValuesToFill().
   form = driver.GetAutofillManager()
@@ -108,12 +122,34 @@ void GenerateTestAutofillPopup(ContentAutofillDriver& driver,
              ->second->ToFormData();
 
   std::vector<Suggestion> suggestions = {Suggestion(u"John Doe")};
-  test_api(static_cast<BrowserAutofillManager&>(driver.GetAutofillManager()))
-      .external_delegate()
-      ->OnSuggestionsReturned(form.fields.front().global_id(), suggestions);
+  TestAutofillExternalDelegate* delegate =
+      static_cast<TestAutofillExternalDelegate*>(
+          test_api(
+              static_cast<BrowserAutofillManager&>(driver.GetAutofillManager()))
+              .external_delegate());
+
+  delegate->OnSuggestionsReturned(form.fields.front().global_id(), suggestions);
 
   // Showing the Autofill Popup is an asynchronous task.
-  base::RunLoop().RunUntilIdle();
+  if (expect_popup_to_be_shown) {
+    // `base::RunLoop().RunUntilIdle()` can cause flakiness when waiting for the
+    // popup to be shown.
+    if (!base::test::RunUntil([&]() { return !delegate->popup_hidden(); })) {
+      return testing::AssertionFailure()
+             << " " << __func__ << "(): Showing the autofill popup timed out.";
+    }
+  } else {
+    // `base::test::RunUntil()` cannot be used to wait for something not to
+    // happen (i.e. for the popup not to be shown).
+    base::RunLoop().RunUntilIdle();
+    if (!delegate->popup_hidden()) {
+      return testing::AssertionFailure()
+             << " " << __func__
+             << "(): Expected the autofill popup to be hidden, but it is not.";
+    }
+  }
+
+  return testing::AssertionSuccess();
 }
 
 }  // namespace autofill
