@@ -147,6 +147,7 @@ NSString* const kContextualPanelEntrypointLabelIdentifier =
 - (UIView*)configuredEntrypointItemsWrapper {
   UIView* view = [[UIView alloc] init];
   view.translatesAutoresizingMaskIntoConstraints = NO;
+  view.userInteractionEnabled = NO;
   view.clipsToBounds = YES;
 
   return view;
