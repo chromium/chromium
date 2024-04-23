@@ -403,7 +403,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': '5014bed93f8b7103e09ce5824587491e370f8037',
+  'devtools_frontend_revision': '6045b7062d158a4b198066e768a2e9e4154bae41',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1198,7 +1198,7 @@ deps = {
     Var('chromium_git') + '/devtools/devtools-frontend' + '@' + Var('devtools_frontend_revision'),
 
   'src/third_party/devtools-frontend-internal': {
-      'url': Var('chrome_git') + '/devtools/devtools-internal.git' + '@' + 'e88d2c394fb2fe5ededb6b5a11ee4af73af66fe0',
+      'url': Var('chrome_git') + '/devtools/devtools-internal.git' + '@' + 'c16f31247a96abd3dcc582e25abf630342586abc',
     'condition': 'checkout_src_internal',
   },
 
@@ -1851,7 +1851,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + '11efd3b4ad23b66ed7aa88e84193833dbe5a7150',
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + '89e26b72494b97b1a50e5c960147550896ed14af',
+    Var('webrtc_git') + '/src.git' + '@' + '8505a9838ea91c66c96c173d30cd66f9dbcc7548',
 
   # Wuffs' canonical repository is at github.com/google/wuffs, but we use
   # Skia's mirror of Wuffs, the same as in upstream Skia's DEPS file.
