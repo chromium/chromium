@@ -200,6 +200,7 @@ void DemuxerManager::FreeResourcesAfterMediaThreadWait(base::OnceClosure cb) {
   // The demuxer and data source must be freed on the main thread, but we have
   // to make sure nothing is using them on the media thread first. So we have
   // to post to the media thread and back.
+  data_source_info_ = nullptr;
   media_task_runner_->PostTask(
       FROM_HERE,
       base::BindPostTaskToCurrentDefault(base::BindOnce(
