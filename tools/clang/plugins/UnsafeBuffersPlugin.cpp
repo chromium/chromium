@@ -216,8 +216,20 @@ class UnsafeBuffersDiagnosticConsumer : public clang::DiagnosticConsumer {
       return cache_it->second;
     }
 
-    // Drop the ../ prefixes.
     llvm::StringRef cmp_filename = filename;
+
+    // If the path is absolute, drop the prefix up to the current working
+    // directory. Some mac machines are passing absolute paths to source files,
+    // but it's the absolute path to the build directory (the current working
+    // directory here) then a relative path from there.
+    llvm::SmallVector<char> cwd;
+    if (llvm::sys::fs::current_path(cwd).value() == 0) {
+      if (cmp_filename.consume_front(llvm::StringRef(cwd.data(), cwd.size()))) {
+        cmp_filename.consume_front("/");
+      }
+    }
+
+    // Drop the ../ prefixes.
     while (cmp_filename.consume_front("./") ||
            cmp_filename.consume_front("../"))
       ;
