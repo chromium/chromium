@@ -27,5 +27,5 @@
 
 [
     Exposed=(Window,Worker)
-] interface WebGLRenderbuffer {
+] interface WebGLRenderbuffer : WebGLObject {
 };

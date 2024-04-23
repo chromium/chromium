@@ -6,5 +6,5 @@
 
 [
     LegacyNoInterfaceObject
-] interface WebGLTimerQueryEXT {
+] interface WebGLTimerQueryEXT : WebGLObject {
 };
