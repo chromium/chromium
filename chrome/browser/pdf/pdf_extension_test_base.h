@@ -112,7 +112,7 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   pdf::TestPdfViewerStreamManager* GetTestPdfViewerStreamManager(
       content::WebContents* contents);
 
-  void CreateTestPdfViewerStreamManager();
+  void CreateTestPdfViewerStreamManager(content::WebContents* contents);
 
   content::RenderFrameHost* GetOnlyPdfExtensionHostEnsureValid();
 

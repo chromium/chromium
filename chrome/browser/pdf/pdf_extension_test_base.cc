@@ -255,10 +255,10 @@ PDFExtensionTestBase::GetTestPdfViewerStreamManager(
       ->GetTestPdfViewerStreamManager(contents);
 }
 
-void PDFExtensionTestBase::CreateTestPdfViewerStreamManager() {
+void PDFExtensionTestBase::CreateTestPdfViewerStreamManager(
+    content::WebContents* contents) {
   absl::get<std::unique_ptr<pdf::TestPdfViewerStreamManagerFactory>>(factory_)
-      ->CreatePdfViewerStreamManager(
-          browser()->tab_strip_model()->GetActiveWebContents());
+      ->CreatePdfViewerStreamManager(contents);
 }
 
 content::RenderFrameHost*
