@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ash/chromebox_for_meetings/hotlog2/log_source.h"
 
+#include <sys/stat.h>
+
 #include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 
 namespace ash::cfm {
@@ -24,6 +27,8 @@ LogSource::LogSource(const std::string& filepath, base::TimeDelta poll_rate)
     return;
   }
 
+  // Store this now so we can detect rotations later.
+  last_known_inode_ = GetCurrentFileInode();
   StartPollTimer();
 }
 
@@ -40,6 +45,15 @@ std::vector<std::string> LogSource::GetNextData() {
     return {};
   }
 
+  // If the file rotated from under us, reset it to start following the
+  // new file. TODO(b/320996557): this might drop newest logs from old
+  // rotated file.
+  if (DidFileRotate()) {
+    VLOG(4) << "Detected rotation in file '" << log_file_.GetFilePath() << "'";
+    log_file_.CloseStream();
+    log_file_.OpenAtOffset(0);
+  }
+
   // ifstreams for files that are currently being written to will not
   // yield newly-written lines unless the file is explicitly reset.
   // If we've hit an EOF, refresh the stream (close & re-open).
@@ -49,6 +63,31 @@ std::vector<std::string> LogSource::GetNextData() {
   }
 
   return log_file_.RetrieveNextLogs(kFileBatchSize);
+}
+
+int LogSource::GetCurrentFileInode() {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  struct stat file_info;
+  const std::string& filepath = log_file_.GetFilePath();
+
+  if (stat(filepath.c_str(), &file_info) != 0) {
+    LOG(ERROR) << "Unable to get inode of " << filepath;
+    return kInvalidFileInode;
+  }
+
+  return file_info.st_ino;
+}
+
+bool LogSource::DidFileRotate() {
+  int curr_inode = GetCurrentFileInode();
+
+  if (curr_inode != kInvalidFileInode && last_known_inode_ != curr_inode) {
+    last_known_inode_ = curr_inode;
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace ash::cfm

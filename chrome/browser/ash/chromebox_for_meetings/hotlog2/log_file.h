@@ -24,6 +24,7 @@ class LogFile {
 
   const std::string& GetFilePath() const;
   bool OpenAtOffset(std::streampos offset);
+  void CloseStream();
   bool IsInFailState() const;
   bool IsAtEOF() const;
   bool Refresh();
@@ -35,6 +36,7 @@ class LogFile {
   const base::FilePath filepath_;
   std::ifstream file_stream_;
 };
+
 }  // namespace ash::cfm
 
 #endif  // CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_HOTLOG2_LOG_FILE_H_

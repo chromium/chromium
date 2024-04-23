@@ -16,7 +16,7 @@ namespace ash::cfm {
 LogFile::LogFile(const std::string& filepath) : filepath_(filepath) {}
 
 LogFile::~LogFile() {
-  file_stream_.close();
+  CloseStream();
 }
 
 const std::string& LogFile::GetFilePath() const {
@@ -47,6 +47,12 @@ bool LogFile::OpenAtOffset(std::streampos offset) {
   }
 
   return true;
+}
+
+void LogFile::CloseStream() {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  file_stream_.close();
 }
 
 bool LogFile::IsInFailState() const {
@@ -82,7 +88,7 @@ bool LogFile::Refresh() {
                                                 base::BlockingType::MAY_BLOCK);
 
   std::streampos curr_pos = GetCurrentOffset();
-  file_stream_.close();
+  CloseStream();
   return OpenAtOffset(curr_pos);
 }
 

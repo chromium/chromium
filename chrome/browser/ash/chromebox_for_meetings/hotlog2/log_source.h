@@ -12,6 +12,10 @@
 
 namespace ash::cfm {
 
+// Dummy value for when a call to stat() fails to obtain
+// a valid inode. Unlikely to be used, but be defensive.
+inline constexpr int kInvalidFileInode = -1;
+
 // This class tracks data from a single log file.
 class LogSource : public LocalDataSource {
  public:
@@ -25,12 +29,19 @@ class LogSource : public LocalDataSource {
   const std::string& GetDisplayName() override;
   std::vector<std::string> GetNextData() override;
 
+  int GetCurrentFileInode();
+  bool DidFileRotate();
+
   std::string filepath_;
 
   // Contains a handle to the log file on disk
   // TODO(b/320996557): this should be a collection of log files
   // after adding rotation support.
   LogFile log_file_;
+
+  // Keep track of the last-known inode to detect when the underlying
+  // file has rotated. Inodes will not change when the file is renamed.
+  int last_known_inode_ = kInvalidFileInode;
 
   // Must be the last class member.
   base::WeakPtrFactory<LogSource> weak_ptr_factory_{this};
