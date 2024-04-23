@@ -769,7 +769,13 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DesktopPWAsOpenLinksInApp) {
 
 // Tests that desktop PWAs open links in a new tab at the end of the tabstrip of
 // the last active browser.
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, DesktopPWAsOpenLinksInNewTab) {
+// TODO(crbug.com/336416356): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DesktopPWAsOpenLinksInNewTab DISABLED_DesktopPWAsOpenLinksInNewTab
+#else
+#define MAYBE_DesktopPWAsOpenLinksInNewTab DesktopPWAsOpenLinksInNewTab
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MAYBE_DesktopPWAsOpenLinksInNewTab) {
   const GURL app_url = GetSecureAppURL();
   const webapps::AppId app_id = InstallPWA(app_url);
   Browser* const app_browser = LaunchWebAppBrowserAndWait(app_id);
