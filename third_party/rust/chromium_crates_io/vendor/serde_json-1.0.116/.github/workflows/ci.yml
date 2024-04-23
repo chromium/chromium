@@ -89,8 +89,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@miri
       - run: cargo miri setup
-      - run: cargo miri test --all-targets  # exclude doctests https://github.com/rust-lang/miri/issues/3404
-      - run: cargo miri test --features preserve_order,float_roundtrip,arbitrary_precision,raw_value --all-targets
+      - run: cargo miri test
+      - run: cargo miri test --features preserve_order,float_roundtrip,arbitrary_precision,raw_value
 
   clippy:
     name: Clippy

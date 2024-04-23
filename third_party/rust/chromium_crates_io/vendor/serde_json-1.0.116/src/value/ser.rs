@@ -29,6 +29,8 @@ impl Serialize for Value {
                 }
                 map.end()
             }
+            #[cfg(not(any(feature = "std", feature = "alloc")))]
+            Value::Object(_) => unreachable!(),
         }
     }
 }

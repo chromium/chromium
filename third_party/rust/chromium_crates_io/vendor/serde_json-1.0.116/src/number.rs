@@ -82,7 +82,7 @@ impl Number {
     /// ```
     /// # use serde_json::json;
     /// #
-    /// let big = i64::max_value() as u64 + 10;
+    /// let big = i64::MAX as u64 + 10;
     /// let v = json!({ "a": 64, "b": big, "c": 256.0 });
     ///
     /// assert!(v["a"].is_i64());
@@ -97,7 +97,7 @@ impl Number {
     pub fn is_i64(&self) -> bool {
         #[cfg(not(feature = "arbitrary_precision"))]
         match self.n {
-            N::PosInt(v) => v <= i64::max_value() as u64,
+            N::PosInt(v) => v <= i64::MAX as u64,
             N::NegInt(_) => true,
             N::Float(_) => false,
         }
@@ -177,7 +177,7 @@ impl Number {
     /// ```
     /// # use serde_json::json;
     /// #
-    /// let big = i64::max_value() as u64 + 10;
+    /// let big = i64::MAX as u64 + 10;
     /// let v = json!({ "a": 64, "b": big, "c": 256.0 });
     ///
     /// assert_eq!(v["a"].as_i64(), Some(64));
@@ -189,7 +189,7 @@ impl Number {
         #[cfg(not(feature = "arbitrary_precision"))]
         match self.n {
             N::PosInt(n) => {
-                if n <= i64::max_value() as u64 {
+                if n <= i64::MAX as u64 {
                     Some(n as i64)
                 } else {
                     None

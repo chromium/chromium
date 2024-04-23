@@ -1045,6 +1045,12 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.114 -> 1.0.115"
 
+[[audits.serde_json]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.115 -> 1.0.116"
+notes = "No changes that affect safety to run, and no crypto"
+
 [[audits.serde_json_lenient]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]

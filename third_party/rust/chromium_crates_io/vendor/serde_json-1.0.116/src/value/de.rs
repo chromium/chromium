@@ -219,6 +219,8 @@ impl<'de> serde::Deserializer<'de> for Value {
             Value::Number(n) => n.deserialize_any(visitor),
             #[cfg(any(feature = "std", feature = "alloc"))]
             Value::String(v) => visitor.visit_string(v),
+            #[cfg(not(any(feature = "std", feature = "alloc")))]
+            Value::String(_) => unreachable!(),
             Value::Array(v) => visit_array(v, visitor),
             Value::Object(v) => visit_object(v, visitor),
         }
@@ -1339,6 +1341,8 @@ impl<'de> de::Deserializer<'de> for BorrowedCowStrDeserializer<'de> {
             Cow::Borrowed(string) => visitor.visit_borrowed_str(string),
             #[cfg(any(feature = "std", feature = "alloc"))]
             Cow::Owned(string) => visitor.visit_string(string),
+            #[cfg(not(any(feature = "std", feature = "alloc")))]
+            Cow::Owned(_) => unreachable!(),
         }
     }
 

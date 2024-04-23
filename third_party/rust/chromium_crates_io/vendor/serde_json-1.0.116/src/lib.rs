@@ -299,7 +299,7 @@
 //! [macro]: crate::json
 //! [`serde-json-core`]: https://github.com/rust-embedded-community/serde-json-core
 
-#![doc(html_root_url = "https://docs.rs/serde_json/1.0.115")]
+#![doc(html_root_url = "https://docs.rs/serde_json/1.0.116")]
 // Ignored clippy lints
 #![allow(
     clippy::collapsible_else_if,
@@ -363,6 +363,11 @@
 #![no_std]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
+#[cfg(not(any(feature = "std", feature = "alloc")))]
+compile_error! {
+    "serde_json requires that either `std` (default) or `alloc` feature is enabled"
+}
+
 extern crate alloc;
 
 #[cfg(feature = "std")]
@@ -408,8 +413,6 @@ pub mod ser;
 #[cfg(not(feature = "std"))]
 mod ser;
 pub mod value;
-
-mod features_check;
 
 mod io;
 #[cfg(feature = "std")]

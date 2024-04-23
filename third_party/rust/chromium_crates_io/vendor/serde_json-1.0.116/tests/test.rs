@@ -44,8 +44,6 @@ use std::marker::PhantomData;
 use std::mem;
 use std::str::FromStr;
 use std::{f32, f64};
-use std::{i16, i32, i64, i8};
-use std::{u16, u32, u64, u8};
 
 macro_rules! treemap {
     () => {
@@ -158,28 +156,28 @@ fn test_write_f64() {
 
 #[test]
 fn test_encode_nonfinite_float_yields_null() {
-    let v = to_value(::std::f64::NAN.copysign(1.0)).unwrap();
+    let v = to_value(f64::NAN.copysign(1.0)).unwrap();
     assert!(v.is_null());
 
-    let v = to_value(::std::f64::NAN.copysign(-1.0)).unwrap();
+    let v = to_value(f64::NAN.copysign(-1.0)).unwrap();
     assert!(v.is_null());
 
-    let v = to_value(::std::f64::INFINITY).unwrap();
+    let v = to_value(f64::INFINITY).unwrap();
     assert!(v.is_null());
 
-    let v = to_value(-::std::f64::INFINITY).unwrap();
+    let v = to_value(-f64::INFINITY).unwrap();
     assert!(v.is_null());
 
-    let v = to_value(::std::f32::NAN.copysign(1.0)).unwrap();
+    let v = to_value(f32::NAN.copysign(1.0)).unwrap();
     assert!(v.is_null());
 
-    let v = to_value(::std::f32::NAN.copysign(-1.0)).unwrap();
+    let v = to_value(f32::NAN.copysign(-1.0)).unwrap();
     assert!(v.is_null());
 
-    let v = to_value(::std::f32::INFINITY).unwrap();
+    let v = to_value(f32::INFINITY).unwrap();
     assert!(v.is_null());
 
-    let v = to_value(-::std::f32::INFINITY).unwrap();
+    let v = to_value(-f32::INFINITY).unwrap();
     assert!(v.is_null());
 }
 
@@ -2240,8 +2238,8 @@ fn null_invalid_type() {
 
 #[test]
 fn test_integer128() {
-    let signed = &[i128::min_value(), -1, 0, 1, i128::max_value()];
-    let unsigned = &[0, 1, u128::max_value()];
+    let signed = &[i128::MIN, -1, 0, 1, i128::MAX];
+    let unsigned = &[0, 1, u128::MAX];
 
     for integer128 in signed {
         let expected = integer128.to_string();
@@ -2277,8 +2275,8 @@ fn test_integer128() {
 
 #[test]
 fn test_integer128_to_value() {
-    let signed = &[i128::from(i64::min_value()), i128::from(u64::max_value())];
-    let unsigned = &[0, u128::from(u64::max_value())];
+    let signed = &[i128::from(i64::MIN), i128::from(u64::MAX)];
+    let unsigned = &[0, u128::from(u64::MAX)];
 
     for integer128 in signed {
         let expected = integer128.to_string();
@@ -2291,7 +2289,7 @@ fn test_integer128_to_value() {
     }
 
     if !cfg!(feature = "arbitrary_precision") {
-        let err = to_value(u128::from(u64::max_value()) + 1).unwrap_err();
+        let err = to_value(u128::from(u64::MAX) + 1).unwrap_err();
         assert_eq!(err.to_string(), "number out of range");
     }
 }

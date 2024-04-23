@@ -17,38 +17,20 @@ fn scientific_exponent_test() {
     assert_eq!(scientific_exponent(-10, 2, 20), -9);
 
     // Underflow
-    assert_eq!(
-        scientific_exponent(i32::min_value(), 0, 0),
-        i32::min_value()
-    );
-    assert_eq!(
-        scientific_exponent(i32::min_value(), 0, 5),
-        i32::min_value()
-    );
+    assert_eq!(scientific_exponent(i32::MIN, 0, 0), i32::MIN);
+    assert_eq!(scientific_exponent(i32::MIN, 0, 5), i32::MIN);
 
     // Overflow
-    assert_eq!(
-        scientific_exponent(i32::max_value(), 0, 0),
-        i32::max_value() - 1
-    );
-    assert_eq!(
-        scientific_exponent(i32::max_value(), 5, 0),
-        i32::max_value()
-    );
+    assert_eq!(scientific_exponent(i32::MAX, 0, 0), i32::MAX - 1);
+    assert_eq!(scientific_exponent(i32::MAX, 5, 0), i32::MAX);
 }
 
 #[test]
 fn mantissa_exponent_test() {
     assert_eq!(mantissa_exponent(10, 5, 0), 5);
     assert_eq!(mantissa_exponent(0, 5, 0), -5);
-    assert_eq!(
-        mantissa_exponent(i32::max_value(), 5, 0),
-        i32::max_value() - 5
-    );
-    assert_eq!(mantissa_exponent(i32::max_value(), 0, 5), i32::max_value());
-    assert_eq!(mantissa_exponent(i32::min_value(), 5, 0), i32::min_value());
-    assert_eq!(
-        mantissa_exponent(i32::min_value(), 0, 5),
-        i32::min_value() + 5
-    );
+    assert_eq!(mantissa_exponent(i32::MAX, 5, 0), i32::MAX - 5);
+    assert_eq!(mantissa_exponent(i32::MAX, 0, 5), i32::MAX);
+    assert_eq!(mantissa_exponent(i32::MIN, 5, 0), i32::MIN);
+    assert_eq!(mantissa_exponent(i32::MIN, 0, 5), i32::MIN + 5);
 }
