@@ -116,5 +116,16 @@ TEST_F(PickerCategoryViewTest, SetResultsDuringLoadingSetsResults) {
       SizeIs(1));
 }
 
+TEST_F(PickerCategoryViewTest, ShowsNoResultsFoundWhenResultsAreEmpty) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerCategoryView view(kPickerWidth, base::DoNothing(), &asset_fetcher);
+
+  view.SetResults({});
+
+  EXPECT_TRUE(view.search_results_view_for_testing()
+                  .no_results_view_for_testing()
+                  ->GetVisible());
+}
+
 }  // namespace
 }  // namespace ash

@@ -74,8 +74,12 @@ void PickerCategoryView::SetResults(
   skeleton_loader_view_->SetVisible(false);
 
   search_results_view_->ClearSearchResults();
-  for (PickerSearchResultsSection& section : sections) {
-    search_results_view_->AppendSearchResults(std::move(section));
+  if (sections.empty()) {
+    search_results_view_->ShowNoResultsFound();
+  } else {
+    for (PickerSearchResultsSection& section : sections) {
+      search_results_view_->AppendSearchResults(std::move(section));
+    }
   }
   search_results_view_->SetVisible(true);
 }

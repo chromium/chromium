@@ -7228,6 +7228,9 @@ New install
       <message name="IDS_PICKER_SEE_MORE_BUTTON_TEXT" translateable="false" desc="Button text shown in a section when there are more results.">
         See more
       </message>
+      <message name="IDS_PICKER_NO_RESULTS_TEXT" translateable="false" desc="Label of the view showing that there are no search results.">
+        No results found.
+      </message>
 
       <!-- WM -->
       <message name="IDS_ENTER_PIP_A11Y_NOTIFICATION" is_accessibility_with_no_ui="true" desc="Accessibility text read by chromevox when a window starts picture-in-picture mode.">

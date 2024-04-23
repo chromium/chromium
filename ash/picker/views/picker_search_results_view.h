@@ -61,6 +61,8 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   // TODO: b/325840864 - Merge with existing sections if needed.
   void AppendSearchResults(PickerSearchResultsSection section);
 
+  void ShowNoResultsFound();
+
   PickerSectionListView* section_list_view_for_testing() {
     return section_list_view_;
   }
@@ -69,6 +71,8 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
       const {
     return section_views_;
   }
+
+  views::View* no_results_view_for_testing() { return no_results_view_; }
 
  private:
   // Runs `select_search_result_callback_` on `result`. Note that only one
@@ -102,6 +106,9 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   // The currently pseudo focused view, which responds to user actions that
   // trigger `DoPseudoFocusedAction`.
   raw_ptr<views::View> pseudo_focused_view_ = nullptr;
+
+  // A view for when there are no results.
+  raw_ptr<views::View> no_results_view_ = nullptr;
 
   PickerPreviewBubbleController preview_bubble_controller_;
 };

@@ -10,6 +10,7 @@
 #include <variant>
 
 #include "ash/ash_element_identifiers.h"
+#include "ash/bubble/bubble_utils.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/picker_asset_fetcher.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
@@ -26,6 +27,7 @@
 #include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
@@ -50,6 +52,8 @@ namespace {
 // Some of the icons we use do not have a default size, so we need to manually
 // set it.
 constexpr int kIconSize = 20;
+
+constexpr auto kNoResultsViewLabelMargin = gfx::Insets::VH(32, 16);
 
 PickerCategory GetCategoryForEditorData(
     const PickerSearchResult::EditorData& data) {
@@ -77,6 +81,16 @@ PickerSearchResultsView::PickerSearchResultsView(
 
   section_list_view_ =
       AddChildView(std::make_unique<PickerSectionListView>(picker_view_width));
+  no_results_view_ = AddChildView(
+      views::Builder<views::Label>(
+          bubble_utils::CreateLabel(
+              TypographyToken::kCrosBody2,
+              l10n_util::GetStringUTF16(IDS_PICKER_NO_RESULTS_TEXT),
+              cros_tokens::kCrosSysOnSurfaceVariant))
+          .SetVisible(false)
+          .SetProperty(views::kMarginsKey, kNoResultsViewLabelMargin)
+          .SetHorizontalAlignment(gfx::ALIGN_CENTER)
+          .Build());
 }
 
 PickerSearchResultsView::~PickerSearchResultsView() = default;
@@ -197,6 +211,8 @@ void PickerSearchResultsView::ClearSearchResults() {
   pseudo_focused_view_ = nullptr;
   section_views_.clear();
   section_list_view_->ClearSectionList();
+  section_list_view_->SetVisible(true);
+  no_results_view_->SetVisible(false);
 }
 
 void PickerSearchResultsView::AppendSearchResults(
@@ -218,6 +234,11 @@ void PickerSearchResultsView::AppendSearchResults(
   if (pseudo_focused_view_ == nullptr) {
     SetPseudoFocusedView(section_list_view_->GetTopItem());
   }
+}
+
+void PickerSearchResultsView::ShowNoResultsFound() {
+  no_results_view_->SetVisible(true);
+  section_list_view_->SetVisible(false);
 }
 
 void PickerSearchResultsView::SelectSearchResult(

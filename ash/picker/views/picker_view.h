@@ -96,7 +96,10 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   void StartSearch(const std::u16string& query);
 
   // Displays `results` in the search view.
-  void PublishSearchResults(std::vector<PickerSearchResultsSection> results);
+  // If `show_no_results_found` is true and `results` is empty, then a "no
+  // results found" view is shown instead of a blank view.
+  void PublishSearchResults(bool show_no_results_found,
+                            std::vector<PickerSearchResultsSection> results);
 
   // Selects a search result.
   void SelectSearchResult(const PickerSearchResult& result);

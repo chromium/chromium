@@ -236,8 +236,9 @@ void PickerView::StartSearch(const std::u16string& query) {
     published_first_results_ = false;
     delegate_->StartSearch(
         query, selected_category_,
-        base::BindRepeating(&PickerView::PublishSearchResults,
-                            weak_ptr_factory_.GetWeakPtr()));
+        base::BindRepeating(
+            &PickerView::PublishSearchResults, weak_ptr_factory_.GetWeakPtr(),
+            /*show_no_results_found=*/selected_category_.has_value()));
   } else if (selected_category_.has_value()) {
     SetActivePage(category_view_);
   } else {
@@ -247,7 +248,16 @@ void PickerView::StartSearch(const std::u16string& query) {
 }
 
 void PickerView::PublishSearchResults(
+    bool show_no_results_found,
     std::vector<PickerSearchResultsSection> results) {
+  // TODO: b/333826943: This is a hacky way to detect if there are no results.
+  // Design a better API for notifying when the search has completed without any
+  // results.
+  if (show_no_results_found && results.empty()) {
+    search_results_view_->ShowNoResultsFound();
+    return;
+  }
+
   if (!published_first_results_) {
     search_results_view_->ClearSearchResults();
     published_first_results_ = true;

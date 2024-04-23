@@ -370,6 +370,30 @@ TEST_F(PickerSearchResultsViewTest, ClickingSeeMoreLinkCallsCallback) {
   EXPECT_EQ(future.Get(), PickerSectionType::kGifs);
 }
 
+TEST_F(PickerSearchResultsViewTest, ShowNoResultsFoundShowsView) {
+  MockPickerAssetFetcher asset_fetcher;
+  base::test::TestFuture<PickerSectionType> future;
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(),
+                               base::DoNothing(), &asset_fetcher);
+
+  view.ShowNoResultsFound();
+
+  EXPECT_FALSE(view.section_list_view_for_testing()->GetVisible());
+  EXPECT_TRUE(view.no_results_view_for_testing()->GetVisible());
+}
+
+TEST_F(PickerSearchResultsViewTest, ClearSearchResultsShowsSearchResults) {
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSearchResultsView view(kPickerWidth, base::DoNothing(),
+                               base::DoNothing(), &asset_fetcher);
+  view.ShowNoResultsFound();
+
+  view.ClearSearchResults();
+
+  EXPECT_TRUE(view.section_list_view_for_testing()->GetVisible());
+  EXPECT_FALSE(view.no_results_view_for_testing()->GetVisible());
+}
+
 struct PickerSearchResultTestCase {
   std::string test_name;
   PickerSearchResult result;

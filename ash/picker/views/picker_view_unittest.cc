@@ -1041,5 +1041,50 @@ TEST_F(PickerViewTest,
       view->search_field_view_for_testing().textfield_for_testing().HasFocus());
 }
 
+TEST_F(PickerViewTest, AllCategorySearchDoesNotShowNoResultsPage) {
+  base::test::TestFuture<void> future;
+  FakePickerViewDelegate delegate({
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue();
+            callback.Run({});
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_FALSE(GetPickerViewFromWidget(*widget)
+                   ->search_results_view_for_testing()
+                   .no_results_view_for_testing()
+                   ->GetVisible());
+}
+
+TEST_F(PickerViewTest, CategoryOnlySearchShowsNoResultsPage) {
+  base::test::TestFuture<void> future;
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kLinks},
+      .search_function = base::BindLambdaForTesting(
+          [&](FakePickerViewDelegate::SearchResultsCallback callback) {
+            future.SetValue();
+            callback.Run({});
+          }),
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  views::View* category_item_view = GetFirstCategoryItemView(picker_view);
+  ViewDrawnWaiter().Wait(category_item_view);
+  LeftClickOn(category_item_view);
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+
+  ASSERT_TRUE(future.Wait());
+  EXPECT_TRUE(picker_view->search_results_view_for_testing()
+                  .no_results_view_for_testing()
+                  ->GetVisible());
+}
+
 }  // namespace
 }  // namespace ash
