@@ -377,6 +377,7 @@ public class SigninAndHistoryOptInIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/336371182")
     public void testWithNoAccount_instantSignin_requiredHistorySync() {
         CoreAccountInfo accountInfo = AccountManagerTestRule.TEST_ACCOUNT_1;
         mSigninTestRule.setResultForNextAddAccountFlow(Activity.RESULT_OK, accountInfo.getEmail());
