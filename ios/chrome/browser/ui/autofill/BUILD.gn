@@ -278,6 +278,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "autofill_profile_edit_mediator_unittest.mm",
+    "autofill_profile_edit_table_view_controller_unittest.mm",
     "card_unmask_prompt_view_controller_unittest.mm",
   ]
   deps = [
@@ -287,15 +288,19 @@ source_set("unit_tests") {
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/prefs:test_support",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/autofill:constants",
     "//ios/chrome/browser/ui/autofill/cells",
     "//ios/chrome/browser/ui/settings:test_support",
     "//ios/chrome/browser/webdata_services/model",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gmock",
