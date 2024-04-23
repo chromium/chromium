@@ -18,8 +18,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   std::string url_str = data_provider.ConsumeRandomLengthString(800);
   GURL url(url_str);
-  if (!url.is_valid())
-    return 0;
 
   bool has_cross_site_ancestor = data_provider.ConsumeBool();
   CookiePartitionKey::AncestorChainBit ancestor_chain_bit =
