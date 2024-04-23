@@ -79,23 +79,23 @@ suite('cr-tooltip', function() {
     await eventToPromise('animationend', tooltip.$.tooltip);
     assertTrue(tooltip.$.tooltip.hidden);
 
-    // Tooltip shows when mouse enters the target.
+    // Tooltip shows when pointer enters the target.
     parent.dispatchEvent(
-        new CustomEvent('mouseenter', {bubbles: true, composed: true}));
+        new CustomEvent('pointerenter', {bubbles: true, composed: true}));
     await eventToPromise('animationend', tooltip.$.tooltip);
     assertFalse(tooltip.$.tooltip.hidden);
 
-    // Tooltip hides when mouse leaves the target.
+    // Tooltip hides when pointer leaves the target.
     parent.dispatchEvent(
-        new CustomEvent('mouseleave', {bubbles: true, composed: true}));
+        new CustomEvent('pointerleave', {bubbles: true, composed: true}));
     await eventToPromise('animationend', tooltip.$.tooltip);
     assertTrue(tooltip.$.tooltip.hidden);
 
-    // If manual mode is enabled, does not respond to mouse events.
+    // If manual mode is enabled, does not respond to pointer events.
     tooltip.manualMode = true;
     await microtasksFinished();
     parent.dispatchEvent(
-        new CustomEvent('mouseenter', {bubbles: true, composed: true}));
+        new CustomEvent('pointerenter', {bubbles: true, composed: true}));
     await new Promise(resolve => setTimeout(resolve, 1));
     assertTrue(tooltip.$.tooltip.hidden);
   });

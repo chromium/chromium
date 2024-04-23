@@ -299,15 +299,15 @@ export class CrTooltipElement extends CrLitElement {
 
   private addListeners_() {
     if (this.target_) {
-      this.tracker_.add(this.target_, 'mouseenter', () => this.show());
+      this.tracker_.add(this.target_, 'pointerenter', () => this.show());
       this.tracker_.add(this.target_, 'focus', () => this.show());
-      this.tracker_.add(this.target_, 'mouseleave', () => this.hide());
+      this.tracker_.add(this.target_, 'pointerleave', () => this.hide());
       this.tracker_.add(this.target_, 'blur', () => this.hide());
       this.tracker_.add(this.target_, 'click', () => this.hide());
     }
     this.tracker_.add(
         this.$.tooltip, 'animationend', () => this.onAnimationEnd_());
-    this.tracker_.add(this, 'mouseenter', () => this.hide());
+    this.tracker_.add(this, 'pointerenter', () => this.hide());
   }
 
   private removeListeners_() {
