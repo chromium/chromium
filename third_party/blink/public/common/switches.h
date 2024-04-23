@@ -63,7 +63,6 @@ BLINK_COMMON_EXPORT extern const char kShowPaintRects[];
 BLINK_COMMON_EXPORT extern const char kTouchTextSelectionStrategy[];
 BLINK_COMMON_EXPORT extern const char kTouchTextSelectionStrategy_Character[];
 BLINK_COMMON_EXPORT extern const char kTouchTextSelectionStrategy_Direction[];
-BLINK_COMMON_EXPORT extern const char kWebSQLAccess[];
 
 }  // namespace switches
 }  // namespace blink

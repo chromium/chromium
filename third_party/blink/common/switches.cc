@@ -172,8 +172,5 @@ const char kConditionalFocusWindowMs[] = "conditional-focus-window-ms";
 // Specifies the flags passed to JS engine.
 const char kJavaScriptFlags[] = "js-flags";
 
-// Controls whether WebSQL is force enabled.
-const char kWebSQLAccess[] = "web-sql-access";
-
 }  // namespace switches
 }  // namespace blink
