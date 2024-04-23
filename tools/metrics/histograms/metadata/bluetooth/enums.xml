@@ -1362,18 +1362,18 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="HidWarningDialogDisabledBehavior">
-  <int value="0" label="kWarningDialogShown"/>
-  <int value="1" label="kWarningDialogNotShown"/>
+  <int value="0" label="Warning dialog shown"/>
+  <int value="1" label="Warning dialog not shown"/>
 </enum>
 
 <enum name="HidWarningDialogSource">
-  <int value="0" label="kOsSettings"/>
-  <int value="1" label="kQuickSettings"/>
+  <int value="0" label="Warning dialog triggered from OS Settings"/>
+  <int value="1" label="Warning dialog triggered from Quick Settings"/>
 </enum>
 
 <enum name="HidWarningUserAction">
-  <int value="0" label="kKeepOn"/>
-  <int value="1" label="kTurnOff"/>
+  <int value="0" label="Keep Bluetooth on"/>
+  <int value="1" label="Turn off Bluetooth"/>
 </enum>
 
 <enum name="SetNicknameResult">
