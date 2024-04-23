@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] RTCSessionDescription interface object length
   assert_equals: wrong value for RTCSessionDescription.length expected 1 but got 0
 [FAIL] RTCSessionDescription interface: attribute type
@@ -10,6 +10,8 @@ Found 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_true: The prototype object must have a property "url" expected true got false
 [FAIL] RTCPeerConnectionIceEvent interface: new RTCPeerConnectionIceEvent('ice') must inherit property "url" with the proper type
   assert_inherits: property "url" not found in prototype chain
+[FAIL] RTCRtpReceiver interface: new RTCPeerConnection().addTransceiver('audio').receiver must inherit property "jitterBufferTarget" with the proper type
+  assert_equals: expected "number" but got "object"
 [FAIL] RTCIceTransport interface: attribute component
   assert_true: The prototype object must have a property "component" expected true got false
 [FAIL] RTCIceTransport interface: idlTestObjects.iceTransport must inherit property "role" with the proper type

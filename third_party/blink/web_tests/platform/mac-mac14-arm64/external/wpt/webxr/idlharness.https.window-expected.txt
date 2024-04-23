@@ -1,11 +1,13 @@
 This is a testharness.js-based test.
-Found 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 25 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] idl_test setup
   promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'XRWebGLLayer': The provided value is not of type '(WebGL2RenderingContext or WebGLRenderingContext)'."
 [FAIL] WebGLRenderingContext includes WebGLRenderingContextOverloads: member names are unique
   assert_true: member bufferData is unique expected true got false
 [FAIL] XRFrame interface: attribute predictedDisplayTime
   assert_true: The prototype object must have a property "predictedDisplayTime" expected true got false
+[FAIL] XRInputSource interface: attribute skipRendering
+  assert_true: The prototype object must have a property "skipRendering" expected true got false
 [FAIL] XRWebGLLayer interface: attribute fixedFoveation
   assert_true: The prototype object must have a property "fixedFoveation" expected true got false
 [FAIL] XRWebGLLayer must be primary interface of xrWebGLLayer

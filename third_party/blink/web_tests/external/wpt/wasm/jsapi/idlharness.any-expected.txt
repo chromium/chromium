@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Memory interface: operation toFixedLengthBuffer()
+  assert_own_property: interface prototype object missing non-static operation expected property "toFixedLengthBuffer" missing
+[FAIL] Memory interface: operation toResizableBuffer()
+  assert_own_property: interface prototype object missing non-static operation expected property "toResizableBuffer" missing
+[FAIL] Memory interface: [object WebAssembly.Memory] must inherit property "toFixedLengthBuffer()" with the proper type
+  assert_inherits: property "toFixedLengthBuffer" not found in prototype chain
+[FAIL] Memory interface: [object WebAssembly.Memory] must inherit property "toResizableBuffer()" with the proper type
+  assert_inherits: property "toResizableBuffer" not found in prototype chain
+Harness: the test ran to completion.
+

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] SFrameTransform interface: existence and properties of interface object
   assert_own_property: self does not have own property "SFrameTransform" expected property "SFrameTransform" missing
 [FAIL] SFrameTransform interface object length
@@ -34,10 +34,6 @@ Found 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
 [FAIL] SFrameTransformErrorEvent interface: attribute frame
   assert_own_property: self does not have own property "SFrameTransformErrorEvent" expected property "SFrameTransformErrorEvent" missing
-[FAIL] RTCEncodedVideoFrame interface object length
-  assert_equals: wrong value for RTCEncodedVideoFrame.length expected 0 but got 1
-[FAIL] RTCEncodedAudioFrame interface object length
-  assert_equals: wrong value for RTCEncodedAudioFrame.length expected 0 but got 1
 [FAIL] RTCRtpScriptTransform interface: existence and properties of interface object
   assert_own_property: self does not have own property "RTCRtpScriptTransform" expected property "RTCRtpScriptTransform" missing
 [FAIL] RTCRtpScriptTransform interface object length
