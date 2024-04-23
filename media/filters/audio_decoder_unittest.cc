@@ -30,6 +30,7 @@
 #include "media/base/test_helpers.h"
 #include "media/base/timestamp_constants.h"
 #include "media/ffmpeg/ffmpeg_common.h"
+#include "media/ffmpeg/scoped_av_packet.h"
 #include "media/filters/audio_file_reader.h"
 #include "media/filters/ffmpeg_audio_decoder.h"
 #include "media/filters/in_memory_url_protocol.h"
@@ -209,11 +210,11 @@ class AudioDecoderTest
     ASSERT_TRUE(reader_->OpenDemuxerForTesting());
 
     // Load the first packet and check its timestamp.
-    AVPacket packet;
-    ASSERT_TRUE(reader_->ReadPacketForTesting(&packet));
-    EXPECT_EQ(params_.first_packet_pts, packet.pts);
+    auto packet = ScopedAVPacket::Allocate();
+    ASSERT_TRUE(reader_->ReadPacketForTesting(packet.get()));
+    EXPECT_EQ(params_.first_packet_pts, packet->pts);
     start_timestamp_ = ConvertFromTimeBase(
-        reader_->GetAVStreamForTesting()->time_base, packet.pts);
+        reader_->GetAVStreamForTesting()->time_base, packet->pts);
 
     // Seek back to the beginning.
     ASSERT_TRUE(reader_->SeekForTesting(start_timestamp_));
@@ -234,7 +235,7 @@ class AudioDecoderTest
       ChannelLayout channel_layout;
       std::vector<uint8_t> extra_data;
       ASSERT_GT(ADTSStreamParser().ParseFrameHeader(
-                    packet.data, packet.size, nullptr, &sample_rate,
+                    packet->data, packet->size, nullptr, &sample_rate,
                     &channel_layout, nullptr, nullptr, &extra_data),
                 0);
       config.Initialize(AudioCodec::kAAC, kSampleFormatS16, channel_layout,
@@ -244,7 +245,7 @@ class AudioDecoderTest
     }
 #endif
 
-    av_packet_unref(&packet);
+    av_packet_unref(packet.get());
 
     EXPECT_EQ(params_.codec, config.codec());
     EXPECT_EQ(params_.samples_per_second, config.samples_per_second());
@@ -272,27 +273,27 @@ class AudioDecoderTest
   }
 
   void Decode() {
-    AVPacket packet;
-    ASSERT_TRUE(reader_->ReadPacketForTesting(&packet));
+    auto packet = ScopedAVPacket::Allocate();
+    ASSERT_TRUE(reader_->ReadPacketForTesting(packet.get()));
 
     scoped_refptr<DecoderBuffer> buffer =
-        DecoderBuffer::CopyFrom(packet.data, packet.size);
+        DecoderBuffer::CopyFrom(packet->data, packet->size);
     buffer->set_timestamp(ConvertFromTimeBase(
-        reader_->GetAVStreamForTesting()->time_base, packet.pts));
+        reader_->GetAVStreamForTesting()->time_base, packet->pts));
     buffer->set_duration(ConvertFromTimeBase(
-        reader_->GetAVStreamForTesting()->time_base, packet.duration));
-    if (packet.flags & AV_PKT_FLAG_KEY)
+        reader_->GetAVStreamForTesting()->time_base, packet->duration));
+    if (packet->flags & AV_PKT_FLAG_KEY)
       buffer->set_is_key_frame(true);
 
     // Don't set discard padding for Opus, it already has discard behavior set
     // based on the codec delay in the AudioDecoderConfig.
     if (decoder_type_ == AudioDecoderType::kFFmpeg &&
         params_.codec != AudioCodec::kOpus) {
-      SetDiscardPadding(&packet, buffer.get(), params_.samples_per_second);
+      SetDiscardPadding(packet.get(), buffer.get(), params_.samples_per_second);
     }
 
     // DecodeBuffer() shouldn't need the original packet since it uses the copy.
-    av_packet_unref(&packet);
+    av_packet_unref(packet.get());
     DecodeBuffer(std::move(buffer));
   }
 

@@ -15,6 +15,7 @@
 #include "media/ffmpeg/ffmpeg_common.h"
 #include "media/ffmpeg/ffmpeg_decoding_loop.h"
 #include "media/ffmpeg/ffmpeg_deleters.h"
+#include "media/ffmpeg/scoped_av_packet.h"
 #include "media/filters/blocking_url_protocol.h"
 #include "media/filters/ffmpeg_glue.h"
 #include "media/filters/file_data_source.h"
@@ -80,7 +81,7 @@ bool MediaFileChecker::Start(base::TimeDelta check_time) {
   if (!found_streams)
     return false;
 
-  AVPacket packet;
+  auto packet = ScopedAVPacket::Allocate();
   int result = 0;
 
   auto do_nothing_cb = base::BindRepeating([](AVFrame*) { return true; });
@@ -88,19 +89,19 @@ bool MediaFileChecker::Start(base::TimeDelta check_time) {
       base::TimeTicks::Now() +
       std::min(check_time, base::Seconds(kMaxCheckTimeInSeconds));
   do {
-    result = av_read_frame(glue.format_context(), &packet);
+    result = av_read_frame(glue.format_context(), packet.get());
     if (result < 0)
       break;
 
-    auto& decoder = stream_contexts[packet.stream_index];
+    auto& decoder = stream_contexts[packet->stream_index];
     if (decoder.loop) {
-      result = decoder.loop->DecodePacket(&packet, do_nothing_cb) ==
+      result = decoder.loop->DecodePacket(packet.get(), do_nothing_cb) ==
                        FFmpegDecodingLoop::DecodeStatus::kOkay
                    ? 0
                    : -1;
     }
 
-    av_packet_unref(&packet);
+    av_packet_unref(packet.get());
   } while (base::TimeTicks::Now() < deadline && read_ok && result >= 0);
 
   stream_contexts.clear();

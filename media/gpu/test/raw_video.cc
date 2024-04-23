@@ -20,6 +20,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/ffmpeg/ffmpeg_common.h"
+#include "media/ffmpeg/scoped_av_packet.h"
 #include "media/filters/ffmpeg_glue.h"
 #include "media/filters/in_memory_url_protocol.h"
 #include "media/filters/offloading_video_decoder.h"
@@ -317,25 +318,26 @@ std::unique_ptr<RawVideo::VP9Decoder> RawVideo::VP9Decoder::Create(
   auto vp9_data_mmap_file = CreateMemoryMappedFile(vp9_webm_data.size());
   uint8_t* const vp9_data = vp9_data_mmap_file->data();
   size_t vp9_data_size = 0;
-  AVPacket packet = {};
+  auto packet = ScopedAVPacket::Allocate();
   size_t num_packets = 0;
   Vp9Parser vp9_parser(/*parsing_compressed_header=*/false);
   std::vector<size_t> keyframe_indices;
   std::vector<base::span<const uint8_t>> vp9_data_chunks(num_read_frames);
-  while (av_read_frame(glue.format_context(), &packet) >= 0 &&
+  while (av_read_frame(glue.format_context(), packet.get()) >= 0 &&
          num_packets < num_read_frames) {
-    if (base::checked_cast<size_t>(packet.stream_index) ==
+    if (base::checked_cast<size_t>(packet->stream_index) ==
         (*vp9_stream_index)) {
-      LOG_ASSERT(vp9_data_size + packet.size <= vp9_data_mmap_file->length())
+      LOG_ASSERT(vp9_data_size + packet->size <= vp9_data_mmap_file->length())
           << "The vp9 data size must be less than webm file size";
-      std::memcpy(vp9_data + vp9_data_size, packet.data, packet.size);
+      std::memcpy(vp9_data + vp9_data_size, packet->data, packet->size);
       vp9_data_chunks[num_packets] = base::span<const uint8_t>(
-          vp9_data + vp9_data_size, base::checked_cast<size_t>(packet.size));
-      vp9_data_size += packet.size;
+          vp9_data + vp9_data_size, base::checked_cast<size_t>(packet->size));
+      vp9_data_size += packet->size;
 
       Vp9FrameHeader header;
       gfx::Size allocate_size;
-      vp9_parser.SetStream(packet.data, packet.size, /*stream_config=*/nullptr);
+      vp9_parser.SetStream(packet->data, packet->size,
+                           /*stream_config=*/nullptr);
       if (vp9_parser.ParseNextFrame(&header, &allocate_size, nullptr) ==
           Vp9Parser::kInvalidStream) {
         LOG(ERROR) << "Failed parsing vp9 data";
@@ -346,7 +348,7 @@ std::unique_ptr<RawVideo::VP9Decoder> RawVideo::VP9Decoder::Create(
       }
       num_packets++;
     }
-    av_packet_unref(&packet);
+    av_packet_unref(packet.get());
   }
   CHECK_EQ(num_read_frames, num_packets);
   CHECK(!keyframe_indices.empty());

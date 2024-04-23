@@ -9,6 +9,7 @@
 #include "media/base/media.h"
 #include "media/base/test_data_util.h"
 #include "media/ffmpeg/ffmpeg_common.h"
+#include "media/ffmpeg/scoped_av_packet.h"
 #include "media/filters/ffmpeg_glue.h"
 #include "media/filters/in_memory_url_protocol.h"
 #include "media/filters/vp9_parser.h"
@@ -40,14 +41,14 @@ class VP9SuperFrameBitstreamFilterTest : public testing::Test {
   }
 
   scoped_refptr<DecoderBuffer> ReadPacket(int stream_index = 0) {
-    AVPacket packet = {0};
-    while (av_read_frame(glue_->format_context(), &packet) >= 0) {
-      if (packet.stream_index == stream_index) {
-        auto buffer = DecoderBuffer::CopyFrom(packet.data, packet.size);
-        av_packet_unref(&packet);
+    auto packet = ScopedAVPacket::Allocate();
+    while (av_read_frame(glue_->format_context(), packet.get()) >= 0) {
+      if (packet->stream_index == stream_index) {
+        auto buffer = DecoderBuffer::CopyFrom(packet->data, packet->size);
+        av_packet_unref(packet.get());
         return buffer;
       }
-      av_packet_unref(&packet);
+      av_packet_unref(packet.get());
     }
     return nullptr;
   }

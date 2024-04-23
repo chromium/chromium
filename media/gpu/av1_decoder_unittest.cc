@@ -17,6 +17,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/test_data_util.h"
 #include "media/ffmpeg/ffmpeg_common.h"
+#include "media/ffmpeg/scoped_av_packet.h"
 #include "media/filters/ffmpeg_demuxer.h"
 #include "media/filters/in_memory_url_protocol.h"
 #include "media/filters/ivf_parser.h"
@@ -276,11 +277,12 @@ std::vector<scoped_refptr<DecoderBuffer>> AV1DecoderTest::ReadWebm(
   EXPECT_NE(stream_index, -1) << "No AV1 data found in " << input_file;
 
   std::vector<scoped_refptr<DecoderBuffer>> buffers;
-  AVPacket packet{};
-  while (av_read_frame(glue.format_context(), &packet) >= 0) {
-    if (packet.stream_index == stream_index)
-      buffers.push_back(DecoderBuffer::CopyFrom(packet.data, packet.size));
-    av_packet_unref(&packet);
+  auto packet = ScopedAVPacket::Allocate();
+  while (av_read_frame(glue.format_context(), packet.get()) >= 0) {
+    if (packet->stream_index == stream_index) {
+      buffers.push_back(DecoderBuffer::CopyFrom(packet->data, packet->size));
+    }
+    av_packet_unref(packet.get());
   }
   return buffers;
 }

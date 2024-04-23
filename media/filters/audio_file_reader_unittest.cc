@@ -15,6 +15,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/test_data_util.h"
 #include "media/ffmpeg/ffmpeg_common.h"
+#include "media/ffmpeg/scoped_av_packet.h"
 #include "media/filters/in_memory_url_protocol.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,28 +66,28 @@ class AudioFileReaderTest : public testing::Test {
   void VerifyPackets(int packet_reads) {
     const int kTestPasses = 2;
 
-    AVPacket packet;
+    auto packet = ScopedAVPacket::Allocate();
     base::TimeDelta start_timestamp;
     std::vector<std::string> packet_md5_hashes_;
     for (int i = 0; i < kTestPasses; ++i) {
       for (int j = 0; j < packet_reads; ++j) {
-        ASSERT_TRUE(reader_->ReadPacketForTesting(&packet));
+        ASSERT_TRUE(reader_->ReadPacketForTesting(packet.get()));
 
         // On the first pass save the MD5 hash of each packet, on subsequent
         // passes ensure it matches.
         const std::string md5_hash = base::MD5String(std::string_view(
-            reinterpret_cast<char*>(packet.data), packet.size));
+            reinterpret_cast<char*>(packet->data), packet->size));
         if (i == 0) {
           packet_md5_hashes_.push_back(md5_hash);
           if (j == 0) {
             start_timestamp = ConvertFromTimeBase(
-                reader_->codec_context_for_testing()->time_base, packet.pts);
+                reader_->codec_context_for_testing()->time_base, packet->pts);
           }
         } else {
           EXPECT_EQ(packet_md5_hashes_[j], md5_hash) << "j = " << j;
         }
 
-        av_packet_unref(&packet);
+        av_packet_unref(packet.get());
       }
       ASSERT_TRUE(reader_->SeekForTesting(start_timestamp));
     }

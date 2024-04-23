@@ -17,6 +17,7 @@
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
 #include "media/ffmpeg/ffmpeg_common.h"
+#include "media/ffmpeg/scoped_av_packet.h"
 #include "media/filters/in_memory_url_protocol.h"
 #include "media/filters/vpx_video_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -324,11 +325,11 @@ TEST_F(VpxVideoDecoderTest, MemoryPoolAllowsMultipleDisplay) {
   FFmpegGlue glue(&protocol);
   ASSERT_TRUE(glue.OpenContext());
 
-  AVPacket packet = {};
-  while (av_read_frame(glue.format_context(), &packet) >= 0) {
+  auto packet = ScopedAVPacket::Allocate();
+  while (av_read_frame(glue.format_context(), packet.get()) >= 0) {
     DecoderStatus decode_status =
-        Decode(DecoderBuffer::CopyFrom(packet.data, packet.size));
-    av_packet_unref(&packet);
+        Decode(DecoderBuffer::CopyFrom(packet->data, packet->size));
+    av_packet_unref(packet.get());
     if (!decode_status.is_ok())
       break;
   }
