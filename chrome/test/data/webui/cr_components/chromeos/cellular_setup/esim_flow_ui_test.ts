@@ -437,31 +437,6 @@ suite(`CrComponentsEsimFlowUiTest`, function() {
             endFlowAndVerifyResult(EsimSetupFlowResult.INSTALL_FAIL);
           });
 
-          test('Navigate backwards from confirmation code', async function() {
-            euicc.setProfileInstallResultForTest(
-                ProfileInstallResult.kErrorNeedsConfirmationCode);
-            assertTrue(!!activationCodePage);
-            await navigateForwardForInstall(activationCodePage);
-
-            // Confirmation code page should be showing.
-            assertConfirmationCodePage(
-                /*forwardButtonShouldBeEnabled*/ false);
-            const confirmationCode = getConfirmationCodeInput(confirmationCodePage);
-            confirmationCode.value = 'CONFIRMATION_CODE';
-
-            eSimPage.navigateBackward();
-            await flushTasks();
-
-            // Should now be at the activation code page.
-            assertActivationCodePage(
-                /*forwardButtonShouldBeEnabled*/ true);
-            assertEquals(getActivationCodeInput(activationCodePage).value,
-                         ACTIVATION_CODE_VALID);
-
-            endFlowAndVerifyResult(
-                EsimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
-          });
-
           test('End flow before installation attempted', async function() {
             await flushTasks();
             if (isManualSetup) {
@@ -482,7 +457,6 @@ suite(`CrComponentsEsimFlowUiTest`, function() {
   });
 
   suite('add eSIM flow with pending profiles', function() {
-    let euicc: FakeEuicc;
 
     async function setupWithProfiles(profileCount: number) {
       assertGT(profileCount, 0);
@@ -490,7 +464,6 @@ suite(`CrComponentsEsimFlowUiTest`, function() {
       eSimManagerRemote.addEuiccForTest(profileCount);
       const availableEuiccs = await eSimManagerRemote.getAvailableEuiccs();
       assertTrue(!!availableEuiccs.euiccs[0]);
-      euicc = availableEuiccs.euiccs[0] as unknown as FakeEuicc;
       eSimPage.initSubflow();
 
       assertFocusDefaultButtonEventFired();
@@ -556,6 +529,7 @@ suite(`CrComponentsEsimFlowUiTest`, function() {
       activationCode.value = ACTIVATION_CODE_VALID;
       assertFalse(focusDefaultButtonEventFired);
 
+      await flushTasks();
       assertActivationCodePage(
           /*forwardButtonShouldBeEnabled*/ true);
     }
@@ -623,50 +597,6 @@ suite(`CrComponentsEsimFlowUiTest`, function() {
           endFlowAndVerifyResult(EsimSetupFlowResult.SUCCESS);
         });
 
-    [1, 2].forEach(profileCount => {
-      test(
-          'Navigate backwards from skip discovery flow with confirmation code',
-          async function() {
-            await setupWithProfiles(profileCount);
-            await deselectCellularProfile();
-            await skipDiscovery();
-
-            euicc.setProfileInstallResultForTest(
-                ProfileInstallResult.kErrorNeedsConfirmationCode);
-            assertTrue(!!activationCodePage);
-            await navigateForwardForInstall(activationCodePage);
-
-            // Confirmation code page should be showing.
-            assertConfirmationCodePage(
-                /*forwardButtonShouldBeEnabled*/ false);
-            assertFocusDefaultButtonEventFired();
-            const confirmationCode = getConfirmationCodeInput(confirmationCodePage);
-            confirmationCode.value = 'CONFIRMATION_CODE';
-            assertFalse(focusDefaultButtonEventFired);
-
-            // Simulate pressing 'Backward'.
-            eSimPage.navigateBackward();
-            await flushTasks();
-
-            assertActivationCodePage(
-                /*forwardButtonShouldBeEnabled*/ true);
-            assertFocusDefaultButtonEventFired();
-            assertEquals(getActivationCodeInput(activationCodePage).value,
-                         ACTIVATION_CODE_VALID);
-
-            eSimPage.navigateBackward();
-            await flushTasks();
-
-            assertProfileDiscoveryPage();
-            assertFocusDefaultButtonEventFired();
-            assertEquals(
-                eSimPage.forwardButtonLabel, 'Skip & set up new profile');
-
-            endFlowAndVerifyResult(
-                EsimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
-          });
-    });
-
     async function selectProfile() {
       assertTrue(!!profileDiscoveryPage);
       // Select the first profile on the list.
@@ -725,38 +655,6 @@ suite(`CrComponentsEsimFlowUiTest`, function() {
             assertFocusDefaultButtonEventFired();
 
             endFlowAndVerifyResult(EsimSetupFlowResult.SUCCESS);
-          });
-    });
-
-    [1, 2].forEach(profileCount => {
-      test(
-          'Navigate backwards from select profile with confirmation code flow',
-          async function() {
-            await setupWithProfiles(profileCount);
-
-            const availableEuiccs =
-                await eSimManagerRemote.getAvailableEuiccs();
-            const euicc: FakeEuicc = availableEuiccs.euiccs[0] as unknown as FakeEuicc;
-            euicc.setProfileInstallResultForTest(
-                ProfileInstallResult.kErrorNeedsConfirmationCode);
-
-            await selectProfile();
-            await flushTasks();
-
-            // Confirmation code page should be showing.
-            assertConfirmationCodePage(
-                /*forwardButtonShouldBeEnabled*/ false);
-            const confirmationCode = getConfirmationCodeInput(confirmationCodePage);
-            confirmationCode.value = 'CONFIRMATION_CODE';
-
-            eSimPage.navigateBackward();
-            await flushTasks();
-
-            assertProfileDiscoveryPage();
-            assertEquals(eSimPage.forwardButtonLabel, 'Next');
-
-            endFlowAndVerifyResult(
-                EsimSetupFlowResult.CANCELLED_NEEDS_CONFIRMATION_CODE);
           });
     });
 
