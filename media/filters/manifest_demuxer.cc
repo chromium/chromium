@@ -80,7 +80,10 @@ ManifestDemuxer::ManifestDemuxer(
     : request_seek_(std::move(request_seek)),
       media_log_(media_log->Clone()),
       media_task_runner_(std::move(media_task_runner)),
-      impl_(std::move(impl)) {}
+      impl_(std::move(impl)) {
+        media_log_->AddMessage(MediaLogMessageLevel::kINFO,
+          "Demuxing stream using ManifestDemuxer");
+      }
 
 std::vector<DemuxerStream*> ManifestDemuxer::GetAllStreams() {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
