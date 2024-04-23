@@ -119,6 +119,10 @@ class SingleClientWebAppsSyncTest : public WebAppsSyncTestBase {
   int GetNumWebAppsInSync() {
     return GetFakeServer()->GetSyncEntitiesByModelType(syncer::WEB_APPS).size();
   }
+
+  WebAppRegistrar& registrar_unsafe() {
+    return WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
@@ -169,9 +173,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  auto& web_app_registrar =
-      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
-  EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
+  EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
@@ -211,9 +213,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   AwaitWebAppQuiescence();
 
   // Installed app should store sync data.
-  auto& web_app_registrar =
-      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
-  const WebApp* web_app = web_app_registrar.GetAppById(app_id);
+  const WebApp* web_app = registrar_unsafe().GetAppById(app_id);
   ASSERT_TRUE(web_app);
   EXPECT_EQ(syncer::WebAppSpecificsToValue(synced_web_app),
             syncer::WebAppSpecificsToValue(web_app->sync_proto()));
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   }
 
   // Start listening for incoming changes from sync.
-  WebAppTestRegistryObserverAdapter registry_observer{&web_app_registrar};
+  WebAppTestRegistryObserverAdapter registry_observer{&registrar_unsafe()};
   base::test::TestFuture<const std::vector<const WebApp*>&>
       updated_from_sync_future;
   registry_observer.SetWebAppWillBeUpdatedFromSyncDelegate(
@@ -246,7 +246,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
       sync_pb::WebAppSpecifics_UserDisplayMode_BROWSER);
   modified_web_app.clear_scope();
   modified_web_app.set_theme_color(SK_ColorBLUE);
-  *(entity_specifics.mutable_web_app()) = modified_web_app;
   sync_pb::EntitySpecifics modified_entity_specifics;
   *(modified_entity_specifics.mutable_web_app()) = modified_web_app;
   GetFakeServer()->ModifyEntitySpecifics(entity_id, modified_entity_specifics);
@@ -318,9 +317,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InstalledAppUpdatesSync) {
   *(expected_sync_data.add_icon_infos()) = std::move(icon_info);
 
   // Check the locally-installed app stored the expected sync data.
-  auto& web_app_registrar =
-      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
-  const WebApp* web_app = web_app_registrar.GetAppById(app_id);
+  const WebApp* web_app = registrar_unsafe().GetAppById(app_id);
   ASSERT_TRUE(web_app);
   EXPECT_EQ(syncer::WebAppSpecificsToValue(expected_sync_data),
             syncer::WebAppSpecificsToValue(web_app->sync_proto()));
@@ -372,6 +369,55 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InstalledAppUpdatesSync) {
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
+                       SyncUpdateWithDifferentStartUrl_UpdatesSyncNotApp) {
+  // Install a web app.
+  GURL start_url("https://example.com/");
+  std::string manifest_id_path = "manifest-id";
+  const std::string app_id = GenerateAppId(manifest_id_path, start_url);
+  InjectWebAppEntityToFakeServer(app_id, start_url, manifest_id_path);
+  ASSERT_TRUE(SetupSync());
+  AwaitWebAppQuiescence();
+
+  // start_url should have been set in the app and sync proto.
+  const WebApp* web_app = registrar_unsafe().GetAppById(app_id);
+  ASSERT_TRUE(web_app);
+  EXPECT_EQ(web_app->start_url(), start_url);
+  EXPECT_EQ(web_app->sync_proto().start_url(), start_url.spec());
+
+  // Create a sync proto with an updated start_url for the same app.
+  GURL updated_start_url("https://example.com/updated/");
+  std::vector<sync_pb::SyncEntity> sync_entities =
+      GetFakeServer()->GetSyncEntitiesByModelType(syncer::WEB_APPS);
+  ASSERT_EQ(sync_entities.size(), 1u);
+  std::string entity_id = sync_entities[0].id_string();
+  sync_pb::EntitySpecifics modified_entity_specifics =
+      sync_entities[0].specifics();
+  modified_entity_specifics.mutable_web_app()->set_start_url(
+      updated_start_url.spec());
+
+  // Start listening for incoming changes from sync.
+  WebAppTestRegistryObserverAdapter registry_observer{&registrar_unsafe()};
+  base::test::TestFuture<const std::vector<const WebApp*>&>
+      updated_from_sync_future;
+  registry_observer.SetWebAppWillBeUpdatedFromSyncDelegate(
+      updated_from_sync_future.GetRepeatingCallback());
+
+  // Modify the entity on the server, simulating another client receiving a
+  // new/different manifest.
+  GetFakeServer()->ModifyEntitySpecifics(entity_id, modified_entity_specifics);
+
+  // Wait for the client to get the update and process.
+  ASSERT_TRUE(updated_from_sync_future.Wait());
+  AwaitWebAppQuiescence();
+
+  // The web app should keep its original start_url (because different clients
+  // may receive different manifests), but its sync proto should have been
+  // updated.
+  EXPECT_EQ(web_app->start_url(), start_url);
+  EXPECT_EQ(web_app->sync_proto().start_url(), updated_start_url.spec());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        AppWithMalformedIdNotSyncInstalled) {
   const std::string app_id = "invalid_id";
   GURL url("https://example.com/");
@@ -379,10 +425,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  auto& web_app_registrar =
-      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
-
-  EXPECT_FALSE(web_app_registrar.IsInstalled(app_id));
+  EXPECT_FALSE(registrar_unsafe().IsInstalled(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
@@ -395,10 +438,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  auto& web_app_registrar =
-      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
-
-  EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
+  EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id));
 
   WebAppInstallInfo info;
   std::string name = "Test name";
@@ -425,10 +465,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  auto& web_app_registrar =
-      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
-
-  EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
+  EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id));
 
   WebAppInstallInfo info;
   std::string name = "Test name";
@@ -455,11 +492,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  auto& web_app_registrar =
-      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
-
-  EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
-  EXPECT_EQ(web_app_registrar.GetAppUserDisplayMode(app_id),
+  EXPECT_TRUE(registrar_unsafe().IsInstalled(app_id));
+  EXPECT_EQ(registrar_unsafe().GetAppUserDisplayMode(app_id),
             mojom::UserDisplayMode::kStandalone);
 }
 
@@ -476,10 +510,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InvalidStartUrl) {
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  auto& web_app_registrar =
-      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
-
-  EXPECT_FALSE(web_app_registrar.IsInstalled(app_id));
+  EXPECT_FALSE(registrar_unsafe().IsInstalled(app_id));
 
   EXPECT_THAT(histogram_tester.GetAllSamples("WebApp.Sync.InvalidEntity"),
               base::BucketsAre(
@@ -508,10 +539,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, NoStartUrl) {
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  auto& web_app_registrar =
-      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
-
-  EXPECT_FALSE(web_app_registrar.IsInstalled(app_id));
+  EXPECT_FALSE(registrar_unsafe().IsInstalled(app_id));
 
   std::vector<sync_pb::SyncEntity> server_apps =
       GetFakeServer()->GetSyncEntitiesByModelType(syncer::WEB_APPS);
@@ -545,10 +573,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InvalidManifestId) {
   ASSERT_TRUE(SetupSync());
   AwaitWebAppQuiescence();
 
-  auto& web_app_registrar =
-      WebAppProvider::GetForTest(GetProfile(0))->registrar_unsafe();
-
-  EXPECT_FALSE(web_app_registrar.IsInstalled(app_id));
+  EXPECT_FALSE(registrar_unsafe().IsInstalled(app_id));
 
   std::vector<sync_pb::SyncEntity> server_apps =
       GetFakeServer()->GetSyncEntitiesByModelType(syncer::WEB_APPS);
