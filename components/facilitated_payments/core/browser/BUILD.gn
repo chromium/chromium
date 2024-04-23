@@ -25,7 +25,7 @@ static_library("browser") {
     "//base",
     "//components/autofill/core/browser",
     "//components/facilitated_payments/core/features",
-    "//components/facilitated_payments/core/mojom",
+    "//components/facilitated_payments/core/mojom:facilitated_payments_agent_mojom",
     "//components/optimization_guide/core",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
