@@ -19,6 +19,12 @@
     body {
       overflow: hidden;
     }
+
+    @media (min-resolution: 200dpi) {
+      body {
+          overflow-x: scroll;
+        }
+      }
     html[chrome-refresh-2023] body {
       background: var(--color-side-panel-content-background);
     }
