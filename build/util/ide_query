@@ -77,16 +77,17 @@ def main():
     targets.append(target)
 
   if options.perform_build:
+    # use `-k=0` to build generated files as much as possible.
     if _use_reclient(options.out_dir):
-      args = ['autoninja', '-C', options.out_dir]
+      args = ['autoninja', '-k=0', '-C', options.out_dir]
     else:
-      args = ['siso', 'ninja', '-C', options.out_dir]
+      args = ['siso', 'ninja', '-k=0', '-C', options.out_dir]
     args.extend(targets)
     p = subprocess.run(args, cwd=repo_root, stdout=2, stderr=2)
     if p.returncode != 0:
       # TODO: report error in IdeAnalysis.Status?
       sys.stderr.write('build failed with %d\n' % p.returncode)
-      return 1
+      # even if build fails, it should report ideanalysis back.
 
   args = ['siso', 'query', 'ideanalysis', '-C', options.out_dir]
   args.extend(targets)
