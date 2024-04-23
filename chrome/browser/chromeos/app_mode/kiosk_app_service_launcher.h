@@ -5,17 +5,24 @@
 #ifndef CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_APP_SERVICE_LAUNCHER_H_
 #define CHROME_BROWSER_CHROMEOS_APP_MODE_KIOSK_APP_SERVICE_LAUNCHER_H_
 
+#include <optional>
 #include <string>
+#include <vector>
+
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "build/buildflag.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/services/app_service/public/cpp/app.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/instance_update.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/services/app_service/public/cpp/instance_registry.h"
@@ -96,9 +103,9 @@ class KioskAppServiceLauncher :
   // A keyed service. Not owned by this class.
   raw_ptr<apps::AppServiceProxy> app_service_;
 
-  std::optional<base::OnceClosure> app_type_initialized_callback_;
+  base::OnceClosure app_type_initialized_callback_;
 
-  std::optional<AppLaunchedCallback> app_launched_callback_;
+  AppLaunchedCallback app_launched_callback_;
   std::optional<GURL> launch_url_;
 
   base::ScopedObservation<apps::AppRegistryCache,
@@ -106,7 +113,7 @@ class KioskAppServiceLauncher :
       app_registry_observation_{this};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::optional<base::OnceClosure> app_visible_callback_;
+  base::OnceClosure app_visible_callback_;
 
   base::ScopedObservation<apps::InstanceRegistry,
                           apps::InstanceRegistry::Observer>

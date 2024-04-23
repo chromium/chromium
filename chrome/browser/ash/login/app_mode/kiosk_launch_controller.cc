@@ -5,33 +5,42 @@
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
 #include <variant>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/shell.h"
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
-#include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_service.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
 #include "chrome/browser/ash/app_mode/lacros_launcher.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
@@ -55,7 +64,11 @@
 #include "chrome/browser/ui/webui/ash/login/encryption_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/session_manager_types.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -707,6 +720,10 @@ void KioskLaunchController::OnAppLaunched() {
 void KioskLaunchController::OnAppWindowCreated(
     const std::optional<std::string>& app_name) {
   SYSLOG(INFO) << "App window created, closing splash screen.";
+
+  // Not receiving the `OnAppLaunched` event before we come here leads to bugs
+  // like b/335158496.
+  DUMP_WILL_BE_CHECK_EQ(app_state_, AppState::kLaunched);
 
   SetKioskLaunchStateCrashKey(KioskLaunchState::kAppWindowCreated);
 
