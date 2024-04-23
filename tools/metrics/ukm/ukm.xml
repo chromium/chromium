@@ -8033,7 +8033,6 @@ be describing additional metrics about the same event.
 
 <event name="Compose.PageEvents">
   <owner>chrome-compose-frontend@google.com</owner>
-  <owner>petewil@chromium.org</owner>
   <owner>dewittj@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <summary>
@@ -8094,6 +8093,20 @@ be describing additional metrics about the same event.
       text field's respective FormFieldData. Uses exponential buckets for
       privacy.
     </summary>
+  </metric>
+  <metric name="ProactiveNudgeShouldShow">
+    <summary>
+      The number of times the Compose proactive nudge should show during This
+      page load. Recorded any time Compose is asked to show the proactive nudge
+      even if it is eventually not shown. Added in M125.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 

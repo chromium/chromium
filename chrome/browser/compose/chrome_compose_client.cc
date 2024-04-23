@@ -501,11 +501,22 @@ bool ChromeComposeClient::ShouldTriggerPopup(
 
   GURL url = GetWebContents().GetPrimaryMainFrame()->GetLastCommittedURL();
 
-  return compose_enabling_->ShouldTriggerPopup(
+  bool ongoing_session = HasSession(form_field_data.global_id());
+
+  auto should_show_nudge = compose_enabling_->ShouldTriggerPopup(
       form_field_data.autocomplete_attribute(), profile_, translate_manager,
-      HasSession(form_field_data.global_id()),
-      top_level_frame->GetLastCommittedOrigin(), form_field_data.origin(), url,
-      trigger_source);
+      ongoing_session, top_level_frame->GetLastCommittedOrigin(),
+      form_field_data.origin(), url, trigger_source);
+
+  // Record ukm only if the proactive nudge shows or is disabled by the flag.
+  if (!ongoing_session &&
+      (should_show_nudge.has_value() ||
+       should_show_nudge.error() ==
+           compose::ComposeNudgeDenyReason::kProactiveNudgeDisabled)) {
+    page_ukm_tracker_->ComposeProactiveNudgeShouldShow();
+  }
+
+  return should_show_nudge.has_value();
 }
 
 bool ChromeComposeClient::ShouldTriggerContextMenu(
