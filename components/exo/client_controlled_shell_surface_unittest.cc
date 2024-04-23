@@ -1287,11 +1287,11 @@ TEST_F(ClientControlledShellSurfaceDisplayTest, MoveToAnotherDisplayByDrag) {
   auto* surface = shell_surface->root_surface();
   display::Display primary_display =
       display::Screen::GetScreen()->GetPrimaryDisplay();
-  gfx::Rect initial_bounds(-150, 10, 200, 200);
-  shell_surface->SetBounds(primary_display.id(), initial_bounds);
+  constexpr gfx::Rect kInitialBounds(-100, 10, 200, 200);
+  shell_surface->SetBounds(primary_display.id(), kInitialBounds);
   surface->Commit();
 
-  EXPECT_EQ(initial_bounds,
+  EXPECT_EQ(kInitialBounds,
             shell_surface->GetWidget()->GetWindowBoundsInScreen());
 
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
@@ -1325,8 +1325,8 @@ TEST_F(ClientControlledShellSurfaceDisplayTest, MoveToAnotherDisplayByDrag) {
   // to simply request WM_EVENT_SET_BOUND with target display id.
   ASSERT_EQ(2, delegate->bounds_change_count());
   // Bounds is local to 2nd display.
-  EXPECT_EQ(gfx::Rect(-150, 10, 200, 200), delegate->requested_bounds()[0]);
-  EXPECT_EQ(gfx::Rect(-150, 10, 200, 200), delegate->requested_bounds()[1]);
+  EXPECT_EQ(gfx::Rect(-100, 10, 200, 200), delegate->requested_bounds()[0]);
+  EXPECT_EQ(gfx::Rect(-100, 10, 200, 200), delegate->requested_bounds()[1]);
 
   EXPECT_EQ(secondary_display.id(), delegate->requested_display_ids()[0]);
   EXPECT_EQ(secondary_display.id(), delegate->requested_display_ids()[1]);
@@ -1343,12 +1343,12 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
   display::Display primary_display =
       display::Screen::GetScreen()->GetPrimaryDisplay();
 
-  gfx::Rect initial_bounds(-174, 10, 200, 200);
-  shell_surface->SetBounds(primary_display.id(), initial_bounds);
+  constexpr gfx::Rect kInitialBounds(-139, 10, 200, 200);
+  shell_surface->SetBounds(primary_display.id(), kInitialBounds);
   surface->Commit();
   shell_surface->GetWidget()->Show();
 
-  EXPECT_EQ(initial_bounds,
+  EXPECT_EQ(kInitialBounds,
             shell_surface->GetWidget()->GetWindowBoundsInScreen());
 
   aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
@@ -1365,7 +1365,7 @@ TEST_F(ClientControlledShellSurfaceDisplayTest,
 
   ASSERT_EQ(1, delegate->bounds_change_count());
   // Should be scaled by 2x in pixels on 2x-density density.
-  EXPECT_EQ(gfx::Rect(-348, 20, 400, 400), delegate->requested_bounds()[0]);
+  EXPECT_EQ(gfx::Rect(-278, 20, 400, 400), delegate->requested_bounds()[0]);
   EXPECT_EQ(secondary_display.id(), delegate->requested_display_ids()[0]);
 
   gfx::Rect secondary_position(700, 10, 200, 200);
@@ -1854,9 +1854,9 @@ TEST_P(ClientControlledShellSurfaceTest, SetOrientationLock) {
 // Tests adjust bounds locally should also request remote client bounds update.
 TEST_P(ClientControlledShellSurfaceTest, AdjustBoundsLocally) {
   UpdateDisplay("800x600");
-  gfx::Rect client_bounds(900, 0, 200, 300);
+  constexpr gfx::Rect kClientBounds(900, 0, 200, 300);
   auto shell_surface = exo::test::ShellSurfaceBuilder({64, 64})
-                           .SetGeometry(client_bounds)
+                           .SetGeometry(kClientBounds)
                            .SetNoCommit()
                            .BuildClientControlledShellSurface();
   auto* delegate =
@@ -1865,12 +1865,12 @@ TEST_P(ClientControlledShellSurfaceTest, AdjustBoundsLocally) {
   surface->Commit();
 
   views::Widget* widget = shell_surface->GetWidget();
-  EXPECT_EQ(gfx::Rect(774, 0, 200, 300), widget->GetWindowBoundsInScreen());
-  EXPECT_EQ(gfx::Rect(774, 0, 200, 300), delegate->requested_bounds().back());
+  EXPECT_EQ(gfx::Rect(739, 0, 200, 300), widget->GetWindowBoundsInScreen());
+  EXPECT_EQ(gfx::Rect(739, 0, 200, 300), delegate->requested_bounds().back());
 
   // Receiving the same bounds shouldn't try to update the bounds again.
   delegate->Reset();
-  shell_surface->SetGeometry(client_bounds);
+  shell_surface->SetGeometry(kClientBounds);
   surface->Commit();
 
   EXPECT_EQ(0, delegate->bounds_change_count());

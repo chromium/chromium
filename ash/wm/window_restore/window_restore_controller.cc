@@ -97,19 +97,12 @@ void MaybeRestoreOutOfBoundsWindows(aura::Window* window) {
 
   const auto& closest_display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window);
-  gfx::Rect display_area = closest_display.work_area();
+  const gfx::Rect display_area = closest_display.work_area();
   if (display_area.Contains(current_bounds))
     return;
 
-  // Adjust the bounds so that at least 30% of the window bounds is visible.
-  auto get_minimum_length = [](int length) -> int {
-    return std::max(
-        kMinimumOnScreenArea,
-        static_cast<int>(std::round(length * kMinimumPercentOnScreenArea)));
-  };
-  AdjustBoundsToEnsureWindowVisibility(
-      display_area, get_minimum_length(current_bounds.width()),
-      get_minimum_length(current_bounds.height()), &current_bounds);
+  AdjustBoundsToEnsureMinimumWindowVisibility(
+      display_area, /*client_controlled=*/false, &current_bounds);
 
   auto* window_state = WindowState::Get(window);
   if (window_state->HasRestoreBounds()) {

@@ -133,7 +133,8 @@ void AutoPlaceSingleWindow(aura::Window* window, bool animated) {
       WindowState::Get(window)->pre_auto_manage_window_bounds();
   if (user_defined_area) {
     bounds = *user_defined_area;
-    AdjustBoundsToEnsureMinimumWindowVisibility(work_area, &bounds);
+    AdjustBoundsToEnsureMinimumWindowVisibility(
+        work_area, /*client_controlled=*/false, &bounds);
   } else {
     // Center the window (only in x).
     bounds.set_x(work_area.x() + (work_area.width() - bounds.width()) / 2);

@@ -159,8 +159,8 @@ void DragWindowResizer::EndDragImpl() {
     else if (last_mouse_location_in_screen.x() > dst_bounds.right())
       dst_bounds.set_x(last_mouse_location_in_screen.x() - dst_bounds.width());
   }
-  AdjustBoundsToEnsureMinimumWindowVisibility(dst_display.bounds(),
-                                              &dst_bounds);
+  AdjustBoundsToEnsureMinimumWindowVisibility(
+      dst_display.bounds(), /*client_controlled=*/false, &dst_bounds);
 
   GetTarget()->SetBoundsInScreen(dst_bounds, dst_display);
 }

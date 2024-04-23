@@ -32,24 +32,12 @@ namespace {
 
 using ::chromeos::WindowStateType;
 
-// |kMinimumOnScreenArea + 1| is used to avoid adjusting loop.
-constexpr int kClientControlledWindowMinimumOnScreenArea =
-    kMinimumOnScreenArea + 1;
 }  // namespace
 
 ClientControlledState::ClientControlledState(std::unique_ptr<Delegate> delegate)
     : BaseState(WindowStateType::kDefault), delegate_(std::move(delegate)) {}
 
 ClientControlledState::~ClientControlledState() = default;
-
-// static
-void ClientControlledState::AdjustBoundsForMinimumWindowVisibility(
-    const gfx::Rect& display_bounds,
-    gfx::Rect* bounds) {
-  AdjustBoundsToEnsureWindowVisibility(
-      display_bounds, kClientControlledWindowMinimumOnScreenArea,
-      kClientControlledWindowMinimumOnScreenArea, bounds);
-}
 
 void ClientControlledState::ResetDelegate() {
   delegate_.reset();
@@ -154,8 +142,8 @@ void ClientControlledState::HandleWorkspaceEvents(WindowState* window_state,
     }
   } else if (event->type() == WM_EVENT_ADDED_TO_WORKSPACE) {
     gfx::Rect bounds = window->bounds();
-    AdjustBoundsForMinimumWindowVisibility(window->GetRootWindow()->bounds(),
-                                           &bounds);
+    AdjustBoundsToEnsureMinimumWindowVisibility(
+        window->GetRootWindow()->bounds(), /*client_controlled=*/true, &bounds);
 
     if (window->bounds() != bounds)
       window_state->SetBoundsConstrained(bounds);

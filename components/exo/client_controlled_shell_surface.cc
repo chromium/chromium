@@ -1034,15 +1034,15 @@ void ClientControlledShellSurface::SetWidgetBounds(const gfx::Rect& bounds,
     const gfx::Rect& restriction = GetWindowState()->IsFullscreen()
                                        ? target_display.bounds()
                                        : target_display.work_area();
-    ash::ClientControlledState::AdjustBoundsForMinimumWindowVisibility(
-        restriction, &adjusted_bounds);
+    ash::AdjustBoundsToEnsureMinimumWindowVisibility(
+        restriction, /*client_controlled=*/true, &adjusted_bounds);
     // Collision detection to the bounds set by Android should be applied only
     // to initial bounds and any client-requested bounds (I.E. Double-Tap to
     // resize). Do not adjust new bounds for fling/display rotation as it can be
     // obsolete or in transit during animation, which results in incorrect
     // resting postiion. The resting position should be fully controlled by
     // chrome afterwards because Android isn't aware of Chrome OS System UI.
-    bool is_resizing_without_rotation =
+    const bool is_resizing_without_rotation =
         !display_rotating_with_pip_ && !IsDragging() &&
         !ash::Shell::Get()->pip_controller()->is_tucked() &&
         GetWindowState()->GetCurrentBoundsInScreen().size() != bounds.size();

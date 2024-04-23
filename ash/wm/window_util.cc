@@ -357,7 +357,8 @@ bool MoveWindowToDisplay(aura::Window* window, int64_t display_id) {
     gfx::Rect bounds = window->bounds();
     gfx::Rect work_area_in_display(display.size());
     work_area_in_display.Inset(display.GetWorkAreaInsets());
-    AdjustBoundsToEnsureMinimumWindowVisibility(work_area_in_display, &bounds);
+    AdjustBoundsToEnsureMinimumWindowVisibility(
+        work_area_in_display, /*client_controlled=*/false, &bounds);
     SetBoundsWMEvent event(bounds, display_id);
     window_state->OnWMEvent(&event);
     return true;

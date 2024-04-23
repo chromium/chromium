@@ -30,6 +30,7 @@
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/test/fake_window_state.h"
+#include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
@@ -1367,9 +1368,11 @@ TEST_F(ClientControlledStateTest, MoveWindowToDisplayOutOfBounds) {
   UpdateDisplay("1000x500, 600x500");
 
   state()->set_bounds_locally(true);
-  widget()->SetBounds(gfx::Rect(700, 0, 100, 200));
+  constexpr int kWidth = 100;
+  widget()->SetBounds(gfx::Rect(700, 0, kWidth, 200));
   state()->set_bounds_locally(false);
-  EXPECT_EQ(gfx::Rect(700, 0, 100, 200), widget()->GetWindowBoundsInScreen());
+  EXPECT_EQ(gfx::Rect(700, 0, kWidth, 200),
+            widget()->GetWindowBoundsInScreen());
 
   display::Screen* screen = display::Screen::GetScreen();
 
@@ -1385,7 +1388,9 @@ TEST_F(ClientControlledStateTest, MoveWindowToDisplayOutOfBounds) {
   // The bounds is constrained by
   // |AdjustBoundsToEnsureMinimumWindowVisibility| in the secondary
   // display.
-  EXPECT_EQ(gfx::Rect(575, 0, 100, 200), delegate()->requested_bounds());
+  constexpr int kMinVisibleWidth = kWidth * kMinimumPercentOnScreenArea;
+  EXPECT_EQ(gfx::Rect(600 - kMinVisibleWidth, 0, kWidth, 200),
+            delegate()->requested_bounds());
 }
 
 // Make sure disconnecting primary notifies the display id change.
