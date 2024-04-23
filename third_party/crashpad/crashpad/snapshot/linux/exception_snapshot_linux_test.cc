@@ -521,7 +521,8 @@ class TimerTest {
 };
 TimerTest* TimerTest::test_;
 
-TEST(ExceptionSnapshotLinux, SelfTimer) {
+// TODO(crbug.com/336392563): Flaky.
+TEST(ExceptionSnapshotLinux, DISABLED_SelfTimer) {
   TimerTest test;
   test.Run();
 }
