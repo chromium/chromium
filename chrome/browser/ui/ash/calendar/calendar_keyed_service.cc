@@ -143,9 +143,7 @@ base::OnceClosure CalendarKeyedService::GetEventList(
     const base::Time end_time) {
   CHECK(thread_checker_.CalledOnValidThread());
   CHECK(callback);
-  CHECK_LT(start_time, end_time);
-
-  if (!sender_) {
+  if (start_time > end_time || !sender_) {
     std::move(callback).Run(google_apis::OTHER_ERROR, /*events=*/nullptr);
     return base::DoNothing();
   }
@@ -164,9 +162,7 @@ base::OnceClosure CalendarKeyedService::GetEventList(
     const std::string& calendar_color_id) {
   CHECK(thread_checker_.CalledOnValidThread());
   CHECK(callback);
-  CHECK_LT(start_time, end_time);
-
-  if (!sender_) {
+  if (start_time > end_time || !sender_) {
     std::move(callback).Run(google_apis::OTHER_ERROR, /*events=*/nullptr);
     return base::DoNothing();
   }
