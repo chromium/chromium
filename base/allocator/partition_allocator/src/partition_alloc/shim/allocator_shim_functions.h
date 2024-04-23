@@ -73,9 +73,12 @@ void UncheckedFree(void* ptr) {
 
 void InsertAllocatorDispatch(AllocatorDispatch* dispatch) {
   // Loop in case of (an unlikely) race on setting the list head.
-  size_t kMaxRetries = 7;
+  constexpr size_t kMaxRetries = 7;
+  const AllocatorDispatch original_dispatch = *dispatch;
   for (size_t i = 0; i < kMaxRetries; ++i) {
     const AllocatorDispatch* chain_head = internal::GetChainHead();
+
+    dispatch->OptimizeAllocatorDispatchTable(&original_dispatch, chain_head);
     dispatch->next = chain_head;
 
     // This function guarantees to be thread-safe w.r.t. concurrent
@@ -99,6 +102,8 @@ void InsertAllocatorDispatch(AllocatorDispatch* dispatch) {
 }
 
 void RemoveAllocatorDispatchForTesting(AllocatorDispatch* dispatch) {
+  // See `AllocatorDispatch::OptimizeAllocatorDispatchTable`. Only the chain
+  // head can be removed. Otherwise, the optimization gets broken.
   PA_DCHECK(internal::GetChainHead() == dispatch);
   internal::g_chain_head.store(dispatch->next, std::memory_order_relaxed);
 }
