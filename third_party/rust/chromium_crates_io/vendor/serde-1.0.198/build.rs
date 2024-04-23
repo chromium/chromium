@@ -64,6 +64,12 @@ fn main() {
     if minor < 64 {
         println!("cargo:rustc-cfg=no_core_cstr");
     }
+
+    // Support for core::num::Saturating and std::num::Saturating stabilized in Rust 1.74
+    // https://blog.rust-lang.org/2023/11/16/Rust-1.74.0.html#stabilized-apis
+    if minor < 74 {
+        println!("cargo:rustc-cfg=no_core_num_saturating");
+    }
 }
 
 fn rustc_minor_version() -> Option<u32> {

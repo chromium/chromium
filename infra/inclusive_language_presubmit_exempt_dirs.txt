@@ -713,9 +713,9 @@ third_party/rust/chromium_crates_io/vendor/ryu-1.0.17/.github/workflows 2 1
 third_party/rust/chromium_crates_io/vendor/ryu-1.0.17/src 1 1
 third_party/rust/chromium_crates_io/vendor/semver-1.0.22 1 1
 third_party/rust/chromium_crates_io/vendor/semver-1.0.22/.github/workflows 2 1
-third_party/rust/chromium_crates_io/vendor/serde-1.0.197 1 1
-third_party/rust/chromium_crates_io/vendor/serde-1.0.197/src 1 1
-third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.197 1 1
+third_party/rust/chromium_crates_io/vendor/serde-1.0.198 1 1
+third_party/rust/chromium_crates_io/vendor/serde-1.0.198/src 1 1
+third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.198 1 1
 third_party/rust/chromium_crates_io/vendor/serde_json-1.0.116 6 1
 third_party/rust/chromium_crates_io/vendor/serde_json-1.0.116/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1 1 1

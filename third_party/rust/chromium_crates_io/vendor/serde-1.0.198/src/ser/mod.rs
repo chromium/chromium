@@ -796,9 +796,9 @@ pub trait Serializer: Sized {
     /// ```
     ///
     /// [`Some(T)`]: https://doc.rust-lang.org/std/option/enum.Option.html#variant.Some
-    fn serialize_some<T: ?Sized>(self, value: &T) -> Result<Self::Ok, Self::Error>
+    fn serialize_some<T>(self, value: &T) -> Result<Self::Ok, Self::Error>
     where
-        T: Serialize;
+        T: ?Sized + Serialize;
 
     /// Serialize a `()` value.
     ///
@@ -891,13 +891,13 @@ pub trait Serializer: Sized {
     ///     }
     /// }
     /// ```
-    fn serialize_newtype_struct<T: ?Sized>(
+    fn serialize_newtype_struct<T>(
         self,
         name: &'static str,
         value: &T,
     ) -> Result<Self::Ok, Self::Error>
     where
-        T: Serialize;
+        T: ?Sized + Serialize;
 
     /// Serialize a newtype variant like `E::N` in `enum E { N(u8) }`.
     ///
@@ -925,7 +925,7 @@ pub trait Serializer: Sized {
     ///     }
     /// }
     /// ```
-    fn serialize_newtype_variant<T: ?Sized>(
+    fn serialize_newtype_variant<T>(
         self,
         name: &'static str,
         variant_index: u32,
@@ -933,7 +933,7 @@ pub trait Serializer: Sized {
         value: &T,
     ) -> Result<Self::Ok, Self::Error>
     where
-        T: Serialize;
+        T: ?Sized + Serialize;
 
     /// Begin to serialize a variably sized sequence. This call must be
     /// followed by zero or more calls to `serialize_element`, then a call to
@@ -1170,7 +1170,8 @@ pub trait Serializer: Sized {
     /// then a call to `end`.
     ///
     /// The `name` is the name of the struct and the `len` is the number of
-    /// data fields that will be serialized.
+    /// data fields that will be serialized. `len` does not include fields
+    /// which are skipped with [`SerializeStruct::skip_field`].
     ///
     /// ```edition2021
     /// use serde::ser::{Serialize, SerializeStruct, Serializer};
@@ -1207,6 +1208,8 @@ pub trait Serializer: Sized {
     /// The `name` is the name of the enum, the `variant_index` is the index of
     /// this variant within the enum, the `variant` is the name of the variant,
     /// and the `len` is the number of data fields that will be serialized.
+    /// `len` does not include fields which are skipped with
+    /// [`SerializeStructVariant::skip_field`].
     ///
     /// ```edition2021
     /// use serde::ser::{Serialize, SerializeStructVariant, Serializer};
@@ -1346,9 +1349,9 @@ pub trait Serializer: Sized {
     /// [`String`]: https://doc.rust-lang.org/std/string/struct.String.html
     /// [`serialize_str`]: #tymethod.serialize_str
     #[cfg(any(feature = "std", feature = "alloc"))]
-    fn collect_str<T: ?Sized>(self, value: &T) -> Result<Self::Ok, Self::Error>
+    fn collect_str<T>(self, value: &T) -> Result<Self::Ok, Self::Error>
     where
-        T: Display,
+        T: ?Sized + Display,
     {
         self.serialize_str(&value.to_string())
     }
@@ -1379,9 +1382,9 @@ pub trait Serializer: Sized {
     /// }
     /// ```
     #[cfg(not(any(feature = "std", feature = "alloc")))]
-    fn collect_str<T: ?Sized>(self, value: &T) -> Result<Self::Ok, Self::Error>
+    fn collect_str<T>(self, value: &T) -> Result<Self::Ok, Self::Error>
     where
-        T: Display;
+        T: ?Sized + Display;
 
     /// Determine whether `Serialize` implementations should serialize in
     /// human-readable form.
@@ -1493,9 +1496,9 @@ pub trait SerializeSeq {
     type Error: Error;
 
     /// Serialize a sequence element.
-    fn serialize_element<T: ?Sized>(&mut self, value: &T) -> Result<(), Self::Error>
+    fn serialize_element<T>(&mut self, value: &T) -> Result<(), Self::Error>
     where
-        T: Serialize;
+        T: ?Sized + Serialize;
 
     /// Finish serializing a sequence.
     fn end(self) -> Result<Self::Ok, Self::Error>;
@@ -1593,9 +1596,9 @@ pub trait SerializeTuple {
     type Error: Error;
 
     /// Serialize a tuple element.
-    fn serialize_element<T: ?Sized>(&mut self, value: &T) -> Result<(), Self::Error>
+    fn serialize_element<T>(&mut self, value: &T) -> Result<(), Self::Error>
     where
-        T: Serialize;
+        T: ?Sized + Serialize;
 
     /// Finish serializing a tuple.
     fn end(self) -> Result<Self::Ok, Self::Error>;
@@ -1638,9 +1641,9 @@ pub trait SerializeTupleStruct {
     type Error: Error;
 
     /// Serialize a tuple struct field.
-    fn serialize_field<T: ?Sized>(&mut self, value: &T) -> Result<(), Self::Error>
+    fn serialize_field<T>(&mut self, value: &T) -> Result<(), Self::Error>
     where
-        T: Serialize;
+        T: ?Sized + Serialize;
 
     /// Finish serializing a tuple struct.
     fn end(self) -> Result<Self::Ok, Self::Error>;
@@ -1696,9 +1699,9 @@ pub trait SerializeTupleVariant {
     type Error: Error;
 
     /// Serialize a tuple variant field.
-    fn serialize_field<T: ?Sized>(&mut self, value: &T) -> Result<(), Self::Error>
+    fn serialize_field<T>(&mut self, value: &T) -> Result<(), Self::Error>
     where
-        T: Serialize;
+        T: ?Sized + Serialize;
 
     /// Finish serializing a tuple variant.
     fn end(self) -> Result<Self::Ok, Self::Error>;
@@ -1767,9 +1770,9 @@ pub trait SerializeMap {
     /// `serialize_entry` instead as it may be implemented more efficiently in
     /// some formats compared to a pair of calls to `serialize_key` and
     /// `serialize_value`.
-    fn serialize_key<T: ?Sized>(&mut self, key: &T) -> Result<(), Self::Error>
+    fn serialize_key<T>(&mut self, key: &T) -> Result<(), Self::Error>
     where
-        T: Serialize;
+        T: ?Sized + Serialize;
 
     /// Serialize a map value.
     ///
@@ -1777,9 +1780,9 @@ pub trait SerializeMap {
     ///
     /// Calling `serialize_value` before `serialize_key` is incorrect and is
     /// allowed to panic or produce bogus results.
-    fn serialize_value<T: ?Sized>(&mut self, value: &T) -> Result<(), Self::Error>
+    fn serialize_value<T>(&mut self, value: &T) -> Result<(), Self::Error>
     where
-        T: Serialize;
+        T: ?Sized + Serialize;
 
     /// Serialize a map entry consisting of a key and a value.
     ///
@@ -1798,14 +1801,10 @@ pub trait SerializeMap {
     /// [`Serialize`]: ../trait.Serialize.html
     /// [`serialize_key`]: #tymethod.serialize_key
     /// [`serialize_value`]: #tymethod.serialize_value
-    fn serialize_entry<K: ?Sized, V: ?Sized>(
-        &mut self,
-        key: &K,
-        value: &V,
-    ) -> Result<(), Self::Error>
+    fn serialize_entry<K, V>(&mut self, key: &K, value: &V) -> Result<(), Self::Error>
     where
-        K: Serialize,
-        V: Serialize,
+        K: ?Sized + Serialize,
+        V: ?Sized + Serialize,
     {
         tri!(self.serialize_key(key));
         self.serialize_value(value)
@@ -1856,15 +1855,13 @@ pub trait SerializeStruct {
     type Error: Error;
 
     /// Serialize a struct field.
-    fn serialize_field<T: ?Sized>(
-        &mut self,
-        key: &'static str,
-        value: &T,
-    ) -> Result<(), Self::Error>
+    fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<(), Self::Error>
     where
-        T: Serialize;
+        T: ?Sized + Serialize;
 
     /// Indicate that a struct field has been skipped.
+    ///
+    /// The default implementation does nothing.
     #[inline]
     fn skip_field(&mut self, key: &'static str) -> Result<(), Self::Error> {
         let _ = key;
@@ -1922,15 +1919,13 @@ pub trait SerializeStructVariant {
     type Error: Error;
 
     /// Serialize a struct variant field.
-    fn serialize_field<T: ?Sized>(
-        &mut self,
-        key: &'static str,
-        value: &T,
-    ) -> Result<(), Self::Error>
+    fn serialize_field<T>(&mut self, key: &'static str, value: &T) -> Result<(), Self::Error>
     where
-        T: Serialize;
+        T: ?Sized + Serialize;
 
     /// Indicate that a struct variant field has been skipped.
+    ///
+    /// The default implementation does nothing.
     #[inline]
     fn skip_field(&mut self, key: &'static str) -> Result<(), Self::Error> {
         let _ = key;

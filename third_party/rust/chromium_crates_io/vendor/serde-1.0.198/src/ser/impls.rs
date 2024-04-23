@@ -114,7 +114,10 @@ where
 
 ////////////////////////////////////////////////////////////////////////////////
 
-impl<T: ?Sized> Serialize for PhantomData<T> {
+impl<T> Serialize for PhantomData<T>
+where
+    T: ?Sized,
+{
     #[inline]
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -504,17 +507,17 @@ macro_rules! deref_impl {
 }
 
 deref_impl! {
-    <'a, T: ?Sized> Serialize for &'a T where T: Serialize
+    <'a, T> Serialize for &'a T where T: ?Sized + Serialize
 }
 
 deref_impl! {
-    <'a, T: ?Sized> Serialize for &'a mut T where T: Serialize
+    <'a, T> Serialize for &'a mut T where T: ?Sized + Serialize
 }
 
 deref_impl! {
     #[cfg(any(feature = "std", feature = "alloc"))]
     #[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
-    <T: ?Sized> Serialize for Box<T> where T: Serialize
+    <T> Serialize for Box<T> where T: ?Sized + Serialize
 }
 
 deref_impl! {
@@ -528,7 +531,7 @@ deref_impl! {
     /// [`"rc"`]: https://serde.rs/feature-flags.html#-features-rc
     #[cfg(all(feature = "rc", any(feature = "std", feature = "alloc")))]
     #[cfg_attr(doc_cfg, doc(cfg(all(feature = "rc", any(feature = "std", feature = "alloc")))))]
-    <T: ?Sized> Serialize for Rc<T> where T: Serialize
+    <T> Serialize for Rc<T> where T: ?Sized + Serialize
 }
 
 deref_impl! {
@@ -542,13 +545,13 @@ deref_impl! {
     /// [`"rc"`]: https://serde.rs/feature-flags.html#-features-rc
     #[cfg(all(feature = "rc", any(feature = "std", feature = "alloc")))]
     #[cfg_attr(doc_cfg, doc(cfg(all(feature = "rc", any(feature = "std", feature = "alloc")))))]
-    <T: ?Sized> Serialize for Arc<T> where T: Serialize
+    <T> Serialize for Arc<T> where T: ?Sized + Serialize
 }
 
 deref_impl! {
     #[cfg(any(feature = "std", feature = "alloc"))]
     #[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
-    <'a, T: ?Sized> Serialize for Cow<'a, T> where T: Serialize + ToOwned
+    <'a, T> Serialize for Cow<'a, T> where T: ?Sized + Serialize + ToOwned
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -561,9 +564,9 @@ deref_impl! {
     doc_cfg,
     doc(cfg(all(feature = "rc", any(feature = "std", feature = "alloc"))))
 )]
-impl<T: ?Sized> Serialize for RcWeak<T>
+impl<T> Serialize for RcWeak<T>
 where
-    T: Serialize,
+    T: ?Sized + Serialize,
 {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -581,9 +584,9 @@ where
     doc_cfg,
     doc(cfg(all(feature = "rc", any(feature = "std", feature = "alloc"))))
 )]
-impl<T: ?Sized> Serialize for ArcWeak<T>
+impl<T> Serialize for ArcWeak<T>
 where
-    T: Serialize,
+    T: ?Sized + Serialize,
 {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -641,9 +644,9 @@ where
     }
 }
 
-impl<T: ?Sized> Serialize for RefCell<T>
+impl<T> Serialize for RefCell<T>
 where
-    T: Serialize,
+    T: ?Sized + Serialize,
 {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -658,9 +661,9 @@ where
 
 #[cfg(feature = "std")]
 #[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
-impl<T: ?Sized> Serialize for Mutex<T>
+impl<T> Serialize for Mutex<T>
 where
-    T: Serialize,
+    T: ?Sized + Serialize,
 {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -675,9 +678,9 @@ where
 
 #[cfg(feature = "std")]
 #[cfg_attr(doc_cfg, doc(cfg(feature = "std")))]
-impl<T: ?Sized> Serialize for RwLock<T>
+impl<T> Serialize for RwLock<T>
 where
-    T: Serialize,
+    T: ?Sized + Serialize,
 {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -1011,6 +1014,20 @@ impl Serialize for OsString {
 ////////////////////////////////////////////////////////////////////////////////
 
 impl<T> Serialize for Wrapping<T>
+where
+    T: Serialize,
+{
+    #[inline]
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        self.0.serialize(serializer)
+    }
+}
+
+#[cfg(not(no_core_num_saturating))]
+impl<T> Serialize for Saturating<T>
 where
     T: Serialize,
 {

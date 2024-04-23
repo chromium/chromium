@@ -10,9 +10,10 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
+edition = "2015"
 rust-version = "1.56"
 name = "serde_derive"
-version = "1.0.197"
+version = "1.0.198"
 authors = [
     "Erick Tryzelaar <erick.tryzelaar@gmail.com>",
     "David Tolnay <dtolnay@gmail.com>",

@@ -104,6 +104,28 @@ macro_rules! impl_deserialize_num {
                 deserializer.$deserialize(NonZeroVisitor)
             }
         }
+
+        #[cfg(not(no_core_num_saturating))]
+        impl<'de> Deserialize<'de> for Saturating<$primitive> {
+            fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+            where
+                D: Deserializer<'de>,
+            {
+                struct SaturatingVisitor;
+
+                impl<'de> Visitor<'de> for SaturatingVisitor {
+                    type Value = Saturating<$primitive>;
+
+                    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                        formatter.write_str("integer with support for saturating semantics")
+                    }
+
+                    $($($method!(saturating $primitive $val : $visit);)*)*
+                }
+
+                deserializer.$deserialize(SaturatingVisitor)
+            }
+        }
     };
 
     ($primitive:ident, $deserialize:ident $($method:ident!($($val:ident : $visit:ident)*);)*) => {
@@ -154,6 +176,15 @@ macro_rules! num_self {
             }
         }
     };
+
+    (saturating $primitive:ident $ty:ident : $visit:ident) => {
+        fn $visit<E>(self, v: $ty) -> Result<Self::Value, E>
+        where
+            E: Error,
+        {
+            Ok(Saturating(v))
+        }
+    };
 }
 
 macro_rules! num_as_self {
@@ -177,6 +208,15 @@ macro_rules! num_as_self {
             } else {
                 Err(Error::invalid_value(Unexpected::Unsigned(0), &self))
             }
+        }
+    };
+
+    (saturating $primitive:ident $ty:ident : $visit:ident) => {
+        fn $visit<E>(self, v: $ty) -> Result<Self::Value, E>
+        where
+            E: Error,
+        {
+            Ok(Saturating(v as $primitive))
         }
     };
 }
@@ -235,6 +275,21 @@ macro_rules! int_to_int {
             Err(Error::invalid_value(Unexpected::Signed(v as i64), &self))
         }
     };
+
+    (saturating $primitive:ident $ty:ident : $visit:ident) => {
+        fn $visit<E>(self, v: $ty) -> Result<Self::Value, E>
+        where
+            E: Error,
+        {
+            if (v as i64) < $primitive::MIN as i64 {
+                Ok(Saturating($primitive::MIN))
+            } else if ($primitive::MAX as i64) < v as i64 {
+                Ok(Saturating($primitive::MAX))
+            } else {
+                Ok(Saturating(v as $primitive))
+            }
+        }
+    };
 }
 
 macro_rules! int_to_uint {
@@ -265,6 +320,21 @@ macro_rules! int_to_uint {
             Err(Error::invalid_value(Unexpected::Signed(v as i64), &self))
         }
     };
+
+    (saturating $primitive:ident $ty:ident : $visit:ident) => {
+        fn $visit<E>(self, v: $ty) -> Result<Self::Value, E>
+        where
+            E: Error,
+        {
+            if v < 0 {
+                Ok(Saturating(0))
+            } else if ($primitive::MAX as u64) < v as u64 {
+                Ok(Saturating($primitive::MAX))
+            } else {
+                Ok(Saturating(v as $primitive))
+            }
+        }
+    };
 }
 
 macro_rules! uint_to_self {
@@ -293,6 +363,19 @@ macro_rules! uint_to_self {
                 }
             }
             Err(Error::invalid_value(Unexpected::Unsigned(v as u64), &self))
+        }
+    };
+
+    (saturating $primitive:ident $ty:ident : $visit:ident) => {
+        fn $visit<E>(self, v: $ty) -> Result<Self::Value, E>
+        where
+            E: Error,
+        {
+            if v as u64 <= $primitive::MAX as u64 {
+                Ok(Saturating(v as $primitive))
+            } else {
+                Ok(Saturating($primitive::MAX))
+            }
         }
     };
 }
@@ -424,6 +507,21 @@ macro_rules! num_128 {
                     Unexpected::Other(stringify!($ty)),
                     &self,
                 ))
+            }
+        }
+    };
+
+    (saturating $primitive:ident $ty:ident : $visit:ident) => {
+        fn $visit<E>(self, v: $ty) -> Result<Self::Value, E>
+        where
+            E: Error,
+        {
+            if (v as i128) < $primitive::MIN as i128 {
+                Ok(Saturating($primitive::MIN))
+            } else if ($primitive::MAX as u128) < v as u128 {
+                Ok(Saturating($primitive::MAX))
+            } else {
+                Ok(Saturating(v as $primitive))
             }
         }
     };
@@ -852,7 +950,10 @@ struct PhantomDataVisitor<T: ?Sized> {
     marker: PhantomData<T>,
 }
 
-impl<'de, T: ?Sized> Visitor<'de> for PhantomDataVisitor<T> {
+impl<'de, T> Visitor<'de> for PhantomDataVisitor<T>
+where
+    T: ?Sized,
+{
     type Value = PhantomData<T>;
 
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
@@ -868,7 +969,10 @@ impl<'de, T: ?Sized> Visitor<'de> for PhantomDataVisitor<T> {
     }
 }
 
-impl<'de, T: ?Sized> Deserialize<'de> for PhantomData<T> {
+impl<'de, T> Deserialize<'de> for PhantomData<T>
+where
+    T: ?Sized,
+{
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
@@ -1877,9 +1981,9 @@ forwarded_impl! {
 
 #[cfg(any(feature = "std", feature = "alloc"))]
 #[cfg_attr(doc_cfg, doc(cfg(any(feature = "std", feature = "alloc"))))]
-impl<'de, 'a, T: ?Sized> Deserialize<'de> for Cow<'a, T>
+impl<'de, 'a, T> Deserialize<'de> for Cow<'a, T>
 where
-    T: ToOwned,
+    T: ?Sized + ToOwned,
     T::Owned: Deserialize<'de>,
 {
     #[inline]
@@ -1902,7 +2006,7 @@ where
     doc_cfg,
     doc(cfg(all(feature = "rc", any(feature = "std", feature = "alloc"))))
 )]
-impl<'de, T: ?Sized> Deserialize<'de> for RcWeak<T>
+impl<'de, T> Deserialize<'de> for RcWeak<T>
 where
     T: Deserialize<'de>,
 {
@@ -1924,7 +2028,7 @@ where
     doc_cfg,
     doc(cfg(all(feature = "rc", any(feature = "std", feature = "alloc"))))
 )]
-impl<'de, T: ?Sized> Deserialize<'de> for ArcWeak<T>
+impl<'de, T> Deserialize<'de> for ArcWeak<T>
 where
     T: Deserialize<'de>,
 {
@@ -1945,8 +2049,9 @@ macro_rules! box_forwarded_impl {
         $t:ident
     ) => {
         $(#[$attr])*
-        impl<'de, T: ?Sized> Deserialize<'de> for $t<T>
+        impl<'de, T> Deserialize<'de> for $t<T>
         where
+            T: ?Sized,
             Box<T>: Deserialize<'de>,
         {
             fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>

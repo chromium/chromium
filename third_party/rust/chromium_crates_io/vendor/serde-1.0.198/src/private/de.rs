@@ -313,6 +313,8 @@ mod content {
         }
     }
 
+    /// Used to capture data in [`Content`] from other deserializers.
+    /// Cannot capture externally tagged enums, `i128` and `u128`.
     struct ContentVisitor<'de> {
         value: PhantomData<Content<'de>>,
     }
@@ -528,6 +530,8 @@ mod content {
         Content(Content<'de>),
     }
 
+    /// Serves as a seed for deserializing a key of internally tagged enum.
+    /// Cannot capture externally tagged enums, `i128` and `u128`.
     struct TagOrContentVisitor<'de> {
         name: &'static str,
         value: PhantomData<TagOrContent<'de>>,
@@ -813,6 +817,9 @@ mod content {
     }
 
     /// Used by generated code to deserialize an internally tagged enum.
+    ///
+    /// Captures map or sequence from the original deserializer and searches
+    /// a tag in it (in case of sequence, tag is the first element of sequence).
     ///
     /// Not public API.
     pub struct TaggedContentVisitor<T> {
