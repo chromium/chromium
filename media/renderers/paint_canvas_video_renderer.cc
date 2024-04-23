@@ -212,9 +212,7 @@ void CopyMailboxToTexture(gpu::gles2::GLES2Interface* gl,
                           bool flip_y) {
   gl->WaitSyncTokenCHROMIUM(source_sync_token.GetConstData());
   GLuint source_texture =
-      source_mailbox.IsSharedImage()
-          ? gl->CreateAndTexStorage2DSharedImageCHROMIUM(source_mailbox.name)
-          : gl->CreateAndConsumeTextureCHROMIUM(source_mailbox.name);
+      gl->CreateAndTexStorage2DSharedImageCHROMIUM(source_mailbox.name);
   {
     ScopedSharedImageAccess access(gl, source_texture, source_mailbox);
     // The video is stored in a unmultiplied format, so premultiply if
