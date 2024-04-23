@@ -60,7 +60,8 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   VideoFrame(scoped_refptr<media::VideoFrame> frame,
              ExecutionContext*,
              std::string monitoring_source_id = std::string(),
-             sk_sp<SkImage> sk_image = nullptr);
+             sk_sp<SkImage> sk_image = nullptr,
+             bool use_capture_timestamp = false);
 
   // Creates a VideoFrame from an existing handle.
   // All frames sharing |handle| will have their |handle_| invalidated if any of

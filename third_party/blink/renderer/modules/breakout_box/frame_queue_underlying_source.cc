@@ -20,11 +20,15 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 
+namespace blink {
+
 BASE_FEATURE(kBreakoutBoxEnqueueInSeparateTask,
              "BreakoutBoxEnqueueInSeparateTask",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-namespace blink {
+BASE_FEATURE(kBreakoutBoxPreferCaptureTimestampInVideoFrames,
+             "BreakoutBoxPreferCaptureTimestampInVideoFrames",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -432,8 +436,12 @@ ScriptWrappable*
 FrameQueueUnderlyingSource<scoped_refptr<media::VideoFrame>>::MakeBlinkFrame(
     scoped_refptr<media::VideoFrame> media_frame) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
-  return MakeGarbageCollected<VideoFrame>(std::move(media_frame),
-                                          GetExecutionContext(), device_id_);
+  return MakeGarbageCollected<VideoFrame>(
+      std::move(media_frame), GetExecutionContext(), device_id_,
+      /*sk_image=*/nullptr,
+      /*prefer_capture_timestamp=*/
+      base::FeatureList::IsEnabled(
+          kBreakoutBoxPreferCaptureTimestampInVideoFrames));
 }
 
 template <>
