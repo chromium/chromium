@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_view.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
+#include "chrome/browser/ui/quick_answers/ui/quick_answers_stage_button.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_text_label.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_util.h"
 #include "chrome/browser/ui/views/editor_menu/utils/focus_search.h"
@@ -123,63 +124,6 @@ gfx::Insets GetContentViewInsets() {
   }
   return kContentViewInsets;
 }
-
-class MainView : public views::Button {
-  METADATA_HEADER(MainView, views::Button)
-
- public:
-  explicit MainView(PressedCallback callback) : Button(std::move(callback)) {
-    SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
-    SetInstallFocusRingOnFocus(false);
-
-    // This is because waiting for mouse-release to fire buttons would be too
-    // late, since mouse-press dismisses the menu.
-    button_controller()->set_notify_action(
-        views::ButtonController::NotifyAction::kOnPress);
-  }
-
-  // Disallow copy and assign.
-  MainView(const MainView&) = delete;
-  MainView& operator=(const MainView&) = delete;
-
-  ~MainView() override = default;
-
- private:
-  // views::View:
-  void OnFocus() override { SetBackgroundState(true); }
-  void OnBlur() override { SetBackgroundState(false); }
-  void OnThemeChanged() override {
-    views::Button::OnThemeChanged();
-    SetBackground(views::CreateSolidBackground(
-        GetColorProvider()->GetColor(ui::kColorPrimaryBackground)));
-  }
-
-  // views::Button:
-  void StateChanged(views::Button::ButtonState old_state) override {
-    Button::StateChanged(old_state);
-    const bool hovered = GetState() == Button::STATE_HOVERED;
-    if (hovered || (GetState() == Button::STATE_NORMAL)) {
-      SetBackgroundState(hovered);
-    }
-  }
-
-  void SetBackgroundState(bool highlight) {
-    if (highlight) {
-      SetBackground(views::CreateBackgroundFromPainter(
-          views::Painter::CreateSolidRoundRectPainter(
-              GetColorProvider()->GetColor(
-                  ui::kColorMenuItemBackgroundHighlighted),
-              /*radius=*/0, kMainViewInsets)));
-    } else {
-      SetBackground(views::CreateSolidBackground(
-          GetColorProvider()->GetColor(ui::kColorPrimaryBackground)));
-    }
-  }
-};
-
-BEGIN_METADATA(MainView)
-END_METADATA
 
 class ReportQueryView : public views::Button {
   METADATA_HEADER(ReportQueryView, views::Button)
@@ -444,10 +388,12 @@ void QuickAnswersView::InitLayout() {
                        .Build()));
 
   main_view_.SetView(base_view_.view()->AddChildView(
-      std::make_unique<MainView>(base::BindRepeating(
-          &QuickAnswersView::SendQuickAnswersQuery, base::Unretained(this)))));
-  main_view_.view()->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
+      views::Builder<QuickAnswersStageButton>()
+          .SetCallback(base::BindRepeating(
+              &QuickAnswersView::SendQuickAnswersQuery, base::Unretained(this)))
+          .SetAccessibleName(
+              l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT))
+          .Build()));
 
   auto* layout = main_view_.view()->SetLayoutManager(
       std::make_unique<views::FlexLayout>());

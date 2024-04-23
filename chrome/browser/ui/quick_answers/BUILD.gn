@@ -39,6 +39,7 @@ source_set("quick_answers") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/chromeos/read_write_cards",
     "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/quick_answers/ui:quick_answers_stage_button",
     "//chrome/browser/ui/views/editor_menu",
     "//chrome/browser/ui/views/editor_menu:utils",
     "//chrome/browser/ui/views/mahi",
