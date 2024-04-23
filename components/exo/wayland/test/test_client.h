@@ -93,6 +93,9 @@ class TestClient {
   surface_augmenter* surface_augmenter() {
     return globals().surface_augmenter.get();
   }
+  wl_data_device_manager* data_device_manager() {
+    return globals().data_device_manager.get();
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   // Buffer creation support.

@@ -313,6 +313,7 @@ source_set("unit_tests") {
     "wayland_display_util_unittest.cc",
     "wayland_keyboard_delegate_unittest.cc",
     "wayland_positioner_unittest.cc",
+    "wayland_protocol_logger_unittest.cc",
     "wl_data_device_manager_unittest.cc",
     "zaura_output_manager_unittest.cc",
     "zaura_output_manager_v2_unittest.cc",
