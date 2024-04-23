@@ -73,150 +73,83 @@ class TwoClientExtensionSettingsSyncTest : public SyncTest {
   }
 };
 
-// For three independent extensions:
-//
-// Set up each extension with the same (but not necessarily empty) settings for
-// all profiles, start syncing, add some new settings, sync, mutate those
-// settings, sync.
-testing::AssertionResult StartWithSameSettingsTest(
-    const std::string& extension0,
-    const std::string& extension1,
-    const std::string& extension2) {
-  {
-    // Leave extension0 empty.
-  }
-  {
-    base::Value::Dict settings;
-    settings.Set("foo", "bar");
-    SetExtensionSettingsForAllProfiles(extension1, settings);
-  }
-  {
-    base::Value::Dict settings;
-    settings.Set("foo", "bar");
-    settings.Set("baz", "qux");
-    SetExtensionSettingsForAllProfiles(extension2, settings);
-  }
-
-  if (!test()->SetupSync()) {
-    return testing::AssertionFailure();
-  }
-  if (!test()->AwaitQuiescence()) {
-    return testing::AssertionFailure();
-  }
-  if (!AllExtensionSettingsSameAsVerifier()) {
-    return testing::AssertionFailure();
-  }
-
-  MutateSomeSettings(0, extension0, extension1, extension2);
-  if (!test()->AwaitQuiescence()) {
-    return testing::AssertionFailure();
-  }
-  if (!AllExtensionSettingsSameAsVerifier()) {
-    return testing::AssertionFailure();
-  }
-
-  MutateSomeSettings(1, extension0, extension1, extension2);
-  if (!test()->AwaitQuiescence()) {
-    return testing::AssertionFailure();
-  }
-  if (!AllExtensionSettingsSameAsVerifier()) {
-    return testing::AssertionFailure();
-  }
-
-  return testing::AssertionSuccess();
-}
-
-// For three independent extensions:
-//
-// Set up each extension with different settings for each profile, start
-// syncing, add some settings, sync, mutate those settings, sync, have a no-op
-// (non-)change to those settings, sync, mutate again, sync.
-testing::AssertionResult StartWithDifferentSettingsTest(
-    const std::string& extension0,
-    const std::string& extension1,
-    const std::string& extension2) {
-  {
-    // Leave extension0 empty again for no particular reason other than it's
-    // the only remaining unique combination given the other 2 tests have
-    // (empty, nonempty) and (nonempty, nonempty) configurations. We can't
-    // test (nonempty, nonempty) because the merging will provide
-    // unpredictable results, so test (empty, empty).
-  }
-  {
-    base::Value::Dict settings;
-    settings.Set("foo", "bar");
-    SetExtensionSettings(test()->verifier(), extension1, settings);
-    SetExtensionSettings(test()->GetProfile(0), extension1, settings);
-  }
-  {
-    base::Value::Dict settings;
-    settings.Set("foo", "bar");
-    settings.Set("baz", "qux");
-    SetExtensionSettings(test()->verifier(), extension2, settings);
-    SetExtensionSettings(test()->GetProfile(1), extension2, settings);
-  }
-
-  if (!test()->SetupSync()) {
-    return testing::AssertionFailure();
-  }
-  if (!test()->AwaitQuiescence()) {
-    return testing::AssertionFailure();
-  }
-  if (!AllExtensionSettingsSameAsVerifier()) {
-    return testing::AssertionFailure();
-  }
-
-  MutateSomeSettings(2, extension0, extension1, extension2);
-  if (!test()->AwaitQuiescence()) {
-    return testing::AssertionFailure();
-  }
-  if (!AllExtensionSettingsSameAsVerifier()) {
-    return testing::AssertionFailure();
-  }
-
-  MutateSomeSettings(3, extension0, extension1, extension2);
-  if (!test()->AwaitQuiescence()) {
-    return testing::AssertionFailure();
-  }
-  if (!AllExtensionSettingsSameAsVerifier()) {
-    return testing::AssertionFailure();
-  }
-
-  // Test a round of no-ops once, for sanity. Ideally we'd want to assert that
-  // this causes no sync activity, but that sounds tricky.
-  MutateSomeSettings(3, extension0, extension1, extension2);
-  if (!test()->AwaitQuiescence()) {
-    return testing::AssertionFailure();
-  }
-  if (!AllExtensionSettingsSameAsVerifier()) {
-    return testing::AssertionFailure();
-  }
-
-  MutateSomeSettings(4, extension0, extension1, extension2);
-  if (!test()->AwaitQuiescence()) {
-    return testing::AssertionFailure();
-  }
-  if (!AllExtensionSettingsSameAsVerifier()) {
-    return testing::AssertionFailure();
-  }
-
-  return testing::AssertionSuccess();
-}
-
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsSyncTest,
                        ExtensionsStartWithSameSettings) {
   ASSERT_TRUE(SetupClients());
-  ASSERT_PRED3(StartWithSameSettingsTest, InstallExtensionForAllProfiles(0),
-               InstallExtensionForAllProfiles(1),
-               InstallExtensionForAllProfiles(2));
+  const std::string extension0 = InstallExtensionForAllProfiles(0);
+  const std::string extension1 = InstallExtensionForAllProfiles(1);
+  const std::string extension2 = InstallExtensionForAllProfiles(2);
+
+  // For three independent extensions:
+  // Set up each extension with the same (but not necessarily empty) settings
+  // for all profiles, start syncing, add some new settings, sync, mutate those
+  // settings, sync.
+  // Leave extension0 empty.
+  SetExtensionSettingsForAllProfiles(extension1,
+                                     base::Value::Dict().Set("foo", "bar"));
+  SetExtensionSettingsForAllProfiles(
+      extension2, base::Value::Dict().Set("foo", "bar").Set("baz", "qux"));
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(AwaitQuiescence());
+  ASSERT_TRUE(AllExtensionSettingsSameAsVerifier());
+
+  MutateSomeSettings(0, extension0, extension1, extension2);
+  ASSERT_TRUE(AwaitQuiescence());
+  ASSERT_TRUE(AllExtensionSettingsSameAsVerifier());
+
+  MutateSomeSettings(1, extension0, extension1, extension2);
+  ASSERT_TRUE(AwaitQuiescence());
+  ASSERT_TRUE(AllExtensionSettingsSameAsVerifier());
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsSyncTest,
                        ExtensionsStartWithDifferentSettings) {
   ASSERT_TRUE(SetupClients());
-  ASSERT_PRED3(
-      StartWithDifferentSettingsTest, InstallExtensionForAllProfiles(0),
-      InstallExtensionForAllProfiles(1), InstallExtensionForAllProfiles(2));
+  const std::string extension0 = InstallExtensionForAllProfiles(0);
+  const std::string extension1 = InstallExtensionForAllProfiles(1);
+  const std::string extension2 = InstallExtensionForAllProfiles(2);
+
+  // For three independent extensions:
+  // Set up each extension with different settings for each profile, start
+  // syncing, add some settings, sync, mutate those settings, sync, have a no-op
+  // (non-)change to those settings, sync, mutate again, sync.
+  // Leave extension0 empty again for no particular reason other than it's
+  // the only remaining unique combination given the other 2 tests have
+  // (empty, nonempty) and (nonempty, nonempty) configurations. We can't
+  // test (nonempty, nonempty) because the merging will provide
+  // unpredictable results, so test (empty, empty).
+  base::Value::Dict settings1;
+  settings1.Set("foo", "bar");
+  SetExtensionSettings(test()->verifier(), extension1, settings1);
+  SetExtensionSettings(test()->GetProfile(0), extension1, settings1);
+  base::Value::Dict settings2;
+  settings2.Set("foo", "bar");
+  settings2.Set("baz", "qux");
+  SetExtensionSettings(test()->verifier(), extension2, settings2);
+  SetExtensionSettings(test()->GetProfile(1), extension2, settings2);
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(AwaitQuiescence());
+  ASSERT_TRUE(AllExtensionSettingsSameAsVerifier());
+
+  MutateSomeSettings(2, extension0, extension1, extension2);
+  ASSERT_TRUE(AwaitQuiescence());
+  ASSERT_TRUE(AllExtensionSettingsSameAsVerifier());
+
+  MutateSomeSettings(3, extension0, extension1, extension2);
+  ASSERT_TRUE(AwaitQuiescence());
+  ASSERT_TRUE(AllExtensionSettingsSameAsVerifier());
+
+  // Test a round of no-ops once, for sanity. Ideally we'd want to assert that
+  // this causes no sync activity, but that sounds tricky.
+  MutateSomeSettings(3, extension0, extension1, extension2);
+  ASSERT_TRUE(AwaitQuiescence());
+  ASSERT_TRUE(AllExtensionSettingsSameAsVerifier());
+
+  MutateSomeSettings(4, extension0, extension1, extension2);
+  ASSERT_TRUE(AwaitQuiescence());
+  ASSERT_TRUE(AllExtensionSettingsSameAsVerifier());
 }
 
 }  // namespace
