@@ -126,8 +126,8 @@ void SecureChannelHostConnection::Factory::ConnectionAttemptDelegateImpl::
     OnConnection(std::unique_ptr<secure_channel::ClientChannel> channel) {
   std::move(on_connection_attempt_delegate_finished_)
       .Run(base::WrapUnique<HostConnection>(new SecureChannelHostConnection(
-          TetherHost(remote_device_), payload_listener_,
-          std::move(on_disconnection_), std::move(channel))));
+          payload_listener_, std::move(on_disconnection_),
+          std::move(channel))));
 }
 
 void SecureChannelHostConnection::Factory::OnConnectionAttemptFinished(
@@ -139,13 +139,10 @@ void SecureChannelHostConnection::Factory::OnConnectionAttemptFinished(
 }
 
 SecureChannelHostConnection::SecureChannelHostConnection(
-    const TetherHost& tether_host,
     raw_ptr<HostConnection::PayloadListener> payload_listener,
     HostConnection::OnDisconnectionCallback on_disconnection,
     std::unique_ptr<secure_channel::ClientChannel> channel)
-    : HostConnection(tether_host,
-                     payload_listener,
-                     std::move(on_disconnection)),
+    : HostConnection(payload_listener, std::move(on_disconnection)),
       client_channel_(std::move(channel)) {
   client_channel_->AddObserver(this);
 }

@@ -49,8 +49,7 @@ class HostConnection {
 
   using OnMessageSentCallback = base::OnceClosure;
 
-  HostConnection(const TetherHost& tether_host,
-                 raw_ptr<PayloadListener> payload_listener,
+  HostConnection(raw_ptr<PayloadListener> payload_listener,
                  OnDisconnectionCallback on_disconnection);
   virtual ~HostConnection();
   HostConnection(const HostConnection&) = delete;
@@ -59,12 +58,9 @@ class HostConnection {
   virtual void SendMessage(std::unique_ptr<MessageWrapper> message,
                            OnMessageSentCallback on_message_sent_callback) = 0;
 
-  const TetherHost& tether_host() const { return tether_host_; }
-
  protected:
   void ParseMessageAndNotifyListener(const std::string& payload);
 
-  const TetherHost tether_host_;
   raw_ptr<PayloadListener> payload_listener_;
   OnDisconnectionCallback on_disconnection_;
 };

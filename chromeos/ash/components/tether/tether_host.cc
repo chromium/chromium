@@ -11,8 +11,6 @@ namespace ash::tether {
 TetherHost::TetherHost(const multidevice::RemoteDeviceRef remote_device_ref)
     : remote_device_ref_(remote_device_ref) {}
 
-TetherHost::TetherHost(const TetherHost&) = default;
-
 TetherHost::~TetherHost() = default;
 
 const std::string TetherHost::GetDeviceId() const {

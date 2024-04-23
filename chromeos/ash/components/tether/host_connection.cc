@@ -6,11 +6,9 @@
 
 namespace ash::tether {
 
-HostConnection::HostConnection(const TetherHost& tether_host,
-                               raw_ptr<PayloadListener> payload_listener,
+HostConnection::HostConnection(raw_ptr<PayloadListener> payload_listener,
                                OnDisconnectionCallback on_disconnection)
-    : tether_host_(tether_host),
-      payload_listener_(payload_listener),
+    : payload_listener_(payload_listener),
       on_disconnection_(std::move(on_disconnection)) {}
 
 HostConnection::~HostConnection() = default;

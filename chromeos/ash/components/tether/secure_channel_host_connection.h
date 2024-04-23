@@ -111,7 +111,6 @@ class SecureChannelHostConnection
 
  private:
   SecureChannelHostConnection(
-      const TetherHost& tether_host,
       raw_ptr<HostConnection::PayloadListener> listener,
       HostConnection::OnDisconnectionCallback on_disconnection,
       std::unique_ptr<secure_channel::ClientChannel> client_channel);
