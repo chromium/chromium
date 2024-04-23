@@ -80,31 +80,30 @@ cr-icon-button {
   }
 }
 
-paper-spinner-lite {
-  --paper-spinner-color:
+.spinner {
+  mask-image: url(//resources/images/throbber_small.svg);
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: var(--cr-icon-size) var(--cr-icon-size);
+  background-color:
       var(--cr-toolbar-search-field-input-icon-color,
           var(--google-grey-700));
   height: var(--cr-icon-size);
   margin: 0;
-  opacity: 0;
+  opacity: 1;
   padding: 2px;
   position: absolute;
   width: var(--cr-icon-size);
 }
 
 @media (prefers-color-scheme: dark) {
-  paper-spinner-lite {
-    --paper-spinner-color: var(
+  .spinner {
+    background-color: var(
         --cr-toolbar-search-field-input-icon-color, white);
   }
 }
 
-paper-spinner-lite[active] {
-  opacity: 1;
-}
-
-#prompt,
-paper-spinner-lite {
+#prompt {
   transition: opacity 200ms;
 }
 
@@ -252,7 +251,7 @@ input[type='search']::-webkit-search-cancel-button {
 }
 
 :host([narrow][showing-search]) #icon,
-:host([narrow][showing-search]) paper-spinner-lite {
+:host([narrow][showing-search]) .spinner {
   /* 18px to line up with the Menu icon by default. */
   margin-inline-start:
       var(--cr-toolbar-search-icon-margin-inline-start, 18px);

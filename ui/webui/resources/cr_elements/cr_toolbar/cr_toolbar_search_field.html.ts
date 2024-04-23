@@ -11,7 +11,7 @@ export function getHtml(this: CrToolbarSearchFieldElement) {
 <div id="stateBackground"></div>
 <div id="content">
   ${this.shouldShowSpinner_() ? html`
-    <paper-spinner-lite active></paper-spinner-lite>` : ''}
+    <div class="spinner"></div>` : ''}
     <cr-icon-button id="icon" iron-icon="${this.iconOverride || 'cr:search'}"
         title="${this.label}" dir="ltr" tabindex="${this.getIconTabIndex_()}"
         aria-hidden="${this.getIconAriaHidden_()}"
