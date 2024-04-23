@@ -1541,6 +1541,13 @@ bool ConsumeFont(bool important,
       *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
 
+  if (RuntimeEnabledFeatures::FontVariantEmojiEnabled()) {
+    css_parsing_utils::AddProperty(
+        CSSPropertyID::kFontVariantEmoji, CSSPropertyID::kFont,
+        *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
+        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  }
+
   css_parsing_utils::AddProperty(
       CSSPropertyID::kFontWeight, CSSPropertyID::kFont,
       font_weight ? *font_weight
@@ -1649,6 +1656,12 @@ bool FontVariant::ParseShorthand(
         CSSPropertyID::kFontVariantPosition, CSSPropertyID::kFontVariant,
         *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
         css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+    if (RuntimeEnabledFeatures::FontVariantEmojiEnabled()) {
+      css_parsing_utils::AddProperty(
+          CSSPropertyID::kFontVariantEmoji, CSSPropertyID::kFontVariant,
+          *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
+          css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+    }
     return range.AtEnd();
   }
 
@@ -1658,6 +1671,7 @@ bool FontVariant::ParseShorthand(
   FontVariantEastAsianParser east_asian_parser;
   FontVariantAlternatesParser alternates_parser;
   CSSIdentifierValue* position_value = nullptr;
+  CSSIdentifierValue* emoji_value = nullptr;
   do {
     FontVariantLigaturesParser::ParseResult ligatures_parse_result =
         ligatures_parser.ConsumeLigature(range);
@@ -1711,6 +1725,18 @@ bool FontVariant::ParseShorthand(
         }
         position_value = css_parsing_utils::ConsumeIdent(range);
         break;
+      case CSSValueID::kText:
+      case CSSValueID::kEmoji:
+      case CSSValueID::kUnicode:
+        if (!RuntimeEnabledFeatures::FontVariantEmojiEnabled()) {
+          return false;
+        }
+        // Only one emoji value permitted in font-variant grammar.
+        if (emoji_value) {
+          return false;
+        }
+        emoji_value = css_parsing_utils::ConsumeIdent(range);
+        break;
       default:
         return false;
     }
@@ -1744,6 +1770,14 @@ bool FontVariant::ParseShorthand(
                      : *CSSIdentifierValue::Create(CSSValueID::kNormal),
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
+  if (RuntimeEnabledFeatures::FontVariantEmojiEnabled()) {
+    css_parsing_utils::AddProperty(
+        CSSPropertyID::kFontVariantEmoji, CSSPropertyID::kFontVariant,
+        emoji_value ? *emoji_value
+                    : *CSSIdentifierValue::Create(CSSValueID::kNormal),
+        important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+        properties);
+  }
   return true;
 }
 

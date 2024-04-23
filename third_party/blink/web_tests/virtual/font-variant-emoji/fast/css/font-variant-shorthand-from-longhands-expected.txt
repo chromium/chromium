@@ -15,13 +15,13 @@ PASS computedStyle.fontVariant is "discretionary-ligatures small-caps historical
 PASS style.fontVariant is ""
 PASS computedStyle.fontVariant is "discretionary-ligatures small-caps historical-forms proportional-nums super"
 PASS style.fontVariant is ""
-FAIL computedStyle.fontVariant should be discretionary-ligatures small-caps historical-forms proportional-nums super emoji. Was discretionary-ligatures small-caps historical-forms proportional-nums super.
-FAIL style.fontVariant should be discretionary-ligatures small-caps historical-forms proportional-nums ruby super emoji. Was discretionary-ligatures small-caps historical-forms proportional-nums ruby super.
-FAIL computedStyle.fontVariant should be discretionary-ligatures small-caps historical-forms proportional-nums ruby super emoji. Was discretionary-ligatures small-caps historical-forms proportional-nums ruby super.
-FAIL style.fontVariant should be discretionary-ligatures historical-forms proportional-nums ruby super emoji. Was discretionary-ligatures historical-forms proportional-nums ruby super.
-FAIL computedStyle.fontVariant should be discretionary-ligatures historical-forms proportional-nums ruby super emoji. Was discretionary-ligatures historical-forms proportional-nums ruby super.
-FAIL style.fontVariant should be discretionary-ligatures historical-forms proportional-nums ruby emoji. Was discretionary-ligatures historical-forms proportional-nums ruby.
-FAIL computedStyle.fontVariant should be discretionary-ligatures historical-forms proportional-nums ruby emoji. Was discretionary-ligatures historical-forms proportional-nums ruby.
+PASS computedStyle.fontVariant is "discretionary-ligatures small-caps historical-forms proportional-nums super emoji"
+PASS style.fontVariant is "discretionary-ligatures small-caps historical-forms proportional-nums ruby super emoji"
+PASS computedStyle.fontVariant is "discretionary-ligatures small-caps historical-forms proportional-nums ruby super emoji"
+PASS style.fontVariant is "discretionary-ligatures historical-forms proportional-nums ruby super emoji"
+PASS computedStyle.fontVariant is "discretionary-ligatures historical-forms proportional-nums ruby super emoji"
+PASS style.fontVariant is "discretionary-ligatures historical-forms proportional-nums ruby emoji"
+PASS computedStyle.fontVariant is "discretionary-ligatures historical-forms proportional-nums ruby emoji"
 PASS style.fontVariant is "discretionary-ligatures historical-forms proportional-nums ruby"
 PASS computedStyle.fontVariant is "discretionary-ligatures historical-forms proportional-nums ruby"
 PASS style.fontVariant is "discretionary-ligatures proportional-nums ruby"

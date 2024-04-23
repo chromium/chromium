@@ -7645,9 +7645,10 @@
       longhands: [
         "font-style", "font-variant-ligatures", "font-variant-caps",
         "font-variant-numeric", "font-variant-east-asian", "font-variant-alternates",
-        "font-variant-position", "font-weight", "font-stretch", "font-size",
-        "line-height", "font-family", "font-optical-sizing", "font-size-adjust",
-        "font-kerning", "font-feature-settings", "font-variation-settings"
+        "font-variant-position", "font-variant-emoji", "font-weight", "font-stretch",
+        "font-size", "line-height", "font-family", "font-optical-sizing",
+        "font-size-adjust", "font-kerning", "font-feature-settings",
+        "font-variation-settings"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       // Changes to anything related to fonts require that we call style.UpdateFont(),
@@ -7658,7 +7659,8 @@
       name: "font-variant",
       longhands: [
         "font-variant-ligatures", "font-variant-caps", "font-variant-alternates",
-        "font-variant-numeric", "font-variant-east-asian", "font-variant-position"
+        "font-variant-numeric", "font-variant-east-asian", "font-variant-position",
+        "font-variant-emoji"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       is_descriptor: true,

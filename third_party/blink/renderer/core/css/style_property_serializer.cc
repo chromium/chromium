@@ -808,6 +808,7 @@ bool StylePropertySerializer::AppendFontLonghandValueIfNotNormal(
       case CSSPropertyID::kFontVariantEastAsian:
       case CSSPropertyID::kFontVariantAlternates:
       case CSSPropertyID::kFontVariantPosition:
+      case CSSPropertyID::kFontVariantEmoji:
       case CSSPropertyID::kFontWeight:
         result.Append(' ');
         break;
@@ -1211,6 +1212,18 @@ String StylePropertySerializer::FontValue() const {
     return g_empty_string;
   }
 
+  if (RuntimeEnabledFeatures::FontVariantEmojiEnabled()) {
+    int font_variant_emoji_property_index =
+        property_set_.FindPropertyIndex(GetCSSPropertyFontVariantEmoji());
+    DCHECK_NE(font_variant_emoji_property_index, -1);
+    PropertyValueForSerializer font_variant_emoji_property =
+        property_set_.PropertyAt(font_variant_emoji_property_index);
+    if (IsPropertyNonInitial(*font_variant_emoji_property.Value(),
+                             CSSValueID::kNormal)) {
+      return g_empty_string;
+    }
+  }
+
   if (RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled()) {
     int font_size_adjust_property_index =
         property_set_.FindPropertyIndex(GetCSSPropertyFontSizeAdjust());
@@ -1296,6 +1309,10 @@ String StylePropertySerializer::FontVariantValue() const {
                                      result);
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantPosition(),
                                      result);
+  if (RuntimeEnabledFeatures::FontVariantEmojiEnabled()) {
+    AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantEmoji(),
+                                       result);
+  }
 
   // The font-variant shorthand should return an empty string where
   // it cannot represent "font-variant-ligatures: none" along

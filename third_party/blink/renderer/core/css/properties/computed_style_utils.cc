@@ -1534,13 +1534,17 @@ CSSValue* ComputedStyleUtils::ValueForFont(const ComputedStyle& style) {
   FontDescription::Kerning kerning = style.GetFontDescription().GetKerning();
   FontDescription::FontVariantPosition variant_position =
       style.GetFontDescription().VariantPosition();
+  FontDescription::FontVariantEmoji variant_emoji =
+      style.GetFontDescription().VariantEmoji();
   OpticalSizing optical_sizing = style.GetFontDescription().FontOpticalSizing();
 
   if (kerning != FontDescription::kAutoKerning ||
       optical_sizing != kAutoOpticalSizing ||
       (RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled() &&
        style.GetFontDescription().HasSizeAdjust()) ||
-      variant_position != FontDescription::kNormalVariantPosition) {
+      variant_position != FontDescription::kNormalVariantPosition ||
+      (RuntimeEnabledFeatures::FontVariantEmojiEnabled() &&
+       variant_emoji != FontDescription::kNormalVariantEmoji)) {
     return nullptr;
   }
 

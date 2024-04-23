@@ -35,17 +35,25 @@ style.fontVariantPosition = "super";
 shouldBeEqualToString("style.fontVariant", "");
 shouldBeEqualToString("computedStyle.fontVariant", "discretionary-ligatures small-caps historical-forms proportional-nums super");
 
+style.fontVariantEmoji = "emoji";
+shouldBeEqualToString("style.fontVariant", "");
+shouldBeEqualToString("computedStyle.fontVariant", "discretionary-ligatures small-caps historical-forms proportional-nums super emoji");
+
 style.fontVariantEastAsian = "ruby";
 // The |style.fontVariant| shorthand is set when all currently supported
 // sub-properties are set.
-shouldBeEqualToString("style.fontVariant", "discretionary-ligatures small-caps historical-forms proportional-nums ruby super");
-shouldBeEqualToString("computedStyle.fontVariant", "discretionary-ligatures small-caps historical-forms proportional-nums ruby super");
+shouldBeEqualToString("style.fontVariant", "discretionary-ligatures small-caps historical-forms proportional-nums ruby super emoji");
+shouldBeEqualToString("computedStyle.fontVariant", "discretionary-ligatures small-caps historical-forms proportional-nums ruby super emoji");
 
 style.fontVariantCaps = "normal";
-shouldBeEqualToString("style.fontVariant", "discretionary-ligatures historical-forms proportional-nums ruby super");
-shouldBeEqualToString("computedStyle.fontVariant", "discretionary-ligatures historical-forms proportional-nums ruby super");
+shouldBeEqualToString("style.fontVariant", "discretionary-ligatures historical-forms proportional-nums ruby super emoji");
+shouldBeEqualToString("computedStyle.fontVariant", "discretionary-ligatures historical-forms proportional-nums ruby super emoji");
 
 style.fontVariantPosition = "normal";
+shouldBeEqualToString("style.fontVariant", "discretionary-ligatures historical-forms proportional-nums ruby emoji");
+shouldBeEqualToString("computedStyle.fontVariant", "discretionary-ligatures historical-forms proportional-nums ruby emoji");
+
+style.fontVariantEmoji = "normal";
 shouldBeEqualToString("style.fontVariant", "discretionary-ligatures historical-forms proportional-nums ruby");
 shouldBeEqualToString("computedStyle.fontVariant", "discretionary-ligatures historical-forms proportional-nums ruby");
 
@@ -72,6 +80,7 @@ style.fontVariantNumeric = "initial";
 style.fontVariantEastAsian = "initial";
 style.fontVariantAlternates = "initial";
 style.fontVariantPosition = "initial";
+style.fontVariantEmoji = "initial";
 shouldBeEqualToString("style.fontVariant", "initial");
 
 document.body.removeChild(testContainer);

@@ -1,0 +1,381 @@
+Longhands for font: 12px monospace
+font-style: normal
+font-variant-caps: normal
+font-variant-ligatures: normal
+font-variant-numeric: normal
+font-variant-east-asian: normal
+font-variant-alternates: normal
+font-size-adjust: none
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
+font-variant-position: normal
+font-variant-emoji: normal
+font-weight: normal
+font-stretch: normal
+font-size: 12px
+line-height: normal
+font-family: monospace
+
+Longhands for font: 12px/24px serif
+font-style: normal
+font-variant-caps: normal
+font-variant-ligatures: normal
+font-variant-numeric: normal
+font-variant-east-asian: normal
+font-variant-alternates: normal
+font-size-adjust: none
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
+font-variant-position: normal
+font-variant-emoji: normal
+font-weight: normal
+font-stretch: normal
+font-size: 12px
+line-height: 24px
+font-family: serif
+
+Longhands for font: normal 12px serif
+font-style: normal
+font-variant-caps: normal
+font-variant-ligatures: normal
+font-variant-numeric: normal
+font-variant-east-asian: normal
+font-variant-alternates: normal
+font-size-adjust: none
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
+font-variant-position: normal
+font-variant-emoji: normal
+font-weight: normal
+font-stretch: normal
+font-size: 12px
+line-height: normal
+font-family: serif
+
+Longhands for font: normal normal 12px serif
+font-style: normal
+font-variant-caps: normal
+font-variant-ligatures: normal
+font-variant-numeric: normal
+font-variant-east-asian: normal
+font-variant-alternates: normal
+font-size-adjust: none
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
+font-variant-position: normal
+font-variant-emoji: normal
+font-weight: normal
+font-stretch: normal
+font-size: 12px
+line-height: normal
+font-family: serif
+
+Longhands for font: normal normal normal 12px serif
+font-style: normal
+font-variant-caps: normal
+font-variant-ligatures: normal
+font-variant-numeric: normal
+font-variant-east-asian: normal
+font-variant-alternates: normal
+font-size-adjust: none
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
+font-variant-position: normal
+font-variant-emoji: normal
+font-weight: normal
+font-stretch: normal
+font-size: 12px
+line-height: normal
+font-family: serif
+
+Longhands for font: italic small-caps 12px/24px serif
+font-style: italic
+font-variant-caps: small-caps
+font-variant-ligatures: normal
+font-variant-numeric: normal
+font-variant-east-asian: normal
+font-variant-alternates: normal
+font-size-adjust: none
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
+font-variant-position: normal
+font-variant-emoji: normal
+font-weight: normal
+font-stretch: normal
+font-size: 12px
+line-height: 24px
+font-family: serif
+
+Longhands for font: italic bold 12px/24px serif
+font-style: italic
+font-variant-caps: normal
+font-variant-ligatures: normal
+font-variant-numeric: normal
+font-variant-east-asian: normal
+font-variant-alternates: normal
+font-size-adjust: none
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
+font-variant-position: normal
+font-variant-emoji: normal
+font-weight: bold
+font-stretch: normal
+font-size: 12px
+line-height: 24px
+font-family: serif
+
+Longhands for font: small-caps bold 14px/28px Arial, sans-serif
+font-style: normal
+font-variant-caps: small-caps
+font-variant-ligatures: normal
+font-variant-numeric: normal
+font-variant-east-asian: normal
+font-variant-alternates: normal
+font-size-adjust: none
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
+font-variant-position: normal
+font-variant-emoji: normal
+font-weight: bold
+font-stretch: normal
+font-size: 14px
+line-height: 28px
+font-family: Arial, sans-serif
+
+Longhands for font: italic small-caps bold 14px/28px Arial, sans-serif
+font-style: italic
+font-variant-caps: small-caps
+font-variant-ligatures: normal
+font-variant-numeric: normal
+font-variant-east-asian: normal
+font-variant-alternates: normal
+font-size-adjust: none
+font-kerning: auto
+font-optical-sizing: auto
+font-feature-settings: normal
+font-variation-settings: normal
+font-variant-position: normal
+font-variant-emoji: normal
+font-weight: bold
+font-stretch: normal
+font-size: 14px
+line-height: 28px
+font-family: Arial, sans-serif
+
+Longhands for font: caption
+font-style: 
+font-variant-ligatures: 
+font-variant-caps: 
+font-variant-numeric: 
+font-variant-east-asian: 
+font-variant-alternates: 
+font-variant-position: 
+font-variant-emoji: 
+font-weight: 
+font-stretch: 
+font-size: 
+line-height: 
+font-family: 
+font-optical-sizing: 
+font-size-adjust: 
+font-kerning: 
+font-feature-settings: 
+font-variation-settings: 
+
+Longhands for font: icon
+font-style: 
+font-variant-ligatures: 
+font-variant-caps: 
+font-variant-numeric: 
+font-variant-east-asian: 
+font-variant-alternates: 
+font-variant-position: 
+font-variant-emoji: 
+font-weight: 
+font-stretch: 
+font-size: 
+line-height: 
+font-family: 
+font-optical-sizing: 
+font-size-adjust: 
+font-kerning: 
+font-feature-settings: 
+font-variation-settings: 
+
+Longhands for font: menu
+font-style: 
+font-variant-ligatures: 
+font-variant-caps: 
+font-variant-numeric: 
+font-variant-east-asian: 
+font-variant-alternates: 
+font-variant-position: 
+font-variant-emoji: 
+font-weight: 
+font-stretch: 
+font-size: 
+line-height: 
+font-family: 
+font-optical-sizing: 
+font-size-adjust: 
+font-kerning: 
+font-feature-settings: 
+font-variation-settings: 
+
+Longhands for font: message-box
+font-style: 
+font-variant-ligatures: 
+font-variant-caps: 
+font-variant-numeric: 
+font-variant-east-asian: 
+font-variant-alternates: 
+font-variant-position: 
+font-variant-emoji: 
+font-weight: 
+font-stretch: 
+font-size: 
+line-height: 
+font-family: 
+font-optical-sizing: 
+font-size-adjust: 
+font-kerning: 
+font-feature-settings: 
+font-variation-settings: 
+
+Longhands for font: small-caption
+font-style: 
+font-variant-ligatures: 
+font-variant-caps: 
+font-variant-numeric: 
+font-variant-east-asian: 
+font-variant-alternates: 
+font-variant-position: 
+font-variant-emoji: 
+font-weight: 
+font-stretch: 
+font-size: 
+line-height: 
+font-family: 
+font-optical-sizing: 
+font-size-adjust: 
+font-kerning: 
+font-feature-settings: 
+font-variation-settings: 
+
+Longhands for font: status-bar
+font-style: 
+font-variant-ligatures: 
+font-variant-caps: 
+font-variant-numeric: 
+font-variant-east-asian: 
+font-variant-alternates: 
+font-variant-position: 
+font-variant-emoji: 
+font-weight: 
+font-stretch: 
+font-size: 
+line-height: 
+font-family: 
+font-optical-sizing: 
+font-size-adjust: 
+font-kerning: 
+font-feature-settings: 
+font-variation-settings: 
+
+Longhands for font: -webkit-mini-control
+font-style: 
+font-variant-ligatures: 
+font-variant-caps: 
+font-variant-numeric: 
+font-variant-east-asian: 
+font-variant-alternates: 
+font-variant-position: 
+font-variant-emoji: 
+font-weight: 
+font-stretch: 
+font-size: 
+line-height: 
+font-family: 
+font-optical-sizing: 
+font-size-adjust: 
+font-kerning: 
+font-feature-settings: 
+font-variation-settings: 
+
+Longhands for font: -webkit-small-control
+font-style: 
+font-variant-ligatures: 
+font-variant-caps: 
+font-variant-numeric: 
+font-variant-east-asian: 
+font-variant-alternates: 
+font-variant-position: 
+font-variant-emoji: 
+font-weight: 
+font-stretch: 
+font-size: 
+line-height: 
+font-family: 
+font-optical-sizing: 
+font-size-adjust: 
+font-kerning: 
+font-feature-settings: 
+font-variation-settings: 
+
+Longhands for font: -webkit-control
+font-style: 
+font-variant-ligatures: 
+font-variant-caps: 
+font-variant-numeric: 
+font-variant-east-asian: 
+font-variant-alternates: 
+font-variant-position: 
+font-variant-emoji: 
+font-weight: 
+font-stretch: 
+font-size: 
+line-height: 
+font-family: 
+font-optical-sizing: 
+font-size-adjust: 
+font-kerning: 
+font-feature-settings: 
+font-variation-settings: 
+
+Longhands for font: italic small-caps bold 12px/24px
+
+Longhands for font: italic small-caps bold 12px
+
+Longhands for font: italic small-caps bold /12px serif
+
+Longhands for font: italic small-caps small-caps 12px serif
+
+Longhands for font: italic italic small-caps bold 12px serif
+
+Longhands for font: 12px/italic serif
+
+Longhands for font: caption italic
+
+Longhands for font: icon 12px
+
+Longhands for font: icon 12px serif
+
+Longhands for font: menu italic 12px
+
+
