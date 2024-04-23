@@ -15,7 +15,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {assertStyle, createAutocompleteMatch} from './realbox_test_utils.js';
 import {TestRealboxBrowserProxy} from './test_realbox_browser_proxy.js';
@@ -1715,7 +1715,7 @@ suite('NewTabPageRealboxTest', () => {
 
     assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
     assertEquals('clear browsing history', realbox.$.input.value);
-    assertEquals(window.getComputedStyle(focusIndicator).display, 'block');
+    assertTrue(isVisible(focusIndicator));
 
     // Give focus to the action button
     const action = $$<HTMLElement>(matchEls[0]!, '#action')!;
@@ -1723,7 +1723,7 @@ suite('NewTabPageRealboxTest', () => {
 
     assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
     assertEquals(action, matchEls[0]!.shadowRoot!.activeElement);
-    assertEquals(window.getComputedStyle(focusIndicator).display, 'none');
+    assertFalse(isVisible(focusIndicator));
 
     // Give focus to remove button
     const removeButton = matchEls[0]!.$.remove;
@@ -1731,7 +1731,7 @@ suite('NewTabPageRealboxTest', () => {
 
     assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
     assertEquals(removeButton, matchEls[0]!.shadowRoot!.activeElement);
-    assertEquals(window.getComputedStyle(focusIndicator).display, 'none');
+    assertFalse(isVisible(focusIndicator));
   });
 
   //============================================================================
@@ -2468,6 +2468,47 @@ suite('NewTabPageRealboxTest', () => {
     await waitAfterNextRender(realbox);
     assertTrue(
         realbox.$.inputWrapper.querySelector('#thumbnailContainer') !== null);
+  });
+
+  test('setting thumbnail clears input text', async () => {
+    assertEquals(realbox.$.input.value, '');
+    assertTrue(
+        realbox.$.inputWrapper.querySelector('#thumbnailContainer') === null);
+
+    testProxy.callbackRouterRemote.setInputText('Hello');
+    await waitAfterNextRender(realbox);
+    assertEquals(realbox.$.input.value, 'Hello');
+    assertTrue(
+        realbox.$.inputWrapper.querySelector('#thumbnailContainer') === null);
+
+    testProxy.callbackRouterRemote.setThumbnail('foo.png');
+    await waitAfterNextRender(realbox);
+    assertEquals(realbox.$.input.value, '');
+    assertTrue(
+        realbox.$.inputWrapper.querySelector('#thumbnailContainer') !== null);
+  });
+
+  test('setting input text clears thumbnail', async () => {
+    assertEquals(realbox.$.input.value, '');
+    assertTrue(
+        realbox.$.inputWrapper.querySelector('#thumbnailContainer') === null);
+
+    testProxy.callbackRouterRemote.setThumbnail('foo.png');
+    await waitAfterNextRender(realbox);
+    assertEquals(realbox.$.input.value, '');
+    let thumbnailContainer =
+        realbox.$.inputWrapper.querySelector('#thumbnailContainer');
+    assertTrue(thumbnailContainer !== null);
+    assertTrue(isVisible(thumbnailContainer));
+
+    testProxy.callbackRouterRemote.setInputText('Hello');
+    await waitAfterNextRender(realbox);
+    assertEquals(realbox.$.input.value, 'Hello');
+    // The thumbnail container should still be present but hidden.
+    thumbnailContainer =
+        realbox.$.inputWrapper.querySelector('#thumbnailContainer');
+    assertTrue(thumbnailContainer !== null);
+    assertFalse(isVisible(thumbnailContainer));
   });
 
   test('thumbnail clicked deletion', async () => {

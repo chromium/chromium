@@ -389,10 +389,12 @@ export class RealboxElement extends RealboxElementBase {
   }
 
   private onSetInputText_(inputText: string) {
-    this.$.input.setAttribute('value', inputText);
+    this.thumbnailUrl_ = '';
+    this.updateInput_({text: inputText, inline: ''});
   }
 
   private onSetThumbnail_(thumbnailUrl: string) {
+    this.updateInput_({text: '', inline: ''});
     this.thumbnailUrl_ = thumbnailUrl;
   }
 
