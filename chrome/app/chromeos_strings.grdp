@@ -1680,7 +1680,7 @@
     Set a <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password to make it easier to sign in
   </message>
   <message name="IDS_PASSWORD_SELECTION_SUBTITLE" desc="Message displayed on the password selection screen.">
-    Instead of entering your Google Account password to sign in, you can create <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password for this device
+    Instead of entering your Google Account password to sign in, you can create a <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password for this device
   </message>
   <message name="IDS_PASSWORD_SELECTION_LOCAL_PASSWORD_LABEL" desc="Label for the local password option on the password selection screen.">
     Create password for this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
