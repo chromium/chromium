@@ -19,6 +19,7 @@
 #include "third_party/dawn/include/dawn/webgpu.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp_print.h"
+#include "third_party/dawn/include/dawn/wire/WireClient.h"
 
 namespace video_effects {
 
@@ -44,8 +45,7 @@ bool VideoEffectsProcessorWebGpu::Initialize() {
 
   // C++ wrapper for WebGPU requires us to install a proc table globally per
   // process or per thread. Here, we install them per-process.
-  const DawnProcTable& procs = webgpu_api_channel->GetProcs();
-  dawnProcSetProcs(&procs);
+  dawnProcSetProcs(&dawn::wire::client::GetProcs());
 
   // Required to create a device. Setting a synthetic token here means that
   // blob cache will be disabled in Dawn, since the mapping that is going to
@@ -54,8 +54,7 @@ bool VideoEffectsProcessorWebGpu::Initialize() {
   webgpu_interface->SetWebGPUExecutionContextToken(
       blink::WebGPUExecutionContextToken(blink::DedicatedWorkerToken{}));
 
-  WGPUInstance webgpu_c_instance = webgpu_api_channel->GetWGPUInstance();
-  instance_ = wgpu::Instance(webgpu_c_instance);
+  instance_ = wgpu::Instance(webgpu_api_channel->GetWGPUInstance());
 
   auto* request_adapter_callback = gpu::webgpu::BindWGPUOnceCallback(
       [](base::WeakPtr<VideoEffectsProcessorWebGpu> processor,
