@@ -102,14 +102,6 @@ template("chrome_common_shared_library") {
       configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
       configs += [ "//build/config/compiler:thinlto_optimize_max" ]
     }
-
-    # Compress sections to stay under 4gb hard limit on 32-bit current_cpu.
-    # https://crbug.com/1449278
-    if (symbol_level == 2 && !use_debug_fission &&
-        (current_cpu == "arm" || current_cpu == "x86")) {
-      configs += [ "//build/config:compress_debug_sections" ]
-    }
-
     configs += [ "//build/config/compiler:chrome_orderfile_config" ]
 
     # Use a dynamically-generated linker script.
