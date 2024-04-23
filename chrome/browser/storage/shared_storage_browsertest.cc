@@ -20,6 +20,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -2630,6 +2631,109 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       kErrorTypeHistogram,
       blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
+                       CrossOriginWorklet_CreateWorklet_PrefsError) {
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
+
+  SetPrefs(/*enable_privacy_sandbox=*/false,
+           /*allow_third_party_cookies=*/true);
+
+  GURL script_url = https_server()->GetURL(kCrossOriginHost,
+                                           "/shared_storage/simple_module.js");
+
+  // The prefs error for `createWorklet()` won't be revealed to the cross-origin
+  // caller. But we can verify the error indirectly, by checking that no worklet
+  // host is created.
+  EXPECT_TRUE(content::ExecJs(
+      GetActiveWebContents(),
+      content::JsReplace("sharedStorage.createWorklet($1)", script_url)));
+
+  EXPECT_EQ(0u, content::GetAttachedSharedStorageWorkletHostsCount(
+                    GetActiveWebContents()
+                        ->GetPrimaryMainFrame()
+                        ->GetStoragePartition()));
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
+                       CrossOriginWorklet_SelectUrl_PrefsError) {
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
+
+  GURL script_url = https_server()->GetURL(kCrossOriginHost,
+                                           "/shared_storage/simple_module.js");
+
+  EXPECT_TRUE(
+      content::ExecJs(GetActiveWebContents(), content::JsReplace(R"(
+        (async function() {
+          window.testWorklet = await sharedStorage.createWorklet($1);
+        })()
+      )",
+                                                                 script_url)));
+
+  SetPrefs(/*enable_privacy_sandbox=*/false,
+           /*allow_third_party_cookies=*/true);
+
+  content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
+
+  // The prefs error for `selectURL()` won't be revealed to the cross-origin
+  // caller. But we can verify the error indirectly, by checking that no console
+  // messages are logged, which indicates that the operation did not execute.
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), R"(
+        window.testWorklet.selectURL(
+            'test-url-selection-operation',
+            [
+              {
+                url: "fenced_frames/title0.html"
+              }
+            ],
+            {
+              data: {'mockResult': 0}
+            }
+          )
+      )"));
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+  run_loop.Run();
+
+  EXPECT_EQ(0u, console_observer.messages().size());
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
+                       CrossOriginWorklet_Run_PrefsError) {
+  Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
+
+  GURL script_url = https_server()->GetURL(kCrossOriginHost,
+                                           "/shared_storage/simple_module.js");
+
+  EXPECT_TRUE(
+      content::ExecJs(GetActiveWebContents(), content::JsReplace(R"(
+        (async function() {
+          window.testWorklet = await sharedStorage.createWorklet($1);
+        })()
+      )",
+                                                                 script_url)));
+
+  SetPrefs(/*enable_privacy_sandbox=*/false,
+           /*allow_third_party_cookies=*/true);
+
+  content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
+
+  // The prefs error for `run()` won't be revealed to the cross-origin caller.
+  // But we can verify the error indirectly, by checking that no console
+  // messages are logged, which indicates that the operation did not execute.
+  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), R"(
+        window.testWorklet.run('test-operation')
+      )"));
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+  run_loop.Run();
+
+  EXPECT_EQ(0u, console_observer.messages().size());
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, DocumentTiming) {

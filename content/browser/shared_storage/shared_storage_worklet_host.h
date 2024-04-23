@@ -272,6 +272,10 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   // the value of the main frame origin in the constructor.
   const url::Origin main_frame_origin_;
 
+  // Whether `shared_storage_origin_` is same origin with the creator context's
+  // origin.
+  bool is_same_origin_worklet_;
+
   // A map of unresolved URNs to the candidate URL with metadata vector. Inside
   // `RunURLSelectionOperationOnWorklet()` a new URN is generated and is
   // inserted into `unresolved_urns_`. When the corresponding

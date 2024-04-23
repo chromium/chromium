@@ -188,6 +188,9 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
       shared_storage_origin_(url::Origin::Create(script_source_url)),
       shared_storage_site_(net::SchemefulSite(shared_storage_origin_)),
       main_frame_origin_(document_service.main_frame_origin()),
+      is_same_origin_worklet_(document_service.render_frame_host()
+                                  .GetLastCommittedOrigin()
+                                  .IsSameOriginWith(shared_storage_origin_)),
       creation_time_(base::TimeTicks::Now()) {
   GetContentClient()->browser()->OnSharedStorageWorkletHostCreated(
       &(document_service.render_frame_host()));
@@ -373,17 +376,6 @@ void SharedStorageWorkletHost::SelectURL(
     return;
   }
 
-  std::string debug_message;
-  if (!IsSharedStorageSelectURLAllowed(&debug_message)) {
-    std::move(callback).Run(
-        /*success=*/false,
-        /*error_message=*/
-        GetSharedStorageErrorMessage(debug_message,
-                                     kSharedStorageSelectURLDisabledMessage),
-        /*result_config=*/std::nullopt);
-    return;
-  }
-
   if (!keep_alive_after_operation_) {
     receiver_.ReportBadMessage(
         "Received further operations when previous operation did not include "
@@ -393,6 +385,9 @@ void SharedStorageWorkletHost::SelectURL(
     return;
   }
 
+  // TODO(crbug.com/335818079): If `keep_alive_after_operation_` switches to
+  // false, but the operation doesn't get executed (e.g. fails other checks), we
+  // should destroy this worklet host as well.
   keep_alive_after_operation_ = keep_alive_after_operation;
 
   size_t shared_storage_fenced_frame_root_count = 0u;
@@ -435,6 +430,34 @@ void SharedStorageWorkletHost::SelectURL(
   }
 
   GURL urn_uuid = pending_urn_uuid.value();
+
+  std::string debug_message;
+  if (!IsSharedStorageSelectURLAllowed(&debug_message)) {
+    if (is_same_origin_worklet_) {
+      std::move(callback).Run(
+          /*success=*/false,
+          /*error_message=*/
+          GetSharedStorageErrorMessage(debug_message,
+                                       kSharedStorageSelectURLDisabledMessage),
+          /*result_config=*/std::nullopt);
+    } else {
+      // When the worklet and the worklet creator are not same-origin, the user
+      // preferences for the worklet origin should not be revealed.
+      //
+      // TODO(cammie): Right now the metric will be recorded as `kSuccess`. We
+      // might want to record a separate metric for this distorted result.
+      FencedFrameConfig config(urn_uuid, GURL());
+      std::move(callback).Run(
+          /*success=*/true, /*error_message=*/{},
+          /*result_config=*/
+          config.RedactFor(FencedFrameEntity::kEmbedder));
+    }
+    return;
+  }
+
+  // Further error checks/messages should be avoided, as they might indirectly
+  // reveal the user preferences for the worklet origin.
+
   IncrementPendingOperationsCount();
 
   std::vector<GURL> urls;
@@ -504,15 +527,6 @@ void SharedStorageWorkletHost::Run(
     return;
   }
 
-  std::string debug_message;
-  if (!IsSharedStorageAllowed(&debug_message)) {
-    std::move(callback).Run(
-        /*success=*/false,
-        /*error_message=*/GetSharedStorageErrorMessage(
-            debug_message, kSharedStorageDisabledMessage));
-    return;
-  }
-
   if (!keep_alive_after_operation_) {
     receiver_.ReportBadMessage(
         "Received further operations when previous operation did not include "
@@ -522,7 +536,33 @@ void SharedStorageWorkletHost::Run(
     return;
   }
 
+  // TODO(crbug.com/335818079): If `keep_alive_after_operation_` switches to
+  // false, but the operation doesn't get executed (e.g. fails other checks), we
+  // should destroy this worklet host as well.
   keep_alive_after_operation_ = keep_alive_after_operation;
+
+  std::string debug_message;
+  if (!IsSharedStorageAllowed(&debug_message)) {
+    if (is_same_origin_worklet_) {
+      std::move(callback).Run(
+          /*success=*/false,
+          /*error_message=*/GetSharedStorageErrorMessage(
+              debug_message, kSharedStorageDisabledMessage));
+    } else {
+      // When the worklet and the worklet creator are not same-origin, the user
+      // preferences for the worklet origin should not be revealed.
+      //
+      // TODO(cammie): Right now the metric will be recorded as `kSuccess`. We
+      // might want to record a separate metric for this distorted result.
+      std::move(callback).Run(
+          /*success=*/true,
+          /*error_message=*/{});
+    }
+    return;
+  }
+
+  // Further error checks/messages should be avoided, as they might indirectly
+  // reveal the user preferences for the worklet origin.
 
   IncrementPendingOperationsCount();
 
