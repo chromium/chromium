@@ -283,6 +283,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
     SetV8FlagsFormatted("--memory-reducer-gc-count=%i",
                         features::kV8MemoryReducerGCCount.Get());
   }
+  SetV8FlagsIfOverridden(features::kV8IdleGcOnContextDisposal,
+                         "--idle-gc-on-context-disposal",
+                         "--no-idle-gc-on-context-disposal");
   SetV8FlagsIfOverridden(features::kV8MinorMS, "--minor-ms", "--no-minor-ms");
   SetV8FlagsIfOverridden(features::kV8Sparkplug, "--sparkplug",
                          "--no-sparkplug");

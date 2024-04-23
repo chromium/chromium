@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "gin/gin_features.h"
+
 #include "base/metrics/field_trial_params.h"
 
 namespace features {
@@ -209,6 +210,10 @@ BASE_FEATURE(kV8UseLibmTrigFunctions,
 
 BASE_FEATURE(kV8UseOriginalMessageForStackTrace,
              "V8UseOriginalMessageForStackTrace",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kV8IdleGcOnContextDisposal,
+             "V8IdleGcOnContextDisposal",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Elide redundant TDZ hole checks in bytecode. This only sets the V8 flag when
