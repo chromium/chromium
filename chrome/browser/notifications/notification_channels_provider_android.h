@@ -7,6 +7,8 @@
 
 #include <map>
 #include <memory>
+#include <optional>
+#include <queue>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -55,6 +57,8 @@ struct NotificationChannel {
 class NotificationChannelsProviderAndroid
     : public content_settings::UserModifiableProvider {
  public:
+  using GetChannelsCallback =
+      base::OnceCallback<void(const std::vector<NotificationChannel>&)>;
   // Helper class to make the JNI calls.
   class NotificationChannelsBridge {
    public:
@@ -62,10 +66,8 @@ class NotificationChannelsProviderAndroid
     virtual NotificationChannel CreateChannel(const std::string& origin,
                                               const base::Time& timestamp,
                                               bool enabled) = 0;
-    virtual NotificationChannelStatus GetChannelStatus(
-        const std::string& origin) = 0;
     virtual void DeleteChannel(const std::string& origin) = 0;
-    virtual std::vector<NotificationChannel> GetChannels() = 0;
+    virtual void GetChannels(GetChannelsCallback callback) = 0;
   };
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -139,21 +141,87 @@ class NotificationChannelsProviderAndroid
       std::unique_ptr<NotificationChannelsBridge> bridge);
   friend class NotificationChannelsProviderAndroidTest;
 
-  std::vector<NotificationChannel> UpdateCachedChannels() const;
+  // Don't call this directly.
+  // Helper methods for implementing MigrateToChannelsIfNecessary(). Called
+  // when `cached_channels_` are initialized.
+  void MigrateToChannelsIfNecessaryImpl(
+      content_settings::ProviderInterface* pref_provider);
 
+  // Don't call this directly.
+  // Helper methods for implementing ClearBlockedChannelsIfNecessary(). Called
+  // when updated channels are retrieved.
+  void ClearBlockedChannelsIfNecessaryImpl(
+      TemplateURLService* template_url_service,
+      const std::vector<NotificationChannel>& channels);
+
+  // Don't call this directly.
+  // Helper methods for implementing ClearAllContentSettingsRules(). Called
+  // when updated channels are retrieved.
+  void ClearAllChannelsImpl(ContentSettingsType content_type,
+                            const std::vector<NotificationChannel>& channels);
+
+  // Don't call this directly.
+  // Helper methods for implementing SetWebsiteSetting(). Called when
+  // `cached_channels_` are initialized.
+  void UpdateChannelForWebsiteImpl(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsType content_type,
+      ContentSetting content_setting,
+      const content_settings::ContentSettingConstraints& constraints);
+
+  // Don't call this directly. Pass this as a callback to ScheduleGetChannels().
+  // Update cached channels. If `only_initialize_null_cached_channels`, cached
+  // channel will get updated only if it is null. Otherwise, all the observers
+  // will be notified if cached channel is updated. Once cached channels are
+  // updated, `on_channel_updated_cb` will be invoked.  This method is posted by
+  // ScheduleGetChannels() and runs when notification channels are retrieved
+  // from Android.
+  void UpdateCachedChannelsImpl(
+      bool only_initialize_null_cached_channels,
+      base::OnceClosure on_channel_updated_cb,
+      const std::vector<NotificationChannel>& channels);
+
+  // Create notification channel if required.
   void CreateChannelIfRequired(const std::string& origin_string,
                                NotificationChannelStatus new_channel_status);
 
+  // Create notification channel for a given rule
   void CreateChannelForRule(const content_settings::Rule& rule);
 
-  void InitCachedChannels();
+  // Called to initialize cached channels. Once complete,
+  // `on_channels_initialized_cb` will be invoked.
+  void InitCachedChannels(base::OnceClosure on_channels_initialized_cb);
+
+  // Schedule an pending operation to get Java notification channels. Once
+  // the previous pending operation completes, GetChannelsImpl() will be
+  // invoked.
+  void ScheduleGetChannels(bool skip_get_if_cached_channels_are_available,
+                           GetChannelsCallback callback);
+
+  // Don't call this directly. Call ScheduleGetChannels() instead.
+  // Gets channels from java side and invoke `get_channels_cb` and
+  // `on_task_completed_cb` on completion. If
+  // `skip_get_if_cached_channels_are_available` is true, callbacks will be
+  // invoked immediately if cached channels are not empty.
+  void GetChannelsImpl(bool skip_get_if_cached_channels_are_available,
+                       GetChannelsCallback get_channels_cb,
+                       base::OnceClosure on_task_completed_cb);
+
+  // Called when GetChannels() completes.
+  void OnGetChannelsDone(GetChannelsCallback get_channels_cb,
+                         base::OnceClosure on_task_completed_cb,
+                         const std::vector<NotificationChannel>& channels);
+
+  // Called to process the next pending operation.
+  void ProcessPendingOperations();
+
+  // Called when a pending operation completes.
+  void OnCurrentOperationFinished();
 
   std::unique_ptr<NotificationChannelsBridge> bridge_;
 
   raw_ptr<base::Clock> clock_;
-
-  // Flag to keep track of whether |cached_channels_| has been initialized yet.
-  bool initialized_cached_channels_;
 
   // Map of origin - NotificationChannel. Channel status may be out of date.
   // This cache is completely refreshed every time GetRuleIterator is called;
@@ -168,10 +236,16 @@ class NotificationChannelsProviderAndroid
   //    they were checked, in order to notify observers. This is necessary to
   //    detect channels getting blocked/enabled by the user, in the absence of a
   //    callback for this event.
-  std::map<std::string, NotificationChannel> cached_channels_;
+  std::optional<std::map<std::string, NotificationChannel>> cached_channels_;
+
+  using PendingCallback = base::OnceCallback<void(base::OnceClosure)>;
+  // This is a list of postponed calls to update cached_channels_.
+  std::queue<PendingCallback> pending_operations_;
 
   // PrefService associated with this instance.
   raw_ptr<PrefService> pref_service_;
+
+  bool is_processing_pending_operations_ = false;
 
   base::WeakPtrFactory<NotificationChannelsProviderAndroid> weak_factory_{this};
 };
