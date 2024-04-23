@@ -57,7 +57,6 @@ class AutofillCvcSaveMessageDelegate;
 struct FormFieldData;
 struct OfferNotificationOptions;
 struct VirtualCardEnrollmentFields;
-class VirtualCardEnrollmentManager;
 struct VirtualCardManualFallbackBubbleOptions;
 
 namespace payments {
@@ -146,7 +145,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
           confirm_unmask_challenge_option_callback,
       base::OnceClosure cancel_unmasking_closure) override;
   void DismissUnmaskAuthenticatorSelectionDialog(bool server_success) override;
-  VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override;
   void ShowVirtualCardEnrollDialog(
       const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
       base::OnceClosure accept_virtual_card_callback,

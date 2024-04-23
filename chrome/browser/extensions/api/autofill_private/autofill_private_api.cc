@@ -758,16 +758,13 @@ ExtensionFunction::ResponseAction AutofillPrivateAddVirtualCardFunction::Run() {
 
   autofill::BrowserAutofillManager* autofill_manager =
       GetBrowserAutofillManager(GetSenderWebContents());
-  if (!autofill_manager || !autofill_manager->client().GetFormDataImporter() ||
-      !autofill_manager->client()
-           .GetFormDataImporter()
-           ->GetVirtualCardEnrollmentManager()) {
+  if (!autofill_manager) {
     return RespondNow(Error(kErrorDataUnavailable));
   }
 
   autofill::VirtualCardEnrollmentManager* virtual_card_enrollment_manager =
       autofill_manager->client()
-          .GetFormDataImporter()
+          .GetPaymentsAutofillClient()
           ->GetVirtualCardEnrollmentManager();
 
   virtual_card_enrollment_manager->InitVirtualCardEnroll(
@@ -802,16 +799,13 @@ AutofillPrivateRemoveVirtualCardFunction::Run() {
 
   autofill::BrowserAutofillManager* autofill_manager =
       GetBrowserAutofillManager(GetSenderWebContents());
-  if (!autofill_manager || !autofill_manager->client().GetFormDataImporter() ||
-      !autofill_manager->client()
-           .GetFormDataImporter()
-           ->GetVirtualCardEnrollmentManager()) {
+  if (!autofill_manager) {
     return RespondNow(Error(kErrorDataUnavailable));
   }
 
   autofill::VirtualCardEnrollmentManager* virtual_card_enrollment_manager =
       autofill_manager->client()
-          .GetFormDataImporter()
+          .GetPaymentsAutofillClient()
           ->GetVirtualCardEnrollmentManager();
 
   virtual_card_enrollment_manager->Unenroll(

@@ -24,6 +24,7 @@ class MigratableCreditCard;
 class OtpUnmaskDelegate;
 struct CardUnmaskChallengeOption;
 enum class OtpUnmaskResult;
+class VirtualCardEnrollmentManager;
 
 namespace payments {
 
@@ -135,6 +136,12 @@ class PaymentsAutofillClient : public RiskDataLoader {
       base::WeakPtr<CardUnmaskDelegate> delegate);
   virtual void OnUnmaskVerificationResult(
       AutofillClient::PaymentsRpcResult result);
+
+  // Returns a pointer to a VirtualCardEnrollmentManager that is owned by
+  // PaymentsAutofillClient. VirtualCardEnrollmentManager is used for virtual
+  // card enroll and unenroll related flows. This function will return a nullptr
+  // on iOS WebView.
+  virtual VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager();
 };
 
 }  // namespace payments

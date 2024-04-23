@@ -542,9 +542,11 @@ void CreditCardSaveManager::InitVirtualCardEnroll(
   // Hide save card confirmation dialog if still showing.
   client_->GetPaymentsAutofillClient()->HideSaveCardPromptPrompt();
 
-  client_->GetVirtualCardEnrollmentManager()->InitVirtualCardEnroll(
-      credit_card, VirtualCardEnrollmentSource::kUpstream,
-      std::move(get_details_for_enrollment_response_details));
+  client_->GetPaymentsAutofillClient()
+      ->GetVirtualCardEnrollmentManager()
+      ->InitVirtualCardEnroll(
+          credit_card, VirtualCardEnrollmentSource::kUpstream,
+          std::move(get_details_for_enrollment_response_details));
 }
 
 CreditCardSaveStrikeDatabase*
@@ -1245,7 +1247,8 @@ void CreditCardSaveManager::OnUserDidAcceptUploadHelper(
   }
 
   if (VirtualCardFeatureEnabled()) {
-    client_->GetVirtualCardEnrollmentManager()
+    client_->GetPaymentsAutofillClient()
+        ->GetVirtualCardEnrollmentManager()
         ->SetSaveCardBubbleAcceptedTimestamp(AutofillClock::Now());
   }
 

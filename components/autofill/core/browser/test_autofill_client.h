@@ -209,7 +209,7 @@ class TestAutofillClientTemplate : public T {
   payments::TestPaymentsAutofillClient* GetPaymentsAutofillClient() override {
     if (!payments_autofill_client_) {
       payments_autofill_client_ =
-          std::make_unique<payments::TestPaymentsAutofillClient>();
+          std::make_unique<payments::TestPaymentsAutofillClient>(this);
     }
     return payments_autofill_client_.get();
   }
@@ -286,10 +286,6 @@ class TestAutofillClientTemplate : public T {
 #endif
 
   void ShowAutofillSettings(FillingProduct main_filling_product) override {}
-
-  VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override {
-    return form_data_importer_->GetVirtualCardEnrollmentManager();
-  }
 
   void ShowVirtualCardEnrollDialog(
       const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,

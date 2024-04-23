@@ -15,6 +15,7 @@
 #import "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #import "components/autofill/core/browser/payments/otp_unmask_result.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
+#import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #import "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -140,6 +141,18 @@ void IOSChromePaymentsAutofillClient::OnUnmaskVerificationResult(
       NOTREACHED();
       return;
   }
+}
+
+VirtualCardEnrollmentManager*
+IOSChromePaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
+  if (!virtual_card_enrollment_manager_) {
+    virtual_card_enrollment_manager_ =
+        std::make_unique<VirtualCardEnrollmentManager>(
+            client_->GetPersonalDataManager(), GetPaymentsNetworkInterface(),
+            &client_.get());
+  }
+
+  return virtual_card_enrollment_manager_.get();
 }
 
 }  // namespace autofill::payments

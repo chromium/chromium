@@ -4,8 +4,11 @@
 
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 
+#include "base/check_deref.h"
 #include "base/functional/callback.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/test/mock_payments_window_manager.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
@@ -13,7 +16,8 @@
 
 namespace autofill::payments {
 
-TestPaymentsAutofillClient::TestPaymentsAutofillClient() = default;
+TestPaymentsAutofillClient::TestPaymentsAutofillClient(AutofillClient* client)
+    : client_(CHECK_DEREF(client)) {}
 
 TestPaymentsAutofillClient::~TestPaymentsAutofillClient() = default;
 
@@ -82,6 +86,23 @@ PaymentsWindowManager* TestPaymentsAutofillClient::GetPaymentsWindowManager() {
         std::make_unique<testing::NiceMock<MockPaymentsWindowManager>>();
   }
   return payments_window_manager_.get();
+}
+
+VirtualCardEnrollmentManager*
+TestPaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
+  if (!virtual_card_enrollment_manager_) {
+    virtual_card_enrollment_manager_ =
+        std::make_unique<VirtualCardEnrollmentManager>(
+            client_->GetPersonalDataManager(), GetPaymentsNetworkInterface(),
+            &*client_);
+  }
+
+  return virtual_card_enrollment_manager_.get();
+}
+
+void TestPaymentsAutofillClient::set_virtual_card_enrollment_manager(
+    std::unique_ptr<VirtualCardEnrollmentManager> vcem) {
+  virtual_card_enrollment_manager_ = std::move(vcem);
 }
 
 }  // namespace autofill::payments

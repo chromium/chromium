@@ -28,7 +28,6 @@
 #import "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
-#import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -562,10 +561,6 @@ ChromeAutofillClientIOS::GetDeviceAuthenticator() {
     reauthModule = [[ReauthenticationModule alloc] init];
   }
   return CreateIOSDeviceAuthenticator(reauthModule, browser_state_, params);
-}
-VirtualCardEnrollmentManager*
-ChromeAutofillClientIOS::GetVirtualCardEnrollmentManager() {
-  return form_data_importer_->GetVirtualCardEnrollmentManager();
 }
 
 void ChromeAutofillClientIOS::ShowVirtualCardEnrollDialog(

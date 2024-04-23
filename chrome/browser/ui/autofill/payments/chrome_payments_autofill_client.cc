@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 
+#include <memory>
+
 #include "base/check_deref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
@@ -16,6 +18,7 @@
 #include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
@@ -258,6 +261,18 @@ void ChromePaymentsAutofillClient::OnUnmaskVerificationResult(
       return;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+VirtualCardEnrollmentManager*
+ChromePaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
+  if (!virtual_card_enrollment_manager_) {
+    virtual_card_enrollment_manager_ =
+        std::make_unique<VirtualCardEnrollmentManager>(
+            client_->GetPersonalDataManager(), GetPaymentsNetworkInterface(),
+            &*client_);
+  }
+
+  return virtual_card_enrollment_manager_.get();
 }
 
 }  // namespace autofill::payments

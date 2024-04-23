@@ -36,6 +36,7 @@
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
+#include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -148,6 +149,10 @@ class MockPaymentsDataManager : public TestPaymentsDataManager {
 
 class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
  public:
+  explicit MockPaymentsAutofillClient(AutofillClient* client)
+      : payments::TestPaymentsAutofillClient(client) {}
+  ~MockPaymentsAutofillClient() override = default;
+
   MOCK_METHOD(void, CreditCardUploadCompleted, (bool card_saved), (override));
   MOCK_METHOD(bool, IsSaveCardPromptVisible, (), (const override));
   MOCK_METHOD(void, HideSaveCardPromptPrompt, (), (override));
@@ -164,13 +169,9 @@ class MockAutofillClient : public TestAutofillClient {
         base::BindRepeating(&PersonalDataManager::NotifyPersonalDataObserver,
                             base::Unretained(pdm))));
     set_payments_autofill_client(
-        std::make_unique<MockPaymentsAutofillClient>());
+        std::make_unique<MockPaymentsAutofillClient>(this));
   }
   ~MockAutofillClient() override = default;
-  MOCK_METHOD(VirtualCardEnrollmentManager*,
-              GetVirtualCardEnrollmentManager,
-              (),
-              (override));
 };
 
 class MockVirtualCardEnrollmentManager
@@ -213,12 +214,10 @@ class CreditCardSaveManagerTest : public testing::Test {
             std::make_unique<payments::TestPaymentsNetworkInterface>(
                 autofill_client_.GetURLLoaderFactory(),
                 autofill_client_.GetIdentityManager(), &personal_data()));
-    virtual_card_enrollment_manager_ =
+    payments_client().set_virtual_card_enrollment_manager(
         std::make_unique<MockVirtualCardEnrollmentManager>(
             autofill_client_.GetPersonalDataManager(),
-            &payments_network_interface(), &autofill_client_);
-    ON_CALL(autofill_client_, GetVirtualCardEnrollmentManager())
-        .WillByDefault(Return(virtual_card_enrollment_manager_.get()));
+            &payments_network_interface(), &autofill_client_));
     credit_card_save_manager_ = new TestCreditCardSaveManager(
         autofill_driver_.get(), &autofill_client_, &personal_data());
     credit_card_save_manager_->SetCreditCardUploadEnabled(true);
@@ -438,8 +437,6 @@ class CreditCardSaveManagerTest : public testing::Test {
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
   syncer::TestSyncService sync_service_;
   MockAutofillClient autofill_client_;
-  std::unique_ptr<MockVirtualCardEnrollmentManager>
-      virtual_card_enrollment_manager_;
   // TODO(crbug.com/40818490): Refactor to use the real CreditCardSaveManager.
   // Ends up getting owned (and destroyed) by TestFormDataImporter:
   raw_ptr<TestCreditCardSaveManager> credit_card_save_manager_;
@@ -5597,8 +5594,9 @@ TEST_F(CreditCardSaveManagerTest,
 // prompt.
 TEST_F(CreditCardSaveManagerTest, InitVirtualCardEnroll) {
   EXPECT_CALL(payments_client(), HideSaveCardPromptPrompt);
-  EXPECT_CALL(autofill_client_, GetVirtualCardEnrollmentManager);
-  EXPECT_CALL(*virtual_card_enrollment_manager_, InitVirtualCardEnroll);
+  EXPECT_CALL(*static_cast<MockVirtualCardEnrollmentManager*>(
+                  payments_client().GetVirtualCardEnrollmentManager()),
+              InitVirtualCardEnroll);
   credit_card_save_manager_->InitVirtualCardEnroll(
       test::GetCreditCard(), payments::PaymentsNetworkInterface::
                                  GetDetailsForEnrollmentResponseDetails());
@@ -5723,8 +5721,9 @@ TEST_F(
                     GetDetailsForEnrollmentResponseDetails>
       arg_get_details_for_enrollment_response_details;
   EXPECT_CALL(payments_client(), CreditCardUploadCompleted(true));
-  EXPECT_CALL(autofill_client_, GetVirtualCardEnrollmentManager);
-  EXPECT_CALL(*virtual_card_enrollment_manager_, InitVirtualCardEnroll)
+  EXPECT_CALL(*static_cast<MockVirtualCardEnrollmentManager*>(
+                  payments_client().GetVirtualCardEnrollmentManager()),
+              InitVirtualCardEnroll)
       .WillOnce(
           DoAll(SaveArg<0>(&arg_credit_card),
                 SaveArg<1>(&arg_virtual_card_enrollment_source),
@@ -5779,8 +5778,9 @@ TEST_F(CreditCardSaveManagerWithDelayedVirtualCardEnrollTest,
       CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible;
 
   EXPECT_CALL(payments_client(), CreditCardUploadCompleted(true));
-  EXPECT_CALL(autofill_client_, GetVirtualCardEnrollmentManager);
-  EXPECT_CALL(*virtual_card_enrollment_manager_, InitVirtualCardEnroll);
+  EXPECT_CALL(*static_cast<MockVirtualCardEnrollmentManager*>(
+                  payments_client().GetVirtualCardEnrollmentManager()),
+              InitVirtualCardEnroll);
 
   credit_card_save_manager_->OnDidUploadCard(
       AutofillClient::PaymentsRpcResult::kSuccess,
@@ -5838,8 +5838,9 @@ TEST_P(CreditCardSaveManagerWithDelayedVirtualCardEnrollTestParameterized,
   if (IsVirtualCardEnrollmentEnabled() &&
       GetEnrollmentState() ==
           CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible) {
-    EXPECT_CALL(autofill_client_, GetVirtualCardEnrollmentManager);
-    EXPECT_CALL(*virtual_card_enrollment_manager_, InitVirtualCardEnroll)
+    EXPECT_CALL(*static_cast<MockVirtualCardEnrollmentManager*>(
+                    payments_client().GetVirtualCardEnrollmentManager()),
+                InitVirtualCardEnroll)
         .WillOnce(DoAll(SaveArg<0>(&arg_credit_card),
                         SaveArg<1>(&arg_virtual_card_enrollment_source)));
   }

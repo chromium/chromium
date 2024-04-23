@@ -181,12 +181,6 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       personal_data_manager_(personal_data_manager),
       app_locale_(app_locale),
-      virtual_card_enrollment_manager_(
-          std::make_unique<VirtualCardEnrollmentManager>(
-              personal_data_manager,
-              client->GetPaymentsAutofillClient()
-                  ->GetPaymentsNetworkInterface(),
-              client)),
       multistep_importer_(app_locale,
                           client_->GetVariationConfigCountryCode()) {
   if (personal_data_manager_) {
@@ -778,8 +772,10 @@ bool FormDataImporter::ProcessExtractedCreditCard(
 
   if (ShouldOfferVirtualCardEnrollment(extracted_credit_card,
                                        fetched_card_instrument_id_)) {
-    virtual_card_enrollment_manager_->InitVirtualCardEnroll(
-        *extracted_credit_card, VirtualCardEnrollmentSource::kDownstream);
+    client_->GetPaymentsAutofillClient()
+        ->GetVirtualCardEnrollmentManager()
+        ->InitVirtualCardEnroll(*extracted_credit_card,
+                                VirtualCardEnrollmentSource::kDownstream);
     return true;
   }
 

@@ -565,8 +565,8 @@ class FormDataImporterTest : public testing::Test {
     auto virtual_card_enrollment_manager =
         std::make_unique<MockVirtualCardEnrollmentManager>(
             nullptr, nullptr, autofill_client_.get());
-    test_api(form_data_importer())
-        .set_virtual_card_enrollment_manager(
+    autofill_client_->GetPaymentsAutofillClient()
+        ->set_virtual_card_enrollment_manager(
             std::move(virtual_card_enrollment_manager));
     auto credit_card_save_manager = std::make_unique<MockCreditCardSaveManager>(
         nullptr, autofill_client_.get(), personal_data_manager_.get());
@@ -759,7 +759,8 @@ class FormDataImporterTest : public testing::Test {
 
   MockVirtualCardEnrollmentManager& virtual_card_enrollment_manager() {
     return *static_cast<MockVirtualCardEnrollmentManager*>(
-        form_data_importer().GetVirtualCardEnrollmentManager());
+        autofill_client_->GetPaymentsAutofillClient()
+            ->GetVirtualCardEnrollmentManager());
   }
 
   MockCreditCardSaveManager& credit_card_save_manager() {

@@ -12,7 +12,6 @@
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
-#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/version_info/channel.h"
@@ -134,11 +133,6 @@ void AutofillClient::ShowUnmaskAuthenticatorSelectionDialog(
 
 void AutofillClient::DismissUnmaskAuthenticatorSelectionDialog(
     bool server_success) {
-}
-
-VirtualCardEnrollmentManager*
-AutofillClient::GetVirtualCardEnrollmentManager() {
-  return nullptr;
 }
 
 void AutofillClient::ShowVirtualCardEnrollDialog(

@@ -25,6 +25,7 @@ class OtpUnmaskDelegate;
 struct AutofillErrorDialogContext;
 struct CardUnmaskChallengeOption;
 enum class OtpUnmaskResult;
+class VirtualCardEnrollmentManager;
 
 namespace payments {
 
@@ -67,6 +68,7 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
       base::WeakPtr<CardUnmaskDelegate> delegate) override;
   void OnUnmaskVerificationResult(
       AutofillClient::PaymentsRpcResult result) override;
+  VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override;
 
   std::unique_ptr<AutofillProgressDialogControllerImpl>
   GetProgressDialogModel() {
@@ -103,6 +105,9 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
       otp_input_dialog_controller_;
   base::WeakPtr<CardUnmaskOtpInputDialogControllerImpl>
       otp_input_dialog_controller_weak_;
+
+  std::unique_ptr<VirtualCardEnrollmentManager>
+      virtual_card_enrollment_manager_;
 };
 
 }  // namespace payments

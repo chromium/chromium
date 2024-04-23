@@ -565,11 +565,6 @@ void ChromeAutofillClient::DismissUnmaskAuthenticatorSelectionDialog(
   }
 }
 
-VirtualCardEnrollmentManager*
-ChromeAutofillClient::GetVirtualCardEnrollmentManager() {
-  return form_data_importer_->GetVirtualCardEnrollmentManager();
-}
-
 void ChromeAutofillClient::ShowVirtualCardEnrollDialog(
     const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
     base::OnceClosure accept_virtual_card_callback,

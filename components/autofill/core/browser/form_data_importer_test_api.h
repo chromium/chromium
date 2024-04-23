@@ -27,11 +27,6 @@ class FormDataImporterTestApi {
     fdi_->credit_card_save_manager_ = std::move(ccsm);
   }
 
-  void set_virtual_card_enrollment_manager(
-      std::unique_ptr<VirtualCardEnrollmentManager> vcem) {
-    fdi_->virtual_card_enrollment_manager_ = std::move(vcem);
-  }
-
   void set_iban_save_manager(
       std::unique_ptr<IbanSaveManager> iban_save_manager) {
     fdi_->iban_save_manager_ = std::move(iban_save_manager);

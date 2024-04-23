@@ -27,6 +27,7 @@ class CardUnmaskOtpInputDialogControllerImpl;
 class OtpUnmaskDelegate;
 struct CardUnmaskChallengeOption;
 enum class OtpUnmaskResult;
+class VirtualCardEnrollmentManager;
 
 namespace payments {
 
@@ -87,6 +88,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       base::WeakPtr<CardUnmaskDelegate> delegate) override;
   void OnUnmaskVerificationResult(
       AutofillClient::PaymentsRpcResult result) override;
+  VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override;
 
   AutofillProgressDialogControllerImpl*
   AutofillProgressDialogControllerForTesting() {
@@ -119,6 +121,14 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   std::unique_ptr<PaymentsWindowManager> payments_window_manager_;
 
   std::unique_ptr<CardUnmaskPromptControllerImpl> unmask_controller_;
+
+  // `virtual_card_enrollment_manager_` must be destroyed before
+  // `payments_network_interface_` because the former keeps a reference to the
+  // latter.
+  // TODO(crbug.com/41489024): Remove the reference to
+  // `payments_network_interface_` in `virtual_card_enrollment_manager_`.
+  std::unique_ptr<VirtualCardEnrollmentManager>
+      virtual_card_enrollment_manager_;
 };
 
 }  // namespace payments

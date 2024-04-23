@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 
 namespace autofill::payments {
@@ -76,5 +77,10 @@ void PaymentsAutofillClient::ShowUnmaskPrompt(
 
 void PaymentsAutofillClient::OnUnmaskVerificationResult(
     AutofillClient::PaymentsRpcResult result) {}
+
+VirtualCardEnrollmentManager*
+PaymentsAutofillClient::GetVirtualCardEnrollmentManager() {
+  return nullptr;
+}
 
 }  // namespace autofill::payments

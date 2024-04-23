@@ -100,7 +100,6 @@ class StrikeDatabase;
 struct Suggestion;
 class TouchToFillDelegate;
 struct VirtualCardEnrollmentFields;
-class VirtualCardEnrollmentManager;
 struct VirtualCardManualFallbackBubbleOptions;
 enum class WebauthnDialogCallbackType;
 enum class WebauthnDialogState;
@@ -528,12 +527,6 @@ class AutofillClient {
   // failure. A successful server response means that the issuer has sent an OTP
   // and we can move on to the next portion of this flow.
   virtual void DismissUnmaskAuthenticatorSelectionDialog(bool server_success);
-
-  // Returns a pointer to a VirtualCardEnrollmentManager that is owned by
-  // AutofillClient. VirtualCardEnrollmentManager is used for virtual card
-  // enroll and unenroll related flows. This function may return a nullptr on
-  // some platforms.
-  virtual VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager();
 
   // Shows a dialog for the user to enroll in a virtual card.
   virtual void ShowVirtualCardEnrollDialog(

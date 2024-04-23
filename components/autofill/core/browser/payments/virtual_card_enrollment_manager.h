@@ -88,8 +88,8 @@ struct VirtualCardEnrollmentProcessState {
   std::optional<std::string> vcn_context_token;
 };
 
-// Owned by FormDataImporter. There is one instance of this class per tab. This
-// class manages the flow for enrolling and unenrolling in Virtual Card
+// Owned by PaymentsAutofillClient. There is one instance of this class per tab.
+// This class manages the flow for enrolling and unenrolling in Virtual Card
 // Numbers.
 class VirtualCardEnrollmentManager {
  public:
