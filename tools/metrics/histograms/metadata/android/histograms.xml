@@ -851,7 +851,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.CpuAbiBitnessSupport" enum="CpuAbiBitnessSupport"
-    expires_after="2024-10-06">
+    expires_after="2025-04-30">
   <owner>bartekn@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -2357,7 +2357,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultipleUserProfilesState"
-    enum="MultipleUserProfilesState" expires_after="2024-10-06">
+    enum="MultipleUserProfilesState" expires_after="2025-04-30">
   <owner>ckitagawa@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <owner>bartekn@chromium.org</owner>
@@ -4567,7 +4567,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.VersionCode" enum="VersionCode"
-    expires_after="2024-10-06">
+    expires_after="2025-04-30">
   <owner>bartekn@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -5884,7 +5884,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.PrimaryCpuAbiBitness"
-    enum="PrimaryCpuAbiBitness" expires_after="2024-06-02">
+    enum="PrimaryCpuAbiBitness" expires_after="2025-04-30">
   <owner>bartekn@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
