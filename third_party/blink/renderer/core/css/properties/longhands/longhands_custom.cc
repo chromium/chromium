@@ -4026,6 +4026,15 @@ const CSSValue* FontVariantPosition::CSSValueFromComputedStyleInternal(
   return ComputedStyleUtils::ValueForFontVariantPosition(style);
 }
 
+const CSSValue* FontVariantEmoji::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  DCHECK(RuntimeEnabledFeatures::FontVariantEmojiEnabled());
+  return CSSIdentifierValue::Create(style.GetFontDescription().VariantEmoji());
+}
+
 const CSSValue* ForcedColorAdjust::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,

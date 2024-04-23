@@ -845,6 +845,7 @@ enum CSSSampleId {
     kPositionVisibility = 789,
     kTypes = 790,
     kLineClamp = 791,
+    kFontVariantEmoji = 792,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

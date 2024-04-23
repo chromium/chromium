@@ -531,7 +531,7 @@ TEST_F(FontDescriptionTest, ToString) {
       "slashed_zero=Off], variant_east_asian=[form=Normal, width=Normal, "
       "ruby=false], font_optical_sizing=Auto, font_synthesis_weight=Auto, "
       "font_synthesis_style=Auto, font_synthesis_small_caps=Auto, "
-      "font_variant_position=Normal",
+      "font_variant_position=Normal, font_variant_emoji=Normal",
       description.ToString());
 }
 

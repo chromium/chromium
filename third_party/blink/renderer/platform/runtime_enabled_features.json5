@@ -1843,6 +1843,9 @@
       // a Chromium level feature.
     },
     {
+      name: "FontVariantEmoji",
+    },
+    {
       name: "FontVariationSequences",
     },
     {

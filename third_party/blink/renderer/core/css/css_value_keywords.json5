@@ -192,6 +192,13 @@
     "font-format",
 
     //
+    // font-variant-emoji
+    // normal
+    // text
+    "emoji",
+    "unicode",
+
+    //
     // font-palette animation
     //
     "palette-mix",

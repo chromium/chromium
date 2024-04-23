@@ -125,6 +125,14 @@ class PLATFORM_EXPORT FontDescription {
   };
   static String ToString(FontVariantPosition);
 
+  enum FontVariantEmoji {
+    kNormalVariantEmoji,
+    kTextVariantEmoji,
+    kEmojiVariantEmoji,
+    kUnicodeVariantEmoji
+  };
+  static String ToString(FontVariantEmoji);
+
   FontDescription();
   FontDescription(const FontDescription&);
 
@@ -342,6 +350,9 @@ class PLATFORM_EXPORT FontDescription {
   FontVariantPosition VariantPosition() const {
     return static_cast<FontVariantPosition>(fields_.variant_position_);
   }
+  FontVariantEmoji VariantEmoji() const {
+    return static_cast<FontVariantEmoji>(fields_.variant_emoji_);
+  }
 
   float EffectiveFontSize()
       const;  // Returns either the computedSize or the computedPixelSize
@@ -426,6 +437,9 @@ class PLATFORM_EXPORT FontDescription {
   }
   void SetVariantPosition(FontVariantPosition variant_position) {
     fields_.variant_position_ = variant_position;
+  }
+  void SetVariantEmoji(FontVariantEmoji variant_emoji) {
+    fields_.variant_emoji_ = variant_emoji;
   }
   void SetWordSpacing(float s) { word_spacing_ = s; }
   void SetLetterSpacing(float s) {
@@ -557,6 +571,7 @@ class PLATFORM_EXPORT FontDescription {
     unsigned font_optical_sizing_ : 1;
     unsigned has_size_adjust_descriptor_ : 1;
     unsigned variant_position_ : 2;
+    unsigned variant_emoji_ : 2;
     unsigned text_spacing_trim_ : kTextSpacingTrimBitCount;
 
     unsigned hash_category_ : 2;  // HashCategory

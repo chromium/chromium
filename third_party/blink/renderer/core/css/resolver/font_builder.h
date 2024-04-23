@@ -87,6 +87,7 @@ class CORE_EXPORT FontBuilder {
   void SetFontSmoothing(FontSmoothingMode);
   void SetVariationSettings(scoped_refptr<const FontVariationSettings>);
   void SetVariantPosition(FontDescription::FontVariantPosition);
+  void SetVariantEmoji(FontDescription::FontVariantEmoji);
 
   // FIXME: These need to just vend a Font object eventually.
   // UpdateFontDescription() returns true if any properties were actually
@@ -160,6 +161,9 @@ class CORE_EXPORT FontBuilder {
   static FontDescription::FontVariantPosition InitialVariantPosition() {
     return FontDescription::kNormalVariantPosition;
   }
+  static FontDescription::FontVariantEmoji InitialVariantEmoji() {
+    return FontDescription::kNormalVariantEmoji;
+  }
 
  private:
   void SetFamilyDescription(FontDescription&,
@@ -197,6 +201,7 @@ class CORE_EXPORT FontBuilder {
     kVariantEastAsian,
     kVariantLigatures,
     kVariantNumeric,
+    kVariantEmoji,
     kVariantPosition,
     kVariationSettings,
     kTextRendering,

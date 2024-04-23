@@ -403,6 +403,9 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kFontVariantEastAsian:
       return a.GetFontDescription().VariantEastAsian() ==
              b.GetFontDescription().VariantEastAsian();
+    case CSSPropertyID::kFontVariantEmoji:
+      return a.GetFontDescription().VariantEmoji() ==
+             b.GetFontDescription().VariantEmoji();
     case CSSPropertyID::kFontVariantLigatures:
       return a.GetFontDescription().GetVariantLigatures() ==
              b.GetFontDescription().GetVariantLigatures();

@@ -1,0 +1,1 @@
+Tests for font-variant-emoji CSS property, flag name: FontVariantEmoji.

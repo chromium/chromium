@@ -280,6 +280,13 @@ void FontBuilder::SetVariantPosition(
   font_description_.SetVariantPosition(variant_position);
 }
 
+void FontBuilder::SetVariantEmoji(
+    FontDescription::FontVariantEmoji variant_emoji) {
+  Set(PropertySetFlag::kVariantEmoji);
+
+  font_description_.SetVariantEmoji(variant_emoji);
+}
+
 float FontBuilder::GetComputedSizeFromSpecifiedSize(
     FontDescription& font_description,
     float effective_zoom,
@@ -571,6 +578,12 @@ bool FontBuilder::UpdateFontDescription(FontDescription& description,
     if (description.VariantPosition() != font_description_.VariantPosition()) {
       modified = true;
       description.SetVariantPosition(font_description_.VariantPosition());
+    }
+  }
+  if (IsSet(PropertySetFlag::kVariantEmoji)) {
+    if (description.VariantEmoji() != font_description_.VariantEmoji()) {
+      modified = true;
+      description.SetVariantEmoji(font_description_.VariantEmoji());
     }
   }
   if (!modified && !IsSet(PropertySetFlag::kEffectiveZoom)) {

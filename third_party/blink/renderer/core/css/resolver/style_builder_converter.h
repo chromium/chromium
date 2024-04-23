@@ -176,6 +176,9 @@ class StyleBuilderConverter {
   static FontDescription::FontVariantPosition ConvertFontVariantPosition(
       StyleResolverState&,
       const CSSValue&);
+  static FontDescription::FontVariantEmoji ConvertFontVariantEmoji(
+      StyleResolverState&,
+      const CSSValue&);
   static FontDescription::Kerning ConvertFontKerning(StyleResolverState&,
                                                      const CSSValue&);
   static OpticalSizing ConvertFontOpticalSizing(StyleResolverState&,

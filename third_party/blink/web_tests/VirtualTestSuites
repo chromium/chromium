@@ -2897,5 +2897,26 @@
     "owners": [
       "alexnj@chromium.org"
     ]
+  },
+  {
+    "prefix": "font-variant-emoji",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/css/css-fonts/font-shorthand-subproperties-reset.html",
+      "external/wpt/css/css-fonts/font-shorthand-serialization-prevention.html",
+      "external/wpt/css/css-fonts/inheritance.html",
+      "external/wpt/css/css-fonts/parsing/font-variant-emoji-computed.html",
+      "external/wpt/css/css-fonts/parsing/font-variant-emoji-invalid.html",
+      "external/wpt/css/css-fonts/parsing/font-variant-emoji-valid.html",
+      "external/wpt/css/css-typed-om/the-stylepropertymap/properties/font-variant-emoji.html",
+      "external/wpt/css/cssom/font-variant-shorthand-serialization.html",
+      "fast/css/font-shorthand.html",
+      "fast/css/font-variant-shorthand-from-longhands.html"
+    ],
+    "args": [
+      "--enable-blink-features=FontVariantEmoji"
+    ],
+    "expires": "Jan 1, 2025",
+    "owners": ["moonira@google.com"]
   }
 ]

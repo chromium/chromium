@@ -510,6 +510,22 @@ StyleBuilderConverter::ConvertFontVariantPosition(StyleResolverState&,
   }
 }
 
+FontDescription::FontVariantEmoji
+StyleBuilderConverter::ConvertFontVariantEmoji(StyleResolverState&,
+                                               const CSSValue& value) {
+  // When the font shorthand is specified, font-variant-emoji property should
+  // be reset to it's initial value. In this case, the CSS parser uses a special
+  // value CSSPendingSystemFontValue to defer resolution of system font
+  // properties. The auto generated converter does not handle this incoming
+  // value.
+  if (value.IsPendingSystemFontValue()) {
+    return FontDescription::kNormalVariantEmoji;
+  }
+
+  return To<CSSIdentifierValue>(value)
+      .ConvertTo<FontDescription::FontVariantEmoji>();
+}
+
 OpticalSizing StyleBuilderConverter::ConvertFontOpticalSizing(
     StyleResolverState&,
     const CSSValue& value) {

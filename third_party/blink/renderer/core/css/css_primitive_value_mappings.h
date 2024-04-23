@@ -1062,6 +1062,48 @@ inline FontSmoothingMode CSSIdentifierValue::ConvertTo() const {
 }
 
 template <>
+inline CSSIdentifierValue::CSSIdentifierValue(
+    FontDescription::FontVariantEmoji variant_emoji)
+    : CSSValue(kIdentifierClass) {
+  switch (variant_emoji) {
+    case FontDescription::kNormalVariantEmoji:
+      value_id_ = CSSValueID::kNormal;
+      return;
+    case FontDescription::kTextVariantEmoji:
+      value_id_ = CSSValueID::kText;
+      return;
+    case FontDescription::kEmojiVariantEmoji:
+      value_id_ = CSSValueID::kEmoji;
+      return;
+    case FontDescription::kUnicodeVariantEmoji:
+      value_id_ = CSSValueID::kUnicode;
+      return;
+  }
+
+  NOTREACHED();
+  value_id_ = CSSValueID::kNormal;
+}
+
+template <>
+inline FontDescription::FontVariantEmoji CSSIdentifierValue::ConvertTo() const {
+  switch (value_id_) {
+    case CSSValueID::kNormal:
+      return FontDescription::kNormalVariantEmoji;
+    case CSSValueID::kText:
+      return FontDescription::kTextVariantEmoji;
+    case CSSValueID::kEmoji:
+      return FontDescription::kEmojiVariantEmoji;
+    case CSSValueID::kUnicode:
+      return FontDescription::kUnicodeVariantEmoji;
+    default:
+      break;
+  }
+
+  NOTREACHED();
+  return FontDescription::kNormalVariantEmoji;
+}
+
+template <>
 inline CSSIdentifierValue::CSSIdentifierValue(TextRenderingMode e)
     : CSSValue(kIdentifierClass) {
   switch (e) {

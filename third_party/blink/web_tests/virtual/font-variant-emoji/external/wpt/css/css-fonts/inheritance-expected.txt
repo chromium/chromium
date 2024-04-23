@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Property font-language-override has initial value normal
+  assert_true: font-language-override doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property font-language-override inherits
+  assert_true: font-language-override doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property font-synthesis has initial value weight style small-caps position
+  assert_equals: expected "weight style small-caps position" but got "weight style small-caps"
+Harness: the test ran to completion.
+

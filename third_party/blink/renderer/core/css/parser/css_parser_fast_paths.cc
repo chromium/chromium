@@ -1569,6 +1569,10 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kFontVariantPosition:
       return value_id == CSSValueID::kNormal || value_id == CSSValueID::kSub ||
              value_id == CSSValueID::kSuper;
+    case CSSPropertyID::kFontVariantEmoji:
+      DCHECK(RuntimeEnabledFeatures::FontVariantEmojiEnabled());
+      return value_id == CSSValueID::kNormal || value_id == CSSValueID::kText ||
+             value_id == CSSValueID::kEmoji || value_id == CSSValueID::kUnicode;
     case CSSPropertyID::kLineBreak:
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kLoose ||
              value_id == CSSValueID::kNormal ||
@@ -1777,6 +1781,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kFontSynthesisWeight,
     CSSPropertyID::kFontSynthesisStyle,
     CSSPropertyID::kFontSynthesisSmallCaps,
+    CSSPropertyID::kFontVariantEmoji,
     CSSPropertyID::kFontVariantPosition,
     CSSPropertyID::kWebkitFontSmoothing,
     CSSPropertyID::kLineBreak,
