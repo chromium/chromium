@@ -56,9 +56,8 @@ class BrowserDesktopWindowTreeHostLinux
   // setting is enabled, or when the window is maximized/fullscreen.
   bool SupportsClientFrameShadow() const;
 
-  // Sets hints for the WM/compositor that reflect the extents of the
-  // client-drawn shadow.
-  void UpdateFrameHints();
+  // views::DesktopWindowTreeHostLinux:
+  void UpdateFrameHints() override;
 
  private:
   // DesktopWindowTreeHostPlatform:
@@ -74,7 +73,7 @@ class BrowserDesktopWindowTreeHostLinux
   // BrowserWindowTreeHostPlatform:
   void FrameTypeChanged() override;
 
-  // views::DesktopWindowTreeHostLinuxImpl:
+  // views::DesktopWindowTreeHostLinux:
   void Init(const views::Widget::InitParams& params) override;
   void OnWidgetInitDone() override;
   void CloseNow() override;
@@ -90,7 +89,6 @@ class BrowserDesktopWindowTreeHostLinux
   // ui::PlatformWindowDelegate
   gfx::Insets CalculateInsetsInDIP(
       ui::PlatformWindowState window_state) const override;
-  void OnBoundsChanged(const BoundsChange& change) override;
   void OnWindowStateChanged(ui::PlatformWindowState old_state,
                             ui::PlatformWindowState new_state) override;
   void OnWindowTiledStateChanged(ui::WindowTiledEdges new_tiled_edges) override;

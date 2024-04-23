@@ -343,13 +343,6 @@ gfx::Insets BrowserDesktopWindowTreeHostLinux::CalculateInsetsInDIP(
       ->MirroredFrameBorderInsets();
 }
 
-void BrowserDesktopWindowTreeHostLinux::OnBoundsChanged(
-    const BoundsChange& change) {
-  DesktopWindowTreeHostLinux::OnBoundsChanged(change);
-
-  UpdateFrameHints();
-}
-
 void BrowserDesktopWindowTreeHostLinux::OnWindowStateChanged(
     ui::PlatformWindowState old_state,
     ui::PlatformWindowState new_state) {

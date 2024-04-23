@@ -58,6 +58,10 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   // Disables event listening to make |dialog| modal.
   base::OnceClosure DisableEventListening();
 
+  // Sets hints for the WM/compositor that reflect the extents of the
+  // client-drawn shadow.
+  virtual void UpdateFrameHints();
+
  protected:
   // Overridden from DesktopWindowTreeHost:
   void Init(const Widget::InitParams& params) override;
@@ -71,6 +75,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   // PlatformWindowDelegate:
   void DispatchEvent(ui::Event* event) override;
   void OnClosed() override;
+  void OnBoundsChanged(const BoundsChange& change) override;
 
   ui::X11Extension* GetX11Extension();
   const ui::X11Extension* GetX11Extension() const;
