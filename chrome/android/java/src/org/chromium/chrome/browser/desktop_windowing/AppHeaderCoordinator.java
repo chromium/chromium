@@ -64,6 +64,7 @@ public class AppHeaderCoordinator extends ObservableSupplierImpl<Boolean> {
     private Activity mActivity;
     private final View mRootView;
     private final BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
+    private final InsetObserver mInsetObserver;
     private final InsetsRectProvider mInsetsRectProvider;
     private final WindowInsetsController mInsetsController;
     private final OneshotSupplier<AppHeaderDelegate> mAppHeaderDelegateSupplier;
@@ -97,6 +98,7 @@ public class AppHeaderCoordinator extends ObservableSupplierImpl<Boolean> {
         mActivity = activity;
         mRootView = rootView;
         mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
+        mInsetObserver = insetObserver;
         mInsetsController = mRootView.getWindowInsetsController();
         mAppHeaderDelegateSupplier = appHeaderDelegateSupplier;
         mTabStripTransitionCoordinatorSupplier = tabStripTransitionCoordinatorSupplier;
@@ -194,14 +196,32 @@ public class AppHeaderCoordinator extends ObservableSupplierImpl<Boolean> {
     }
 
     /**
-     * Check if the desktop windowing mode is enabled by checking all the criteria: 1. Caption bar
-     * has insets.top > 0 2. Caption bar has 2 bounding rects. 3. Widest unoccluded rect in
-     * captionBar insets is connected to the bottom
+     * Check if the desktop windowing mode is enabled by checking all the criteria:
+     *
+     * <ol type=1>
+     *   <li>Caption bar has insets.top > 0;
+     *   <li>There's no bottom insets from the navigation bar;
+     *   <li>Caption bar has 2 bounding rects;
+     *   <li>Widest unoccluded rect in captionBar insets is connected to the bottom;
+     * </ol>
      */
     // TODO(crbug/328446763): Add metrics to record the failure reason.
     // TODO(crbug/330213938): Add more criteria checks.
     private boolean isDesktopWindowingModeEnabled() {
         if (!mActivity.isInMultiWindowMode()) return false;
+
+        // Disable DW mode if there is a navigation bar (though it may or may not be visible /
+        // dismissed).
+        assert mInsetObserver.getLastRawWindowInsets() != null
+                : "Attempt to read the insets too early.";
+
+        var navBarInsets =
+                mInsetObserver
+                        .getLastRawWindowInsets()
+                        .getInsets(WindowInsetsCompat.Type.navigationBars());
+        if (navBarInsets.bottom > 0) {
+            return false;
+        }
 
         int numOfBoundingRects = mInsetsRectProvider.getBoundingRects().size();
         if (numOfBoundingRects != 2) {

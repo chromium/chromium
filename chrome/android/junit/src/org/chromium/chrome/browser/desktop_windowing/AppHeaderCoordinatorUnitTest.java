@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -20,6 +21,7 @@ import android.graphics.Rect;
 import android.view.View;
 
 import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -75,6 +77,7 @@ public class AppHeaderCoordinatorUnitTest {
     private AppHeaderCoordinator mAppHeaderCoordinator;
     private Activity mSpyActivity;
     private View mSpyRootView;
+    private WindowInsetsCompat mLastSeenRawWindowInsets = new WindowInsetsCompat(null);
     private final OneshotSupplierImpl<AppHeaderDelegate> mAppHeaderDelegateSupplier =
             new OneshotSupplierImpl<>();
     private final OneshotSupplierImpl<TabStripTransitionCoordinator>
@@ -86,6 +89,7 @@ public class AppHeaderCoordinatorUnitTest {
         doReturn(true).when(mSpyActivity).isInMultiWindowMode();
         mSpyRootView = spy(mSpyActivity.getWindow().getDecorView());
         AppHeaderCoordinator.setInsetsRectProviderForTesting(mInsetsRectProvider);
+        doAnswer(inv -> mLastSeenRawWindowInsets).when(mInsetObserver).getLastRawWindowInsets();
         setupWithNoInsets();
         initAppHeaderCoordinator();
     }
@@ -170,6 +174,21 @@ public class AppHeaderCoordinatorUnitTest {
 
         assertFalse(
                 "Desktop Windowing does not enable when not in multi window mode.",
+                mAppHeaderCoordinator.isDesktopWindowingEnabled());
+    }
+
+    @Test
+    public void notEnabledWhenNavBarBottomInsetsSeen() {
+        setupWithLeftAndRightBoundingRect();
+        // Override the last seen raw insets so there's a bottom nav bar insets.
+        mLastSeenRawWindowInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, 10))
+                        .build();
+        notifyInsetsRectObserver();
+
+        assertFalse(
+                "Desktop Windowing does not enable when there are bottom insets.",
                 mAppHeaderCoordinator.isDesktopWindowingEnabled());
     }
 
@@ -270,6 +289,11 @@ public class AppHeaderCoordinatorUnitTest {
 
     private void setupInsetsRectProvider(
             Insets insets, List<Rect> blockedRects, Rect widestUnOccludedRect, Rect windowRect) {
+        mLastSeenRawWindowInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.captionBar(), insets)
+                        .build();
+
         doReturn(windowRect).when(mInsetsRectProvider).getWindowRect();
         doReturn(widestUnOccludedRect).when(mInsetsRectProvider).getWidestUnoccludedRect();
         doReturn(insets).when(mInsetsRectProvider).getCachedInset();

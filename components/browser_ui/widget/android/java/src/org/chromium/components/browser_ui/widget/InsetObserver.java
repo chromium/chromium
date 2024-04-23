@@ -8,6 +8,7 @@ import android.graphics.Rect;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.view.DisplayCutoutCompat;
 import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
@@ -42,6 +43,9 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     private int mBottomInsetsForEdgeToEdge;
     private final boolean mInsetsManagementEnabled;
     private final Rect mDisplayCutoutRect;
+
+    // Cached state
+    private WindowInsetsCompat mLastSeenRawWindowInset;
 
     /** Allows observing changes to the window insets from Android system UI. */
     public interface WindowInsetObserver {
@@ -211,6 +215,17 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         mObservers.removeObserver(observer);
     }
 
+    /**
+     * Return the last seen raw window insets from the system. Insets will be returned as original,
+     * so modifying this WindowInsets (e.g. by {@link WindowInsetsCompat#inset} is not recommended.
+     * This should only be used for clients interested in reading a specific type of the insets;
+     * otherwise, the client should be registered as a {@link WindowInsetsConsumer}.
+     */
+    @Nullable
+    public WindowInsetsCompat getLastRawWindowInsets() {
+        return mLastSeenRawWindowInset;
+    }
+
     public WindowInsetsAnimationCompat.Callback getInsetAnimationProxyCallbackForTesting() {
         return mWindowInsetsAnimationProxyCallback;
     }
@@ -219,6 +234,8 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     @Override
     public WindowInsetsCompat onApplyWindowInsets(
             @NonNull View view, @NonNull WindowInsetsCompat insets) {
+        mLastSeenRawWindowInset = insets;
+
         updateDisplayCutoutRect(insets);
         insets = forwardToInsetConsumers(insets);
         updateKeyboardInset();
