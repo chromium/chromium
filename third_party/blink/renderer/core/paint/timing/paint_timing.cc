@@ -359,6 +359,7 @@ void PaintTiming::RecordFirstContentfulPaintTimingMetrics(
        frame_timing_details.embedded_frame_timestamp);
   base::UmaHistogramBoolean("Navigation.FCPFrameSubmittedBeforeSurfaceEmbed",
                             frame_submitted_before_embed);
+
   if (frame_submitted_before_embed) {
     base::UmaHistogramCustomTimes(
         "Navigation.FCPFrameSubmissionToSurfaceEmbed",

@@ -20,6 +20,11 @@ struct StructTraits<viz::mojom::FrameTimingDetailsDataView,
     return frame_timing_details.received_compositor_frame_timestamp;
   }
 
+  static base::TimeTicks embedded_frame_timestamp(
+      const viz::FrameTimingDetails& frame_timing_details) {
+    return frame_timing_details.embedded_frame_timestamp;
+  }
+
   static base::TimeTicks draw_start_timestamp(
       const viz::FrameTimingDetails& frame_timing_details) {
     return frame_timing_details.draw_start_timestamp;

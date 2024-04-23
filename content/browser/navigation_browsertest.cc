@@ -16,6 +16,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -289,6 +290,21 @@ BlockNavigationWillProcessResponse(WebContentsImpl* web_content) {
 
             return throttle;
           }));
+}
+
+void WaitForHistogramRecordedInChildProcess(std::string name) {
+  base::HistogramTester histogram_tester;
+
+  while (true) {
+    if (!histogram_tester.GetAllSamples(name).empty()) {
+      return;
+    }
+
+    // Retry fetching the histogram since it's not populated yet.
+    content::FetchHistogramsFromChildProcesses();
+    base::StatisticsRecorder::ImportProvidedHistogramsSync();
+    base::RunLoop().RunUntilIdle();
+  }
 }
 
 }  // namespace
@@ -8355,6 +8371,19 @@ IN_PROC_BROWSER_TEST_P(NavigationBrowserTestDeprecateUnloadOptOut,
   // Check for the side-effect.
   ASSERT_EQ(EvalJs(web_contents(), "localStorage.getItem('unload')"),
             IsOptOutEnabled() ? "dispatched" : "not_dispatched");
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, FCPMetrics) {
+  GURL url_1(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_1));
+
+  GURL url_2(embedded_test_server()->GetURL("/title2.html"));
+  NavigationController::LoadURLParams params(url_2);
+  params.transition_type = ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+  web_contents()->GetController().LoadURLWithParams(params);
+  WaitForHistogramRecordedInChildProcess(
+      "Navigation.FCPFrameSubmittedBeforeSurfaceEmbed");
 }
 
 class NavigationWithPageSwapBrowserTest : public NavigationBrowserTest {

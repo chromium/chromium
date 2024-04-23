@@ -11,6 +11,7 @@ import "ui/gfx/mojom/swap_timings.mojom";
 // viz::FrameTimingDetails
 struct FrameTimingDetails {
   mojo_base.mojom.TimeTicks received_compositor_frame_timestamp;
+  mojo_base.mojom.TimeTicks embedded_frame_timestamp;
   mojo_base.mojom.TimeTicks draw_start_timestamp;
   gfx.mojom.SwapTimings swap_timings;
   gfx.mojom.PresentationFeedback presentation_feedback;
