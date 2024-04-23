@@ -7208,7 +7208,6 @@ crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-contain/contain-layout-
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-contain/contain-paint-008.html [ Failure ]
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-contain/contain-paint-ignored-cases-ruby-containing-block-001.html [ Crash ]
 crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-contain/content-visibility/display-ruby-text-crash.html [ Crash ]
-crbug.com/324111880 virtual/ruby-lb/external/wpt/css/css-text-decor/ruby-text-decoration-01.html [ Crash ]
 crbug.com/324111880 virtual/ruby-lb/external/wpt/editing/run/inserthorizontalrule.html [ Failure ]
 crbug.com/324111880 virtual/ruby-lb/fast/ruby/float-overhang-from-ruby-text.html [ Failure ]
 crbug.com/324111880 virtual/ruby-lb/fast/ruby/select-ruby.html [ Failure ]

@@ -296,11 +296,11 @@ void InlinePaintContext::SetLineBox(const InlineCursor& line_cursor) {
   //
   // Compute the offset of the non-existent anonymous inline box.
   PhysicalOffset offset = line_item.OffsetInContainerFragment();
-  const PhysicalLineBoxFragment* fragment = line_item.LineBoxFragment();
-  DCHECK(fragment);
-  if (const SimpleFontData* font = style.GetFont().PrimaryFont()) {
-    offset.top += fragment->Metrics().ascent;
-    offset.top -= font->GetFontMetrics().FixedAscent();
+  if (const PhysicalLineBoxFragment* fragment = line_item.LineBoxFragment()) {
+    if (const SimpleFontData* font = style.GetFont().PrimaryFont()) {
+      offset.top += fragment->Metrics().ascent;
+      offset.top -= font->GetFontMetrics().FixedAscent();
+    }
   }
 
   // If the block has multiple decorations, all decorations have the same

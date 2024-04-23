@@ -933,6 +933,12 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
   }
 
   if (Type() == kLine) {
+    if (!LineBoxFragment()) {
+      // InlinePaintContext::ScopedLineBox doesn't support nested scopes.
+      // Nested kLine items are placed at the end of the base line. So it's ok
+      // to clear the current line before handling nested lines.
+      inline_context->ClearLineBox();
+    }
     InlinePaintContext::ScopedLineBox scoped_line_box(cursor, inline_context);
     PhysicalRect contents_rect =
         RecalcInkOverflowForDescendantsOf(cursor, inline_context);
