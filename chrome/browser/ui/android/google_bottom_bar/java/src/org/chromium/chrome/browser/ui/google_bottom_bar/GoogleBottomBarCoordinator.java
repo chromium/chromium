@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -26,25 +25,18 @@ public class GoogleBottomBarCoordinator {
             ChromeFeatureList.newStringCachedFieldTrialParameter(
                     ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR, BUTTON_LIST_PARAM, "");
 
-    // TODO - move the logic into a separate class that will process information received from the
-    // intent extras
-    private static final List<Integer> SUPPORTED_BUTTON_IDS = Arrays.asList(100, 101, 104);
-
     /** Returns true if GoogleBottomBar is enabled in the feature flag. */
     public static boolean isFeatureEnabled() {
         return ChromeFeatureList.sCctGoogleBottomBar.isEnabled();
     }
 
-    // TODO - move the logic into a separate class that will process information received from the
-    // intent extras
     /** Returns true if the id of the custom button param is supported. */
     public static boolean shouldUseCustomButtonParams(int customButtonParamsId) {
-        return SUPPORTED_BUTTON_IDS.contains(customButtonParamsId);
+        return BottomBarConfigCreator.shouldUseCustomButtonParams(customButtonParamsId);
     }
 
     private final Context mContext;
     private final GoogleBottomBarViewCreator mGoogleBottomBarViewCreator;
-    private final List<CustomButtonParams> mCustomButtonsParams;
 
     /**
      * Constructor.
@@ -61,8 +53,9 @@ public class GoogleBottomBarCoordinator {
         mContext = context;
         mGoogleBottomBarViewCreator =
                 new GoogleBottomBarViewCreator(
-                        context, getButtonConfig(googleBottomBarIntentParams));
-        mCustomButtonsParams = customButtonsOnGoogleBottomBar;
+                        context,
+                        getButtonConfig(
+                                googleBottomBarIntentParams, customButtonsOnGoogleBottomBar));
     }
 
     /** Returns a view that contains the Google Bottom bar. */
@@ -75,13 +68,17 @@ public class GoogleBottomBarCoordinator {
         return context.getResources().getDimensionPixelSize(R.dimen.google_bottom_bar_height);
     }
 
-    private BottomBarConfig getButtonConfig(GoogleBottomBarIntentParams intentParams) {
+    private BottomBarConfig getButtonConfig(
+            GoogleBottomBarIntentParams intentParams,
+            List<CustomButtonParams> customButtonsOnGoogleBottomBar) {
         // Encoded button list provided in intent from embedder
         if (intentParams.getEncodedButtonCount() != 0) {
-            return BottomBarConfig.fromEncodedList(intentParams.getEncodedButtonList());
+            return BottomBarConfigCreator.create(
+                    intentParams.getEncodedButtonList(), customButtonsOnGoogleBottomBar);
         }
 
         // Fall back on encoded string provided in Finch param
-        return BottomBarConfig.fromEncodedString(GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST.getValue());
+        return BottomBarConfigCreator.create(
+                GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST.getValue(), customButtonsOnGoogleBottomBar);
     }
 }

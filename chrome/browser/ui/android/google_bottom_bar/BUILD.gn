@@ -8,6 +8,7 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/BottomBarConfig.java",
+    "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/BottomBarConfigCreator.java",
     "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/GoogleBottomBarViewCreator.java",
   ]
@@ -29,13 +30,15 @@ android_resources("java_resources") {
 }
 
 robolectric_library("junit") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/BottomBarConfigTest.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/ui/google_bottom_bar/BottomBarConfigCreatorTest.java" ]
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//chrome/browser/android/browserservices/intents:java",
     "//third_party/junit",
+    "//third_party/mockito:mockito_java",
   ]
 }
 
