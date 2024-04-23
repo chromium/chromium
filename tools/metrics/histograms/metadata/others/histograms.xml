@@ -3072,7 +3072,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AggregatableReport.DroppedKeysPercentage"
-    units="%" expires_after="2024-05-12">
+    units="%" expires_after="2024-10-04">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3084,7 +3084,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AggregatableReport.ExtraReportDelay" units="ms"
-    expires_after="2024-05-10">
+    expires_after="2024-10-04">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3205,7 +3205,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Conversions.AggregatableReport.TimeFromTriggerToReportAssembly2"
-    units="ms" expires_after="2024-05-12">
+    units="ms" expires_after="2024-10-04">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3218,7 +3218,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Conversions.AggregatableReport.TimeFromTriggerToReportSentSuccessfully"
-    units="ms" expires_after="2024-05-12">
+    units="ms" expires_after="2024-10-04">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3558,7 +3558,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.FiltersPerFilterData" units="filters"
-    expires_after="2024-05-10">
+    expires_after="2024-10-04">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
