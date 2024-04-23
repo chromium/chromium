@@ -1,6 +1,7 @@
 {
   "src": "refs/branch-heads/6422",
   "src:src/clank": "refs/heads/chromium/6422",
+  "src:src/components/optimization_guide/internal": "refs/heads/chromium/6422",
   "src:src/internal": "refs/heads/chromium/6422",
   "src:src/ios_internal": "refs/heads/chromium/6422",
   "src:src/third_party/angle": "refs/heads/chromium/6422",
