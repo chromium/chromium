@@ -26,7 +26,7 @@ constexpr char kLoginPublicAccountUserViewClassName[] =
     "LoginPublicAccountUserView";
 
 // Distance from the top of the user view to the user icon.
-constexpr int kDistanceFromTopOfBigUserViewToUserIconDp = 54;
+constexpr int kDistanceFromTopOfBigUserViewToUserIconDp = 24;
 
 // Distance from the top of the user view to the user icon.
 constexpr int kDistanceFromUserViewToArrowButton = 44;
