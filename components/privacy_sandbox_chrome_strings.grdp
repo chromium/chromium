@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Strings in this file use the Chrome translation budget (and not PS). -->
+<!--
+  This file is deprecated in favor of the new Privacy Sandbox translation
+  pipeline found at //components/privacy_sandbox_strings.grd.
+  If you're considering making any changes to the strings here, please move them
+  over to the new file.
+-->
+<!-- LINT.IfChange -->
 <grit-part>
     <!-- Privacy Sandbox v4 - Consent EEA. -->
   <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_TITLE" desc="This string is a page title. It needs to serve 2 purposes: 1) it needs to encompass 3 settings: one of which appears on this screen and two others on a second screen. 2) it also tries to give a sense for a bigger project, Privacy Sandbox described at www.privacysandbox.com. * 'ad privacy' is also the name of a new page in Chrome settings called 'Ad settings'. We mean privacy associated with ads, and not privacy from ads. That new page includes 3 settings: Ad topics, Site-suggested ads, and Ad measurement. Those are also the same 3 settings associated with this 2-screen moment. * The new ad settings appear in the privacy section of Chrome settings: chrome://settings/adSettings **** CONTEXT PRIVACY SANDBOX **** Chrome’s Privacy Sandbox initiative 1) deprecates third-party cookies in Chrome, 2) supports free and open content on the web (by finding better ways to support ads online), 3) while providing stronger privacy protections for users. You can see a high-level description of this public project at www.privacysanbox.com. **** CONTEXT EEA CONSENT **** 1) This screen is a Consent moment for Chrome users in the European Economic Area (EEA). It follows guidelines established by the GDPR. 2) This screen is 1 of 2 screens. This first screen describes the “Ad topics” setting. The second screen describes 2 other settings: “Site-suggested ads” and “Ad measurement”. " formatter_data="android_java">
@@ -2358,3 +2364,4 @@
     Tracking Protection is temporarily unavailable. While Chrome is updating this feature, sites can temporarily use third-party cookies unless you block them. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
   </message>
 </grit-part>
+<!-- LINT.ThenChange(/components/privacy_sandbox_strings.grd) -->
