@@ -31,6 +31,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
+#include "url/url_features.h"
 
 using content::BrowserThread;
 
@@ -800,6 +801,31 @@ TEST_F(ProtocolHandlerRegistryTest, TestInstallDefaultHandler) {
   EXPECT_TRUE(registry()->IsHandledProtocol("news"));
 }
 
+// Non-special URLs behavior is affected by the
+// StandardCompliantNonSpecialSchemeURLParsing feature.
+// See https://crbug.com/40063064 for details.
+class ProtocolHandlerRegistryParamTest
+    : public ProtocolHandlerRegistryTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  ProtocolHandlerRegistryParamTest()
+      : use_standard_compliant_non_special_scheme_url_parsing_(GetParam()) {
+    if (use_standard_compliant_non_special_scheme_url_parsing_) {
+      scoped_feature_list_.InitAndEnableFeature(
+          url::kStandardCompliantNonSpecialSchemeURLParsing);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          url::kStandardCompliantNonSpecialSchemeURLParsing);
+    }
+  }
+
+ protected:
+  bool use_standard_compliant_non_special_scheme_url_parsing_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 #define URL_p1u1 "https://p1u1.com/%s"
 #define URL_p1u2 "https://p1u2.com/%s"
 #define URL_p1u3 "https://p1u3.com/%s"
@@ -959,7 +985,7 @@ TEST_F(ProtocolHandlerRegistryTest, TestPrefPolicyOverlapIgnore) {
   ASSERT_EQ(InMemoryIgnoredHandlerCount(), 4);
 }
 
-TEST_F(ProtocolHandlerRegistryTest, TestURIPercentEncoding) {
+TEST_P(ProtocolHandlerRegistryParamTest, TestURIPercentEncoding) {
   ProtocolHandler ph =
       CreateProtocolHandler("web+custom", GURL("https://test.com/url=%s"));
   registry()->OnAcceptRegisterProtocolHandler(ph);
@@ -975,10 +1001,21 @@ TEST_F(ProtocolHandlerRegistryTest, TestURIPercentEncoding) {
       translated_url,
       GURL("https://test.com/url=web%2Bcustom%3A%2F%2Fcustom%2F%2520handler"));
 
-  // Space character.
-  translated_url = ph.TranslateUrl(GURL("web+custom://custom handler"));
-  ASSERT_EQ(translated_url,
-            GURL("https://test.com/url=web%2Bcustom%3A%2F%2Fcustom%20handler"));
+  // Percent-encoded spaces in the host part.
+  translated_url = ph.TranslateUrl(GURL("web+custom://custom%20handler"));
+  ASSERT_EQ(
+      translated_url,
+      GURL("https://test.com/url=web%2Bcustom%3A%2F%2Fcustom%2520handler"));
+
+  if (!use_standard_compliant_non_special_scheme_url_parsing_) {
+    // We can't test a non-special URL which includes a space in the host part,
+    // as such URLs become invalid when the feature is enabled.
+    // TODO(crbug.com/40063064) Remove this test when the feature is shipped.
+    translated_url = ph.TranslateUrl(GURL("web+custom://custom handler"));
+    ASSERT_EQ(
+        translated_url,
+        GURL("https://test.com/url=web%2Bcustom%3A%2F%2Fcustom%20handler"));
+  }
 
   // Query parameters.
   translated_url = ph.TranslateUrl(GURL("web+custom://custom?foo=bar&bar=baz"));
@@ -988,9 +1025,30 @@ TEST_F(ProtocolHandlerRegistryTest, TestURIPercentEncoding) {
 
   // Non-ASCII characters.
   translated_url = ph.TranslateUrl(GURL("web+custom://custom/<>`{}#?\"'😂"));
-  ASSERT_EQ(translated_url, GURL("https://test.com/"
-                                 "url=web%2Bcustom%3A%2F%2Fcustom%2F%3C%3E%60%"
-                                 "7B%7D%23%3F%2522'%25F0%259F%2598%2582"));
+
+  // When StandardCompliantNonSpecialSchemeURLParsing feature is enabled, some
+  // punctuation characters in the path part of a non-special URLs are correctly
+  // percent-encoded. Thus, we need to test both cases.
+  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+    // When the feature is enabled, a URL like
+    // "web+custom://custom/<>`{}#?\"'😂" is correctly percent-encoded. This
+    // results in the serialized URL:
+    // "web+custom://custom/%3C%3E%60%7B%7D#?%22'%F0%9F%98%82"
+    ASSERT_EQ(
+        translated_url,
+        GURL("https://test.com/"
+             "url=web%2Bcustom%3A%2F%2Fcustom%2F%253C%253E%2560%257B%257D%"
+             "23%3F%2522'%25F0%259F%2598%2582"));
+  } else {
+    // When the feature is disabled, a URL like
+    // "web+custom://custom/<>`{}#?\"'😂", is not correctly percent-encoded.
+    // This results in the serialized URL:
+    // web+custom://custom/<>`{}#?%22'%F0%9F%98%82".
+    ASSERT_EQ(translated_url,
+              GURL("https://test.com/"
+                   "url=web%2Bcustom%3A%2F%2Fcustom%2F%3C%3E%60%"
+                   "7B%7D%23%3F%2522'%25F0%259F%2598%2582"));
+  }
 
   // ASCII characters from the C0 controls percent-encode set.
   // GURL constructor encodes U+001F and U+007F as "%1F" and "%7F" first,
@@ -1325,14 +1383,26 @@ TEST_P(ProtocolHandlerRegistryCredentialsTest,
   }
 }
 
-TEST_F(ProtocolHandlerRegistryTest, CredentialsForNonStandardSchemes) {
+TEST_P(ProtocolHandlerRegistryParamTest, CredentialsForNonStandardSchemes) {
   ProtocolHandler ph =
       CreateProtocolHandler("web+bool", GURL("https://example.com/url=%s"));
   registry()->OnAcceptRegisterProtocolHandler(ph);
 
-  EXPECT_EQ(ph.TranslateUrl(GURL("web+bool://user:password@example/y")),
-            GURL("https://example.com/"
-                 "url=web%2Bbool%3A%2F%2Fuser%3Apassword%40example%2Fy"));
+  if (use_standard_compliant_non_special_scheme_url_parsing_) {
+    // If the feature is enabled, the credentials part, "user:password", in
+    // non-special URLs is correctly parsed and removed.
+    EXPECT_EQ(ph.TranslateUrl(GURL("web+bool://user:password@example/y")),
+              GURL("https://example.com/"
+                   "url=web%2Bbool%3A%2F%2Fexample%2Fy"));
+  } else {
+    EXPECT_EQ(ph.TranslateUrl(GURL("web+bool://user:password@example/y")),
+              GURL("https://example.com/"
+                   "url=web%2Bbool%3A%2F%2Fuser%3Apassword%40example%2Fy"));
+  }
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ProtocolHandlerRegistryParamTest,
+                         ::testing::Bool());
 
 }  // namespace custom_handlers
