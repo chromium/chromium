@@ -10,6 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.chromium.base.test.transit.ViewElement.sharedViewElement;
 import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
 
+import android.os.Build;
 import android.view.View;
 
 import androidx.annotation.CallSuper;
@@ -67,10 +68,10 @@ public class MessageFacility extends StationFacility<PageStation> {
     /** Dismiss the message banner. */
     public void dismiss() {
         Trigger dismissTrigger;
-        boolean isTablet = mStation.mChromeTabbedActivityTestRule.getActivity().isTablet();
-        if (isTablet) {
-            // For tablets, GeneralSwipeAction is not working in the current version of Espresso.
-            // Workaround by using the test helpers to dismiss the popup programmatically.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // b/329707221: For S+, GeneralSwipeAction is not working in the current version of
+            // Espresso (3.2). Workaround by using the test helpers to dismiss the popup
+            // programmatically.
             dismissTrigger =
                     () ->
                             ThreadUtils.runOnUiThreadBlocking(
