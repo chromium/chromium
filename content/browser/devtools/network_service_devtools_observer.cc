@@ -13,6 +13,7 @@
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
+#include "services/network/public/mojom/shared_dictionary_error.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace content {
@@ -345,6 +346,98 @@ void NetworkServiceDevToolsObserver::OnSubresourceWebBundleInnerResponseError(
       host, &protocol::NetworkHandler::OnSubresourceWebBundleInnerResponseError,
       inner_request_devtools_id, url, error_message,
       bundle_request_devtools_id);
+}
+
+namespace {
+
+protocol::String BuildSharedDictionaryError(
+    network::mojom::SharedDictionaryError write_error) {
+  using network::mojom::SharedDictionaryError;
+  namespace SharedDictionaryErrorEnum =
+      protocol::Audits::SharedDictionaryErrorEnum;
+  switch (write_error) {
+    case SharedDictionaryError::kUseErrorCrossOriginNoCorsRequest:
+      return SharedDictionaryErrorEnum::UseErrorCrossOriginNoCorsRequest;
+    case SharedDictionaryError::kUseErrorDictionaryLoadFailure:
+      return SharedDictionaryErrorEnum::UseErrorDictionaryLoadFailure;
+    case SharedDictionaryError::kUseErrorMatchingDictionaryNotUsed:
+      return SharedDictionaryErrorEnum::UseErrorMatchingDictionaryNotUsed;
+    case SharedDictionaryError::kUseErrorUnexpectedContentDictionaryHeader:
+      return SharedDictionaryErrorEnum::
+          UseErrorUnexpectedContentDictionaryHeader;
+    case SharedDictionaryError::kWriteErrorAlreadyRegistered:
+      NOTREACHED_NORETURN();
+    case SharedDictionaryError::kWriteErrorCossOriginNoCorsRequest:
+      return SharedDictionaryErrorEnum::WriteErrorCossOriginNoCorsRequest;
+    case SharedDictionaryError::kWriteErrorDisallowedBySettings:
+      return SharedDictionaryErrorEnum::WriteErrorDisallowedBySettings;
+    case SharedDictionaryError::kWriteErrorExpiredResponse:
+      return SharedDictionaryErrorEnum::WriteErrorExpiredResponse;
+    case SharedDictionaryError::kWriteErrorFeatureDisabled:
+      return SharedDictionaryErrorEnum::WriteErrorFeatureDisabled;
+    case SharedDictionaryError::kWriteErrorInsufficientResources:
+      return SharedDictionaryErrorEnum::WriteErrorInsufficientResources;
+    case SharedDictionaryError::kWriteErrorInvalidMatchField:
+      return SharedDictionaryErrorEnum::WriteErrorInvalidMatchField;
+    case SharedDictionaryError::kWriteErrorInvalidStructuredHeader:
+      return SharedDictionaryErrorEnum::WriteErrorInvalidStructuredHeader;
+    case SharedDictionaryError::kWriteErrorNavigationRequest:
+      return SharedDictionaryErrorEnum::WriteErrorNavigationRequest;
+    case SharedDictionaryError::kWriteErrorNoMatchField:
+      return SharedDictionaryErrorEnum::WriteErrorNoMatchField;
+    case SharedDictionaryError::kWriteErrorNonListMatchDestField:
+      return SharedDictionaryErrorEnum::WriteErrorNonListMatchDestField;
+    case SharedDictionaryError::kWriteErrorNonSecureContext:
+      return SharedDictionaryErrorEnum::WriteErrorNonSecureContext;
+    case SharedDictionaryError::kWriteErrorNonStringIdField:
+      return SharedDictionaryErrorEnum::WriteErrorNonStringIdField;
+    case SharedDictionaryError::kWriteErrorNonStringInMatchDestList:
+      return SharedDictionaryErrorEnum::WriteErrorNonStringInMatchDestList;
+    case SharedDictionaryError::kWriteErrorNonStringMatchField:
+      return SharedDictionaryErrorEnum::WriteErrorNonStringMatchField;
+    case SharedDictionaryError::kWriteErrorNonTokenTypeField:
+      return SharedDictionaryErrorEnum::WriteErrorNonTokenTypeField;
+    case SharedDictionaryError::kWriteErrorRequestAborted:
+      return SharedDictionaryErrorEnum::WriteErrorRequestAborted;
+    case SharedDictionaryError::kWriteErrorShuttingDown:
+      return SharedDictionaryErrorEnum::WriteErrorShuttingDown;
+    case SharedDictionaryError::kWriteErrorTooLongIdField:
+      return SharedDictionaryErrorEnum::WriteErrorTooLongIdField;
+    case SharedDictionaryError::kWriteErrorUnsupportedType:
+      return SharedDictionaryErrorEnum::WriteErrorUnsupportedType;
+  }
+}
+
+}  // namespace
+
+void NetworkServiceDevToolsObserver::OnSharedDictionaryError(
+    const std::string& devtool_request_id,
+    const GURL& url,
+    network::mojom::SharedDictionaryError error) {
+  RenderFrameHostImpl* rfhi = GetRenderFrameHostImplFrom(frame_tree_node_id_);
+  if (!rfhi) {
+    return;
+  }
+  auto affected_request = protocol::Audits::AffectedRequest::Create()
+                              .SetRequestId(devtool_request_id)
+                              .SetUrl(url.spec())
+                              .Build();
+  auto shared_dictionary_issue_details =
+      protocol::Audits::SharedDictionaryIssueDetails::Create()
+          .SetSharedDictionaryError(BuildSharedDictionaryError(error))
+          .SetRequest(std::move(affected_request))
+          .Build();
+  auto details = protocol::Audits::InspectorIssueDetails::Create()
+                     .SetSharedDictionaryIssueDetails(
+                         std::move(shared_dictionary_issue_details))
+                     .Build();
+  auto issue =
+      protocol::Audits::InspectorIssue::Create()
+          .SetCode(
+              protocol::Audits::InspectorIssueCodeEnum::SharedDictionaryIssue)
+          .SetDetails(std::move(details))
+          .Build();
+  devtools_instrumentation::ReportBrowserInitiatedIssue(rfhi, issue.get());
 }
 
 void NetworkServiceDevToolsObserver::Clone(
