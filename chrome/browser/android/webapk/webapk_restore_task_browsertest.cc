@@ -19,17 +19,6 @@
 
 namespace webapk {
 
-namespace {
-
-sync_pb::WebApkSpecifics CreateWebApkSpecifics(const std::string& url) {
-  sync_pb::WebApkSpecifics web_apk;
-  web_apk.set_manifest_id(url);
-  web_apk.set_start_url(url);
-
-  return web_apk;
-}
-}  // namespace
-
 class WebApkRestoreTaskBrowserTest : public PlatformBrowserTest {
  public:
   WebApkRestoreTaskBrowserTest() = default;
@@ -61,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, CreateAndRunTasks) {
   GURL test_url = embedded_test_server()->GetURL("/manifest_test_page.html");
 
   WebApkRestoreTask task(WebApkRestoreManager::PassKeyForTesting(), profile(),
-                         CreateWebApkSpecifics(test_url.spec()));
+                         std::make_unique<webapps::ShortcutInfo>(test_url));
 
   task.Start(web_contents_manager.get(),
              base::BindOnce(&WebApkRestoreTaskBrowserTest::OnTaskCompleted,

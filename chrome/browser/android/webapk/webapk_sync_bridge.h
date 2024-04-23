@@ -23,6 +23,10 @@ class ModelError;
 class ModelTypeChangeProcessor;
 }  // namespace syncer
 
+namespace webapps {
+struct ShortcutInfo;
+}
+
 namespace webapk {
 
 class AbstractWebApkDatabaseFactory;
@@ -95,9 +99,9 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
                     bool is_install);
   void OnWebApkUninstalled(const std::string& manifest_id);
 
-  // Get the apps info for apps that are available to restore. Returns the AppId
-  // and the app name for each of the apps as a vector of a vector.
-  std::vector<std::vector<std::string>> GetRestorableAppsInfo() const;
+  // Get list of apps that are available to restore.
+  std::map<webapps::AppId, std::unique_ptr<webapps::ShortcutInfo>>
+  GetRestorableAppsShortcutInfo() const;
 
   const WebApkProto* GetWebApkByAppId(webapps::AppId app_id) const;
 

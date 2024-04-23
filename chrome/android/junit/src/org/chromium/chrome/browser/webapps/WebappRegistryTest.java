@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.webapps.WebappRegistry.GetWebApkSpecificsImplSetWebappInfoForTesting;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
 import org.chromium.components.sync.protocol.WebApkSpecifics;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.Arrays;
@@ -110,7 +109,7 @@ public class WebappRegistryTest {
 
         @Override
         public void fetchRestorableApps(
-                Profile profile, WindowAndroid windowAndroid, int arrowResourceId) {}
+                Profile profile, WebApkSyncService.PwaRestorableListCallback callback) {}
     }
 
     @Before

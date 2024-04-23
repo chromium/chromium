@@ -6,12 +6,13 @@
 
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/android/webapk/webapk_helpers.h"
 #include "chrome/browser/android/webapk/webapk_restore_task.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,16 +22,6 @@ namespace webapk {
 
 namespace {
 
-std::unique_ptr<sync_pb::WebApkSpecifics> CreateWebApkSpecifics(
-    const GURL& url) {
-  std::unique_ptr<sync_pb::WebApkSpecifics> web_apk =
-      std::make_unique<sync_pb::WebApkSpecifics>();
-  web_apk->set_manifest_id(url.spec());
-  web_apk->set_start_url(url.spec());
-
-  return web_apk;
-}
-
 // A mock WebApkRestoreTask that does nothing but run the complete callback when
 // starts.
 class MockWebApkRestoreTask : public WebApkRestoreTask {
@@ -38,32 +29,31 @@ class MockWebApkRestoreTask : public WebApkRestoreTask {
   explicit MockWebApkRestoreTask(
       base::PassKey<WebApkRestoreManager> pass_key,
       Profile* profile,
-      const sync_pb::WebApkSpecifics& webapk_specifics,
+      std::unique_ptr<webapps::ShortcutInfo> shortcut_info,
       std::vector<std::pair<GURL, std::string>>* task_log)
-      : WebApkRestoreTask(pass_key, profile, webapk_specifics),
-        manifest_id_(GURL(webapk_specifics.manifest_id())),
+      : WebApkRestoreTask(pass_key, profile, std::move(shortcut_info)),
         task_log_(task_log) {}
   ~MockWebApkRestoreTask() override = default;
 
   void Start(WebApkRestoreWebContentsManager* web_contents_manager,
              CompleteCallback complete_callback) override {
-    task_log_->emplace_back(manifest_id_, "Start");
+    task_log_->emplace_back(fallback_info_->manifest_id, "Start");
 
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(complete_callback), manifest_id_,
+        FROM_HERE, base::BindOnce(std::move(complete_callback),
+                                  fallback_info_->manifest_id,
                                   webapps::WebApkInstallResult::SUCCESS));
   }
 
  private:
-  const GURL manifest_id_;
   raw_ptr<std::vector<std::pair<GURL, std::string>>> task_log_;
 };
 
-class FakeWebApkRestoreManager : public WebApkRestoreManager {
+class TestWebApkRestoreManager : public WebApkRestoreManager {
  public:
-  explicit FakeWebApkRestoreManager(Profile* profile)
+  explicit TestWebApkRestoreManager(Profile* profile)
       : WebApkRestoreManager(profile) {}
-  ~FakeWebApkRestoreManager() override = default;
+  ~TestWebApkRestoreManager() override = default;
 
   void PrepareTasksFinish(base::OnceClosure on_task_finish) {
     on_task_finish_ = std::move(on_task_finish);
@@ -84,11 +74,11 @@ class FakeWebApkRestoreManager : public WebApkRestoreManager {
  private:
   // Mock CreateNewTask to create the Mock task instead.
   std::unique_ptr<WebApkRestoreTask> CreateNewTask(
-      const sync_pb::WebApkSpecifics& webapk_specifics) override {
-    task_log_.emplace_back(GURL(webapk_specifics.manifest_id()), "Create");
+      std::unique_ptr<webapps::ShortcutInfo> shortcut_info) override {
+    task_log_.emplace_back(shortcut_info->manifest_id, "Create");
     return std::make_unique<MockWebApkRestoreTask>(
-        WebApkRestoreManager::PassKeyForTesting(), profile(), webapk_specifics,
-        &task_log_);
+        WebApkRestoreManager::PassKeyForTesting(), profile(),
+        std::move(shortcut_info), &task_log_);
   }
 
   base::OnceClosure on_task_finish_;
@@ -110,6 +100,14 @@ class WebApkRestoreManagerTest : public ::testing::Test {
 
   TestingProfile* profile() { return profile_.get(); }
 
+ protected:
+  const GURL kManifestId1 = GURL("https://example.com/app1");
+  const GURL kManifestId2 = GURL("https://example.com/app2");
+  const GURL kManifestId3 = GURL("https://example.com/app3");
+  const webapps::AppId kAppId1 = GenerateAppIdFromManifestId(kManifestId1);
+  const webapps::AppId kAppId2 = GenerateAppIdFromManifestId(kManifestId2);
+  const webapps::AppId kAppId3 = GenerateAppIdFromManifestId(kManifestId3);
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager testing_profile_manager_{
@@ -117,61 +115,94 @@ class WebApkRestoreManagerTest : public ::testing::Test {
   raw_ptr<TestingProfile> profile_;
 };
 
-TEST_F(WebApkRestoreManagerTest, OneTasks) {
-  const GURL manifest_id_1("https://example.com/app1");
+TEST_F(WebApkRestoreManagerTest, GetAppResults) {
+  std::unique_ptr<TestWebApkRestoreManager> manager =
+      std::make_unique<TestWebApkRestoreManager>(profile());
+
+  std::map<webapps::AppId, std::unique_ptr<webapps::ShortcutInfo>> apps;
+  auto shortcut_info_1 = std::make_unique<webapps::ShortcutInfo>(kManifestId1);
+  shortcut_info_1->name = u"app1";
+  auto shortcut_info_2 = std::make_unique<webapps::ShortcutInfo>(kManifestId2);
+  shortcut_info_2->name = u"app2";
+  apps.emplace(kAppId1, std::move(shortcut_info_1));
+  apps.emplace(kAppId2, std::move(shortcut_info_2));
+
+  std::vector<std::vector<std::string>> app_list;
+  base::RunLoop run_loop;
+  manager->PrepareRestorableApps(
+      std::move(apps), base::BindLambdaForTesting(
+                           [&](std::vector<std::vector<std::string>> results) {
+                             app_list = results;
+                             run_loop.Quit();
+                           }));
+  run_loop.Run();
+
+  EXPECT_THAT(app_list,
+              testing::ElementsAre(
+                  std::vector<std::string>{
+                      GenerateAppIdFromManifestId(kManifestId1), "app1"},
+                  std::vector<std::string>{
+                      GenerateAppIdFromManifestId(kManifestId2), "app2"}));
+}
+
+TEST_F(WebApkRestoreManagerTest, RunOneTasks) {
+  std::unique_ptr<TestWebApkRestoreManager> manager =
+      std::make_unique<TestWebApkRestoreManager>(profile());
+
+  std::map<webapps::AppId, std::unique_ptr<webapps::ShortcutInfo>> apps;
+  apps.emplace(kAppId1, std::make_unique<webapps::ShortcutInfo>(kManifestId1));
+  manager->PrepareRestorableApps(std::move(apps), base::DoNothing());
 
   base::RunLoop run_loop;
-
-  std::unique_ptr<FakeWebApkRestoreManager> manager =
-      std::make_unique<FakeWebApkRestoreManager>(profile());
-
   manager->PrepareTasksFinish(run_loop.QuitClosure());
-  manager->ScheduleTask(*CreateWebApkSpecifics(manifest_id_1).get());
-
+  manager->ScheduleRestoreTasks({kAppId1});
   run_loop.Run();
+
   EXPECT_THAT(manager->task_log(),
-              testing::ElementsAre(std::pair(manifest_id_1, "Create"),
-                                   std::pair(manifest_id_1, "Start"),
-                                   std::pair(manifest_id_1, "Finish")));
+              testing::ElementsAre(std::pair(kManifestId1, "Create"),
+                                   std::pair(kManifestId1, "Start"),
+                                   std::pair(kManifestId1, "Finish")));
 }
 
 // Schedule multiple tasks and they run in sequence.
 TEST_F(WebApkRestoreManagerTest, ScheduleMultipleTasks) {
-  const GURL manifest_id_1("https://example.com/app1");
-  const GURL manifest_id_2("https://example.com/app2");
-  const GURL manifest_id_3("https://example.com/app3");
+  std::unique_ptr<TestWebApkRestoreManager> manager =
+      std::make_unique<TestWebApkRestoreManager>(profile());
 
-  std::unique_ptr<FakeWebApkRestoreManager> manager =
-      std::make_unique<FakeWebApkRestoreManager>(profile());
+  std::map<webapps::AppId, std::unique_ptr<webapps::ShortcutInfo>> apps;
+  apps.emplace(kAppId1, std::make_unique<webapps::ShortcutInfo>(kManifestId1));
+  apps.emplace(kAppId2, std::make_unique<webapps::ShortcutInfo>(kManifestId2));
+  apps.emplace(kAppId3, std::make_unique<webapps::ShortcutInfo>(kManifestId3));
+  manager->PrepareRestorableApps(std::move(apps), base::DoNothing());
+
   base::RunLoop run_loop;
   manager->PrepareTasksFinish(run_loop.QuitClosure());
-  manager->ScheduleTask(*CreateWebApkSpecifics(manifest_id_1).get());
-  manager->ScheduleTask(*CreateWebApkSpecifics(manifest_id_2).get());
+  manager->ScheduleRestoreTasks({kAppId1, kAppId2});
   run_loop.Run();
 
   // Tests are created when added to the queue. The second task only start until
   // the first one finished.
-  EXPECT_THAT(manager->task_log(),
-              testing::ElementsAre(std::pair(manifest_id_1, "Create"),
-                                   std::pair(manifest_id_1, "Start"),
-                                   std::pair(manifest_id_2, "Create"),
-                                   std::pair(manifest_id_1, "Finish"),
-                                   std::pair(manifest_id_2, "Start"),
-                                   std::pair(manifest_id_2, "Finish")));
-
-  base::RunLoop run_loop2;
-  manager->PrepareTasksFinish(run_loop2.QuitClosure());
-  manager->ScheduleTask(*CreateWebApkSpecifics(manifest_id_3).get());
-  run_loop2.Run();
   EXPECT_THAT(
       manager->task_log(),
       testing::ElementsAre(
-          std::pair(manifest_id_1, "Create"), std::pair(manifest_id_1, "Start"),
-          std::pair(manifest_id_2, "Create"),
-          std::pair(manifest_id_1, "Finish"), std::pair(manifest_id_2, "Start"),
-          std::pair(manifest_id_2, "Finish"),
-          std::pair(manifest_id_3, "Create"), std::pair(manifest_id_3, "Start"),
-          std::pair(manifest_id_3, "Finish")));
+          std::pair(kManifestId1, "Create"), std::pair(kManifestId2, "Create"),
+          std::pair(kManifestId3, "Create"), std::pair(kManifestId1, "Start"),
+          std::pair(kManifestId1, "Finish"), std::pair(kManifestId2, "Start"),
+          std::pair(kManifestId2, "Finish")));
+
+  base::RunLoop run_loop2;
+  manager->PrepareTasksFinish(run_loop2.QuitClosure());
+  manager->ScheduleRestoreTasks({kAppId3});
+  run_loop2.Run();
+
+  EXPECT_THAT(
+      manager->task_log(),
+      testing::ElementsAre(
+          std::pair(kManifestId1, "Create"), std::pair(kManifestId2, "Create"),
+          std::pair(kManifestId3, "Create"), std::pair(kManifestId1, "Start"),
+          std::pair(kManifestId1, "Finish"), std::pair(kManifestId2, "Start"),
+          std::pair(kManifestId2, "Finish"), std::pair(kManifestId3, "Start"),
+          std::pair(kManifestId3, "Finish")));
 }
 
 }  // namespace webapk

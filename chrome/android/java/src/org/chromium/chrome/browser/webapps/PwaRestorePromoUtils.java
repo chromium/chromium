@@ -9,7 +9,6 @@ import android.app.Activity;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
-import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.Log;
@@ -147,11 +146,14 @@ public class PwaRestorePromoUtils {
 
     private static void launchPromo(Profile profile, WindowAndroid windowAndroid) {
         WebApkSyncService.fetchRestorableApps(
-                profile, windowAndroid, R.drawable.ic_arrow_back_24dp);
+                profile,
+                (success, appList) -> {
+                    onRestorableAppsAvailable(
+                            success, appList, windowAndroid, R.drawable.ic_arrow_back_24dp);
+                });
         // Flow continues in onRestorableAppsAvailable.
     }
 
-    @CalledByNative
     private static void onRestorableAppsAvailable(
             boolean success,
             @NonNull String[][] appList,

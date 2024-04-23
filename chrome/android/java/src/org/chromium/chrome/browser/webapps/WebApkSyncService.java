@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.webapps;
 
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+
+import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -16,12 +19,17 @@ import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.sync.protocol.WebApkIconInfo;
 import org.chromium.components.sync.protocol.WebApkSpecifics;
-import org.chromium.ui.base.WindowAndroid;
 
 /** Static class to update WebAPK data to sync. */
 @JNINamespace("webapk")
 public class WebApkSyncService {
     private static final long UNIX_OFFSET_MICROS = 11644473600000000L;
+
+    /** Called with update result. */
+    public static interface PwaRestorableListCallback {
+        @CalledByNative("PwaRestorableListCallback")
+        public void onResultFromNative(boolean success, @NonNull String[][] appList);
+    }
 
     static void onWebApkUsed(
             BrowserServicesIntentDataProvider intendDataProvider,
@@ -104,9 +112,8 @@ public class WebApkSyncService {
         return timeInMills * 1000 + UNIX_OFFSET_MICROS;
     }
 
-    public static void fetchRestorableApps(
-            Profile profile, WindowAndroid windowAndroid, int arrowResourceId) {
-        WebApkSyncServiceJni.get().fetchRestorableApps(profile, windowAndroid, arrowResourceId);
+    public static void fetchRestorableApps(Profile profile, PwaRestorableListCallback callback) {
+        WebApkSyncServiceJni.get().fetchRestorableApps(profile, callback);
     }
 
     @NativeMethods
@@ -118,8 +125,6 @@ public class WebApkSyncService {
         void removeOldWebAPKsFromSync(long currentTimeMsSinceUnixEpoch);
 
         void fetchRestorableApps(
-                @JniType("Profile*") Profile profile,
-                WindowAndroid windowAndroid,
-                int arrowResourceId);
+                @JniType("Profile*") Profile profile, PwaRestorableListCallback callback);
     }
 }

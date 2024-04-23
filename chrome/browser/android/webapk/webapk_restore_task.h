@@ -8,7 +8,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
-#include "components/sync/protocol/web_apk_specifics.pb.h"
 #include "components/webapps/browser/android/add_to_homescreen_data_fetcher.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -31,9 +30,11 @@ class WebApkRestoreWebContentsManager;
 // represents a WebAPK to be install.
 class WebApkRestoreTask : public webapps::AddToHomescreenDataFetcher::Observer {
  public:
-  explicit WebApkRestoreTask(base::PassKey<WebApkRestoreManager>,
-                             Profile* profile,
-                             const sync_pb::WebApkSpecifics& webapk_specifics);
+  explicit WebApkRestoreTask(
+      base::PassKey<WebApkRestoreManager>,
+      Profile* profile,
+      std::unique_ptr<webapps::ShortcutInfo> shortcut_info);
+
   WebApkRestoreTask(const WebApkRestoreTask&) = delete;
   WebApkRestoreTask& operator=(const WebApkRestoreTask&) = delete;
   ~WebApkRestoreTask() override;
@@ -43,6 +44,9 @@ class WebApkRestoreTask : public webapps::AddToHomescreenDataFetcher::Observer {
 
   virtual void Start(WebApkRestoreWebContentsManager* web_contents_manager,
                      CompleteCallback complete_callback);
+
+ protected:
+  std::unique_ptr<webapps::ShortcutInfo> fallback_info_;
 
  private:
   void OnWebAppUrlLoaded(webapps::WebAppUrlLoaderResult result);
@@ -68,9 +72,6 @@ class WebApkRestoreTask : public webapps::AddToHomescreenDataFetcher::Observer {
 
   std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
   std::unique_ptr<webapps::AddToHomescreenDataFetcher> data_fetcher_;
-
-  const GURL manifest_id_;
-  std::unique_ptr<webapps::ShortcutInfo> fallback_info_;
 
   base::WeakPtrFactory<WebApkRestoreTask> weak_factory_{this};
 };

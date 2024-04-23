@@ -7,17 +7,19 @@
 
 #include <deque>
 
+#include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/android/webapk/webapk_restore_task.h"
-#include "components/sync/protocol/web_apk_specifics.pb.h"
+#include "components/webapps/common/web_app_id.h"
 
 class Profile;
 
 namespace webapps {
+struct ShortcutInfo;
 enum class WebApkInstallResult;
 }
 
@@ -35,13 +37,18 @@ class WebApkRestoreManager {
   WebApkRestoreManager& operator=(const WebApkRestoreManager&) = delete;
   virtual ~WebApkRestoreManager();
 
-  void ScheduleTask(const sync_pb::WebApkSpecifics& webapk_specifics);
+  void PrepareRestorableApps(
+      std::map<webapps::AppId, std::unique_ptr<webapps::ShortcutInfo>> apps,
+      base::OnceCallback<void(std::vector<std::vector<std::string>>)>
+          result_callback);
+  void ScheduleRestoreTasks(
+      const std::vector<webapps::AppId>& app_ids_to_restore);
 
   uint32_t GetTasksCountForTesting() const { return tasks_.size(); }
 
  protected:
   virtual std::unique_ptr<WebApkRestoreTask> CreateNewTask(
-      const sync_pb::WebApkSpecifics& webapk_specifics);
+      std::unique_ptr<webapps::ShortcutInfo> shortcut_info);
   virtual void OnTaskFinished(const GURL& manifest_id,
                               webapps::WebApkInstallResult result);
 
@@ -53,8 +60,12 @@ class WebApkRestoreManager {
   raw_ptr<Profile> profile_;
   std::unique_ptr<WebApkRestoreWebContentsManager> web_contents_manager_;
 
-  // The list of webapk infos to be restored.
-  std::deque<std::unique_ptr<WebApkRestoreTask>> tasks_;
+  // All restorable WebAPKs
+  std::map<webapps::AppId, std::unique_ptr<WebApkRestoreTask>>
+      restorable_tasks_;
+
+  // The list of AppId for WebAPKs to be restored.
+  std::deque<webapps::AppId> tasks_;
   bool is_running_ = false;
 
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

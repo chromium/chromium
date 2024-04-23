@@ -3796,7 +3796,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/tabmodel/TabModelJniBridge.java",
     "java/src/org/chromium/chrome/browser/tabmodel/TabModelObserverJniBridge.java",
     "java/src/org/chromium/chrome/browser/usage_stats/UsageStatsBridge.java",
-    "java/src/org/chromium/chrome/browser/webapps/PwaRestorePromoUtils.java",
     "java/src/org/chromium/chrome/browser/webapps/WebApkDataProvider.java",
     "java/src/org/chromium/chrome/browser/webapps/WebApkHandlerDelegate.java",
     "java/src/org/chromium/chrome/browser/webapps/WebApkInstallService.java",

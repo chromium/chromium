@@ -20,6 +20,7 @@
 #include "components/sync/model/entity_change.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/common/web_app_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1161,13 +1162,13 @@ TEST_F(WebApkSyncBridgeTest, RemoveOldWebAPKsFromSync) {
 TEST_F(WebApkSyncBridgeTest, GetRestorableAppsInfo) {
   InitSyncBridge();
 
-  const std::string manifest_id_1 = "https://example.com/app1";
-  const std::string manifest_id_2 = "https://example.com/app2";
-  const std::string manifest_id_3 = "https://example.com/app3";
-  const std::string manifest_id_4 = "https://example.com/app4";
+  const GURL manifest_id_1("https://example.com/app1");
+  const GURL manifest_id_2("https://example.com/app2");
+  const GURL manifest_id_3("https://example.com/app3");
+  const GURL manifest_id_4("https://example.com/app4");
 
   std::unique_ptr<WebApkProto> registry_app_1 =
-      CreateWebApkProto(manifest_id_1, "registry_app_1");
+      CreateWebApkProto(manifest_id_1.spec(), "registry_app_1");
   registry_app_1->mutable_sync_data()->set_last_used_time_windows_epoch_micros(
       UnixTsSecToWindowsTsMsec(
           1136145845.0));  // Sun Jan 01 2006 15:04:05 GMT-0500 - slightly
@@ -1175,7 +1176,7 @@ TEST_F(WebApkSyncBridgeTest, GetRestorableAppsInfo) {
   registry_app_1->set_is_locally_installed(true);
 
   std::unique_ptr<WebApkProto> registry_app_2 =
-      CreateWebApkProto(manifest_id_2, "registry_app_2");
+      CreateWebApkProto(manifest_id_2.spec(), "registry_app_2");
   registry_app_2->mutable_sync_data()->set_last_used_time_windows_epoch_micros(
       UnixTsSecToWindowsTsMsec(
           1136145845.0));  // Sun Jan 01 2006 15:04:05 GMT-0500 - slightly
@@ -1183,7 +1184,7 @@ TEST_F(WebApkSyncBridgeTest, GetRestorableAppsInfo) {
   registry_app_2->set_is_locally_installed(false);
 
   std::unique_ptr<WebApkProto> registry_app_3 =
-      CreateWebApkProto(manifest_id_3, "registry_app_3");
+      CreateWebApkProto(manifest_id_3.spec(), "registry_app_3");
   registry_app_3->mutable_sync_data()->set_last_used_time_windows_epoch_micros(
       UnixTsSecToWindowsTsMsec(
           1133726645.0));  // Sun Dec 04 2005 15:04:05 GMT-0500 - 29 days before
@@ -1191,7 +1192,7 @@ TEST_F(WebApkSyncBridgeTest, GetRestorableAppsInfo) {
   registry_app_3->set_is_locally_installed(false);
 
   std::unique_ptr<WebApkProto> registry_app_4 =
-      CreateWebApkProto(manifest_id_4, "registry_app_4");
+      CreateWebApkProto(manifest_id_4.spec(), "registry_app_4");
   registry_app_4->mutable_sync_data()->set_last_used_time_windows_epoch_micros(
       UnixTsSecToWindowsTsMsec(
           1133640244.0));  // Sat Dec 03 2005 15:04:04 GMT-0500 - 30 days and 1
@@ -1213,12 +1214,16 @@ TEST_F(WebApkSyncBridgeTest, GetRestorableAppsInfo) {
 
   InitSyncBridge();
 
-  EXPECT_THAT(sync_bridge().GetRestorableAppsInfo(),
-              testing::ElementsAre(
-                  std::vector<std::string>{ManifestIdStrToAppId(manifest_id_2),
-                                           "registry_app_2"},
-                  std::vector<std::string>{ManifestIdStrToAppId(manifest_id_3),
-                                           "registry_app_3"}));
+  auto result = sync_bridge().GetRestorableAppsShortcutInfo();
+  EXPECT_EQ(result.size(), 2u);
+  EXPECT_EQ(result[ManifestIdStrToAppId(manifest_id_2.spec())]->manifest_id,
+            manifest_id_2);
+  EXPECT_EQ(result[ManifestIdStrToAppId(manifest_id_2.spec())]->name,
+            u"registry_app_2");
+  EXPECT_EQ(result[ManifestIdStrToAppId(manifest_id_3.spec())]->manifest_id,
+            manifest_id_3);
+  EXPECT_EQ(result[ManifestIdStrToAppId(manifest_id_3.spec())]->name,
+            u"registry_app_3");
 }
 
 }  // namespace webapk

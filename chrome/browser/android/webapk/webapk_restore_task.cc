@@ -9,7 +9,6 @@
 #include "chrome/browser/android/webapk/webapk_installer.h"
 #include "chrome/browser/android/webapk/webapk_restore_web_contents_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
@@ -27,16 +26,8 @@ const int kDataFetcherTimeoutInMilliseconds = 12000;
 WebApkRestoreTask::WebApkRestoreTask(
     base::PassKey<WebApkRestoreManager> pass_key,
     Profile* profile,
-    const sync_pb::WebApkSpecifics& webapk_specifics)
-    : profile_(profile) {
-  fallback_info_ = std::make_unique<webapps::ShortcutInfo>(
-      GURL(webapk_specifics.start_url()));
-  fallback_info_->manifest_id = GURL(webapk_specifics.manifest_id());
-  fallback_info_->scope = GURL(webapk_specifics.scope());
-  fallback_info_->user_title = base::UTF8ToUTF16(webapk_specifics.name());
-  fallback_info_->name = fallback_info_->user_title;
-  fallback_info_->short_name = fallback_info_->user_title;
-}
+    std::unique_ptr<webapps::ShortcutInfo> shortcut_info)
+    : fallback_info_(std::move(shortcut_info)), profile_(profile) {}
 
 WebApkRestoreTask::~WebApkRestoreTask() = default;
 

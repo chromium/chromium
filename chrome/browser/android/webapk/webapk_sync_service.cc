@@ -18,15 +18,27 @@
 #include "components/sync/base/features.h"
 
 // Must come after other includes, because FromJniType() uses Profile.
-#include "chrome/android/chrome_jni_headers/PwaRestorePromoUtils_jni.h"
 #include "chrome/android/chrome_jni_headers/WebApkSyncService_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
-using base::android::ScopedJavaLocalRef;
 
 namespace webapk {
+
+namespace {
+
+// Called after getting restorable app info.
+void OnGotAppsInfo(const JavaRef<jobject>& java_callback,
+                   std::vector<std::vector<std::string>> results) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_PwaRestorableListCallback_onResultFromNative(
+      env, java_callback, true,
+      base::android::ToJavaArrayOfStringArray(env, results));
+}
+
+}  // anonymous namespace
 
 // static
 WebApkSyncService* WebApkSyncService::GetForProfile(Profile* profile) {
@@ -82,20 +94,17 @@ void WebApkSyncService::RemoveOldWebAPKsFromSync(
   sync_bridge_->RemoveOldWebAPKsFromSync(current_time_ms_since_unix_epoch);
 }
 
-std::vector<std::vector<std::string>> WebApkSyncService::GetRestorableAppsInfo()
-    const {
-  return sync_bridge_->GetRestorableAppsInfo();
+void WebApkSyncService::PrepareRestorableAppsInfo(
+    base::OnceCallback<void(std::vector<std::vector<std::string>>)>
+        result_callback) const {
+  restore_manager_->PrepareRestorableApps(
+      sync_bridge_->GetRestorableAppsShortcutInfo(),
+      std::move(result_callback));
 }
 
 void WebApkSyncService::RestoreAppList(
-    std::vector<std::string> app_ids_to_restore) {
-  for (auto app_id : app_ids_to_restore) {
-    const WebApkProto* webapk_proto = sync_bridge_->GetWebApkByAppId(app_id);
-    if (!webapk_proto || webapk_proto->is_locally_installed()) {
-      continue;
-    }
-    restore_manager_->ScheduleTask(webapk_proto->sync_data());
-  }
+    const std::vector<std::string>& app_ids_to_restore) {
+  restore_manager_->ScheduleRestoreTasks(app_ids_to_restore);
 }
 
 // static
@@ -161,18 +170,14 @@ static void JNI_WebApkSyncService_RemoveOldWebAPKsFromSync(
 static void JNI_WebApkSyncService_FetchRestorableApps(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& jwindow_android,
-    int arrow_resource_id) {
+    const JavaParamRef<jobject>& java_callback) {
   if (profile == nullptr) {
     return;
   }
 
-  auto result =
-      WebApkSyncService::GetForProfile(profile)->GetRestorableAppsInfo();
-  ScopedJavaLocalRef<jobjectArray> jresults =
-      base::android::ToJavaArrayOfStringArray(env, result);
-  webapps::Java_PwaRestorePromoUtils_onRestorableAppsAvailable(
-      env, true, jresults, jwindow_android, arrow_resource_id);
+  ScopedJavaGlobalRef<jobject> callback_ref(java_callback);
+  WebApkSyncService::GetForProfile(profile)->PrepareRestorableAppsInfo(
+      base::BindOnce(&OnGotAppsInfo, callback_ref));
 }
 
 }  // namespace webapk

@@ -4,11 +4,11 @@
 
 #include "chrome/browser/android/webapk/webapk_restore_manager.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/android/webapk/webapk_restore_web_contents_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "components/sync/protocol/web_app_specifics.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -27,17 +27,32 @@ WebApkRestoreManager::PassKey WebApkRestoreManager::PassKeyForTesting() {
   return PassKey();
 }
 
-void WebApkRestoreManager::ScheduleTask(
-    const sync_pb::WebApkSpecifics& webapk_specifics) {
-  tasks_.push_back(CreateNewTask(webapk_specifics));
+void WebApkRestoreManager::PrepareRestorableApps(
+    std::map<webapps::AppId, std::unique_ptr<webapps::ShortcutInfo>> apps,
+    base::OnceCallback<void(std::vector<std::vector<std::string>>)>
+        result_callback) {
+  std::vector<std::vector<std::string>> results;
+  for (auto&& [appId, shortcut_info] : apps) {
+    results.push_back({appId, base::UTF16ToUTF8(shortcut_info->name)});
+    restorable_tasks_.emplace(std::move(appId),
+                              CreateNewTask(std::move(shortcut_info)));
+  }
+  std::move(result_callback).Run(results);
+}
+
+void WebApkRestoreManager::ScheduleRestoreTasks(
+    const std::vector<webapps::AppId>& app_ids_to_restore) {
+  for (auto appId : app_ids_to_restore) {
+    tasks_.push_back(appId);
+  }
 
   MaybeStartNextTask();
 }
 
 std::unique_ptr<WebApkRestoreTask> WebApkRestoreManager::CreateNewTask(
-    const sync_pb::WebApkSpecifics& webapk_specifics) {
+    std::unique_ptr<webapps::ShortcutInfo> shortcut_info) {
   return std::make_unique<WebApkRestoreTask>(PassKey(), profile_,
-                                             webapk_specifics);
+                                             std::move(shortcut_info));
 }
 
 void WebApkRestoreManager::MaybeStartNextTask() {
@@ -53,9 +68,10 @@ void WebApkRestoreManager::MaybeStartNextTask() {
 
   is_running_ = true;
   web_contents_manager_->EnsureWebContentsCreated(PassKey());
-  tasks_.front()->Start(web_contents_manager_.get(),
-                        base::BindOnce(&WebApkRestoreManager::OnTaskFinished,
-                                       base::Unretained(this)));
+  restorable_tasks_.at(tasks_.front())
+      ->Start(web_contents_manager_.get(),
+              base::BindOnce(&WebApkRestoreManager::OnTaskFinished,
+                             base::Unretained(this)));
 }
 
 void WebApkRestoreManager::OnTaskFinished(const GURL& manifest_id,

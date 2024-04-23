@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -28,6 +29,7 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
+#include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
@@ -108,6 +110,18 @@ bool AppWasUsedRecentlyComparedTo(const sync_pb::WebApkSpecifics* specifics,
   base::Time app_last_used = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(specifics->last_used_time_windows_epoch_micros()));
   return time - app_last_used < kRecentAppMaxAge;
+}
+
+std::unique_ptr<webapps::ShortcutInfo> CreateShortcutInfoFromSpecifics(
+    const sync_pb::WebApkSpecifics& webapk_specifics) {
+  auto shortcut_info = std::make_unique<webapps::ShortcutInfo>(
+      GURL(webapk_specifics.start_url()));
+  shortcut_info->manifest_id = GURL(webapk_specifics.manifest_id());
+  shortcut_info->scope = GURL(webapk_specifics.scope());
+  shortcut_info->user_title = base::UTF8ToUTF16(webapk_specifics.name());
+  shortcut_info->name = shortcut_info->user_title;
+  shortcut_info->short_name = shortcut_info->user_title;
+  return shortcut_info;
 }
 
 }  // anonymous namespace
@@ -380,13 +394,14 @@ void WebApkSyncBridge::OnWebApkUninstalled(const std::string& manifest_id) {
                      weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 }
 
-std::vector<std::vector<std::string>> WebApkSyncBridge::GetRestorableAppsInfo()
-    const {
-  std::vector<std::vector<std::string>> results;
+std::map<webapps::AppId, std::unique_ptr<webapps::ShortcutInfo>>
+WebApkSyncBridge::GetRestorableAppsShortcutInfo() const {
+  std::map<webapps::AppId, std::unique_ptr<webapps::ShortcutInfo>> results;
   for (auto const& [appId, proto] : registry_) {
     if (!proto->is_locally_installed() &&
         AppWasUsedRecently(&proto->sync_data())) {
-      results.push_back({appId, proto->sync_data().name()});
+      results.emplace(appId,
+                      CreateShortcutInfoFromSpecifics(proto->sync_data()));
     }
   }
   return results;
