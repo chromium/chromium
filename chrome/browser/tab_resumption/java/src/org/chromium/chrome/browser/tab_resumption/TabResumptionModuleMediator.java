@@ -209,7 +209,7 @@ public class TabResumptionModuleMediator {
      * @return Whether the given suggestion is qualified to be shown in UI.
      */
     private static boolean isSuggestionValid(SuggestionEntry entry) {
-        return !TextUtils.isEmpty(entry.title);
+        return (entry instanceof LocalTabSuggestionEntry) || !TextUtils.isEmpty(entry.title);
     }
 
     /**

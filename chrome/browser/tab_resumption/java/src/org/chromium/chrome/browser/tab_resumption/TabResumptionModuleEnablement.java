@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
+import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -19,7 +20,19 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 /** Utility class for the decision funnel on showing or hiding the tab resumption module. */
 public class TabResumptionModuleEnablement {
 
-    // TODO(b/332588018): Add class LocalTab.
+    static class LocalTab {
+        static boolean isFeatureEnabled() {
+            return HomeModulesMetricsUtils.HOME_MODULES_COMBINE_TABS.getValue();
+        }
+
+        static boolean hasData(ModuleDelegate moduleDelegate) {
+            return moduleDelegate.getTrackingTab() != null;
+        }
+
+        static boolean shouldMakeProvider(ModuleDelegate moduleDelegate) {
+            return isFeatureEnabled() && hasData(moduleDelegate);
+        }
+    }
 
     static class ForeignSession {
         static boolean isFeatureEnabled() {

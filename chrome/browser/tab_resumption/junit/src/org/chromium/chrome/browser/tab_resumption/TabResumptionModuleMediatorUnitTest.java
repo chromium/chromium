@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.Sugg
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallbacks;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
@@ -260,7 +259,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     @SmallTest
     public void testTentativeNothingStableSomething() {
         List<SuggestionEntry> tentativeSuggestions = new ArrayList<SuggestionEntry>();
-        List<SuggestionEntry> stableSuggestions1 = Arrays.asList(makeValidEntry(0));
+        List<SuggestionEntry> stableSuggestions1 = Arrays.asList(makeForeignSessionSuggestion(0));
 
         // Tentative suggestions = nothing: Don't fail yet; wait some more.
         mMediator.loadModule();
@@ -306,7 +305,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     @Test
     @SmallTest
     public void testTentativeSomethingStableNothing() {
-        List<SuggestionEntry> tentativeSuggestions = Arrays.asList(makeValidEntry(1));
+        List<SuggestionEntry> tentativeSuggestions = Arrays.asList(makeForeignSessionSuggestion(1));
         List<SuggestionEntry> stableSuggestions1 = new ArrayList<SuggestionEntry>();
 
         // Tentative suggestions = something: Call onDataReady() and show (tentative).
@@ -344,10 +343,10 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     @Test
     @SmallTest
     public void testTentativeSomethingStableSomething() {
-        List<SuggestionEntry> tentativeSuggestions = Arrays.asList(makeValidEntry(0));
+        List<SuggestionEntry> tentativeSuggestions = Arrays.asList(makeForeignSessionSuggestion(0));
         List<SuggestionEntry> stableSuggestions1 =
-                Arrays.asList(makeValidEntry(1), makeValidEntry(0));
-        List<SuggestionEntry> stableSuggestions2 = Arrays.asList(makeValidEntry(0));
+                Arrays.asList(makeForeignSessionSuggestion(1), makeForeignSessionSuggestion(0));
+        List<SuggestionEntry> stableSuggestions2 = Arrays.asList(makeForeignSessionSuggestion(0));
         List<SuggestionEntry> stableSuggestions3 = new ArrayList<SuggestionEntry>();
 
         // Tentative suggestions = something: Call onDataReady() and show (tentative).
@@ -414,18 +413,6 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
                 /* expectOnDataReadyCalls= */ 1,
                 /* expectOnDataFetchFailedCalls= */ 0,
                 /* expectRemoveModuleCalls= */ 1);
-    }
-
-    private SuggestionEntry makeValidEntry(int index) {
-        assert index == 0 || index == 1;
-        GURL[] urlChoices = {JUnitTestGURLs.GOOGLE_URL_DOG, JUnitTestGURLs.GOOGLE_URL_CAT};
-        String[] titleChoices = {"Google Dog", "Google Cat"};
-        return new SuggestionEntry(
-                /* sourceName= */ "Desktop",
-                /* url= */ urlChoices[index],
-                /* title= */ titleChoices[index],
-                /* timestamp= */ makeTimestamp(16, 0, 0),
-                /* id= */ 45);
     }
 
     private void checkModuleState(

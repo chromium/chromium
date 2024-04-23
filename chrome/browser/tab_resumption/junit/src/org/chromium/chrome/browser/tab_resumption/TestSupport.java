@@ -4,12 +4,17 @@
 
 package org.chromium.chrome.browser.tab_resumption;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import android.graphics.Bitmap;
 
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.sync_device_info.FormFactor;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
@@ -143,5 +148,26 @@ public class TestSupport {
                         /* formFactor= */ FormFactor.TABLET);
 
         return new ArrayList<>(Arrays.asList(tabletForeignSession));
+    }
+
+    static SuggestionEntry makeForeignSessionSuggestion(int index) {
+        assert index == 0 || index == 1;
+        GURL[] urlChoices = {JUnitTestGURLs.GOOGLE_URL_DOG, JUnitTestGURLs.GOOGLE_URL_CAT};
+        String[] titleChoices = {"Google Dog", "Google Cat"};
+        return new SuggestionEntry(
+                /* sourceName= */ "Desktop",
+                /* url= */ urlChoices[index],
+                /* title= */ titleChoices[index],
+                /* timestamp= */ makeTimestamp(16, 0, 0),
+                /* id= */ 45);
+    }
+
+    static Tab makeMockBrowserTab() {
+        Tab tab = mock(Tab.class);
+        when(tab.getUrl()).thenReturn(JUnitTestGURLs.BLUE_1);
+        when(tab.getTitle()).thenReturn("Blue 1");
+        when(tab.getTimestampMillis()).thenReturn(BASE_TIME_MS);
+        when(tab.getId()).thenReturn(42);
+        return tab;
     }
 }
