@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_idle_status_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_main_tab_grid_delegate.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation_layout_providing.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_layout_providing.h"
 
 @protocol ApplicationCommands;
@@ -100,7 +99,6 @@ enum class TabGridPageConfiguration {
                         GridConsumer,
                         KeyCommandActions,
                         TabGridConsumer,
-                        LegacyGridTransitionAnimationLayoutProviding,
                         TabGridIdleStatusHandler,
                         TabGridPaging,
                         TabGridToolbarsMainTabGridDelegate,
@@ -176,6 +174,9 @@ enum class TabGridPageConfiguration {
     UIViewController* incognitoGridContainerViewController;
 @property(nonatomic, weak)
     GridContainerViewController* remoteGridContainerViewController;
+
+// The currently visible page.
+@property(nonatomic, assign, readonly) TabGridPage currentPage;
 
 // Init with tab grid view configuration, which decides which sub view
 // controller should be added.

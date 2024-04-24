@@ -97,6 +97,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_helper.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_coordinator_delegate.h"
@@ -105,6 +106,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation_layout_providing.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_tab_grid_transition_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/tab_grid_transition_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
@@ -146,6 +149,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                   HistoryPresentationDelegate,
                                   HistorySyncPopupCoordinatorDelegate,
                                   InactiveTabsCoordinatorDelegate,
+                                  LegacyGridTransitionAnimationLayoutProviding,
                                   RecentTabsPresentationDelegate,
                                   SceneStateObserver,
                                   SnackbarCoordinatorDelegate,
@@ -191,6 +195,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // Remote grid container.
   // TODO(crbug.com/1457146): To remove when remote coordinator handles it.
   GridContainerViewController* _remoteGridContainerViewController;
+
+  // The frame of the Tab Grid when it is presented.
+  CGRect _frameWhenEntering;
 }
 
 // Browser that contain tabs from the main pane (i.e. non-incognito).
@@ -428,22 +435,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   BOOL toTabGroup = tabGroup != nullptr;
 
   __weak __typeof(self) weakSelf = self;
-  __weak UIWindow* sceneWindow = sceneState.window;
 
   ProceduralBlock transitionCompletionBlock = ^{
-    __typeof(self) strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-
-    strongSelf.bvcContainer = nil;
-    [strongSelf.baseViewController contentDidAppear];
-
-    if (shouldDisplayBringAndroidTabsPrompt) {
-      [strongSelf displayBringAndroidTabsPrompt];
-    }
-
-    sceneWindow.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+    [weakSelf transitionToGridCompleteForAndroidTabsPrompt:
+                  shouldDisplayBringAndroidTabsPrompt];
   };
 
   ProceduralBlock transitionBlock = ^{
@@ -455,7 +450,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     strongSelf.baseViewController.childViewControllerForStatusBarStyle = nil;
 
     if (IsNewTabGridTransitionsEnabled()) {
-      [self
+      [strongSelf
           performBrowserToTabGridTransitionWithAnimationEnabled:animated
                                                      completion:
                                                          transitionCompletionBlock];
@@ -698,12 +693,27 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                        withCompletion:completion];
 }
 
+// Called when the transition from Browser to Tab Grid is complete and whether
+// it `shouldDisplayBringAndroidTabsPrompt`.
+- (void)transitionToGridCompleteForAndroidTabsPrompt:
+    (BOOL)shouldDisplayBringAndroidTabsPrompt {
+  self.bvcContainer = nil;
+  _frameWhenEntering = self.baseViewController.view.frame;
+  [self.baseViewController contentDidAppear];
+
+  if (shouldDisplayBringAndroidTabsPrompt) {
+    [self displayBringAndroidTabsPrompt];
+  }
+
+  UIWindow* sceneWindow = self.regularBrowser->GetSceneState().window;
+  sceneWindow.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+}
+
 // Creates a transition handler with `animationEnabled` parameter.
 - (LegacyTabGridTransitionHandler*)createTransitionHanlderWithAnimationEnabled:
     (BOOL)animationEnabled {
   LegacyTabGridTransitionHandler* transitionHandler =
-      [[LegacyTabGridTransitionHandler alloc]
-          initWithLayoutProvider:self.baseViewController];
+      [[LegacyTabGridTransitionHandler alloc] initWithLayoutProvider:self];
   transitionHandler.animationDisabled = !animationEnabled;
 
   return transitionHandler;
@@ -1577,6 +1587,114 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (UIView*)viewAboveTabGroup {
   return self.bvcContainer.view;
+}
+
+#pragma mark - LegacyGridTransitionAnimationLayoutProviding
+
+- (BOOL)isSelectedCellVisible {
+  if (self.baseViewController.activePage !=
+      self.baseViewController.currentPage) {
+    return NO;
+  }
+
+  return [self isSelectedCellVisibleForPage:self.baseViewController.activePage];
+}
+
+- (BOOL)shouldReparentSelectedCell:(GridAnimationDirection)animationDirection {
+  switch (animationDirection) {
+      // For contracting animation only selected pinned cells should be
+      // reparented.
+    case GridAnimationDirectionContracting:
+      return [self isPinnedCellSelected];
+      // For expanding animation any selected cell should be reparented.
+    case GridAnimationDirectionExpanding:
+      return YES;
+  }
+}
+
+- (LegacyGridTransitionLayout*)transitionLayout:(TabGridPage)activePage {
+  LegacyGridTransitionLayout* layout =
+      [self transitionLayoutForPage:activePage];
+  if (!layout) {
+    return nil;
+  }
+  layout.frameChanged = !CGRectEqualToRect(self.baseViewController.view.frame,
+                                           _frameWhenEntering);
+  return layout;
+}
+
+- (UIView*)animationViewsContainer {
+  return self.baseViewController.view;
+}
+
+- (UIView*)animationViewsContainerBottomView {
+  // The animation should happen just above the direct subview of the TabGrid
+  // containing the visible grid.
+  UIView* potentialGridContainer;
+  switch (self.baseViewController.activePage) {
+    case TabGridPageIncognitoTabs:
+      potentialGridContainer =
+          _incognitoGridCoordinator.gridContainerViewController.view;
+      break;
+    case TabGridPageRegularTabs:
+      potentialGridContainer =
+          _regularGridCoordinator.gridContainerViewController.view;
+      break;
+    case TabGridPageRemoteTabs:
+      NOTREACHED_NORETURN();
+  }
+  UIView* baseView = self.baseViewController.view;
+  while (potentialGridContainer.superview != baseView) {
+    potentialGridContainer = potentialGridContainer.superview;
+  }
+  return potentialGridContainer;
+}
+
+// Returns whether selcted cell is visible for the provided `page`.
+- (BOOL)isSelectedCellVisibleForPage:(TabGridPage)page {
+  switch (page) {
+    case TabGridPageIncognitoTabs:
+      return _incognitoGridCoordinator.gridViewController.selectedCellVisible;
+    case TabGridPageRegularTabs:
+      return [self isSelectedCellVisibleForRegularTabsPage];
+    case TabGridPageRemoteTabs:
+      return NO;
+  }
+}
+
+// Returns whether selcted cell is visible for the regular tabs `page`.
+- (BOOL)isSelectedCellVisibleForRegularTabsPage {
+  BOOL isSelectedCellVisible =
+      _regularGridCoordinator.gridViewController.selectedCellVisible;
+
+  if (IsPinnedTabsEnabled()) {
+    isSelectedCellVisible |=
+        _regularGridCoordinator.pinnedTabsViewController.selectedCellVisible;
+  }
+
+  return isSelectedCellVisible;
+}
+
+// Returns wether there is a selected pinned cell.
+- (BOOL)isPinnedCellSelected {
+  if (!IsPinnedTabsEnabled() ||
+      self.baseViewController.currentPage != TabGridPageRegularTabs) {
+    return NO;
+  }
+
+  return [_regularGridCoordinator.pinnedTabsViewController hasSelectedCell];
+}
+
+// Returns transition layout for the provided `page`.
+- (LegacyGridTransitionLayout*)transitionLayoutForPage:(TabGridPage)page {
+  switch (page) {
+    case TabGridPageIncognitoTabs:
+      return [_incognitoGridCoordinator transitionLayout];
+    case TabGridPageRegularTabs:
+      return [_regularGridCoordinator transitionLayout];
+    case TabGridPageRemoteTabs:
+      return nil;
+  }
 }
 
 @end

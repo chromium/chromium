@@ -92,6 +92,12 @@
   return _mediator;
 }
 
+#pragma mark - Superclass overrides
+
+- (LegacyGridTransitionLayout*)transitionLayout {
+  return [self.gridViewController transitionLayout];
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {

@@ -30,6 +30,14 @@
 // Mediator of the grid. The subclasses should implement the getter.
 @property(nonatomic, strong, readonly) BaseGridMediator* mediator;
 
+// Combines two transition layouts into one. The `primaryLayout` has the
+// priority over `secondaryLayout`. This means that in case there are two
+// activeItems and/or two selectionItems available, only the ones from
+// `primaryLayout` would be picked for a combined layout.
+- (LegacyGridTransitionLayout*)
+    combineTransitionLayout:(LegacyGridTransitionLayout*)primaryLayout
+       withTransitionLayout:(LegacyGridTransitionLayout*)secondaryLayout;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_COORDINATOR_SUBCLASSING_H_

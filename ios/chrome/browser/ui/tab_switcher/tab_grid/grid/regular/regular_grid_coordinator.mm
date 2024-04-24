@@ -62,6 +62,23 @@
   return _mediator;
 }
 
+#pragma mark - Superclass overrides
+
+- (LegacyGridTransitionLayout*)transitionLayout {
+  LegacyGridTransitionLayout* regularTabsTransitionLayout =
+      [_gridViewController transitionLayout];
+
+  if (IsPinnedTabsEnabled()) {
+    LegacyGridTransitionLayout* pinnedTabsTransitionLayout =
+        [self.pinnedTabsViewController transitionLayout];
+
+    return [self combineTransitionLayout:regularTabsTransitionLayout
+                    withTransitionLayout:pinnedTabsTransitionLayout];
+  }
+
+  return regularTabsTransitionLayout;
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {

@@ -123,12 +123,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 @property(nonatomic, strong) UIControl* scrimView;
 @property(nonatomic, assign) TabGridConfiguration configuration;
 // Setting the current page doesn't scroll the scroll view; use
-// -scrollToPage:animated: for that.
-@property(nonatomic, assign) TabGridPage currentPage;
+// -scrollToPage:animated: for that. Redefined as readwrite.
+@property(nonatomic, assign, readwrite) TabGridPage currentPage;
 // The UIViewController corresponding with `currentPage`.
 @property(nonatomic, readonly) UIViewController* currentPageViewController;
-// The frame of `self.view` when it initially appeared.
-@property(nonatomic, assign) CGRect initialFrame;
 // Whether the scroll view is animating its content offset to the current page.
 @property(nonatomic, assign, getter=isScrollViewAnimatingContentOffset)
     BOOL scrollViewAnimatingContentOffset;
@@ -368,46 +366,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   return l10n_util::GetNSString(stringID);
 }
 
-#pragma mark - LegacyGridTransitionAnimationLayoutProviding properties
-
-- (BOOL)isSelectedCellVisible {
-  if (self.activePage != self.currentPage) {
-    return NO;
-  }
-
-  return [self isSelectedCellVisibleForPage:self.activePage];
-}
-
-- (BOOL)shouldReparentSelectedCell:(GridAnimationDirection)animationDirection {
-  switch (animationDirection) {
-      // For contracting animation only selected pinned cells should be
-      // reparented.
-    case GridAnimationDirectionContracting:
-      return [self isPinnedCellSelected];
-      // For expanding animation any selected cell should be reparented.
-    case GridAnimationDirectionExpanding:
-      return YES;
-  }
-}
-
-- (LegacyGridTransitionLayout*)transitionLayout:(TabGridPage)activePage {
-  LegacyGridTransitionLayout* layout =
-      [self transitionLayoutForPage:activePage];
-  if (!layout) {
-    return nil;
-  }
-  layout.frameChanged = !CGRectEqualToRect(self.view.frame, self.initialFrame);
-  return layout;
-}
-
-- (UIView*)animationViewsContainer {
-  return self.view;
-}
-
-- (UIView*)animationViewsContainerBottomView {
-  return self.scrollView;
-}
-
 #pragma mark - TabGridTransitionLayoutProviding
 
 - (TabGridTransitionLayout*)transitionLayout {
@@ -449,7 +407,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)contentDidAppear {
-  self.initialFrame = self.view.frame;
   // Modify Remote Tabs Insets when page appears and during rotation.
   if (self.remoteTabsViewController) {
     [self setInsetForRemoteTabs];
@@ -665,120 +622,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // `_idleRecentTabs` is set to 'YES' if the "Done" button has been tapped from
   // the "TabGridPageRemoteTabs" or if the page has changed.
   _idleRecentTabs = NO;
-}
-
-// Returns wether there is a selected pinned cell.
-- (BOOL)isPinnedCellSelected {
-  if (!IsPinnedTabsEnabled() || self.currentPage != TabGridPageRegularTabs) {
-    return NO;
-  }
-
-  return [self.pinnedTabsViewController hasSelectedCell];
-}
-
-// Returns whether selcted cell is visible for the provided `page`.
-- (BOOL)isSelectedCellVisibleForPage:(TabGridPage)page {
-  switch (page) {
-    case TabGridPageIncognitoTabs:
-      return self.incognitoTabsViewController.selectedCellVisible;
-    case TabGridPageRegularTabs:
-      return [self isSelectedCellVisibleForRegularTabsPage];
-    case TabGridPageRemoteTabs:
-      return NO;
-  }
-}
-
-// Returns whether selcted cell is visible for the regular tabs `page`.
-- (BOOL)isSelectedCellVisibleForRegularTabsPage {
-  BOOL isSelectedCellVisible =
-      self.regularTabsViewController.selectedCellVisible;
-
-  if (IsPinnedTabsEnabled()) {
-    isSelectedCellVisible |= self.pinnedTabsViewController.selectedCellVisible;
-  }
-
-  return isSelectedCellVisible;
-}
-
-// Returns transition layout for the provided `page`.
-- (LegacyGridTransitionLayout*)transitionLayoutForPage:(TabGridPage)page {
-  switch (page) {
-    case TabGridPageIncognitoTabs:
-      return [self.incognitoTabsViewController transitionLayout];
-    case TabGridPageRegularTabs:
-      return [self transitionLayoutForRegularTabsPage];
-    case TabGridPageRemoteTabs:
-      return nil;
-  }
-}
-
-// Returns transition layout provider for the regular tabs page.
-- (LegacyGridTransitionLayout*)transitionLayoutForRegularTabsPage {
-  LegacyGridTransitionLayout* regularTabsTransitionLayout =
-      [self.regularTabsViewController transitionLayout];
-
-  if (IsPinnedTabsEnabled()) {
-    LegacyGridTransitionLayout* pinnedTabsTransitionLayout =
-        [self.pinnedTabsViewController transitionLayout];
-
-    return [self combineTransitionLayout:regularTabsTransitionLayout
-                    withTransitionLayout:pinnedTabsTransitionLayout];
-  }
-
-  return regularTabsTransitionLayout;
-}
-
-// Combines two transition layouts into one. The `primaryLayout` has the
-// priority over `secondaryLayout`. This means that in case there are two
-// activeItems and/or two selectionItems available, only the ones from
-// `primaryLayout` would be picked for a combined layout.
-- (LegacyGridTransitionLayout*)
-    combineTransitionLayout:(LegacyGridTransitionLayout*)primaryLayout
-       withTransitionLayout:(LegacyGridTransitionLayout*)secondaryLayout {
-  NSArray<LegacyGridTransitionItem*>* primaryInactiveItems =
-      primaryLayout.inactiveItems;
-  NSArray<LegacyGridTransitionItem*>* secondaryInactiveItems =
-      secondaryLayout.inactiveItems;
-
-  NSArray<LegacyGridTransitionItem*>* inactiveItems =
-      [self combineInactiveItems:primaryInactiveItems
-               withInactiveItems:secondaryInactiveItems];
-
-  LegacyGridTransitionActiveItem* primaryActiveItem = primaryLayout.activeItem;
-  LegacyGridTransitionActiveItem* secondaryActiveItem =
-      secondaryLayout.activeItem;
-
-  // Prefer primary active item.
-  LegacyGridTransitionActiveItem* activeItem =
-      primaryActiveItem ? primaryActiveItem : secondaryActiveItem;
-
-  LegacyGridTransitionItem* primarySelectionItem = primaryLayout.selectionItem;
-  LegacyGridTransitionItem* secondarySelectionItem =
-      secondaryLayout.selectionItem;
-
-  // Prefer primary selection item.
-  LegacyGridTransitionItem* selectionItem =
-      primarySelectionItem ? primarySelectionItem : secondarySelectionItem;
-
-  return [LegacyGridTransitionLayout layoutWithInactiveItems:inactiveItems
-                                                  activeItem:activeItem
-                                               selectionItem:selectionItem];
-}
-
-// Combines two arrays of inactive items into one. The `primaryInactiveItems`
-// (if any) would be placed in the front of the resulting array, whether the
-// `secondaryInactiveItems` would be placed in the back.
-- (NSArray<LegacyGridTransitionItem*>*)
-    combineInactiveItems:
-        (NSArray<LegacyGridTransitionItem*>*)primaryInactiveItems
-       withInactiveItems:
-           (NSArray<LegacyGridTransitionItem*>*)secondaryInactiveItems {
-  if (primaryInactiveItems == nil) {
-    primaryInactiveItems = @[];
-  }
-
-  return [primaryInactiveItems
-      arrayByAddingObjectsFromArray:secondaryInactiveItems];
 }
 
 // Sets the proper insets for the Remote Tabs ViewController to accommodate for

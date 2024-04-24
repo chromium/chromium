@@ -13,6 +13,7 @@ class Browser;
 @class GridContainerViewController;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsMutator;
+@class LegacyGridTransitionLayout;
 @protocol TabContextMenuDelegate;
 @protocol TabGroupPositioner;
 
@@ -46,6 +47,9 @@ class Browser;
 
 // Shows the TabGroup view while the TabGrid is being opened at the same time.
 - (void)showTabGroupForTabGridOpening:(const TabGroup*)tabGroup;
+
+// Returns the transition layout for this grid.
+- (LegacyGridTransitionLayout*)transitionLayout;
 
 @end
 
