@@ -370,7 +370,10 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       break;
     }
     case mojom::Operation::Tag::kReshape: {
-      ASSIGN_OR_RETURN(operator_offset, SerializeReshape(*op.get_reshape()));
+      const mojom::Reshape& reshape = *op.get_reshape();
+      ASSIGN_OR_RETURN(operator_offset,
+                       SerializeReshape(reshape.input_operand_id,
+                                        reshape.output_operand_id));
       break;
     }
     case mojom::Operation::Tag::kSigmoid:
@@ -978,8 +981,13 @@ auto GraphBuilder::SerializeElementWiseUnary(const mojom::ElementWiseUnary& op)
           MojoOperandTypeToTFLite(GetOperand(op.output_operand_id).data_type));
     case mojom::ElementWiseUnary::Kind::kLogicalNot:
       return SerializeLogicalNot(op);
-    case mojom::ElementWiseUnary::Kind::kTan:
     case mojom::ElementWiseUnary::Kind::kIdentity:
+      // Implement WebNN identity operation with TFLite reshape operator, the
+      // output shape is the same as input.
+      // TODO(crbug.com/336399247): Skip identity implementation with
+      // redirecting output tensor to input.
+      return SerializeReshape(op.input_operand_id, op.output_operand_id);
+    case mojom::ElementWiseUnary::Kind::kTan:
     case mojom::ElementWiseUnary::Kind::kErf:
     case mojom::ElementWiseUnary::Kind::kReciprocal:
       return base::unexpected(
@@ -1490,11 +1498,12 @@ auto GraphBuilder::SerializeResample2d(const mojom::Resample2d& resample2d)
                                   builtin_options_type, builtin_options);
 }
 
-auto GraphBuilder::SerializeReshape(const mojom::Reshape& reshape)
+auto GraphBuilder::SerializeReshape(uint64_t input_operand_id,
+                                    uint64_t output_operand_id)
     -> base::expected<OperatorOffset, std::string> {
   // Get the shape of the output tensor, such that this operator can reshape the
   // input to it.
-  const mojom::Operand& output_operand = GetOperand(reshape.output_operand_id);
+  const mojom::Operand& output_operand = GetOperand(output_operand_id);
   ASSIGN_OR_RETURN(std::vector<int32_t> signed_output_dimensions,
                    ToSignedDimensions(output_operand.dimensions));
 
@@ -1504,9 +1513,8 @@ auto GraphBuilder::SerializeReshape(const mojom::Reshape& reshape)
           std::move(signed_output_dimensions)));
 
   return SerializeUnaryOperation(
-      ::tflite::BuiltinOperator_RESHAPE, reshape.input_operand_id,
-      reshape.output_operand_id, ::tflite::BuiltinOptions_ReshapeOptions,
-      reshape_options.Union());
+      ::tflite::BuiltinOperator_RESHAPE, input_operand_id, output_operand_id,
+      ::tflite::BuiltinOptions_ReshapeOptions, reshape_options.Union());
 }
 
 auto GraphBuilder::SerializeSigmoid(const mojom::Sigmoid& sigmoid)
