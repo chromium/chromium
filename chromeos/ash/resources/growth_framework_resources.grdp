@@ -2,4 +2,5 @@
 <grit-part>
   <!-- Resources for Growth Framework. -->
   <include name="IDR_GROWTH_FRAMEWORK_CONTAINER_APP_PNG" file="../resources/internal/container_app.png" type="BINDATA" />
+  <include name="IDR_GROWTH_FRAMEWORK_G1_PNG" file="../components/growth/resources/logo_one_color_2x_web_96dp.png" type="BINDATA" />
 </grit-part>

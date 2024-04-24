@@ -105,6 +105,24 @@ inline constexpr int kIconSize = 60;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 inline constexpr gfx::Size kBubbleIconSizeDip = gfx::Size(kIconSize, kIconSize);
+
+std::optional<int> GetBuiltInImageResourceId(
+    const std::optional<BuiltInIcon>& icon) {
+  if (!icon) {
+    return std::nullopt;
+  }
+
+  if (icon == BuiltInIcon::kContainerApp) {
+    return IDR_GROWTH_FRAMEWORK_CONTAINER_APP_PNG;
+  }
+
+  if (icon == BuiltInIcon::kG1) {
+    return IDR_GROWTH_FRAMEWORK_G1_PNG;
+  }
+
+  return std::nullopt;
+}
+
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 std::optional<BuiltInIcon> GetBuiltInIconType(
@@ -497,10 +515,11 @@ const std::optional<ui::ImageModel> Image::GetBuiltInIcon() const {
 
   const auto icon = GetBuiltInIconType(image_dict_);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (icon == BuiltInIcon::kContainerApp) {
+  const auto resource_id = GetBuiltInImageResourceId(icon);
+  if (resource_id) {
     gfx::ImageSkia* image =
         ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            IDR_GROWTH_FRAMEWORK_CONTAINER_APP_PNG);
+            resource_id.value());
     gfx::ImageSkia resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
         *image, skia::ImageOperations::RESIZE_BEST, kBubbleIconSizeDip);
     resized_image.EnsureRepsForSupportedScales();
