@@ -229,11 +229,14 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // |num_instances_| tracks that number.
   static constexpr int kMaxNumOfInstances = 10;
   static base::AtomicRefCount num_instances_;
-  const bool can_use_encoder_;
+  const bool can_use_encoder_ GUARDED_BY_CONTEXT(child_sequence_checker_);
+
+  // All of the members below must be accessed on the encoder_task_runner_,
+  // while it is running.
 
   // The unchanged values are filled upon the construction. The varied values
   // are filled properly during encoding.
-  VideoEncoderInfo encoder_info_;
+  VideoEncoderInfo encoder_info_ GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // VaapiWrapper is the owner of all HW resources (surfaces and buffers)
   // and will free them on destruction.
@@ -242,29 +245,31 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
 
   // The expected coded size of incoming video frames when |native_input_mode_|
   // is false.
-  gfx::Size expected_input_coded_size_;
+  gfx::Size expected_input_coded_size_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // The codec of the stream to be produced. Set during initialization.
-  VideoCodec output_codec_ = VideoCodec::kUnknown;
+  VideoCodec output_codec_ GUARDED_BY_CONTEXT(encoder_sequence_checker_) =
+      VideoCodec::kUnknown;
 
   // The visible rect to be encoded.
-  gfx::Rect visible_rect_;
+  gfx::Rect visible_rect_ GUARDED_BY_CONTEXT(encoder_sequence_checker_);
 
   // Size in bytes required for output bitstream buffers.
-  size_t output_buffer_byte_size_ = 0;
+  size_t output_buffer_byte_size_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_) = 0;
   // Size of the max size of |pending_encode_results_|.
-  size_t max_pending_results_size_ = 0;
+  size_t max_pending_results_size_
+      GUARDED_BY_CONTEXT(encoder_sequence_checker_) = 0;
 
   // This flag signals when the client is sending NV12 + DmaBuf-backed
   // VideoFrames to encode, which allows for skipping a copy-adaptation on
   // input.
-  bool native_input_mode_ = false;
+  bool native_input_mode_ GUARDED_BY_CONTEXT(encoder_sequence_checker_) = false;
 
   // The number of frames that needs to be held on encoding.
-  size_t num_frames_in_flight_ = 0;
-
-  // All of the members below must be accessed on the encoder_task_runner_,
-  // while it is running.
+  size_t num_frames_in_flight_ GUARDED_BY_CONTEXT(encoder_sequence_checker_) =
+      0;
 
   // Encoder state. Encode tasks will only run in kEncoding state.
   State state_ GUARDED_BY_CONTEXT(encoder_sequence_checker_) =

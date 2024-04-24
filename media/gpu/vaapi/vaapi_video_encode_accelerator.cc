@@ -217,9 +217,9 @@ bool VaapiVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  native_input_mode_ =
+  bool native_input_mode =
       config.storage_type == Config::StorageType::kGpuMemoryBuffer;
-  if (native_input_mode_ && config.input_format != PIXEL_FORMAT_NV12) {
+  if (native_input_mode && config.input_format != PIXEL_FORMAT_NV12) {
     // TODO(crbug.com/894381): Support other formats.
     MEDIA_LOG(ERROR, media_log.get())
         << "Unsupported format for native input mode: "
@@ -227,7 +227,7 @@ bool VaapiVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  if (config.HasSpatialLayer() && !native_input_mode_) {
+  if (config.HasSpatialLayer() && !native_input_mode) {
     MEDIA_LOG(ERROR, media_log.get())
         << "Spatial scalability is only supported for native input now";
     return false;
@@ -264,6 +264,9 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK_EQ(state_, kUninitialized);
   VLOGF(2);
+
+  native_input_mode_ =
+      config.storage_type == Config::StorageType::kGpuMemoryBuffer;
 
   output_codec_ = VideoCodecProfileToVideoCodec(config.output_profile);
   DCHECK_EQ(IsConfiguredForTesting(), !!vaapi_wrapper_);
@@ -966,12 +969,6 @@ void VaapiVideoEncodeAccelerator::UseOutputBitstreamBuffer(
   DVLOGF(4) << "id: " << buffer.id();
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
 
-  if (buffer.size() < output_buffer_byte_size_) {
-    NotifyError({EncoderStatus::Codes::kInvalidOutputBuffer,
-                 "Provided bitstream buffer too small"});
-    return;
-  }
-
   encoder_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VaapiVideoEncodeAccelerator::UseOutputBitstreamBufferTask,
@@ -982,6 +979,12 @@ void VaapiVideoEncodeAccelerator::UseOutputBitstreamBufferTask(
     BitstreamBuffer buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
   DCHECK_NE(state_, kUninitialized);
+
+  if (buffer.size() < output_buffer_byte_size_) {
+    NotifyError({EncoderStatus::Codes::kInvalidOutputBuffer,
+                 "Provided bitstream buffer too small"});
+    return;
+  }
 
   available_bitstream_buffers_.push(std::move(buffer));
   TryToReturnBitstreamBuffers();
