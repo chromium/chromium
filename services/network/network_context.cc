@@ -3087,9 +3087,7 @@ void NetworkContext::RevokeNetworkForNonces(
     network_revocation_nonces_.insert(nonce);
     const std::set<GURL>& exemptions = network_revocation_exemptions_[nonce];
     for (const auto& factory : url_loader_factories_) {
-      for (const auto& loader : factory->url_loaders()) {
-        loader->CancelRequestIfNonceMatchesAndUrlNotExempted(nonce, exemptions);
-      }
+      factory->CancelRequestsIfNonceMatchesAndUrlNotExempted(nonce, exemptions);
     }
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
     if (websocket_factory_) {
