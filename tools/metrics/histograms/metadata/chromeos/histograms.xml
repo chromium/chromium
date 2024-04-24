@@ -1898,6 +1898,21 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Inputs.Mouse.InvalidRegistration.{DeviceType}"
+    units="Vkey" expires_after="2024-08-04">
+  <owner>wangdanny@google.com</owner>
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records everytime if the mouse which tries the invalid registration is
+    recognized as a {DeviceType}.
+  </summary>
+  <token key="DeviceType">
+    <variant name="Combo"/>
+    <variant name="NonCombo"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Inputs.Stylus.BatteryReportingEligibility"
     enum="BatteryReportingEligibility" expires_after="2025-03-15">
   <owner>wmahon@google.com</owner>

@@ -56,6 +56,7 @@ namespace {
 constexpr int kMouseDeviceId = 1;
 constexpr int kGraphicsTabletDeviceId = 2;
 constexpr int kRandomKeyboardDeviceId = 3;
+constexpr int kComboDeviceId = 4;
 
 class TestEventSink : public ui::EventSink {
  public:
@@ -540,9 +541,13 @@ class PeripheralCustomizationEventRewriterTest : public AshTestBase {
         .WillByDefault(testing::Return(keyboard_->settings.get()));
     ON_CALL(*controller_, GetKeyboard(kRandomKeyboardDeviceId))
         .WillByDefault(testing::Return(keyboard_.get()));
+    ON_CALL(*controller_, GetKeyboard(kComboDeviceId))
+        .WillByDefault(testing::Return(keyboard_.get()));
     ON_CALL(*controller_, GetGraphicsTablet(kGraphicsTabletDeviceId))
         .WillByDefault(testing::Return(graphics_tablet_.get()));
     ON_CALL(*controller_, GetMouse(kMouseDeviceId))
+        .WillByDefault(testing::Return(mouse_.get()));
+    ON_CALL(*controller_, GetMouse(kComboDeviceId))
         .WillByDefault(testing::Return(mouse_.get()));
     rewriter_ = std::make_unique<PeripheralCustomizationEventRewriter>(
         controller_.get());
@@ -1060,6 +1065,41 @@ TEST_F(PeripheralCustomizationEventRewriterTest, InvalidRegistrationMetric) {
   EXPECT_EQ(KeyB::Typed(), RunRewriter(KeyB::Typed()));
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Inputs.Mouse.InvalidRegistration", KeyB::Pressed().keycode, 1);
+}
+
+TEST_F(PeripheralCustomizationEventRewriterTest,
+       ComboMouseInvalidRegistrationMetric) {
+  base::HistogramTester histogram_tester;
+
+  rewriter_->StartObservingMouse(
+      kComboDeviceId,
+      mojom::CustomizationRestriction::kDisableKeyEventRewrites);
+
+  EXPECT_EQ(KeyA::Typed(),
+            RunRewriter(KeyA::Typed(), ui::EF_NONE, kComboDeviceId));
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Mouse.InvalidRegistration.Combo",
+      KeyA::Pressed().keycode, 1);
+
+  EXPECT_EQ(KeyB::Typed(),
+            RunRewriter(KeyB::Typed(), ui::EF_NONE, kComboDeviceId));
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Mouse.InvalidRegistration.Combo",
+      KeyB::Pressed().keycode, 1);
+
+  rewriter_->StartObservingMouse(
+      kMouseDeviceId,
+      mojom::CustomizationRestriction::kDisableKeyEventRewrites);
+
+  EXPECT_EQ(KeyA::Typed(), RunRewriter(KeyA::Typed()));
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Mouse.InvalidRegistration.NonCombo",
+      KeyA::Pressed().keycode, 1);
+
+  EXPECT_EQ(KeyB::Typed(), RunRewriter(KeyB::Typed()));
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Inputs.Mouse.InvalidRegistration.NonCombo",
+      KeyB::Pressed().keycode, 1);
 }
 
 class MouseButtonObserverTest

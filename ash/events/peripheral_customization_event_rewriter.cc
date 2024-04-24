@@ -652,8 +652,21 @@ void RecordMouseInvalidKeyPressed(InputDeviceSettingsController* controller,
   }
 
   auto* mouse = controller->GetMouse(key_event.source_device_id());
+  auto* keyboard = controller->GetKeyboard(key_event.source_device_id());
   if (!mouse) {
     return;
+  }
+
+  if (mouse && keyboard) {
+    base::UmaHistogramSparse("ChromeOS.Inputs.Mouse.InvalidRegistration.Combo",
+                             key_event.key_code());
+    return;
+  }
+
+  if (mouse) {
+    base::UmaHistogramSparse(
+        "ChromeOS.Inputs.Mouse.InvalidRegistration.NonCombo",
+        key_event.key_code());
   }
 
   LOG(WARNING) << base::StringPrintf(
