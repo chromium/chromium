@@ -466,6 +466,10 @@ config("msan_flags") {
       msan_ignorelist_path =
           rebase_path("//tools/msan/ignorelist.txt", root_build_dir)
     }
+    msan_ignorelist_key = exec_script("//build/gn_hash_file.py",
+                                      [ msan_ignorelist_path ],
+                                      "string")
+
     cflags = [
       "-fsanitize=memory",
       "-fsanitize-memory-track-origins=$msan_track_origins",
@@ -474,6 +478,8 @@ config("msan_flags") {
       # TODO(crbug.com/40222690): evaluate and possibly enable
       "-fno-sanitize-memory-use-after-dtor",
     ]
+
+    defines = [ "CR_MSAN_IGNORELIST_KEY=$msan_ignorelist_key" ]
 
     if (!msan_eager_checks) {
       cflags += [ "-fno-sanitize-memory-param-retval" ]
