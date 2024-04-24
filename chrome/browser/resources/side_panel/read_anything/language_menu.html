@@ -100,12 +100,13 @@
           localeToDisplayName, languageSearchValue_,
           enabledLanguagesInPref)]]">
         <div class="language-line dropdown-line">
-          <span class="language-name">
+          <span id="language-name" class="language-name">
             [[item.language]]
           </span>
           <cr-toggle
             checked="[[item.checked]]"
-            on-change="onToggleChange_"></cr-toggle>
+            on-change="onToggleChange_"
+            aria-labelledby="language-name"></cr-toggle>
         </div>
         <span id="notificationText">[[item.notificationText]]</span>
     </template>
