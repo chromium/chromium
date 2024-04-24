@@ -154,6 +154,11 @@ export class WebuiGalleryAppElement extends PolymerElement {
               src: 'cr_toolbar/cr_toolbar_demo.js',
             },
             {
+              name: 'Tooltip',
+              path: 'tooltip',
+              src: 'cr_tooltip/cr_tooltip_demo.js',
+            },
+            {
               name: 'Tree, non-Polymer',
               path: 'tree',
               src: 'cr_tree/cr_tree_demo.js',
