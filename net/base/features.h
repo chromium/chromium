@@ -182,11 +182,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheKeyingExperimentControlGroup);
 // servers.
 NET_EXPORT BASE_DECLARE_FEATURE(kTLS13KeyUpdate);
 
-// Enables permuting TLS extensions in the ClientHello, to reduce the risk of
-// non-compliant servers ossifying parts of the ClientHello and interfering with
-// deployment of future security improvements.
-NET_EXPORT BASE_DECLARE_FEATURE(kPermuteTLSExtensions);
-
 // Enables Kyber-based post-quantum key-agreements in TLS 1.3 connections.
 NET_EXPORT BASE_DECLARE_FEATURE(kPostQuantumKyber);
 

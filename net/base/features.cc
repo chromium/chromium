@@ -151,10 +151,6 @@ BASE_FEATURE(kTLS13KeyUpdate,
              "TLS13KeyUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPermuteTLSExtensions,
-             "PermuteTLSExtensions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPostQuantumKyber,
              "PostQuantumKyber",
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
