@@ -1368,48 +1368,50 @@ ScrollNode* InputHandler::GetNodeToScroll(ScrollNode* node) const {
   return node;
 }
 
+ScrollNode* InputHandler::GetNodeToScrollForLayer(
+    const LayerImpl* layer) const {
+  if (layer->IsScrollbarLayer()) {
+    // If we hit a scrollbar layer, get the ScrollNode from its associated
+    // scrolling layer, rather than directly from the scrollbar layer. The
+    // latter would return the parent scroller's ScrollNode.
+    if (auto* scroll_node = GetScrollTree().FindNodeFromElementId(
+            ToScrollbarLayer(layer)->scroll_element_id())) {
+      return GetNodeToScroll(scroll_node);
+    }
+    return nullptr;
+  }
+  return GetNodeToScroll(GetScrollTree().Node(layer->scroll_tree_index()));
+}
+
 bool InputHandler::IsInitialScrollHitTestReliable(
     const LayerImpl* layer_impl,
     const LayerImpl* first_scrollable_or_opaque_to_hit_test_layer,
     ScrollNode*& out_node_to_scroll) const {
-  // Hit tests directly on a composited scrollbar are always reliable.
-  if (layer_impl->IsScrollbarLayer()) {
-    DCHECK(layer_impl == first_scrollable_or_opaque_to_hit_test_layer);
-    // If we hit a scrollbar layer, get the ScrollNode from its associated
-    // scrolling layer, rather than directly from the scrollbar layer. The
-    // latter would return the parent scroller's ScrollNode.
-    out_node_to_scroll = GetScrollTree().FindNodeFromElementId(
-        ToScrollbarLayer(layer_impl)->scroll_element_id());
-    if (out_node_to_scroll) {
-      out_node_to_scroll = GetNodeToScroll(out_node_to_scroll);
-    }
+  ScrollNode* scroll_node = GetNodeToScrollForLayer(layer_impl);
+
+  if (layer_impl == first_scrollable_or_opaque_to_hit_test_layer) {
+    out_node_to_scroll = scroll_node;
     return true;
   }
 
-  auto& scroll_tree = GetScrollTree();
-  ScrollNode* closest_scroll_node =
-      GetNodeToScroll(scroll_tree.Node(layer_impl->scroll_tree_index()));
-
   // If there's a scrolling layer, we should also have a closest scroll node,
   // and vice versa. Otherwise, the hit test is not reliable.
-  if ((first_scrollable_or_opaque_to_hit_test_layer && !closest_scroll_node) ||
-      (closest_scroll_node && !first_scrollable_or_opaque_to_hit_test_layer)) {
+  if ((first_scrollable_or_opaque_to_hit_test_layer && !scroll_node) ||
+      (scroll_node && !first_scrollable_or_opaque_to_hit_test_layer)) {
     return false;
   }
-  if (!first_scrollable_or_opaque_to_hit_test_layer && !closest_scroll_node) {
+  if (!first_scrollable_or_opaque_to_hit_test_layer && !scroll_node) {
     // It's ok if we have neither.
     out_node_to_scroll = nullptr;
     return true;
   }
 
-  // If `first_scrollable_or_opaque_to_hit_test_layer` is not a scrollbar, and
-  // it and `layer_impl` will scroll the same scroll node, the hit test has not
-  // escaped to other areas of the scroll tree and is reliable so far.
-  if (!first_scrollable_or_opaque_to_hit_test_layer->IsScrollbarLayer() &&
-      closest_scroll_node == GetNodeToScroll(scroll_tree.Node(
-                                 first_scrollable_or_opaque_to_hit_test_layer
-                                     ->scroll_tree_index()))) {
-    out_node_to_scroll = closest_scroll_node;
+  // If `first_scrollable_or_opaque_to_hit_test_layer` and `layer_impl` will
+  // scroll the same scroll node, the hit test has not escaped to other areas
+  // of the scroll tree and is reliable so far.
+  if (scroll_node ==
+      GetNodeToScrollForLayer(first_scrollable_or_opaque_to_hit_test_layer)) {
+    out_node_to_scroll = scroll_node;
     return true;
   }
 

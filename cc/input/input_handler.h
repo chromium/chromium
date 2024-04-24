@@ -572,6 +572,7 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // Returns the ScrollNode we should use to scroll, accounting for viewport
   // scroll chaining rules.
   ScrollNode* GetNodeToScroll(ScrollNode* node) const;
+  ScrollNode* GetNodeToScrollForLayer(const LayerImpl* layer) const;
 
   // Given a starting node (determined by hit-test), walks up the scroll tree
   // looking for the first node that can consume scroll from the given

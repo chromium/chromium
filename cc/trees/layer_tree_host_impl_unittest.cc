@@ -1784,18 +1784,30 @@ TEST_F(LayerTreeHostImplTest, ScrolledOverlappingDrawnScrollbarLayer) {
   drawn_scrollbar->SetBounds(scrollbar_size);
   drawn_scrollbar->SetOffsetToTransformParent(gfx::Vector2dF(345, 0));
 
-  LayerImpl* squash = AddLayer();
-  squash->SetBounds(gfx::Size(140, 300));
-  squash->SetDrawsContent(true);
-  squash->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
-  CopyProperties(scroll, squash);
-  squash->SetOffsetToTransformParent(gfx::Vector2dF(220, 0));
+  // squash1 has mixed hit test opaqueness and the same scroll tree index as
+  // the scroller.
+  LayerImpl* squash1 = AddLayer();
+  squash1->SetBounds(gfx::Size(140, 200));
+  squash1->SetDrawsContent(true);
+  squash1->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
+  CopyProperties(scroll, squash1);
+  squash1->SetOffsetToTransformParent(gfx::Vector2dF(220, 0));
+
+  // squash2 has mixed hit test opaqueness and escapes the scroll state of the
+  // scroller.
+  LayerImpl* squash2 = AddLayer();
+  squash2->SetBounds(gfx::Size(140, 200));
+  squash2->SetDrawsContent(true);
+  squash2->SetHitTestOpaqueness(HitTestOpaqueness::kMixed);
+  CopyProperties(scroll, squash2);
+  squash2->SetScrollTreeIndex(OuterViewportScrollLayer()->scroll_tree_index());
+  squash2->SetOffsetToTransformParent(gfx::Vector2dF(220, 200));
 
   UpdateDrawProperties(layer_tree_impl);
   layer_tree_impl->DidBecomeActive();
 
-  // The point hits squash layer and also scrollbar layer, but because the
-  // scrollbar layer is a drawn scrollbar, we cannot scroll on the impl thread.
+  // The point hits squash1 and also scrollbar layer. Because both layers will
+  // scroll the same scroll node, we scroll on the impl thread.
   auto status = GetInputHandler().ScrollBegin(
       BeginState(gfx::Point(350, 150), gfx::Vector2d(0, 10),
                  ui::ScrollInputType::kWheel)
@@ -1804,8 +1816,23 @@ TEST_F(LayerTreeHostImplTest, ScrolledOverlappingDrawnScrollbarLayer) {
   EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
   EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
             status.main_thread_repaint_reasons);
+  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+            status.main_thread_hit_test_reasons);
+  GetInputHandler().ScrollEnd();
+
+  // The point hits squash2 and also scrollbar layer. Because they will scroll
+  // different scroll nodes, the scroll is not reliable.
+  status = GetInputHandler().ScrollBegin(
+      BeginState(gfx::Point(350, 350), gfx::Vector2d(0, 10),
+                 ui::ScrollInputType::kWheel)
+          .get(),
+      ui::ScrollInputType::kWheel);
+  EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
+  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+            status.main_thread_repaint_reasons);
   EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
             status.main_thread_hit_test_reasons);
+  GetInputHandler().ScrollEnd();
 
   // The point hits the drawn scrollbar layer completely and should scroll on
   // the impl thread.
@@ -1819,6 +1846,7 @@ TEST_F(LayerTreeHostImplTest, ScrolledOverlappingDrawnScrollbarLayer) {
             status.main_thread_repaint_reasons);
   EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
             status.main_thread_hit_test_reasons);
+  GetInputHandler().ScrollEnd();
 }
 
 gfx::PresentationFeedback ExampleFeedback() {
@@ -18080,6 +18108,7 @@ class UnifiedScrollingTest : public LayerTreeHostImplTest {
     DCHECK(node);
     return node;
   }
+  LayerImpl* ScrollerLayer() const { return scroller_layer_.get(); }
   ElementId ScrollerElementId() const {
     if (scroller_layer_)
       return scroller_layer_->element_id();
@@ -18385,6 +18414,31 @@ TEST_F(UnifiedScrollingTest, UnreliableHitTestOnNonOpaqueToHitTestScroller) {
     EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
               status.main_thread_hit_test_reasons);
   }
+}
+
+TEST_F(UnifiedScrollingTest, ScrollbarLayerClippedByRoundedCorner) {
+  CreateScroller(MainThreadScrollingReason::kNotScrollingOnMain,
+                 HitTestOpaqueness::kMixed);
+  auto* scrollbar_layer = AddLayer<PaintedScrollbarLayerImpl>(
+      host_impl_->active_tree(), ScrollbarOrientation::kVertical, false, true);
+  CreateEffectNode(ScrollerLayer()).node_or_ancestor_has_fast_rounded_corner =
+      true;
+  SetupScrollbarLayer(ScrollerLayer(), scrollbar_layer);
+  scrollbar_layer->SetBounds(gfx::Size(10, 50));
+  scrollbar_layer->SetOffsetToTransformParent(gfx::Vector2dF(40, 0));
+
+  // Hit test on the scrollbar layer is not reliable because of the rounded
+  // corner.
+  auto status = GetInputHandler().ScrollBegin(
+      BeginState(gfx::Point(45, 20), gfx::Vector2d(0, 10),
+                 ui::ScrollInputType::kWheel)
+          .get(),
+      ui::ScrollInputType::kWheel);
+  EXPECT_EQ(ScrollThread::kScrollOnImplThread, status.thread);
+  EXPECT_EQ(MainThreadScrollingReason::kNotScrollingOnMain,
+            status.main_thread_repaint_reasons);
+  EXPECT_EQ(MainThreadScrollingReason::kFailedHitTest,
+            status.main_thread_hit_test_reasons);
 }
 
 // This tests whether or not various kinds of scrolling mutates the transform
