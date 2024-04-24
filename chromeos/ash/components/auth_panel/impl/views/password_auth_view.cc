@@ -282,8 +282,11 @@ void PasswordAuthView::ContentsChanged(const std::u16string& new_contents) {
       base::UTF16ToUTF8(login_textfield_->GetText())});
 }
 
-gfx::Size PasswordAuthView::CalculatePreferredSize() const {
-  gfx::Size size = views::View::CalculatePreferredSize();
+gfx::Size PasswordAuthView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  views::SizeBounds content_available_size(available_size);
+  content_available_size.set_width(kPasswordTotalWidthDp);
+  gfx::Size size = views::View::CalculatePreferredSize(available_size);
   size.set_width(kPasswordTotalWidthDp);
   return size;
 }

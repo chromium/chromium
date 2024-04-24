@@ -45,7 +45,8 @@ class NonClientFrameViewBase : public views::NonClientFrameView,
   void UpdateWindowTitle() override;
   void SizeConstraintsChanged() override;
   views::View::Views GetChildrenInZOrder() override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;

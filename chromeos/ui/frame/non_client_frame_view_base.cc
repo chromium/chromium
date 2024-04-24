@@ -149,8 +149,9 @@ views::View::Views NonClientFrameViewBase::GetChildrenInZOrder() {
   return header_view_->GetFrameHeader()->GetAdjustedChildrenInZOrder(this);
 }
 
-gfx::Size NonClientFrameViewBase::CalculatePreferredSize() const {
-  gfx::Size pref = frame_->client_view()->GetPreferredSize({});
+gfx::Size NonClientFrameViewBase::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size pref = frame_->client_view()->GetPreferredSize(available_size);
   gfx::Rect bounds(0, 0, pref.width(), pref.height());
   return frame_->non_client_view()
       ->GetWindowBoundsForClientBounds(bounds)
