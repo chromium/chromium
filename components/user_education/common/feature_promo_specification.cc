@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/notreached.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -56,6 +57,17 @@ bool IsAllowedKeyedNotice(const base::Feature& promo_feature) {
       "IPH_DesktopPWAsLinkCapturingLaunch",
       "IPH_SignoutWebIntercept",
   };
+  for (const auto* promo_name : kAllowedPromoNames) {
+    if (!strcmp(promo_feature.name, promo_name)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool IsAllowedRotatingPromo(const base::Feature& promo_feature) {
+  // Add the text names of allowlisted keyed notices here:
+  static const char* const kAllowedPromoNames[] = {};
   for (const auto* promo_name : kAllowedPromoNames) {
     if (!strcmp(promo_feature.name, promo_name)) {
       return true;
@@ -280,6 +292,32 @@ FeaturePromoSpecification FeaturePromoSpecification::CreateForCustomAction(
 }
 
 // static
+FeaturePromoSpecification FeaturePromoSpecification::CreateForRotatingPromo(
+    const base::Feature& feature,
+    RotatingPromos rotating_promos) {
+  CHECK(IsAllowedRotatingPromo(feature));
+  FeaturePromoSpecification spec;
+  spec.feature_ = &feature;
+  spec.promo_type_ = PromoType::kRotating;
+
+  // Check the rotating promos to ensure they're all normal promos.
+  for (const auto& promo : rotating_promos) {
+    if (promo) {
+      CHECK_EQ(PromoSubtype::kNormal, promo->promo_subtype())
+          << "Rotating promo cannot contain promo of type "
+          << promo->promo_type() << " and subtype " << promo->promo_subtype();
+      CHECK_NE(PromoType::kLegacy, promo->promo_type())
+          << "Rotating promo cannot contain promo of type Legacy";
+      CHECK_NE(PromoType::kUnspecified, promo->promo_type())
+          << "Rotating promo cannot contain promo of type Unspecified";
+    }
+  }
+  spec.rotating_promos_ = std::move(rotating_promos);
+
+  return spec;
+}
+
+// static
 FeaturePromoSpecification FeaturePromoSpecification::CreateForLegacyPromo(
     const base::Feature* feature,
     ui::ElementIdentifier anchor_element_id,
@@ -321,6 +359,8 @@ FeaturePromoSpecification& FeaturePromoSpecification::OverrideFocusOnShow(
 FeaturePromoSpecification& FeaturePromoSpecification::SetPromoSubtype(
     PromoSubtype promo_subtype) {
   CHECK_NE(promo_type_, PromoType::kUnspecified);
+  CHECK_NE(promo_type_, PromoType::kRotating)
+      << "Rotating is not compatible with other promo subtypes.";
   CHECK_NE(promo_type_, PromoType::kSnooze)
       << "Basic snooze is not compatible with other promo subtypes.";
   switch (promo_subtype) {
@@ -426,6 +466,9 @@ std::ostream& operator<<(std::ostream& oss,
       break;
     case FeaturePromoSpecification::PromoType::kUnspecified:
       oss << "kUnspecified";
+      break;
+    case FeaturePromoSpecification::PromoType::kRotating:
+      oss << "kRotating";
       break;
   }
   return oss;

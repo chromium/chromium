@@ -58,6 +58,7 @@ struct FeaturePromoData {
   base::Time last_snooze_time;
   int snooze_count = 0;
   int show_count = 0;
+  int promo_index = 0;
   std::set<std::string> shown_for_keys;
 };
 

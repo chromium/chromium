@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
@@ -620,6 +621,12 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
     return FeaturePromoResult::kError;
   }
 
+  // TODO(dfried): support rotating promos.
+  if (spec->promo_type() == FeaturePromoSpecification::PromoType::kRotating) {
+    NOTIMPLEMENTED();
+    return FeaturePromoResult::kError;
+  }
+
   // When not bypassing the normal gating systems, don't try to show promos for
   // disabled features. This prevents us from calling into the Feature
   // Engagement tracker more times than necessary, emitting unnecessary logging
@@ -635,7 +642,7 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
   if (!for_demo && !in_iph_demo_mode_) {
     lifecycle = std::make_unique<FeaturePromoLifecycle>(
         storage_service_, params.key, &*params.feature, spec->promo_type(),
-        spec->promo_subtype());
+        spec->promo_subtype(), 0);
     if (const auto result = lifecycle->CanShow(); !result) {
       return result;
     }
@@ -683,7 +690,7 @@ FeaturePromoResult FeaturePromoControllerCommon::CanShowPromoCommon(
       // provide one.
       lifecycle = std::make_unique<FeaturePromoLifecycle>(
           storage_service_, params.key, &*params.feature, spec->promo_type(),
-          spec->promo_subtype());
+          spec->promo_subtype(), 0);
     }
     *lifecycle_out = std::move(lifecycle);
   }
@@ -770,6 +777,8 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
     case FeaturePromoSpecification::PromoType::kToast:
     case FeaturePromoSpecification::PromoType::kLegacy:
       break;
+    case FeaturePromoSpecification::PromoType::kRotating:
+      NOTREACHED_NORETURN() << "Not implemented; should never reach this code.";
   }
 
   bool had_screen_reader_promo = false;

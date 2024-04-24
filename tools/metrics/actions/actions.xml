@@ -40958,6 +40958,12 @@ should be able to be added at any place in this file.
   <description>A Legal Notice Tutorial IPH was shown to the user.</description>
 </action>
 
+<action name="UserEducation.MessageShown.RotatingPromo">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>An Actionable Alert IPH was shown to the user.</description>
+</action>
+
 <action name="UserEducation.MessageShown.Snooze">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>

@@ -151,7 +151,11 @@ class FeaturePromoSpecification {
     // A simple promo that acts like a toast but without the required
     // accessibility data.
     kLegacy = 5,
-    kMaxValue = kLegacy
+    // Rotating promos have a list of different promos they cycle between.
+    // Because they are shown over and over, possibly at startup, this type
+    // requires being on an allowlist.
+    kRotating = 6,
+    kMaxValue = kRotating
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
@@ -200,6 +204,11 @@ class FeaturePromoSpecification {
    private:
     ValueType value_;
   };
+
+  // A list of rotating promos. The order or index of promos should not change,
+  // but a promo can be replaced with `std::nullopt` or another promo if it
+  // becomes deprecated.
+  using RotatingPromos = std::vector<std::optional<FeaturePromoSpecification>>;
 
   FeaturePromoSpecification();
   FeaturePromoSpecification(FeaturePromoSpecification&& other) noexcept;
@@ -268,6 +277,11 @@ class FeaturePromoSpecification {
       int custom_action_string_id,
       CustomActionCallback custom_action_callback);
 
+  // Specifies a promo that shows a rotating set of promos.
+  static FeaturePromoSpecification CreateForRotatingPromo(
+      const base::Feature& feature,
+      RotatingPromos rotating_promos);
+
   // Specifies a text-only promo without additional accessibility information.
   // Deprecated. Only included for backwards compatibility with existing
   // promos. This is the only case in which |feature| can be null, and if it is
@@ -299,8 +313,10 @@ class FeaturePromoSpecification {
   // can be done to fix it.
   FeaturePromoSpecification& OverrideFocusOnShow(bool focus_on_show);
 
-  // Set the promo subtype. Setting the subtype to LegalNotice requires being on
-  // an allowlist.
+  // Set the promo subtype. Setting the subtype to most values other than
+  // `kNormal` requires being on an allowlist.
+  //
+  // For rotating promos, use CreateForRotatingPromo() instead.
   FeaturePromoSpecification& SetPromoSubtype(PromoSubtype promo_subtype);
 
   // Set the anchor element filter.
@@ -386,6 +402,9 @@ class FeaturePromoSpecification {
     return SetMetadata(Metadata(std::forward<Args>(args)...));
   }
 
+  // Only valid for rotating promo subtype.
+  const RotatingPromos& rotating_promos() const { return rotating_promos_; }
+
   // Force the subtype to a particular value, bypassing permission checks.
   FeaturePromoSpecification& set_promo_subtype_for_testing(
       PromoSubtype promo_subtype) {
@@ -470,6 +489,9 @@ class FeaturePromoSpecification {
 
   // Additional conditions describing when the promo can show.
   AdditionalConditions additional_conditions_;
+
+  // For rotating promos, maintain a list of sub-promos.
+  RotatingPromos rotating_promos_;
 
   // Metadata for this promo.
   Metadata metadata_;

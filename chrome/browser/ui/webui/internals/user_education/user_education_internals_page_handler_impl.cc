@@ -92,6 +92,8 @@ std::string GetPromoTypeString(
       return "Toast";
     case user_education::FeaturePromoSpecification::PromoType::kTutorial:
       return "Tutorial";
+    case user_education::FeaturePromoSpecification::PromoType::kRotating:
+      return "Rotating";
   }
 }
 

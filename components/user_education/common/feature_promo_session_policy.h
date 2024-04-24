@@ -30,7 +30,7 @@ class FeaturePromoSessionPolicy {
   // IPH in interactivity).
   enum class PromoWeight { kLight, kHeavy };
 
-  // Describes wehter the promotion is high-priority, such as a mandatory
+  // Describes whether the promotion is high-priority, such as a mandatory
   // legal or privacy notice.
   enum class PromoPriority { kLow, kMedium, kHigh };
 

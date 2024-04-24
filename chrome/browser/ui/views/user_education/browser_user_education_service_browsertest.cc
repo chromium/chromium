@@ -49,6 +49,7 @@ enum class IPHFailureReason {
   kWrongSessionImpactKeyedNotice,
   kWrongSessionImpactLegalNotice,
   kLegacyPromoNoScreenReader,
+  kWrongSessionParamsRotatingPromo,
 };
 
 struct IPHException {
@@ -169,6 +170,15 @@ std::ostream& operator<<(std::ostream& os, const IPHFailure& failure) {
     case IPHFailureReason::kLegacyPromoNoScreenReader:
       os << " is a legacy promo with inadequate screen reader support. Use a "
             "toast promo instead.";
+      break;
+    case IPHFailureReason::kWrongSessionParamsRotatingPromo:
+      os << " has unexpected session rate and/or session rate impact: "
+         << failure.config->session_rate.type << ", "
+         << failure.config->session_rate.value << ", "
+         << failure.config->session_rate_impact.type
+         << ". A rotating promo should never be prevented from running "
+            "(session rate ANY) and should not prevent other IPH from "
+            "running (session rate impact NONE).";
       break;
   }
   return os;
@@ -422,6 +432,14 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
         if (is_session_limited != limits_other_iph) {
           MaybeAddFailure(failures, exceptions, feature,
                           IPHFailureReason::kWrongSessionImpact,
+                          feature_config);
+        }
+        break;
+      case user_education::FeaturePromoSpecification::PromoType::kRotating:
+        // Rotating promos should be unlimited and not limit other IPH.
+        if (is_session_limited || limits_other_iph) {
+          MaybeAddFailure(failures, exceptions, feature,
+                          IPHFailureReason::kWrongSessionParamsRotatingPromo,
                           feature_config);
         }
         break;

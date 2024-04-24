@@ -115,6 +115,7 @@ FeaturePromoSessionPolicy::SpecificationToPromoInfo(
   switch (spec.promo_type()) {
     case FeaturePromoSpecification::PromoType::kToast:
     case FeaturePromoSpecification::PromoType::kLegacy:
+    case FeaturePromoSpecification::PromoType::kRotating:
       promo_info.weight = PromoWeight::kLight;
       break;
     case FeaturePromoSpecification::PromoType::kSnooze:

@@ -113,6 +113,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UserEducation.MessageShown.RotatingPromoIndex" units="Index"
+    expires_after="2024-09-01">
+  <owner>dfried@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <summary>
+    Record the index of a rotating promo when it is shown to the user. This can
+    be used to determine how deep in the rotation of rotating promos users are
+    going, and also what proportion of users have seen a particular promo from a
+    rotating promo set.
+  </summary>
+</histogram>
+
 <histogram name="UserEducation.MessageShown.Subtype" enum="PromoSubtype"
     expires_after="2024-09-01">
   <owner>mickeyburks@chromium.org</owner>

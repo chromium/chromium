@@ -44,6 +44,8 @@ constexpr char kIPHSnoozeCountPath[] = "snooze_count";
 // Path to the count of how many times this IPH has been shown.
 // in_product_help.snoozed_feature.[iph_name].show_count
 constexpr char kIPHShowCountPath[] = "show_count";
+// Path to the index into a cycling promo.
+constexpr char kIPHPromoIndexPath[] = "promo_index";
 // Path to a list of app IDs that the IPH was shown for; applies to app-specific
 // IPH only.
 constexpr char kIPHShownForAppsPath[] = "shown_for_apps";
@@ -135,6 +137,8 @@ BrowserFeaturePromoStorageService::ReadPromoData(
       pref_data.FindIntByDottedPath(path_prefix + kIPHSnoozeCountPath);
   std::optional<int> show_count =
       pref_data.FindIntByDottedPath(path_prefix + kIPHShowCountPath);
+  std::optional<int> promo_index =
+      pref_data.FindIntByDottedPath(path_prefix + kIPHPromoIndexPath);
   const base::Value::List* app_list =
       pref_data.FindListByDottedPath(path_prefix + kIPHShownForAppsPath);
 
@@ -165,6 +169,7 @@ BrowserFeaturePromoStorageService::ReadPromoData(
   promo_data->last_snooze_time = *snooze_time;
   promo_data->snooze_count = *snooze_count;
   promo_data->show_count = *show_count;
+  promo_data->promo_index = promo_index.value_or(0);
 
   // Since `last_dismissed_by` was not previously recorded, default to
   // "canceled" if the data isn't present or is invalid.
@@ -213,6 +218,8 @@ void BrowserFeaturePromoStorageService::SavePromoData(
                             promo_data.snooze_count);
   pref_data.SetByDottedPath(path_prefix + kIPHShowCountPath,
                             promo_data.show_count);
+  pref_data.SetByDottedPath(path_prefix + kIPHPromoIndexPath,
+                            promo_data.promo_index);
 
   base::Value::List shown_for_keys;
   for (auto& app_id : promo_data.shown_for_keys) {
