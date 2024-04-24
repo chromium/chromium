@@ -14,6 +14,9 @@
 #include "third_party/webrtc/system_wrappers/include/cpu_info.h"
 #include "third_party/webrtc_overrides/rtc_base/logging.h"
 
+namespace {
+
+#if !defined(RTC_USE_PERFETTO)
 const unsigned char* GetCategoryGroupEnabled(const char* category_group) {
   return TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(category_group);
 }
@@ -33,12 +36,22 @@ void AddTraceEvent(char phase,
                                   trace_event_internal::kGlobalScope, id, &args,
                                   flags);
 }
+#endif
 
-bool InitializeWebRtcModule() {
+}  // namespace
+
+bool InitializeWebRtcModuleBeforeSandbox() {
   // Workaround for crbug.com/176522
   // On Linux, we can't fetch the number of cores after the sandbox has been
   // initialized, so we call DetectNumberOfCores() here, to cache the value.
   webrtc::CpuInfo::DetectNumberOfCores();
-  webrtc::SetupEventTracer(&GetCategoryGroupEnabled, &AddTraceEvent);
   return true;
+}
+
+void InitializeWebRtcModule() {
+#if defined(RTC_USE_PERFETTO)
+  webrtc::RegisterPerfettoTrackEvents();
+#else
+  webrtc::SetupEventTracer(&GetCategoryGroupEnabled, &AddTraceEvent);
+#endif  // defined(RTC_USE_PERFETTO)
 }

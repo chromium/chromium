@@ -109,6 +109,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/webrtc_overrides/init_webrtc.h"
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -231,6 +232,8 @@ void ModulesInitializer::Initialize() {
 
   V8PerIsolateData::SetTaskAttributionTrackerFactory(
       &scheduler::TaskAttributionTrackerImpl::Create);
+
+  ::InitializeWebRtcModule();
 }
 
 void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
