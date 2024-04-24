@@ -25,9 +25,9 @@
 # the `+` line takes precedence and the file will be checked.
 #
 # To opt individual files out of checks, place `#pragma allow_unsafe_buffers`
-# anywhere in the (source or header) file, guarded by
-# `#ifdef UNSAFE_BUFFERS_BUILD`. These pragmas represent the technical debt and
-# security risk present in the file through unsafe pointer usage.
+# anywhere in the (source or header) file. These pragmas represent the
+# technical debt and security risk present in the file through unsafe
+# pointer usage.
 #
 # ***
 # Recommended process for removing a `-dir/` line from this file:
@@ -37,13 +37,7 @@
 #       like `-dir/sub_dir/`.
 # 2. Add `#pragma allow_unsafe_buffers` to every file in the directory that now
 #    has a compilation error, with a TODO to the tracking bug for the
-#    directory:
-#    ```
-#    #ifdef UNSAFE_BUFFERS_BUILD
-#    // TODO(crbug.com/ABC): Remove this and convert code to safer constructs.
-#    #pragma allow_unsafe_buffers
-#    #endif
-#    ```
+#    directory.
 # 3. Work through the files in the directory, converting pointers to spans, or
 #    to owning containers like HeapArray and vector. Remove the pragmas from
 #    the files when there is no unsafe pointer usage left in each one.
@@ -53,8 +47,14 @@
 -android_webview/
 -apps/
 -ash/
--base/allocator
--base/third_party
+
+-base/
++base/containers/buffer_iterator_nocompile.nc
++base/containers/span.h
++base/strings/cstring_view
++base/unsafe_buffers_unittest.cc
++base/unsafe_buffers_nocompile.nc
+
 -build/
 -build_overrides/
 -buildtools/

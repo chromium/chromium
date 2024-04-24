@@ -98,8 +98,6 @@ config("unsafe_buffers") {
   if (clang_use_chrome_plugins && clang_unsafe_buffers_paths != "" &&
       !use_goma) {
     cflags = [
-      "-DUNSAFE_BUFFERS_BUILD",
-
       "-Xclang",
       "-add-plugin",
       "-Xclang",
