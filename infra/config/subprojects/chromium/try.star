@@ -80,6 +80,12 @@ luci.bucket(
                 "infra-try-recipes-tester@chops-service-accounts.iam.gserviceaccount.com",
             ],
         ),
+        luci.binding(
+            roles = "role/buildbucket.triggerer",
+            users = [
+                "chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com",
+            ],
+        ),
         # TODO(crbug.com/1501383): Remove this binding after shadow bucket
         # could inherit the view permission from the actual bucket.
         luci.binding(
