@@ -27,17 +27,20 @@ class GitCLTest(unittest.TestCase):
     def test_run_with_auth(self):
         host = MockHost()
         host.executive = MockExecutive(output='mock-output')
-        git_cl = GitCL(host, auth_refresh_token_json='token.json')
+        git_cl = GitCL(host)
         git_cl.run(['try', '-b', 'win10_blink_rel'])
         self.assertEqual(host.executive.calls, [[
-            'git', 'cl', 'try', '-b', 'win10_blink_rel',
-            '--auth-refresh-token-json', 'token.json'
+            'git',
+            'cl',
+            'try',
+            '-b',
+            'win10_blink_rel',
         ]])
 
     def test_some_commands_not_run_with_auth(self):
         host = MockHost()
         host.executive = MockExecutive(output='mock-output')
-        git_cl = GitCL(host, auth_refresh_token_json='token.json')
+        git_cl = GitCL(host)
         git_cl.run(['issue'])
         self.assertEqual(host.executive.calls, [['git', 'cl', 'issue']])
 
@@ -45,47 +48,70 @@ class GitCLTest(unittest.TestCase):
         # When no bucket is specified, luci.chromium.try is used by
         # default. Besides, `git cl try` invocations are grouped by buckets.
         host = MockHost()
-        git_cl = GitCL(host, auth_refresh_token_json='token.json')
+        git_cl = GitCL(host)
         git_cl.trigger_try_jobs([
             'android_blink_rel', 'fake_blink_try_linux', 'fake_blink_try_win'
         ])
         self.assertEqual(host.executive.calls, [
             [
-                'git', 'cl', 'try', '-B', 'luci.chromium.try', '-b',
-                'fake_blink_try_linux', '-b', 'fake_blink_try_win',
-                '--auth-refresh-token-json', 'token.json'
+                'git',
+                'cl',
+                'try',
+                '-B',
+                'luci.chromium.try',
+                '-b',
+                'fake_blink_try_linux',
+                '-b',
+                'fake_blink_try_win',
             ],
             [
-                'git', 'cl', 'try', '-B', 'luci.chromium.android', '-b',
-                'android_blink_rel', '--auth-refresh-token-json', 'token.json'
+                'git',
+                'cl',
+                'try',
+                '-B',
+                'luci.chromium.android',
+                '-b',
+                'android_blink_rel',
             ],
         ])
 
     def test_trigger_try_jobs_with_frozenset(self):
         # The trigger_try_jobs method may be called with an immutable set.
         host = MockHost()
-        git_cl = GitCL(host, auth_refresh_token_json='token.json')
+        git_cl = GitCL(host)
         git_cl.trigger_try_jobs(
             frozenset(['fake_blink_try_linux', 'fake_blink_try_win']))
         self.assertEqual(host.executive.calls, [
             [
-                'git', 'cl', 'try', '-B', 'luci.chromium.try', '-b',
-                'fake_blink_try_linux', '-b', 'fake_blink_try_win',
-                '--auth-refresh-token-json', 'token.json'
+                'git',
+                'cl',
+                'try',
+                '-B',
+                'luci.chromium.try',
+                '-b',
+                'fake_blink_try_linux',
+                '-b',
+                'fake_blink_try_win',
             ],
         ])
 
     def test_trigger_try_jobs_with_explicit_bucket(self):
         # An explicit bucket overrides configured or default buckets.
         host = MockHost()
-        git_cl = GitCL(host, auth_refresh_token_json='token.json')
+        git_cl = GitCL(host)
         git_cl.trigger_try_jobs(['fake_blink_try_linux', 'android_blink_rel'],
                                 bucket='luci.dummy')
         self.assertEqual(host.executive.calls, [
             [
-                'git', 'cl', 'try', '-B', 'luci.dummy', '-b',
-                'android_blink_rel', '-b', 'fake_blink_try_linux',
-                '--auth-refresh-token-json', 'token.json'
+                'git',
+                'cl',
+                'try',
+                '-B',
+                'luci.dummy',
+                '-b',
+                'android_blink_rel',
+                '-b',
+                'fake_blink_try_linux',
             ],
         ])
 

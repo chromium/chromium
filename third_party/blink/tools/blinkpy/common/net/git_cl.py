@@ -19,10 +19,6 @@ from blinkpy.common.net.rpc import Build, BuildbucketClient
 
 _log = logging.getLogger(__name__)
 
-# A refresh token may be needed for some commands, such as git cl try,
-# in order to authenticate with buildbucket.
-_COMMANDS_THAT_TAKE_REFRESH_TOKEN = ('try', )
-
 
 class BuildStatus(enum.Flag):
     """Buildbucket statuses [0]. The names should match where applicable.
@@ -69,14 +65,10 @@ class CLStatus(NamedTuple):
 
 
 class GitCL:
-    def __init__(self,
-                 host,
-                 auth_refresh_token_json=None,
-                 cwd=None,
-                 bb_client=None):
+
+    def __init__(self, host, cwd=None, bb_client=None):
         self._host = host
         self.bb_client = bb_client or BuildbucketClient.from_host(host)
-        self._auth_refresh_token_json = auth_refresh_token_json
         self._cwd = cwd
         self._git_executable_name = Git.find_executable_name(
             host.executive, host.platform)
@@ -91,11 +83,6 @@ class GitCL:
             A string (the output from git-cl).
         """
         command = [self._git_executable_name, 'cl'] + args
-        if (self._auth_refresh_token_json
-                and args[0] in _COMMANDS_THAT_TAKE_REFRESH_TOKEN):
-            command += [
-                '--auth-refresh-token-json', self._auth_refresh_token_json
-            ]
         # Suppress the stderr of git-cl because git-cl will show a warning when
         # running on Swarming bots with local git cache.
         return self._host.executive.run_command(

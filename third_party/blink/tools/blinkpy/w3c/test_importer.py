@@ -130,8 +130,7 @@ class TestImporter:
                          '#GitHub-credentials for instructions on how to set '
                          'your credentials up.')
         self.github = self.github or WPTGitHub(self.host, gh_user, gh_token)
-        self.git_cl = GitCL(
-            self.host, auth_refresh_token_json=options.auth_refresh_token_json)
+        self.git_cl = GitCL(self.host)
 
         _log.debug('Noting the current Chromium revision.')
         chromium_revision = self.project_git.latest_git_commit()
@@ -377,10 +376,6 @@ class TestImporter:
             '--auto-file-bugs',
             action='store_true',
             help='file new failures automatically to crbug.com')
-        parser.add_argument(
-            '--auth-refresh-token-json',
-            help='authentication refresh token JSON file used for try jobs, '
-            'generally not necessary on developer machines')
         parser.add_argument(
             '--credentials-json',
             help='A JSON file with GitHub credentials, '
