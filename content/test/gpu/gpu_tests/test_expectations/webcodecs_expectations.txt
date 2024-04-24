@@ -139,7 +139,6 @@ crbug.com/1400512 [ fuchsia fuchsia-board-sherlock ] WebCodecs_copyTo_camera [ F
 # Skia graphite failures
 crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_EncodeDecode_offscreen_avc1.42001E_prefer-hardware [ RetryOnFailure ]
 crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_EncodeDecode_offscreen_avc1.42001E_prefer-software [ RetryOnFailure ]
-crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_EncodeDecode_offscreen_hvc1.1.6.L123.00_prefer-hardware [ RetryOnFailure ]
 crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_EncodeDecode_offscreen_vp09.00.10.08_prefer-software [ RetryOnFailure ]
 crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_EncodeDecode_offscreen_vp8_prefer-software [ RetryOnFailure ]
 crbug.com/1522954 [ mac intel graphite-enabled asan ] WebCodecs_SVC_av01.0.04M.08_prefer-software_layers_2 [ RetryOnFailure ]
