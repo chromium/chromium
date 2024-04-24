@@ -98,6 +98,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mAreHeadersInitialized = false;
         mIsLoadingItems = true;
         mClearOnNextQueryComplete = true;
+        setAppId(null);
         if (mHostName != null) {
             mHistoryProvider.queryHistoryForHost(mHostName);
         } else {
@@ -164,6 +165,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     public void onEndSearch() {
         mQueryText = EMPTY_QUERY;
         mIsSearching = false;
+        if (mAppFilterChip != null) resetAppFilterChip();
 
         // Re-initialize the data in the adapter.
         startLoadingItems();
@@ -402,10 +404,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     void updateHistory(AppInfo appInfo) {
         if (appInfo == null) {
-            mAppId = null;
-            mAppFilterChip.getPrimaryTextView().setText(R.string.history_filter_by_app);
-            mAppFilterChip.setSelected(false);
-            mAppFilterChip.setIcon(ChipView.INVALID_ICON_ID, false);
+            resetAppFilterChip();
         } else {
             mAppId = appInfo.id;
             mAppFilterChip.getPrimaryTextView().setText(appInfo.label);
@@ -413,6 +412,13 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
             mAppFilterChip.setIcon(R.drawable.ic_check_googblue_24dp, true);
         }
         search(EMPTY_QUERY);
+    }
+
+    private void resetAppFilterChip() {
+        setAppId(null);
+        mAppFilterChip.getPrimaryTextView().setText(R.string.history_filter_by_app);
+        mAppFilterChip.setSelected(false);
+        mAppFilterChip.setIcon(ChipView.INVALID_ICON_ID, false);
     }
 
     ViewGroup getPrivacyDisclaimerContainer(ViewGroup parent) {

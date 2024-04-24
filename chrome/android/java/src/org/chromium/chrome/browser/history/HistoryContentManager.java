@@ -579,6 +579,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
     /** Called when a search is ended. */
     public void onEndSearch() {
+        mCurrentApp = null;
         mHistoryAdapter.onEndSearch();
     }
 
@@ -620,7 +621,7 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                             this::onAppUpdated,
                             mAppInfoList);
         }
-        mAppFilterSheet.openSheet();
+        mAppFilterSheet.openSheet(mCurrentApp);
     }
 
     /** Callback from app filter sheet, with the newly chosen app to filter. */

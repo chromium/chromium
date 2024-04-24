@@ -47,9 +47,6 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AppFilterCoordinatorTest {
-    /** {@link AppInfo} indicating that no app is selected i.e. full history. */
-    private static final AppInfo APP_NOTSELECTED = new AppInfo(null, null, null);
-
     private static final String APPID_YOUTUBE = "com.google.android.youtube";
     private static final String APPID_CHROME = "com.android.chrome";
     private static final String APPID_CALENDAR = "com.google.android.calendar";
@@ -66,9 +63,7 @@ public class AppFilterCoordinatorTest {
 
     private BottomSheetController mBottomSheetController;
     private AppFilterCoordinator mAppFilterSheet;
-    private Drawable mIcon;
-    private String mAppId;
-    private CharSequence mAppLabel;
+    private AppInfo mCurrentApp;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -79,12 +74,12 @@ public class AppFilterCoordinatorTest {
                 () -> {
                     mBottomSheetController = createBottomSheetController();
 
-                    mIcon = activity.getResources().getDrawable(R.drawable.ic_devices_16dp);
+                    Drawable icon = activity.getResources().getDrawable(R.drawable.ic_devices_16dp);
                     List<AppInfo> apps = new ArrayList<>();
-                    apps.add(new AppInfo(APPID_YOUTUBE, mIcon, APPLABEL_YOUTUBE));
-                    apps.add(new AppInfo(APPID_CHROME, mIcon, APPLABEL_CHROME));
-                    apps.add(new AppInfo(APPID_CALENDAR, mIcon, APPLABEL_CALENDAR));
-                    apps.add(new AppInfo(APPID_MESSAGE, mIcon, APPLABEL_MESSAGE));
+                    apps.add(new AppInfo(APPID_YOUTUBE, icon, APPLABEL_YOUTUBE));
+                    apps.add(new AppInfo(APPID_CHROME, icon, APPLABEL_CHROME));
+                    apps.add(new AppInfo(APPID_CALENDAR, icon, APPLABEL_CALENDAR));
+                    apps.add(new AppInfo(APPID_MESSAGE, icon, APPLABEL_MESSAGE));
                     mAppFilterSheet =
                             new AppFilterCoordinator(
                                     activity,
@@ -123,14 +118,11 @@ public class AppFilterCoordinatorTest {
     }
 
     private void onAppUpdated(AppInfo appInfo) {
-        mAppId = appInfo != null ? appInfo.id : null;
-        mAppLabel = appInfo != null ? appInfo.label : null;
+        mCurrentApp = appInfo;
     }
 
     private void setCurrentAppInfo(String appId, CharSequence appLabel) {
-        mAppId = appId;
-        mAppLabel = appLabel;
-        mAppFilterSheet.setCurrentAppForTesting(appId);
+        mCurrentApp = appId == null ? null : new AppInfo(appId, null, appLabel);
     }
 
     private int calcSheetHeight(int rowHeight, int baseViewHeight, int rowCount) {
@@ -172,66 +164,106 @@ public class AppFilterCoordinatorTest {
     @Test
     @MediumTest
     public void testFullHistoryToApp() {
-        assertEquals("Selected app is not correct.", null, mAppId);
+        assertEquals("Selected app is not correct.", null, mCurrentApp);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mAppFilterSheet.openSheet();
+                    mAppFilterSheet.openSheet(mCurrentApp);
                     mAppFilterSheet.clickItemForTesting(APPID_MESSAGE);
                 });
 
         // Tapping an app selects it.
-        assertEquals("Chosen app is not correct.", APPID_MESSAGE, mAppId);
-        assertEquals("Chosen app is not correct.", APPLABEL_MESSAGE, mAppLabel);
+        assertEquals("Chosen app is not correct.", APPID_MESSAGE, mCurrentApp.id);
+        assertEquals("Chosen label is not correct.", APPLABEL_MESSAGE, mCurrentApp.label);
     }
 
     @Test
     @MediumTest
     public void testSelectNewApp() {
         setCurrentAppInfo(APPID_CALENDAR, APPLABEL_CALENDAR);
-        assertEquals("Selected app is not correct.", APPID_CALENDAR, mAppId);
+        assertEquals("Selected app is not correct.", APPID_CALENDAR, mCurrentApp.id);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mAppFilterSheet.openSheet();
+                    mAppFilterSheet.openSheet(mCurrentApp);
                     mAppFilterSheet.clickItemForTesting(APPID_CHROME);
                 });
 
         // Tapping an app makes it a newly selected one.
-        assertEquals("Chosen app is not correct.", APPID_CHROME, mAppId);
-        assertEquals("Chosen app is not correct.", APPLABEL_CHROME, mAppLabel);
+        assertEquals("Chosen app is not correct.", APPID_CHROME, mCurrentApp.id);
+        assertEquals("Chosen label is not correct.", APPLABEL_CHROME, mCurrentApp.label);
     }
 
     @Test
     @MediumTest
     public void testUnselectApp() {
         setCurrentAppInfo(APPID_CALENDAR, APPLABEL_CALENDAR);
-        assertEquals("Selected app is not correct.", APPID_CALENDAR, mAppId);
+        assertEquals("Selected app is not correct.", APPID_CALENDAR, mCurrentApp.id);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mAppFilterSheet.openSheet();
+                    mAppFilterSheet.openSheet(mCurrentApp);
                     mAppFilterSheet.clickItemForTesting(APPID_CALENDAR);
                 });
 
         // Tapping the already selected app unselects it.
-        assertEquals("Chosen app is not correct.", APP_NOTSELECTED.id, mAppId);
-        assertEquals("Chosen app is not correct.", APP_NOTSELECTED.label, mAppLabel);
+        assertEquals("Chosen app is not correct.", null, mCurrentApp);
+
+        // Open the sheet once more and select the app that was unselected right before.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAppFilterSheet.openSheet(mCurrentApp);
+                    mAppFilterSheet.clickItemForTesting(APPID_CALENDAR);
+                });
+        assertEquals("Chosen app is not correct.", APPID_CALENDAR, mCurrentApp.id);
+        assertEquals("Chosen label is not correct.", APPLABEL_CALENDAR, mCurrentApp.label);
+    }
+
+    @Test
+    @MediumTest
+    public void testResetSheetAtOpen() {
+        assertEquals("Selected app is not correct.", null, mCurrentApp);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAppFilterSheet.openSheet(mCurrentApp);
+                    mAppFilterSheet.clickItemForTesting(APPID_CALENDAR);
+                });
+        assertEquals("Chosen app should be Calendar.", APPID_CALENDAR, mCurrentApp.id);
+
+        // Caller resets its state and opens the sheet again. The sheet should be reset in sync.
+        setCurrentAppInfo(null, null);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAppFilterSheet.openSheet(mCurrentApp);
+                });
+        assertEquals(
+                "No app should be selected.", null, mAppFilterSheet.getCurrentAppIdForTesting());
+
+        setCurrentAppInfo(APPID_YOUTUBE, APPLABEL_YOUTUBE);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAppFilterSheet.openSheet(mCurrentApp);
+                });
+        assertEquals(
+                "Chosen app should be YouTube.",
+                APPID_YOUTUBE,
+                mAppFilterSheet.getCurrentAppIdForTesting());
     }
 
     @Test
     @MediumTest
     public void testCloseSheetWithoutSelection() {
         setCurrentAppInfo(APPID_CALENDAR, APPLABEL_CALENDAR);
-        assertEquals("Selected app is not correct.", APPID_CALENDAR, mAppId);
+        assertEquals("Selected app is not correct.", APPID_CALENDAR, mCurrentApp.id);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mAppFilterSheet.openSheet();
+                    mAppFilterSheet.openSheet(mCurrentApp);
                     mAppFilterSheet.clickCloseButtonForTesting();
                 });
 
         // Closing the sheet preserves the previously selected app.
-        assertEquals("Chosen app is not correct.", APPID_CALENDAR, mAppId);
-        assertEquals("Chosen app is not correct.", APPLABEL_CALENDAR, mAppLabel);
+        assertEquals("Chosen app is not correct.", APPID_CALENDAR, mCurrentApp.id);
+        assertEquals("Chosen label is not correct.", APPLABEL_CALENDAR, mCurrentApp.label);
     }
 }

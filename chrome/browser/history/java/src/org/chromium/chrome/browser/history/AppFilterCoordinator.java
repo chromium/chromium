@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -141,9 +142,15 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
         }
     }
 
-    /** Open app filter bottom sheet. */
-    public void openSheet() {
+    /**
+     * Open app filter bottom sheet.
+     *
+     * @param currentApp Initial app to be selected at the beginning. If {@code null}, no app will
+     *     be selected.
+     */
+    public void openSheet(@Nullable AppInfo currentApp) {
         updateSheetHeight();
+        mMediator.resetState(currentApp);
         mBottomSheetController.requestShowContent(mSheetContent, true);
     }
 
@@ -188,5 +195,9 @@ class AppFilterCoordinator implements View.OnLayoutChangeListener {
 
     void setCurrentAppForTesting(String appId) {
         mMediator.setCurrentAppForTesting(appId); // IN-TEST
+    }
+
+    String getCurrentAppIdForTesting() {
+        return mMediator.getCurrentAppIdForTesting(); // IN-TEST
     }
 }

@@ -49,6 +49,17 @@ class AppFilterMediator {
         return model;
     }
 
+    void resetState(AppInfo currentApp) {
+        if (mSelectedModel != null) {
+            mSelectedModel.set(AppFilterProperties.SELECTED, false);
+            mSelectedModel = null;
+        }
+        if (currentApp != null) {
+            mSelectedModel = getModelForAppId(currentApp.id);
+            mSelectedModel.set(AppFilterProperties.SELECTED, true);
+        }
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     void handleClick(PropertyModel model) {
         PropertyModel prevModel = mSelectedModel;
@@ -57,7 +68,7 @@ class AppFilterMediator {
         boolean toFullHistory = prevModel != null && prevModel == model;
 
         if (prevModel != null) prevModel.set(AppFilterProperties.SELECTED, false);
-        mSelectedModel = model;
+        mSelectedModel = toFullHistory ? null : model;
         if (toFullHistory) {
             mCloseCallback.onAppUpdated(null);
         } else {
@@ -67,7 +78,7 @@ class AppFilterMediator {
         }
     }
 
-    private PropertyModel getModelForAppIdForTesting(String appId) {
+    private PropertyModel getModelForAppId(String appId) {
         for (SimpleRecyclerViewAdapter.ListItem item : mModelList) {
             if (appId.equals(item.model.get(AppFilterProperties.ID))) {
                 return item.model;
@@ -77,10 +88,14 @@ class AppFilterMediator {
     }
 
     void clickItemForTesting(String appId) {
-        handleClick(getModelForAppIdForTesting(appId));
+        handleClick(getModelForAppId(appId));
     }
 
     void setCurrentAppForTesting(String appId) {
-        mSelectedModel = getModelForAppIdForTesting(appId);
+        mSelectedModel = getModelForAppId(appId);
+    }
+
+    String getCurrentAppIdForTesting() {
+        return mSelectedModel != null ? mSelectedModel.get(AppFilterProperties.ID) : null;
     }
 }

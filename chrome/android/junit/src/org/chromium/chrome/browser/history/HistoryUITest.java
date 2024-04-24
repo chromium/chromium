@@ -12,6 +12,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -500,7 +501,7 @@ public class HistoryUITest {
         mAdapter.onQueryAppsComplete(result);
 
         mContentManager.onAppFilterClicked();
-        verify(mAppFilterSheet).openSheet();
+        verify(mAppFilterSheet).openSheet(eq(null));
 
         // Verify ContentManager is updated with the selected app info.
         AppInfo selected = new AppInfo("Ernie", null, appId1);
