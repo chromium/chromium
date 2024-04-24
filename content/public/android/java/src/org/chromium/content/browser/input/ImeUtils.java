@@ -85,15 +85,6 @@ public class ImeUtils {
             }
         } else {
             switch (inputMode) {
-                default:
-                case WebTextInputMode.DEFAULT:
-                case WebTextInputMode.TEXT:
-                case WebTextInputMode.SEARCH:
-                    outAttrs.inputType |= EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
-                    if ((inputFlags & WebTextInputFlags.AUTOCORRECT_OFF) == 0) {
-                        outAttrs.inputType |= EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT;
-                    }
-                    break;
                 case WebTextInputMode.TEL:
                     outAttrs.inputType = InputType.TYPE_CLASS_PHONE;
                     break;
@@ -116,6 +107,15 @@ public class ImeUtils {
                 case WebTextInputMode.DECIMAL:
                     outAttrs.inputType =
                             InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL;
+                    break;
+                case WebTextInputMode.DEFAULT:
+                case WebTextInputMode.TEXT:
+                case WebTextInputMode.SEARCH:
+                default:
+                    outAttrs.inputType |= EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE;
+                    if ((inputFlags & WebTextInputFlags.AUTOCORRECT_OFF) == 0) {
+                        outAttrs.inputType |= EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT;
+                    }
                     break;
             }
         }
