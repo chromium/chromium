@@ -61,6 +61,7 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
   std::vector<std::string> GetLanguageList() override;
   base::Value::Dict GetProductSpecificDataJson() override;
   void OnSurveyLoaded() override;
+  void OnSurveyCompleted() override;
   void OnSurveyClosed() override;
 
  protected:

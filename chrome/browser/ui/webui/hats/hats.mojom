@@ -17,6 +17,9 @@ interface PageHandler {
   // Notifies the browser that a survey has been successfully loaded and is
   // being displayed within the WebContents.
   OnSurveyLoaded();
+  // This event is triggered when the user finishes the entire survey. This will
+  // be triggered before the 'thank you' card is displayed.
+  OnSurveyCompleted();
   // Notifies the browser that the survey has been closed and is not being
   // displayed.
   OnSurveyClosed();
