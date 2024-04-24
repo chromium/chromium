@@ -562,8 +562,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             account_selection_view_->sheet_type_);
 
-  // Failure bubble should have been re-used for sign-in dialog.
-  EXPECT_EQ(1u, controller->num_dialogs_);
+  EXPECT_EQ(2u, controller->num_dialogs_);
 }
 
 // Test transitioning from IdP sign-in status mismatch failure dialog to regular
@@ -601,8 +600,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
             account_selection_view_->sheet_type_);
 
-  // Failure bubble should have been re-used for sign-in dialog.
-  EXPECT_EQ(1u, controller->num_dialogs_);
+  EXPECT_EQ(2u, controller->num_dialogs_);
 }
 
 TEST_F(FedCmAccountSelectionViewDesktopTest, AutoReauthnSingleAccountFlow) {
@@ -1248,8 +1246,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_THAT(account_selection_view_->account_ids_,
               testing::ElementsAre(kAccountId1));
 
-  // Failure bubble should have been re-used for sign-in dialog.
-  EXPECT_EQ(1u, controller->num_dialogs_);
+  EXPECT_EQ(2u, controller->num_dialogs_);
 }
 
 // Test the use another account flow, resulting in the new account being shown
@@ -1717,6 +1714,33 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // Reset the widget explicitly since no widget was shown. Otherwise, the test
   // will complain that a widget is still open.
   dialog_widget_.reset();
+}
+
+TEST_F(FedCmAccountSelectionViewDesktopTest, MultiIdpMismatchAndShow) {
+  std::vector<IdentityProviderDisplayData> idp_list = {
+      CreateIdentityProviderDisplayData({{kAccountId1, LoginState::kSignUp}}),
+      CreateIdentityProviderDisplayData(/*account_infos=*/{},
+                                        /*has_login_status_mismatch=*/true)};
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowMultiIdp(idp_list, SignInMode::kExplicit,
+                            blink::mojom::RpMode::kWidget);
+
+  // Emulate user clicking on "Continue" button in the mismatch dialog.
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+  observer->OnLoginToIdP(GURL(kConfigUrl), GURL(kLoginUrl), CreateMouseEvent());
+  CreateAndShowPopupWindow(*controller);
+  controller->CloseModalDialog();
+
+  std::vector<content::IdentityRequestAccount> new_accounts =
+      CreateAccount(LoginState::kSignUp);
+  content::IdentityProviderData new_idp_data =
+      CreateIdentityProviderData(new_accounts);
+
+  Show(*controller, new_accounts, SignInMode::kExplicit,
+       blink::mojom::RpMode::kButton, new_idp_data);
+
+  EXPECT_EQ(2u, controller->num_dialogs_);
 }
 
 // Tests that if a single account chooser is opened in button flow mode,

@@ -125,24 +125,19 @@ void FedCmAccountSelectionView::Show(
                                   base::UTF8ToUTF16(*iframe_etld_plus_one))
                             : std::nullopt;
 
-  // If a modal dialog was created previously but there is no modal support for
-  // this type of dialog, reset account_selection_view_ to create a bubble
-  // dialog instead.
-  if (account_selection_view_ && rp_mode == blink::mojom::RpMode::kButton &&
-      !has_modal_support) {
-    ResetAccountSelectionView();
-  }
+  bool has_no_prev_view = !account_selection_view_;
+  // If there was previously a dialog here, the new dialog may be of a different
+  // type or have a different title. Reset account_selection_view_ to make sure
+  // everything is updated properly.
+  MaybeResetAccountSelectionView();
 
-  bool create_view = !account_selection_view_;
-  if (create_view) {
-    account_selection_view_ = CreateAccountSelectionView(
-        top_frame_for_display_, iframe_for_display_, idp_title, rp_context,
-        rp_mode, has_modal_support);
+  account_selection_view_ = CreateAccountSelectionView(
+      top_frame_for_display_, iframe_for_display_, idp_title, rp_context,
+      rp_mode, has_modal_support);
 
-    if (!account_selection_view_) {
-      delegate_->OnDismiss(DismissReason::kOther);
-      return;
-    }
+  if (!account_selection_view_) {
+    delegate_->OnDismiss(DismissReason::kOther);
+    return;
   }
 
   if (sign_in_mode == Account::SignInMode::kAuto) {
@@ -247,7 +242,7 @@ void FedCmAccountSelectionView::Show(
   // while the modal dialog is visible and we are called from CloseModalDialog.
   // Because the modal dialog is now closed, we should show the account chooser
   // now.
-  if (create_view || is_modal_closed_but_accounts_fetch_pending_ ||
+  if (has_no_prev_view || is_modal_closed_but_accounts_fetch_pending_ ||
       (popup_window_state_ &&
        *popup_window_state_ ==
            PopupWindowResult::kAccountsReceivedAndPopupNotClosedByIdp)) {
@@ -303,30 +298,25 @@ void FedCmAccountSelectionView::ShowFailureDialog(
   // modal is not yet implemented.
   bool has_modal_support = false;
 
-  // If a modal dialog was created previously but there is no modal support for
-  // this type of dialog, reset account_selection_view_ to create a bubble
-  // dialog instead.
-  if (account_selection_view_ && rp_mode == blink::mojom::RpMode::kButton &&
-      !has_modal_support) {
-    ResetAccountSelectionView();
-  }
+  bool has_no_prev_view = !account_selection_view_;
+  // If there was previously a dialog here, the new dialog may be of a different
+  // type or have a different title. Reset account_selection_view_ to make sure
+  // everything is updated properly.
+  MaybeResetAccountSelectionView();
 
-  bool create_view = !account_selection_view_;
   top_frame_for_display_ = base::UTF8ToUTF16(top_frame_etld_plus_one);
   iframe_for_display_ = iframe_etld_plus_one
                             ? std::make_optional<std::u16string>(
                                   base::UTF8ToUTF16(*iframe_etld_plus_one))
                             : std::nullopt;
-  if (create_view) {
-    account_selection_view_ =
-        CreateAccountSelectionView(top_frame_for_display_, iframe_for_display_,
-                                   base::UTF8ToUTF16(idp_etld_plus_one),
-                                   rp_context, rp_mode, has_modal_support);
+  account_selection_view_ =
+      CreateAccountSelectionView(top_frame_for_display_, iframe_for_display_,
+                                 base::UTF8ToUTF16(idp_etld_plus_one),
+                                 rp_context, rp_mode, has_modal_support);
 
-    if (!account_selection_view_) {
-      delegate_->OnDismiss(DismissReason::kOther);
-      return;
-    }
+  if (!account_selection_view_) {
+    delegate_->OnDismiss(DismissReason::kOther);
+    return;
   }
 
   account_selection_view_->ShowFailureDialog(
@@ -345,7 +335,7 @@ void FedCmAccountSelectionView::ShowFailureDialog(
     input_protector_ = std::make_unique<views::InputEventActivationProtector>();
   }
 
-  if (create_view || is_modal_closed_but_accounts_fetch_pending_) {
+  if (has_no_prev_view || is_modal_closed_but_accounts_fetch_pending_) {
     is_modal_closed_but_accounts_fetch_pending_ = false;
     if (is_web_contents_visible_) {
       input_protector_->VisibilityChanged(true);
@@ -377,25 +367,19 @@ void FedCmAccountSelectionView::ShowErrorDialog(
   // modal is not yet implemented.
   bool has_modal_support = false;
 
-  // If a modal dialog was created previously but there is no modal support for
-  // this type of dialog, reset account_selection_view_ to create a bubble
-  // dialog instead.
-  if (account_selection_view_ && rp_mode == blink::mojom::RpMode::kButton &&
-      !has_modal_support) {
-    ResetAccountSelectionView();
-  }
+  // If there was previously a dialog here, the new dialog may be of a different
+  // type or have a different title. Reset account_selection_view_ to make sure
+  // everything is updated properly.
+  MaybeResetAccountSelectionView();
 
-  bool create_view = !account_selection_view_;
-  if (create_view) {
-    account_selection_view_ =
-        CreateAccountSelectionView(top_frame_for_display_, iframe_for_display_,
-                                   base::UTF8ToUTF16(idp_etld_plus_one),
-                                   rp_context, rp_mode, has_modal_support);
+  account_selection_view_ =
+      CreateAccountSelectionView(top_frame_for_display_, iframe_for_display_,
+                                 base::UTF8ToUTF16(idp_etld_plus_one),
+                                 rp_context, rp_mode, has_modal_support);
 
-    if (!account_selection_view_) {
-      delegate_->OnDismiss(DismissReason::kOther);
-      return;
-    }
+  if (!account_selection_view_) {
+    delegate_->OnDismiss(DismissReason::kOther);
+    return;
   }
 
   account_selection_view_->ShowErrorDialog(
@@ -414,7 +398,7 @@ void FedCmAccountSelectionView::ShowErrorDialog(
     input_protector_ = std::make_unique<views::InputEventActivationProtector>();
   }
 
-  if (create_view && is_web_contents_visible_) {
+  if (is_web_contents_visible_) {
     GetDialogWidget()->Show();
     input_protector_->VisibilityChanged(true);
   }
@@ -942,7 +926,7 @@ void FedCmAccountSelectionView::OnDismiss(DismissReason dismiss_reason) {
                               *modal_account_chooser_state_);
   }
 
-  ResetAccountSelectionView();
+  MaybeResetAccountSelectionView();
   input_protector_.reset();
 
   if (notify_delegate_of_dismiss_) {
@@ -960,7 +944,10 @@ FedCmAccountSelectionView::GetDialogType() {
   return dialog_type_;
 }
 
-void FedCmAccountSelectionView::ResetAccountSelectionView() {
+void FedCmAccountSelectionView::MaybeResetAccountSelectionView() {
+  if (!account_selection_view_) {
+    return;
+  }
   account_selection_view_->CloseDialog();
   account_selection_view_ = nullptr;
   TabStripModelObserver::StopObservingAll(this);

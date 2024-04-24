@@ -283,7 +283,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Resets `account_selection_view_`. Typically, to recreate it later to show a
   // different kind of dialog.
-  void ResetAccountSelectionView();
+  void MaybeResetAccountSelectionView();
 
   // Returns whether an IDP sign-in pop-up window is currently open.
   bool IsIdpSigninPopupOpen();
