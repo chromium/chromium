@@ -1692,6 +1692,13 @@ void ScrollableShelfView::CalculateVerticalGradient(
     return std::clamp(static_cast<float>(position) / total, 0.f, 1.f);
   };
 
+  // Do not add gradient if visible height is too small.
+  if (visible_space_.bottom() <
+      visible_space_.y() +
+          2 * scrollable_shelf_constants::kGradientZoneLength) {
+    return;
+  }
+
   float gradient_start, gradient_end;
 
   DCHECK(!ShouldAdaptToRTL());

@@ -27,6 +27,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -306,6 +307,29 @@ TEST_F(ScrollableShelfViewTest, CorrectUIAfterDisplayRotationShortToLong) {
                 ShelfConfig::Get()->GetAppIconEndPadding(),
             visible_space.right());
   EXPECT_FALSE(scrollable_shelf_view_->ShouldAdjustForTest());
+}
+
+// Verifies that the gradient calculation for vertical scrollable shelf does not
+// crash for minimum shelf height (b/319527955).
+TEST_F(ScrollableShelfViewTest,
+       GradientCalculationDoesNotCrashForMinimumShelfHeight) {
+  const size_t initial_display_height = 400;
+  UpdateDisplay(base::StringPrintf("600x%zu", initial_display_height));
+
+  auto* const prefs =
+      Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+  SetShelfAlignmentPref(prefs, GetPrimaryDisplay().id(), ShelfAlignment::kLeft);
+  AddAppShortcutsUntilOverflow();
+
+  // Reduce the screen height (this can also happen with the maximum size of the
+  // docked magnifier), so the height of `scrollable_shelf_view_` is only 1 px,
+  // this is where the crash happened before.
+  const size_t new_display_height =
+      initial_display_height -
+      scrollable_shelf_view_->visible_space().height() + 1;
+  UpdateDisplay(base::StringPrintf("600x%zu", new_display_height));
+
+  // No crash.
 }
 
 // TODO(crbug.com/40867071): Enable when the bug is fixed.
