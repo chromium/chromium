@@ -72,6 +72,58 @@ std::tuple<LayoutUnit, LayoutUnit> AdjustTextOverUnderOffsetsForEmHeight(
   return std::make_tuple(over + over_diff, under - under_diff);
 }
 
+FontHeight ComputeEmHeight(const LogicalLineItem& line_item) {
+  if (const auto& shape_result_view = line_item.shape_result) {
+    const ComputedStyle* style = line_item.Style();
+    const SimpleFontData* primary_font_data = style->GetFont().PrimaryFont();
+    if (!primary_font_data) {
+      return FontHeight();
+    }
+    const auto font_baseline = style->GetFontBaseline();
+    const FontHeight primary_height =
+        primary_font_data->GetFontMetrics().GetFloatFontHeight(font_baseline);
+    FontHeight result_height;
+    // We don't use ShapeResultView::FallbackFonts() because we can't know if
+    // the primary font is actually used with FallbackFonts().
+    HeapVector<ShapeResult::RunFontData> run_fonts;
+    ClearCollectionScope clear_scope(&run_fonts);
+    shape_result_view->GetRunFontData(&run_fonts);
+    for (const auto& run_font : run_fonts) {
+      const SimpleFontData* font_data = run_font.font_data_;
+      if (!font_data) {
+        continue;
+      }
+      result_height.Unite(
+          font_data->NormalizedTypoAscentAndDescent(font_baseline));
+    }
+    result_height.ascent = std::min(LayoutUnit(result_height.ascent.Ceil()),
+                                    primary_height.ascent);
+    result_height.descent = std::min(LayoutUnit(result_height.descent.Ceil()),
+                                     primary_height.descent);
+    result_height.Move(line_item.rect.offset.block_offset +
+                       primary_height.ascent);
+    return result_height;
+  }
+  if (const auto& layout_result = line_item.layout_result) {
+    const auto& fragment = layout_result->GetPhysicalFragment();
+    const auto& style = fragment.Style();
+    LogicalSize logical_size =
+        LogicalFragment(style.GetWritingDirection(), fragment).Size();
+    const LayoutBox* box = DynamicTo<LayoutBox>(line_item.GetLayoutObject());
+    if (logical_size.inline_size && box && box->IsAtomicInlineLevel()) {
+      LogicalRect overflow =
+          WritingModeConverter(
+              {ToLineWritingMode(style.GetWritingMode()), style.Direction()},
+              fragment.Size())
+              .ToLogical(box->ScrollableOverflowRect());
+      // Assume 0 is the baseline.  BlockOffset() is always negative.
+      return FontHeight(-overflow.offset.block_offset - line_item.BlockOffset(),
+                        overflow.BlockEndOffset() + line_item.BlockOffset());
+    }
+  }
+  return FontHeight();
+}
+
 }  // anonymous namespace
 
 RubyItemIndexes ParseRubyInInlineItems(const HeapVector<InlineItem>& items,
@@ -394,6 +446,7 @@ AnnotationMetrics ComputeAnnotationOverflow(
     const ComputedStyle& line_style,
     std::optional<FontHeight> annotation_metrics) {
   // Min/max position of content and annotations, ignoring line-height.
+  // They are distance from the line box top.
   const LayoutUnit line_over;
   LayoutUnit content_over = line_over + line_box_metrics.ascent;
   LayoutUnit content_under = content_over;
@@ -404,6 +457,8 @@ AnnotationMetrics ComputeAnnotationOverflow(
   const LayoutUnit line_under = line_over + line_box_metrics.LineHeight();
   bool has_over_emphasis = false;
   bool has_under_emphasis = false;
+  // TODO(crbug.com/324111880): This loop can be replaced with
+  // ComputeLogicalLineEmHeight() after enabling RubyLineBreakable flag.
   for (const LogicalLineItem& item : logical_line) {
     if (!item.HasInFlowFragment())
       continue;
@@ -418,6 +473,7 @@ AnnotationMetrics ComputeAnnotationOverflow(
             item_over, item_under, *style, *item.shape_result);
       }
     } else {
+      const LayoutBox* box = DynamicTo<LayoutBox>(item.GetLayoutObject());
       const auto* fragment = item.GetPhysicalFragment();
       if (fragment && fragment->IsRubyColumn()) {
         DCHECK(!RuntimeEnabledFeatures::RubyLineBreakableEnabled());
@@ -449,6 +505,10 @@ AnnotationMetrics ComputeAnnotationOverflow(
           else if (overflow > LayoutUnit())
             has_under_annotation = true;
         }
+      } else if (RuntimeEnabledFeatures::RubyAnnotationSpaceFixEnabled() &&
+                 fragment && box && box->IsAtomicInlineLevel() &&
+                 !box->IsInitialLetterBox()) {
+        item_under = ComputeEmHeight(item).LineHeight();
       } else if (item.IsInlineBox()) {
         continue;
       }
@@ -942,58 +1002,6 @@ void UpdateRubyColumnInlinePositions(
 // ================================================================
 
 namespace {
-
-FontHeight ComputeEmHeight(const LogicalLineItem& line_item) {
-  if (const auto& shape_result_view = line_item.shape_result) {
-    const ComputedStyle* style = line_item.Style();
-    const SimpleFontData* primary_font_data = style->GetFont().PrimaryFont();
-    if (!primary_font_data) {
-      return FontHeight();
-    }
-    const auto font_baseline = style->GetFontBaseline();
-    const FontHeight primary_height =
-        primary_font_data->GetFontMetrics().GetFloatFontHeight(font_baseline);
-    FontHeight result_height;
-    // We don't use ShapeResultView::FallbackFonts() because we can't know if
-    // the primary font is actually used with FallbackFonts().
-    HeapVector<ShapeResult::RunFontData> run_fonts;
-    ClearCollectionScope clear_scope(&run_fonts);
-    shape_result_view->GetRunFontData(&run_fonts);
-    for (const auto& run_font : run_fonts) {
-      const SimpleFontData* font_data = run_font.font_data_;
-      if (!font_data) {
-        continue;
-      }
-      result_height.Unite(
-          font_data->NormalizedTypoAscentAndDescent(font_baseline));
-    }
-    result_height.ascent = std::min(LayoutUnit(result_height.ascent.Ceil()),
-                                    primary_height.ascent);
-    result_height.descent = std::min(LayoutUnit(result_height.descent.Ceil()),
-                                     primary_height.descent);
-    result_height.Move(line_item.rect.offset.block_offset +
-                       primary_height.ascent);
-    return result_height;
-  }
-  if (const auto& layout_result = line_item.layout_result) {
-    const auto& fragment = layout_result->GetPhysicalFragment();
-    const auto& style = fragment.Style();
-    LogicalSize logical_size =
-        LogicalFragment(style.GetWritingDirection(), fragment).Size();
-    const LayoutBox* box = DynamicTo<LayoutBox>(line_item.GetLayoutObject());
-    if (logical_size.inline_size && box && box->IsAtomicInlineLevel()) {
-      LogicalRect overflow =
-          WritingModeConverter(
-              {ToLineWritingMode(style.GetWritingMode()), style.Direction()},
-              fragment.Size())
-              .ToLogical(box->ScrollableOverflowRect());
-      // Assume 0 is the baseline.  BlockOffset() is always negative.
-      return FontHeight(-overflow.offset.block_offset - line_item.BlockOffset(),
-                        overflow.BlockEndOffset() + line_item.BlockOffset());
-    }
-  }
-  return FontHeight();
-}
 
 FontHeight ComputeLogicalLineEmHeight(const LogicalLineItems& line_items) {
   FontHeight height;
