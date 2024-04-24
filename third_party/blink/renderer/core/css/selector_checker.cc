@@ -303,27 +303,28 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
     return kSelectorMatches;
   }
 
-  MatchStatus match;
-  if (context.selector->Relation() != CSSSelector::kSubSelector) {
-    // The kScopeActivation relation type does not change the current element
-    // being matched, unlike e.g. kChild which looks at the parent element.
-    if (NextSelectorExceedsScope(context) &&
-        (context.selector->Relation() != CSSSelector::kScopeActivation)) {
-      return kSelectorFailsCompletely;
-    }
+  switch (context.selector->Relation()) {
+    case CSSSelector::kSubSelector:
+      return MatchForSubSelector(context, result);
+    case CSSSelector::kScopeActivation:
+      // The kScopeActivation relation type does not change the current element
+      // being matched: it behaves like a special kSubSelector in this context.
+      return MatchForScopeActivation(context, result);
+    default: {
+      if (NextSelectorExceedsScope(context)) {
+        return kSelectorFailsCompletely;
+      }
 
-    if (context.pseudo_id != kPseudoIdNone &&
-        context.pseudo_id != result.dynamic_pseudo) {
-      return kSelectorFailsCompletely;
-    }
+      if (context.pseudo_id != kPseudoIdNone &&
+          context.pseudo_id != result.dynamic_pseudo) {
+        return kSelectorFailsCompletely;
+      }
 
-    base::AutoReset<PseudoId> dynamic_pseudo_scope(&result.dynamic_pseudo,
-                                                   kPseudoIdNone);
-    match = MatchForRelation(context, result);
-  } else {
-    match = MatchForSubSelector(context, result);
+      base::AutoReset<PseudoId> dynamic_pseudo_scope(&result.dynamic_pseudo,
+                                                     kPseudoIdNone);
+      return MatchForRelation(context, result);
+    }
   }
-  return match;
 }
 
 static inline SelectorChecker::SelectorCheckingContext
@@ -389,6 +390,43 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForSubSelector(
   return MatchSelector(next_context, result);
 }
 
+SelectorChecker::MatchStatus SelectorChecker::MatchForScopeActivation(
+    const SelectorCheckingContext& context,
+    MatchResult& result) const {
+  SelectorCheckingContext next_context = PrepareNextContextForRelation(context);
+  next_context.is_sub_selector = true;
+
+  if (context.style_scope) {
+    const StyleScopeActivations& activations =
+        EnsureActivations(context, *context.style_scope);
+    if (ImpactsSubject(context)) {
+      // For e.g. @scope (:hover) { :scope { ...} },
+      // the StyleScopeActivations may have stored MatchFlags that we
+      // need to propagate. However, this is only needed if :scope
+      // appears in the subject position, since MatchFlags are only
+      // used for subject invalidation. Non-subject flags are set on
+      // Elements directly (e.g. SetChildrenOrSiblingsAffectedByHover)
+      result.flags |= activations.match_flags;
+    }
+    if (activations.vector.empty()) {
+      return kSelectorFailsCompletely;
+    }
+    for (const StyleScopeActivation& activation : activations.vector) {
+      next_context.match_visited = context.match_visited;
+      next_context.impact = context.impact;
+      next_context.style_scope = nullptr;
+      next_context.scope = activation.root;
+      if (MatchSelector(next_context, result) == kSelectorMatches) {
+        result.proximity = activation.proximity;
+        return kSelectorMatches;
+      }
+    }
+    return kSelectorFailsLocally;
+  }
+
+  return MatchSelector(next_context, result);
+}
+
 SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
     const SelectorCheckingContext& context,
     MatchResult& result) const {
@@ -399,10 +437,8 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
   // Disable :visited matching when we see the first link or try to match
   // anything else than an ancestor.
   if ((!context.is_sub_selector || context.in_nested_complex_selector) &&
-      (context.element->IsLink() ||
-       (relation != CSSSelector::kScopeActivation &&
-        relation != CSSSelector::kDescendant &&
-        relation != CSSSelector::kChild))) {
+      (context.element->IsLink() || (relation != CSSSelector::kDescendant &&
+                                     relation != CSSSelector::kChild))) {
     DisallowMatchVisited(next_context);
   }
 
@@ -551,36 +587,8 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
       }
       return kSelectorFailsCompletely;
     case CSSSelector::kSubSelector:
-      break;
     case CSSSelector::kScopeActivation:
-      if (context.style_scope) {
-        const StyleScopeActivations& activations =
-            EnsureActivations(context, *context.style_scope);
-        if (ImpactsSubject(context)) {
-          // For e.g. @scope (:hover) { :scope { ...} },
-          // the StyleScopeActivations may have stored MatchFlags that we
-          // need to propagate. However, this is only needed if :scope
-          // appears in the subject position, since MatchFlags are only
-          // used for subject invalidation. Non-subject flags are set on
-          // Elements directly (e.g. SetChildrenOrSiblingsAffectedByHover)
-          result.flags |= activations.match_flags;
-        }
-        if (activations.vector.empty()) {
-          return kSelectorFailsCompletely;
-        }
-        for (const StyleScopeActivation& activation : activations.vector) {
-          next_context.match_visited = context.match_visited;
-          next_context.impact = context.impact;
-          next_context.style_scope = nullptr;
-          next_context.scope = activation.root;
-          if (MatchSelector(next_context, result) == kSelectorMatches) {
-            result.proximity = activation.proximity;
-            return kSelectorMatches;
-          }
-        }
-        return kSelectorFailsLocally;
-      }
-      return MatchSelector(next_context, result);
+      break;
   }
   NOTREACHED();
   return kSelectorFailsCompletely;

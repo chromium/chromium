@@ -321,6 +321,8 @@ class CORE_EXPORT SelectorChecker {
   MatchStatus MatchSelector(const SelectorCheckingContext&, MatchResult&) const;
   MatchStatus MatchForSubSelector(const SelectorCheckingContext&,
                                   MatchResult&) const;
+  MatchStatus MatchForScopeActivation(const SelectorCheckingContext&,
+                                      MatchResult&) const;
   MatchStatus MatchForRelation(const SelectorCheckingContext&,
                                MatchResult&) const;
   MatchStatus MatchForPseudoContent(const SelectorCheckingContext&,
