@@ -1274,6 +1274,13 @@ gfx::GpuMemoryBuffer* VideoFrame::GetGpuMemoryBuffer() const {
                         : gpu_memory_buffer_.get();
 }
 
+gfx::GpuMemoryBufferHandle VideoFrame::GetGpuMemoryBufferHandle() const {
+  return wrapped_frame_
+             ? wrapped_frame_->GetGpuMemoryBufferHandle()
+             : (gpu_memory_buffer_ ? gpu_memory_buffer_->CloneHandle()
+                                   : gfx::GpuMemoryBufferHandle());
+}
+
 bool VideoFrame::IsSameAllocation(VideoPixelFormat format,
                                   const gfx::Size& coded_size,
                                   const gfx::Rect& visible_rect,

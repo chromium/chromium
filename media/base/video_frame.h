@@ -508,6 +508,13 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Gets the GpuMemoryBuffer backing the VideoFrame.
   gfx::GpuMemoryBuffer* GetGpuMemoryBuffer() const;
 
+  // Gets the GpuMemoryBufferHandle backing the VideoFrame. Note that most of
+  // VideoFrame clients currently use ::GetGpuMemoryBuffer() above only to clone
+  // a handle from it. Those clients will be switched to using this new api.
+  // This will help with MappableSI work which intends to remove all direct
+  // usage of GpuMemoryBuffer.
+  gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() const;
+
   // Returns true if the video frame was created with the given parameters.
   bool IsSameAllocation(VideoPixelFormat format,
                         const gfx::Size& coded_size,
