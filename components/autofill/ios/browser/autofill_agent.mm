@@ -543,22 +543,25 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 
 #pragma mark - AutofillDriverIOSBridge
 
-- (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)data
-         inFrame:(web::WebFrame*)frame {
+- (void)fillFormData:(const autofill::FormData&)form
+             inFrame:(web::WebFrame*)frame {
   base::Value::Dict autofillData;
+  autofillData.Set("formName", base::Value(base::UTF16ToUTF8(form.name)));
+  autofillData.Set("formRendererID",
+                   base::Value(static_cast<int>(form.renderer_id.value())));
 
   base::Value::Dict fieldsData;
-  for (const auto& field : data) {
+  for (const auto& field : form.fields) {
     // Skip empty fields and those that are not autofilled.
-    if (field.value.empty() || !field.is_autofilled) {
+    if (field.value().empty() || !field.is_autofilled()) {
       continue;
     }
 
     base::Value::Dict fieldData;
-    fieldData.Set("value", field.value);
-    fieldData.Set("section", field.section.ToString());
-    fieldData.Set("hostFormId", static_cast<int>(*field.host_form_id));
-    fieldsData.Set(NumberToString(*field.renderer_id), std::move(fieldData));
+    fieldData.Set("value", field.value());
+    fieldData.Set("section", field.section().ToString());
+    fieldsData.Set(NumberToString(field.renderer_id().value()),
+                   std::move(fieldData));
   }
   autofillData.Set("fields", std::move(fieldsData));
 
@@ -570,6 +573,9 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   } else {
     [self sendData:std::move(autofillData) toFrame:frame];
   }
+
+  autofill::AutofillDriverIOS::FromWebStateAndWebFrame(_webState, frame)
+      ->DidFillAutofillFormData(form, base::TimeTicks::Now());
 }
 
 // Similar to `fillField`, but does not rely on `FillActiveFormField`, opting
@@ -1107,7 +1113,6 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   SuggestionHandledCompletion suggestionHandledCompletionCopy =
       [_suggestionHandledCompletion copy];
   _suggestionHandledCompletion = nil;
-
   AutofillJavaScriptFeature::GetInstance()->FillForm(
       frame, std::move(data), _pendingAutocompleteFieldID,
       base::BindOnce(^(NSString* jsonString) {
@@ -1118,9 +1123,8 @@ constexpr CGFloat kSuggestionIconWidth = 32;
                                                  inFrame:frame];
         // It is possible that the fill was not initiated by selecting
         // a suggestion in this case the callback is nil.
-        if (suggestionHandledCompletionCopy) {
+        if (suggestionHandledCompletionCopy)
           suggestionHandledCompletionCopy();
-        }
       }));
 }
 

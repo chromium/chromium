@@ -4,8 +4,6 @@
 
 import * as fill_constants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {isTextAreaElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
-import {getFrameId} from '//ios/web/public/js_messaging/resources/frame_id.js';
-import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
  * @fileoverview Installs Autofill management functions on the __gCrWeb object.
@@ -21,6 +19,8 @@ import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.j
 /**
  * The autofill data for a form.
  * @typedef {{
+ *   formName: string,
+ *   formRendererID: number,
  *   fields: !Object<string, !Object<string, string>>,
  * }}
  */
@@ -63,19 +63,6 @@ __gCrWeb.autofill.lastAutoFilledElement = null;
 __gCrWeb.autofill.styleInjected = false;
 
 /**
- * The name of the message handler in C++ land.
- *
- * @type {string}
- */
-const NATIVE_MESSAGE_HANDLER = 'autofill_controller';
-
-/**
- * An identifying string for messages with the result of a form fill event.
- * Used on the C++ side.
- */
-const FORM_FILLED_COMMAND = 'formFilled';
-
-/**
  * Determines whether the form is interesting enough to send to the browser for
  * further operations.
  *
@@ -84,70 +71,55 @@ const FORM_FILLED_COMMAND = 'formFilled';
  * in chromium/src/components/autofill/content/renderer/form_cache.cc
  *
  * @param {AutofillFormData} form Form to examine.
+ * @param {number} numEditableElements number of editable elements.
  * @return {boolean} Whether the form is sufficiently interesting.
  */
-function isFormInteresting_(form) {
-  // If the form has at least one field with an autocomplete attribute, or one
-  // non-checkable field, it is a candidate for autofill.
+function isFormInteresting_(form, numEditableElements) {
+  if (form.fields.length === 0) {
+    return false;
+  }
+
+  // If the form has at least one field with an autocomplete attribute, it is a
+  // candidate for autofill.
   for (let i = 0; i < form.fields.length; ++i) {
     if (form.fields[i]['autocomplete_attribute'] != null &&
         form.fields[i]['autocomplete_attribute'].length > 0) {
       return true;
     }
-
-    if (!form.fields[i].is_checkable) {
-      return true;
-    }
   }
 
-  return false;
+  // If there are no autocomplete attributes, the form needs to have at least
+  // the required number of editable fields for the prediction routines to be a
+  // candidate for autofill.
+  return numEditableElements >= 1;
 }
 
 /**
- * Returns the number of editable elements in `elements`.
+ * Scans |control_elements| and returns the number of editable elements.
  *
- * @param {Array<FormControlElement>} elements The elements to scan.
+ * Unlike the C++ version, this version does not take the
+ * log_deprecation_messages parameter, and it does not save any state since
+ * there is no caching.
+ *
+ * It is based on the logic in:
+ *     size_t FormCache::ScanFormControlElements(
+ *         const std::vector<WebFormControlElement>& control_elements,
+ *         bool log_deprecation_messages);
+ * in chromium/src/components/autofill/content/renderer/form_cache.cc.
+ *
+ * @param {Array<FormControlElement>} controlElements The elements to scan.
  * @return {number} The number of editable elements.
  */
-function countEditableElements_(elements) {
+function scanFormControlElements_(controlElements) {
   let numEditableElements = 0;
-  for (const element of elements) {
+  for (let elementIndex = 0; elementIndex < controlElements.length;
+       ++elementIndex) {
+    const element = controlElements[elementIndex];
     if (!__gCrWeb.fill.isCheckableElement(element)) {
       ++numEditableElements;
     }
   }
   return numEditableElements;
-}
-
-/**
- * Scans the page for fields not owned by a form, and returns a synthetic form
- * containing them, if any are found. Returns null otherwise.
- * @param {number} extractMask Bitmask use for filtering elements. See
- *     fill_constants.ts.
- * @param {boolean} restrictUnownedFieldsToFormlessCheckout Whether extraction
- *     should exclude fields outside checkout fields.
- * @return {AutofillFormData|null} A form containing the unowned fields, or null
- *     if no such fields were found.
- */
-function extractUnownedFields(
-    extractMask, restrictUnownedFieldsToFormlessCheckout) {
-  const fieldsets = [];
-  const unownedControlElements =
-      __gCrWeb.fill.getUnownedAutofillableFormFieldElements(
-          document.all, fieldsets);
-  const numEditableUnownedElements =
-      countEditableElements_(unownedControlElements);
-  if (numEditableUnownedElements > 0) {
-    const unownedForm = new __gCrWeb['common'].JSONSafeObject();
-    const hasUnownedForm =
-        __gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData(
-            window, fieldsets, unownedControlElements, extractMask,
-            restrictUnownedFieldsToFormlessCheckout, unownedForm);
-    if (hasUnownedForm) {
-      return unownedForm;
-    }
-  }
-  return null;
 }
 
 /**
@@ -217,8 +189,8 @@ function controlElementInputListener_(evt) {
 /**
  * Fills a number of fields in the same named form for full-form Autofill.
  * Applies Autofill CSS (i.e. yellow background) to filled elements.
- * Only empty fields will be filled, except that field with ID
- * |forceFillFieldID| will always be filled even if non-empty.
+ * Only empty fields will be filled, except that field named
+ * |forceFillFieldName| will always be filled even if non-empty.
  *
  * @param {!FormData} data Autofill data to fill in.
  * @param {number} forceFillFieldID Identified field will always be
@@ -238,13 +210,16 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
     __gCrWeb.autofill.styleInjected = true;
   }
   const filledElements = {};
-  const modifiedForms = new Set();
 
-  let delay = 0;
+  const form = __gCrWeb.form.getFormElementFromRendererId(data.formRendererID);
+  const controlElements = form ?
+      __gCrWeb.form.getFormControlElements(form) :
+      __gCrWeb.fill.getUnownedAutofillableFormFieldElements(
+          document.all,
+          /*fieldsets=*/[]);
 
-  for (const [fieldId, fieldData] of Object.entries(data.fields)) {
-    const element = __gCrWeb.fill.getElementByUniqueID(Number(fieldId));
-
+  for (let i = 0, delay = 0; i < controlElements.length; ++i) {
+    const element = controlElements[i];
     if (!__gCrWeb.fill.isAutofillableElement(element)) {
       continue;
     }
@@ -254,13 +229,21 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
       continue;
     }
 
+    // Skip fields for which autofill data is missing.
+    const fieldRendererID = __gCrWeb.fill.getUniqueID(element);
+    const fieldData = data.fields[fieldRendererID];
+
+    if (!fieldData) {
+      continue;
+    }
+
     // Skip non-empty fields unless:
     // a) The element's identifier matches |forceFillFieldIdentifier|; or
     // b) The element is a 'select-one' element. 'select-one' elements are
     //    always autofilled; see AutofillManager::FillOrPreviewDataModelForm().
     // c) The "value" or "placeholder" attributes match the value, if any; or
     // d) The value has not been set by the user.
-    const shouldBeForceFilled = fieldId === forceFillFieldID.toString();
+    const shouldBeForceFilled = fieldRendererID === forceFillFieldID.toString();
     if (element.value && __gCrWeb.form.fieldWasEditedByUser(element) &&
         !__gCrWeb.autofill.sanitizedFieldIsEmpty(element.value) &&
         !shouldBeForceFilled && !__gCrWeb.fill.isSelectElement(element) &&
@@ -271,8 +254,6 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
                element.value.toLowerCase()))) {
       continue;
     }
-
-    modifiedForms.add(fieldData.hostFormId);
 
     (function(_element, _value, _section, _delay) {
       window.setTimeout(function() {
@@ -288,56 +269,19 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
     filledElements[__gCrWeb.fill.getUniqueID(element)] = fieldData.value;
   }
 
-  // After the last form fill event, re-extract the form and report back to the
-  // browser that filling has completed. `delay` currently holds the scheduled
-  // time of the last fill plus `delayBetweenFieldFillingMs`.
-  const reportFormFill = function(_form, _delay) {
-    window.setTimeout(() => {
-      let formData = new __gCrWeb['common'].JSONSafeObject();
-      const extractMask = fill_constants.EXTRACT_MASK_VALUE |
-          fill_constants.EXTRACT_MASK_OPTIONS;
-      if (_form) {
-        if (!__gCrWeb.fill.webFormElementToFormData(
-                window, _form, null, extractMask, formData, null /* field */)) {
-          formData = null;
-        }
-      } else {
-        formData = extractUnownedFields(
-            extractMask,
-            /*restrictUnownedFieldsToFormlessCheckout=*/ false);
+  if (form) {
+    // Remove Autofill styling when form receives 'reset' event.
+    // Individual control elements may be left with 'input' event listeners but
+    // they are harmless.
+    const formResetListener = function(evt) {
+      const controlElements = __gCrWeb.form.getFormControlElements(evt.target);
+      for (let i = 0; i < controlElements.length; ++i) {
+        controlElements[i].removeAttribute('chrome-autofilled');
+        controlElements[i].isAutofilled = false;
       }
-      if (formData) {
-        sendWebKitMessage(NATIVE_MESSAGE_HANDLER, {
-          'command': FORM_FILLED_COMMAND,
-          'form_data': formData,
-          'frame': getFrameId(),
-        });
-      }
-    }, _delay);
-  };
-
-  // Remove Autofill styling when form receives 'reset' event.
-  // Individual control elements may be left with 'input' event listeners but
-  // they are harmless.
-  const formResetListener = function(evt) {
-    const controlElements = __gCrWeb.form.getFormControlElements(evt.target);
-    for (let i = 0; i < controlElements.length; ++i) {
-      controlElements[i].removeAttribute('chrome-autofilled');
-      controlElements[i].isAutofilled = false;
-    }
-    evt.target.removeEventListener('reset', formResetListener);
-  };
-
-  for (const id of modifiedForms) {
-    const form = __gCrWeb.fill.getElementByUniqueID(id);
-    // This is safe to call even if `form` is null. `modifiedForms` may contain
-    // 0 to indicate we filled fields outside of forms. `reportFormFill` handles
-    // this case explicitly.
-    reportFormFill(form, delay);
-
-    if (form && form.tagName == 'FORM') {
-      form.addEventListener('reset', formResetListener);
-    }
+      evt.target.removeEventListener('reset', formResetListener);
+    };
+    form.addEventListener('reset', formResetListener);
   }
 
   return __gCrWeb.stringify(filledElements);
@@ -454,7 +398,7 @@ __gCrWeb.autofill.extractNewForms = function(
     const formElement = webForms[formIndex];
     const controlElements =
         __gCrWeb.autofill.extractAutofillableElementsInForm(formElement);
-    const numEditableElements = countEditableElements_(controlElements);
+    const numEditableElements = scanFormControlElements_(controlElements);
 
     if (numEditableElements === 0) {
       continue;
@@ -471,24 +415,35 @@ __gCrWeb.autofill.extractNewForms = function(
       break;
     }
 
-    if (isFormInteresting_(form)) {
+    if (isFormInteresting_(form, numEditableElements)) {
       forms.push(form);
     }
   }
 
   // Look for more extractable fields outside of forms.
-  const unownedForm = extractUnownedFields(
-      extractMask, restrictUnownedFieldsToFormlessCheckout);
-
-  if (unownedForm) {
-    numFieldsSeen += unownedForm['fields'].length;
-    if (numFieldsSeen <= fill_constants.MAX_EXTRACTABLE_FIELDS) {
-      if (isFormInteresting_(unownedForm)) {
-        forms.push(unownedForm);
+  const fieldsets = [];
+  const unownedControlElements =
+      __gCrWeb.fill.getUnownedAutofillableFormFieldElements(
+          document.all, fieldsets);
+  const numEditableUnownedElements =
+      scanFormControlElements_(unownedControlElements);
+  if (numEditableUnownedElements > 0) {
+    const unownedForm = new __gCrWeb['common'].JSONSafeObject();
+    const hasUnownedForm =
+        __gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData(
+            window, fieldsets, unownedControlElements, extractMask,
+            restrictUnownedFieldsToFormlessCheckout, unownedForm);
+    if (hasUnownedForm) {
+      numFieldsSeen += unownedForm['fields'].length;
+      if (numFieldsSeen <= fill_constants.MAX_EXTRACTABLE_FIELDS) {
+        const interesting =
+            isFormInteresting_(unownedForm, numEditableUnownedElements);
+        if (interesting) {
+          forms.push(unownedForm);
+        }
       }
     }
   }
-
   return forms;
 };
 
