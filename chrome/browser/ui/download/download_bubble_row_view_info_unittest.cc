@@ -462,7 +462,7 @@ TEST_F(DownloadBubbleRowViewInfoTest, ShouldNotShowNoticeWithoutFlag) {
           Return(download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING));
   safe_browsing::SetSafeBrowsingState(
       profile()->GetPrefs(),
-      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   EXPECT_FALSE(info().ShouldShowDeepScanNotice());
 }
 

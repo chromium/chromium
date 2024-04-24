@@ -372,5 +372,4 @@ bool DownloadBubbleRowViewInfo::ShouldShowDeepScanNotice() const {
              *model_->profile()->GetPrefs()) &&
          base::FeatureList::IsEnabled(
              safe_browsing::kDeepScanningPromptRemoval);
-  ;
 }
