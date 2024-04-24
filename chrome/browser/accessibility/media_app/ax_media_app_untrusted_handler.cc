@@ -23,8 +23,7 @@
 #include "base/types/to_address.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/screen_ai/screen_ai_service_router.h"
-#include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
+#include "chrome/browser/screen_ai/optical_character_recognizer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -67,32 +66,23 @@ AXMediaAppUntrustedHandler::AXMediaAppUntrustedHandler(
   if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr)) {
     return;
   }
-  screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
-      base::to_address(browser_context_))
-      ->GetServiceStateAsync(
-          screen_ai::ScreenAIServiceRouter::Service::kOCR,
-          base::BindOnce(&AXMediaAppUntrustedHandler::OnOCRServiceInitialized,
-                         weak_ptr_factory_.GetWeakPtr()));
+  ocr_ = screen_ai::OpticalCharacterRecognizer::CreateWithStatusCallback(
+      Profile::FromBrowserContext(base::to_address(browser_context_)),
+      base::BindOnce(&AXMediaAppUntrustedHandler::OnOCRServiceInitialized,
+                     weak_ptr_factory_.GetWeakPtr()));
   ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
 }
 
 AXMediaAppUntrustedHandler::~AXMediaAppUntrustedHandler() = default;
 
 bool AXMediaAppUntrustedHandler::IsOcrServiceEnabled() const {
-  return screen_ai_annotator_.is_bound();
+  return ocr_->is_ready();
 }
 
 void AXMediaAppUntrustedHandler::OnOCRServiceInitialized(bool successful) {
   if (!successful) {
     return;
   }
-  // This is expected to be called only once.
-  CHECK(!screen_ai_annotator_.is_bound());
-  screen_ai::ScreenAIServiceRouter* service_router =
-      screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
-          base::to_address(browser_context_));
-  service_router->BindScreenAIAnnotator(
-      screen_ai_annotator_.BindNewPipeAndPassReceiver());
   if (!dirty_page_ids_.empty()) {
     OcrNextDirtyPageIfAny();
   }
@@ -671,7 +661,7 @@ void AXMediaAppUntrustedHandler::OcrNextDirtyPageIfAny() {
     // the ENABLE_SCREEN_AI_SERVICE buildflag. We should figure out a way to
     // mock it in tests running on bots without this flag and call
     // OnBitmapReceived() here.
-    screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(
+    ocr_->PerformOCR(
         page_bitmap,
         base::BindOnce(&AXMediaAppUntrustedHandler::OnPageOcred,
                        weak_ptr_factory_.GetWeakPtr(), dirty_page_id));
@@ -690,7 +680,7 @@ void AXMediaAppUntrustedHandler::OnBitmapReceived(
   // value which shows up as an empty bitmap here. To prevent the entire app
   // crashing just because one page failed to render, send it to ScreenAI
   // anyway, which should just produce an empty A11y tree.
-  screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(
+  ocr_->PerformOCR(
       bitmap, base::BindOnce(&AXMediaAppUntrustedHandler::OnPageOcred,
                              weak_ptr_factory_.GetWeakPtr(), dirty_page_id));
 }

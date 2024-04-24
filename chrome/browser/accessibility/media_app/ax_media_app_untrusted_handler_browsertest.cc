@@ -43,7 +43,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
-#include "services/screen_ai/public/test/fake_screen_ai_annotator.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
@@ -98,8 +97,8 @@ class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
     handler_->SetMediaAppForTesting(&fake_media_app_);
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     handler_->SetIsOcrServiceEnabledForTesting();
-    handler_->SetScreenAIAnnotatorForTesting(
-        fake_annotator_.BindNewPipeAndPassRemote());
+    handler_->CreateFakeOpticalCharacterRecognizerForTesting(
+        /*return_empty=*/false);
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   }
 
@@ -120,10 +119,6 @@ class AXMediaAppUntrustedHandlerTest : public InProcessBrowserTest {
 
   FakeAXMediaApp fake_media_app_;
   std::unique_ptr<TestAXMediaAppUntrustedHandler> handler_;
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  screen_ai::test::FakeScreenAIAnnotator fake_annotator_{
-      /*create_empty_result=*/false};
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
  private:
   base::test::ScopedFeatureList feature_list_;

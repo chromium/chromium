@@ -26,6 +26,6 @@ source_set("test_support") {
   ]
 
   if (enable_screen_ai_service) {
-    deps += [ "//services/screen_ai/public/mojom" ]
+    deps += [ "//chrome//browser/screen_ai/public:test_support" ]
   }
 }

@@ -3028,6 +3028,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/screen_ai:screen_ai_install_state",
         "//chrome/browser/screen_ai:screen_ai_service_router_factory",
+        "//chrome/browser/screen_ai/public:test_support",
         "//services/screen_ai:test_support",
         "//services/screen_ai/public/cpp:utilities",
         "//services/screen_ai/public/mojom",
@@ -8752,6 +8753,7 @@ test("unit_tests") {
       "//chrome/browser/policy:unit_tests",
       "//chrome/browser/push_notification:push_notification",
       "//chrome/browser/screen_ai:unit_tests",
+      "//chrome/browser/screen_ai/public:test_support",
       "//chrome/browser/ui/ash/holding_space:test_support",
       "//chrome/browser/ui/chromeos/read_write_cards",
       "//chrome/browser/ui/quick_answers",

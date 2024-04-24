@@ -29,10 +29,21 @@ class OpticalCharacterRecognizer
       public base::RefCountedDeleteOnSequence<OpticalCharacterRecognizer> {
  public:
   // Creates OCR using ScreenAI service instance for `profile`. If needed,
+  // triggers download and initialization of the component. Calls
+  // `status_callback` when service initialization status is known.
+  static scoped_refptr<screen_ai::OpticalCharacterRecognizer>
+  CreateWithStatusCallback(Profile* profile,
+                           base::OnceCallback<void(bool)> status_callback);
+
+  // Creates OCR using ScreenAI service instance for `profile`. If needed,
   // triggers download and initialization of the component.
-  // TODO(crbug.com/327181467): Try add a constructor that receives a callback
-  // when initialization is completed.
-  explicit OpticalCharacterRecognizer(Profile* profile);
+  static scoped_refptr<screen_ai::OpticalCharacterRecognizer> Create(
+      Profile* profile);
+
+  // Creates OCR for testing. The object will not be connected to ScreenAI
+  // service and always returns empty results.
+  static scoped_refptr<screen_ai::OpticalCharacterRecognizer>
+  CreateForTesting();
 
   OpticalCharacterRecognizer(const OpticalCharacterRecognizer&) = delete;
   OpticalCharacterRecognizer& operator=(const OpticalCharacterRecognizer&) =
@@ -44,22 +55,42 @@ class OpticalCharacterRecognizer
   // Returns true if OCR service is ready.
   bool is_ready() { return ready_ && *ready_; }
 
-  // Performs OCR on the given image and returns the results. If the client is
-  // not in the browser process, it needs to implement this function in its
-  // own process.
-  void PerformOCR(
+  // Performs OCR on the given image and returns the results as a
+  // `VisualAnnotation` struct. If the client is not in the browser process, it
+  // needs to implement this function in its own process.
+  virtual void PerformOCR(
       const SkBitmap& image,
       base::OnceCallback<void(mojom::VisualAnnotationPtr)> callback);
 
-  // TODO(crbug.com/327181467): Add more infterfaces for a11y tree OCR output.
+  // Performs OCR on the given image and returns the results as an accessibility
+  // tree update. If the client is not in the browser process, it needs to
+  // implement this function in its own process.
+  virtual void PerformOCR(
+      const SkBitmap& image,
+      base::OnceCallback<void(const ui::AXTreeUpdate& tree_update)> callback);
+
+  // Ensures all posted tasks are completed in tests.
+  virtual void FlushForTesting() {}
+
+ protected:
+  explicit OpticalCharacterRecognizer(Profile* profile);
+  ~OpticalCharacterRecognizer() override;
+
+  // OCR Service is ready to use.
+  std::optional<bool> ready_;
 
  private:
   friend class base::RefCountedDeleteOnSequence<OpticalCharacterRecognizer>;
   friend class base::DeleteHelper<OpticalCharacterRecognizer>;
+  template <typename T, typename... Args>
+  friend scoped_refptr<T> base::MakeRefCounted(Args&&... args);
 
-  ~OpticalCharacterRecognizer() override;
+  void Initialize(base::OnceCallback<void(bool)> status_callback);
 
-  void OnOCRInitializationCallback(bool successful);
+  // `status_callback` will receive a copy of `successful`.
+  void OnOCRInitializationCallback(
+      base::OnceCallback<void(bool)> status_callback,
+      bool successful);
 
   // Is initialized in the constructor and is cleared if profile gets destroyed
   // while this object still exists, or after it is used in
@@ -72,9 +103,6 @@ class OpticalCharacterRecognizer
   // sequence.
   std::unique_ptr<base::SequenceBound<SequenceBoundReceiver>>
       sequence_bound_receiver_;
-
-  // OCR Service is ready to use.
-  std::optional<bool> ready_;
 
   std::unique_ptr<mojo::Remote<mojom::ScreenAIAnnotator>> screen_ai_annotator_;
 

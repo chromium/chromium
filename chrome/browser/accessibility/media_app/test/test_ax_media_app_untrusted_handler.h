@@ -16,10 +16,6 @@
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/accessibility/ax_tree_manager.h"
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-
 namespace content {
 
 class BrowserContext;
@@ -79,9 +75,7 @@ class TestAXMediaAppUntrustedHandler : public AXMediaAppUntrustedHandler {
   }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  void SetScreenAIAnnotatorForTesting(
-      mojo::PendingRemote<screen_ai::mojom::ScreenAIAnnotator>
-          screen_ai_annotator);
+  void CreateFakeOpticalCharacterRecognizerForTesting(bool return_empty);
   void FlushForTesting();
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

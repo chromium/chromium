@@ -11,6 +11,10 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_update.h"
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "chrome/browser/screen_ai/public/test/fake_optical_character_recognizer.h"
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
 namespace ash::test {
 
 TestAXMediaAppUntrustedHandler::TestAXMediaAppUntrustedHandler(
@@ -35,15 +39,14 @@ void TestAXMediaAppUntrustedHandler::
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void TestAXMediaAppUntrustedHandler::SetScreenAIAnnotatorForTesting(
-    mojo::PendingRemote<screen_ai::mojom::ScreenAIAnnotator>
-        screen_ai_annotator) {
-  screen_ai_annotator_.reset();
-  screen_ai_annotator_.Bind(std::move(screen_ai_annotator));
+void TestAXMediaAppUntrustedHandler::
+    CreateFakeOpticalCharacterRecognizerForTesting(bool return_empty) {
+  ocr_.reset();
+  ocr_ = screen_ai::FakeOpticalCharacterRecognizer::Create(return_empty);
 }
 
 void TestAXMediaAppUntrustedHandler::FlushForTesting() {
-  screen_ai_annotator_.FlushForTesting();  // IN-TEST
+  ocr_->FlushForTesting();  // IN-TEST
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
