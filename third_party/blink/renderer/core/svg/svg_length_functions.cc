@@ -112,8 +112,9 @@ float ValueForLength(const Length& length,
                      float zoom,
                      SVGLengthMode mode) {
   // The viewport will be unaffected by zoom.
-  const float dimension =
-      length.IsPercentOrCalc() ? viewport_resolver.ViewportDimension(mode) : 0;
+  const float dimension = length.MayHavePercentDependence()
+                              ? viewport_resolver.ViewportDimension(mode)
+                              : 0;
   return ValueForLength(length, zoom, dimension);
 }
 
@@ -154,7 +155,8 @@ gfx::Vector2dF VectorForLengthPair(const Length& x_length,
                                    const SVGViewportResolver& viewport_resolver,
                                    const ComputedStyle& style) {
   gfx::SizeF viewport_size;
-  if (x_length.IsPercentOrCalc() || y_length.IsPercentOrCalc()) {
+  if (x_length.MayHavePercentDependence() ||
+      y_length.MayHavePercentDependence()) {
     viewport_size = viewport_resolver.ResolveViewport();
   }
   return VectorForLengthPair(x_length, y_length, style.EffectiveZoom(),

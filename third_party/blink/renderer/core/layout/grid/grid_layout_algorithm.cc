@@ -925,9 +925,9 @@ void GridLayoutAlgorithm::ComputeGridGeometry(
     // If we have any rows, gaps which will resolve differently if we have a
     // definite |grid_available_size_| re-compute the grid using the
     // |block_size| calculated above.
-    needs_additional_pass |= (container_style.RowGap() &&
-                              container_style.RowGap()->IsPercentOrCalc()) ||
-                             layout_data.Rows().IsDependentOnAvailableSize();
+    needs_additional_pass |=
+        (container_style.RowGap() && container_style.RowGap()->HasPercent()) ||
+        layout_data.Rows().IsDependentOnAvailableSize();
 
     // If we are a flex-item, we may have our initial block-size forced to be
     // indefinite, however grid layout always re-computes the grid using the

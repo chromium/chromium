@@ -236,10 +236,10 @@ bool CanUseCachedIntrinsicInlineSizes(const ConstraintSpace& constraint_space,
 
   // Check if we have any percentage padding.
   const auto& style = node.Style();
-  if (style.MayHavePadding() && (style.PaddingTop().IsPercentOrCalc() ||
-                                 style.PaddingRight().IsPercentOrCalc() ||
-                                 style.PaddingBottom().IsPercentOrCalc() ||
-                                 style.PaddingLeft().IsPercentOrCalc())) {
+  if (style.MayHavePadding() &&
+      (style.PaddingTop().HasPercent() || style.PaddingRight().HasPercent() ||
+       style.PaddingBottom().HasPercent() ||
+       style.PaddingLeft().HasPercent())) {
     return false;
   }
 

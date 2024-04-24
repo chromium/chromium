@@ -777,7 +777,7 @@ void LineBreaker::PrepareNextLine(LineInfo* line_info) {
     LayoutUnit maximum_value;
     // Ignore percentages (resolve to 0) when calculating min/max intrinsic
     // sizes.
-    if (length.IsPercentOrCalc() && mode_ == LineBreakerMode::kContent) {
+    if (length.HasPercent() && mode_ == LineBreakerMode::kContent) {
       maximum_value = constraint_space_.AvailableSize().inline_size;
     }
     line_info->SetTextIndent(MinimumValueForLength(length, maximum_value));

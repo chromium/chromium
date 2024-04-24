@@ -1024,10 +1024,11 @@ bool PhysicalFragment::DependsOnPercentageBlockSize(
   }
 
   const ComputedStyle& style = builder.Style();
-  if (style.LogicalHeight().IsPercentOrCalc() ||
-      style.LogicalMinHeight().IsPercentOrCalc() ||
-      style.LogicalMaxHeight().IsPercentOrCalc())
+  if (style.LogicalHeight().MayHavePercentDependence() ||
+      style.LogicalMinHeight().MayHavePercentDependence() ||
+      style.LogicalMaxHeight().MayHavePercentDependence()) {
     return true;
+  }
 
   return false;
 }

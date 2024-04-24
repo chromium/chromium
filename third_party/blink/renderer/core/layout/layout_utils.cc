@@ -40,8 +40,8 @@ inline bool InlineLengthMayChange(const ComputedStyle& style,
   // Percentage inline margins will affect the size if the size is unspecified
   // (auto and similar).
   if (is_unspecified && style.MayHaveMargin() &&
-      (style.MarginInlineStart().IsPercentOrCalc() ||
-       style.MarginInlineEnd().IsPercentOrCalc()) &&
+      (style.MarginInlineStart().HasPercent() ||
+       style.MarginInlineEnd().HasPercent()) &&
       (new_space.PercentageResolutionInlineSize() !=
        old_space.PercentageResolutionInlineSize())) {
     return true;
@@ -53,7 +53,7 @@ inline bool InlineLengthMayChange(const ComputedStyle& style,
       return true;
   }
 
-  if (length.IsPercentOrCalc()) {
+  if (length.MayHavePercentDependence()) {
     if (new_space.PercentageResolutionInlineSize() !=
         old_space.PercentageResolutionInlineSize())
       return true;
@@ -161,11 +161,11 @@ bool SizeMayChange(const BlockNode& node,
           old_space.PercentageResolutionInlineSize()) {
     // Percentage-based padding is resolved against the inline content box size
     // of the containing block.
-    if (style.PaddingTop().IsPercentOrCalc() ||
-        style.PaddingRight().IsPercentOrCalc() ||
-        style.PaddingBottom().IsPercentOrCalc() ||
-        style.PaddingLeft().IsPercentOrCalc())
+    if (style.PaddingTop().HasPercent() || style.PaddingRight().HasPercent() ||
+        style.PaddingBottom().HasPercent() ||
+        style.PaddingLeft().HasPercent()) {
       return true;
+    }
   }
 
   return BlockSizeMayChange(node, new_space, old_space, layout_result);

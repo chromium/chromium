@@ -297,15 +297,25 @@ class PLATFORM_EXPORT Length {
   bool IsFillAvailable() const { return GetType() == kFillAvailable; }
   bool IsFitContent() const { return GetType() == kFitContent; }
   bool IsPercent() const { return GetType() == kPercent; }
-  // IsPercentOrCalc should be used for decisions about whether to optimize
+  // MayHavePercentDependence should be used to decide whether to optimize
   // away computing the value on which percentages depend or optimize away
   // recomputation that results from changes to that value.  It is intended to
   // be used *only* in cases where the implementation could be changed to one
   // that returns true only if there are percentage values somewhere in the
   // expression (that is, one that still returns true for calc-size(any, 30%)
   // for which HasPercent() is false, but is false for calc-size(any, 30px)).
-  // TODO(https://crbug.com/313072): Rename this.
-  bool IsPercentOrCalc() const {
+  //
+  // We could (if we want) make this exact and remove "May" from the name.
+  // But this would require looking into the calculation value like HasPercent
+  // does.  However, it needs to be different from HasPercent because of cases
+  // where calc-size() erases percentage-ness from the type, like
+  // calc-size(any, 20%).
+  //
+  // For properties that cannot have calc-size in them, we currently use
+  // HasPercent() rather than MayHavePercentDependence() since it's a
+  // shorter/simpler function name, and the two functions are equivalent in
+  // that case.
+  bool MayHavePercentDependence() const {
     return GetType() == kPercent || GetType() == kCalculated;
   }
   bool IsFlex() const { return GetType() == kFlex; }

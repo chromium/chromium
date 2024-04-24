@@ -1060,7 +1060,7 @@ InlineLayoutStateStack::ApplyBaselineShift(InlineBoxState* box,
       // 'Percentages: refer to the 'line-height' of the element itself'.
       // https://www.w3.org/TR/CSS22/visudet.html#propdef-vertical-align
       const Length& length = style.GetVerticalAlignLength();
-      LayoutUnit line_height = length.IsPercentOrCalc()
+      LayoutUnit line_height = length.HasPercent()
                                    ? style.ComputedLineHeightAsFixed()
                                    : box->text_metrics.LineHeight();
       baseline_shift = -ValueForLength(length, line_height);

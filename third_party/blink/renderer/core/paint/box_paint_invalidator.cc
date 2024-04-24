@@ -41,8 +41,9 @@ static bool ShouldFullyInvalidateFillLayersOnWidthChange(
   }
 
   // TODO(alancutter): Make this work correctly for calc lengths.
-  if (layer.PositionX().IsPercentOrCalc() && !layer.PositionX().IsZero())
+  if (layer.PositionX().HasPercent() && !layer.PositionX().IsZero()) {
     return true;
+  }
 
   if (layer.BackgroundXOrigin() != BackgroundEdgeOrigin::kLeft)
     return true;
@@ -57,8 +58,9 @@ static bool ShouldFullyInvalidateFillLayersOnWidthChange(
 
   // TODO(alancutter): Make this work correctly for calc lengths.
   const Length& width = layer.SizeLength().Width();
-  if (width.IsPercentOrCalc() && !width.IsZero())
+  if (width.HasPercent() && !width.IsZero()) {
     return true;
+  }
 
   if (width.IsAuto() && !image->HasIntrinsicSize())
     return true;
@@ -84,8 +86,9 @@ static bool ShouldFullyInvalidateFillLayersOnHeightChange(
   }
 
   // TODO(alancutter): Make this work correctly for calc lengths.
-  if (layer.PositionY().IsPercentOrCalc() && !layer.PositionY().IsZero())
+  if (layer.PositionY().HasPercent() && !layer.PositionY().IsZero()) {
     return true;
+  }
 
   if (layer.BackgroundYOrigin() != BackgroundEdgeOrigin::kTop)
     return true;
@@ -100,8 +103,9 @@ static bool ShouldFullyInvalidateFillLayersOnHeightChange(
 
   // TODO(alancutter): Make this work correctly for calc lengths.
   const Length& height = layer.SizeLength().Height();
-  if (height.IsPercentOrCalc() && !height.IsZero())
+  if (height.HasPercent() && !height.IsZero()) {
     return true;
+  }
 
   if (height.IsAuto() && !image->HasIntrinsicSize())
     return true;

@@ -455,8 +455,9 @@ void LayoutBlock::RemoveSvgTextDescendant(LayoutBox& svg_text) {
 LayoutUnit LayoutBlock::TextIndentOffset() const {
   NOT_DESTROYED();
   LayoutUnit cw;
-  if (StyleRef().TextIndent().IsPercentOrCalc())
+  if (StyleRef().TextIndent().HasPercent()) {
     cw = ContentLogicalWidth();
+  }
   return MinimumValueForLength(StyleRef().TextIndent(), cw);
 }
 

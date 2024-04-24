@@ -2384,7 +2384,7 @@ float ComputedStyle::ComputedLineHeight(const Length& lh, const Font& font) {
     return 0.0f;
   }
 
-  if (lh.IsPercentOrCalc()) {
+  if (lh.HasPercent()) {
     return MinimumValueForLength(
         lh, LayoutUnit(font.GetFontDescription().ComputedSize()));
   }
@@ -2407,7 +2407,7 @@ LayoutUnit ComputedStyle::ComputedLineHeightAsFixed(const Font& font) const {
     return LayoutUnit();
   }
 
-  if (lh.IsPercentOrCalc()) {
+  if (lh.HasPercent()) {
     return MinimumValueForLength(lh, ComputedFontSizeAsFixed(font));
   }
 

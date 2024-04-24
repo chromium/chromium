@@ -50,8 +50,8 @@ class PLATFORM_EXPORT TranslateTransformOperation final
 
   BoxSizeDependency BoxSizeDependencies() const override {
     return CombineDependencies(
-        (x_.IsPercentOrCalc() ? kDependsWidth : kDependsNone),
-        (y_.IsPercentOrCalc() ? kDependsHeight : kDependsNone));
+        (x_.HasPercent() ? kDependsWidth : kDependsNone),
+        (y_.HasPercent() ? kDependsHeight : kDependsNone));
   }
 
   double X(const gfx::SizeF& border_box_size) const {

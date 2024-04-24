@@ -40,7 +40,7 @@ namespace {
 gfx::SizeF MakeViewport(const SVGViewportResolver& viewport_resolver,
                         const LengthPoint& point,
                         SVGUnitTypes::SVGUnitType type) {
-  if (!point.X().IsPercentOrCalc() && !point.Y().IsPercentOrCalc()) {
+  if (!point.X().HasPercent() && !point.Y().HasPercent()) {
     return gfx::SizeF(0, 0);
   }
   if (type == SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {
@@ -52,7 +52,7 @@ gfx::SizeF MakeViewport(const SVGViewportResolver& viewport_resolver,
 float MakeViewportDimension(const SVGViewportResolver& viewport_resolver,
                             const Length& radius,
                             SVGUnitTypes::SVGUnitType type) {
-  if (!radius.IsPercentOrCalc()) {
+  if (!radius.HasPercent()) {
     return 0;
   }
   if (type == SVGUnitTypes::kSvgUnitTypeObjectboundingbox) {

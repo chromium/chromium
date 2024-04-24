@@ -274,10 +274,13 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForReplaced(
   // Replaced elements which have a percentage block-size always depend on
   // their block constraints (as they have an aspect-ratio which changes their
   // min/max content size).
+  // TODO(https://crbug.com/40339056): These should also check for 'stretch'
+  // values.  (We could add Length::MayHaveStretchOrPercentDependence or
+  // similar.)
   const bool depends_on_block_constraints =
-      child_style.LogicalHeight().IsPercentOrCalc() ||
-      child_style.LogicalMinHeight().IsPercentOrCalc() ||
-      child_style.LogicalMaxHeight().IsPercentOrCalc() ||
+      child_style.LogicalHeight().MayHavePercentDependence() ||
+      child_style.LogicalMinHeight().MayHavePercentDependence() ||
+      child_style.LogicalMaxHeight().MayHavePercentDependence() ||
       (child_style.LogicalHeight().HasAuto() &&
        space.IsBlockAutoBehaviorStretch());
   return MinMaxSizesResult(result, depends_on_block_constraints);

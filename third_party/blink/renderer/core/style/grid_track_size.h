@@ -118,11 +118,11 @@ class GridTrackSize {
   bool IsFitContent() const { return type_ == kFitContentTrackSizing; }
   bool HasPercentage() const {
     if (IsFitContent()) {
-      return FitContentTrackBreadth().IsPercentOrCalc();
+      return FitContentTrackBreadth().MayHavePercentDependence();
     }
 
-    return min_track_breadth_.IsPercentOrCalc() ||
-           max_track_breadth_.IsPercentOrCalc();
+    return min_track_breadth_.MayHavePercentDependence() ||
+           max_track_breadth_.MayHavePercentDependence();
   }
 
   bool operator==(const GridTrackSize& other) const {

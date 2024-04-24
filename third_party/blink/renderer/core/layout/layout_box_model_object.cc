@@ -752,8 +752,9 @@ LayoutUnit LayoutBoxModelObject::ComputedCSSPadding(
     const Length& padding) const {
   NOT_DESTROYED();
   LayoutUnit w;
-  if (padding.IsPercentOrCalc())
+  if (padding.HasPercent()) {
     w = ContainingBlockLogicalWidthForContent();
+  }
   return MinimumValueForLength(padding, w);
 }
 

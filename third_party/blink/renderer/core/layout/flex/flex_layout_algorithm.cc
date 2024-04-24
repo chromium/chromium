@@ -742,7 +742,7 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     };
 
     const Length& flex_basis = child_style.FlexBasis();
-    if (is_column_ && flex_basis.IsPercentOrCalc()) {
+    if (is_column_ && flex_basis.MayHavePercentDependence()) {
       has_column_percent_flex_basis_ = true;
     }
 

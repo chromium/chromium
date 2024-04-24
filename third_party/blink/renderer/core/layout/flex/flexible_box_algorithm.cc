@@ -671,7 +671,7 @@ FlexibleBoxAlgorithm::FlexibleBoxAlgorithm(const ComputedStyle* style,
       UseCounter::Count(document, WebFeature::kFlexGapPositive);
   }
 
-  if (row_gap && row_gap->IsPercentOrCalc()) {
+  if (row_gap && row_gap->HasPercent()) {
     UseCounter::Count(document, WebFeature::kFlexRowGapPercent);
     if (percent_resolution_sizes.block_size == LayoutUnit(-1))
       UseCounter::Count(document, WebFeature::kFlexRowGapPercentIndefinite);

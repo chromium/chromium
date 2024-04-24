@@ -111,8 +111,9 @@ gfx::RectF LayoutSVGResourceContainer::ResolveRectangle(
     DCHECK_EQ(type, SVGUnitTypes::kSvgUnitTypeUserspaceonuse);
     // Determine the viewport to use for resolving the Lengths to user units.
     gfx::SizeF viewport_size_for_resolve;
-    if (size.Width().IsPercentOrCalc() || size.Height().IsPercentOrCalc() ||
-        point.X().IsPercentOrCalc() || point.Y().IsPercentOrCalc()) {
+    if (size.Width().MayHavePercentDependence() ||
+        size.Height().MayHavePercentDependence() || point.X().HasPercent() ||
+        point.Y().HasPercent()) {
       viewport_size_for_resolve = viewport_resolver.ResolveViewport();
     }
     // Resolve the Lengths to user units.

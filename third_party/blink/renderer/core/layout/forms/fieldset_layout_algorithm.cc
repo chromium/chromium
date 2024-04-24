@@ -148,9 +148,9 @@ const LayoutResult* FieldsetLayoutAlgorithm::Layout() {
   OutOfFlowLayoutPart(Node(), GetConstraintSpace(), &container_builder_).Run();
 
   const auto& style = Style();
-  if (style.LogicalHeight().IsPercentOrCalc() ||
-      style.LogicalMinHeight().IsPercentOrCalc() ||
-      style.LogicalMaxHeight().IsPercentOrCalc()) {
+  if (style.LogicalHeight().MayHavePercentDependence() ||
+      style.LogicalMinHeight().MayHavePercentDependence() ||
+      style.LogicalMaxHeight().MayHavePercentDependence()) {
     // The height of the fieldset content box depends on the percent-height of
     // the fieldset. So we should assume the fieldset has a percent-height
     // descendant.
