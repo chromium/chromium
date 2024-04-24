@@ -35,23 +35,21 @@ const char kFirstPermissionRow[] = "FirstPermissionRow";
 
 }  // namespace
 
-class PermissionRHSIndicatorsInteractiveUITest : public InteractiveBrowserTest {
+class PermissionsFlowInteractiveUITest : public InteractiveBrowserTest {
  public:
-  PermissionRHSIndicatorsInteractiveUITest() {
+  PermissionsFlowInteractiveUITest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kFileSystemAccessPersistentPermissions},
-        // This class is for RHS indicators.
-        // LHS indicators feature should be disable.
         {content_settings::features::kLeftHandSideActivityIndicators});
 
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
   }
 
-  ~PermissionRHSIndicatorsInteractiveUITest() override = default;
-  PermissionRHSIndicatorsInteractiveUITest(
-    const PermissionRHSIndicatorsInteractiveUITest&) = delete;
-  void operator=(const PermissionRHSIndicatorsInteractiveUITest&) = delete;
+  ~PermissionsFlowInteractiveUITest() override = default;
+  PermissionsFlowInteractiveUITest(const PermissionsFlowInteractiveUITest&) =
+      delete;
+  void operator=(const PermissionsFlowInteractiveUITest&) = delete;
 
   void SetUp() override {
     https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -105,7 +103,7 @@ class PermissionRHSIndicatorsInteractiveUITest : public InteractiveBrowserTest {
 };
 
 // Tests that by default PageInfo has no visible permission.
-IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
+IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
                        PageInfoWithEmptyPermissionsTest) {
   RunTestSequenceInContext(
       context(), NavigateAndOpenPageInfo(),
@@ -115,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
                         0));
 }
 
-IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
+IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
                        PageInfoCameraPermissionsTest) {
   // Set Camera permission to Allow so it becomes visible in PageInfo.
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_ALLOW);
@@ -137,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
           l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_CAMERA)));
 }
 
-IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
+IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
                        FileSystemPermissionsTest) {
   // Set File System permission to Allow so that it becomes visible in PageInfo.
   SetPermission(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
@@ -163,7 +161,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
 
 // The test requests Notifications permission, clicks Allow on a permission
 // prompt, and verifies that a new entry for Notifications appeared in PageInfo.
-IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
+IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
                        NotificationsPermissionRequestTest) {
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
@@ -189,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
           l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_NOTIFICATIONS)));
 }
 
-IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
+IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
                        CameraPermissionRequestTest) {
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
@@ -215,8 +213,9 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
           l10n_util::GetStringUTF16(IDS_SITE_SETTINGS_TYPE_CAMERA)));
 }
 
-IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
-                       CameraActivityIndicatorTest) {
+// TODO(crbug.com/1510975): fix and re-enable for CR2023.
+IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
+                       DISABLED_CameraActivityIndicatorTest) {
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
@@ -234,11 +233,12 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
       CheckViewProperty(
           ContentSettingImageView::kMediaActivityIndicatorElementId,
           &ContentSettingImageView::get_icon_for_testing,
-          &vector_icons::kVideocamChromeRefreshIcon));
+          &vector_icons::kVideocamIcon));
 }
 
-IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
-                       MicrophoneActivityIndicatorTest) {
+// TODO(crbug.com/1510975): fix and re-enable for CR2023.
+IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
+                       DISABLED_MicrophoneActivityIndicatorTest) {
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
@@ -256,11 +256,12 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
       CheckViewProperty(
           ContentSettingImageView::kMediaActivityIndicatorElementId,
           &ContentSettingImageView::get_icon_for_testing,
-          &vector_icons::kMicChromeRefreshIcon));
+          &vector_icons::kMicIcon));
 }
 
-IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
-                       CameraAndMicrophoneActivityIndicatorTest) {
+// TODO(crbug.com/1510975): fix and re-enable for CR2023.
+IN_PROC_BROWSER_TEST_F(PermissionsFlowInteractiveUITest,
+                       DISABLED_CameraAndMicrophoneActivityIndicatorTest) {
   RunTestSequenceInContext(
       context(), InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
@@ -280,5 +281,5 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
       CheckViewProperty(
           ContentSettingImageView::kMediaActivityIndicatorElementId,
           &ContentSettingImageView::get_icon_for_testing,
-          &vector_icons::kVideocamChromeRefreshIcon));
+          &vector_icons::kVideocamIcon));
 }

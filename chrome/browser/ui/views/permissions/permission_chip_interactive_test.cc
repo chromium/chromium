@@ -45,7 +45,7 @@
 #include "content/public/test/permissions_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
-#include "chrome/browser/ui/views/permissions/permission_prompt_chip.h"
+#include "permission_prompt_chip.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/test_event.h"
@@ -126,13 +126,12 @@ class ChipExpansionObserver : PermissionChipView::Observer {
 
 }  // namespace
 
-class PermissionChipInteractiveUITest : public InProcessBrowserTest {
+class PermissionChipInteractiveTest : public InProcessBrowserTest {
  public:
-  PermissionChipInteractiveUITest() = default;
-  PermissionChipInteractiveUITest(
-      const PermissionChipInteractiveUITest&) = delete;
-  PermissionChipInteractiveUITest& operator=(
-      const PermissionChipInteractiveUITest&) = delete;
+  PermissionChipInteractiveTest() = default;
+  PermissionChipInteractiveTest(const PermissionChipInteractiveTest&) = delete;
+  PermissionChipInteractiveTest& operator=(
+      const PermissionChipInteractiveTest&) = delete;
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
@@ -284,7 +283,7 @@ class PermissionChipInteractiveUITest : public InProcessBrowserTest {
   std::unique_ptr<test::PermissionRequestManagerTestApi> test_api_;
 };
 
-class LocationBarIconOverrideTest : public PermissionChipInteractiveUITest {
+class LocationBarIconOverrideTest : public PermissionChipInteractiveTest {
  public:
   LocationBarIconOverrideTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -361,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarIconOverrideTest,
 }
 
 class ConfirmationChipEnabledInteractiveTest
-    : public PermissionChipInteractiveUITest {
+    : public PermissionChipInteractiveTest {
  public:
   ConfirmationChipEnabledInteractiveTest() = default;
 };
@@ -467,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipEnabledInteractiveTest,
 }
 
 class ConfirmationChipUmaInteractiveTest
-    : public PermissionChipInteractiveUITest {
+    : public PermissionChipInteractiveTest {
  public:
   ConfirmationChipUmaInteractiveTest() = default;
 };
@@ -531,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(ConfirmationChipUmaInteractiveTest, VerifyUmaMetrics) {
       static_cast<int>(permissions::PageInfoDialogAccessType::LOCK_CLICK), 2);
 }
 
-class PageInfoChangedWithin1mUmaTest : public PermissionChipInteractiveUITest {
+class PageInfoChangedWithin1mUmaTest : public PermissionChipInteractiveTest {
  public:
   PageInfoChangedWithin1mUmaTest() = default;
 
@@ -714,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoChangedWithin1mUmaTest,
 }
 
 class ChipGestureSensitiveEnabledInteractiveTest
-    : public PermissionChipInteractiveUITest {
+    : public PermissionChipInteractiveTest {
  public:
   ChipGestureSensitiveEnabledInteractiveTest() {}
 };
@@ -749,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(ChipGestureSensitiveEnabledInteractiveTest,
 }
 
 class QuietChipAutoPopupBubbleInteractiveTest
-    : public PermissionChipInteractiveUITest {
+    : public PermissionChipInteractiveTest {
  public:
   QuietChipAutoPopupBubbleInteractiveTest() {
     scoped_feature_list_.InitWithFeatures({features::kQuietNotificationPrompts},
@@ -1161,8 +1160,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipAutoPopupBubbleInteractiveTest,
           LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE);
 }
 
-class QuietChipFailFastInteractiveTest : public
-                                    PermissionChipInteractiveUITest {
+class QuietChipFailFastInteractiveTest : public PermissionChipInteractiveTest {
  public:
   QuietChipFailFastInteractiveTest() {
     scoped_feature_list_.InitWithFeatures(
@@ -1516,7 +1514,7 @@ IN_PROC_BROWSER_TEST_F(QuietChipFailFastInteractiveTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
+IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveTest,
                        PermissionChipWithAndWithoutUserGesture) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/title1.html"));
@@ -1578,7 +1576,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
+IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveTest,
                        PermissionRequestWithSameDocumentNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
 

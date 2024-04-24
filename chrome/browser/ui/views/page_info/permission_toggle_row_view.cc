@@ -38,11 +38,6 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionToggleRowView,
-                                      kRowSubTitleCameraElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionToggleRowView,
-                                      kRowSubTitleMicrophoneElementId);
-
 PermissionToggleRowView::PermissionToggleRowView(
     ChromePageInfoUiDelegate* delegate,
     PageInfoNavigationHandler* navigation_handler,
@@ -295,13 +290,6 @@ void PermissionToggleRowView::UpdateUiOnPermissionChanged() {
         PageInfoUI::PermissionMainPageStateToUIString(delegate_, permission_);
     if (!state_text.empty()) {
       state_label_ = row_view_->AddSecondaryLabel(state_text);
-      if (permission_.type == ContentSettingsType::MEDIASTREAM_CAMERA) {
-        state_label_->SetProperty(views::kElementIdentifierKey,
-                                  kRowSubTitleCameraElementId);
-      } else if (permission_.type == ContentSettingsType::MEDIASTREAM_MIC) {
-        state_label_->SetProperty(views::kElementIdentifierKey,
-                                  kRowSubTitleMicrophoneElementId);
-      }
     }
   }
 }
