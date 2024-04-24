@@ -34,18 +34,6 @@ namespace features {
 namespace {
 
 #if BUILDFLAG(IS_ANDROID)
-bool FieldIsInBlocklist(const char* current_value, std::string blocklist_str) {
-  std::vector<std::string> blocklist = base::SplitString(
-      blocklist_str, "|", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  for (const std::string& blocklisted_value : blocklist) {
-    if (base::StartsWith(current_value, blocklisted_value,
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-      return true;
-    }
-  }
-  return false;
-}
-
 bool IsDeviceBlocked(const char* field, const std::string& block_list) {
   auto disable_patterns = base::SplitString(
       block_list, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -798,16 +786,15 @@ bool LimitAImageReaderMaxSizeToOne() {
     // images. This helps in removing the flickering seen which can happen with
     // only 1 image.
     // https://buganizer.corp.google.com/issues/266571065
-    if (FieldIsInBlocklist(
-            base::android::BuildInfo::GetInstance()->manufacturer(),
-            kRelaxLimitAImageReaderMaxSizeToOneBlocklist.Get())) {
+    if (IsDeviceBlocked(base::android::BuildInfo::GetInstance()->manufacturer(),
+                        kRelaxLimitAImageReaderMaxSizeToOneBlocklist.Get())) {
       return false;
     }
     return true;
   }
 
-  return (FieldIsInBlocklist(base::android::BuildInfo::GetInstance()->model(),
-                             kLimitAImageReaderMaxSizeToOneBlocklist.Get()));
+  return (IsDeviceBlocked(base::android::BuildInfo::GetInstance()->model(),
+                          kLimitAImageReaderMaxSizeToOneBlocklist.Get()));
 }
 
 bool IncreaseBufferCountForHighFrameRate() {
