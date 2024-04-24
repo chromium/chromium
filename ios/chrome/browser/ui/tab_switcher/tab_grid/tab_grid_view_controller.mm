@@ -156,6 +156,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 @end
 
 @implementation TabGridViewController {
+  // Searched text.
+  NSString* _searchText;
   // Idle page status.
   // Tracks whether the user closed the tab switcher without doing any
   // `TabGridActionType::kInPageAction`s.
@@ -1411,6 +1413,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - UISearchBarDelegate
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar*)searchBar {
+  _searchText = searchBar.text;
   [self updateScrimVisibilityForText:searchBar.text];
   [self.currentPageViewController.view
       addGestureRecognizer:self.searchResultPanRecognizer];
@@ -1426,6 +1429,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)searchBar:(UISearchBar*)searchBar textDidChange:(NSString*)searchText {
+  if ([_searchText isEqualToString:searchText]) {
+    // It seems that in some cases, the keyboard is triggered twice in the same
+    // runloop. This is a tentative fix to avoid trigger duplicate updates. See
+    // crbug.com/336515391.
+    return;
+  }
+  _searchText = searchText;
   searchBar.searchTextField.accessibilityIdentifier =
       [kTabGridSearchTextFieldIdentifierPrefix
           stringByAppendingString:searchText];
