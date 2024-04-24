@@ -16,6 +16,7 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordViewPageInteractions} from '../password_manager_proxy.js';
+import {UserUtilMixin} from '../user_utils_mixin.js';
 
 import type {CredentialFieldElement} from './credential_field.js';
 import {getTemplate} from './passkey_details_card.html.js';
@@ -28,10 +29,11 @@ export interface PasskeyDetailsCardElement {
     showMore: HTMLAnchorElement,
     usernameValue: CredentialFieldElement,
     displayNameValue: CredentialFieldElement,
+    infoLabel: HTMLElement,
   };
 }
 
-const PasskeyDetailsCardElementBase = I18nMixin(PolymerElement);
+const PasskeyDetailsCardElementBase = UserUtilMixin(I18nMixin(PolymerElement));
 
 export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
   static get is() {
@@ -51,12 +53,20 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
       },
       showEditPasskeyDialog_: Boolean,
       showDeletePasskeyDialog_: Boolean,
+      infoLabelText_: String,
     };
+  }
+
+  static get observers() {
+    return [
+      'updatePasskeyManagementInfoLabel_(isSyncingPasswords)',
+    ];
   }
 
   passkey: chrome.passwordsPrivate.PasswordUiEntry;
   private showEditPasskeyDialog_: boolean;
   private showDeletePasskeyDialog_: boolean;
+  private infoLabelText_: string;
 
   private getUsernameValue_(): string {
     return !this.passkey.username || this.passkey.username === '' ?
@@ -112,6 +122,15 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
         this.i18n('passkeyDetailsCardDeleteButtonNoUsernameAriaLabel') :
         this.i18n(
             'passkeyDetailsCardDeleteButtonAriaLabel', this.passkey.username);
+  }
+
+  private updatePasskeyManagementInfoLabel_() {
+    PasswordManagerImpl.getInstance().isPasswordManagerPinAvailable().then(
+        available => {
+          this.infoLabelText_ = available ?
+              this.i18n('passkeyManagementWithPinInfoLabel') :
+              this.i18n('passkeyManagementInfoLabel');
+        });
   }
 }
 
