@@ -478,12 +478,9 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
       third_party_url_2, net::SiteForCookies(), embedder_origin, {}));
   {
     base::HistogramTester histogram_tester;
-    content::CookieChangeObserver observer(GetWebContents(),
-                                           /*num_expected_calls=*/2);
     NavigateToPageWithFrame(kFirstPartyHost);
     NavigateFrameTo(kThirdPartyHost2, "/browsing_data/site_data.html");
-    ExpectCookie(GetFrame(), true);
-    observer.Wait();
+    ExpectCookie(GetFrame(), false);
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 

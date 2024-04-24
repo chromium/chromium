@@ -102,7 +102,8 @@ bool StructTraits<content_settings::mojom::RuleMetaDataDataView,
          data.ReadLastUsed(&out->last_used_) &&
          data.ReadLastVisited(&out->last_visited_) &&
          data.ReadSessionModel(&out->session_model_) &&
-         data.ReadTpcdMetadataRuleSource(&out->tpcd_metadata_rule_source_);
+         data.ReadTpcdMetadataRuleSource(&out->tpcd_metadata_rule_source_) &&
+         data.ReadTpcdMetadataCohort(&out->tpcd_metadata_cohort_);
 }
 
 // static

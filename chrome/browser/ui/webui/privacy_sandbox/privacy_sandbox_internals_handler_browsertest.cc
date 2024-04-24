@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetTpcdMetadataGrants) {
   tpcd::metadata::Metadata metadata;
   tpcd::metadata::helpers::AddEntryToMetadata(
       metadata, primary_pattern.ToString(), secondary_pattern.ToString(),
-      tpcd::metadata::Parser::kSourceTest);
+      tpcd::metadata::Parser::kSourceTest, /*dtrp=*/0);
   EXPECT_EQ(metadata.metadata_entries_size(), 1);
 
   auto* tpcd_metadata_parser = tpcd::metadata::Parser::GetInstance();
