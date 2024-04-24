@@ -172,9 +172,6 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // Log the LUID of the adapter used for decoding.
   void LogDecoderAdapterLUID();
 
-  // Create a D3D11VideoDecoder, if possible, based on the current config.
-  D3D11Status::Or<ComD3D11VideoDecoder> CreateD3D11Decoder();
-
   // Create the D3DVideoDecoderWrapper according to the version level.
   std::unique_ptr<D3DVideoDecoderWrapper> CreateD3DVideoDecoderWrapper(
       D3D11DecoderConfigurator* decoder_configurator,
