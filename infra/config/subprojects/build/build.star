@@ -628,7 +628,7 @@ This builder measures build performance for Mac developer builds, by simulating 
         category = "mac",
         short_name = "dev",
     ),
-    reclient_jobs = 800,
+    reclient_jobs = 640,
 )
 
 developer_build_perf_builder(
@@ -665,7 +665,7 @@ This builder measures build performance for iOS developer builds, by simulating 
         category = "ios",
         short_name = "dev",
     ),
-    reclient_jobs = 800,
+    reclient_jobs = 640,
     xcode = xcode.xcode_default,
 )
 
