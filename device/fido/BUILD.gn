@@ -169,6 +169,8 @@ component("fido") {
       "enclave/verify/endorsement.h",
       "enclave/verify/hash.cc",
       "enclave/verify/hash.h",
+      "enclave/verify/rekor.cc",
+      "enclave/verify/rekor.h",
       "enclave/verify/utils.cc",
       "enclave/verify/utils.h",
       "enclave/verify/verify.h",
