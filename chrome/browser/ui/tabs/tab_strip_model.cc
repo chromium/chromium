@@ -428,7 +428,7 @@ int TabStripModel::InsertDetachedTabAt(
   return InsertTabAtImpl(index, std::move(tab), add_types, group);
 }
 
-std::unique_ptr<content::WebContents> TabStripModel::ReplaceWebContentsAt(
+std::unique_ptr<content::WebContents> TabStripModel::DiscardWebContentsAt(
     int index,
     std::unique_ptr<WebContents> new_contents) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
@@ -442,7 +442,7 @@ std::unique_ptr<content::WebContents> TabStripModel::ReplaceWebContentsAt(
   TabStripSelectionChange selection(GetActiveWebContents(), selection_model_);
   WebContents* raw_new_contents = new_contents.get();
   std::unique_ptr<WebContents> old_contents =
-      GetTabAtIndex(index)->ReplaceContents(std::move(new_contents));
+      GetTabAtIndex(index)->DiscardContents(std::move(new_contents));
 
   // When the active WebContents is replaced send out a selection notification
   // too. We do this as nearly all observers need to treat a replacement of the

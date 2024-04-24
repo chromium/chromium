@@ -930,7 +930,7 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
 
   std::unique_ptr<content::WebContents> replacement_web_contents =
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-  browser->tab_strip_model()->ReplaceWebContentsAt(
+  browser->tab_strip_model()->DiscardWebContentsAt(
       0, std::move(replacement_web_contents));
 
   // Expect after moving the first tab to the right of the second, that the

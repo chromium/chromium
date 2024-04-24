@@ -126,10 +126,8 @@ LensOverlayController::LensOverlayController(
   tab_subscriptions_.push_back(tab_->RegisterWillEnterBackground(
       base::BindRepeating(&LensOverlayController::TabWillEnterBackground,
                           weak_factory_.GetWeakPtr())));
-  tab_subscriptions_.push_back(tab_->RegisterDidAddContents(base::BindRepeating(
-      &LensOverlayController::DidAddContents, weak_factory_.GetWeakPtr())));
-  tab_subscriptions_.push_back(tab_->RegisterWillRemoveContents(
-      base::BindRepeating(&LensOverlayController::WillRemoveContents,
+  tab_subscriptions_.push_back(tab_->RegisterWillDiscardContents(
+      base::BindRepeating(&LensOverlayController::WillDiscardContents,
                           weak_factory_.GetWeakPtr())));
 }
 
@@ -682,15 +680,13 @@ void LensOverlayController::TabWillEnterBackground(tabs::TabInterface* tab) {
   CloseUI();
 }
 
-void LensOverlayController::WillRemoveContents(tabs::TabInterface* tab,
-                                               content::WebContents* contents) {
-  contents->RemoveUserData(LensOverlayControllerTabLookup::UserDataKey());
+void LensOverlayController::WillDiscardContents(
+    tabs::TabInterface* tab,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
   CloseUI();
-}
-
-void LensOverlayController::DidAddContents(tabs::TabInterface* tab,
-                                           content::WebContents* contents) {
-  LensOverlayControllerTabLookup::CreateForWebContents(contents, this);
+  old_contents->RemoveUserData(LensOverlayControllerTabLookup::UserDataKey());
+  LensOverlayControllerTabLookup::CreateForWebContents(new_contents, this);
 }
 
 void LensOverlayController::CloseRequestedByOverlay() {

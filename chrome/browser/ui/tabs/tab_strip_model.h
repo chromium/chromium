@@ -254,10 +254,10 @@ class TabStripModel : public TabGroupController {
   // |close_types| is a bitmask of CloseTypes.
   void CloseWebContentsAt(int index, uint32_t close_types);
 
-  // Replaces the WebContents at |index| with |new_contents|. The
-  // WebContents that was at |index| is returned and its ownership returns
+  // Discards the WebContents at |index| and replaces it with |new_contents|.
+  // The WebContents that was at |index| is returned and its ownership returns
   // to the caller.
-  std::unique_ptr<content::WebContents> ReplaceWebContentsAt(
+  std::unique_ptr<content::WebContents> DiscardWebContentsAt(
       int index,
       std::unique_ptr<content::WebContents> new_contents);
 

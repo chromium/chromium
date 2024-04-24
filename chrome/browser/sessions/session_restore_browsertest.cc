@@ -2063,7 +2063,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, SessionStorageAfterTabReplace) {
 
     TabStripModel* tab_strip_model = browser()->tab_strip_model();
     std::unique_ptr<content::WebContents> old_web_contents =
-        tab_strip_model->ReplaceWebContentsAt(tab_strip_model->active_index(),
+        tab_strip_model->DiscardWebContentsAt(tab_strip_model->active_index(),
                                               std::move(web_contents));
     // Navigate with the new tab.
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl2()));

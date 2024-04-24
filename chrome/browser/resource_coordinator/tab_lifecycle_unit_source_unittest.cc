@@ -481,7 +481,7 @@ TEST_F(TabLifecycleUnitSourceTest, CloseTabInFocusedTabStrip) {
                                   {first_lifecycle_unit});
 }
 
-TEST_F(TabLifecycleUnitSourceTest, ReplaceWebContents) {
+TEST_F(TabLifecycleUnitSourceTest, DiscardWebContents) {
   LifecycleUnit* first_lifecycle_unit = nullptr;
   LifecycleUnit* second_lifecycle_unit = nullptr;
   CreateTwoTabs(true /* focus_tab_strip */, &first_lifecycle_unit,
@@ -498,7 +498,7 @@ TEST_F(TabLifecycleUnitSourceTest, ReplaceWebContents) {
       CreateTestWebContents();
   content::WebContents* raw_new_web_contents = new_web_contents.get();
   std::unique_ptr<content::WebContents> original_web_contents_deleter =
-      tab_strip_model_->ReplaceWebContentsAt(1, std::move(new_web_contents));
+      tab_strip_model_->DiscardWebContentsAt(1, std::move(new_web_contents));
   EXPECT_EQ(original_web_contents, original_web_contents_deleter.get());
   EXPECT_FALSE(source_->GetTabLifecycleUnitExternal(original_web_contents));
   EXPECT_EQ(tab_lifecycle_unit_external,

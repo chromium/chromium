@@ -61,20 +61,15 @@ class TabModel final : public SupportsHandles<const TabModel>,
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
-  // https://crbug.com/331022416: Do not use this method. The signature of this
-  // method suggests that it's possible to replace the WebContents that
-  // represents a live, foregrounded tab with a different WebContents. This is
-  // never the case.
-  std::unique_ptr<content::WebContents> ReplaceContents(
+  // https://crbug.com/331022416: Do not use this method. This is only used by
+  // tab discard, which is being refactored to not need this.
+  std::unique_ptr<content::WebContents> DiscardContents(
       std::unique_ptr<content::WebContents> contents);
 
   // This destroys the TabModel and takes ownership of the underlying
   // WebContents.
   static std::unique_ptr<content::WebContents> DestroyAndTakeWebContents(
       std::unique_ptr<TabModel> tab_model);
-
-  // The current contents of the tab must be |nullptr|.
-  void SetContents(std::unique_ptr<content::WebContents> contents);
 
   TabFeatures* tab_features() { return tab_features_.get(); }
 
@@ -102,10 +97,8 @@ class TabModel final : public SupportsHandles<const TabModel>,
 
   // TabInterface overrides:
   content::WebContents* GetContents() const override;
-  base::CallbackListSubscription RegisterDidAddContents(
-      TabInterface::DidAddContentsCallback callback) override;
-  base::CallbackListSubscription RegisterWillRemoveContents(
-      TabInterface::WillRemoveContentsCallback callback) override;
+  base::CallbackListSubscription RegisterWillDiscardContents(
+      TabInterface::WillDiscardContentsCallback callback) override;
   bool IsInForeground() const override;
   base::CallbackListSubscription RegisterDidEnterForeground(
       TabInterface::DidEnterForegroundCallback callback) override;
@@ -117,8 +110,6 @@ class TabModel final : public SupportsHandles<const TabModel>,
   BrowserWindowInterface* GetBrowserWindowInterface() override;
 
  private:
-  std::unique_ptr<content::WebContents> RemoveContents();
-
   // Overridden from TabStripModelObserver:
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
@@ -155,13 +146,9 @@ class TabModel final : public SupportsHandles<const TabModel>,
   std::optional<tab_groups::TabGroupId> group_ = std::nullopt;
   raw_ptr<TabCollection> parent_collection_ = nullptr;
 
-  using DidAddContentsCallbackList =
-      base::RepeatingCallbackList<void(TabInterface*, content::WebContents*)>;
-  DidAddContentsCallbackList did_add_contents_callback_list_;
-
-  using WillRemoveContentsCallbackList =
-      base::RepeatingCallbackList<void(TabInterface*, content::WebContents*)>;
-  WillRemoveContentsCallbackList will_remove_contents_callback_list_;
+  using WillDiscardContentsCallbackList = base::RepeatingCallbackList<
+      void(TabInterface*, content::WebContents*, content::WebContents*)>;
+  WillDiscardContentsCallbackList will_discard_contents_callback_list_;
 
   using DidEnterForegroundCallbackList =
       base::RepeatingCallbackList<void(TabInterface*)>;

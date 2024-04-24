@@ -2236,7 +2236,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   std::unique_ptr<content::WebContents> new_web_contents =
       content::WebContents::Create(
           content::WebContents::CreateParams(browser()->profile()));
-  browser()->tab_strip_model()->ReplaceWebContentsAt(
+  browser()->tab_strip_model()->DiscardWebContentsAt(
       0, std::move(new_web_contents));
 
   // The drag session should still exist, and still not be started.

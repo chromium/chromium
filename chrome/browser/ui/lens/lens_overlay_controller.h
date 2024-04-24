@@ -311,12 +311,10 @@ class LensOverlayController : public LensSearchboxClient,
   // Called when the associated tab will enter the background.
   void TabWillEnterBackground(tabs::TabInterface* tab);
 
-  // Called when the tab's WebContents are removed.
-  void WillRemoveContents(tabs::TabInterface* tab,
-                          content::WebContents* contents);
-
-  // Called when the tab's WebContents are added.
-  void DidAddContents(tabs::TabInterface* tab, content::WebContents* contents);
+  // Called when the tab's WebContents is discarded.
+  void WillDiscardContents(tabs::TabInterface* tab,
+                           content::WebContents* old_contents,
+                           content::WebContents* new_contents);
 
   // lens::mojom::LensPageHandler overrides.
   void CloseRequestedByOverlay() override;

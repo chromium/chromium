@@ -85,14 +85,9 @@ content::WebContents* TabModel::GetContents() const {
   return contents();
 }
 
-base::CallbackListSubscription TabModel::RegisterDidAddContents(
-    TabInterface::DidAddContentsCallback callback) {
-  return did_add_contents_callback_list_.Add(std::move(callback));
-}
-
-base::CallbackListSubscription TabModel::RegisterWillRemoveContents(
-    TabInterface::WillRemoveContentsCallback callback) {
-  return will_remove_contents_callback_list_.Add(std::move(callback));
+base::CallbackListSubscription TabModel::RegisterWillDiscardContents(
+    TabInterface::WillDiscardContentsCallback callback) {
+  return will_discard_contents_callback_list_.Add(std::move(callback));
 }
 
 bool TabModel::IsInForeground() const {
@@ -156,20 +151,14 @@ void TabModel::WriteIntoTrace(perfetto::TracedValue context) const {
   dict.Add("blocked", blocked());
 }
 
-std::unique_ptr<content::WebContents> TabModel::ReplaceContents(
+std::unique_ptr<content::WebContents> TabModel::DiscardContents(
     std::unique_ptr<content::WebContents> contents) {
-  // We do not call will_enter_background_callback_list_ because it is
-  // guaranteed that if a tab is being discarded, it is already in the
-  // background.
-  std::unique_ptr<content::WebContents> old_contents = RemoveContents();
-  SetContents(std::move(contents));
+  will_discard_contents_callback_list_.Notify(this, contents_, contents.get());
+  std::unique_ptr<content::WebContents> old_contents =
+      std::move(contents_owned_);
+  contents_owned_ = std::move(contents);
+  contents_ = contents_owned_.get();
   return old_contents;
-}
-
-std::unique_ptr<content::WebContents> TabModel::RemoveContents() {
-  will_remove_contents_callback_list_.Notify(this, contents_.get());
-  contents_ = nullptr;
-  return std::move(contents_owned_);
 }
 
 // static
@@ -178,14 +167,6 @@ std::unique_ptr<content::WebContents> TabModel::DestroyAndTakeWebContents(
   std::unique_ptr<content::WebContents> contents =
       std::move(tab_model->contents_owned_);
   return contents;
-}
-
-void TabModel::SetContents(std::unique_ptr<content::WebContents> contents) {
-  CHECK(!contents_);
-  CHECK(contents);
-  contents_owned_ = std::move(contents);
-  contents_ = contents_owned_.get();
-  did_add_contents_callback_list_.Notify(this, contents_.get());
 }
 
 }  // namespace tabs

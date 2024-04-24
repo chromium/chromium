@@ -560,7 +560,7 @@ TEST_F(TabStripPageHandlerTest, TabReplaced) {
       browser()->tab_strip_model()->GetWebContentsAt(0));
 
   web_ui()->ClearTrackedCalls();
-  browser()->tab_strip_model()->ReplaceWebContentsAt(
+  browser()->tab_strip_model()->DiscardWebContentsAt(
       0, content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
   int expected_new_id = extensions::ExtensionTabUtil::GetTabId(
       browser()->tab_strip_model()->GetWebContentsAt(0));

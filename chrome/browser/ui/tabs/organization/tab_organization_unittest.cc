@@ -245,7 +245,7 @@ TEST_F(TabOrganizationTest, TabDataOnDestroyWebContentsReplaceUpdatesContents) {
   std::unique_ptr<content::WebContents> new_contents = CreateWebContents();
   content::WebContents* new_contents_ptr = new_contents.get();
   EXPECT_EQ(tab_data->web_contents(), old_contents);
-  tab_strip_model()->ReplaceWebContentsAt(
+  tab_strip_model()->DiscardWebContentsAt(
       tab_strip_model()->GetIndexOfWebContents(old_contents),
       std::move(new_contents));
   EXPECT_EQ(tab_data->web_contents(), new_contents_ptr);
@@ -331,7 +331,7 @@ TEST_F(TabOrganizationTest, TabDataObserverTest) {
   // replace the contents which should result in an update call.
   std::unique_ptr<content::WebContents> new_contents = CreateWebContents();
   content::WebContents* new_contents_ptr = new_contents.get();
-  tab_strip_model()->ReplaceWebContentsAt(
+  tab_strip_model()->DiscardWebContentsAt(
       tab_strip_model()->GetIndexOfWebContents(old_contents),
       std::move(new_contents));
   EXPECT_EQ(observer.update_call_count, 1);

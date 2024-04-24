@@ -40,16 +40,13 @@ class TabInterface {
   // WebContents.
   virtual content::WebContents* GetContents() const = 0;
 
-  // Register for these two callbacks to detect changes to GetContents().
-  using DidAddContentsCallback =
-      base::RepeatingCallback<void(TabInterface*, content::WebContents*)>;
-  virtual base::CallbackListSubscription RegisterDidAddContents(
-      DidAddContentsCallback callback) = 0;
-
-  using WillRemoveContentsCallback =
-      base::RepeatingCallback<void(TabInterface*, content::WebContents*)>;
-  virtual base::CallbackListSubscription RegisterWillRemoveContents(
-      WillRemoveContentsCallback callback) = 0;
+  // Register for this callback to detect changes to GetContents(). The first
+  // WebContents is the contents that will be discarded. The second WebContents
+  // is the new contents. The tab is guaranteed to be in the background.
+  using WillDiscardContentsCallback = base::RepeatingCallback<
+      void(TabInterface*, content::WebContents*, content::WebContents*)>;
+  virtual base::CallbackListSubscription RegisterWillDiscardContents(
+      WillDiscardContentsCallback callback) = 0;
 
   // Whether the tab is in the foreground. When a tab is in the foreground, this
   // class guarantees that GetContents() will return a non-nullptr WebContents,
