@@ -2174,7 +2174,7 @@
 <translation id="261305050785128654">让网站知道您所用的语言。它们将尽可能以这些语言显示内容。</translation>
 <translation id="2613210758071148851">不允许运行 <ph name="RESTRICTED_SITE" /> 的任何扩展程序</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> 将能够修改“<ph name="FILENAME" />”</translation>
-<translation id="2613747923081026172">创建群组</translation>
+<translation id="2613747923081026172">创建分组</translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{在此扩展程序中打开并修改 <ph name="FILE1" />}other{在此应用中打开并修改 <ph name="FILE1" />…}}</translation>
 <translation id="2616366145935564096">读取和更改您在<ph name="WEBSITE_1" />上的数据</translation>
 <translation id="2618797463720777311">设置“附近分享”功能</translation>
@@ -7402,7 +7402,7 @@
 <translation id="6716798148881908873">网络连接中断了。请检查您的网络连接状况，或尝试改用其他 Wi-Fi 网络。</translation>
 <translation id="6718849325281682232">Chrome 主题颜色已焕然一新，可更好地满足每个用户的需求，无论是处于深色模式还是浅色模式</translation>
 <translation id="671928215901716392">锁定屏幕</translation>
-<translation id="6721744718589119342">如果需要您提供更多信息或想向您提供最新信息，我们可能会向您发送电子邮件</translation>
+<translation id="6721744718589119342">我们可能会向您发送电子邮件，获取更多信息或为您提供最新进展</translation>
 <translation id="6721972322305477112">文件(&amp;F)</translation>
 <translation id="672208878794563299">此网站下次仍会请求您授权。</translation>
 <translation id="6722744767592605627">您可以恢复 <ph name="EMAIL" />，但本地数据将被删除。</translation>
@@ -10292,7 +10292,7 @@
 <translation id="8903733144777177139">已禁止使用麦克风</translation>
 <translation id="890616557918890486">更改来源</translation>
 <translation id="8907701755790961703">请选择国家/地区</translation>
-<translation id="8908420399006197927">从建议的分组中排除相应标签页</translation>
+<translation id="8908420399006197927">将标签页从建议的分组中移除</translation>
 <translation id="8909298138148012791">已卸载 <ph name="APP_NAME" /></translation>
 <translation id="8909833622202089127">该网站正在跟踪您的位置</translation>
 <translation id="8910222113987937043">对您的书签、历史记录、密码及其他设置所做的更改将不再同步到您的 Google 账号。但是，您的现有数据依然会存储在您的 Google 账号中，而且您可以通过 <ph name="BEGIN_LINK" />Google 信息中心<ph name="END_LINK" />管理这些数据。</translation>

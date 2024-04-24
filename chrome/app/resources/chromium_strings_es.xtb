@@ -125,7 +125,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="3258596308407688501">Chromium no puede leer el directorio de datos ni escribir en él:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 es el motor de JavaScript y WebAssembly de Chromium que se usa para mejorar el rendimiento de los sitios</translation>
+<translation id="3268051428841342958">V8 es el motor de Chromium para JavaScript y WebAssembly que se usa para mejorar el rendimiento de los sitios</translation>
 <translation id="3283186697780795848">Está instalada la versión <ph name="PRODUCT_VERSION" /> de Chromium</translation>
 <translation id="3286538390144397061">Reiniciar ahora</translation>
 <translation id="328888136576916638">Faltan las claves de la API de Google. Se inhabilitarán algunas funciones de Chromium.</translation>
@@ -406,7 +406,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8105840573057009683">Chromium necesita el permiso de ubicación para este sitio</translation>
 <translation id="8133124826068723441">ChromiumOS no ha podido sincronizar tus datos porque la función de sincronización no está disponible para tu dominio.</translation>
 <translation id="813913629614996137">Inicializando…</translation>
-<translation id="8166782796394721554">Activa la protección adicional en el motor de JavaScript y WebAssembly de Chromium</translation>
+<translation id="8166782796394721554">Activa la protección adicional en el motor de Chromium para JavaScript y WebAssembly</translation>
 <translation id="81770708095080097">Este archivo es peligroso, por lo que Chromium lo ha bloqueado.</translation>
 <translation id="8248265253516264921">Si una imagen no tiene ninguna descripción útil, Chromium intentará proporcionártela. Para crear las descripciones, las imágenes se envían a Google. Puedes desactivar esta opción cuando quieras desde la configuración.</translation>
 <translation id="8266560134891435528">Chromium no puede comprobar tus contraseñas porque no has iniciado sesión</translation>
