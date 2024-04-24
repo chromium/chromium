@@ -21,19 +21,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  add-label-to-release:
-    name: Add label to release
-    runs-on: ubuntu-latest
-    if: contains(github.head_ref, 'release-please')
-    permissions:
-      pull-requests: write
-    steps:
-      - run: gh pr edit "$NUMBER" --add-label "puppeteer"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_REPO: ${{ github.repository }}
-          NUMBER: ${{ github.event.pull_request.number }}
-
   puppeteer-test:
     name: Run Puppeteer tests
     runs-on: ubuntu-latest

@@ -1,0 +1,34 @@
+name: Labeler CI
+
+# Declare default permissions as read only.
+permissions: read-all
+
+on:
+  pull_request:
+
+jobs:
+  add-label-to-release:
+    name: Add label to release
+    runs-on: ubuntu-latest
+    if: contains(github.head_ref, 'release-please')
+    permissions:
+      pull-requests: write
+    steps:
+      - run: gh pr edit "$NUMBER" --add-label "puppeteer"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.pull_request.number }}
+
+  add-label-to-wpt-bump:
+    name: Add label to release
+    runs-on: ubuntu-latest
+    if: contains(github.head_ref, 'Bump wpt')
+    permissions:
+      pull-requests: write
+    steps:
+      - run: gh pr edit "$NUMBER" --add-label "update-expectations"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.pull_request.number }}

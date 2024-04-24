@@ -15,6 +15,17 @@ env:
 on:
   push:
     branches: 'main'
+  pull_request:
+    types:
+      # These are the defaults. See
+      # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request
+      - opened
+      - reopened
+      - synchronize
+
+      # Used for `update-expectations`
+      - labeled
+
   workflow_dispatch:
     inputs:
       auto-commit:
@@ -40,7 +51,7 @@ jobs:
   wpt-report:
     name: WPT report
     needs: wpt
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'update-expectations')  }}
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -69,10 +80,11 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
+
   wpt-auto-commit:
     name: WPT auto-commit expectations
     needs: wpt
-    if: ${{ !cancelled() && github.event.inputs.auto-commit == 'true' }}
+    if: ${{ !cancelled() && (github.event.inputs.auto-commit == 'true' || contains(github.event.pull_request.labels.*.name, 'update-expectations')) }}
     runs-on: ubuntu-latest
     # Give GITHUB_TOKEN write permission to commit and push.
     # Needed by stefanzweifel/git-auto-commit-action.
@@ -81,6 +93,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4.1.3
+        with:
+          token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
       - run: rm -rf wpt-metadata/chromedriver/headless/*
       - run: rm -rf wpt-metadata/chromedriver/headful/*
       - run: rm -rf wpt-metadata/mapper/headless/*
@@ -103,6 +117,7 @@ jobs:
           commit_message: Update WPT expectations
           commit_options: -n --signoff
           file_pattern: 'wpt-metadata/**/*.ini'
+
   wpt:
     name: ${{ matrix.kind }}-${{ matrix.head }}
     runs-on: ubuntu-latest
