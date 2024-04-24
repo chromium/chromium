@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -29,7 +30,9 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -157,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
 
 // Tests that the confirm button is focused by default in the signin email
 // confirmation dialog.
-// TODO(http://crbug.com/1286855): Flaky on MacOS.
+// TODO(crbug.com/40815877): Failing on MacOS.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_EmailConfirmationDefaultFocus \
   DISABLED_EmailConfirmationDefaultFocus
@@ -180,6 +183,18 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
           }));
   EXPECT_TRUE(browser()->signin_view_controller()->ShowsModalDialog());
   content_observer.Wait();
+  content::WebContents* web_contents =
+      browser()
+          ->signin_view_controller()
+          ->GetModalDialogWebContentsForTesting();
+  ASSERT_TRUE(web_contents);
+
+  const char kConfirmButtonExists[] =
+      "let app = document.querySelector('signin-email-confirmation-app'); "
+      "app && app.shadowRoot.querySelector('#confirmButton') != null";
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return content::EvalJs(web_contents, kConfirmButtonExists).ExtractBool();
+  }));
 
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN,
                                               /*control=*/false,
