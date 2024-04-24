@@ -353,8 +353,7 @@ Status ExecuteTouchEvent(Session* session,
   if (!status.IsOk())
     return status;
   std::vector<TouchEvent> events;
-  events.push_back(
-      TouchEvent(type, relative_x, relative_y));
+  events.emplace_back(type, relative_x, relative_y);
   return web_view->DispatchTouchEvents(events, false);
 }
 
@@ -707,11 +706,23 @@ Status ExecuteWindowCommand(const WindowCommand& command,
     nav_status = web_view->WaitForPendingNavigations(
         session->GetCurrentFrameId(),
         Timeout(session->page_load_timeout, &timeout), true);
-    if (nav_status.IsError())
+    // Impossible errors:
+    // * kNoSuchExecutionContext as WebView::WaitForPendingNavigations never
+    //   returns it.
+    // Some possible errors:
+    // * kTimeout. The pending navigation has taken too long, the whole command
+    //   has timed out.
+    // * kDisconnected. The connection was lost. There is no point to retry.
+    if (nav_status.IsError()) {
       return nav_status;
+    }
 
     status = command.Run(session, web_view, params, value, &timeout);
-    if (status.code() == kNoSuchExecutionContext || status.code() == kTimeout) {
+    if (status.code() == kNoSuchExecutionContext) {
+      // Navigation was detected while running the command. Retry.
+      continue;
+    }
+    if (status.code() == kTimeout) {
       // If the command timed out, let WaitForPendingNavigations cancel
       // the navigation if there is one.
       continue;
@@ -744,12 +755,20 @@ Status ExecuteWindowCommand(const WindowCommand& command,
       Timeout(session->page_load_timeout, &timeout), true);
 
   if (status.IsOk() && nav_status.IsError() &&
-      nav_status.code() != kUnexpectedAlertOpen)
+      nav_status.code() != kUnexpectedAlertOpen) {
     return nav_status;
-  if (status.code() == kUnexpectedAlertOpen)
+  }
+  if (status.code() == kUnexpectedAlertOpen) {
     return Status(kOk);
-  if (status.code() == kUnexpectedAlertOpen_Keep)
+  }
+  if (status.code() == kUnexpectedAlertOpen_Keep) {
     return Status(kUnexpectedAlertOpen, status.message());
+  }
+  if (status.code() == kNoSuchExecutionContext) {
+    // The command has failed to run due to pending navigation three times.
+    // Giving up with an appropriate standard error.
+    return Status{kUnknownError, status};
+  }
   return status;
 }
 

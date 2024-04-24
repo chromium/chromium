@@ -1047,10 +1047,10 @@ Status WebViewImpl::DispatchTouchEventsForMouseEvents(
       "new Promise(x => setTimeout(() => setTimeout(x, 20), 20))");
   promise_params.Set("awaitPromise", true);
   client_->SendCommand("Runtime.evaluate", promise_params);
-  for (auto it = events.begin(); it != events.end(); ++it) {
+  for (const MouseEvent& event : events) {
     base::Value::Dict params;
 
-    switch (it->type) {
+    switch (event.type) {
       case kPressedMouseEventType:
         params.Set("type", "touchStart");
         break;
@@ -1058,8 +1058,9 @@ Status WebViewImpl::DispatchTouchEventsForMouseEvents(
         params.Set("type", "touchEnd");
         break;
       case kMovedMouseEventType:
-        if (it->button == kNoneMouseButton)
+        if (event.button == kNoneMouseButton) {
           continue;
+        }
         params.Set("type", "touchMove");
         break;
       default:
@@ -1067,14 +1068,14 @@ Status WebViewImpl::DispatchTouchEventsForMouseEvents(
     }
 
     base::Value::List touch_points;
-    if (it->type != kReleasedMouseEventType) {
+    if (event.type != kReleasedMouseEventType) {
       base::Value::Dict touch_point;
-      touch_point.Set("x", it->x);
-      touch_point.Set("y", it->y);
+      touch_point.Set("x", event.x);
+      touch_point.Set("y", event.y);
       touch_points.Append(std::move(touch_point));
     }
     params.Set("touchPoints", std::move(touch_points));
-    params.Set("modifiers", it->modifiers);
+    params.Set("modifiers", event.modifiers);
     Status status = client_->SendCommand("Input.dispatchTouchEvent", params);
     if (status.IsError())
       return status;
@@ -1360,7 +1361,7 @@ Status WebViewImpl::WaitForPendingNavigations(const std::string& frame_id,
                                               bool stop_load_on_timeout) {
   // This function should not be called for child WebViews
   if (parent_ != nullptr)
-    return Status(kUnsupportedOperation,
+    return Status(kUnknownError,
                   "Call WaitForPendingNavigations only on the parent WebView");
   VLOG(0) << "Waiting for pending navigations...";
   const auto not_pending_navigation = base::BindRepeating(
@@ -1371,7 +1372,12 @@ Status WebViewImpl::WaitForPendingNavigations(const std::string& frame_id,
   // current WebView because we are executing the code in its method. Instead we
   // lock the WebView with target holder and only label the view as detached.
   WebViewImplHolder target_holder(this);
-  Status status = client_->HandleEventsUntil(not_pending_navigation, timeout);
+  bool keep_waiting = true;
+  Status status{kOk};
+  while (keep_waiting) {
+    status = client_->HandleEventsUntil(not_pending_navigation, timeout);
+    keep_waiting = status.code() == kNoSuchExecutionContext;
+  }
   if (status.code() == kTimeout && stop_load_on_timeout) {
     VLOG(0) << "Timed out. Stopping navigation...";
     navigation_tracker_->set_timed_out(true);
@@ -1380,9 +1386,14 @@ Status WebViewImpl::WaitForPendingNavigations(const std::string& frame_id,
     // stops and we cleanup properly after a command that caused a navigation
     // that timed out.  Otherwise we might have to wait for that before
     // executing the next command, and it will be counted towards its timeout.
-    Status new_status = client_->HandleEventsUntil(
-        not_pending_navigation,
-        Timeout(base::Seconds(kWaitForNavigationStopSeconds)));
+    Status new_status{kOk};
+    keep_waiting = true;
+    while (keep_waiting) {
+      new_status = client_->HandleEventsUntil(
+          not_pending_navigation,
+          Timeout(base::Seconds(kWaitForNavigationStopSeconds)));
+      keep_waiting = new_status.code() == kNoSuchExecutionContext;
+    }
     navigation_tracker_->set_timed_out(false);
     if (new_status.IsError())
       status = new_status;
