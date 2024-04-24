@@ -146,6 +146,14 @@ class ReadAnythingAppModel {
     base_language_code_ = code;
   }
 
+  const std::string& default_language_code() const {
+    return default_language_code_;
+  }
+
+  void set_default_language_code(const std::string code) {
+    default_language_code_ = code;
+  }
+
   std::vector<std::string> GetSupportedFonts() const;
 
   // TODO(b/1266555): Ensure there is proper test coverage for all methods.
@@ -510,6 +518,13 @@ class ReadAnythingAppModel {
 
   // The current base language code used for fonts or reading aloud.
   std::string base_language_code_ = "en";
+
+  // The default language code, used as a fallback in case base_language_code_
+  // is invalid. It's not guaranteed that default_language_code_ will always
+  // be valid, but as it is tied to the browser language, it is likely more
+  // stable than the base_language_code_, which may be changed on different
+  // pages.
+  std::string default_language_code_ = "en";
 
   // Theme information.
   std::string font_name_ = string_constants::kReadAnythingPlaceholderFontName;

@@ -233,6 +233,10 @@ interface UntrustedPage {
   // language or the browser language depending on what's available.
   SetLanguageCode(string code);
 
+  // Sets the default language code to be available in the WebUI in the event
+  // the language set by SetLanguageCode is invalid.
+  SetDefaultLanguageCode(string code);
+
   // Send the settings values stored in prefs to the WebUI. voices maps
   // language to voice name
   OnSettingsRestoredFromPrefs(read_anything.mojom.LineSpacing line_spacing,

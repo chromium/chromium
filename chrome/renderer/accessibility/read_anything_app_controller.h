@@ -111,6 +111,7 @@ class ReadAnythingAppController
       base::Value::List languages_enabled_in_pref,
       read_anything::mojom::HighlightGranularity granularity) override;
   void SetLanguageCode(const std::string& code) override;
+  void SetDefaultLanguageCode(const std::string& code) override;
   void ScreenAIServiceReady() override;
 
   // gin templates:

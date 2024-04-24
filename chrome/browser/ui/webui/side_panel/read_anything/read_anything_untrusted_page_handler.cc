@@ -593,6 +593,7 @@ void ReadAnythingUntrustedPageHandler::SetDefaultLanguageCode(
     const std::string& code) {
   default_language_code_ = code;
   page_->SetLanguageCode(code);
+  page_->SetDefaultLanguageCode(code);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
