@@ -20,10 +20,6 @@ declare_args() {
 }
 
 declare_args() {
-  # TODO(awscreen)  Safety net to avoid revert for a flag rename which affects
-  # many locations.  Remove this once `enable_printing` has landed.
-  enable_basic_printing = enable_printing
-
   # Enables printing with print preview.
   # Print preview requires PDF per //printing/BUILD.gn.
   # The is_android condition is currently redundant but left for clarity.
