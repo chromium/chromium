@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/types/optional_ref.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "net/http/http_status_code.h"
@@ -49,9 +50,11 @@ void AddResponse(network::TestURLLoaderFactory* url_loader_factory,
 
 // Convenience methods to invoke AddResponse() with the specified MIME type and
 // no charset.
-void AddJavascriptResponse(network::TestURLLoaderFactory* url_loader_factory,
-                           const GURL& url,
-                           const std::string content);
+void AddJavascriptResponse(
+    network::TestURLLoaderFactory* url_loader_factory,
+    const GURL& url,
+    const std::string& content,
+    base::optional_ref<const std::string> extra_headers = std::nullopt);
 void AddJsonResponse(network::TestURLLoaderFactory* url_loader_factory,
                      const GURL& url,
                      const std::string content);

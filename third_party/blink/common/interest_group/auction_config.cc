@@ -9,6 +9,7 @@
 #include <tuple>
 
 #include "base/strings/to_string.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 
@@ -152,7 +153,12 @@ bool AuctionConfig::IsValidTrustedScoringSignalsURL(const GURL& url) const {
     return false;
   }
 
-  return IsHttpsAndMatchesSellerOrigin(url);
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFledgePermitCrossOriginTrustedSignals)) {
+    return url.scheme() == url::kHttpsScheme;
+  } else {
+    return IsHttpsAndMatchesSellerOrigin(url);
+  }
 }
 
 bool AuctionConfig::IsDirectFromSellerSignalsValid(

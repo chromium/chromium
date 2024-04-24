@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/synchronization/waitable_event.h"
@@ -71,11 +72,21 @@ void AddResponse(network::TestURLLoaderFactory* url_loader_factory,
                                   std::move(redirects));
 }
 
-void AddJavascriptResponse(network::TestURLLoaderFactory* url_loader_factory,
-                           const GURL& url,
-                           const std::string content) {
-  AddResponse(url_loader_factory, url, kJavascriptMimeType, std::nullopt,
-              content);
+void AddJavascriptResponse(
+    network::TestURLLoaderFactory* url_loader_factory,
+    const GURL& url,
+    const std::string& content,
+    base::optional_ref<const std::string> extra_headers) {
+  std::string headers;
+  if (!extra_headers.has_value()) {
+    headers = kAllowFledgeHeader;
+  } else {
+    headers = base::StrCat(
+        {kAllowFledgeHeader, "\r\n",
+         base::TrimWhitespaceASCII(*extra_headers, base::TRIM_ALL)});
+  }
+  AddResponse(url_loader_factory, url, kJavascriptMimeType,
+              /*charset=*/std::nullopt, content, headers);
 }
 
 void AddJsonResponse(network::TestURLLoaderFactory* url_loader_factory,

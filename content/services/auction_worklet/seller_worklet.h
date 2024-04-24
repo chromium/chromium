@@ -63,6 +63,19 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
 
+  // Classification of how trusted signals related to this worklet.
+  enum class SignalsOriginRelation {
+    kNoTrustedSignals,
+    kSameOriginSignals,
+
+    // If trusted signals are cross-origin, their classification starts at
+    // kUnknownPermissionCrossOriginSignals and gets changed to permitted or
+    // forbidden once the permission header is received (or is found missing).
+    kUnknownPermissionCrossOriginSignals,
+    kPermittedCrossOriginSignals,
+    kForbiddenCrossOriginSignals
+  };
+
   // Starts loading the worklet script on construction.
   SellerWorklet(
       scoped_refptr<AuctionV8Helper> v8_helper,
@@ -306,12 +319,14 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
             shared_storage_host_remote,
         const GURL& decision_logic_url,
         const std::optional<GURL>& trusted_scoring_signals_url,
+        const std::optional<url::Origin>& trusted_scoring_signals_origin,
         const url::Origin& top_window_origin,
         mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
         std::optional<uint16_t> experiment_group_id,
         base::WeakPtr<SellerWorklet> parent);
 
-    void SetWorkletScript(WorkletLoader::Result worklet_script);
+    void SetWorkletScript(WorkletLoader::Result worklet_script,
+                          SignalsOriginRelation trusted_signals_relation);
 
     void ScoreAd(
         const std::string& ad_metadata_json,
@@ -426,6 +441,9 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
 
     const GURL decision_logic_url_;
     const std::optional<GURL> trusted_scoring_signals_url_;
+    const std::optional<url::Origin> trusted_scoring_signals_origin_;
+    SignalsOriginRelation trusted_signals_relation_ =
+        SignalsOriginRelation::kNoTrustedSignals;
     const url::Origin top_window_origin_;
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state_;
     const std::optional<uint16_t> experiment_group_id_;
@@ -448,6 +466,9 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   void OnDownloadComplete(WorkletLoader::Result worklet_script,
                           std::optional<std::string> error_msg);
   void MaybeRecordCodeWait();
+
+  void OnGotCrossOriginTrustedSignalsPermissions(
+      std::vector<url::Origin> permit_origins);
 
   // Called when trusted scoring signals have finished downloading, or when
   // there are no scoring signals to download. Starts running scoreAd() on the
@@ -537,6 +558,10 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
   // `trusted_scoring_signals_url`.
   std::unique_ptr<TrustedSignalsRequestManager>
       trusted_signals_request_manager_;
+
+  const std::optional<url::Origin> trusted_scoring_signals_origin_;
+  SignalsOriginRelation trusted_signals_relation_ =
+      SignalsOriginRelation::kNoTrustedSignals;
 
   // Used for fetching DirectFromSellerSignals from subresource bundles (and
   // caching responses).

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
@@ -17,6 +18,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/common/interest_group/auction_config_test_util.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/seller_capabilities.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
@@ -169,7 +171,7 @@ TEST(AuctionConfigMojomTraitsTest, SellerDecisionUrlTooLong) {
 
 TEST(AuctionConfigMojomTraitsTest, SellerScoringSignalsUrlMismatch) {
   AuctionConfig auction_config =
-      CreateBasicAuctionConfig(GURL("http://seller.test"));
+      CreateBasicAuctionConfig(GURL("https://seller.test"));
   // Different origin than seller, but same scheme.
   auction_config.trusted_scoring_signals_url =
       GURL("https://not.seller.test/foo");
@@ -178,6 +180,31 @@ TEST(AuctionConfigMojomTraitsTest, SellerScoringSignalsUrlMismatch) {
   auction_config = CreateBasicAuctionConfig(GURL("https://seller.test"));
   // This blob URL should be considered same-origin to the seller, but the
   // scheme is wrong.
+  auction_config.trusted_scoring_signals_url =
+      GURL("blob:https://seller.test/foo");
+  ASSERT_EQ(auction_config.seller,
+            url::Origin::Create(*auction_config.trusted_scoring_signals_url));
+  EXPECT_FALSE(SerializeAndDeserialize(auction_config));
+}
+
+TEST(AuctionConfigMojomTraitsTest,
+     SellerScoringSignalsUrlCrossOriginPermitted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kFledgePermitCrossOriginTrustedSignals);
+
+  AuctionConfig auction_config =
+      CreateBasicAuctionConfig(GURL("https://seller.test"));
+  auction_config.trusted_scoring_signals_url =
+      GURL("https://not.seller.org/foo");
+
+  // With kFledgePermitCrossOriginTrustedSignals on, this is OK.
+  EXPECT_TRUE(SerializeAndDeserialize(auction_config));
+
+  auction_config = CreateBasicAuctionConfig(GURL("https://seller.test"));
+  // This blob URL should be considered same-origin to the seller, but the
+  // scheme is wrong. That restriction still applies even if the cross-origin
+  // check is off.
   auction_config.trusted_scoring_signals_url =
       GURL("blob:https://seller.test/foo");
   ASSERT_EQ(auction_config.seller,

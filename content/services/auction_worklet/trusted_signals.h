@@ -115,6 +115,15 @@ class CONTENT_EXPORT TrustedSignals {
 
     std::optional<uint32_t> GetDataVersion() const { return data_version_; }
 
+    // If `signals` is not undefined or not null, returns an object containing
+    // `signals` as a field under the key `source_origin`.
+    // Otherwise, returns JS null.
+    static v8::Local<v8::Value> WrapCrossOriginSignals(
+        AuctionV8Helper* v8_helper,
+        v8::Local<v8::Context> context,
+        const url::Origin& source_origin,
+        v8::Local<v8::Value> signals);
+
    private:
     friend class base::RefCountedThreadSafe<Result>;
 

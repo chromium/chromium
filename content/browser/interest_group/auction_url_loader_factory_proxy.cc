@@ -37,6 +37,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -179,6 +180,13 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     return;
   }
 
+  bool is_cross_origin_enabled_trusted_signals_request = false;
+  if (is_trusted_signals_request && is_for_seller_ &&
+      base::FeatureList::IsEnabled(
+          blink::features::kFledgePermitCrossOriginTrustedSignals)) {
+    is_cross_origin_enabled_trusted_signals_request = true;
+  }
+
   // Create fresh request object, only keeping the URL field and Accept request
   // header, to protect against compromised auction worklet processes setting
   // values that should not have access to (e.g., sending credentialed
@@ -215,11 +223,18 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     }
   }
 
+  if (is_cross_origin_enabled_trusted_signals_request) {
+    // For cross-origin trusted signals request, the principal is the origin
+    // of the script.
+    new_request.request_initiator = url::Origin::Create(script_url_);
+  }
+
   if (force_reload_) {
     new_request.load_flags = net::LOAD_BYPASS_CACHE;
   }
 
-  if (maybe_subresource_info || needs_cors_for_additional_bid_) {
+  if (maybe_subresource_info || needs_cors_for_additional_bid_ ||
+      is_cross_origin_enabled_trusted_signals_request) {
     // CORS is needed.
     //
     // For subresource bundle requests, CORS is supported if the subresource
@@ -241,6 +256,10 @@ void AuctionURLLoaderFactoryProxy::CreateLoaderAndStart(
     // signal's JSON response, if made in the context of the page, but the JSON
     // is only made available to the same-origin script, so ORB isn't needed
     // here.
+    //
+    // This does not apply if we permit trusted signals to be cross-origin from
+    // the corresponding script, in which has the signals origin's permission is
+    // required before sharing its data with the script.
     new_request.mode = network::mojom::RequestMode::kNoCors;
   }
 

@@ -75,7 +75,7 @@ std::string CreateScoreAdScript(const std::string& raw_return_value,
                                 const std::string& extra_code = std::string()) {
   constexpr char kSellAdScript[] = R"(
     function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
-        browserSignals, directFromSellerSignals) {
+        browserSignals, directFromSellerSignals, crossOriginTrustedSignals) {
       %s;
       return %s;
     }
@@ -302,7 +302,8 @@ class SellerWorkletTest : public testing::Test {
       PrivateAggregationRequests expected_pa_requests = {},
       std::optional<double> expected_bid_in_seller_currency = std::nullopt) {
     AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
-                          CreateScoreAdScript(raw_return_value));
+                          CreateScoreAdScript(raw_return_value),
+                          extra_js_headers_);
     auto seller_worklet = CreateWorklet();
 
     base::RunLoop run_loop;
@@ -339,8 +340,8 @@ class SellerWorkletTest : public testing::Test {
       PrivateAggregationRequests expected_pa_requests = {},
       std::optional<double> expected_bid_in_seller_currency = std::nullopt) {
     SCOPED_TRACE(javascript);
-    AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
-                          javascript);
+    AddJavascriptResponse(&url_loader_factory_, decision_logic_url_, javascript,
+                          extra_js_headers_);
     RunScoreAdExpectingResult(
         expected_score, expected_errors,
         std::move(expected_component_auction_modified_bid_params),
@@ -768,6 +769,9 @@ class SellerWorkletTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+
+  // Extra headers to append to replies for JavaScript resources.
+  std::optional<std::string> extra_js_headers_;
 
   // Arguments passed to score_bid() and report_result(). Arguments common to
   // both of them use the same field.
@@ -1934,6 +1938,14 @@ TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignals) {
       mojom::ComponentAuctionModifiedBidParamsPtr(),
       TrustedSignalsRequestManager::kAutoSendDelay, /*expected_errors=*/{},
       /*expected_data_version=*/5);
+}
+
+// With the cross-origin trusted signals flag off, nothing is passed in to the
+// cross-original signals parameter.
+TEST_F(SellerWorkletTest, CrossOriginTrustedSignalsDisabled) {
+  RunScoreAdWithReturnValueExpectingResult(
+      "crossOriginTrustedSignals === undefined ? 1 : 0", 1);
+  RunScoreAdWithReturnValueExpectingResult("arguments.length", 6);
 }
 
 TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignalsLatency) {
@@ -6009,6 +6021,303 @@ TEST_F(SellerWorkletDeprecatedRenderURLReplacementsEnabledTest,
       /*expected_data_version=*/std::nullopt,
       /*expected_debug_loss_report_url=*/std::nullopt,
       /*expected_debug_win_report_url=*/std::nullopt);
+}
+
+class SellerWorkletCrossOriginTrustedSignalsTest : public SellerWorkletTest {
+ public:
+  SellerWorkletCrossOriginTrustedSignalsTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kFledgePermitCrossOriginTrustedSignals);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// With the feature on, same-origin trusted signals still come in the same,
+// only there is an extra null param.
+TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, SameOrigin) {
+  trusted_scoring_signals_url_ =
+      GURL("https://url.test/trusted_scoring_signals");
+  const GURL kNoComponentSignalsUrl(
+      "https://url.test/trusted_scoring_signals?hostname=window.test"
+      "&renderUrls=https%3A%2F%2Frender.url.test%2F");
+
+  AddVersionedJsonResponse(&url_loader_factory_, kNoComponentSignalsUrl,
+                           kTrustedScoringSignalsResponse, /*data_version=*/5);
+  RunScoreAdWithReturnValueExpectingResult(
+      "crossOriginTrustedSignals === null ? 1 : 0", 1,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/5);
+  RunScoreAdWithReturnValueExpectingResult(
+      "arguments.length", 7,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/5);
+  RunScoreAdWithReturnValueExpectingResult(
+      "browserSignals.dataVersion", 5,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/5);
+  RunScoreAdWithReturnValueExpectingResult(
+      "'crossOriginDataVersion' in browserSignals ? 3 : 2", 2,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/5);
+  RunScoreAdWithReturnValueExpectingResult(
+      "trustedScoringSignals.renderURL['https://render.url.test/']", 4,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/5);
+}
+
+// Cross-origin signals need explicit header to work; so if it's not there,
+// or doesn't permit the origin, they will get blocked including the version.
+TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, ForbiddenCrossOrigin) {
+  trusted_scoring_signals_url_ =
+      GURL("https://other.test/trusted_scoring_signals");
+  const GURL kNoComponentSignalsUrl(
+      "https://other.test/trusted_scoring_signals?hostname=window.test"
+      "&renderUrls=https%3A%2F%2Frender.url.test%2F");
+
+  std::vector<std::string> expected_errors = {
+      "https://url.test/ disregarding trusted scoring signals since origin "
+      "'https://other.test' is different from script's origin but not "
+      "authorized by script's Ad-Auction-Allow-Trusted-Scoring-Signals-From."};
+
+  AddVersionedJsonResponse(&url_loader_factory_, kNoComponentSignalsUrl,
+                           kTrustedScoringSignalsResponse, /*data_version=*/5);
+
+  for (bool provide_header : {false, true}) {
+    SCOPED_TRACE(provide_header);
+    if (provide_header) {
+      extra_js_headers_ =
+          "Ad-Auction-Allow-Trusted-Scoring-Signals-From: "
+          "\"http://other.test/\", \"https://url.test/\"";
+    } else {
+      extra_js_headers_ = std::nullopt;
+    }
+
+    RunScoreAdWithReturnValueExpectingResult(
+        "crossOriginTrustedSignals === null ? 1 : 0", 1, expected_errors);
+    RunScoreAdWithReturnValueExpectingResult("arguments.length", 7,
+                                             expected_errors);
+    RunScoreAdWithReturnValueExpectingResult(
+        "trustedScoringSignals === null ? 1 : 0", 1, expected_errors);
+
+    // No version in browserSignals... or passed out of worklet.
+    RunScoreAdWithReturnValueExpectingResult(
+        "'dataVersion' in browserSignals ? 0 : 1", 1, expected_errors,
+        mojom::ComponentAuctionModifiedBidParamsPtr(),
+        /*expected_data_version=*/std::nullopt);
+    RunScoreAdWithReturnValueExpectingResult(
+        "'crossOriginDataVersion' in browserSignals ? 0 : 1", 1,
+        expected_errors, mojom::ComponentAuctionModifiedBidParamsPtr(),
+        /*expected_data_version=*/std::nullopt);
+  }
+}
+
+// Not allowed cross-origin trusted seller signals do not get fetched
+TEST_F(SellerWorkletCrossOriginTrustedSignalsTest,
+       ForbiddenCrossOriginNoFetch) {
+  trusted_scoring_signals_url_ =
+      GURL("https://other.test/trusted_scoring_signals");
+  const char kScoreExpr[] = "crossOriginTrustedSignals === null ? 1 : 0";
+  const char kError[] =
+      "https://url.test/ disregarding trusted scoring signals since origin "
+      "'https://other.test' is different from script's origin but not "
+      "authorized by script's Ad-Auction-Allow-Trusted-Scoring-Signals-From.";
+
+  std::vector<GURL> saw_urls;
+  url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        saw_urls.push_back(request.url);
+      }));
+
+  for (bool provide_header : {false, true}) {
+    SCOPED_TRACE(provide_header);
+    url_loader_factory_.ClearResponses();
+    saw_urls.clear();
+    if (provide_header) {
+      extra_js_headers_ =
+          "Ad-Auction-Allow-Trusted-Scoring-Signals-From: "
+          "\"http://other.test/\", \"https://url.test/\"";
+    } else {
+      extra_js_headers_ = std::nullopt;
+    }
+
+    base::RunLoop run_loop;
+    auto seller_worklet = CreateWorklet();
+    RunScoreAdOnWorkletAsync(seller_worklet.get(),
+                             /*expected_score=*/1.0,
+                             /*expected_errors=*/{kError},
+                             mojom::ComponentAuctionModifiedBidParamsPtr(),
+                             /*expected_data_version=*/std::nullopt,
+                             /*expected_debug_loss_report_url=*/std::nullopt,
+                             /*expected_debug_win_report_url=*/std::nullopt,
+                             mojom::RejectReason::kNotAvailable,
+                             /*expected_pa_requests=*/{},
+                             /*expected_bid_in_seller_currency=*/std::nullopt,
+                             /*expected_score_ad_timeout=*/false,
+                             /*expected_signals_fetch_latency=*/std::nullopt,
+                             /*expected_code_ready_latency=*/std::nullopt,
+                             run_loop.QuitClosure());
+
+    // Only the script fetch must have started, even if we give enough time that
+    // seller signals would normally be flushed.
+    task_environment_.FastForwardBy(
+        TrustedSignalsRequestManager::kAutoSendDelay);
+    EXPECT_EQ(1, url_loader_factory_.NumPending());
+    EXPECT_TRUE(url_loader_factory_.IsPending(decision_logic_url_.spec()));
+
+    AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                          CreateScoreAdScript(kScoreExpr), extra_js_headers_);
+    run_loop.Run();
+    // We didn't just time out the signals fetch, it didn't happen at all.
+    EXPECT_THAT(saw_urls, testing::ElementsAre(decision_logic_url_));
+  }
+}
+
+// Note that the fetch also involves CORS, but this isn't really a good place
+// to test it since we're using a TestURLLoaderFactory so all the CORS code is
+// bypassed.
+TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, AllowedCrossOrigin) {
+  trusted_scoring_signals_url_ =
+      GURL("https://other.test/trusted_scoring_signals");
+  const GURL kNoComponentSignalsUrl(
+      "https://other.test/trusted_scoring_signals?hostname=window.test"
+      "&renderUrls=https%3A%2F%2Frender.url.test%2F");
+
+  extra_js_headers_ =
+      "Ad-Auction-Allow-Trusted-Scoring-Signals-From: "
+      "\"https://more.test\", \"https://other.test/ignored\"";
+
+  AddVersionedJsonResponse(&url_loader_factory_, kNoComponentSignalsUrl,
+                           kTrustedScoringSignalsResponse, /*data_version=*/5);
+
+  RunScoreAdWithReturnValueExpectingResult(
+      "arguments.length", 7, /*expected_errors=*/{},
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/5);
+  RunScoreAdWithReturnValueExpectingResult(
+      "trustedScoringSignals === null ? 1 : 0", 1,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/5);
+  const char kValidate[] = R"(
+    const expected = '{"https://other.test":{' +
+      '"renderURL":{"https://render.url.test/":4},' +
+      '"renderUrl":{"https://render.url.test/":4}}}'
+    const actual = JSON.stringify(crossOriginTrustedSignals);
+    if (actual === expected)
+      return 7;
+    throw actual + "!" + expected;
+  )";
+
+  RunScoreAdWithJavascriptExpectingResult(
+      CreateScoreAdScript("3", kValidate), 7,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/5);
+
+  // Versions in crossOriginDataVersion, and passed out of worklet.
+  RunScoreAdWithReturnValueExpectingResult(
+      "'dataVersion' in browserSignals ? 0 : 1", 1,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/5);
+  RunScoreAdWithReturnValueExpectingResult(
+      "browserSignals.crossOriginDataVersion", 5,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/5);
+}
+
+// When cross-origin trusted seller signals are allowed, they must happen
+// after the script headers complete (approximated as script /fetch/
+// completes in this test, since TestURLLoaderFactory isn't that fine-grained).
+TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, AllowedCrossOriginTiming) {
+  trusted_scoring_signals_url_ =
+      GURL("https://other.test/trusted_scoring_signals");
+  const GURL kNoComponentSignalsUrl(
+      "https://other.test/trusted_scoring_signals?hostname=window.test"
+      "&renderUrls=https%3A%2F%2Frender.url.test%2F");
+
+  extra_js_headers_ =
+      "Ad-Auction-Allow-Trusted-Scoring-Signals-From: "
+      "\"https://more.test\", \"https://other.test/ignored\"";
+
+  const char kValidate[] = R"(
+    const expected = '{"https://other.test":{' +
+      '"renderURL":{"https://render.url.test/":4},' +
+      '"renderUrl":{"https://render.url.test/":4}}}'
+    const actual = JSON.stringify(crossOriginTrustedSignals);
+    if (actual === expected)
+      return 7;
+    throw actual + "!" + expected;
+  )";
+
+  base::RunLoop run_loop;
+  auto seller_worklet = CreateWorklet();
+  RunScoreAdOnWorkletAsync(
+      seller_worklet.get(),
+      /*expected_score=*/7,
+      /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/5,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
+      mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{},
+      /*expected_bid_in_seller_currency=*/std::nullopt,
+      /*expected_score_ad_timeout=*/false,
+      /*expected_signals_fetch_latency=*/std::nullopt,
+      /*expected_code_ready_latency=*/std::nullopt, run_loop.QuitClosure());
+
+  // Only the script fetch must have started now... and after auto-send delay.
+  task_environment_.FastForwardBy(TrustedSignalsRequestManager::kAutoSendDelay);
+  EXPECT_EQ(1, url_loader_factory_.NumPending());
+  EXPECT_TRUE(url_loader_factory_.IsPending(decision_logic_url_.spec()));
+
+  AddJavascriptResponse(&url_loader_factory_, decision_logic_url_,
+                        CreateScoreAdScript("3", kValidate), extra_js_headers_);
+  task_environment_.FastForwardBy(TrustedSignalsRequestManager::kAutoSendDelay);
+
+  // Now the trusted signals fetch must be pending, too.
+  EXPECT_EQ(1, url_loader_factory_.NumPending());
+  EXPECT_TRUE(url_loader_factory_.IsPending(kNoComponentSignalsUrl.spec()));
+  AddVersionedJsonResponse(&url_loader_factory_, kNoComponentSignalsUrl,
+                           kTrustedScoringSignalsResponse, /*data_version=*/5);
+  run_loop.Run();
+}
+
+// Handling of errors in trusted signals other than the cross-origin permission;
+// it should look identical except for the error message test.
+TEST_F(SellerWorkletCrossOriginTrustedSignalsTest, ErrorCrossOrigin) {
+  trusted_scoring_signals_url_ =
+      GURL("https://other.test/trusted_scoring_signals");
+  const GURL kNoComponentSignalsUrl(
+      "https://other.test/trusted_scoring_signals?hostname=window.test"
+      "&renderUrls=https%3A%2F%2Frender.url.test%2F");
+
+  std::vector<std::string> expected_errors = {
+      "https://other.test/trusted_scoring_signals Unable to parse as a JSON "
+      "object."};
+
+  extra_js_headers_ =
+      "Ad-Auction-Allow-Trusted-Scoring-Signals-From: "
+      "\"https://more.test\", \"https://other.test/ignored\"";
+
+  AddVersionedJsonResponse(&url_loader_factory_, kNoComponentSignalsUrl, "{",
+                           /*data_version=*/5);
+
+  RunScoreAdWithReturnValueExpectingResult(
+      "crossOriginTrustedSignals === null ? 1 : 0", 1, expected_errors);
+  RunScoreAdWithReturnValueExpectingResult("arguments.length", 7,
+                                           expected_errors);
+  RunScoreAdWithReturnValueExpectingResult(
+      "trustedScoringSignals === null ? 1 : 0", 1, expected_errors);
+
+  // No version in browserSignals... or passed out of worklet.
+  RunScoreAdWithReturnValueExpectingResult(
+      "'dataVersion' in browserSignals ? 0 : 1", 1, expected_errors,
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/std::nullopt);
+  RunScoreAdWithReturnValueExpectingResult(
+      "'crossOriginDataVersion' in browserSignals ? 0 : 1", 1, expected_errors,
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/std::nullopt);
 }
 
 }  // namespace

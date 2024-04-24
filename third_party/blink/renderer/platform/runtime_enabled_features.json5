@@ -1792,6 +1792,11 @@
       status: "stable",
     },
     {
+      // Permit trusted signals to come cross-origin, subject to CORS on the
+      // trusted server side and opt-in on the worklet script side.
+      name: "FledgePermitCrossOriginTrustedSignals",
+    },
+    {
       // Enables using a 'reportingTimeout' field within the Protected Audience
       // ad auction config.
       name: "FledgeReportingTimeout",

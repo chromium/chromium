@@ -341,6 +341,58 @@ std::optional<base::TimeDelta> NullOptIfZero(base::TimeDelta delta) {
   return delta;
 }
 
+// Check if trusted scoring signals are absent, same-origin, or cross-origin.
+SellerWorklet::SignalsOriginRelation ClassifyTrustedSignals(
+    const GURL& decision_logic_url,
+    const std::optional<url::Origin>& trusted_scoring_signals_origin) {
+  if (!trusted_scoring_signals_origin.has_value()) {
+    return SellerWorklet::SignalsOriginRelation::kNoTrustedSignals;
+  }
+
+  if (trusted_scoring_signals_origin->IsSameOriginWith(decision_logic_url)) {
+    return SellerWorklet::SignalsOriginRelation::kSameOriginSignals;
+  }
+
+  return SellerWorklet::SignalsOriginRelation::
+      kUnknownPermissionCrossOriginSignals;
+}
+
+// Sets the appropriate field (if any) of `browser_signals` to data version,
+// considering the cross-origin validity.
+// Returns success/failure.
+bool SetDataVersion(
+    SellerWorklet::SignalsOriginRelation trusted_signals_relation,
+    std::optional<uint32_t> scoring_signals_data_version,
+    gin::Dictionary& browser_signals_dict) {
+  if (!scoring_signals_data_version.has_value()) {
+    return true;
+  }
+
+  switch (trusted_signals_relation) {
+    case SellerWorklet::SignalsOriginRelation::kNoTrustedSignals:
+      return true;
+
+    case SellerWorklet::SignalsOriginRelation::kSameOriginSignals:
+      return browser_signals_dict.Set("dataVersion",
+                                      scoring_signals_data_version.value());
+
+    case SellerWorklet::SignalsOriginRelation::
+        kUnknownPermissionCrossOriginSignals:
+      // This should be turned into permitted or forbidden by now.
+      CHECK(false);
+      return false;
+
+    case SellerWorklet::SignalsOriginRelation::kPermittedCrossOriginSignals:
+      return browser_signals_dict.Set("crossOriginDataVersion",
+                                      scoring_signals_data_version.value());
+
+    case SellerWorklet::SignalsOriginRelation::kForbiddenCrossOriginSignals:
+      // We shouldn't have a fetch to get a version from if it's forbidden.
+      CHECK(false);
+      return false;
+  }
+}
+
 }  // namespace
 
 SellerWorklet::SellerWorklet(
@@ -363,6 +415,10 @@ SellerWorklet::SellerWorklet(
           base::MakeRefCounted<AuctionV8Helper::DebugId>(v8_helper_.get())),
       url_loader_factory_(std::move(pending_url_loader_factory)),
       script_source_url_(decision_logic_url),
+      trusted_scoring_signals_origin_(
+          trusted_scoring_signals_url ? std::make_optional(url::Origin::Create(
+                                            *trusted_scoring_signals_url))
+                                      : std::nullopt),
       v8_state_(nullptr, base::OnTaskRunnerDeleter(v8_runner_)),
       auction_network_events_handler_(
           std::move(auction_network_events_handler)) {
@@ -382,12 +438,23 @@ SellerWorklet::SellerWorklet(
                  /*trusted_bidding_signals_slot_size_param=*/std::string(),
                  v8_helper_.get())
            : nullptr);
+  trusted_signals_relation_ = ClassifyTrustedSignals(
+      script_source_url_, trusted_scoring_signals_origin_);
+  // If trusted seller signals are cross-origin, we cannot start fetching them
+  // until we have confirmation they are authorized by guaranteed-same-origin
+  // script, as otherwise we may end up sending sensitive IG information to an
+  // unrelated this party.
+  if (trusted_signals_relation_ ==
+      SignalsOriginRelation::kUnknownPermissionCrossOriginSignals) {
+    trusted_signals_request_manager_->Pause();
+  }
 
   v8_state_ = std::unique_ptr<V8State, base::OnTaskRunnerDeleter>(
       new V8State(v8_helper_, debug_id_, std::move(shared_storage_host_remote),
                   decision_logic_url, trusted_scoring_signals_url,
-                  top_window_origin, std::move(permissions_policy_state),
-                  experiment_group_id, weak_ptr_factory_.GetWeakPtr()),
+                  trusted_scoring_signals_origin_, top_window_origin,
+                  std::move(permissions_policy_state), experiment_group_id,
+                  weak_ptr_factory_.GetWeakPtr()),
       base::OnTaskRunnerDeleter(v8_runner_));
 
   paused_ = pause_for_debugger_on_start;
@@ -659,6 +726,7 @@ SellerWorklet::V8State::V8State(
         shared_storage_host_remote,
     const GURL& decision_logic_url,
     const std::optional<GURL>& trusted_scoring_signals_url,
+    const std::optional<url::Origin>& trusted_scoring_signals_origin,
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     std::optional<uint16_t> experiment_group_id,
@@ -669,6 +737,7 @@ SellerWorklet::V8State::V8State(
       user_thread_(base::SequencedTaskRunner::GetCurrentDefault()),
       decision_logic_url_(decision_logic_url),
       trusted_scoring_signals_url_(trusted_scoring_signals_url),
+      trusted_scoring_signals_origin_(trusted_scoring_signals_origin),
       top_window_origin_(top_window_origin),
       permissions_policy_state_(std::move(permissions_policy_state)),
       experiment_group_id_(experiment_group_id) {
@@ -679,9 +748,11 @@ SellerWorklet::V8State::V8State(
 }
 
 void SellerWorklet::V8State::SetWorkletScript(
-    WorkletLoader::Result worklet_script) {
+    WorkletLoader::Result worklet_script,
+    SignalsOriginRelation trusted_signals_relation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   worklet_script_ = WorkletLoader::TakeScript(std::move(worklet_script));
+  trusted_signals_relation_ = trusted_signals_relation;
 }
 
 void SellerWorklet::V8State::ScoreAd(
@@ -712,6 +783,13 @@ void SellerWorklet::V8State::ScoreAd(
     base::TimeTicks task_enqueued_time,
     ScoreAdCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  CHECK_NE(trusted_signals_relation_,
+           SignalsOriginRelation::kUnknownPermissionCrossOriginSignals);
+  if (trusted_signals_relation_ ==
+      SignalsOriginRelation::kForbiddenCrossOriginSignals) {
+    // We must have cancelled the fetch, so nothing should be set).
+    CHECK(!trusted_scoring_signals);
+  }
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.ScoreAdQueueTime",
                           base::TimeTicks::Now() - task_enqueued_time);
   base::ElapsedTimer elapsed_timer;
@@ -778,6 +856,7 @@ void SellerWorklet::V8State::ScoreAd(
     return;
   }
 
+  std::vector<std::string> errors_out;
   v8::Local<v8::Value> trusted_scoring_signals_value;
   std::optional<uint32_t> scoring_signals_data_version;
   if (trusted_scoring_signals) {
@@ -788,7 +867,23 @@ void SellerWorklet::V8State::ScoreAd(
   } else {
     trusted_scoring_signals_value = v8::Null(isolate);
   }
-  args.push_back(trusted_scoring_signals_value);
+
+  if (trusted_signals_relation_ ==
+      SignalsOriginRelation::kForbiddenCrossOriginSignals) {
+    // Add a warning to help people debug.
+    errors_out.push_back(base::StrCat(
+        {decision_logic_url_.spec(),
+         " disregarding trusted scoring signals since origin '",
+         trusted_scoring_signals_origin_->Serialize(),
+         "' is different from script's origin but not authorized by script's "
+         "Ad-Auction-Allow-Trusted-Scoring-Signals-From."}));
+  }
+
+  if (trusted_signals_relation_ == SignalsOriginRelation::kSameOriginSignals) {
+    args.push_back(trusted_scoring_signals_value);
+  } else {
+    args.push_back(v8::Null(isolate));
+  }
 
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
@@ -811,9 +906,8 @@ void SellerWorklet::V8State::ScoreAd(
                                 browser_signal_bidding_duration_msecs) ||
       !browser_signals_dict.Set("bidCurrency",
                                 blink::PrintableAdCurrency(bid_currency)) ||
-      (scoring_signals_data_version.has_value() &&
-       !browser_signals_dict.Set("dataVersion",
-                                 scoring_signals_data_version.value())) ||
+      !SetDataVersion(trusted_signals_relation_, scoring_signals_data_version,
+                      browser_signals_dict) ||
       (base::FeatureList::IsEnabled(
            blink::features::kBiddingAndScoringDebugReportingAPI) &&
        base::FeatureList::IsEnabled(
@@ -842,7 +936,6 @@ void SellerWorklet::V8State::ScoreAd(
   v8::Local<v8::Object> direct_from_seller_signals = v8::Object::New(isolate);
   gin::Dictionary direct_from_seller_signals_dict(isolate,
                                                   direct_from_seller_signals);
-  std::vector<std::string> errors_out;
   v8::Local<v8::Value> seller_signals = GetDirectFromSellerSignals(
       direct_from_seller_result_seller_signals,
       direct_from_seller_seller_signals_header_ad_slot, *v8_helper_, context,
@@ -860,6 +953,21 @@ void SellerWorklet::V8State::ScoreAd(
     return;
   }
   args.push_back(direct_from_seller_signals);
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFledgePermitCrossOriginTrustedSignals)) {
+    v8::Local<v8::Value> cross_origin_trusted_scoring_signals_value;
+    if (trusted_signals_relation_ ==
+        SignalsOriginRelation::kPermittedCrossOriginSignals) {
+      cross_origin_trusted_scoring_signals_value =
+          TrustedSignals::Result::WrapCrossOriginSignals(
+              v8_helper_.get(), context, *trusted_scoring_signals_origin_,
+              trusted_scoring_signals_value);
+    } else {
+      cross_origin_trusted_scoring_signals_value = v8::Null(isolate);
+    }
+    args.push_back(cross_origin_trusted_scoring_signals_value);
+  }
 
   v8::Local<v8::Value> score_ad_result;
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
@@ -1545,6 +1653,15 @@ void SellerWorklet::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
   DCHECK(!paused_);
 
+  WorkletLoader::AllowTrustedScoringSignalsCallback
+      on_got_cross_origin_signals_permissions;
+  if (trusted_signals_relation_ ==
+      SignalsOriginRelation::kUnknownPermissionCrossOriginSignals) {
+    on_got_cross_origin_signals_permissions = base::BindOnce(
+        &SellerWorklet::OnGotCrossOriginTrustedSignalsPermissions,
+        base::Unretained(this));
+  }
+
   base::UmaHistogramCounts100000(
       "Ads.InterestGroup.Net.RequestUrlSizeBytes.ScoringScriptJS",
       script_source_url_.spec().size());
@@ -1553,7 +1670,7 @@ void SellerWorklet::Start() {
       CreateNewAuctionNetworkEventsHandlerRemote(
           auction_network_events_handler_),
       script_source_url_, v8_helper_, debug_id_,
-      WorkletLoader::AllowTrustedScoringSignalsCallback(),
+      std::move(on_got_cross_origin_signals_permissions),
       base::BindOnce(&SellerWorklet::OnDownloadComplete,
                      base::Unretained(this)));
 }
@@ -1581,10 +1698,13 @@ void SellerWorklet::OnDownloadComplete(WorkletLoader::Result worklet_script,
   // ReportResult() callbacks.
   load_script_error_msg_ = std::move(error_msg);
 
-  v8_runner_->PostTask(FROM_HERE,
-                       base::BindOnce(&SellerWorklet::V8State::SetWorkletScript,
-                                      base::Unretained(v8_state_.get()),
-                                      std::move(worklet_script)));
+  DCHECK_NE(trusted_signals_relation_,
+            SignalsOriginRelation::kUnknownPermissionCrossOriginSignals);
+  v8_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SellerWorklet::V8State::SetWorkletScript,
+                     base::Unretained(v8_state_.get()),
+                     std::move(worklet_script), trusted_signals_relation_));
   MaybeRecordCodeWait();
 
   for (auto score_ad_task = score_ad_tasks_.begin();
@@ -1611,6 +1731,39 @@ void SellerWorklet::MaybeRecordCodeWait() {
   for (auto& task : report_result_tasks_) {
     task.wait_code = now - task.trace_wait_deps_start;
   }
+}
+
+void SellerWorklet::OnGotCrossOriginTrustedSignalsPermissions(
+    std::vector<url::Origin> permit_origins) {
+  DCHECK_EQ(trusted_signals_relation_,
+            SignalsOriginRelation::kUnknownPermissionCrossOriginSignals);
+
+  for (const auto& permitted_origin : permit_origins) {
+    if (trusted_scoring_signals_origin_->IsSameOriginWith(permitted_origin)) {
+      // Cross-origin trusted signals fetch authorized, so let it start.
+      trusted_signals_relation_ =
+          SignalsOriginRelation::kPermittedCrossOriginSignals;
+      trusted_signals_request_manager_->Resume();
+      return;
+    }
+  }
+
+  // Trusted scoring signals fetch disallowed; remove them from the queue and
+  // proceed without them.
+  trusted_signals_relation_ =
+      SellerWorklet::SignalsOriginRelation::kForbiddenCrossOriginSignals;
+  for (auto& task : score_ad_tasks_) {
+    task.trusted_scoring_signals_request.reset();
+  }
+
+  // Also remove the `trusted_signals_request_manager_` so we don't try to
+  // fetch any more.
+  trusted_signals_request_manager_.reset();
+
+  // If we're here, we don't actually have to worry about kicking off scoreAd()
+  // execution since we only got the headers for the script; the body hasn't
+  // been handed to us yet.
+  DCHECK(!IsCodeReady());
 }
 
 void SellerWorklet::OnTrustedScoringSignalsDownloaded(

@@ -28,6 +28,7 @@
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "gin/converter.h"
+#include "gin/dictionary.h"
 #include "net/base/parse_number.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "url/gurl.h"
@@ -386,6 +387,22 @@ v8::Local<v8::Object> TrustedSignals::Result::GetScoringSignals(
     DCHECK(result);
   }
 
+  return out;
+}
+
+// static
+v8::Local<v8::Value> TrustedSignals::Result::WrapCrossOriginSignals(
+    AuctionV8Helper* v8_helper,
+    v8::Local<v8::Context> context,
+    const url::Origin& source_origin,
+    v8::Local<v8::Value> signals) {
+  v8::Isolate* isolate = v8_helper->isolate();
+  if (signals->IsNullOrUndefined()) {
+    return v8::Null(isolate);
+  }
+  v8::Local<v8::Object> out = v8::Object::New(v8_helper->isolate());
+  gin::Dictionary out_converter(isolate, out);
+  out_converter.Set(source_origin.Serialize(), signals);
   return out;
 }
 

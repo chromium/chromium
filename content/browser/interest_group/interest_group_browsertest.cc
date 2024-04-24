@@ -23300,6 +23300,152 @@ IN_PROC_BROWSER_TEST_F(InterestGroupOOPIFBrowserTest,
                 ->ShouldChangeRenderFrameHostOnSameSiteNavigation());
 }
 
+class InterestGroupCrossOriginTrustedSignalsBrowserTest
+    : public InterestGroupBrowserTest {
+ public:
+  InterestGroupCrossOriginTrustedSignalsBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kFledgePermitCrossOriginTrustedSignals);
+  }
+
+  ~InterestGroupCrossOriginTrustedSignalsBrowserTest() override = default;
+
+  void TestTrustedSellerSignals(bool expect_success,
+                                bool add_cors_header,
+                                bool add_script_header);
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+void InterestGroupCrossOriginTrustedSignalsBrowserTest::
+    TestTrustedSellerSignals(bool expect_success,
+                             bool add_cors_header,
+                             bool add_script_header) {
+  // This test cares about kSellerSignals and kSeller being cross-origin.
+  // Whether other origins are the same or different does not matter.
+  const char kPublisher[] = "a.test";
+  const char kBidder[] = "b.test";
+  const char kSeller[] = "c.test";
+  const char kSellerSignals[] = "d.test";
+
+  GURL seller_signals_url = embedded_https_test_server().GetURL(
+      kSellerSignals, "/trusted_scoring_signals.json");
+
+  GURL ad_url = embedded_https_test_server().GetURL(
+      kBidder, "/set-header?Supports-Loading-Mode: fenced-frame");
+
+  // Navigate to bidder site, and add an interest group.
+  GURL bidder_url = embedded_https_test_server().GetURL(kBidder, "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
+  url::Origin bidder_origin = url::Origin::Create(bidder_url);
+  EXPECT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                blink::TestInterestGroupBuilder(
+                    /*owner=*/bidder_origin,
+                    /*name=*/"cars")
+                    .SetBiddingUrl(embedded_https_test_server().GetURL(
+                        kBidder, "/interest_group/bidding_logic.js"))
+                    .SetAds({{{ad_url, /*metadata=*/std::nullopt}}})
+                    .Build()));
+
+  // Navigate to publisher.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_https_test_server().GetURL(
+                                 kPublisher, "/page_with_iframe.html")));
+
+  GURL seller_logic_url = embedded_https_test_server().GetURL(
+      kSeller, "/interest_group/decision_logic_need_signals.js");
+  // Register a seller script that only bids if
+  // `crossOriginTrustedScoringSignals` are successfully fetched.
+  NetworkResponder::ResponseHeaders extra_js_headers;
+  if (add_script_header) {
+    extra_js_headers.emplace_back(
+        std::string("Ad-Auction-Allow-Trusted-Scoring-Signals-From"),
+        base::StringPrintf(
+            "\"%s\"",
+            url::Origin::Create(seller_signals_url).Serialize().c_str()));
+  }
+  const char kSellerScriptTemplate[] = R"(
+    function scoreAd(
+        adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals,
+        directFromSellerSignals, crossOriginTrustedScoringSignals) {
+      if (trustedScoringSignals !== null) {
+        return 0;
+      }
+
+      if (browserSignals.crossOriginDataVersion !== 25) {
+        return 0;
+      }
+
+      if ('dataVersion' in browserSignals) {
+        return 0;
+      }
+
+      if (crossOriginTrustedScoringSignals[$1].renderURL[
+              browserSignals.renderURL] === "foo") {
+        return bid;
+      }
+      return 0;
+    }
+  )";
+
+  network_responder_->RegisterNetworkResponse(
+      seller_logic_url.path(),
+      JsReplace(kSellerScriptTemplate, url::Origin::Create(seller_signals_url)),
+      "application/javascript", std::move(extra_js_headers));
+
+  // Register seller signals with a value for `ad_url`, and a CORS header
+  // permitting script to access it.
+  NetworkResponder::ResponseHeaders extra_json_headers;
+  extra_json_headers.emplace_back("Data-Version", "25");
+  if (add_cors_header) {
+    extra_json_headers.emplace_back(
+        std::string("Access-Control-Allow-Origin"),
+        url::Origin::Create(seller_logic_url).Serialize());
+  }
+  network_responder_->RegisterNetworkResponse(
+      seller_signals_url.path(),
+      base::StringPrintf(R"({"renderUrls": {"%s": "foo"}})",
+                         ad_url.spec().c_str()),
+      "application/json", std::move(extra_json_headers));
+
+  // Run an auction with the scoring script. It should succeed.
+  const char kConfigTemplate[] = R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    trustedScoringSignalsURL: $3,
+    interestGroupBuyers: [$4],
+  })";
+  std::string config =
+      JsReplace(kConfigTemplate, url::Origin::Create(seller_logic_url),
+                seller_logic_url, seller_signals_url, bidder_origin);
+  // Should succeed with CORS header, fail without.
+  if (expect_success) {
+    EXPECT_EQ(ad_url, RunAuctionAndWaitForUrl(config));
+  } else {
+    EXPECT_EQ(nullptr, RunAuctionAndWait(config));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
+                       SellerSignalsPermitted) {
+  TestTrustedSellerSignals(/*expect_success=*/true, /*add_cors_header=*/true,
+                           /*add_script_header=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
+                       SellerSignalsNoCors) {
+  TestTrustedSellerSignals(/*expect_success=*/false, /*add_cors_header=*/false,
+                           /*add_script_header=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
+                       SellerSignalsNoScriptHeader) {
+  TestTrustedSellerSignals(/*expect_success=*/false, /*add_cors_header=*/true,
+                           /*add_script_header=*/false);
+}
+
 }  // namespace
 
 }  // namespace content
