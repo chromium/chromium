@@ -188,7 +188,7 @@ interface GpuService {
   // host since multiple clients may be using the same physical disk path. Note
   // that this method is used only from a trusted process.
   LoadedBlob(gpu.mojom.GpuDiskCacheHandle cache_handle,
-             string key,
+             mojo_base.mojom.ByteString key,
              mojo_base.mojom.ByteString data);
 
   // Tells GPU to wake up the GPU because we're about to draw.
