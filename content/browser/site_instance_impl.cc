@@ -1191,8 +1191,13 @@ bool SiteInstanceImpl::IsSameSite(const IsolationContext& isolation_context,
 
   // If the destination url is just a blank page, we treat them as part of the
   // same site.
-  if (dest_url.IsAboutBlank())
+  if (dest_url.IsAboutBlank()) {
+    // TODO(https://crbug.com/1440543): It's actually possible for the
+    // about:blank page to inherit an origin that doesn't match `src_origin`. In
+    // that case we shouldn't treat it as same-site. Consider changing this
+    // behavior if all tests can pass.
     return true;
+  }
 
   // If the source and destination URLs are equal excluding the hash, they have
   // the same site.  This matters for file URLs, where SameDomainOrHost() would

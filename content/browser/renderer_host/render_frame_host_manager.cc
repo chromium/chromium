@@ -3066,9 +3066,10 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
 
   // If the entry has an instance already we should usually use it, unless it is
   // no longer suitable.
-  if (dest_instance && CanUseDestinationInstance(
-                           dest_url_info, current_instance, dest_instance,
-                           error_page_process, browsing_context_group_swap)) {
+  if (dest_instance &&
+      CanUseDestinationInstance(dest_url_info, current_instance, dest_instance,
+                                error_page_process, browsing_context_group_swap,
+                                was_server_redirect)) {
     AppendReason(reason, "DetermineSiteInstanceForURL => dest_instance");
     return SiteInstanceDescriptor(dest_instance);
   }
@@ -3313,7 +3314,8 @@ bool RenderFrameHostManager::CanUseDestinationInstance(
     SiteInstanceImpl* current_instance,
     SiteInstanceImpl* dest_instance,
     NavigationRequest::ErrorPageProcess error_page_process,
-    const BrowsingContextGroupSwap& browsing_context_group_swap) {
+    const BrowsingContextGroupSwap& browsing_context_group_swap,
+    bool was_server_redirect) {
   // Start by verifying that the dest_instance is compatible with the browsing
   // context group swap decision.
   if (browsing_context_group_swap.ShouldSwap()) {
@@ -3358,8 +3360,20 @@ bool RenderFrameHostManager::CanUseDestinationInstance(
       (dest_url_info.url.SchemeIs(url::kDataScheme) ||
        IsAbout(dest_url_info.url)) &&
       !dest_url_info.is_sandboxed;
-  if (is_data_or_about_and_not_sandboxed)
-    return true;
+  if (is_data_or_about_and_not_sandboxed) {
+    // Server redirects to data: and about: URLs can only be done by
+    // extensions. In this case, we are doing a history navigation to a URL
+    // that wasn't redirected by extensions before, but got redirected to a
+    // data: or about: URL when doing a history traversal back to it. Since the
+    // redirect isn't related to the original page at all, don't use the saved
+    // SiteInstance.
+    // See also https://crbug.com/1440543, https://crbug.com/1454273, and the
+    // comment about a similar case for non-history navigations in
+    // `CanUseSourceSiteInstance()`.
+    // TODO(https://crbug.com/1440543): Make `IsSuitableForUrlInfo()` handle
+    // this case instead.
+    return !was_server_redirect;
+  }
 
   return dest_instance->IsSuitableForUrlInfo(dest_url_info);
 }
