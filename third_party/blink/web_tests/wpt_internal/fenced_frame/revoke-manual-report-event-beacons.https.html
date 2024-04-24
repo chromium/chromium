@@ -16,8 +16,18 @@
     // for a custom URL event. Both beacons are expected not to send, because
     // network revocation should prevent the requests from going out.
     await fencedframe.execute(async () => {
+      // This fenced frame will not have its network revoked. This is done to
+      // check that popup navigations do not work regardless of the network status
+      // of a frame's descendants.
+      await attachFencedFrameContext({generator_api: 'sharedstorage'});
 
-      await window.fence.disableUntrustedNetwork();
+      let timeout_promise = new Promise(
+          resolve => setTimeout(() => {resolve('timeout')}, 500));
+      const result =
+          await Promise.race([
+              window.fence.disableUntrustedNetwork(), timeout_promise]);
+      assert_equals(result, 'timeout',
+          "The disableUntrustedNetwork() promise should not resolve.");
 
       const destination_enum_event = {
         eventType: 'click',

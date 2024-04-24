@@ -32,7 +32,8 @@ promise_test(async (t) => {
     let get_result = await sharedStorage.get('test');
     assert_equals(get_result, 'apple');
   });
-}, 'Test sharedStorage.get() succeeds in a fenced frame with network revocation.');
+}, 'Test sharedStorage.get() succeeds in a fenced frame with network ' +
+   'revocation.');
 
 promise_test(async (t) => {
   const fencedframe = await attachFencedFrameContext(
@@ -49,7 +50,8 @@ promise_test(async (t) => {
         'has been revoked with window.fence.disableUntrustedNetwork()');
     }
   });
-}, 'Test that sharedStorage.get() in a fenced frame rejects when network is not revoked.');
+}, 'Test that sharedStorage.get() in a fenced frame rejects when network is ' +
+   'not revoked.');
 
 promise_test(async (t) => {
   const fencedframe = await attachFencedFrameContext(
@@ -60,7 +62,8 @@ promise_test(async (t) => {
     let get_result = await sharedStorage.get('test');
     assert_equals(get_result, 'banana');
   });
-}, 'Test that sharedStorage.get() can only fetch keys for its own origin when network is revoked.');
+}, 'Test that sharedStorage.get() can only fetch keys for its own origin ' +
+   'when network is revoked.');
 
 promise_test(async (t) => {
     // First, try get() in a top-level document.
@@ -91,36 +94,38 @@ promise_test(async (t) => {
   const fencedframe = await attachFencedFrameContext(
     {origin: get_host_info().HTTPS_ORIGIN});
 
-  let get_result = await fencedframe.execute(async () => {
-    const nested_frame = await attachFencedFrameContext(
-      {origin: get_host_info().HTTPS_ORIGIN});
+  const destination_url = new URL('resources/dummy.html', location.href);
 
-    // Note that the parent fenced frame has not disabled network at this point.
-    return nested_frame.execute(async () => {
-      await window.fence.disableUntrustedNetwork();
-      return sharedStorage.get('test');
-    });
-  });
-
-  assert_equals(get_result, 'apple');
-}, 'Test that sharedStorage.get() succeeds in a nested fenced frame with network disabled, ' +
-   'even if the parent fenced frame has not disabled network yet.');
-
-promise_test(async (t) => {
-  const fencedframe = await attachFencedFrameContext(
-    {origin: get_host_info().HTTPS_ORIGIN});
-
-  await fencedframe.execute(async () => {
+  await fencedframe.execute(async (destination_url) => {
     const nested_frame = await attachFencedFrameContext(
       {origin: get_host_info().HTTPS_ORIGIN})
 
     // Note that we do *not* await, because we need to operate in the top frame
     // while the nested frame still hasn't disabled network access.
-    // TODO(crbug.com/324440086): disableUntrustedNetwork() should not resolve
-    // until all child frames also disable untrusted network. However, that
-    // behavior is yet to be implemented. We should add a timeout check here
-    // once the async behavior of disableUntrustedNetwork() is correct.
     let disable_network_promise = window.fence.disableUntrustedNetwork();
+
+    let timeout_promise = new Promise(
+        resolve => setTimeout(() => {resolve('timeout')}, 1000));
+    const result =
+        await Promise.race([disable_network_promise, timeout_promise]);
+    assert_equals(result, 'timeout',
+        "The disableUntrustedNetwork() promise should not resolve.");
+
+    // Even though disableUntrustedNetwork() has not resolved, network calls
+    // should not succeed.
+    try {
+      const response_failure = await fetch(destination_url);
+      assert_unreached('The fetch should throw an exception.');
+    } catch (e) {
+      assert_equals(e.name, 'TypeError');
+      assert_equals(e.message, 'Failed to fetch');
+    }
+
+    // Network calls in the nested fenced frame should still succeed, since
+    // their network hasn't been cut off yet.
+    await nested_frame.execute(async (destination_url) => {
+      await fetch(destination_url);
+    }, [destination_url]);
 
     try {
       await sharedStorage.get('test');
@@ -133,10 +138,9 @@ promise_test(async (t) => {
         'fenced frame until network access for it and all descendent frames ' +
         'has been revoked with window.fence.disableUntrustedNetwork()');
     }
-  });
-}, 'sharedStorage.get() fails in a top-level fenced frame with network disabled, ' +
-   'because a nested fenced frame has not disabled network yet.');
+  }, [destination_url]);
+}, 'sharedStorage.get() fails in a top-level fenced frame with network ' +
+   'disabled because a nested fenced frame has not disabled network yet.');
 
 </script>
 </body>
-

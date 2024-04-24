@@ -15,7 +15,7 @@
 <script>
 
 promise_test(async(t) => {
-  const fencedframe = await attachFencedFrameContext({generator_api: 'fledge'});
+  const fencedframe = await attachFencedFrameContext();
   await fencedframe.execute(() => {});
 
   const actions = new test_driver.Actions();
@@ -26,7 +26,19 @@ promise_test(async(t) => {
              .send();
 
   await fencedframe.execute(async () => {
-    await window.fence.disableUntrustedNetwork();
+    // This fenced frame will not have its network revoked. This is done to
+    // check that popup navigations do not work regardless of the network status
+    // of a frame's descendants.
+    await attachFencedFrameContext();
+
+    let timeout_promise = new Promise(
+        resolve => setTimeout(() => {resolve('timeout')}, 500));
+    const result =
+        await Promise.race([
+            window.fence.disableUntrustedNetwork(), timeout_promise]);
+    assert_equals(result, 'timeout',
+        "The disableUntrustedNetwork() promise should not resolve.");
+
     // After disabling network, popup navigations should not work.
     assert_true(navigator.userActivation.isActive,
                 'The frame should have user activation.');

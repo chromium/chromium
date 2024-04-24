@@ -6710,15 +6710,22 @@ IN_PROC_BROWSER_TEST_F(
   // Note that we do *not* await the call to disableUntrustedNetwork, because we
   // need to operate in the top frame while the nested frame still hasn't
   // disabled network access.
-  // TODO(crbug.com/324440086): disableUntrustedNetwork() should not resolve
-  // until all child frames also disable untrusted network. However, that
-  // behavior is yet to be implemented. We should add a timeout check here
-  // once the async behavior of disableUntrustedNetwork() is correct.
-  EvalJsResult get_result = EvalJs(fenced_frame_root_node, R"(
+  EXPECT_TRUE(ExecJs(fenced_frame_root_node, R"(
     (async () => {
-      let disable_network_promise = window.fence.disableUntrustedNetwork();
-      await sharedStorage.get('test');
+      window.fence.disableUntrustedNetwork();
     })();
+  )"));
+
+  // Wait before calling sharedStorage.get() in case the fenced frame was given
+  // access to Shared Storage without disableUntrustedNetwork() actually
+  // resolving.
+  base::RunLoop disable_network_wait;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, disable_network_wait.QuitClosure(), base::Milliseconds(500));
+  disable_network_wait.Run();
+
+  EvalJsResult get_result = EvalJs(fenced_frame_root_node, R"(
+    sharedStorage.get('test');
   )");
 
   EXPECT_THAT(

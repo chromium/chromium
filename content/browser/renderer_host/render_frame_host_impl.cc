@@ -1100,7 +1100,8 @@ bool ValidateUnfencedTopNavigation(
             render_frame_host->frame_tree_node()->GetFencedFrameProperties(
                 FencedFramePropertiesNodeSource::kFrameTreeRoot);
     if (initiator_fenced_frame_properties.has_value() &&
-        initiator_fenced_frame_properties->has_disabled_untrusted_network()) {
+        initiator_fenced_frame_properties
+            ->HasDisabledNetworkForCurrentFrameTree()) {
       render_frame_host->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
           "_unfencedTop navigations are not allowed after the fenced frame's "
@@ -8421,7 +8422,8 @@ void RenderFrameHostImpl::CreateNewWindow(
             frame_tree_node()->GetFencedFrameProperties(
                 FencedFramePropertiesNodeSource::kFrameTreeRoot);
     if (initiator_fenced_frame_properties.has_value() &&
-        initiator_fenced_frame_properties->has_disabled_untrusted_network()) {
+        initiator_fenced_frame_properties
+            ->HasDisabledNetworkForCurrentFrameTree()) {
       AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
           "Popup creation is not allowed after the fenced frame's "
@@ -8703,6 +8705,9 @@ void RenderFrameHostImpl::DestroyFencedFrame(FencedFrame& fenced_frame) {
                                   base::MatchesUniquePtr(&fenced_frame));
   CHECK(it != fenced_frames_.end());
   fenced_frames_.erase(it);
+  // An ancestor's network revocation status could've changed as a result of
+  // this fenced frame being removed.
+  GetOutermostMainFrame()->CalculateUntrustedNetworkStatus();
 }
 
 void RenderFrameHostImpl::CreateFencedFrame(
@@ -8776,6 +8781,20 @@ void RenderFrameHostImpl::CreateFencedFrame(
   // Fenced frames (after their first navigation) do not have opaque origins,
   // and this default-constructed FRS does not impact that.
   DCHECK(initial_replicated_state.origin.opaque());
+
+  // A fenced frame that is added to a frame tree whose network has already been
+  // revoked will never be able to navigate. For all intents and purposes, this
+  // fenced frame has its network revoked as well.
+  if (frame_tree_node_->GetFencedFrameProperties(
+          FencedFramePropertiesNodeSource::kFrameTreeRoot) &&
+      frame_tree_node_
+          ->GetFencedFrameProperties(
+              FencedFramePropertiesNodeSource::kFrameTreeRoot)
+          ->HasDisabledNetworkForCurrentFrameTree()) {
+    proxy_host->frame_tree_node()
+        ->GetFencedFrameProperties()
+        ->MarkDisabledNetworkForCurrentAndDescendantFrameTrees();
+  }
 }
 
 void RenderFrameHostImpl::ForwardFencedFrameEventToEmbedder(
@@ -9133,7 +9152,8 @@ void RenderFrameHostImpl::SendFencedFrameReportingBeaconInternal(
 
   auto properties = frame_tree_node()->GetFencedFrameProperties(
       FencedFramePropertiesNodeSource::kFrameTreeRoot);
-  if (properties.has_value() && properties->has_disabled_untrusted_network()) {
+  if (properties.has_value() &&
+      properties->HasDisabledNetworkForCurrentFrameTree()) {
     error_message =
         "Cannot send fenced frame event-level reports after "
         "calling window.fence.disableUntrustedNetwork().";
@@ -9310,10 +9330,85 @@ void RenderFrameHostImpl::RevokeNetworkForNonceCallback(
     std::move(callback).Run();
     return;
   }
-  // Now that the nonce has been revoked, mark the fenced frame tree's network
-  // as having been disabled in the fenced frame properties.
-  properties->MarkUntrustedNetworkDisabled();
-  std::move(callback).Run();
+
+  if (properties->HasDisabledNetworkForCurrentAndDescendantFrameTrees()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  // Add the callback to the fenced frame root's document data. This is done
+  // since we need to check all of a fenced frame's descendants before we can
+  // determine if a fenced frame is ready for full network cutoff.
+  FencedDocumentData* fenced_document_data =
+      FencedDocumentData::GetOrCreateForCurrentDocument(GetMainFrame());
+  fenced_document_data->AddDisabledUntrustedNetworkCallback(
+      std::move(callback));
+
+  // We then need to recalculate the network revocation status of every frame in
+  // the frame tree, as an ancestor's revocation status could've changed as a
+  // result. Do not mark the network as having been disabled yet, as all
+  // subframes need to have their network disabled before this frame's network
+  // can be considered disabled.
+  properties->MarkDisabledNetworkForCurrentFrameTree();
+  GetOutermostMainFrame()->CalculateUntrustedNetworkStatus();
+}
+
+void RenderFrameHostImpl::CalculateUntrustedNetworkStatus() {
+  FrameTree::NodeRange node_range =
+      frame_tree()->NodesIncludingInnerTreeNodes();
+  std::vector<FrameTreeNode*> subframe_nodes(std::next(node_range.begin()),
+                                             node_range.end());
+  std::reverse(subframe_nodes.begin(), subframe_nodes.end());
+  std::set<int> node_ids_with_network_allowed_descendants;
+  // This loop traverses up the frame tree, determining if each fenced frame
+  // root node meets the criteria for network cutoff. We look at the most deeply
+  // nested nodes first since each node's network cutoff status is reliant on
+  // the network cutoff status of all its descendant fenced frame trees.
+  for (auto it : subframe_nodes) {
+    // Only check the network cutoff status for each fenced frame root, as they
+    // are the source of network cutoff.
+    if (!it->IsFencedFrameRoot()) {
+      continue;
+    }
+
+    std::optional<FencedFrameProperties>& properties =
+        it->GetFencedFrameProperties(
+            FencedFramePropertiesNodeSource::kFrameTreeRoot);
+    CHECK(properties.has_value());
+
+    // Avoid redundant processing if network has already been disabled for this
+    // FrameTreeNode.
+    if (properties->HasDisabledNetworkForCurrentAndDescendantFrameTrees()) {
+      continue;
+    }
+
+    bool all_children_have_network_cutoff =
+        !node_ids_with_network_allowed_descendants.contains(
+            it->frame_tree_node_id());
+    bool network_cutoff_ready =
+        all_children_have_network_cutoff &&
+        properties->HasDisabledNetworkForCurrentFrameTree();
+
+    if (network_cutoff_ready) {
+      properties->MarkDisabledNetworkForCurrentAndDescendantFrameTrees();
+      if (FencedDocumentData* fenced_document_data =
+              FencedDocumentData::GetForCurrentDocument(
+                  it->current_frame_host())) {
+        // Run the relevant callbacks for this frame as well as any same-origin
+        // child iframe that might've called disableUntrustedNetwork() as well.
+        fenced_document_data->RunDisabledUntrustedNetworkCallbacks();
+      }
+    } else if (it->GetParentOrOuterDocument() &&
+               it->GetParentOrOuterDocument()->IsNestedWithinFencedFrame()) {
+      // If network cutoff is not ready for a fenced frame root, none of its
+      // ancestor fenced frames will be ready for network cutoff either.
+      node_ids_with_network_allowed_descendants.insert(
+          it->GetParentOrOuterDocument()
+              ->GetMainFrame()
+              ->frame_tree_node()
+              ->frame_tree_node_id());
+    }
+  }
 }
 
 void RenderFrameHostImpl::ExemptUrlFromNetworkRevocationForTesting(
@@ -16474,32 +16569,10 @@ bool RenderFrameHostImpl::CanReadFromSharedStorage() {
     return false;
   }
 
-  bool allowed = true;
-  // TODO(averge): There's probably some redundant traversal happening here,
-  // because if we know that a fenced frame root has network disabled, then
-  // we know all iframe children in the inner FrameTree also have network
-  // disabled. For now we'll check every RFHI to be safest, but it might be
-  // better to add a ForEachFencedFrameRoot traversal to speed things up a bit.
-  // TODO(averge): Credentialless iframes have their own per-`Page` nonce that
-  // will be revoked alongside the fenced frame's nonce. Once revocation is
-  // implemented for credentialless iframes, we should do one of 2 things:
-  // 1. Only set has_disabled_untrusted_network if both nonces are revoked.
-  // 2. If not, this traversal should check if the current `Page` for each RFHI
-  // has a revoked iframe nonce.
-  ForEachRenderFrameHost([&allowed](RenderFrameHostImpl* rfhi) {
-    // URN iframes cannot disable untrusted network on their own, so
-    // kClosestAncestor isn't appropriate here. Using kFrameTreeRoot will search
-    // for the root node of each FrameTree, and for fenced frames, this will
-    // always be the root of the fenced frame tree.
-    auto properties = rfhi->frame_tree_node()->GetFencedFrameProperties(
-        FencedFramePropertiesNodeSource::kFrameTreeRoot);
-    if (!properties.has_value() ||
-        !properties->has_disabled_untrusted_network()) {
-      allowed = false;
-    }
-  });
-
-  return allowed;
+  auto properties = frame_tree_node()->GetFencedFrameProperties(
+      FencedFramePropertiesNodeSource::kFrameTreeRoot);
+  return properties.has_value() &&
+         properties->HasDisabledNetworkForCurrentAndDescendantFrameTrees();
 }
 
 bool RenderFrameHostImpl::ShouldReuseCompositing(

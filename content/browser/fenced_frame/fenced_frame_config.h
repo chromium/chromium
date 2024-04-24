@@ -209,6 +209,16 @@ class CONTENT_EXPORT FencedFrameProperty {
   VisibilityToContent visibility_to_content_;
 };
 
+enum class DisableUntrustedNetworkStatus {
+  kNotStarted,
+  // Set when the fenced frame has called window.fence.disableUntrustedNetwork()
+  // but its descendant fenced frames have not had their network access cut off
+  // yet.
+  kCurrentFrameTreeComplete,
+  // Set after all descendant fenced frames have had network cut off.
+  kCurrentAndDescendantFrameTreesComplete
+};
+
 // A collection of properties that can be loaded into a fenced frame and
 // specifies its subsequent behavior. (During a navigation, they are
 // transformed into a `FencedFrameProperties` object, and installed at
@@ -524,14 +534,34 @@ class CONTENT_EXPORT FencedFrameProperties {
     return can_disable_untrusted_network_;
   }
 
-  bool has_disabled_untrusted_network() const {
-    return has_disabled_untrusted_network_;
+  bool HasDisabledNetworkForCurrentFrameTree() const {
+    return disable_untrusted_network_status_ ==
+               DisableUntrustedNetworkStatus::kCurrentFrameTreeComplete ||
+           disable_untrusted_network_status_ ==
+               DisableUntrustedNetworkStatus::
+                   kCurrentAndDescendantFrameTreesComplete;
+  }
+
+  bool HasDisabledNetworkForCurrentAndDescendantFrameTrees() const {
+    return disable_untrusted_network_status_ ==
+           DisableUntrustedNetworkStatus::
+               kCurrentAndDescendantFrameTreesComplete;
+  }
+
+  void MarkDisabledNetworkForCurrentFrameTree() {
+    CHECK(can_disable_untrusted_network_);
+    CHECK(
+        disable_untrusted_network_status_ !=
+        DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+    disable_untrusted_network_status_ =
+        DisableUntrustedNetworkStatus::kCurrentFrameTreeComplete;
   }
 
   // Safe to call multiple times (will do nothing after the first time).
-  void MarkUntrustedNetworkDisabled() {
+  void MarkDisabledNetworkForCurrentAndDescendantFrameTrees() {
     CHECK(can_disable_untrusted_network_);
-    has_disabled_untrusted_network_ = true;
+    disable_untrusted_network_status_ =
+        DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete;
   }
 
  private:
@@ -588,6 +618,11 @@ class CONTENT_EXPORT FencedFrameProperties {
 
   scoped_refptr<FencedFrameReporter> fenced_frame_reporter_;
 
+  // The nonce that will be included in the IsolationInfo, CookiePartitionKey
+  // and StorageKey for network, cookie and storage partitioning, respectively.
+  // As part of IsolationInfo it is also used to identify which network requests
+  // should be disallowed in the network service if the initiator fenced frame
+  // tree has had its network cut off via disableUntrustedNetwork().
   std::optional<FencedFrameProperty<base::UnguessableToken>> partition_nonce_;
 
   DeprecatedFencedFrameMode mode_ = DeprecatedFencedFrameMode::kDefault;
@@ -636,12 +671,11 @@ class CONTENT_EXPORT FencedFrameProperties {
   // TODO(crbug.com/1415475): Remove this when urn iframes are removed.
   bool can_disable_untrusted_network_ = true;
 
-  // Whether this fenced frame has already called
-  // window.fence.disableUntrustedNetwork() (i.e., if this is true, untrusted
-  // network access should be disabled and access to unpartitioned storage
-  // should be enabled.)
-  // Set by `DisableUntrustedNetwork()`.
-  bool has_disabled_untrusted_network_ = false;
+  // Tracks the status of disabling untrusted network in this fenced frame. This
+  // requires the fenced frame and all its descendant fenced frames to call
+  // window.fence.disableUntrustedNetwork().
+  DisableUntrustedNetworkStatus disable_untrusted_network_status_ =
+      DisableUntrustedNetworkStatus::kNotStarted;
 
   // Whether the original document loaded with this config opted in to
   // cross-origin event-level reporting. That is, if the document was served

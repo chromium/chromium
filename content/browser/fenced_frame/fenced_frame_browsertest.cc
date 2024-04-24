@@ -2394,6 +2394,29 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
     content_browser_client_->SetAllowAutomaticBeaconCredentials(allowed);
   }
 
+  void VerifyFencedFrameNetworkStatus(RenderFrameHostImpl* frame,
+                                      DisableUntrustedNetworkStatus status) {
+    std::optional<FencedFrameProperties> props =
+        frame->frame_tree_node()->GetFencedFrameProperties();
+    CHECK(props.has_value());
+
+    bool expected_current_frame_status = false;
+    bool expected_nested_frame_status = false;
+
+    if (status == DisableUntrustedNetworkStatus::kCurrentFrameTreeComplete) {
+      expected_current_frame_status = true;
+    } else if (status == DisableUntrustedNetworkStatus::
+                             kCurrentAndDescendantFrameTreesComplete) {
+      expected_current_frame_status = true;
+      expected_nested_frame_status = true;
+    }
+
+    EXPECT_EQ(props->HasDisabledNetworkForCurrentFrameTree(),
+              expected_current_frame_status);
+    EXPECT_EQ(props->HasDisabledNetworkForCurrentAndDescendantFrameTrees(),
+              expected_nested_frame_status);
+  }
+
   ~FencedFrameParameterizedBrowserTest() override {
     // Shutdown the server explicitly so that there is no race with the
     // destruction of cookie_headers_map_ and invocation of RequestMonitor.
@@ -5084,6 +5107,308 @@ IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
   EXPECT_NE(nested_ff_site_instance, post_navigation_site_instance);
   EXPECT_FALSE(nested_ff_site_instance->IsRelatedSiteInstance(
       post_navigation_site_instance));
+}
+
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
+                       DisableUntrustedNetworkNestedFrames) {
+  // This test creates the following frame setup:
+  // a.test
+  //  └─b.test (fenced)
+  //     ├─c.test
+  //     │  └─c.test
+  //     └─d.test (fenced)
+  // It then calls disableUntrustedNetwork() on b.test, and ensures that network
+  // isn't cut off until d.test's network is revoked.
+
+  GURL main_url(
+      https_server()->GetURL("a.test",
+                             "/cross_site_iframe_factory.html?a.test(b.test{"
+                             "fenced}(c.test(c.test),d.test{fenced}))"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  RenderFrameHostImpl* root = web_contents()->GetPrimaryMainFrame();
+  RenderFrameHostImpl* first_fenced_frame =
+      root->GetFencedFrames().at(0)->GetInnerRoot();
+  RenderFrameHostImpl* second_fenced_frame =
+      first_fenced_frame->GetFencedFrames().at(0)->GetInnerRoot();
+
+  // Call disable untrusted network on the first fenced frame. Make sure it
+  // doesn't resolve.
+  EXPECT_EQ(EvalJs(first_fenced_frame, R"(
+    (async () => {
+      let timeout_promise = new Promise(
+          resolve => setTimeout(() => {resolve('timeout')}, 1000));
+      let disable_network_promise = window.fence.disableUntrustedNetwork();
+      return Promise.race([disable_network_promise, timeout_promise]);
+    })();
+  )"),
+            "timeout");
+
+  VerifyFencedFrameNetworkStatus(
+      first_fenced_frame,
+      DisableUntrustedNetworkStatus::kCurrentFrameTreeComplete);
+  VerifyFencedFrameNetworkStatus(second_fenced_frame,
+                                 DisableUntrustedNetworkStatus::kNotStarted);
+
+  // Call disable untrusted network on the second fenced frame. This one should
+  // resolve and cause the first fenced frame to have full network cutoff.
+  EXPECT_TRUE(ExecJs(second_fenced_frame, R"(
+    (async () => {
+      return window.fence.disableUntrustedNetwork();
+    })();
+  )"));
+
+  VerifyFencedFrameNetworkStatus(
+      first_fenced_frame,
+      DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+  VerifyFencedFrameNetworkStatus(
+      second_fenced_frame,
+      DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+}
+
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
+                       DisableUntrustedNetworkParallelTrees) {
+  // This test creates the following frame setup:
+  // a.test
+  //  ├─b.test (fenced) (FF1)
+  //  │  └─b.test (fenced) (FF2)
+  //  └─c.test (fenced) (FF3)
+  //     └─c.test (fenced) (FF4)
+  // It then makes the following calls and checks:
+  // 1. FF1 disableUntrustedNetwork(), no promise resolved.
+  // 2. FF4 disableUntrustedNetwork(), FF4 promise resolved.
+  // 3. FF3 disableUntrustedNetwork(), FF3 promise resolved.
+  // 4. FF2 disableUntrustedNetwork(), FF1 & FF2 promise resolved.
+
+  GURL main_url(
+      https_server()->GetURL("a.test",
+                             "/cross_site_iframe_factory.html?a.test(b.test{"
+                             "fenced}(b.test{fenced}),c.test{fenced}(c.test{"
+                             "fenced}))"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHostImpl* root = web_contents()->GetPrimaryMainFrame();
+  RenderFrameHostImpl* ff1 = root->GetFencedFrames().at(0)->GetInnerRoot();
+  RenderFrameHostImpl* ff2 = ff1->GetFencedFrames().at(0)->GetInnerRoot();
+  RenderFrameHostImpl* ff3 = root->GetFencedFrames().at(1)->GetInnerRoot();
+  RenderFrameHostImpl* ff4 = ff3->GetFencedFrames().at(0)->GetInnerRoot();
+
+  // Call disable untrusted network on the first fenced frame. Make sure it
+  // doesn't resolve.
+  EXPECT_EQ(EvalJs(ff1, R"(
+    (async () => {
+      let timeout_promise = new Promise(
+          resolve => setTimeout(() => {resolve('timeout')}, 1000));
+      let disable_network_promise = window.fence.disableUntrustedNetwork();
+      return Promise.race([disable_network_promise, timeout_promise]);
+    })();
+  )"),
+            "timeout");
+
+  // Only the first fenced frame should have marked its frame tree as disabled.
+  // No frame trees should have full network cutoff.
+  VerifyFencedFrameNetworkStatus(
+      ff1, DisableUntrustedNetworkStatus::kCurrentFrameTreeComplete);
+  VerifyFencedFrameNetworkStatus(ff2,
+                                 DisableUntrustedNetworkStatus::kNotStarted);
+  VerifyFencedFrameNetworkStatus(ff3,
+                                 DisableUntrustedNetworkStatus::kNotStarted);
+  VerifyFencedFrameNetworkStatus(ff4,
+                                 DisableUntrustedNetworkStatus::kNotStarted);
+
+  // Call disable untrusted network on the 4th fenced frame. It should resolve.
+  EXPECT_TRUE(ExecJs(ff4, R"(
+    (async () => {
+      return window.fence.disableUntrustedNetwork();
+    })();
+  )"));
+
+  // The 4th fenced frame should be fully marked for network cutoff. None of the
+  // other frames should've been affected by this.
+  VerifyFencedFrameNetworkStatus(
+      ff1, DisableUntrustedNetworkStatus::kCurrentFrameTreeComplete);
+  VerifyFencedFrameNetworkStatus(ff2,
+                                 DisableUntrustedNetworkStatus::kNotStarted);
+  VerifyFencedFrameNetworkStatus(ff3,
+                                 DisableUntrustedNetworkStatus::kNotStarted);
+  VerifyFencedFrameNetworkStatus(
+      ff4,
+      DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+
+  // Call disable untrusted network on the 3rd fenced frame. It should resolve.
+  EXPECT_TRUE(ExecJs(ff3, R"(
+    (async () => {
+      return window.fence.disableUntrustedNetwork();
+    })();
+  )"));
+
+  // The 3rd fenced frame should be fully marked for network cutoff. None of the
+  // other frames should've been affected by this.
+  VerifyFencedFrameNetworkStatus(
+      ff1, DisableUntrustedNetworkStatus::kCurrentFrameTreeComplete);
+  VerifyFencedFrameNetworkStatus(ff2,
+                                 DisableUntrustedNetworkStatus::kNotStarted);
+  VerifyFencedFrameNetworkStatus(
+      ff3,
+      DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+  VerifyFencedFrameNetworkStatus(
+      ff4,
+      DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+
+  // Call disable untrusted network on the 2nd fenced frame. It should resolve.
+  EXPECT_TRUE(ExecJs(ff2, R"(
+    (async () => {
+      return window.fence.disableUntrustedNetwork();
+    })();
+  )"));
+
+  // The 2nd fenced frame should be fully marked for network cutoff. The 1st
+  // fenced frame should also be fully marked now that its descendant has lost
+  // network access.
+  VerifyFencedFrameNetworkStatus(
+      ff1,
+      DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+  VerifyFencedFrameNetworkStatus(
+      ff2,
+      DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+  VerifyFencedFrameNetworkStatus(
+      ff3,
+      DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+  VerifyFencedFrameNetworkStatus(
+      ff4,
+      DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+}
+
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
+                       AddFencedFrameToDisabledNetworkTree) {
+  // This test creates the following frame setup:
+  // a.test
+  //  ├─b.test (fenced) FF1
+  //  └─c.test (fenced) FF2
+  // It then cuts off b.test's network access. After doing that, the test adds a
+  // new child fenced frame and checks that the fenced frame did not navigate
+  // and that recalculating the network revocation status (via c.test having its
+  // network revoked) doesn't change the status of b.test.
+
+  GURL main_url(https_server()->GetURL(
+      "a.test",
+      "/cross_site_iframe_factory.html?a.test(b.test{fenced},c.test{fenced})"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHostImpl* root = web_contents()->GetPrimaryMainFrame();
+  RenderFrameHostImpl* ff1 = root->GetFencedFrames().at(0)->GetInnerRoot();
+  RenderFrameHostImpl* ff2 = root->GetFencedFrames().at(1)->GetInnerRoot();
+
+  // Disable the fenced frame's network.
+  EXPECT_TRUE(ExecJs(ff1, R"(
+    (async () => {
+      return window.fence.disableUntrustedNetwork();
+    })();
+  )"));
+  VerifyFencedFrameNetworkStatus(
+      ff1,
+      DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+  VerifyFencedFrameNetworkStatus(ff2,
+                                 DisableUntrustedNetworkStatus::kNotStarted);
+
+  // Create and attempt to navigate a child fenced frame after network cutoff.
+  // The creation should succeed, but the navigation should fail.
+  RenderFrameHostImpl* nested_ff =
+      AddNestedFencedFrame(ff1->frame_tree_node(), 0)->current_frame_host();
+  GURL fenced_frame_url(
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html"));
+  EXPECT_TRUE(ExecJs(ff1, JsReplace("document.querySelector('fencedframe')."
+                                    "config = new FencedFrameConfig($1);",
+                                    fenced_frame_url.spec())));
+
+  // Disable the network of an unrelated fenced frame. This will cause the whole
+  // frame tree to be recalculated.
+  EXPECT_TRUE(ExecJs(ff2, R"(
+    (async () => {
+      return window.fence.disableUntrustedNetwork();
+    })();
+  )"));
+  VerifyFencedFrameNetworkStatus(
+      ff2,
+      DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+
+  // The addition of a nested fenced frame that doesn't navigate shouldn't
+  // change the network revocation status of its ancestor. The nested fenced
+  // frame will have been created with its network already being marked as cut
+  // off.
+  VerifyFencedFrameNetworkStatus(
+      ff1,
+      DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+  VerifyFencedFrameNetworkStatus(
+      nested_ff,
+      DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+}
+
+IN_PROC_BROWSER_TEST_F(FencedFrameParameterizedBrowserTest,
+                       AddFencedFrameAfterNetworkCutoff) {
+  // This test creates the following frame setup:
+  // a.test
+  //  └─b.test (fenced)
+  //     └─c.test (fenced)
+  // It then cuts off b.test's network access. After doing that, the test adds a
+  // new fenced frame as a child of b.test and checks that the fenced frame did
+  // not navigate. It then cuts off c.test's network and checks that b.test has
+  // its network revoked as a result.
+
+  GURL main_url(https_server()->GetURL("a.test",
+                                       "/cross_site_iframe_factory.html?a.test("
+                                       "b.test{fenced}(c.test{fenced}))"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHostImpl* root = web_contents()->GetPrimaryMainFrame();
+  RenderFrameHostImpl* ff1 = root->GetFencedFrames().at(0)->GetInnerRoot();
+  RenderFrameHostImpl* ff2 = ff1->GetFencedFrames().at(0)->GetInnerRoot();
+
+  // Disable the outer fenced frame's network.
+  // Call disable untrusted network on the first fenced frame. Make sure it
+  // doesn't resolve.
+  EXPECT_EQ(EvalJs(ff1, R"(
+    (async () => {
+      let timeout_promise = new Promise(
+          resolve => setTimeout(() => {resolve('timeout')}, 1000));
+      let disable_network_promise = window.fence.disableUntrustedNetwork();
+      return Promise.race([disable_network_promise, timeout_promise]);
+    })();
+  )"),
+            "timeout");
+  VerifyFencedFrameNetworkStatus(
+      ff1, DisableUntrustedNetworkStatus::kCurrentFrameTreeComplete);
+  VerifyFencedFrameNetworkStatus(ff2,
+                                 DisableUntrustedNetworkStatus::kNotStarted);
+
+  // Create and attempt to navigate a child fenced frame after network cutoff.
+  // The creation should succeed, but the navigation should fail.
+  RenderFrameHostImpl* nested_ff =
+      AddNestedFencedFrame(ff1->frame_tree_node(), 1)->current_frame_host();
+  GURL fenced_frame_url(
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html"));
+  EXPECT_TRUE(ExecJs(ff1, JsReplace("document.querySelector('fencedframe')."
+                                    "config = new FencedFrameConfig($1);",
+                                    fenced_frame_url.spec())));
+
+  // Disable the network of the other nested fenced frame. This will cause the
+  // whole frame tree to be recalculated.
+  EXPECT_TRUE(ExecJs(ff2, R"(
+    (async () => {
+      return window.fence.disableUntrustedNetwork();
+    })();
+  )"));
+  VerifyFencedFrameNetworkStatus(
+      ff2,
+      DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+
+  // The addition of a nested fenced frame that doesn't navigate shouldn't
+  // change the network revocation status of its ancestor.
+  VerifyFencedFrameNetworkStatus(
+      ff1,
+      DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
+  VerifyFencedFrameNetworkStatus(
+      nested_ff,
+      DisableUntrustedNetworkStatus::kCurrentAndDescendantFrameTreesComplete);
 }
 
 class FencedFrameReportEventBrowserTest

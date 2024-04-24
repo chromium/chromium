@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "content/browser/fenced_frame/automatic_beacon_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
@@ -49,6 +50,12 @@ class CONTENT_EXPORT FencedDocumentData
     features_ = features;
   }
 
+  void AddDisabledUntrustedNetworkCallback(base::OnceClosure callback) {
+    on_disabled_untrusted_network_callbacks_.push_back(std::move(callback));
+  }
+
+  void RunDisabledUntrustedNetworkCallbacks();
+
  private:
   // No public constructors to force going through static methods of
   // DocumentUserData (e.g. CreateForCurrentDocument).
@@ -64,6 +71,11 @@ class CONTENT_EXPORT FencedDocumentData
   // to an AutomaticBeaconInfo object.
   std::map<blink::mojom::AutomaticBeaconType, AutomaticBeaconInfo>
       automatic_beacon_info_;
+
+  // Should be invoked when network access is cut off. This is stored as a
+  // vector to account for the web platform supporting multiple calls to
+  // disableUntrustedNetwork().
+  std::vector<base::OnceClosure> on_disabled_untrusted_network_callbacks_;
 };
 
 }  // namespace content

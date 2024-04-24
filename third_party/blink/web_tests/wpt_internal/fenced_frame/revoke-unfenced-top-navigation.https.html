@@ -27,7 +27,19 @@ promise_test(async(t) => {
 
   const destination_url = new URL('resources/unreached.https.html', location.href);
   fencedframe.execute(async (url) => {
-    await window.fence.disableUntrustedNetwork();
+    // This fenced frame will not have its network revoked. This is done to
+    // check that popup navigations do not work regardless of the network status
+    // of a frame's descendants.
+    await attachFencedFrameContext({generator_api: 'sharedstorage'});
+
+    let timeout_promise = new Promise(
+        resolve => setTimeout(() => {resolve('timeout')}, 500));
+    const revoke_result =
+        await Promise.race([
+            window.fence.disableUntrustedNetwork(), timeout_promise]);
+    assert_equals(revoke_result, 'timeout',
+        "The disableUntrustedNetwork() promise should not resolve.");
+
     // After disabling network, _unfencedTop navigations should not work.
     assert_true(navigator.userActivation.isActive,
                 'The frame should have user activation.')

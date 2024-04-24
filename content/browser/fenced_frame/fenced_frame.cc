@@ -121,7 +121,8 @@ void FencedFrame::Navigate(
         owner_render_frame_host_->frame_tree_node()->GetFencedFrameProperties(
             FencedFramePropertiesNodeSource::kFrameTreeRoot);
     if (embedder_fenced_frame_properties.has_value() &&
-        embedder_fenced_frame_properties->has_disabled_untrusted_network()) {
+        embedder_fenced_frame_properties
+            ->HasDisabledNetworkForCurrentFrameTree()) {
       owner_render_frame_host_->AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,
           "Embedder-initiated navigations of fenced frames are not allowed "
