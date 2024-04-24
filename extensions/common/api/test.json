@@ -223,7 +223,6 @@
         "name": "checkDeepEq",
         "type": "function",
         "nocompile": true,
-        "allowAmbiguousOptionalArguments": true,
         "parameters": [
           // These need to be optional because they can be null.
           {"type": "any", "name": "expected", "optional": true},
@@ -234,7 +233,6 @@
         "name": "assertEq",
         "type": "function",
         "nocompile": true,
-        "allowAmbiguousOptionalArguments": true,
         "parameters": [
           // These need to be optional because they can be null.
           {"type": "any", "name": "expected", "optional": true},
@@ -246,7 +244,6 @@
         "name": "assertNe",
         "type": "function",
         "nocompile": true,
-        "allowAmbiguousOptionalArguments": true,
         "parameters": [
           // These need to be optional because they can be null.
           {"type": "any", "name": "expected", "optional": true},

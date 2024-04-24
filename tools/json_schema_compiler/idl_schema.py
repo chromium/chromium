@@ -226,8 +226,7 @@ class Member(object):
     if self.node.GetProperty('deprecated'):
       properties['deprecated'] = self.node.GetProperty('deprecated')
 
-    for property_name in ['allowAmbiguousOptionalArguments',
-                          'nodoc', 'nocompile', 'nodart',
+    for property_name in ['nodoc', 'nocompile', 'nodart',
                           'serializableFunction']:
       if self.node.GetProperty(property_name):
         properties[property_name] = True
