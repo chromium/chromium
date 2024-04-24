@@ -1611,7 +1611,6 @@
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">您即將啟用 ChromeOS Flex 偵錯功能；啟用後，系統會設定 sshd 協助程式，並啟用 USB 記憶體開機功能。</translation>
 <translation id="2178614541317717477">CA 洩露</translation>
-<translation id="2179416702468739594">正在尋找可用的設定檔。這可能導致流動網絡中斷連線幾分鐘。</translation>
 <translation id="2180620921879609685">封鎖任何頁面上的內容</translation>
 <translation id="2181821976797666341">政策</translation>
 <translation id="2182058453334755893">已複製至剪貼簿</translation>
@@ -1664,6 +1663,7 @@
 <translation id="222115440608612541">在日出和日落時切換主題</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">未命名嘅媒體來源</translation>
+<translation id="2224337661447660594">沒有互聯網</translation>
 <translation id="2224444042887712269">這項設定屬於 <ph name="OWNER_EMAIL" />。</translation>
 <translation id="2224551243087462610">編輯資料夾名稱</translation>
 <translation id="2225927550500503913">虛擬卡已啟用</translation>
@@ -3118,7 +3118,6 @@
 <translation id="3321494112580110651">看不到打印機嗎？</translation>
 <translation id="3321776060736518525">來源：<ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">恭喜！您的裝置使用時間增加了</translation>
-<translation id="3325804108816646710">正在尋找可用的設定檔…</translation>
 <translation id="3325930488268995856">已連線至 Microsoft OneDrive</translation>
 <translation id="3325995804968971809">樣式</translation>
 <translation id="3327050066667856415">Chromebook 專為提升安全性而設。您的裝置會自動防範惡意軟件，無需安裝額外軟件。</translation>
@@ -5421,7 +5420,6 @@
 <translation id="5101839224773798795">遊標停止時自動點擊</translation>
 <translation id="5103311607312269661">顯示屏校光亮度</translation>
 <translation id="5106350808162641062">移除</translation>
-<translation id="5106608587025903971">你可為此裝置建立 <ph name="DEVICE_TYPE" /> 密碼，不必輸入 Google 帳戶密碼登入</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> 由 Family Link 監管。您可新增學校帳戶，以便在家長監管下存取學校資源。</translation>
 <translation id="5107093668001980925">永不顯示「<ph name="MODULE_NAME" />」</translation>
 <translation id="5107443654503185812">有擴充程式已停用「安全瀏覽」功能</translation>
@@ -7380,7 +7378,6 @@
 <translation id="6647690760956378579">播放自然語音</translation>
 <translation id="6648911618876616409">已準備好安裝重要更新。登入即可開始更新。</translation>
 <translation id="6649018507441623493">請稍候...</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> 要求確認您的身分</translation>
 <translation id="6650206238642452078">訂閱 ChromeOS 系統事件</translation>
 <translation id="665061930738760572">在新視窗中開啟(&amp;N)</translation>
 <translation id="6651237644330755633">信任這個用來識別網站的憑證</translation>

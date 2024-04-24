@@ -584,7 +584,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2071692954027939183">Le notifiche sono state automaticamente bloccate perché solitamente non le consenti</translation>
 <translation id="2071852865256799872">Il tuo browser è gestito dalla tua organizzazione e il tuo profilo è gestito da <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Sblocca <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">L'amministratore ha bloccato <ph name="PERMISSION" /> su <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Giochi musicali e di danza</translation>
 <translation id="2079545284768500474">Annulla</translation>
 <translation id="2080021694978766903">Questo criterio non deve avere più di <ph name="MAX_ITEMS_LIMIT" /> voci.</translation>
@@ -737,7 +736,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2354001756790975382">Altri Preferiti</translation>
 <translation id="2355395290879513365">Gli utenti malintenzionati potrebbero riuscire a vedere le immagini che visualizzi in questo sito e ingannarti modificandole.</translation>
 <translation id="2356070529366658676">Chiedi</translation>
-<translation id="2356926036049612643">Strumento per ottimizzare V8</translation>
+<translation id="2356926036049612643">Strumento di ottimizzazione V8</translation>
 <translation id="2357481397660644965">Il tuo dispositivo è gestito da <ph name="DEVICE_MANAGER" /> e il tuo account da <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Multiple</translation>
 <translation id="2359808026110333948">Continua</translation>
@@ -935,6 +934,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2759825833388495838">inserire la tua password su <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Fumetti</translation>
 <translation id="2765217105034171413">Piccola</translation>
+<translation id="2768397283109119044">Hai tentato di connetterti a <ph name="DOMAIN" />, ma il server ha presentato un certificato non valido emesso per il nome specificato. Il nome è un indirizzo IP riservato o un nome host interno.</translation>
 <translation id="2770159525358613612">Prova a caricare di nuovo i file</translation>
 <translation id="277133753123645258">Metodo di spedizione</translation>
 <translation id="2773388851563527404">Chrome limita l'utilizzo dei cookie di terze parti per la maggior parte dei siti. Tuttavia, i cookie di terze parti sono consentiti su questo sito perché si basa su questi cookie per fornire servizi di base. Vai alle impostazioni per <ph name="LINK" />.</translation>
@@ -1713,6 +1713,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4265872034478892965">Consentita dall'amministratore</translation>
 <translation id="4269029136757623689">Ventilatori per uso domestico</translation>
 <translation id="4269264543938335308">Costumi da bagno</translation>
+<translation id="4269599248168651462">Il certificato del server viene emesso con un nome non univoco.</translation>
 <translation id="4270541775497538019">Fascicolatore 6</translation>
 <translation id="4275830172053184480">Riavvia il dispositivo</translation>
 <translation id="4276974990916607331">No, grazie</translation>
@@ -2021,7 +2022,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4885030148564729407">Lune di miele e fughe romantiche</translation>
 <translation id="4885256590493466218">Paga con <ph name="CARD_DETAIL" /> al momento del pagamento</translation>
 <translation id="4887406273302438710">Proteggere le password con Windows Hello</translation>
-<translation id="4890070067176768718">L'amministratore ha consentito <ph name="PERMISSION" /> su <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Posteriore</translation>
 <translation id="4895019427244614047">Elimina l'indirizzo</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3907,7 +3907,6 @@ Ulteriori dettagli:
 <translation id="8493948351860045254">Libera spazio</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ha impiegato troppo tempo a rispondere.</translation>
 <translation id="8502023382441452707">Compleanni e onomastici</translation>
-<translation id="8502972004418241366">Per usare la tua <ph name="PERMISSION" /> su questo sito, devi consentire l'accesso a Chrome</translation>
 <translation id="8503559462189395349">Password Chrome</translation>
 <translation id="8503813439785031346">Nome utente</translation>
 <translation id="8504928302600319133">Hardware per computer</translation>
@@ -3928,7 +3927,6 @@ Ulteriori dettagli:
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Visita &lt;strong&gt;chrome://policy&lt;/strong&gt; per visualizzare l'elenco di URL bloccati e altri criteri applicati dall'amministratore di sistema.
 </translation>
-<translation id="8534934518812659742">Hai disattivato <ph name="PERMISSION" /> per Chrome.</translation>
 <translation id="8536234749087605613">Busta (con finestra)</translation>
 <translation id="8539500321752640291">Vuoi consentire 2 autorizzazioni?</translation>
 <translation id="8541158209346794904">Dispositivo Bluetooth</translation>
@@ -3985,7 +3983,6 @@ Ulteriori dettagli:
 <translation id="865032292777205197">sensori di movimento</translation>
 <translation id="865255447216708819">Pellicola per stampa posteriore</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">In precedenza non hai consentito l'autorizzazione <ph name="PERMISSION" /> su <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Proprietà commerciali</translation>
 <translation id="8663226718884576429">Riepilogo ordine, <ph name="TOTAL_LABEL" />, altri dettagli</translation>
 <translation id="8663909737634214500">Disco ottico</translation>
@@ -4017,6 +4014,7 @@ Ulteriori dettagli:
 <translation id="8722929331701811374">Carta da lettere (carta intestata)</translation>
 <translation id="8724824364712796726">Busta B6</translation>
 <translation id="8725066075913043281">Riprova</translation>
+<translation id="8725667981218437315">Videocamera e microfono</translation>
 <translation id="8726549941689275341">Dimensioni pagina:</translation>
 <translation id="8730621377337864115">Fine</translation>
 <translation id="8731268612289859741">Codice di sicurezza</translation>
@@ -4115,6 +4113,7 @@ Ulteriori dettagli:
 <translation id="8919740778133505789">Auto sportive</translation>
 <translation id="8919895429178014996">Nascondi tutti gli elementi</translation>
 <translation id="8922013791253848639">Consenti sempre gli annunci su questo sito</translation>
+<translation id="8924109546403192898">Quando Chrome segnala eventi di sicurezza, i relativi dati pertinenti vengono inviati al tuo amministratore. Questi dati possono includere URL delle pagine visitate in Chrome o da cui hai copiato dei dati, metadati o nomi dei file, arresti anomali del browser o delle schede e il nome utente che usi per accedere alle applicazioni basate sul web, al tuo dispositivo e a Chrome.</translation>
 <translation id="892588693504540538">Perforatura in alto a destra</translation>
 <translation id="8926389886865778422">Non visualizzare più questo avviso</translation>
 <translation id="8932102934695377596">L'orologio è indietro</translation>

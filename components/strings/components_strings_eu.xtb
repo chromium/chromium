@@ -584,7 +584,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2071692954027939183">Automatikoki blokeatu dira jakinarazpenak, normalean ez dituzulako onartzen</translation>
 <translation id="2071852865256799872">Zure erakundeak kudeatzen du arakatzailea, eta zure profila, aldiz, <ph name="PROFILE_DOMAIN" /> domeinuak</translation>
 <translation id="2074733626795553847">Desblokeatu <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Administratzaileak <ph name="PERMISSION" /> blokeatu du <ph name="ORIGIN" /> webgunean</translation>
 <translation id="2078956195623975415">Musika- eta dantza-jokoak</translation>
 <translation id="2079545284768500474">Desegin</translation>
 <translation id="2080021694978766903">Gidalerro honek ez lituzke <ph name="MAX_ITEMS_LIMIT" /> sarrera baino gehiago izan behar.</translation>
@@ -2020,7 +2019,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4885030148564729407">Eztei-bidaiak eta oporraldi erromantikoak</translation>
 <translation id="4885256590493466218">Ordaintzerakoan, erabili <ph name="CARD_DETAIL" /> txartela</translation>
 <translation id="4887406273302438710">Babestu pasahitzak Windows Hello erabilita</translation>
-<translation id="4890070067176768718">Administratzaileak <ph name="PERMISSION" /> erabiltzeko baimena eman du <ph name="ORIGIN" /> webgunean</translation>
 <translation id="4892518386797173871">Atzealdea</translation>
 <translation id="4895019427244614047">Ezabatu helbidea</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3906,7 +3904,6 @@ Xehetasun gehiago:
 <translation id="8493948351860045254">Egin tokia</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> webguneak ez du garaiz erantzun.</translation>
 <translation id="8502023382441452707">Urtebetetzeak eta santu-egunak</translation>
-<translation id="8502972004418241366">Webgune honetan <ph name="PERMISSION" /> erabili ahal izateko, Chrome-ri hura erabiltzeko baimena eman beharko diozu</translation>
 <translation id="8503559462189395349">Chrome-ko pasahitzak</translation>
 <translation id="8503813439785031346">Erabiltzaile-izena</translation>
 <translation id="8504928302600319133">Hardware informatikoa</translation>
@@ -3926,7 +3923,6 @@ Xehetasun gehiago:
 <translation id="853246364274116957">Broadway eta musikal-antzokiak</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Joan &lt;strong&gt;chrome://policy&lt;/strong&gt; orrira sistemaren administratzaileak blokeatutako URLen zerrenda eta aplikatutako gidalerroak ikusteko.</translation>
-<translation id="8534934518812659742">Kendu egin diozu <ph name="PERMISSION" /> erabiltzeko baimena Chrome-ri.</translation>
 <translation id="8536234749087605613">Gutun-azala (leihoduna)</translation>
 <translation id="8539500321752640291">Mikrofonoa eta kamera erabiltzeko baimenak eman nahi dizkiozu?</translation>
 <translation id="8541158209346794904">Bluetooth bidezko gailua</translation>
@@ -3983,7 +3979,6 @@ Xehetasun gehiago:
 <translation id="865032292777205197">mugimendu-sentsoreak</translation>
 <translation id="865255447216708819">Atzetik inprimatutako filma</translation>
 <translation id="8654126188050905496">55 × 91 mm</translation>
-<translation id="8655930295668719549">Lehen ez zenion eman nahi izan <ph name="PERMISSION" /> erabiltzeko baimena <ph name="ORIGIN" /> webguneari</translation>
 <translation id="8662463432865928030">Merkataritza-jabetzak</translation>
 <translation id="8663226718884576429">Eskaeraren laburpena, <ph name="TOTAL_LABEL" />, xehetasun gehiago</translation>
 <translation id="8663909737634214500">Disko optikoa</translation>
@@ -4015,6 +4010,7 @@ Xehetasun gehiago:
 <translation id="8722929331701811374">Paper-gaiak (gutun-goiburua)</translation>
 <translation id="8724824364712796726">B6 gutun-azala</translation>
 <translation id="8725066075913043281">Saiatu berriro</translation>
+<translation id="8725667981218437315">Kamera eta mikrofonoa</translation>
 <translation id="8726549941689275341">Orriaren tamaina:</translation>
 <translation id="8730621377337864115">Eginda</translation>
 <translation id="8731268612289859741">Segurtasun-kodea</translation>

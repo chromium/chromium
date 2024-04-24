@@ -584,7 +584,6 @@
 <translation id="2071692954027939183">由於您通常不允許通知，因此系統已自動封鎖通知</translation>
 <translation id="2071852865256799872">你的瀏覽器由機構管理，個人檔案則由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="2074733626795553847">解除封鎖「<ph name="TOPIC" />」</translation>
-<translation id="2075497153347571252">管理員已封鎖 <ph name="ORIGIN" /> 的<ph name="PERMISSION" />權限</translation>
 <translation id="2078956195623975415">音樂和舞蹈遊戲</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2080021694978766903">此政策只能包含 <ph name="MAX_ITEMS_LIMIT" /> 個項目，</translation>
@@ -2023,7 +2022,6 @@
 <translation id="4885030148564729407">蜜月和浪漫旅遊</translation>
 <translation id="4885256590493466218">使用 <ph name="CARD_DETAIL" /> 結帳付款</translation>
 <translation id="4887406273302438710">使用 Windows Hello 保護密碼</translation>
-<translation id="4890070067176768718">管理員已允許 <ph name="ORIGIN" /> 的<ph name="PERMISSION" />權限</translation>
 <translation id="4892518386797173871">後方</translation>
 <translation id="4895019427244614047">刪除地址</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />，<ph name="TYPE_3" /></translation>
@@ -3910,7 +3908,6 @@
 <translation id="8493948351860045254">釋出儲存空間</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> 的回應時間過長。</translation>
 <translation id="8502023382441452707">生日和命名日</translation>
-<translation id="8502972004418241366">你需要授予 Chrome 存取權，才能在此網站使用 <ph name="PERMISSION" /></translation>
 <translation id="8503559462189395349">Chrome 密碼</translation>
 <translation id="8503813439785031346">用戶名稱</translation>
 <translation id="8504928302600319133">電腦硬件</translation>
@@ -3930,7 +3927,6 @@
 <translation id="853246364274116957">百老匯及音樂劇場</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">請前往 &lt;strong&gt;chrome://policy&lt;/strong&gt; 查看被封鎖的網址清單，以及由系統管理員強制執行的其他政策。</translation>
-<translation id="8534934518812659742">你已關閉 Chrome 的<ph name="PERMISSION" />權限。</translation>
 <translation id="8536234749087605613">信封 (開窗)</translation>
 <translation id="8539500321752640291">要允許 2 項權限嗎？</translation>
 <translation id="8541158209346794904">藍牙裝置</translation>
@@ -3987,7 +3983,6 @@
 <translation id="865032292777205197">動作感應器</translation>
 <translation id="865255447216708819">背面印刷薄膜</translation>
 <translation id="8654126188050905496">55 x 91 毫米</translation>
-<translation id="8655930295668719549">你先前不允許在 <ph name="ORIGIN" /> 使用<ph name="PERMISSION" /></translation>
 <translation id="8662463432865928030">商用物業</translation>
 <translation id="8663226718884576429">訂單摘要、<ph name="TOTAL_LABEL" /> 及更多詳情</translation>
 <translation id="8663909737634214500">光碟</translation>
@@ -4019,6 +4014,7 @@
 <translation id="8722929331701811374">文具用品 (信頭)</translation>
 <translation id="8724824364712796726">B6 信封</translation>
 <translation id="8725066075913043281">再試一次</translation>
+<translation id="8725667981218437315">相機和麥克風</translation>
 <translation id="8726549941689275341">頁面大小：</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731268612289859741">安全碼</translation>

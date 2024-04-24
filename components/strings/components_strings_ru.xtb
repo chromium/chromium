@@ -583,7 +583,6 @@
 <translation id="2071692954027939183">Уведомления заблокированы автоматически, потому что вы обычно запрещаете их показ.</translation>
 <translation id="2071852865256799872">Этим браузером управляет ваша организация, а профилем – <ph name="PROFILE_DOMAIN" />.</translation>
 <translation id="2074733626795553847">Разблокировать тему "<ph name="TOPIC" />"</translation>
-<translation id="2075497153347571252">Администратор запретил использовать разрешение "<ph name="PERMISSION" />" на сайте <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Музыкальные и танцевальные игры</translation>
 <translation id="2079545284768500474">Отмена</translation>
 <translation id="2080021694978766903">Максимальное число записей для этого правила: <ph name="MAX_ITEMS_LIMIT" />.</translation>
@@ -2021,7 +2020,6 @@
 <translation id="4885030148564729407">Свадебные и романтические туры</translation>
 <translation id="4885256590493466218">Оплатите с помощью <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Защитите пароли с помощью Windows Hello</translation>
-<translation id="4890070067176768718">Администратор позволил использовать разрешение "<ph name="PERMISSION" />" на сайте <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Задняя сторона</translation>
 <translation id="4895019427244614047">Удалить адрес</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /></translation>
@@ -3905,7 +3903,6 @@
 <translation id="8493948351860045254">Освободить место</translation>
 <translation id="8498891568109133222">Превышено время ожидания ответа от сайта <ph name="HOST_NAME" />.</translation>
 <translation id="8502023382441452707">Дни рождения и именины</translation>
-<translation id="8502972004418241366">Чтобы использовать функцию "<ph name="PERMISSION" />" на этом сайте, предоставьте доступ браузеру Chrome.</translation>
 <translation id="8503559462189395349">Пароли Chrome</translation>
 <translation id="8503813439785031346">Имя пользователя</translation>
 <translation id="8504928302600319133">Компьютерная техника</translation>
@@ -3925,7 +3922,6 @@
 <translation id="853246364274116957">Бродвей и музыкальные театры</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Чтобы посмотреть список заблокированных URL и узнать, какие ещё правила заданы системным администратором, перейдите на страницу &lt;strong&gt;chrome://policy&lt;/strong&gt;.</translation>
-<translation id="8534934518812659742">Вы запретили Chrome доступ к разрешению "<ph name="PERMISSION" />".</translation>
 <translation id="8536234749087605613">Конверт (с окошком)</translation>
 <translation id="8539500321752640291">Предоставить два разрешения?</translation>
 <translation id="8541158209346794904">Устройство Bluetooth</translation>
@@ -3982,7 +3978,6 @@
 <translation id="865032292777205197">датчики движения</translation>
 <translation id="865255447216708819">Пленка для обратной печати</translation>
 <translation id="8654126188050905496">55 x 91 мм</translation>
-<translation id="8655930295668719549">Ранее вы запретили сайту <ph name="ORIGIN" /> доступ к разрешению "<ph name="PERMISSION" />".</translation>
 <translation id="8662463432865928030">Коммерческая недвижимость</translation>
 <translation id="8663226718884576429">Информация о заказе, <ph name="TOTAL_LABEL" />, дополнительные сведения</translation>
 <translation id="8663909737634214500">Оптический диск</translation>
@@ -4014,6 +4009,7 @@
 <translation id="8722929331701811374">Бумага (фирменный бланк)</translation>
 <translation id="8724824364712796726">Конверт B6</translation>
 <translation id="8725066075913043281">Повторить попытку</translation>
+<translation id="8725667981218437315">камеру и микрофон</translation>
 <translation id="8726549941689275341">Размер страницы:</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731268612289859741">Защитный код</translation>

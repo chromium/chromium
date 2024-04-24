@@ -584,7 +584,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2071692954027939183">Se bloquearon las notificaciones de forma automática porque no sueles permitirlas.</translation>
 <translation id="2071852865256799872">Tu organización administra el navegador y <ph name="PROFILE_DOMAIN" /> administra tu perfil</translation>
 <translation id="2074733626795553847">Desbloquear <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Tu administrador bloqueó <ph name="PERMISSION" /> en <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Juegos de música y baile</translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="2080021694978766903">Esta política no debe tener más de <ph name="MAX_ITEMS_LIMIT" /> entradas.</translation>
@@ -2025,7 +2024,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4885030148564729407">Lunas de miel y escapadas románticas</translation>
 <translation id="4885256590493466218">Pagar con <ph name="CARD_DETAIL" /> en la confirmación de la compra</translation>
 <translation id="4887406273302438710">Protege las contraseñas con Windows Hello</translation>
-<translation id="4890070067176768718">Tu administrador permitió <ph name="PERMISSION" /> en <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Parte trasera</translation>
 <translation id="4895019427244614047">Borrar dirección</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3912,7 +3910,6 @@ Detalles adicionales:
 <translation id="8493948351860045254">Liberar espacio</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> tardó demasiado en responder.</translation>
 <translation id="8502023382441452707">Cumpleaños y onomásticos</translation>
-<translation id="8502972004418241366">Para usar tu <ph name="PERMISSION" /> en este sitio, debes otorgar acceso a Chrome.</translation>
 <translation id="8503559462189395349">Contraseñas de Chrome</translation>
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="8504928302600319133">Hardware</translation>
@@ -3932,7 +3929,6 @@ Detalles adicionales:
 <translation id="853246364274116957">Broadway y teatro musical</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Visita &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver la lista de URL bloqueadas y otras políticas que estableció el administrador del sistema.</translation>
-<translation id="8534934518812659742">Desactivaste <ph name="PERMISSION" /> para Chrome.</translation>
 <translation id="8536234749087605613">Sobre (con ventana)</translation>
 <translation id="8539500321752640291">¿Quieres habilitar 2 permisos?</translation>
 <translation id="8541158209346794904">Dispositivo Bluetooth</translation>
@@ -3990,7 +3986,6 @@ Detalles adicionales:
 <translation id="865032292777205197">sensores de movimiento</translation>
 <translation id="865255447216708819">Película para impresión en dorso</translation>
 <translation id="8654126188050905496">55 × 91 mm</translation>
-<translation id="8655930295668719549">Habías denegado el uso de <ph name="PERMISSION" /> en <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Locales comerciales</translation>
 <translation id="8663226718884576429">Resumen del pedido, <ph name="TOTAL_LABEL" />, Más detalles</translation>
 <translation id="8663909737634214500">Disco óptico</translation>
@@ -4022,6 +4017,7 @@ Detalles adicionales:
 <translation id="8722929331701811374">Papelería (con membrete)</translation>
 <translation id="8724824364712796726">Sobre B6</translation>
 <translation id="8725066075913043281">Intentar nuevamente</translation>
+<translation id="8725667981218437315">Cámara y micrófono</translation>
 <translation id="8726549941689275341">Tamaño de la página:</translation>
 <translation id="8730621377337864115">Listo</translation>
 <translation id="8731268612289859741">Código de seguridad</translation>

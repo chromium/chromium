@@ -828,6 +828,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1611432201750675208">Įrenginys užrakintas</translation>
 <translation id="1611649489706141841">persiųsti</translation>
 <translation id="1612019740169791082">Sudėtinis rodinys nesukonfigūruotas palaikyti disko dydžio keitimą. Jei norite koreguoti, kiek vietos priskiriama „Linux“, sukurkite atsarginę kopiją ir atkurkite naujame sudėtiniame rodinyje.</translation>
+<translation id="1612179176000108678">Įjungti tik tada, kai akumuliatoriaus įkrovos lygis yra <ph name="PERCENT" /> proc. ar mažiau</translation>
 <translation id="1613019471223620622">Rodyti <ph name="USERNAME" /> slaptažodį <ph name="DOMAIN" /></translation>
 <translation id="1613149688105334014">Senų versijų „Chrome“ programos nebebus atidaromos po 2022 m. gruodžio mėn. Galite patikrinti, ar pasiekiama nauja versija.</translation>
 <translation id="1614511179807650956">Gali būti, kad pasiekėte mobiliojo ryšio duomenų apribojimą. Apsilankykite „<ph name="NAME" />“ suaktyvinimo portale, kad įsigytumėte daugiau duomenų</translation>
@@ -1614,7 +1615,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Įgalinsite „ChromeOS Flex“ derinimo funkcijas ir bus nustatyta „sshd daemon“, kad būtų galima paleisti programas iš atmintuko.</translation>
 <translation id="2178614541317717477">CA pažeidimo galimybė</translation>
-<translation id="2179416702468739594">Ieškoma pasiekiamų profilių. Dėl to mobiliojo ryšio tinklas gali būti atjungtas kelias minutes.</translation>
 <translation id="2180620921879609685">Blokuoti turinį bet kokiame puslapyje</translation>
 <translation id="2181821976797666341">Politika</translation>
 <translation id="2182058453334755893">Nukopijuota į iškarpinę</translation>
@@ -1667,6 +1667,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="222115440608612541">Perjunkite temas saulei patekėjus ir nusileidus</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Medijos šaltinis be pavadinimo</translation>
+<translation id="2224337661447660594">Nėra interneto ryšio</translation>
 <translation id="2224444042887712269">Šis nustatymas priklauso <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Redaguoti aplanko pavadinimą</translation>
 <translation id="2225927550500503913">Virtuali kortelė įjungta</translation>
@@ -3121,7 +3122,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3321494112580110651">Nematote spausdintuvo?</translation>
 <translation id="3321776060736518525">Iš <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Premija! Galite ilgiau naudoti įrenginį</translation>
-<translation id="3325804108816646710">Ieškoma pasiekiamų profilių...</translation>
 <translation id="3325930488268995856">„Microsoft OneDrive“ prijungta</translation>
 <translation id="3325995804968971809">Stilius</translation>
 <translation id="3327050066667856415">„Chromebook“ įrenginiuose pasirūpinta sauga. Jūsų įrenginys yra automatiškai apsaugotas nuo kenkėjiškų programų, todėl nereikia jokios papildomos programinės įrangos.</translation>
@@ -3906,6 +3906,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="39103738135459590">Aktyvinimo kodas</translation>
 <translation id="3910588685973519483">Ekrano fonų kūrimas naudojant DI</translation>
 <translation id="3911824782900911339">Naujo skirtuko puslapis</translation>
+<translation id="3913689539406883376">Įjungti, kai kompiuteris atjungtas nuo maitinimo lizdo</translation>
 <translation id="3914173277599553213">Būtina</translation>
 <translation id="3914568430265141791">Atidaryti aplanką „<ph name="FOLDER_TITLE" />“</translation>
 <translation id="3915280005470252504">Ieškoti balsu</translation>
@@ -5428,7 +5429,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5101839224773798795">Automatiškai spustelėti sustojus žymekliui</translation>
 <translation id="5103311607312269661">padidinti ekrano šviesumą</translation>
 <translation id="5106350808162641062">Pašalinti</translation>
-<translation id="5106608587025903971">Užuot įvedę „Google“ paskyros slaptažodį, kad prisijungtumėte, galite sukurti šio įrenginio „<ph name="DEVICE_TYPE" />“ slaptažodį</translation>
 <translation id="510695978163689362">Paskyra <ph name="USER_EMAIL" /> prižiūrima naudojant „Family Link“. Galite pridėti mokyklos paskyrų, kad būtų galima pasiekti mokyklos išteklius naudojant tėvų priežiūros funkciją.</translation>
 <translation id="5107093668001980925">Niekada nerodyti: <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Plėtinys išjungė Saugaus naršymo funkciją</translation>
@@ -7396,7 +7396,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6647690760956378579">Natūralaus balso peržiūra</translation>
 <translation id="6648911618876616409">Svarbus naujinys paruoštas įdiegti. Prisijunkite ir pradėkite.</translation>
 <translation id="6649018507441623493">Šiek tiek palaukite...</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> norėtų patvirtinti, kad tai jūs</translation>
 <translation id="6650206238642452078">Prenumeruoti „ChromeOS“ sistemos įvykius</translation>
 <translation id="665061930738760572">Atidaryti &amp;naujame lange</translation>
 <translation id="6651237644330755633">Pasitikėti šiuo sertifikatu nustatant svetaines</translation>
@@ -9148,6 +9147,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7966571622054096916">{COUNT,plural, =1{1 elementas žymių sąraše}one{{COUNT} elementas žymių sąraše}few{{COUNT} elementai žymių sąraše}many{{COUNT} elemento žymių sąraše}other{{COUNT} elementų žymių sąraše}}</translation>
 <translation id="7967776604158229756">Daugiau žiniatinklio programos nustatymų ir leidimų</translation>
 <translation id="7968072247663421402">Teikėjo parinktys</translation>
+<translation id="7968576769959093306">Atsisiunčiami balsai...</translation>
 <translation id="7968742106503422125">Skaityti ir keisti kopijuojamus ir įklijuojamus duomenis</translation>
 <translation id="7968833647796919681">Įgalinti našumo duomenų rinkimą</translation>
 <translation id="7968982339740310781">Žiūrėti išsamią informaciją</translation>

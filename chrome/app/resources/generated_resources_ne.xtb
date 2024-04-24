@@ -1600,7 +1600,6 @@
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">तपाईं ChromeOS Flex का डिबग गर्ने सुविधाहरू अन गर्दै हुनुहुन्छ। ती सुविधा अन भएपछि sshd daemon सेटअप हुने छ र USB ड्राइभबाट बुट गर्ने सुविधा अन हुने छ।</translation>
 <translation id="2178614541317717477">CA सम्झौता</translation>
-<translation id="2179416702468739594">उपलब्ध प्रोफाइलहरू खोजिँदै छ। यसले गर्दा तपाईंको मोबाइल नेटवर्क केही मिनेट डिस्कनेक्ट हुन सक्छ।</translation>
 <translation id="2180620921879609685">कुनै पनि पेजमा भएका सामग्री ब्लक गर्न</translation>
 <translation id="2181821976797666341">नीतिहरू</translation>
 <translation id="2182058453334755893">तपाईंको क्लिपबोर्डमा कपी गरियो</translation>
@@ -1654,6 +1653,7 @@
 <translation id="222115440608612541">थिमहरू बदलेर सूर्योदय र सूर्यास्त थिम बनाउनुहोस्</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">नाम नराखिएको मिडिया स्रोत</translation>
+<translation id="2224337661447660594">इन्टरनेट छैन</translation>
 <translation id="2224444042887712269">यो सेटिङ <ph name="OWNER_EMAIL" /> को हो</translation>
 <translation id="2224551243087462610">फोल्डर नाम सम्पादन गर्नुहोस्</translation>
 <translation id="2225927550500503913">भर्चुअल कार्ड अन गरिएको छ</translation>
@@ -3115,7 +3115,6 @@
 <translation id="3321494112580110651">प्रिन्टर देख्नुभएन?</translation>
 <translation id="3321776060736518525"><ph name="APP_URL" /> बाट</translation>
 <translation id="3323521181261657960">बोनस! तपाईंले यन्त्रमा हेरेर बिताउने थप समय प्राप्त गर्नुभयो</translation>
-<translation id="3325804108816646710">उपलब्ध प्रोफाइलहरू खोज्दै...</translation>
 <translation id="3325930488268995856">Microsoft OneDrive कनेक्ट गरिएको छ</translation>
 <translation id="3325995804968971809">शैली</translation>
 <translation id="3327050066667856415">Chromebook सुरक्षाका लागि डिजाइन गरिएको छ। तपाईंको यन्त्र मालवेयरबाट स्वतः सुरक्षित रहन्छ – कुनै पनि अतिरिक्त सफ्टवेयर आवश्यक हुँदैन।</translation>
@@ -5430,7 +5429,6 @@
 <translation id="5101839224773798795">कर्सर रोकिँदा स्वतः क्लिक गर्नुहोस्</translation>
 <translation id="5103311607312269661">डिस्प्लेको चमक बढाउने की</translation>
 <translation id="5106350808162641062">हटाउनुहोस्</translation>
-<translation id="5106608587025903971">साइन इन गर्दा आफ्नो Google खाताको पासवर्ड हाल्नुको साटो तपाईं यो डिभाइसको <ph name="DEVICE_TYPE" /> पासवर्ड राख्न सक्नुहुन्छ</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> Family Link मार्फत सुपरिवेक्षण गरिएको छ। अभिभावकको निगरानीमा विद्यालयका स्रोत साधन प्रयोग गर्न तिमी विद्यालयका खाता थप्न सक्छौ।</translation>
 <translation id="5107093668001980925"><ph name="MODULE_NAME" /> कहिल्यै पनि नदेखाउनुहोस्</translation>
 <translation id="5107443654503185812">एउटा एक्स्टेन्सनले सुरक्षित ब्राउजिङ सेवा निष्क्रिय पारेको छ</translation>
@@ -7409,7 +7407,6 @@
 <translation id="6647690760956378579">उच्च गुणस्तरको आवाजको प्रिभ्यू</translation>
 <translation id="6648911618876616409">एउटा महत्त्वपूर्ण अद्यावधिक स्थापनाका लागि तयार छ। सुरु गर्न साइन इन गर्नुहोस्‌।</translation>
 <translation id="6649018507441623493">एकै सेकेन्ड...</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> तपाईंको पहिचान पुष्टि गर्न चाहन्छ</translation>
 <translation id="6650206238642452078">ChromeOS सिस्टम इभेन्टको सदस्यता लिइयोस्</translation>
 <translation id="665061930738760572">&amp;नयाँ विण्डोमा खोल्नुहोस्</translation>
 <translation id="6651237644330755633">वेबसाइटहरूको पहिचान गर्न यो प्रमाणपत्रमाथि विश्वास गर्नुहोस्</translation>

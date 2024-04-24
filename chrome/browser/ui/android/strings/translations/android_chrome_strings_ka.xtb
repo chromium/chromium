@@ -36,6 +36,7 @@
 <translation id="1181037720776840403">ამოშლა</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" />-ზე</translation>
 <translation id="1183189057400844278">თქვენს Google ანგარიშში არსებული პაროლები დაუბრკოლებლად რომ გამოიყენოთ, დაადასტურეთ ვინაობა</translation>
+<translation id="1187810343066461819">ასევე, გასუფთავდეს სანიშნეები, ისტორია და სხვა კონტენტი ამ მანქანიდან</translation>
 <translation id="1193729455103054076">გსურთ, გამოიყენოთ ძლიერი პაროლი?</translation>
 <translation id="1197267115302279827">სანიშნეების გადატანა</translation>
 <translation id="1197761954713363183">წვდომის გასაღების დადასტურების ფურცელი დახურულია</translation>
@@ -82,6 +83,7 @@
 <translation id="1386674309198842382">აქტიური იყო <ph name="LAST_UPDATED" /> დღის წინ</translation>
 <translation id="13931502444227376">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამ საიტს გაუზიარებს თქვენს სახელს, ელფოსტის მისამართსა და პროფილის სურათს. გაეცანით ამ საიტის <ph name="BEGIN_LINK1" />მომსახურების პირობებს<ph name="END_LINK1" />.</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />-ით ძიება</translation>
+<translation id="1398037172295725596">ცადეთ სხვა რამის მოძებნა ან გახსენით ისტორია Chrome-ში, რათა ნახოთ სხვა აპებიდან დათვალიერების ისტორია.</translation>
 <translation id="1407069428457324124">მუქი თემა</translation>
 <translation id="1407135791313364759">ყველას გახსნა</translation>
 <translation id="1409879593029778104"><ph name="FILE_NAME" /> ვერ ჩამოიტვირთა, რადგან ფაილი უკვე არსებობს.</translation>
@@ -153,6 +155,8 @@
 <translation id="1807709131360304325">ახალი ფანჯრის გახსნა</translation>
 <translation id="1810845389119482123">სინქრონიზაციის თავდაპირველი დაყენება არ დასრულებულა</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> ვერ აგრძელებს <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ის გამოყენებას</translation>
+<translation id="1825772852827001597">Google Pay-ში არსებული გადახდის მეთოდები და მისამართები არ დაიშიფრება. Chrome-ში არსებული დათვალიერების ისტორია არ სინქრონიზდება.
+თქვენი დაშიფრული მონაცემების წაკითხვა შეუძლია მხოლოდ მას, ვინც თქვენი საიდუმლო ფრაზა იცის. საიდუმლო ფრაზა არ იგზავნება Google-ში და არ ინახება მის მიერ. საიდუმლო ფრაზის დავიწყების ან ამ პარამეტრის შეცვლის სურვილის შემთხვევაში, <ph name="BEGIN_LINK" />წაშალეთ Chrome მონაცემები თქვენს ანგარიშში<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">გვერდზე ძებნა</translation>
 <translation id="185383612275551373">შეასრულეთ სინქრონიზაცია, Google-ისგან ყველაზე სათანადო კონტენტი რომ მიიღოთ</translation>
 <translation id="1871098866036088250">Chrome-ის ბრაუზერში გახსნა</translation>
@@ -266,6 +270,7 @@
 <translation id="250020030759455918">Chrome-ში იხილავთ როგორც <ph name="SITE_NAME" />-ში შესვლის სტატუსს, ისე დათვალიერების/საიტის მონაცემებს</translation>
 <translation id="2510106555128151389">მიმდინარეობს <ph name="WEBAPK_NAME" />-ის ინსტალაცია...</translation>
 <translation id="2513403576141822879">კონფიდენციალურობასთან, უსაფრთხოებასთან და მონაცემთა შეგროვებასთან დაკავშირებული სხვა პარამეტრებისთვის იხილეთ <ph name="BEGIN_LINK" />სინქრონიზაცია და Google-ის სერვისები<ph name="END_LINK" /></translation>
+<translation id="2515921719039583189">წაიშალოს Chrome მონაცემები ამ მოწყ-დან?</translation>
 <translation id="2517113738956581680">სრულზომიანი ფურცელი</translation>
 <translation id="2523184218357549926">Google-ს უგზავნის თქვენ მიერ მონახულებული გვერდების URL-ებს</translation>
 <translation id="2527209463677295330">გვერდზე არსებული მეტი ტექსტის დართვის შემთხვევაში, შესაძლოა, უკეთესი შედეგები იხილოთ</translation>
@@ -492,6 +497,7 @@
 <translation id="3631987586758005671">მიმდინარეობს გაზიარება <ph name="DEVICE_NAME" />-თან</translation>
 <translation id="363596933471559332">ავტორიზაციის შენახული მონაცემების მეშვეობით ვებსაიტებში ავტომატური შესვლა. ამ ფუნქციის გამორთვის შემთხვევაში, ვებსაიტში შესვლის ყოველი მცდელობისას დადასტურება მოგიწევთ.</translation>
 <translation id="3636940436873918441">უპირატესი ენები</translation>
+<translation id="3637744895182738742">საიდუმლო ფრაზის დავიწყების ან ამ პარამეტრის შეცვლის სურვილის შემთხვევაში, <ph name="BEGIN_LINK" />წაშალეთ Chrome-ის მონაცემები თქვენი ანგარიშიდან<ph name="END_LINK" />.</translation>
 <translation id="368329460027487650">გამოსული ხართ. გახსნის შესვლის ვარიანტებს.</translation>
 <translation id="3687645719033307815">თქვენ ამ გვერდის გადასახედ ვერსიას ათვალიერებთ</translation>
 <translation id="3690369331356918524">გაგაფრთხილებთ მონაცემთა გაჟონვისას პაროლების გამოაშკარავების შემთხვევაში</translation>
@@ -1186,6 +1192,7 @@
 <translation id="707155805709242880">ქვემოთ აირჩიეთ, რის სინქრონიზაცია გსურთ</translation>
 <translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{სანიშნე შეინახა „<ph name="FOLDER_NAME" />“-ში თქვენს ანგარიშში (<ph name="ACCOUNT_EMAIL" />).}other{სანიშნეები შეინახა „<ph name="FOLDER_NAME" />“-ში თქვენს ანგარიშში (<ph name="ACCOUNT_EMAIL" />).}}</translation>
 <translation id="7077143737582773186">SD ბარათი</translation>
+<translation id="7078916049958741685">თქვენი Chrome მონაცემების გასუფთავება ამ მოწყობილობიდანაც</translation>
 <translation id="7080806333218412752">URL-ები შესამოწმებლად გაეგზავნება Safe Browsing-ს. ახალი საფრთხეების აღმოჩენის ხელშეწყობის მიზნით, გაიგზავნება გვერდების, ჩამოტვირთვების, გაფართოებათა აქტივობისა და სისტემის ინფორმაციის მცირე ნიმუშებიც. Google აპებში თქვენი დაცვის მიზნით, ეს მონაცემები დროებით მიებმება თქვენს Google ანგარიშს, როცა სისტემაში შესული ხართ.</translation>
 <translation id="7085332316435785646">აირჩიეთ, დაერთოს თუ არა Chrome ისტორია, Google სერვისებში უფრო პერსონალიზებული ფუნქციებით რომ ისარგებლოთ</translation>
 <translation id="7088681679121566888">Chrome განახლებულია</translation>
@@ -1198,6 +1205,9 @@
 <translation id="7146622961999026732">როგორც ჩანს, თქვენთვის მნიშვნელოვანია შემდეგი აპები და საიტები:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />მიიღეთ დამატებითი ინფორმაცია<ph name="END_LINK" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-დან.</translation>
 <translation id="7149893636342594995">ბოლო 24 საათი</translation>
+<translation id="71503698506017927">საიდუმლო ფრაზით დაშიფვრა არ მოიცავს გადახდის მეთოდებსა და მისამართებს Google Pay-დან.
+
+ამ პარამეტრის შესაცვლელად, <ph name="BEGIN_LINK" />წაშალეთ Chrome მონაცემები თქვენს ანგარიშში<ph name="END_LINK" />.</translation>
 <translation id="7168323970702333693">შესული ხართ, როგორც <ph name="USER_NAME" />. გახსნის პარამეტრებს.</translation>
 <translation id="7173114856073700355">პარამეტრების გახსნა</translation>
 <translation id="7177466738963138057">ამის მოგვიანებით შეცვლა შეგიძლიათ პარამეტრებიდან</translation>
@@ -1626,6 +1636,7 @@
 <translation id="939598580284253335">შეიყვანეთ საიდუმლო ფრაზა</translation>
 <translation id="952301137339791907">გვერდის ანალიზის ქვედა ფურცელი გახსნილია</translation>
 <translation id="95817756606698420">ჩინეთის ტერიტორიაზე ძიების განსახორციელებლად, Chrome-ს <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />-ს გამოყენება შეუძლია. ამის შეცვლა <ph name="BEGIN_LINK" />პარამეტრებიდან<ph name="END_LINK" /> შეგიძლიათ.</translation>
+<translation id="966131775676567255">მიმდინარეობს ანგარიშის მონაცემების წაშლა</translation>
 <translation id="96681097142096641">გსურთ, იხილოთ გამარტივებული გვერდი?</translation>
 <translation id="970715775301869095">დარჩენილია <ph name="MINUTES" /> წთ</translation>
 <translation id="981121421437150478">ოფლაინი</translation>

@@ -73,6 +73,7 @@
 <translation id="2918709798697875261">‏تطلُب مؤسستك منك البقاء في وضع تسجيل الخروج من Chromium.</translation>
 <translation id="2942241131342758843">‏يمكنك استخدام Chromium كمتصفّح تلقائي لفتح الروابط والبحث من خلال الأدوات وملء كلمات المرور تلقائيًا في التطبيقات الأخرى.</translation>
 <translation id="2977470724722393594">‏Chromium محدّث</translation>
+<translation id="3044857325852340337">‏تم حذف بيانات Chromium</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{‏يمكن أن يساعدك متصفِّح Chromium في تتبُّع هذه الحزمة في صفحة "علامة تبويب جديدة".}zero{‏يمكن أن يساعدك متصفِّح Chromium في تتبُّع هذه الحِزم في صفحة "علامة تبويب جديدة".}two{‏يمكن أن يساعدك متصفِّح Chromium في تتبُّع هاتين الحزمتَين في صفحة "علامة تبويب جديدة".}few{‏يمكن أن يساعدك متصفِّح Chromium في تتبُّع هذه الحِزم في صفحة "علامة تبويب جديدة".}many{‏يمكن أن يساعدك متصفِّح Chromium في تتبُّع هذه الحِزم في صفحة "علامة تبويب جديدة".}other{‏يمكن أن يساعدك متصفِّح Chromium في تتبُّع هذه الحِزم في صفحة "علامة تبويب جديدة".}}</translation>
 <translation id="3102849287235003384">‏للخروج من حسابك على Google في جميع المواقع الإلكترونية، عليك <ph name="BEGIN_LINK" />الخروج من Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">‏البحث باستخدام الصوت في Chromium</translation>
@@ -120,6 +121,7 @@
 <translation id="4633738821577273991">‏يمكنك الاستفادة من ميزة "الحماية المحسّنة للتصفّح الآمن" لهذا الملف الشخصي على Chromium أيضًا.</translation>
 <translation id="4638625642619341392">‏نزِّل Chromium من هنا.</translation>
 <translation id="4654936625574199632">‏للمساعدة على تحسين التطبيق، يرسل متصفِّح Chromium بيانات الاستخدام والتعطُّل إلى Google. <ph name="BEGIN_LINK" />إدارة<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">‏حذف بيانات التصفّح في Chromium</translation>
 <translation id="4681781466797808448">‏تفعيل الماسح الضوئي في Chromium</translation>
 <translation id="4736424910885271643">‏سيتم محو بيانات Chromium المخزَّنة على هذا الجهاز لأنّ حسابك تتم إدارته من خلال <ph name="HOSTED_DOMAIN" /></translation>
 <translation id="4773487571745795781">‏لقد أوقفت ميزة تسجيل الدخول إلى Chromium.</translation>
@@ -187,6 +189,7 @@
 <translation id="6324041800010509197">‏الانتقال إلى شبكة علامات التبويب في Chromium</translation>
 <translation id="6325378625795868881">‏يؤدي هذا الإعداد إلى فتح Chromium عند النقر على الروابط في الرسائل والتطبيقات الأخرى.</translation>
 <translation id="632825460376924298">‏السماح بتسجيل الدخول إلى Chromium</translation>
+<translation id="6332129548244419716">‏يمكنك حذف بيانات التصفّح في Chromium.</translation>
 <translation id="6337530241089703714">‏اختيار ما إذا كنت تريد محو بيانات Chromium المخزَّنة على هذا الجهاز أو الاحتفاظ بها</translation>
 <translation id="6348483005826990855">‏‫3. اختيار Chromium</translation>
 <translation id="6383607155624074112">‏يمكنك الوصول إلى Chromium بصورة أسرع من خلال شريط التطبيقات في الشاشة الرئيسية</translation>

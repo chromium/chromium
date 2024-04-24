@@ -415,6 +415,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="813913629614996137">מתבצע אתחול...</translation>
 <translation id="8166782796394721554">‏הפעלת הגנה נוספת במנוע WebAssembly ו-JavaScript של Chromium</translation>
 <translation id="81770708095080097">‏Chromium‏ חסם את הקובץ הזה כי הוא מסוכן.</translation>
+<translation id="8232193495299001329">‏‫Chromium לא יכול לאמת את מקור התוסף הזה ויכול להיות שהוא לא בטוח. צריך להסיר אותו מ-Chromium כדי לא לאפשר לו יותר לראות ולשנות את הנתונים שלך באתרים שאליהם תתבצע כניסה, כולל הפרטים האישיים שלך.</translation>
 <translation id="8248265253516264921">‏אם אין לתמונה תיאור מועיל, Chromium ינסה לספק לך תיאור. כדי ליצור תיאורים, התמונות נשלחות אל Google. אפשר להשבית את האפשרות הזו בכל זמן דרך ההגדרות.</translation>
 <translation id="8266560134891435528">‏Chromium לא יכול לבדוק את הסיסמאות שלך כי לא נכנסת לחשבון</translation>
 <translation id="8286943863733751221">‏<ph name="BEGIN_LINK" />ב-Chromium מוצגות אזהרות<ph name="END_LINK" /> מפני הורדות ואתרים לא בטוחים</translation>

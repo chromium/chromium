@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">ಖಾಲಿ-ಅಲ್ಲದ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="1758486001363313524">ಇತರೆ...</translation>
 <translation id="1787192514241997742">ಒಟ್ಟು ಸಮಯ: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">ಕ್ಯಾಮರಾವನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">ರಿಮೋಟ್ ಸಾಧನದಲ್ಲಿ ಪ್ಲೇ ಮಾಡಿ</translation>
 <translation id="1921819250265091946">ದಿದಿ</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">ಪ್ರಸ್ತುತ ಹಂತ</translation>
 <translation id="3321030238473337787">ಪ್ಲೇಬ್ಯಾಕ್ ವೇಗ</translation>
 <translation id="3329013043687509092">ಸ್ಯಾಚುರೇಶನ್</translation>
-<translation id="3377518164566272702">ಮೈಕ್ರೊಫೋನ್ ಹಾಗೂ ಕ್ಯಾಮರಾವನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="3450233048674729344">ಮೌಲ್ಯವು <ph name="MAXIMUM" /> ಕ್ಕೆ ಸಮನಾಗಿರಬಹುದು ಅಥವಾ ಅದಕ್ಕಿಂತಲೂ ಕಡಿಮೆ ಆಗಿರಬಹುದು.</translation>
 <translation id="3732799496749320381">ಮಿಮೀ</translation>
 <translation id="3754210790023674521">ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರ ಮೋಡ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">ಇತರೆ...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" /> ರಂದು ಪ್ರಾರಂಭವಾಗುತ್ತದೆ</translation>
 <translation id="916607977885256133">ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರ</translation>
-<translation id="918430632320614861">ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="945780513535800434">ಭಾಗಶಃ ಗುರುತಿಸಲಾಗಿದೆ</translation>
 <translation id="954003015749068518">ಚಿತ್ರದಲ್ಲಿನ ಚಿತ್ರವನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 </translationbundle>

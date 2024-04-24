@@ -584,7 +584,6 @@
 <translation id="2071692954027939183">Сіз әдетте хабарландыруларға рұқсат бермейтін болғандықтан, олар автоматты түрде бөгелді.</translation>
 <translation id="2071852865256799872">Браузеріңізді ұйымыңыз басқарады және профиліңізді <ph name="PROFILE_DOMAIN" /> басқарады.</translation>
 <translation id="2074733626795553847">Блоктан шығару: <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Әкімшіңіз <ph name="ORIGIN" /> сайты үшін <ph name="PERMISSION" /> рұқсатын блоктады.</translation>
 <translation id="2078956195623975415">Музыка және би ойындары</translation>
 <translation id="2079545284768500474">Қайтару</translation>
 <translation id="2080021694978766903">Бұл саясаттағы жазбалардың максималды саны: <ph name="MAX_ITEMS_LIMIT" />.</translation>
@@ -935,6 +934,7 @@
 <translation id="2759825833388495838"><ph name="APP_NAME" /> қолданбасында құпия сөздеріңізді толтырмақ</translation>
 <translation id="2764001903315068341">Комикс</translation>
 <translation id="2765217105034171413">Кіші</translation>
+<translation id="2768397283109119044"><ph name="DOMAIN" /> доменіне қол жеткізуге әрекет еттіңіз, бірақ сервер сол атқа жарамсыз сертификат ұсынды. Бұл ат — резервтелген IP мекенжайы немесе ішкі хост атауы.</translation>
 <translation id="2770159525358613612">Файлдарды қайта жүктеп салып көріңіз</translation>
 <translation id="277133753123645258">Жөнелту әдісі</translation>
 <translation id="2773388851563527404">Chrome браузері сайттардың көпшілігіне үшінші тарап cookie файлдарын пайдалануға шектеу қояды. Бірақ бұл сайтта үшінші тарап cookie файлдарына рұқсат берілді, себебі оның негізгі қызметтері осы файлдарға тәуелді. <ph name="LINK" /> үшін параметрлерге өтіңіз.</translation>
@@ -1715,6 +1715,7 @@
 <translation id="4265872034478892965">Әкімші рұқсат берген</translation>
 <translation id="4269029136757623689">Тұмыстық желдеткіштер</translation>
 <translation id="4269264543938335308">Жүзуге арналған киім</translation>
+<translation id="4269599248168651462">Сервер сертификаты бірегей емес атқа берілді.</translation>
 <translation id="4270541775497538019">6-жинастырушы</translation>
 <translation id="4275830172053184480">Құрылғыңызды қайта іске қосу</translation>
 <translation id="4276974990916607331">Жоқ, рақмет</translation>
@@ -2023,7 +2024,6 @@
 <translation id="4885030148564729407">Бал айы және романтикалық орындар</translation>
 <translation id="4885256590493466218">Тапсырысты рәсімдегенде, <ph name="CARD_DETAIL" /> картасымен төлеңіз.</translation>
 <translation id="4887406273302438710">Windows Hello технологиясымен құпия сөздерді қорғау</translation>
-<translation id="4890070067176768718">Әкімшіңіз <ph name="ORIGIN" /> сайтына <ph name="PERMISSION" /> рұқсатын берді.</translation>
 <translation id="4892518386797173871">Артқы</translation>
 <translation id="4895019427244614047">Мекенжайды жою</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3910,7 +3910,6 @@
 <translation id="8493948351860045254">Жадтағы орынды босату</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> жауабы тым ұзақ уақыт алды.</translation>
 <translation id="8502023382441452707">Туған күндер мен атаулы күндер</translation>
-<translation id="8502972004418241366">Бұл сайтта <ph name="PERMISSION" /> рұқсатын пайдалану үшін Chrome-ға кіру рұқсатын беруіңіз қажет.</translation>
 <translation id="8503559462189395349">Chrome құпия сөздері</translation>
 <translation id="8503813439785031346">Пайдаланушы аты</translation>
 <translation id="8504928302600319133">Компьютер жабдығы</translation>
@@ -3930,7 +3929,6 @@
 <translation id="853246364274116957">Бродвей және музыкалық театр</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Тыйым салынған URL мекенжайларын және жүйе әкімшісі енгізген басқа саясаттар тізімін қарау үшін &lt;strong&gt;chrome://policy&lt;/strong&gt; бетіне кіріңіз.</translation>
-<translation id="8534934518812659742">Chrome үшін <ph name="PERMISSION" /> рұқсатын өшірдіңіз.</translation>
 <translation id="8536234749087605613">Хатқалта (терезе)</translation>
 <translation id="8539500321752640291">2 рұқсат берілсін бе?</translation>
 <translation id="8541158209346794904">Bluetooth құрылғысы</translation>
@@ -3987,7 +3985,6 @@
 <translation id="865032292777205197">қозғалыс датчиктері</translation>
 <translation id="865255447216708819">Кері жағын басып шығару үлдірі</translation>
 <translation id="8654126188050905496">55 x 91 мм</translation>
-<translation id="8655930295668719549">Бұған дейін <ph name="ORIGIN" /> сайтына <ph name="PERMISSION" /> рұқсатын бермедіңіз.</translation>
 <translation id="8662463432865928030">Коммерциялық жылжымайтын мүлік нысандары</translation>
 <translation id="8663226718884576429">Тапсырыс қорытындысы, <ph name="TOTAL_LABEL" />, толығырақ деректер</translation>
 <translation id="8663909737634214500">Оптикалық диск</translation>
@@ -4117,6 +4114,7 @@
 <translation id="8919740778133505789">Спорттық көліктер</translation>
 <translation id="8919895429178014996">Барлық элементті жасыру</translation>
 <translation id="8922013791253848639">Осы сайтта жарнамаларға әрқашан рұқсат ету</translation>
+<translation id="8924109546403192898">Chrome браузерінде қауіпсіздік оқиғалары белгіленген кезде, оқиғаларға қатысты деректер әкімшіңізге жіберіледі. Олар Chrome-да сіз кірген беттердің URL мекенжайларын, деректері көшірілген беттердің URL мекенжайларын, файл атауларын не метадеректерін, браузердің не қойындының бұзылу оқиғаларын және веб-технологияға негізделген қолданбаларға, құрылғыңыз бен Chrome-ға кіру үшін қолданылатын пайдаланушы атын қамтуы мүмкін.</translation>
 <translation id="892588693504540538">Жоғарғы оң жағын тесу</translation>
 <translation id="8926389886865778422">Енді сұралмасын</translation>
 <translation id="8932102934695377596">Сағатыңыз артта қалған</translation>

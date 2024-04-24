@@ -584,7 +584,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2071692954027939183">Arifa zimezuiwa kiotomatiki kwa sababu kwa kawaida huziruhusu</translation>
 <translation id="2071852865256799872">Kivinjari chako kinadhibitiwa na shirika lako na wasifu wako unadhibitiwa na <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Ruhusu <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Msimamizi wako amezuia <ph name="PERMISSION" /> kwenye <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Michezo ya Muziki na Dansi</translation>
 <translation id="2079545284768500474">Tendua</translation>
 <translation id="2080021694978766903">Hupaswi kuweka watoa huduma wa utafutaji zaidi ya <ph name="MAX_ITEMS_LIMIT" /> katika sera hii.</translation>
@@ -2024,7 +2023,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4885030148564729407">Fungate na Mapumziko ya Wenzi</translation>
 <translation id="4885256590493466218">Tumia <ph name="CARD_DETAIL" /> wakati wa kulipa</translation>
 <translation id="4887406273302438710">Linda manenosiri ukitumia Windows Hello</translation>
-<translation id="4890070067176768718">Msimamizi wako ameruhusu <ph name="PERMISSION" /> kwenye <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Nyuma</translation>
 <translation id="4895019427244614047">Futa anwani</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3907,7 +3905,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8493948351860045254">Ongeza nafasi ya hifadhi</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> imechukua muda mrefu kupakia.</translation>
 <translation id="8502023382441452707">Maadhimisho ya Siku za Kuzaliwa na Siku Muhimu Zinazoambatana na Jina</translation>
-<translation id="8502972004418241366">Ili utumie <ph name="PERMISSION" /> yako kwenye tovuti hii, utahitaji kuipa Chrome ruhusa ya kuifikia</translation>
 <translation id="8503559462189395349">Manenosiri ya Chrome</translation>
 <translation id="8503813439785031346">Jina la mtumiaji</translation>
 <translation id="8504928302600319133">Maunzi ya Kompyuta</translation>
@@ -3927,7 +3924,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="853246364274116957">Ukumbi Mpana wa Muziki</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Tembelea &lt;strong&gt;chrome://policy&lt;/strong&gt; ili uone orodha ya URL zilizozuiwa na sera zingine zinazotekelezwa na msimamizi wako wa mfumo.</translation>
-<translation id="8534934518812659742">Umezima ufikiaji wa <ph name="PERMISSION" /> kwenye Chrome.</translation>
 <translation id="8536234749087605613">Bahasha (Yenye Kidirisha)</translation>
 <translation id="8539500321752640291">Ungependa kuruhusu vipengele viwili vifikiwe?</translation>
 <translation id="8541158209346794904">Kifaa cha Bluetooth</translation>
@@ -3985,7 +3981,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="865032292777205197">vitambuzi vya mwendo</translation>
 <translation id="865255447216708819">Filamu ya Kuchapisha Nyuma</translation>
 <translation id="8654126188050905496">Milimita 55 x 91</translation>
-<translation id="8655930295668719549">Hapo awali hukuruhusu <ph name="PERMISSION" /> kwenye <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Nyumba za Kibiashara</translation>
 <translation id="8663226718884576429">Muhtasari wa Agizo, <ph name="TOTAL_LABEL" />, Maelezo Zaidi</translation>
 <translation id="8663909737634214500">Diski ya optiki</translation>
@@ -4017,6 +4012,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8722929331701811374">Vifaa vya Kuandikia (Nembo)</translation>
 <translation id="8724824364712796726">Bahasha ya ukubwa wa B6</translation>
 <translation id="8725066075913043281">Jaribu tena</translation>
+<translation id="8725667981218437315">Kamera na maikrofoni</translation>
 <translation id="8726549941689275341">Ukubwa wa kurasa:</translation>
 <translation id="8730621377337864115">Nimemaliza</translation>
 <translation id="8731268612289859741">Msimbo wa usalama</translation>

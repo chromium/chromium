@@ -1599,7 +1599,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Estàs activant les funcions de depuració de ChromeOS Flex, de manera que es configurarà el dimoni SSHD i es permetrà iniciar el sistema des d'unitats USB.</translation>
 <translation id="2178614541317717477">Compromís de CA</translation>
-<translation id="2179416702468739594">S'estan cercant perfils disponibles. Això pot fer que la xarxa mòbil es desconnecti durant uns minuts.</translation>
 <translation id="2180620921879609685">Bloqueja el contingut en qualsevol pàgina</translation>
 <translation id="2181821976797666341">Polítiques</translation>
 <translation id="2182058453334755893">S'ha copiat al porta-retalls</translation>
@@ -1652,6 +1651,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="222115440608612541">Canvia els temes a l'alba i a la posta de sol</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> i <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Font multimèdia sense nom</translation>
+<translation id="2224337661447660594">Sense connexió a Internet</translation>
 <translation id="2224444042887712269">Aquesta configuració pertany a <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Edita el nom de la carpeta</translation>
 <translation id="2225927550500503913">La targeta virtual s'ha activat</translation>
@@ -3103,7 +3103,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3321494112580110651">No veus la teva impressora?</translation>
 <translation id="3321776060736518525">Font: <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Has obtingut més temps de connexió!</translation>
-<translation id="3325804108816646710">S'estan cercant perfils disponibles...</translation>
 <translation id="3325930488268995856">Connectat a Microsoft OneDrive</translation>
 <translation id="3325995804968971809">Estil</translation>
 <translation id="3327050066667856415">Els Chromebook estan dissenyats perquè siguin segurs. El teu dispositiu està protegit del programari maliciós automàticament i no necessita programari addicional.</translation>
@@ -3336,7 +3335,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3509379002674019679">Crea, desa i gestiona les teves contrasenyes de manera que puguis iniciar la sessió fàcilment en llocs web i aplicacions.</translation>
 <translation id="3511200754045804813">Torna a cercar</translation>
 <translation id="3511307672085573050">Copia l'adr&amp;eça de l'enllaç</translation>
-<translation id="351152300840026870">Tipus de lletra amb amplada fixa</translation>
+<translation id="351152300840026870">Font d'amplada fixa</translation>
 <translation id="3511528412952710609">Curt</translation>
 <translation id="3514335087372914653">Control de jocs</translation>
 <translation id="3514373592552233661">Les xarxes preferides tindran preferència sobre altres xarxes conegudes si n'hi ha més d'una disponible.</translation>
@@ -5408,7 +5407,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5101839224773798795">Fes clic automàticament quan el cursor s'aturi</translation>
 <translation id="5103311607312269661">augmenta la brillantor de la pantalla</translation>
 <translation id="5106350808162641062">Suprimeix</translation>
-<translation id="5106608587025903971">En lloc d'introduir la contrasenya del teu Compte de Google per iniciar la sessió, pots crear una contrasenya de <ph name="DEVICE_TYPE" /> per a aquest dispositiu</translation>
 <translation id="510695978163689362">El compte <ph name="USER_EMAIL" /> està supervisat per Family Link. Pots afegir comptes de centres educatius per accedir als recursos escolars amb supervisió parental.</translation>
 <translation id="5107093668001980925">No mostris mai <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Una extensió ha desactivat Navegació segura</translation>
@@ -7368,7 +7366,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6647690760956378579">Escolta la veu natural</translation>
 <translation id="6648911618876616409">Hi ha una actualització crítica a punt per instal·lar-se. Inicia la sessió per començar.</translation>
 <translation id="6649018507441623493">Un moment…</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vol confirmar que ets tu</translation>
 <translation id="6650206238642452078">Subscriure's a esdeveniments del sistema ChromeOS</translation>
 <translation id="665061930738760572">Obre en una &amp;finestra nova</translation>
 <translation id="6651237644330755633">Confia en aquest certificat per identificar llocs web</translation>

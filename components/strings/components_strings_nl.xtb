@@ -584,7 +584,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2071692954027939183">Meldingen zijn automatisch geblokkeerd omdat je deze doorgaans niet toestaat</translation>
 <translation id="2071852865256799872">Je browser wordt beheerd door je organisatie en je profiel wordt beheerd door <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> niet meer blokkeren</translation>
-<translation id="2075497153347571252">Je beheerder heeft <ph name="PERMISSION" /> geblokkeerd op <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Muziek- en dansgames</translation>
 <translation id="2079545284768500474">Ongedaan maken</translation>
 <translation id="2080021694978766903">Dit beleid mag niet meer dan <ph name="MAX_ITEMS_LIMIT" /> items bevatten.</translation>
@@ -2019,7 +2018,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4885030148564729407">Huwelijksreizen en romantische uitjes</translation>
 <translation id="4885256590493466218">Bij het afrekenen betalen met <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Wachtwoorden beveiligen met Windows Hello</translation>
-<translation id="4890070067176768718">Je beheerder heeft <ph name="PERMISSION" /> toegestaan op <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Achterzijde</translation>
 <translation id="4895019427244614047">Adres verwijderen</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3905,7 +3903,6 @@ Aanvullende informatie:
 <translation id="8493948351860045254">Ruimte vrijmaken</translation>
 <translation id="8498891568109133222">Het duurt te lang voordat <ph name="HOST_NAME" /> reageert.</translation>
 <translation id="8502023382441452707">Verjaardagen en naamdagen</translation>
-<translation id="8502972004418241366">Als je je <ph name="PERMISSION" /> op deze site wilt gebruiken, moet je Chrome toegang geven</translation>
 <translation id="8503559462189395349">Chrome-wachtwoorden</translation>
 <translation id="8503813439785031346">Gebruikersnaam</translation>
 <translation id="8504928302600319133">Computerhardware</translation>
@@ -3925,7 +3922,6 @@ Aanvullende informatie:
 <translation id="853246364274116957">Broadway en musicals</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Ga naar &lt;strong&gt;chrome://policy&lt;/strong&gt; om de lijst met geblokkeerde URL's en andere beleidsregels te bekijken die worden afgedwongen door je systeembeheerder.</translation>
-<translation id="8534934518812659742">Je hebt <ph name="PERMISSION" /> uitgezet voor Chrome.</translation>
 <translation id="8536234749087605613">Envelop (venster)</translation>
 <translation id="8539500321752640291">2 rechten toestaan?</translation>
 <translation id="8541158209346794904">Bluetooth-apparaat</translation>
@@ -3982,7 +3978,6 @@ Aanvullende informatie:
 <translation id="865032292777205197">bewegingssensoren</translation>
 <translation id="865255447216708819">Terugdrukfilm</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Je hebt <ph name="PERMISSION" /> eerder niet toegestaan op <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Commercieel vastgoed</translation>
 <translation id="8663226718884576429">Besteloverzicht, <ph name="TOTAL_LABEL" />, meer informatie</translation>
 <translation id="8663909737634214500">Optische schijf</translation>
@@ -4014,6 +4009,7 @@ Aanvullende informatie:
 <translation id="8722929331701811374">Briefpapier (briefhoofd)</translation>
 <translation id="8724824364712796726">Envelop B6</translation>
 <translation id="8725066075913043281">Opnieuw proberen</translation>
+<translation id="8725667981218437315">Camera en microfoon</translation>
 <translation id="8726549941689275341">Paginagrootte:</translation>
 <translation id="8730621377337864115">Klaar</translation>
 <translation id="8731268612289859741">Beveiligingscode</translation>

@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">Унесите имејл адресу која није празна.</translation>
 <translation id="1758486001363313524">Друго...</translation>
 <translation id="1787192514241997742">укупно време: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">Дозволи камеру</translation>
 <translation id="1822429046913737220">пре подне/по подне</translation>
 <translation id="1832974991323546415">пуштајте на удаљеном уређају</translation>
 <translation id="1921819250265091946">дд</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">актуелни корак</translation>
 <translation id="3321030238473337787">Брзина репродукције</translation>
 <translation id="3329013043687509092">Засићеност боја</translation>
-<translation id="3377518164566272702">Дозволи микрофон и камеру</translation>
 <translation id="3450233048674729344">Вредност сме да буде највише <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">мм</translation>
 <translation id="3754210790023674521">Изађи из режима слике у слици</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">Друго...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, од <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Слика у слици</translation>
-<translation id="918430632320614861">Дозволи микрофон</translation>
 <translation id="945780513535800434">Делимично означено</translation>
 <translation id="954003015749068518">уђи у режим слике у слици</translation>
 </translationbundle>

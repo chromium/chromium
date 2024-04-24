@@ -131,6 +131,7 @@
 <translation id="1653432787084483144">{count,plural, =1{{count} na-save na password ang available sa itaas ng iyong keyboard.}one{{count} na-save na password ang available sa itaas ng iyong keyboard.}other{{count} na na-save na password ang available sa itaas ng iyong keyboard.}}</translation>
 <translation id="1657011748321897393">Nabigo ang pagbabahagi dahil hindi ka nakakonekta sa network.</translation>
 <translation id="165877110639533037">Walang Mga Nakabukas na Tab</translation>
+<translation id="1668001730617725852">Buksan sa Bagong Grupo ng Tab</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> na isasalin sa <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">I-request ang Pang-mobile na Site</translation>
 <translation id="1687475363370981210">Markahan ang Lahat Bilang Nabasa Na</translation>
@@ -1206,6 +1207,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7162168282402939716">I-unlock ang Mga Tab na Incognito Gamit ang <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Buksan ang Mga Setting</translation>
 <translation id="7186568385131859684">Kontrolin kung paano ginagamit ang history ng pag-browse kasama ng iba mo pang data sa mga serbisyo ng Google</translation>
+<translation id="7187190640134722091">Gumawa ng Grupo</translation>
 <translation id="7189598951263744875">Ibahagi...</translation>
 <translation id="719133302483559673">Pamahalaan ang iyong mga interes at preference.</translation>
 <translation id="7192050974311852563">Simulan ang Pag-log</translation>
@@ -1428,7 +1430,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="828291969289324795">{count,plural, =1{Magdagdag ng Tab sa Bagong Grupo}one{Magdagdag ng Mga Tab sa Bagong Grupo}other{Magdagdag ng Mga Tab sa Bagong Grupo}}</translation>
 <translation id="8283172974887967105">Itakda…</translation>
 <translation id="8286036467436129157">Mag-sign In</translation>
-<translation id="8289930144142009940">In-off ang mga notification para sa <ph name="FEATURE_NAME" /></translation>
+<translation id="8289930144142009940">Naka-off ang mga notification para sa <ph name="FEATURE_NAME" /></translation>
 <translation id="8292843446079898078">Makatanggap ng mga alerto sa pagbaba ng presyo para sa mga produktong sinusubaybayan mo.</translation>
 <translation id="8299417921174340354">Para gumamit ng mga password, dapat ka munang magtakda ng passcode sa iyong device.</translation>
 <translation id="8299613349954694191">Magbukas ng tab na Incognito para pribadong i-browse ang web.</translation>
@@ -1603,6 +1605,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="9109699888944026290">{count,plural, =1{Bagong Password Para Sa Site Na Ito}one{Mga Bagong Password Para Sa Site Na Ito}other{Mga Bagong Password Para Sa Site Na Ito}}</translation>
 <translation id="9120217828624527905">Lumipat sa Pagsasalin ng Buong Page</translation>
 <translation id="9124387962554796433">Puwedeng gamitin ng Google ang iyong history para i-personalize ang Search at iba pang serbisyo ng Google.</translation>
+<translation id="913036870884277353">Madaling makapagbukas ng mga link sa iba pang app.</translation>
 <translation id="9137526406337347448">Mga Serbisyo ng Google</translation>
 <translation id="9144931028079269381">I-hide ang Listahan ng Babasahin</translation>
 <translation id="9148126808321036104">Muling mag-sign in</translation>

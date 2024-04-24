@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Tingnan ang Mga Bookmark sa Chromium</translation>
 <translation id="2590893390871230428">I-sync ang Iyong Data sa Chromium</translation>
 <translation id="2592940277904433508">Ipagpatuloy ang paggamit ng Chromium</translation>
+<translation id="2607609479243848905">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">Sa Mga Setting ng iyong device, buksan ang "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" at piliin ang "Chromium"</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Tutulong ang Chromium na subaybayan ang package na ito sa Page ng Bagong Tab.}one{Tutulong ang Chromium na subaybayan ang mga package na ito sa Page ng Bagong Tab.}other{Tutulong ang Chromium na subaybayan ang mga package na ito sa Page ng Bagong Tab.}}</translation>
 <translation id="2650312721222849884">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chromium, i-on ang pag-sync</translation>
@@ -116,6 +117,9 @@ Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at 
 <translation id="4498832288620833153">Idaragdag ang mga in-input na URL sa iyong listahan ng babasahin sa Chromium.</translation>
 <translation id="452436063477828504">Tiyaking magagamit mo sa anumang oras ang data ng Chromium sa iyong Google Account</translation>
 <translation id="4555020257205549924">Kapag naka-on ang feature na ito, mag-aalok ang Chromium na magsalin ng mga page na nakasulat sa ibang mga wika gamit ang Google Translate. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address.
+
+Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Bubuksan ang Page ng Setting ng Mga Paraan ng Pagbabayad sa Chromium.</translation>
 <translation id="459080529287102949">Maghanap ng Mga Visual sa Chromium</translation>
 <translation id="4633738821577273991">Kunin din ang Pinahusay na Ligtas na Pag-browse para sa profile sa Chromium na ito</translation>
@@ -214,6 +218,9 @@ Mga bagay na dapat isaalang-alang:
 <translation id="7163483974919055112">Maghanap ng Mga Visual sa Chromium.</translation>
 <translation id="7165402419892018581">Piliin ang Chromium para sa AutoFill</translation>
 <translation id="7175400662502680481">Na-expose ang password mo sa isang paglabag sa data. Inirerekomenda ng Password Manager na palitan na ito ngayon.</translation>
+<translation id="7185731475720473450">Hindi mae-encrypt ang mga paraan ng pagbabayad at address. Hindi masi-sync ang history ng pag-browse mula sa Chromium.
+
+Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data. Hindi ipinapadala sa o hindi sino-store ng Google ang passphrase. Kung makakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Kasalukuyang naka-off ang mga notification sa Chromium sa mga setting ng iyong device.</translation>
 <translation id="7222001353246886083">Hanapin ang ${searchPhrase} sa Chromium</translation>
 <translation id="725427773388857052">Makakatulong ang Chromium na panatilihin kang ligtas laban sa mga paglabag sa data, hindi ligtas na website, at higit pa.</translation>

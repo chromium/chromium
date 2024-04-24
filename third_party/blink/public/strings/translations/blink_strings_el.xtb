@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">Καταχωρίστε μια διεύθυνση ηλεκτρονικού ταχυδρομείου.</translation>
 <translation id="1758486001363313524">Άλλες…</translation>
 <translation id="1787192514241997742">συνολικός χρόνος: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">Να επιτρέπεται η χρήση της κάμερας</translation>
 <translation id="1822429046913737220">Π.Μ./Μ.Μ.</translation>
 <translation id="1832974991323546415">αναπαραγωγή σε απομακρυσμένη συσκευή</translation>
 <translation id="1921819250265091946">ηη</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">τρέχον βήμα</translation>
 <translation id="3321030238473337787">Ταχύτητα αναπαραγωγής</translation>
 <translation id="3329013043687509092">Κορεσμός</translation>
-<translation id="3377518164566272702">Να επιτρέπεται η χρήση του μικροφώνου και της κάμερας</translation>
 <translation id="3450233048674729344">Η τιμή πρέπει να είναι μικρότερη ή ίση του <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">μμ</translation>
 <translation id="3754210790023674521">Έξοδος από τη λειτουργία picture-in-picture</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">Άλλες…</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, από τις <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Παράθεση εικόνων</translation>
-<translation id="918430632320614861">Να επιτρέπεται η χρήση του μικροφώνου</translation>
 <translation id="945780513535800434">Μερικώς επιλεγμένο</translation>
 <translation id="954003015749068518">είσοδος στη λειτουργία picture-in-picture</translation>
 </translationbundle>

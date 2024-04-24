@@ -1610,7 +1610,6 @@
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">तुम्ही ChromeOS Flex ची डीबगिंग वैशिष्‍ट्ये सुरू करत आहात, ज्यामुळे SSH daemon सेट केले जाईल आणि USB ड्राइव्‍हमधून बूट करणे सुरू केले जाईल.</translation>
 <translation id="2178614541317717477">CA तडजोड</translation>
-<translation id="2179416702468739594">उपलब्ध प्रोफाइल शोधत आहे. यामुळे तुमचे मोबाइल नेटवर्क काही मिनिटांसाठी डिस्कनेक्ट होऊ शकते.</translation>
 <translation id="2180620921879609685">कोणत्याही पेजवरील आशय ब्लॉक करू शकते</translation>
 <translation id="2181821976797666341">धोरणे</translation>
 <translation id="2182058453334755893">तुमच्या क्लिपबोर्डवर कॉपी केले</translation>
@@ -1663,6 +1662,7 @@
 <translation id="222115440608612541">सूर्योदय आणि सूर्यास्ताच्यावेळी थीम स्विच करा</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">अनामित मीडिया स्रोत</translation>
+<translation id="2224337661447660594">इंटरनेट नाही</translation>
 <translation id="2224444042887712269">ही सेटिंग <ph name="OWNER_EMAIL" /> च्या मालकीची आहे.</translation>
 <translation id="2224551243087462610">फोल्डर नाव संपादित करा</translation>
 <translation id="2225927550500503913">व्हर्च्युअल कार्ड सुरू केले आहे</translation>
@@ -2867,7 +2867,7 @@
 <translation id="311394601889664316">साइटना तुमच्या डिव्हाइसवरील फाइल किंवा फोल्डर संपादित करण्याची अनुमती देऊ नका</translation>
 <translation id="3115147772012638511">कॅशेसाठी प्रतीक्षा करत आहे...</translation>
 <translation id="3115580024857770654">सर्व कोलॅप्‍स करा</translation>
-<translation id="3115728370128632723">वेबने तुमच्यासाठी सर्वोत्तम काम करणे याचा अर्थ काय आहे:
+<translation id="3115728370128632723">वेबने तुमच्यासाठी सर्वोत्तम काम करणे याचा अर्थ आहे:
       &lt;ul&gt;
         &lt;li&gt;तुम्ही ब्राउझ करत असताना तुम्हाला सुरक्षित ठेवणे, आणि&lt;/li&gt;
          &lt;li&gt;वेब सुरक्षित, मुक्त, जलद आणि विनामूल्य ठेवणाऱ्या भरभराटीच्या व्यवस्थेला सपोर्ट करणे&lt;/li&gt;
@@ -3117,7 +3117,6 @@
 <translation id="3321494112580110651">तुमचा प्रिंटर दिसत नाही का?</translation>
 <translation id="3321776060736518525"><ph name="APP_URL" /> कडून</translation>
 <translation id="3323521181261657960">बोनस! तुम्हाला आणखी स्क्रीन वेळ मिळाला</translation>
-<translation id="3325804108816646710">उपलब्ध प्रोफाइल शोधत आहे...</translation>
 <translation id="3325930488268995856">Microsoft OneDrive कनेक्ट केले आहे</translation>
 <translation id="3325995804968971809">शैली</translation>
 <translation id="3327050066667856415">Chromebook सुरक्षेसाठी डिझाइन केलेली आहेत. तुमच्या डिव्हाइसचे मालवेअरपासून आपोआप संरक्षण केले जाते - अतिरिक्त सॉफ्टवेअरची गरज नाही.</translation>
@@ -5422,7 +5421,6 @@
 <translation id="5101839224773798795">कर्सर थांबल्यावर आपोआप क्लिक करा</translation>
 <translation id="5103311607312269661">डिस्प्लेचा ब्राइटनेस वाढवा</translation>
 <translation id="5106350808162641062">काढून टाका</translation>
-<translation id="5106608587025903971">साइन इन करण्यासाठी तुमचा Google खाते पासवर्ड एंटर करण्याऐवजी, तुम्ही या डिव्हाइससाठी <ph name="DEVICE_TYPE" /> पासवर्ड तयार करू शकता</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> हा Family Link द्वारे पर्यवेक्षित केला जातो. पालक पर्यवेक्षणासह शाळेचे स्रोत अ‍ॅक्सेस करण्यासाठी तुम्ही शाळेची खाती जोडू शकता.</translation>
 <translation id="5107093668001980925"><ph name="MODULE_NAME" /> कधीही दाखवू नका</translation>
 <translation id="5107443654503185812">एक्स्टेंशनने सुरक्षित ब्राउझिंग बंद केले आहे</translation>
@@ -7384,7 +7382,6 @@
 <translation id="6647690760956378579">नैसर्गिक आवाज पूर्वावलोकन</translation>
 <translation id="6648911618876616409">महत्वाचे अपडेट इंस्टॉल करण्यासाठी तयार आहे. सुरुवात करण्यासाठी साइन इन करा.</translation>
 <translation id="6649018507441623493">फक्त एक सेकंद…</translation>
-<translation id="6650072551060208490">हे तुम्हीच असल्याची <ph name="ORIGIN_NAME" /> ला खात्री करायची आहे</translation>
 <translation id="6650206238642452078">ChromeOS सिस्टीम इव्‍हेंटचे सदस्यत्व घ्या</translation>
 <translation id="665061930738760572">&amp;नवीन विंडोमध्ये उघडा</translation>
 <translation id="6651237644330755633">वेबसाइट ओळखण्‍यासाठी या सर्टिफिकेटवर विश्‍वास ठेवा</translation>

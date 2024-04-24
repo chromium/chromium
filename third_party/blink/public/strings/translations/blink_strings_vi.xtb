@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">Vui lòng nhập địa chỉ email không trống.</translation>
 <translation id="1758486001363313524">Khác...</translation>
 <translation id="1787192514241997742">tổng thời gian: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">Cho phép dùng camera</translation>
 <translation id="1822429046913737220">SA/CH</translation>
 <translation id="1832974991323546415">phát trên thiết bị từ xa</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">bước hiện tại</translation>
 <translation id="3321030238473337787">Tốc độ phát</translation>
 <translation id="3329013043687509092">Độ bão hòa</translation>
-<translation id="3377518164566272702">Cho phép dùng micrô và camera</translation>
 <translation id="3450233048674729344">Giá trị phải nhỏ hơn hoặc bằng <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Thoát chế độ hình trong hình</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">Khác...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, bắt đầu vào <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Ảnh trong ảnh</translation>
-<translation id="918430632320614861">Cho phép dùng micrô</translation>
 <translation id="945780513535800434">Đã kiểm tra một phần</translation>
 <translation id="954003015749068518">vào chế độ hình trong hình</translation>
 </translationbundle>

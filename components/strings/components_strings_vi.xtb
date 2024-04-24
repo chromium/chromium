@@ -586,7 +586,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2071692954027939183">Các thông báo tự động bị chặn do bạn thường xuyên không cho phép các thông báo đó</translation>
 <translation id="2071852865256799872">Trình duyệt của bạn do tổ chức bạn quản lý, còn hồ sơ của bạn do <ph name="PROFILE_DOMAIN" /> quản lý</translation>
 <translation id="2074733626795553847">Bỏ chặn <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Quản trị viên của bạn đã chặn <ph name="PERMISSION" /> trên <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Trò chơi âm nhạc và khiêu vũ</translation>
 <translation id="2079545284768500474">Hoàn tác</translation>
 <translation id="2080021694978766903">Chính sách này không được chứa nhiều hơn <ph name="MAX_ITEMS_LIMIT" /> mục nhập.</translation>
@@ -2027,7 +2026,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4885030148564729407">Tuần trăng mật và chuyến đi lãng mạn</translation>
 <translation id="4885256590493466218">Thanh toán bằng <ph name="CARD_DETAIL" /> khi thanh toán</translation>
 <translation id="4887406273302438710">Bảo vệ mật khẩu bằng Windows Hello</translation>
-<translation id="4890070067176768718">Quản trị viên của bạn đã cho phép <ph name="PERMISSION" /> trên <ph name="ORIGIN" /></translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, hãy nhấn phím Tab rồi nhấn Enter để xoá nhật ký duyệt web, cookie, bộ nhớ đệm và các dữ liệu khác trong phần cài đặt của Chrome</translation>
 <translation id="4892518386797173871">Phía sau</translation>
 <translation id="4895019427244614047">Xoá địa chỉ</translation>
@@ -3919,7 +3917,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8493948351860045254">Giải phóng dung lượng</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> mất quá nhiều thời gian để phản hồi.</translation>
 <translation id="8502023382441452707">Sinh nhật và ngày đặt tên</translation>
-<translation id="8502972004418241366">Để dùng <ph name="PERMISSION" /> trên trang web này, bạn cần cấp quyền truy cập cho Chrome</translation>
 <translation id="8503559462189395349">Mật khẩu Chrome</translation>
 <translation id="8503813439785031346">Tên người dùng</translation>
 <translation id="8504928302600319133">Phần cứng máy tính</translation>
@@ -3939,7 +3936,6 @@ Thông tin chi tiết bổ sung:
 <translation id="853246364274116957">Broadway và nhà hát âm nhạc</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Hãy truy cập vào &lt;strong&gt;chrome://policy&lt;/strong&gt; để xem danh sách các URL bị chặn và những chính sách khác do quản trị viên hệ thống thực thi.</translation>
-<translation id="8534934518812659742">Bạn đã tắt <ph name="PERMISSION" /> đối với Chrome.</translation>
 <translation id="8536234749087605613">Phong bì (Có cửa sổ giấy bóng)</translation>
 <translation id="8539500321752640291">Cấp 2 quyền truy cập?</translation>
 <translation id="8541158209346794904">Thiết bị Bluetooth</translation>
@@ -3997,7 +3993,6 @@ Thông tin chi tiết bổ sung:
 <translation id="865032292777205197">cảm biến chuyển động</translation>
 <translation id="865255447216708819">Phim in mặt sau</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Trước đây, bạn đã không cho phép <ph name="PERMISSION" /> trên <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Bất động sản thương mại</translation>
 <translation id="8663226718884576429">Tóm tắt đơn hàng, <ph name="TOTAL_LABEL" />, chi tiết khác</translation>
 <translation id="8663909737634214500">Đĩa quang</translation>
@@ -4030,6 +4025,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8722929331701811374">Văn phòng phẩm (Giấy tiêu đề)</translation>
 <translation id="8724824364712796726">Phong bì B6</translation>
 <translation id="8725066075913043281">Thử lại</translation>
+<translation id="8725667981218437315">Máy ảnh và micrô</translation>
 <translation id="8726549941689275341">Kích thước trang:</translation>
 <translation id="8730621377337864115">Xong</translation>
 <translation id="8731268612289859741">Mã bảo mật</translation>

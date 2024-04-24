@@ -1596,7 +1596,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Estás habilitando las funciones de depuración de ChromeOS Flex que configurarán el daemon sshd y habilitarán el inicio desde unidades USB.</translation>
 <translation id="2178614541317717477">Compromiso de entidad de certificación</translation>
-<translation id="2179416702468739594">Se están buscando perfiles disponibles. Es posible que se desconecte tu red móvil por unos minutos.</translation>
 <translation id="2180620921879609685">Bloquear contenido en cualquier página</translation>
 <translation id="2181821976797666341">Políticas</translation>
 <translation id="2182058453334755893">Se copió en tu portapapeles</translation>
@@ -1649,6 +1648,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="222115440608612541">Cambia de tema al amanecer y al atardecer</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Fuente de contenido multimedia sin nombre</translation>
+<translation id="2224337661447660594">Sin Internet</translation>
 <translation id="2224444042887712269">Esta configuración pertenece a <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Editar nombre de carpeta</translation>
 <translation id="2225927550500503913">Se activó la tarjeta virtual</translation>
@@ -3100,7 +3100,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3321494112580110651">¿No ves tu impresora?</translation>
 <translation id="3321776060736518525">De <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonus: Disfruta de más tiempo de uso</translation>
-<translation id="3325804108816646710">Buscando perfiles disponibles…</translation>
 <translation id="3325930488268995856">Se conectó Microsoft OneDrive</translation>
 <translation id="3325995804968971809">Estilo</translation>
 <translation id="3327050066667856415">Las Chromebooks están diseñadas para ser seguras. Tu dispositivo cuenta con una protección automática contra software malicioso, por lo que no necesitas una protección adicional.</translation>
@@ -5406,7 +5405,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5101839224773798795">Hacer clic automáticamente cuando se detenga el cursor</translation>
 <translation id="5103311607312269661">aumenta el brillo de la pantalla</translation>
 <translation id="5106350808162641062">Quitar</translation>
-<translation id="5106608587025903971">En lugar de ingresar la contraseña de tu Cuenta de Google para acceder, puedes crear una contraseña de <ph name="DEVICE_TYPE" /> para este dispositivo</translation>
 <translation id="510695978163689362">Family Link supervisa la cuenta <ph name="USER_EMAIL" />. Puedes agregar cuentas de instituciones educativas para acceder a los recursos escolares con supervisión parental.</translation>
 <translation id="5107093668001980925">No mostrar <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Una extensión desactivó la Navegación segura</translation>
@@ -7367,7 +7365,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6647690760956378579">Vista previa de la voz natural</translation>
 <translation id="6648911618876616409">Hay una actualización fundamental lista para instalarse. Accede a tu cuenta para comenzar.</translation>
 <translation id="6649018507441623493">Un segundo…</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> quiere confirmar que eres tú</translation>
 <translation id="6650206238642452078">Suscribirse a eventos del sistema de ChromeOS</translation>
 <translation id="665061930738760572">Abrir en una &amp;nueva ventana</translation>
 <translation id="6651237644330755633">Confía en este certificado para identificar sitios web</translation>

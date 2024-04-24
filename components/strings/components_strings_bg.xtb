@@ -584,7 +584,6 @@
 <translation id="2071692954027939183">Известията бяха блокирани автоматично, защото обикновено не ги разрешавате</translation>
 <translation id="2071852865256799872">Браузърът ви се управлява от организацията ви, а потребителският ви профил – от <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Отблокиране на <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Администраторът ви е блокирал разрешението „<ph name="PERMISSION" />“ на <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Музикални и танцови игри</translation>
 <translation id="2079545284768500474">Отмяна</translation>
 <translation id="2080021694978766903">Това правило не трябва да съдържа повече от <ph name="MAX_ITEMS_LIMIT" /> записа.</translation>
@@ -2024,7 +2023,6 @@
 <translation id="4885030148564729407">Пътувания за меден месец и романтични пътешествия</translation>
 <translation id="4885256590493466218">Плащане с <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Защита на паролите с Windows Hello</translation>
-<translation id="4890070067176768718">Администраторът ви е предоставил разрешението „<ph name="PERMISSION" />“ на <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Заден</translation>
 <translation id="4895019427244614047">Изтриване на адреса</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> и <ph name="TYPE_3" /></translation>
@@ -3911,7 +3909,6 @@
 <translation id="8493948351860045254">Освобождаване на място</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> не отговаря твърде дълго време.</translation>
 <translation id="8502023382441452707">Рождени и имени дни</translation>
-<translation id="8502972004418241366">За да използвате <ph name="PERMISSION" /> на този сайт, трябва да предоставите достъп на Chrome</translation>
 <translation id="8503559462189395349">Пароли в Chrome</translation>
 <translation id="8503813439785031346">Потребителско име</translation>
 <translation id="8504928302600319133">Компютърен хардуер</translation>
@@ -3931,7 +3928,6 @@
 <translation id="853246364274116957">Бродуей и мюзикъли</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Посетете &lt;strong&gt;chrome://policy&lt;/strong&gt;, за да видите блокираните URL адреси и другите правила, наложени от системния ви администратор.</translation>
-<translation id="8534934518812659742">Изключихте разрешението за достъп до <ph name="PERMISSION" /> за Chrome.</translation>
 <translation id="8536234749087605613">Плик (с прозорец)</translation>
 <translation id="8539500321752640291">Да се предоставят ли две разрешения?</translation>
 <translation id="8541158209346794904">Bluetooth устройства</translation>
@@ -3988,7 +3984,6 @@
 <translation id="865032292777205197">сензори за движение</translation>
 <translation id="865255447216708819">Полупрозрачно фолио</translation>
 <translation id="8654126188050905496">55 x 91 мм</translation>
-<translation id="8655930295668719549">По-рано не разрешихте на <ph name="ORIGIN" /> да осъществи достъп до <ph name="PERMISSION" /></translation>
 <translation id="8662463432865928030">Търговски имоти</translation>
 <translation id="8663226718884576429">Обобщение на поръчката, <ph name="TOTAL_LABEL" />, още подробности</translation>
 <translation id="8663909737634214500">Оптичен диск</translation>
@@ -4020,6 +4015,7 @@
 <translation id="8722929331701811374">Листове (бланки)</translation>
 <translation id="8724824364712796726">Плик B6</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>
+<translation id="8725667981218437315">Камера и микрофон</translation>
 <translation id="8726549941689275341">Размер на страниците:</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8731268612289859741">Код за сигурност</translation>

@@ -699,7 +699,9 @@
 <translation id="4732120983431207637">מודול התרת מחסניות</translation>
 <translation id="4736934858538408121">כרטיס וירטואלי</translation>
 <translation id="473775607612524610">עדכון</translation>
+<translation id="4738065825338914557">הרישום מתבטל…</translation>
 <translation id="4738836084190194332">סונכרן לאחרונה: <ph name="WHEN" /></translation>
+<translation id="474121291218385686">סינון לפי אפליקציות</translation>
 <translation id="4741753828624614066">בסרגל הכתובות יוצגו הצעות משופרות</translation>
 <translation id="4742970037960872810">הסרת ההדגשה</translation>
 <translation id="4749960740855309258">פתיחת כרטיסייה חדשה</translation>
@@ -783,6 +785,7 @@
 <translation id="5099845111805573968">כשבוחרים אתר שמותאם למחשב בפעם הראשונה, ההגדרה חלה על האתר בכל פעם שמבקרים בו</translation>
 <translation id="5102401324271069229">‏אם באתר כלשהו מתבצע ניסיון לגנוב את הסיסמה שלך, או אם המערכת מזהה הורדה של קובץ מזיק, Chrome עשוי לשלוח כתובות URL לבדיקה באמצעות 'גלישה בטוחה'. הנתונים שנשלחים לבדיקה כוללים ביטים מתוכן של דפים</translation>
 <translation id="510275257476243843">נותרה שעה אחת</translation>
+<translation id="5114895953710637392">גיליון הסינון לפי אפליקציות סגור.</translation>
 <translation id="5115811374190515607">אל <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">תחומי עניין</translation>
 <translation id="5122378528687922675">אם צריך עזרה, אפשר לבקש עזרה מהורה (<ph name="PARENT_NAME_1" /> או <ph name="PARENT_NAME_2" />)</translation>
@@ -1132,6 +1135,7 @@
 <translation id="685850645784703949">‏Discover by Google – מושבת</translation>
 <translation id="686366188661646310">למחוק את הסיסמה?</translation>
 <translation id="6864459304226931083">הורדת תמונה</translation>
+<translation id="686490460830618322">גיליון הסינון לפי אפליקציות</translation>
 <translation id="6865313869410766144">נתוני טפסים למילוי אוטומטי</translation>
 <translation id="6867400383614725881">כרטיסיית מצב אנונימי חדשה</translation>
 <translation id="6869056123412990582">מחשב</translation>
@@ -1199,6 +1203,7 @@
 <translation id="7177466738963138057">אפשר לשנות את ההגדרה הזו מאוחר יותר ב'הגדרות'</translation>
 <translation id="7177873915659574692">‏לא ניתן ליצור קוד QR. כתובת ה-URL מכילה יותר מ-<ph name="CHARACTER_LIMIT" /> תווים.</translation>
 <translation id="7180611975245234373">רענון</translation>
+<translation id="7183517696921903380">גיליון הסינון לפי אפליקציות פתוח.</translation>
 <translation id="7183693674623539380">קבוצת כרטיסיות – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">‏יש לך אפשרות לשלוט בדרכים שבהן נשתמש בהיסטוריית הגלישה ביחד עם שאר הנתונים שלך בשירותי Google</translation>
 <translation id="7187993566681480880">‏מגינה עליך ב-Chrome ועשויה לשפר את האבטחה שלך באפליקציות אחרות של Google. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
@@ -1324,6 +1329,7 @@
 <translation id="7780645209293383778">‏כדי להגן עליך באפליקציות של Google, הנתונים האלה מקושרים באופן זמני לחשבון Google שלך. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
 <translation id="7791543448312431591">הוספה</translation>
 <translation id="7798392620021911922">שוחזרו <ph name="TAB_COUNT" /> כרטיסיות</translation>
+<translation id="780287761701992588">אפשר לקבל גישה לסימניות, לסיסמאות ולנתונים נוספים בכל המכשירים שלך</translation>
 <translation id="780301667611848630">לא תודה</translation>
 <translation id="7808889146555843082">מחיקת הסיסמה הזו לא תגרום למחיקת החשבון שלך באתר <ph name="SITE" />. כדי למנוע את החשיפה של הסיסמה, כדאי לשנות אותה או למחוק את החשבון שלך ב-<ph name="SITE" />.</translation>
 <translation id="7810647596859435254">פתיחה באמצעות...</translation>

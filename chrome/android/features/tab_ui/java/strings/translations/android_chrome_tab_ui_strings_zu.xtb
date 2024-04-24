@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Ungathola amathebhu akho avaliwe kumathebhu Akamuva ngaphansi kwemenyu eyinhloko ye-Chrome Ithebhu yakho ye-Incognito ngeke itholakale.}one{Ungathola amathebhu akho avaliwe kumathebhu Akamuva ngaphansi kwemenyu eyinhloko ye-Chrome Amathebhu akho angu-# e-Incognito ngeke atholakale.}other{Ungathola amathebhu akho avaliwe kumathebhu Akamuva ngaphansi kwemenyu eyinhloko ye-Chrome Amathebhu akho angu-# e-Incognito ngeke atholakale.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{Ithebhu e-<ph name="TABS_COUNT_ONE" />}one{Amathebhu angu-<ph name="TABS_COUNT_MANY" />}other{Amathebhu angu-<ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="6549021453810473782">Buka ulwazi lwesitolo</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Hambisa ithebhu ngakwesokunxele</translation>
 <translation id="6615455863669487791">Ngibonise</translation>
 <translation id="661742612106409204">Ungathola amathebhu akho avaliwe kumathebhu Akamuva ngaphansi kwemenyu eyinhloko ye-Chrome</translation>

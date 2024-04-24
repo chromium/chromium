@@ -583,7 +583,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2071692954027939183">Odatda ruxsat bermasligingiz uchun bildirishnomalar avtomatik bloklanadi</translation>
 <translation id="2071852865256799872">Brauzeringiz tashkilotingiz boshqaruvida va profilingiz <ph name="PROFILE_DOMAIN" /> domenida boshqariladi</translation>
 <translation id="2074733626795553847">Blokdan chiqarish: <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Administrator <ph name="ORIGIN" /> saytida <ph name="PERMISSION" />ni taqiqlagan</translation>
 <translation id="2078956195623975415">Musiqa va raqs oʻyinlari</translation>
 <translation id="2079545284768500474">Bekor qilish</translation>
 <translation id="2080021694978766903">Bu siyosatdagi elementlar soni <ph name="MAX_ITEMS_LIMIT" /> yozuvdan oshmasligi kerak.</translation>
@@ -2019,7 +2018,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4885030148564729407">Asal oyi va romantik sayohatlar</translation>
 <translation id="4885256590493466218">Hisob-kitob vaqtida <ph name="CARD_DETAIL" /> bilan toʻlang</translation>
 <translation id="4887406273302438710">Parollarni Windows Hello yordamida himoyalash</translation>
-<translation id="4890070067176768718">Administrator <ph name="ORIGIN" /> saytida <ph name="PERMISSION" />ga ruxsat bergan</translation>
 <translation id="4892518386797173871">Orqasi</translation>
 <translation id="4895019427244614047">Manzilni oʻchirish</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3905,7 +3903,6 @@ Batafsil axborot:
 <translation id="8493948351860045254">Joy ochish</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> saytidan javobni kutish vaqti tugadi.</translation>
 <translation id="8502023382441452707">Tavallud va ism berish kunlari</translation>
-<translation id="8502972004418241366">Bu saytda <ph name="PERMISSION" /> uchun Chromega ruxsat berish kerak.</translation>
 <translation id="8503559462189395349">Chrome parollari</translation>
 <translation id="8503813439785031346">Foydalanuvchi nomi</translation>
 <translation id="8504928302600319133">Kompyuter texnikasi</translation>
@@ -3925,7 +3922,6 @@ Batafsil axborot:
 <translation id="853246364274116957">Brodvey va musiqa teatri</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Administrator tomonidan tuzilgan URL manzillar qora roʻyxati va boshqa parametrlarni &lt;strong&gt;chrome://policy&lt;/strong&gt; sahifasi orqali koʻrish mumkin.</translation>
-<translation id="8534934518812659742">Chromega <ph name="PERMISSION" /> ruxsati berilmagan</translation>
 <translation id="8536234749087605613">Konvert (oynali)</translation>
 <translation id="8539500321752640291">2 ta ruxsat berilsinmi?</translation>
 <translation id="8541158209346794904">Bluetooth qurilma</translation>
@@ -3982,7 +3978,6 @@ Batafsil axborot:
 <translation id="865032292777205197">harakat sensorlari</translation>
 <translation id="865255447216708819">Teskari bosib chiqarish uchun film</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Siz avval <ph name="ORIGIN" /> <ph name="PERMISSION" />ga ruxsat bermagansiz</translation>
 <translation id="8662463432865928030">Tijoriy koʻchmas mulk</translation>
 <translation id="8663226718884576429">Buyurtma axboroti, <ph name="TOTAL_LABEL" />, Batafsil</translation>
 <translation id="8663909737634214500">Optik disk</translation>

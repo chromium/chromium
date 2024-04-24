@@ -584,7 +584,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2071692954027939183">As notificacións bloqueáronse automaticamente porque non adoitas permitilas</translation>
 <translation id="2071852865256799872">O teu navegador está xestionado pola túa organización e o teu perfil está xestionado por <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Desbloquear <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">A persoa administradora bloqueou o permiso do seguinte en <ph name="ORIGIN" />: <ph name="PERMISSION" /></translation>
 <translation id="2078956195623975415">Xogos de música e baile</translation>
 <translation id="2079545284768500474">Desfacer</translation>
 <translation id="2080021694978766903">Esta política non pode ter máis de <ph name="MAX_ITEMS_LIMIT" /> entradas.</translation>
@@ -2024,7 +2023,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4885030148564729407">Lúas de mel e escapadas románticas</translation>
 <translation id="4885256590493466218">Paga con <ph name="CARD_DETAIL" /> ao procesar a compra</translation>
 <translation id="4887406273302438710">Protexe os contrasinais con Windows Hello</translation>
-<translation id="4890070067176768718">A persoa administradora concedeu o permiso do seguinte en <ph name="ORIGIN" />: <ph name="PERMISSION" /></translation>
 <translation id="4892518386797173871">Traseira</translation>
 <translation id="4895019427244614047">Eliminar enderezo</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3911,7 +3909,6 @@ Detalles adicionais:
 <translation id="8493948351860045254">Liberar espazo</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> tardou demasiado en responder.</translation>
 <translation id="8502023382441452707">Aniversarios e santos</translation>
-<translation id="8502972004418241366">Cómpre concederlle permiso de <ph name="PERMISSION" /> a Chrome para poder usar ese recurso neste sitio</translation>
 <translation id="8503559462189395349">Contrasinais de Chrome</translation>
 <translation id="8503813439785031346">Nome de usuario</translation>
 <translation id="8504928302600319133">Hardware informático</translation>
@@ -3931,7 +3928,6 @@ Detalles adicionais:
 <translation id="853246364274116957">Broadway e musicais</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Visita &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver a lista dos URL bloqueados e outras políticas aplicadas pola persoa que administra o sistema.</translation>
-<translation id="8534934518812659742">Desactivaches <ph name="PERMISSION" /> para Chrome.</translation>
 <translation id="8536234749087605613">Sobre (ventá)</translation>
 <translation id="8539500321752640291">Queres conceder 2 permisos?</translation>
 <translation id="8541158209346794904">Dispositivo Bluetooth</translation>
@@ -3988,7 +3984,6 @@ Detalles adicionais:
 <translation id="865032292777205197">sensores de movemento</translation>
 <translation id="865255447216708819">Película para imprimir no dorso</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Anteriormente denegaches o permiso de <ph name="PERMISSION" /> en <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Propiedades comerciais</translation>
 <translation id="8663226718884576429">Resumo do pedido, <ph name="TOTAL_LABEL" />, máis detalles</translation>
 <translation id="8663909737634214500">Disco óptico</translation>
@@ -4020,6 +4015,7 @@ Detalles adicionais:
 <translation id="8722929331701811374">Papelaría (cabeceira)</translation>
 <translation id="8724824364712796726">Sobre B6</translation>
 <translation id="8725066075913043281">Tentar de novo</translation>
+<translation id="8725667981218437315">Cámara e micrófono</translation>
 <translation id="8726549941689275341">Tamaño da páxina:</translation>
 <translation id="8730621377337864115">Feito</translation>
 <translation id="8731268612289859741">Código de seguranza</translation>

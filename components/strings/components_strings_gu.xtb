@@ -584,7 +584,6 @@
 <translation id="2071692954027939183">નોટિફિકેશન ઑટોમૅટિક રીતે બ્લૉક કરવામાં આવ્યા હતા કારણ કે તમે સામાન્ય રીતે તેમને મંજૂરી આપતા નથી</translation>
 <translation id="2071852865256799872">તમારી સંસ્થા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે અને <ph name="PROFILE_DOMAIN" /> દ્વારા તમારી પ્રોફાઇલ મેનેજ કરવામાં આવે છે</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" />ને અનબ્લૉક કરો</translation>
-<translation id="2075497153347571252">તમારા ઍડમિન દ્વારા <ph name="ORIGIN" /> પર <ph name="PERMISSION" />ની સુવિધા બ્લૉક કરવામાં આવી છે</translation>
 <translation id="2078956195623975415">મ્યુઝિક અને ડાન્સ ગેમ</translation>
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="2080021694978766903">આ પૉલિસીમાં <ph name="MAX_ITEMS_LIMIT" /> કરતાં વધારે એન્ટ્રી હોવી જોઈએ નહી.</translation>
@@ -2024,7 +2023,6 @@
 <translation id="4885030148564729407">હનીમૂન અને રોમાન્સ માટેના સ્થાનો</translation>
 <translation id="4885256590493466218">ચેકઆઉટ કરતી વખતે <ph name="CARD_DETAIL" /> વડે ચુકવણી કરો</translation>
 <translation id="4887406273302438710">Windows Hello વડે પાસવર્ડની સુરક્ષા કરો</translation>
-<translation id="4890070067176768718">તમારા ઍડમિન દ્વારા <ph name="ORIGIN" /> પર <ph name="PERMISSION" />ની સુવિધાને મંજૂરી આપવામાં આવી છે</translation>
 <translation id="4892518386797173871">પાછળ</translation>
 <translation id="4895019427244614047">સરનામું ડિલીટ કરો</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3911,7 +3909,6 @@
 <translation id="8493948351860045254">સ્થાન ખાલી કરો</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> એ પ્રતિસાદ આપવા માટે ઘણો સમય લીધો.</translation>
 <translation id="8502023382441452707">જન્મદિવસ અને નામકરણ દિવસ</translation>
-<translation id="8502972004418241366">આ સાઇટ પર તમારા <ph name="PERMISSION" />નો ઉપયોગ કરવા માટે, તમારે Chromeને ઍક્સેસ આપવાની જરૂર છે</translation>
 <translation id="8503559462189395349">Chrome પાસવર્ડ</translation>
 <translation id="8503813439785031346">વપરાશકર્તાનામ</translation>
 <translation id="8504928302600319133">કમ્પ્યુટર હાર્ડવેર</translation>
@@ -3931,7 +3928,6 @@
 <translation id="853246364274116957">બ્રોડવે અને મ્યુઝિકલ થિયેટર</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">બ્લૉક કરેલા URLsની સૂચિ અને તમારા સિસ્ટમ વ્યવસ્થાપક દ્વારા લાગુ કરવામાં આવેલી અન્ય પૉલિસીઓ જોવા માટે &lt;strong&gt;chrome://policy&lt;/strong&gt;ની મુલાકાત લો.</translation>
-<translation id="8534934518812659742">તમે Chrome માટે <ph name="PERMISSION" /> બંધ કરી છે.</translation>
 <translation id="8536234749087605613">એન્વેલોપ (વિન્ડો)</translation>
 <translation id="8539500321752640291">શું 2 પરવાનગી માટે મંજૂરી આપીએ?</translation>
 <translation id="8541158209346794904">બ્લૂટૂથ ડિવાઇસ</translation>
@@ -3988,7 +3984,6 @@
 <translation id="865032292777205197">મોશન સેન્સર</translation>
 <translation id="865255447216708819">પાછળ પ્રિન્ટવાળી ફિલ્મ</translation>
 <translation id="8654126188050905496">55 x 91 મિમી</translation>
-<translation id="8655930295668719549">તમે અગાઉ <ph name="ORIGIN" /> પર <ph name="PERMISSION" /> માટે કોઈ મંજૂરી આપી ન હતી</translation>
 <translation id="8662463432865928030">વ્યાવાસાયિક પ્રોપર્ટી</translation>
 <translation id="8663226718884576429">ઑર્ડરનો સારાંશ, <ph name="TOTAL_LABEL" />, વધુ વિગતો</translation>
 <translation id="8663909737634214500">ઓપ્ટિકલ ડિસ્ક</translation>
@@ -4020,6 +4015,7 @@
 <translation id="8722929331701811374">સ્ટેશનરી (લેટરહેડ)</translation>
 <translation id="8724824364712796726">એન્વલપ B6</translation>
 <translation id="8725066075913043281">ફરી પ્રયાસ કરો</translation>
+<translation id="8725667981218437315">કૅમેરો અને માઇક્રોફોન</translation>
 <translation id="8726549941689275341">પેજનું કદ:</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>
 <translation id="8731268612289859741">સિક્યુરિટી કોડ</translation>

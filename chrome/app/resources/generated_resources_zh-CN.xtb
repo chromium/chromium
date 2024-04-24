@@ -1592,7 +1592,6 @@
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">您正在启用 ChromeOS Flex 调试功能，这些功能将设置 sshd 守护程序并允许从 U 盘启动设备。</translation>
 <translation id="2178614541317717477">CA 泄漏</translation>
-<translation id="2179416702468739594">正在查找可用的配置文件。这可能会导致您的移动网络连接断开几分钟。</translation>
 <translation id="2180620921879609685">屏蔽所有页面上的内容</translation>
 <translation id="2181821976797666341">政策</translation>
 <translation id="2182058453334755893">已复制到您的剪贴板</translation>
@@ -1645,6 +1644,7 @@
 <translation id="222115440608612541">在日出和日落时切换主题</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">未命名的媒体来源</translation>
+<translation id="2224337661447660594">未连接到互联网</translation>
 <translation id="2224444042887712269">此设置属于<ph name="OWNER_EMAIL" />。</translation>
 <translation id="2224551243087462610">修改文件夹名</translation>
 <translation id="2225927550500503913">虚拟卡已开启</translation>
@@ -2185,7 +2185,7 @@
 <translation id="261305050785128654">让网站知道您所用的语言。它们将尽可能以这些语言显示内容。</translation>
 <translation id="2613210758071148851">不允许运行 <ph name="RESTRICTED_SITE" /> 的任何扩展程序</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> 将能够修改“<ph name="FILENAME" />”</translation>
-<translation id="2613747923081026172">创建群组</translation>
+<translation id="2613747923081026172">创建分组</translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{在此扩展程序中打开并修改 <ph name="FILE1" />}other{在此应用中打开并修改 <ph name="FILE1" />…}}</translation>
 <translation id="2615927647449180540">不允许锁定指针</translation>
 <translation id="2616366145935564096">读取和更改您在<ph name="WEBSITE_1" />上的数据</translation>
@@ -2848,7 +2848,7 @@
 <translation id="3115728370128632723">为您提供更好的网络体验是指：
       &lt;ul&gt;
         &lt;li&gt;保障您安全地浏览网页，以及&lt;/li&gt;
-        &lt;li&gt;为蓬勃发展的生态系统提供支持，确保网络安全、开放、快速且免费&lt;/li&gt;
+        &lt;li&gt;为蓬勃发展的生态系统提供支持，打造安全、开放、快速且免费的网络环境&lt;/li&gt;
       &lt;/ul&gt;</translation>
 <translation id="3115743155098198207">管理 Google 账号语言</translation>
 <translation id="3117362587799608430">基座不完全兼容</translation>
@@ -3095,7 +3095,6 @@
 <translation id="3321494112580110651">找不到您的打印机？</translation>
 <translation id="3321776060736518525">来源：<ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">恭喜！您获得了更多的设备使用时间</translation>
-<translation id="3325804108816646710">正在查找可用的配置文件…</translation>
 <translation id="3325930488268995856">已连接 Microsoft OneDrive</translation>
 <translation id="3325995804968971809">样式</translation>
 <translation id="3327050066667856415">Chromebook 旨在确保安全。您的设备会自动防范恶意软件 - 无需安装其他软件。</translation>
@@ -5400,7 +5399,6 @@
 <translation id="5101839224773798795">光标停止时自动点击</translation>
 <translation id="5103311607312269661">调高显示屏亮度</translation>
 <translation id="5106350808162641062">移除</translation>
-<translation id="5106608587025903971">您可以为此设备创建 <ph name="DEVICE_TYPE" /> 密码，而无需输入您的 Google 账号密码来登录</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> 由 Family Link 监管。您可添加学校账号，以便在家长监管下访问学校资源。</translation>
 <translation id="5107093668001980925">一律不显示<ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">某个扩展程序关闭了“安全浏览”功能</translation>
@@ -5700,7 +5698,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%（右侧）</translation>
 <translation id="534449933710420173">未命名的文件夹</translation>
 <translation id="5345916423802287046">在您登录时启动应用</translation>
-<translation id="5347920333985823270">Chrome 支持免费网络</translation>
+<translation id="5347920333985823270">Chrome 支持免费的网络体验</translation>
 <translation id="5350293332385664455">关闭 Google 助理</translation>
 <translation id="535123479159372765">从其他设备复制的文字</translation>
 <translation id="5352033265844765294">时间戳</translation>
@@ -5954,8 +5952,8 @@
 <translation id="5543901591855628053">广告对许多线上业务至关重要。商家依赖广告提供免费的线上内容，确保人人都能使用。Chrome 开发了各种方法，让网站在保护隐私的同时，向您展示个性化广告。如果运用得当，广告可惠及网络上的所有人，原因在于当您浏览广告时：
       &lt;ul&gt;
         &lt;li&gt;您可能会发现新奇或有趣的事物&lt;/li&gt;
-        &lt;li&gt;广告主可能会触及新客户&lt;/li&gt;
-        &lt;li&gt;您访问的网站会通过托管广告赚取收入&lt;/li&gt;
+        &lt;li&gt;广告主可能会触达新客户&lt;/li&gt;
+        &lt;li&gt;您访问的网站会通过展示广告赚取收入&lt;/li&gt;
       &lt;/ul&gt;</translation>
 <translation id="5543983818738093899">正在检查状态…</translation>
 <translation id="5544482392629385159">第 <ph name="DEVICE_INDEX" /> 部设备（共 <ph name="DEVICE_COUNT" /> 部），设备名称为“<ph name="DEVICE_NAME" />”</translation>
@@ -7358,7 +7356,6 @@
 <translation id="6647690760956378579">自然语音预览</translation>
 <translation id="6648911618876616409">有一项重要更新已可供安装。登录即可开始安装。</translation>
 <translation id="6649018507441623493">请稍候…</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> 想确认您的身份</translation>
 <translation id="6650206238642452078">订阅 ChromeOS 系统事件</translation>
 <translation id="665061930738760572">在新窗口中打开(&amp;N)</translation>
 <translation id="6651237644330755633">信任该证书，以标识网站的身份</translation>
@@ -7447,7 +7444,7 @@
 <translation id="6716798148881908873">网络连接中断了。请检查您的网络连接状况，或尝试改用其他 Wi-Fi 网络。</translation>
 <translation id="6718849325281682232">Chrome 主题颜色已焕然一新，可更好地满足每个用户的需求，无论是处于深色模式还是浅色模式</translation>
 <translation id="671928215901716392">锁定屏幕</translation>
-<translation id="6721744718589119342">如果需要您提供更多信息或想向您提供最新信息，我们可能会向您发送电子邮件</translation>
+<translation id="6721744718589119342">我们可能会向您发送电子邮件，获取更多信息或为您提供最新进展</translation>
 <translation id="6721972322305477112">文件(&amp;F)</translation>
 <translation id="672208878794563299">此网站下次仍会请求您授权。</translation>
 <translation id="6722744767592605627">您可以恢复 <ph name="EMAIL" />，但本地数据将被删除。</translation>
@@ -10266,7 +10263,7 @@
 <translation id="8846132060409673887">查看此计算机的制造商和型号</translation>
 <translation id="8846163936679269230">重置 eSIM 卡配置文件</translation>
 <translation id="8846239054091760429">单声道音频、启动、实时字幕等</translation>
-<translation id="8847459600640933659">广告收入也能让 Google 推出许多免费产品和服务，例如 Chrome、Gmail、Google 地图和 YouTube。</translation>
+<translation id="8847459600640933659">广告收入也能让 Google 推出各种免费产品和服务，例如 Chrome、Gmail、Google 地图和 YouTube。</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8849001918648564819">已隐藏</translation>
 <translation id="8849219423513870962">取消移除名为“<ph name="PROFILE_NAME" />”的 eSIM 卡配置文件</translation>
@@ -10349,7 +10346,7 @@
 <translation id="8903733144777177139">已禁止使用麦克风</translation>
 <translation id="890616557918890486">更改来源</translation>
 <translation id="8907701755790961703">请选择国家/地区</translation>
-<translation id="8908420399006197927">从建议的分组中排除相应标签页</translation>
+<translation id="8908420399006197927">将标签页从建议的分组中移除</translation>
 <translation id="8909298138148012791">已卸载 <ph name="APP_NAME" /></translation>
 <translation id="8909833622202089127">该网站正在跟踪您的位置</translation>
 <translation id="8910222113987937043">对您的书签、历史记录、密码及其他设置所做的更改将不再同步到您的 Google 账号。但是，您的现有数据依然会存储在您的 Google 账号中，而且您可以通过 <ph name="BEGIN_LINK" />Google 信息中心<ph name="END_LINK" />管理这些数据。</translation>

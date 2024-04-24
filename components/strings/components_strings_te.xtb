@@ -162,6 +162,7 @@
 <translation id="1282358575813748144">బోట్‌లు &amp; నీటిపై వెళ్లే వాహనాలు</translation>
 <translation id="1283977499362032052">రెజ్యూమ్‌లు &amp; పోర్ట్‌ఫోలియోలు</translation>
 <translation id="1285320974508926690">ఈ సైట్‌ను ఎప్పటికీ అనువదించవద్దు</translation>
+<translation id="1291249564161469503">మీ కీబోర్డ్‌ను లాక్ చేయండి</translation>
 <translation id="1292571435393770077">ట్రే 16</translation>
 <translation id="1292701964462482250">"మీ కంప్యూటర్‌లో ఉన్న సాఫ్ట్‌వేర్ కారణంగా Chrome సురక్షితంగా వెబ్‌కు కనెక్ట్ కాలేకపోతోంది" (Windows కంప్యూటర్‌ల కోసం మాత్రమే)</translation>
 <translation id="1293797321964802402">9 x 11 అంగుళాల ఎన్వలప్</translation>
@@ -567,6 +568,7 @@
 <translation id="2046951263634619614">పుస్తకాల రిటైలర్‌లు</translation>
 <translation id="2048261947532620704">పేజీని అనువదిస్తోంది</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> భాషలో ఉన్న పేజీలు అనువదించబడవు.</translation>
+<translation id="2056492565825767809">మీ మౌస్ పాయింటర్‌ను లాక్ చేయండి</translation>
 <translation id="2056658168519009885">మీకు కనిపించే యాడ్‌లను వ్యక్తిగతీకరించడంలో సహాయపడే సమాచారాన్ని అందించాల్సిందిగా సైట్‌లు Chromeను అడగవచ్చు.</translation>
 <translation id="2059166748188874810">మున్సిపాలిటీ</translation>
 <translation id="2059202684901022309">22 x 34 అంగుళాలు</translation>
@@ -579,7 +581,6 @@
 <translation id="2071692954027939183">మీరు సాధారణంగా వాటిని అనుమతించనందున నోటిఫికేషన్‌లు ఆటోమేటిక్‌గా బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="2071852865256799872">మీ బ్రౌజర్‌ను మీ సంస్థ మేనేజ్ చేస్తోంది, మీ ప్రొఫైల్‌ను <ph name="PROFILE_DOMAIN" /> మేనేజ్ చేస్తోంది</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" />‌ను అన్‌బ్లాక్ చేయండి</translation>
-<translation id="2075497153347571252">మీ అడ్మినిస్ట్రేటర్ <ph name="ORIGIN" /> వెబ్‌సైట్‌లో <ph name="PERMISSION" />ను బ్లాక్ చేశారు</translation>
 <translation id="2078956195623975415">మ్యూజిక్ &amp; డ్యాన్స్ గేమ్‌లు</translation>
 <translation id="2079545284768500474">చర్య రద్దు</translation>
 <translation id="2080021694978766903">ఈ పాలసీలో <ph name="MAX_ITEMS_LIMIT" /> కంటే ఎక్కువ ఎంట్రీలు ఉండకూడదు.</translation>
@@ -930,6 +931,7 @@
 <translation id="2759825833388495838"><ph name="APP_NAME" />పై మీ పాస్‌వర్డ్‌ను పూర్తి చేయండి</translation>
 <translation id="2764001903315068341">కామిక్స్</translation>
 <translation id="2765217105034171413">చిన్నది</translation>
+<translation id="2768397283109119044">మీరు <ph name="DOMAIN" />‌ను చేరుకోవడానికి ప్రయత్నించారు, కానీ సర్వర్ ఆ పేరుపై చెల్లని సర్టిఫికెట్ జారీ చేసింది. ఆ పేరు అనేది కేటాయించిన IP అడ్రస్ లేదా అంతర్గత హోస్ట్‌పేరు.</translation>
 <translation id="2770159525358613612">మీ ఫైళ్లను మళ్లీ అప్‌లోడ్ చేయడానికి ట్రై చేయండి</translation>
 <translation id="277133753123645258">రవాణా పద్ధతి</translation>
 <translation id="2773388851563527404">థర్డ్-పార్టీ కుక్కీలను ఉపయోగించకుండా Chrome చాలా సైట్‌లను పరిమితం చేస్తుంది. కానీ ఈ సైట్‌లో థర్డ్-పార్టీ కుక్కీలు అనుమతించబడతాయి ఎందుకంటే ఇది ప్రాథమిక సర్వీస్‌ను అందించడానికి వాటిపై ఆధారపడుతుంది. <ph name="LINK" /> సెట్టింగ్‌లను చూడండి.</translation>
@@ -1064,6 +1066,7 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> పైన <ph name="PRICE_DROP" /> తగ్గింపు</translation>
 <translation id="3054512251683174387">4 వారాల కంటే పాతవైన టాపిక్‌లను Chrome ఆటోమేటిక్‌గా తొలగిస్తుంది. మీరు బ్రౌజ్ చేస్తూ ఉన్నప్పుడు, లిస్ట్‌లో అదే టాపిక్ మళ్లీ కనిపించవచ్చు. లేదా, సైట్‌లతో Chrome షేర్ చేయకూడదు అని భావించే టాపిక్‌లను మీరు బ్లాక్ చేయవచ్చు. Chromeలో మీ యాడ్‌ల విషయంలో గోప్యతను మేనేజ్ చేయడం గురించి మరింత తెలుసుకోండి.</translation>
 <translation id="3061707000357573562">ప్యాచ్ సేవ</translation>
+<translation id="3062655045399308513">బ్రౌజింగ్ డేటాను తొలగించండి...</translation>
 <translation id="306573536155379004">గేమ్ ప్రారంభమైంది.</translation>
 <translation id="3067505415088964188">ధర తక్కువగా ఉంటుంది</translation>
 <translation id="3076865167425975822">ఆపరేటింగ్ సిస్టమ్‌లు</translation>
@@ -1711,6 +1714,7 @@
 <translation id="4265872034478892965">మీ నిర్వాహకులు అనుమతించారు</translation>
 <translation id="4269029136757623689">ఇంటిలో ఉపయోగించే ఫ్యాన్‌లు</translation>
 <translation id="4269264543938335308">ఈత దుస్తులు</translation>
+<translation id="4269599248168651462">నాన్-యూనిక్ పేరుకు సర్వర్ సర్టిఫికెట్ జారీ చేయబడింది.</translation>
 <translation id="4270541775497538019">స్టాకర్ 6</translation>
 <translation id="4275830172053184480">మీ పరికరాన్ని పునఃప్రారంభించండి</translation>
 <translation id="4276974990916607331">వద్దు, థ్యాంక్స్</translation>
@@ -2019,7 +2023,7 @@
 <translation id="4885030148564729407">హనీమూన్‌లు &amp; రొమాంటిక్ విహారయాత్రలు</translation>
 <translation id="4885256590493466218">చెక్అవుట్‌లో <ph name="CARD_DETAIL" />తో పేమెంట్ చేయండి</translation>
 <translation id="4887406273302438710">Windows Helloతో పాస్‌వర్డ్‌లను సురక్షితం చేసుకోండి</translation>
-<translation id="4890070067176768718">మీ అడ్మినిస్ట్రేటర్ <ph name="ORIGIN" /> వెబ్‌సైట్‌లో <ph name="PERMISSION" />ను అనుమతించారు</translation>
+<translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome సెట్టింగ్‌లలో మీ బ్రౌజింగ్ హిస్టరీ, కుక్కీలు, కాష్ ఇంకా మరిన్నింటిని తొలగించడానికి 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
 <translation id="4892518386797173871">వెనుక భాగం</translation>
 <translation id="4895019427244614047">అడ్రస్‌ను తొలగించండి</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -2587,6 +2591,7 @@
 <translation id="6014851866995737824">"ఎనేబుల్" లేదా "డిజేబుల్" లిస్ట్‌లో లేని కారణంగా ఇది విస్మరించబడింది.</translation>
 <translation id="6015796118275082299">సంవత్సరం</translation>
 <translation id="6017514345406065928">ఆకుపచ్చ</translation>
+<translation id="6018650639991193045">Chrome సెట్టింగ్‌లలో మీ బ్రౌజింగ్ హిస్టరీ, కుక్కీలు, కాష్ ఇంకా మరిన్నింటిని తొలగించండి</translation>
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (సింక్ చేయబడ్డాయి)</translation>
 <translation id="6028591542479806248">మొబైల్, ఈమెయిల్ నోటిఫికేషన్‌లను మేనేజ్ చేయండి</translation>
 <translation id="6028833024483927901">వివిధ దేశాల వంటకాలు</translation>
@@ -2760,6 +2765,7 @@
 <translation id="634500758737709758">దిశలు</translation>
 <translation id="6348220984832452017">యాక్టివ్‌గా ఉన్న వేరియేషన్‌లు</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" />‌ను ఇన్‌స్టాల్ చేయండి</translation>
+<translation id="6351658970066645919">బ్రౌజింగ్ డేటాను తొలగించండి</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ఏవీ లేవు}=1{1 పాస్‌వర్డ్ (<ph name="DOMAIN_LIST" />కు చెందినది, సింక్ చేయబడింది)}=2{2 పాస్‌వర్డ్‌లు (<ph name="DOMAIN_LIST" />కు చెందినవి, సింక్ చేయబడ్డాయి)}other{# పాస్‌వర్డ్‌లు (<ph name="DOMAIN_LIST" />కు చెందినవి, సింక్ చేయబడ్డాయి)}}</translation>
 <translation id="6355392890578844978">ఈ బ్రౌజర్ కంపెనీ లేదా ఇతర సంస్థ ద్వారా మేనేజ్ చేయబడదు. ఈ పరికరంలోని యాక్టివిటీని Chromium వెలుపల మేనేజ్ చేస్తుండవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">పేమెంట్ ఆప్షన్‌లను ఎడిట్ చేయండి</translation>
@@ -3487,6 +3493,7 @@
 <translation id="7682287625158474539">ఓడ రవాణా</translation>
 <translation id="7682451652090915298">రగ్బీ</translation>
 <translation id="7684683146428206649">మెటల్</translation>
+<translation id="7684817988830401358">బ్రౌజింగ్ డేటా బటన్‌ను తొలగించండి, Chrome సెట్టింగ్‌లలో మీ బ్రౌజింగ్ హిస్టరీ, కుక్కీలు, కాష్, ఇంకా మరిన్నింటిని తొలగించడానికి యాక్టివేట్ చేయండి</translation>
 <translation id="7684928361160505327">{0,plural, =1{పాలసీ కారణంగా <ph name="FILE_NAME" /> బ్లాక్ చేయబడింది}other{పాలసీ కారణంగా <ph name="FILE_COUNT" /> ఫైల్స్ బ్లాక్ చేయబడ్డాయి}}</translation>
 <translation id="7687186412095877299">పేమెంట్ ఫారమ్‌లను, మీరు సేవ్ చేసిన పేమెంట్ ఆప్షన్‌లతో ఫిల్ చేస్తుంది</translation>
 <translation id="7687305263118037187">పునఃప్రయత్న సమయం ముగిసింది</translation>
@@ -3599,6 +3606,7 @@
 <translation id="7935318582918952113">DOM డిస్టిల్లర్</translation>
 <translation id="7937163678541954811">వేగవంతమైన చెక్అవుట్ కోసం ఈ కార్డ్ CVC ఎన్‌క్రిప్ట్ చేయబడుతుంది, మీ పరికరంలో సేవ్ చేయబడుతుంది</translation>
 <translation id="7937554595067888181"><ph name="EXPIRATION_DATE_ABBR" />న గడువు ముగుస్తుంది</translation>
+<translation id="7938490694919717008">చెక్ అవుట్‌లో మీ కార్డ్‌లకు ఏ రివార్డ్‌లు, ప్రయోజనాలు అందుబాటులో ఉన్నాయో చూడండి <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />కార్డ్ ప్రయోజనాల గురించి తెలుసుకోండి<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="7938958445268990899">సర్వర్ ప్రమాణపత్రం ఇంకా చెల్లుబాటులో లేదు.</translation>
 <translation id="7941628148012649605">ఎన్వలప్ చౌ 4</translation>
 <translation id="794169214536209644">క్యాండీ &amp; స్వీట్‌లు</translation>
@@ -3906,7 +3914,6 @@
 <translation id="8493948351860045254">స్థలాన్ని ఖాళీ చేయి</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ప్రతిస్పందించడానికి చాలా ఎక్కువ సమయం పట్టింది.</translation>
 <translation id="8502023382441452707">పుట్టినరోజులు &amp; నామకరణ రోజులు</translation>
-<translation id="8502972004418241366">ఈ సైట్‌లో మీ <ph name="PERMISSION" />ను ఉపయోగించడానికి, మీరు Chrome యాక్సెస్‌ను ఇవ్వాలి</translation>
 <translation id="8503559462189395349">Chrome పాస్‌వర్డ్‌లు</translation>
 <translation id="8503813439785031346">యూజర్‌పేరు</translation>
 <translation id="8504928302600319133">కంప్యూటర్ హార్డ్‌వేర్</translation>
@@ -3926,7 +3933,6 @@
 <translation id="853246364274116957">బ్రాడ్‌వే &amp; మ్యూజికల్ థియేటర్</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">బ్లాక్ చేయబడి ఉన్న URLల లిస్ట్‌ను, మీ సిస్టమ్ అడ్మినిస్ట్రేటర్ ద్వారా అమలు చేయబడిన ఇతర పాలసీలను చూడటానికి &lt;strong&gt;chrome://policy&lt;/strong&gt;ని సందర్శించండి.</translation>
-<translation id="8534934518812659742">మీరు Chrome కోసం <ph name="PERMISSION" />‌ను ఆఫ్ చేశారు.</translation>
 <translation id="8536234749087605613">ఎన్వలప్ (విండో)</translation>
 <translation id="8539500321752640291">2 అనుమతులను ఇవ్వాలా?</translation>
 <translation id="8541158209346794904">బ్లూటూత్ పరికరం</translation>
@@ -3983,10 +3989,10 @@
 <translation id="865032292777205197">మోషన్ సెన్సార్‌లు</translation>
 <translation id="865255447216708819">బ్యాక్ ప్రింట్ ఫిల్మ్</translation>
 <translation id="8654126188050905496">55 x 91 మి.మీ.</translation>
-<translation id="8655930295668719549">మీరు మునుపటి <ph name="ORIGIN" />లో <ph name="PERMISSION" />ను అనుమతించలేదు</translation>
 <translation id="8662463432865928030">కమర్షియల్ ప్రాపర్టీలు</translation>
 <translation id="8663226718884576429">ఆర్డర్ సారాంశం, <ph name="TOTAL_LABEL" />, మరిన్ని వివరాలు</translation>
 <translation id="8663909737634214500">ఆప్టికల్ డిస్క్</translation>
+<translation id="8664326323360157684">బ్రౌజింగ్ డేటాను తొలగించండి...</translation>
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> విలువ సైజు అవసరాలకు అనుగుణంగా లేదు.</translation>
 <translation id="867224526087042813">సంతకం</translation>
 <translation id="8672535691554698269">కంప్యూటర్ నెట్‌వర్క్‌లు</translation>
@@ -4015,6 +4021,7 @@
 <translation id="8722929331701811374">స్టేషనరీ (లెటర్‌హెడ్)</translation>
 <translation id="8724824364712796726">ఎన్వలప్ B6</translation>
 <translation id="8725066075913043281">మళ్ళీ ప్రయత్నించండి</translation>
+<translation id="8725667981218437315">కెమెరా మరియు మైక్రోఫోన్</translation>
 <translation id="8726549941689275341">పేజీ సైజ్:</translation>
 <translation id="8730621377337864115">పూర్తయింది</translation>
 <translation id="8731268612289859741">సెక్యూరిటీ కోడ్</translation>
@@ -4113,6 +4120,7 @@
 <translation id="8919740778133505789">స్పోర్ట్స్ కార్‌లు</translation>
 <translation id="8919895429178014996">ఐటెమ్‌లన్నింటిని దాచండి</translation>
 <translation id="8922013791253848639">ప్రకటనలను ఈ సైట్‌లో ఎప్పుడూ అనుమతించండి</translation>
+<translation id="8924109546403192898">Chrome సెక్యూరిటీ ఈవెంట్‌లను ఫ్లాగ్ చేసినప్పుడు, ఈవెంట్‌లకు సంబంధించిన డేటా మీ అడ్మినిస్ట్రేటర్‌కు పంపబడుతుంది. ఇందులో Chromeలో మీరు తెరిచే పేజీల URLలు, మీరు ఎక్కడి నుండి అయితే డేటాను కాపీ చేశారో ఆ పేజీల URLలు, ఫైల్ పేర్లు లేదా మెటాడేటా, బ్రౌజర్ లేదా ట్యాబ్ క్రాష్‌లు, వెబ్ ఆధారిత అప్లికేషన్‌లకు సైన్ ఇన్ చేయడానికి మీరు ఉపయోగించే యూజర్‌నేమ్, మీ పరికరం, Chrome ఉండవచ్చు.</translation>
 <translation id="892588693504540538">కుడివైపు ఎగువ భాగంలో రంధ్రం</translation>
 <translation id="8926389886865778422">మళ్ళి అడగవద్దు</translation>
 <translation id="8932102934695377596">మీ గడియారం సమయం గతంలో ఉంది</translation>
@@ -4284,6 +4292,7 @@
 <translation id="949314938206378263">మీరు ఈ సైట్‌ను సందర్శించడానికి అనుమతి కోరారు. మీ తల్లి/తండ్రి Family Linkలో రిప్లయి ఇవ్వవచ్చు.</translation>
 <translation id="950736567201356821">ఎగువ భాగంలో మూడు రంధ్రాలు</translation>
 <translation id="961663415146723894">దిగువ భాగంలో బైండ్</translation>
+<translation id="961856697154696964">బ్రౌజింగ్ డేటాను తొలగించండి</translation>
 <translation id="961930410699694996">ఈసారి లొకేషన్ పొందడానికి అనుమతి ఉంది</translation>
 <translation id="962484866189421427">ఈ కంటెంట్ వేరేవాటిలా కనిపించే మోసపూరిత యాప్‌లను ఇన్‌స్టాల్ చేయడానికి ప్రయత్నించవచ్చు లేదా మిమ్మల్ని ట్రాక్ చేయడానికి ఉపయోగించే డేటాను సేకరించవచ్చు. <ph name="BEGIN_LINK" />అయినప్పటికీ, చూపించు<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">మీ ప్రాంతంలోని చట్టం ఆధారంగా, మీ డిఫాల్ట్ సెర్చ్ ఇంజిన్‌ను ఎంచుకోమని Chromium మిమ్మల్ని అడుగుతుంది. ఈ సెర్చ్ ఇంజిన్‌లు మీ ప్రాంతంలో ప్రసిద్ధి చెందినవి, ఇవి ర్యాండమ్‌గా అమర్చిన క్రమంలో చూపబడతాయి.</translation>

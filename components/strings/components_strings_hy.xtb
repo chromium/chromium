@@ -588,7 +588,6 @@
 <translation id="2071692954027939183">Ծանուցումներն ավտոմատ արգելափակվել են, քանի որ դուք դրանք սովորաբար մերժում եք։</translation>
 <translation id="2071852865256799872">Ձեր դիտարկիչը կառավարվում է ձեր կազմակերպության կողմից, իսկ պրոֆիլը՝ <ph name="PROFILE_DOMAIN" /> տիրույթի կողմից</translation>
 <translation id="2074733626795553847">Արգելաբացել «<ph name="TOPIC" />» թեման</translation>
-<translation id="2075497153347571252">Ձեր ադմինիստրատորն արգելել է օգտագործել «<ph name="PERMISSION" />» թույլտվությունը <ph name="ORIGIN" /> կայքում</translation>
 <translation id="2078956195623975415">Երաժշտական և պարային խաղեր</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
 <translation id="2080021694978766903">Այս կանոնում գրառումների առավելագույն քանակը՝ <ph name="MAX_ITEMS_LIMIT" />:</translation>
@@ -939,6 +938,7 @@
 <translation id="2759825833388495838">լրացրեք ձեր գաղտնաբառը <ph name="APP_NAME" /> հավելվածում</translation>
 <translation id="2764001903315068341">Կոմիքսներ</translation>
 <translation id="2765217105034171413">Փոքր</translation>
+<translation id="2768397283109119044">Դուք փորձել եք բացել <ph name="DOMAIN" /> հասցեն, սակայն սերվերը ներկայացրել է այդ անվանման համար թողարկված սխալ վկայագիր։ Անվանումը պահված IP հասցե կամ ներքին խնամորդ է։</translation>
 <translation id="2770159525358613612">Փորձեք նորից վերբեռնել ֆայլերը</translation>
 <translation id="277133753123645258">Ուղարկման եղանակ</translation>
 <translation id="2773388851563527404">Chrome-ը սահմանափակում է երրորդ կողմի քուքիների օգտագործումը կայքերի մեծամասնության կողմից։ Սակայն երրորդ կողմի քուքիները թույլատրված են այս կայքում, քանի որ այն օգտագործում է դրանք՝ իր հիմնական ծառայությունները տրամադրելու համար։ Անցեք կարգավորումներ՝ <ph name="LINK" /> համար։</translation>
@@ -1724,6 +1724,7 @@
 <translation id="4265872034478892965">Թույլատրվել է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="4269029136757623689">Կենցաղային հովացուցիչներ</translation>
 <translation id="4269264543938335308">Լողազգեստ</translation>
+<translation id="4269599248168651462">Սերվերի վկայագիրը թողարկվել է ոչ եզակի անվանման համար։</translation>
 <translation id="4270541775497538019">Շեղջիչ 6</translation>
 <translation id="4275830172053184480">Սարքի վերագործարկում:</translation>
 <translation id="4276974990916607331">Ոչ, շնորհակալություն</translation>
@@ -2032,7 +2033,6 @@
 <translation id="4885030148564729407">Մեղրամիս և ռոմանտիկ ճանապարհորդություններ</translation>
 <translation id="4885256590493466218">Վճարեք <ph name="CARD_DETAIL" /> քարտի միջոցով</translation>
 <translation id="4887406273302438710">Պաշտպանեք գաղտնաբառերը Windows Hello-ի միջոցով</translation>
-<translation id="4890070067176768718">Ձեր ադմինիստրատորը թույլատրել է օգտագործել «<ph name="PERMISSION" />» թույլտվությունը <ph name="ORIGIN" /> կայքում</translation>
 <translation id="4892518386797173871">Հետևի կողմ</translation>
 <translation id="4895019427244614047">Ջնջել հասցեն</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3922,7 +3922,6 @@
 <translation id="8493948351860045254">Ազատել տարածք</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" />-ը չափից երկար է պատասխանում:</translation>
 <translation id="8502023382441452707">Ծննդյան օրեր և անվանը նվիրված օրեր</translation>
-<translation id="8502972004418241366">Այս կայքում <ph name="PERMISSION" />ն օգտագործելու համար պետք է այն հասանելի դարձնեք Chrome-ում</translation>
 <translation id="8503559462189395349">Chrome-ի գաղտնաբառեր</translation>
 <translation id="8503813439785031346">Օգտանուն</translation>
 <translation id="8504928302600319133">Համակարգչային սարքակազմ</translation>
@@ -3942,7 +3941,6 @@
 <translation id="853246364274116957">Բրոդվեյ և երաժշտական թատրոն</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Արգելափակված URL-ների ցուցակը և ձեր համակարգի ադմինիստրատորի կողմից կիրառված մյուս կանոնները տեսնելու համար այցելեք &lt;strong&gt;chrome://policy&lt;/strong&gt;։</translation>
-<translation id="8534934518812659742">Դուք անջատել եք <ph name="PERMISSION" />ն օգտագործելու թույլտվությունը Chrome-ի համար։</translation>
 <translation id="8536234749087605613">Ծրար (պատուհանով)</translation>
 <translation id="8539500321752640291">Տրամադրե՞լ 2 թույլտվություն</translation>
 <translation id="8541158209346794904">Bluetooth սարք</translation>
@@ -3999,7 +3997,6 @@
 <translation id="865032292777205197">շարժման տվիչներ</translation>
 <translation id="865255447216708819">Թաղանթ հետևի մասում տպելու համար</translation>
 <translation id="8654126188050905496">55 x 91 մմ</translation>
-<translation id="8655930295668719549">Դուք նախկինում չեք թույլատրել <ph name="PERMISSION" /> օգտագործել <ph name="ORIGIN" /> կայքում</translation>
 <translation id="8662463432865928030">Կոմերցիոն շինություններ</translation>
 <translation id="8663226718884576429">Տեղեկություն պատվերի մասին, <ph name="TOTAL_LABEL" />, մանրամասներ</translation>
 <translation id="8663909737634214500">Օպտիկական սկավառակ</translation>
@@ -4031,6 +4028,7 @@
 <translation id="8722929331701811374">Գրենական պիտույքներ (բլանկների)</translation>
 <translation id="8724824364712796726">Envelope B6</translation>
 <translation id="8725066075913043281">Փորձել կրկին</translation>
+<translation id="8725667981218437315">Տեսախցիկ և խոսափող</translation>
 <translation id="8726549941689275341">Էջի չափսը`</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>
 <translation id="8731268612289859741">Անվտանգության կոդ</translation>
@@ -4129,6 +4127,7 @@
 <translation id="8919740778133505789">Սպորտային ավտոմեքենաներ</translation>
 <translation id="8919895429178014996">Թաքցնել բոլոր տարրերը</translation>
 <translation id="8922013791253848639">Միշտ թույլատրել գովազդն այս կայքում</translation>
+<translation id="8924109546403192898">Երբ անվտանգությանը սպառնացող գործողություններ են հայտնաբերվում Chrome-ի կողմից, դրանց մասին համապատասխան տվյալներն ուղարկվում են ձեր ադմինիստրատորին։ Սա կարող է ներառել Chrome-ում ձեր այցելած էջերի հասցեները, հասցեներ այն էջերից, որտեղից տվյալներ եք պատճենել, ֆայլերի անվանումներ կամ մետատվյալներ, տվյալներ դիտարկիչի կամ ներդիրների խափանումների մասին, ինչպես նաև օգտանուններ, որոնք օգտագործում եք վեբ հավելվածներում, ձեր սարքում կամ Chrome-ում հաշիվ մտնելու համար։</translation>
 <translation id="892588693504540538">Անցք վերևի աջ կողմում</translation>
 <translation id="8926389886865778422">Այլևս չհարցնել</translation>
 <translation id="8932102934695377596">Ձեր ժամացույցը հետ է ընկել</translation>

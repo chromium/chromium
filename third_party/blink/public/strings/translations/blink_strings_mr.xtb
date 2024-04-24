@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">कृपया एक रिक्त नसलेला ईमेल ॲड्रेस एंटर करा.</translation>
 <translation id="1758486001363313524">अन्य...</translation>
 <translation id="1787192514241997742">एकूण वेळ: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">कॅमेराला अनुमती द्या</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">दूरस्थ डिव्हाइसवर प्ले करा</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">सध्याची पायरी</translation>
 <translation id="3321030238473337787">प्लेबॅकचा वेग</translation>
 <translation id="3329013043687509092">संपृक्तता</translation>
-<translation id="3377518164566272702">मायक्रोफोन आणि कॅमेराला अनुमती द्या</translation>
 <translation id="3450233048674729344">मूल्य <ph name="MAXIMUM" /> पेक्षा कमी किंवा समान असावे.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">चित्रात-चित्र मधून बाहेर पडा</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">अन्य...</translation>
 <translation id="9155987714137265666"><ph name="WEEK_START_DATE" /> रोजी सुरू होणारा, <ph name="WEEK" /></translation>
 <translation id="916607977885256133">चित्रात-चित्र</translation>
-<translation id="918430632320614861">मायक्रोफोनला अनुमती द्या</translation>
 <translation id="945780513535800434">अंशतः तपासलेले</translation>
 <translation id="954003015749068518">चित्रात-चित्र एंटर करा</translation>
 </translationbundle>

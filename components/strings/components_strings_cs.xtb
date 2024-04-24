@@ -584,7 +584,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2071692954027939183">Oznámení byla automaticky zablokována, protože je obvykle nepovolujete</translation>
 <translation id="2071852865256799872">Váš prohlížeč spravuje vaše organizace a váš profil spravuje doména <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Odblokovat téma <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Oprávnění <ph name="PERMISSION" /> na webu <ph name="ORIGIN" /> zablokoval váš administrátor</translation>
 <translation id="2078956195623975415">Hudební a taneční hry</translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
 <translation id="2080021694978766903">Tato zásada smí mít maximálně tento počet položek: <ph name="MAX_ITEMS_LIMIT" />.</translation>
@@ -2020,7 +2019,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4885030148564729407">Líbánky a romantické pobyty</translation>
 <translation id="4885256590493466218">U pokladny zaplaťte kartou <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Chraňte hesla pomocí Windows Hello</translation>
-<translation id="4890070067176768718">Oprávnění <ph name="PERMISSION" /> na webu <ph name="ORIGIN" /> povolil váš administrátor</translation>
 <translation id="4892518386797173871">Zadní</translation>
 <translation id="4895019427244614047">Smazat adresu</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3905,7 +3903,6 @@ Další podrobnosti:
 <translation id="8493948351860045254">Uvolnit místo</translation>
 <translation id="8498891568109133222">Odpověď webu <ph name="HOST_NAME" /> trvala příliš dlouho.</translation>
 <translation id="8502023382441452707">Narozeniny a jmeniny</translation>
-<translation id="8502972004418241366">Pokud na tomto webu chcete používat prostředek <ph name="PERMISSION" />, musíte Chromu udělit přístup</translation>
 <translation id="8503559462189395349">Hesla Chrome</translation>
 <translation id="8503813439785031346">Uživatelské jméno</translation>
 <translation id="8504928302600319133">Počítačový hardware</translation>
@@ -3925,7 +3922,6 @@ Další podrobnosti:
 <translation id="853246364274116957">Muzikály a hudební divadla</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Na stránce &lt;strong&gt;chrome://policy&lt;/strong&gt; naleznete seznam blokovaných adres URL a další zásady vynucené vaším administrátorem systému.</translation>
-<translation id="8534934518812659742">Vypnuli jste oprávnění <ph name="PERMISSION" /> pro Chrome.</translation>
 <translation id="8536234749087605613">Obálka (s okénkem)</translation>
 <translation id="8539500321752640291">Udělit dvě oprávnění?</translation>
 <translation id="8541158209346794904">Zařízení Bluetooth</translation>
@@ -3983,7 +3979,6 @@ Další podrobnosti:
 <translation id="865032292777205197">senzory pohybu</translation>
 <translation id="865255447216708819">Rubotisková folie</translation>
 <translation id="8654126188050905496">55 × 91 mm</translation>
-<translation id="8655930295668719549">Dříve jste webu <ph name="ORIGIN" /> neudělili toto oprávnění: <ph name="PERMISSION" /></translation>
 <translation id="8662463432865928030">Komerční nemovitosti</translation>
 <translation id="8663226718884576429">Shrnutí objednávky, <ph name="TOTAL_LABEL" />, další podrobnosti</translation>
 <translation id="8663909737634214500">Optický disk</translation>
@@ -4015,6 +4010,7 @@ Další podrobnosti:
 <translation id="8722929331701811374">Papír (hlavičkový)</translation>
 <translation id="8724824364712796726">Obálka B6</translation>
 <translation id="8725066075913043281">Zkusit znovu</translation>
+<translation id="8725667981218437315">Fotoaparát a mikrofon</translation>
 <translation id="8726549941689275341">Velikost stránky:</translation>
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8731268612289859741">Bezpečnostní kód</translation>

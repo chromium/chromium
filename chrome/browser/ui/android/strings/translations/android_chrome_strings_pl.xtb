@@ -36,6 +36,7 @@
 <translation id="1181037720776840403">Usuń</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183189057400844278">Potwierdź swoją tożsamość, aby móc zawsze używać haseł na koncie Google</translation>
+<translation id="1187810343066461819">Usuń też zakładki, historię i inne dane z tego samochodu</translation>
 <translation id="1193729455103054076">Użyć silnego hasła?</translation>
 <translation id="1197267115302279827">Przenieś zakładki</translation>
 <translation id="1197761954713363183">Arkusz potwierdzenia klucza dostępu został zamknięty</translation>
@@ -82,6 +83,7 @@
 <translation id="1386674309198842382">Aktywność <ph name="LAST_UPDATED" /> dni temu</translation>
 <translation id="13931502444227376"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> udostępni teraz witrynie Twoje imię i nazwisko, adres e-mail i zdjęcie profilowe. Zobacz <ph name="BEGIN_LINK1" />warunki korzystania<ph name="END_LINK1" /> z tej witryny.</translation>
 <translation id="1397811292916898096">Szukaj w <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398037172295725596">Wyszukaj coś innego lub otwórz obszerniejszą historię w Chrome, aby zobaczyć więcej wyników z innych aplikacji.</translation>
 <translation id="1407069428457324124">Ciemny motyw</translation>
 <translation id="1407135791313364759">Otwórz wszystkie</translation>
 <translation id="1409879593029778104">Plik <ph name="FILE_NAME" /> nie został pobrany, bo już istnieje.</translation>
@@ -153,6 +155,8 @@
 <translation id="1807709131360304325">Otwórz nowe okno</translation>
 <translation id="1810845389119482123">Nie dokończono wstępnego konfigurowania synchronizacji</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> nie może dalej korzystać z konta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1825772852827001597">Formy płatności ani adresy z Google Pay nie będą szyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.
+Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest ono wysyłane do Google ani tam przechowywane. Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Znajdź na stronie</translation>
 <translation id="185383612275551373">Aby zobaczyć najtrafniejsze treści z Google, włącz synchronizację</translation>
 <translation id="1871098866036088250">Otwórz w przeglądarce Chrome</translation>
@@ -266,6 +270,7 @@
 <translation id="250020030759455918">Będziesz mieć dostęp do stanu logowania, danych przeglądania oraz danych witryny w Chrome dotyczących Twojej strony <ph name="SITE_NAME" /></translation>
 <translation id="2510106555128151389">Instaluję aplikację <ph name="WEBAPK_NAME" />…</translation>
 <translation id="2513403576141822879">Więcej ustawień związanych z prywatnością, bezpieczeństwem i zbieraniem danych znajdziesz w sekcji <ph name="BEGIN_LINK" />Synchronizacja i usługi Google<ph name="END_LINK" /></translation>
+<translation id="2515921719039583189">Usunąć dane Chrome z tego urządzenia?</translation>
 <translation id="2517113738956581680">Plansza w pełnym rozmiarze</translation>
 <translation id="2523184218357549926">Adresy URL odwiedzanych stron będą wysyłane do Google</translation>
 <translation id="2527209463677295330">Jeśli dołączysz więcej tekstu ze strony, możesz zobaczyć lepsze wyniki</translation>
@@ -492,6 +497,7 @@
 <translation id="3631987586758005671">Udostępniam urządzeniu <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Automatycznie loguj się na stronach, używając zapisanych danych logowania. Gdy ta funkcja jest wyłączona, przed każdym zalogowaniem się zobaczysz prośbę o weryfikację.</translation>
 <translation id="3636940436873918441">Preferowane języki</translation>
+<translation id="3637744895182738742">Jeśli zapomnisz hasło lub postanowisz zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="368329460027487650">Wylogowano. Otwiera opcje logowania.</translation>
 <translation id="3687645719033307815">Widzisz podgląd strony</translation>
 <translation id="3690369331356918524">Ostrzega, jeśli wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia haseł</translation>
@@ -1186,6 +1192,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="707155805709242880">Poniżej wybierz elementy do synchronizacji</translation>
 <translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Zakładka została zapisana w folderze „<ph name="FOLDER_NAME" />” na Twoim koncie <ph name="ACCOUNT_EMAIL" />.}few{Zakładki zostały zapisane w folderze „<ph name="FOLDER_NAME" />” na Twoim koncie <ph name="ACCOUNT_EMAIL" />.}many{Zakładki zostały zapisane w folderze „<ph name="FOLDER_NAME" />” na Twoim koncie <ph name="ACCOUNT_EMAIL" />.}other{Zakładki zostały zapisane w folderze „<ph name="FOLDER_NAME" />” na Twoim koncie <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">Karta SD</translation>
+<translation id="7078916049958741685">Usuń też swoje dane Chrome z tego urządzenia</translation>
 <translation id="7080806333218412752">Wysyłaj adresy URL do sprawdzenia przez usługę Bezpieczne przeglądanie. Funkcja wysyła też małe próbki stron, pobieranych plików, aktywności rozszerzeń i informacji o systemie, by pomóc w wykrywaniu nowych zagrożeń. Tymczasowo łączy te dane z Twoim kontem Google, gdy się na nie zalogujesz, by chronić Cię we wszystkich aplikacjach Google.</translation>
 <translation id="7085332316435785646">Określ, czy chcesz uwzględniać historię Chrome w celu lepszego dostosowania usług Google</translation>
 <translation id="7088681679121566888">Masz aktualną wersję Chrome</translation>
@@ -1198,6 +1205,9 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="7146622961999026732">Wygląda na to, że te strony i aplikacje są dla Ciebie ważne:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /> znajdziesz w witrynie <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="7149893636342594995">Ostatnie 24 godziny</translation>
+<translation id="71503698506017927">Szyfrowanie haseł nie obejmuje form płatności ani adresów w Google Pay.
+
+Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="7168323970702333693">Zalogowano jako <ph name="USER_NAME" />. Otwiera ustawienia.</translation>
 <translation id="7173114856073700355">Otwórz Ustawienia</translation>
 <translation id="7177466738963138057">Możesz zmienić to później w Ustawieniach</translation>
@@ -1626,6 +1636,7 @@ Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy b
 <translation id="939598580284253335">Wpisz hasło wielowyrazowe</translation>
 <translation id="952301137339791907">Plansza dolna ze statystykami strony jest otwarta</translation>
 <translation id="95817756606698420">Chrome może używać <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> do wyszukiwania w Chinach. Możesz to zmienić w <ph name="BEGIN_LINK" />Ustawieniach<ph name="END_LINK" />.</translation>
+<translation id="966131775676567255">Usuwam dane konta</translation>
 <translation id="96681097142096641">Pokazać uproszczoną stronę?</translation>
 <translation id="970715775301869095">Pozostało: <ph name="MINUTES" /> min</translation>
 <translation id="981121421437150478">Offline</translation>

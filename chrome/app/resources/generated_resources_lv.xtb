@@ -1601,7 +1601,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Jūs iespējojat Chrome OS Flex atkļūdošanas funkcijas, kas iestatīs sshd dēmonu un iespējos palaišanu no USB diskiem.</translation>
 <translation id="2178614541317717477">CA drošības politikas apdraudējums</translation>
-<translation id="2179416702468739594">Notiek pieejamu profilu meklēšana… Uz dažām minūtēm var tikt pārtraukts savienojums ar mobilo tīklu.</translation>
 <translation id="2180620921879609685">Bloķēt saturu jebkurā lapā</translation>
 <translation id="2181821976797666341">Politikas</translation>
 <translation id="2182058453334755893">Kopēts jūsu starpliktuvē</translation>
@@ -1654,6 +1653,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="222115440608612541">Motīvu maiņa līdz ar saullēktu un saulrietu</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Multivides avots bez nosaukuma</translation>
+<translation id="2224337661447660594">Nav interneta savienojuma</translation>
 <translation id="2224444042887712269">Šo iestatījumu veica <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Rediģēt mapes nosaukumu</translation>
 <translation id="2225927550500503913">Virtuālā karte ir ieslēgta</translation>
@@ -3105,7 +3105,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3321494112580110651">Vai neredzat savu printeri?</translation>
 <translation id="3321776060736518525">No <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonuss! Pagarināts izmantošanas ilgums</translation>
-<translation id="3325804108816646710">Notiek pieejamu profilu meklēšana...</translation>
 <translation id="3325930488268995856">Pievienota Microsoft OneDrive krātuve</translation>
 <translation id="3325995804968971809">Stils</translation>
 <translation id="3327050066667856415">Chromebook datori ir izstrādāti rūpēs par drošību. Jūsu ierīce tiek automātiski aizsargāta pret ļaunprātīgu programmatūru — papildu programmatūra nav vajadzīga.</translation>
@@ -5411,7 +5410,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5101839224773798795">Automātiski noklikšķināt, kad kursors apstājas</translation>
 <translation id="5103311607312269661">palielināt displeja spilgtumu</translation>
 <translation id="5106350808162641062">Noņemt</translation>
-<translation id="5106608587025903971">Lai pierakstoties nebūtu jāievada Google konta parole, varat izveidot paroli šai ierīcei (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="510695978163689362">Lietotāja <ph name="USER_EMAIL" /> konts tiek pārvaldīts lietotnē Family Link. Varat pievienot mācību iestādes kontus, lai piekļūtu mācību iestādes resursiem, pat ja ir spēkā vecāku uzraudzība.</translation>
 <translation id="5107093668001980925">Nekad nerādīt šādu informāciju: <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Paplašinājums izslēdza funkciju Droša pārlūkošana.</translation>
@@ -7373,7 +7371,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6647690760956378579">Dabiskās balss priekšskatījums</translation>
 <translation id="6648911618876616409">Svarīgs atjauninājums ir pieejams instalēšanai. Pierakstieties, lai sāktu.</translation>
 <translation id="6649018507441623493">Uzgaidiet…</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vēlas apstiprināt jūsu identitāti</translation>
 <translation id="6650206238642452078">Abonēt ChromeOS sistēmas notikumus</translation>
 <translation id="665061930738760572">Atvērt &amp;jaunā logā</translation>
 <translation id="6651237644330755633">Uzticēties šim sertifikātam, lai identificētu vietnes</translation>

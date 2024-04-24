@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{閉じたタブは Chrome メインメニューの [最近使ったタブ] で確認できます。シークレット タブは使用できなくなります。}other{閉じたタブは Chrome メインメニューの [最近使ったタブ] で確認できます。# 個のシークレット タブは使用できなくなります。}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個のタブ}other{<ph name="TABS_COUNT_MANY" /> 個のタブ}}</translation>
 <translation id="6549021453810473782">ストア情報を表示</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">タブを左に移動</translation>
 <translation id="6615455863669487791">表示</translation>
 <translation id="661742612106409204">閉じたタブは Chrome メインメニューの [最近使ったタブ] で確認できます。</translation>

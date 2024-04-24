@@ -1607,7 +1607,6 @@
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Та sshd daemon-г тохируулж, USB драйвуудыг ачаалахыг идэвхжүүлэх ChromeOS Flex-н дебагийн онцлогуудыг идэвхжүүлж байна.</translation>
 <translation id="2178614541317717477">CA Compromise</translation>
-<translation id="2179416702468739594">Боломжтой профайлыг хайж байна. Энэ нь таны мобайл сүлжээг хэдэн минутын турш салахад хүргэж болзошгүй.</translation>
 <translation id="2180620921879609685">Аливаа хуудсан дээрх контентыг блоклох</translation>
 <translation id="2181821976797666341">Тохиргоонууд</translation>
 <translation id="2182058453334755893">Түр санах ой руу хуулсан</translation>
@@ -1660,6 +1659,7 @@
 <translation id="222115440608612541">Нар мандах болон нар жаргах үед загваруудыг сэлгээрэй</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Нэргүй медиа эх сурвалж</translation>
+<translation id="2224337661447660594">Интернэт алга</translation>
 <translation id="2224444042887712269">Энэ тохиргоо нь <ph name="OWNER_EMAIL" />-д хамаатай.</translation>
 <translation id="2224551243087462610">Хавтасны нэрийг засах</translation>
 <translation id="2225927550500503913">Виртуал картыг асаасан</translation>
@@ -3114,7 +3114,6 @@
 <translation id="3321494112580110651">Хэвлэгчээ харахгүй байна уу?</translation>
 <translation id="3321776060736518525"><ph name="APP_URL" />-с</translation>
 <translation id="3323521181261657960">Бонус! Таны дэлгэцийн цагийг сунгалаа</translation>
-<translation id="3325804108816646710">Боломжтой профайлыг хайж байна...</translation>
 <translation id="3325930488268995856">Microsoft OneDrive холбогдсон</translation>
 <translation id="3325995804968971809">Загвар</translation>
 <translation id="3327050066667856415">Chromebook-г аюулгүй байдалд зориулж бүтээсэн. Таны төхөөрөмж хортой кодоос автоматаар хамгаалагддаг бөгөөд нэмэлт программ хангамж шаардлагагүй.</translation>
@@ -5420,7 +5419,6 @@
 <translation id="5101839224773798795">Курсор зогссон үед автоматаар товших</translation>
 <translation id="5103311607312269661">дэлгэцийн гэрэлтүүлгийг нэмэгдүүлэх</translation>
 <translation id="5106350808162641062">Хасах</translation>
-<translation id="5106608587025903971">Нэвтрэхийн тулд Google Бүртгэлийн нууц үгээ оруулахын оронд та энэ төхөөрөмжид <ph name="DEVICE_TYPE" />-н нууц үг үүсгэх боломжтой</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" />-г Family Link-р хянадаг. Та эцэг эхийн хяналттайгаар сургуулийн нөөцөд хандахын тулд сургуулийн бүртгэл нэмж болно.</translation>
 <translation id="5107093668001980925"><ph name="MODULE_NAME" />-г хэзээ ч бүү харуул</translation>
 <translation id="5107443654503185812">Өргөтгөл нь Аюулгүй хайлтыг унтраасан</translation>
@@ -7381,7 +7379,6 @@
 <translation id="6647690760956378579">Төрөлхийн дуу хоолойг урьдчилан сонсох</translation>
 <translation id="6648911618876616409">Шаардлагатай шинэчлэлтийг суулгахад бэлэн байна. Эхлүүлэхийн тулд нэвтэрнэ үү.</translation>
 <translation id="6649018507441623493">Түр хүлээнэ үү…</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> таныг мөн болохыг баталгаажуулахыг хүсэж байна</translation>
 <translation id="6650206238642452078">ChromeOS системийн үйл явдлуудыг захиалах</translation>
 <translation id="665061930738760572">Шинэ цонхонд нээх &amp;</translation>
 <translation id="6651237644330755633">Веб хуудсыг тодорхойлохдоо энэ сертификатыг итгэмжилнэ үү</translation>

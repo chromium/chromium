@@ -36,6 +36,7 @@
 <translation id="1181037720776840403">Remover</translation>
 <translation id="1181366777303791449">em <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183189057400844278">Confirme sua identidade para sempre poder usar as senhas na sua Conta do Google</translation>
+<translation id="1187810343066461819">Excluir também favoritos, histórico e muito mais deste carro</translation>
 <translation id="1193729455103054076">Usar uma senha forte?</translation>
 <translation id="1197267115302279827">Mover favoritos</translation>
 <translation id="1197761954713363183">Página de confirmação da chave de acesso fechada</translation>
@@ -82,6 +83,7 @@
 <translation id="1386674309198842382">Ativado há <ph name="LAST_UPDATED" /> dias</translation>
 <translation id="13931502444227376">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> vai compartilhar seu nome, endereço de e-mail e foto do perfil com esse site. Veja os <ph name="BEGIN_LINK1" />Termos de Serviço<ph name="END_LINK1" /> desse site.</translation>
 <translation id="1397811292916898096">Pesquisar com o <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398037172295725596">Tente pesquisar algo diferente ou consulte o histórico no Chrome para conferir mais detalhes do histórico da Web de outros apps.</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1409879593029778104">O download de <ph name="FILE_NAME" /> foi impedido porque o arquivo já existe.</translation>
@@ -153,6 +155,8 @@
 <translation id="1807709131360304325">Abrir uma nova janela</translation>
 <translation id="1810845389119482123">Configuração de sincronização inicial não concluída</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> não pode continuar usando o <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1825772852827001597">As formas de pagamento e os endereços do Google Pay não serão criptografados. O histórico de navegação do Chrome não será sincronizado.
+Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senha longa não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Encontrar na página</translation>
 <translation id="185383612275551373">Sincronize para acessar no Google o que importa para você</translation>
 <translation id="1871098866036088250">Abrir no navegador Chrome</translation>
@@ -266,6 +270,7 @@
 <translation id="250020030759455918">Seu status de login, dados de navegação e dados do site para <ph name="SITE_NAME" /> serão exibidos no Chrome</translation>
 <translation id="2510106555128151389">Instalando <ph name="WEBAPK_NAME" />…</translation>
 <translation id="2513403576141822879">Para acessar mais configurações relacionadas à privacidade, segurança e coleta de dados, acesse <ph name="BEGIN_LINK" />Serviços do Google e de sincronização<ph name="END_LINK" /></translation>
+<translation id="2515921719039583189">Excluir dados do Chrome deste dispositivo?</translation>
 <translation id="2517113738956581680">Página no tamanho original</translation>
 <translation id="2523184218357549926">Envia URLs das páginas que você visita para o Google</translation>
 <translation id="2527209463677295330">Ao incluir mais texto de uma página, você poderá ver resultados melhores</translation>
@@ -492,6 +497,7 @@
 <translation id="3631987586758005671">Compartilhando com <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Faça login automaticamente nos websites usando as credenciais armazenadas. Se o recurso estiver desativado, será preciso fazer a verificação sempre antes de fazer login em um website.</translation>
 <translation id="3636940436873918441">Idiomas preferidos</translation>
+<translation id="3637744895182738742">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="368329460027487650">Conta desconectada. Abre as opções para fazer login.</translation>
 <translation id="3687645719033307815">Esta é uma visualização dessa página</translation>
 <translation id="3690369331356918524">Avisa caso suas senhas sejam expostas em uma violação de dados</translation>
@@ -1187,6 +1193,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="707155805709242880">Escolha o que será sincronizado abaixo</translation>
 <translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Favorito salvo em "<ph name="FOLDER_NAME" />" na conta <ph name="ACCOUNT_EMAIL" />.}one{Favorito salvo em "<ph name="FOLDER_NAME" />" na conta <ph name="ACCOUNT_EMAIL" />.}other{Favoritos salvos em "<ph name="FOLDER_NAME" />" na conta <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">Cartão SD</translation>
+<translation id="7078916049958741685">Excluir também seus dados do Chrome deste dispositivo</translation>
 <translation id="7080806333218412752">Envia URLs para a verificação pelo Navegação segura. Também envia uma pequena amostra de páginas, downloads, atividades de extensões e informações do sistema para ajudar a descobrir novas ameaças. Vincula temporariamente esses dados à sua Conta do Google quando ela está conectada para proteger você nos apps do Google.</translation>
 <translation id="7085332316435785646">Escolha se você quer incluir o histórico do Chrome para ter experiências mais personalizadas nos Serviços do Google</translation>
 <translation id="7088681679121566888">O Chrome está atualizado</translation>
@@ -1199,6 +1206,9 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7146622961999026732">Estes sites e apps parecem importantes para você:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />Confira mais informações<ph name="END_LINK" /> do <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
+<translation id="71503698506017927">A criptografia por senha longa não inclui formas de pagamento e endereços do Google Pay.
+
+Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="7168323970702333693">Login feito como <ph name="USER_NAME" />. Abre as configurações.</translation>
 <translation id="7173114856073700355">Configurações</translation>
 <translation id="7177466738963138057">Você poderá alterar isso mais tarde nas configurações</translation>
@@ -1627,6 +1637,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="939598580284253335">Inserir senha</translation>
 <translation id="952301137339791907">A página inferior de insights está aberta</translation>
 <translation id="95817756606698420">O Chrome pode usar o <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para fazer pesquisas na China. É possível alterar essa opção nas <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
+<translation id="966131775676567255">Excluindo dados da conta</translation>
 <translation id="96681097142096641">Ver página simplificada?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutos restantes</translation>
 <translation id="981121421437150478">Off-line</translation>

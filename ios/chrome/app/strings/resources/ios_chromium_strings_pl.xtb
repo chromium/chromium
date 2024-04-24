@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Zobacz Zakładki Chromium</translation>
 <translation id="2590893390871230428">Synchronizuj dane Chromium</translation>
 <translation id="2592940277904433508">Nadal korzystaj z Chromium</translation>
+<translation id="2607609479243848905">Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">W ustawieniach urządzenia otwórz „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” i wybierz „Chromium”</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium pomoże Ci śledzić tę przesyłkę na stronie nowej karty.}few{Chromium pomoże Ci śledzić te przesyłki na stronie nowej karty.}many{Chromium pomoże Ci śledzić te przesyłki na stronie nowej karty.}other{Chromium pomoże Ci śledzić te przesyłki na stronie nowej karty.}}</translation>
 <translation id="2650312721222849884">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chromium, włącz synchronizację</translation>
@@ -115,6 +116,9 @@ Dane zostały zaszyfrowane za pomocą Twojego hasła wielowyrazowego. Podaj to h
 <translation id="4498832288620833153">Dodaje wpisane adresy URL do listy Do przeczytania w Chromium.</translation>
 <translation id="452436063477828504">Upewnij się, że zawsze możesz używać danych Chromium na swoim koncie Google</translation>
 <translation id="4555020257205549924">Gdy ta funkcja jest włączona, Chromium oferuje tłumaczenie stron w innych językach przy użyciu Tłumacza Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Szyfrowanie hasłem nie obejmuje form płatności ani adresów.
+
+Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Otwiera stronę ustawień form płatności w Chromium.</translation>
 <translation id="459080529287102949">Wyszukaj elementy wizualne w Chromium</translation>
 <translation id="4633738821577273991">Włącz też Ulepszone Bezpieczne przeglądanie na tym profilu Chromium</translation>
@@ -211,6 +215,9 @@ Pamiętaj, że:
 <translation id="7163483974919055112">Wyszukaj elementy wizualne w Chromium.</translation>
 <translation id="7165402419892018581">Wybieranie Chromium do autouzupełniania</translation>
 <translation id="7175400662502680481">Wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia hasła. Menedżer haseł zaleca, aby jak najszybciej je zmienić.</translation>
+<translation id="7185731475720473450">Formy płatności i adresy nie będą zaszyfrowane. Historia przeglądania z Chromium nie będzie synchronizowana.
+
+Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest ono wysyłane do Google ani tam przechowywane. Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Powiadomienia Chromium są aktualnie wyłączone w ustawieniach urządzenia.</translation>
 <translation id="7222001353246886083">Wyszukaj ${searchPhrase} w Chromium</translation>
 <translation id="725427773388857052">Chromium pomaga chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi stronami internetowymi i innymi zagrożeniami.</translation>

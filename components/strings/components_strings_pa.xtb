@@ -586,7 +586,6 @@
 <translation id="2071692954027939183">ਸੂਚਨਾਵਾਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬਲਾਕ ਕੀਤੀਆਂ ਗਈਆਂ ਕਿਉਂਕਿ ਤੁਸੀਂ ਆਮ ਤੌਰ 'ਤੇ ਉਹਨਾਂ ਨੂੰ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿੰਦੇ ਹੋ</translation>
 <translation id="2071852865256799872">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="PROFILE_DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> ਨੂੰ ਅਣਬਲਾਕ ਕਰੋ</translation>
-<translation id="2075497153347571252">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ <ph name="ORIGIN" /> 'ਤੇ <ph name="PERMISSION" /> ਨੂੰ ਬਲਾਕ ਕਰ ਦਿੱਤਾ ਹੈ</translation>
 <translation id="2078956195623975415">ਸੰਗੀਤ ਅਤੇ ਡਾਂਸ ਗੇਮਾਂ</translation>
 <translation id="2079545284768500474">ਅਣਕੀਤਾ ਕਰੋ</translation>
 <translation id="2080021694978766903">ਇਸ ਨੀਤੀ ਵਿੱਚ <ph name="MAX_ITEMS_LIMIT" /> ਤੋਂ ਵੱਧ ਇੰਦਰਾਜ ਨਹੀਂ ਹੋਣੇ ਚਾਹੀਦੇ ਹਨ।</translation>
@@ -2024,7 +2023,6 @@
 <translation id="4885030148564729407">ਹਨੀਮੂਨ ਅਤੇ ਰੋਮਾਂਟਿਕ ਸੈਰਗਾਹ</translation>
 <translation id="4885256590493466218">ਚੈੱਕਆਊਟ ਕਰਨ ਵੇਲੇ <ph name="CARD_DETAIL" /> ਨਾਲ ਭੁਗਤਾਨ ਕਰੋ</translation>
 <translation id="4887406273302438710">Windows Hello ਨਾਲ ਪਾਸਵਰਡ ਸੁਰੱਖਿਅਤ ਕਰੋ</translation>
-<translation id="4890070067176768718">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ <ph name="ORIGIN" /> ਨੂੰ <ph name="PERMISSION" /> ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿੱਤੀ ਹੈ</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾਓ, ਫਿਰ Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ, ਕੁਕੀਜ਼, ਕੈਸ਼ੇ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਮਿਟਾਉਣ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="4892518386797173871">ਪਿਛਲਾ</translation>
 <translation id="4895019427244614047">ਪਤਾ ਹਟਾਓ</translation>
@@ -3915,7 +3913,6 @@
 <translation id="8493948351860045254">ਖਾਲੀ ਸਪੇਸ ਬਣਾਓ</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ਨੇ ਪ੍ਰਤਿਕਿਰਿਆ ਦੇਣ ਵਿੱਚ ਬਹੁਤ ਜ਼ਿਆਦਾ ਸਮਾਂ ਲਗਾਇਆ।</translation>
 <translation id="8502023382441452707">ਜਨਮਦਿਨ ਅਤੇ ਨਾਮ ਰੱਖਣ ਵਾਲੇ ਦਿਨ</translation>
-<translation id="8502972004418241366">ਇਸ ਸਾਈਟ 'ਤੇ <ph name="PERMISSION" /> ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ, ਤੁਹਾਨੂੰ Chrome ਨੂੰ ਪਹੁੰਚ ਦੇਣ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="8503559462189395349">Chrome ਪਾਸਵਰਡ</translation>
 <translation id="8503813439785031346">ਵਰਤੋਂਕਾਰ ਨਾਮ</translation>
 <translation id="8504928302600319133">ਕੰਪਿਊਟਰ ਹਾਰਡਵੇਅਰ</translation>
@@ -3935,7 +3932,6 @@
 <translation id="853246364274116957">ਬ੍ਰੌਡਵੇਅ ਅਤੇ ਸੰਗੀਤਕ ਥੀਏਟਰ</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ਬਲਾਕ ਕੀਤੇ URL ਅਤੇ ਤੁਹਾਡੇ ਸਿਸਟਮ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਲਾਗੂ ਕੀਤੀਆਂ ਹੋਰ ਨੀਤੀਆਂ ਦੀ ਸੂਚੀ ਦੇਖਣ ਲਈ &lt;strong&gt;chrome://policy&lt;/strong&gt; 'ਤੇ ਜਾਓ।</translation>
-<translation id="8534934518812659742">ਤੁਸੀਂ Chrome ਲਈ <ph name="PERMISSION" /> ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="8536234749087605613">ਐਨਵਲੋਪ (ਵਿੰਡੋ)</translation>
 <translation id="8539500321752640291">ਕੀ 2 ਇਜਾਜ਼ਤਾਂ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੋ?</translation>
 <translation id="8541158209346794904">ਬਲੂਟੁੱਥ ਡੀਵਾਈਸ</translation>
@@ -3992,7 +3988,6 @@
 <translation id="865032292777205197">ਮੋਸ਼ਨ ਸੈਂਸਰ</translation>
 <translation id="865255447216708819">ਬੈਕ ਪ੍ਰਿੰਟ ਫ਼ਿਲਮ</translation>
 <translation id="8654126188050905496">55 x 91 ਮਿ.ਮੀ.</translation>
-<translation id="8655930295668719549">ਪਿਛਲੀ ਵਾਰ ਤੁਸੀਂ <ph name="PERMISSION" /> ਨੂੰ <ph name="ORIGIN" /> 'ਤੇ ਆਗਿਆ ਨਹੀਂ ਦਿੱਤੀ</translation>
 <translation id="8662463432865928030">ਵਪਾਰਕ ਸੰਪਤੀਆਂ</translation>
 <translation id="8663226718884576429">ਆਰਡਰ ਸਾਰਾਂਸ਼, <ph name="TOTAL_LABEL" />, ਹੋਰ ਵੇਰਵੇ</translation>
 <translation id="8663909737634214500">ਔਪਟੀਕਲ ਡਿਸਕ</translation>

@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">Veuillez saisir une adresse e-mail dans le champ correspondant.</translation>
 <translation id="1758486001363313524">Autre…</translation>
 <translation id="1787192514241997742">Durée totale : <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">Autoriser l'accès à la caméra</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">lire sur un appareil à distance</translation>
 <translation id="1921819250265091946">jj</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">étape actuelle</translation>
 <translation id="3321030238473337787">Vitesse de lecture</translation>
 <translation id="3329013043687509092">Saturation</translation>
-<translation id="3377518164566272702">Autoriser l'accès au micro et à la caméra</translation>
 <translation id="3450233048674729344">Cette valeur doit être inférieure ou égale à <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Quitter le mode PIP (Picture-in-picture)</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">Autre…</translation>
 <translation id="9155987714137265666"><ph name="WEEK" /> (premier jour de la semaine : <ph name="WEEK_START_DATE" />)</translation>
 <translation id="916607977885256133">Picture-in-picture</translation>
-<translation id="918430632320614861">Autoriser l'accès au micro</translation>
 <translation id="945780513535800434">Partiellement cochée</translation>
 <translation id="954003015749068518">utiliser le mode PIP</translation>
 </translationbundle>

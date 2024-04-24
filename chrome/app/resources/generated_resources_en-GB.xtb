@@ -1611,7 +1611,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">You are enabling Chrome OS Flex debugging features which will set up sshd daemon and enable booting from USB drives.</translation>
 <translation id="2178614541317717477">CA Compromise</translation>
-<translation id="2179416702468739594">Looking for available profiles. This may cause your mobile network to disconnect for a few minutes.</translation>
 <translation id="2180620921879609685">Block content on any page</translation>
 <translation id="2181821976797666341">Policies</translation>
 <translation id="2182058453334755893">Copied to your Clipboard</translation>
@@ -1664,6 +1663,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="222115440608612541">Switch themes at sunrise and sunset</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Unnamed media source</translation>
+<translation id="2224337661447660594">No Internet</translation>
 <translation id="2224444042887712269">This setting belongs to <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Edit folder name</translation>
 <translation id="2225927550500503913">Virtual card turned on</translation>
@@ -3118,7 +3118,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3321494112580110651">Don’t see your printer?</translation>
 <translation id="3321776060736518525">From <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonus! You got more screen time</translation>
-<translation id="3325804108816646710">Looking for available profiles…</translation>
 <translation id="3325930488268995856">Microsoft OneDrive connected</translation>
 <translation id="3325995804968971809">Style</translation>
 <translation id="3327050066667856415">Chromebooks are designed for security. Your device is protected from malware automatically – no extra software required.</translation>
@@ -5425,7 +5424,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5101839224773798795">Automatically click when the cursor stops</translation>
 <translation id="5103311607312269661">Display brightness up</translation>
 <translation id="5106350808162641062">Remove</translation>
-<translation id="5106608587025903971">Instead of entering your Google Account password to sign in, you can create <ph name="DEVICE_TYPE" /> password for this device</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> is supervised by Family Link. You can add school accounts to access school resources with parental supervision.</translation>
 <translation id="5107093668001980925">Never show <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">An extension has turned off Safe Browsing</translation>
@@ -7386,7 +7384,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6647690760956378579">Natural voice preview</translation>
 <translation id="6648911618876616409">A critical update is ready to install. Sign in to get started.</translation>
 <translation id="6649018507441623493">Just a sec...</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> would like to confirm that it's you</translation>
 <translation id="6650206238642452078">Subscribe to ChromeOS system events</translation>
 <translation id="665061930738760572">Open in &amp;New Window</translation>
 <translation id="6651237644330755633">Trust this certificate for identifying websites</translation>

@@ -1598,7 +1598,6 @@
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Вы включаете функции отладки Chrome OS Flex. Будет настроен SSHD-демон и разрешена загрузка с USB-накопителей.</translation>
 <translation id="2178614541317717477">Скомпрометированный ЦС</translation>
-<translation id="2179416702468739594">Поиск доступных профилей… Подключение к мобильной сети может быть прервано на несколько минут.</translation>
 <translation id="2180620921879609685">Блокировка контента на всех страницах.</translation>
 <translation id="2181821976797666341">Правила</translation>
 <translation id="2182058453334755893">Скопировано в буфер обмена.</translation>
@@ -1651,6 +1650,7 @@
 <translation id="222115440608612541">Включает автоматическое переключение между светлой и тёмной темами.</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> и <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Источник медиа без названия</translation>
+<translation id="2224337661447660594">Нет подключения к Интернету</translation>
 <translation id="2224444042887712269">Этот параметр установлен пользователем <ph name="OWNER_EMAIL" /></translation>
 <translation id="2224551243087462610">Изменить имя папки</translation>
 <translation id="2225927550500503913">Виртуальная карта включена</translation>
@@ -3100,7 +3100,6 @@
 <translation id="3321494112580110651">Нужного принтера нет?</translation>
 <translation id="3321776060736518525">Источник: <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Время использования устройства продлено</translation>
-<translation id="3325804108816646710">Поиск доступных профилей…</translation>
 <translation id="3325930488268995856">Хранилище Microsoft OneDrive подключено</translation>
 <translation id="3325995804968971809">Стиль</translation>
 <translation id="3327050066667856415">Создавая Chromebook, мы уделили большое внимание безопасности. Вам не нужно устанавливать дополнительные программы для защиты от вредоносного ПО.</translation>
@@ -5403,7 +5402,6 @@
 <translation id="5101839224773798795">Автоматически регистрировать нажатие кнопки мыши, когда указатель останавливается</translation>
 <translation id="5103311607312269661">Увеличить яркость экрана</translation>
 <translation id="5106350808162641062">Удалить</translation>
-<translation id="5106608587025903971">Создайте пароль для <ph name="DEVICE_TYPE" /> и используйте его при входе вместо учетных данных от аккаунта Google.</translation>
 <translation id="510695978163689362">Аккаунт <ph name="USER_EMAIL" /> находится под управлением Family Link. Чтобы контролировать доступ к школьным материалам, можно добавить учебный аккаунт.</translation>
 <translation id="5107093668001980925">Никогда не показывать модуль "<ph name="MODULE_NAME" />"</translation>
 <translation id="5107443654503185812">Расширение отключило Безопасный просмотр.</translation>
@@ -7364,7 +7362,6 @@
 <translation id="6647690760956378579">Предв. прослушивание естественного голоса</translation>
 <translation id="6648911618876616409">Доступно новое критическое обновление. Войдите, чтобы установить его.</translation>
 <translation id="6649018507441623493">Подождите...</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> запрашивает подтверждение вашей личности.</translation>
 <translation id="6650206238642452078">Подписка на системные события ChromeOS</translation>
 <translation id="665061930738760572">Открыть в &amp;новом окне</translation>
 <translation id="6651237644330755633">Доверять этому сертификату при идентификации сайтов</translation>

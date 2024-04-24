@@ -102,6 +102,7 @@
 <translation id="152234381334907219">常に保存しない</translation>
 <translation id="1523341279170789507">Cookie をすべて受け入れる</translation>
 <translation id="1524563461097350801">スキップ</translation>
+<translation id="1539173178539798367">閲覧履歴データの削除を非表示にする</translation>
 <translation id="1540800554400757039">住所1行目</translation>
 <translation id="1545749641540134597">QR コードをスキャンします</translation>
 <translation id="1552525382687785070">同期は管理者により無効にされています</translation>
@@ -130,6 +131,7 @@
 <translation id="1653432787084483144">{count,plural, =1{キーボードの上部に保存済みのパスワードが {count} 件表示されています。}other{キーボードの上部に保存済みのパスワードが {count} 件表示されています。}}</translation>
 <translation id="1657011748321897393">ネットワークに接続されていないため共有できませんでした。</translation>
 <translation id="165877110639533037">開いているタブはありません</translation>
+<translation id="1668001730617725852">新しいタブグループで開く</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />から<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">モバイルサイトをリクエスト</translation>
 <translation id="1687475363370981210">すべて既読にする</translation>
@@ -320,6 +322,7 @@
 
 検索エンジンは <ph name="DSE_NAME" /> に設定されています。検索履歴を削除する場合は、検索エンジンの手順をご確認ください（該当する場合）。</translation>
 <translation id="2697526135132990015">ログアウトしてデータを削除</translation>
+<translation id="269819437389494246">アクセスしたページを確認したり履歴から削除したりできます</translation>
 <translation id="2700241355396984822">権限設定のオプション</translation>
 <translation id="2702801445560668637">リーディング リスト</translation>
 <translation id="2704606927547763573">コピーしました</translation>
@@ -393,6 +396,7 @@
 <translation id="3039722182465315531">ログインしない</translation>
 <translation id="3053332585453689122">アクセスした URL と、ページのコンテンツ、ダウンロード、拡張機能のアクティビティ、システム情報の一部のサンプルを Google セーフ ブラウジングに送信して、有害かどうか確認します。</translation>
 <translation id="3054631738875941048">[リーディング リストに追加] を非表示にする</translation>
+<translation id="3064295814838126921">閲覧履歴データを削除しています...</translation>
 <translation id="3074499504015191586">ページ全体を翻訳</translation>
 <translation id="3076846064362030967">Google アカウントへのログイン状態は維持されます。ログイン中は Google アカウントに<ph name="BEGIN_LINK" />その他のアクティビティ<ph name="END_LINK" />が保存される可能性があります。これらのデータはいつでも削除できます。
 
@@ -858,6 +862,7 @@
 <translation id="5490005495580364134">すべての Cookie をブロックする（推奨されません）</translation>
 <translation id="5497202150450073388">不在。再配達予定</translation>
 <translation id="5511959326926949696">極めて強力なブラウザの保護設定。非常に高度なサイバー攻撃の標的になっている可能性がある場合にのみ使用してください。</translation>
+<translation id="5512759250809559631">[メニュー] → [履歴] → [閲覧履歴データを削除]</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 時間前</translation>
 <translation id="5525269841082836315">パスフレーズの作成</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{脆弱なパスワード: {COUNT} 件}other{脆弱なパスワード: {COUNT} 件}}</translation>
@@ -933,6 +938,7 @@
 <translation id="5859715514067755465">進む</translation>
 <translation id="5860033963881614850">OFF</translation>
 <translation id="5860491529813859533">オンにする</translation>
+<translation id="5889333064153755823">閲覧履歴データの削除</translation>
 <translation id="5896576662943111387">iOS にぴったり</translation>
 <translation id="5897749768294722429">過去にアクセスしたサイトにすばやく戻るには、タブと履歴を同期します。</translation>
 <translation id="5897956970858271241">コピーしたリンクにアクセス</translation>
@@ -1030,6 +1036,7 @@
 <translation id="6346549652287021269">新たにダウンロードを開始しますか？</translation>
 <translation id="6347953390226388422">{count,plural, =1{この住所は Google アカウント（<ph name="USER_EMAIL" />）とこのデバイスから削除されます。}other{これらの住所は Google アカウント（<ph name="USER_EMAIL" />）とこのデバイスから削除されます。}}</translation>
 <translation id="634878792104344809">すべてのデバイスでパスワード、履歴、その他の設定を同期する</translation>
+<translation id="6351658970066645919">閲覧履歴データの削除</translation>
 <translation id="63519665078626091">ウェブ インスペクタを使用するには、ケーブルを使用してパソコンで Safari に接続し、[開発] メニューから iPad にアクセスします。[開発] メニューは、パソコンの Safari の [詳細] 設定で有効にできます。</translation>
 <translation id="6355820205320395730">脆弱なパスワードは簡単に推測されてしまいます。安全なパスワードを作成してください。<ph name="BEGIN_LINK" />セキュリティに関する他のヒントを見る<ph name="END_LINK" /></translation>
 <translation id="6361681885917591592">完了</translation>
@@ -1151,6 +1158,7 @@
 <translation id="687135068089457384">設定を表示</translation>
 <translation id="6873263987691478642">分割表示</translation>
 <translation id="6882836635272038266">危険だと認識されているウェブサイト、ダウンロード、拡張機能から標準的な方法で保護します。</translation>
+<translation id="6887173972066406796">閲覧履歴データの削除を確定する</translation>
 <translation id="6888009575607455378">変更を破棄してもよろしいですか？</translation>
 <translation id="6896758677409633944">コピー</translation>
 <translation id="6897187120838603299">パスワードはこのデバイスに保存されます。</translation>
@@ -1199,6 +1207,7 @@
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> でシークレット タブのロックを解除</translation>
 <translation id="7173114856073700355">設定を開く</translation>
 <translation id="7186568385131859684">Google サービス全体で閲覧履歴を他のデータと関連付けて使用する方法を管理する</translation>
+<translation id="7187190640134722091">グループを作成</translation>
 <translation id="7189598951263744875">共有...</translation>
 <translation id="719133302483559673">あなたの興味や好みに関する情報を管理します。</translation>
 <translation id="7192050974311852563">ログ記録を開始</translation>
@@ -1345,6 +1354,7 @@
 <translation id="7930998711684428189">データ侵害によりパスワードが漏洩した場合に警告します。</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">パスワードをエクスポート...</translation>
+<translation id="7939856641500914040">閲覧履歴データを削除...</translation>
 <translation id="794799177247607889">ログ記録を停止</translation>
 <translation id="7959441099968534758">フィードに移動</translation>
 <translation id="7961015016161918242">使用しない</translation>
@@ -1595,6 +1605,7 @@
 <translation id="9109699888944026290">{count,plural, =1{このサイトの新しいパスワード}other{このサイトの新しいパスワード}}</translation>
 <translation id="9120217828624527905">ページ全体の翻訳に切り替え</translation>
 <translation id="9124387962554796433">Google は、検索やその他の Google サービスをパーソナライズするために履歴を使用することがあります。</translation>
+<translation id="913036870884277353">他のアプリで簡単にリンクを開くことができます。</translation>
 <translation id="9137526406337347448">Google サービス</translation>
 <translation id="9144931028079269381">リーディング リストを非表示</translation>
 <translation id="9148126808321036104">もう一度ログインする</translation>

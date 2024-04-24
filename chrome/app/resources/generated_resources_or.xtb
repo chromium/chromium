@@ -1596,7 +1596,6 @@
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">ଆପଣ ChromeOS Flex ଡିବଗିଂ ଫିଚରଗୁଡ଼ିକୁ ସକ୍ଷମ କରୁଛନ୍ତି, ଯାହା sshd ଡିମୋନକୁ ସେଟ ଅପ କରିବ ଏବଂ USB ଡ୍ରାଇଭଗୁଡ଼ିକରୁ ବୁଟିଂକୁ ସକ୍ଷମ କରିବ।</translation>
 <translation id="2178614541317717477">CA କମ୍ପ୍ରୋମାଇଜ୍</translation>
-<translation id="2179416702468739594">ଉପଲବ୍ଧ ପ୍ରୋଫାଇଲଗୁଡ଼ିକୁ ଖୋଜାଯାଉଛି। ଏହା ଯୋଗୁଁ ଆପଣଙ୍କ ମୋବାଇଲ ନେଟୱାର୍କ ଅଳ୍ପ ସମୟ ପାଇଁ ବିଚ୍ଛିନ୍ନ ହୋଇପାରେ।</translation>
 <translation id="2180620921879609685">ଯେ କୌଣସି ପୃଷ୍ଠାରେ ବିଷୟବସ୍ତୁକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="2181821976797666341">ନୀତି</translation>
 <translation id="2182058453334755893">ଆପଣଙ୍କର କ୍ଲିପ୍‌ବୋର୍ଡକୁ କପି କରାଯାଇଛି</translation>
@@ -1649,6 +1648,7 @@
 <translation id="222115440608612541">ସୂର୍ଯ୍ୟୋଦୟ ଏବଂ ସୂର୍ଯ୍ୟାସ୍ତ ସମୟରେ ଥିମଗୁଡ଼ିକୁ ସ୍ୱିଚ କରନ୍ତୁ</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">ବେନାମୀ ମିଡିଆ ସୋର୍ସ</translation>
+<translation id="2224337661447660594">କୌଣସି ଇଣ୍ଟର୍ନେଟ୍‍ ନାହିଁ</translation>
 <translation id="2224444042887712269">ଏହି ସେଟିଂ <ph name="OWNER_EMAIL" />ର ଅନ୍ତର୍ଗତ ଅଟେ।</translation>
 <translation id="2224551243087462610">ଫୋଲ୍ଡର ନାମ ସଂପାଦନ କରନ୍ତୁ</translation>
 <translation id="2225927550500503913">ଭର୍ଚୁଆଲ କାର୍ଡକୁ ଚାଲୁ କରାଯାଇଛି</translation>
@@ -3101,7 +3101,6 @@
 <translation id="3321494112580110651">ଆପଣଙ୍କ ପ୍ରିଣ୍ଟର ଦେଖୁନାହାଁନ୍ତି?</translation>
 <translation id="3321776060736518525"><ph name="APP_URL" />ରୁ</translation>
 <translation id="3323521181261657960">ବୋନସ୍! ଆପଣ ଅଧିକ ସ୍କ୍ରିନ୍ ସମୟ ପାଇଛନ୍ତି</translation>
-<translation id="3325804108816646710">ଉପଲବ୍ଧ ପ୍ରୋଫାଇଲଗୁଡ଼ିକୁ ଖୋଜାଯାଉଛି...</translation>
 <translation id="3325930488268995856">Microsoft OneDrive କନେକ୍ଟ କରାଯାଇଛି</translation>
 <translation id="3325995804968971809">ଷ୍ଟାଇଲ</translation>
 <translation id="3327050066667856415">Chromebook ସୁରକ୍ଷା ପାଇଁ ଡିଜାଇନ୍ କରାଯାଇଛି। ଆପଣଙ୍କ ଡିଭାଇସ୍ ସ୍ୱଚାଳିତ ଭାବରେ ମାଲୱେୟାର୍ ଠାରୁ ସୁରକ୍ଷିତ ଅଛି – କୌଣସି ଅତିରିକ୍ତ ସଫ୍ଟୱେର୍ ଆବଶ୍ୟକ ନାହିଁ।</translation>
@@ -5407,7 +5406,6 @@
 <translation id="5101839224773798795">କର୍ସର୍ ବନ୍ଦ ଦେବା ସମୟରେ ସ୍ୱଚାଳିତ ଭାବେ କ୍ଲିକ୍ କରିଥାଏ</translation>
 <translation id="5103311607312269661">ଡିସପ୍ଲେର ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ</translation>
 <translation id="5106350808162641062">କାଢ଼ି ଦିଅନ୍ତୁ</translation>
-<translation id="5106608587025903971">ସାଇନ ଇନ କରିବାକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ପାସୱାର୍ଡ ଲେଖିବା ପରିବର୍ତ୍ତେ ଆପଣ ଏହି ଡିଭାଇସ ପାଇଁ <ph name="DEVICE_TYPE" /> ପାସୱାର୍ଡ ତିଆରି କରିପାରିବେ</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> Family Link ଦ୍ୱାରା ନିରୀକ୍ଷିତ ହେଉଛି। ତୁମେ ସ୍କୁଲର ରିସୋର୍ସଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ବାପାମାଙ୍କ ନିରୀକ୍ଷଣ ସହିତ ସ୍କୁଲ୍ ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ଯୋଗ କରିପାରିବ।</translation>
 <translation id="5107093668001980925"><ph name="MODULE_NAME" />କୁ କେବେ ବି ଦେଖାନ୍ତୁ ନାହିଁ</translation>
 <translation id="5107443654503185812">ଏକ ଏକ୍ସଟେନସନ୍ ସେଫ୍ ବ୍ରାଉଜିଂ ବନ୍ଦ କରିଦେଇଛି</translation>
@@ -7367,7 +7365,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6647690760956378579">ସ୍ୱାଭାବିକ ଭଏସର ପ୍ରିଭ୍ୟୁ</translation>
 <translation id="6648911618876616409">ଇନ୍‌ଷ୍ଟଲ୍ କରିବାକୁ ଏକ ଜଟିଳ ଅପ୍‌ଡେଟ୍‌ ପ୍ରସ୍ତୁତ ଅଛି। ଆରମ୍ଭ କରିବା ପାଇଁ ସାଇନ୍-ଇନ୍ କରନ୍ତୁ।</translation>
 <translation id="6649018507441623493">ଟିକିଏ ରୁହନ୍ତୁ…</translation>
-<translation id="6650072551060208490">ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି <ph name="ORIGIN_NAME" /> ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ ଚାହୁଁଛି</translation>
 <translation id="6650206238642452078">ChromeOS ସିଷ୍ଟମ ଇଭେଣ୍ଟଗୁଡ଼ିକର ସଦସ୍ୟତା ନିଅନ୍ତୁ</translation>
 <translation id="665061930738760572">&amp;ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="6651237644330755633">ୱେବ୍‌ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଚିହ୍ନଟ କରିବା ପାଇଁ ଏହି ସାର୍ଟିଫିକେଟ୍‌କୁ ବିଶ୍ଵାସ କରନ୍ତୁ</translation>

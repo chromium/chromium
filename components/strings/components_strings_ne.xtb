@@ -586,7 +586,6 @@
 <translation id="2071692954027939183">तपाईं सामान्यतया सूचनाहरू देखाउने अनुमति दिनुहुन्न। त्यसैले सूचनाहरू स्वतः ब्लक गरिएका छन्</translation>
 <translation id="2071852865256799872">तपाईंको सङ्गठनले तपाईंको ब्राउजर र <ph name="PROFILE_DOMAIN" /> ले तपाईंको प्रोफाइल व्यवस्थापन गर्छ</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> अनब्लक गर्नुहोस्</translation>
-<translation id="2075497153347571252">तपाईंका एड्मिनले <ph name="ORIGIN" /> मा <ph name="PERMISSION" /> प्रयोग गर्ने अनुमति दिनुभएको छैन</translation>
 <translation id="2078956195623975415">सङ्गीत तथा नृत्यसम्बन्धी गेमहरू</translation>
 <translation id="2079545284768500474">अन्डू गर्नुहोस्</translation>
 <translation id="2080021694978766903">यो नीतिमा <ph name="MAX_ITEMS_LIMIT" /> भन्दा बढी इन्ट्री समावेश हुनु हुँदैन।</translation>
@@ -2025,7 +2024,6 @@
 <translation id="4885030148564729407">हनिमुन तथा रोमान्टिक यात्राहरू</translation>
 <translation id="4885256590493466218">चेकआउटका बेला <ph name="CARD_DETAIL" /> प्रयोग गरी भुक्तानी गर्नुहोस्</translation>
 <translation id="4887406273302438710">Windows Hello मार्फत पासवर्डहरू सुरक्षित राख्नुहोस्</translation>
-<translation id="4890070067176768718">तपाईंका एड्मिनले <ph name="ORIGIN" /> मा <ph name="PERMISSION" /> प्रयोग गर्ने अनुमति दिनुभएको छ</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सेटिङमा गई आफ्नो ब्राउजिङ हिस्ट्री, कुकी, क्यास तथा अन्य कुरा मेटाउन "ट्याब" थिच्नुहोस् अनि "इन्टर" थिच्नुहोस्</translation>
 <translation id="4892518386797173871">पछाडिको भाग</translation>
 <translation id="4895019427244614047">ठेगाना मेटाउनुहोस्</translation>
@@ -3917,7 +3915,6 @@
 <translation id="8493948351860045254">ठाउँ खाली गर्नुहोस्</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ले प्रतिक्रिया दिन निकै लामो समय लियो।</translation>
 <translation id="8502023382441452707">जन्मदिन तथा न्वाराम</translation>
-<translation id="8502972004418241366">यो साइटमा <ph name="PERMISSION" /> प्रयोग गर्न तपाईंले Chrome लाई अनुमति दिनु पर्ने हुन्छ</translation>
 <translation id="8503559462189395349">Chrome का पासवर्डहरू</translation>
 <translation id="8503813439785031346">एक-पटके टेक्स्ट म्यासेज</translation>
 <translation id="8504928302600319133">कम्प्युटर हार्डवेयर</translation>
@@ -3937,7 +3934,6 @@
 <translation id="853246364274116957">ब्रोडवे तथा म्युजिकल थिएटर</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ब्लक गरिएका URL र तपाईंको प्रणालीका एड्मिनले लागू गर्नुभएका अन्य नीतिहरूको सूची हेर्न &lt;strong&gt;chrome://policy&lt;/strong&gt; मा जानुहोस्।</translation>
-<translation id="8534934518812659742">तपाईंले Chrome मा <ph name="PERMISSION" /> अफ गर्नुभएको छ।</translation>
 <translation id="8536234749087605613">इन्भलप (विन्डो)</translation>
 <translation id="8539500321752640291">२ वटै अनुमति दिने हो?</translation>
 <translation id="8541158209346794904">ब्लुटुथ यन्त्र</translation>
@@ -3994,7 +3990,6 @@
 <translation id="865032292777205197">मोसन सेन्सरहरू</translation>
 <translation id="865255447216708819">ब्याक प्रिन्ट फिल्म</translation>
 <translation id="8654126188050905496">५५ x ९१ मिलिमिटर</translation>
-<translation id="8655930295668719549">तपाईंले पहिले <ph name="ORIGIN" /> मा <ph name="PERMISSION" /> चलाउने अनुमति दिनुभएन</translation>
 <translation id="8662463432865928030">व्यावसायिक प्रोपर्टी</translation>
 <translation id="8663226718884576429">अर्डरको सारांश, <ph name="TOTAL_LABEL" />, थप विवरण</translation>
 <translation id="8663909737634214500">अप्टिकल डिस्क</translation>
@@ -4027,6 +4022,7 @@
 <translation id="8722929331701811374">स्टेसनरी (लेटरहेड)</translation>
 <translation id="8724824364712796726">Envelope B6</translation>
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
+<translation id="8725667981218437315">क्यामेरा र माइक्रोफोन</translation>
 <translation id="8726549941689275341">पेजको आकार:</translation>
 <translation id="8730621377337864115">गरियो</translation>
 <translation id="8731268612289859741">सुरक्षा कोड</translation>

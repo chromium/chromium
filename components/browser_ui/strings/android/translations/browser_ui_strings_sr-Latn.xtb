@@ -133,6 +133,7 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> sačuvanih podataka</translation>
 <translation id="321187648315454507">Da biste dozvolili da vam <ph name="APP_NAME" /> šalje obaveštenja, uključite obaveštenja i u <ph name="BEGIN_LINK" />Android podešavanjima<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3232293466644486101">Izbriši podatke pregledanja…</translation>
 <translation id="3242646949159196181">Kada je uključeno, sajtovi mogu da puštaju zvuk. Kada je isključeno, sajtovi ne mogu da puštaju zvuk.</translation>
 <translation id="3277252321222022663">Dozvoli sajtovima da pristupaju senzorima (preporučeno)</translation>
 <translation id="3285500645985761267">Dozvolite srodnim sajtovima da vide vaše aktivnosti u grupi</translation>
@@ -307,6 +308,7 @@
 <translation id="6064125863973209585">Dovršena preuzimanja</translation>
 <translation id="6071501408666570960">Možda ćete biti odjavljeni sa ovog sajta</translation>
 <translation id="6120483543004435978">Kada je uključeno, sajtovi mogu da zatraže da znaju kada aktivno koristite uređaj. Kada je isključeno, sajtovi ne mogu da znaju kada aktivno koristite uređaj.</translation>
+<translation id="6140839633433422817">Želite stvarno da resetujete dozvole i izbrišete kolačiće i podatke o sajtovima?</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6171020522141473435">Kada je uključeno, sajtovi mogu da traže da koriste Bluetooth uređaje. Kada je isključeno, sajtovi ne mogu da koriste Bluetooth uređaje.</translation>
 <translation id="6177111841848151710">Blokirano je za aktuelni pretraživač</translation>

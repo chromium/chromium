@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">Vnesite e-poštni naslov (polje ne sme biti prazno).</translation>
 <translation id="1758486001363313524">Drugo ...</translation>
 <translation id="1787192514241997742">skupni čas: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">Dovoli uporabo fotoaparata</translation>
 <translation id="1822429046913737220">Dopoldne/popoldne</translation>
 <translation id="1832974991323546415">predvajanje v oddaljeni napravi</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">trenutni korak</translation>
 <translation id="3321030238473337787">Hitrost predvajanja</translation>
 <translation id="3329013043687509092">Nasičenost</translation>
-<translation id="3377518164566272702">Dovoli uporabo mikrofona in fotoaparata</translation>
 <translation id="3450233048674729344">Vrednost mora biti manjša od <ph name="MAXIMUM" /> ali enaka.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Zapri način slike v sliki</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">Drugo ...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, začne se <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Slika v sliki</translation>
-<translation id="918430632320614861">Dovoli uporabo mikrofona</translation>
 <translation id="945780513535800434">Delno označeno</translation>
 <translation id="954003015749068518">odpiranje načina slike v sliki</translation>
 </translationbundle>

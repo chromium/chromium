@@ -130,6 +130,7 @@
 <translation id="1653432787084483144">{count,plural, =1{നിങ്ങളുടെ കീബോർഡിന് മുകളിൽ {count} സംരക്ഷിച്ച പാസ്‌വേഡ് ലഭ്യമാണ്.}other{നിങ്ങളുടെ കീബോർഡിന് മുകളിൽ {count} സംരക്ഷിച്ച പാസ്‌വേഡുകൾ ലഭ്യമാണ്.}}</translation>
 <translation id="1657011748321897393">നിങ്ങൾ ഒരു നെറ്റ്‌വർക്കുമായി കണക്റ്റ് ചെയ്യാത്തതിനാൽ പങ്കിടൽ പരാജയപ്പെട്ടു.</translation>
 <translation id="165877110639533037">തുറന്ന ടാബുകൾ ഒന്നുമില്ല</translation>
+<translation id="1668001730617725852">പുതിയ ടാബ് ഗ്രൂപ്പിൽ തുറക്കുക</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> എന്നതിൽ നിന്ന് <ph name="TARGET_LANGUAGE" /> എന്നതിലേക്ക്</translation>
 <translation id="1683483432843341018">മൊബൈൽ സൈറ്റ് അഭ്യർത്ഥിക്കുക</translation>
 <translation id="1687475363370981210">എല്ലാം വായിച്ചതായി അടയാളപ്പെടുത്തുക</translation>
@@ -1199,6 +1200,7 @@
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ഉപയോഗിച്ച് അദൃശ്യ ടാബുകൾ അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="7173114856073700355">ക്രമീകരണം തുറക്കുക</translation>
 <translation id="7186568385131859684">Google സേവനങ്ങളിലുടനീളം നിങ്ങളുടെ മറ്റ് ഡാറ്റയ്‌ക്കൊപ്പം ബ്രൗസിംഗ് ചരിത്രം ഉപയോഗിക്കുന്നത് എങ്ങനെയെന്നത് നിയന്ത്രിക്കുക</translation>
+<translation id="7187190640134722091">ഗ്രൂപ്പ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="7189598951263744875">പങ്കിടുക...</translation>
 <translation id="719133302483559673">നിങ്ങളുടെ താൽപ്പര്യങ്ങളും മുൻഗണനകളും മാനേജ് ചെയ്യുക.</translation>
 <translation id="7192050974311852563">ലോഗിംഗ് ആരംഭിക്കുക</translation>
@@ -1595,6 +1597,7 @@
 <translation id="9109699888944026290">{count,plural, =1{ഈ സൈറ്റിനുള്ള പുതിയ പാസ്‌വേഡ്}other{ഈ സൈറ്റിനുള്ള പുതിയ പാസ്‌വേഡുകൾ}}</translation>
 <translation id="9120217828624527905">പൂർണ്ണ പേജ് വിവർത്തനത്തിലേക്ക് മാറുക</translation>
 <translation id="9124387962554796433">Search-ഉം മറ്റ് Google സേവനങ്ങളും വ്യക്തിപരമാക്കാൻ Google നിങ്ങളുടെ ചരിത്രം ഉപയോഗിച്ചേക്കാം.</translation>
+<translation id="913036870884277353">മറ്റ് ആപ്പുകളിൽ ലിങ്കുകൾ എളുപ്പത്തിൽ തുറക്കുക.</translation>
 <translation id="9137526406337347448">Google സേവനങ്ങൾ</translation>
 <translation id="9144931028079269381">'വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റ്' മറയ്ക്കുക</translation>
 <translation id="9148126808321036104">വീണ്ടും പ്രവേശിക്കുക</translation>

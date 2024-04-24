@@ -1599,7 +1599,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">ChromeOS Flex-en arazketa-eginbideak gaitzera zoaz. Eginbide horiek sshd daemon konfiguratuko dute, eta USB bidezko unitateetatik abiarazteko aukera gaituko.</translation>
 <translation id="2178614541317717477">Autoritate ziurtagiri-emailea kolokan</translation>
-<translation id="2179416702468739594">Eskuragarri dauden profilak bilatzen. Ondorioz, baliteke sare mugikorra zenbait minutuz deskonektatzea.</translation>
 <translation id="2180620921879609685">Edozein orritako edukia blokeatu</translation>
 <translation id="2181821976797666341">Gidalerroak</translation>
 <translation id="2182058453334755893">Arbelean kopiatu da</translation>
@@ -1652,6 +1651,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="222115440608612541">Aldatu gaiak egunsentian eta ilunabarrean</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Multimedia-iturburu izengabea</translation>
+<translation id="2224337661447660594">Ez dago Interneteko konexiorik</translation>
 <translation id="2224444042887712269">Ezarpen hau <ph name="OWNER_EMAIL" /> erabiltzailearena da.</translation>
 <translation id="2224551243087462610">Editatu karpetaren izena</translation>
 <translation id="2225927550500503913">Txartel birtuala aktibatuta dago</translation>
@@ -3103,7 +3103,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3321494112580110651">Ez duzu ikusten zure inprimagailua?</translation>
 <translation id="3321776060736518525">Iturburua: <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Erabilera-denbora gehiago eman dizute!</translation>
-<translation id="3325804108816646710">Eskuragarri dauden profilak bilatzen…</translation>
 <translation id="3325930488268995856">Microsoft OneDrive konektatuta</translation>
 <translation id="3325995804968971809">Estiloa</translation>
 <translation id="3327050066667856415">Chromebook-ak seguruak izateko daude diseinatuta. Gailuak berez dakar malwareen kontrako babesa. Ez da software gehigarririk behar.</translation>
@@ -5409,7 +5408,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5101839224773798795">Egin klik automatikoki kurtsorea gelditzen denean</translation>
 <translation id="5103311607312269661">pantailaren distira handitzeko tekla</translation>
 <translation id="5106350808162641062">Kendu</translation>
-<translation id="5106608587025903971">Saioa hasteko Google-ko kontuko pasahitza idatzi ordez, <ph name="DEVICE_TYPE" /> gailurako pasahitz bat sor dezakezu</translation>
 <translation id="510695978163689362">Family Link-ek kudeatzen du <ph name="USER_EMAIL" />. Ikastetxeko kontuak gehi ditzakezu gurasoen gainbegiratzea duten ikastetxeko baliabideak atzitzeko.</translation>
 <translation id="5107093668001980925">Ez erakutsi inoiz <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Luzapen batek arakatze segurua desaktibatu du</translation>
@@ -7367,7 +7365,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6647690760956378579">Ahots naturalaren aurrebista</translation>
 <translation id="6648911618876616409">Ezinbesteko eguneratze bat instalatzeko prest dago. Hasi saioa instalatzen hasteko.</translation>
 <translation id="6649018507441623493">Itxaron unetxo batean…</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> webguneak zeu zarela berretsi nahi du</translation>
 <translation id="6650206238642452078">Harpidetu ChromeOS-eko sistemaren gertaeretara</translation>
 <translation id="665061930738760572">Ireki leiho &amp;berrian</translation>
 <translation id="6651237644330755633">Jo fidagarritzat webguneak identifikatzeko ziurtagiri hau</translation>

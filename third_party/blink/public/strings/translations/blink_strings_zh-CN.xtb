@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">请输入有效的电子邮件地址。</translation>
 <translation id="1758486001363313524">其他...</translation>
 <translation id="1787192514241997742">总时间：<ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">允许使用摄像头</translation>
 <translation id="1822429046913737220">上午/下午</translation>
 <translation id="1832974991323546415">在远程设备上播放</translation>
 <translation id="1921819250265091946">日</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">当前步骤</translation>
 <translation id="3321030238473337787">播放速度</translation>
 <translation id="3329013043687509092">饱和度</translation>
-<translation id="3377518164566272702">允许使用麦克风和摄像头</translation>
 <translation id="3450233048674729344">值必须小于或等于 <ph name="MAXIMUM" />。</translation>
 <translation id="3732799496749320381">月</translation>
 <translation id="3754210790023674521">退出“画中画”模式</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">其他...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />，从 <ph name="WEEK_START_DATE" />开始</translation>
 <translation id="916607977885256133">画中画</translation>
-<translation id="918430632320614861">允许使用麦克风</translation>
 <translation id="945780513535800434">已部分选中</translation>
 <translation id="954003015749068518">进入“画中画”模式</translation>
 </translationbundle>

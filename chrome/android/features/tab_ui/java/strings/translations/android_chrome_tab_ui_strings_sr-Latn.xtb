@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{Zatvorene kartice možete da pronađete u odeljku Nedavne kartice u glavnom meniju Chrome-a. Kartica bez arhiviranja neće biti dostupna.}one{Zatvorene kartice možete da pronađete u odeljku Nedavne kartice u glavnom meniju Chrome-a. # kartica bez arhiviranja neće biti dostupna.}few{Zatvorene kartice možete da pronađete u odeljku Nedavne kartice u glavnom meniju Chrome-a. # kartice bez arhiviranja neće biti dostupne.}other{Zatvorene kartice možete da pronađete u odeljku Nedavne kartice u glavnom meniju Chrome-a. # kartica bez arhiviranja neće biti dostupno.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kartica}one{<ph name="TABS_COUNT_MANY" /> kartica}few{<ph name="TABS_COUNT_MANY" /> kartice}other{<ph name="TABS_COUNT_MANY" /> kartica}}</translation>
 <translation id="6549021453810473782">Prikaži detalje o prodavnici</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Premestite karticu ulevo</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
 <translation id="661742612106409204">Zatvorene kartice možete da pronađete u odeljku Nedavne kartice u glavnom meniju Chrome-a.</translation>

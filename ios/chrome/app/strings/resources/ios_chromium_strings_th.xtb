@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">ดูบุ๊กมาร์ก Chromium</translation>
 <translation id="2590893390871230428">ซิงค์ข้อมูล Chromium</translation>
 <translation id="2592940277904433508">ใช้ Chromium ต่อ</translation>
+<translation id="2607609479243848905">หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ลบข้อมูล Chromium ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="2618596336309823556">จากการตั้งค่าของอุปกรณ์ ให้เปิด "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" และเลือก "Chromium"</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium จะช่วยติดตามพัสดุนี้ในหน้าแท็บใหม่}other{Chromium จะช่วยติดตามพัสดุเหล่านี้ในหน้าแท็บใหม่}}</translation>
 <translation id="2650312721222849884">เปิดการซิงค์เพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chromium</translation>
@@ -116,6 +117,9 @@
 <translation id="4498832288620833153">เพิ่ม URL ที่ป้อนลงในเรื่องรออ่านใน Chromium</translation>
 <translation id="452436063477828504">ตรวจสอบว่าคุณใช้ข้อมูล Chromium ในบัญชี Google ได้เสมอ</translation>
 <translation id="4555020257205549924">เมื่อเปิดฟีเจอร์นี้ Chromium จะเสนอให้แปลหน้าต่างๆ ที่เขียนด้วยภาษาอื่นโดยใช้ Google แปลภาษา <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">การเข้ารหัสด้วยรหัสผ่านไม่รวมถึงวิธีการชำระเงินและที่อยู่
+
+หากต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ลบข้อมูล Chromium ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="4576283463017113841">เปิดหน้าการตั้งค่าวิธีการชำระเงินใน Chromium</translation>
 <translation id="459080529287102949">ค้นหาภาพใน Chromium</translation>
 <translation id="4633738821577273991">รับ Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้นสำหรับโปรไฟล์ Chromium นี้ด้วย</translation>
@@ -214,6 +218,9 @@
 <translation id="7163483974919055112">ค้นหาภาพใน Chromium</translation>
 <translation id="7165402419892018581">เลือก Chromium สำหรับการป้อนข้อความอัตโนมัติ</translation>
 <translation id="7175400662502680481">รหัสผ่านของคุณถูกเปิดเผยในการละเมิดข้อมูล เครื่องมือจัดการรหัสผ่านแนะนำให้เปลี่ยนรหัสผ่านทันที</translation>
+<translation id="7185731475720473450">จะไม่มีการเข้ารหัสวิธีการชำระเงินและที่อยู่ ประวัติการท่องเว็บจาก Chromium จะไม่ซิงค์
+
+เฉพาะผู้ที่มีรหัสผ่านของคุณเท่านั้นที่จะอ่านข้อมูลที่เข้ารหัสได้ Google จะไม่ได้รับหรือจัดเก็บรหัสผ่านดังกล่าว หากลืมรหัสผ่านหรือต้องการเปลี่ยนการตั้งค่านี้ ให้<ph name="BEGIN_LINK" />ลบข้อมูล Chromium ในบัญชี<ph name="END_LINK" /></translation>
 <translation id="7192111075364461693">ตอนนี้การแจ้งเตือนของ Chromium ปิดอยู่ในการตั้งค่าอุปกรณ์</translation>
 <translation id="7222001353246886083">ค้นหา ${searchPhrase} ใน Chromium</translation>
 <translation id="725427773388857052">Chromium ช่วยให้คุณปลอดภัยจากการละเมิดข้อมูล เว็บไซต์ที่ไม่ปลอดภัย และอื่นๆ ได้</translation>

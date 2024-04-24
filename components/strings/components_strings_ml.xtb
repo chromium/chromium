@@ -584,7 +584,6 @@
 <translation id="2071692954027939183">നിങ്ങൾ സാധാരണയായി അറിയിപ്പുകൾ അനുവദിക്കാത്തതിനാൽ അവ സ്വയമേവ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="2071852865256799872">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ ഓർഗനൈസേഷനും നിങ്ങളുടെ പ്രൊഫൈൽ മാനേജ് ചെയ്യുന്നത് <ph name="PROFILE_DOMAIN" /> ഡൊമെയ്‌നുമാണ്</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> അൺബ്ലോക്ക് ചെയ്യുക</translation>
-<translation id="2075497153347571252">നിങ്ങളുടെ അഡ്മിൻ <ph name="ORIGIN" /> -ൽ <ph name="PERMISSION" /> ബ്ലോക്ക് ചെയ്തു</translation>
 <translation id="2078956195623975415">സംഗീത, നൃത്ത ഗെയിമുകൾ</translation>
 <translation id="2079545284768500474">പഴയപടിയാക്കുക</translation>
 <translation id="2080021694978766903">ഈ നയത്തിൽ <ph name="MAX_ITEMS_LIMIT" />-ൽ കൂടുതൽ എൻട്രികൾ ഉണ്ടാകരുത്.</translation>
@@ -935,6 +934,7 @@
 <translation id="2759825833388495838"><ph name="APP_NAME" /> ആപ്പിൽ നിങ്ങളുടെ പാസ്‌വേഡ് പൂരിപ്പിക്കുക</translation>
 <translation id="2764001903315068341">കോമിക്‌സ്</translation>
 <translation id="2765217105034171413">ചെറുത്</translation>
+<translation id="2768397283109119044">നിങ്ങൾ <ph name="DOMAIN" /> എന്നതിലെത്താൻ ശ്രമിച്ചു, എന്നാൽ ആ പേരിൽ അസാധുവായ സർട്ടിഫിക്കറ്റ് നൽകിയെന്ന് സെർവർ കാണിച്ചു. റിസർവ് ചെയ്തിട്ടുള്ള IP വിലാസമോ ഇന്റേണൽ ഹോസ്റ്റ് നാമമോ ആണ് പേര്.</translation>
 <translation id="2770159525358613612">നിങ്ങളുടെ ഫയലുകൾ അപ്‌ലോഡ് ചെയ്യാൻ വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="277133753123645258">ഷിപ്പിംഗ് രീതി</translation>
 <translation id="2773388851563527404">മൂന്നാം കക്ഷി കുക്കികൾ ഉപയോഗിക്കുന്നതിൽ നിന്ന് മിക്ക സൈറ്റുകളെയും Chrome നിയന്ത്രിക്കുന്നു. എന്നാൽ അടിസ്ഥാന സേവനങ്ങൾ നൽകുന്നതിന് മൂന്നാം കക്ഷി കുക്കികളെ ആശ്രയിക്കുന്നതിനാൽ അവ ഈ സൈറ്റിൽ അനുവദനീയമാണ്. <ph name="LINK" /> ക്രമീകരണം സന്ദർശിക്കുക.</translation>
@@ -1715,6 +1715,7 @@
 <translation id="4265872034478892965">നിങ്ങളുടെ അഡ്‌മിനിട്രേറ്റർ അനുവദിച്ചിരിക്കുന്നു</translation>
 <translation id="4269029136757623689">വീട്ടാവശ്യങ്ങൾക്കുള്ള ഫാനുകൾ</translation>
 <translation id="4269264543938335308">നീന്തൽ വസ്‌ത്രം</translation>
+<translation id="4269599248168651462">തനതല്ലാത്ത പേരിനാണ് സെർവർ സർട്ടിഫിക്കറ്റ് നൽകിയിരിക്കുന്നത്.</translation>
 <translation id="4270541775497538019">സ്റ്റാക്കർ 6</translation>
 <translation id="4275830172053184480">നിങ്ങളുടെ ഉപകരണം പുനരാരംഭിക്കുക</translation>
 <translation id="4276974990916607331">വേണ്ട</translation>
@@ -2023,7 +2024,6 @@
 <translation id="4885030148564729407">ഹണിമൂണുകൾ, റൊമാന്റിക് യാത്രകൾ</translation>
 <translation id="4885256590493466218">ചെക്ക്‌ഔട്ട് ചെയ്യുമ്പോൾ <ph name="CARD_DETAIL" /> ഉപയോഗിച്ച് പണമടയ്‌ക്കുക</translation>
 <translation id="4887406273302438710">Windows Hello ഉപയോഗിച്ച് പാസ്‌വേഡുകൾ പരിരക്ഷിക്കുക</translation>
-<translation id="4890070067176768718">നിങ്ങളുടെ അഡ്മിൻ <ph name="ORIGIN" /> -ൽ <ph name="PERMISSION" /> അനുവദിച്ചു</translation>
 <translation id="4892518386797173871">പിൻഭാഗം</translation>
 <translation id="4895019427244614047">വിലാസം ഇല്ലാതാക്കുക</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3908,7 +3908,6 @@
 <translation id="8493948351860045254">ഇടം സൃഷ്‌ടിക്കുക</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> പ്രതികരിക്കാൻ കൂടുതൽ സമയമെടുത്തു.</translation>
 <translation id="8502023382441452707">ജന്മദിനങ്ങളും പേരിടൽ ദിവസങ്ങളും</translation>
-<translation id="8502972004418241366">ഈ സൈറ്റിൽ നിങ്ങളുടെ <ph name="PERMISSION" /> ഉപയോഗിക്കാൻ, നിങ്ങൾ Chrome-ന് ആക്‌സസ് നൽകേണ്ടതുണ്ട്</translation>
 <translation id="8503559462189395349">Chrome പാസ്‌വേഡുകൾ</translation>
 <translation id="8503813439785031346">ഉപയോക്തൃനാമം</translation>
 <translation id="8504928302600319133">കമ്പ്യൂട്ടർ ഹാർഡ്‌വെയർ</translation>
@@ -3928,7 +3927,6 @@
 <translation id="853246364274116957">ബ്രോഡ്‌വേ, മ്യൂസിക്കൽ തീയറ്റർ</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ബ്ലോക്ക് ചെയ്ത URL-കളുടെ ലിസ്റ്റും നിങ്ങളുടെ സിസ്റ്റം അഡ്‌മിൻ നടപ്പിലാക്കിയ മറ്റ് നയങ്ങളും കാണുന്നതിന് &lt;strong&gt;chrome://policy&lt;/strong&gt; സന്ദർശിക്കുക.</translation>
-<translation id="8534934518812659742">Chrome-നുള്ള <ph name="PERMISSION" /> നിങ്ങൾ ഓഫാക്കി.</translation>
 <translation id="8536234749087605613">എൻവലപ്പ് (വിൻഡോ)</translation>
 <translation id="8539500321752640291">2 അനുമതികൾ നൽകണോ?</translation>
 <translation id="8541158209346794904">Bluetooth ഉപകരണം</translation>
@@ -3985,7 +3983,6 @@
 <translation id="865032292777205197">മോഷൻ സെൻസറുകൾ</translation>
 <translation id="865255447216708819">ബാക്ക് പ്രിന്റ് ഫിലിം</translation>
 <translation id="8654126188050905496">55 x 91 മി.മീ</translation>
-<translation id="8655930295668719549">നിങ്ങൾ മുമ്പ് <ph name="ORIGIN" /> -ൽ <ph name="PERMISSION" /> അനുവദിച്ചിരുന്നില്ല</translation>
 <translation id="8662463432865928030">വാണിജ്യപരമായ പ്രോപ്പർട്ടികൾ</translation>
 <translation id="8663226718884576429">ഓർഡർ സംഗ്രഹം, <ph name="TOTAL_LABEL" />, കൂടുതൽ വിശദാംശങ്ങൾ</translation>
 <translation id="8663909737634214500">ഒപ്‌റ്റിക്കൽ ഡിസ്‌ക്</translation>
@@ -4017,6 +4014,7 @@
 <translation id="8722929331701811374">സ്റ്റേഷനറി (ലെറ്റർഹെഡ്)</translation>
 <translation id="8724824364712796726">Envelope B6</translation>
 <translation id="8725066075913043281">വീണ്ടും ശ്രമിക്കുക</translation>
+<translation id="8725667981218437315">ക്യാമറയും മൈക്രോഫോണും</translation>
 <translation id="8726549941689275341">പേജിന്റെ വലുപ്പം:</translation>
 <translation id="8730621377337864115">പൂർത്തിയാക്കി</translation>
 <translation id="8731268612289859741">സുരക്ഷാ കോഡ്</translation>
@@ -4115,6 +4113,7 @@
 <translation id="8919740778133505789">സ്‌പോർട്‌സ് കാറുകൾ</translation>
 <translation id="8919895429178014996">എല്ലാ ഇനങ്ങളും മറയ്ക്കുക</translation>
 <translation id="8922013791253848639">ഈ സൈറ്റിൽ എല്ലായ്‌പ്പോഴും പരസ്യങ്ങൾ അനുവദിക്കുക</translation>
+<translation id="8924109546403192898">സുരക്ഷാ ഇവന്റുകൾ Chrome ഫ്ലാഗ് ചെയ്യുമ്പോൾ, ഇവന്റുകളുമായി ബന്ധപ്പെട്ട പ്രസക്തമായ ഡാറ്റ നിങ്ങളുടെ അഡ്‌മിന് അയയ്ക്കുന്നു. Chrome-ൽ നിങ്ങൾ സന്ദർശിക്കുന്ന പേജുകളുടെ URL-കൾ, നിങ്ങൾ ഡാറ്റ പകർത്തിയ പേജുകളുടെ URL-കൾ, ഫയലിന്റെ പേരുകൾ അല്ലെങ്കിൽ മെറ്റാഡാറ്റ, ബ്രൗസർ അല്ലെങ്കിൽ ടാബ് ക്രാഷുകൾ, വെബ് അധിഷ്ഠിത ആപ്പുകളിലേക്കും നിങ്ങളുടെ ഉപകരണത്തിലേക്കും Chrome-ലേക്കും സൈൻ ഇൻ ചെയ്യാൻ നിങ്ങൾ ഉപയോഗിച്ച ഉപയോക്തൃ നാമം എന്നിൽ ഇതിൽ ഉൾപ്പെടാം.</translation>
 <translation id="892588693504540538">മുകളിൽ വലതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>
 <translation id="8926389886865778422">എന്നോട് വീണ്ടും ചോദിക്കരുത്</translation>
 <translation id="8932102934695377596">നിങ്ങളുടെ ക്ലോക്ക് വളരെ പിന്നിലാണ്</translation>

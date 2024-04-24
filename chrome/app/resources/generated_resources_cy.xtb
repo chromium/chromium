@@ -1614,7 +1614,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Rydych yn galluogi nodweddion dadfygio ChromeOS Flex a fydd yn gosod sshd daemon ac yn galluogi cychwyn o yriannau USB.</translation>
 <translation id="2178614541317717477">Cyfaddawd CA</translation>
-<translation id="2179416702468739594">Wrthi'n chwilio am broffiliau sydd ar gael. Gall hyn achosi i'ch rhwydwaith symudol ddatgysylltu am ychydig funudau.</translation>
 <translation id="2180620921879609685">Rhwystro cynnwys ar unrhyw dudalen</translation>
 <translation id="2181821976797666341">Polisïau</translation>
 <translation id="2182058453334755893">Wedi'i Gopïo i'ch Clipfwrdd</translation>
@@ -1667,6 +1666,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="222115440608612541">Newid themâu ar godiad a machlud haul</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Ffynhonnell cyfryngau ddienw</translation>
+<translation id="2224337661447660594">Dim rhyngrwyd</translation>
 <translation id="2224444042887712269">Mae'r gosodiad hwn yn perthyn i <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Golygu enw'r ffolder</translation>
 <translation id="2225927550500503913">Cerdyn rhithwir wedi'i droi ymlaen</translation>
@@ -3121,7 +3121,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3321494112580110651">Methu â gweld eich argraffydd?</translation>
 <translation id="3321776060736518525">O <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonws! Cei di fwy o amser sgrîn</translation>
-<translation id="3325804108816646710">Wrthi'n chwilio am broffiliau sydd ar gael...</translation>
 <translation id="3325930488268995856">Microsoft OneDrive wedi'i gysylltu</translation>
 <translation id="3325995804968971809">Arddull</translation>
 <translation id="3327050066667856415">Mae Chromebooks wedi'u dylunio ar gyfer diogelwch. Mae eich dyfais wedi'i hamddiffyn rhag drwgwedd yn awtomatig - does dim angen meddalwedd ychwanegol.</translation>
@@ -5428,7 +5427,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5101839224773798795">Clicio'n awtomatig pan fydd y cyrchwr yn stopio</translation>
 <translation id="5103311607312269661">cynyddu disgleirdeb y sgrîn</translation>
 <translation id="5106350808162641062">Tynnu</translation>
-<translation id="5106608587025903971">Yn lle rhoi cyfrinair eich Cyfrif Google i fewngofnodi, gallwch greu cyfrinair <ph name="DEVICE_TYPE" /> ar gyfer y ddyfais hon</translation>
 <translation id="510695978163689362">Mae <ph name="USER_EMAIL" /> yn cael ei oruchwylio gan Family Link. Gallwch ychwanegu cyfrifon ysgol i gael mynediad at adnoddau ysgol gyda goruchwyliaeth rhiant.</translation>
 <translation id="5107093668001980925">Peidio byth â dangos <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Mae estyniad wedi diffodd Pori'n Ddiogel</translation>
@@ -7397,7 +7395,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6647690760956378579">Rhagolwg llais naturiol</translation>
 <translation id="6648911618876616409">Mae diweddariad critigol yn barod i'w osod. Mewngofnodwch i gychwyn arni.</translation>
 <translation id="6649018507441623493">Arhoswch eiliad...</translation>
-<translation id="6650072551060208490">Hoffai <ph name="ORIGIN_NAME" /> gadarnhau mai chi sydd yno</translation>
 <translation id="6650206238642452078">Tanysgrifio i ddigwyddiadau system ChromeOS</translation>
 <translation id="665061930738760572">Agor mewn &amp;Ffenestr Newydd</translation>
 <translation id="6651237644330755633">Ymddiried yn y dystysgrif hon ar gyfer adnabod gwefannau</translation>

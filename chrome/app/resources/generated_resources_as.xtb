@@ -1613,7 +1613,6 @@
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">আপুনি ChromeOS Flexৰ ডিবাগ কৰাৰ সুবিধাসমূহ সক্ষম কৰিবলৈ লৈছে যিয়ে sshd daemon ছেট আপ কৰিব আৰু ইউএছবি ড্ৰাইভৰ পৰা বুট কৰাটো সক্ষম কৰিব।</translation>
 <translation id="2178614541317717477">CA কম্প্ৰমাইজ</translation>
-<translation id="2179416702468739594">উপলব্ধ প্ৰ’ফাইল বিচাৰি থকা হৈছে। এইটোৱে কেইমিনিটমানৰ বাবে আপোনাৰ ম’বাইলৰ নেটৱৰ্কৰ সংযোগ বিচ্ছিন্ন কৰিব পাৰে।</translation>
 <translation id="2180620921879609685">যিকোনো পৃষ্ঠাত সমল অৱৰোধ কৰক</translation>
 <translation id="2181821976797666341">নীতি</translation>
 <translation id="2182058453334755893">আপোনাৰ ক্লিপব’ৰ্ডলৈ প্ৰতিলিপি কৰা হৈছে</translation>
@@ -1667,6 +1666,7 @@
 <translation id="222115440608612541">সূৰ্যোদয় আৰু সূৰ্যাস্তৰ সময়ত থীম সলনি কৰক</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">নামবিহীন মিডিয়াৰ উৎস</translation>
+<translation id="2224337661447660594">ইণ্টাৰনেট নাই</translation>
 <translation id="2224444042887712269">এই ছেটিংটোৰ গৰাকী হৈছে <ph name="OWNER_EMAIL" />।</translation>
 <translation id="2224551243087462610">ফ’ল্ডাৰৰ নাম সম্পাদনা কৰক</translation>
 <translation id="2225927550500503913">ভাৰ্চুৱেল কাৰ্ড অন কৰা হৈছে</translation>
@@ -3130,7 +3130,6 @@
 <translation id="3321494112580110651">আপোনাৰ প্ৰিণ্টাৰটো দেখা পোৱা নাই নেকি?</translation>
 <translation id="3321776060736518525"><ph name="APP_URL" />ৰ পৰা</translation>
 <translation id="3323521181261657960">ব’নাছ! আপুনি আৰু বেছি স্ক্ৰীন টাইম পাইছে</translation>
-<translation id="3325804108816646710">উপলব্ধ প্ৰ’ফাইল বিচাৰি থকা হৈছে...</translation>
 <translation id="3325930488268995856">Microsoft OneDrive সংযোগ কৰা হৈছে</translation>
 <translation id="3325995804968971809">শৈলী</translation>
 <translation id="3327050066667856415">Chromebook সুৰক্ষাৰ বাবে ডিজাইন কৰা হয়। আপোনাৰ ডিভাইচটো মালৱেৰৰ পৰা স্বয়ংক্ৰিয়ভাৱে সুৰক্ষিত হয় – কোনো অতিৰিক্ত ছফ্টৱেৰৰ আৱশ্যক নহয়।</translation>
@@ -5446,7 +5445,6 @@
 <translation id="5101839224773798795">কাৰ্জৰটো ৰৈ গ’লে স্বয়ংক্ৰিয়ভাৱে ক্লিক কৰক</translation>
 <translation id="5103311607312269661">ডিছপ্লে’ৰ উজ্জ্বলতা বঢ়োৱা</translation>
 <translation id="5106350808162641062">আঁতৰাওক</translation>
-<translation id="5106608587025903971">ছাইন ইন কৰিবলৈ আপোনাৰ Google একাউণ্টৰ পাছৱৰ্ড দিয়াৰ পৰিৱৰ্তে, আপুনি এই ডিভাইচটোৰ বাবে <ph name="DEVICE_TYPE" />ৰ পাছৱৰ্ড সৃষ্টি কৰিব পাৰে</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" />ক Family Linkএ তদাৰক কৰে। আপুনি অভিভাৱকীয় তদাৰকৰ সৈতে বিদ্যালয়ৰ সম্পদ এক্সেছ কৰিবলৈ বিদ্যালয়ৰ একাউণ্ট যোগ দিব পাৰে।</translation>
 <translation id="5107093668001980925"><ph name="MODULE_NAME" /> কেতিয়াও নেদেখুৱাব</translation>
 <translation id="5107443654503185812">এটা এক্সটেনশ্বনে সুৰক্ষিত ব্ৰাউজিং অফ কৰিছে</translation>
@@ -7428,7 +7426,6 @@
 <translation id="6647690760956378579">প্ৰাকৃতিক কণ্ঠস্বৰৰ পূৰ্বদৰ্শন</translation>
 <translation id="6648911618876616409">এটা গুৰুত্বপূর্ণ আপডে’ট ইনষ্টল কৰিব পৰা হৈ আছে। ইনষ্টলেশ্বন আৰম্ভ কৰিবলৈ ছাইন ইন কৰক।</translation>
 <translation id="6649018507441623493">মাত্ৰ কেই ছেকেণ্ড মান অপেক্ষা কৰক...</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" />এ এয়া আপুনি বুলি নিশ্চিত কৰিবলৈ বিচাৰিছে</translation>
 <translation id="6650206238642452078">ChromeOS ছিষ্টেমৰ ইভেণ্ট ছাবস্ক্ৰাইব কৰক</translation>
 <translation id="665061930738760572">&amp;নতুন ৱিণ্ড’ত খোলক</translation>
 <translation id="6651237644330755633">ৱেবছাইটসমূহক চিনাক্ত কৰিবলৈ এই প্ৰমাণপত্ৰখনক বিশ্বাস কৰক</translation>

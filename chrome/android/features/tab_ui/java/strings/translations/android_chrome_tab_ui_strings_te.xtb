@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{మీరు మూసివేసిన ట్యాబ్‌లను, Chrome ప్రధాన మెనూలో ఉండే ఇటీవలి ట్యాబ్‌లలో చూడవచ్చు. మీ అజ్ఞాత ట్యాబ్ అందుబాటులో ఉండదు.}other{మీరు మూసివేసిన ట్యాబ్‌లను, Chrome ప్రధాన మెనూలో ఉండే ఇటీవలి ట్యాబ్‌లలో చూడవచ్చు. మీ # అజ్ఞాత ట్యాబ్‌లు అందుబాటులో ఉండవు.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లు}}</translation>
 <translation id="6549021453810473782">స్టోర్ సమాచారాన్ని చూడండి</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ట్యాబ్‌ను ఎడమకు తరలించు</translation>
 <translation id="6615455863669487791">నాకు చూపించు</translation>
 <translation id="661742612106409204">మీరు మూసివేసిన ట్యాబ్‌లను, Chrome ప్రధాన మెనూలో ఉండే ఇటీవలి ట్యాబ్‌లలో చూడవచ్చు.</translation>

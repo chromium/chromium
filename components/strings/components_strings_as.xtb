@@ -586,7 +586,6 @@
 <translation id="2071692954027939183">জাননীসমূহ স্বয়ংক্ৰিয়ভাৱে অৱৰোধ কৰা হৈছে কাৰণ আপুনি সাধাৰণতে সেইসমূহক অনুমতি নিদিয়ে</translation>
 <translation id="2071852865256799872">আপোনাৰ প্ৰতিষ্ঠানে আপোনাৰ ব্ৰাউজাৰ পৰিচালনা কৰে আৰু আপোনাৰ <ph name="PROFILE_DOMAIN" />এ আপোনাৰ প্ৰ’ফাইল পৰিচালনা কৰে</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" />ক অৱৰোধৰ পৰা আঁতৰাওক</translation>
-<translation id="2075497153347571252">আপোনাৰ প্ৰশাসকে <ph name="ORIGIN" />ত <ph name="PERMISSION" /> অৱৰোধ কৰিছে</translation>
 <translation id="2078956195623975415">সংগীত আৰু নৃত্যৰ গে’ম</translation>
 <translation id="2079545284768500474">আনডু কৰক</translation>
 <translation id="2080021694978766903">এই নীতিটোত <ph name="MAX_ITEMS_LIMIT" /> টাতকৈ অধিক প্ৰবিষ্টি থাকিব নালাগে।</translation>
@@ -2023,7 +2022,6 @@
 <translation id="4885030148564729407">মধুচন্দ্ৰিকা আৰু ৰোমাণ্টিক ঠাই</translation>
 <translation id="4885256590493466218">চেকআউট কৰাৰ সময়ত <ph name="CARD_DETAIL" />ৰ জৰিয়তে পৰিশোধ কৰক</translation>
 <translation id="4887406273302438710">Windows Helloৰ জৰিয়তে পাছৱৰ্ড সুৰক্ষিত কৰক</translation>
-<translation id="4890070067176768718">আপোনাৰ প্ৰশাসকে <ph name="ORIGIN" />ত <ph name="PERMISSION" />ৰ অনুমতি দিছে</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeৰ ছেটিংসমূহত আপোনাৰ ব্ৰাউজিঙৰ ইতিহাস, কুকিসমূহ, কেশ্ব আৰু বহুতো মচিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="4892518386797173871">পাছফাল</translation>
 <translation id="4895019427244614047">ঠিকনা মচক</translation>
@@ -3914,7 +3912,6 @@
 <translation id="8493948351860045254">ঠাই খালী কৰক</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ল’ড হোৱাত বহুত বেছি সময় লাগিল৷</translation>
 <translation id="8502023382441452707">জন্মদিন আৰু নামকৰণৰ দিন</translation>
-<translation id="8502972004418241366">এই ছাইটটোত আপোনাৰ <ph name="PERMISSION" /> ব্যৱহাৰ কৰিবলৈ, আপুনি Chromeক এক্সেছ দিব লাগিব</translation>
 <translation id="8503559462189395349">Chromeৰ পাছৱৰ্ড</translation>
 <translation id="8503813439785031346">ব্যৱহাৰকাৰীৰ নাম</translation>
 <translation id="8504928302600319133">কম্পিউটাৰ হাৰ্ডৱেৰ</translation>
@@ -3934,7 +3931,6 @@
 <translation id="853246364274116957">ব্ৰডৱে’ আৰু সাংগীতিক থিয়েটাৰ</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">অৱৰোধ কৰা URL আৰু আপোনাৰ ছিষ্টেমৰ প্ৰশাসকে বলৱৎ কৰা অন্য নীতিসমূহৰ সূচীখন চাবলৈ &lt;strong&gt;chrome://policy&lt;/strong&gt;লৈ যাওক।</translation>
-<translation id="8534934518812659742">আপুনি Chromeৰ বাবে <ph name="PERMISSION" /> অফ কৰিছে।</translation>
 <translation id="8536234749087605613">এনভেল’প (ৱিণ্ড’)</translation>
 <translation id="8539500321752640291">২ টা অনুমতি দিবনে?</translation>
 <translation id="8541158209346794904">ব্লুটুথ ডিভাইচ</translation>
@@ -3991,7 +3987,6 @@
 <translation id="865032292777205197">ম'শ্বন ছেন্সৰ</translation>
 <translation id="865255447216708819">বেক প্ৰিণ্ট ফিল্ম</translation>
 <translation id="8654126188050905496">৫৫ x ৯১ মি.মি.</translation>
-<translation id="8655930295668719549">আপুনি পূৰ্বতে <ph name="ORIGIN" />ত <ph name="PERMISSION" />ৰ অনুমতি দিয়া নাছিল</translation>
 <translation id="8662463432865928030">বাণিজ্যিক সম্পত্তি</translation>
 <translation id="8663226718884576429">অৰ্ডাৰৰ সাৰাংশ, <ph name="TOTAL_LABEL" />, অধিক বিৱৰণ</translation>
 <translation id="8663909737634214500">অপ্টিকেল ডিস্ক</translation>

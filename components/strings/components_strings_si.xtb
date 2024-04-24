@@ -586,7 +586,6 @@
 <translation id="2071692954027939183">ඔබ සාමාන්‍යයෙන් ඒවාට ඉඩ නොදෙන නිසා දැනුම්දීම් ස්වයංක්‍රියව අවහිර කරන ලදි</translation>
 <translation id="2071852865256799872">ඔබේ බ්‍රවුසර කළමනා කරනු ලබන්නේ ඔබේ සංවිධානය විසිනි, ඔබේ පැතිකඩ කළමනා කරනු ලබන්නේ <ph name="PROFILE_DOMAIN" /> විසිනි</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> අවහිර නොකරන්න</translation>
-<translation id="2075497153347571252">ඔබේ පරිපාලක <ph name="ORIGIN" /> මත <ph name="PERMISSION" /> අවහිර කර ඇත</translation>
 <translation id="2078956195623975415">සංගීත සහ නර්තන ක්‍රීඩා</translation>
 <translation id="2079545284768500474">පසුගමනය</translation>
 <translation id="2080021694978766903">මෙම ප්‍රතිපත්තියට <ph name="MAX_ITEMS_LIMIT" />කට වඩා වැඩි ඇතුළත් කිරීම් නොතිබිය යුතු ය.</translation>
@@ -2029,7 +2028,6 @@
 <translation id="4885030148564729407">මධුසමය සහ ආදර නිවාඩු</translation>
 <translation id="4885256590493466218">ගෙවීමේදී <ph name="CARD_DETAIL" /> සමගින් ගෙවන්න</translation>
 <translation id="4887406273302438710">Windows Hello සමග මුරපද ආරක්ෂා කරන්න</translation>
-<translation id="4890070067176768718">ඔබේ පරිපාලක <ph name="ORIGIN" /> මත <ph name="PERMISSION" /> වෙත ඉඩ දී ඇත</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome සැකසීම් තුළ ඔබේ බ්‍රවුස් කිරීමේ ඉතිහාසය, කුකී, හැඹිලිය සහ තවත් දේ මැකීමට, Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="4892518386797173871">පසුපස</translation>
 <translation id="4895019427244614047">ලිපිනය මකන්න</translation>
@@ -3921,7 +3919,6 @@
 <translation id="8493948351860045254">ඉඩ හිස් කරන්න</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ප්‍රතිචාර දැක්වීමට දිගු කාලයක් ගත්තේය.</translation>
 <translation id="8502023382441452707">උපන් දින සහ නම් දින</translation>
-<translation id="8502972004418241366">මෙම අඩවියෙහි ඔබේ <ph name="PERMISSION" /> භාවිතය සඳහා, ඔබට Chrome වෙත ප්‍රවේශය ලබා දීමට අවශ්‍ය වේ</translation>
 <translation id="8503559462189395349">Chrome මුරපද</translation>
 <translation id="8503813439785031346">පරිශීලක නාමය</translation>
 <translation id="8504928302600319133">පරිගණක දෘඨාංග</translation>
@@ -3941,7 +3938,6 @@
 <translation id="853246364274116957">පළල් පාරවල් සහ සංගීත ශාලා</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ඔබේ පද්ධති පරිපාලක විසින් පනවන ලද අවහිර කළ URL සහ වෙනත් ප්‍රතිපත්ති බැලීමට &lt;strong&gt;chrome://policy&lt;/strong&gt; වෙත පිවිසෙන්න.</translation>
-<translation id="8534934518812659742">ඔබ Chrome සඳහා <ph name="PERMISSION" /> අක්‍රිය කර ඇත.</translation>
 <translation id="8536234749087605613">ලියුම් කවරය (කවුළුව)</translation>
 <translation id="8539500321752640291">අවසර 2කට ඉඩ දෙන්නද?</translation>
 <translation id="8541158209346794904">බ්ලූටූත් උපාංගය</translation>
@@ -3998,7 +3994,6 @@
 <translation id="865032292777205197">චලන සංවේදක</translation>
 <translation id="865255447216708819">පසුපස මුද්‍රණ චිත්‍රපටිය</translation>
 <translation id="8654126188050905496">මිමි 55 x 91</translation>
-<translation id="8655930295668719549">ඔබ මීට පෙර <ph name="ORIGIN" /> මත <ph name="PERMISSION" /> හට ඉඩ දුන්නේ නැත</translation>
 <translation id="8662463432865928030">වාණිජ දේපළ</translation>
 <translation id="8663226718884576429">ඇණවුමේ සාරාංශය, <ph name="TOTAL_LABEL" />, තව විස්තර</translation>
 <translation id="8663909737634214500">ප්‍රකාශ තැටිය</translation>
@@ -4031,6 +4026,7 @@
 <translation id="8722929331701811374">ලිපි ද්‍රව්‍ය (ලිපි ශීර්ෂය)</translation>
 <translation id="8724824364712796726">ලියුම් කවරය B6</translation>
 <translation id="8725066075913043281">නැවත උත්සහ කරන්න</translation>
+<translation id="8725667981218437315">කැමරාව හා මයික්‍රෆෝනය</translation>
 <translation id="8726549941689275341">පිටු තරම:</translation>
 <translation id="8730621377337864115">අවසන්</translation>
 <translation id="8731268612289859741">ආරක්ෂක කේතය</translation>

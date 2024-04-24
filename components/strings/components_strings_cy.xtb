@@ -584,7 +584,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2071692954027939183">Cafodd hysbysiadau eu rhwystro'n awtomatig oherwydd nid ydych fel arfer yn eu caniatáu</translation>
 <translation id="2071852865256799872">Rheolir eich porwr gan eich sefydliad a rheolir eich proffil gan <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Dadrwystro <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Mae eich gweinyddwr wedi rhwystro <ph name="PERMISSION" /> ar <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Gemau Cerddoriaeth a Dawns</translation>
 <translation id="2079545284768500474">Dadwneud</translation>
 <translation id="2080021694978766903">Ni ddylai'r polisi hwn gynnwys mwy na <ph name="MAX_ITEMS_LIMIT" /> o gofnodion.</translation>
@@ -2024,7 +2023,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4885030148564729407">Misoedd Mêl a Gwyliau Rhamantus</translation>
 <translation id="4885256590493466218">Talu gyda <ph name="CARD_DETAIL" /> wrth y ddesg dalu</translation>
 <translation id="4887406273302438710">Amddiffyn cyfrineiriau gyda Windows Hello</translation>
-<translation id="4890070067176768718">Mae eich gweinyddwr wedi caniatáu <ph name="PERMISSION" /> ar <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Cefn</translation>
 <translation id="4895019427244614047">Dileu cyfeiriad</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3911,7 +3909,6 @@ Manylion ychwanegol:
 <translation id="8493948351860045254">Rhyddhau lle storio</translation>
 <translation id="8498891568109133222">Gwnaeth <ph name="HOST_NAME" /> gymryd rhy hir i ymateb.</translation>
 <translation id="8502023382441452707">Penblwyddi a Dyddiau Enwau</translation>
-<translation id="8502972004418241366">I ddefnyddio'ch <ph name="PERMISSION" /> ar y wefan hon, mae angen i chi roi mynediad i Chrome</translation>
 <translation id="8503559462189395349">Cyfrineiriau Chrome</translation>
 <translation id="8503813439785031346">Enw defnyddiwr</translation>
 <translation id="8504928302600319133">Caledwedd Cyfrifiadurol</translation>
@@ -3931,7 +3928,6 @@ Manylion ychwanegol:
 <translation id="853246364274116957">Broadway a Theatr Gerddorol</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Ewch i &lt;strong&gt;chrome://policy&lt;/strong&gt; i weld y rhestr o gyfeiriadau URL sydd wedi'u rhwystro a pholisïau eraill sy'n cael eu gweithredu gan eich gweinyddwr system.</translation>
-<translation id="8534934518812659742">Rydych wedi diffodd <ph name="PERMISSION" /> ar gyfer Chrome.</translation>
 <translation id="8536234749087605613">Amlen (Ffenestr)</translation>
 <translation id="8539500321752640291">Caniatáu 2 ganiatâd?</translation>
 <translation id="8541158209346794904">Dyfais Bluetooth</translation>
@@ -3988,7 +3984,6 @@ Manylion ychwanegol:
 <translation id="865032292777205197">synwyryddion symudiad</translation>
 <translation id="865255447216708819">Ffilm Argraffu ar y Cefn</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Ni wnaethoch ganiatáu <ph name="PERMISSION" /> o'r blaen ar <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Eiddo Masnachol</translation>
 <translation id="8663226718884576429">Crynodeb o'r Archeb, <ph name="TOTAL_LABEL" />, Rhagor o Fanylion</translation>
 <translation id="8663909737634214500">Disg Optegol</translation>

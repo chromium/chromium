@@ -1611,7 +1611,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Du aktiverar felsökningsfunktioner i ChromeOS Flex som konfigurerar sshd-daemonen och aktiverar start från USB-enheter.</translation>
 <translation id="2178614541317717477">CA-kompromiss</translation>
-<translation id="2179416702468739594">Söker efter tillgängliga profiler. Mobilnätverket kan kopplas från i några minuter.</translation>
 <translation id="2180620921879609685">Blockera innehåll på alla sidor</translation>
 <translation id="2181821976797666341">Policyer</translation>
 <translation id="2182058453334755893">Kopierat till urklipp</translation>
@@ -1664,6 +1663,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="222115440608612541">Byt tema vid soluppgången och solnedgången</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Namnlös mediekälla</translation>
+<translation id="2224337661447660594">Inget internet</translation>
 <translation id="2224444042887712269">Den här inställningen tillhör <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Redigera mappnamn</translation>
 <translation id="2225927550500503913">Aktiverat virtuellt kort</translation>
@@ -3118,7 +3118,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3321494112580110651">Visas inte din skrivare?</translation>
 <translation id="3321776060736518525">Från <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonus! Du har fått mer skärmtid</translation>
-<translation id="3325804108816646710">Söker efter tillgängliga profiler …</translation>
 <translation id="3325930488268995856">Microsoft OneDrive har anslutits</translation>
 <translation id="3325995804968971809">Stil</translation>
 <translation id="3327050066667856415">En Chromebook är gjord för att vara säker. Enheten skyddas från skadlig programvara automatiskt – inga specialprogram behövs.</translation>
@@ -5425,7 +5424,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5101839224773798795">Klicka automatiskt när pekaren stannar</translation>
 <translation id="5103311607312269661">tangenten som ökar skärmens ljusstyrka</translation>
 <translation id="5106350808162641062">Ta bort</translation>
-<translation id="5106608587025903971">I stället för att ange lösenordet för Google-kontot när du loggar in kan du skapa ett <ph name="DEVICE_TYPE" />-lösenord för den här enheten</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> kontrolleras via Family Link. Du kan lägga till skolkonton för att få åtkomst till skolresurser med föräldrakontroll.</translation>
 <translation id="5107093668001980925">Visa aldrig <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Ett tillägg har inaktiverat Säker webbsökning</translation>
@@ -7386,7 +7384,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6647690760956378579">Förhandsgranska naturlig röst</translation>
 <translation id="6648911618876616409">En viktig uppdatering är klar för installation. Logga in för att komma igång.</translation>
 <translation id="6649018507441623493">Ett ögonblick …</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vill kontrollera din identitet</translation>
 <translation id="6650206238642452078">Prenumerera på systemhändelser för ChromeOS</translation>
 <translation id="665061930738760572">Öppna i &amp;nytt fönster</translation>
 <translation id="6651237644330755633">Lita på detta certifikat för identifiering av webbplatser</translation>
@@ -8297,7 +8294,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7364796246159120393">Välj fil</translation>
 <translation id="7365076891350562061">Skärmstorlek</translation>
 <translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> – fäst</translation>
-<translation id="7366316827772164604">Söker efter enheter i närheten …</translation>
+<translation id="7366316827772164604">Söker efter enheter i närheten …</translation>
 <translation id="7366415735885268578">Lägg till en webbplats</translation>
 <translation id="7366909168761621528">Webbinformation</translation>
 <translation id="7367714965999718019">QR-kodgenerator</translation>

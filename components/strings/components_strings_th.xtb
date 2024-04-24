@@ -586,7 +586,6 @@
 <translation id="2071692954027939183">การแจ้งเตือนถูกบล็อกโดยอัตโนมัติเนื่องจากคุณมักไม่อนุญาตให้แสดง</translation>
 <translation id="2071852865256799872">เบราว์เซอร์ได้รับการจัดการโดยองค์กร และโปรไฟล์ของคุณได้รับการจัดการโดย <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">เลิกบล็อก "<ph name="TOPIC" />"</translation>
-<translation id="2075497153347571252">ผู้ดูแลระบบบล็อก <ph name="PERMISSION" /> ใน <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">เกมเพลงและเกมเต้น</translation>
 <translation id="2079545284768500474">เลิกทำ</translation>
 <translation id="2080021694978766903">นโยบายนี้ต้องมีข้อมูลไม่เกิน <ph name="MAX_ITEMS_LIMIT" /> รายการ</translation>
@@ -937,6 +936,7 @@
 <translation id="2759825833388495838">กรอกรหัสผ่านใน "<ph name="APP_NAME" />"</translation>
 <translation id="2764001903315068341">การ์ตูน</translation>
 <translation id="2765217105034171413">ขนาดเล็ก</translation>
+<translation id="2768397283109119044">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่เซิร์ฟเวอร์แสดงใบรับรองที่ไม่ถูกต้องซึ่งออกให้กับชื่อนั้น ชื่อคือที่อยู่ IP หรือชื่อโฮสต์ภายในที่สงวนไว้</translation>
 <translation id="2770159525358613612">ลองอัปโหลดไฟล์อีกครั้ง</translation>
 <translation id="277133753123645258">วิธีการจัดส่งสินค้า</translation>
 <translation id="2773388851563527404">Chrome จำกัดไม่ให้เว็บไซต์ส่วนใหญ่ใช้คุกกี้ของบุคคลที่สาม แต่อนุญาตคุกกี้ของบุคคลที่สามในเว็บไซต์นี้เนื่องจากต้องใช้คุกกี้ดังกล่าวในการให้บริการขั้นพื้นฐาน ไปที่การตั้งค่าเพื่อ<ph name="LINK" /></translation>
@@ -1718,6 +1718,7 @@
 <translation id="4265872034478892965">อนุญาตโดยผู้ดูแลระบบ</translation>
 <translation id="4269029136757623689">พัดลมใช้ในบ้าน</translation>
 <translation id="4269264543938335308">ชุดว่ายน้ำ</translation>
+<translation id="4269599248168651462">ใบรับรองเซิร์ฟเวอร์จะออกให้กับชื่อที่ซ้ำกัน</translation>
 <translation id="4270541775497538019">สแต็กเกอร์ 6</translation>
 <translation id="4275830172053184480">รีสตาร์ทอุปกรณ์ของคุณ</translation>
 <translation id="4276974990916607331">ไม่เป็นไร</translation>
@@ -2026,7 +2027,6 @@
 <translation id="4885030148564729407">สถานที่ฮันนีมูนและสถานที่เที่ยวโรแมนติก</translation>
 <translation id="4885256590493466218">ชำระเงินด้วย <ph name="CARD_DETAIL" /> ที่จุดชำระเงิน</translation>
 <translation id="4887406273302438710">ปกป้องรหัสผ่านด้วย Windows Hello</translation>
-<translation id="4890070067176768718">ผู้ดูแลระบบอนุญาต <ph name="PERMISSION" /> ใน <ph name="ORIGIN" /></translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อลบประวัติการท่องเว็บ คุกกี้ แคช และอื่นๆ ในการตั้งค่า Chrome</translation>
 <translation id="4892518386797173871">หลัง</translation>
 <translation id="4895019427244614047">ลบที่อยู่</translation>
@@ -3918,7 +3918,6 @@
 <translation id="8493948351860045254">เพิ่มพื้นที่ว่าง</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ใช้เวลาตอบกลับนานเกินไป</translation>
 <translation id="8502023382441452707">วันเกิดและวันตั้งชื่อ</translation>
-<translation id="8502972004418241366">หากต้องการใช้<ph name="PERMISSION" />ในเว็บไซต์นี้ คุณต้องให้สิทธิ์เข้าถึงแก่ Chrome</translation>
 <translation id="8503559462189395349">รหัสผ่าน Chrome</translation>
 <translation id="8503813439785031346">ชื่อผู้ใช้</translation>
 <translation id="8504928302600319133">ฮาร์ดแวร์คอมพิวเตอร์</translation>
@@ -3938,7 +3937,6 @@
 <translation id="853246364274116957">โรงละครบรอดเวย์และละครเพลง</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ไปที่ &lt;strong&gt;chrome://policy&lt;/strong&gt; เพื่อดูรายการ URL ที่ถูกบล็อกและนโยบายอื่นๆ ที่ผู้ดูแลระบบบังคับใช้</translation>
-<translation id="8534934518812659742">คุณได้ปิดสิทธิ์เข้าถึง<ph name="PERMISSION" />สำหรับ Chrome</translation>
 <translation id="8536234749087605613">ซอง (มีกรอบใสด้านหน้า)</translation>
 <translation id="8539500321752640291">อนุญาตให้เข้าถึงสิทธิ์ 2 รายการไหม</translation>
 <translation id="8541158209346794904">อุปกรณ์บลูทูธ</translation>
@@ -3996,7 +3994,6 @@
 <translation id="865032292777205197">เซ็นเซอร์ตรวจจับการเคลื่อนไหว</translation>
 <translation id="865255447216708819">ฟิล์มพิมพ์ด้านหลัง</translation>
 <translation id="8654126188050905496">55 x 91 มม.</translation>
-<translation id="8655930295668719549">ก่อนหน้านี้คุณไม่อนุญาต<ph name="PERMISSION" />ที่ <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">อาคารพาณิชย์</translation>
 <translation id="8663226718884576429">สรุปคำสั่งซื้อ <ph name="TOTAL_LABEL" /> รายละเอียดเพิ่มเติม</translation>
 <translation id="8663909737634214500">แผ่นเก็บข้อมูล</translation>
@@ -4029,6 +4026,7 @@
 <translation id="8722929331701811374">กระดาษจดหมาย (หัวจดหมาย)</translation>
 <translation id="8724824364712796726">Envelope B6</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>
+<translation id="8725667981218437315">กล้องถ่ายรูปและไมโครโฟน</translation>
 <translation id="8726549941689275341">ขนาดหน้า:</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
 <translation id="8731268612289859741">รหัสความปลอดภัย</translation>
@@ -4127,6 +4125,7 @@
 <translation id="8919740778133505789">รถสปอร์ต</translation>
 <translation id="8919895429178014996">ซ่อนรายการทั้งหมด</translation>
 <translation id="8922013791253848639">อนุญาตโฆษณาในไซต์นี้เสมอ</translation>
+<translation id="8924109546403192898">เมื่อ Chrome แจ้งว่ามีการดำเนินการด้านความปลอดภัย ระบบจะส่งข้อมูลที่เกี่ยวข้องกับการดำเนินการนั้นไปให้ผู้ดูแลระบบ ข้อมูลนี้อาจมี URL ของหน้าเว็บที่คุณเข้าชมใน Chrome, URL ของหน้าเว็บที่คัดลอกข้อมูลมา, ชื่อหรือข้อมูลเมตาของไฟล์, ข้อขัดข้องของเบราว์เซอร์หรือแท็บ และชื่อผู้ใช้ที่คุณลงชื่อเข้าใช้แอปพลิเคชันบนเว็บ อุปกรณ์ และ Chrome</translation>
 <translation id="892588693504540538">เจาะรูด้านขวาบน</translation>
 <translation id="8926389886865778422">ไม่ต้องถามอีก</translation>
 <translation id="8932102934695377596">นาฬิกาช้าเกินไป</translation>

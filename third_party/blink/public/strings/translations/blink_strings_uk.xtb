@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">Введіть електронну адресу.</translation>
 <translation id="1758486001363313524">Інші...</translation>
 <translation id="1787192514241997742">загальний час: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">Дозволити доступ до камери</translation>
 <translation id="1822429046913737220">д.п./п.п.</translation>
 <translation id="1832974991323546415">відтворити на віддаленому пристрої</translation>
 <translation id="1921819250265091946">дд</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">поточний крок</translation>
 <translation id="3321030238473337787">Швидкість відтворення</translation>
 <translation id="3329013043687509092">Насиченість</translation>
-<translation id="3377518164566272702">Дозволити доступ до мікрофона й камери</translation>
 <translation id="3450233048674729344">Значення має бути меншим або дорівнювати <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">мм</translation>
 <translation id="3754210790023674521">Вийти з режиму "Картинка в картинці"</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">Інші...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, починається <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Картинка в картинці</translation>
-<translation id="918430632320614861">Дозволити доступ до мікрофона</translation>
 <translation id="945780513535800434">Частково позначено</translation>
 <translation id="954003015749068518">увімкнути режим "Картинка в картинці"</translation>
 </translationbundle>

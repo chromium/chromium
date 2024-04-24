@@ -1600,7 +1600,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Vous activez les fonctionnalités de débogage de Chrome OS Flex qui vont installer le programme d'arrière-plan SSHD et activer le démarrage à partir de clés USB.</translation>
 <translation id="2178614541317717477">Autorité de certification compromise</translation>
-<translation id="2179416702468739594">Recherche des profils accessibles en cours… Il se peut que votre réseau cellulaire soit déconnecté pendant quelques minutes.</translation>
 <translation id="2180620921879609685">Bloquer le contenu sur n'importe quelle page</translation>
 <translation id="2181821976797666341">Règles</translation>
 <translation id="2182058453334755893">Copié dans votre presse-papiers</translation>
@@ -1653,6 +1652,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="222115440608612541">Changez de thème au lever et au coucher du soleil</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Source multimédia anonyme</translation>
+<translation id="2224337661447660594">Aucune connexion Internet</translation>
 <translation id="2224444042887712269">Ce paramètre appartient à <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Modifier le nom du dossier</translation>
 <translation id="2225927550500503913">Carte virtuelle activée</translation>
@@ -3106,7 +3106,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3321494112580110651">Vous ne voyez pas votre imprimante?</translation>
 <translation id="3321776060736518525">À partir de <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Hé hé! Ton temps d'écran a été prolongé!</translation>
-<translation id="3325804108816646710">Recherche des profils accessibles en cours…</translation>
 <translation id="3325930488268995856">Microsoft OneDrive connecté</translation>
 <translation id="3325995804968971809">Style</translation>
 <translation id="3327050066667856415">Les Chromebook sont conçus en fonction de la sécurité. Votre appareil est automatiquement protégé contre les logiciels malveillants. Aucun logiciel supplémentaire n'est requis.</translation>
@@ -5412,7 +5411,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5101839224773798795">Cliquer automatiquement lorsque le curseur s'arrête</translation>
 <translation id="5103311607312269661">augmenter la luminosité de l'écran</translation>
 <translation id="5106350808162641062">Retirer</translation>
-<translation id="5106608587025903971">Au lieu de saisir le mot de passe de votre compte Google pour vous connecter, vous pouvez créer un mot de passe <ph name="DEVICE_TYPE" /> pour cet appareil</translation>
 <translation id="510695978163689362">Le compte <ph name="USER_EMAIL" /> est supervisé par Family Link. Vous pouvez ajouter des comptes scolaires pour lui permettre d'accéder à des ressources scolaires avec supervision parentale.</translation>
 <translation id="5107093668001980925">Ne jamais afficher <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Une extension a désactivé la navigation sécurisée</translation>
@@ -7375,7 +7373,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6647690760956378579">Aperçu de la voix naturelle</translation>
 <translation id="6648911618876616409">Une mise à jour essentielle est prête pour l'installation. Connectez-vous pour commencer.</translation>
 <translation id="6649018507441623493">Un instant…</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> souhaite confirmer qu'il s'agit bien de vous</translation>
 <translation id="6650206238642452078">S'abonner aux événements du système Chrome OS</translation>
 <translation id="665061930738760572">Ouvrir dans une &amp;nouvelle fenêtre</translation>
 <translation id="6651237644330755633">Considérer ce certificat comme fiable pour identifier les sites Web</translation>

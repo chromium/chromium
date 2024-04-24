@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">অনুগ্রহ করে একটি খালি না থাকা ইমেল আইডি লিখুন৷</translation>
 <translation id="1758486001363313524">অন্যান্য...</translation>
 <translation id="1787192514241997742">মোট সময়: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">ক্যামেরা অ্যাক্সেস করার অনুমতি দিন</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">রিমোট ডিভাইসে প্লে করুন</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">বর্তমান ধাপ</translation>
 <translation id="3321030238473337787">প্লেব্যাক স্পিড</translation>
 <translation id="3329013043687509092">পরিপৃক্তি</translation>
-<translation id="3377518164566272702">মাইক্রোফোন ও ক্যামেরা অ্যাক্সেস করার অনুমতি দিন</translation>
 <translation id="3450233048674729344">মানটি অবশ্যই <ph name="MAXIMUM" />এর চেয়ে কম বা সমান হবে৷</translation>
 <translation id="3732799496749320381">মিমি</translation>
 <translation id="3754210790023674521">ছবির-মধ্যে-ছবি মোড থেকে বেরিয়ে আসুন</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">অন্যান্য...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, <ph name="WEEK_START_DATE" /> এ শুরু</translation>
 <translation id="916607977885256133">ছবির-মধ্যে-ছবি</translation>
-<translation id="918430632320614861">মাইক্রোফোন অ্যাক্সেস করার অনুমতি দিন</translation>
 <translation id="945780513535800434">আংশিকভাবে টিকচিহ্ন দেওয়া হয়েছে</translation>
 <translation id="954003015749068518">ছবির-মধ্যে-ছবি মোডে যান</translation>
 </translationbundle>

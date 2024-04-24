@@ -584,7 +584,6 @@
 <translation id="2071692954027939183">Апавяшчэнні былі заблакіраваны аўтаматычна, бо звычайна вы не даяце дазволу на іх паказ</translation>
 <translation id="2071852865256799872">Вашым браўзерам кіруе ваша арганізацыя, а профілем – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Разблакіраваць тэму "<ph name="TOPIC" />"</translation>
-<translation id="2075497153347571252">Адміністратар заблакіраваў дазвол "<ph name="PERMISSION" />" для сайта <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Музычныя і танцавальныя гульні</translation>
 <translation id="2079545284768500474">Адрабіць</translation>
 <translation id="2080021694978766903">Максімальная колькасць запісаў для гэтай палітыкі: <ph name="MAX_ITEMS_LIMIT" />.</translation>
@@ -2024,7 +2023,6 @@
 <translation id="4885030148564729407">Вясельныя і рамантычныя падарожжы</translation>
 <translation id="4885256590493466218">Аплаціць карткай <ph name="CARD_DETAIL" /> пры афармленні заказу</translation>
 <translation id="4887406273302438710">Абараніце паролі з дапамогай Windows Hello</translation>
-<translation id="4890070067176768718">Адміністратар уключыў дазвол "<ph name="PERMISSION" />" для сайта <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Задні</translation>
 <translation id="4895019427244614047">Выдаліць адрас</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3912,7 +3910,6 @@
 <translation id="8493948351860045254">Вызваліць месца</translation>
 <translation id="8498891568109133222">Чаканне адказу ад <ph name="HOST_NAME" /> заняло занадта шмат часу.</translation>
 <translation id="8502023382441452707">Дні нараджэння і імяніны</translation>
-<translation id="8502972004418241366">Каб выкарыстоўваць інструмент "<ph name="PERMISSION" />" на гэтым сайце, неабходна даць доступ браўзеру Chrome</translation>
 <translation id="8503559462189395349">Паролі Chrome</translation>
 <translation id="8503813439785031346">Імя карыстальніка</translation>
 <translation id="8504928302600319133">Камп'ютарнае апаратнае забеспячэнне</translation>
@@ -3932,7 +3929,6 @@
 <translation id="853246364274116957">Брадвей і музычныя тэатры</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Каб прагледзець спіс заблакіраваных URL-адрасоў і іншыя палітыкі, якімі кіруе сістэмны адміністратар, наведайце &lt;strong&gt;chrome://policy&lt;/strong&gt;.</translation>
-<translation id="8534934518812659742">Вы забаранілі браўзеру Chrome доступ да дазволу "<ph name="PERMISSION" />".</translation>
 <translation id="8536234749087605613">Канверт з акенцам</translation>
 <translation id="8539500321752640291">Даць 2 дазволы?</translation>
 <translation id="8541158209346794904">Прылада Bluetooth</translation>
@@ -3989,7 +3985,6 @@
 <translation id="865032292777205197">датчыкі руху</translation>
 <translation id="865255447216708819">Плёнка для друку на адваротным баку</translation>
 <translation id="8654126188050905496">55 x 91 мм</translation>
-<translation id="8655930295668719549">Раней вы не далі на сайце <ph name="ORIGIN" /> наступны дазвол: <ph name="PERMISSION" /></translation>
 <translation id="8662463432865928030">Камерцыйная маёмасць</translation>
 <translation id="8663226718884576429">Зводка па заказе, <ph name="TOTAL_LABEL" />, дадатковая інфармацыя</translation>
 <translation id="8663909737634214500">Аптычны дыск</translation>

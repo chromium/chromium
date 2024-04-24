@@ -189,6 +189,9 @@ Dane zostały zaszyfrowane za pomocą Twojego hasła wielowyrazowego. Podaj to h
 <translation id="6648150602980899529">Logujesz się na konto, którym zarządza <ph name="DOMAIN" />, i przekazujesz jego administratorowi kontrolę nad Twoimi danymi Chrome. Zostaną one trwale przypisane do tego konta. Gdy się wylogujesz, znikną one z tego urządzenia, ale pozostaną zapisane na Twoim koncie Google.</translation>
 <translation id="6683891932310469419">Otwiera stronę historii Chrome.</translation>
 <translation id="6709398533399187136">Wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia hasła. Menedżer haseł Google zaleca, aby jak najszybciej je zmienić.</translation>
+<translation id="6820553595690137150">Szyfrowanie hasłem nie obejmuje form płatności ani adresów.
+
+Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Otwórz Ustawienia Chrome na urządzeniu z iOS, kliknij „Domyślna przeglądarka” i wybierz Chrome.</translation>
 <translation id="686691656039982452">Możesz <ph name="BEGIN_LINK" />określić, jakie dane Chrome mają być zapisywane<ph name="END_LINK" /> na koncie Google.
 
@@ -212,6 +215,7 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="7261678641327190792">Chrome nie może sprawdzić Twoich haseł</translation>
 <translation id="7272930098487145294">Aby zapisać obrazy, kliknij Ustawienia i pozwól Chrome na dodanie ich do Twoich zdjęć</translation>
 <translation id="7275945473750112644">Twoim kontem zarządza <ph name="HOSTED_DOMAIN" />, więc Twoje dane z Chrome zostaną usunięte z tego urządzenia</translation>
+<translation id="7284245284340063465">Jeśli zapomnisz hasło lub postanowisz zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="7304491752269485262">Widok rozwinięty autouzupełniania w Chrome</translation>
 <translation id="7344094882820374540">Korzystaj z najlepszych zabezpieczeń Chrome przed niebezpiecznymi stronami</translation>
 <translation id="7349129508108954623">Zezwalaj Chrome na używanie Map Google do podawania wskazówek i informacji lokalnych o wykrytych adresach.</translation>
@@ -243,6 +247,9 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="8160472928944011082">Nie udało się zaktualizować Chrome</translation>
 <translation id="8174679664544842874">Otwiera nową kartę w Chrome.</translation>
 <translation id="8213758103105806860">Zobacz zakładki Chrome</translation>
+<translation id="8317674518145175158">Formy płatności i adresy nie będą zaszyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.
+
+Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest ono wysyłane do Google ani tam przechowywane. Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="8328903609881776074">Otwiera nową kartę incognito w Chrome.</translation>
 <translation id="8357607116237445042">Zdecyduj, czy chcesz usunąć swoje dane z Chrome z tego urządzenia czy je na nim zachować</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>

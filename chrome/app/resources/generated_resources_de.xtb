@@ -1596,7 +1596,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Du aktivierst Chrome OS Flex-Funktionen zur Fehlerbehebung. Dadurch wird der SSHD-Daemon eingerichtet und das Starten über USB-Speicher aktiviert.</translation>
 <translation id="2178614541317717477">Kompromittierung der Zertifizierungsstelle</translation>
-<translation id="2179416702468739594">Es wird nach verfügbaren Profilen gesucht. Das kann dazu führen, dass deine Mobilfunkverbindung einige Minuten getrennt wird.</translation>
 <translation id="2180620921879609685">Inhalte auf jeder Seite blockieren</translation>
 <translation id="2181821976797666341">Richtlinien</translation>
 <translation id="2182058453334755893">In die Zwischenablage kopiert</translation>
@@ -1649,6 +1648,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="222115440608612541">Designs bei Sonnenauf- und -untergang wechseln</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Unbenannte Medienquelle</translation>
+<translation id="2224337661447660594">Kein Internet</translation>
 <translation id="2224444042887712269">Inhaber dieser Einstellung ist <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Ordnername bearbeiten</translation>
 <translation id="2225927550500503913">Virtuelle Karte aktiviert</translation>
@@ -3100,7 +3100,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3321494112580110651">Wird dein Drucker nicht angezeigt?</translation>
 <translation id="3321776060736518525">Von <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonus! Bildschirmzeit verlängert</translation>
-<translation id="3325804108816646710">Es wird nach verfügbaren Profilen gesucht…</translation>
 <translation id="3325930488268995856">Mit Microsoft OneDrive verbunden</translation>
 <translation id="3325995804968971809">Stil</translation>
 <translation id="3327050066667856415">Chromebooks sind auf Sicherheit ausgelegt. Dein Gerät ist automatisch vor Malware geschützt – ganz ohne zusätzliche Software.</translation>
@@ -5406,7 +5405,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5101839224773798795">Automatisch klicken, wenn der Cursor anhält</translation>
 <translation id="5103311607312269661">Displayhelligkeit erhöhen</translation>
 <translation id="5106350808162641062">Entfernen</translation>
-<translation id="5106608587025903971">Anstatt dich mit dem Passwort deines Google-Kontos anzumelden, kannst du ein <ph name="DEVICE_TYPE" />-Passwort für dieses Gerät erstellen</translation>
 <translation id="510695978163689362">Für <ph name="USER_EMAIL" /> ist die Elternaufsicht über Family Link eingerichtet. Du kannst Konten einer Bildungseinrichtung hinzufügen, um unter Elternaufsicht auf Ressourcen dieser Einrichtung zuzugreifen.</translation>
 <translation id="5107093668001980925"><ph name="MODULE_NAME" /> nie anzeigen</translation>
 <translation id="5107443654503185812">Safe Browsing wurde durch eine Erweiterung deaktiviert</translation>
@@ -7364,7 +7362,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6647690760956378579">Vorschau für natürliche Stimme</translation>
 <translation id="6648911618876616409">Ein wichtiges Update ist zur Installation bereit. Melde dich an, um die Installation zu starten.</translation>
 <translation id="6649018507441623493">Bitte warten...</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> möchte sichergehen, dass du das bist</translation>
 <translation id="6650206238642452078">ChromeOS-Systemereignisse abonnieren</translation>
 <translation id="665061930738760572">In &amp;neuem Fenster öffnen</translation>
 <translation id="6651237644330755633">Diesem Zertifikat zur Identifizierung von Websites vertrauen</translation>

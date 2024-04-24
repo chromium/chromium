@@ -1598,7 +1598,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Vas activar as funcións de depuración de Chrome OS Flex, as cales configurarán o daemon sshd e activarán o inicio desde unidades USB.</translation>
 <translation id="2178614541317717477">Compromiso de entidade emisora de certificados</translation>
-<translation id="2179416702468739594">Buscando perfís dispoñibles. Este proceso podería provocar que a rede de telefonía móbil se desconecte durante uns minutos.</translation>
 <translation id="2180620921879609685">Bloquear contido en calquera páxina</translation>
 <translation id="2181821976797666341">Políticas</translation>
 <translation id="2182058453334755893">Copiouse o contido no teu portapapeis</translation>
@@ -1651,6 +1650,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="222115440608612541">Cambia de tema ao amencer e ao solpor</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Fonte de información sen nome</translation>
+<translation id="2224337661447660594">Non hai conexión a Internet</translation>
 <translation id="2224444042887712269">Esta configuración pertence a <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Editar o nome do cartafol</translation>
 <translation id="2225927550500503913">Tarxeta virtual activada</translation>
@@ -3102,7 +3102,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3321494112580110651">Non ves a impresora?</translation>
 <translation id="3321776060736518525">Desde <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Xenial! Máis tempo diante da pantalla</translation>
-<translation id="3325804108816646710">Buscando perfís dispoñibles...</translation>
 <translation id="3325930488268995856">Microsoft OneDrive conectado</translation>
 <translation id="3325995804968971809">Estilo</translation>
 <translation id="3327050066667856415">Os Chromebooks están deseñados para que sexan seguros. O teu dispositivo está protexido contra software malicioso automaticamente e non precisa software adicional.</translation>
@@ -5411,7 +5410,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5101839224773798795">Facer clic automaticamente cando se deteña o cursor</translation>
 <translation id="5103311607312269661">aumentar o brillo da pantalla</translation>
 <translation id="5106350808162641062">Quitar</translation>
-<translation id="5106608587025903971">En lugar de poñer o contrasinal da túa Conta de Google para iniciar sesión, podes crear un contrasinal de <ph name="DEVICE_TYPE" /> para este dispositivo</translation>
 <translation id="510695978163689362">Family Link supervisa <ph name="USER_EMAIL" />. Podes engadir contas de centro educativo para acceder a recursos didácticos con supervisión parental.</translation>
 <translation id="5107093668001980925">Non mostrar nunca <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Unha extensión desactivou a opción Navegación segura</translation>
@@ -7369,7 +7367,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6647690760956378579">Vista previa da voz natural</translation>
 <translation id="6648911618876616409">É necesario realizar unha actualización importante. Inicia sesión para comezar.</translation>
 <translation id="6649018507441623493">Un segundo…</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> quere confirmar a túa identidade</translation>
 <translation id="6650206238642452078">Subscribirse aos eventos do sistema ChromeOS</translation>
 <translation id="665061930738760572">Abrir nunha ventá &amp;nova</translation>
 <translation id="6651237644330755633">Confiar neste certificado para identificar sitios web</translation>

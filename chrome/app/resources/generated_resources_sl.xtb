@@ -1614,7 +1614,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Omogočili boste funkcije za odpravljanje napak sistema ChromeOS Flex, tako da boste nastavili sshd daemon in omogočili zagon prek pogonov USB.</translation>
 <translation id="2178614541317717477">Overitelj potrdil ni več varen</translation>
-<translation id="2179416702468739594">Iskanje razpoložljivih profilov. Zaradi tega bo povezava z mobilnim omrežjem zaradi nekaj minut morda prekinjena.</translation>
 <translation id="2180620921879609685">Blokiranje vsebine na kateri koli strani</translation>
 <translation id="2181821976797666341">Pravilniki</translation>
 <translation id="2182058453334755893">Kopirano v odložišče</translation>
@@ -1667,6 +1666,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="222115440608612541">Zamenjava tem ob sončnem vzhodu in sončnem zahodu.</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Neimenovan vir predstavnosti</translation>
+<translation id="2224337661447660594">Ni internetne povezave</translation>
 <translation id="2224444042887712269">Ta nastavitev se nanaša na uporabnika <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Uredi ime mape</translation>
 <translation id="2225927550500503913">Virtualna kartica je vklopljena</translation>
@@ -3121,7 +3121,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3321494112580110651">Ali tiskalnika ni na seznamu?</translation>
 <translation id="3321776060736518525">Iz: <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Nagrada! Čas uporabe je podaljšan.</translation>
-<translation id="3325804108816646710">Iskanje razpoložljivih profilov …</translation>
 <translation id="3325930488268995856">Povezava s storitvijo Microsoft OneDrive je vzpostavljena</translation>
 <translation id="3325995804968971809">Slog</translation>
 <translation id="3327050066667856415">Chromebooki so zasnovani za varnost. Vaša naprava je samodejno zaščitena pred zlonamerno programsko opremo. Ne potrebujete posebne programske opreme.</translation>
@@ -5428,7 +5427,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5101839224773798795">Samodejni klik, ko se kazalec ustavi</translation>
 <translation id="5103311607312269661">povečanje svetlosti zaslona</translation>
 <translation id="5106350808162641062">Odstrani</translation>
-<translation id="5106608587025903971">Namesto vnosa gesla za račun Google lahko za prijavo ustvarite geslo za <ph name="DEVICE_TYPE" /> za to napravo.</translation>
 <translation id="510695978163689362">Račun <ph name="USER_EMAIL" /> se nadzira s storitvijo Family Link. Dodate lahko šolske račune za dostop do šolskih virov s starševskim nadzorom.</translation>
 <translation id="5107093668001980925">Nikoli ne pokaži tega: <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Razširitev je izklopila varno brskanje</translation>
@@ -7397,7 +7395,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6647690760956378579">Predogled naravnega glasu</translation>
 <translation id="6648911618876616409">Nujna posodobitev je pripravljena za namestitev. Če želite začeti, se prijavite.</translation>
 <translation id="6649018507441623493">Samo trenutek …</translation>
-<translation id="6650072551060208490">Spletno mesto <ph name="ORIGIN_NAME" /> želi potrditi, da ste to res vi.</translation>
 <translation id="6650206238642452078">Naročanje na dogodke v sistemu ChromeOS</translation>
 <translation id="665061930738760572">Odpri v &amp;novem oknu</translation>
 <translation id="6651237644330755633">Zaupaj temu potrdilu za prepoznavanje spletnih mest</translation>

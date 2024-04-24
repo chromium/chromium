@@ -130,6 +130,7 @@
 <translation id="1653432787084483144">{count,plural, =1{{count} senha salva disponível acima do teclado.}one{{count} senha salva disponível acima do teclado.}other{{count} senhas salvas disponíveis acima do teclado.}}</translation>
 <translation id="1657011748321897393">O compartilhamento falhou porque não há conexão de rede.</translation>
 <translation id="165877110639533037">Não há guias abertas</translation>
+<translation id="1668001730617725852">Abrir em um novo grupo de guias</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> para <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Solicitar o site móvel</translation>
 <translation id="1687475363370981210">Marcar todas as entradas como lidas</translation>
@@ -1199,6 +1200,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7162168282402939716">Desbloquear guias anônimas com o <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Configurações</translation>
 <translation id="7186568385131859684">Controle como o histórico de navegação é usado com seus outros dados nos Serviços do Google</translation>
+<translation id="7187190640134722091">Criar grupo</translation>
 <translation id="7189598951263744875">Compartilhar...</translation>
 <translation id="719133302483559673">Gerencie seus interesses e suas preferências.</translation>
 <translation id="7192050974311852563">Iniciar registro</translation>
@@ -1595,6 +1597,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9109699888944026290">{count,plural, =1{Nova senha para este site}one{Nova senha para este site}other{Novas senhas para este site}}</translation>
 <translation id="9120217828624527905">Mudar para tradução de página inteira</translation>
 <translation id="9124387962554796433">O Google pode usar seu histórico para personalizar a Pesquisa e outros Serviços do Google.</translation>
+<translation id="913036870884277353">Abra links com facilidade em outros apps.</translation>
 <translation id="9137526406337347448">Serviços do Google</translation>
 <translation id="9144931028079269381">Ocultar a Lista de leitura</translation>
 <translation id="9148126808321036104">Faça login novamente</translation>

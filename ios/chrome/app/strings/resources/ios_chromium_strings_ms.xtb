@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Lihat Penanda Halaman Chromium</translation>
 <translation id="2590893390871230428">Segerakkan Data Chromium Anda</translation>
 <translation id="2592940277904433508">Terus menggunakan Chromium</translation>
+<translation id="2607609479243848905">Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chromium dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">Buka "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" dan pilih "Chromium" daripada Tetapan peranti anda</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium akan membantu menjejaki pakej ini pada Halaman Tab Baharu.}other{Chromium akan membantu menjejaki pakej ini pada Halaman Tab Baharu.}}</translation>
 <translation id="2650312721222849884">Untuk melihat tab anda daripada mana-mana tempat anda menggunakan Chromium, hidupkan penyegerakan</translation>
@@ -116,6 +117,9 @@ Data anda telah disulitkan dengan ungkapan laluan anda. Masukkan ungkapan laluan
 <translation id="4498832288620833153">Menambahkan URL yang diinput pada senarai bacaan anda dalam Chromium.</translation>
 <translation id="452436063477828504">Pastikan anda dapat menggunakan data Chromium pada bila-bila masa dalam Google Account anda</translation>
 <translation id="4555020257205549924">Apabila ciri ini dihidupkan, Chromium akan menawarkan untuk menterjemah halaman yang ditulis dalam bahasa lain menggunakan Terjemahan Google. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Penyulitan ungkapan laluan tidak termasuk kaedah pembayaran dan alamat.
+
+Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chromium dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Buka Halaman Tetapan Kaedah Pembayaran dalam Chromium.</translation>
 <translation id="459080529287102949">Cari Visual dalam Chromium</translation>
 <translation id="4633738821577273991">Dapatkan juga Penyemakan Imbas Selamat Dipertingkat untuk profil Chromium ini</translation>
@@ -214,6 +218,9 @@ Perkara yang perlu dipertimbangkan:
 <translation id="7163483974919055112">Cari Visual dalam Chromium.</translation>
 <translation id="7165402419892018581">Pilih Chromium untuk AutoLengkap</translation>
 <translation id="7175400662502680481">Kata laluan anda terdedah dalam suatu pelanggaran data. Pengurus Kata Laluan mengesyorkan agar anda menukarnya sekarang.</translation>
+<translation id="7185731475720473450">Kaedah pembayaran dan alamat tidak akan disulitkan. Sejarah penyemakan imbas daripada Chromium tidak akan disegerakkan.
+
+Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda yang disulitkan. Ungkapan laluan tidak dihantar kepada atau disimpan oleh Google. Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chromium dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Pemberitahuan Chromium dimatikan dalam tetapan peranti anda pada masa ini.</translation>
 <translation id="7222001353246886083">Cari ${searchPhrase} pada Chromium</translation>
 <translation id="725427773388857052">Chrome dapat membantu untuk memastikan anda selamat daripada pelanggaran data, laman web yang tidak selamat dan pelbagai lagi.</translation>

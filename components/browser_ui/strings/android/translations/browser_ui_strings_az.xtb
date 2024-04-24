@@ -133,6 +133,7 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> saxlanılan data</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> tətbiqinə sizə bildiriş göndərmək icazəsi vermək üçün <ph name="BEGIN_LINK" />Android Ayarlarında<ph name="END_LINK" /> bildirişləri də aktiv edin.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3232293466644486101">Baxış datasını silin…</translation>
 <translation id="3242646949159196181">Aktiv ediləndə saytlar səs oxuda bilər. Aktiv ediləndə saytlar səs oxuda bilməz.</translation>
 <translation id="3277252321222022663">Saytların sensorlara daxil olmasına icazə verin (tövsiyə edilir)</translation>
 <translation id="3285500645985761267">Əlaqədar saytlara qrupdakı fəaliyyətinizi görməyə icazə verin</translation>
@@ -307,6 +308,7 @@
 <translation id="6064125863973209585">Tamamlanmış endirmələr</translation>
 <translation id="6071501408666570960">Bu saytdan çıxarıla bilərsiniz</translation>
 <translation id="6120483543004435978">Aktiv ediləndə saytlar cihazdan nə vaxt aktiv istifadə etdiyinizi öyrənmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar cihazdan nə vaxt aktiv istifadə etdiyinizi öyrənə bilməz.</translation>
+<translation id="6140839633433422817">İcazələri sıfırlamaq, kukiləri və sayt datasını silmək istədiyinizə əminsiniz?</translation>
 <translation id="6165508094623778733">Ətraflı öyrənin</translation>
 <translation id="6171020522141473435">Aktiv ediləndə saytlar Bluetooth cihazlarından istifadə etmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar Bluetooth cihazlarından istifadə edə bilməz.</translation>
 <translation id="6177111841848151710">Cari axtarış sistemi üçün blok edildi</translation>

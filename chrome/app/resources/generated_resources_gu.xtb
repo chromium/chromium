@@ -1596,7 +1596,6 @@
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">તમે ChromeOS Flexની ડિબગીંગની સુવિધાઓ ચાલુ કરી રહ્યાં છો, જે sshd daemonનું સેટઅપ કરશે અને USB ડ્રાઇવમાંથી બૂટ કરવાનું ચાલુ કરશે.</translation>
 <translation id="2178614541317717477">CA સમાધાન</translation>
-<translation id="2179416702468739594">ઉપલબ્ધ પ્રોફાઇલ શોધી રહ્યાં છીએ. આને કારણે કદાચ થોડીવાર માટે તમારું મોબાઇલ નેટવર્ક ડિસ્કનેક્ટ થઈ શકે છે.</translation>
 <translation id="2180620921879609685">કોઈપણ પેજ પરનું કન્ટેન્ટ બ્લૉક કરો</translation>
 <translation id="2181821976797666341">પૉલિસીઓ</translation>
 <translation id="2182058453334755893">તમારા ક્લિપબોર્ડ પર કૉપિ કરવામાં આવ્યું</translation>
@@ -1649,6 +1648,7 @@
 <translation id="222115440608612541">સૂર્યોદય અને સૂર્યાસ્ત વખતે થીમ સ્વિચ કરો</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">નામ વગરનો મીડિયા સૉર્સ</translation>
+<translation id="2224337661447660594">ઇન્ટરનેટ ઍક્સેસ નથી</translation>
 <translation id="2224444042887712269">આ સેટિંગ <ph name="OWNER_EMAIL" /> ની છે.</translation>
 <translation id="2224551243087462610">ફોલ્ડરના નામમાં ફેરફાર કરો</translation>
 <translation id="2225927550500503913">વર્ચ્યુઅલ કાર્ડ ચાલુ કરવામાં આવ્યું છે</translation>
@@ -3101,7 +3101,6 @@
 <translation id="3321494112580110651">તમારું પ્રિન્ટર નથી દેખાતું?</translation>
 <translation id="3321776060736518525"><ph name="APP_URL" /> તરફથી</translation>
 <translation id="3323521181261657960">બોનસ! તમને હજી વધુ સ્ક્રીન સમય મળ્યો છે</translation>
-<translation id="3325804108816646710">ઉપલબ્ધ પ્રોફાઇલ શોધી રહ્યાં છીએ…</translation>
 <translation id="3325930488268995856">Microsoft OneDrive કનેક્ટેડ</translation>
 <translation id="3325995804968971809">શૈલી</translation>
 <translation id="3327050066667856415">Chromebooksની ડિઝાઇન જ સુરક્ષાને ધ્યાનમાં રાખીને કરવામાં આવી છે. તમારું ડિવાઇસ માલવેરથી ઑટોમૅટિક રીતે જ સુરક્ષિત રહે છે – આના માટે કોઈ વધારાનું સૉફ્ટવેર જરૂરી નથી.</translation>
@@ -5407,7 +5406,6 @@
 <translation id="5101839224773798795">કર્સર રોકાઈ જાય ત્યારે ઑટોમૅટિક રીતે ક્લિક કરો</translation>
 <translation id="5103311607312269661">ડિસ્પ્લેનું બ્રાઇટનેસ વધારવાની કી</translation>
 <translation id="5106350808162641062">કાઢી નાખો</translation>
-<translation id="5106608587025903971">સાઇન ઇન કરવા માટે તમારા Google એકાઉન્ટનો પાસવર્ડ દાખલ કરવાને બદલે તમે આ ડિવાઇસ માટે <ph name="DEVICE_TYPE" /> પાસવર્ડ બનાવી શકો છો</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" />નું નિરીક્ષણ Family Link દ્વારા કરવામાં આવે છે. માતાપિતાના નિરીક્ષણમાં સ્કૂલના સંસાધનોનો ઍક્સેસ કરવા માટે, તમે સ્કૂલના એકાઉન્ટ ઉમેરી શકો છો.</translation>
 <translation id="5107093668001980925"><ph name="MODULE_NAME" /> ક્યારેય બતાવશો નહીં</translation>
 <translation id="5107443654503185812">એક્સ્ટેંશન દ્વારા Safe Browsing બંધ કરવામાં આવ્યું છે</translation>
@@ -7100,7 +7098,7 @@ USB ડિવાઇસ</translation>
 <translation id="6429384232893414837">અપડેટમાં ભૂલ</translation>
 <translation id="6430814529589430811">Base64-encoded ASCII, એકલ પ્રમાણપત્ર</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> આ કમ્પ્યૂટરના બધા વપરાશકર્તા માટે સ્વચાલિત અપડેટ્સ સેટ કરશે.</translation>
-<translation id="6432072919019816301">સહાયક ટેક્નોલોજી માટે ટેક્સ્ટ એક્સટ્રેક્ટ કરવા PDF સ્કેન કરો</translation>
+<translation id="6432072919019816301">સહાયક ટેક્નોલોજી માટે ટેક્સ્ટ એક્સટ્રેક્ટ કરવા PDF સ્કૅન કરો</translation>
 <translation id="6434104957329207050">પૉઇન્ટ સ્કૅન કરવાની ઝડપ</translation>
 <translation id="6434309073475700221">કાઢી નાખો</translation>
 <translation id="6434325376267409267">તમે <ph name="APP_NAME" />નો ઉપયોગ કરો તે પહેલાં તમારા ડિવાઇસને અપડેટ કરવાની જરૂર છે.</translation>
@@ -7372,7 +7370,6 @@ USB ડિવાઇસ</translation>
 <translation id="6647690760956378579">સાહજિક વૉઇસનો પ્રીવ્યૂ</translation>
 <translation id="6648911618876616409">મહત્ત્વપૂર્ણ અપડેટ ઇન્સ્ટૉલ થવા માટે તૈયાર છે. શરૂ કરવા માટે, સાઇન ઇન કરો.</translation>
 <translation id="6649018507441623493">માત્ર એક જ સેકંડ…</translation>
-<translation id="6650072551060208490">આ તમે જ છો, તે <ph name="ORIGIN_NAME" /> કન્ફર્મ કરવા માગે છે</translation>
 <translation id="6650206238642452078">ChromeOSની સિસ્ટમ ઇવેન્ટ સબ્સ્ક્રાઇબ કરો</translation>
 <translation id="665061930738760572">&amp;નવી વિંડોમાં ખોલો</translation>
 <translation id="6651237644330755633">વેબસાઇટ્સ ઓળખવા માટે આ પ્રમાણપત્ર પર વિશ્વાસ કરો</translation>

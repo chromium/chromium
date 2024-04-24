@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">Моля, въведете имейл адрес.</translation>
 <translation id="1758486001363313524">Други...</translation>
 <translation id="1787192514241997742">общо време: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">Разрешаване на камерата</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">възпроизвеждане на отдалечено устройство</translation>
 <translation id="1921819250265091946">дд</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">текуща стъпка</translation>
 <translation id="3321030238473337787">Скорост на възпроизвеждане</translation>
 <translation id="3329013043687509092">Насищане</translation>
-<translation id="3377518164566272702">Разрешаване на микрофона и камерата</translation>
 <translation id="3450233048674729344">Стойността трябва да е по-малка или равна на <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">мм</translation>
 <translation id="3754210790023674521">Изход от „Картина в картината“</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">Други...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" /> – започва от <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Картина в картината</translation>
-<translation id="918430632320614861">Разрешаване на микрофона</translation>
 <translation id="945780513535800434">Частично отметнато</translation>
 <translation id="954003015749068518">вход в режима „Картина в картината“</translation>
 </translationbundle>

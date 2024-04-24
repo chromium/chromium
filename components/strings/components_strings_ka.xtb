@@ -584,7 +584,6 @@
 <translation id="2071692954027939183">შეტყობინებები ავტომატურად დაიბლოკა, რადგან, როგორც წესი, მათ მიღებას კრძალავთ ხოლმე</translation>
 <translation id="2071852865256799872">თქვენს ბრაუზერს მართავს თქვენი ორგანიზაცია, თქვენს პროფილს კი — <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847"><ph name="TOPIC" />-ის განბლოკვა</translation>
-<translation id="2075497153347571252">თქვენმა ადმინისტრატორმა დაბლოკა <ph name="PERMISSION" /> <ph name="ORIGIN" />-ზე</translation>
 <translation id="2078956195623975415">მუსიკალური და საცეკვაო თამაშები</translation>
 <translation id="2079545284768500474">მოქმედების გაუქმება</translation>
 <translation id="2080021694978766903">ამ წესებში <ph name="MAX_ITEMS_LIMIT" />-ზე მეტი ჩანაწერი არ უნდა იყოს.</translation>
@@ -2026,7 +2025,6 @@
 <translation id="4885030148564729407">საქორწილო და რომანტიკული მოგზაურობა</translation>
 <translation id="4885256590493466218">ანგარიშსწორებისას გადაიხადეთ <ph name="CARD_DETAIL" />-ით</translation>
 <translation id="4887406273302438710">დაიცავით პაროლები Windows Hello-ს მეშვეობით</translation>
-<translation id="4890070067176768718">თქვენმა ადმინისტრატორმა დაუშვა <ph name="PERMISSION" /> <ph name="ORIGIN" />-ზე</translation>
 <translation id="4892518386797173871">უკანა</translation>
 <translation id="4895019427244614047">მისამართის წაშლა</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3913,7 +3911,6 @@
 <translation id="8493948351860045254">მეხსიერების გამოთავისუფლება</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" />-ს რეაგირებისთვის ძალიან ბევრი დრო დასჭირდა.</translation>
 <translation id="8502023382441452707">დაბადების და სახელობითი დღეები</translation>
-<translation id="8502972004418241366">ამ საიტზე თქვენი <ph name="PERMISSION" /> რომ გამოიყენოთ, Chrome-ს წვდომა უნდა მიანიჭოთ</translation>
 <translation id="8503559462189395349">Chrome-ის პაროლები</translation>
 <translation id="8503813439785031346">მომხმარებლის სახელი</translation>
 <translation id="8504928302600319133">კომპიუტერული ტექნიკა</translation>
@@ -3933,7 +3930,6 @@
 <translation id="853246364274116957">ბროდვეი და მუსიკალური თეატრი</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ეწვიეთ გვერდს &lt;strong&gt;chrome://policy&lt;/strong&gt; დაბლოკილი URL-ების სანახავად და ადმინისტრატორის მიერ გააქტიურებული სხვა წესების დასათვალიერებლად.</translation>
-<translation id="8534934518812659742">თქვენ გამორთეთ <ph name="PERMISSION" /> Chrome-ისთვის.</translation>
 <translation id="8536234749087605613">კონვერტი (ფანჯრიანი)</translation>
 <translation id="8539500321752640291">გსურთ 2 ნებართვის მინიჭება?</translation>
 <translation id="8541158209346794904">Bluetooth მოწყობილობა</translation>
@@ -3990,7 +3986,6 @@
 <translation id="865032292777205197">მოძრაობის სენსორები</translation>
 <translation id="865255447216708819">ყუაზე ბეჭდვის აფსკი</translation>
 <translation id="8654126188050905496">55 x 91 მმ</translation>
-<translation id="8655930295668719549">ადრე <ph name="PERMISSION" /> არ დაუშვით <ph name="ORIGIN" />-ზე</translation>
 <translation id="8662463432865928030">კომერციული უძრავი ქონება</translation>
 <translation id="8663226718884576429">შეკვეთის რეზიუმე, <ph name="TOTAL_LABEL" />, დამატებითი ინფორმაცია</translation>
 <translation id="8663909737634214500">ოპტიკური დისკი</translation>
@@ -4022,6 +4017,7 @@
 <translation id="8722929331701811374">საწერი ქაღალდი (ბლანკი)</translation>
 <translation id="8724824364712796726">კონვერტი B6</translation>
 <translation id="8725066075913043281">ხელახლა სცადეთ</translation>
+<translation id="8725667981218437315">კამერა და მიკროფონი</translation>
 <translation id="8726549941689275341">გვერდის ზომა:</translation>
 <translation id="8730621377337864115">მზადაა</translation>
 <translation id="8731268612289859741">უსაფრთხოების კოდი</translation>

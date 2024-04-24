@@ -586,7 +586,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2071692954027939183">Pemberitahuan disekat secara automatik kerana biasanya anda tidak membenarkan pemberitahuan</translation>
 <translation id="2071852865256799872">Penyemak imbas anda diuruskan oleh organisasi anda dan profil anda diuruskan oleh <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Nyahsekat <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Pentadbir anda telah menyekat <ph name="PERMISSION" /> pada <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Permainan Muzik &amp; Tarian</translation>
 <translation id="2079545284768500474">Buat asal</translation>
 <translation id="2080021694978766903">Dasar ini tidak boleh mengandungi lebih daripada <ph name="MAX_ITEMS_LIMIT" /> entri.</translation>
@@ -2030,7 +2029,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4885030148564729407">Percutian Bulan Madu &amp; Romantik</translation>
 <translation id="4885256590493466218">Buat bayaran menggunakan <ph name="CARD_DETAIL" /> semasa daftar keluar</translation>
 <translation id="4887406273302438710">Lindungi kata laluan dengan Windows Hello</translation>
-<translation id="4890070067176768718">Pentadbir anda telah membenarkan <ph name="PERMISSION" /> pada <ph name="ORIGIN" /></translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab, kemudian Enter untuk memadamkan sejarah penyemakan imbas, kuki, cache dan pelbagai lagi dalam tetapan Chrome</translation>
 <translation id="4892518386797173871">Belakang</translation>
 <translation id="4895019427244614047">Padamkan alamat</translation>
@@ -2956,7 +2954,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab kemudian Enter untuk mencari peranti anda dalam Google Account</translation>
 <translation id="6695428916538794739">Filem Aksi &amp; Pengembaraan</translation>
 <translation id="6696424331653607346">Panduan Perjalanan &amp; Travelog</translation>
-<translation id="6698097747703777657">Tidak menerima kod anda? <ph name="BEGIN_LINK" />Dapatkan kod baharu<ph name="END_LINK" /></translation>
+<translation id="6698097747703777657">Tidak menerima kod? <ph name="BEGIN_LINK" />Dapatkan kod baharu<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Dicipta:</translation>
 <translation id="67007264085648978">Pelaras masa</translation>
 <translation id="6702851555558236418">Perisian Audio &amp; Muzik</translation>
@@ -3922,7 +3920,6 @@ Butiran tambahan:
 <translation id="8493948351860045254">Kosongkan ruang</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> mengambil masa terlalu lama untuk bertindak balas.</translation>
 <translation id="8502023382441452707">Hari Lahir &amp; Nama Hari</translation>
-<translation id="8502972004418241366">Untuk menggunakan <ph name="PERMISSION" /> anda pada laman ini, anda perlu memberikan akses kepada Chrome</translation>
 <translation id="8503559462189395349">Kata Laluan Chrome</translation>
 <translation id="8503813439785031346">Nama pengguna</translation>
 <translation id="8504928302600319133">Perkakasan Komputer</translation>
@@ -3942,7 +3939,6 @@ Butiran tambahan:
 <translation id="853246364274116957">Teater Broadway &amp; Muzikal</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Lawati &lt;strong&gt;chrome://policy&lt;/strong&gt; untuk melihat senarai URL yang disekat dan dasar lain yang dikuatkuasakan oleh pentadbir sistem anda.</translation>
-<translation id="8534934518812659742">Anda mematikan <ph name="PERMISSION" /> untuk Chrome.</translation>
 <translation id="8536234749087605613">Sampul (Tingkap)</translation>
 <translation id="8539500321752640291">Berikan 2 kebenaran?</translation>
 <translation id="8541158209346794904">Peranti Bluetooth</translation>
@@ -4000,7 +3996,6 @@ Butiran tambahan:
 <translation id="865032292777205197">penderia gerakan</translation>
 <translation id="865255447216708819">Saput Cetakan Belakang</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Sebelum ini anda tidak membenarkan <ph name="PERMISSION" /> pada <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Hartanah Komersial</translation>
 <translation id="8663226718884576429">Ringkasan Pesanan, <ph name="TOTAL_LABEL" />, Butiran Lanjut</translation>
 <translation id="8663909737634214500">Cakera Optik</translation>
@@ -4033,6 +4028,7 @@ Butiran tambahan:
 <translation id="8722929331701811374">Alat Tulis (Kepala Surat)</translation>
 <translation id="8724824364712796726">Sampul B6</translation>
 <translation id="8725066075913043281">Cuba lagi</translation>
+<translation id="8725667981218437315">Kamera dan mikrofon</translation>
 <translation id="8726549941689275341">Saiz halaman:</translation>
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8731268612289859741">Kod keselamatan</translation>

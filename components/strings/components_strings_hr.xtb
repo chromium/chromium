@@ -586,7 +586,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2071692954027939183">Obavijesti su automatski blokirane jer ih obično ne dopuštate</translation>
 <translation id="2071852865256799872">Preglednikom upravlja vaša organizacija, a profilom upravlja <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Deblokiraj temu <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Administrator je blokirao dopuštenje <ph name="PERMISSION" /> na web-lokaciji <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Glazbene i plesne igre</translation>
 <translation id="2079545284768500474">Poništi</translation>
 <translation id="2080021694978766903">Broj unosa u ovom pravilu ne smije biti veći od <ph name="MAX_ITEMS_LIMIT" />.</translation>
@@ -2026,7 +2025,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="4885030148564729407">Bračna putovanja i romantični izleti</translation>
 <translation id="4885256590493466218">Platite karticom <ph name="CARD_DETAIL" /> prilikom naplate</translation>
 <translation id="4887406273302438710">Zaštita zaporki pomoću Windows Helloa</translation>
-<translation id="4890070067176768718">Administrator je odobrio dopuštenje <ph name="PERMISSION" /> na web-lokaciji <ph name="ORIGIN" /></translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste izbrisali povijest pregledavanja, kolačiće, predmemoriju i još mnogo toga u postavkama Chromea</translation>
 <translation id="4892518386797173871">Stražnji</translation>
 <translation id="4895019427244614047">Izbrišite adresu</translation>
@@ -3918,7 +3916,6 @@ Dodatne pojedinosti:
 <translation id="8493948351860045254">Oslobodi prostor</translation>
 <translation id="8498891568109133222">Hostu <ph name="HOST_NAME" /> bilo je potrebno previše vremena za odgovor.</translation>
 <translation id="8502023382441452707">Rođendani i imendani</translation>
-<translation id="8502972004418241366">Ako želite da se na ovoj web-lokaciji upotrebljava <ph name="PERMISSION" />, trebate Chromeu odobriti pristup</translation>
 <translation id="8503559462189395349">Zaporke preglednika Chrome</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="8504928302600319133">Računalni hardver</translation>
@@ -3938,7 +3935,6 @@ Dodatne pojedinosti:
 <translation id="853246364274116957">Broadway i mjuzikli</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Posjetite &lt;strong&gt;chrome://policy&lt;/strong&gt; da biste vidjeli popis blokiranih URL-ova i druga pravila koja je postavio vaš administrator sustava.</translation>
-<translation id="8534934518812659742">Isključili ste dopuštenje (<ph name="PERMISSION" />) za Chrome.</translation>
 <translation id="8536234749087605613">Omotnica (prozor)</translation>
 <translation id="8539500321752640291">Želite li dopustiti dva dopuštenja?</translation>
 <translation id="8541158209346794904">Bluetooth uređaj</translation>
@@ -3996,7 +3992,6 @@ Dodatne pojedinosti:
 <translation id="865032292777205197">senzori kretanja</translation>
 <translation id="865255447216708819">Film za ispisivanje straga</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Prethodno niste omogućili dopuštenje <ph name="PERMISSION" /> na web-lokaciji <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Komercijalni objekti</translation>
 <translation id="8663226718884576429">Sažetak narudžbe, <ph name="TOTAL_LABEL" />, više pojedinosti</translation>
 <translation id="8663909737634214500">Optički disk</translation>
@@ -4029,6 +4024,7 @@ Dodatne pojedinosti:
 <translation id="8722929331701811374">Uredski pribor (memorandum)</translation>
 <translation id="8724824364712796726">Omotnica B6</translation>
 <translation id="8725066075913043281">Pokušajte ponovo</translation>
+<translation id="8725667981218437315">Kamera i mikrofon</translation>
 <translation id="8726549941689275341">Veličina stranica:</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8731268612289859741">Sigurnosni kôd</translation>

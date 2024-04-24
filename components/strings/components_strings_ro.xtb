@@ -584,7 +584,6 @@
 <translation id="2071692954027939183">Notificările au fost blocate automat deoarece nu le permiți de obicei</translation>
 <translation id="2071852865256799872">Browserul este gestionat de organizația ta, iar profilul este gestionat de <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Deblochează <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Administratorul a blocat permisiunea pentru <ph name="PERMISSION" /> pe <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Jocuri cu muzică și dans</translation>
 <translation id="2079545284768500474">Anulează</translation>
 <translation id="2080021694978766903">Această politică nu poate să conțină mai mult de <ph name="MAX_ITEMS_LIMIT" /> intrări.</translation>
@@ -2024,7 +2023,6 @@
 <translation id="4885030148564729407">Luna de miere și escapade romantice</translation>
 <translation id="4885256590493466218">Plătești cu <ph name="CARD_DETAIL" /> la finalizarea achiziției</translation>
 <translation id="4887406273302438710">Protejează-ți parolele cu Windows Hello</translation>
-<translation id="4890070067176768718">Administratorul a acordat permisiunea pentru <ph name="PERMISSION" /> pe <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Spate</translation>
 <translation id="4895019427244614047">Șterge adresa</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3911,7 +3909,6 @@ Detalii suplimentare:
 <translation id="8493948351860045254">Eliberează spațiu</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> a răspuns prea târziu.</translation>
 <translation id="8502023382441452707">Aniversări și onomastici</translation>
-<translation id="8502972004418241366">Pentru a folosi <ph name="PERMISSION" /> pe acest site, trebuie să permiți accesul browserului Chrome</translation>
 <translation id="8503559462189395349">Parole Chrome</translation>
 <translation id="8503813439785031346">Nume de utilizator</translation>
 <translation id="8504928302600319133">Hardware pentru computere</translation>
@@ -3931,7 +3928,6 @@ Detalii suplimentare:
 <translation id="853246364274116957">Teatru de pe Broadway și teatru muzical</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Accesează &lt;strong&gt;chrome://policy&lt;/strong&gt; ca să vezi lista de adrese URL blocate și alte politici aplicate de administratorul de sistem.</translation>
-<translation id="8534934518812659742">Ai dezactivat <ph name="PERMISSION" /> pentru Chrome.</translation>
 <translation id="8536234749087605613">Plic (cu fereastră)</translation>
 <translation id="8539500321752640291">Acorzi două permisiuni?</translation>
 <translation id="8541158209346794904">Dispozitivul Bluetooth</translation>
@@ -3989,7 +3985,6 @@ Detalii suplimentare:
 <translation id="865032292777205197">Senzori de mișcare</translation>
 <translation id="865255447216708819">Peliculă de printare pe verso</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Anterior nu ai permis <ph name="PERMISSION" /> pe <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Proprietăți comerciale</translation>
 <translation id="8663226718884576429">Rezumatul comenzii, <ph name="TOTAL_LABEL" />, Mai multe detalii</translation>
 <translation id="8663909737634214500">Disc optic</translation>
@@ -4021,6 +4016,7 @@ Detalii suplimentare:
 <translation id="8722929331701811374">Papetărie (cu antet)</translation>
 <translation id="8724824364712796726">Plic B6</translation>
 <translation id="8725066075913043281">Încearcă din nou</translation>
+<translation id="8725667981218437315">Cameră și microfon</translation>
 <translation id="8726549941689275341">Dimensiunea paginii:</translation>
 <translation id="8730621377337864115">Terminat</translation>
 <translation id="8731268612289859741">Cod de securitate</translation>

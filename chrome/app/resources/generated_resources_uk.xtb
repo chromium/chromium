@@ -828,6 +828,7 @@
 <translation id="1611432201750675208">Пристрій заблоковано</translation>
 <translation id="1611649489706141841">уперед</translation>
 <translation id="1612019740169791082">Ваш контейнер не підтримує зміну розміру диска. Щоб скоригувати обсяг пам'яті, що виділено для Linux, створіть резервну копію, а потім відновіть її в новому контейнері.</translation>
+<translation id="1612179176000108678">Вмикати, лише коли заряд акумулятора становить <ph name="PERCENT" />% або менше</translation>
 <translation id="1613019471223620622">Показати пароль для користувача <ph name="USERNAME" /> на сайті <ph name="DOMAIN" /></translation>
 <translation id="1613149688105334014">Старі версії додатків Chrome не відкриватимуться після грудня 2022 року. Ви можете перевірити, чи доступна нова версія.</translation>
 <translation id="1614511179807650956">Можливо, ви використали ліміт мобільного передавання даних. Перейдіть на портал активації служби "<ph name="NAME" />", щоб придбати більший обсяг даних</translation>
@@ -1614,7 +1615,6 @@
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Ви ввімкнули функції налагодження ОС Chrome Flex, які встановлять daemon SSHD та ввімкнуть запуск із носіїв USB.</translation>
 <translation id="2178614541317717477">Дискредитація ЦС</translation>
-<translation id="2179416702468739594">Пошук доступних профілів. Можливо, пристрій на кілька хвилин від’єднається від мобільної мережі.</translation>
 <translation id="2180620921879609685">Блокувати контент на всіх сторінках</translation>
 <translation id="2181821976797666341">Правила</translation>
 <translation id="2182058453334755893">Скопійовано в буфер обміну</translation>
@@ -1667,6 +1667,7 @@
 <translation id="222115440608612541">Міняє теми відповідно до часу доби</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Джерело медіа без назви</translation>
+<translation id="2224337661447660594">Немає Інтернету</translation>
 <translation id="2224444042887712269">Це налаштування встановив користувач <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Редагувати ім’я папки</translation>
 <translation id="2225927550500503913">Віртуальну картку ввімкнено</translation>
@@ -3121,7 +3122,6 @@
 <translation id="3321494112580110651">Вашого принтера немає в списку?</translation>
 <translation id="3321776060736518525">Джерело: <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Бонус! Подовжено час використання пристрою</translation>
-<translation id="3325804108816646710">Пошук доступних профілів…</translation>
 <translation id="3325930488268995856">Microsoft OneDrive зв’язано</translation>
 <translation id="3325995804968971809">Стиль</translation>
 <translation id="3327050066667856415">Безпека комп'ютерів Chromebook – наша основна мета. Ваш пристрій має автоматичний захист від зловмисного програмного забезпечення, тому вам не потрібно встановлювати інші додатки.</translation>
@@ -3906,6 +3906,7 @@
 <translation id="39103738135459590">Код активації</translation>
 <translation id="3910588685973519483">Створюйте фонові малюнки за допомогою ШІ</translation>
 <translation id="3911824782900911339">Сторінка нової вкладки</translation>
+<translation id="3913689539406883376">Вмикати, лише коли комп’ютер не підключено до мережі живлення</translation>
 <translation id="3914173277599553213">Обов’язково</translation>
 <translation id="3914568430265141791">Відкрити папку "<ph name="FOLDER_TITLE" />"</translation>
 <translation id="3915280005470252504">Пошук голосом</translation>
@@ -5428,7 +5429,6 @@
 <translation id="5101839224773798795">Автоматично натискати, коли курсор зупиняється</translation>
 <translation id="5103311607312269661">збільшення яскравості екрана</translation>
 <translation id="5106350808162641062">Вилучити</translation>
-<translation id="5106608587025903971">Замість того щоб вводити пароль облікового запису Google під час входу, можна створити пароль <ph name="DEVICE_TYPE" /> для цього пристрою</translation>
 <translation id="510695978163689362">Для облікового запису <ph name="USER_EMAIL" /> налаштовано батьківський контроль у Family Link. Щоб керувати доступом до навчальних матеріалів за допомогою цієї ж функції, додайте обліковий запис закладу освіти.</translation>
 <translation id="5107093668001980925">Ніколи не показувати модуль "<ph name="MODULE_NAME" />"</translation>
 <translation id="5107443654503185812">Розширення вимкнуло Безпечний перегляд</translation>
@@ -7392,7 +7392,6 @@
 <translation id="6647690760956378579">Попереднє прослуховування природного голосу</translation>
 <translation id="6648911618876616409">Доступне важливе оновлення. Увійдіть, щоб установити його.</translation>
 <translation id="6649018507441623493">Зачекайте…</translation>
-<translation id="6650072551060208490">Сайт <ph name="ORIGIN_NAME" /> хоче підтвердити вашу особу</translation>
 <translation id="6650206238642452078">Підписуватися на події системи ChromeOS</translation>
 <translation id="665061930738760572">Відкрити в &amp;новому вікні</translation>
 <translation id="6651237644330755633">Довіряти цьому сертифікату для ідентифікації веб-сайтів</translation>
@@ -9143,6 +9142,7 @@
 <translation id="7966571622054096916">{COUNT,plural, =1{У списку закладок 1 елемент}one{У списку закладок {COUNT} елемент}few{У списку закладок {COUNT} елементи}many{У списку закладок {COUNT} елементів}other{У списку закладок {COUNT} елемента}}</translation>
 <translation id="7967776604158229756">Інші налаштування й дозволи для веб-додатків</translation>
 <translation id="7968072247663421402">Доступні постачальники</translation>
+<translation id="7968576769959093306">Завантаження голосів…</translation>
 <translation id="7968742106503422125">Переглядати та змінювати дані, які копіюються</translation>
 <translation id="7968833647796919681">Увімкнути збір даних про ефективність</translation>
 <translation id="7968982339740310781">Переглянути деталі</translation>

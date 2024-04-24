@@ -73,6 +73,7 @@
 <translation id="2918709798697875261">Vaša organizácia vyžaduje, aby ste sa do prehliadača Chromium neprihlasovali.</translation>
 <translation id="2942241131342758843">Predvolene otvárajte odkazy, vyhľadávajte v miniaplikáciách a automaticky dopĺňajte heslá v iných aplikáciách pomocou prehliadača Chromium</translation>
 <translation id="2977470724722393594">Prehliadač Chromium bol aktualizovaný</translation>
+<translation id="3044857325852340337">Dáta prehliadača Chromium boli odstránené</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium vám môže pomôcť sledovať túto zásielku na stránke na novej karte.}few{Chromium vám môže pomôcť sledovať tieto zásielky na stránke na novej karte.}many{Chromium can help you track these packages on the New Tab Page.}other{Chromium vám môže pomôcť sledovať tieto zásielky na stránke na novej karte.}}</translation>
 <translation id="3102849287235003384">Ak sa chcete odhlásiť zo svojho účtu Google na všetkých weboch, <ph name="BEGIN_LINK" />odhláste sa z prehliadača Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Vyhľadávať hlasom v prehliadači Chromium</translation>
@@ -120,6 +121,7 @@
 <translation id="4633738821577273991">Získajte aj Zlepšené bezpečné prehliadanie pre tento profil prehliadača Chromium</translation>
 <translation id="4638625642619341392">Tu si stiahnite Chromium.</translation>
 <translation id="4654936625574199632">Chromium odosiela údaje o používaní a pádoch Googlu, čím pomáha so svojím zlepšovaním. <ph name="BEGIN_LINK" />Spravovať<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Odstrániť dáta prehliadania v prehliadači Chromium</translation>
 <translation id="4681781466797808448">Zapnutie skenera prehliadača Chromium</translation>
 <translation id="4736424910885271643">Váš účet spravuje <ph name="HOSTED_DOMAIN" />, takže údaje prehliadača Chromium budú z tohto zariadenia vymazané</translation>
 <translation id="4773487571745795781">Vypli ste prihlásenie do prehliadača Chromium.</translation>
@@ -187,6 +189,7 @@
 <translation id="6324041800010509197">Prejsť na mriežku kariet v prehliadači Chromium</translation>
 <translation id="6325378625795868881">Chromium môžete kedykoľvek použiť klepnutím na odkazy v správach a ďalších aplikáciách.</translation>
 <translation id="632825460376924298">Povoliť prihlásenie do prehliadača Chromium</translation>
+<translation id="6332129548244419716">Odstráňte dáta prehliadania v prehliadači Chromium.</translation>
 <translation id="6337530241089703714">Vyberte, či chcete údaje prehliadača Chromium v tomto zariadení vymazať alebo ponechať</translation>
 <translation id="6348483005826990855">3. Vyberte Chromium</translation>
 <translation id="6383607155624074112">Získajte prístup k prehliadaču Chromium rýchlejšie z ponuky aplikácií na ploche</translation>

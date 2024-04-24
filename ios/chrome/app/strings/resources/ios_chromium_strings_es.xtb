@@ -73,6 +73,7 @@ Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrom
 <translation id="2918709798697875261">Tu organización requiere que mantengas tu sesión cerrada en Chromium.</translation>
 <translation id="2942241131342758843">Usa Chromium de forma predeterminada para abrir enlaces, hacer búsquedas desde widgets y autocompletar contraseñas en otras aplicaciones</translation>
 <translation id="2977470724722393594">Chromium está actualizado</translation>
+<translation id="3044857325852340337">Datos de Chromium eliminados</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{Chromium puede ayudarte a hacer un seguimiento de este paquete en la página Nueva pestaña.}other{Chromium puede ayudarte a hacer un seguimiento de estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="3102849287235003384">Para cerrar sesión con tu cuenta de Google en todos los sitios web, <ph name="BEGIN_LINK" />cierra sesión en Chromium<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Buscar por voz en Chromium</translation>
@@ -120,6 +121,7 @@ Tus datos se han cifrado con tu frase de contraseña. Introdúcela para usar y g
 <translation id="4633738821577273991">Usa Navegación segura mejorada en este perfil de Chromium también</translation>
 <translation id="4638625642619341392">Descarga Chromium aquí.</translation>
 <translation id="4654936625574199632">Para ayudar a mejorar la aplicación, Chromium envía datos de uso y de fallos a Google. <ph name="BEGIN_LINK" />Gestionar<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Eliminar datos de navegación en Chromium</translation>
 <translation id="4681781466797808448">Activar el escáner de Chromium</translation>
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> gestiona tu cuenta, así que se borrarán tus datos de Chromium en este dispositivo</translation>
 <translation id="4773487571745795781">Has desactivado el inicio de sesión en Chromium.</translation>
@@ -187,6 +189,7 @@ Notas importantes:
 <translation id="6324041800010509197">Acceder a la cuadrícula de pestañas en Chromium</translation>
 <translation id="6325378625795868881">Usa Chromium siempre que toques enlaces de mensajes y otras aplicaciones.</translation>
 <translation id="632825460376924298">Permitir el inicio de sesión en Chromium</translation>
+<translation id="6332129548244419716">Elimina los datos de navegación en Chromium.</translation>
 <translation id="6337530241089703714">Elige si quieres borrar o conservar tus datos de Chromium en este dispositivo</translation>
 <translation id="6348483005826990855">3. Selecciona Chromium</translation>
 <translation id="6383607155624074112">Accede más rápido a Chromium desde el Dock de tu pantalla de inicio</translation>

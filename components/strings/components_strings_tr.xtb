@@ -584,7 +584,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2071692954027939183">Genelde izin vermediğiniz için bildirimler otomatik olarak engellendi</translation>
 <translation id="2071852865256799872">Tarayıcınızın yönetimi kuruluşunuz tarafından, profilinizin yönetimi ise <ph name="PROFILE_DOMAIN" /> tarafından yapılıyor</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> engellemesini kaldır</translation>
-<translation id="2075497153347571252">Yöneticiniz <ph name="ORIGIN" /> sitesinde <ph name="PERMISSION" /> iznini engelledi</translation>
 <translation id="2078956195623975415">Müzik ve Dans Oyunları</translation>
 <translation id="2079545284768500474">Geri al</translation>
 <translation id="2080021694978766903">Bu politikada en çok <ph name="MAX_ITEMS_LIMIT" /> giriş olabilir.</translation>
@@ -2024,7 +2023,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4885030148564729407">Balayı ve Romantik Kaçamaklar</translation>
 <translation id="4885256590493466218">Ödeme sırasında <ph name="CARD_DETAIL" /> ile ödeyin</translation>
 <translation id="4887406273302438710">Windows Hello ile şifreleri koruma</translation>
-<translation id="4890070067176768718">Yöneticiniz <ph name="ORIGIN" /> sitesinde <ph name="PERMISSION" /> iznini verdi</translation>
 <translation id="4892518386797173871">Arka</translation>
 <translation id="4895019427244614047">Adresi sil</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3911,7 +3909,6 @@ Ek ayrıntılar:
 <translation id="8493948351860045254">Yer aç</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ana makinesinin yanıt vermesi çok uzun sürdü.</translation>
 <translation id="8502023382441452707">Doğum Günleri ve İsim Günleri</translation>
-<translation id="8502972004418241366">Bu sitede <ph name="PERMISSION" /> izninin kullanılması için Chrome'a erişim izni vermeniz gerekiyor</translation>
 <translation id="8503559462189395349">Chrome Şifreleri</translation>
 <translation id="8503813439785031346">Kullanıcı adı</translation>
 <translation id="8504928302600319133">Bilgisayar Donanımı</translation>
@@ -3931,7 +3928,6 @@ Ek ayrıntılar:
 <translation id="853246364274116957">Broadway Gösterileri ve Müzikaller</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Engellenen URL'lerin ve sistem yöneticinizin zorunlu tuttuğu diğer politikaların listesini görmek için &lt;strong&gt;chrome://policy&lt;/strong&gt; adresini ziyaret edin.</translation>
-<translation id="8534934518812659742">Chrome'un <ph name="PERMISSION" /> iznini kullanmasını devre dışı bıraktınız.</translation>
 <translation id="8536234749087605613">Zarf (Pencereli)</translation>
 <translation id="8539500321752640291">2 izin verilsin mi?</translation>
 <translation id="8541158209346794904">Bluetooth cihaz</translation>
@@ -3989,7 +3985,6 @@ Ek ayrıntılar:
 <translation id="865032292777205197">hareket sensörleri</translation>
 <translation id="865255447216708819">Arka Baskı Filmi</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Daha önce <ph name="ORIGIN" /> sitesine <ph name="PERMISSION" /> izni vermemiştiniz</translation>
 <translation id="8662463432865928030">Ticari Mülkler</translation>
 <translation id="8663226718884576429">Sipariş Özeti, <ph name="TOTAL_LABEL" />, Daha Fazla Ayrıntı</translation>
 <translation id="8663909737634214500">Optik Disk</translation>
@@ -4021,6 +4016,7 @@ Ek ayrıntılar:
 <translation id="8722929331701811374">Kırtasiye Malzemesi (Antetli Kağıt)</translation>
 <translation id="8724824364712796726">Zarf B6</translation>
 <translation id="8725066075913043281">Yeniden dene</translation>
+<translation id="8725667981218437315">Kamera ve mikrofon</translation>
 <translation id="8726549941689275341">Sayfa boyutu:</translation>
 <translation id="8730621377337864115">Bitti</translation>
 <translation id="8731268612289859741">Güvenlik kodu</translation>

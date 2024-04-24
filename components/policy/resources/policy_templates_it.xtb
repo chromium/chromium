@@ -640,6 +640,7 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cl
 
       Questo criterio è deprecato. Usa il criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="1509692106376861764">Questa norma non è più supportata a partire dalla versione 29 di <ph name="PRODUCT_NAME" />.</translation>
+<translation id="1509839615768187049">Utilizza sempre il client DNS integrato</translation>
 <translation id="1514888685242892912">Attiva <ph name="PRODUCT_NAME" /></translation>
 <translation id="1515230621229117540">Attiva il menu Accessibilità mobile</translation>
 <translation id="1515824657887788963">Consenti a una pagina di fare richieste XHR sincrone durante l'uscita dalla pagina</translation>
@@ -3302,6 +3303,11 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di IA ge
 <translation id="3554498762428140109">Attiva Copertura finestra nativa</translation>
 <translation id="3554984410014457319">Consente all'Assistente Google di ascoltare la frase di attivazione vocale</translation>
 <translation id="3557586898458302131">Includi porta non standard nel Kerberos SPN generato</translation>
+<translation id="3557705296383573923">Questo criterio consente di controllare quale stack software viene utilizzato per comunicare con il server DNS: il client DNS del sistema operativo o quello integrato di <ph name="PRODUCT_NAME" />. Questo criterio non influisce sui server DNS utilizzati: se, ad esempio, il sistema operativo viene configurato in modo da usare un server DNS aziendale, lo stesso server viene usato dal client DNS integrato. Non consente nemmeno di controllare se viene utilizzato il protocollo DNS over HTTPS; <ph name="PRODUCT_NAME" /> userà sempre il resolver integrato per le richieste DNS over HTTPS. Per informazioni relative al controllo del protocollo DNS over HTTPS, vedi il criterio <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" />.
+
+      Se questo criterio viene attivato o se non viene configurato, viene utilizzato il client DNS integrato.
+
+      Se viene disattivato, il client DNS integrato viene utilizzato soltanto quando viene usato il protocollo DNS over HTTPS.</translation>
 <translation id="3558024517032824255">Consente di specificare il numero minimo di obiettivi di <ph name="PRODUCT_OS_NAME" /> consentiti per il rollback a partire dalla versione stabile in qualsiasi momento.
 
 L'impostazione predefinita è 0 per il consumatore, 4 (circa sei mesi) per i dispositivi aziendali registrati.

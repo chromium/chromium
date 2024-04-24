@@ -1600,7 +1600,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Les fonctionnalités de débogage de ChromeOS Flex que vous activez configurent le daemon sshd et autorisent le démarrage à partir de clés USB.</translation>
 <translation id="2178614541317717477">Autorité de certification compromise</translation>
-<translation id="2179416702468739594">Recherche des profils disponibles… Votre réseau mobile risque de se déconnecter pendant quelques minutes.</translation>
 <translation id="2180620921879609685">Bloquer du contenu sur n'importe quelle page</translation>
 <translation id="2181821976797666341">Règles</translation>
 <translation id="2182058453334755893">Copié dans le presse-papiers</translation>
@@ -1653,6 +1652,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="222115440608612541">Permet de changer le thème au lever et au coucher du soleil</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Source multimédia sans nom</translation>
+<translation id="2224337661447660594">Aucun accès à Internet</translation>
 <translation id="2224444042887712269">Ce paramètre appartient à <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Modifier le nom du dossier</translation>
 <translation id="2225927550500503913">Carte virtuelle activée</translation>
@@ -3104,7 +3104,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3321494112580110651">Vous ne voyez pas votre imprimante ?</translation>
 <translation id="3321776060736518525">À partir de <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Super ! Tu as plus de temps d'utilisation</translation>
-<translation id="3325804108816646710">Recherche de profils disponibles…</translation>
 <translation id="3325930488268995856">Microsoft OneDrive connecté</translation>
 <translation id="3325995804968971809">Style</translation>
 <translation id="3327050066667856415">Les Chromebooks sont conçus pour une sécurité optimale. Votre appareil est automatiquement protégé contre les logiciels malveillants. Aucun logiciel supplémentaire n'est requis.</translation>
@@ -5410,7 +5409,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5101839224773798795">Cliquer automatiquement à l'arrêt du curseur</translation>
 <translation id="5103311607312269661">augmenter la luminosité de l'écran</translation>
 <translation id="5106350808162641062">Supprimer</translation>
-<translation id="5106608587025903971">Au lieu d'utiliser le mot de passe de votre compte Google pour vous connecter, vous pouvez créer un mot de passe pour cet appareil <ph name="DEVICE_TYPE" /></translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> est supervisé par Family Link. Vous pouvez ajouter des comptes scolaires pour lui permettre d'accéder à des ressources scolaires avec supervision parentale.</translation>
 <translation id="5107093668001980925">Ne jamais afficher <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Une extension a désactivé la navigation sécurisée</translation>
@@ -7374,7 +7372,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6647690760956378579">Aperçu de la voix naturelle</translation>
 <translation id="6648911618876616409">Une mise à jour critique est disponible. Connectez-vous pour lancer l'installation.</translation>
 <translation id="6649018507441623493">Un instant…</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> souhaite vérifier qu'il s'agit bien de vous</translation>
 <translation id="6650206238642452078">Abonnez-vous aux événements système ChromeOS</translation>
 <translation id="665061930738760572">Ouvrir dans une &amp;nouvelle fenêtre</translation>
 <translation id="6651237644330755633">Considérer ce certificat comme fiable pour identifier les sites Web</translation>

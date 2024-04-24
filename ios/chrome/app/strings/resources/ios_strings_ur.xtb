@@ -1038,7 +1038,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6363526231572697780">کوئی صارف نام نہیں ہے</translation>
 <translation id="6366190659675876144">معیاری تحفظ</translation>
 <translation id="6366663624406569102">سائن آؤٹ کریں اور مطابقت پذیری آف کریں</translation>
-<translation id="6368038301482806847">فہرست سے سرچ انجن منتخب کریں</translation>
+<translation id="6368038301482806847">فہرست سے سرچ انجن منتخب کریں۔</translation>
 <translation id="6374469231428023295">دوبارہ کوشش کریں</translation>
 <translation id="6377118281273296434">سائٹ کی سیکیورٹی</translation>
 <translation id="6383719166112032471">مقام کھولیں…</translation>
@@ -1198,7 +1198,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7161230316646448869">سبھی آلات پر اپنے بُک مارکس اور سرگزشت وغیرہ سنک کریں</translation>
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> سے پوشیدگی ٹیبز غیر مقفل کریں</translation>
 <translation id="7173114856073700355">ترتیبات کھولیں</translation>
-<translation id="7186568385131859684">‏Google سروسز پر آپ کے دوسرے ڈیٹا کے ساتھ براؤزنگ کی سرگزشت کو کس طرح استعمال کیا جاتا ہے اس کو کنٹرول کریں</translation>
+<translation id="7186568385131859684">‏کنٹرول کریں کہ براؤزنگ کی سرگزشت آپ کے دوسرے ڈیٹا کے ساتھ Google سروسز پر کیسے استعمال کی جائے</translation>
 <translation id="7189598951263744875">اشتراک کریں…</translation>
 <translation id="719133302483559673">اپنی دلچسپیوں اور ترجیحات کا نظم کریں۔</translation>
 <translation id="7192050974311852563">لاگ کرنا شروع کریں</translation>
@@ -1242,7 +1242,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7438481509621345350">نیا ٹیب کھولنے پر اب آپ کو <ph name="CHANNEL_NAME" /> سے کہانیاں دکھائی دیں گی۔</translation>
 <translation id="7451023311965289370">{count,plural, =1{"{title}" میں بُک مارک کو محفوظ کیا گیا}other{"{title}" میں بُک مارکس کو محفوظ کیا گیا}}</translation>
 <translation id="7454057999980797137">ریاست / ملک</translation>
-<translation id="7458706065921255639">ذاتی نوعیت سازی اور لنکنگ</translation>
+<translation id="7458706065921255639">ذاتی نوعیت سازی اور لنک کرنا</translation>
 <translation id="745899714366929493">پورا دن</translation>
 <translation id="7459628154744868585">بہتر کردہ حفاظت آن ہے</translation>
 <translation id="7465351360025415755">وہ مواد حاصل کریں جو آپ کے لیے اہم ہے</translation>

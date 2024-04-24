@@ -584,7 +584,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2071692954027939183">Ilmoitukset on estetty automaattisesti, koska et yleensä salli niitä</translation>
 <translation id="2071852865256799872">Organisaatio ylläpitää selaintasi ja <ph name="PROFILE_DOMAIN" /> ylläpitää profiiliasi</translation>
 <translation id="2074733626795553847">Kumoa esto: <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Järjestelmänvalvoja on estänyt luvan (<ph name="PERMISSION" />) täällä: <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Musiikki‑ ja tanssipelit</translation>
 <translation id="2079545284768500474">Kumoa</translation>
 <translation id="2080021694978766903">Käytännössä voi olla korkeintaan <ph name="MAX_ITEMS_LIMIT" /> hakupalvelua.</translation>
@@ -2025,7 +2024,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4885030148564729407">Häämatkat ja romanttiset maisemanvaihdokset</translation>
 <translation id="4885256590493466218">Käytä <ph name="CARD_DETAIL" /> ‑maksutapaa kassalla.</translation>
 <translation id="4887406273302438710">Suojaa salasanat Windows Hellolla</translation>
-<translation id="4890070067176768718">Järjestelmänvalvoja on myöntänyt luvan (<ph name="PERMISSION" />) täällä: <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Takaosa</translation>
 <translation id="4895019427244614047">Poista osoite</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3912,7 +3910,6 @@ Lisätietoja:
 <translation id="8493948351860045254">Vapauta tilaa</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ei vastannut riittävän nopeasti.</translation>
 <translation id="8502023382441452707">Syntymä‑ ja nimipäivät</translation>
-<translation id="8502972004418241366">Sinun on annettava Chromelle pääsyoikeus, jotta <ph name="PERMISSION" /> on käytettävissä tällä sivustolla</translation>
 <translation id="8503559462189395349">Chrome-salasanat</translation>
 <translation id="8503813439785031346">Käyttäjätunnus</translation>
 <translation id="8504928302600319133">Tietokonelaitteistot</translation>
@@ -3932,7 +3929,6 @@ Lisätietoja:
 <translation id="853246364274116957">Broadway-esitykset ja musiikkiteatteri</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Voit nähdä estetyt URL-osoitteet ja muut järjestelmänvalvojasi määräämät käytännöt osoitteessa &lt;strong&gt;chrome://policy&lt;/strong&gt;.</translation>
-<translation id="8534934518812659742"><ph name="PERMISSION" /> on laitettu pois päältä Chromessa.</translation>
 <translation id="8536234749087605613">Kirjekuori (ikkuna)</translation>
 <translation id="8539500321752640291">Myönnetäänkö 2 lupaa?</translation>
 <translation id="8541158209346794904">Bluetooth-laite</translation>
@@ -3990,7 +3986,6 @@ Lisätietoja:
 <translation id="865032292777205197">liiketunnistimet</translation>
 <translation id="865255447216708819">Filmin takapuolen tulostus</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Et aiemmin myöntänyt lupaa (<ph name="PERMISSION" />) sivustolle <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Liikekiinteistöt</translation>
 <translation id="8663226718884576429">Tilauksen yhteenveto, <ph name="TOTAL_LABEL" />, lisätietoja</translation>
 <translation id="8663909737634214500">Optinen levy</translation>
@@ -4022,6 +4017,7 @@ Lisätietoja:
 <translation id="8722929331701811374">Kirjepaperi (kirjelomake)</translation>
 <translation id="8724824364712796726">Kirjekuori B6</translation>
 <translation id="8725066075913043281">Yritä uudelleen</translation>
+<translation id="8725667981218437315">kameraasi ja mikrofoniasi</translation>
 <translation id="8726549941689275341">Sivun koko:</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8731268612289859741">Turvakoodi</translation>

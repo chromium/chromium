@@ -1611,7 +1611,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Jy aktiveer tans Chrome OS Flex-ontfoutingkenmerke wat sshd daemon sal opstel en selflaai van USB-datastokkies af moontlik sal maak.</translation>
 <translation id="2178614541317717477">CA-kompromie</translation>
-<translation id="2179416702468739594">Soek tans beskikbare profiele. Dit kan veroorsaak dat jou selnetwerk vir 'n paar minute ontkoppel.</translation>
 <translation id="2180620921879609685">Blokkeer inhoud op enige bladsy</translation>
 <translation id="2181821976797666341">Beleide</translation>
 <translation id="2182058453334755893">Gekopieer na jou knipbord</translation>
@@ -1664,6 +1663,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="222115440608612541">Skakel met sonsopkoms en sonsondergang tussen temas oor</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Naamlose mediabron</translation>
+<translation id="2224337661447660594">Geen internet nie</translation>
 <translation id="2224444042887712269">Hierdie instelling behoort aan <ph name="OWNER_EMAIL" /> .</translation>
 <translation id="2224551243087462610">Wysig vouernaam</translation>
 <translation id="2225927550500503913">Virtuele kaart is aangeskakel</translation>
@@ -3118,7 +3118,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3321494112580110651">Sien jy nie jou drukker nie?</translation>
 <translation id="3321776060736518525">Vanaf <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonus! Jy het meer skermtyd gekry</translation>
-<translation id="3325804108816646710">Soek tans beskikbare profiele …</translation>
 <translation id="3325930488268995856">Microsoft OneDrive is gekoppel</translation>
 <translation id="3325995804968971809">Styl</translation>
 <translation id="3327050066667856415">Chromebooks is ontwerp vir sekuriteit. Jou toestel word outomaties teen wanware beskerm – geen ekstra sagteware is nodig nie.</translation>
@@ -5425,7 +5424,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5101839224773798795">Klik outomaties wanneer die merker stop</translation>
 <translation id="5103311607312269661">verhoog skermhelderheid</translation>
 <translation id="5106350808162641062">Verwyder</translation>
-<translation id="5106608587025903971">Jy kan, in plaas daarvan om jou Google Rekening-wagwoord vir aanmelding in te voer, ’n <ph name="DEVICE_TYPE" />-wagwoord vir hierdie toestel skep</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> is onder toesig van Family Link. Jy kan skoolrekeninge byvoeg om met ouertoesig toegang tot skoolhulpbronne te kry.</translation>
 <translation id="5107093668001980925">Moet nooit <ph name="MODULE_NAME" /> wys nie</translation>
 <translation id="5107443654503185812">'n Uitbreiding het Veiligblaai afgeskakel</translation>
@@ -7387,7 +7385,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6647690760956378579">Voorskou van natuurlike stem</translation>
 <translation id="6648911618876616409">'n Noodsaaklike opdatering is gereed om geïnstalleer te word. Meld aan om te begin.</translation>
 <translation id="6649018507441623493">Net 'n oomblik …</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> wil bevestig dat dit jy is</translation>
 <translation id="6650206238642452078">Teken in op ChromeOS-stelselgebeure</translation>
 <translation id="665061930738760572">Maak in nuwe venster oop</translation>
 <translation id="6651237644330755633">Vertrou hierdie sertifikaat om webwerwe te identifiseer</translation>

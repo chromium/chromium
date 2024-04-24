@@ -584,7 +584,6 @@
 <translation id="2071692954027939183">Οι ειδοποιήσεις αποκλείστηκαν αυτόματα επειδή συνήθως δεν τις επιτρέπετε</translation>
 <translation id="2071852865256799872">Το πρόγραμμα περιήγησης είναι υπό τη διαχείριση του οργανισμού σας και το προφίλ σας υπό τη διαχείριση του τομέα <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Κατάργηση αποκλεισμού του θέματος <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Ο διαχειριστής απέκλεισε την άδεια <ph name="PERMISSION" /> στον ιστότοπο <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Παιχνίδια μουσικής και χορού</translation>
 <translation id="2079545284768500474">Αναίρεση</translation>
 <translation id="2080021694978766903">Αυτή η πολιτική δεν πρέπει να έχει περισσότερες από <ph name="MAX_ITEMS_LIMIT" /> καταχωρίσεις.</translation>
@@ -2025,7 +2024,6 @@
 <translation id="4885030148564729407">Μήνες του μέλιτος και ρομαντικές αποδράσεις</translation>
 <translation id="4885256590493466218">Πληρωμή με την κάρτα <ph name="CARD_DETAIL" /> κατά την ολοκλήρωση της αγοράς</translation>
 <translation id="4887406273302438710">Προστασία κωδικών πρόσβασης με το Windows Hello</translation>
-<translation id="4890070067176768718">Ο διαχειριστής παραχώρησε την άδεια <ph name="PERMISSION" /> στον ιστότοπο <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Πίσω</translation>
 <translation id="4895019427244614047">Διαγραφή διεύθυνσης</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3912,7 +3910,6 @@
 <translation id="8493948351860045254">Αποδεσμεύστε χώρο</translation>
 <translation id="8498891568109133222">Ο κεντρικός υπολογιστής <ph name="HOST_NAME" /> άργησε πολύ να ανταποκριθεί.</translation>
 <translation id="8502023382441452707">Γενέθλια και ονομαστικές εορτές</translation>
-<translation id="8502972004418241366">Για να χρησιμοποιήσετε την άδεια <ph name="PERMISSION" /> σε αυτόν τον ιστότοπο, θα πρέπει να παραχωρήσετε πρόσβαση στο Chrome</translation>
 <translation id="8503559462189395349">Κωδικοί πρόσβασης Chrome</translation>
 <translation id="8503813439785031346">Όνομα χρήστη</translation>
 <translation id="8504928302600319133">Εξοπλισμός υπολογιστών</translation>
@@ -3932,7 +3929,6 @@
 <translation id="853246364274116957">Broadway και μουσικό θέατρο</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Μεταβείτε στη διεύθυνση &lt;strong&gt;chrome://policy&lt;/strong&gt; για να δείτε τη λίστα των αποκλεισμένων URL και άλλες πολιτικές που έχουν τεθεί σε εφαρμογή από τον διαχειριστή του συστήματός σας.</translation>
-<translation id="8534934518812659742">Απενεργοποιήσατε την άδεια "<ph name="PERMISSION" />" για το Chrome.</translation>
 <translation id="8536234749087605613">Φάκελος (Παράθυρο)</translation>
 <translation id="8539500321752640291">Να επιτρέπονται οι 2 άδειες;</translation>
 <translation id="8541158209346794904">Συσκευή Bluetooth</translation>
@@ -3990,7 +3986,6 @@
 <translation id="865032292777205197">αισθητήρες κίνησης</translation>
 <translation id="865255447216708819">Αδιαφανές φιλμ</translation>
 <translation id="8654126188050905496">55 x 91 χιλ.</translation>
-<translation id="8655930295668719549">Στο παρελθόν δεν επιτρέπατε την άδεια <ph name="PERMISSION" /> στον ιστότοπο <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Εμπορικές ιδιοκτησίες</translation>
 <translation id="8663226718884576429">Σύνοψη παραγγελίας, <ph name="TOTAL_LABEL" />, Περισσότερες λεπτομέρειες</translation>
 <translation id="8663909737634214500">Οπτικός δίσκος</translation>
@@ -4022,6 +4017,7 @@
 <translation id="8722929331701811374">Γραφική ύλη (Επιστολόχαρτο)</translation>
 <translation id="8724824364712796726">Φάκελος B6</translation>
 <translation id="8725066075913043281">Προσπαθήστε ξανά</translation>
+<translation id="8725667981218437315">Κάμερα και μικρόφωνο</translation>
 <translation id="8726549941689275341">Μέγεθος σελίδας:</translation>
 <translation id="8730621377337864115">Ολοκληρώθηκε</translation>
 <translation id="8731268612289859741">Κωδικός ασφαλείας</translation>

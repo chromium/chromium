@@ -130,6 +130,7 @@
 <translation id="1653432787084483144">{count,plural, =1{{count} vistað aðgangsorð tiltækt ofan við lyklaborðið.}one{{count} vistað aðgangsorð tiltækt ofan við lyklaborðið.}other{{count} vistuð aðgangsorð tiltæk ofan við lyklaborðið.}}</translation>
 <translation id="1657011748321897393">Mistókst að deila vegna þess að þú ert ekki með tengingu við netið.</translation>
 <translation id="165877110639533037">Engir opnir flipar</translation>
+<translation id="1668001730617725852">Opna í nýjum flipahóp</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> &gt; <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Biðja um snjallvef</translation>
 <translation id="1687475363370981210">Merkja allt sem lesið</translation>
@@ -1199,6 +1200,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="7162168282402939716">Taka huliðsflipa úr lás með <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Opna stillingar</translation>
 <translation id="7186568385131859684">Stjórnaðu því hvernig vafraferillinn er notaður með öðrum gögnum úr Google-þjónustum</translation>
+<translation id="7187190640134722091">Búa til hóp</translation>
 <translation id="7189598951263744875">Deila...</translation>
 <translation id="719133302483559673">Stjórnaðu áhugasviðum þínum og kjörstillingum.</translation>
 <translation id="7192050974311852563">Hefja skráningu</translation>
@@ -1595,6 +1597,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9109699888944026290">{count,plural, =1{nýtt aðgangsorð fyrir þetta vefsvæði}one{nýtt aðgangsorð fyrir þetta vefsvæði}other{ný aðgangsorð fyrir þetta vefsvæði}}</translation>
 <translation id="9120217828624527905">Skipta yfir í að þýða alla síðuna</translation>
 <translation id="9124387962554796433">Google notar hugsanlega ferilinn þinn til að sérsníða Leit og aðrar Google þjónustur.</translation>
+<translation id="913036870884277353">Opnaðu tengla í öðrum forritum með einföldum hætti</translation>
 <translation id="9137526406337347448">Google þjónustur</translation>
 <translation id="9144931028079269381">Fela „Leslisti“</translation>
 <translation id="9148126808321036104">Skrá inn aftur</translation>

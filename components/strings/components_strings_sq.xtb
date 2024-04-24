@@ -584,7 +584,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2071692954027939183">Njoftimet bllokohen automatikisht sepse ti zakonisht nuk i lejon ato</translation>
 <translation id="2071852865256799872">Shfletuesi yt menaxhohet nga organizata jote dhe profili yt menaxhohet nga <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Zhblloko "<ph name="TOPIC" />"</translation>
-<translation id="2075497153347571252">Administratorit yt e ka bllokuar <ph name="PERMISSION" /> në <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Lojëra me muzikë dhe kërcim</translation>
 <translation id="2079545284768500474">Zhbëj</translation>
 <translation id="2080021694978766903">Kjo politikë nuk duhet të ketë më shumë se <ph name="MAX_ITEMS_LIMIT" /> hyrje.</translation>
@@ -2024,7 +2023,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4885030148564729407">Muaj mjalti dhe pushime romantike</translation>
 <translation id="4885256590493466218">Paguaj me <ph name="CARD_DETAIL" /> në përfundim të blerjes</translation>
 <translation id="4887406273302438710">Mbroji fjalëkalimet me Windows Hello</translation>
-<translation id="4890070067176768718">Administratori yt e ka lejuar <ph name="PERMISSION" /> në <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Prapa</translation>
 <translation id="4895019427244614047">Fshi adresën</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3910,7 +3908,6 @@ Detaje shtesë:
 <translation id="8493948351860045254">Liro hapësirë</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> kërkoi shumë kohë për t'u përgjigjur.</translation>
 <translation id="8502023382441452707">Ditëlindje dhe ditë emrash</translation>
-<translation id="8502972004418241366">Për ta përdorur (<ph name="PERMISSION" />) në këtë sajt, duhet t'i japësh qasje Chrome</translation>
 <translation id="8503559462189395349">Fjalëkalimet e Chrome</translation>
 <translation id="8503813439785031346">Emri i përdoruesit</translation>
 <translation id="8504928302600319133">Harduerë kompjuterikë</translation>
@@ -3930,7 +3927,6 @@ Detaje shtesë:
 <translation id="853246364274116957">Shfaqje teatrale muzikore</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Vizito &lt;strong&gt;chrome://policy&lt;/strong&gt; për të parë listën e URL-ve të bllokuara dhe politika të tjera të detyruara nga administratori i sistemit tënd.</translation>
-<translation id="8534934518812659742">E ke çaktivizuar lejen për te <ph name="PERMISSION" /> për Chrome.</translation>
 <translation id="8536234749087605613">Zarf (me dritare)</translation>
 <translation id="8539500321752640291">Të lejohen 2 leje?</translation>
 <translation id="8541158209346794904">Pajisje me Bluetooth</translation>
@@ -3987,7 +3983,6 @@ Detaje shtesë:
 <translation id="865032292777205197">sensorët e lëvizjes</translation>
 <translation id="865255447216708819">Film i printuar prapa</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Nuk e ke lejuar më parë <ph name="PERMISSION" /> në <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Prona komerciale</translation>
 <translation id="8663226718884576429">Përmbledhje e porosisë, <ph name="TOTAL_LABEL" />, detaje të tjera</translation>
 <translation id="8663909737634214500">Disk optik</translation>

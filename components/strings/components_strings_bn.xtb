@@ -585,7 +585,6 @@
 <translation id="2071692954027939183">আপনি সাধারণত বিজ্ঞপ্তি অনুমোদন না করার জন্য অটোমেটিক ব্লক হয়ে গেছে</translation>
 <translation id="2071852865256799872">আপনার প্রতিষ্ঠান আপনার ব্রাউজার ম্যানেজ করে এবং <ph name="PROFILE_DOMAIN" /> আপনার প্রোফাইল ম্যানেজ করে</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> আনব্লক করুন</translation>
-<translation id="2075497153347571252">আপনার অ্যাডমিনিস্ট্রেটর <ph name="ORIGIN" />-এ <ph name="PERMISSION" /> সম্পর্কিত অনুমতি ব্লক করেছেন</translation>
 <translation id="2078956195623975415">মিউজিক ও ডান্সের গেম</translation>
 <translation id="2079545284768500474">আগের অবস্থায় ফিরুন</translation>
 <translation id="2080021694978766903">এই নীতিতে <ph name="MAX_ITEMS_LIMIT" />টির বেশি এন্ট্রি থাকা যাবে না।</translation>
@@ -2025,7 +2024,6 @@
 <translation id="4885030148564729407">হানিমুন এবং রোমান্টিক গেটওয়ে</translation>
 <translation id="4885256590493466218">চেক-আউট করার সময় <ph name="CARD_DETAIL" /> দিয়ে পেমেন্ট করুন</translation>
 <translation id="4887406273302438710">Windows Hello-এর মাধ্যমে পাসওয়ার্ড সুরক্ষিত করুন</translation>
-<translation id="4890070067176768718">আপনার অ্যাডমিনিস্ট্রেটর <ph name="ORIGIN" />-এ <ph name="PERMISSION" /> সম্পর্কিত অনুমতি দিয়েছেন</translation>
 <translation id="4892518386797173871">রিয়ার</translation>
 <translation id="4895019427244614047">ঠিকানা মুছুন</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3911,7 +3909,6 @@
 <translation id="8493948351860045254">জায়গা ফাঁকা করুন</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> সাড়া দিতে খুবে বেশি সময় নিয়েছে।</translation>
 <translation id="8502023382441452707">জন্মদিন এবং নাম দিবস</translation>
-<translation id="8502972004418241366">এই সাইটে আপনার <ph name="PERMISSION" /> ব্যবহার করতে, আপনাকে Chrome-কে অ্যাক্সেস দিতে হবে</translation>
 <translation id="8503559462189395349">Chrome পাসওয়ার্ডগুলি</translation>
 <translation id="8503813439785031346">ইউজারনেম</translation>
 <translation id="8504928302600319133">কম্পিউটার হার্ডওয়্যার</translation>
@@ -3931,7 +3928,6 @@
 <translation id="853246364274116957">ব্রডওয়ে ও মিউজিকাল থিয়েটার</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ব্লক করা ইউআরএলের তালিকা এবং আপনার সিস্টেম অ্যাডমিনিস্ট্রেটরের প্রয়োগ করা অন্যান্য নীতিগুলি দেখার জন্য &lt;strong&gt;chrome://policy&lt;/strong&gt;-এ যান।</translation>
-<translation id="8534934518812659742">আপনি Chrome-এর জন্য <ph name="PERMISSION" /> বন্ধ করেছেন।</translation>
 <translation id="8536234749087605613">এনভেলপ (উইন্ডো)</translation>
 <translation id="8539500321752640291">২টি অনুমতি দেবেন?</translation>
 <translation id="8541158209346794904">ব্লুটুথ ডিভাইস</translation>
@@ -3988,7 +3984,6 @@
 <translation id="865032292777205197">মোশন সেন্সর</translation>
 <translation id="865255447216708819">ব্যাক প্রিন্ট ফিল্ম</translation>
 <translation id="8654126188050905496">৫৫ x ৯১ মিমি</translation>
-<translation id="8655930295668719549">আপনি আগে <ph name="ORIGIN" />-এ <ph name="PERMISSION" />-এর অনুমতি দেননি</translation>
 <translation id="8662463432865928030">ব্যবসায়িক প্রপার্টি</translation>
 <translation id="8663226718884576429">অর্ডারের সারসংক্ষেপ, <ph name="TOTAL_LABEL" />, আরও বিবরণ</translation>
 <translation id="8663909737634214500">অপটিকাল ডিস্ক</translation>
@@ -4020,6 +4015,7 @@
 <translation id="8722929331701811374">স্টেশনারি (লেটারহেড)</translation>
 <translation id="8724824364712796726">এনভেলপ B6</translation>
 <translation id="8725066075913043281">আবার চেষ্টা করুন</translation>
+<translation id="8725667981218437315">ক্যামেরা এবং মাইক্রোফোন</translation>
 <translation id="8726549941689275341">পৃষ্ঠার সাইজ:</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>
 <translation id="8731268612289859741">সিকিউরিটি কোড</translation>

@@ -4,6 +4,7 @@
 <translation id="1001534784610492198">インストーラー アーカイブが壊れているか無効です。Google Chrome をダウンロードし直してください。</translation>
 <translation id="1026101648481255140">インストールを再開</translation>
 <translation id="102763973188675173">Google Chrome をカスタマイズしてご活用ください。アップデートが利用可能です。</translation>
+<translation id="1028061813283459617">閲覧履歴データをこのデバイスからのみ削除して、Google アカウントに残すには、<ph name="BEGIN_LINK" />Chrome からログアウト<ph name="END_LINK" />します。</translation>
 <translation id="1065672644894730302">ユーザー設定ファイルを読み込むことができません。一部の機能が利用できない可能性があります。また、設定への変更は保存されません。</translation>
 <translation id="1088300314857992706">Chrome の前回の使用者は <ph name="USER_EMAIL_ADDRESS" /> です</translation>
 <translation id="110877069173485804">自分好みに設定</translation>

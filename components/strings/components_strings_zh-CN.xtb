@@ -584,7 +584,6 @@
 <translation id="2071692954027939183">由于您通常不允许显示通知，系统已自动屏蔽通知</translation>
 <translation id="2071852865256799872">您的浏览器由贵组织管理，您的个人资料由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="2074733626795553847">取消屏蔽“<ph name="TOPIC" />”</translation>
-<translation id="2075497153347571252">您的管理员已禁止 <ph name="ORIGIN" /> 使用<ph name="PERMISSION" /></translation>
 <translation id="2078956195623975415">音乐与舞蹈游戏</translation>
 <translation id="2079545284768500474">撤消</translation>
 <translation id="2080021694978766903">此政策最多只能包含 <ph name="MAX_ITEMS_LIMIT" /> 个条目。</translation>
@@ -2020,7 +2019,6 @@
 <translation id="4885030148564729407">蜜月与浪漫旅行</translation>
 <translation id="4885256590493466218">结账时使用 <ph name="CARD_DETAIL" /> 付款</translation>
 <translation id="4887406273302438710">使用 Windows Hello 保护密码</translation>
-<translation id="4890070067176768718">您的管理员已允许 <ph name="ORIGIN" /> 使用<ph name="PERMISSION" /></translation>
 <translation id="4892518386797173871">后方</translation>
 <translation id="4895019427244614047">删除地址</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /></translation>
@@ -3906,7 +3904,6 @@
 <translation id="8493948351860045254">释放空间</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> 的响应时间过长。</translation>
 <translation id="8502023382441452707">生日与命名日</translation>
-<translation id="8502972004418241366">如需在此网站使用<ph name="PERMISSION" />，您需要向 Chrome 授予相应的权限</translation>
 <translation id="8503559462189395349">Chrome 密码</translation>
 <translation id="8503813439785031346">用户名</translation>
 <translation id="8504928302600319133">计算机硬件</translation>
@@ -3926,7 +3923,6 @@
 <translation id="853246364274116957">百老汇与音乐剧</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">请访问 &lt;strong&gt;chrome://policy&lt;/strong&gt;，查看被屏蔽的网址列表以及您的系统管理员强制执行的其他政策。</translation>
-<translation id="8534934518812659742">您已为 Chrome 关闭<ph name="PERMISSION" />权限。</translation>
 <translation id="8536234749087605613">信封（开窗）</translation>
 <translation id="8539500321752640291">授予 2 项权限？</translation>
 <translation id="8541158209346794904">蓝牙设备</translation>
@@ -3984,7 +3980,6 @@
 <translation id="865032292777205197">移动传感器</translation>
 <translation id="865255447216708819">背面印刷薄膜</translation>
 <translation id="8654126188050905496">55 x 91 毫米</translation>
-<translation id="8655930295668719549">您之前未向 <ph name="ORIGIN" /> 授予<ph name="PERMISSION" />使用权</translation>
 <translation id="8662463432865928030">商用房地产</translation>
 <translation id="8663226718884576429">订单摘要，<ph name="TOTAL_LABEL" />，更多详情</translation>
 <translation id="8663909737634214500">光盘</translation>
@@ -4016,6 +4011,7 @@
 <translation id="8722929331701811374">信笺（印有信头）</translation>
 <translation id="8724824364712796726">B6 信封</translation>
 <translation id="8725066075913043281">重试</translation>
+<translation id="8725667981218437315">摄像头和麦克风</translation>
 <translation id="8726549941689275341">页面尺寸：</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8731268612289859741">安全码</translation>

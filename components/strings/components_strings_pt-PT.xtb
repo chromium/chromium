@@ -584,7 +584,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2071692954027939183">As notificações foram automaticamente bloqueadas porque, geralmente, não as permite.</translation>
 <translation id="2071852865256799872">O navegador é gerido pela sua organização e o seu perfil é gerido pelo domínio <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Desbloquear <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">O seu administrador bloqueou a autorização <ph name="PERMISSION" /> em <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Jogos de música e dança</translation>
 <translation id="2079545284768500474">Anular</translation>
 <translation id="2080021694978766903">Esta política não deve ter mais de <ph name="MAX_ITEMS_LIMIT" /> fornecedores de pesquisa.</translation>
@@ -935,6 +934,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2759825833388495838">preencher a sua palavra-passe na app <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Banda desenhada</translation>
 <translation id="2765217105034171413">Pequeno</translation>
+<translation id="2768397283109119044">Tentou aceder a <ph name="DOMAIN" />, mas o servidor apresentou um certificado inválido emitido para esse nome. O nome é um endereço IP reservado ou um nome de anfitrião interno.</translation>
 <translation id="2770159525358613612">Tente carregar os ficheiros novamente</translation>
 <translation id="277133753123645258">Método de envio</translation>
 <translation id="2773388851563527404">Na maioria dos sites, o Chrome limita a utilização de cookies de terceiros. Porém, os cookies de terceiros são permitidos neste site porque dependem deles para disponibilizar serviços básicos. Aceda às definições para <ph name="LINK" />.</translation>
@@ -1716,6 +1716,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4265872034478892965">Permitida pelo gestor</translation>
 <translation id="4269029136757623689">Ventoinhas de uso doméstico</translation>
 <translation id="4269264543938335308">Vestuário de natação</translation>
+<translation id="4269599248168651462">O certificado do servidor é emitido para um nome não exclusivo.</translation>
 <translation id="4270541775497538019">Empilhador 6</translation>
 <translation id="4275830172053184480">Reiniciar o dispositivo</translation>
 <translation id="4276974990916607331">Não</translation>
@@ -2024,7 +2025,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4885030148564729407">Lua de mel e escapadinhas românticas</translation>
 <translation id="4885256590493466218">Utilize o <ph name="CARD_DETAIL" /> no pagamento.</translation>
 <translation id="4887406273302438710">Proteja as palavras-passe com o Windows Hello</translation>
-<translation id="4890070067176768718">O seu administrador concedeu a autorização <ph name="PERMISSION" /> a <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Traseiro</translation>
 <translation id="4895019427244614047">Eliminar morada</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3910,7 +3910,6 @@ Detalhes adicionais:
 <translation id="8493948351860045254">Libertar espaço</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> demorou demasiado tempo a responder.</translation>
 <translation id="8502023382441452707">Aniversários e dias onomásticos</translation>
-<translation id="8502972004418241366">Para usar <ph name="PERMISSION" /> neste site, tem de dar acesso ao Chrome</translation>
 <translation id="8503559462189395349">Palavras-passe do Chrome</translation>
 <translation id="8503813439785031346">Nome de utilizador</translation>
 <translation id="8504928302600319133">Hardware informático</translation>
@@ -3930,7 +3929,6 @@ Detalhes adicionais:
 <translation id="853246364274116957">Teatro musical e da Broadway</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Visite &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver a lista dos URLs bloqueados e outras políticas aplicadas pelo administrador do sistema.</translation>
-<translation id="8534934518812659742">Desativou a autorização <ph name="PERMISSION" /> para o Chrome.</translation>
 <translation id="8536234749087605613">Envelope (janela)</translation>
 <translation id="8539500321752640291">Permitir 2 autorizações?</translation>
 <translation id="8541158209346794904">Dispositivo Bluetooth</translation>
@@ -3988,7 +3986,6 @@ Detalhes adicionais:
 <translation id="865032292777205197">sensores de movimento</translation>
 <translation id="865255447216708819">Filme de impressão retro</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Anteriormente, não permitiu <ph name="PERMISSION" /> em <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Propriedades comerciais</translation>
 <translation id="8663226718884576429">Resumo da encomenda, <ph name="TOTAL_LABEL" />, mais detalhes</translation>
 <translation id="8663909737634214500">Disco ótico</translation>
@@ -4020,6 +4017,7 @@ Detalhes adicionais:
 <translation id="8722929331701811374">Artigos de papelaria (papel timbrado)</translation>
 <translation id="8724824364712796726">Envelope B6</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
+<translation id="8725667981218437315">Câmara e microfone</translation>
 <translation id="8726549941689275341">Tamanho das páginas:</translation>
 <translation id="8730621377337864115">Concluído</translation>
 <translation id="8731268612289859741">Código de segurança</translation>
@@ -4118,6 +4116,7 @@ Detalhes adicionais:
 <translation id="8919740778133505789">Carros desportivos</translation>
 <translation id="8919895429178014996">Ocultar todos os itens</translation>
 <translation id="8922013791253848639">Permitir sempre anúncios neste site</translation>
+<translation id="8924109546403192898">Quando o Chrome sinaliza eventos de segurança, são enviados dados relevantes acerca dos eventos ao seu administrador. Estes podem incluir os URLs das páginas que visita no Chrome, os URLs das páginas das quais copiou dados, os metadados ou os nomes de ficheiros, as falhas de sistema do navegador ou dos separadores e o nome de utilizador que usa para iniciar sessão nas aplicações baseadas na Web, no dispositivo e no Chrome.</translation>
 <translation id="892588693504540538">Perfurar na parte superior direita</translation>
 <translation id="8926389886865778422">Não voltar a perguntar</translation>
 <translation id="8932102934695377596">O seu relógio está atrasado</translation>

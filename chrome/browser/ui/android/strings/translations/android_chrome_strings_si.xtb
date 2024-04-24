@@ -36,6 +36,7 @@
 <translation id="1181037720776840403">ඉවත් කරන්න</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> හි</translation>
 <translation id="1183189057400844278">ඔබට සැම විටම ඔබේ Google ගිණුමේ ඇති මුරපද භාවිත කළ හැකි බව සහතික කර ගැනීමට, ඒ ඔබ බව සත්‍යාපනය කරන්න.</translation>
+<translation id="1187810343066461819">මෙම මෝටර් රථයෙන් පිටුසන්, ඉතිහාසය, සහ තවත් දේ ද මකන්න</translation>
 <translation id="1193729455103054076">ප්‍රබල මුරපදයක් භාවිත කරන්නද?</translation>
 <translation id="1197267115302279827">පිටුසන් ගෙන යන්න</translation>
 <translation id="1197761954713363183">මුරයතුර තහවුරු කිරීමේ පත්‍රය වසා ඇත</translation>
@@ -82,6 +83,7 @@
 <translation id="1386674309198842382">දින <ph name="LAST_UPDATED" /> කට පෙර ක්‍රියාත්මකයි</translation>
 <translation id="13931502444227376">ඉදිරියට යාමට, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ඔබගේ නම, ඉ-තැපැල් ලිපිනය සහ පැතිකඩ පින්තූරය මෙම අඩවිය සමග බෙදා ගනු ඇත. මෙම අඩවියේ <ph name="BEGIN_LINK1" />සේවා නියම<ph name="END_LINK1" /> බලන්න.</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> සමඟ සොයන්න</translation>
+<translation id="1398037172295725596">වෙන දෙයක් සෙවීමට උත්සාහ කරන්න, නැති නම් වෙනත් යෙදුම්වලින් ලැබෙන තව වෙබ් ඉතිහාසය බැලීමට Chrome තුළ තව ඉතිහාසය විවෘත කරන්න.</translation>
 <translation id="1407069428457324124">අඳුරු තේමාව</translation>
 <translation id="1407135791313364759">සියල්ල විවෘත කරන්න</translation>
 <translation id="1409879593029778104">ගොනුව දැනටමත් තිබෙන නිසා <ph name="FILE_NAME" /> බාගැනීම වළක්වන ලදි.</translation>
@@ -153,6 +155,8 @@
 <translation id="1807709131360304325">නව කවුළුවක් විවෘත කරන්න</translation>
 <translation id="1810845389119482123">මූලික සමමුහූර්ත සැකසීම අවසන් වී නැත</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> හට <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> දිගටම භාවිතා කළ නොහැක</translation>
+<translation id="1825772852827001597">Google Pay වෙතින් ලැබෙන ගෙවීම් ක්‍රම සහ ලිපින සංකේතන නොකෙරේ. Chrome වෙතින් ලැබෙන බ්‍රවුස් කිරීමේ ඉතිහාසය සමමුහූර්ත නොවේ.
+ඔබේ සංකේතිත දත්ත කියවිය හැක්කේ ඔබේ මුර වැකිකඩ සහිත කෙනෙකුට පමණි. මුර වැකිකඩ Google වෙත යවන්නේ හෝ ගබඩා කරන්නේ නැත. ඔබට ඔබේ මුර-වැකිකඩ අමතක වුවහොත් හෝ මෙම සැකසීම වෙනස් කිරීමට අවශ්‍ය නම්, <ph name="BEGIN_LINK" />ඔබේ ගිණුමේ ඇති Chrome දත්ත මකන්න<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">පිටුවෙහි සොයන්න</translation>
 <translation id="185383612275551373">Google වෙතින් වඩාත්ම අදාළ අන්තර්ගතය ලබා ගැනීමට සමමුහුර්ත කරන්න</translation>
 <translation id="1871098866036088250">Chrome බ්‍රව්සරය තුළ විවෘත කරන්න</translation>
@@ -268,6 +272,7 @@
 <translation id="250020030759455918">ඔබ Chrome තුළ ඔබේ <ph name="SITE_NAME" /> පුරන තත්ත්‍වය, බ්‍රවුස් කිරීමේ දත්ත, සහ අඩවි දත්ත දකිනු ඇත</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> ස්ථාපනය කරමින්...</translation>
 <translation id="2513403576141822879">රහස්‍යතාව, ආරක්ෂාව, සහ දත්ත රැස් කිරීමට අදාළ තවත් සැකසීම් සඳහා, <ph name="BEGIN_LINK" />සමමුහුර්තකරණය සහ Google සේවා<ph name="END_LINK" /> බලන්න</translation>
+<translation id="2515921719039583189">මෙම උපාංගයෙන් ඔබේ Chrome දත්ත මකන්නද?</translation>
 <translation id="2517113738956581680">පූර්ණ තරමේ පත්‍රය</translation>
 <translation id="2523184218357549926">Google වෙත ඔබ පිවිසෙන පිටු URL යවයි</translation>
 <translation id="2527209463677295330">පිටුවක පෙළ වැඩිපුර ඇතුළත් කිරීමෙන්, ඔබට වඩා හොඳ ප්‍රතිඵල දැකිය හැකිය</translation>
@@ -496,6 +501,7 @@
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> වෙත බෙදා ගැනීම</translation>
 <translation id="363596933471559332">ගබඩා කළ අක්තපත්‍ර භාවිතයෙන් වෙබ් අඩවි වෙත ස්වයංක්‍රියව පුරනය වන්න. විශේෂාංගය ක්‍රියාවිරහිත කර ඇති විට, ඔබ වෙබ් අඩවියකට පුරන සෑම විටම ඔබට සත්‍යාපනය කිරීමට පවසනු ඇත.</translation>
 <translation id="3636940436873918441">මනාප භාෂා</translation>
+<translation id="3637744895182738742">ඔබට ඔබේ මුර වැකිකඩ අමතක වුවහොත් හෝ මෙම සැකසීම වෙනස් කිරීමට අවශ්‍ය නම්, <ph name="BEGIN_LINK" />ඔබේ ගිණුමේ ඇති Chrome දත්ත මකන්න<ph name="END_LINK" />.</translation>
 <translation id="368329460027487650">වරනය විය. පුරනය වීමට විකල්ප විවෘත කරයි.</translation>
 <translation id="3687645719033307815">ඔබ මෙම පිටුවේ පෙරදසුනක් නරඹමින් සිටී</translation>
 <translation id="3690369331356918524">දත්ත කඩ කිරීමකින් මුරපද අනාවරණ කෙරෙන්නේ නම් ඔබට අවවාද කරයි</translation>
@@ -1193,6 +1199,7 @@
 <translation id="707155805709242880">පහත කුමක් සම්මුහුර්ත කරන්නේදැයි තෝරන්න</translation>
 <translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{පිටුසන ඔබේ <ph name="ACCOUNT_EMAIL" /> ගිණුමේ, "<ph name="FOLDER_NAME" />" වෙත සුරකින ලදි.}one{පිටුසන් ඔබේ <ph name="ACCOUNT_EMAIL" /> ගිණුමේ "<ph name="FOLDER_NAME" />" වෙත සුරකින ලදි.}other{පිටුසන් ඔබේ <ph name="ACCOUNT_EMAIL" /> ගිණුමේ "<ph name="FOLDER_NAME" />" වෙත සුරකින ලදි.}}</translation>
 <translation id="7077143737582773186">SD පත</translation>
+<translation id="7078916049958741685">මෙම උපාංගයෙන් ඔබගේ Chrome දත්ත මකන්නද?</translation>
 <translation id="7080806333218412752">URL පරීක්ෂා කිරීමට ඒවා ආරක්ෂිත බ්‍රවුස් කිරීම වෙත යවයි. නව තර්ජන සොයා ගැනීමට උදවු කිරීමට පිටුවල, බාගැනීම්වල, දිගු ක්‍රියාකාරකමේ, සහ පද්ධති තොරතුරුවල කුඩා නියැදියක් ද යවයි. Google යෙදුම් හරහා ඔබව ආරක්ෂා කිරීමට, ඔබ පුරා සිටින විට ඔබේ Google ගිණුමට මෙම දත්ත තාවකාලිකව සබැඳි කෙරේ.</translation>
 <translation id="7085332316435785646">Google සේවාවල වඩාත් පුද්ගලිකකරණය කළ අත්දැකීම් සඳහා Chrome ඉතිහාසය ඇතුළත් කළ යුතුද යන්න තෝරන්න</translation>
 <translation id="7088681679121566888">Chrome යාවත්කාලීනයි</translation>
@@ -1205,6 +1212,9 @@
 <translation id="7146622961999026732">මෙම අඩවි සහ යෙදුම් ඔබට වැදගත් යැයි පෙනේ:</translation>
 <translation id="7148400116894863598"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> වෙතින් <ph name="BEGIN_LINK" />වැඩිදුර තොරතුරු ලබා ගන්න<ph name="END_LINK" />.</translation>
 <translation id="7149893636342594995">පසුගිය පැය 24</translation>
+<translation id="71503698506017927">මුර වැකිකඩ සංකේතනයට Google Pay වෙතින් ලැබෙන ගෙවීම් ක්‍රම සහ ලිපින ඇතුළත් නොවේ.
+
+මෙම සැකසීම වෙනස් කිරීමට <ph name="BEGIN_LINK" />ඔබේ ගිණුමේ ඇති Chrome දත්ත මකන්න<ph name="END_LINK" />.</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> ලෙස පුරනය වී ඇත. සැකසීම් විවෘත කරයි.</translation>
 <translation id="7173114856073700355">සැකසීම් විවෘත කරන්න</translation>
 <translation id="7177466738963138057">ඔබට මෙය සැකසීම් තුළ පසුව වෙනස් කළ හැක.</translation>
@@ -1638,6 +1648,7 @@
 <translation id="952301137339791907">පිටු විදසුන් පහළ පත්‍රය විවෘතව ඇත</translation>
 <translation id="95817756606698420">Chrome හට චීනයෙහි සෙවීම සඳහා <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> භාවිතා කළ හැකිය. ඔබට <ph name="BEGIN_LINK" />සැකසීම්<ph name="END_LINK" /> තුළ මෙය වෙනස් කළ හැකිය.</translation>
 <translation id="961856697154696964">බ්‍රවුස් කිරීමේ දත්ත මකන්න</translation>
+<translation id="966131775676567255">ගිණුම් දත්ත මැකීම</translation>
 <translation id="96681097142096641">සරල කළ පිටුව බලන්නද?</translation>
 <translation id="970715775301869095">මිනිත්තු <ph name="MINUTES" />ක් ඉතිරියි</translation>
 <translation id="981121421437150478">ඕෆ්ලයින්</translation>

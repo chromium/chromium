@@ -827,6 +827,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1611432201750675208">Uređaj je zaključan</translation>
 <translation id="1611649489706141841">prosljeđivanje</translation>
 <translation id="1612019740169791082">Vaš spremnik nije konfiguriran za podržavanje promjena veličine diska. Da biste prilagodili količinu prostora koji je rezerviran za Linux, izradite sigurnosnu kopiju i vratite je u novom spremniku.</translation>
+<translation id="1612179176000108678">Uključi samo kad je baterija na <ph name="PERCENT" />% ili niže</translation>
 <translation id="1613019471223620622">Prikaži zaporku za korisnika <ph name="USERNAME" /> na domeni <ph name="DOMAIN" /></translation>
 <translation id="1613149688105334014">Stare verzije Chromeovih aplikacija neće se otvoriti nakon prosinca 2022. Možete provjeriti je li dostupna nova verzija.</translation>
 <translation id="1614511179807650956">Vjerojatno ste potrošili dopuštenu količinu mobilnih podataka. Posjetite aktivacijski portal <ph name="NAME" /> kako biste platili dodatni prijenos podataka.</translation>
@@ -1605,7 +1606,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Omogućujete značajke za otklanjanje pogrešaka ChromeOS Flexa koje će postaviti sshd daemon i omogućiti pokretanje s USB pogona.</translation>
 <translation id="2178614541317717477">CA kompromis</translation>
-<translation id="2179416702468739594">Tražimo dostupne profile. Zbog toga biste mogli izgubiti vezu s mobilnom mrežom na nekoliko minuta.</translation>
 <translation id="2180620921879609685">Blokiraj sadržaj na bilo kojoj stranici</translation>
 <translation id="2181821976797666341">Pravila</translation>
 <translation id="2182058453334755893">Kopirano u međuspremnik</translation>
@@ -1659,6 +1659,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="222115440608612541">Promjena teme kad sunce izađe i zađe</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Neimenovan medijski izvor</translation>
+<translation id="2224337661447660594">Nema interneta</translation>
 <translation id="2224444042887712269">Ova postavka pripada korisniku <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Uredi naziv mape</translation>
 <translation id="2225927550500503913">Virtualna kartica je uključena</translation>
@@ -3120,7 +3121,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3321494112580110651">Ne vidite svoj pisač?</translation>
 <translation id="3321776060736518525">S <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonus! Vrijeme upotrebe ti je produženo</translation>
-<translation id="3325804108816646710">Tražimo dostupne profile...</translation>
 <translation id="3325930488268995856">Microsoft OneDrive povezan</translation>
 <translation id="3325995804968971809">Stil</translation>
 <translation id="3327050066667856415">Chromebookovi su osmišljeni za sigurnost. Vaš uređaj automatski je zaštićen od zlonamjernih softvera – nije potreban dodatni softver.</translation>
@@ -3909,6 +3909,7 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="39103738135459590">Aktivacijski kôd</translation>
 <translation id="3910588685973519483">Izrada pozadina pomoću AI-ja</translation>
 <translation id="3911824782900911339">Stranica Nova kartica</translation>
+<translation id="3913689539406883376">Uključi kada je računalo isključeno</translation>
 <translation id="3914173277599553213">Obavezno</translation>
 <translation id="3914568430265141791">Otvori mapu <ph name="FOLDER_TITLE" /></translation>
 <translation id="3915280005470252504">Pretraživanje po glasu</translation>
@@ -5436,7 +5437,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5101839224773798795">Automatski klikni kada se pokazivač zaustavi</translation>
 <translation id="5103311607312269661">pojačavanje svjetline zaslona</translation>
 <translation id="5106350808162641062">Ukloni</translation>
-<translation id="5106608587025903971">Umjesto da za prijavu unosite zaporku Google računa, možete izraditi <ph name="DEVICE_TYPE" /> zaporku za ovaj uređaj</translation>
 <translation id="510695978163689362">Račun <ph name="USER_EMAIL" /> pod nadzorom je Family Linka. Možeš dodati školske račune ako želiš pristupati školskim resursima uz roditeljski nadzor.</translation>
 <translation id="5107093668001980925">Nikad nemoj prikazivati <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Proširenje je isključilo Sigurno pregledavanje</translation>
@@ -7417,7 +7417,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6647690760956378579">Pregled prirodnog glasa</translation>
 <translation id="6648911618876616409">Kritično ažuriranje spremno je za instalaciju. Prijavite se za početak.</translation>
 <translation id="6649018507441623493">Samo tren...</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> želi potvrditi da ste to vi</translation>
 <translation id="6650206238642452078">Pretplata na događaje sustava Chrome OS</translation>
 <translation id="665061930738760572">Otvaranje u &amp;novom prozoru</translation>
 <translation id="6651237644330755633">Vjeruj ovom certifikatu za identificiranje web-lokacija</translation>
@@ -9174,6 +9173,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7966571622054096916">{COUNT,plural, =1{Jedna stavka na popisu oznaka}one{{COUNT} stavka na popisu oznaka}few{{COUNT} stavke na popisu oznaka}other{{COUNT} stavki na popisu oznaka}}</translation>
 <translation id="7967776604158229756">Više postavki i dopuštenja web-aplikacija</translation>
 <translation id="7968072247663421402">Opcije davatelja usluga</translation>
+<translation id="7968576769959093306">Preuzimanje glasova...</translation>
 <translation id="7968742106503422125">čitati i izmjenjivati podatke koje kopirate i lijepite</translation>
 <translation id="7968833647796919681">Omogući prikupljanje podataka o izvedbi</translation>
 <translation id="7968982339740310781">Prikaži pojedinosti</translation>

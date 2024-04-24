@@ -1611,7 +1611,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">sshd демонду орнотуп, USB дисктерден жүктөөнү иштете турган ChromeOS Flex мүчүлүштүктөрдү оңдоо өзгөчөлүктөрүн иштетип жатасыз.</translation>
 <translation id="2178614541317717477">ТБ компрометациясы</translation>
-<translation id="2179416702468739594">Жеткиликтүү профилдер изделүүдө. Ушуну менен мобилдик тармагыңыз бир нече мүнөткө ажырап калышы мүмкүн.</translation>
 <translation id="2180620921879609685">Бардык барактардагы мазмунду бөгөттөө</translation>
 <translation id="2181821976797666341">Саясаттар</translation>
 <translation id="2182058453334755893">Алмашуу буферине көчүрүлдү</translation>
@@ -1664,6 +1663,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="222115440608612541">Темаларды күн чыкканда жана батканда которуп туруңуз</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Аталышы жок медиа булагы</translation>
+<translation id="2224337661447660594">Интернет жок</translation>
 <translation id="2224444042887712269">Бул параметр <ph name="OWNER_EMAIL" /> дегенге таандык.</translation>
 <translation id="2224551243087462610">Куржундун аталышын өзгөртүү</translation>
 <translation id="2225927550500503913">Виртуалдык карта күйгүзүлдү</translation>
@@ -3118,7 +3118,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3321494112580110651">Принтерди көрбөй жатасызбы?</translation>
 <translation id="3321776060736518525"><ph name="APP_URL" /> баштап</translation>
 <translation id="3323521181261657960">Бонус! Түзмөктү колдонуу убакыты узарды</translation>
-<translation id="3325804108816646710">Жеткиликтүү профилдер изделүүдө…</translation>
 <translation id="3325930488268995856">Microsoft OneDrive туташты</translation>
 <translation id="3325995804968971809">Стиль</translation>
 <translation id="3327050066667856415">Chromebook'тар коопсуздукту коргоо үчүн жасалган. Түзмөгүңүз кесепеттүү программалардан автоматтык түрдө корголот – кошумча программаны орнотуунун кереги жок.</translation>
@@ -5425,7 +5424,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5101839224773798795">Курсор токтогондо, автоматтык түрдө чыкылдатылсын</translation>
 <translation id="5103311607312269661">дисплейдин жарыктыгын көбөйтүү</translation>
 <translation id="5106350808162641062">Өчүрүү</translation>
-<translation id="5106608587025903971">Кирүү үчүн Google аккаунтунун сырсөзүн киргизүүнүн ордуна, бул түзмөк үчүн <ph name="DEVICE_TYPE" /> сырсөзүн түзө аласыз</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> Family Link аркылуу башкарылат. Мектеп булактарына ата-эненин көзөмөлү менен кирүү үчүн мектеп аккаунттарын кошо аласыз.</translation>
 <translation id="5107093668001980925"><ph name="MODULE_NAME" /> эч качан көрүнбөсүн</translation>
 <translation id="5107443654503185812">Кеңейтүү Коопсуз серептөөнү өчүрдү</translation>
@@ -7386,7 +7384,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6647690760956378579">Кадимки үндү алдын ала угуу</translation>
 <translation id="6648911618876616409">Маанилүү жаңыртуу орнотууга даяр. Баштоо үчүн аккаунтуңузга кириңиз.</translation>
 <translation id="6649018507441623493">Бир секунд…</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> сиз экениңизди ырастоону суранып жатат</translation>
 <translation id="6650206238642452078">ChromeOS тутумунун иш-аракеттерине жазылыңыз</translation>
 <translation id="665061930738760572">&amp;Жаңы терезеде ачуу</translation>
 <translation id="6651237644330755633">Веб-сайттарды аныктай турган ушул тастыктамага ишенүү</translation>

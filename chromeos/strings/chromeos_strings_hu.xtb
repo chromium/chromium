@@ -33,7 +33,7 @@
 <translation id="1167755866710282443">A kulcsok személyre szabásához nyissa meg a menüt. Az áthelyezéshez húzza a megfelelő helyre a menüt.</translation>
 <translation id="1171349345463658120">homokos lagúna</translation>
 <translation id="1174073918202301297">Parancsikon hozzáadva</translation>
-<translation id="11743817593307477">A nyílbillentyűkkel a kívánt játékművelethez helyezheti át ezt a vezérlőt. A vezérlő elhelyezéséhez használja az Enter billentyűt. A megszakításhoz használja az Escape billentyűt.</translation>
+<translation id="11743817593307477">A nyílbillentyűkkel a kívánt játékművelethez mozgathatja ezt a vezérlőt. A vezérlő elhelyezéséhez használja az Enter billentyűt. A megszakításhoz használja az Escape billentyűt.</translation>
 <translation id="1175697296044146566">Ezt a(z) <ph name="DEVICE_TYPE" /> eszközt a(z) <ph name="MANAGER" /> kezeli.</translation>
 <translation id="1175951029573070619">Átlagos (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1180621378971766337">barátságos</translation>
@@ -1399,7 +1399,7 @@
 <translation id="8928727111548978589">Sikertelen – Kifogyott a papír</translation>
 <translation id="8930521118335213258">Peer</translation>
 <translation id="8930622219860340959">Vezeték nélküli</translation>
-<translation id="8933650076320258356">A kiválasztott billentyű: <ph name="KEYS" />. Ez a billentyű a következőhöz használható: <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" />.</translation>
+<translation id="8933650076320258356">A kiválasztott <ph name="KEYS" /> billentyű a következőhöz használható: <ph name="DIRECTION" />. <ph name="REASSIGN_INSTRUCTION" />.</translation>
 <translation id="8936793075252196307">Ügyfél IP-címe</translation>
 <translation id="8944651180182756621">Indító színe</translation>
 <translation id="8945308580158685341">méhek</translation>

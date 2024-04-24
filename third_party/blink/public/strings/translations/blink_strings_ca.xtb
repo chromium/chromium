@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">Introduïu una adreça electrònica.</translation>
 <translation id="1758486001363313524">Altres...</translation>
 <translation id="1787192514241997742">temps total: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">Permet l'accés a la càmera</translation>
 <translation id="1822429046913737220">a. m./p. m.</translation>
 <translation id="1832974991323546415">reprodueix al dispositiu remot</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">pas actual</translation>
 <translation id="3321030238473337787">Velocitat de reproducció</translation>
 <translation id="3329013043687509092">Saturació</translation>
-<translation id="3377518164566272702">Permet l'accés al micròfon i a la càmera</translation>
 <translation id="3450233048674729344">El valor ha de ser igual o inferior a <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Surt d'imatge sobre imatge</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">Altres...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, a partir del dia <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Imatge sobre imatge</translation>
-<translation id="918430632320614861">Permet l'accés al micròfon</translation>
 <translation id="945780513535800434">Marcada parcialment</translation>
 <translation id="954003015749068518">entra a imatge sobre imatge</translation>
 </translationbundle>

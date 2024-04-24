@@ -189,6 +189,9 @@ Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os
 <translation id="6648150602980899529">Você está fazendo login com uma conta gerenciada por <ph name="DOMAIN" /> e dando ao administrador dela o controle sobre seus dados do Chrome, os quais ficarão permanentemente vinculados a essa conta. Se você sair do Chrome, seus dados serão excluídos desse dispositivo, mas permanecerão armazenados na sua Conta do Google.</translation>
 <translation id="6683891932310469419">Abre a página de histórico do Chrome.</translation>
 <translation id="6709398533399187136">Sua senha foi exposta em uma violação de dados. O Gerenciador de senhas do Google recomenda que ela seja mudada agora mesmo.</translation>
+<translation id="6820553595690137150">A criptografia por senha longa não inclui formas de pagamento e endereços.
+
+Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Abra as configurações do Chrome no iOS, toque em "App de navegador padrão" e selecione o Chrome.</translation>
 <translation id="686691656039982452">Você pode <ph name="BEGIN_LINK" />gerenciar quais dados do Chrome são salvos<ph name="END_LINK" /> na sua Conta do Google.
 
@@ -212,6 +215,7 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="7261678641327190792">Não é possível verificar suas senhas com o Chrome.</translation>
 <translation id="7272930098487145294">Para salvar imagens, toque em "Configurações" e permita que o Chrome as adicione às suas fotos</translation>
 <translation id="7275945473750112644">Sua conta é gerenciada por <ph name="HOSTED_DOMAIN" />. Por isso, seus dados do Chrome serão apagados deste dispositivo</translation>
+<translation id="7284245284340063465">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="7304491752269485262">Visualização aberta do preenchimento automático do Chrome</translation>
 <translation id="7344094882820374540">Aproveite a segurança mais avançada do Chrome em sites perigosos</translation>
 <translation id="7349129508108954623">Permita que o Chrome use o Google Maps para fornecer rotas e informações locais sobre os endereços detectados.</translation>
@@ -243,6 +247,9 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="8160472928944011082">Não é possível atualizar o Chrome</translation>
 <translation id="8174679664544842874">Abre uma nova guia no Chrome.</translation>
 <translation id="8213758103105806860">Visualizar favoritos do Chrome</translation>
+<translation id="8317674518145175158">Formas de pagamento e endereços não serão criptografados. O histórico de navegação do Chrome não será sincronizado.
+
+Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senha longa não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="8328903609881776074">Abre uma nova guia anônima no Chrome.</translation>
 <translation id="8357607116237445042">Você quer apagar ou manter os dados do Chrome neste dispositivo?</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>

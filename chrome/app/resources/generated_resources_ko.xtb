@@ -1612,7 +1612,6 @@
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">sshd 데몬을 설정하고 USB 드라이브에서 부팅할 수 있도록 하는 ChromeOS Flex 디버깅 기능을 사용 설정합니다.</translation>
 <translation id="2178614541317717477">CA 손상</translation>
-<translation id="2179416702468739594">사용 가능한 프로필을 찾는 중입니다. 이로 인해 모바일 네트워크의 연결이 몇 분간 해제될 수 있습니다.</translation>
 <translation id="2180620921879609685">모든 페이지에서 콘텐츠 차단</translation>
 <translation id="2181821976797666341">정책</translation>
 <translation id="2182058453334755893">클립보드에 복사됨</translation>
@@ -1665,6 +1664,7 @@
 <translation id="222115440608612541">일출 및 일몰 시 테마를 전환합니다.</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">이름이 지정되지 않은 미디어 소스</translation>
+<translation id="2224337661447660594">인터넷 연결 없음</translation>
 <translation id="2224444042887712269"><ph name="OWNER_EMAIL" />의 설정입니다.</translation>
 <translation id="2224551243087462610">폴더 이름 수정</translation>
 <translation id="2225927550500503913">가상 카드 사용 설정됨</translation>
@@ -3120,7 +3120,6 @@
 <translation id="3321494112580110651">프린터가 표시되지 않나요?</translation>
 <translation id="3321776060736518525">출처: <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">보너스 기기 사용 시간이 추가되었습니다</translation>
-<translation id="3325804108816646710">사용 가능한 프로필 찾는 중...</translation>
 <translation id="3325930488268995856">Microsoft OneDrive 연결됨</translation>
 <translation id="3325995804968971809">스타일</translation>
 <translation id="3327050066667856415">Chromebook은 안전하게 설계되었습니다. 기기는 멀웨어로부터 자동으로 보호되고 있으며 소프트웨어가 추가로 필요하지 않습니다.</translation>
@@ -5425,7 +5424,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5101839224773798795">커서가 멈추면 자동으로 클릭</translation>
 <translation id="5103311607312269661">디스플레이 밝기 높이기</translation>
 <translation id="5106350808162641062">삭제</translation>
-<translation id="5106608587025903971">Google 계정 비밀번호를 입력하여 로그인하는 대신 이 기기를 위한 <ph name="DEVICE_TYPE" /> 비밀번호를 만들 수 있습니다.</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> 계정은 Family Link를 통해 감독됩니다. 자녀가 부모 감독 기능이 적용되는 상태에서 학교 자료에 액세스할 수 있도록 학교 계정을 추가할 수 있습니다.</translation>
 <translation id="5107093668001980925"><ph name="MODULE_NAME" /> 표시하지 않음</translation>
 <translation id="5107443654503185812">확장 프로그램이 세이프 브라우징을 사용 중지했습니다.</translation>
@@ -7386,7 +7384,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6647690760956378579">자연 음성 미리보기</translation>
 <translation id="6648911618876616409">중요 업데이트를 설치할 준비가 되었습니다. 시작하려면 로그인하세요.</translation>
 <translation id="6649018507441623493">잠시 기다려 주세요.</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" />에서 본인 확인을 요청합니다.</translation>
 <translation id="6650206238642452078">ChromeOS 시스템 이벤트 구독</translation>
 <translation id="665061930738760572">새 창에서 열기(&amp;N)</translation>
 <translation id="6651237644330755633">웹사이트를 식별하기 위해 이 인증서 신뢰</translation>

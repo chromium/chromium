@@ -1598,7 +1598,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Siz ChromeOS Flex nosozliklarni aniqlash funksiyalarini yoqyapsiz, ular sshd xizmatini sozlaydi va tizimni USB disklardan yuklash funksiyasini yoqadi.</translation>
 <translation id="2178614541317717477">Sertifikat markazi (CA) oshkor bo‘lishi</translation>
-<translation id="2179416702468739594">Mavjud profillar qidirilmoqda. Bunda mobil internetingiz vaqtincha uzilib qolishi mumkin.</translation>
 <translation id="2180620921879609685">Istalgan sahifadagi kontentni bloklash</translation>
 <translation id="2181821976797666341">Qoidalar</translation>
 <translation id="2182058453334755893">Vaqtinchalik xotiraga nusxalandi</translation>
@@ -1651,6 +1650,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="222115440608612541">Mavzularni quyosh chiqishi va botishida almashtirish</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Nomsiz media manba</translation>
+<translation id="2224337661447660594">Internet yo‘q</translation>
 <translation id="2224444042887712269">Bu sozlama <ph name="OWNER_EMAIL" /> tomonidan o‘rnatilingan.</translation>
 <translation id="2224551243087462610">Jild nomini o‘zgartirish</translation>
 <translation id="2225927550500503913">Virtual karta yoniq</translation>
@@ -3105,7 +3105,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3321494112580110651">Printer chiqmadimi?</translation>
 <translation id="3321776060736518525">Manba: <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonus! Foydalanish vaqtingiz oshdi</translation>
-<translation id="3325804108816646710">Mavjud profillar qidirilmoqda...</translation>
 <translation id="3325930488268995856">Microsoft OneDrive ulandi</translation>
 <translation id="3325995804968971809">Uslub</translation>
 <translation id="3327050066667856415">Chromebook qurilmalari yuqori xavfsizlik uchun ishlab chiqilgan. Qurilmangiz zararli dasturlarni avtomatik aniqlaydi va buning uchun qoʻshimcha dasturlarni talab qilmaydi.</translation>
@@ -5412,7 +5411,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5101839224773798795">Kursor harakati toʻxtaganda avtomatik klik bosilsin</translation>
 <translation id="5103311607312269661">Displey yorqinligini oshirish</translation>
 <translation id="5106350808162641062">Olib tashlash</translation>
-<translation id="5106608587025903971"><ph name="DEVICE_TYPE" /> uchun parol yarating va undan tizimga kirganingizda Google hisobingiz paroli oʻrniga foydalaning.</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> Family Link bilan boshqariladi. Ota-ona nazorati bilan maktab resurslariga kirish uchun maktab hisoblarini kiritishingiz mumkin.</translation>
 <translation id="5107093668001980925"><ph name="MODULE_NAME" /> hech qachon chiqarilmasin</translation>
 <translation id="5107443654503185812">Saytlarni xavfsiz kezish kengaytma tomonidan faolsizlantirildi</translation>
@@ -7373,7 +7371,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6647690760956378579">Tabiiy ovozni oldindan tinglash</translation>
 <translation id="6648911618876616409">Jiddiy yangilanish o‘rnatish uchun tayyor. Boshlash uchun hisobingizga kiring.</translation>
 <translation id="6649018507441623493">Iltimos, kuting...</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> shaxsingizni tasdiqlamoqchi</translation>
 <translation id="6650206238642452078">ChromeOS tizim hodisalariga obuna boʻlish</translation>
 <translation id="665061930738760572">&amp;Yangi oynada ochish</translation>
 <translation id="6651237644330755633">Saytlarni identifikatsiya qilishda ushbu sertifikat ishonchli deb hisoblansin</translation>

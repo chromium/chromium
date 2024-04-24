@@ -583,7 +583,6 @@
 <translation id="2071692954027939183">ಅಧಿಸೂಚನೆಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ ಏಕೆಂದರೆ ನೀವು ಸಾಮಾನ್ಯವಾಗಿ ಅವುಗಳನ್ನು ಅನುಮತಿಸುವುದಿಲ್ಲ</translation>
 <translation id="2071852865256799872">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತಿದೆ ಮತ್ತು <ph name="PROFILE_DOMAIN" /> ಮೂಲಕ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಅನ್ನು ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> ನಿರ್ಬಂಧ ತೆಗೆಯಿರಿ</translation>
-<translation id="2075497153347571252">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="ORIGIN" /> ನಲ್ಲಿ <ph name="PERMISSION" /> ಅನ್ನು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ</translation>
 <translation id="2078956195623975415">ಸಂಗೀತ ಮತ್ತು ನೃತ್ಯದ ಆಟಗಳು</translation>
 <translation id="2079545284768500474">ರದ್ದುಮಾಡಿ</translation>
 <translation id="2080021694978766903">ಈ ನೀತಿಯು <ph name="MAX_ITEMS_LIMIT" /> ಕ್ಕಿಂತ ಹೆಚ್ಚಿನ ನಮೂದುಗಳನ್ನು ಹೊಂದಿರುವಂತಿಲ್ಲ.</translation>
@@ -935,6 +934,7 @@
 <translation id="2759825833388495838"><ph name="APP_NAME" /> ನಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="2764001903315068341">ಕಾಮಿಕ್ಸ್</translation>
 <translation id="2765217105034171413">ಸಣ್ಣ</translation>
+<translation id="2768397283109119044">ನೀವು <ph name="DOMAIN" /> ಅನ್ನು ತಲುಪಲು ಪ್ರಯತ್ನಿಸಿದ್ದೀರಿ, ಆದರೆ ಆ ಹೆಸರಿಗೆ ನೀಡಲಾದ ಅಮಾನ್ಯ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಸರ್ವರ್ ಪ್ರಸ್ತುತಪಡಿಸಿದೆ. ಹೆಸರು ಎಂಬುದು ಕಾಯ್ದಿರಿಸಿದ IP ವಿಳಾಸ ಅಥವಾ ಆಂತರಿಕ ಹೋಸ್ಟ್ ಹೆಸರು ಆಗಿದೆ.</translation>
 <translation id="2770159525358613612">ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಪುನಃ ಅಪ್‌ಲೋಡ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="277133753123645258">ಶಿಪ್ಪಿಂಗ್ ವಿಧಾನ</translation>
 <translation id="2773388851563527404">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಬಳಸುವುದರಿಂದ ಬಹುತೇಕ ಸೈಟ್‌ಗಳನ್ನು Chrome ಮಿತಿಗೊಳಿಸುತ್ತದೆ. ಆದಾಗ್ಯೂ, ಈ ಸೈಟ್ ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳ ಬಳಕೆಯನ್ನು ಅನುಮತಿಸುತ್ತದೆ ಏಕೆಂದರೆ ಈ ಸೈಟ್ ಮೂಲಭೂತ ಸೇವೆಗಳನ್ನು ಒದಗಿಸಲು ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ಅವಲಂಬಿಸಿದೆ. <ph name="LINK" /> ಗೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಿ.</translation>
@@ -1713,6 +1713,7 @@
 <translation id="4265872034478892965">ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಂದ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4269029136757623689">ಮನೆಯ ಫ್ಯಾನ್‌ಗಳು</translation>
 <translation id="4269264543938335308">ಈಜುಡುಗೆ</translation>
+<translation id="4269599248168651462">ವಿಶಿಷ್ಟವಲ್ಲದ ಹೆಸರಿಗೆ ಸರ್ವರ್ ಪ್ರಮಾಣಪತ್ರವನ್ನು ನೀಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="4270541775497538019">ಸ್ಟ್ಯಾಕರ್ 6</translation>
 <translation id="4275830172053184480">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="4276974990916607331">ಬೇಡ</translation>
@@ -2021,7 +2022,6 @@
 <translation id="4885030148564729407">ಮಧುಚಂದ್ರ ಮತ್ತು ರೊಮ್ಯಾಂಟಿಕ್ ಗೆಟ್‌ಅವೇಗಳು</translation>
 <translation id="4885256590493466218">ಚೆಕ್ಔಟ್‌ನಲ್ಲಿ <ph name="CARD_DETAIL" /> ಮೂಲಕ ಪಾವತಿಸಿ</translation>
 <translation id="4887406273302438710">Windows Hello ಮೂಲಕ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಕ್ಷಿಸಿ</translation>
-<translation id="4890070067176768718">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು <ph name="ORIGIN" /> ನಲ್ಲಿ <ph name="PERMISSION" /> ಅನ್ನು ಅನುಮತಿಸಿದ್ದಾರೆ</translation>
 <translation id="4892518386797173871">ಹಿಂಬದಿ</translation>
 <translation id="4895019427244614047">ವಿಳಾಸವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3907,7 +3907,6 @@
 <translation id="8493948351860045254">ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ</translation>
 <translation id="8498891568109133222">ಪ್ರತಿಕ್ರಿಯಿಸಲು <ph name="HOST_NAME" /> ಹೆಚ್ಚು ಸಮಯ ತೆಗೆದುಕೊಂಡಿದೆ.</translation>
 <translation id="8502023382441452707">ಹುಟ್ಟುಹಬ್ಬಗಳು ಮತ್ತು ಹೆಸರಿನ ದಿನಗಳು</translation>
-<translation id="8502972004418241366">ಈ ಸೈಟ್‌ನಲ್ಲಿ ನಿಮ್ಮ <ph name="PERMISSION" /> ಅನ್ನು ಬಳಸಲು, ನೀವು Chrome ಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನೀಡಬೇಕಾಗುತ್ತದೆ</translation>
 <translation id="8503559462189395349">Chrome ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="8503813439785031346">ಬಳಕೆದಾರರಹೆಸರು</translation>
 <translation id="8504928302600319133">ಕಂಪ್ಯೂಟರ್ ಹಾರ್ಡ್‌ವೇರ್</translation>
@@ -3927,7 +3926,6 @@
 <translation id="853246364274116957">ಬ್ರಾಡ್‌ವೇ ಮತ್ತು ಸಂಗೀತ ನಾಟಕ</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ನಿಮ್ಮ ಸಿಸ್ಟಮ್ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿರುವ URLಗಳ ಪಟ್ಟಿ ಮತ್ತು ಜಾರಿಗೊಳಿಸಿರುವ ಇತರ ನೀತಿಗಳನ್ನು ವೀಕ್ಷಿಸಲು &lt;strong&gt;chrome://policy&lt;/strong&gt; ಗೆ ಭೇಟಿ ನೀಡಿ.</translation>
-<translation id="8534934518812659742">Chrome ಗಾಗಿ ನೀವು <ph name="PERMISSION" /> ಅನ್ನು ಆಫ್ ಮಾಡಿದ್ದೀರಿ.</translation>
 <translation id="8536234749087605613">ಎನ್ವಲಪ್ (ವಿಂಡೋ)</translation>
 <translation id="8539500321752640291">2 ಅನುಮತಿಗಳನ್ನು ನೀಡಬೇಕೆ?</translation>
 <translation id="8541158209346794904">ಬ್ಲೂಟೂತ್ ಸಾಧನ</translation>
@@ -3985,7 +3983,6 @@
 <translation id="865032292777205197">ಮೋಷನ್ ಸೆನ್ಸರ್‌ಗಳು</translation>
 <translation id="865255447216708819">ಬ್ಯಾಕ್ ಪ್ರಿಂಟ್ ಫಿಲ್ಮ್</translation>
 <translation id="8654126188050905496">55 x 91 ಮಿಮೀ</translation>
-<translation id="8655930295668719549">ನೀವು ಈ ಹಿಂದೆ <ph name="ORIGIN" /> ನಲ್ಲಿ <ph name="PERMISSION" /> ಅನ್ನು ಅನುಮತಿಸಲಿಲ್ಲ</translation>
 <translation id="8662463432865928030">ವಾಣಿಜ್ಯ ಆಸ್ತಿಗಳು</translation>
 <translation id="8663226718884576429">ಆರ್ಡರ್ ಸಾರಾಂಶ, <ph name="TOTAL_LABEL" />, ಹೆಚ್ಚಿನ ವಿವರಗಳು</translation>
 <translation id="8663909737634214500">ಆಪ್ಟಿಕಲ್‌ ಡಿಸ್ಕ್‌</translation>
@@ -4017,6 +4014,7 @@
 <translation id="8722929331701811374">ಲೇಖನ ಸಾಮಗ್ರಿ (ಲೆಟರ್‌ಹೆಡ್)</translation>
 <translation id="8724824364712796726">ಎನ್ವಲಪ್ B6</translation>
 <translation id="8725066075913043281">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
+<translation id="8725667981218437315">ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್</translation>
 <translation id="8726549941689275341">ಪುಟದ ಗಾತ್ರ:</translation>
 <translation id="8730621377337864115">ಮುಗಿದಿದೆ</translation>
 <translation id="8731268612289859741">ಭದ್ರತಾ ಕೋಡ್</translation>
@@ -4115,6 +4113,7 @@
 <translation id="8919740778133505789">ಕ್ರೀಡಾ ಕಾರುಗಳು</translation>
 <translation id="8919895429178014996">ಎಲ್ಲಾ ಐಟಂಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="8922013791253848639">ಈ ಸೈಟ್‌ನಲ್ಲಿ ಯಾವಾಗಲೂ ಜಾಹೀರಾತುಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
+<translation id="8924109546403192898">Chrome ಮೂಲಕ ಭದ್ರತೆಗೆ ಸಂಬಂಧಿಸಿದ ಈವೆಂಟ್‌ಗಳ ಕುರಿತು ಫ್ಲ್ಯಾಗ್ ಮಾಡಿದಾಗ, ಈವೆಂಟ್‌ಗಳ ಕುರಿತ ಸಂಬಂಧಿತ ಡೇಟಾವನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ಇದು Chrome ನಲ್ಲಿ ನೀವು ಭೇಟಿ ನೀಡಿದ ಪುಟಗಳ URL ಗಳು, ನೀವು ಡೇಟಾವನ್ನು ಕಾಪಿ ಮಾಡಿದ ಪುಟಗಳ URL ಗಳು, ಫೈಲ್ ಹೆಸರುಗಳು ಅಥವಾ ಮೆಟಾಡೇಟಾ, ಬ್ರೌಸರ್ ಅಥವಾ ಟ್ಯಾಬ್ ಕ್ರ್ಯಾಶ್‌ಗಳು ಮತ್ತು ವೆಬ್ ಆಧಾರಿತ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು, ನಿಮ್ಮ ಸಾಧನ ಮತ್ತು Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ನೀವು ಬಳಸುವ ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ಒಳಗೊಂಡಿರುತ್ತದೆ.</translation>
 <translation id="892588693504540538">ಮೇಲಿನ ಬಲಭಾಗದಲ್ಲಿ ತೂತು ಮಾಡಿ</translation>
 <translation id="8926389886865778422">ಮತ್ತೆ ಕೇಳಬೇಡಿ</translation>
 <translation id="8932102934695377596">ನಿಮ್ಮ ಗಡಿಯಾರ ಹಿಂದೆ ಇದೆ</translation>

@@ -192,6 +192,9 @@ Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at 
 <translation id="6648150602980899529">Nagsa-sign in ka gamit ang isang account na pinamamahalaan ng <ph name="DOMAIN" /> at binibigyan mo ang administrator nito ng kontrol sa iyong data sa Chrome. Permanenteng mauugnay ang iyong data sa account na ito. Made-delete ang data mo sa device na ito kapag nag-sign out ka sa Chrome, ngunit mananatili itong naka-store sa iyong Google Account.</translation>
 <translation id="6683891932310469419">Bubuksan ang iyong Page ng History sa Chrome.</translation>
 <translation id="6709398533399187136">Na-expose ang password mo sa isang paglabag sa data. Inirerekomenda ng Google Password Manager na palitan na ito ngayon.</translation>
+<translation id="6820553595690137150">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address.
+
+Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Buksan ang Mga Setting ng Chrome sa iOS, pagkatapos ay i-tap ang "Default na Browser App" at piliin ang Chrome.</translation>
 <translation id="686691656039982452">Puwede mong <ph name="BEGIN_LINK" />pamahalaan kung anong data ng Chrome ang nase-save<ph name="END_LINK" /> sa iyong Google Account.
 
@@ -215,6 +218,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="7261678641327190792">Hindi masuri ng Chrome ang iyong mga password</translation>
 <translation id="7272930098487145294">Para makapag-save ng mga larawan, mag-tap sa Mga Setting para payagan ang Chrome na magdagdag sa iyong mga larawan</translation>
 <translation id="7275945473750112644">Pinapamahalaan ng <ph name="HOSTED_DOMAIN" /> ang iyong account, kaya maki-clear ang data mo sa Chrome sa device na ito</translation>
+<translation id="7284245284340063465">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="7304491752269485262">Na-expand na View ng Autofill ng Chrome</translation>
 <translation id="7344094882820374540">Kunin ang pinakamaigting na seguridad ng Chrome mula sa mga mapanganib na site</translation>
 <translation id="7349129508108954623">Payagan ang Chrome na gamitin ang Google Maps para bigyan ka ng mga direksyon at lokal na impormasyon tungkol sa mga na-detect na address.</translation>
@@ -246,6 +250,9 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="8160472928944011082">Hindi makapag-update ang Chrome</translation>
 <translation id="8174679664544842874">Magbubukas ng Bagong Tab sa Chrome.</translation>
 <translation id="8213758103105806860">Tingnan ang Mga Bookmark sa Chrome</translation>
+<translation id="8317674518145175158">Hindi mae-encrypt ang mga paraan ng pagbabayad at address. Hindi masi-sync ang history ng pag-browse mula sa Chrome.
+
+Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data. Hindi ipinapadala sa o hindi sino-store ng Google ang passphrase. Kung makakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="8328903609881776074">Magbubukas ng Bagong Tab na Incognito sa Chrome.</translation>
 <translation id="8357607116237445042">Piliin kung iki-clear ang iyong data sa Chrome sa device na ito o kung papanatilihin ito</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>

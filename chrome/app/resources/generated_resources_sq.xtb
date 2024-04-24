@@ -1596,7 +1596,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Po aktivizon veçoritë e korrigjimit në pajisjet Chrome OS Flex që do të konfigurojnë sshd daemon dhe do të aktivizojnë ndezjen nga njësitë USB.</translation>
 <translation id="2178614541317717477">Komprometim i autoritetit të certifikimit</translation>
-<translation id="2179416702468739594">Po kërkon për profilet e disponueshme. Kjo mund të bëjë që rrjeti yt celular të shkëputet për disa minuta.</translation>
 <translation id="2180620921879609685">Blloko përmbajtjen në çdo faqe</translation>
 <translation id="2181821976797666341">Politikat</translation>
 <translation id="2182058453334755893">Kopjuar te kujtesa e fragmenteve</translation>
@@ -1649,6 +1648,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="222115440608612541">Ndërroji temat në agim dhe në perëndim të diellit</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Burim i paemërtuar i medias</translation>
+<translation id="2224337661447660594">Nuk ka internet</translation>
 <translation id="2224444042887712269">Ky cilësim i përket <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Redakto emrin e dosjes</translation>
 <translation id="2225927550500503913">Karta virtuale është aktivizuar</translation>
@@ -3101,7 +3101,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3321494112580110651">Nuk e shikon printerin tënd?</translation>
 <translation id="3321776060736518525">Nga <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonus! Ke më shumë kohë para ekranit</translation>
-<translation id="3325804108816646710">Po kërkon për profilet e disponueshme...</translation>
 <translation id="3325930488268995856">Microsoft OneDrive u lidh</translation>
 <translation id="3325995804968971809">Stili</translation>
 <translation id="3327050066667856415">Pajisjet Chromebook janë projektuar për siguri. Pajisja jote është e mbrojtur automatikisht nga softuerët keqdashës. Nuk kërkohen softuerë shtesë.</translation>
@@ -5407,7 +5406,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5101839224773798795">Kliko automatikisht kur kursori ndalon</translation>
 <translation id="5103311607312269661">ngritja e ndriçimit të ekranit</translation>
 <translation id="5106350808162641062">Hiq</translation>
-<translation id="5106608587025903971">Në vend që të futësh fjalëkalimin e "Llogarisë sate të Google" për t'u identifikuar, mund të krijosh një fjalëkalim të <ph name="DEVICE_TYPE" /> për këtë pajisje</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> mbikëqyret nga Family Link. Mund të shtosh llogari të shkollës për të pasur qasje te burimet e shkollës me mbikëqyrjen e prindërve.</translation>
 <translation id="5107093668001980925">Mos shfaq asnjëherë: <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Një shtesë ka çaktivizuar "Shfletimin e sigurt"</translation>
@@ -7368,7 +7366,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6647690760956378579">Pamja paraprake me zë të natyrshëm</translation>
 <translation id="6648911618876616409">Një përditësim kritik është gati për t'u instaluar. Identifikohu për të filluar.</translation>
 <translation id="6649018507441623493">Prit një sekondë…</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> dëshiron të konfirmojë që je ti</translation>
 <translation id="6650206238642452078">Abonohu për ngjarjet e sistemit ChromeOS</translation>
 <translation id="665061930738760572">Hape në dritare &amp;të re</translation>
 <translation id="6651237644330755633">Besoji kësaj certifikate për identifikimin e faqeve të internetit</translation>

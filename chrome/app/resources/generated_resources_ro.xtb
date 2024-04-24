@@ -1600,7 +1600,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Activezi funcțiile de remediere a erorilor în sistemul de operare Chrome Flex, care vor configura SSH daemon și vor activa pornirea de pe unități USB.</translation>
 <translation id="2178614541317717477">Compromitere CA</translation>
-<translation id="2179416702468739594">Se caută profiluri disponibile. Din acest motiv, rețeaua mobilă se poate deconecta timp de câteva minute.</translation>
 <translation id="2180620921879609685">să blocheze conținutul din toate paginile</translation>
 <translation id="2181821976797666341">Politici</translation>
 <translation id="2182058453334755893">Copiat în clipboard</translation>
@@ -1653,6 +1652,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="222115440608612541">Schimbă tema la răsărit și la apus</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Sursă media nedenumită</translation>
+<translation id="2224337661447660594">Nu există conexiune la internet</translation>
 <translation id="2224444042887712269">Setarea aparține utilizatorului <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Editați numele dosarului</translation>
 <translation id="2225927550500503913">Cardul virtual a fost activat</translation>
@@ -3104,7 +3104,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3321494112580110651">Imprimanta nu este afișată?</translation>
 <translation id="3321776060736518525">Din <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonus! Ai primit o durată mai mare de folosire a dispozitivului</translation>
-<translation id="3325804108816646710">Se caută profiluri disponibile...</translation>
 <translation id="3325930488268995856">Microsoft OneDrive s-a conectat</translation>
 <translation id="3325995804968971809">Stil</translation>
 <translation id="3327050066667856415">Chromebookurile sunt proiectate pentru securitate. Dispozitivul tău este protejat automat de programe malware; nu este nevoie de software suplimentar.</translation>
@@ -5410,7 +5409,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5101839224773798795">Se dă clic automat când cursorul se oprește</translation>
 <translation id="5103311607312269661">creșterea luminozității ecranului</translation>
 <translation id="5106350808162641062">Elimină</translation>
-<translation id="5106608587025903971">În loc să introduci parola Contului Google pentru a te conecta, poți crea parola <ph name="DEVICE_TYPE" /> pentru acest dispozitiv</translation>
 <translation id="510695978163689362">Contul <ph name="USER_EMAIL" /> este supravegheat prin Family Link. Poți să adaugi conturi de la școală ca să accesezi resurse pentru școală cu supraveghere parentală.</translation>
 <translation id="5107093668001980925">Nu afișa niciodată <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">O extensie a dezactivat Navigarea sigură</translation>
@@ -7373,7 +7371,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6647690760956378579">Previzualizare vocală naturală</translation>
 <translation id="6648911618876616409">O actualizare esențială este gata de instalare. Conectează-te pentru a începe.</translation>
 <translation id="6649018507441623493">O secundă…</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> solicită să îți confirmi identitatea</translation>
 <translation id="6650206238642452078">Abonează-te la evenimentele de sistem ChromeOS</translation>
 <translation id="665061930738760572">Deschideți într-o &amp;fereastră nouă</translation>
 <translation id="6651237644330755633">Ai încredere în acest certificat pentru a identifica site-urile</translation>

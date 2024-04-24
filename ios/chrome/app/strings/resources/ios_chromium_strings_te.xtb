@@ -73,6 +73,7 @@
 <translation id="2918709798697875261">మీరు Chromium నుండి సైన్ అవుట్ అయ్యి ఉండాల్సిందిగా మీ సంస్థ కోరుతోంది.</translation>
 <translation id="2942241131342758843">లింక్‌లను తెరవడానికి, విడ్జెట్‌ల నుండి సెర్చ్ చేయడానికి, ఇతర యాప్‌లలో పాస్‌వర్డ్‌లను ఆటోఫిల్ చేయడానికి Chromiumను డిఫాల్ట్‌గా ఉపయోగించండి</translation>
 <translation id="2977470724722393594">Chromium తాజాగా ఉంది</translation>
+<translation id="3044857325852340337">Chromium డేటా తొలగింపు పూర్తయింది</translation>
 <translation id="3078941082359356771">{COUNT,plural, =1{కొత్త ట్యాబ్ పేజీలో ఈ ప్యాకేజీని ట్రాక్ చేయడంలో Chromium మీకు సహాయం చేయవచ్చు.}other{కొత్త ట్యాబ్ పేజీలో ఈ ప్యాకేజీలను ట్రాక్ చేయడంలో Chromium మీకు సహాయం చేయవచ్చు.}}</translation>
 <translation id="3102849287235003384">అన్ని వెబ్‌సైట్‌లలో మీ Google ఖాతా నుండి సైన్ అవుట్ చేయడానికి, <ph name="BEGIN_LINK" />Chromium నుండి సైన్ అవుట్ చేయండి<ph name="END_LINK" />.</translation>
 <translation id="3219277919172823720">Chromiumలో Voiceతో సెర్చ్ చేయండి</translation>
@@ -120,6 +121,7 @@
 <translation id="4633738821577273991">ఈ Chromium ప్రొఫైల్ కోసం కూడా మెరుగైన సురక్షిత బ్రౌజింగ్‌ను పొందండి</translation>
 <translation id="4638625642619341392">Chromiumను ఇక్కడ డౌన్‌లోడ్ చేయండి.</translation>
 <translation id="4654936625574199632">యాప్‌ను మెరుగుపరచుకోవడంలో సహాయపడటానికి Chromium, వినియోగ, క్రాష్ డేటాను Googleకు పంపుతుంది. <ph name="BEGIN_LINK" />మేనేజ్ చేయండి<ph name="END_LINK" /></translation>
+<translation id="4675485352217495362">Chromiumలో బ్రౌజింగ్ డేటాను తొలగించండి</translation>
 <translation id="4681781466797808448">Chromium స్కానర్‌ను ఆన్ చేయండి</translation>
 <translation id="4736424910885271643">మీ ఖాతా <ph name="HOSTED_DOMAIN" /> ద్వారా మేనేజ్ చేయబడుతుంది, కాబట్టి మీ Chromium డేటా ఈ పరికరం నుండి క్లియర్ చేయబడుతుంది</translation>
 <translation id="4773487571745795781">మీరు Chromium సైన్ ఇన్‌ను ఆఫ్ చేశారు.</translation>
@@ -187,6 +189,7 @@
 <translation id="6324041800010509197">Chromiumలో ట్యాబ్ గ్రిడ్‌ను చూడండి</translation>
 <translation id="6325378625795868881">మీరు మెసేజ్‌లలో, ఇతర యాప్‌లలో ఉండే లింక్‌లను ట్యాప్ చేసినప్పుడల్లా Chromiumను ఉపయోగించండి.</translation>
 <translation id="632825460376924298">Chromium సైన్-ఇన్‌ను అనుమతించండి</translation>
+<translation id="6332129548244419716">Chromiumలో బ్రౌజింగ్ డేటాను తొలగించండి.</translation>
 <translation id="6337530241089703714">ఈ పరికరం నుండి మీ Chromium డేటాను క్లియర్ చేయాలా లేదా ఉంచాలా అనే దాన్ని ఎంచుకోండి</translation>
 <translation id="6348483005826990855">3. Chromiumను ఎంచుకోండి</translation>
 <translation id="6383607155624074112">మీ మొదటి స్క్రీన్ డాక్ నుండి Chromiumను మరింత వేగంగా యాక్సెస్ చేయండి</translation>

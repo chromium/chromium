@@ -14,6 +14,13 @@
 <translation id="1002829167638728809">Permitir relatórios de dados relacionados à confiabilidade do domínio</translation>
 <translation id="1004590217607585595">Configurações de gerenciamento de apps da Web</translation>
 <translation id="1006218396155867129">Impedir que usuários de acesso remoto transfiram arquivos do host remoto e para ele</translation>
+<translation id="1007043180702842391">Controla se o visualizador de PDF no <ph name="PRODUCT_NAME" /> usa um iframe fora do processo (OOPIF, na sigla em inglês). Essa será a nova arquitetura do visualizador de PDF no futuro, porque é mais simples e facilita a adição de novos recursos. O visualizador de PDF do GuestView atual é uma arquitetura complexa e desatualizada que está sendo descontinuada.
+
+Quando esta política for ativada ou deixada sem definição, o <ph name="PRODUCT_NAME" /> poderá usar a arquitetura do visualizador de PDF OOPIF. Se a política for ativada ou deixada sem definição, o comportamento padrão será decidido pelo <ph name="PRODUCT_NAME" />.
+
+Se ela for desativada, o <ph name="PRODUCT_NAME" /> vai usar estritamente o visualizador de PDF do GuestView. Ele incorpora uma página da Web, com uma árvore de frames separada, a outra página.
+
+Essa política será removida após o lançamento do recurso de visualizador de PDF OOPIF.</translation>
 <translation id="1007149936182752368">Desativar a edição de favoritos</translation>
 <translation id="1009336698423963085">Permitir a tela cheia automática nesses sites</translation>
 <translation id="1010151305531217567">Usar o botão direito do mouse como o principal</translation>
@@ -649,6 +656,7 @@ Para informações detalhadas sobre padrões de URL válidos, consulte https://c
 
       Esta política está suspensa. Use a <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="1509692106376861764">Esta política teve o uso suspenso a partir da versão 29 do <ph name="PRODUCT_NAME" />.</translation>
+<translation id="1509839615768187049">Sempre usar o cliente DNS integrado</translation>
 <translation id="1514888685242892912">Ativar <ph name="PRODUCT_NAME" /></translation>
 <translation id="1515230621229117540">Ativa o menu de acessibilidade flutuante</translation>
 <translation id="1515824657887788963">Permite que uma página execute solicitações XHR síncronas durante a dispensa de páginas.</translation>
@@ -3359,6 +3367,11 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="3554498762428140109">Ativar a oclusão de janelas nativas</translation>
 <translation id="3554984410014457319">Permitir que a frase de ativação por voz seja ouvida pelo Google Assistente</translation>
 <translation id="3557586898458302131">Incluir porta não padrão no SPN do Kerberos gerado</translation>
+<translation id="3557705296383573923">Esta política controla qual pilha de software é usada para se comunicar com o servidor DNS: o cliente DNS do sistema operacional ou o cliente DNS integrado do <ph name="PRODUCT_NAME" />. Esta política não afeta qual servidor DNS será usado. Se, por exemplo, o sistema operacional estiver configurado para usar um servidor DNS empresarial, o mesmo servidor será usado pelo cliente DNS integrado. Ela também não controla como o DNS sobre HTTPS é usado. O <ph name="PRODUCT_NAME" /> sempre usará o resolvedor integrado para solicitações DNS sobre HTTPS. Consulte a política <ph name="DNS_OVER_HTTPS_MODE_POLICY_NAME" /> para informações sobre como controlar o DNS sobre HTTPS.
+
+      Se a política for ativada ou deixada sem definição, o cliente DNS integrado será usado.
+
+      Se a política for definida como "Desativada", o cliente DNS integrado será usado apenas quando o DNS sobre HTTPS estiver em uso.</translation>
 <translation id="3558024517032824255">Especifica o número mínimo de marcos do <ph name="PRODUCT_OS_NAME" /> em que a reversão precisa ser permitida a partir da versão estável a qualquer momento.
 
 O padrão é 0 para o consumidor, 4 (aproximadamente um semestre) para dispositivos inscritos na empresa.
@@ -7566,6 +7579,7 @@ configurados.</translation>
 <translation id="6795485990775913659">Permitir impressão apenas sem PIN</translation>
 <translation id="6796215185873669533">Definir a versão da string do user agent como a configuração padrão do navegador.</translation>
 <translation id="6800181452282128474">Não consultar servidores Quirks</translation>
+<translation id="6802412020718145539">O visualizador de PDF usa a arquitetura OOPIF.</translation>
 <translation id="68031099365512050">Informar o status de áudio</translation>
 <translation id="680356860463873420">Não permitir o uso de um PluginVm</translation>
 <translation id="6807947647944603395">Desativar o contrato de chave Kyber pós-quântica para TLS</translation>
@@ -7719,6 +7733,7 @@ Isso substitui a política <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NA
 <translation id="6903818804346914108">Ativar relatórios de informações do ventilador do dispositivo</translation>
 <translation id="690734633209203892">Controla como e quando as atualizações do <ph name="PRODUCT_OS_NAME" /> são aplicadas.</translation>
 <translation id="6907778402784621686">Bloquear conteúdo não seguro nesses sites</translation>
+<translation id="6908335885425855120">Usar o visualizador de PDF com iframe fora do processo</translation>
 <translation id="6908640907898649429">Configura o provedor de pesquisa padrão. É possível especificar o provedor de pesquisa padrão que será usado ou escolhido pelo usuário para desativar a pesquisa padrão.</translation>
 <translation id="6913068954484253496">Permitir que o <ph name="PRODUCT_NAME" /> conecte-se a dispositivos de transmissão em todos os endereços IP.</translation>
 <translation id="6915493311660114995">Se a política for ativada, o <ph name="PRODUCT_NAME" /> vai permitir
@@ -10483,6 +10498,7 @@ Se a política é deixada sem definição, o <ph name="PRODUCT_NAME" /> pode col
       Se esta política não for definida, não haverá seleção automática para nenhum site.
 
       Para informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês).</translation>
+<translation id="9063485115966829754">O visualizador de PDF usa a arquitetura do GuestView.</translation>
 <translation id="9066311316566875681">O modelo de URI do resolvedor de DNS sobre HTTPS desejado. Para especificar vários resolvedores de DNS sobre HTTPS, separe os modelos de URI correspondentes com espaços.
 
       Se a política DnsOverHttpsMode estiver definida como <ph name="SECURE_DNS_MODE_SECURE" />, esta política precisará ser definida e não poderá estar vazia. No <ph name="PRODUCT_OS_NAME" />, esta política ou a <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> precisam ser definidas. Caso contrário, a resolução de DNS vai falhar.

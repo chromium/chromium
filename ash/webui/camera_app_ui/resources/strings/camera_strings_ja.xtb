@@ -32,6 +32,7 @@
 <translation id="2175927920773552910">QR コード</translation>
 <translation id="2244252133441425811">動画 FPS 選択ツールをオンにする</translation>
 <translation id="2271433936731426666">フルサイズの動画スナップショットを有効にする</translation>
+<translation id="2281736597583450397">高度なズーム機能で細部を鮮明に</translation>
 <translation id="2320741269052147773">左にパン</translation>
 <translation id="2360840973209616515">カメラアプリは管理者によって管理されています。
         詳しくは、管理者にお問い合わせください。</translation>
@@ -118,6 +119,7 @@
 画質に関するフィードバックの場合は、サンプルの写真や動画を添付し、問題の内容を詳しくご説明ください（写真が暗すぎる、ピントが合わないなど）。</translation>
 <translation id="6519884562954018934"><ph name="WIFINAME" /> に参加</translation>
 <translation id="6527303717912515753">共有</translation>
+<translation id="6586509689874700895">最初に <ph name="BUTTON_NAME" /> を押してズームインしてから撮影すると、高精細な写真が撮れます。</translation>
 <translation id="6617916774429601017">すべての解像度を表示</translation>
 <translation id="6631515515009660915">ミラーをオフにする</translation>
 <translation id="6652737148136672975">矢印キーで角の位置を移動します</translation>

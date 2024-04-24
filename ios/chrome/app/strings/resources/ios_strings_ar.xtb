@@ -104,6 +104,7 @@
 <translation id="1523341279170789507">السماح بكل ملفات تعريف الارتباط
 </translation>
 <translation id="1524563461097350801">لا، شكرًا</translation>
+<translation id="1539173178539798367">إخفاء خيار "حذف بيانات التصفّح"</translation>
 <translation id="1540800554400757039">العنوان 1</translation>
 <translation id="1545749641540134597">فحص رمز الاستجابة السريعة</translation>
 <translation id="1552525382687785070">تم إيقاف المزامنة من قِبل المشرف</translation>
@@ -322,6 +323,7 @@
 
 محرّك البحث المستخدَم هو "<ph name="DSE_NAME" />". اطّلِع على تعليمات هذا المحرّك بشأن حذف سجلّ البحث، إن أمكن.</translation>
 <translation id="2697526135132990015">تسجيل الخروج ومحو البيانات</translation>
+<translation id="269819437389494246">يمكنك من خلال السجلّ الاطّلاع على الصفحات التي زرتها أو حذفها</translation>
 <translation id="2700241355396984822">خيارات ضبط الأذونات</translation>
 <translation id="2702801445560668637">قائمة القراءة</translation>
 <translation id="2704606927547763573">تم النسخ</translation>
@@ -395,6 +397,7 @@
 <translation id="3039722182465315531">عدم تسجيل الدخول</translation>
 <translation id="3053332585453689122">‏يُرسِل هذا الوضع إلى "التصفّح الآمن من Google" عناوين URL التي تزورها وعيّنة صغيرة من محتوى الصفحة وعمليات التنزيل ونشاط الإضافات ومعلومات النظام للتحقّق ممّا إذا كانت ضارة.</translation>
 <translation id="3054631738875941048">إخفاء ميزة "الإضافة إلى قائمة القراءة"</translation>
+<translation id="3064295814838126921">جارٍ حذف بيانات التصفّح…</translation>
 <translation id="3074499504015191586">ترجمة الصفحة بأكملها</translation>
 <translation id="3076846064362030967">‏لن يتم تسجيل خروجك من حساب Google. قد يتم حفظ <ph name="BEGIN_LINK" />بيانات الأنشطة الأخرى<ph name="END_LINK" /> في حسابك على Google عند تسجيل الدخول إليه. ويمكنك حذفها في أي وقت.
 
@@ -860,6 +863,7 @@
 <translation id="5490005495580364134">حظر كل ملفات تعريف الارتباط (لا ننصح بهذا الخيار)</translation>
 <translation id="5497202150450073388">لم تنجح عملية التسليم. ستتم إعادة المحاولة لاحقًا.</translation>
 <translation id="5511959326926949696">يوفّر لك هذا الوضع حماية صارمة اختيارية على المتصفِّح. وينصح بعدم استخدام هذا الوضع إلا إذا كنت تعتقد أنّك قد تتعرّض لهجوم إلكتروني متطوِّر جدًا.</translation>
+<translation id="5512759250809559631">القائمة ← السجلّ ← حذف بيانات التصفّح</translation>
 <translation id="5513681519188741830">قبل <ph name="TIME" /> ساعة</translation>
 <translation id="5525269841082836315">إنشاء عبارة مرور</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{هناك كلمة مرور واحدة ({COUNT}) ضعيفة}zero{هناك {COUNT} كلمة مرور ضعيفة}two{هناك كلمتا مرور ({COUNT}) ضعيفتان}few{هناك {COUNT} كلمات مرور ضعيفة}many{هناك {COUNT} كلمة مرور ضعيفة}other{هناك {COUNT} كلمة مرور ضعيفة}}</translation>
@@ -935,6 +939,7 @@
 <translation id="5859715514067755465">التالي</translation>
 <translation id="5860033963881614850">غير مفعّلة</translation>
 <translation id="5860491529813859533">تفعيل</translation>
+<translation id="5889333064153755823">حذف بيانات التصفّح</translation>
 <translation id="5896576662943111387">‏مُخصّص لنظام التشغيل iOS</translation>
 <translation id="5897749768294722429">يجب مزامنة علامات التبويب والسجلّ للانتقال بسرعة إلى المواقع الإلكترونية التي زرتها.</translation>
 <translation id="5897956970858271241">الانتقال إلى الرابط المنسوخ</translation>
@@ -1032,6 +1037,7 @@
 <translation id="6346549652287021269">هل تريد بدء تنزيل جديد؟</translation>
 <translation id="6347953390226388422">{count,plural, =1{‏سيتم حذف هذا العنوان من حسابك على Google‏ (<ph name="USER_EMAIL" />) ومن هذا الجهاز.}zero{‏سيتم حذف هذه العناوين من حسابك على Google‏ (<ph name="USER_EMAIL" />) ومن هذا الجهاز.}two{‏سيتم حذف هذين العنوانَين من حسابك على Google‏ (<ph name="USER_EMAIL" />) ومن هذا الجهاز.}few{‏سيتم حذف هذه العناوين من حسابك على Google‏ (<ph name="USER_EMAIL" />) ومن هذا الجهاز.}many{‏سيتم حذف هذه العناوين من حسابك على Google‏ (<ph name="USER_EMAIL" />) ومن هذا الجهاز.}other{‏سيتم حذف هذه العناوين من حسابك على Google‏ (<ph name="USER_EMAIL" />) ومن هذا الجهاز.}}</translation>
 <translation id="634878792104344809">مزامنة كلمات المرور والسجلّ وغير ذلك على جميع أجهزتك</translation>
+<translation id="6351658970066645919">حذف بيانات التصفّح</translation>
 <translation id="63519665078626091">‏لاستخدام Web Inspector (أداة فحص الويب)، عليك الاتصال بخادم Safari على جهاز الكمبيوتر باستخدام كابل ثم الوصول إلى جهاز iPad من القائمة Develop (تطوير). يمكنك تفعيل القائمة Develop (تطوير) من خلال قسم Advanced (إعدادات متقدّمة) في إعدادات خادم Safari على جهاز الكمبيوتر.</translation>
 <translation id="6355820205320395730">يمكن تخمين كلمات المرور الضعيفة بسهولة، ولذلك ننصحك بإنشاء كلمات مرور قوية. <ph name="BEGIN_LINK" />الاطّلاع على مزيد من نصائح الأمان<ph name="END_LINK" /></translation>
 <translation id="6361681885917591592">تم</translation>
@@ -1153,6 +1159,7 @@
 <translation id="687135068089457384">عرض الإعدادات</translation>
 <translation id="6873263987691478642">وضع تقسيم العرض</translation>
 <translation id="6882836635272038266">يوفّر لك حماية عادية من الإضافات وعمليات التنزيل والمواقع الإلكترونية الضارة.</translation>
+<translation id="6887173972066406796">تأكيد حذف بيانات التصفّح</translation>
 <translation id="6888009575607455378">هل تريد فعلاً تجاهل التغييرات؟</translation>
 <translation id="6896758677409633944">نسخ</translation>
 <translation id="6897187120838603299">سيتم حفظ كلمة المرور في جهازك.</translation>
@@ -1347,6 +1354,7 @@
 <translation id="7930998711684428189">التحذير في حال الكشف عن كلمات المرور في عملية اختراق بيانات</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">تصدير كلمات المرور...</translation>
+<translation id="7939856641500914040">حذف بيانات التصفّح…</translation>
 <translation id="794799177247607889">إيقاف التسجيل</translation>
 <translation id="7959441099968534758">الانتقال إلى الخلاصة</translation>
 <translation id="7961015016161918242">مطلقًا</translation>

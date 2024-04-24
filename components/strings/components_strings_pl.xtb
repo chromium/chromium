@@ -584,7 +584,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2071692954027939183">Powiadomienia zostały automatycznie zablokowane, bo zazwyczaj na nie nie zezwalasz</translation>
 <translation id="2071852865256799872">Twoją przeglądarką zarządza Twoja organizacja, a Twoim profilem – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Odblokuj: <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Administrator zablokował: <ph name="PERMISSION" /> w domenie <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Gry muzyczne i taneczne</translation>
 <translation id="2079545284768500474">Cofnij</translation>
 <translation id="2080021694978766903">Maksymalna liczba wpisów w tej zasadzie to <ph name="MAX_ITEMS_LIMIT" />.</translation>
@@ -2024,7 +2023,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4885030148564729407">Miesiące miodowe i romantyczne podróże</translation>
 <translation id="4885256590493466218">Zapłać kartą <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Chroń hasła za pomocą Windows Hello</translation>
-<translation id="4890070067176768718">Administrator zezwolił na korzystanie z: <ph name="PERMISSION" /> w domenie <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Tył</translation>
 <translation id="4895019427244614047">Usuń adres</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3911,7 +3909,6 @@ Dodatkowe informacje:
 <translation id="8493948351860045254">Zwolnij miejsce</translation>
 <translation id="8498891568109133222">Serwer <ph name="HOST_NAME" /> potrzebował zbyt wiele czasu na odpowiedź.</translation>
 <translation id="8502023382441452707">Urodziny i imieniny</translation>
-<translation id="8502972004418241366">Aby używać: <ph name="PERMISSION" /> w tej witrynie, musisz zezwolić Chrome na dostęp</translation>
 <translation id="8503559462189395349">Hasła w Chrome</translation>
 <translation id="8503813439785031346">Nazwa użytkownika</translation>
 <translation id="8504928302600319133">Sprzęt komputerowy</translation>
@@ -3931,7 +3928,6 @@ Dodatkowe informacje:
 <translation id="853246364274116957">Broadway i teatry muzyczne</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Wejdź na stronę &lt;strong&gt;chrome://policy&lt;/strong&gt;, by wyświetlić listę zablokowanych adresów URL oraz inne zasady egzekwowane przez administratora systemu.</translation>
-<translation id="8534934518812659742">Uprawnienia <ph name="PERMISSION" /> są wyłączone w Chrome.</translation>
 <translation id="8536234749087605613">Koperta (okno)</translation>
 <translation id="8539500321752640291">Przyznać 2 uprawnienia?</translation>
 <translation id="8541158209346794904">Urządzenie Bluetooth</translation>
@@ -3988,7 +3984,6 @@ Dodatkowe informacje:
 <translation id="865032292777205197">czujniki ruchu</translation>
 <translation id="865255447216708819">Folia Back Print</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Wcześniej nie przyznałeś(-aś) uprawnień <ph name="PERMISSION" /> witrynie <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Nieruchomości komercyjne</translation>
 <translation id="8663226718884576429">Podsumowanie zamówienia, <ph name="TOTAL_LABEL" />, Szczegółowe informacje</translation>
 <translation id="8663909737634214500">Dysk optyczny</translation>
@@ -4020,6 +4015,7 @@ Dodatkowe informacje:
 <translation id="8722929331701811374">Papeteria (papier firmowy)</translation>
 <translation id="8724824364712796726">Koperta B6</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>
+<translation id="8725667981218437315">Kamera i mikrofon</translation>
 <translation id="8726549941689275341">Rozmiar strony:</translation>
 <translation id="8730621377337864115">Gotowe</translation>
 <translation id="8731268612289859741">Kod bezpieczeństwa</translation>

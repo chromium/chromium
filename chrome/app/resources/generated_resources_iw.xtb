@@ -247,6 +247,7 @@
 <translation id="1178581264944972037">השהיה</translation>
 <translation id="1178601482396475810">ניהול הסנכרון במכשיר</translation>
 <translation id="117916940443676133">מפתח האבטחה שלך אינו מוגן באמצעות קוד אימות. כדי לנהל את פרטי הכניסה, צריך תחילה ליצור קוד אימות.</translation>
+<translation id="1179902906564467236">צריך לפעול לפי ההוראות בטלפון או להשתמש באפליקציית המצלמה</translation>
 <translation id="118057123461613219">חיסכון של נפח גדול מאוד</translation>
 <translation id="1181037720776840403">הסרה</translation>
 <translation id="1181366777303791449">ב-<ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
@@ -660,6 +661,7 @@
 <translation id="1500801317528437432">‏מידע נוסף על אפליקציות Chrome שלא נתמכות</translation>
 <translation id="1501480321619201731">מחיקת קבוצה</translation>
 <translation id="1503392482221435031">‏שליחת סטטיסטיקת שימוש אל Google באופן אוטומטי. בהגדרות המכשיר יש אפשרות להפעיל או להשבית את דוחות הקריסה.</translation>
+<translation id="1503556098270577657">‏נכנסת לחשבון <ph name="USER_EMAIL" /> באמצעות טלפון Android</translation>
 <translation id="150411034776756821">הסרה של <ph name="SITE" /></translation>
 <translation id="1504551620756424144">‏התיקיות המשותפות זמינות ב-Windows בספרייה <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">לייצא את הסיסמאות</translation>
@@ -1608,7 +1610,6 @@
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">‏פעולה זו מאפשרת פעילות של תכונות לניפוי באגים במערכת ההפעלה של ChromeOS Flex שיגדירו sshd daemon ויאפשרו אתחול מכונני USB.</translation>
 <translation id="2178614541317717477">‏רשות האישורים (CA) בסכנה</translation>
-<translation id="2179416702468739594">מתבצע חיפוש של פרופילים זמינים. הפעולה עשויה לגרום לניתוק הרשת הסלולרית למשך מספר דקות.</translation>
 <translation id="2180620921879609685">לחסום תוכן בכל דף</translation>
 <translation id="2181821976797666341">מדיניות</translation>
 <translation id="2182058453334755893">הועתק אל הלוח</translation>
@@ -1661,6 +1662,7 @@
 <translation id="222115440608612541">החלפת העיצוב בזריחה ובשקיעה</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">מקור מדיה ללא שם</translation>
+<translation id="2224337661447660594">אין אינטרנט</translation>
 <translation id="2224444042887712269">ההגדרה הזו שייכת ל-<ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">עריכת שם התיקייה</translation>
 <translation id="2225927550500503913">הכרטיס הווירטואלי מופעל</translation>
@@ -3115,7 +3117,6 @@
 <translation id="3321494112580110651">המדפסת שלך לא מופיעה?</translation>
 <translation id="3321776060736518525">המקור: <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">בונוס! קיבלת עוד זמן מסך</translation>
-<translation id="3325804108816646710">מתבצע חיפוש של פרופילים זמינים…</translation>
 <translation id="3325930488268995856">‏Microsoft OneDrive מחובר</translation>
 <translation id="3325995804968971809">סגנון</translation>
 <translation id="3327050066667856415">‏אבטחת המכשיר מתוכננת ב-Chromebook באופן מובנה. המכשיר שלך מוגן מתוכנות זדוניות באופן אוטומטי, ולא נדרשות בו תוכנות נוספות.</translation>
@@ -5423,7 +5424,6 @@
 <translation id="5101839224773798795">קליק אוטומטי כשהסמן עוצר</translation>
 <translation id="5103311607312269661">הגברה של בהירות התצוגה</translation>
 <translation id="5106350808162641062">הסרה</translation>
-<translation id="5106608587025903971">‏במקום להזין את הסיסמה לחשבון Google כדי להיכנס, אפשר ליצור סיסמה ל-<ph name="DEVICE_TYPE" /> למכשיר הזה</translation>
 <translation id="510695978163689362">‏הפיקוח על <ph name="USER_EMAIL" /> מתבצע באמצעות Family Link. אפשר להוסיף חשבונות בית-ספריים כדי לקבל גישה למקורות מידע הזמינים בבית הספר בעזרת פיקוח הורים.</translation>
 <translation id="5107093668001980925">לא להציג <ph name="MODULE_NAME" /> אף פעם</translation>
 <translation id="5107443654503185812">תוסף כיבה את הגלישה הבטוחה</translation>
@@ -5586,6 +5586,10 @@
 <translation id="5235050375939235066">להסיר את התקנת האפליקציה?</translation>
 <translation id="523505283826916779">הגדרות נגישות</translation>
 <translation id="5235750401727657667">החלפת הדף שמוצג בפתיחה של כרטיסייה חדשה</translation>
+<translation id="5237124927415201087">‏אפשר להגדיר בקלות את מכשיר <ph name="DEVICE_TYPE" /> באמצעות הטלפון. ניתן להוסיף את ה-Wi-Fi ואת החשבון שלך ב-Google בלי להזין את הסיסמאות באופן ידני.
+    <ph name="BR" />
+    <ph name="BR" />
+    גלוי בתור <ph name="DEVICE_TYPE" />…</translation>
 <translation id="523862956770478816">הרשאות לאתרים</translation>
 <translation id="5240931875940563122">‏כניסה באמצעות טלפון Android</translation>
 <translation id="5242724311594467048">האם להפעיל את "<ph name="EXTENSION_NAME" />"?</translation>
@@ -7384,7 +7388,6 @@
 <translation id="6647690760956378579">תצוגה מקדימה של הקול הטבעי</translation>
 <translation id="6648911618876616409">יש עדכון קריטי המוכן להתקנה. צריך להיכנס לחשבון כדי להתחיל.</translation>
 <translation id="6649018507441623493">רק רגע...</translation>
-<translation id="6650072551060208490">כדי להתחבר אל <ph name="ORIGIN_NAME" /> יש לאמת את זהותך</translation>
 <translation id="6650206238642452078">‏הרשמה לאירועי מערכת של ChromeOS</translation>
 <translation id="665061930738760572">פתיחה ב&amp;חלון חדש</translation>
 <translation id="6651237644330755633">לתת אמון באישור זה לזיהוי אתרי אינטרנט</translation>
@@ -8891,6 +8894,7 @@
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="7788948939674438635">לא לאפשר לאתרים לנעול את המקלדת</translation>
 <translation id="7789963078219276159">הרקע של דף הפתיחה הוחלף, ועכשיו מופיעה בו התמונה<ph name="CATEGORY" />.</translation>
+<translation id="7790689625219600437">PDF OCR</translation>
 <translation id="7791269138074599214">שיטת הקלט</translation>
 <translation id="7791429245559955092">‏האפליקציה הזו תותקן בפרופיל ב-Chrome שבשימוש כרגע</translation>
 <translation id="7791436592012979144">הגלילה ההפוכה מופעלת</translation>
@@ -10826,6 +10830,10 @@
 <translation id="940212040923880623">&amp;חיפוש ועריכה</translation>
 <translation id="942296794412775122">הפעלה או השבתה של המיקרופון</translation>
 <translation id="942532530371314860">‏<ph name="APP_NAME" /> משתף כרטיסייה ואודיו של Chrome.</translation>
+<translation id="943673863723789781">‏אפשר להגדיר בקלות את מכשיר <ph name="DEVICE_TYPE" /> באמצעות הטלפון. ניתן להוסיף את החשבון שלך ב-Google בלי להזין את הסיסמה באופן ידני.
+    <ph name="BR" />
+    <ph name="BR" />
+    גלוי בתור <ph name="DEVICE_TYPE" />…</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="947156494302904893">אתרים שמבקרים בהם יכולים לאמת שמדובר באדם אמיתי ולא בבוט</translation>
 <translation id="947329552760389097">&amp;בדיקת רכיבים</translation>

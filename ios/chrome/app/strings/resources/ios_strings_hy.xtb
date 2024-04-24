@@ -130,6 +130,7 @@
 <translation id="1653432787084483144">{count,plural, =1{{count} պահված գաղտնաբառ ցուցադրվում է ստեղնաշարի վերևում։}one{{count} պահված գաղտնաբառ ցուցադրվում է ստեղնաշարի վերևում։}other{{count} պահված գաղտնաբառ ցուցադրվում է ստեղնաշարի վերևում։}}</translation>
 <translation id="1657011748321897393">Չհաջողվեց համօգտագործել, քանի որ դուք միացած չեք ցանցին:</translation>
 <translation id="165877110639533037">Բաց ներդիրներ չկան</translation>
+<translation id="1668001730617725852">Բացել ներդիրների նոր խմբում</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />ից <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">Պահանջել կայքի բջջային տարբերակը</translation>
 <translation id="1687475363370981210">Բոլորը նշել որպես կարդացված</translation>
@@ -1199,6 +1200,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7162168282402939716">Ապակողպեք ինկոգնիտո ներդիրները՝ օգտագործելով <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">Բացել կարգավորումները</translation>
 <translation id="7186568385131859684">Կառավարեք, թե ինչպես այցելությունների պատմությունը ձեր մյուս տվյալների հետ օգտագործվի Google-ի ծառայություններում</translation>
+<translation id="7187190640134722091">Ստեղծել խումբ</translation>
 <translation id="7189598951263744875">Կիսվել…</translation>
 <translation id="719133302483559673">Կառավարեք ձեր հետաքրքրությունները և նախընտրանքները։</translation>
 <translation id="7192050974311852563">Սկսել գրանցումը</translation>
@@ -1595,6 +1597,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="9109699888944026290">{count,plural, =1{Նոր գաղտնաբառ այս կայքի համար}one{Նոր գաղտնաբառ այս կայքի համար}other{Նոր գաղտնաբառեր այս կայքի համար}}</translation>
 <translation id="9120217828624527905">Անցնել ամբողջ էջի թարգմանությանը</translation>
 <translation id="9124387962554796433">Google-ը կարող է ձեր պատմությունն օգտագործել` Որոնումն ու Google-ի մյուս ծառայություններն անհատականացնելու համար։</translation>
+<translation id="913036870884277353">Հեշտությամբ բացեք հղումները այլ հավելվածներում։</translation>
 <translation id="9137526406337347448">Google-ի ծառայություններ</translation>
 <translation id="9144931028079269381">Թաքցնել «Ընթերցանության ցանկ» կետը</translation>
 <translation id="9148126808321036104">Նորից մուտք գործել</translation>

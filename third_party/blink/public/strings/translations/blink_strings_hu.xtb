@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">Kérjük, ne hagyja üresen az e-mail-cím mezőjét.</translation>
 <translation id="1758486001363313524">Más...</translation>
 <translation id="1787192514241997742">összes idő: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">Kamerahasználat engedélyezése</translation>
 <translation id="1822429046913737220">de./du.</translation>
 <translation id="1832974991323546415">lejátszás távoli eszközön</translation>
 <translation id="1921819250265091946">nn</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">aktuális lépés</translation>
 <translation id="3321030238473337787">Lejátszási sebesség</translation>
 <translation id="3329013043687509092">Telítettség</translation>
-<translation id="3377518164566272702">Mikrofon- és kamerahasználat engedélyezése</translation>
 <translation id="3450233048674729344">Az érték legyen kisebb vagy egyenlő, mint <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">hh</translation>
 <translation id="3754210790023674521">Kilépés a kép a képben módból</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">Más...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />. hét (<ph name="WEEK_START_DATE" />-i dátummal kezdődik)</translation>
 <translation id="916607977885256133">Kép a képben</translation>
-<translation id="918430632320614861">Mikrofonhasználat engedélyezése</translation>
 <translation id="945780513535800434">Részben ellenőrzött</translation>
 <translation id="954003015749068518">belépés a kép a képben funkcióba</translation>
 </translationbundle>

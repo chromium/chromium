@@ -36,6 +36,7 @@
 <translation id="1181037720776840403">Fjern</translation>
 <translation id="1181366777303791449">på <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183189057400844278">For å sikre at du alltid kan bruke passordene i Google-kontoen din, må du bekrefte at det er deg</translation>
+<translation id="1187810343066461819">Slett også bokmerker, logg og annet fra denne bilen</translation>
 <translation id="1193729455103054076">Vil du bruke det sterke passordet?</translation>
 <translation id="1197267115302279827">Flytt bokmerker</translation>
 <translation id="1197761954713363183">Arket for passnøkkelbekreftelse er lukket</translation>
@@ -82,6 +83,7 @@
 <translation id="1386674309198842382">Aktiv for <ph name="LAST_UPDATED" /> dager siden</translation>
 <translation id="13931502444227376">For at du skal kunne fortsette, må <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dele navnet ditt, e-postadressen din og profilbildet ditt med dette nettstedet. Se <ph name="BEGIN_LINK1" />vilkårene for bruk<ph name="END_LINK1" /> av dette nettstedet.</translation>
 <translation id="1397811292916898096">Søk med <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398037172295725596">Prøv å søke etter noe annet, eller åpne mer logg i Chrome for å se mer nettlogg fra andre apper.</translation>
 <translation id="1407069428457324124">Mørkt tema</translation>
 <translation id="1407135791313364759">Åpne alle</translation>
 <translation id="1409879593029778104">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt fordi filen finnes allerede.</translation>
@@ -153,6 +155,8 @@
 <translation id="1807709131360304325">Åpne et nytt vindu</translation>
 <translation id="1810845389119482123">Det innledende synkroniseringsoppsettet er ikke fullført</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> kan ikke fortsette å bruke <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1825772852827001597">Betalingsmåter og adresser fra Google Pay krypteres ikke. Nettleserloggen fra Chrome synkroniseres ikke.
+Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordfrasen blir verken sendt til eller lagret av Google. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Finn på side</translation>
 <translation id="185383612275551373">Synkroniser for å få det mest relevante innholdet fra Google</translation>
 <translation id="1871098866036088250">Åpne i Chrome-nettleseren</translation>
@@ -268,6 +272,7 @@
 <translation id="250020030759455918">Du kommer til å se påloggingsstatus, nettlesingsdata og nettstedsdata for <ph name="SITE_NAME" /> i Chrome</translation>
 <translation id="2510106555128151389">Installerer <ph name="WEBAPK_NAME" /> …</translation>
 <translation id="2513403576141822879">Se <ph name="BEGIN_LINK" />Synkronisering og Google tjenester<ph name="END_LINK" /> for flere innstillinger knyttet til personvern, sikkerhet og datainnsamling.</translation>
+<translation id="2515921719039583189">Vil du slette Chrome-data fra enheten?</translation>
 <translation id="2517113738956581680">Felt i full størrelse</translation>
 <translation id="2523184218357549926">Sender Google nettadressene til sider du besøker</translation>
 <translation id="2527209463677295330">Hvis du inkluderer mer av teksten på siden, kan det hende du får bedre resultater</translation>
@@ -496,6 +501,7 @@
 <translation id="3631987586758005671">Deler med <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Du logges på nettsteder automatisk ved hjelp av lagret legitimasjon. Når funksjonen er slått av, blir du bedt om å oppgi legitimasjonen din hver gang du logger på et nettsted.</translation>
 <translation id="3636940436873918441">Foretrukne språk</translation>
+<translation id="3637744895182738742">Hvis du har glemt passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="368329460027487650">Logget av. Åpner alternativer for pålogging.</translation>
 <translation id="3687645719033307815">Du ser på en forhåndsvisning av denne siden</translation>
 <translation id="3690369331356918524">Advarer deg hvis passord blir avdekket i databrudd</translation>
@@ -1193,6 +1199,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="707155805709242880">Velg hva som skal synkroniseres, nedenfor</translation>
 <translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Bokmerket er lagret i «<ph name="FOLDER_NAME" />» i kontoen din, <ph name="ACCOUNT_EMAIL" />.}other{Bokmerkene er lagret i «<ph name="FOLDER_NAME" />» i kontoen din, <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">SD-kort</translation>
+<translation id="7078916049958741685">Slett også Chrome-dataene dine fra denne enheten</translation>
 <translation id="7080806333218412752">Sender nettadresser til Safe Browsing for å sjekke dem. Sender også et lite utvalg av sider, nedlastinger, utvidelsesaktivitet og systeminformasjon for å bidra til å oppdage nye trusler. Knytter disse dataene til Google-kontoen din midlertidig når du er pålogget, slik at du er beskyttet i alle Google-appene.</translation>
 <translation id="7085332316435785646">Velg om Chrome-loggen skal inkluderes for å gi opplevelser i Google-tjenester mer personlig preg</translation>
 <translation id="7088681679121566888">Chrome er oppdatert</translation>
@@ -1205,6 +1212,9 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7146622961999026732">Disse nettstedene og appene ser ut til å være viktige for deg:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />Få mer informasjon<ph name="END_LINK" /> fra <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="7149893636342594995">Siste døgn</translation>
+<translation id="71503698506017927">Kryptering med passordfrase inkluderer ikke betalingsmåter eller adresser fra Google Pay.
+
+For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="7168323970702333693">Logget på som <ph name="USER_NAME" />. Åpner innstillinger.</translation>
 <translation id="7173114856073700355">Åpne Innstillinger</translation>
 <translation id="7177466738963138057">Du kan endre dette senere i Innstillinger</translation>
@@ -1638,6 +1648,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="952301137339791907">Sidestatistikkfeltet nederst er åpnet</translation>
 <translation id="95817756606698420">Chrome kan bruke <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> for søk i Kina. Du kan endre dette i <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">Slett nettlesingsdata</translation>
+<translation id="966131775676567255">Sletter kontodata</translation>
 <translation id="96681097142096641">Vil du se den forenklede siden?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutter igjen</translation>
 <translation id="981121421437150478">Uten nett</translation>

@@ -585,7 +585,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2071692954027939183">Notifikasi otomatis diblokir karena Anda biasanya tidak mengizinkannya</translation>
 <translation id="2071852865256799872">Browser dikelola oleh organisasi Anda dan profil Anda dikelola oleh <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Berhenti memblokir <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Administrator Anda telah memblokir <ph name="PERMISSION" /> di <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Game Musik &amp; Tari</translation>
 <translation id="2079545284768500474">Urungkan</translation>
 <translation id="2080021694978766903">Kebijakan ini tidak boleh memiliki lebih dari <ph name="MAX_ITEMS_LIMIT" /> entri.</translation>
@@ -2024,7 +2023,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4885030148564729407">Bulan Madu &amp; Liburan Romantis</translation>
 <translation id="4885256590493466218">Bayar dengan <ph name="CARD_DETAIL" /> saat checkout</translation>
 <translation id="4887406273302438710">Lindungi sandi dengan Windows Hello</translation>
-<translation id="4890070067176768718">Administrator Anda telah mengizinkan <ph name="PERMISSION" /> di <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Belakang</translation>
 <translation id="4895019427244614047">Hapus alamat</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3907,7 +3905,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8493948351860045254">Kosongkan ruang</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> membutuhkan terlalu banyak waktu untuk merespons.</translation>
 <translation id="8502023382441452707">Hari Ulang Tahun &amp; Pemberian Nama</translation>
-<translation id="8502972004418241366">Untuk menggunakan <ph name="PERMISSION" /> di situs ini, Anda perlu memberikan akses ke Chrome</translation>
 <translation id="8503559462189395349">Sandi Chrome</translation>
 <translation id="8503813439785031346">Nama Pengguna</translation>
 <translation id="8504928302600319133">Hardware Komputer</translation>
@@ -3927,7 +3924,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="853246364274116957">Teater Broadway &amp; Musik</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Buka &lt;strong&gt;chrome://policy&lt;/strong&gt; untuk melihat daftar URL yang diblokir dan kebijakan lainnya yang diterapkan oleh administrator sistem Anda.</translation>
-<translation id="8534934518812659742">Anda telah menonaktifkan <ph name="PERMISSION" /> untuk Chrome.</translation>
 <translation id="8536234749087605613">Amplop (Jendela)</translation>
 <translation id="8539500321752640291">Berikan 2 izin?</translation>
 <translation id="8541158209346794904">Perangkat Bluetooth</translation>
@@ -3984,7 +3980,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="865032292777205197">sensor gerakan</translation>
 <translation id="865255447216708819">Film Cetak Belakang</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Anda sebelumnya tidak mengizinkan <ph name="PERMISSION" /> di <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Properti Komersial</translation>
 <translation id="8663226718884576429">Ringkasan Pesanan, <ph name="TOTAL_LABEL" />, Detail Selengkapnya</translation>
 <translation id="8663909737634214500">Cakram Optis</translation>
@@ -4016,6 +4011,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8722929331701811374">Alat tulis (Kepala Surat)</translation>
 <translation id="8724824364712796726">Envelope B6</translation>
 <translation id="8725066075913043281">Coba lagi</translation>
+<translation id="8725667981218437315">Kamera dan mikrofon</translation>
 <translation id="8726549941689275341">Ukuran halaman:</translation>
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8731268612289859741">Kode keamanan</translation>

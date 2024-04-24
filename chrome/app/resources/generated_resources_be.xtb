@@ -1600,7 +1600,6 @@
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Вы ўключаеце функцыі адладкі Chrome OS Flex. Будзе наладжаны дэман SSHD і дазволена загрузка з USB-дыскаў.</translation>
 <translation id="2178614541317717477">Кампраметацыя ЦС</translation>
-<translation id="2179416702468739594">Ідзе пошук даступных профіляў. Гэта можа прывесці да адключэння мабільнай сеткі на некалькі хвілін.</translation>
 <translation id="2180620921879609685">Блакіраваць змесціва на любой старонцы</translation>
 <translation id="2181821976797666341">Палітыкі</translation>
 <translation id="2182058453334755893">Скапіравана ў буфер абмену</translation>
@@ -1653,6 +1652,7 @@
 <translation id="222115440608612541">Пераключаць тэмы аўтаматычна ў залежнасці ад часу сутак</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Крыніца медыя без назвы</translation>
+<translation id="2224337661447660594">Няма падключэння да інтэрнэту</translation>
 <translation id="2224444042887712269">Гэта налада належыць карыстальніку <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Змена назвы папкі</translation>
 <translation id="2225927550500503913">Віртуальная картка ўключана</translation>
@@ -3104,7 +3104,6 @@
 <translation id="3321494112580110651">Вашага прынтара няма на гэтай старонцы?</translation>
 <translation id="3321776060736518525">Крыніца: <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Бонус! Час карыстання павялічыўся</translation>
-<translation id="3325804108816646710">Ідзе пошук даступных профіляў...</translation>
 <translation id="3325930488268995856">Сховішча Microsoft OneDrive падключана</translation>
 <translation id="3325995804968971809">Стыль</translation>
 <translation id="3327050066667856415">Прылады Chromebook распрацаваны для вашай бяспекі. Ваша прылада абараняецца ад шкодных праграм аўтаматычна – дадатковае праграмнае забеспячэнне не патрабуецца.</translation>
@@ -5408,7 +5407,6 @@
 <translation id="5101839224773798795">Аўтаматычна націскаць, калі курсор спыняецца</translation>
 <translation id="5103311607312269661">павялічыць яркасць дысплэя</translation>
 <translation id="5106350808162641062">Выдаліць</translation>
-<translation id="5106608587025903971">Стварыце пароль для <ph name="DEVICE_TYPE" /> і ўводзьце яго пры ўваходзе замест пароля Уліковага запісу Google</translation>
 <translation id="510695978163689362">Уліковы запіс <ph name="USER_EMAIL" /> кантралюецца праз Family Link. Каб пад бацькоўскім кантролем атрымліваць доступ да навучальных матэрыялаў, вы можаце дадаваць навучальныя ўліковыя запісы.</translation>
 <translation id="5107093668001980925">Ніколі не паказваць: <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Адно з пашырэнняў выключыла Бяспечны прагляд</translation>
@@ -7374,7 +7372,6 @@
 <translation id="6647690760956378579">Узор натуральнага голасу</translation>
 <translation id="6648911618876616409">Крытычнае абнаўленне гатовае да ўсталявання. Каб усталяваць яго, увайдзіце ва ўліковы запіс.</translation>
 <translation id="6649018507441623493">Секунду…</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> хоча ўпэўніцца, што гэта вы</translation>
 <translation id="6650206238642452078">Падпісацца на падзеі сістэмы ChromeOS</translation>
 <translation id="665061930738760572">Адкрыць у &amp;новым акне</translation>
 <translation id="6651237644330755633">Давяраць гэтаму сертыфікату пры ідэнтыфікацыі вэб-сайтаў</translation>

@@ -1611,7 +1611,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Anda mengaktifkan fitur proses debug ChromeOS Flex yang akan menyiapkan daemon sshd dan memungkinkan booting dari drive USB.</translation>
 <translation id="2178614541317717477">CA Mencurigakan</translation>
-<translation id="2179416702468739594">Mencari profil yang tersedia. Hal ini dapat menyebabkan jaringan seluler Anda terputus selama beberapa menit.</translation>
 <translation id="2180620921879609685">Memblokir konten di halaman mana pun</translation>
 <translation id="2181821976797666341">Kebijakan</translation>
 <translation id="2182058453334755893">Disalin ke Papan Klip Anda</translation>
@@ -1664,6 +1663,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="222115440608612541">Beralih tema saat matahari terbit dan terbenam</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Sumber media tidak bernama</translation>
+<translation id="2224337661447660594">Tidak ada internet</translation>
 <translation id="2224444042887712269">Setelan ini adalah milik <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Edit nama folder</translation>
 <translation id="2225927550500503913">Kartu virtual diaktifkan</translation>
@@ -3118,7 +3118,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3321494112580110651">Tidak melihat printer Anda?</translation>
 <translation id="3321776060736518525">Dari <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonus! Kamu boleh memakainya lebih lama</translation>
-<translation id="3325804108816646710">Mencari profil yang tersedia ...</translation>
 <translation id="3325930488268995856">Microsoft OneDrive terhubung</translation>
 <translation id="3325995804968971809">Gaya</translation>
 <translation id="3327050066667856415">Chromebook didesain dengan mengutamakan keamanan. Perangkat Anda otomatis dilindungi dari malware, jadi tidak memerlukan software tambahan.</translation>
@@ -5425,7 +5424,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5101839224773798795">Klik secara otomatis saat kursor berhenti</translation>
 <translation id="5103311607312269661">tingkatkan kecerahan layar</translation>
 <translation id="5106350808162641062">Hapus</translation>
-<translation id="5106608587025903971">Anda dapat membuat sandi <ph name="DEVICE_TYPE" /> untuk perangkat ini, bukan memasukkan sandi Akun Google Anda untuk login</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> diawasi oleh Family Link. Kamu bisa menambahkan akun sekolah untuk mengakses materi sekolah dengan pengawasan orang tua.</translation>
 <translation id="5107093668001980925">Jangan pernah tampilkan <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Ekstensi telah menonaktifkan Safe Browsing</translation>
@@ -7386,7 +7384,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6647690760956378579">Pratinjau suara alami</translation>
 <translation id="6648911618876616409">Update penting siap diinstal. Login untuk memulai.</translation>
 <translation id="6649018507441623493">Tunggu sebentar...</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ingin mengonfirmasi bahwa ini benar-benar Anda</translation>
 <translation id="6650206238642452078">Berlangganan peristiwa sistem ChromeOS</translation>
 <translation id="665061930738760572">Buka di &amp;Jendela Baru</translation>
 <translation id="6651237644330755633">Percayai sertifikat ini untuk mengidentifikasi situs web</translation>

@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">Rhowch gyfeiriad e-bost nad yw'n wag.</translation>
 <translation id="1758486001363313524">Arall...</translation>
 <translation id="1787192514241997742">cyfanswm yr amser: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">Caniatáu'r camera</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">chwarae ar ddyfais o bell</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">cam presennol</translation>
 <translation id="3321030238473337787">Cyflymder chwarae</translation>
 <translation id="3329013043687509092">Dirlawnder</translation>
-<translation id="3377518164566272702">Caniatáu'r meicroffon a'r camera</translation>
 <translation id="3450233048674729344">Rhaid i'r gwerth fod yn llai na neu'n hafal i <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Gadael llun-mewn-llun</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">Arall...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, yn dechrau ar <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Llun mewn Llun</translation>
-<translation id="918430632320614861">Caniatáu'r meicroffon</translation>
 <translation id="945780513535800434">Wedi'i Dicio'n Rhannol</translation>
 <translation id="954003015749068518">dechrau llun-mewn-llun</translation>
 </translationbundle>

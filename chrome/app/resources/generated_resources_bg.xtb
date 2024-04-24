@@ -822,6 +822,7 @@
 <translation id="1611432201750675208">Устройството ви е заключено</translation>
 <translation id="1611649489706141841">напред</translation>
 <translation id="1612019740169791082">Контейнерът ви не е конфигуриран да поддържа промени в размера на диска. За да коригирате обема на хранилището, заделено за Linux, създайте резервно копие и след това го възстановете в нов контейнер.</translation>
+<translation id="1612179176000108678">Включване само когато нивото на батерията ви е <ph name="PERCENT" />% или по-малко</translation>
 <translation id="1613019471223620622">Показване на паролата за <ph name="USERNAME" /> в домейна <ph name="DOMAIN" /></translation>
 <translation id="1613149688105334014">Старите версии на приложенията за Chrome няма да се отварят след декември 2022 г. Можете да проверите дали е налице нова версия.</translation>
 <translation id="1614511179807650956">Възможно е да сте изразходвали отпуснатите ви мобилни данни. Посетете портала за активиране на <ph name="NAME" />, за да купите още данни</translation>
@@ -1607,7 +1608,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Активирате функциите за отстраняване на грешки в ChromeOS Flex, които ще настроят sshd daemon и ще позволят стартирането от USB устройства.</translation>
 <translation id="2178614541317717477">Компрометиране на сертифициращия орган</translation>
-<translation id="2179416702468739594">Търсят се налични профили за мобилна мрежа. Това може да доведе до прекъсване на връзката с мобилната ви мрежа за няколко минути.</translation>
 <translation id="2180620921879609685">да блокира съдържанието на всяка страница</translation>
 <translation id="2181821976797666341">Правила</translation>
 <translation id="2182058453334755893">Копирано в буферната памет</translation>
@@ -1660,6 +1660,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="222115440608612541">Превключване на темите при изгрев и залез</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Мултимедиен източник без име</translation>
+<translation id="2224337661447660594">Няма достъп до интернет</translation>
 <translation id="2224444042887712269">Тази настройка принадлежи на <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Редактиране на името на папката</translation>
 <translation id="2225927550500503913">Виртуалната карта е включена</translation>
@@ -3114,7 +3115,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3321494112580110651">Не виждате принтера си?</translation>
 <translation id="3321776060736518525">От <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Бонус! Получихте още време на ползване</translation>
-<translation id="3325804108816646710">Търсят се налични профили...</translation>
 <translation id="3325930488268995856">Установена е връзка с Microsoft OneDrive</translation>
 <translation id="3325995804968971809">Стил</translation>
 <translation id="3327050066667856415">Устройствата Chromebook са проектирани с мисъл за сигурността. Устройството ви е автоматично защитено от злонамерен софтуер – няма нужда от допълнителни програми.</translation>
@@ -3900,6 +3900,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="39103738135459590">Код за активиране</translation>
 <translation id="3910588685973519483">Създаване на тапети с AI</translation>
 <translation id="3911824782900911339">Нов раздел в браузъра</translation>
+<translation id="3913689539406883376">Включване, когато компютърът ви е изключен от захранването</translation>
 <translation id="3914173277599553213">Задължително</translation>
 <translation id="3914568430265141791">Отваряне на папката <ph name="FOLDER_TITLE" /></translation>
 <translation id="3915280005470252504">Търсене с глас</translation>
@@ -5422,7 +5423,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5101839224773798795">Автоматично кликване при спиране на курсора</translation>
 <translation id="5103311607312269661">увеличаване на яркостта на екрана</translation>
 <translation id="5106350808162641062">Премахване</translation>
-<translation id="5106608587025903971">Вместо да влизате чрез паролата за профила си в Google, можете да създадете парола за това устройство <ph name="DEVICE_TYPE" /></translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> се контролира чрез Family Link. Можете да добавите училищни профили за достъп до училищни ресурси с родителски контрол.</translation>
 <translation id="5107093668001980925">Без показване на <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Разширение изключи „Безопасно сърфиране“</translation>
@@ -7384,7 +7384,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6647690760956378579">Прослушване на откъс с естествен глас</translation>
 <translation id="6648911618876616409">Критична актуализация е готова за инсталиране. Влезте в профила си, за да започнете.</translation>
 <translation id="6649018507441623493">Една секунда...</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> иска да потвърди, че това сте вие</translation>
 <translation id="6650206238642452078">Абониране за събития, свързани със системата ChromeOS</translation>
 <translation id="665061930738760572">Отваряне в &amp;нов прозорец</translation>
 <translation id="6651237644330755633">Да се има доверие на този сертификат за идентифициране на уебсайтове</translation>
@@ -9136,6 +9135,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7966571622054096916">{COUNT,plural, =1{1 елемент в списъка с отметки}other{{COUNT} елемента в списъка с отметки}}</translation>
 <translation id="7967776604158229756">Още настройки и разрешения за уеб приложенията</translation>
 <translation id="7968072247663421402">Опции за доставчика</translation>
+<translation id="7968576769959093306">Гласовете се изтеглят...</translation>
 <translation id="7968742106503422125">Четене и промяна на данните, които копирате и поставяте</translation>
 <translation id="7968833647796919681">Активиране на събирането на данни за ефективността</translation>
 <translation id="7968982339740310781">Преглед на подробностите</translation>

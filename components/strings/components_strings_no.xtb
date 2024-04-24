@@ -586,7 +586,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2071692954027939183">Varsler ble blokkert automatisk fordi du vanligvis ikke tillater dem</translation>
 <translation id="2071852865256799872">Nettleseren din administreres av organisasjonen din, og profilen din administreres av <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Opphev blokkeringen av <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Administratoren din har blokkert <ph name="PERMISSION" /> på <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Musikk- og dansespill</translation>
 <translation id="2079545284768500474">Angre</translation>
 <translation id="2080021694978766903">Dette feltet skal ikke ha mer enn <ph name="MAX_ITEMS_LIMIT" /> oppføringer.</translation>
@@ -937,6 +936,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2759825833388495838">fylle ut passordet ditt på <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Tegneserier</translation>
 <translation id="2765217105034171413">Liten</translation>
+<translation id="2768397283109119044">Du forsøkte å nå <ph name="DOMAIN" />, men tjeneren viste et ugyldig sertifikat for det navnet. Navnet er en reservert IP-adresse eller et internt vertsnavn.</translation>
 <translation id="2770159525358613612">Prøv å laste opp filene på nytt</translation>
 <translation id="277133753123645258">Leveringsmetode</translation>
 <translation id="2773388851563527404">Chrome begrenser de fleste nettsteder fra å bruke informasjonskapsler fra tredjeparter. Men informasjonskapsler fra tredjeparter er tillatt på dette nettstedet fordi det trenger dem for å kunne levere grunnleggende tjenester. Gå til innstillingene for å <ph name="LINK" />.</translation>
@@ -1719,6 +1719,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4265872034478892965">Tillatt av administratoren din</translation>
 <translation id="4269029136757623689">Vifter til hjemmet</translation>
 <translation id="4269264543938335308">Badetøy</translation>
+<translation id="4269599248168651462">Tjenersertifikatet er utstedt til et ikke-unikt navn.</translation>
 <translation id="4270541775497538019">Hylle 6</translation>
 <translation id="4275830172053184480">Start enheten din på nytt</translation>
 <translation id="4276974990916607331">Nei takk</translation>
@@ -2027,7 +2028,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4885030148564729407">Bryllupsreiser og romantiske ferier</translation>
 <translation id="4885256590493466218">Betal med <ph name="CARD_DETAIL" /> i kassen</translation>
 <translation id="4887406273302438710">Beskytt passord med Windows Hello</translation>
-<translation id="4890070067176768718">Administratoren din har tillatt <ph name="PERMISSION" /> på <ph name="ORIGIN" /></translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å slette nettleserloggen, informasjonskapsler, bufferen med mer i Chrome-innstillingene</translation>
 <translation id="4892518386797173871">Bak</translation>
 <translation id="4895019427244614047">Slett adressen</translation>
@@ -3918,7 +3918,6 @@ Mer informasjon:
 <translation id="8493948351860045254">Frigjør plass</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> brukte for lang tid på å svare.</translation>
 <translation id="8502023382441452707">Bursdager og navnedager</translation>
-<translation id="8502972004418241366">For å bruke <ph name="PERMISSION" /> på dette nettstedet må du gi Chrome tilgang</translation>
 <translation id="8503559462189395349">Chrome-passord</translation>
 <translation id="8503813439785031346">Brukernavn</translation>
 <translation id="8504928302600319133">Maskinvare</translation>
@@ -3938,7 +3937,6 @@ Mer informasjon:
 <translation id="853246364274116957">Broadway og musikaler</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Gå til &lt;strong&gt;chrome://policy&lt;/strong&gt; for å se listen over blokkerte nettadresser og andre regler systemadministratoren din har fastsatt.</translation>
-<translation id="8534934518812659742">Du har slått av <ph name="PERMISSION" /> for Chrome.</translation>
 <translation id="8536234749087605613">Konvolutt (vindu)</translation>
 <translation id="8539500321752640291">Vil du gi 2 tillatelser?</translation>
 <translation id="8541158209346794904">Bluetooth-enhet</translation>
@@ -3995,7 +3993,6 @@ Mer informasjon:
 <translation id="865032292777205197">bevegelsessensorer</translation>
 <translation id="865255447216708819">Film med trykk på baksiden</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Du har tidligere ikke tillatt <ph name="PERMISSION" /> på <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Næringseiendommer</translation>
 <translation id="8663226718884576429">Bestillingssammendrag, <ph name="TOTAL_LABEL" />, mer informasjon</translation>
 <translation id="8663909737634214500">Optisk disk</translation>
@@ -4028,6 +4025,7 @@ Mer informasjon:
 <translation id="8722929331701811374">Brevpapir (brevhode)</translation>
 <translation id="8724824364712796726">B6-konvolutt</translation>
 <translation id="8725066075913043281">Prøv på nytt</translation>
+<translation id="8725667981218437315">Kamera og mikrofon</translation>
 <translation id="8726549941689275341">Sidestørrelse:</translation>
 <translation id="8730621377337864115">Ferdig</translation>
 <translation id="8731268612289859741">Sikkerhetskode</translation>
@@ -4126,6 +4124,7 @@ Mer informasjon:
 <translation id="8919740778133505789">Sportsbiler</translation>
 <translation id="8919895429178014996">Skjul alle elementer</translation>
 <translation id="8922013791253848639">Tillat alltid annonser på dette nettstedet</translation>
+<translation id="8924109546403192898">Når Chrome flagger sikkerhetshendelser, sendes relevante data om hendelsen til administratoren din. Dette kan omfatte nettadressene til sider du besøker i Chrome, nettadressene til sider du har kopiert data fra, filnavn eller metadata, nettleser- eller fanekrasj og brukernavnet du bruker for å logge på nettbaserte apper, enheten din og Chrome.</translation>
 <translation id="892588693504540538">Hull oppe til høyre</translation>
 <translation id="8926389886865778422">Ikke spør igjen</translation>
 <translation id="8932102934695377596">Klokken går for sent</translation>

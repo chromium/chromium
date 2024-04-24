@@ -828,6 +828,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1611432201750675208">Thiết bị của bạn đã bị khóa</translation>
 <translation id="1611649489706141841">chuyển tiếp</translation>
 <translation id="1612019740169791082">Vùng chứa của bạn chưa được định cấu hình để hỗ trợ việc thay đổi dung lượng ổ đĩa. Để điều chỉnh mức dung lượng dự trữ cho Linux, hãy sao lưu rồi khôi phục dữ liệu sang một vùng chứa mới.</translation>
+<translation id="1612179176000108678">Chỉ bật khi pin ở mức <ph name="PERCENT" />% trở xuống</translation>
 <translation id="1613019471223620622">Hiện mật khẩu cho <ph name="USERNAME" /> trên <ph name="DOMAIN" /></translation>
 <translation id="1613149688105334014">Các phiên bản cũ của Ứng dụng Chrome sẽ không mở sau tháng Mười hai năm 2022. Bạn có thể kiểm tra xem liệu đã có phiên bản mới hay chưa theo các bước sau.</translation>
 <translation id="1614511179807650956">Bạn có thể đã dùng hết dữ liệu di động cho phép. Hãy truy cập vào cổng kích hoạt <ph name="NAME" /> để mua thêm dữ liệu</translation>
@@ -1615,7 +1616,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Bạn đang bật tính năng gỡ lỗi của ChromeOS Flex. Tính năng này sẽ thiết lập trình nền sshd và bật tính năng khởi động qua ổ đĩa USB.</translation>
 <translation id="2178614541317717477">Lộ CA</translation>
-<translation id="2179416702468739594">Đang tìm hồ sơ có sẵn. Thao tác này có thể khiến mạng di động của bạn bị ngắt kết nối trong vài phút.</translation>
 <translation id="2180620921879609685">Chặn nội dung trên bất kỳ trang nào</translation>
 <translation id="2181821976797666341">Chính sách</translation>
 <translation id="2182058453334755893">Đã sao chép vào bảng nhớ tạm</translation>
@@ -1669,6 +1669,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="222115440608612541">Chuyển đổi giao diện lúc bình minh và hoàng hôn</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Nguồn phương tiện nghe nhìn chưa đặt tên</translation>
+<translation id="2224337661447660594">Không có Internet</translation>
 <translation id="2224444042887712269">Cài đặt này thuộc về <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Chỉnh sửa tên thư mục</translation>
 <translation id="2225927550500503913">Đã bật thẻ ảo</translation>
@@ -3132,7 +3133,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3321494112580110651">Bạn không thấy máy in của mình?</translation>
 <translation id="3321776060736518525">Từ <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Phần thưởng! Bạn có thêm thời gian sử dụng thiết bị</translation>
-<translation id="3325804108816646710">Đang tìm hồ sơ có sẵn...</translation>
 <translation id="3325930488268995856">Đã kết nối với Microsoft OneDrive</translation>
 <translation id="3325995804968971809">Kiểu</translation>
 <translation id="3327050066667856415">Chromebook có thiết kế giúp tăng cường tính bảo mật. Thiết bị của bạn tự động được bảo vệ khỏi phần mềm độc hại mà không cần phải cài đặt phần mềm bổ sung.</translation>
@@ -3921,6 +3921,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="39103738135459590">Mã kích hoạt</translation>
 <translation id="3910588685973519483">Tạo hình nền bằng AI</translation>
 <translation id="3911824782900911339">Trang thẻ mới</translation>
+<translation id="3913689539406883376">Bật khi máy tính không cắm sạc</translation>
 <translation id="3914173277599553213">Bắt buộc</translation>
 <translation id="3914568430265141791">Mở thư mục <ph name="FOLDER_TITLE" /></translation>
 <translation id="3915280005470252504">Tìm kiếm bằng giọng nói</translation>
@@ -5449,7 +5450,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5101839224773798795">Tự động nhấp chuột khi con trỏ dừng lại</translation>
 <translation id="5103311607312269661">tăng độ sáng màn hình</translation>
 <translation id="5106350808162641062">Xoá</translation>
-<translation id="5106608587025903971">Thay vì phải nhập mật khẩu của Tài khoản Google để đăng nhập, bạn có thể tạo mật khẩu cho thiết bị <ph name="DEVICE_TYPE" /> này</translation>
 <translation id="510695978163689362">Tài khoản <ph name="USER_EMAIL" /> do Family Link giám sát. Bạn có thể thêm các tài khoản trường học để truy cập vào tài nguyên của trường học dưới sự giám sát của cha mẹ.</translation>
 <translation id="5107093668001980925">Không bao giờ hiển thị <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Một tiện ích đã tắt tính năng Duyệt web an toàn</translation>
@@ -7429,7 +7429,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6647690760956378579">Nghe thử giọng nói tự nhiên</translation>
 <translation id="6648911618876616409">Một bản cập nhật quan trọng đã sẵn sàng cài đặt. Hãy đăng nhập để bắt đầu.</translation>
 <translation id="6649018507441623493">Hãy đợi giây lát…</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> muốn xác nhận đó là bạn</translation>
 <translation id="6650206238642452078">Đăng ký các sự kiện của hệ thống ChromeOS</translation>
 <translation id="665061930738760572">Mở trong cửa sổ &amp;mới</translation>
 <translation id="6651237644330755633">Tin tưởng chứng chỉ này khi nhận dạng trang web</translation>
@@ -9188,6 +9187,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7966571622054096916">{COUNT,plural, =1{1 mục trong danh sách dấu trang}other{{COUNT} mục trong danh sách dấu trang}}</translation>
 <translation id="7967776604158229756">Quyền và chế độ cài đặt khác trên ứng dụng web</translation>
 <translation id="7968072247663421402">Các tùy chọn nhà cung cấp</translation>
+<translation id="7968576769959093306">Đang tải giọng nói xuống...</translation>
 <translation id="7968742106503422125">Đọc và sửa đổi dữ liệu bạn sao chép và dán</translation>
 <translation id="7968833647796919681">Bật tính năng thu thập dữ liệu hoạt động</translation>
 <translation id="7968982339740310781">Xem chi tiết</translation>

@@ -825,6 +825,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1611432201750675208">Laitteesi on lukittu</translation>
 <translation id="1611649489706141841">seuraava</translation>
 <translation id="1612019740169791082">Säilö ei tue levyn koon muuttamista. Jos haluat muuttaa Linuxille varatun tilan määrää, luo varmuuskopio ja palauta se sitten uuteen säilöön.</translation>
+<translation id="1612179176000108678">Laita päälle vain, kun akkua on jäljellä <ph name="PERCENT" /> % tai vähemmän</translation>
 <translation id="1613019471223620622">Näytä salasana: <ph name="USERNAME" />, <ph name="DOMAIN" /></translation>
 <translation id="1613149688105334014">Chrome-sovellusten vanhoja versioita ei voi avata joulukuun 2022 jälkeen. Voit tarkistaa, onko uutta versiota saatavilla.</translation>
 <translation id="1614511179807650956">Olet saattanut käyttää mobiilidatasaldosi loppuun. Käy aktivointiportaalissa (<ph name="NAME" />) ostamassa lisää saldoa.</translation>
@@ -1610,7 +1611,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Olet ottamassa käyttöön ChromeOS Flexin viankorjausominaisuudet, jotka määrittävät sshd daemon -toiminnon ja ottavat käyttöön USB-muistitikulta käynnistyksen.</translation>
 <translation id="2178614541317717477">Myöntäjäkompromissi</translation>
-<translation id="2179416702468739594">Etsitään käytettävissä olevia profiileja. Tämä voi katkaista mobiiliverkkoyhteyden muutamaksi minuutiksi.</translation>
 <translation id="2180620921879609685">Estää sisällön millä tahansa sivulla</translation>
 <translation id="2181821976797666341">Käytännöt</translation>
 <translation id="2182058453334755893">Kopioitu leikepöydälle</translation>
@@ -1663,6 +1663,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="222115440608612541">Vaihda teemaa auringon noustessa ja laskiessa</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Nimetön medialähde</translation>
+<translation id="2224337661447660594">Ei internetyhteyttä</translation>
 <translation id="2224444042887712269">Tämä asetus kuuluu käyttäjälle <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Muokkaa kansion nimeä</translation>
 <translation id="2225927550500503913">Virtuaalinen kortti on päällä</translation>
@@ -3117,7 +3118,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3321494112580110651">Etkö näe tulostintasi?</translation>
 <translation id="3321776060736518525">Lähde: <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonus! Sait lisää käyttöaikaa</translation>
-<translation id="3325804108816646710">Etsitään käytettävissä olevia profiileja…</translation>
 <translation id="3325930488268995856">Microsoft OneDrive yhdistetty</translation>
 <translation id="3325995804968971809">Tyyli</translation>
 <translation id="3327050066667856415">Chromebookit on suunniteltu turvallisiksi. Laitteesi suojataan haittaohjelmilta automaattisesti ilman ylimääräisiä ohjelmistoja.</translation>
@@ -3902,6 +3902,7 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="39103738135459590">Aktivointikoodi</translation>
 <translation id="3910588685973519483">Luo taustakuvia tekoälyn avulla</translation>
 <translation id="3911824782900911339">Uusi välilehti -sivu</translation>
+<translation id="3913689539406883376">Laita päälle, kun tietokoneen virtajohto irrotetaan</translation>
 <translation id="3914173277599553213">Pakollinen</translation>
 <translation id="3914568430265141791">Avaa kansio <ph name="FOLDER_TITLE" /></translation>
 <translation id="3915280005470252504">Puhehaku</translation>
@@ -5421,7 +5422,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5101839224773798795">Klikkaa automaattisesti, kun osoitin pysähtyy</translation>
 <translation id="5103311607312269661">lisää näytön kirkkautta</translation>
 <translation id="5106350808162641062">Poista</translation>
-<translation id="5106608587025903971">Google-tilin salasanan sijaan voit luoda tälle laitteelle salasanan (<ph name="DEVICE_TYPE" />) sisäänkirjautumista varten</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> on valvottu Family Linkillä. Voit lisätä koulutilejä, jotka pääsevät oppimateriaaleihin vanhemman valvonnassa.</translation>
 <translation id="5107093668001980925">Älä näytä koskaan: <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Laajennus laittoi selaussuojan pois päältä</translation>
@@ -5914,7 +5914,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5493792505296048976">näyttö päällä</translation>
 <translation id="5494016731375030300">Viimeksi suljetut välilehdet</translation>
 <translation id="5494362494988149300">Avaa, kun val&amp;mis</translation>
-<translation id="5494843939447324326">Chromessa tarjoaa valinnanvaraa</translation>
+<translation id="5494843939447324326">Chrome tarjoaa valinnanvaraa</translation>
 <translation id="5494920125229734069">Valitse kaikki</translation>
 <translation id="5495466433285976480">Tämä poistaa kaikki paikalliset käyttäjät, tiedostot, tiedot ja muut asetukset seuraavan uudelleenkäynnistyksesi jälkeen. Kaikkien käyttäjien on kirjauduttava sisään uudelleen.</translation>
 <translation id="5495597166260341369">Älä sulje näyttöä</translation>
@@ -7382,7 +7382,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6647690760956378579">Luonnollisen äänen esikuuntelu</translation>
 <translation id="6648911618876616409">Tärkeä päivitys on valmis asennettavaksi. Aloita kirjautumalla sisään.</translation>
 <translation id="6649018507441623493">Hetki vain…</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> haluaa varmistaa henkilöllisyytesi</translation>
 <translation id="6650206238642452078">Tilaa ChromeOS:n järjestelmätapahtumat</translation>
 <translation id="665061930738760572">Avaa uudessa ikkunassa</translation>
 <translation id="6651237644330755633">Luota tähän varmenteeseen tunnistettaessa verkkosivustoja.</translation>
@@ -9133,6 +9132,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7966571622054096916">{COUNT,plural, =1{Listalla on yksi kirjanmerkki}other{Listalla on {COUNT} kirjanmerkkiä}}</translation>
 <translation id="7967776604158229756">Lisää verkkosovelluksen asetuksia ja lupia</translation>
 <translation id="7968072247663421402">Palvelujen vaihtoehdot</translation>
+<translation id="7968576769959093306">Ladataan ääniä…</translation>
 <translation id="7968742106503422125">lukea ja muokata kopioimiasi ja liittämiäsi tietoja</translation>
 <translation id="7968833647796919681">Ota käyttöön tehokkuustietojen kerääminen</translation>
 <translation id="7968982339740310781">Näytä tiedot</translation>

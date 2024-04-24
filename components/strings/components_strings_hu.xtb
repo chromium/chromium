@@ -584,7 +584,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2071692954027939183">A rendszer automatikusan letiltotta az értesítéseket, mert Ön általában nem engedélyezi őket.</translation>
 <translation id="2071852865256799872">Böngészőjét a szervezete, a profilját pedig a(z) <ph name="PROFILE_DOMAIN" /> kezeli</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> letiltásának feloldása</translation>
-<translation id="2075497153347571252">A rendszergazda letiltotta a(z) <ph name="PERMISSION" /> engedélyt a(z) <ph name="ORIGIN" /> webhelyen</translation>
 <translation id="2078956195623975415">Zenés és táncos játékok</translation>
 <translation id="2079545284768500474">Visszavonás</translation>
 <translation id="2080021694978766903">Ebben a házirendben legfeljebb <ph name="MAX_ITEMS_LIMIT" /> bejegyzés szerepelhet.</translation>
@@ -935,6 +934,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2759825833388495838">kitölteni a jelszót itt: <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Képregények</translation>
 <translation id="2765217105034171413">Kicsi</translation>
+<translation id="2768397283109119044">Megpróbálta elérni a(z) <ph name="DOMAIN" /> webhelyet, de a szerver az adott névre kibocsátott érvénytelen tanúsítványt mutatott be. A név foglalt IP-cím vagy belső gazdagépnév.</translation>
 <translation id="2770159525358613612">Próbálja meg ismét feltölteni a fájlokat</translation>
 <translation id="277133753123645258">Szállítási mód</translation>
 <translation id="2773388851563527404">A Chrome a legtöbb webhely számára korlátozza, hogy harmadik féltől származó cookie-kat használjanak. A harmadik féltől származó cookie-k azonban engedélyezettek ezen a webhelyen, mivel az alapvető szolgáltatások nyújtásához szükségük van rájuk. Nyissa meg a beállításokat <ph name="LINK" />.</translation>
@@ -1714,6 +1714,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4265872034478892965">A rendszergazda engedélyezte</translation>
 <translation id="4269029136757623689">Háztartási ventilátorok</translation>
 <translation id="4269264543938335308">Úszóruházat</translation>
+<translation id="4269599248168651462">A szervertanúsítvány nem egyedi névre van kiállítva.</translation>
 <translation id="4270541775497538019">6. kötegelő</translation>
 <translation id="4275830172053184480">Indítsa újra az eszközt</translation>
 <translation id="4276974990916607331">Nem</translation>
@@ -2022,7 +2023,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4885030148564729407">Nászutak és romantikus kirándulások</translation>
 <translation id="4885256590493466218">Fizetés a(z) <ph name="CARD_DETAIL" /> kártyával</translation>
 <translation id="4887406273302438710">Jelszavak védelme a Windows Hellóval</translation>
-<translation id="4890070067176768718">A rendszergazda engedélyezte a(z) <ph name="PERMISSION" /> engedélyt a(z) <ph name="ORIGIN" /> webhelyen</translation>
 <translation id="4892518386797173871">Hátsó</translation>
 <translation id="4895019427244614047">Cím törlése</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" /> és <ph name="TYPE_3" /></translation>
@@ -3910,7 +3910,6 @@ További részletek:
 <translation id="8493948351860045254">Terület felszabadítása</translation>
 <translation id="8498891568109133222">A(z) <ph name="HOST_NAME" /> túl hosszú ideje nem válaszol.</translation>
 <translation id="8502023382441452707">Születésnapok és névnapok</translation>
-<translation id="8502972004418241366">Ahhoz, hogy használhassa a(z) <ph name="PERMISSION" /> engedélyt ezen a webhelyen, hozzáférést kell adnia a Chrome-nak</translation>
 <translation id="8503559462189395349">Chrome-jelszavak</translation>
 <translation id="8503813439785031346">Felhasználónév</translation>
 <translation id="8504928302600319133">Hardver</translation>
@@ -3930,7 +3929,6 @@ További részletek:
 <translation id="853246364274116957">Broadway és musicalszínház</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">A &lt;strong&gt;chrome://policy&lt;/strong&gt; oldalon láthatja a rendszergazda által letiltott URL-ek és a beállított egyéb kötelező irányelvek listáját.</translation>
-<translation id="8534934518812659742">Kikapcsolta a(z) <ph name="PERMISSION" /> engedélyt a Chrome-ban.</translation>
 <translation id="8536234749087605613">Boríték (ablakos)</translation>
 <translation id="8539500321752640291">Megad 2 engedélyt?</translation>
 <translation id="8541158209346794904">Bluetooth-eszköz</translation>
@@ -3988,7 +3986,6 @@ További részletek:
 <translation id="865032292777205197">mozgásérzékelők</translation>
 <translation id="865255447216708819">Hátlapi film</translation>
 <translation id="8654126188050905496">55 × 91 mm</translation>
-<translation id="8655930295668719549">Korábban nem engedélyezte a következőt: <ph name="PERMISSION" /> a(z) <ph name="ORIGIN" /> webhelyen</translation>
 <translation id="8662463432865928030">Kereskedelmi célú ingatlanok</translation>
 <translation id="8663226718884576429">Rendelés-összefoglaló, <ph name="TOTAL_LABEL" />, További részletek</translation>
 <translation id="8663909737634214500">Optikai lemez</translation>
@@ -4020,6 +4017,7 @@ További részletek:
 <translation id="8722929331701811374">Levélpapír (fejléces)</translation>
 <translation id="8724824364712796726">B6 boríték</translation>
 <translation id="8725066075913043281">Újrapróbálás</translation>
+<translation id="8725667981218437315">Kamera és mikrofon</translation>
 <translation id="8726549941689275341">Oldalméret:</translation>
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8731268612289859741">Biztonsági kód</translation>
@@ -4118,6 +4116,7 @@ További részletek:
 <translation id="8919740778133505789">Sportkocsik</translation>
 <translation id="8919895429178014996">Összes elem elrejtése</translation>
 <translation id="8922013791253848639">Mindig engedélyezi a hirdetéseket ezen a webhelyen</translation>
+<translation id="8924109546403192898">Amikor a Chrome biztonsági eseményeket észlel, a böngésző elküldi az eseménnyel kapcsolatos releváns adatokat a rendszergazdának. Az ilyen adatok közé tartozhatnak a Chrome-ban felkeresett oldalak URL-jei, az olyan oldalak URL-jei, ahonnan Ön adatokat másolt, a fájlnevek és metaadatok, a böngésző vagy a lapok összeomlásai, valamint a webalapú alkalmazásokba, az eszközre és a Chrome-ba való bejelentkezéshez használt felhasználónév.</translation>
 <translation id="892588693504540538">Lyuk jobbra fent</translation>
 <translation id="8926389886865778422">Többször ne figyelmeztessen</translation>
 <translation id="8932102934695377596">Késik az órája</translation>

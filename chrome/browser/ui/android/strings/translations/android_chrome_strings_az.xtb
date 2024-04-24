@@ -36,6 +36,7 @@
 <translation id="1181037720776840403">Silin</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> domenində</translation>
 <translation id="1183189057400844278">Google Hesabında parollardan hər zaman istifadə edə bilmək üçün kimliyinizi doğrulayın</translation>
+<translation id="1187810343066461819">Əlfəcin, tarixçə və s. datanı da bu avtomobildən silin</translation>
 <translation id="1193729455103054076">Güclü paroldan istifadə edilsin?</translation>
 <translation id="1197267115302279827">Əlfəcinləri köçürün</translation>
 <translation id="1197761954713363183">Giriş açarı təsdiqi üçün vərəq bağlandı</translation>
@@ -82,6 +83,7 @@
 <translation id="1386674309198842382"><ph name="LAST_UPDATED" /> gün əvvəl aktiv olub</translation>
 <translation id="13931502444227376">Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ad, e-poçt ünvanı və profil şəklinizi bu sayt ilə paylaşacaq. Bu saytın <ph name="BEGIN_LINK1" />xidmət şərtlərinə<ph name="END_LINK1" /> baxın.</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ilə axtarın</translation>
+<translation id="1398037172295725596">Başqa bir şey axtarın və ya digər tətbiqlərdən əldə edilən daha çox veb-tarixçəyə baxmaq üçün Chrome-da daha çox tarixçə açın.</translation>
 <translation id="1407069428457324124">Tünd tema</translation>
 <translation id="1407135791313364759">Hamısını açın</translation>
 <translation id="1409879593029778104"><ph name="FILE_NAME" /> fayl yüklənilmədi, çünki artıq mövcuddur.</translation>
@@ -153,6 +155,8 @@
 <translation id="1807709131360304325">Yeni pəncərə açın</translation>
 <translation id="1810845389119482123">İlkin sinxronizasiya ayarlanması tamamlanmayıb</translation>
 <translation id="1812027881030482584"><ph name="SITE_ETLD_PLUS_ONE" /> <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> istifadəsinə davam edə bilməz</translation>
+<translation id="1825772852827001597">Google Pay-dən ödəniş metodu və ünvanlar şifrələnməyəcək. Chrome-dan baxış tarixçəsi sinxronlaşdırılmayacaq.
+Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Google parol ifadəsini əldə etmir və ya saxlamır. Parol ifadəsini unutsanız, yaxud bu ayarı dəyişmək istəsəniz, <ph name="BEGIN_LINK" />hesabda Chrome datasını silin<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Səhifədə tapın</translation>
 <translation id="185383612275551373">Google-dan uyğun kontent əldə etmək üçün sinxronlaşdırın</translation>
 <translation id="1871098866036088250">Chrome brauzerində açın</translation>
@@ -171,10 +175,12 @@
 <translation id="1933845786846280168">Seçilmiş Panel</translation>
 <translation id="1943432128510653496">Parolları yadda saxlayın</translation>
 <translation id="1944535645109964458">Əlçatan giriş açarı yoxdur</translation>
+<translation id="1957557050935255529">PDF yüklənir…</translation>
 <translation id="1959679933317802873">Məzmun gözlənilir</translation>
 <translation id="1960290143419248813">Chrome güncəlləmələri artıq bu Android versiyasında dəstəklənmir</translation>
 <translation id="1963976881984600709">Standart qoruma</translation>
 <translation id="1966710179511230534">Hesaba giriş detallarınızı güncəlləşdirin.</translation>
+<translation id="1969037871259811890">Baxış datasını sildikdə Google Hesabından çıxmırsınız. Bunun üçün <ph name="BEGIN_LINK1" />Chrome-dan çıxın<ph name="END_LINK1" />.</translation>
 <translation id="197288927597451399">Saxlayın</translation>
 <translation id="1973912524893600642">Datanı saxlayın</translation>
 <translation id="1974060860693918893">Qabaqcıl</translation>
@@ -266,6 +272,7 @@
 <translation id="250020030759455918">Chrome'da <ph name="SITE_NAME" /> üçün giriş statusu, baxış datası və sayt datanızı görəcəksiniz</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> quraşdırılır...</translation>
 <translation id="2513403576141822879">Məxfilik, təhlükəsizlik və data toplanması ilə bağlı daha çox ayarlar üçün <ph name="BEGIN_LINK" />Sinxronizasiya və Google xidmətləri<ph name="END_LINK" /> səhifəsinə daxil olun</translation>
+<translation id="2515921719039583189">Chrome datası bu cihazdan silinsin?</translation>
 <translation id="2517113738956581680">Tam ölçülü vərəq</translation>
 <translation id="2523184218357549926">Daxil olduğunuz səhifələrin linkləri Google'a göndərilir</translation>
 <translation id="2527209463677295330">Digər səhifə mətnini daxil etməklə daha yaxşı nəticələr görə bilərsiniz</translation>
@@ -335,6 +342,7 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 gün əvvəl yoxlanılıb}other{# gün əvvəl yoxlanılıb}}</translation>
 <translation id="2842985007712546952">Ana qovluq</translation>
 <translation id="2853415089995957805">Tez yüklənməsi üçün Chrome daxil ola biləcəyiniz səhifələri əvvəlcədən yükləyir</translation>
+<translation id="2855243985454069333">Bütün sinxronlaşdırılmış cihazlardan tarixçəni silir</translation>
 <translation id="2856503607207334158">Daxil olmaq alınmadı</translation>
 <translation id="2860954141821109167">Telefon tətbiqinin bu cihazda aktiv edildiyinə əmin olun</translation>
 <translation id="2861923151411510142">Bəzi Chrome funksiyaları daha əlçatan olmayacaq</translation>
@@ -418,6 +426,7 @@
 <translation id="3220943972464248773">Parollarınızı sinxronlaşdırmaq üçün kimliyinizi doğrulayın</translation>
 <translation id="3226612997184048185">Chrome-da məhsul qiymətlərini izləmək və qiymət enəndə bildiriş almaq üçün əlfəcinləri Google Hesabında da saxlayın</translation>
 <translation id="3227557059438308877">Təhlükəsizlik Açarı olaraq Google Chrome</translation>
+<translation id="3232293466644486101">Baxış datasını silin…</translation>
 <translation id="3232754137068452469">Veb Tətbiq</translation>
 <translation id="3236059992281584593">1 dəqiqə qaldı</translation>
 <translation id="3237087289225714896">Standart əvvəlcədən yükləmə:</translation>
@@ -492,6 +501,7 @@
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> ilə paylaşılır</translation>
 <translation id="363596933471559332">Saxlanmış kredensialları istifadə edərək vebsaytlara avtomatik daxil olun. Funksiya deaktiv olanda sayta hər dəfə girdiyinizdə doğrulama tələb olunacaq.</translation>
 <translation id="3636940436873918441">Tərcih etdiyiniz dillər</translation>
+<translation id="3637744895182738742">Parol ifadəsini unutsanız, yaxud bu ayarı dəyişmək istəsəniz, <ph name="BEGIN_LINK" />hesabda Chrome datasını silin<ph name="END_LINK" />.</translation>
 <translation id="368329460027487650">Çıxılıb. Giriş seçimlərini açır.</translation>
 <translation id="3687645719033307815">Bu səhifənin önizləməsinə baxırsınız</translation>
 <translation id="3690369331356918524">Data pozulması halında parolların ələ keçirilib-keçirilmədiyini Sizə bildirir</translation>
@@ -703,6 +713,7 @@
 <translation id="4738836084190194332">Sonuncu dəfə sinxronizasiya olunub: <ph name="WHEN" /></translation>
 <translation id="474121291218385686">Tətbiq üzrə filtrləyin</translation>
 <translation id="4741753828624614066">Ünvan panelində təkmilləşdirilmiş təkliflər alacaqsınız</translation>
+<translation id="4742795653798179840">Chrome datası silindi</translation>
 <translation id="4742970037960872810">Vurğulamanı silin</translation>
 <translation id="4749960740855309258">Yeni panel açın</translation>
 <translation id="4750356170202299988">Gənclər üçün kontent</translation>
@@ -916,6 +927,7 @@
 <translation id="5810288467834065221">Müəllif hüquqları <ph name="YEAR" /> Google MMC. Bütün hüquqlar qorunur.</translation>
 <translation id="5814749351757353073">Sevdiyiniz saytlardan xəbərdar olun</translation>
 <translation id="5822875253699806474">Daxil olduğunuz saytlara sürətlə qayıtmaq üçün tablar və tarixçəni sinxronlaşdırın</translation>
+<translation id="5828921839638612740">Chrome ayarlarında datanı silə bilərsiniz</translation>
 <translation id="5829586821381540080"><ph name="FOLDER_NAME" /> qovluğunda yadda saxlandı</translation>
 <translation id="583281660410589416">Naməlum</translation>
 <translation id="5833984609253377421">Linki paylaşın</translation>
@@ -1104,6 +1116,7 @@
 <translation id="6715020873764921614">Hər halda <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) faylını endirmək istəyirsiniz?</translation>
 <translation id="6719634564325948108">QR Kodu ilə qoşulun?</translation>
 <translation id="6723740634201835758">Google Hesabında</translation>
+<translation id="6734310707649923383">Daxil olduğunuz səhifələri görə və ya tarixçədən silə bilərsiniz</translation>
 <translation id="6738867403308150051">Endirilir...</translation>
 <translation id="67404633032079629">Veb tarixçənizin bəzi hissəsi burada görünməyə bilər. Tam veb tarixçəsini görmək üçün "Tam Chrome tarixçəsini açın" üzərinə toxunun.</translation>
 <translation id="674388916582496364">Ziyarət etdiyiniz saytların təcrübənizi fərdiləşdirmək üçün maraqlarınızı xatırlaması normaldır. Saytlar həmçinin maraqlarınız haqqında Chrome ilə məlumat saxlaya bilər.</translation>
@@ -1184,6 +1197,7 @@
 <translation id="707155805709242880">Nəyi sinxronizasiya edəcəyinizi aşağıda seçin</translation>
 <translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Əlfəcin hesabda (<ph name="ACCOUNT_EMAIL" />) "<ph name="FOLDER_NAME" />" qovluğunda yadda saxlandı.}other{Əlfəcinlər hesabda (<ph name="ACCOUNT_EMAIL" />) "<ph name="FOLDER_NAME" />" qovluğunda yadda saxlandı.}}</translation>
 <translation id="7077143737582773186">SD Kart</translation>
+<translation id="7078916049958741685">Həmçinin Chrome datanızı bu cihazdan silin</translation>
 <translation id="7080806333218412752">URL'ləri yoxlamaq üçün onları Təhlükəsiz Baxışa göndərir. Həmçinin yeni təhlükələri aşkarlamaqda kömək məqsədilə səhifə, endirmə, artırma fəaliyyətindən ibarət kiçik nümunə göndərir. Daxil olduğunuzda sizi Google tətbiqlərində qorumaq üçün bu datanı Google Hesabınız ilə müvəqqəti olaraq əlaqələndirir.</translation>
 <translation id="7085332316435785646">Google xidmətlərində daha çox fərdiləşdirilmiş təcrübə üçün Chrome tarixçəsinin daxil edilib-edilməməsini seçin</translation>
 <translation id="7088681679121566888">Chrome güncəldir</translation>
@@ -1196,6 +1210,9 @@
 <translation id="7146622961999026732">Bu saytlar və tətbiqlər sizə vacib görünür:</translation>
 <translation id="7148400116894863598"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> tərəfindən <ph name="BEGIN_LINK" />ətraflı məlumat əldə edin<ph name="END_LINK" />.</translation>
 <translation id="7149893636342594995">Son 24 saat</translation>
+<translation id="71503698506017927">Parol ifadəsi şifrələməsinə Google Pay-dən ödəniş metodu və ünvanlar daxil deyil.
+
+Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını silin<ph name="END_LINK" />.</translation>
 <translation id="7168323970702333693"><ph name="USER_NAME" /> olaraq daxil olunub. Ayarları açır.</translation>
 <translation id="7173114856073700355">Ayarları Açın</translation>
 <translation id="7177466738963138057">Bunu daha sonra Ayarlar bölməsində dəyişə bilərsiniz</translation>
@@ -1239,6 +1256,7 @@
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Seçilmiş 1 elementi paylaşın}other{Seçilmiş # elementi paylaşın}}</translation>
 <translation id="7359002509206457351">Ödəniş üsullarına daxil olun</translation>
 <translation id="7363349185727752629">Məxfilik seçimləriniz üçün bələdçi</translation>
+<translation id="7364103838544876661">Baxış datasını silmək üzrə digər seçimlər</translation>
 <translation id="7375125077091615385">Növ:</translation>
 <translation id="7376560087009844242">Digər səhifə mətnini daxil etməklə "Axtarmaq üçün toxunun" funksiyasından istifadə etdiyiniz zaman daha yaxşı nəticələr görə bilərsiniz Bunu istənilən vaxt <ph name="BEGIN_LINK" />ayarlarda<ph name="END_LINK" /> dəyişə bilərsiniz.</translation>
 <translation id="7379900596734708416">Saytlar üçün tünd tema əlçatandır</translation>
@@ -1426,6 +1444,7 @@
 <translation id="8215740705341534369">Yan vərəq</translation>
 <translation id="8218622182176210845">Hesabınızı idarə edin</translation>
 <translation id="8221401890884589479">İstəmədiyiniz saytları bloklaya bilərsiniz. Chrome 30 gündən əvvələ aid saytları siyahıdan avtomatik silir. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
+<translation id="8221985041778490865">Baxış datası silinir</translation>
 <translation id="8223642481677794647">Lent kartı menyusu</translation>
 <translation id="8236097722223016103">Əlfəcinlərə əlavə edin</translation>
 <translation id="8237871086242677046">Səhifə statistikası üzrə aşağı vərəq</translation>
@@ -1457,6 +1476,7 @@
 <translation id="8413126021676339697">Tam tarixçəni göstərin</translation>
 <translation id="8413795581997394485">Təhlükəli sayt, endirmə və artırmalardan qoruyur. Sayta daxil olduqda Chrome IP ünvanını gizlədən məxfilik serveri vasitəsilə URL-in qarışıq bir hissəsini Google-a göndərir. Sayt şübhəli nəsə edərsə, tam URL və kiçik səhifə kontenti nümunələri də göndərilir.</translation>
 <translation id="8414396119627470038"><ph name="SITE_ETLD_PLUS_ONE" /> saytına <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ilə daxil olun</translation>
+<translation id="8419144699778179708">Axtarış xanasındakılar daxil olmaqla tarixçəni silir</translation>
 <translation id="8419244640277402268">Daxil edin</translation>
 <translation id="8422250855136581222">Bu cihazda tab yoxdur</translation>
 <translation id="8424781820952413435">Səhifə göndərildi. Onu görmək üçün bu cihazda Chrome'u açın: <ph name="DEVICE_TYPE" /></translation>
@@ -1619,16 +1639,20 @@
 <translation id="926205370408745186">Digital Sağlamlıqdan Chrome fəaliyyətini silin</translation>
 <translation id="927968626442779827">Google Chrome'da Lite rejimindən istifadə edin</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> izlənilir</translation>
+<translation id="930124987204876019">Tarixçə, kuki, sayt datası və keşi silin…</translation>
 <translation id="93533588269984624">Bütün parollar cihaza endiriləcək və <ph name="CHROME_CHANNEL" /> kanalından silinəcək</translation>
 <translation id="938850635132480979">Xəta: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">Parol daxil edin</translation>
 <translation id="952301137339791907">Səhifə statistikası üzrə aşağı vərəq açılıb</translation>
 <translation id="95817756606698420">Chrome, Çində axtarış üçün <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> istifadə edə bilər. Bunu <ph name="BEGIN_LINK" />Ayarlar<ph name="END_LINK" /> bölməsindən dəyişə bilərsiniz.</translation>
+<translation id="961856697154696964">Baxış datasını silin</translation>
+<translation id="966131775676567255">Hesab datası silinir</translation>
 <translation id="96681097142096641">Sadələşdirilmiş səhifəyə baxmaq istəyirsiniz?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> dəqiqə qaldı</translation>
 <translation id="981121421437150478">Oflayn</translation>
 <translation id="983192555821071799">Bütün panelləri bağlayın</translation>
 <translation id="987264212798334818">Ümumi</translation>
+<translation id="988091779042748639">Cihazdan Anonim brauzer tarixçəsini silmək üçün bütün Anonim tabları bağlayın.</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> tab</translation>
 <translation id="996149300115483134">Təchizat kartı menyusu bağlıdır</translation>
 </translationbundle>

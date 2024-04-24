@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">Bo‘sh bo‘lmagan e-pochta manzilini kiriting.</translation>
 <translation id="1758486001363313524">Boshqa...</translation>
 <translation id="1787192514241997742">umimiy vaqt: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">Kameraga ruxsat berish</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">masofadagi qurilmada ijro etish</translation>
 <translation id="1921819250265091946">kk</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">joriy qadam</translation>
 <translation id="3321030238473337787">Ijro tezligi</translation>
 <translation id="3329013043687509092">To‘liqlik</translation>
-<translation id="3377518164566272702">Mikrofon va kameraga ruxsat berish</translation>
 <translation id="3450233048674729344">Qiymat <ph name="MAXIMUM" /> ga teng yoki undan kichik bo‘lishi kerak.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Tasvir ustida tasvir rejimidan chiqish</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">Boshqa...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, boshlanadi: <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Tasvir ustida tasvir</translation>
-<translation id="918430632320614861">Mikrofonga ruxsat berish</translation>
 <translation id="945780513535800434">Qisman belgilangan</translation>
 <translation id="954003015749068518">tasvir ustida tasvir rejimiga kirish</translation>
 </translationbundle>

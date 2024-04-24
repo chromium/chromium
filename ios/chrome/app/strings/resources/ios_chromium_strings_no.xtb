@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Se Chromium-bokmerker</translation>
 <translation id="2590893390871230428">Synkroniser Chromium-dataene dine</translation>
 <translation id="2592940277904433508">Fortsett å bruke Chromium</translation>
+<translation id="2607609479243848905">Hvis du har glemt passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chromium-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">Åpne «<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />» fra enhetsinnstillingene, og velg «Chromium»</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{Chromium hjelper deg med å spore denne pakken på Ny fane-siden.}other{Chromium hjelper deg med å spore disse pakkene på Ny fane-siden.}}</translation>
 <translation id="2650312721222849884">For å se fanene dine overalt hvor du bruker Chromium, slå på synkronisering</translation>
@@ -116,6 +117,9 @@ Dataene dine er kryptert med passordfrasen din. Skriv den inn for å bruke og la
 <translation id="4498832288620833153">Legger til de angitte nettadressene på leselisten i Chromium.</translation>
 <translation id="452436063477828504">Sørg for at du alltid kan bruke Chromium-dataene i Google-kontoen din</translation>
 <translation id="4555020257205549924">Når denne funksjonen er slått på, tilbyr Chromium å oversette sider som er skrevet på andre språk, ved hjelp av Google Oversetter. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">Kryptering med passordfrase inkluderer ikke betalingsmåter eller adresser.
+
+For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chromium-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Åpner innstillingssiden for betalingsmåter i Chromium.</translation>
 <translation id="459080529287102949">Søk i visuelle elementer i Chromium</translation>
 <translation id="4633738821577273991">Få Safe Browsing med økt beskyttelse for denne Chromium-profilen også</translation>
@@ -214,6 +218,9 @@ Du bør tenke på følgende:
 <translation id="7163483974919055112">Søk i visuelle elementer i Chromium.</translation>
 <translation id="7165402419892018581">Velg Chromium for autofyll</translation>
 <translation id="7175400662502680481">Passordet ditt har vært avdekket i et databrudd. Passordlagring anbefaler at du endrer det nå.</translation>
+<translation id="7185731475720473450">Betalingsmåter og adresser krypteres ikke. Nettleserloggen fra Chromium synkroniseres ikke.
+
+Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordfrasen blir verken sendt til eller lagret av Google. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, kan du <ph name="BEGIN_LINK" />slette Chromium-dataene i kontoen din<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">Chromium-varsler er nå slått av i enhetsinnstillingene.</translation>
 <translation id="7222001353246886083">Søk etter ${searchPhrase} i Chromium</translation>
 <translation id="725427773388857052">Chromium kan beskytte deg mot databrudd, utrygge nettsteder med mer.</translation>

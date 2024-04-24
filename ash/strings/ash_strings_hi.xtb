@@ -68,6 +68,7 @@
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ऐप्लिकेशन</translation>
 <translation id="1225748608451425081">आपका Chromebook, एक जानी-पहचानी समस्या की वजह से लॉक है. आप इतने समय बाद साइन इन कर पाएंगे: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">टेक्स्ट चुनना बंद करें</translation>
+<translation id="1230853660706736937">इमेज में मौजूद टेक्स्ट खोजें और इमेज की झलक देखें</translation>
 <translation id="1235458158152011030">ज्ञात नेटवर्क</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> कनेक्ट हो गया है.</translation>
 <translation id="1240638468526743569">कोई ऐप्लिकेशन</translation>
@@ -718,11 +719,13 @@
 <translation id="3824784079442479685">इससे <ph name="APP_NAME" /> और ऐसे सभी ऐप्लिकेशन और वेबसाइटों को कैमरे का ऐक्सेस मिलेगा जिनके पास कैमरा इस्तेमाल करने की अनुमति है. आपको वेब पेज को रीफ़्रेश या ऐप्लिकेशन को रीस्टार्ट करना पड़ सकता है.</translation>
 <translation id="3826099427150913765">पासवर्ड पर स्विच करें</translation>
 <translation id="383058930331066723">बैटरी सेवर मोड चालू है</translation>
+<translation id="3831226344927851293">ट्यूटोरियल देखना बंद करें</translation>
 <translation id="383629559565718788">कीबोर्ड सेटिंग दिखाएं</translation>
 <translation id="384082539148746321">क्या आपको टेंप्लेट मिटाना है?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> फिर <ph name="KEY_ONE" /> या <ph name="KEY_TWO" /> या <ph name="KEY_THREE" /> या <ph name="KEY_FOUR" /></translation>
 <translation id="3846559267983630264">50+94/5</translation>
 <translation id="3846575436967432996">कोई नेटवर्क जानकारी उपलब्ध नहीं</translation>
+<translation id="3848526302597027234">ऐप्लिकेशन को इन्हें ऐक्सेस करने की अनुमति दें:</translation>
 <translation id="385051799172605136">वापस जाएं</translation>
 <translation id="385300504083504382">टेक्स्ट की शुरुआत में जाएं</translation>
 <translation id="3859364108019690">ऐप्लिकेशन स्ट्रीम नहीं किए जा सकते</translation>
@@ -2122,6 +2125,7 @@
 <translation id="954052413789300507"><ph name="FILENAME" /> को डाउनलोड करने के लिए, डिवाइस में जगह कम है. जगह खाली करें.</translation>
 <translation id="954520015070501466">30 मिनट</translation>
 <translation id="956452277966142925">गेम डैशबोर्ड की सेटिंग</translation>
+<translation id="961856697154696964">ब्राउज़िंग डेटा मिटाएं</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> के लिए <ph name="RESULT_COUNT" /> नतीजे दिखाए जा रहे हैं</translation>
 <translation id="981011780479609956">असाइनमेंट पूरा करने की तारीख तय नहीं है</translation>
 <translation id="98120814841227350">दस्तावेज़ के आखिर में जाएं</translation>

@@ -584,7 +584,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2071692954027939183">Kennisgewings is outomaties geblokkeer omdat jy hulle gewoonlik nie toelaat nie</translation>
 <translation id="2071852865256799872">Jou organisasie bestuur jou blaaier en <ph name="PROFILE_DOMAIN" /> bestuur jou profiel</translation>
 <translation id="2074733626795553847">Deblokkeer <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Jou administrateur het <ph name="PERMISSION" /> op <ph name="ORIGIN" /> geblokkeer</translation>
 <translation id="2078956195623975415">Musiek- en dansspeletjies</translation>
 <translation id="2079545284768500474">Ontdoen</translation>
 <translation id="2080021694978766903">Hierdie beleid moenie meer as <ph name="MAX_ITEMS_LIMIT" /> inskrywings hê nie.</translation>
@@ -2024,7 +2023,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4885030148564729407">Wittebrood en romantiese wegbreek</translation>
 <translation id="4885256590493466218">Betaal met <ph name="CARD_DETAIL" /> by betaalpunt</translation>
 <translation id="4887406273302438710">Beskerm wagwoorde met Windows Hello</translation>
-<translation id="4890070067176768718">Jou administrateur het <ph name="PERMISSION" /> toegelaat op <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Agter</translation>
 <translation id="4895019427244614047">Vee adres uit</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3911,7 +3909,6 @@ Bykomende besonderhede:
 <translation id="8493948351860045254">Maak spasie beskikbaar</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> het te lank gevat om te reageer.</translation>
 <translation id="8502023382441452707">Verjaarsdae en naamdae</translation>
-<translation id="8502972004418241366">Om jou <ph name="PERMISSION" /> op hierdie werf te gebruik, moet jy Chrome toegang gee</translation>
 <translation id="8503559462189395349">Chrome-wagwoorde</translation>
 <translation id="8503813439785031346">Gebruikernaam</translation>
 <translation id="8504928302600319133">Rekenaarhardeware</translation>
@@ -3931,7 +3928,6 @@ Bykomende besonderhede:
 <translation id="853246364274116957">Broadway en musiekteater</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Besoek &lt;strong&gt;chrome://policy&lt;/strong&gt; om die lys geblokkeerde URL'e en ander beleide wat jou stelseladministrateur toepas te sien.</translation>
-<translation id="8534934518812659742">Jy het <ph name="PERMISSION" /> vir Chrome afgeskakel.</translation>
 <translation id="8536234749087605613">Koevert (venster)</translation>
 <translation id="8539500321752640291">Gee 2 toestemmings?</translation>
 <translation id="8541158209346794904">Bluetooth-toestel</translation>
@@ -3988,7 +3984,6 @@ Bykomende besonderhede:
 <translation id="865032292777205197">bewegingsensors</translation>
 <translation id="865255447216708819">Agterdrukfilm</translation>
 <translation id="8654126188050905496">55x91 mm</translation>
-<translation id="8655930295668719549">Jy het voorheen nie <ph name="PERMISSION" /> op <ph name="ORIGIN" /> toegelaat nie</translation>
 <translation id="8662463432865928030">Kommersiële eiendomme</translation>
 <translation id="8663226718884576429">Bestellingopsomming, <ph name="TOTAL_LABEL" />, meer besonderhede</translation>
 <translation id="8663909737634214500">Optiese skyf</translation>
@@ -4020,6 +4015,7 @@ Bykomende besonderhede:
 <translation id="8722929331701811374">Skryfbehoeftes (briefhoof)</translation>
 <translation id="8724824364712796726">Koevert B6</translation>
 <translation id="8725066075913043281">Probeer weer</translation>
+<translation id="8725667981218437315">Kamera en mikrofoon</translation>
 <translation id="8726549941689275341">Bladsygrootte:</translation>
 <translation id="8730621377337864115">Gedoen</translation>
 <translation id="8731268612289859741">Sekuriteitkode</translation>

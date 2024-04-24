@@ -584,7 +584,6 @@
 <translation id="2071692954027939183">सूचना आपोआप ब्लॉक केल्या होत्या कारण तुम्ही सहसा त्यांना अनुमती देत नाही</translation>
 <translation id="2071852865256799872">तुमची संस्था तुमचा ब्राउझर व्यवस्थापित करते आणि <ph name="PROFILE_DOMAIN" />तुमची प्रोफाइल व्यवस्थापित करते</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> अनब्लॉक करा</translation>
-<translation id="2075497153347571252">तुमच्या अ‍ॅडमिनिस्ट्रेटरने <ph name="ORIGIN" /> वर <ph name="PERMISSION" /> ब्लॉक केला आहे</translation>
 <translation id="2078956195623975415">संगीत आणि नृत्याशी संबंधित गेम</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
 <translation id="2080021694978766903">या धोरणात <ph name="MAX_ITEMS_LIMIT" /> पेक्षा जास्त नोंदी असू शकत नाहीत.</translation>
@@ -2023,7 +2022,6 @@
 <translation id="4885030148564729407">हनिमून आणि रोमॅंटिक गेटवे</translation>
 <translation id="4885256590493466218">चेकआउट करताना <ph name="CARD_DETAIL" /> वापरून पेमेंट करा</translation>
 <translation id="4887406273302438710">Windows Hello सह पासवर्ड संरक्षित करा</translation>
-<translation id="4890070067176768718">तुमच्या अ‍ॅडमिनिस्ट्रेटरने <ph name="ORIGIN" /> वर <ph name="PERMISSION" /> ला अनुमती दिली आहे</translation>
 <translation id="4892518386797173871">मागील</translation>
 <translation id="4895019427244614047">पत्ता हटवा</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -2326,7 +2324,7 @@
     <ph name="LINE_BREAK" />
     सिस्टम ॲडमिनिस्ट्रेटरशी संपर्क साधण्याचा प्रयत्न करा.</translation>
 <translation id="549333378215107354">आकार ३</translation>
-<translation id="5496804587179176046">सुरक्षा कोड सेव्ह करा, सध्या कोणतेही सुरक्षा कोड नाहीत</translation>
+<translation id="5496804587179176046">सुरक्षा कोड सेव्ह करा, सध्या कोणतेही सुरक्षा कोड सेव्ह केलेले नाहीत</translation>
 <translation id="550365051221576010">सर्व फील्ड</translation>
 <translation id="5508443345185481044">कॅमेरा आणि कॅमकॉर्डर</translation>
 <translation id="5509762909502811065">B0</translation>
@@ -3911,7 +3909,6 @@
 <translation id="8493948351860045254">जागा मोकळी करा</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> नी प्रतिसाद देण्यात बराच वेळ घेतला.</translation>
 <translation id="8502023382441452707">वाढदिवस आणि बारसे</translation>
-<translation id="8502972004418241366">या साइटवर तुमचा <ph name="PERMISSION" /> वापरण्यासाठी, तुम्ही Chrome ला अ‍ॅक्सेस देणे आवश्यक आहे</translation>
 <translation id="8503559462189395349">Chrome पासवर्ड</translation>
 <translation id="8503813439785031346">वापरकर्ता नाव</translation>
 <translation id="8504928302600319133">कॉंप्युटर हार्डवेअर</translation>
@@ -3931,7 +3928,6 @@
 <translation id="853246364274116957">ब्रॉडवे आणि संगीत थिएटर</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">तुमच्या सिस्टम अ‍ॅडमिनिस्ट्रेटरद्वारे ब्लॉक केलेल्या URL आणि लागू केलेली इतर धोरणे पाहण्यासाठी &lt;strong&gt;chrome://policy&lt;/strong&gt; ला भेट द्या.</translation>
-<translation id="8534934518812659742">तुम्ही Chrome साठी <ph name="PERMISSION" /> बंद केला आहे.</translation>
 <translation id="8536234749087605613">एन्व्हलप (विंडो)</translation>
 <translation id="8539500321752640291">दोन परवानग्यांना अनुमती द्यायची का?</translation>
 <translation id="8541158209346794904">ब्लूटूथ डिव्‍हाइस</translation>
@@ -3988,7 +3984,6 @@
 <translation id="865032292777205197">मोशन सेन्सर</translation>
 <translation id="865255447216708819">ब्लॅक प्रिंट फिल्म</translation>
 <translation id="8654126188050905496">५५ x ९१ मिमी</translation>
-<translation id="8655930295668719549">तुम्ही यापूर्वी <ph name="ORIGIN" /> वर <ph name="PERMISSION" /> ची अनुमती दिली नव्हती</translation>
 <translation id="8662463432865928030">व्यावसायिक मालमत्ता</translation>
 <translation id="8663226718884576429">ऑर्डर सारांश, <ph name="TOTAL_LABEL" />, आणखी तपशील</translation>
 <translation id="8663909737634214500">ऑप्टिकल डिस्क</translation>
@@ -4020,6 +4015,7 @@
 <translation id="8722929331701811374">स्टेशनरी (लेटरहेड)</translation>
 <translation id="8724824364712796726">एन्व्हलप बी६</translation>
 <translation id="8725066075913043281">पुन्हा प्रयत्न करा</translation>
+<translation id="8725667981218437315">कॅमेरा आणि मायक्रोफोन</translation>
 <translation id="8726549941689275341">पेजचा आकार:</translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>
 <translation id="8731268612289859741">सुरक्षितता कोड</translation>

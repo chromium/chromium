@@ -32,6 +32,7 @@
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2244252133441425811">Slå på velger for videobilder per sekund</translation>
 <translation id="2271433936731426666">Slå på full størrelse for øyeblikksbilder fra videoer</translation>
+<translation id="2281736597583450397">Få skarpere detaljer med forbedret zoom</translation>
 <translation id="2320741269052147773">Panorer til venstre</translation>
 <translation id="2360840973209616515">Kamera-appen administreres av administratoren din.
         Kontakt administratoren for å få mer informasjon.</translation>
@@ -118,6 +119,7 @@
 Hvis tilbakemeldingen din gjelder bilde- eller videokvalitet, ber vi deg legge ved et eksempelbilde eller en eksempelvideo og forklare hva som er galt. (Eksempel: Bildet er for mørkt, eller motivet er ute av fokus.)</translation>
 <translation id="6519884562954018934">Koble til <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Del</translation>
+<translation id="6586509689874700895">Trykk først på <ph name="BUTTON_NAME" /> for å zoome inn. Når du deretter tar bilder, blir detaljene skarpere.</translation>
 <translation id="6617916774429601017">Vis alle oppløsninger</translation>
 <translation id="6631515515009660915">Speiling av</translation>
 <translation id="6652737148136672975">Flytt hjørneposisjonen med piltastene</translation>

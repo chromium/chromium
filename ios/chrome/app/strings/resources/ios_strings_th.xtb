@@ -131,6 +131,7 @@
 <translation id="1653432787084483144">{count,plural, =1{รหัสผ่านที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}other{รหัสผ่านที่บันทึกไว้ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}}</translation>
 <translation id="1657011748321897393">การแชร์ล้มเหลวเนื่องจากคุณไม่ได้เชื่อมต่อเครือข่าย</translation>
 <translation id="165877110639533037">ไม่มีแท็บที่เปิดไว้</translation>
+<translation id="1668001730617725852">เปิดในกลุ่มแท็บใหม่</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />เป็น<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1683483432843341018">ขอเว็บไซต์ในอุปกรณ์เคลื่อนที่</translation>
 <translation id="1687475363370981210">ทำเครื่องหมายทั้งหมดว่าอ่านแล้ว</translation>
@@ -1206,6 +1207,7 @@
 <translation id="7162168282402939716">ปลดล็อกแท็บที่ไม่ระบุตัวตนด้วย <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7173114856073700355">เปิดการตั้งค่า</translation>
 <translation id="7186568385131859684">ควบคุมการใช้ประวัติการท่องเว็บกับข้อมูลอื่นๆ ของคุณในบริการต่างๆ ของ Google</translation>
+<translation id="7187190640134722091">สร้างกลุ่ม</translation>
 <translation id="7189598951263744875">แชร์...</translation>
 <translation id="719133302483559673">จัดการความสนใจและความต้องการของคุณ</translation>
 <translation id="7192050974311852563">เริ่มต้นการบันทึก</translation>
@@ -1603,6 +1605,7 @@
 <translation id="9109699888944026290">{count,plural, =1{รหัสผ่านใหม่สำหรับเว็บไซต์นี้}other{รหัสผ่านใหม่สำหรับเว็บไซต์นี้}}</translation>
 <translation id="9120217828624527905">เปลี่ยนเป็นการแปลภาษาทั้งหน้า</translation>
 <translation id="9124387962554796433">Google อาจใช้ประวัติการเข้าชมเพื่อปรับเปลี่ยน Search และบริการอื่นๆ ของ Google ให้เหมาะกับคุณ</translation>
+<translation id="913036870884277353">เปิดลิงก์ในแอปอื่นๆ ได้อย่างง่ายดาย</translation>
 <translation id="9137526406337347448">Google Services</translation>
 <translation id="9144931028079269381">ซ่อน "เรื่องรออ่าน"</translation>
 <translation id="9148126808321036104">ลงชื่อเข้าใช้อีกครั้ง</translation>

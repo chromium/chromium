@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">Внесете адреса на е-пошта што не е празна.</translation>
 <translation id="1758486001363313524">Друго...</translation>
 <translation id="1787192514241997742">вкупно време: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">Дозволете камера</translation>
 <translation id="1822429046913737220">претпладне/попладне</translation>
 <translation id="1832974991323546415">репродуцирај на далечински уред</translation>
 <translation id="1921819250265091946">дд</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">тековен чекор</translation>
 <translation id="3321030238473337787">Брзина на репродукција</translation>
 <translation id="3329013043687509092">Заситеност</translation>
-<translation id="3377518164566272702">Дозволете микрофон и камера</translation>
 <translation id="3450233048674729344">Вредноста мора да биде помала или еднаква на <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Излези од „Слика во слика“</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">Друго...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, почнувајќи од <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Слика во слика</translation>
-<translation id="918430632320614861">Дозволете микрофон</translation>
 <translation id="945780513535800434">Делумно штиклирано</translation>
 <translation id="954003015749068518">влези во „слика во слика“</translation>
 </translationbundle>

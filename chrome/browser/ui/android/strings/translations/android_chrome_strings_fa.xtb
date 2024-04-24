@@ -171,10 +171,12 @@
 <translation id="1933845786846280168">برگه انتخاب‌شده</translation>
 <translation id="1943432128510653496">ذخیره گذرواژه‌ها</translation>
 <translation id="1944535645109964458">گذرکلیدی موجود نیست</translation>
+<translation id="1957557050935255529">‏درحال بار کردن PDF…</translation>
 <translation id="1959679933317802873">درانتظار محتوا</translation>
 <translation id="1960290143419248813">‏به‌روزرسانی‌های Chrome دیگر در این نسخه Android پشتیبانی نمی‌شوند</translation>
 <translation id="1963976881984600709">محافظت استاندارد</translation>
 <translation id="1966710179511230534">لطفاً جزئیات ورود به سیستم را به‌روز کنید.</translation>
+<translation id="1969037871259811890">‏حذف کردن داده‌های مرور باعث نمی‌شود از سیستم «حساب Google» خود خارج شوید. برای انجام این کار، <ph name="BEGIN_LINK1" />از سیستم Chrome خارج شوید<ph name="END_LINK1" />.</translation>
 <translation id="197288927597451399">ادامه دادن</translation>
 <translation id="1973912524893600642">نگه داشتن داده‌ها</translation>
 <translation id="1974060860693918893">پیشرفته</translation>
@@ -335,6 +337,7 @@
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{آخرین بررسی: ۱ روز قبل}one{آخرین بررسی: # روز قبل}other{آخرین بررسی: # روز قبل}}</translation>
 <translation id="2842985007712546952">پوشه اصلی</translation>
 <translation id="2853415089995957805">‏‫Chrome صفحه‌هایی را که احتمالاً از آن‌ها بازدید خواهید کرد پیش‌بارگیری می‌کند تا وقتی از آن‌ها بازدید می‌کنید سریع‌تر بارگیری شوند</translation>
+<translation id="2855243985454069333">سابقه از همه دستگاه‌های همگام‌سازی‌شده حذف می‌شود</translation>
 <translation id="2856503607207334158">ورود به سیستم ناموفق بود</translation>
 <translation id="2860954141821109167">مطمئن شوید برنامه تلفن در این دستگاه فعال باشد</translation>
 <translation id="2861923151411510142">‏برخی‌از ویژگی‌های Chrome دیگر دردسترس نخواهد بود</translation>
@@ -418,6 +421,7 @@
 <translation id="3220943972464248773">برای همگام‌سازی گذرواژه‌ها، هویتتان را به‌تأیید برسانید</translation>
 <translation id="3226612997184048185">‏اگر نشانک‌ها را در «حساب Google» هم ذخیره کنید، می‌توانید قیمت محصولات را در Chrome پیگیری کنید و از کاهش قیمت‌ها مطلع شوید</translation>
 <translation id="3227557059438308877">‏Google Chrome به‌عنوان «کلید ایمنی»</translation>
+<translation id="3232293466644486101">حذف کردن داده‌های مرور…</translation>
 <translation id="3232754137068452469">برنامه وب</translation>
 <translation id="3236059992281584593">۱ دقیقه باقی‌مانده است</translation>
 <translation id="3237087289225714896">پیش‌بارگذاری استاندارد:</translation>
@@ -703,6 +707,7 @@
 <translation id="4738836084190194332">آخرین همگام‌سازی: <ph name="WHEN" /></translation>
 <translation id="474121291218385686">فیلتر کردن براساس برنامه</translation>
 <translation id="4741753828624614066">پیشنهادهای بهبودیافته‌ای در نوار نشانی دریافت خواهید کرد</translation>
+<translation id="4742795653798179840">‏داده‌های Chrome حذف شد</translation>
 <translation id="4742970037960872810">برداشتن برجسته‌سازی</translation>
 <translation id="4749960740855309258">باز کردن برگه جدید</translation>
 <translation id="4750356170202299988">محتوای ذهن‌های جوان</translation>
@@ -916,6 +921,7 @@
 <translation id="5810288467834065221">‏حق نشر <ph name="YEAR" /> Google LLC.‎ کلیه حقوق محفوظ است.</translation>
 <translation id="5814749351757353073">از سایت‌های محبوبتان باخبر باشید</translation>
 <translation id="5822875253699806474">برای برگشتن سریع به سایت‌هایی که بازدید کرده‌اید، برگه‌ها و سابقه را همگام‌سازی کنید</translation>
+<translation id="5828921839638612740">‏می‌توانید داده‌ها را در «تنظیمات» Chrome حذف کنید</translation>
 <translation id="5829586821381540080">در <ph name="FOLDER_NAME" /> ذخیره شد</translation>
 <translation id="583281660410589416">ناشناس</translation>
 <translation id="5833984609253377421">هم‌رسانی پیوند</translation>
@@ -1106,6 +1112,7 @@
 <translation id="6715020873764921614">می‌خواهید <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) درهرصورت بارگیری شود؟</translation>
 <translation id="6719634564325948108">با رمزینه پاسخ‌سریع وارد می‌شوید؟</translation>
 <translation id="6723740634201835758">‏در حساب Google</translation>
+<translation id="6734310707649923383">می‌توانید صفحه‌هایی را که از آن‌ها بازدید کرده‌اید ببینید یا آن‌ها را از سابقه حذف کنید</translation>
 <translation id="6738867403308150051">در حال بارگیری…</translation>
 <translation id="67404633032079629">‏ممکن است بخشی از سابقه وب شما اینجا نمایش داده نشود. برای دیدن سابقه کامل وب، روی «باز کردن سابقه کامل Chrome» ضربه بزنید.</translation>
 <translation id="674388916582496364">‏طبیعی است اگر سایت‌هایی که بازدید می‌کنید برای شخصی‌سازی تجربه‌تان، علایق شما را به‌خاطر آورند. به‌علاوه، سایت‌ها می‌توانند بااستفاده از Chrome اطلاعاتی درباره علایقتان ذخیره کنند.</translation>
@@ -1241,6 +1248,7 @@
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{اشتراک‌گذاری ۱ مورد انتخاب‌شده}one{اشتراک‌گذاری # مورد انتخاب‌شده}other{اشتراک‌گذاری # مورد انتخاب‌شده}}</translation>
 <translation id="7359002509206457351">دسترسی به روش‌های پرداخت</translation>
 <translation id="7363349185727752629">راهنمای گزینه‌های حریم خصوصی</translation>
+<translation id="7364103838544876661">گزینه‌های بیشتر برای حذف داده‌های مرور</translation>
 <translation id="7375125077091615385">نوع:</translation>
 <translation id="7376560087009844242">با لحاظ کردن بخش بیشتری از نوشتار صفحه، ممکن هنگام استفاده از «لمس کردن برای جستجو» نتایج بهتری دریافت کنید. همواره می‌توانید با رفتن به <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> این مورد را تغییر دهید.</translation>
 <translation id="7379900596734708416">زمینه تیره برای سایت‌ها دردسترس است</translation>
@@ -1428,6 +1436,7 @@
 <translation id="8215740705341534369">برگ کناری</translation>
 <translation id="8218622182176210845">مدیریت حساب</translation>
 <translation id="8221401890884589479">‏می‌توانید سایت‌هایی را که نمی‌خواهید مسدود کنید. Chrome همچنین سایت‌هایی را که قدیمی‌تر از ۳۰ روز باشند به‌طور خودکار از فهرست حذف می‌کند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="8221985041778490865">درحال حذف کردن داده‌های مرور</translation>
 <translation id="8223642481677794647">منوی کارت فید</translation>
 <translation id="8236097722223016103">افزودن به نشانک‌ها</translation>
 <translation id="8237871086242677046">برگ زیرین اطلاعات آماری صفحه</translation>
@@ -1459,6 +1468,7 @@
 <translation id="8413126021676339697">نمایش کل سابقه</translation>
 <translation id="8413795581997394485">‏دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودنشان مشخص شده است از شما محافظت می‌کند. هنگامی که از سایتی بازدید می‌کنید، Chrome بخش مبهم‌سازی‌شده‌ای از نشانی وب را ازطریق سرور حریم خصوصی‌ای که نشانی IP شما را پنهان کرده است به Google ارسال می‌کند. اگر سایتی کار مشکوکی انجام دهد، نشانی‌های وب کامل و بخش‌هایی از محتوای صفحه نیز ارسال می‌شود.</translation>
 <translation id="8414396119627470038">ورود به سیستم <ph name="SITE_ETLD_PLUS_ONE" /> با <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="8419144699778179708">سابقه، ازجمله سابقه موجود در چارگوش جستجو حذف می‌شود</translation>
 <translation id="8419244640277402268">لحاظ شود</translation>
 <translation id="8422250855136581222">برگه‌ای در این دستگاه بسته نمی‌شود</translation>
 <translation id="8424781820952413435">‏صفحه ارسال شد. برای دیدن آن، Chrome را در <ph name="DEVICE_TYPE" /> باز کنید</translation>
@@ -1621,16 +1631,19 @@
 <translation id="926205370408745186">‏فعالیت Chrome شما از «آسایش دیجیتالی» برداشته شود</translation>
 <translation id="927968626442779827">‏استفاده از «حالت ساده» در Google Chrome</translation>
 <translation id="928550791203542716"><ph name="SITE_NAME" /> را دنبال می‌کنید</translation>
+<translation id="930124987204876019">حذف کردن سابقه، کوکی‌ها، داده‌های سایت، حافظه نهان…</translation>
 <translation id="93533588269984624">همه گذرواژه‌ها در دستگاهتان بارگیری خواهند شد و از <ph name="CHROME_CHANNEL" /> برداشته می‌شوند</translation>
 <translation id="938850635132480979">خطا: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">گذرعبارت را وارد کنید</translation>
 <translation id="952301137339791907">برگ زیرین اطلاعات آماری صفحه باز شده است</translation>
 <translation id="95817756606698420">‏Chrome می‌تواند از <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> برای جستجو در چین استفاده کند. در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> می‌توانید این را تغییر دهید.</translation>
+<translation id="961856697154696964">حذف کردن داده‌های مرور</translation>
 <translation id="96681097142096641">صفحه ساده‌شده نشان داده شود؟</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> دقیقه باقی‌مانده است</translation>
 <translation id="981121421437150478">آفلاین</translation>
 <translation id="983192555821071799">بستن همه برگه‌ها</translation>
 <translation id="987264212798334818">موارد کلی</translation>
+<translation id="988091779042748639">برای حذف کردن سابقه مرور «حالت ناشناس» از دستگاه، همه برگه‌های «ناشناس» را ببندید</translation>
 <translation id="992745192656291733"><ph name="TAB_COUNT" /> برگه</translation>
 <translation id="996149300115483134">منوی کارت فید بسته شد</translation>
 </translationbundle>

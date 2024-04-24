@@ -584,7 +584,6 @@
 <translation id="2071692954027939183">Билдирмелер автоматтык түрдө бөгөттөлдү, анткени, адатта, аларга уруксат бербейсиз</translation>
 <translation id="2071852865256799872">Серепчиңиз уюмуңуз, ал эми профилиңиз <ph name="PROFILE_DOMAIN" /> тарабынан тескелет</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> дегенди бөгөттөн чыгаруу</translation>
-<translation id="2075497153347571252">Администраторуңуз <ph name="ORIGIN" /> сайтында <ph name="PERMISSION" /> колдонууга тыюу салды</translation>
 <translation id="2078956195623975415">Музыка жана бий оюндары</translation>
 <translation id="2079545284768500474">Кайтаруу</translation>
 <translation id="2080021694978766903">Бул саясатка киргизилген маанилердин саны <ph name="MAX_ITEMS_LIMIT" /> ашпашы керек.</translation>
@@ -2023,7 +2022,6 @@
 <translation id="4885030148564729407">Бал айлары жана романтикалуу эс алуу</translation>
 <translation id="4885256590493466218"><ph name="CARD_DETAIL" /> картасы менен төлөңүз</translation>
 <translation id="4887406273302438710">Сырсөздөрдү Windows Hello функциясы менен коргоо</translation>
-<translation id="4890070067176768718">Администраторуңуз <ph name="ORIGIN" /> сайтында <ph name="PERMISSION" /> колдонууга уруксат берди</translation>
 <translation id="4892518386797173871">Арткы</translation>
 <translation id="4895019427244614047">Даректи өчүрүү</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3910,7 +3908,6 @@
 <translation id="8493948351860045254">Орун бошотуу</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> өтө узактан кийин жооп берди.</translation>
 <translation id="8502023382441452707">Туулган күн жана ысым күндөрү</translation>
-<translation id="8502972004418241366">Бул сайтта <ph name="PERMISSION" /> колдонуу үчүн Chrome'го аны колдонууга уруксат беришиңиз керек</translation>
 <translation id="8503559462189395349">Chrome сырсөздөрү</translation>
 <translation id="8503813439785031346">Колдонуучунун ысымы</translation>
 <translation id="8504928302600319133">Компьютердин жабдыктары</translation>
@@ -3930,7 +3927,6 @@
 <translation id="853246364274116957">Бродвей жана музыкалык театр</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Бөгөттөлгөн URL'дерди жана тутум администраторуңуз ишке киргизген эрежелерди көрүү үчүн &lt;strong&gt;chrome://policy&lt;/strong&gt; дарегине кириңиз.</translation>
-<translation id="8534934518812659742">Chrome үчүн <ph name="PERMISSION" /> уруксатын өчүрүп койдуңуз.</translation>
 <translation id="8536234749087605613">Конверт (терезеси менен)</translation>
 <translation id="8539500321752640291">2 уруксатты бересизби?</translation>
 <translation id="8541158209346794904">Bluetooth түзмөгү</translation>
@@ -3987,7 +3983,6 @@
 <translation id="865032292777205197">кыймыл сенсорлору</translation>
 <translation id="865255447216708819">Тескери басып чыгаруу үчүн тасма</translation>
 <translation id="8654126188050905496">55 x 91 мм.</translation>
-<translation id="8655930295668719549">Буга чейин <ph name="ORIGIN" /> сайтында <ph name="PERMISSION" /> колдонууга тыюу салгансыз</translation>
 <translation id="8662463432865928030">Коммерциялык кыймылсыз мүлк</translation>
 <translation id="8663226718884576429">Буйрутма тууралуу маалымат, <ph name="TOTAL_LABEL" />, Толук маалымат</translation>
 <translation id="8663909737634214500">Оптикалык диск</translation>
@@ -4019,6 +4014,7 @@
 <translation id="8722929331701811374">Канцелярия (фирмалык бланк)</translation>
 <translation id="8724824364712796726">Конверт B6</translation>
 <translation id="8725066075913043281">Кайра аракет кылып көрүү</translation>
+<translation id="8725667981218437315">Камера жана микрофон</translation>
 <translation id="8726549941689275341">Барактын өлчөмү:</translation>
 <translation id="8730621377337864115">Бүттү</translation>
 <translation id="8731268612289859741">Коопсуздук коду</translation>

@@ -102,6 +102,7 @@
 <translation id="152234381334907219">Ayikaze yalondolozwa</translation>
 <translation id="1523341279170789507">Vumela Wonke Amakhukhi</translation>
 <translation id="1524563461097350801">Cha, Ngiyabonga</translation>
+<translation id="1539173178539798367">Fihla Ukusula Idatha Yopheqululo</translation>
 <translation id="1540800554400757039">Ikheli 1</translation>
 <translation id="1545749641540134597">Skena ikhodi ye-QR</translation>
 <translation id="1552525382687785070">Ukuvumelanisa kukhutshazwe umlawuli wakho</translation>
@@ -320,6 +321,7 @@ Amasayithi awakwazi ukusebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula
 
 Injini yakho yokusesha yi-<ph name="DSE_NAME" />. Bona imiyalelo yayo yokusula umlando wakho wosesho, uma kusebenza.</translation>
 <translation id="2697526135132990015">Phuma Ngemvume futhi Usule Idatha</translation>
+<translation id="269819437389494246">Ungakwazi ukubona amakhasi owavakashele noma uwasule emlandweni wakho</translation>
 <translation id="2700241355396984822">Izinketho Zokusetha Izimvume</translation>
 <translation id="2702801445560668637">Uhlu lokufunda</translation>
 <translation id="2704606927547763573">Kukopishiwe</translation>
@@ -393,6 +395,7 @@ Injini yakho yokusesha yi-<ph name="DSE_NAME" />. Bona imiyalelo yayo yokusula u
 <translation id="3039722182465315531">Ungangeni Ngemvume</translation>
 <translation id="3053332585453689122">Ithumela ama-URL owavakashelayo kanye nesampula encane yokuqukethwe kwekhasi, okudawunilodiwe, umsebenzi wesandiso, nolwazi lwesistimu Ekubhrawuzeni Okuphephile kwe-Google ukuhlola ukuthi kuyingozi yini.</translation>
 <translation id="3054631738875941048">Fihla okuthi Faka Ohlwini Lokufunda</translation>
+<translation id="3064295814838126921">Isula idatha yopheqululo...</translation>
 <translation id="3074499504015191586">Humusha Ikhasi Eligcwele</translation>
 <translation id="3076846064362030967">Ngeke uze ukhishwe ngemvume ku-Akhawunti yakho ye-Google. <ph name="BEGIN_LINK" />Ezinye izinhlobo zomsebenzi<ph name="END_LINK" /> zingase zilondolozwe ku-akhawunti yakho ye-Google lapho ungene ngemvume. Ungakusula noma kunini
 
@@ -858,6 +861,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="5490005495580364134">Vimbela Wonke Amakhukhi (Akunconywa)</translation>
 <translation id="5497202150450073388">Kwenziwe Umzamo Wokudiliva. Kuzozanywa kabusha</translation>
 <translation id="5511959326926949696">Ukuvikeleka kokuzikhethela okudlulele kwebhrawuza yakho. Kufanele isetshenziswe kuphela uma ukholwa ukuthi kungenzeka uqondiswe ukuhlasela kwe-inthanethi okuyinkimbinkimbi kakhulu.</translation>
+<translation id="5512759250809559631">Imenyu → Umlando → Sula Idatha Yopheqululo</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ihora eledlule</translation>
 <translation id="5525269841082836315">Dala umushwana wokungena</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{Iphasiwedi engaqinile e-{COUNT}}one{Amaphasiwedi angaqinile angu-{COUNT}}other{Amaphasiwedi angaqinile angu-{COUNT}}}</translation>
@@ -933,6 +937,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="5859715514067755465">Phambili</translation>
 <translation id="5860033963881614850">Valiwe</translation>
 <translation id="5860491529813859533">Vula</translation>
+<translation id="5889333064153755823">Sula Idatha Yopheqululo</translation>
 <translation id="5896576662943111387">Yakhelwe i-iOS</translation>
 <translation id="5897749768294722429">Ukuze ubuyele ngokushesha kumasayithi owavakashele, vumelanisa amathebhu wakho nomlando.</translation>
 <translation id="5897956970858271241">Vakashela isixhumanisi esikopishiwe</translation>
@@ -1030,6 +1035,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="6346549652287021269">Qala ukulanda okusha?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Leli kheli lizosulwa ku-Google Account yakho (<ph name="USER_EMAIL" />) nakule divayisi.}one{Lamakheli azosulwa ku-Google Account yakho (<ph name="USER_EMAIL" />) nakule divayisi.}other{Lamakheli azosulwa ku-Google Account yakho (<ph name="USER_EMAIL" />) nakule divayisi.}}</translation>
 <translation id="634878792104344809">Vumelanisa amaphasiwedi akho, umlando, nokuningi kuwo wonke amadivayisi akho</translation>
+<translation id="6351658970066645919">Sula Idatha Yopheqululo</translation>
 <translation id="63519665078626091">Ukuze usebenzise Isihloli Sewebhu, xhuma ku-Safari kukhompyutha yakho usebenzisa ikhebula bese ufinyelela ku-iPad yakho kusuka kumenyu Yokusungula. Unganika amandla imenyu yokusungula esigabeni Sokuthuthukisiwe samasethingi we-Safari kukhompyutha yakho.</translation>
 <translation id="6355820205320395730">Amaphasiwedi angaqinile aqageleka kalula. Qinisekisa ukuthi usungula iphasiwedi eqinile. <ph name="BEGIN_LINK" />Bona amathiphu amaningi okuvikeleka.<ph name="END_LINK" /></translation>
 <translation id="6361681885917591592">Kwenziwe</translation>
@@ -1151,6 +1157,7 @@ Lapho uku-Incognito, amasayithi awakwazi ukusebenzisa amakhukhi wakho ukubona um
 <translation id="687135068089457384">Bonisa Amasethingi</translation>
 <translation id="6873263987691478642">Ukubuka okuhlukanisiwe</translation>
 <translation id="6882836635272038266">Ukuvikelwa okujwayelekile ngokumelene namawebhusayithi, okulandwayo, nezandiso ezaziwa njengeziyingozi.</translation>
+<translation id="6887173972066406796">Qinisekisa Ukusula Idatha Yopheqululo</translation>
 <translation id="6888009575607455378">Ingabe uqinisekile ukuthi ufuna ukulahla ushintsho lwakho?</translation>
 <translation id="6896758677409633944">Kopisha</translation>
 <translation id="6897187120838603299">Iphasiwedi yakho izolondolozwa kudivayisi yakho.</translation>
@@ -1345,6 +1352,7 @@ Lapho uku-Incognito, amasayithi awakwazi ukusebenzisa amakhukhi wakho ukubona um
 <translation id="7930998711684428189">Iyakuxwayisa uma amaphasiwedi avezwe ekuphulweni kwesivumelwano sedatha.</translation>
 <translation id="7938254975914653459">I-FaceTime</translation>
 <translation id="7939128259257418052">Thumela amaphasiwedi...</translation>
+<translation id="7939856641500914040">Sula Idatha Yopheqululo…</translation>
 <translation id="794799177247607889">Misa ukuloga</translation>
 <translation id="7959441099968534758">IYA KOKUPHAKELAYO</translation>
 <translation id="7961015016161918242">Ngeke</translation>

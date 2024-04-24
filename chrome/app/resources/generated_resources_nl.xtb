@@ -1599,7 +1599,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Je zet foutopsporingsfuncties aan voor Chrome OS Flex waarmee de sshd daemon wordt ingesteld en opstarten vanaf USB-stations mogelijk wordt.</translation>
 <translation id="2178614541317717477">Inbreuk op CA</translation>
-<translation id="2179416702468739594">Zoeken naar beschikbare profielen. Hierdoor kan de verbinding met je mobiele netwerk enkele minuten worden verbroken.</translation>
 <translation id="2180620921879609685">Content op elke pagina blokkeren</translation>
 <translation id="2181821976797666341">Beleid</translation>
 <translation id="2182058453334755893">Naar klembord gekopieerd</translation>
@@ -1652,6 +1651,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="222115440608612541">Wijzig het thema bij zonsopgang en zonsondergang</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Naamloze mediabron</translation>
+<translation id="2224337661447660594">Geen internet</translation>
 <translation id="2224444042887712269">Deze instelling hoort bij <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Mapnaam bewerken</translation>
 <translation id="2225927550500503913">Virtuele kaart staat aan</translation>
@@ -3103,7 +3103,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3321494112580110651">Staat je printer er niet bij?</translation>
 <translation id="3321776060736518525">Van <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonus! Je hebt meer schermtijd gekregen</translation>
-<translation id="3325804108816646710">Zoeken naar beschikbare profielen…</translation>
 <translation id="3325930488268995856">Gekoppeld aan Microsoft OneDrive</translation>
 <translation id="3325995804968971809">Stijl</translation>
 <translation id="3327050066667856415">Chromebooks zijn ontworpen voor beveiliging. Je apparaat is automatisch beveiligd tegen malware. Je hebt geen extra software nodig.</translation>
@@ -5407,7 +5406,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5101839224773798795">Automatisch klikken wanneer de cursor stopt</translation>
 <translation id="5103311607312269661">helderheid van scherm verhogen</translation>
 <translation id="5106350808162641062">Verwijderen</translation>
-<translation id="5106608587025903971">Je kunt een <ph name="DEVICE_TYPE" />-wachtwoord instellen voor dit apparaat zodat je niet hoeft in te loggen met je Google-accountwachtwoord.</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> staat onder toezicht van Family Link. Je kunt schoolaccounts toevoegen om toegang tot hulpbronnen van school te krijgen met ouderlijk toezicht.</translation>
 <translation id="5107093668001980925"><ph name="MODULE_NAME" /> nooit tonen</translation>
 <translation id="5107443654503185812">Een extensie heeft Safe Browsing uitgezet</translation>
@@ -7364,7 +7362,6 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6647690760956378579">Voorbeeld van natuurlijke stem</translation>
 <translation id="6648911618876616409">Er is een nieuwe essentiële update beschikbaar. Log in om aan de slag te gaan.</translation>
 <translation id="6649018507441623493">Een ogenblik…</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> wil bevestigen dat jij het bent</translation>
 <translation id="6650206238642452078">Abonneren op ChromeOS-systeemgebeurtenissen</translation>
 <translation id="665061930738760572">Openen in &amp;nieuw venster</translation>
 <translation id="6651237644330755633">Dit certificaat vertrouwen voor het identificeren van websites</translation>

@@ -116,10 +116,12 @@
 <translation id="417201473131094001">‏در Chrome Canary پشتیبانی نمی‌شود</translation>
 <translation id="424864128008805179">‏از سیستم Chrome خارج می شوید؟</translation>
 <translation id="4251174643044751591">‏صفحه تنظیم روش‌های پرداخت در Chrome را باز می‌کند.</translation>
+<translation id="4286914711740227883">‏حذف کردن داده‌های مرور در Chrome</translation>
 <translation id="4453284704333523777">‏مدیریت تنظیمات Chrome</translation>
 <translation id="4523886039239821078">‏برخی از افزونه‌ها باعث می‌شوند Chrome از کار بیفتد. لطفاً آنها را حذف نصب کنید:</translation>
 <translation id="4633328489441962921">‏Chrome نمی‌تواند به‌روزرسانی‌ها را بررسی کند</translation>
 <translation id="4636900170638246267">‏به سیستم این سایت و Chrome وارد شوید.</translation>
+<translation id="4742795653798179840">‏داده‌های Chrome حذف شد</translation>
 <translation id="4761869838909035636">‏راندن «بررسی ایمنی» در Chrome</translation>
 <translation id="4798859546468762093">‏برای دریافت شخصی‌سازی و ویژگی‌های دیگر، Chrome را به <ph name="FEATURE_NAME_1" /> و <ph name="FEATURE_NAME_2" /> اضافه کنید</translation>
 <translation id="4819268619367838612">‏برای کمک به بهبود برنامه، Chrome داده‌های استفاده و ازکارافتادگی را به Google ارسال می‌کند. <ph name="BEGIN_LINK" />مدیریت<ph name="END_LINK" /></translation>
@@ -130,6 +132,7 @@
 <translation id="4840404732697892756">‏وقتی با «حساب Google» خود به سیستم وارد شوید، «مدیر گذرواژه Google» می‌تواند گذرواژه‌هایتان را بررسی کند.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{‏‫Chrome می‌تواند به شما کمک کند این بسته را در «صفحه برگه جدید» ردیابی کنید.}one{‏‫Chrome می‌تواند به شما کمک کند این بسته را در «صفحه برگه جدید» ردیابی کنید.}other{‏‫Chrome می‌تواند به شما کمک کند این بسته‌ها را در «صفحه برگه جدید» ردیابی کنید.}}</translation>
 <translation id="4903674399067644695">‏این کارت پیشنهادهایی را برای بردن بیشترین بهره از Chrome نشان می‌دهد.</translation>
+<translation id="4919069428879420545">‏حذف کردن داده‌های مرور در Chrome.</translation>
 <translation id="49200511069271369">‏سازمانتان (<ph name="DOMAIN" />) حسابی که با آن به سیستم وارد می‌شوید و نحوه استفاده از Chrome را مدیریت می‌کند. سرپرستتان می‌توانید برخی‌از ویژگی‌ها را راه‌اندازی یا محدود کند.</translation>
 <translation id="498985224078955265">‏برای ارسال این برگه به دستگاهی دیگر، در هردو دستگاه به سیستم Chrome وارد شوید.</translation>
 <translation id="5030102366287574140">‏Chrome می‌تواند به محافظت از شما دربرابر نقض داده، وب‌سایت‌های ناامن، و موارد دیگر کمک کند.</translation>

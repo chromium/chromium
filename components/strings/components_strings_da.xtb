@@ -584,7 +584,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2071692954027939183">Der blev automatisk blokeret notifikationer, da du som regel ikke tillader notifikationer</translation>
 <translation id="2071852865256799872">Din browser administreres af din organisation, og din profil administreres af <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Fjern blokeringen af <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Din administrator har blokeret <ph name="PERMISSION" /> på <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Musik- og dansespil</translation>
 <translation id="2079545284768500474">Fortryd</translation>
 <translation id="2080021694978766903">Denne politik må ikke have mere end <ph name="MAX_ITEMS_LIMIT" /> poster.</translation>
@@ -2024,7 +2023,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4885030148564729407">Bryllupsferie og romantiske rejser</translation>
 <translation id="4885256590493466218">Betal med <ph name="CARD_DETAIL" /> ved kassen</translation>
 <translation id="4887406273302438710">Beskyt adgangskoder med Windows Hello</translation>
-<translation id="4890070067176768718">Din administrator har tilladt <ph name="PERMISSION" /> på <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Bagest</translation>
 <translation id="4895019427244614047">Slet adressen</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3911,7 +3909,6 @@ Yderligere oplysninger:
 <translation id="8493948351860045254">Frigør plads</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> var for lang tid om at svare.</translation>
 <translation id="8502023382441452707">Fødselsdage og navnedage</translation>
-<translation id="8502972004418241366">Hvis du vil bruge <ph name="PERMISSION" /> på dette website, skal du give Chrome adgang</translation>
 <translation id="8503559462189395349">Chrome-adgangskoder</translation>
 <translation id="8503813439785031346">Brugernavn</translation>
 <translation id="8504928302600319133">Computerhardware</translation>
@@ -3931,7 +3928,6 @@ Yderligere oplysninger:
 <translation id="853246364274116957">Musicals og Broadway-teater</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Gå til &lt;strong&gt;chrome://policy&lt;/strong&gt; for at se listen over blokerede webadresser og andre politikker, der håndhæves af din systemadministrator.</translation>
-<translation id="8534934518812659742">Du har deaktiveret <ph name="PERMISSION" /> for Chrome.</translation>
 <translation id="8536234749087605613">Kuvert (rude)</translation>
 <translation id="8539500321752640291">Vil du godkende 2 tilladelser?</translation>
 <translation id="8541158209346794904">Bluetooth-enhed</translation>
@@ -3989,7 +3985,6 @@ Yderligere oplysninger:
 <translation id="865032292777205197">bevægelsessensorer</translation>
 <translation id="865255447216708819">Film til baggrundsbelysning</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Du har tidligere ikke tilladt <ph name="PERMISSION" /> på <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Erhvervsejendomme</translation>
 <translation id="8663226718884576429">Ordreoversigt, <ph name="TOTAL_LABEL" />, flere oplysninger</translation>
 <translation id="8663909737634214500">Optisk disk</translation>
@@ -4021,6 +4016,7 @@ Yderligere oplysninger:
 <translation id="8722929331701811374">Papir (brevpapir)</translation>
 <translation id="8724824364712796726">Konvolut B6</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>
+<translation id="8725667981218437315">Kamera og mikrofon</translation>
 <translation id="8726549941689275341">Sidestørrelse:</translation>
 <translation id="8730621377337864115">Udfør</translation>
 <translation id="8731268612289859741">Sikkerhedskode</translation>

@@ -584,7 +584,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2071692954027939183">Pranešimai automatiškai užblokuoti, nes įprastai jų neleidžiate</translation>
 <translation id="2071852865256799872">Jūsų naršyklę tvarko jūsų organizacija, o profilį tvarko <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Panaikinti blokavimą: „<ph name="TOPIC" />“</translation>
-<translation id="2075497153347571252">Administratorius užblokavo <ph name="PERMISSION" /> svetainėje <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Muzikiniai ir šokių žaidimai</translation>
 <translation id="2079545284768500474">Anuliuoti</translation>
 <translation id="2080021694978766903">Šioje politikoje gali būti ne daugiau nei <ph name="MAX_ITEMS_LIMIT" /> įraš.</translation>
@@ -2025,7 +2024,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4885030148564729407">Medaus mėnesio ir romantinės išvykos</translation>
 <translation id="4885256590493466218">Mokėti naudojant <ph name="CARD_DETAIL" /> atsiskaitant</translation>
 <translation id="4887406273302438710">Slaptažodžių apsauga naudojant „Windows Hello“</translation>
-<translation id="4890070067176768718">Jūsų administratorius leido <ph name="PERMISSION" /> svetainėje <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Galas</translation>
 <translation id="4895019427244614047">Ištrinti adresą</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3912,7 +3910,6 @@ Papildoma išsami informacija:
 <translation id="8493948351860045254">Atlaisvinti vietos</translation>
 <translation id="8498891568109133222">Per ilgai laukta <ph name="HOST_NAME" /> atsako.</translation>
 <translation id="8502023382441452707">Gimimo ir vardo dienos</translation>
-<translation id="8502972004418241366">Jei norite naudoti <ph name="PERMISSION" /> šioje svetainėje, turite suteikti „Chrome“ prieigą</translation>
 <translation id="8503559462189395349">„Chrome“ slaptažodžiai</translation>
 <translation id="8503813439785031346">Vartotojo vardas</translation>
 <translation id="8504928302600319133">Kompiuterių aparatinė įranga</translation>
@@ -3932,7 +3929,6 @@ Papildoma išsami informacija:
 <translation id="853246364274116957">Brodvėjus ir muzikinis teatras</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Apsilankykite adresu &lt;strong&gt;chrome://policy&lt;/strong&gt;, kad peržiūrėtumėte užblokuotų URL sąrašą ir kitą politiką, kurią taiko sistemos administratoriaus.</translation>
-<translation id="8534934518812659742">Išjungėte <ph name="PERMISSION" /> leidimą naršyklėje „Chrome“.</translation>
 <translation id="8536234749087605613">Vokas (su langeliu)</translation>
 <translation id="8539500321752640291">Suteikti du leidimus?</translation>
 <translation id="8541158209346794904">„Bluetooth“ įrenginys</translation>
@@ -3990,7 +3986,6 @@ Papildoma išsami informacija:
 <translation id="865032292777205197">judesio jutikliai</translation>
 <translation id="865255447216708819">Atgalinio spausdinimo juosta</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Anksčiau neleidote <ph name="PERMISSION" /> svetainėje <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Komercinės patalpos</translation>
 <translation id="8663226718884576429">Užsakymo suvestinė, <ph name="TOTAL_LABEL" />, daugiau informacijos</translation>
 <translation id="8663909737634214500">Optinis diskas</translation>
@@ -4022,6 +4017,7 @@ Papildoma išsami informacija:
 <translation id="8722929331701811374">Laiškinis popierius (blankas)</translation>
 <translation id="8724824364712796726">B6 vokas</translation>
 <translation id="8725066075913043281">Bandyti dar kartą</translation>
+<translation id="8725667981218437315">Fotoaparatas ir mikrofonas</translation>
 <translation id="8726549941689275341">Puslapio dydis:</translation>
 <translation id="8730621377337864115">Atlikta</translation>
 <translation id="8731268612289859741">Saugos kodas</translation>

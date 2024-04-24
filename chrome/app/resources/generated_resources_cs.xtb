@@ -1601,7 +1601,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Aktivujete funkce ladění systému ChromeOS Flex, které nastaví démona sshd a umožní spouštění z jednotek USB.</translation>
 <translation id="2178614541317717477">Ohrožení bezpečnosti certifikační autority</translation>
-<translation id="2179416702468739594">Probíhá vyhledávání dostupných profilů. V důsledku této akce můžete být na několik minut odpojeni od mobilní sítě.</translation>
 <translation id="2180620921879609685">Blokovat obsah na všech stránkách</translation>
 <translation id="2181821976797666341">Zásady</translation>
 <translation id="2182058453334755893">Zkopírováno do schránky</translation>
@@ -1654,6 +1653,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="222115440608612541">Přepnutí motivů při východu nebo západu slunce</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Nepojmenovaný zdroj médií</translation>
+<translation id="2224337661447660594">Nejste připojeni k internetu</translation>
 <translation id="2224444042887712269">Toto nastavení patří uživateli <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Upravit název složky</translation>
 <translation id="2225927550500503913">Virtuální karta je zapnutá</translation>
@@ -3105,7 +3105,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3321494112580110651">Nevidíte svou tiskárnu?</translation>
 <translation id="3321776060736518525">Zdroj: <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonus! Získáváš víc času na zařízení</translation>
-<translation id="3325804108816646710">Vyhledávání dostupných profilů…</translation>
 <translation id="3325930488268995856">Microsoft OneDrive připojen</translation>
 <translation id="3325995804968971809">Styl</translation>
 <translation id="3327050066667856415">Chromebooky kladou velký důraz na zabezpečení. Zařízení je automaticky chráněno před malwarem – nepotřebujete žádný další software.</translation>
@@ -5410,7 +5409,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5101839224773798795">Při zastavení kurzoru automaticky kliknout</translation>
 <translation id="5103311607312269661">zvýšit jas displeje</translation>
 <translation id="5106350808162641062">Odstranit</translation>
-<translation id="5106608587025903971">Místo přihlašování pomocí hesla k účtu Google můžete vytvořit heslo pro toto zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="510695978163689362">Účet <ph name="USER_EMAIL" /> je pod dohledem aplikace Family Link. Můžete si přidat školní účty, abyste pod dohledem rodičů měli přístup ke studijním materiálům.</translation>
 <translation id="5107093668001980925">Nikdy nezobrazovat <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Rozšíření vypnulo funkci Bezpečné prohlížení</translation>
@@ -7372,7 +7370,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6647690760956378579">Náhled přirozeného hlasu</translation>
 <translation id="6648911618876616409">K instalaci je připravena kritická aktualizace. Začněte tím, že se přihlásíte.</translation>
 <translation id="6649018507441623493">Chviličku…</translation>
-<translation id="6650072551060208490">Web <ph name="ORIGIN_NAME" /> chce ověřit, zda jste to vy</translation>
 <translation id="6650206238642452078">Odebírat události systému ChromeOS</translation>
 <translation id="665061930738760572">Otevřít v &amp;novém okně</translation>
 <translation id="6651237644330755633">Důvěřovat tomuto certifikátu k identifikaci webových stránek</translation>

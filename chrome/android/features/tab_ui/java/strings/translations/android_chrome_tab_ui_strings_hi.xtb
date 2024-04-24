@@ -88,6 +88,7 @@
 <translation id="6421412308143682486">{INCOGNITO_TABS_COUNT,plural, =1{अपने बंद किए गए टैब, Chrome के मुख्य मेन्यू में 'हाल ही में खोले गए टैब' पर जाकर देखे जा सकते हैं. हालांकि, गुप्त मोड में खोला गया टैब आपको यहां नहीं दिखेगा.}one{अपने बंद किए गए टैब, Chrome के मुख्य मेन्यू में 'हाल ही में खोले गए टैब' पर जाकर देखे जा सकते हैं. हालांकि, गुप्त मोड में खोला गया आपका # टैब यहां नहीं दिखेगा.}other{अपने बंद किए गए टैब, Chrome के मुख्य मेन्यू में 'हाल ही में खोले गए टैब' पर जाकर देखे जा सकते हैं. हालांकि, गुप्त मोड में खोले गए आपके # टैब यहां नहीं दिखेंगे.}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब}one{<ph name="TABS_COUNT_MANY" /> टैब}other{<ph name="TABS_COUNT_MANY" /> टैब}}</translation>
 <translation id="6549021453810473782">स्टोर की जानकारी देखें</translation>
+<translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">टैब को बाईं ओर ले जाएं</translation>
 <translation id="6615455863669487791">मुझे दिखाएं</translation>
 <translation id="661742612106409204">अपने बंद किए गए टैब, Chrome के मुख्य मेन्यू में 'हाल ही में खोले गए टैब' पर जाकर देखे जा सकते हैं.</translation>

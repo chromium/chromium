@@ -1159,7 +1159,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1845060436536902492">Skærmlæseren i ChromeOS Flex, dvs. ChromeVox, bruges primært af personer, som er blinde eller har stærkt nedsat syn, til at læse tekst, der vises på skærmen med en talesynthesizer eller en brailleskærm. Tryk på mellemrumstasten for at aktivere ChromeVox. Når ChromeVox er aktiveret, får du en hurtig gennemgang af skærmlæseren.</translation>
 <translation id="1845727111305721124">Har tilladelse til at afspille lyd</translation>
 <translation id="1846308012215045257">Hold ctrl-tasten nede, og klik for at køre <ph name="PLUGIN_NAME" /></translation>
-<translation id="1846925908122602601">opdater nu</translation>
+<translation id="1846925908122602601">opdatere nu</translation>
 <translation id="1848219224579402567">Log ud, når låget er lukket</translation>
 <translation id="184862733444771842">Forslag til ny funktion</translation>
 <translation id="1849016657376805933">Alle HID-enheder</translation>
@@ -1612,7 +1612,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Du er ved at aktivere ChromeOS Flex-fejlretningsfunktioner, som konfigurerer sshd daemon og aktiverer systemgenstart via USB-drev.</translation>
 <translation id="2178614541317717477">Sammensat nøglecenter</translation>
-<translation id="2179416702468739594">Søger efter tilgængelige profiler. Dette kan afbryde forbindelsen til dit mobilnetværk i et par minutter.</translation>
 <translation id="2180620921879609685">Bloker indhold på alle sider</translation>
 <translation id="2181821976797666341">Politikker</translation>
 <translation id="2182058453334755893">Kopieret til din udklipsholder</translation>
@@ -1665,6 +1664,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="222115440608612541">Skift tema ved solopgang og solnedgang</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Unavngiven mediekilde</translation>
+<translation id="2224337661447660594">Der er ingen internetforbindelse</translation>
 <translation id="2224444042887712269">Denne indstilling tilhører <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Rediger mappenavn</translation>
 <translation id="2225927550500503913">Virtuelt kort er aktiveret</translation>
@@ -3119,7 +3119,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3321494112580110651">Kan du ikke se din printer?</translation>
 <translation id="3321776060736518525">Fra <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Ekstra tid! Du har fået mere skærmtid</translation>
-<translation id="3325804108816646710">Søger efter tilgængelige profiler…</translation>
 <translation id="3325930488268995856">Microsoft OneDrive er forbundet</translation>
 <translation id="3325995804968971809">Stil</translation>
 <translation id="3327050066667856415">Chromebooks er udviklet med fokus på sikkerhed. Din enhed er automatisk beskyttet mod malware, uden at du skal hente ekstra software.</translation>
@@ -5426,7 +5425,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5101839224773798795">Klik automatisk, når markøren stopper</translation>
 <translation id="5103311607312269661">Skru op for skærmens lysstyrke</translation>
 <translation id="5106350808162641062">Fjern</translation>
-<translation id="5106608587025903971">I stedet for at angive adgangskoden til din Google-konto for at logge ind kan du oprette en adgangskode til <ph name="DEVICE_TYPE" /> på denne enhed</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> forældrestyres af Family Link. Du kan tilføje skolekonti for at få adgang til skoleressourcer med en forældrestyret konto.</translation>
 <translation id="5107093668001980925">Vis aldrig <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">En udvidelse har deaktiveret Beskyttet browsing</translation>
@@ -7389,7 +7387,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6647690760956378579">Eksempel på naturlig stemme</translation>
 <translation id="6648911618876616409">En vigtig opdatering er klar til at blive installeret. Log ind for at komme godt i gang.</translation>
 <translation id="6649018507441623493">Vent et øjeblik…</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ønsker, at du bekræfter din identitet</translation>
 <translation id="6650206238642452078">Abonner på ChromeOS-systemhændelser</translation>
 <translation id="665061930738760572">Åbn i &amp;nyt vindue</translation>
 <translation id="6651237644330755633">Hav tillid til dette certifikat i forbindelse med identificering af websites</translation>

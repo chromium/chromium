@@ -584,7 +584,6 @@
 <translation id="2071692954027939183">알림을 평소에 허용하지 않았기 때문에 알림이 자동으로 차단되었습니다.</translation>
 <translation id="2071852865256799872">조직에서 브라우저를 관리하고 <ph name="PROFILE_DOMAIN" />에서 프로필을 관리합니다</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> 차단 해제</translation>
-<translation id="2075497153347571252">관리자가 <ph name="ORIGIN" />에서 <ph name="PERMISSION" /> 권한을 차단했습니다.</translation>
 <translation id="2078956195623975415">음악 및 댄스 게임</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="2080021694978766903">정책의 항목이 <ph name="MAX_ITEMS_LIMIT" />개를 넘으면 안 됩니다.</translation>
@@ -2024,7 +2023,6 @@
 <translation id="4885030148564729407">신혼 여행 및 낭만적인 여행</translation>
 <translation id="4885256590493466218">결제 시 <ph name="CARD_DETAIL" /> 사용</translation>
 <translation id="4887406273302438710">Windows Hello로 비밀번호 보호</translation>
-<translation id="4890070067176768718">관리자가 <ph name="ORIGIN" />에서 <ph name="PERMISSION" /> 권한을 허용했습니다.</translation>
 <translation id="4892518386797173871">후면</translation>
 <translation id="4895019427244614047">주소 삭제</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3910,7 +3908,6 @@
 <translation id="8493948351860045254">저장 공간 확보하기</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" />에서 응답하는 데 시간이 너무 오래 걸립니다.</translation>
 <translation id="8502023382441452707">생일 및 영명 축일</translation>
-<translation id="8502972004418241366">이 사이트에서 <ph name="PERMISSION" /> 권한을 사용하려면 Chrome에 액세스 권한을 부여해야 합니다.</translation>
 <translation id="8503559462189395349">Chrome 비밀번호</translation>
 <translation id="8503813439785031346">사용자 이름</translation>
 <translation id="8504928302600319133">컴퓨터 하드웨어</translation>
@@ -3930,7 +3927,6 @@
 <translation id="853246364274116957">브로드웨이 및 뮤지컬 극장</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">차단된 URL 및 시스템 관리자가 설정한 기타 정책 목록을 확인하려면 &lt;strong&gt;chrome://policy&lt;/strong&gt;를 방문하세요.</translation>
-<translation id="8534934518812659742">Chrome에서 <ph name="PERMISSION" /> 권한이 사용 중지되었습니다.</translation>
 <translation id="8536234749087605613">봉투(창)</translation>
 <translation id="8539500321752640291">2개 권한을 허용하시겠습니까?</translation>
 <translation id="8541158209346794904">블루투스 기기</translation>
@@ -3987,7 +3983,6 @@
 <translation id="865032292777205197">움직임 감지 센서</translation>
 <translation id="865255447216708819">후면 인쇄 필름</translation>
 <translation id="8654126188050905496">55x91mm</translation>
-<translation id="8655930295668719549">이전에 <ph name="ORIGIN" />에서 <ph name="PERMISSION" /> 권한을 허용하지 않았습니다.</translation>
 <translation id="8662463432865928030">상업용 부동산</translation>
 <translation id="8663226718884576429">주문 요약, <ph name="TOTAL_LABEL" />, 세부정보 더보기</translation>
 <translation id="8663909737634214500">광학 디스크</translation>
@@ -4019,6 +4014,7 @@
 <translation id="8722929331701811374">편지지(레터헤드)</translation>
 <translation id="8724824364712796726">봉투 B6</translation>
 <translation id="8725066075913043281">다시 시도하기</translation>
+<translation id="8725667981218437315">카메라 및 마이크</translation>
 <translation id="8726549941689275341">페이지 크기:</translation>
 <translation id="8730621377337864115">완료</translation>
 <translation id="8731268612289859741">보안 코드</translation>

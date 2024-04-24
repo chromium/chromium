@@ -785,7 +785,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5099845111805573968">Una volta selezionato il sito desktop, l'impostazione viene applicata al sito ogni volta che lo visiti</translation>
 <translation id="5102401324271069229">Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chrome potrebbe inviare gli URL, inclusi frammenti dei contenuti delle pagine, a Navigazione sicura</translation>
 <translation id="510275257476243843">1 ora rimanente</translation>
-<translation id="5114895953710637392">Il foglio per filtrare per app è chiuso.</translation>
+<translation id="5114895953710637392">Il foglio di filtro delle app è chiuso.</translation>
 <translation id="5115811374190515607">in <ph name="PRODUCT_NAME" /></translation>
 <translation id="5118713593561876160">Interessi</translation>
 <translation id="5122378528687922675">Se hai bisogno di aiuto, rivolgiti al tuo genitore (<ph name="PARENT_NAME_1" /> o <ph name="PARENT_NAME_2" />)</translation>
@@ -1135,7 +1135,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="685850645784703949">Discover di Google - disattivato</translation>
 <translation id="686366188661646310">Vuoi eliminare la password?</translation>
 <translation id="6864459304226931083">Scarica immagine</translation>
-<translation id="686490460830618322">Foglio per filtrare per app</translation>
+<translation id="686490460830618322">Foglio di filtro delle app</translation>
 <translation id="6865313869410766144">Dati della compilazione automatica dei moduli</translation>
 <translation id="6867400383614725881">Nuova scheda di navigazione in incognito</translation>
 <translation id="6869056123412990582">computer</translation>
@@ -1203,7 +1203,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7177466738963138057">Puoi cambiarlo in un secondo momento nelle Impostazioni</translation>
 <translation id="7177873915659574692">Impossibile creare il codice QR. L'URL contiene più di <ph name="CHARACTER_LIMIT" /> caratteri.</translation>
 <translation id="7180611975245234373">Aggiorna</translation>
-<translation id="7183517696921903380">Il foglio per filtrare per app è aperto.</translation>
+<translation id="7183517696921903380">Il foglio di filtro delle app è aperto.</translation>
 <translation id="7183693674623539380">Gruppo di schede - <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7186568385131859684">Controlla il modo in cui la cronologia di navigazione viene utilizzata con gli altri dati sui servizi Google</translation>
 <translation id="7187993566681480880">Ti protegge su Chrome e potrebbe essere utilizzata per migliorare la sicurezza su altre app Google se esegui l'accesso.</translation>
@@ -1329,7 +1329,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7780645209293383778">Se hai eseguito l'accesso, collega temporaneamente questi dati al tuo Account Google per proteggerti nelle app Google</translation>
 <translation id="7791543448312431591">Aggiungi</translation>
 <translation id="7798392620021911922"><ph name="TAB_COUNT" /> schede ripristinate</translation>
-<translation id="780287761701992588">Trovare i preferiti, le password e altri dati su tutti i dispositivi</translation>
+<translation id="780287761701992588">Trova i preferiti, le password e altri dati su tutti i dispositivi</translation>
 <translation id="780301667611848630">No grazie</translation>
 <translation id="7808889146555843082">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="SITE" />. Cambia la password o elimina il tuo account su <ph name="SITE" /> per proteggerlo dagli altri.</translation>
 <translation id="7810647596859435254">Apri con…</translation>

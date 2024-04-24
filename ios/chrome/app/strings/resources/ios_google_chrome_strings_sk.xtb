@@ -116,10 +116,12 @@
 <translation id="417201473131094001">Nepodporované vo verzii Chrome Canary</translation>
 <translation id="424864128008805179">Odhlásiť sa z Chromu?</translation>
 <translation id="4251174643044751591">Otvorí stránku nastavení spôsobov platby v Chrome.</translation>
+<translation id="4286914711740227883">Odstrániť dáta prehliadania v Chrome</translation>
 <translation id="4453284704333523777">Spravovať Nastavenia Chromu</translation>
 <translation id="4523886039239821078">Niektoré doplnky spôsobujú zlyhanie prehliadača Chrome. Odinštalujte ich.</translation>
 <translation id="4633328489441962921">Chrome nemôže skontrolovať dostupnosť aktualizácií</translation>
 <translation id="4636900170638246267">Prihláste sa na tomto webe a v Chrome.</translation>
+<translation id="4742795653798179840">Dáta Chromu boli odstránené</translation>
 <translation id="4761869838909035636">Spustiť kontrolu bezpečnosti Chromu</translation>
 <translation id="4798859546468762093">Ak chcete mať k dispozícii prispôsobenie a ďalšie funkcie, zahrňte Chrome do funkcií <ph name="FEATURE_NAME_1" /> a <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4819268619367838612">Chrome odosiela údaje o používaní a pádoch Googlu, čím pomáha so svojím zlepšovaním. <ph name="BEGIN_LINK" />Spravovať<ph name="END_LINK" /></translation>
@@ -130,6 +132,7 @@
 <translation id="4840404732697892756">Správca hesiel môže kontrolovať heslá, keď sa prihlásite účtom Google.</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome vám môže pomôcť sledovať túto zásielku na stránke na novej karte.}few{Chrome vám môže pomôcť sledovať tieto zásielky na stránke na novej karte.}many{Chrome can help you track these packages on the New Tab Page.}other{Chrome vám môže pomôcť sledovať tieto zásielky na stránke na novej karte.}}</translation>
 <translation id="4903674399067644695">Na tejto karte sa vám zobrazujú návrhy, ako využívať Chrome naplno.</translation>
+<translation id="4919069428879420545">Odstráňte dáta prehliadania v Chrome.</translation>
 <translation id="49200511069271369">Vaša organizácia <ph name="DOMAIN" /> spravuje účet, do ktorého sa prihlasujete, a spôsob, akým sa dá Chrome používať. Váš správca môže nastaviť alebo obmedziť určité funkcie.</translation>
 <translation id="498985224078955265">Ak chcete túto kartu odoslať do iného zariadenia, prihláste sa v oboch zariadeniach do Chromu.</translation>
 <translation id="5030102366287574140">Chrome vás môže chrániť pred porušeniami ochrany údajov, nebezpečnými webmi a ďalšími hrozbami.</translation>

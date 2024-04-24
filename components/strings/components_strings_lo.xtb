@@ -586,7 +586,6 @@
 <translation id="2071692954027939183">ການແຈ້ງເຕືອນຖືກບລັອກໄວ້ອັດຕະໂນມັດເນື່ອງຈາກທ່ານບໍ່ອະນຸຍາດພວກມັນ</translation>
 <translation id="2071852865256799872">ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຖືກຈັດການໂດຍອົງການຂອງທ່ານ ແລະ ໂປຣໄຟລ໌ຂອງທ່ານຖືກຈັດການໂດຍ <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">ຍົກເລີກການບລັອກ <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ບລັອກ <ph name="PERMISSION" /> ຢູ່ <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">ເກມເພງ ແລະ ເກມເຕັ້ນ</translation>
 <translation id="2079545284768500474">ບໍ່ເຮັດ</translation>
 <translation id="2080021694978766903">ນະໂຍບາຍນີ້ຕ້ອງມີຂໍ້ມູນບໍ່ເກີນ <ph name="MAX_ITEMS_LIMIT" /> ລາຍການ.</translation>
@@ -2029,7 +2028,6 @@
 <translation id="4885030148564729407">ສະຖານທີ່ຮັນນິມູນ ແລະ ສະຖານທີ່ທ່ຽວໂຣແມນຕິກ</translation>
 <translation id="4885256590493466218">ຈ່າຍດ້ວຍ <ph name="CARD_DETAIL" /> ຢູ່ຈຸດຈ່າຍເງິນ</translation>
 <translation id="4887406273302438710">ປົກປ້ອງລະຫັດຜ່ານດ້ວຍ Windows Hello</translation>
-<translation id="4890070067176768718">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ອະນຸຍາດ <ph name="PERMISSION" /> ຢູ່ <ph name="ORIGIN" /></translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດ Tab ຈາກນັ້ນກົດ Enter ເພື່ອລຶບປະຫວັດການທ່ອງເວັບ, ຄຸກກີ້, ແຄສ ແລະ ອື່ນໆຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="4892518386797173871">ຫຼັງ</translation>
 <translation id="4895019427244614047">ລຶບທີ່ຢູ່</translation>
@@ -3921,7 +3919,6 @@
 <translation id="8493948351860045254">ຂະຫຍາຍພື້ນທີ່ຫວ່າງ</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ໃຊ້ເວລາດົນເກີນໄປໃນການຕອບສະໜອງ.</translation>
 <translation id="8502023382441452707">ວັນເກີດ ແລະ ວັນຕັ້ງຊື່</translation>
-<translation id="8502972004418241366">ເພື່ອໃຊ້ <ph name="PERMISSION" /> ຂອງທ່ານຢູ່ເວັບໄຊນີ້, ທ່ານຈະຕ້ອງມອບສິດເຂົ້າເຖິງໃຫ້ Chrome ກ່ອນ</translation>
 <translation id="8503559462189395349">ລະຫັດຜ່ານຂອງ Chrome</translation>
 <translation id="8503813439785031346">ຊື່​ຜູ້​ໃຊ້</translation>
 <translation id="8504928302600319133">ຮາດແວຄອມພິວເຕີ</translation>
@@ -3941,7 +3938,6 @@
 <translation id="853246364274116957">ໂຮງລະຄອນໂບຣດເວ ແລະ ດົນຕີ</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ເຂົ້າຫາ &lt;strong&gt;chrome://policy&lt;/strong&gt; ເພື່ອເບິ່ງລາຍຊື່ຂອງ URL ທີ່ຖືກບລັອກໄວ້ ແລະ ນະໂຍບາຍອື່ນທີ່ຜູ້ຄວບຄຸມລະບົບຂອງທ່ານບັງຄັບໃຊ້.</translation>
-<translation id="8534934518812659742">ທ່ານໄດ້ປິດ <ph name="PERMISSION" /> ສຳລັບ Chrome ໄວ້ແລ້ວ.</translation>
 <translation id="8536234749087605613">ຊອງ (ມີຊ່ອງໃສຢູ່ທາງໜ້າ)</translation>
 <translation id="8539500321752640291">ອະນຸຍາດ 2 ຢ່າງບໍ?</translation>
 <translation id="8541158209346794904">ອຸປະກອນ Bluetooth</translation>
@@ -3998,7 +3994,6 @@
 <translation id="865032292777205197">ເຊັນກວດຈັບການເຄື່ອນໄຫວ</translation>
 <translation id="865255447216708819">ຟີມພິມທາງຫຼັງ</translation>
 <translation id="8654126188050905496">55 x 91 ມມ</translation>
-<translation id="8655930295668719549">ກ່ອນໜ້ານີ້ທ່ານບໍ່ອະນຸຍາດ <ph name="PERMISSION" /> ຢູ່ <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">ອາຄານທາງການຄ້າ</translation>
 <translation id="8663226718884576429">ສັງຮວມຄຳສັ່ງຊື້, <ph name="TOTAL_LABEL" />, ລາຍລະອຽດເພີ່ມເຕີມ</translation>
 <translation id="8663909737634214500">ອັອບຕິຄອລດິສ</translation>
@@ -4031,6 +4026,7 @@
 <translation id="8722929331701811374">ເຈ້ຍຈົດໝາຍ (ຫົວຈົດໝາຍ)</translation>
 <translation id="8724824364712796726">Envelope B6</translation>
 <translation id="8725066075913043281">ລອງໃໝ່ອີກ</translation>
+<translation id="8725667981218437315">ກ້ອງ​ຖ່າຍ​ຮູບ ​ແລະໄມໂຄຣໂຟນ</translation>
 <translation id="8726549941689275341">ຂະຫນາດຫນ້າ:</translation>
 <translation id="8730621377337864115">ສໍາເລັດ</translation>
 <translation id="8731268612289859741">ລະຫັດຄວາມປອດໄພ</translation>

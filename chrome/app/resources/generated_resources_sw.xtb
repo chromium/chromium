@@ -1607,7 +1607,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Unawasha vipengele vya utatuzi vya ChromeOS Flex ambavyo vitaweka mipangilio ya sshd daemon na kuruhusu uwashe kutoka kwenye Hifadhi za USB.</translation>
 <translation id="2178614541317717477">Kuvurugwa kwa Mamlaka ya Cheti</translation>
-<translation id="2179416702468739594">Inatafuta wasifu unaopatikana. Huenda hatua hii ikasababisha mtandao wako wa simu ukatike kwa dakika kadhaa.</translation>
 <translation id="2180620921879609685">Kuzuia maudhui kwenye ukurasa wowote</translation>
 <translation id="2181821976797666341">Sera</translation>
 <translation id="2182058453334755893">Yamenakiliwa kwenye Ubao wa Kunakili</translation>
@@ -1660,6 +1659,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="222115440608612541">Hubadilisha mandhari wakati wa mawio na machweo</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Chanzo cha maudhui kisicho na jina</translation>
+<translation id="2224337661447660594">Hakuna intaneti</translation>
 <translation id="2224444042887712269">Mipangilio hii ni ya <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Badilisha jina la folda</translation>
 <translation id="2225927550500503913">Kadi pepe imewashwa</translation>
@@ -3115,7 +3115,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3321494112580110651">Huoni printa yako?</translation>
 <translation id="3321776060736518525">Kuanzia <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonasi! Umeongezewa muda wa kutumia kifaa</translation>
-<translation id="3325804108816646710">Inatafuta wasifu unaopatikana...</translation>
 <translation id="3325930488268995856">Microsoft OneDrive imeunganishwa</translation>
 <translation id="3325995804968971809">Muundo</translation>
 <translation id="3327050066667856415">Chromebook zimebuniwa kuimarisha usalama. Kifaa chako kimelindwa kiotomatiki dhidi ya programu hasidi – huhitaji programu ya ziada.</translation>
@@ -5420,7 +5419,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5101839224773798795">Bofya kiotomatiki kiteuzi kinaposimama</translation>
 <translation id="5103311607312269661">kuongeza mwangaza wa skrini</translation>
 <translation id="5106350808162641062">Ondoa</translation>
-<translation id="5106608587025903971">Badala ya kuweka nenosiri la Akaunti yako ya Google ili uingie katika akaunti, unaweza kuunda nenosiri la <ph name="DEVICE_TYPE" /> ulitumie katika kifaa hiki</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> inadhibitiwa kwa kutumia Family Link. Unaweza kuongeza akaunti za shule zitakazotumiwa kufikia nyenzo za shule kwa usimamizi wa wazazi.</translation>
 <translation id="5107093668001980925">Kamwe usionyeshe <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Kiendelezi kimezima kipengele cha Kuvinjari Salama</translation>
@@ -7381,7 +7379,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6647690760956378579">Kagua kwanza sauti ya kawaida</translation>
 <translation id="6648911618876616409">Sasisho muhimu liko tayari kusakinishwa. Ingia katika akaunti ili usakinishe.</translation>
 <translation id="6649018507441623493">Subiri kidogo...</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ingependa kuthibitisha kwamba ni wewe</translation>
 <translation id="6650206238642452078">Jisajili kwenye matukio ya mfumo wa ChromeOS</translation>
 <translation id="665061930738760572">Fungua katika &amp;Dirisha Jipya</translation>
 <translation id="6651237644330755633">Amini cheti hiki kwa ajili ya kutambua tovuti</translation>

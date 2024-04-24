@@ -32,6 +32,7 @@
 <translation id="2175927920773552910">QR Code</translation>
 <translation id="2244252133441425811">I-enable ang tagapili ng FPS ng video</translation>
 <translation id="2271433936731426666">I-enable ang full-sized na snapshot ng video</translation>
+<translation id="2281736597583450397">Makakuha ng mas malilinaw na detalye gamit ang pinahusay na pag-zoom</translation>
 <translation id="2320741269052147773">Mag-pan sa kaliwa</translation>
 <translation id="2360840973209616515">Pinapamahalaan ng iyong administrator ang camera app.
         Para sa mga detalye, makipag-ugnayan sa administrator.</translation>
@@ -118,6 +119,7 @@
 Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng halimbawang larawan o video at ilarawan kung ano ang mali rito. (Halimbawa, masyadong madilim ang larawan o hindi naka-focus ang paksa.)</translation>
 <translation id="6519884562954018934">Sumali sa <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Ibahagi</translation>
+<translation id="6586509689874700895">Una, pindutin ang <ph name="BUTTON_NAME" /> para mag-zoom in. Pagkatapos mong kumuha ng larawan, makikita mo ang mas malilinaw na detalye.</translation>
 <translation id="6617916774429601017">Ipakita ang lahat ng resolution</translation>
 <translation id="6631515515009660915">Naka-off ang Mirror</translation>
 <translation id="6652737148136672975">Ilipat ang sulok na posisyon gamit ang mga arrow key</translation>

@@ -102,6 +102,7 @@
 <translation id="152234381334907219">Contraseñas que nunca se guardan</translation>
 <translation id="1523341279170789507">Permitir todas las cookies</translation>
 <translation id="1524563461097350801">No, gracias</translation>
+<translation id="1539173178539798367">Ocultar la opción Eliminar datos de navegación</translation>
 <translation id="1540800554400757039">Dirección 1</translation>
 <translation id="1545749641540134597">Escanea el código QR</translation>
 <translation id="1552525382687785070">El administrador ha inhabilitado la sincronización</translation>
@@ -320,6 +321,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 
 Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador para eliminar tu historial de búsqueda (si corresponde).</translation>
 <translation id="2697526135132990015">Cerrar sesión y borrar datos</translation>
+<translation id="269819437389494246">Puedes ver las páginas que has visitado o eliminarlas de tu historial</translation>
 <translation id="2700241355396984822">Opciones para configurar permisos</translation>
 <translation id="2702801445560668637">Lista de lectura</translation>
 <translation id="2704606927547763573">Copiado</translation>
@@ -393,6 +395,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="3039722182465315531">No iniciar sesión</translation>
 <translation id="3053332585453689122">Envía las URLs que visitas y una pequeña muestra del contenido de la página, de las descargas, de la actividad de las extensiones y de la información del sistema a Navegación segura de Google para comprobar si son dañinas.</translation>
 <translation id="3054631738875941048">Ocultar Añadir a lista de lectura</translation>
+<translation id="3064295814838126921">Eliminando datos de navegación...</translation>
 <translation id="3074499504015191586">Traducir página completa</translation>
 <translation id="3076846064362030967">No se cerrará la sesión de tu cuenta de Google. Es posible que <ph name="BEGIN_LINK" />otras formas de actividad<ph name="END_LINK" /> se guarden en tu cuenta de Google si has iniciado sesión. Puedes eliminarlas cuando quieras.
 
@@ -858,6 +861,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="5490005495580364134">Bloquear todas las cookies (no recomendado)</translation>
 <translation id="5497202150450073388">Intento de entrega. Se volverá a intentar.</translation>
 <translation id="5511959326926949696">Protección opcional extrema para tu navegador. Solo se debe usar si crees que es posible que sufras un ciberataque muy sofisticado.</translation>
+<translation id="5512759250809559631">Menú → Historial → Eliminar datos de navegación</translation>
 <translation id="5513681519188741830">Hace <ph name="TIME" /> h</translation>
 <translation id="5525269841082836315">Crear frase de contraseña</translation>
 <translation id="553151287733286479">{COUNT,plural, =1{{COUNT} contraseña poco segura}other{{COUNT} contraseñas poco seguras}}</translation>
@@ -933,6 +937,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="5859715514067755465">Avanzar</translation>
 <translation id="5860033963881614850">Desactivado</translation>
 <translation id="5860491529813859533">Activar</translation>
+<translation id="5889333064153755823">Eliminar datos de navegación</translation>
 <translation id="5896576662943111387">Diseñado para iOS</translation>
 <translation id="5897749768294722429">Para volver rápidamente a los sitios que has visitado, sincroniza tus pestañas y tu historial.</translation>
 <translation id="5897956970858271241">Ir al enlace copiado</translation>
@@ -1030,6 +1035,7 @@ Handoff también debe estar habilitado en la sección General de Configuración,
 <translation id="6346549652287021269">¿Quieres iniciar una nueva descarga?</translation>
 <translation id="6347953390226388422">{count,plural, =1{Esta dirección se eliminará de tu cuenta de Google (<ph name="USER_EMAIL" />) y de este dispositivo.}other{Estas direcciones se eliminarán de tu cuenta de Google (<ph name="USER_EMAIL" />) y de este dispositivo.}}</translation>
 <translation id="634878792104344809">Sincroniza tus contraseñas, tu historial y mucho más en todos tus dispositivos</translation>
+<translation id="6351658970066645919">Eliminar datos de navegación</translation>
 <translation id="63519665078626091">Para usar el inspector web, conéctate a Safari en tu ordenador mediante un cable y accede a tu iPad desde el menú Desarrollo. Puedes habilitar el menú Desarrollo en la sección Avanzado de los ajustes de Safari de tu ordenador.</translation>
 <translation id="6355820205320395730">Las contraseñas poco seguras son fáciles de adivinar. Asegúrate de que tus contraseñas sean seguras. <ph name="BEGIN_LINK" />Consulta más consejos sobre seguridad<ph name="END_LINK" />.</translation>
 <translation id="6361681885917591592">Hecho</translation>
@@ -1151,6 +1157,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="687135068089457384">Mostrar configuración</translation>
 <translation id="6873263987691478642">Vista dividida</translation>
 <translation id="6882836635272038266">Protección estándar frente a descargas, extensiones y sitios web que se sabe que son peligrosos.</translation>
+<translation id="6887173972066406796">Confirmar eliminación de datos de navegación</translation>
 <translation id="6888009575607455378">¿Seguro que quieres descartar los cambios?</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897187120838603299">Tu contraseña se guardará en tu dispositivo.</translation>
@@ -1345,6 +1352,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7930998711684428189">Te avisa si tus contraseñas se ven expuestas en una brecha de seguridad de datos.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar contraseñas...</translation>
+<translation id="7939856641500914040">Eliminar datos de navegación...</translation>
 <translation id="794799177247607889">Detener registro</translation>
 <translation id="7959441099968534758">IR AL FEED</translation>
 <translation id="7961015016161918242">Nunca</translation>

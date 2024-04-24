@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">Introduza um endereço de email que não esteja vazio.</translation>
 <translation id="1758486001363313524">Outra...</translation>
 <translation id="1787192514241997742">tempo total: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">Permitir câmara</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">reproduzir no dispositivo remoto</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">passo atual</translation>
 <translation id="3321030238473337787">Velocidade de reprodução</translation>
 <translation id="3329013043687509092">Saturação</translation>
-<translation id="3377518164566272702">Permitir microfone e câmara</translation>
 <translation id="3450233048674729344">O valor tem de ser inferior ou igual a <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Sair de ecrã no ecrã</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">Outra...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, a partir de <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Ecrã no ecrã</translation>
-<translation id="918430632320614861">Permitir microfone</translation>
 <translation id="945780513535800434">Parcialmente selecionada</translation>
 <translation id="954003015749068518">entrar no modo ecrã no ecrã</translation>
 </translationbundle>

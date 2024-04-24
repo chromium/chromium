@@ -586,7 +586,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2071692954027939183">Awtomatikong na-block ang mga notification dahil karaniwang hindi mo pinapayagan ang mga ito</translation>
 <translation id="2071852865256799872">Ang iyong browser ay pinapamahalaan ng iyong organisasyon at ang iyong profile ay pinapamahalaan ng <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">I-unblock ang <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Na-block ng iyong administrator ang <ph name="PERMISSION" /> sa <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Mga Laro sa Musika at Pagsayaw</translation>
 <translation id="2079545284768500474">I-undo</translation>
 <translation id="2080021694978766903">Hindi dapat magkaroon ng higit sa <ph name="MAX_ITEMS_LIMIT" /> (na) entry ang patakarang ito.</translation>
@@ -937,6 +936,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2759825833388495838">ilagay ang iyong password sa <ph name="APP_NAME" /></translation>
 <translation id="2764001903315068341">Komiks</translation>
 <translation id="2765217105034171413">Maliit</translation>
+<translation id="2768397283109119044">Sinubukan mong pumunta sa <ph name="DOMAIN" />, pero nagpakita ang server ng invalid na certificate na ibinigay sa pangalang iyon. Nakareserbang IP address o internal na hostname ang pangalan.</translation>
 <translation id="2770159525358613612">Subukang i-upload ulit ang iyong mga file</translation>
 <translation id="277133753123645258">Paraan ng pagpapadala</translation>
 <translation id="2773388851563527404">Nililimitahan ng Chrome ang karamihan ng mga site sa paggamit ng third-party na cookies. Pero pinapayagan ang third-party na cookies sa site na ito dahil umaasa ito sa mga ito para makapagbigay ng mga pangunahing serbisyo. Bisitahin ang mga setting para <ph name="LINK" />.</translation>
@@ -1719,6 +1719,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4265872034478892965">Pinayagan ng iyong administrator</translation>
 <translation id="4269029136757623689">Mga Bentilador sa Bahay</translation>
 <translation id="4269264543938335308">Kasuotang Panlangoy</translation>
+<translation id="4269599248168651462">Ibinibigay ang certificate ng server sa isang non-unique na pangalan.</translation>
 <translation id="4270541775497538019">Stacker 6</translation>
 <translation id="4275830172053184480">I-restart ang iyong device</translation>
 <translation id="4276974990916607331">Huwag na lang</translation>
@@ -2027,7 +2028,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4885030148564729407">Mga Honeymoon at Romantikong Bakasyon</translation>
 <translation id="4885256590493466218">Magbayad gamit ang <ph name="CARD_DETAIL" /> sa pag-checkout</translation>
 <translation id="4887406273302438710">Protektahan ang mga password gamit ang Windows Hello</translation>
-<translation id="4890070067176768718">Pinayagan ng iyong administrator ang <ph name="PERMISSION" /> sa <ph name="ORIGIN" /></translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para i-delete ang iyong history ng pag-browse, cookies, cache, at higit pa sa mga setting ng Chrome</translation>
 <translation id="4892518386797173871">Likod</translation>
 <translation id="4895019427244614047">I-delete ang address</translation>
@@ -3919,7 +3919,6 @@ Mga karagdagang detalye:
 <translation id="8493948351860045254">Magbakante ng espasyo</translation>
 <translation id="8498891568109133222">Masyadong matagal bago nakatugon ang <ph name="HOST_NAME" />.</translation>
 <translation id="8502023382441452707">Mga Kaarawan at Name Day</translation>
-<translation id="8502972004418241366">Para gamitin ang iyong <ph name="PERMISSION" /> sa site na ito, kailangan mong bigyan ng access ang Chrome</translation>
 <translation id="8503559462189395349">Mga Password sa Chrome</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="8504928302600319133">Hardware ng Computer</translation>
@@ -3939,7 +3938,6 @@ Mga karagdagang detalye:
 <translation id="853246364274116957">Broadway at Musical Theater</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Bisitahin ang &lt;strong&gt;chrome://policy&lt;/strong&gt; para makita ang listahan ng mga naka-block na URL at ang iba pang patakarang ipinapatupad ng iyong system administrator.</translation>
-<translation id="8534934518812659742">Ini-off mo ang <ph name="PERMISSION" /> para sa Chrome.</translation>
 <translation id="8536234749087605613">Envelope (Window)</translation>
 <translation id="8539500321752640291">Payagan ang 2 pahintulot?</translation>
 <translation id="8541158209346794904">Bluetooth device</translation>
@@ -3996,7 +3994,6 @@ Mga karagdagang detalye:
 <translation id="865032292777205197">mga sensor ng paggalaw</translation>
 <translation id="865255447216708819">Back Print Film</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Hindi mo pinayagan dati ang <ph name="PERMISSION" /> sa <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Mga Komersyal na Ari-arian</translation>
 <translation id="8663226718884576429">Buod ng Order, <ph name="TOTAL_LABEL" />, Higit pang Detalye</translation>
 <translation id="8663909737634214500">Optical Disc</translation>
@@ -4029,6 +4026,7 @@ Mga karagdagang detalye:
 <translation id="8722929331701811374">Stationery (Letterhead)</translation>
 <translation id="8724824364712796726">Envelope B6</translation>
 <translation id="8725066075913043281">Muling subukan</translation>
+<translation id="8725667981218437315">Camera at mikropono</translation>
 <translation id="8726549941689275341">Laki ng page:</translation>
 <translation id="8730621377337864115">Tapos na</translation>
 <translation id="8731268612289859741">Panseguridad na code</translation>
@@ -4127,6 +4125,7 @@ Mga karagdagang detalye:
 <translation id="8919740778133505789">Mga Sports Car</translation>
 <translation id="8919895429178014996">I-hide ang lahat ng item</translation>
 <translation id="8922013791253848639">Palaging payagan ang mga ad sa site na ito</translation>
+<translation id="8924109546403192898">Kapag na-flag ng Chrome ang mga event tungkol sa seguridad, ipapadala sa iyong administrator ang nauugnay na data tungkol sa mga event. Puwedeng kabilang dito ang mga URL ng mga page na binibisita mo sa Chrome, URL ng mga page kung saan ka kumopya ng data, pangalan ng file o metadata, pag-crash ng browser o tab, at ang username na ginagamit mo para mag-sign in sa mga web-based na application, iyong device, at Chrome.</translation>
 <translation id="892588693504540538">Punch top right</translation>
 <translation id="8926389886865778422">Huwag nang itanong ulit</translation>
 <translation id="8932102934695377596">Nahuhuli ang iyong orasan</translation>

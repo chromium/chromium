@@ -830,6 +830,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1611432201750675208">Vaš uređaj je zaključan</translation>
 <translation id="1611649489706141841">prosljeđivanje</translation>
 <translation id="1612019740169791082">Vaš spremnik nije konfiguriran da podrži promjenu veličine diska. Da podesite količinu prostora koja je rezervirana za Linux, napravite sigurnosnu kopiju, a zatim je vratite u novi spremnik.</translation>
+<translation id="1612179176000108678">Uključi samo kad je baterija na <ph name="PERCENT" />% ili niže</translation>
 <translation id="1613019471223620622">Prikazivanje lozinke za korisnika <ph name="USERNAME" /> na domeni <ph name="DOMAIN" /></translation>
 <translation id="1613149688105334014">Stare verzije Chromeovih aplikacija se neće moći otvarati nakon decembra 2022. Možete provjeriti je li dostupna nova verzija.</translation>
 <translation id="1614511179807650956">Moguće je da ste iskoristili ograničenje prijenosa podataka na mobilnoj mreži. Posjetite portal za aktivaciju <ph name="NAME" /> da kupite još prijenosa podataka</translation>
@@ -1614,7 +1615,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Omogućujete funkcije za otklanjanje grešaka na ChromeOS Flexu kojim će se postaviti sshd daemon i omogućiti pokretanje sistema s USB diskova.</translation>
 <translation id="2178614541317717477">CA je kompromitiran</translation>
-<translation id="2179416702468739594">Traženje dostupnih profila. Zbog toga možete izgubiti vezu s mobilnom mrežom na nekoliko minuta.</translation>
 <translation id="2180620921879609685">blokirati sadržaj na bilo kojoj stranici</translation>
 <translation id="2181821976797666341">Pravila</translation>
 <translation id="2182058453334755893">Kopirano u međumemoriju</translation>
@@ -1668,6 +1668,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="222115440608612541">Mijenjajte teme u svitanje i sumrak</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Neimenovani izvor medijskog sadržaja</translation>
+<translation id="2224337661447660594">Nema internetske veze</translation>
 <translation id="2224444042887712269">Vlasnik ove postavke je <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Uređivanje naziva foldera</translation>
 <translation id="2225927550500503913">Virtuelna kartica je uključena</translation>
@@ -3131,7 +3132,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3321494112580110651">Štampač vam nije prikazan?</translation>
 <translation id="3321776060736518525">S web lokacije <ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">Bonus! Vrijeme korištenja uređaja ti je produženo</translation>
-<translation id="3325804108816646710">Traženje dostupnih profila...</translation>
 <translation id="3325930488268995856">Microsoft OneDrive je povezan</translation>
 <translation id="3325995804968971809">Stil</translation>
 <translation id="3327050066667856415">Chromebook računari su dizajnirani da budu sigurni. Vaš uređaj je automatski zaštićen od zlonamjernog softvera i nije potreban dodatni softver.</translation>
@@ -3920,6 +3920,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="39103738135459590">Kôd za aktivaciju</translation>
 <translation id="3910588685973519483">Kreirajte pozadinske slike pomoću AI-ja</translation>
 <translation id="3911824782900911339">Stranica nove kartice</translation>
+<translation id="3913689539406883376">Uključi kada je računalo isključeno</translation>
 <translation id="3914173277599553213">Obavezno</translation>
 <translation id="3914568430265141791">Otvaranje foldera <ph name="FOLDER_TITLE" /></translation>
 <translation id="3915280005470252504">Pretražujte glasom</translation>
@@ -5448,7 +5449,6 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5101839224773798795">Automatski klikni kada se kursor zaustavi</translation>
 <translation id="5103311607312269661">pojačavanje osvijetljenosti ekrana</translation>
 <translation id="5106350808162641062">Ukloni</translation>
-<translation id="5106608587025903971">Umjesto prijave unosom lozinke za Google račun, možete kreirati lozinku za uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="510695978163689362">Family Link upravlja računom <ph name="USER_EMAIL" />. Možeš dodati školske račune da pristupiš školskim izvorima uz roditeljski nadzor.</translation>
 <translation id="5107093668001980925">Nikad ne prikazuj: <ph name="MODULE_NAME" /></translation>
 <translation id="5107443654503185812">Ekstenzija je isključila Sigurno pregledanje</translation>
@@ -7432,7 +7432,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6647690760956378579">Pregled prirodnog glasa</translation>
 <translation id="6648911618876616409">Važno ažuriranje je spremno za instaliranje. Prijavite se za pokretanje.</translation>
 <translation id="6649018507441623493">Samo trenutak...</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> želi potvrditi vaš identitet</translation>
 <translation id="6650206238642452078">Pretplatite se za događaje sistema ChromeOS</translation>
 <translation id="665061930738760572">Otvori u &amp;novom prozoru</translation>
 <translation id="6651237644330755633">Vjeruj ovoj potvrdi za identifikaciju web lokacija</translation>
@@ -9032,7 +9031,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7853999103056713222">Koristite sigurniju lozinku</translation>
 <translation id="7855678561139483478">Premjesti karticu u novi prozor</translation>
 <translation id="7857004848504343806">Računar sadržava sigurnosni modul koji se koristi za primjenu mnogih ključnih sigurnosnih funkcija u ChromeOS Flexu. Posjetite Chromebookov centar za pomoć da saznate više: https://support.google.com/chromebook/?p=sm</translation>
-<translation id="7857093393627376423">Prijedlozi teksta</translation>
+<translation id="7857093393627376423">Prijedlozi za odabir riječi</translation>
 <translation id="7858120906780498731">Povezani ulazni uređaji ChromeOS-a</translation>
 <translation id="7858328180167661092"><ph name="APP_NAME" /> (Windows)</translation>
 <translation id="7859560813397128941">Uklanjanje ekstenzije <ph name="EXTENSION_NAME" /></translation>
@@ -9189,6 +9188,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7966571622054096916">{COUNT,plural, =1{1 stavka na listi s oznakama}one{{COUNT} stavka na listi s oznakama}few{{COUNT} stavke na listi s oznakama}other{{COUNT} stavki na listi s oznakama}}</translation>
 <translation id="7967776604158229756">Više postavki i odobrenja za web aplikaciju</translation>
 <translation id="7968072247663421402">Opcije pružaoca</translation>
+<translation id="7968576769959093306">Preuzimanje glasova...</translation>
 <translation id="7968742106503422125">Čitajte i mijenjajte podatke koje kopirate i lijepite</translation>
 <translation id="7968833647796919681">Omogući prikupljanje podataka o performansama</translation>
 <translation id="7968982339740310781">Prikaži detalje</translation>

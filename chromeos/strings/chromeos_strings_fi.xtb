@@ -1056,7 +1056,7 @@
           Valitse "Kaipaan inspiraatiota", jos haluat nähdä yksilöllisempiä ja monipuolisempia AI-kuvavaihtoehtoja.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          Kun käytät tekoälyä, kehote lähetetään Googlen tekoälypalvelimille kuvien luomiseksi ja tuotteen parantamiseksi <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googlen tietosuojakäytännön<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> mukaisesti.
+          Kun käytät tekoälyä, kehote lähetetään Googlen tekoälypalvelimille ja sitä käytetään kuvien luomiseen ja tuotteen parantamiseen <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googlen tietosuojakäytännön<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> mukaisesti.
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           Generatiivinen tekoäly on kokeellinen ja se on vielä kehitysvaiheessa, ja sen saatavuus on tällä hetkellä rajoitettu.</translation>

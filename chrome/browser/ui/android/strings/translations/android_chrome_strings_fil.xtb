@@ -36,6 +36,7 @@
 <translation id="1181037720776840403">Alisin</translation>
 <translation id="1181366777303791449">sa <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183189057400844278">Para matiyak na magagamit mo sa anumang oras ang mga password sa iyong Google Account, i-verify na ikaw ito</translation>
+<translation id="1187810343066461819">Mag-delete din ng mga bookmark, history, at higit pa sa kotseng ito</translation>
 <translation id="1193729455103054076">Gumamit ng malakas na password?</translation>
 <translation id="1197267115302279827">Ilipat ang mga bookmark</translation>
 <translation id="1197761954713363183">Isinara ang sheet ng pagkumpirma sa passkey</translation>
@@ -82,6 +83,7 @@
 <translation id="1386674309198842382">Aktibo <ph name="LAST_UPDATED" /> (na) araw ang nakalipas</translation>
 <translation id="13931502444227376">Para magpatuloy, ibabahagi ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong pangalan, email address, at larawan sa profile sa site na ito. Tingnan ang <ph name="BEGIN_LINK1" />mga tuntunin ng serbisyo<ph name="END_LINK1" /> ng site na ito.</translation>
 <translation id="1397811292916898096">Maghanap gamit ang <ph name="PRODUCT_NAME" /></translation>
+<translation id="1398037172295725596">Subukang maghanap ng iba o magbukas ng higit pang history sa Chrome para makakita ng higit pang history sa web mula sa iba pang app.</translation>
 <translation id="1407069428457324124">Madilim na tema</translation>
 <translation id="1407135791313364759">Buksan lahat</translation>
 <translation id="1409879593029778104">Pinigilan ang pag-download sa <ph name="FILE_NAME" /> dahil may ganitong file na sa kasalukuyan.</translation>
@@ -153,6 +155,8 @@
 <translation id="1807709131360304325">Magbukas ng bagong window</translation>
 <translation id="1810845389119482123">Hindi natapos ang paunang pag-set up ng pag-sync</translation>
 <translation id="1812027881030482584">Hindi makapagpatuloy ang <ph name="SITE_ETLD_PLUS_ONE" /> gamit ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1825772852827001597">Hindi mae-encrypt ang mga paraan ng pagbabayad at address mula sa Google Pay. Hindi masi-sync ang history ng pag-browse mula sa Chrome.
+Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data. Hindi ipinapadala sa o hindi sino-store ng Google ang passphrase. Kung makakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Hanapin sa page</translation>
 <translation id="185383612275551373">Mag-sync para makuha ang pinakanauugnay na content mula sa Google</translation>
 <translation id="1871098866036088250">Buksan sa Chrome browser</translation>
@@ -268,6 +272,7 @@
 <translation id="250020030759455918">Makikita mo sa Chrome ang iyong status ng pag-sign in sa <ph name="SITE_NAME" />, data mula sa pag-browse, at data ng site</translation>
 <translation id="2510106555128151389">Ini-install ang <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2513403576141822879">Para sa higit pang setting na nauugnay sa privacy, seguridad, at pangongolekta ng data, tingnan ang <ph name="BEGIN_LINK" />Pag-sync at mga serbisyo ng Google<ph name="END_LINK" /></translation>
+<translation id="2515921719039583189">I-delete sa device ang data sa Chrome?</translation>
 <translation id="2517113738956581680">Full-size sheet</translation>
 <translation id="2523184218357549926">Ipinapadala sa Google ang mga URL ng mga page na binibisita mo</translation>
 <translation id="2527209463677295330">Kapag nagsama ka ng mas maraming text ng isang page, posibleng makakita ka ng mas magagandang resulta</translation>
@@ -496,6 +501,7 @@
 <translation id="3631987586758005671">Ibinabahagi sa <ph name="DEVICE_NAME" /></translation>
 <translation id="363596933471559332">Awtomatikong mag-sign in sa mga website gamit ang mga naka-store na kredensyal. Kapag naka-off ang feature, hihilingin sa iyong mag-verify sa tuwing magsa-sign in ka sa isang website.</translation>
 <translation id="3636940436873918441">Mga gustong wika</translation>
+<translation id="3637744895182738742">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="368329460027487650">Naka-sign out. Magbubukas ng mga opsyon sa pag-sign in.</translation>
 <translation id="3687645719033307815">Tinitingnan mo ang preview ng page na ito</translation>
 <translation id="3690369331356918524">Babalaan ka kung mae-expose ang mga password sa isang paglabag sa data</translation>
@@ -1193,6 +1199,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="707155805709242880">Piliin kung ano ang isi-sync sa ibaba</translation>
 <translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Na-save ang bookmark sa "<ph name="FOLDER_NAME" />" sa iyong account na <ph name="ACCOUNT_EMAIL" />.}one{Na-save ang mga bookmark sa "<ph name="FOLDER_NAME" />" sa iyong account na <ph name="ACCOUNT_EMAIL" />.}other{Na-save ang mga bookmark sa "<ph name="FOLDER_NAME" />" sa iyong account na <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">SD Card</translation>
+<translation id="7078916049958741685">I-delete din ang iyong data sa Chrome sa device na ito</translation>
 <translation id="7080806333218412752">Nagpapadala ng mga URL sa Ligtas na Pag-browse para masuri ang mga ito. Nagpapadala rin ng maliit na sample ng mga page, download, aktibidad ng extension, at impormasyon ng system para makatulong na tumuklas ng mga bagong banta. Pansamantalang nili-link ang data na ito sa iyong Google Account kapag naka-sign in ka, para protektahan ka sa lahat ng Google app.</translation>
 <translation id="7085332316435785646">Piliin kung isasama ang history ng Chrome para sa mas naka-personalize na mga karanasan sa mga serbisyo ng Google</translation>
 <translation id="7088681679121566888">Updated ang Chrome</translation>
@@ -1205,6 +1212,9 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7146622961999026732">Mukhang mahalaga sa iyo ang mga site at app na ito:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />Kumuha ng higit pang impormasyon<ph name="END_LINK" /> mula sa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="7149893636342594995">Nakalipas na 24 na oras</translation>
+<translation id="71503698506017927">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address mula sa Google Pay.
+
+Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="7168323970702333693">Naka-sign in bilang <ph name="USER_NAME" />. Binubuksan ang mga setting.</translation>
 <translation id="7173114856073700355">Buksan ang Mga Setting</translation>
 <translation id="7177466738963138057">Maaari mo itong baguhin sa ibang pagkakataon sa Mga Setting</translation>
@@ -1638,6 +1648,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="952301137339791907">Nakabukas ang bottom sheet ng mga insight ng page</translation>
 <translation id="95817756606698420">Maaaring gamitin ng Chrome ang <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" /> para sa paghahanap sa China. Maaari mo itong baguhin sa <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" />.</translation>
 <translation id="961856697154696964">I-delete ang browsing data</translation>
+<translation id="966131775676567255">Dine-delete ang data ng account</translation>
 <translation id="96681097142096641">Tingnan ang pinasimpleng page?</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> (na) minuto na lang ang natitira</translation>
 <translation id="981121421437150478">Offline</translation>

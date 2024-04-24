@@ -584,7 +584,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2071692954027939183">Benachrichtigungen wurden automatisch blockiert, da du sie normalerweise nicht zulässt</translation>
 <translation id="2071852865256799872">Dein Browser wird von deiner Organisation verwaltet, dein Profil von <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Blockierung aufheben für <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Dein Administrator hat <ph name="PERMISSION" /> auf <ph name="ORIGIN" /> blockiert</translation>
 <translation id="2078956195623975415">Musik- und Tanzspiele</translation>
 <translation id="2079545284768500474">Rückgängig</translation>
 <translation id="2080021694978766903">Diese Richtlinie sollte nicht mehr als <ph name="MAX_ITEMS_LIMIT" /> Einträge enthalten.</translation>
@@ -2022,7 +2021,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4885030148564729407">Flitterwochen und Romantikausflüge</translation>
 <translation id="4885256590493466218">An der Kasse mit <ph name="CARD_DETAIL" /> zahlen</translation>
 <translation id="4887406273302438710">Passwörter mit Windows Hello schützen</translation>
-<translation id="4890070067176768718">Dein Administrator hat <ph name="PERMISSION" /> auf <ph name="ORIGIN" /> zugelassen</translation>
 <translation id="4892518386797173871">Hinten</translation>
 <translation id="4895019427244614047">Adresse löschen</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3909,7 +3907,6 @@ Weitere Details:
 <translation id="8493948351860045254">Speicherplatz freigeben</translation>
 <translation id="8498891568109133222">Die Antwort von <ph name="HOST_NAME" /> hat zu lange gedauert.</translation>
 <translation id="8502023382441452707">Geburts- und Namenstage</translation>
-<translation id="8502972004418241366">Wenn du die Berechtigung „<ph name="PERMISSION" />“ auf dieser Website verwenden möchtest, musst du Chrome Zugriff gewähren</translation>
 <translation id="8503559462189395349">Chrome-Passwörter</translation>
 <translation id="8503813439785031346">Nutzername</translation>
 <translation id="8504928302600319133">Computerhardware</translation>
@@ -3929,7 +3926,6 @@ Weitere Details:
 <translation id="853246364274116957">Broadway und Musicals</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Unter &lt;strong&gt;chrome://policy&lt;/strong&gt; findest du eine Liste mit blockierten URLs und andere Richtlinien, die von deinem Systemadministrator festgelegt wurden.</translation>
-<translation id="8534934518812659742">Du hast die Berechtigung „<ph name="PERMISSION" />“ für Chrome deaktiviert.</translation>
 <translation id="8536234749087605613">Umschlag (Fenster)</translation>
 <translation id="8539500321752640291">Beide Berechtigungen erteilen?</translation>
 <translation id="8541158209346794904">Bluetooth-Gerät</translation>
@@ -3987,7 +3983,6 @@ Weitere Details:
 <translation id="865032292777205197">Bewegungssensoren</translation>
 <translation id="865255447216708819">Rückseitendruckfilm</translation>
 <translation id="8654126188050905496">55 × 91 mm</translation>
-<translation id="8655930295668719549">Du hast <ph name="PERMISSION" /> auf <ph name="ORIGIN" /> zuvor nicht zugelassen</translation>
 <translation id="8662463432865928030">Gewerbeimmobilien</translation>
 <translation id="8663226718884576429">Bestellübersicht, <ph name="TOTAL_LABEL" />, weitere Details</translation>
 <translation id="8663909737634214500">Optische Disk</translation>
@@ -4019,6 +4014,7 @@ Weitere Details:
 <translation id="8722929331701811374">Briefpapier (Briefbogen)</translation>
 <translation id="8724824364712796726">Umschlag B6</translation>
 <translation id="8725066075913043281">Erneut versuchen</translation>
+<translation id="8725667981218437315">Kamera und Mikrofon</translation>
 <translation id="8726549941689275341">Seitengröße:</translation>
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="8731268612289859741">Sicherheitscode</translation>

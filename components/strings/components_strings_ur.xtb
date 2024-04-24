@@ -585,7 +585,6 @@
 <translation id="2071692954027939183">اطلاعات کو خودکار طور پر مسدود کر دیا گیا کیونکہ آپ عموماً انہیں اجازت نہیں دیتے ہیں</translation>
 <translation id="2071852865256799872">آپ کے براؤزر کا نظم آپ کی تنظیم کرتی ہے اور آپ کی پروفائل کا نظم <ph name="PROFILE_DOMAIN" /> کرتا ہے</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" /> کو غیر مسدود کریں</translation>
-<translation id="2075497153347571252">آپ کے منتظم نے <ph name="ORIGIN" /> پر <ph name="PERMISSION" /> کو مسدود کر دیا ہے</translation>
 <translation id="2078956195623975415">موسیقی اور رقص والی گمیز</translation>
 <translation id="2079545284768500474">کالعدم کریں</translation>
 <translation id="2080021694978766903">اس پالیسی میں <ph name="MAX_ITEMS_LIMIT" /> سے زیادہ اندراجات نہیں ہونے چاہئیں۔</translation>
@@ -2026,7 +2025,6 @@
 <translation id="4885030148564729407">ہنی مونز اور رومانی مقامات</translation>
 <translation id="4885256590493466218">چیک آؤٹ کرنے پر <ph name="CARD_DETAIL" /> سے ادائیگی کریں۔</translation>
 <translation id="4887406273302438710">‏Windows Hello کے ساتھ پاس ورڈز کی حفاظت کریں</translation>
-<translation id="4890070067176768718">آپ کے منتظم نے <ph name="ORIGIN" /> پر <ph name="PERMISSION" /> کی اجازت دی ہے</translation>
 <translation id="4892518386797173871">پیچھے</translation>
 <translation id="4895019427244614047">پتہ حذف کریں</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />، <ph name="TYPE_2" />، <ph name="TYPE_3" /></translation>
@@ -3914,7 +3912,6 @@
 <translation id="8493948351860045254">جگہ خالی کریں</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> کو جواب دینے میں کافی وقت لگا۔</translation>
 <translation id="8502023382441452707">سالگرہیں اور ناموں سے منسوب دن</translation>
-<translation id="8502972004418241366">‏اس سائٹ پر اپنی <ph name="PERMISSION" /> استعمال کرنے کے لیے، آپ کو Chrome کو رسائی فراہم کرنے کی ضرورت ہے</translation>
 <translation id="8503559462189395349">‏Chrome کے پاس ورڈز</translation>
 <translation id="8503813439785031346">صارف کا نام</translation>
 <translation id="8504928302600319133">کمپیوٹر ہارڈ ویئر</translation>
@@ -3934,7 +3931,6 @@
 <translation id="853246364274116957">براڈوے اور میوزیکل تھیئٹر</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">‏مسدود کردہ URLs کی فہرست اور اپنے سسٹم کے منتظم کے ذریعے نافذ کردہ دیگر پالیسیاں دیکھنے کے لیے &lt;strong&gt;chrome://policy&lt;/strong&gt; ملاحظہ کریں۔</translation>
-<translation id="8534934518812659742">‏آپ نے Chrome کے لیے <ph name="PERMISSION" /> کو آف کر دیا ہے۔</translation>
 <translation id="8536234749087605613">لفافہ (ونڈو)</translation>
 <translation id="8539500321752640291">2 اجازتیں دیں؟</translation>
 <translation id="8541158209346794904">بلوٹوتھ آلہ</translation>
@@ -3991,7 +3987,6 @@
 <translation id="865032292777205197">موشن سینسرز</translation>
 <translation id="865255447216708819">بیک پرنٹ فلم</translation>
 <translation id="8654126188050905496">‏‎55 x 91 ملی میٹر</translation>
-<translation id="8655930295668719549">آپ نے پہلے <ph name="ORIGIN" /> پر <ph name="PERMISSION" /> کی اجازت نہیں دی</translation>
 <translation id="8662463432865928030">تجارتی پراپرٹیز</translation>
 <translation id="8663226718884576429">آرڈر کا خلاصہ، <ph name="TOTAL_LABEL" />، مزید تفصیلات</translation>
 <translation id="8663909737634214500">آپٹیکل ڈسک</translation>

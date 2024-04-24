@@ -1607,7 +1607,6 @@
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">የsshd ስውር አገልጋይን የሚያዋቅሩ እና ከዩኤስቢ አንጻፊዎች ማስነሳትን የሚያነቁ የChromeOS Flex ስህተት ማረሚያ ባህሪያትን እያነቁ ነው።</translation>
 <translation id="2178614541317717477">CA Compromise</translation>
-<translation id="2179416702468739594">የሚገኙ መገለጫዎችን በመፈለግ ላይ። ይህ የተንቀሳቃሽ ስልክ አውታረ መረብዎ ለጥቂት ደቂቃዎች እንዲቋረጥ ሊያደርግ ይችላል።</translation>
 <translation id="2180620921879609685">ይዘትን በማንኛውም ገፅ ላይ አግድ</translation>
 <translation id="2181821976797666341">መምሪያዎች</translation>
 <translation id="2182058453334755893">ወደ የእርስዎ ቅንጥብ ሰሌዳ ላይ ተቀድቷል</translation>
@@ -1660,6 +1659,7 @@
 <translation id="222115440608612541">ፀሐይ ስትወጣና ስትገባ ገጽታዎችን ይቀያይሩ</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />፣ <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">ያልተሰየመ የሚዲያ ምንጭ</translation>
+<translation id="2224337661447660594">ምንም በይነመረብ የለም</translation>
 <translation id="2224444042887712269">ይህ ቅንብር የ<ph name="OWNER_EMAIL" /> ነው።</translation>
 <translation id="2224551243087462610">የአቃፊ ስም አርትዕ</translation>
 <translation id="2225927550500503913">ምናባዊ ካርድ በርቷል</translation>
@@ -3112,7 +3112,6 @@
 <translation id="3321494112580110651">ማተሚያዎ አይታይዎትም?</translation>
 <translation id="3321776060736518525">ከ<ph name="APP_URL" /></translation>
 <translation id="3323521181261657960">ጉርሻ! ተጨማሪ የማያ ገፅ ጊዜ አለዎት</translation>
-<translation id="3325804108816646710">የሚገኙ መገለጫዎችን በመፈለግ ላይ...</translation>
 <translation id="3325930488268995856">Microsoft OneDrive ተገናኝቷል</translation>
 <translation id="3325995804968971809">ቅጥ</translation>
 <translation id="3327050066667856415">Chromebooks ለደህንነት የተነደፉ ናቸው። የእርስዎ መሣሪያ በራስ-ሰር ከተንኮል-አዘል ዌር የተጠበቀ ነው – ምንም ተጨማሪ ሶፍትዌር ሳያስፈልግ።</translation>
@@ -5416,7 +5415,6 @@
 <translation id="5101839224773798795">ጠቋሚ ሲያቆም በራስሰር ጠቅ አድርግ</translation>
 <translation id="5103311607312269661">የማሳያ ብሩህነት መጨመሪያ</translation>
 <translation id="5106350808162641062">አስወግድ</translation>
-<translation id="5106608587025903971">ለመግባት የGoogle መለያዎን የይለፍ ቃል ከማስገባት ይልቅ ለዚህ መሣሪያ የ<ph name="DEVICE_TYPE" /> የይለፍ ቃል መፍጠር ይችላሉ</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> በ Family Link ክትትል ይደረግበታል። በወላጆች ክትትል የትምህርት ቤት ንብረቶችን ለመድረስ የትምህርት ቤት መለያዎችን ማከል ይችላሉ።</translation>
 <translation id="5107093668001980925"><ph name="MODULE_NAME" /> የሚለውን በጭራሽ አታሳይ</translation>
 <translation id="5107443654503185812">አንድ ቅጥያ የጥንቃቄ አሰሳን አጥፍቷል</translation>
@@ -7379,7 +7377,6 @@
 <translation id="6647690760956378579">የተፈጥሯዊ ድምፅ ቅድመ ዕይታ</translation>
 <translation id="6648911618876616409">አንድ ወሳኝ ዝማኔ ለመጫን ዝግጁ ነው። ለመጀመር በመለያ ይግቡ።</translation>
 <translation id="6649018507441623493">አንዴ ይጠብቁ...</translation>
-<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> እርስዎ እንደሆኑ ማረጋገጥ ይፈልጋል</translation>
 <translation id="6650206238642452078">ለChromeOS ስርዓት ክስተቶች ለደንበኝነት ይመዝገቡ</translation>
 <translation id="665061930738760572">&amp;በአዲስ መስኮት ክፈት</translation>
 <translation id="6651237644330755633">ድር ጣቢያዎችን ለመለየት ይህን የዕውቅና ማረጋገጫ ይመኑ</translation>

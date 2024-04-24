@@ -192,6 +192,9 @@ Data anda telah disulitkan dengan ungkapan laluan anda. Masukkan ungkapan laluan
 <translation id="6648150602980899529">Anda log masuk dengan akaun yang diurus oleh <ph name="DOMAIN" /> dan memberi kawalan terhadap data Chrome anda kepada  pentadbirnya. Data anda akan terikat secara kekal kepada akaun ini. Tindakan log keluar daripada Chrome akan memadamkan data anda daripada peranti ini, tetapi data itu akan kekal disimpan dalam Google Account anda.</translation>
 <translation id="6683891932310469419">Buka Halaman Sejarah Chrome anda.</translation>
 <translation id="6709398533399187136">Kata laluan anda terdedah dalam suatu pelanggaran data. Pengurus Kata Laluan Google mengesyorkan agar anda menukarnya sekarang.</translation>
+<translation id="6820553595690137150">Penyulitan ungkapan laluan tidak termasuk kaedah pembayaran dan alamat.
+
+Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="6851982868877411675">Buka Tetapan Chrome dalam iOS, kemudian ketik "Apl Penyemak Imbas Lalai" dan pilih Chrome.</translation>
 <translation id="686691656039982452">Anda boleh <ph name="BEGIN_LINK" />mengurus data Chrome yang disimpan<ph name="END_LINK" /> dalam Google Account anda.
 
@@ -215,6 +218,7 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="7261678641327190792">Chrome tidak dapat menyemak kata laluan anda</translation>
 <translation id="7272930098487145294">Untuk menyimpan imej, ketik Tetapan untuk membolehkan Chrome membuat penambahan pada foto anda.</translation>
 <translation id="7275945473750112644">Akaun anda diurus oleh <ph name="HOSTED_DOMAIN" />, oleh itu data Chrome anda akan dikosongkan daripada peranti ini</translation>
+<translation id="7284245284340063465">Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="7304491752269485262">Paparan Autolengkap Chrome Dikembangkan</translation>
 <translation id="7344094882820374540">Dapatkan keselamatan Chrome yang paling kukuh daripada laman berbahaya</translation>
 <translation id="7349129508108954623">Benarkan Chrome untuk menggunakan Google Maps bagi memberikan arah dan maklumat setempat kepada anda pada alamat yang dikesan.</translation>
@@ -246,6 +250,9 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="8160472928944011082">Chrome tidak dapat mengemas kini</translation>
 <translation id="8174679664544842874">Membuka Tab Baharu dalam Chrome.</translation>
 <translation id="8213758103105806860">Lihat Penanda Halaman Chrome</translation>
+<translation id="8317674518145175158">Kaedah pembayaran dan alamat tidak akan disulitkan. Sejarah penyemakan imbas daripada Chrome tidak akan disegerakkan.
+
+Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda yang disulitkan. Ungkapan laluan tidak dihantar kepada atau disimpan oleh Google. Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="8328903609881776074">Buka Tab Inkognito Chrome Baharu.</translation>
 <translation id="8357607116237445042">Pilih sama ada anda hendak mengosongkan data Chrome anda daripada peranti ini atau mengekalkan data tersebut</translation>
 <translation id="8370517070665726704">Hak Cipta <ph name="YEAR" /> Google LLC. Hak cipta terpelihara.</translation>

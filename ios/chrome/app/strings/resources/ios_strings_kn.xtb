@@ -130,6 +130,7 @@
 <translation id="1653432787084483144">{count,plural, =1{{count} ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್ ನಿಮ್ಮ ಕೀಬೋರ್ಡ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ ಲಭ್ಯವಿದೆ.}one{{count} ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ನಿಮ್ಮ ಕೀಬೋರ್ಡ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ ಲಭ್ಯವಿದೆ.}other{{count} ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ನಿಮ್ಮ ಕೀಬೋರ್ಡ್‌ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ ಲಭ್ಯವಿದೆ.}}</translation>
 <translation id="1657011748321897393">ನೀವು ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಸಂಪರ್ಕ ಹೊಂದದೇ ಇರುವುದರಿಂದ ಹಂಚಿಕೆ ವಿಫಲಗೊಂಡಿದೆ.</translation>
 <translation id="165877110639533037">ಯಾವುದೇ ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳಿಲ್ಲ</translation>
+<translation id="1668001730617725852">ಹೊಸ ಟ್ಯಾಬ್ ಗುಂಪಿನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ನಿಂದ <ph name="TARGET_LANGUAGE" /> ಗೆ</translation>
 <translation id="1683483432843341018">ಮೊಬೈಲ್ ಸೈಟ್ ಅನ್ನು ವಿನಂತಿಸಿ</translation>
 <translation id="1687475363370981210">ಎಲ್ಲವನ್ನೂ ಓದಿದಂತೆ ಗುರುತಿಸಿ</translation>
@@ -1199,6 +1200,7 @@
 <translation id="7162168282402939716"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ಬಳಸಿಕೊಂಡು ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="7173114856073700355">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="7186568385131859684">Google ಸೇವೆಗಳಾದ್ಯಂತ ನಿಮ್ಮ ಇತರ ಡೇಟಾದೊಂದಿಗೆ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಹೇಗೆ ಬಳಸಲಾಗುತ್ತದೆ ಎಂಬುದನ್ನು ನಿಯಂತ್ರಿಸಿ</translation>
+<translation id="7187190640134722091">ಗುಂಪನ್ನು ರಚಿಸಿ</translation>
 <translation id="7189598951263744875">ಹಂಚಿ...</translation>
 <translation id="719133302483559673">ನಿಮ್ಮ ಆಸಕ್ತಿಗಳು ಮತ್ತು ಆದ್ಯತೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ.</translation>
 <translation id="7192050974311852563">ಲಾಗ್‌ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
@@ -1595,6 +1597,7 @@
 <translation id="9109699888944026290">{count,plural, =1{ಈ ಸೈಟ್‌ನ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್}one{ಈ ಸೈಟ್‌ಗಳ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}other{ಈ ಸೈಟ್‌ಗಳ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}}</translation>
 <translation id="9120217828624527905">ಸಂಪೂರ್ಣ ಪುಟದ ಅನುವಾದಕ್ಕೆ ಬದಲಿಸಿ</translation>
 <translation id="9124387962554796433">Search ಮತ್ತು ಇತರ Google ಸೇವೆಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ನಿಮ್ಮ ಇತಿಹಾಸವನ್ನು Google ಬಳಸಬಹುದು.</translation>
+<translation id="913036870884277353">ಇತರ ಆ್ಯಪ್‌ಗಳಲ್ಲಿ ಸುಲಭವಾಗಿ ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="9137526406337347448">Google ಸೇವೆಗಳು</translation>
 <translation id="9144931028079269381">ಓದುವ ಪಟ್ಟಿಯನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="9148126808321036104">ಪುನಃ ಸೈನ್ ಇನ್  ಆಗಿ</translation>

@@ -584,7 +584,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2071692954027939183">Notifications bloquées automatiquement, car vous les refusez d'habitude</translation>
 <translation id="2071852865256799872">Votre navigateur est géré par votre organisation et votre profil par <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Débloquer <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Votre administrateur a bloqué <ph name="PERMISSION" /> sur <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Jeux de musique et de danse</translation>
 <translation id="2079545284768500474">Annuler</translation>
 <translation id="2080021694978766903">Cette règle ne peut pas contenir plus de <ph name="MAX_ITEMS_LIMIT" /> entrées.</translation>
@@ -2024,7 +2023,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4885030148564729407">Lunes de miel et escapades romantiques</translation>
 <translation id="4885256590493466218">Vous paierez avec "<ph name="CARD_DETAIL" />".</translation>
 <translation id="4887406273302438710">Protéger les mots de passe avec Windows Hello</translation>
-<translation id="4890070067176768718">Votre administrateur a autorisé <ph name="PERMISSION" /> sur <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Arrière</translation>
 <translation id="4895019427244614047">Supprimer l'adresse</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3912,7 +3910,6 @@ Informations supplémentaires :
 <translation id="8493948351860045254">Libérer de l'espace</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> a mis trop de temps à répondre.</translation>
 <translation id="8502023382441452707">Anniversaires et fêtes</translation>
-<translation id="8502972004418241366">Pour utiliser votre <ph name="PERMISSION" /> sur ce site, vous devez autoriser Chrome à y accéder</translation>
 <translation id="8503559462189395349">Mots de passe Chrome</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8504928302600319133">Matériel informatique</translation>
@@ -3932,7 +3929,6 @@ Informations supplémentaires :
 <translation id="853246364274116957">Théâtre musical et comédies musicales</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Pour consulter la liste des URL bloquées et des autres règles définies par votre administrateur système, rendez-vous sur &lt;strong&gt;chrome://policy&lt;/strong&gt;.</translation>
-<translation id="8534934518812659742">Vous avez désactivé l'accès à votre <ph name="PERMISSION" /> pour Chrome.</translation>
 <translation id="8536234749087605613">Enveloppe (à fenêtre)</translation>
 <translation id="8539500321752640291">Accorder les deux autorisations ?</translation>
 <translation id="8541158209346794904">Appareil Bluetooth</translation>
@@ -3989,7 +3985,6 @@ Informations supplémentaires :
 <translation id="865032292777205197">capteurs de mouvement</translation>
 <translation id="865255447216708819">Pellicule avec impression au dos</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Vous n'avez pas autorisé précédemment <ph name="PERMISSION" /> sur <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Locaux à usage commercial</translation>
 <translation id="8663226718884576429">Récapitulatif de la commande, <ph name="TOTAL_LABEL" />, détails supplémentaires</translation>
 <translation id="8663909737634214500">Disque optique</translation>
@@ -4021,6 +4016,7 @@ Informations supplémentaires :
 <translation id="8722929331701811374">Papeterie (en-tête)</translation>
 <translation id="8724824364712796726">Enveloppe B6</translation>
 <translation id="8725066075913043281">Réessayer</translation>
+<translation id="8725667981218437315">Caméra et micro</translation>
 <translation id="8726549941689275341">Format de page :</translation>
 <translation id="8730621377337864115">OK</translation>
 <translation id="8731268612289859741">Code de sécurité</translation>

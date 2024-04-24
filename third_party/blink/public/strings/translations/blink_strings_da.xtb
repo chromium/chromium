@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">Angiv en mailadresse, der ikke er tom.</translation>
 <translation id="1758486001363313524">Andet...</translation>
 <translation id="1787192514241997742">tid i alt: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">Tillad kamera</translation>
 <translation id="1822429046913737220">f.m./e.m.</translation>
 <translation id="1832974991323546415">afspil på en enhed via fjernadgang</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">aktuelt trin</translation>
 <translation id="3321030238473337787">Afspilningshastighed</translation>
 <translation id="3329013043687509092">Mætning</translation>
-<translation id="3377518164566272702">Tillad mikrofon og kamera</translation>
 <translation id="3450233048674729344">Værdien skal være mindre end eller lig med <ph name="MAXIMUM" />.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">Afslut integreret billede</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">Andet...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, med start <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">Integreret billede</translation>
-<translation id="918430632320614861">Tillad mikrofon</translation>
 <translation id="945780513535800434">Delvis markering</translation>
 <translation id="954003015749068518">start integreret billede</translation>
 </translationbundle>

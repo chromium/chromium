@@ -1609,7 +1609,6 @@
 <translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">ChromeOS Flex အမှားရှာပြင်သည့် ဝန်ဆောင်မှုများကို ဖွင့်ခြင်းဖြင့် ၎င်းသည် sshd နောက်ခံပရိုဂရမ်ကို စနစ်ထည့်သွင်းမည်ဖြစ်ပြီး USB ဒရိုက်ဗ်များမှ စနစ်စတင်ခြင်းကို ဖွင့်ပေးပါမည်။</translation>
 <translation id="2178614541317717477">CA သံသယဖြစ်ခံခဲ့ရ</translation>
-<translation id="2179416702468739594">ရနိုင်သောပရိုဖိုင်များ ရှာနေသည်။ ၎င်းက သင့်မိုဘိုင်းကွန်ရက်ကို မိနစ်အနည်းငယ်ကြာ ချိတ်ဆက်မှု ရပ်ထားနိုင်သည်။</translation>
 <translation id="2180620921879609685">စာမျက်နှာအားလုံးတွင် အကြောင်းအရာကို ပိတ်ထားခြင်း</translation>
 <translation id="2181821976797666341">ပေါ်လစီများ</translation>
 <translation id="2182058453334755893">'သင့်ကလစ်ဘုတ်' သို့ မိတ္တူကူးထားသည်</translation>
@@ -1662,6 +1661,7 @@
 <translation id="222115440608612541">ရောင်နီနှင့် ဆည်းဆာတွင် အပြင်အဆင် ချိန်းရန်</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />၊ <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">အမည်မပါသော မီဒီယာရင်းမြစ်</translation>
+<translation id="2224337661447660594">အင်တာနက် မရှိပါ</translation>
 <translation id="2224444042887712269">ဒီဆက်တင် <ph name="OWNER_EMAIL" />က ပိုင်ဆိုင်သည်။</translation>
 <translation id="2224551243087462610">ဖိုလ်ဒါ အမည်ကို တည်းဖြတ်ရန်</translation>
 <translation id="2225927550500503913">ပကတိအသွင်ကတ် ဖွင့်ထားသည်</translation>
@@ -3117,7 +3117,6 @@
 <translation id="3321494112580110651">ပရင်တာမတွေ့ဘူးလား။</translation>
 <translation id="3321776060736518525"><ph name="APP_URL" /> ထံမှ</translation>
 <translation id="3323521181261657960">အပိုဆု။ အသုံးပြုချိန် ပိုရထားသည်</translation>
-<translation id="3325804108816646710">ရနိုင်သောပရိုဖိုင်များ ရှာနေသည်...</translation>
 <translation id="3325930488268995856">Microsoft OneDrive ချိတ်ဆက်ထားသည်</translation>
 <translation id="3325995804968971809">ပုံစံ</translation>
 <translation id="3327050066667856415">Chromebook များကို လုံခြုံရေးအတွက် ရည်ရွယ်ထုတ်လုပ်ထားခြင်းဖြစ်သည်။ သင့်စက်ကို မဲလ်ဝဲမှ အလိုအလျောက်ကာကွယ်ပြီးဖြစ်သည်၊ နောက်ထပ်ဆော့ဖ်ဝဲမလိုပါ။</translation>
@@ -5423,7 +5422,6 @@
 <translation id="5101839224773798795">ကာဆာရပ်သွားသည့်အခါ အလိုအလျောက် နှိပ်ရန်</translation>
 <translation id="5103311607312269661">ဖန်သားပြင်တောက်ပမှု တိုးရန်</translation>
 <translation id="5106350808162641062">ဖယ်ရှားရန်</translation>
-<translation id="5106608587025903971">လက်မှတ်ထိုးဝင်ရန် သင့် Google Account ၏ စကားဝှက်ကို ရိုက်ထည့်မည့်အစား ဤစက်အတွက် <ph name="DEVICE_TYPE" /> စကားဝှက် ပြုလုပ်နိုင်သည်</translation>
 <translation id="510695978163689362"><ph name="USER_EMAIL" /> ကို Family Link က ကြီးကြပ်သည်။ မိဘအုပ်ထိန်းမှုဖြင့် ကျောင်းရင်းမြစ်များ ဝင်ကြည့်ရန် ကျောင်းအကောင့်များ ထည့်နိုင်သည်။</translation>
 <translation id="5107093668001980925"><ph name="MODULE_NAME" /> ကို ဘယ်တော့မှ မပြပါနှင့်</translation>
 <translation id="5107443654503185812">နောက်ဆက်တွဲတစ်ခုက 'လုံခြုံစွာ ကြည့်ရှုခြင်း' ကို ပိတ်လိုက်သည်</translation>
@@ -7382,7 +7380,6 @@
 <translation id="6647690760956378579">သဘာဝဆန်သည့်အသံ အစမ်းကြည့်ရှုခြင်း</translation>
 <translation id="6648911618876616409">အရေးကြီးသည့် အပ်ဒိတ်ကို ထည့်သွင်းရန် အဆင်သင့်ဖြစ်ပါပြီ။ စတင်ရန် လက်မှတ်ထိုးဝင်ပါ။</translation>
 <translation id="6649018507441623493">ခေတ္တစောင့်ပါ...</translation>
-<translation id="6650072551060208490">သင်ဖြစ်ကြောင်း <ph name="ORIGIN_NAME" /> က အတည်ပြုလိုသည်</translation>
 <translation id="6650206238642452078">ChromeOS စနစ်ဖြစ်ရပ်များ ရယူရန် စာရင်းသွင်းပါ</translation>
 <translation id="665061930738760572">ဝင်ဒိုးအသစ် ထဲမှာ &amp;ဖွင့်ရန်</translation>
 <translation id="6651237644330755633">ဝဘ်ဆိုက်များ၏ အထောက်အထားအဖြစ် ဤအသိအမှတ်ပြုလက်မှတ်များကို ယုံကြည်ပါ</translation>
@@ -10304,7 +10301,7 @@
 <translation id="885701979325669005">သိုလှောင်ခန်း</translation>
 <translation id="885746075120788020">Google Account ဖြင့် လက်မှတ်ထိုးဝင်သောအခါ သင်သိမ်းထားသော သတ်မှတ်ချက်နှင့် လုပ်ဆောင်ချက်များကို ChromeOS စက်တိုင်းတွင် အသင့်ရရှိပါမည်။ စင့်ခ်လုပ်မည့်အရာကို ဆက်တင်များတွင် ရွေးချယ်နိုင်သည်။</translation>
 <translation id="8858010757866773958">{NUM_SUB_APP_INSTALLS,plural, =1{အက်ပ်ကို ထည့်သွင်းလိုပါသလား။}other{အက်ပ်များ ထည့်သွင်းလိုပါသလား။}}</translation>
-<translation id="8858369206579825206">ကိုယ်ရေးအချက်အလက် လုံခြုံမှုဆိုင်ရာ ထိန်းချုပ်မှုများ</translation>
+<translation id="8858369206579825206">ကိုယ်ရေးအချက်အလက်လုံခြုံမှု ဆက်တင်များ</translation>
 <translation id="8859174528519900719">ဘောင်ငယ်: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8859402192569844210">ဝန်ဆောင်မှု စည်းမျဉ်းများကို ဖွင့်၍မရနိုင်ပါ</translation>
 <translation id="8859662783913000679">မိဘ အကောင့်</translation>

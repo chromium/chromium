@@ -133,6 +133,7 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> の保存データ</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> に通知の送信を許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でも通知をオンにしてください。</translation>
 <translation id="3227137524299004712">マイク</translation>
+<translation id="3232293466644486101">閲覧履歴データを削除...</translation>
 <translation id="3242646949159196181">オンにすると、サイトは音声を再生できます。オフにすると、サイトは音声を再生できません。</translation>
 <translation id="3277252321222022663">サイトによるセンサーへのアクセスを許可する（推奨）</translation>
 <translation id="3285500645985761267">関連サイトにグループ内のアクティビティの確認を許可する</translation>
@@ -307,6 +308,7 @@
 <translation id="6064125863973209585">完了したダウンロード</translation>
 <translation id="6071501408666570960">このサイトからログアウトされる可能性があります</translation>
 <translation id="6120483543004435978">オンにすると、サイトはデバイスのアクティブ状態の検出を要求できます。オフにすると、サイトはデバイスのアクティブ状態を検出できません。</translation>
+<translation id="6140839633433422817">権限をリセットし、Cookie とサイトデータを削除してもよろしいですか？</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6171020522141473435">オンにすると、サイトは Bluetooth デバイスの使用を要求できます。オフにすると、サイトは Bluetooth デバイスを使用できません。</translation>
 <translation id="6177111841848151710">現在の検索エンジンに対してはブロック</translation>

@@ -584,7 +584,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2071692954027939183">Les notificacions s'han bloquejat automàticament perquè normalment no les permets</translation>
 <translation id="2071852865256799872">La teva organització gestiona el navegador i <ph name="PROFILE_DOMAIN" /> gestiona el perfil</translation>
 <translation id="2074733626795553847">Desbloqueja <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">L'administrador ha bloquejat <ph name="PERMISSION" /> a <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Jocs de música i dansa</translation>
 <translation id="2079545284768500474">Desfés</translation>
 <translation id="2080021694978766903">Aquesta política no pot tenir més de <ph name="MAX_ITEMS_LIMIT" /> entrades.</translation>
@@ -2024,7 +2023,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4885030148564729407">Llunes de mel i escapades romàntiques</translation>
 <translation id="4885256590493466218">Paga amb <ph name="CARD_DETAIL" /> en tramitar la compra.</translation>
 <translation id="4887406273302438710">Protegeix les contrasenyes amb Windows Hello</translation>
-<translation id="4890070067176768718">L'administrador ha permès <ph name="PERMISSION" /> a <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Part posterior</translation>
 <translation id="4895019427244614047">Suprimeix l'adreça</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3911,7 +3909,6 @@ Detalls addicionals:
 <translation id="8493948351860045254">Allibera espai</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ha tardat massa a respondre.</translation>
 <translation id="8502023382441452707">Aniversaris i efemèrides</translation>
-<translation id="8502972004418241366">Per utilitzar la <ph name="PERMISSION" /> en aquest lloc web, has de donar accés a Chrome</translation>
 <translation id="8503559462189395349">Contrasenyes de Chrome</translation>
 <translation id="8503813439785031346">Nom d'usuari</translation>
 <translation id="8504928302600319133">Maquinari informàtic</translation>
@@ -3931,7 +3928,6 @@ Detalls addicionals:
 <translation id="853246364274116957">Teatre musical i de Broadway</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Ves a &lt;strong&gt;chrome://policy&lt;/strong&gt; per veure la llista d'URL bloquejats i altres polítiques aplicades per l'administrador del sistema.</translation>
-<translation id="8534934518812659742">Has desactivat <ph name="PERMISSION" /> per a Chrome.</translation>
 <translation id="8536234749087605613">Sobre (finestra)</translation>
 <translation id="8539500321752640291">Vols concedir els dos permisos?</translation>
 <translation id="8541158209346794904">Dispositiu Bluetooth</translation>
@@ -3988,7 +3984,6 @@ Detalls addicionals:
 <translation id="865032292777205197">sensors de moviment</translation>
 <translation id="865255447216708819">Pel·lícula d'impressió posterior</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Anteriorment no permeties <ph name="PERMISSION" /> a <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Propietats comercials</translation>
 <translation id="8663226718884576429">Resum de la comanda, <ph name="TOTAL_LABEL" />, més detalls</translation>
 <translation id="8663909737634214500">Disc òptic</translation>
@@ -4020,6 +4015,7 @@ Detalls addicionals:
 <translation id="8722929331701811374">Papereria (carta)</translation>
 <translation id="8724824364712796726">Sobre B6</translation>
 <translation id="8725066075913043281">Torna-ho a provar</translation>
+<translation id="8725667981218437315">Càmera i micròfon</translation>
 <translation id="8726549941689275341">Mida de la pàgina:</translation>
 <translation id="8730621377337864115">Fet</translation>
 <translation id="8731268612289859741">Codi de seguretat</translation>

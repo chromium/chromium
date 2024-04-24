@@ -584,7 +584,6 @@
 <translation id="2071692954027939183">Та мэдэгдлийг ихэвчлэн зөвшөөрдөггүй тул тэдгээрийг автоматаар блоклосон</translation>
 <translation id="2071852865256799872">Танай байгууллага таны хөтчийг удирддаг бөгөөд <ph name="PROFILE_DOMAIN" /> таны профайлыг удирддаг</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" />-г блокоос гаргах</translation>
-<translation id="2075497153347571252">Танай администратор <ph name="PERMISSION" />-г <ph name="ORIGIN" />-д блоклосон</translation>
 <translation id="2078956195623975415">Хөгжим, бүжгийн тоглоомууд</translation>
 <translation id="2079545284768500474">Буцаах</translation>
 <translation id="2080021694978766903">Энэ бодлого <ph name="MAX_ITEMS_LIMIT" />-с олон оруулгатай байх ёсгүй.</translation>
@@ -2025,7 +2024,6 @@
 <translation id="4885030148564729407">Бал сар, романтик амралтууд</translation>
 <translation id="4885256590493466218">Тооцоо хийхдээ <ph name="CARD_DETAIL" />-р төлөөрэй</translation>
 <translation id="4887406273302438710">Windows Hello-н тусламжтай нууц үгнүүдээ хамгаалаарай</translation>
-<translation id="4890070067176768718">Танай администратор <ph name="PERMISSION" />-г <ph name="ORIGIN" />-д зөвшөөрсөн</translation>
 <translation id="4892518386797173871">Ар талын</translation>
 <translation id="4895019427244614047">Хаягийг устгах</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3911,7 +3909,6 @@
 <translation id="8493948351860045254">Зай гаргах</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" />-д холбогдоход хэтэрхий удаж байна.</translation>
 <translation id="8502023382441452707">Төрсөн өдөр, нэр өгөх өдөр</translation>
-<translation id="8502972004418241366"><ph name="PERMISSION" />-г энэ сайтад ашиглахын тулд та Chrome-д хандах эрх өгөх шаардлагатай</translation>
 <translation id="8503559462189395349">Chrome-н нууц үг</translation>
 <translation id="8503813439785031346">Хэрэглэгчийн нэр</translation>
 <translation id="8504928302600319133">Компьютерын техник хангамж</translation>
@@ -3931,7 +3928,6 @@
 <translation id="853246364274116957">Бродвей болон мюзикл театр</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Системийн администраторынхаа хэрэгжүүлдэг блоклосон URL-үүдийн болон бусад удирдамжийн жагсаалтыг харахын тулд &lt;strong&gt; chrome://policy&lt;/strong&gt;-д зочилно уу.</translation>
-<translation id="8534934518812659742">Та <ph name="PERMISSION" />-г Chrome-д унтраасан.</translation>
 <translation id="8536234749087605613">Дугтуй (цонхтой)</translation>
 <translation id="8539500321752640291">2 зөвшөөрөл олгох уу?</translation>
 <translation id="8541158209346794904">Bluetooth төхөөрөмж</translation>
@@ -3988,7 +3984,6 @@
 <translation id="865032292777205197">хөдөлгөөн мэдрэгч</translation>
 <translation id="865255447216708819">Ард хэвлэх хальс</translation>
 <translation id="8654126188050905496">55 x 91 мм</translation>
-<translation id="8655930295668719549">Та өмнө нь <ph name="ORIGIN" />-д <ph name="PERMISSION" />-г зөвшөөрөөгүй</translation>
 <translation id="8662463432865928030">Арилжааны үл хөдлөх хөрөнгүүд</translation>
 <translation id="8663226718884576429">Захиалгын дүн, <ph name="TOTAL_LABEL" />, Дэлгэрэнгүй</translation>
 <translation id="8663909737634214500">Оптик диск</translation>
@@ -4020,6 +4015,7 @@
 <translation id="8722929331701811374">Бичгийн цаас (албан бланк)</translation>
 <translation id="8724824364712796726">Дугтуй B6</translation>
 <translation id="8725066075913043281">Дахин оролдож үзнэ үү.</translation>
+<translation id="8725667981218437315">Камер ба микрофон</translation>
 <translation id="8726549941689275341">Хуудасны хэмжээ:</translation>
 <translation id="8730621377337864115">хийсэн</translation>
 <translation id="8731268612289859741">Аюулгүй байдлын код</translation>

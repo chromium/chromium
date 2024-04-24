@@ -584,7 +584,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2071692954027939183">Paziņojumi tika automātiski bloķēti, jo jūs tos parasti neatļaujat.</translation>
 <translation id="2071852865256799872">Pārlūku pārvalda jūsu organizācija, un jūsu profilu pārvalda <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Atbloķēt <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Jūsu administrators ir vietnē <ph name="ORIGIN" /> bloķējis atļauju “<ph name="PERMISSION" />”</translation>
 <translation id="2078956195623975415">Mūzikas un deju spēles</translation>
 <translation id="2079545284768500474">Atsaukt</translation>
 <translation id="2080021694978766903">Šajā politikā drīkst būt ne vairāk kā <ph name="MAX_ITEMS_LIMIT" /> meklētājprogrammas.</translation>
@@ -2023,7 +2022,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4885030148564729407">Medusmēneša vai romantiski ceļojumi</translation>
 <translation id="4885256590493466218">Maksājiet ar karti <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Paroļu aizsardzība, izmantojot Windows Hello</translation>
-<translation id="4890070067176768718">Jūsu administrators ir piešķīris vietnei <ph name="ORIGIN" /> atļauju “<ph name="PERMISSION" />”</translation>
 <translation id="4892518386797173871">Aizmugurējā</translation>
 <translation id="4895019427244614047">Dzēst adresi</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3910,7 +3908,6 @@ Papildu informācija:
 <translation id="8493948351860045254">Atbrīvot vietu</translation>
 <translation id="8498891568109133222">Vietne <ph name="HOST_NAME" /> pārāk ilgi nereaģēja.</translation>
 <translation id="8502023382441452707">Dzimšanas dienas un vārda dienas</translation>
-<translation id="8502972004418241366">Jums ir jāpiešķir piekļuve pārlūkam Chrome, lai jūsu <ph name="PERMISSION" /> varētu tikt izmantota šajā vietnē.</translation>
 <translation id="8503559462189395349">Chrome paroles</translation>
 <translation id="8503813439785031346">Lietotājvārds</translation>
 <translation id="8504928302600319133">Datoru aparatūra</translation>
@@ -3930,7 +3927,6 @@ Papildu informācija:
 <translation id="853246364274116957">Brodveja un mūzikli</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Apmeklējiet vietni &lt;strong&gt;chrome://policy&lt;/strong&gt;, lai skatītu bloķēto URL sarakstu, kā arī citas politikas, ko noteicis sistēmas administrators.</translation>
-<translation id="8534934518812659742">Jūs esat izslēdzis atļauju “<ph name="PERMISSION" />” pārlūkam Chrome.</translation>
 <translation id="8536234749087605613">Aploksne (ar lodziņu)</translation>
 <translation id="8539500321752640291">Vai piešķirt 2 atļaujas?</translation>
 <translation id="8541158209346794904">Bluetooth ierīce</translation>
@@ -3988,7 +3984,6 @@ Papildu informācija:
 <translation id="865032292777205197">kustību sensori</translation>
 <translation id="865255447216708819">Kodoskopa plēve</translation>
 <translation id="8654126188050905496">55 x 91 mm</translation>
-<translation id="8655930295668719549">Iepriekš neatļāvāt vietnē <ph name="ORIGIN" /> izmantot atļauju <ph name="PERMISSION" />.</translation>
 <translation id="8662463432865928030">Komercīpašumi</translation>
 <translation id="8663226718884576429">Pasūtījuma kopsavilkums, <ph name="TOTAL_LABEL" />, citi dati</translation>
 <translation id="8663909737634214500">Optiskais disks</translation>
@@ -4020,6 +4015,7 @@ Papildu informācija:
 <translation id="8722929331701811374">Rakstāmpapīrs (veidlapa)</translation>
 <translation id="8724824364712796726">Aploksne B6</translation>
 <translation id="8725066075913043281">Mēģināt vēlreiz</translation>
+<translation id="8725667981218437315">Kamera un mikrofons</translation>
 <translation id="8726549941689275341">Lapas lielums:</translation>
 <translation id="8730621377337864115">Gatavs</translation>
 <translation id="8731268612289859741">Drošības kods</translation>

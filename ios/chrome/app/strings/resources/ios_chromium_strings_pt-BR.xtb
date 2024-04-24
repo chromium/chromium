@@ -59,6 +59,7 @@
 <translation id="2574528844022712255">Visualizar favoritos do Chromium</translation>
 <translation id="2590893390871230428">Sincronizar seus dados do Chromium</translation>
 <translation id="2592940277904433508">Continuar usando o Chromium</translation>
+<translation id="2607609479243848905">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="2618596336309823556">Nas configurações do dispositivo, abra "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" e selecione "Chromium"</translation>
 <translation id="2618757400690011108">{COUNT,plural, =1{O Chromium ajudará a rastrear o pacote na página "Nova guia".}one{O Chromium ajudará a rastrear o pacote na página "Nova guia".}other{O Chromium ajudará a rastrear os pacotes na página "Nova guia".}}</translation>
 <translation id="2650312721222849884">Para acessar suas guias em qualquer lugar onde você usar o Chromium, ative a sincronização</translation>
@@ -115,6 +116,9 @@ Seus dados são criptografados com a senha longa. Digite-a para usar e salvar os
 <translation id="4498832288620833153">Adiciona os URLs inseridos à sua Lista de leitura no Chromium.</translation>
 <translation id="452436063477828504">Garanta que você sempre possa usar os dados do Chromium na sua Conta do Google</translation>
 <translation id="4555020257205549924">Quando este recurso está ativado, o Chromium oferece a tradução de páginas escritas em outros idiomas usando o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="4572441104543926904">A criptografia por senha longa não inclui formas de pagamento e endereços.
+
+Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Abre a página de configurações de formas de pagamento do Chromium.</translation>
 <translation id="459080529287102949">Pesquisar recursos visuais no Chromium</translation>
 <translation id="4633738821577273991">Use também o recurso Navegação segura com maior proteção neste perfil do Chromium</translation>
@@ -211,6 +215,9 @@ Considerações:
 <translation id="7163483974919055112">Pesquise recursos visuais no Chromium.</translation>
 <translation id="7165402419892018581">Escolha o Chromium para o preenchimento automático</translation>
 <translation id="7175400662502680481">Sua senha foi exposta em uma violação de dados. O Gerenciador de senhas recomenda que ela seja mudada agora mesmo.</translation>
+<translation id="7185731475720473450">Formas de pagamento e endereços não serão criptografados. O histórico de navegação do Chromium não será sincronizado.
+
+Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senha longa não é enviada ao Google nem armazenada por ele. Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="7192111075364461693">As notificações do Chromium estão desativadas nas configurações do dispositivo no momento.</translation>
 <translation id="7222001353246886083">Pesquisar ${searchphrase} no Chromium</translation>
 <translation id="725427773388857052">O Chromium pode ajudar a proteger você de violações de dados, sites perigosos e muito mais.</translation>

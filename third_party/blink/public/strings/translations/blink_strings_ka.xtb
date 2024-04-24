@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">გთხოვთ შეიყვანოთ შევსებული ელექტრონული ფოსტის მისამართი.</translation>
 <translation id="1758486001363313524">სხვა…</translation>
 <translation id="1787192514241997742">საერთო დრო: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">კამერაზე წვდომის დაშვება</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">დისტანციურ მოწყობილობაზე დაკვრა</translation>
 <translation id="1921819250265091946">დდ</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">ამჟამინდელი ნაბიჯი</translation>
 <translation id="3321030238473337787">დაკვრის სიჩქარე</translation>
 <translation id="3329013043687509092">გაჯერება</translation>
-<translation id="3377518164566272702">მიკროფონსა და კამერაზე წვდომის დაშვება</translation>
 <translation id="3450233048674729344">მნიშვნელობა უნდა იყოს ნაკლები ან უდრიდეს <ph name="MAXIMUM" />-ს.</translation>
 <translation id="3732799496749320381">თთ</translation>
 <translation id="3754210790023674521">რეჟიმიდან „გამოსახულება გამოსახულებაში“ გასვლა</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">სხვა…</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, რომლის დაწყების თარიღია: <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">გამოსახულება გამოსახულებაში</translation>
-<translation id="918430632320614861">მიკროფონზე წვდომის დაშვება</translation>
 <translation id="945780513535800434">ნახევრად მონიშნული</translation>
 <translation id="954003015749068518">რეჟიმში „გამოსახულება გამოსახულებაში“ შესვლა</translation>
 </translationbundle>

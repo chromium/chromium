@@ -584,7 +584,6 @@
 <translation id="2071692954027939183">ଆପଣ ସାଧାରଣତଃ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଅନୁମତି ଦେଉନଥିବା ଯୋଗୁଁ ସେଗୁଡ଼ିକୁ ସ୍ୱଚାଳିତ ଭାବରେ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="2071852865256799872">ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ଆପଣଙ୍କର ବ୍ରାଉଜର ପରିଚାଳିତ ହୋଇଥାଏ ଏବଂ <ph name="PROFILE_DOMAIN" /> ଦ୍ୱାରା ଆପଣଙ୍କ ପ୍ରୋଫାଇଲ ପରିଚାଳିତ ହୋଇଥାଏ</translation>
 <translation id="2074733626795553847"><ph name="TOPIC" />କୁ ଅନବ୍ଲକ କରନ୍ତୁ</translation>
-<translation id="2075497153347571252">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="ORIGIN" />ରେ <ph name="PERMISSION" />କୁ ବ୍ଲକ କରିଛନ୍ତି</translation>
 <translation id="2078956195623975415">ମ୍ୟୁଜିକ ଏବଂ ଡ୍ୟାନ୍ସ ଗେମଗୁଡ଼ିକ</translation>
 <translation id="2079545284768500474">ପୂର୍ବବତ୍</translation>
 <translation id="2080021694978766903">ଏହି ନୀତିରେ <ph name="MAX_ITEMS_LIMIT" />ରୁ ଅଧିକ ଏଣ୍ଟ୍ରି ରହିବା ଉଚିତ ନୁହେଁ।</translation>
@@ -2021,7 +2020,6 @@
 <translation id="4885030148564729407">ହନିମୁନ ଏବଂ ରୋମାଣ୍ଟିକ ଭ୍ରମଣଗୁଡ଼ିକ</translation>
 <translation id="4885256590493466218">ଚେକଆଉଟ୍ କରିବା ସମୟରେ <ph name="CARD_DETAIL" /> ମାଧ୍ୟମରେ ପେମେଣ୍ଟ କରନ୍ତୁ</translation>
 <translation id="4887406273302438710">Windows Hello ମାଧ୍ୟମରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ କରନ୍ତୁ</translation>
-<translation id="4890070067176768718">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="ORIGIN" />ରେ <ph name="PERMISSION" />କୁ ଅନୁମତି ଦେଇଛନ୍ତି</translation>
 <translation id="4892518386797173871">ପଛଭାଗ</translation>
 <translation id="4895019427244614047">ଠିକଣା ଡିଲିଟ କରନ୍ତୁ</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3907,7 +3905,6 @@
 <translation id="8493948351860045254">ଜାଗା ଖାଲି କରନ୍ତୁ</translation>
 <translation id="8498891568109133222"><ph name="HOST_NAME" /> ପ୍ରତିକ୍ରିୟା ଦେବାକୁ ବହୁତ ସମୟ ନେଉଛି।</translation>
 <translation id="8502023382441452707">ଜନ୍ମଦିନ ଏବଂ ନାମ ଦିନଗୁଡ଼ିକ</translation>
-<translation id="8502972004418241366">ଏହି ସାଇଟରେ ଆପଣଙ୍କ <ph name="PERMISSION" />କୁ ବ୍ୟବହାର କରିବା ପାଇଁ, ଆପଣ Chromeକୁ ଆକ୍ସେସ ଦେବା ଆବଶ୍ୟକ</translation>
 <translation id="8503559462189395349">Chrome ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="8503813439785031346">ଉପଯୋଗକର୍ତ୍ତାନାମ</translation>
 <translation id="8504928302600319133">କମ୍ପ୍ୟୁଟର ହାର୍ଡୱେର</translation>
@@ -3927,7 +3924,6 @@
 <translation id="853246364274116957">ବ୍ରଡୱେ ଏବଂ ମ୍ୟୁଜିକାଲ ଥିଏଟର</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ବ୍ଲକ୍ କରାଯାଇଥିବା URLଗୁଡ଼ିକର ତାଲିକା ଏବଂ ଆପଣଙ୍କ ସିଷ୍ଟମ୍ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ଵାରା ଲାଗୁ କରାଯାଇଥିବା ଅନ୍ୟ ନୀତିଗୁଡ଼ିକୁ ଦେଖିବା ପାଇଁ &lt;strong&gt;chrome://policy&lt;/strong&gt; କୁ ଭିଜିଟ୍ କରନ୍ତୁ।</translation>
-<translation id="8534934518812659742">ଆପଣ Chrome ପାଇଁ <ph name="PERMISSION" />କୁ ବନ୍ଦ କରିଛନ୍ତି।</translation>
 <translation id="8536234749087605613">ଏନଭେଲପ (ୱିଣ୍ଡୋ)</translation>
 <translation id="8539500321752640291">2ଟି ଅନୁମତି ଦେବେ?</translation>
 <translation id="8541158209346794904">ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସ୍</translation>
@@ -3984,7 +3980,6 @@
 <translation id="865032292777205197">ମୋସନ୍ ସେନ୍ସରଗୁଡ଼ିକ</translation>
 <translation id="865255447216708819">ବେକ ପ୍ରିଣ୍ଟ ଫିଲ୍ମ</translation>
 <translation id="8654126188050905496">55 x 91 ମିମି</translation>
-<translation id="8655930295668719549">ଆପଣ ପୂର୍ବେ <ph name="ORIGIN" />ରେ <ph name="PERMISSION" />କୁ ଅନୁମତି ଦେଇନାହାଁନ୍ତି</translation>
 <translation id="8662463432865928030">କମର୍ସିଆଲ ପ୍ରପର୍ଟି</translation>
 <translation id="8663226718884576429">ଅର୍ଡର ସାରାଂଶ, <ph name="TOTAL_LABEL" />, ଅଧିକ ବିବରଣୀ</translation>
 <translation id="8663909737634214500">ଅପ୍ଟିକାଲ ଡିସ୍କ</translation>

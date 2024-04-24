@@ -584,7 +584,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2071692954027939183">Märguanded blokeeriti automaatselt, kuna tavaliselt ei luba te neid kuvada</translation>
 <translation id="2071852865256799872">Teie brauserit haldab teie organisatsioon ja teie profiili haldab <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="2074733626795553847">Deblokeeri <ph name="TOPIC" /></translation>
-<translation id="2075497153347571252">Teie administraator on blokeerinud loa <ph name="PERMISSION" /> lähtekohas <ph name="ORIGIN" /></translation>
 <translation id="2078956195623975415">Muusika- ja tantsumängud</translation>
 <translation id="2079545284768500474">Võta tagasi</translation>
 <translation id="2080021694978766903">Sellel reeglil ei tohi olla üle <ph name="MAX_ITEMS_LIMIT" /> kirje.</translation>
@@ -2026,7 +2025,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4885030148564729407">Mesinädalad ja romantilised puhkused</translation>
 <translation id="4885256590493466218">Makske kassas kaardiga <ph name="CARD_DETAIL" /></translation>
 <translation id="4887406273302438710">Kaitske paroole funktsiooniga Windows Hello</translation>
-<translation id="4890070067176768718">Teie administraator on lubanud loa <ph name="PERMISSION" /> lähtekohas <ph name="ORIGIN" /></translation>
 <translation id="4892518386797173871">Tagumine</translation>
 <translation id="4895019427244614047">Kustutage aadress</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -3913,7 +3911,6 @@ Lisateave:
 <translation id="8493948351860045254">Vabasta ruum</translation>
 <translation id="8498891568109133222">Hostil <ph name="HOST_NAME" /> kulus vastamiseks liiga kaua aega.</translation>
 <translation id="8502023382441452707">Sünnipäevad ja nimepäevad</translation>
-<translation id="8502972004418241366">Sellel saidil seadme <ph name="PERMISSION" /> kasutamiseks peate Chrome'ile juurdepääsu lubama</translation>
 <translation id="8503559462189395349">Chrome'i paroolid</translation>
 <translation id="8503813439785031346">Kasutajanimi</translation>
 <translation id="8504928302600319133">Arvutiriistvara</translation>
@@ -3933,7 +3930,6 @@ Lisateave:
 <translation id="853246364274116957">Broadway ja muusikateater</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Külastage saiti &lt;strong&gt;chrome://policy&lt;/strong&gt;, et näha blokeeritud URL-ide loendit ja teisi reegleid, mille teie süsteemiadministraator on jõustanud.</translation>
-<translation id="8534934518812659742">Olete Chrome'i jaoks loa <ph name="PERMISSION" /> välja lülitanud.</translation>
 <translation id="8536234749087605613">Ümbrik (aknaga)</translation>
 <translation id="8539500321752640291">Kas anda kaks luba?</translation>
 <translation id="8541158209346794904">Bluetooth-seade</translation>
@@ -3990,7 +3986,6 @@ Lisateave:
 <translation id="865032292777205197">liikumisandurid</translation>
 <translation id="865255447216708819">Läbivalgustatav kile</translation>
 <translation id="8654126188050905496">55 × 91 mm</translation>
-<translation id="8655930295668719549">Varem te ei lubanud seadet <ph name="PERMISSION" /> aadressil <ph name="ORIGIN" /></translation>
 <translation id="8662463432865928030">Äripinnad</translation>
 <translation id="8663226718884576429">Tellimuse kokkuvõte, <ph name="TOTAL_LABEL" />, rohkem üksikasju</translation>
 <translation id="8663909737634214500">Optiline andmekandja</translation>
@@ -4022,6 +4017,7 @@ Lisateave:
 <translation id="8722929331701811374">Kirjapaber (kirjaplank)</translation>
 <translation id="8724824364712796726">Ümbrik B6</translation>
 <translation id="8725066075913043281">Proovi uuesti</translation>
+<translation id="8725667981218437315">Kaamera ja mikrofon</translation>
 <translation id="8726549941689275341">Lehe suurus:</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8731268612289859741">Turvakood</translation>

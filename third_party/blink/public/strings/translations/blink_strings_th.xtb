@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">โปรดป้อนที่อยู่อีเมลที่ไม่ว่างเปล่า</translation>
 <translation id="1758486001363313524">อื่นๆ...</translation>
 <translation id="1787192514241997742">เวลารวม: <ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">อนุญาตให้เข้าถึงกล้อง</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">เล่นในอุปกรณ์ระยะไกล</translation>
 <translation id="1921819250265091946">วว</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">ขั้นตอนปัจจุบัน</translation>
 <translation id="3321030238473337787">ความเร็วในการเล่น</translation>
 <translation id="3329013043687509092">ความอิ่มตัวของสี</translation>
-<translation id="3377518164566272702">อนุญาตให้เข้าถึงไมโครโฟนและกล้อง</translation>
 <translation id="3450233048674729344">ค่าต้องน้อยกว่าหรือเท่ากับ <ph name="MAXIMUM" /></translation>
 <translation id="3732799496749320381">ดด</translation>
 <translation id="3754210790023674521">ออกจากการแสดงภาพซ้อนภาพ</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">อื่นๆ...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" /> เริ่มวันที่ <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">การแสดงภาพซ้อนภาพ</translation>
-<translation id="918430632320614861">อนุญาตให้เข้าถึงไมโครโฟน</translation>
 <translation id="945780513535800434">เลือกบางรายการ</translation>
 <translation id="954003015749068518">เข้าสู่การแสดงภาพซ้อนภาพ</translation>
 </translationbundle>

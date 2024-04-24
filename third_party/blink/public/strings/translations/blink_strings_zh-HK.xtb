@@ -17,7 +17,6 @@
 <translation id="1729654308190250600">請輸入一個非空的電郵地址。</translation>
 <translation id="1758486001363313524">其他日期…</translation>
 <translation id="1787192514241997742">總時間：<ph name="REMAINING_TIME" /></translation>
-<translation id="1800494066469288780">授予相機權限</translation>
 <translation id="1822429046913737220">上午/下午</translation>
 <translation id="1832974991323546415">在遠端裝置上播放</translation>
 <translation id="1921819250265091946">日</translation>
@@ -54,7 +53,6 @@
 <translation id="3220661731597678625">目前嘅步驟</translation>
 <translation id="3321030238473337787">播放速度</translation>
 <translation id="3329013043687509092">飽和度</translation>
-<translation id="3377518164566272702">授予麥克風和攝影機權限</translation>
 <translation id="3450233048674729344">數值必須小於或等於 <ph name="MAXIMUM" />。</translation>
 <translation id="3732799496749320381">月</translation>
 <translation id="3754210790023674521">退出畫中畫</translation>
@@ -188,7 +186,6 @@
 <translation id="9132465097189459683">其他日期…</translation>
 <translation id="9155987714137265666"><ph name="WEEK" /> (該週的第一天為 <ph name="WEEK_START_DATE" />)</translation>
 <translation id="916607977885256133">畫中畫</translation>
-<translation id="918430632320614861">授予麥克風權限</translation>
 <translation id="945780513535800434">有部分勾選咗</translation>
 <translation id="954003015749068518">進入畫中畫</translation>
 </translationbundle>
