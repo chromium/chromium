@@ -105,6 +105,9 @@ void RecordReinitializationLatency(base::TimeDelta latency) {
 }
 
 bool HasSoftwareFallback(media::VideoCodec video_codec) {
+  if (video_codec == media::VideoCodec::kHEVC) {
+    return false;
+  }
 #if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
   return video_codec != media::VideoCodec::kH264;
 #else
@@ -515,7 +518,8 @@ std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
       media::EncryptionScheme::kUnencrypted);
   config.set_is_rtc(true);
 
-  if (!resolution_monitor) {
+  // HEVC does not have SW fallback, so resolution monitor is not needed.
+  if (!resolution_monitor && HasSoftwareFallback(config.codec())) {
     resolution_monitor = ResolutionMonitor::Create(config.codec());
     if (!resolution_monitor) {
       DLOG(ERROR) << "Failed to create ResolutionMonitor for codec: "
@@ -552,8 +556,10 @@ RTCVideoDecoderAdapter::RTCVideoDecoderAdapter(
       resolution_monitor_(std::move(resolution_monitor)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoding_sequence_checker_);
   DVLOG(1) << __func__;
-  CHECK(resolution_monitor_);
-  CHECK_EQ(resolution_monitor_->codec(), config_.codec());
+  if (HasSoftwareFallback(config.codec())) {
+    CHECK(resolution_monitor_);
+    CHECK_EQ(resolution_monitor_->codec(), config_.codec());
+  }
 
   decoder_info_.implementation_name = "ExternalDecoder (Unknown)";
   decoder_info_.is_hardware_accelerated = true;
@@ -627,8 +633,10 @@ bool RTCVideoDecoderAdapter::Configure(const Settings& settings) {
 
   if (WebRtcToMediaVideoCodec(settings.codec_type()) != config_.codec())
     return false;
-  CHECK_EQ(resolution_monitor_->codec(),
-           WebRtcToMediaVideoCodec(settings.codec_type()));
+  if (HasSoftwareFallback(config_.codec())) {
+    CHECK_EQ(resolution_monitor_->codec(),
+             WebRtcToMediaVideoCodec(settings.codec_type()));
+  }
 
   const bool init_success = status_ != Status::kError;
   base::UmaHistogramBoolean("Media.RTCVideoDecoderInitDecodeSuccess",

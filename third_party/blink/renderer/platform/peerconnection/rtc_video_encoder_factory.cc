@@ -10,17 +10,24 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/clients/mojo_video_encoder_metrics_provider.h"
 #include "media/video/gpu_video_accelerator_factories.h"
+#include "media/webrtc/webrtc_features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder.h"
+#include "third_party/webrtc/api/video/resolution.h"
 #include "third_party/webrtc/api/video_codecs/h264_profile_level_id.h"
 #include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder.h"
 #include "third_party/webrtc/api/video_codecs/vp9_profile.h"
 #include "third_party/webrtc/media/base/codec.h"
+
+#if BUILDFLAG(RTC_USE_H265)
+#include "third_party/webrtc/api/video_codecs/h265_profile_tier_level.h"
+#endif  // BUILDFLAG(RTC_USE_H265)
 
 namespace blink {
 
@@ -67,6 +74,11 @@ std::optional<media::VideoCodecProfile> WebRTCFormatToCodecProfile(
   } else if (sdp.name == "AV1") {
     return media::VideoCodecProfile::AV1PROFILE_MIN;
   }
+#if BUILDFLAG(RTC_USE_H265)
+  else if (sdp.name == "H265") {
+    return media::VideoCodecProfile::HEVCPROFILE_MIN;
+  }
+#endif  // BUILDFLAG(RTC_USE_H265)
   return std::nullopt;
 }
 
@@ -74,7 +86,10 @@ std::optional<media::VideoCodecProfile> WebRTCFormatToCodecProfile(
 // webrtc::SdpVideoFormat, or return nothing if the profile isn't supported.
 std::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
     const media::VideoEncodeAccelerator::SupportedProfile& profile) {
-  DCHECK_EQ(profile.max_framerate_denominator, 1U);
+  const int width = profile.max_resolution.width();
+  const int height = profile.max_resolution.height();
+  const int fps = profile.max_framerate_numerator;
+  DCHECK_EQ(1u, profile.max_framerate_denominator);
 
   if (profile.profile >= media::VP8PROFILE_MIN &&
       profile.profile <= media::VP8PROFILE_MAX) {
@@ -119,11 +134,6 @@ std::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
         return std::nullopt;
     }
 
-    const int width = profile.max_resolution.width();
-    const int height = profile.max_resolution.height();
-    const int fps = profile.max_framerate_numerator;
-    DCHECK_EQ(1u, profile.max_framerate_denominator);
-
     const std::optional<webrtc::H264Level> h264_level =
         webrtc::H264SupportedLevel(width * height, fps);
     const webrtc::H264ProfileLevelId profile_level_id(
@@ -164,6 +174,47 @@ std::optional<webrtc::SdpVideoFormat> VEAToWebRTCFormat(
     return webrtc::SdpVideoFormat("AV1");
   }
 
+  if (profile.profile >= media::HEVCPROFILE_MIN &&
+      profile.profile <= media::HEVCPROFILE_MAX) {
+#if BUILDFLAG(RTC_USE_H265)
+    // Unlikely H.264, there is no SW encoder implementation for H.265, so we
+    // will not check SW support here.
+    webrtc::H265Profile h265_profile;
+    switch (profile.profile) {
+      case media::HEVCPROFILE_MAIN:
+        h265_profile = webrtc::H265Profile::kProfileMain;
+        break;
+      case media::HEVCPROFILE_MAIN10:
+        h265_profile = webrtc::H265Profile::kProfileMain10;
+        break;
+      default:
+        // Unsupported H.265 profiles(main still/range extensions etc) in
+        // WebRTC.
+        return std::nullopt;
+    }
+    const webrtc::Resolution resolution = {
+        .width = width,
+        .height = height,
+    };
+    const std::optional<webrtc::H265Level> h265_level =
+        webrtc::GetSupportedH265Level(resolution, fps);
+    const webrtc::H265ProfileTierLevel profile_tier_level(
+        h265_profile, webrtc::H265Tier::kTier0,
+        h265_level.value_or(webrtc::H265Level::kLevel1));
+    webrtc::SdpVideoFormat format("H265");
+    format.parameters = {
+        {cricket::kH265FmtpProfileId,
+         webrtc::H265ProfileToString(profile_tier_level.profile)},
+        {cricket::kH265FmtpTierFlag,
+         webrtc::H265TierToString(profile_tier_level.tier)},
+        {cricket::kH265FmtpLevelId,
+         webrtc::H265LevelToString(profile_tier_level.level)}};
+    return format;
+#else
+    return std::nullopt;
+#endif  // BUILDFLAG(RTC_USE_H265)
+  }
+
   return std::nullopt;
 }  // namespace
 
@@ -181,6 +232,8 @@ SupportedFormats GetSupportedFormatsInternal(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     const std::vector<media::VideoCodecProfile>& disabled_profiles) {
   SupportedFormats supported_formats;
+  SupportedFormats low_priority_formats;
+
   auto profiles = gpu_factories->GetVideoEncodeAcceleratorSupportedProfiles();
   if (!profiles)
     return supported_formats;
@@ -197,7 +250,16 @@ SupportedFormats GetSupportedFormatsInternal(
       if (format->IsCodecInList(supported_formats.sdp_formats)) {
         continue;
       }
-
+      // Supported H.265 formats must be added to the end of supported codecs.
+#if BUILDFLAG(RTC_USE_H265)
+      if (format->name == cricket::kH265CodecName) {
+        low_priority_formats.profiles.push_back(profile.profile);
+        low_priority_formats.scalability_modes.push_back(
+            profile.scalability_modes);
+        low_priority_formats.sdp_formats.push_back(std::move(*format));
+        continue;
+      }
+#endif  // BUILDFLAG(RTC_USE_H265)
       supported_formats.profiles.push_back(profile.profile);
       supported_formats.scalability_modes.push_back(profile.scalability_modes);
       supported_formats.sdp_formats.push_back(std::move(*format));
@@ -221,6 +283,17 @@ SupportedFormats GetSupportedFormatsInternal(
 #endif
     }
   }
+
+  supported_formats.profiles.insert(supported_formats.profiles.end(),
+                                    low_priority_formats.profiles.begin(),
+                                    low_priority_formats.profiles.end());
+  supported_formats.scalability_modes.insert(
+      supported_formats.scalability_modes.end(),
+      low_priority_formats.scalability_modes.begin(),
+      low_priority_formats.scalability_modes.end());
+  supported_formats.sdp_formats.insert(supported_formats.sdp_formats.end(),
+                                       low_priority_formats.sdp_formats.begin(),
+                                       low_priority_formats.sdp_formats.end());
 
   DCHECK_EQ(supported_formats.profiles.size(),
             supported_formats.sdp_formats.size());
@@ -280,7 +353,30 @@ RTCVideoEncoderFactory::RTCVideoEncoderFactory(
     disabled_profiles_.emplace_back(media::AV1PROFILE_PROFILE_HIGH);
     disabled_profiles_.emplace_back(media::AV1PROFILE_PROFILE_PRO);
   }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(RTC_USE_H265)
+  // We may not need to add check for media::kPlatformHEVCEncoderSupport here
+  // but it's added for consistency with other codecs like H264 and AV1.
+  if (
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
+      !base::FeatureList::IsEnabled(media::kPlatformHEVCEncoderSupport) ||
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
+      !base::FeatureList::IsEnabled(::features::kWebRtcAllowH265Send)) {
+    disabled_profiles_.emplace_back(media::HEVCPROFILE_MAIN);
+    disabled_profiles_.emplace_back(media::HEVCPROFILE_MAIN10);
+    disabled_profiles_.emplace_back(media::HEVCPROFILE_MAIN_STILL_PICTURE);
+    disabled_profiles_.emplace_back(media::HEVCPROFILE_REXT);
+    disabled_profiles_.emplace_back(media::HEVCPROFILE_HIGH_THROUGHPUT);
+    disabled_profiles_.emplace_back(media::HEVCPROFILE_MULTIVIEW_MAIN);
+    disabled_profiles_.emplace_back(media::HEVCPROFILE_SCALABLE_MAIN);
+    disabled_profiles_.emplace_back(media::HEVCPROFILE_3D_MAIN);
+    disabled_profiles_.emplace_back(media::HEVCPROFILE_SCREEN_EXTENDED);
+    disabled_profiles_.emplace_back(media::HEVCPROFILE_SCALABLE_REXT);
+    disabled_profiles_.emplace_back(
+        media::HEVCPROFILE_HIGH_THROUGHPUT_SCREEN_EXTENDED);
+  }
+#endif  // BUILDFLAG(RTC_USE_H265)
 }
 
 RTCVideoEncoderFactory::~RTCVideoEncoderFactory() {

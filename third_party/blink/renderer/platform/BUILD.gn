@@ -2344,6 +2344,7 @@ source_set("blink_platform_unittests_sources") {
     "//media:test_support",
     "//media/capture/mojom:video_capture",
     "//media/mojo:test_support",
+    "//media/webrtc:webrtc",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings/tests:for_blink_tests",
     "//mojo/public/cpp/test_support:test_utils",

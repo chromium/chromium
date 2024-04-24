@@ -29,6 +29,7 @@ include_rules = [
     "+media/video/video_decode_accelerator.h",
     "+media/video/h264_parser.h",
     "+media/video/video_encode_accelerator.h",
+    "+media/webrtc/webrtc_features.h",
     "+third_party/blink/renderer/platform/allow_discouraged_type.h",
     "+third_party/blink/renderer/platform/bindings/script_wrappable.h",
     "+third_party/blink/renderer/platform/heap",

@@ -5,7 +5,11 @@
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 
 #include "base/logging.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/webrtc/api/video_codecs/h264_profile_level_id.h"
+#if BUILDFLAG(RTC_USE_H265)
+#include "third_party/webrtc/api/video_codecs/h265_profile_tier_level.h"
+#endif  // BUILDFLAG(RTC_USE_H265)
 #include "third_party/webrtc/api/video_codecs/video_codec.h"
 #include "third_party/webrtc/api/video_codecs/vp9_profile.h"
 
@@ -36,6 +40,10 @@ media::VideoCodec WebRtcToMediaVideoCodec(webrtc::VideoCodecType codec) {
       return media::VideoCodec::kVP9;
     case webrtc::kVideoCodecH264:
       return media::VideoCodec::kH264;
+#if BUILDFLAG(RTC_USE_H265)
+    case webrtc::kVideoCodecH265:
+      return media::VideoCodec::kHEVC;
+#endif  // BUILDFLAG(RTC_USE_H265)
     default:
       return media::VideoCodec::kUnknown;
   }
@@ -88,6 +96,23 @@ media::VideoCodecProfile WebRtcVideoFormatToMediaVideoCodecProfile(
           return media::H264PROFILE_BASELINE;
       }
     }
+#if BUILDFLAG(RTC_USE_H265)
+    case webrtc::kVideoCodecH265: {
+      const std::optional<webrtc::H265ProfileTierLevel> h265_ptl =
+          webrtc::ParseSdpForH265ProfileTierLevel(format.parameters);
+      if (!h265_ptl) {
+        return media::VIDEO_CODEC_PROFILE_UNKNOWN;
+      }
+      switch (h265_ptl->profile) {
+        case webrtc::H265Profile::kProfileMain:
+          return media::HEVCPROFILE_MAIN;
+        case webrtc::H265Profile::kProfileMain10:
+          return media::HEVCPROFILE_MAIN10;
+        default:
+          return media::VIDEO_CODEC_PROFILE_UNKNOWN;
+      }
+    }
+#endif
     default:
       return media::VIDEO_CODEC_PROFILE_UNKNOWN;
   }

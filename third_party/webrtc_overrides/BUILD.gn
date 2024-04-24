@@ -66,6 +66,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/api/units:time_delta",
   "//third_party/webrtc/api/units:timestamp",
   "//third_party/webrtc/api/video:recordable_encoded_frame",
+  "//third_party/webrtc/api/video:resolution",
   "//third_party/webrtc/api/video:video_bitrate_allocation",
   "//third_party/webrtc/api/video:video_frame",
   "//third_party/webrtc/api/video:video_frame_metadata",

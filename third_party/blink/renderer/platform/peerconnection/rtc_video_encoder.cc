@@ -575,6 +575,11 @@ void RecordEncoderStatusUMA(const media::EncoderStatus& status,
     case webrtc::VideoCodecType::kVideoCodecAV1:
       histogram_name += "AV1";
       break;
+#if BUILDFLAG(RTC_USE_H265)
+    case webrtc::VideoCodecType::kVideoCodecH265:
+      histogram_name += "H265";
+      break;
+#endif  // BUILDFLAG(RTC_USE_H265)
     default:
       histogram_name += "Other";
       break;
@@ -2143,7 +2148,11 @@ int32_t RTCVideoEncoder::InitEncode(
   // situations where a codec like H264 is available in HW but not SW in which
   // case SW fallback would result in a change of codec, see
   // https://crbug.com/1469318.
-  if (base::FeatureList::IsEnabled(features::kForceSoftwareForLowResolutions)) {
+  //
+  // H.265 does not support SW fallback, so it is excluded from low resoloution
+  // fallback.
+  if (codec_settings->codecType != webrtc::kVideoCodecH265 &&
+      base::FeatureList::IsEnabled(features::kForceSoftwareForLowResolutions)) {
     uint16_t force_sw_height = 359;
     if (base::FeatureList::IsEnabled(features::kForcingSoftwareIncludes360)) {
       force_sw_height = 360;
@@ -2156,8 +2165,7 @@ int32_t RTCVideoEncoder::InitEncode(
     }
   }
 
-  if (profile_ >= media::H264PROFILE_MIN &&
-      profile_ <= media::H264PROFILE_MAX &&
+  if (codec_settings->codecType == webrtc::kVideoCodecH264 &&
       (codec_settings->width % 2 != 0 || codec_settings->height % 2 != 0)) {
     LOG(ERROR) << "Input video size is " << codec_settings->width << "x"
                << codec_settings->height << ", "

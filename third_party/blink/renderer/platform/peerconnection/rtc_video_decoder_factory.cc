@@ -18,16 +18,24 @@
 #include "media/base/media_util.h"
 #include "media/base/platform_features.h"
 #include "media/base/video_codecs.h"
+#include "media/media_buildflags.h"
 #include "media/video/gpu_video_accelerator_factories.h"
+#include "media/webrtc/webrtc_features.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_adapter.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_stream_adapter.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
+#include "third_party/webrtc/api/video/resolution.h"
 #include "third_party/webrtc/api/video_codecs/h264_profile_level_id.h"
 #include "third_party/webrtc/api/video_codecs/vp9_profile.h"
 #include "third_party/webrtc/media/base/codec.h"
 #include "third_party/webrtc/media/base/media_constants.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
+
+#if BUILDFLAG(RTC_USE_H265)
+#include "third_party/webrtc/api/video_codecs/h265_profile_tier_level.h"
+#endif  // BUILDFLAG(RTC_USE_H265)
 
 namespace blink {
 namespace {
@@ -38,15 +46,20 @@ namespace {
 // returned by the internal software decoder.
 // TODO(crbug.com/1213437): Query gpu_factories_ or decoder_factory_ to
 // determine the maximum resolution and frame rate.
-const int kDefaultFps = 30;
-const gfx::Size kDefaultSize(1280, 720);
+constexpr int kDefaultFps = 30;
+constexpr gfx::Size kDefaultSize(1280, 720);
+#if BUILDFLAG(RTC_USE_H265)
+// For H.265 we use larger default resolution to signal support of 1080p and
+// minimum required level 3.1.
+constexpr gfx::Size kDefaultSizeH265(1920, 1080);
+#endif  // BUILDFLAG(RTC_USE_H265)
 
 struct CodecConfig {
   media::VideoCodec codec;
   media::VideoCodecProfile profile;
 };
 
-constexpr std::array<CodecConfig, 9> kCodecConfigs = {{
+constexpr CodecConfig kCodecConfigs[] = {
     {media::VideoCodec::kVP8, media::VP8PROFILE_ANY},
     {media::VideoCodec::kVP9, media::VP9PROFILE_PROFILE0},
     {media::VideoCodec::kVP9, media::VP9PROFILE_PROFILE1},
@@ -56,7 +69,11 @@ constexpr std::array<CodecConfig, 9> kCodecConfigs = {{
     {media::VideoCodec::kH264, media::H264PROFILE_HIGH},
     {media::VideoCodec::kH264, media::H264PROFILE_HIGH444PREDICTIVEPROFILE},
     {media::VideoCodec::kAV1, media::AV1PROFILE_PROFILE_MAIN},
-}};
+#if BUILDFLAG(RTC_USE_H265)
+    {media::VideoCodec::kHEVC, media::HEVCPROFILE_MAIN},
+    {media::VideoCodec::kHEVC, media::HEVCPROFILE_MAIN10},
+#endif  // BUILDFLAG(RTC_USE_H265)
+};
 
 // Translate from media::VideoDecoderConfig to webrtc::SdpVideoFormat, or return
 // nothing if the profile isn't supported.
@@ -121,6 +138,47 @@ std::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
            *webrtc::H264ProfileLevelIdToString(profile_level_id)},
           {cricket::kH264FmtpLevelAsymmetryAllowed, "1"}};
       return format;
+    }
+    case media::VideoCodec::kHEVC: {
+#if BUILDFLAG(RTC_USE_H265)
+      if (!base::FeatureList::IsEnabled(::features::kWebRtcAllowH265Receive)) {
+        return std::nullopt;
+      }
+
+      webrtc::H265Profile h265_profile;
+      switch (config.profile()) {
+        case media::HEVCPROFILE_MAIN:
+          h265_profile = webrtc::H265Profile::kProfileMain;
+          break;
+        case media::HEVCPROFILE_MAIN10:
+          h265_profile = webrtc::H265Profile::kProfileMain10;
+          break;
+        default:
+          // Unsupported H265 profile in WebRTC.
+          return std::nullopt;
+      }
+
+      gfx::Rect visible_rect(kDefaultSizeH265);
+      const webrtc::Resolution resolution = {.width = visible_rect.width(),
+                                             .height = visible_rect.height()};
+      const std::optional<webrtc::H265Level> h265_level =
+          webrtc::GetSupportedH265Level(resolution, kDefaultFps);
+      const webrtc::H265ProfileTierLevel profile_tier_level(
+          h265_profile, webrtc::H265Tier::kTier0,
+          h265_level.value_or(webrtc::H265Level::kLevel1));
+
+      webrtc::SdpVideoFormat format(cricket::kH265CodecName);
+      format.parameters = {
+          {cricket::kH265FmtpProfileId,
+           webrtc::H265ProfileToString(profile_tier_level.profile)},
+          {cricket::kH265FmtpTierFlag,
+           webrtc::H265TierToString(profile_tier_level.tier)},
+          {cricket::kH265FmtpLevelId,
+           webrtc::H265LevelToString(profile_tier_level.level)}};
+      return format;
+#else
+      return std::nullopt;
+#endif  // BUILDFLAG(RTC_USE_H265)
     }
     default:
       return std::nullopt;
@@ -262,6 +320,13 @@ RTCVideoDecoderFactory::QueryCodecSupport(const webrtc::SdpVideoFormat& format,
 
   media::VideoCodec codec =
       WebRtcToMediaVideoCodec(webrtc::PayloadStringToCodecType(format.name));
+
+  // If WebRtcAllowH265Receive is not enabled, report H.265 as unsupported.
+  if (codec == media::VideoCodec::kHEVC &&
+      !base::FeatureList::IsEnabled(::features::kWebRtcAllowH265Receive)) {
+    return {false, false};
+  }
+
   if (reference_scaling) {
     // Check that the configuration is valid (e.g., H264 doesn't support SVC at
     // all and VP8 doesn't support spatial layers).
