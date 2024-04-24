@@ -32,6 +32,10 @@ BASE_FEATURE(kOmniboxPopupRowContentConfiguration,
              "OmniboxPopupRowContentConfiguration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOmniboxActionsInSuggest,
+             "OmniboxIOSActionsInSuggest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsIpadPopoutOmniboxEnabled() {
   return base::FeatureList::IsEnabled(kEnablePopoutOmniboxIpad) &&
          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;

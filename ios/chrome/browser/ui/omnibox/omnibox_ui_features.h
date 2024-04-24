@@ -31,6 +31,9 @@ BASE_DECLARE_FEATURE(kOmniboxLockIconEnabled);
 // Feature flag to enable the use of content configuration for the popup rows.
 BASE_DECLARE_FEATURE(kOmniboxPopupRowContentConfiguration);
 
+// Feature flag to enable actions in suggest.
+BASE_DECLARE_FEATURE(kOmniboxActionsInSuggest);
+
 // Type of rich autocompletion implementation.
 enum class RichAutocompletionImplementation {
   // kRichAutocompletionParamLabel.

@@ -716,6 +716,10 @@ const char kNTPViewHierarchyRepairName[] = "NTP View Hierarchy Repair";
 const char kNTPViewHierarchyRepairDescription[] =
     "Checks if NTP view hierarchy is broken and fixes it if necessary.";
 
+const char kOmniboxActionsInSuggestName[] = "Omnibox actions in suggest";
+const char kOmniboxActionsInSuggestDescription[] =
+    "Enables actions in suggest for IOS";
+
 const char kOmniboxCompanyEntityIconAdjustmentName[] =
     "Omnibox Company Entity Icon Adjustment";
 const char kOmniboxCompanyEntityIconAdjustmentDescription[] =

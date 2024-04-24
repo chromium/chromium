@@ -1592,6 +1592,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableVerveCardSupportDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableVerveCardSupport)},
+    {"omnibox-actions-in-suggest",
+     flag_descriptions::kOmniboxActionsInSuggestName,
+     flag_descriptions::kOmniboxActionsInSuggestDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kOmniboxActionsInSuggest)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
