@@ -1388,7 +1388,7 @@ class OperatorFilterSubscribeDelegate final
 
       ScriptState::Scope scope(script_state_);
       v8::TryCatch try_catch(script_state_->GetIsolate());
-      v8::Maybe<bool> matches = predicate_->Invoke(nullptr, value);
+      v8::Maybe<bool> matches = predicate_->Invoke(nullptr, value, idx_++);
       if (try_catch.HasCaught()) {
         subscriber_->error(
             script_state_,
@@ -1416,6 +1416,7 @@ class OperatorFilterSubscribeDelegate final
     }
 
    private:
+    uint64_t idx_ = 0;
     Member<Subscriber> subscriber_;
     Member<ScriptState> script_state_;
     Member<V8Predicate> predicate_;

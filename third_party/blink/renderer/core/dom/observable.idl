@@ -13,7 +13,9 @@ callback Mapper = any (any element, unsigned long long index);
 // Differs from Mapper only in return type, since this callback is exclusively
 // used to visit each element in a sequence, not transform it.
 callback Visitor = undefined (any element, unsigned long long index);
-callback Predicate = boolean (any value);
+// This matches the predicate in the ECMAScript Iterator helpers proposal, i.e.,
+// including the `index` parameter.
+callback Predicate = boolean (any value, unsigned long long index);
 
 callback ObservableInspectorAbortHandler = undefined (any value);
 
