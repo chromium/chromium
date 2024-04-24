@@ -23,11 +23,10 @@ namespace media {
 
 namespace {
 gfx::GenericSharedMemoryId GetNextSharedMemoryId() {
-  static base::NoDestructor<base::Lock> id_lock;
-  static int next_shared_memory_id = 0;
-  base::AutoLock lock(*id_lock);
-  CHECK_LT(next_shared_memory_id, std::numeric_limits<int>::max());
-  return gfx::GpuMemoryBufferId(next_shared_memory_id++);
+  // This uses the same ID generator that is used for creating ID's for GPU
+  // memory buffers. Doing so avoids overlapping ID's. No cast is necessary
+  // since gfx::GpuMemoryBufferId is an alias of gfx::GenericSharedMemoryId.
+  return GetNextGpuMemoryBufferId();
 }
 
 // Provides a const-correct accessor to |pixmap_|->ExportHandle(). This is
