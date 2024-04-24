@@ -6,6 +6,8 @@
 
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/back_forward_cache/back_forward_cache_disable.h"
+#include "components/back_forward_cache/disabled_reason_id.h"
 #include "components/js_injection/browser/web_message.h"
 #include "components/js_injection/browser/web_message_host.h"
 #include "components/js_injection/browser/web_message_host_factory.h"
@@ -44,8 +46,12 @@ class EmptyReplyProxy : public WebMessageReplyProxy {
   raw_ptr<content::Page> page_;
 };
 
-const char16_t NavigationWebMessageSender::kNavigationListenerObjectName[] =
-    u"experimentalWebViewNavigationListener";
+const char16_t
+    NavigationWebMessageSender::kNavigationListenerAllowBFCacheObjectName[] =
+        u"experimentalWebViewNavigationListenerAllowBFCache";
+const char16_t
+    NavigationWebMessageSender::kNavigationListenerDisableBFCacheObjectName[] =
+        u"experimentalWebViewNavigationListenerDisableBFCache";
 
 const char NavigationWebMessageSender::kOptedInMessage[] =
     "NAVIGATION_MESSAGE_OPTED_IN";
@@ -54,8 +60,28 @@ const char NavigationWebMessageSender::kNavigationCompletedMessage[] =
 const char NavigationWebMessageSender::kPageLoadEndMessage[] = "PAGE_LOAD_END";
 const char NavigationWebMessageSender::kPageDeletedMessage[] = "PAGE_DELETED";
 
+// static
+bool NavigationWebMessageSender::IsNavigationListener(
+    const std::u16string& js_object_name) {
+  return base::FeatureList::IsEnabled(features::kEnableNavigationListener) &&
+         ((js_object_name == kNavigationListenerAllowBFCacheObjectName) ||
+          (js_object_name == kNavigationListenerDisableBFCacheObjectName));
+}
+
+// static
+void NavigationWebMessageSender::CreateForPageIfNeeded(
+    content::Page& page,
+    const std::u16string& js_object_name,
+    WebMessageHostFactory* factory) {
+  if (!IsNavigationListener(js_object_name)) {
+    return;
+  }
+  NavigationWebMessageSender::CreateForPage(page, js_object_name, factory);
+}
+
 NavigationWebMessageSender::NavigationWebMessageSender(
     content::Page& page,
+    const std::u16string& js_object_name,
     WebMessageHostFactory* factory)
     : content::PageUserData<NavigationWebMessageSender>(page),
       content::WebContentsObserver(
@@ -67,6 +93,14 @@ NavigationWebMessageSender::NavigationWebMessageSender(
   reply_proxy_ = std::make_unique<EmptyReplyProxy>(page);
   host_ = factory->CreateHost(origin_string, origin_string,
                               /*is_main_frame=*/true, reply_proxy_.get());
+  if (js_object_name == kNavigationListenerDisableBFCacheObjectName) {
+    // Prevent this page to enter BFCache. See the comment for the definition of
+    // `kNavigationListenerDisableBFCacheObjectName` for why we want to do this.
+    content::BackForwardCache::DisableForRenderFrameHost(
+        &page.GetMainDocument(),
+        back_forward_cache::DisabledReason(
+            back_forward_cache::DisabledReasonId::kRequestedByWebViewClient));
+  }
 }
 
 NavigationWebMessageSender::~NavigationWebMessageSender() {

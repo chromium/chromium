@@ -13,6 +13,7 @@
 #include "components/js_injection/browser/web_message_host_factory.h"
 #include "components/js_injection/common/origin_matcher.h"
 #include "components/js_injection/common/origin_matcher_mojom_traits.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -155,9 +156,7 @@ std::u16string JsCommunicationHost::AddWebMessageHostFactory(
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kEnableNavigationListener) &&
-      js_object_name ==
-          NavigationWebMessageSender::kNavigationListenerObjectName) {
+  if (NavigationWebMessageSender::IsNavigationListener(js_object_name)) {
     // This is the special navigationListener object that is registered to
     // listen for navigation events instead of establishing a connection to
     // the renderer. This shouldn't create an object in the renderer. Instead,
@@ -166,8 +165,8 @@ std::u16string JsCommunicationHost::AddWebMessageHostFactory(
     // TODO(https://crbug.com/332809183): Guard this behind an origin trial
     // check later on.
     has_navigation_listener_ = true;
-    NavigationWebMessageSender::CreateForPage(web_contents()->GetPrimaryPage(),
-                                              factory.get());
+    NavigationWebMessageSender::CreateForPageIfNeeded(
+        web_contents()->GetPrimaryPage(), js_object_name, factory.get());
     NavigationWebMessageSender::GetForPage(web_contents()->GetPrimaryPage())
         ->DispatchOptInMessage();
   }
@@ -269,9 +268,7 @@ void JsCommunicationHost::NotifyFrameForWebMessageListener(
   std::vector<mojom::JsObjectPtr> js_objects;
   js_objects.reserve(js_objects_.size());
   for (const auto& js_object : js_objects_) {
-    if (base::FeatureList::IsEnabled(features::kEnableNavigationListener) &&
-        js_object->name ==
-            NavigationWebMessageSender::kNavigationListenerObjectName) {
+    if (NavigationWebMessageSender::IsNavigationListener(js_object->name)) {
       // This is the special navigationListener object that is registered to
       // listen for navigation events instead of establishing a connection to
       // the renderer. Don't create an object in the renderer. The
@@ -305,18 +302,16 @@ void JsCommunicationHost::PrimaryPageChanged(content::Page& page) {
     return;
   }
   for (const auto& js_object : js_objects_) {
-    if (js_object->name ==
-        NavigationWebMessageSender::kNavigationListenerObjectName) {
-      // The active Page in the primary main frame just changed. Ensure that a
-      // NavigationWebMessageSender is created for the primary Page, so that
-      // navigation notifications for it will be sent correctly, including the
-      // navigation that committed the primary Page. Note that some Pages
-      // might not be primary even when navigations happen on them (e.g.
-      // prerendering Pages), but we won't send notifications for those pages,
-      // so there is no need to create the NavigationWebMessageSenders for
-      // them before they become the primary Page.
-      NavigationWebMessageSender::CreateForPage(page, js_object->factory.get());
-    }
+    // The active Page in the primary main frame just changed. Ensure that a
+    // NavigationWebMessageSender is created for the primary Page, so that
+    // navigation notifications for it will be sent correctly, including the
+    // navigation that committed the primary Page. Note that some Pages
+    // might not be primary even when navigations happen on them (e.g.
+    // prerendering Pages), but we won't send notifications for those pages,
+    // so there is no need to create the NavigationWebMessageSenders for
+    // them before they become the primary Page.
+    NavigationWebMessageSender::CreateForPageIfNeeded(page, js_object->name,
+                                                      js_object->factory.get());
   }
 }
 

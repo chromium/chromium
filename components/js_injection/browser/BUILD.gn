@@ -19,6 +19,7 @@ source_set("browser") {
 
   deps = [
     "//base",
+    "//components/back_forward_cache",
     "//components/js_injection/common",
     "//components/js_injection/common:common_mojom",
     "//content/public/browser",
@@ -38,6 +39,7 @@ source_set("browser_tests") {
   deps = [
     ":browser",
     "//base/test:test_support",
+    "//components/back_forward_cache",
     "//content/shell:content_shell_lib",
     "//content/test:browsertest_support",
     "//content/test:test_support",

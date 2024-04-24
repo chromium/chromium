@@ -50,7 +50,10 @@ public class NavigationListenerTest extends AwParameterizedTest {
     private static final String PAGE_A = RESOURCE_PATH + "/hello_world.html";
     private static final String PAGE_B = RESOURCE_PATH + "/safe.html";
     private static final String PAGE_WITH_IFRAME = RESOURCE_PATH + "/iframe_access.html";
-    private static final String NAVIGATION_LISTENER_NAME = "experimentalWebViewNavigationListener";
+    private static final String NAVIGATION_LISTENER_ALLOW_BFCACHE_NAME =
+            "experimentalWebViewNavigationListenerAllowBFCache";
+    private static final String NAVIGATION_LISTENER_DISABLE_BFCACHE_NAME =
+            "experimentalWebViewNavigationListenerDisableBFCache";
     private static final String ENCODING = "UTF-8";
 
     private EmbeddedTestServer mTestServer;
@@ -88,7 +91,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
     public void testNavigationVariousCases() throws Throwable {
         // Add the special listener object which will receive navigation messages.
         addWebMessageListenerOnUiThread(
-                mAwContents, NAVIGATION_LISTENER_NAME, new String[] {"*"}, mListener);
+                mAwContents, NAVIGATION_LISTENER_ALLOW_BFCACHE_NAME, new String[] {"*"}, mListener);
         // The first message received should be the NAVIGATION_MESSAGE_OPTED_IN message.
         TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
         assertNavigationMessageType(data, "NAVIGATION_MESSAGE_OPTED_IN");
@@ -102,7 +105,10 @@ public class NavigationListenerTest extends AwParameterizedTest {
         // No actual navigationListener object is created on the JS side.
         Assert.assertFalse(
                 hasJavaScriptObject(
-                        NAVIGATION_LISTENER_NAME, mActivityTestRule, mAwContents, mContentsClient));
+                        NAVIGATION_LISTENER_ALLOW_BFCACHE_NAME,
+                        mActivityTestRule,
+                        mAwContents,
+                        mContentsClient));
 
         // Navigation #1: Navigate to `url` to trigger navigation messages.
         final String url = loadUrlFromPath(PAGE_A);
@@ -467,7 +473,8 @@ public class NavigationListenerTest extends AwParameterizedTest {
         // Navigation #1: Set up the listener and navigate to `url`. This will create a new page and
         // an associated JsReplyProxy.
         final String url = mTestServer.getURL(PAGE_A);
-        JsReplyProxy page2ReplyProxy = setUpAndNavigateToNewPage(url);
+        JsReplyProxy page2ReplyProxy =
+                setUpAndNavigateToNewPage(url, /* listenerDisablesBFCache= */ false);
 
         // Navigation #2: Save and restore to a new AwContents, which should trigger a load to
         // `url` again.
@@ -478,7 +485,10 @@ public class NavigationListenerTest extends AwParameterizedTest {
         AwActivityTestRule.enableJavaScriptOnUiThread(newContents);
         TestWebMessageListener newListener = new TestWebMessageListener();
         addWebMessageListenerOnUiThread(
-                newContents, NAVIGATION_LISTENER_NAME, new String[] {"*"}, newListener);
+                newContents,
+                NAVIGATION_LISTENER_ALLOW_BFCACHE_NAME,
+                new String[] {"*"},
+                newListener);
 
         InstrumentationRegistry.getInstrumentation()
                 .runOnMainSync(
@@ -741,7 +751,8 @@ public class NavigationListenerTest extends AwParameterizedTest {
         // Navigation #1: Set up the listener and navigate to `url`. This will create a new page and
         // an associated JsReplyProxy.
         final String url = mTestServer.getURL(PAGE_A);
-        JsReplyProxy page2ReplyProxy = setUpAndNavigateToNewPage(url);
+        JsReplyProxy page2ReplyProxy =
+                setUpAndNavigateToNewPage(url, /* listenerDisablesBFCache= */ false);
 
         // Navigation #2: Navigate to `url2`.
         final String url2 = loadUrlFromPath(PAGE_B);
@@ -818,7 +829,8 @@ public class NavigationListenerTest extends AwParameterizedTest {
         // Navigation #1: Set up the listener and navigate to `url`. This will create a new page and
         // an associated JsReplyProxy.
         final String url = mTestServer.getURL(PAGE_A);
-        JsReplyProxy page2ReplyProxy = setUpAndNavigateToNewPage(url);
+        JsReplyProxy page2ReplyProxy =
+                setUpAndNavigateToNewPage(url, /* listenerDisablesBFCache= */ false);
 
         // Navigation #2: Navigate to `url2`.
         final String url2 = loadUrlFromPath(PAGE_B);
@@ -873,6 +885,86 @@ public class NavigationListenerTest extends AwParameterizedTest {
         Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
     }
 
+    // Test navigation messages on history navigations with BFCache enabled, but with the
+    // listener that disables BFCache. No page will be BFCached, because of the listener.
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView", "NavigationListener"})
+    @CommandLineFlags.Add({"enable-features=EnableNavigationListener,WebViewBackForwardCache"})
+    public void testNavigationHistoryNavigationBFCacheEnabled_ListenerDisablesBFCache()
+            throws Throwable {
+        // Navigation #1: Set up the listener and navigate to `url`. This will create a new page and
+        // an associated JsReplyProxy.
+        final String url = mTestServer.getURL(PAGE_A);
+        JsReplyProxy page2ReplyProxy =
+                setUpAndNavigateToNewPage(url, /* listenerDisablesBFCache= */ true);
+
+        // Navigation #2: Navigate to `url2`.
+        final String url2 = loadUrlFromPath(PAGE_B);
+
+        // Since this navigation creates a new Page, the previous Page gets
+        // deleted.
+        TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
+        assertNavigationMessageType(data, "PAGE_DELETED");
+        Assert.assertEquals(page2ReplyProxy, data.mReplyProxy);
+
+        // The notification should indicate that the navigation is
+        // cross-document and uses a new JavaScriptReplyProxy.
+        data = mListener.waitForOnPostMessage();
+        assertNavigationData(
+                data,
+                url2,
+                /* isSameDocument */ false,
+                /* isReload */ false,
+                /* isHistory */ false,
+                /* isErrorPage */ false,
+                /* isPageInitiated */ false,
+                /* committed */ true,
+                /* statusCode */ 200);
+        JsReplyProxy page3ReplyProxy = data.mReplyProxy;
+        Assert.assertNotEquals(page2ReplyProxy, page3ReplyProxy);
+
+        data = mListener.waitForOnPostMessage();
+        assertNavigationMessageType(data, "PAGE_LOAD_END");
+        Assert.assertEquals(page3ReplyProxy, data.mReplyProxy);
+
+        // Navigation #3: Do a back navigation to the `url` Page.
+        OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
+        HistoryUtils.goBackSync(
+                InstrumentationRegistry.getInstrumentation(),
+                mAwContents.getWebContents(),
+                onPageStartedHelper);
+
+        // Since this navigation creates a new Page, the `url2` Page gets
+        // deleted.
+        data = mListener.waitForOnPostMessage();
+        assertNavigationMessageType(data, "PAGE_DELETED");
+        Assert.assertEquals(page3ReplyProxy, data.mReplyProxy);
+
+        // The history navigation creates a new Page and uses a new
+        // JsReplyProxy.
+        data = mListener.waitForOnPostMessage();
+        assertNavigationData(
+                data,
+                url,
+                /* isSameDocument */ false,
+                /* isReload */ false,
+                /* isHistory */ true,
+                /* isErrorPage */ false,
+                /* isPageInitiated */ false,
+                /* committed */ true,
+                /* statusCode */ 200);
+        JsReplyProxy page4ReplyProxy = data.mReplyProxy;
+        Assert.assertNotEquals(page2ReplyProxy, page4ReplyProxy);
+        Assert.assertNotEquals(page3ReplyProxy, page4ReplyProxy);
+
+        data = mListener.waitForOnPostMessage();
+        assertNavigationMessageType(data, "PAGE_LOAD_END");
+        Assert.assertEquals(page4ReplyProxy, data.mReplyProxy);
+
+        Assert.assertTrue(mListener.hasNoMoreOnPostMessage());
+    }
+
     // Test the navigation messages on history navigations with BFCache enabled, but the page was
     // evicted from BFCache.
     @Test
@@ -883,7 +975,8 @@ public class NavigationListenerTest extends AwParameterizedTest {
         // Navigation #1: Set up the listener and navigate to `url`. This will create a new page and
         // an associated JsReplyProxy.
         final String url = mTestServer.getURL(PAGE_A);
-        JsReplyProxy page2ReplyProxy = setUpAndNavigateToNewPage(url);
+        JsReplyProxy page2ReplyProxy =
+                setUpAndNavigateToNewPage(url, /* listenerDisablesBFCache= */ false);
 
         // Navigation #2: Navigate to `url2`.
         final String url2 = loadUrlFromPath(PAGE_B);
@@ -1011,7 +1104,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
     private JsReplyProxy setUpAndGetInitialProxy() throws Throwable {
         // Add the special listener object which will receive navigation messages.
         addWebMessageListenerOnUiThread(
-                mAwContents, NAVIGATION_LISTENER_NAME, new String[] {"*"}, mListener);
+                mAwContents, NAVIGATION_LISTENER_ALLOW_BFCACHE_NAME, new String[] {"*"}, mListener);
         // The first message received should be the NAVIGATION_MESSAGE_OPTED_IN message. This will
         // fire with the JSReplyProxy associated with the initial empty document, which we should
         // return.
@@ -1020,15 +1113,29 @@ public class NavigationListenerTest extends AwParameterizedTest {
         return data.mReplyProxy;
     }
 
-    private JsReplyProxy setUpAndNavigateToNewPage(String url) throws Throwable {
-        JsReplyProxy page1ReplyProxy = setUpAndGetInitialProxy();
+    private JsReplyProxy setUpAndNavigateToNewPage(String url, boolean listenerDisablesBFCache)
+            throws Throwable {
+        // Add the special listener object which will receive navigation messages.
+        addWebMessageListenerOnUiThread(
+                mAwContents,
+                listenerDisablesBFCache
+                        ? NAVIGATION_LISTENER_DISABLE_BFCACHE_NAME
+                        : NAVIGATION_LISTENER_ALLOW_BFCACHE_NAME,
+                new String[] {"*"},
+                mListener);
+        // The first message received should be the NAVIGATION_MESSAGE_OPTED_IN message. This will
+        // fire with the JSReplyProxy associated with the initial empty document, which we should
+        // return.
+        TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
+        assertNavigationMessageType(data, "NAVIGATION_MESSAGE_OPTED_IN");
+        JsReplyProxy page1ReplyProxy = data.mReplyProxy;
 
         // Navigate to `url`.
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
 
         // Since this navigation creates a new Page, the previous Page gets
         // deleted.
-        TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
+        data = mListener.waitForOnPostMessage();
         assertNavigationMessageType(data, "PAGE_DELETED");
         Assert.assertEquals(page1ReplyProxy, data.mReplyProxy);
 

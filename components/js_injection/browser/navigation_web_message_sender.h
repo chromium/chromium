@@ -43,7 +43,19 @@ class NavigationWebMessageSender
     : public content::PageUserData<NavigationWebMessageSender>,
       public content::WebContentsObserver {
  public:
-  static const char16_t kNavigationListenerObjectName[];
+  // Depending on which object name is used, BFCache might be disallowed. If
+  // `kNavigationListenerDisableBFCacheObjectName` is used, the client requests
+  // to disable BFCache, so it will ensure all pages can't be BFCached. We
+  // provide this functionality so that if the client can't handle BFCache yet
+  // (due to needing to update client-side code to handle reusing pages, etc)
+  // while the BFCache flag is already enabled on the WebView side (e.g. during
+  // random experimentation), it won't get confused  with the ordering of events
+  // (e.g. PAGE_DELETED not getting called for a long time). If the client uses
+  // `kNavigationListenerAllowBFCacheObjectName` instead, it signals that it can
+  // handle BFCache cases correctly, so pages are allowed to enter BFCache (if
+  // the BFCache feature is turned on).
+  static const char16_t kNavigationListenerAllowBFCacheObjectName[];
+  static const char16_t kNavigationListenerDisableBFCacheObjectName[];
 
   // === Various messages that can be dispatched to the client ===
 
@@ -63,6 +75,11 @@ class NavigationWebMessageSender
   // will be when the page is evicted. Otherwise, it will be when the primary
   // Page changed after a cross-document navigation away from this apge.
   static const char kPageDeletedMessage[];
+
+  static bool IsNavigationListener(const std::u16string& js_object_name);
+  static void CreateForPageIfNeeded(content::Page& page,
+                                    const std::u16string& js_object_name,
+                                    WebMessageHostFactory* factory);
 
   ~NavigationWebMessageSender() override;
 
@@ -84,6 +101,7 @@ class NavigationWebMessageSender
       base::Value::Dict message_dict);
 
   NavigationWebMessageSender(content::Page& page,
+                             const std::u16string& js_object_name,
                              WebMessageHostFactory* factory);
 
   // content::WebContentsObserver implementations

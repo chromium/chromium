@@ -35,6 +35,8 @@ std::string ReasonIdToString(DisabledReasonId reason_id) {
       return "ExtensionSentMessageToCachedFrame";
     case DisabledReasonId::kOomInterventionTabHelper:
       return "OomInterventionTabHelper";
+    case DisabledReasonId::kRequestedByWebViewClient:
+      return "RequestedByWebViewClient";
   }
 }
 

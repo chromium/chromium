@@ -44,6 +44,9 @@ enum class DisabledReasonId : uint16_t {
   kExtensionMessaging = 13,
   // kExtensionMessagingForOpenPort = 14. Removed
   kExtensionSentMessageToCachedFrame = 15,
+  // Android WebView client requested to disable BFCache. See
+  // NavigationWebMessageSender.
+  kRequestedByWebViewClient = 16,
   // New reasons should be accompanied by a comment as to why BackForwardCache
   // cannot be used in this case and a link to a bug to fix that if it is
   // fixable.

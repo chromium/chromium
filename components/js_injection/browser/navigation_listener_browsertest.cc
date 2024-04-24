@@ -159,7 +159,8 @@ class FakeWebMessageHostFactory : public WebMessageHostFactory {
   raw_ptr<NavigationMessageListener> listener_;
 };
 
-class NavigationListenerBrowserTest : public content::ContentBrowserTest {
+class NavigationListenerBrowserTest : public content::ContentBrowserTest,
+                                      public testing::WithParamInterface<bool> {
  public:
   NavigationListenerBrowserTest() {
     features_.InitAndEnableFeature(features::kEnableNavigationListener);
@@ -179,6 +180,13 @@ class NavigationListenerBrowserTest : public content::ContentBrowserTest {
 
   NavigationMessageListener& listener() { return listener_; }
 
+  bool UseBackForwardCacheDisablerListener() const { return GetParam(); }
+
+  bool IsBackForwardCacheDisabled() const {
+    return UseBackForwardCacheDisablerListener() ||
+           !base::FeatureList::IsEnabled(features::kBackForwardCache);
+  }
+
   void SetupNavigationListener() {
     if (!js_communication_host_.get()) {
       js_communication_host_ =
@@ -186,7 +194,12 @@ class NavigationListenerBrowserTest : public content::ContentBrowserTest {
     }
     js_communication_host_->AddWebMessageHostFactory(
         std::make_unique<FakeWebMessageHostFactory>(&listener()),
-        NavigationWebMessageSender::kNavigationListenerObjectName, {"*"});
+        UseBackForwardCacheDisablerListener()
+            ? NavigationWebMessageSender::
+                  kNavigationListenerDisableBFCacheObjectName
+            : NavigationWebMessageSender::
+                  kNavigationListenerAllowBFCacheObjectName,
+        {"*"});
   }
 
   HostToken GetCurrentHostToken() {
@@ -281,7 +294,7 @@ class NavigationListenerBrowserTest : public content::ContentBrowserTest {
 // 3) Same-document navigation
 // 4) Same-document history navigation
 // 5) Failed navigation resulting in an error page.
-IN_PROC_BROWSER_TEST_F(NavigationListenerBrowserTest, Basic) {
+IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest, Basic) {
   // Setup the navigation listener.
   SetupNavigationListener();
   // A NavigationWebMessageSender & FakeWebMessageHost is immediately created
@@ -382,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(NavigationListenerBrowserTest, Basic) {
   // created for the new error page.
   HostToken host3 = GetCurrentHostToken();
 
-  if (!base::FeatureList::IsEnabled(features::kBackForwardCache)) {
+  if (IsBackForwardCacheDisabled()) {
     // The previous page will be deleted, unless it gets into the back/forward
     // cache.
     listener().WaitForNextMessageForHost(host2);
@@ -408,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(NavigationListenerBrowserTest, Basic) {
 
 // Test navigation messages when navigating away from a page that hasn't fired
 // the load event.
-IN_PROC_BROWSER_TEST_F(NavigationListenerBrowserTest, NoLoadEnd) {
+IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest, NoLoadEnd) {
   std::string page_with_infinite_loading_image = "/page_with_loading_image";
   std::string infinite_loading_image = "/image";
   net::test_server::ControllableHttpResponse page_request(
@@ -515,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(NavigationListenerBrowserTest, NoLoadEnd) {
 // Test navigation messages when a new renderer-initiated same-document
 // navigation happens while a cross-document navigation is ongoing and hasn't
 // received its network response. Both navigations should commit.
-IN_PROC_BROWSER_TEST_F(NavigationListenerBrowserTest,
+IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest,
                        NewRendererInitiatedSameDocNavDuringCrossDocNav) {
   std::string page_with_delayed_response = "/page_with_delayed_response";
   net::test_server::ControllableHttpResponse request_to_delay(
@@ -569,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(NavigationListenerBrowserTest,
   // A new NavigationWebMessageSender has been created for the new page.
   HostToken host2 = GetCurrentHostToken();
 
-  if (!base::FeatureList::IsEnabled(features::kBackForwardCache)) {
+  if (IsBackForwardCacheDisabled()) {
     // The previous page will be deleted, unless it gets into the back/forward
     // cache.
     listener().WaitForNextMessageForHost(host);
@@ -589,6 +602,7 @@ IN_PROC_BROWSER_TEST_F(NavigationListenerBrowserTest,
                                   /*status_code=*/200);
   CheckNavigationMessage(listener().NextMessageForHost(host2),
                          NavigationWebMessageSender::kPageLoadEndMessage);
+
   ASSERT_FALSE(listener().HasNextMessageForAnyHost());
 }
 
@@ -597,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(NavigationListenerBrowserTest,
 // received its network response. Different than above, the newer same-document
 // navigation should cancel the first navigation here, since the newer
 // NavigationHandle will take the place of the first NavigationHandle.
-IN_PROC_BROWSER_TEST_F(NavigationListenerBrowserTest,
+IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest,
                        NewBrowserInitiatedSameDocNavDuringCrossDocNav) {
   std::string page_with_delayed_response = "/page_with_delayed_response";
   net::test_server::ControllableHttpResponse request_to_delay(
@@ -663,7 +677,7 @@ IN_PROC_BROWSER_TEST_F(NavigationListenerBrowserTest,
 // here, since the newer NavigationHandle will take the place of the first
 // NavigationHandle. This behavior will be the same regardless of whether the
 // newer navigation is browser- or renderer-initiated.
-IN_PROC_BROWSER_TEST_F(NavigationListenerBrowserTest,
+IN_PROC_BROWSER_TEST_P(NavigationListenerBrowserTest,
                        NewCrossDocNavDuringCrossDocNav) {
   std::string page_with_delayed_response = "/page_with_delayed_response";
   net::test_server::ControllableHttpResponse request_to_delay(
@@ -727,5 +741,14 @@ IN_PROC_BROWSER_TEST_F(NavigationListenerBrowserTest,
 
   ASSERT_FALSE(listener().HasNextMessageForAnyHost());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         NavigationListenerBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return base::StringPrintf(
+                               "%s", info.param ? "listener_disables_bfcache"
+                                                : "listener_allows_bfcache");
+                         });
 
 }  // namespace js_injection
