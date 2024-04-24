@@ -129,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="CastStreaming.Sender.Audio.NegotiatedCodec" enum="AudioCodec"
-    expires_after="2024-04-07">
+    expires_after="2025-04-24">
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
@@ -138,7 +138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CastStreaming.Sender.Video.Bitrate" units="kbps"
-    expires_after="2024-09-01">
+    expires_after="2025-04-24">
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
@@ -148,7 +148,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CastStreaming.Sender.Video.NegotiatedCodec" enum="VideoCodec"
-    expires_after="2024-10-20">
+    expires_after="2025-04-24">
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.AverageCaptureLatency"
-    units="ms" expires_after="2024-09-01">
+    units="ms" expires_after="2025-04-24">
   <owner>anasr@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>jophba@chromium.org</owner>
@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.AverageEncodeTime"
-    units="ms" expires_after="2024-09-01">
+    units="ms" expires_after="2025-04-24">
   <owner>anasr@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>jophba@chromium.org</owner>
@@ -192,7 +192,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.AverageEndToEndLatency"
-    units="ms" expires_after="2024-09-01">
+    units="ms" expires_after="2025-04-24">
   <owner>anasr@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>jophba@chromium.org</owner>
@@ -210,7 +210,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.AverageNetworkLatency"
-    units="ms" expires_after="2024-09-01">
+    units="ms" expires_after="2025-04-24">
   <owner>anasr@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>jophba@chromium.org</owner>
@@ -227,7 +227,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.ExceededPlayoutDelayPacketsPercentage"
-    units="%" expires_after="2024-09-01">
+    units="%" expires_after="2025-04-24">
   <owner>anasr@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>jophba@chromium.org</owner>
@@ -244,7 +244,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.LateFramesPercentage"
-    units="%" expires_after="2024-09-01">
+    units="%" expires_after="2025-04-24">
   <owner>anasr@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>jophba@chromium.org</owner>
@@ -262,7 +262,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.RetransmittedPacketsPercentage"
-    units="%" expires_after="2024-09-01">
+    units="%" expires_after="2025-04-24">
   <owner>anasr@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>jophba@chromium.org</owner>
@@ -279,7 +279,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSenderAudioVideo}.TransmissionRate"
-    units="kbps" expires_after="2024-09-01">
+    units="kbps" expires_after="2025-04-24">
   <owner>anasr@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>jophba@chromium.org</owner>
@@ -295,7 +295,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CastStreaming.Sender.{CastStreamingSender}.FrameDropped"
-    enum="CastStreamingFrameDropReason" expires_after="2024-09-01">
+    enum="CastStreamingFrameDropReason" expires_after="2025-04-24">
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
@@ -306,7 +306,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CastStreaming.Sender.{CastStreamingSender}.PercentDroppedFrames"
-    units="%" expires_after="2024-09-01">
+    units="%" expires_after="2025-04-24">
   <owner>jophba@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <summary>
@@ -5783,7 +5783,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.AspectRatio" units="%"
-    expires_after="2024-05-05">
+    expires_after="2025-04-24">
   <owner>mcasas@chromium.org</owner>
   <owner>jophba@chromium.org</owner>
   <summary>
@@ -6013,7 +6013,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.ScaleOverride" units="units"
-    expires_after="2024-05-05">
+    expires_after="2025-04-24">
   <owner>jophba@chromium.org</owner>
   <owner>klausw@chromium.org</owner>
   <summary>
@@ -6025,7 +6025,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.ScaleOverrideChangeCount" units="units"
-    expires_after="2024-07-07">
+    expires_after="2025-04-24">
   <owner>jophba@chromium.org</owner>
   <owner>klausw@chromium.org</owner>
   <summary>
