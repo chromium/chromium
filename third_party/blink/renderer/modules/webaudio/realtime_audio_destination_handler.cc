@@ -342,17 +342,9 @@ base::TimeDelta RealtimeAudioDestinationHandler::GetPlatformBufferDuration()
 void RealtimeAudioDestinationHandler::CreatePlatformDestination() {
   DCHECK(IsMainThread());
 
-  if (base::FeatureList::IsEnabled(features::kWebAudioSinkSelection)) {
-    platform_destination_ = AudioDestination::Create(
-        *this, sink_descriptor_, ChannelCount(), latency_hint_, sample_rate_,
-        Context()->GetDeferredTaskHandler().RenderQuantumFrames());
-  } else {
-    WebAudioSinkDescriptor
-        sink_descriptor(String(""), sink_descriptor_.Token());
-    platform_destination_ = AudioDestination::Create(
-        *this, sink_descriptor, ChannelCount(), latency_hint_, sample_rate_,
-        Context()->GetDeferredTaskHandler().RenderQuantumFrames());
-  }
+  platform_destination_ = AudioDestination::Create(
+      *this, sink_descriptor_, ChannelCount(), latency_hint_, sample_rate_,
+      Context()->GetDeferredTaskHandler().RenderQuantumFrames());
 
   // if `sample_rate_` is nullopt, it is supposed to use the default device
   // sample rate. Update the internal sample rate for subsequent device change
