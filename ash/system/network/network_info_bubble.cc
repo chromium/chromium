@@ -104,13 +104,16 @@ NetworkInfoBubble::~NetworkInfoBubble() {
   }
 }
 
-gfx::Size NetworkInfoBubble::CalculatePreferredSize() const {
+gfx::Size NetworkInfoBubble::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // This bubble should be inset by kBubbleMargin on the left and right relative
   // to the parent bubble.
   const gfx::Size anchor_size = GetAnchorView()->size();
   int contents_width =
       anchor_size.width() - 2 * kBubbleMargin - margins().width();
-  return gfx::Size(contents_width, GetHeightForWidth(contents_width));
+  return gfx::Size(
+      contents_width,
+      GetLayoutManager()->GetPreferredHeightForWidth(this, contents_width));
 }
 
 void NetworkInfoBubble::OnMouseExited(const ui::MouseEvent& event) {

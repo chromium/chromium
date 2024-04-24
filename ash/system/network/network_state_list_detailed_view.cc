@@ -155,13 +155,16 @@ class NetworkStateListDetailedView::InfoBubble
 
  private:
   // View:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     // This bubble should be inset by kBubbleMargin on both left and right
     // relative to the parent bubble.
     const gfx::Size anchor_size = GetAnchorView()->size();
     int contents_width =
         anchor_size.width() - 2 * kBubbleMargin - margins().width();
-    return gfx::Size(contents_width, GetHeightForWidth(contents_width));
+    return gfx::Size(
+        contents_width,
+        GetLayoutManager()->GetPreferredHeightForWidth(this, contents_width));
   }
 
   void OnMouseExited(const ui::MouseEvent& event) override {
