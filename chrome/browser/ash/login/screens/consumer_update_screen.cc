@@ -223,6 +223,11 @@ void ConsumerUpdateScreen::OnUserAction(const base::Value::List& args) {
   } else if (action_id == kUserActionSkipUpdate) {
     RecordIsOptionalUpdateSkipped(/*skipped=*/true);
     version_updater_->StopObserving();
+    if (did_prepare_quick_start_for_update_) {
+      WizardController::default_controller()
+          ->quick_start_controller()
+          ->ResumeSessionAfterCancelledUpdate();
+    }
     exit_callback_.Run(Result::SKIPPED);
   } else if (action_id == kUserActionBackButton) {
     version_updater_->RejectUpdateOverCellular();
@@ -238,12 +243,6 @@ void ConsumerUpdateScreen::DelayExitNoUpdate() {
 }
 
 void ConsumerUpdateScreen::FinishExitUpdate(VersionUpdater::Result result) {
-  if (did_prepare_quick_start_for_update_) {
-    WizardController::default_controller()
-        ->quick_start_controller()
-        ->ResumeSessionAfterCancelledUpdate();
-  }
-
   switch (result) {
     case VersionUpdater::Result::UPDATE_NOT_REQUIRED:
       RecordOobeConsumerUpdateScreenSkippedReasonHistogram(
