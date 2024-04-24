@@ -120,6 +120,11 @@ const char kAutofillEnableCardProductNameDescription[] =
     "When enabled, card product name (instead of issuer network) will be shown "
     "in Payments UI.";
 
+const char kAutofillEnableVerveCardSupportName[] =
+    "Enable autofill support for Verve cards";
+const char kAutofillEnableVerveCardSupportDescription[] =
+    "When enabled, Verve-branded card art will be shown for Verve cards.";
+
 const char kAutofillEnableVirtualCardsName[] =
     "Enable virtual card enrollment and retrieval";
 const char kAutofillEnableVirtualCardsDescription[] =

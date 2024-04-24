@@ -221,6 +221,11 @@ BASE_FEATURE(kAutofillEnableVirtualCardEnrollMetricsLogger,
              "AutofillEnableVirtualCardEnrollMetricsLogger",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, Verve-branded card art will be shown for Verve cards.
+BASE_FEATURE(kAutofillEnableVerveCardSupport,
+             "AutofillEnableVerveCardSupport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, Chrome will show metadata along with other card information
 // when the virtual card is presented to users.
 BASE_FEATURE(kAutofillEnableVirtualCardMetadata,

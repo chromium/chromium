@@ -103,6 +103,10 @@ extern const char kAutofillEnableSupportForLandmarkDescription[];
 extern const char kAutofillEnableCardProductNameName[];
 extern const char kAutofillEnableCardProductNameDescription[];
 
+// Title and description for flag to enable Verve card support for autofill.
+extern const char kAutofillEnableVerveCardSupportName[];
+extern const char kAutofillEnableVerveCardSupportDescription[];
+
 // Title and description for flag to enable virtual card enrollment and
 // retrieval.
 extern const char kAutofillEnableVirtualCardsName[];

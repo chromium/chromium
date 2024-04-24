@@ -19485,6 +19485,7 @@ from previous Chrome versions.
   <int value="-762541013" label="enable-bluetooth-spp-in-serial-api"/>
   <int value="-761870200" label="CaptureModeDemoTools:disabled"/>
   <int value="-761814801" label="NtpRealboxCr23HoverFillShape:disabled"/>
+  <int value="-761538347" label="AutofillEnableVerveCardSupport:enabled"/>
   <int value="-760729135"
       label="AutofillEnableCardArtServerSideStretching:disabled"/>
   <int value="-759830869" label="enable-tab-discarding"/>
@@ -24456,6 +24457,7 @@ from previous Chrome versions.
   <int value="1454363479" label="disable-storage-manager"/>
   <int value="1454527518" label="ArcNativeBridgeExperiment:enabled"/>
   <int value="1454656852" label="ResponsiveToolbar:enabled"/>
+  <int value="1455708250" label="AutofillEnableVerveCardSupport:disabled"/>
   <int value="1455881930" label="V8VmFuture:enabled"/>
   <int value="1455970119" label="MacCoreLocationBackend:disabled"/>
   <int value="1456108837" label="RealboxSecondaryZeroSuggest:disabled"/>

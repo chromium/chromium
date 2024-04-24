@@ -601,6 +601,11 @@ const char kAutofillEnableVcnEnrollLoadingAndConfirmationDescription[] =
     "spinner while enrolling the card to the server and present a confirmation "
     "screen with the result when completed.";
 
+const char kAutofillEnableVerveCardSupportName[] =
+    "Enable autofill support for Verve cards";
+const char kAutofillEnableVerveCardSupportDescription[] =
+    "When enabled, Verve-branded card art will be shown for Verve cards.";
+
 const char kAutofillEnableVirtualCardMetadataName[] =
     "Enable showing metadata for virtual cards";
 const char kAutofillEnableVirtualCardMetadataDescription[] =
