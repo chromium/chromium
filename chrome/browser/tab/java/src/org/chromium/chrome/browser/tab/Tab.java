@@ -149,8 +149,8 @@ public interface Tab extends TabLifecycle {
     GURL getUrl();
 
     /**
-     * @return Original url of the tab without any Chrome feature modifications applied
-     *         (e.g. reader mode).
+     * @return Original url of the tab without any Chrome feature modifications applied (e.g. reader
+     *     mode).
      */
     GURL getOriginalUrl();
 

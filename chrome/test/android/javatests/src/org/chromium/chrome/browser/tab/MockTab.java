@@ -35,7 +35,7 @@ public class MockTab extends TabImpl {
     /** Create a new Tab for testing and initializes Tab UserData objects. */
     public static MockTab createAndInitialize(int id, Profile profile) {
         MockTab tab = new MockTab(id, profile);
-        tab.initialize(null, null, null, null, null, false, null, false);
+        tab.initialize(null, null, null, null, null, null, false, null, false);
         return tab;
     }
 
@@ -43,7 +43,7 @@ public class MockTab extends TabImpl {
     public static MockTab createAndInitialize(
             int id, Profile profile, @TabLaunchType int tabLaunchType) {
         MockTab tab = new MockTab(id, profile, tabLaunchType);
-        tab.initialize(null, null, null, null, null, false, null, false);
+        tab.initialize(null, null, null, null, null, null, false, null, false);
         return tab;
     }
 
@@ -60,6 +60,7 @@ public class MockTab extends TabImpl {
             Tab parent,
             @Nullable @TabCreationState Integer creationState,
             LoadUrlParams loadUrlParams,
+            @Nullable String title,
             WebContents webContents,
             @Nullable TabDelegateFactory delegateFactory,
             boolean initiallyHidden,

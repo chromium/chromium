@@ -590,13 +590,14 @@ WebContentsState::RestoreContentsFromByteBufferImpl(
 ScopedJavaLocalRef<jobject>
 WebContentsState::CreateSingleNavigationStateAsByteBuffer(
     JNIEnv* env,
+    jstring title,
     jstring url,
     jstring referrer_url,
     jint referrer_policy,
     const base::android::JavaParamRef<jobject>& jinitiator_origin,
     jboolean is_off_the_record) {
   std::unique_ptr<content::NavigationEntry> entry =
-      CreatePendingNavigationEntry(env, nullptr, url, referrer_url,
+      CreatePendingNavigationEntry(env, title, url, referrer_url,
                                    referrer_policy, jinitiator_origin,
                                    is_off_the_record);
 
@@ -685,13 +686,14 @@ JNI_WebContentsStateBridge_DeleteNavigationEntries(
 static ScopedJavaLocalRef<jobject>
 JNI_WebContentsStateBridge_CreateSingleNavigationStateAsByteBuffer(
     JNIEnv* env,
+    const JavaParamRef<jstring>& title,
     const JavaParamRef<jstring>& url,
     const JavaParamRef<jstring>& referrer_url,
     jint referrer_policy,
     const JavaParamRef<jobject>& initiator_origin,
     jboolean is_off_the_record) {
   return WebContentsState::CreateSingleNavigationStateAsByteBuffer(
-      env, url, referrer_url, referrer_policy, initiator_origin,
+      env, title, url, referrer_url, referrer_policy, initiator_origin,
       is_off_the_record);
 }
 

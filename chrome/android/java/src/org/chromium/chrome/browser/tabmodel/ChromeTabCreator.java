@@ -208,6 +208,7 @@ public class ChromeTabCreator extends TabCreator {
 
     /**
      * Creates a new tab and posts to UI.
+     *
      * @param loadUrlParams parameters of the url load.
      * @param type Information about how the tab was launched.
      * @param parent the parent tab, if present.
@@ -217,11 +218,32 @@ public class ChromeTabCreator extends TabCreator {
     @Override
     public Tab createNewTab(
             LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, int position) {
-        return createNewTab(loadUrlParams, type, parent, position, null);
+        return createNewTab(loadUrlParams, null, type, parent, position, null);
     }
 
     /**
      * Creates a new tab and posts to UI.
+     *
+     * @param loadUrlParams parameters of the url load.
+     * @param title The title of the tab if lazily loaded.
+     * @param type Information about how the tab was launched.
+     * @param parent the parent tab, if present.
+     * @param position the requested position (index in the tab model)
+     * @return The new tab.
+     */
+    @Override
+    public Tab createNewTab(
+            LoadUrlParams loadUrlParams,
+            String title,
+            @TabLaunchType int type,
+            Tab parent,
+            int position) {
+        return createNewTab(loadUrlParams, title, type, parent, position, null);
+    }
+
+    /**
+     * Creates a new tab and posts to UI.
+     *
      * @param loadUrlParams parameters of the url load.
      * @param type Information about how the tab was launched.
      * @param parent the parent tab, if present.
@@ -241,12 +263,14 @@ public class ChromeTabCreator extends TabCreator {
             if (index != TabModel.INVALID_TAB_INDEX) position = index + 1;
         }
 
-        return createNewTab(loadUrlParams, type, parent, position, intent);
+        return createNewTab(loadUrlParams, null, type, parent, position, intent);
     }
 
     /**
      * Creates a new tab and posts to UI.
+     *
      * @param loadUrlParams parameters of the url load.
+     * @param title the title to use for a lazily loaded tab.
      * @param type Information about how the tab was launched.
      * @param parent the parent tab, if present.
      * @param position the requested position (index in the tab model)
@@ -255,6 +279,7 @@ public class ChromeTabCreator extends TabCreator {
      */
     private Tab createNewTab(
             LoadUrlParams loadUrlParams,
+            String title,
             @TabLaunchType int type,
             Tab parent,
             int position,
@@ -345,7 +370,7 @@ public class ChromeTabCreator extends TabCreator {
                 // to preserve resources (cpu, memory, strong renderer binding) for the foreground
                 // tab.
                 tab =
-                        TabBuilder.createForLazyLoad(getProfile(), loadUrlParams)
+                        TabBuilder.createForLazyLoad(getProfile(), loadUrlParams, title)
                                 .setParent(parent)
                                 .setWindow(mNativeWindow)
                                 .setLaunchType(type)
@@ -544,7 +569,12 @@ public class ChromeTabCreator extends TabCreator {
                 // contents (we would not want the previous content to show).
                 Tab newTab =
                         createNewTab(
-                                loadUrlParams, TabLaunchType.FROM_EXTERNAL_APP, null, i, intent);
+                                loadUrlParams,
+                                null,
+                                TabLaunchType.FROM_EXTERNAL_APP,
+                                null,
+                                i,
+                                intent);
                 TabAssociatedApp.from(newTab).setAppId(appId);
                 mTabModel.closeTab(tab, false, false, false);
                 return newTab;

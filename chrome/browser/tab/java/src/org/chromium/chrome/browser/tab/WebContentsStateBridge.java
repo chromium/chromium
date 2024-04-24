@@ -64,6 +64,7 @@ public class WebContentsStateBridge {
     /**
      * Creates a WebContentsState for a tab that will be loaded lazily.
      *
+     * @param title The title to display.
      * @param url URL that is pending.
      * @param referrerUrl URL for the referrer.
      * @param referrerPolicy Policy for the referrer.
@@ -72,6 +73,7 @@ public class WebContentsStateBridge {
      * @return ByteBuffer that represents a state representing a single pending URL.
      */
     public static ByteBuffer createSingleNavigationStateAsByteBuffer(
+            String title,
             String url,
             String referrerUrl,
             int referrerPolicy,
@@ -79,7 +81,7 @@ public class WebContentsStateBridge {
             boolean isIncognito) {
         return WebContentsStateBridgeJni.get()
                 .createSingleNavigationStateAsByteBuffer(
-                        url, referrerUrl, referrerPolicy, initiatorOrigin, isIncognito);
+                        title, url, referrerUrl, referrerPolicy, initiatorOrigin, isIncognito);
     }
 
     /**
@@ -160,6 +162,7 @@ public class WebContentsStateBridge {
         ByteBuffer deleteNavigationEntries(ByteBuffer state, int saveStateVersion, long predicate);
 
         ByteBuffer createSingleNavigationStateAsByteBuffer(
+                String title,
                 String url,
                 String referrerUrl,
                 int referrerPolicy,

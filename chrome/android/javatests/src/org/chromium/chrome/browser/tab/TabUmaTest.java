@@ -110,7 +110,8 @@ public class TabUmaTest {
                     Tab bgTab =
                             TabBuilder.createForLazyLoad(
                                             sActivityTestRule.getProfile(false),
-                                            new LoadUrlParams(mTestUrl))
+                                            new LoadUrlParams(mTestUrl),
+                                            /* title= */ null)
                                     .setWindow(sActivityTestRule.getActivity().getWindowAndroid())
                                     .setLaunchType(TabLaunchType.FROM_LONGPRESS_BACKGROUND)
                                     .setDelegateFactory(createTabDelegateFactory())

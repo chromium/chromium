@@ -48,11 +48,21 @@ public class ArchivedTabCreator extends TabCreator {
     @Override
     public @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, int index) {
+        return createNewTab(loadUrlParams, /* title= */ null, type, parent, index);
+    }
+
+    @Override
+    public @Nullable Tab createNewTab(
+            LoadUrlParams loadUrlParams,
+            String title,
+            @TabLaunchType int type,
+            Tab parent,
+            int index) {
         // TODO(crbug.com/331827001): Also possible to change the entire restore path.
         assert type == TabLaunchType.FROM_RESTORE
                 : "ArchivedTabCreator only supports #createNewTab calls as a restore fallback.";
         Tab tab =
-                TabBuilder.createForLazyLoad(mTabModel.getProfile(), loadUrlParams)
+                TabBuilder.createForLazyLoad(mTabModel.getProfile(), loadUrlParams, title)
                         .setWindow(mWindow)
                         .setLaunchType(TabLaunchType.FROM_RESTORE)
                         .setTabResolver((tabId) -> TabModelUtils.getTabById(mTabModel, tabId))

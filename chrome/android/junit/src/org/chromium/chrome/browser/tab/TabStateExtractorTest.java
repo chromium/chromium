@@ -34,6 +34,7 @@ import java.nio.ByteBuffer;
 @Config(manifest = Config.NONE)
 public class TabStateExtractorTest {
     private static final int REFERRER_POLICY = 123;
+    private static final String TITLE = "test_title";
     private static final String URL = "test_url";
     private static final String REFERRER_URL = "referrer_url";
 
@@ -77,11 +78,17 @@ public class TabStateExtractorTest {
         loadUrlParams.setReferrer(new Referrer(REFERRER_URL, REFERRER_POLICY));
         loadUrlParams.setInitiatorOrigin(mMockOrigin);
         doReturn(loadUrlParams).when(mTabMock).getPendingLoadParams();
+        doReturn(TITLE).when(mTabMock).getTitle();
         doReturn(true).when(mTabMock).isIncognito();
         doReturn(mByteBuffer)
                 .when(mWebContentsBridgeJni)
                 .createSingleNavigationStateAsByteBuffer(
-                        eq(URL), eq(REFERRER_URL), eq(REFERRER_POLICY), eq(mMockOrigin), eq(true));
+                        eq(TITLE),
+                        eq(URL),
+                        eq(REFERRER_URL),
+                        eq(REFERRER_POLICY),
+                        eq(mMockOrigin),
+                        eq(true));
 
         WebContentsState result = TabStateExtractor.getWebContentsState(mTabMock);
 

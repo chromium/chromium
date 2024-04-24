@@ -980,6 +980,8 @@ class TabImpl implements Tab {
      * @param creationState State in which the tab is created.
      * @param loadUrlParams Parameters used for a lazily loaded Tab or null if we initialize a tab
      *     without an URL.
+     * @param pendingTitle The title used for a lazily load Tab. Ignored if {@code loadUrlParams} is
+     *     {@code null}.
      * @param webContents A {@link WebContents} object or {@code null} if one should be created.
      * @param delegateFactory The {@link TabDelegateFactory} to be used for delegate creation.
      * @param initiallyHidden Only used if {@code webContents} is {@code null}. Determines whether
@@ -993,6 +995,7 @@ class TabImpl implements Tab {
             Tab parent,
             @Nullable @TabCreationState Integer creationState,
             @Nullable LoadUrlParams loadUrlParams,
+            @Nullable String pendingTitle,
             WebContents webContents,
             @Nullable TabDelegateFactory delegateFactory,
             boolean initiallyHidden,
@@ -1007,9 +1010,14 @@ class TabImpl implements Tab {
 
             mTabLaunchTypeAtCreation = mLaunchType;
             mCreationState = creationState;
+
+            // If applicable set up for a lazy background tab load.
             mPendingLoadParams = loadUrlParams;
             if (loadUrlParams != null) {
                 mUrl = new GURL(loadUrlParams.getUrl());
+                if (pendingTitle != null) {
+                    setTitle(pendingTitle);
+                }
             }
 
             // The {@link mDelegateFactory} needs to be set before calling

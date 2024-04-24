@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -25,6 +27,7 @@ public class TabBuilder {
     private Integer mCreationType;
     private boolean mFromFrozenState;
     private LoadUrlParams mLoadUrlParams;
+    private String mTitle;
 
     private WebContents mWebContents;
     private TabDelegateFactory mDelegateFactory;
@@ -187,6 +190,7 @@ public class TabBuilder {
                 parent,
                 mCreationType,
                 mLoadUrlParams,
+                mTitle,
                 mWebContents,
                 mDelegateFactory,
                 mInitiallyHidden,
@@ -207,6 +211,11 @@ public class TabBuilder {
 
     private TabBuilder setLoadUrlParams(LoadUrlParams loadUrlParams) {
         mLoadUrlParams = loadUrlParams;
+        return this;
+    }
+
+    private TabBuilder setTitle(String title) {
+        mTitle = title;
         return this;
     }
 
@@ -231,10 +240,13 @@ public class TabBuilder {
      *
      * @param profile The Profile associated with the Tab.
      * @param loadUrlParams Params specifying the conditions for loading url.
+     * @param title The title to use for the load.
      */
-    public static TabBuilder createForLazyLoad(Profile profile, LoadUrlParams loadUrlParams) {
+    public static TabBuilder createForLazyLoad(
+            Profile profile, LoadUrlParams loadUrlParams, @Nullable String title) {
         return new TabBuilder(profile)
                 .setLoadUrlParams(loadUrlParams)
+                .setTitle(title)
                 .setCreationType(TabCreationState.FROZEN_FOR_LAZY_LOAD);
     }
 

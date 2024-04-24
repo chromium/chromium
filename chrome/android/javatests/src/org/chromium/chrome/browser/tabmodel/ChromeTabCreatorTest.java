@@ -212,17 +212,23 @@ public class ChromeTabCreatorTest {
     @Feature({"Browser"})
     public void testCreateNewTabWithSyncBackgroundFrozen() throws ExecutionException {
         final String url = mTestServer.getURL(TEST_PATH);
+        final String title = "BAR";
         final Tab bgTab =
                 TestThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return sActivityTestRule
-                                    .getActivity()
-                                    .getCurrentTabCreator()
-                                    .createNewTab(
-                                            new LoadUrlParams(url),
-                                            TabLaunchType.FROM_SYNC_BACKGROUND,
-                                            null);
+                            Tab tab =
+                                    sActivityTestRule
+                                            .getActivity()
+                                            .getCurrentTabCreator()
+                                            .createNewTab(
+                                                    new LoadUrlParams(url),
+                                                    title,
+                                                    TabLaunchType.FROM_SYNC_BACKGROUND,
+                                                    null,
+                                                    TabModel.INVALID_TAB_INDEX);
+                            return tab;
                         });
+        Assert.assertEquals(title, ChromeTabUtils.getTitleOnUiThread(bgTab));
 
         // Verify that the background tab is not loading.
         Assert.assertFalse(bgTab.isLoading());
@@ -240,6 +246,9 @@ public class ChromeTabCreatorTest {
                 };
         ChromeTabUtils.waitForTabPageLoaded(bgTab, url, loadPage);
         Assert.assertNotNull(bgTab.getView());
+
+        // Title should change when the page loads.
+        Assert.assertNotEquals(title, ChromeTabUtils.getTitleOnUiThread(bgTab));
     }
 
     private Intent createIntent(int tabIndex) {

@@ -46,11 +46,22 @@ public class MockTabCreator extends TabCreator {
     @Override
     public Tab createNewTab(
             LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, int position) {
+        return createNewTab(loadUrlParams, /* title= */ null, type, parent, position);
+    }
+
+    @Override
+    public Tab createNewTab(
+            LoadUrlParams loadUrlParams,
+            String title,
+            @TabLaunchType int type,
+            Tab parent,
+            int position) {
         Tab tab =
                 new MockTab(
                         0, mSelector.getModel(mIsIncognito).getProfile(), TabLaunchType.FROM_LINK);
         tab.getUserDataHost().setUserData(MockTabAttributes.class, new MockTabAttributes(false));
-        TabTestUtils.initialize(tab, null, null, loadUrlParams, null, null, false, null, false);
+        TabTestUtils.initialize(
+                tab, null, null, loadUrlParams, title, null, null, false, null, false);
         mSelector
                 .getModel(mIsIncognito)
                 .addTab(tab, position, type, TabCreationState.LIVE_IN_FOREGROUND);
@@ -67,7 +78,7 @@ public class MockTabCreator extends TabCreator {
                         TabLaunchType.FROM_RESTORE);
         tab.getUserDataHost().setUserData(MockTabAttributes.class, new MockTabAttributes(true));
         if (state != null) TabTestUtils.restoreFieldsFromState(tab, state);
-        TabTestUtils.initialize(tab, null, null, null, null, null, false, null, false);
+        TabTestUtils.initialize(tab, null, null, null, null, null, null, false, null, false);
         mSelector
                 .getModel(mIsIncognito)
                 .addTab(tab, index, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_ON_RESTORE);

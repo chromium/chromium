@@ -111,6 +111,7 @@ class WebContentsState {
   static base::android::ScopedJavaLocalRef<jobject>
   CreateSingleNavigationStateAsByteBuffer(
       JNIEnv* env,
+      jstring title,
       jstring url,
       jstring referrer_url,
       jint referrer_policy,
