@@ -141,17 +141,19 @@ class SampleForTests {
 
     // The generator is not confused by @Annotated parameters.
     @CalledByNative
-    void javaMethodWithAnnotatedParam(
+    @JniType("std::vector<int32_t>")
+    int[] jniTypesAndAnnotations(
             @SomeAnnotation @JniType("MyEnum") int foo,
-            final @SomeAnnotation int bar,
+            final @SomeAnnotation @JniType("std::vector<int32_t>") int[] bar,
             @SomeAnnotation final int baz,
-            @SomeAnnotation @JniType("long") final @AnotherAnnotation long bat) {}
+            @SomeAnnotation @JniType("long") final @AnotherAnnotation long bat) {
+        return bar;
+    }
 
     // ---------------------------------------------------------------------------------------------
     // Java fields which are accessed from C++ code only must be annotated with @AccessedByNative to
     // prevent them being eliminated when unreferenced code is stripped.
-    @AccessedByNative
-    private int mJavaField;
+    @AccessedByNative private int mJavaField;
 
     // This "struct" will be created by the native side using |createInnerStructA|,
     // and used by the java-side somehow.

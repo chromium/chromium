@@ -387,8 +387,9 @@ int main() {
                                                                 my_java_object);
   jni_zero::tests::Java_SampleForTests_methodThatThrowsException(
       env, my_java_object);
-  jni_zero::tests::Java_SampleForTests_javaMethodWithAnnotatedParam(
-      env, my_java_object, jni_zero::tests::MyEnum::kFirstOption, 13, -1, 99);
+  std::vector<int32_t> vec;
+  vec = jni_zero::tests::Java_SampleForTests_jniTypesAndAnnotations(
+      env, my_java_object, jni_zero::tests::MyEnum::kFirstOption, vec, -1, 99);
 
   jni_zero::tests::Java_SampleForTests_getInnerInterface(env);
   jni_zero::tests::Java_SampleForTests_getInnerEnum(env);

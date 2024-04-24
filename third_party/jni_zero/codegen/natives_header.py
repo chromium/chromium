@@ -62,8 +62,6 @@ def _prep_param(sb, param, proxy_type):
     ret = f'{param.name}_converted'
     with sb.statement():
       sb(f'{java_type.converted_type()} {ret} = ')
-      if java_type.is_array():
-        orig_name = f'static_cast<{java_type.to_cpp()}>({orig_name})'
       convert_type.from_jni_expression(sb, orig_name, java_type)
     return ret
 

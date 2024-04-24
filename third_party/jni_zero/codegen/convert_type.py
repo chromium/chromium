@@ -92,7 +92,12 @@ def from_jni_expression(sb, rvalue, java_type):
     sb(f'static_cast<{T}>({rvalue})')
     return
 
-  jtype = java_type.to_cpp() if java_type.is_array() else 'jobject'
+  if java_type.is_array():
+    jtype = java_type.to_cpp()
+    rvalue = f'static_cast<{jtype}>({rvalue})'
+  else:
+    jtype = 'jobject'
+
   rvalue = f'jni_zero::JavaParamRef<{jtype}>(env, {rvalue})'
 
   if not java_type.is_array():
