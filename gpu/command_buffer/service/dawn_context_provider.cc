@@ -424,6 +424,8 @@ bool DawnContextProvider::Initialize(
       wgpu::FeatureName::SharedFenceVkSemaphoreOpaqueFD,
 
       wgpu::FeatureName::TransientAttachments,
+
+      wgpu::FeatureName::DawnLoadResolveTexture,
   };
 
   wgpu::Adapter adapter(adapters[0].Get());
