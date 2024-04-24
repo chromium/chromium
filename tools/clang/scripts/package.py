@@ -493,10 +493,23 @@ def main():
   # to wherever the reclient config file is written when added to the file.
   reclient_inputs = {
       'clang': [
+        # Note: These have to match the `want` list exactly. `want` uses
+        # a glob, so these must too.
         'lib/clang/$V/share/asan_*list.txt',
         'lib/clang/$V/share/cfi_*list.txt',
       ],
   }
+  if sys.platform == 'win32':
+    # TODO(crbug.com/335997052): Remove this again once we have a compiler
+    # flag that tells clang-cl to not auto-add it (and then explicitly pass
+    # it via GN).
+    reclient_inputs['clang'].extend([
+        'lib/clang/$V/lib/windows/clang_rt.ubsan_standalone-x86_64.lib',
+        'lib/clang/$V/lib/windows/clang_rt.ubsan_standalone_cxx-x86_64.lib',
+        'lib/clang/$V/lib/windows/clang_rt.profile-i386.lib',
+        'lib/clang/$V/lib/windows/clang_rt.profile-x86_64.lib',
+        'lib/clang/$V/lib/windows/clang_rt.profile-aarch64.lib',
+        ])
 
   # Check that all non-glob wanted files exist on disk.
   want = [w.replace('$V', RELEASE_VERSION) for w in want]
