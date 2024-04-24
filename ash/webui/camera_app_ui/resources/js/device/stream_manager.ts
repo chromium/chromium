@@ -89,9 +89,14 @@ export class StreamManager {
   private readonly videoConfigFilter: (config: VideoConfig) => boolean;
 
   private constructor() {
-    if (loadTimeData.getBoard() === 'grunt' &&
-        !state.get(state.State.DISABLE_VIDEO_RESOLUTION_FILTER_FOR_TESTING)) {
-      this.videoConfigFilter = ({height}: VideoConfig) => height < 720;
+    if (loadTimeData.getBoard() === 'grunt') {
+      this.videoConfigFilter = ({height}: VideoConfig) => {
+        if (state.get(
+                state.State.DISABLE_VIDEO_RESOLUTION_FILTER_FOR_TESTING)) {
+          return true;
+        }
+        return height < 720;
+      };
     } else {
       this.videoConfigFilter = () => true;
     }
