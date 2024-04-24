@@ -15,6 +15,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "net/base/proxy_string_util.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
@@ -59,6 +60,11 @@ ProxyServer ProxyServer::FromSchemeHostAndPort(Scheme scheme,
                                                std::optional<uint16_t> port) {
   // Create INVALID proxies directly using `ProxyServer()`.
   DCHECK_NE(scheme, SCHEME_INVALID);
+
+  // Trim host which may have been pasted with excess whitespace.
+  if (!host.empty()) {
+    host = base::TrimWhitespaceASCII(host, base::TRIM_ALL);
+  }
 
   // Add brackets to IPv6 literals if missing, as required by url
   // canonicalization.

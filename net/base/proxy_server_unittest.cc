@@ -62,6 +62,7 @@ TEST(ProxyServerTest, FromSchemeHostAndPort) {
       {ProxyServer::SCHEME_QUIC, "foopy", 111, "111", "foopy", 111},
       {ProxyServer::SCHEME_SOCKS4, "foopy", 111, "111", "foopy", 111},
       {ProxyServer::SCHEME_SOCKS5, "foopy", 111, "111", "foopy", 111},
+      {ProxyServer::SCHEME_HTTPS, " foopy \n", 111, "111", "foopy", 111},
 
       // Default ports
       {ProxyServer::SCHEME_HTTP, "foopy", std::nullopt, "", "foopy", 80},
