@@ -29,17 +29,6 @@ gfx::GenericSharedMemoryId GetNextSharedMemoryId() {
   return GetNextGpuMemoryBufferId();
 }
 
-// Provides a const-correct accessor to |pixmap_|->ExportHandle(). This is
-// needed because NativePixmap::ExportHandle() is declared as non-const.
-// However, in the case of NativePixmapDmaBuf, the implementation, at the time
-// or writing, is const. This is a convenience method for performing the
-// const_cast on |pixmap_| in order to call ExportHandle().
-// TODO(nhebert): add a NativePixmapDmaBuf::ExportHandle() const method and
-// remove ExportHandle()` from this file.
-gfx::NativePixmapHandle ExportHandle(const gfx::NativePixmapDmaBuf* pixmap) {
-  return const_cast<gfx::NativePixmapDmaBuf*>(pixmap)->ExportHandle();
-}
-
 }  // namespace
 
 scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
@@ -291,7 +280,7 @@ int NativePixmapFrameResource::GetDmabufFd(size_t i) const {
 scoped_refptr<gfx::NativePixmapDmaBuf>
 NativePixmapFrameResource::CreateNativePixmapDmaBuf() const {
   // Duplicate FD's into a new NativePixmapHandle
-  gfx::NativePixmapHandle native_pixmap_handle = ExportHandle(pixmap_.get());
+  gfx::NativePixmapHandle native_pixmap_handle = pixmap_->ExportHandle();
 
   // If ExportHandle() runs out of FD's, |native_pixmap_handle| will have no
   // planes.
@@ -312,7 +301,7 @@ NativePixmapFrameResource::GetNativePixmapDmaBuf() const {
 gfx::GpuMemoryBufferHandle
 NativePixmapFrameResource::CreateGpuMemoryBufferHandle() const {
   // Duplicate FD's into a new NativePixmapHandle
-  gfx::NativePixmapHandle native_pixmap_handle = ExportHandle(pixmap_.get());
+  gfx::NativePixmapHandle native_pixmap_handle = pixmap_->ExportHandle();
   if (native_pixmap_handle.planes.empty()) {
     return gfx::GpuMemoryBufferHandle();  // Invalid
   }
