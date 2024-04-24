@@ -380,8 +380,6 @@ class CORE_EXPORT HTMLCanvasElement final
   static std::pair<blink::Image*, float> BrokenCanvas(
       float device_scale_factor);
 
-  AnimationState ComputeAnimationState() const;
-
   FRIEND_TEST_ALL_PREFIXES(HTMLCanvasElementTest, BrokenCanvasHighRes);
 
   HeapHashSet<WeakMember<CanvasDrawListener>> listeners_;

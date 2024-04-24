@@ -1496,28 +1496,12 @@ void HTMLCanvasElement::DiscardResourceProvider() {
   dirty_rect_ = gfx::RectF();
 }
 
-HTMLCanvasElement::AnimationState HTMLCanvasElement::ComputeAnimationState()
-    const {
-  DCHECK(GetPage());
-  const bool is_hidden = GetPage()->GetVisibilityState() ==
-                         mojom::blink::PageVisibilityState::kHidden;
-  if (is_hidden) {
-    if (HasCanvasCapture()) {
-      const bool allow_synthetic_timing =
-          RuntimeEnabledFeatures::AllowSyntheticTimingForCanvasCaptureEnabled();
-      return allow_synthetic_timing ? AnimationState::kActiveWithSyntheticTiming
-                                    : AnimationState::kActive;
-    } else {
-      return AnimationState::kSuspended;
-    }
-  }
-
-  return AnimationState::kActive;
-}
-
 void HTMLCanvasElement::UpdateSuspendOffscreenCanvasAnimation() {
   if (GetPage()) {
-    SetSuspendOffscreenCanvasAnimation(ComputeAnimationState());
+    SetSuspendOffscreenCanvasAnimation(
+        GetPage()->GetVisibilityState() ==
+            mojom::blink::PageVisibilityState::kHidden &&
+        !HasCanvasCapture());
   }
 }
 

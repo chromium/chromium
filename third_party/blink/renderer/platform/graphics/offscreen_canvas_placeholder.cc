@@ -32,11 +32,11 @@ void ReleaseFrameToDispatcher(
   }
 }
 
-void SetAnimationState(
+void SetSuspendAnimation(
     base::WeakPtr<blink::CanvasResourceDispatcher> dispatcher,
-    blink::OffscreenCanvasPlaceholder::AnimationState animation_state) {
+    bool suspend) {
   if (dispatcher) {
-    dispatcher->SetAnimationState(animation_state);
+    dispatcher->SetSuspendAnimation(suspend);
   }
 }
 
@@ -104,13 +104,14 @@ void OffscreenCanvasPlaceholder::SetOffscreenCanvasResource(
       base::BindOnce(FrameLastUnrefCallback, frame_dispatcher_,
                      frame_dispatcher_task_runner_, resource_id));
 
-  if (deferred_animation_state_ &&
-      current_animation_state_ != *deferred_animation_state_) {
-    bool success = PostSetAnimationStateToOffscreenCanvasThread(
-        *deferred_animation_state_);
+  if (animation_state_ == kShouldSuspendAnimation) {
+    bool success = PostSetSuspendAnimationToOffscreenCanvasThread(true);
     DCHECK(success);
-    current_animation_state_ = *deferred_animation_state_;
-    deferred_animation_state_.reset();
+    animation_state_ = kSuspendedAnimation;
+  } else if (animation_state_ == kShouldActivateAnimation) {
+    bool success = PostSetSuspendAnimationToOffscreenCanvasThread(false);
+    DCHECK(success);
+    animation_state_ = kActiveAnimation;
   }
 }
 
@@ -152,15 +153,38 @@ void OffscreenCanvasPlaceholder::UpdateOffscreenCanvasFilterQuality(
 }
 
 void OffscreenCanvasPlaceholder::SetSuspendOffscreenCanvasAnimation(
-    AnimationState requested_animation_state) {
-  if (PostSetAnimationStateToOffscreenCanvasThread(requested_animation_state)) {
-    current_animation_state_ = requested_animation_state;
-    // If there is any deferred state, clear it because we just posted the
-    // correct update.
-    deferred_animation_state_.reset();
-  } else {
-    // Defer the request until we have a dispatcher.
-    deferred_animation_state_ = requested_animation_state;
+    bool suspend) {
+  switch (animation_state_) {
+    case kActiveAnimation:
+      if (suspend) {
+        if (PostSetSuspendAnimationToOffscreenCanvasThread(suspend)) {
+          animation_state_ = kSuspendedAnimation;
+        } else {
+          animation_state_ = kShouldSuspendAnimation;
+        }
+      }
+      break;
+    case kSuspendedAnimation:
+      if (!suspend) {
+        if (PostSetSuspendAnimationToOffscreenCanvasThread(suspend)) {
+          animation_state_ = kActiveAnimation;
+        } else {
+          animation_state_ = kShouldActivateAnimation;
+        }
+      }
+      break;
+    case kShouldSuspendAnimation:
+      if (!suspend) {
+        animation_state_ = kActiveAnimation;
+      }
+      break;
+    case kShouldActivateAnimation:
+      if (suspend) {
+        animation_state_ = kSuspendedAnimation;
+      }
+      break;
+    default:
+      NOTREACHED();
   }
 }
 
@@ -188,13 +212,13 @@ void OffscreenCanvasPlaceholder::UnregisterPlaceholderCanvas() {
   placeholder_id_ = kNoPlaceholderId;
 }
 
-bool OffscreenCanvasPlaceholder::PostSetAnimationStateToOffscreenCanvasThread(
-    AnimationState animation_state) {
+bool OffscreenCanvasPlaceholder::PostSetSuspendAnimationToOffscreenCanvasThread(
+    bool suspend) {
   if (!frame_dispatcher_task_runner_)
     return false;
-  PostCrossThreadTask(*frame_dispatcher_task_runner_, FROM_HERE,
-                      CrossThreadBindOnce(SetAnimationState, frame_dispatcher_,
-                                          animation_state));
+  PostCrossThreadTask(
+      *frame_dispatcher_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(SetSuspendAnimation, frame_dispatcher_, suspend));
   return true;
 }
 
