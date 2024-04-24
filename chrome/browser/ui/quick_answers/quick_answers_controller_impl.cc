@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -81,6 +82,52 @@ bool IsActiveUserInternal() {
 
   return gaia::IsGoogleInternalAccountEmail(email);
 }
+
+class PerformOnConsentAccepted : public QuickAnswersStateObserver {
+ public:
+  explicit PerformOnConsentAccepted(base::OnceCallback<void()> action)
+      : action_(std::move(action)) {
+    CHECK(action_);
+
+    // `QuickAnswersState::AddObserver` calls an added observer with a current
+    // value (or a pref value later if it's not initialized yet).
+    scoped_observation_.Observe(QuickAnswersState::Get());
+  }
+
+  // QuickAnswersStateObserver:
+  void OnSettingsEnabled(bool enabled) override { MaybeRun(); }
+
+  void OnConsentStatusUpdated(
+      quick_answers::prefs::ConsentStatus consent_status) override {
+    MaybeRun();
+  }
+
+ private:
+  void MaybeRun() {
+    if (!action_) {
+      return;
+    }
+
+    QuickAnswersState* quick_answers_state = QuickAnswersState::Get();
+    CHECK(quick_answers_state->prefs_initialized());
+
+    bool settings_enabled = quick_answers_state->settings_enabled();
+    quick_answers::prefs::ConsentStatus consent_status =
+        quick_answers_state->consent_status();
+
+    if (!settings_enabled ||
+        consent_status != quick_answers::prefs::ConsentStatus::kAccepted) {
+      return;
+    }
+
+    scoped_observation_.Reset();
+    std::move(action_).Run();
+  }
+
+  base::ScopedObservation<QuickAnswersState, PerformOnConsentAccepted>
+      scoped_observation_{this};
+  base::OnceCallback<void()> action_;
+};
 
 }  // namespace
 
@@ -353,9 +400,19 @@ void QuickAnswersControllerImpl::OnUserConsentResult(bool consented) {
 
   if (consented) {
     visibility_ = QuickAnswersVisibility::kPending;
-    // Display Quick-Answer for the cached query when user consent has
-    // been granted.
-    OnTextAvailable(anchor_bounds_, title_, context_.surrounding_text);
+
+    // Preference value can be updated as an async operation. Wait the value
+    // change and then display quick answer for the cached query. There should
+    // be no need to reset `perform_on_consent_accepted_` as there is no case a
+    // user accepts a consent twice on a device. Toggling from OS settings will
+    // set value directly to `kAccepted` or `kRejected`.
+    CHECK(!perform_on_consent_accepted_)
+        << "There is already a pending action. A user should not accept a "
+           "consent twice or more.";
+    perform_on_consent_accepted_ =
+        std::make_unique<PerformOnConsentAccepted>(base::BindOnce(
+            &QuickAnswersControllerImpl::OnTextAvailable, GetWeakPtr(),
+            anchor_bounds_, title_, context_.surrounding_text));
   } else {
     visibility_ = QuickAnswersVisibility::kClosed;
   }

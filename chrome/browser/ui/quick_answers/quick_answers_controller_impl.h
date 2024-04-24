@@ -14,12 +14,12 @@
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chromeos/components/editor_menu/public/cpp/read_write_card_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/gfx/geometry/rect.h"
 
 class Profile;
-class QuickAnswersState;
 class QuickAnswersUiController;
 
 // Implementation of QuickAnswerController. It fetches quick answers
@@ -137,6 +137,10 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
       read_write_cards_ui_controller_;
 
   QuickAnswersVisibility visibility_ = QuickAnswersVisibility::kClosed;
+
+  // Use `std::unique_ptr` instead of `std::optional` as we can pass a class
+  // defined in an unnamed namespace.
+  std::unique_ptr<QuickAnswersStateObserver> perform_on_consent_accepted_;
 
   base::WeakPtrFactory<QuickAnswersControllerImpl> weak_factory_{this};
 };
