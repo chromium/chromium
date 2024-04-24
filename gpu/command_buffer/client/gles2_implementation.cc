@@ -6843,24 +6843,6 @@ void GLES2Implementation::DrawElementsInstancedBaseVertexBaseInstanceANGLE(
   CheckGLError();
 }
 
-GLuint GLES2Implementation::CreateAndConsumeTextureCHROMIUM(
-    const GLbyte* data) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glCreateAndConsumeTextureCHROMIUM("
-                     << static_cast<const void*>(data) << ")");
-  const Mailbox& mailbox = *reinterpret_cast<const Mailbox*>(data);
-  DCHECK(mailbox.Verify()) << "CreateAndConsumeTextureCHROMIUM was passed a "
-                              "mailbox that was not generated via Mailbox "
-                              "creation functions.";
-  GLuint client_id;
-  GetIdHandler(SharedIdNamespaces::kTextures)->MakeIds(this, 0, 1, &client_id);
-  helper_->CreateAndConsumeTextureINTERNALImmediate(client_id, data);
-  if (share_group_->bind_generates_resource())
-    helper_->CommandBufferHelper::OrderingBarrier();
-  CheckGLError();
-  return client_id;
-}
-
 GLuint GLES2Implementation::CreateAndTexStorage2DSharedImageCHROMIUM(
     const GLbyte* mailbox_data) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();

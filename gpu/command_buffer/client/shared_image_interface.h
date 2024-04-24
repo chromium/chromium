@@ -115,8 +115,7 @@ class GPU_EXPORT SharedImageInterface
   // ClientSharedImage struct contains a mailbox that can be imported into said
   // APIs using their corresponding shared image functions (e.g.
   // GLES2Interface::CreateAndTexStorage2DSharedImageCHROMIUM or
-  // RasterInterface::CopySharedImage) or (deprecated) mailbox functions (e.g.
-  // GLES2Interface::CreateAndConsumeTextureCHROMIUM).
+  // RasterInterface::CopySharedImage).
   // The |SharedImageInterface| keeps ownership of the image until
   // |DestroySharedImage| is called or the interface itself is destroyed (e.g.
   // the GPU channel is lost).
@@ -219,8 +218,7 @@ class GPU_EXPORT SharedImageInterface
   // Returns a mailbox that can be imported into said APIs using their
   // corresponding shared image functions (e.g.
   // GLES2Interface::CreateAndTexStorage2DSharedImageCHROMIUM or
-  // RasterInterface::CopySharedImage) or (deprecated) mailbox functions (e.g.
-  // GLES2Interface::CreateAndConsumeTextureCHROMIUM).
+  // RasterInterface::CopySharedImage).
   // The |SharedImageInterface| keeps ownership of the image until
   // |DestroySharedImage| is called or the interface itself is destroyed (e.g.
   // the GPU channel is lost).
@@ -302,8 +300,7 @@ class GPU_EXPORT SharedImageInterface
   // Creates a swap chain.
   // Returns shared images for front and back buffers of a DXGI Swap Chain that
   // can be imported into GL command buffer using shared image functions (e.g.
-  // GLES2Interface::CreateAndTexStorage2DSharedImageCHROMIUM) or (deprecated)
-  // mailbox functions (e.g. GLES2Interface::CreateAndConsumeTextureCHROMIUM).
+  // GLES2Interface::CreateAndTexStorage2DSharedImageCHROMIUM).
   virtual SwapChainSharedImages CreateSwapChain(
       viz::SharedImageFormat format,
       const gfx::Size& size,

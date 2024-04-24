@@ -4971,29 +4971,6 @@ error::Error GLES2DecoderImpl::HandleCopySubTextureCHROMIUM(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderImpl::HandleCreateAndConsumeTextureINTERNALImmediate(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::CreateAndConsumeTextureINTERNALImmediate& c =
-      *static_cast<const volatile gles2::cmds::
-                       CreateAndConsumeTextureINTERNALImmediate*>(cmd_data);
-  GLuint texture = static_cast<GLuint>(c.texture);
-  uint32_t mailbox_size;
-  if (!GLES2Util::ComputeDataSize<GLbyte, 16>(1, &mailbox_size)) {
-    return error::kOutOfBounds;
-  }
-  if (mailbox_size > immediate_data_size) {
-    return error::kOutOfBounds;
-  }
-  volatile const GLbyte* mailbox = GetImmediateDataAs<volatile const GLbyte*>(
-      c, mailbox_size, immediate_data_size);
-  if (mailbox == nullptr) {
-    return error::kOutOfBounds;
-  }
-  DoCreateAndConsumeTextureINTERNAL(texture, mailbox);
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderImpl::HandleTraceEndCHROMIUM(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

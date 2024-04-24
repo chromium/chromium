@@ -2914,57 +2914,6 @@ TEST_P(GLES2DecoderTest, TextureUsageAngleExtNotEnabledByDefault) {
   EXPECT_EQ(GL_INVALID_ENUM, GetGLError());
 }
 
-TEST_P(GLES2DecoderTest, CreateAndConsumeTextureCHROMIUMInvalidMailbox) {
-  // Attempt to consume the mailbox when no texture has been produced with it.
-  Mailbox mailbox = Mailbox::GenerateLegacyMailboxForTesting();
-  GLuint new_texture_id = kNewClientId;
-
-  EXPECT_CALL(*gl_, GenTextures(1, _))
-      .WillOnce(SetArgPointee<1>(kNewServiceId))
-      .RetiresOnSaturation();
-  EXPECT_CALL(*gl_, ActiveTexture(GL_TEXTURE1)).Times(1).RetiresOnSaturation();
-
-  auto& texture_cmd = *GetImmediateAs<cmds::ActiveTexture>();
-  texture_cmd.Init(GL_TEXTURE1);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(texture_cmd));
-
-  auto& consume_cmd =
-      *GetImmediateAs<cmds::CreateAndConsumeTextureINTERNALImmediate>();
-  consume_cmd.Init(new_texture_id, mailbox.name);
-  EXPECT_EQ(error::kNoError,
-            ExecuteImmediateCmd(consume_cmd, sizeof(mailbox.name)));
-
-  // CreateAndConsumeTexture should fail if the mailbox isn't associated with a
-  // texture.
-  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
-
-  // Make sure the new client_id is associated with a texture ref even though
-  // CreateAndConsumeTexture failed.
-  TextureRef* texture_ref =
-      group().texture_manager()->GetTexture(new_texture_id);
-  ASSERT_TRUE(texture_ref != nullptr);
-  Texture* texture = texture_ref->texture();
-  // New texture should be unbound to a target.
-  EXPECT_TRUE(texture->target() == GL_NONE);
-  // New texture should have a valid service_id.
-  EXPECT_EQ(kNewServiceId, texture->service_id());
-}
-
-TEST_P(GLES2DecoderTest, CreateAndConsumeTextureCHROMIUMInvalidTexture) {
-  Mailbox mailbox = Mailbox::GenerateLegacyMailboxForTesting();
-
-  // Attempt to consume the mailbox with an invalid texture id.
-  GLuint new_texture_id = 0;
-  auto& consume_cmd =
-      *GetImmediateAs<cmds::CreateAndConsumeTextureINTERNALImmediate>();
-  consume_cmd.Init(new_texture_id, mailbox.name);
-  EXPECT_EQ(error::kNoError,
-            ExecuteImmediateCmd(consume_cmd, sizeof(mailbox.name)));
-
-  // CreateAndConsumeTexture should fail.
-  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
-}
-
 TEST_P(GLES2DecoderTest, CreateAndTexStorage2DSharedImageCHROMIUM) {
   MemoryTypeTracker memory_tracker(memory_tracker_.get());
   Mailbox mailbox = Mailbox::GenerateForSharedImage();

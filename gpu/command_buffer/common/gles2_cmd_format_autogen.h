@@ -14408,47 +14408,6 @@ static_assert(offsetof(VertexAttribDivisorANGLE, index) == 4,
 static_assert(offsetof(VertexAttribDivisorANGLE, divisor) == 8,
               "offset of VertexAttribDivisorANGLE divisor should be 8");
 
-struct CreateAndConsumeTextureINTERNALImmediate {
-  typedef CreateAndConsumeTextureINTERNALImmediate ValueType;
-  static const CommandId kCmdId = kCreateAndConsumeTextureINTERNALImmediate;
-  static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(2);
-
-  static uint32_t ComputeDataSize() {
-    return static_cast<uint32_t>(sizeof(GLbyte) * 16);
-  }
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType) + ComputeDataSize());
-  }
-
-  void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
-
-  void Init(GLuint _texture, const GLbyte* _mailbox) {
-    SetHeader();
-    texture = _texture;
-    memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
-  }
-
-  void* Set(void* cmd, GLuint _texture, const GLbyte* _mailbox) {
-    static_cast<ValueType*>(cmd)->Init(_texture, _mailbox);
-    const uint32_t size = ComputeSize();
-    return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
-  }
-
-  gpu::CommandHeader header;
-  uint32_t texture;
-};
-
-static_assert(sizeof(CreateAndConsumeTextureINTERNALImmediate) == 8,
-              "size of CreateAndConsumeTextureINTERNALImmediate should be 8");
-static_assert(
-    offsetof(CreateAndConsumeTextureINTERNALImmediate, header) == 0,
-    "offset of CreateAndConsumeTextureINTERNALImmediate header should be 0");
-static_assert(
-    offsetof(CreateAndConsumeTextureINTERNALImmediate, texture) == 4,
-    "offset of CreateAndConsumeTextureINTERNALImmediate texture should be 4");
-
 struct BindUniformLocationCHROMIUMBucket {
   typedef BindUniformLocationCHROMIUMBucket ValueType;
   static const CommandId kCmdId = kBindUniformLocationCHROMIUMBucket;

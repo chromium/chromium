@@ -1082,8 +1082,6 @@ void DrawElementsInstancedBaseVertexBaseInstanceANGLE(
 
 void VertexAttribDivisorANGLE(GLuint index, GLuint divisor) override;
 
-GLuint CreateAndConsumeTextureCHROMIUM(const GLbyte* mailbox) override;
-
 void BindUniformLocationCHROMIUM(GLuint program,
                                  GLint location,
                                  const char* name) override;

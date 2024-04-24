@@ -21,15 +21,6 @@ extern "C" {
 #ifndef GL_MAILBOX_SIZE_CHROMIUM
 #define GL_MAILBOX_SIZE_CHROMIUM 16
 #endif
-#ifdef GL_GLEXT_PROTOTYPES
-GL_APICALL GLuint GL_APIENTRY
-glCreateAndConsumeTextureCHROMIUM(const GLbyte* mailbox);
-#endif
-typedef void (GL_APIENTRYP PFNGLGENMAILBOXCHROMIUMPROC) (GLbyte* mailbox);
-typedef void (GL_APIENTRYP PFNGLPRODUCETEXTUREDIRECTCHROMIUMPROC) (
-    GLuint texture, GLenum target, const GLbyte* mailbox);
-typedef GLuint(GL_APIENTRYP PFNGLCREATEANDCONSUMETEXTURECHROMIUMPROC)(
-    const GLbyte* mailbox);
 #endif  /* GL_CHROMIUM_texture_mailbox */
 
 /* GL_CHROMIUM_pixel_transfer_buffer_object */

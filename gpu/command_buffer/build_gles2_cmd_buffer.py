@@ -1856,20 +1856,6 @@ _FUNCTION_INFO = {
     'unit_test': False,
     'es3': True,
   },
-  'CreateAndConsumeTextureCHROMIUM': {
-    'type': 'NoCommand',
-    'extension': "CHROMIUM_texture_mailbox",
-    'trace_level': 2,
-  },
-  'CreateAndConsumeTextureINTERNAL': {
-    'decoder_func': 'DoCreateAndConsumeTextureINTERNAL',
-    'internal': True,
-    'type': 'PUT',
-    'count': 16,  # GL_MAILBOX_SIZE_CHROMIUM
-    'impl_func': False,
-    'unit_test': False,
-    'trace_level': 2,
-  },
   'ClearStencil': {
     'type': 'StateSet',
     'state': 'ClearStencil',

@@ -375,13 +375,6 @@ void TestGLES2Interface::GetQueryObjectuivEXT(GLuint id,
   }
 }
 
-GLuint TestGLES2Interface::CreateAndConsumeTextureCHROMIUM(
-    const GLbyte* mailbox) {
-  GLuint texture_id;
-  GenTextures(1, &texture_id);
-  return texture_id;
-}
-
 GLuint TestGLES2Interface::CreateAndTexStorage2DSharedImageCHROMIUM(
     const GLbyte* mailbox) {
   GLuint texture_id;
