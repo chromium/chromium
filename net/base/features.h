@@ -524,8 +524,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPriorityHeader);
 // Enables a more efficient implementation of SpdyHeadersToHttpResponse().
 NET_EXPORT BASE_DECLARE_FEATURE(kSpdyHeadersToHttpResponseUseBuilder);
 
-// Enables receiving ECN bit by sockets in Chrome.
-NET_EXPORT BASE_DECLARE_FEATURE(kReceiveEcn);
+// Enables receiving ECN bit by UDP sockets in Chrome, and reporting the counts
+// to QUIC servers via ACK frames.
+NET_EXPORT BASE_DECLARE_FEATURE(kReportEcn);
 
 // Enables using the new ALPS codepoint to negotiate application settings for
 // HTTP2.

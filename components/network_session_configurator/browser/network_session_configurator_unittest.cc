@@ -105,6 +105,7 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_FALSE(quic_params_.exponential_backoff_on_initial_delay.has_value());
   EXPECT_FALSE(quic_params_.delay_main_job_with_available_spdy_session);
   EXPECT_FALSE(quic_params_.use_new_alps_codepoint);
+  EXPECT_FALSE(quic_params_.report_ecn);
 }
 
 TEST_F(NetworkSessionConfiguratorTest, Http2FieldTrialGroupNameDoesNotMatter) {
@@ -889,6 +890,26 @@ TEST_F(NetworkSessionConfiguratorTest,
   ParseFieldTrials();
 
   EXPECT_EQ(base::Milliseconds(500), quic_params_.initial_rtt_for_handshake);
+}
+
+TEST_F(NetworkSessionConfiguratorTest,
+       ReportReceivedEcnFromFieldTrailParams) {
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["report_ecn"] = "true";
+  base::AssociateFieldTrialParams("QUIC", "Enabled", field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
+
+  ParseFieldTrials();
+
+  EXPECT_TRUE(quic_params_.report_ecn);
+}
+
+TEST_F(NetworkSessionConfiguratorTest,
+       ReportReceivedEcnFromFeature) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(net::features::kReportEcn);
+  ParseFieldTrials();
+  EXPECT_TRUE(quic_params_.report_ecn);
 }
 
 class NetworkSessionConfiguratorWithQuicVersionTest

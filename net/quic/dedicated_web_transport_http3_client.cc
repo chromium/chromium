@@ -620,7 +620,7 @@ void DedicatedWebTransportHttp3Client::CreateConnection() {
       kQuicYieldAfterPacketsRead,
       quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds),
-      net_log_);
+      quic_context_->params()->report_ecn, net_log_);
 
   event_logger_ = std::make_unique<QuicEventLogger>(session_.get(), net_log_);
   connection_->set_debug_visitor(event_logger_.get());

@@ -485,7 +485,8 @@ QuicSessionPool::QuicSessionPool(
       connectivity_monitor_(default_network_),
       ssl_config_service_(ssl_config_service),
       use_network_anonymization_key_for_crypto_configs_(
-          NetworkAnonymizationKey::IsPartitioningEnabled()) {
+          NetworkAnonymizationKey::IsPartitioningEnabled()),
+      report_ecn_(quic_context->params()->report_ecn) {
   DCHECK(transport_security_state_);
   DCHECK(http_server_properties_);
   if (params_.disable_tls_zero_rtt) {
@@ -819,7 +820,7 @@ void QuicSessionPool::FinishConnectAndConfigureSocket(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(net::features::kReceiveEcn)) {
+  if (report_ecn_) {
     rv = socket->SetRecvTos();
     if (rv != OK) {
       OnFinishConnectAndConfigureSocketError(
@@ -912,7 +913,7 @@ int QuicSessionPool::ConfigureSocket(DatagramClientSocket* socket,
     return rv;
   }
 
-  if (base::FeatureList::IsEnabled(net::features::kReceiveEcn)) {
+  if (report_ecn_) {
     rv = socket->SetRecvTos();
     if (rv != OK) {
       HistogramCreateSessionFailure(CREATION_ERROR_SETTING_RECEIVE_ECN);
@@ -1563,7 +1564,8 @@ bool QuicSessionPool::CreateSessionHelper(
       std::move(crypto_config_handle),
       network_connection_.connection_description(), dns_resolution_start_time,
       dns_resolution_end_time, tick_clock_, task_runner_.get(),
-      std::move(socket_performance_watcher), metadata, net_log);
+      std::move(socket_performance_watcher), metadata, params_.report_ecn,
+      net_log);
 
   all_sessions_[*session] = key;  // owning pointer
   writer->set_delegate(*session);

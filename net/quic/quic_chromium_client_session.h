@@ -588,6 +588,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // connection), the `dns_resolution_*_time` arguments should be equal and
   // the current time, and `endpoint_result` should be an empty value, with an
   // empty address list.
+  // TODO(crbug.com/332924003): Delete the |report_ecn| argument when the
+  // feature is deprecated.
   QuicChromiumClientSession(
       quic::QuicConnection* connection,
       std::unique_ptr<DatagramClientSocket> socket,
@@ -622,6 +624,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       base::SequencedTaskRunner* task_runner,
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
       const ConnectionEndpointMetadata& metadata,
+      bool report_ecn,
       const NetLogWithSource& net_log);
 
   QuicChromiumClientSession(const QuicChromiumClientSession&) = delete;
@@ -1096,6 +1099,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   std::unique_ptr<CertVerifyResult> cert_verify_result_;
   bool pkp_bypassed_ = false;
   bool is_fatal_cert_error_ = false;
+  bool report_ecn_;
   HandleSet handles_;
   StreamRequestQueue stream_requests_;
   std::vector<CompletionOnceCallback> waiting_for_confirmation_callbacks_;

@@ -1298,7 +1298,7 @@ class WebSocketQuicStreamAdapterTest
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
-        NetLogWithSource::Make(NetLogSourceType::NONE));
+        /*report_ecn=*/true, NetLogWithSource::Make(NetLogSourceType::NONE));
 
     session_->Initialize();
 

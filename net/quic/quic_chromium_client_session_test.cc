@@ -196,7 +196,7 @@ class QuicChromiumClientSessionTest
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
-        NetLogWithSource::Make(NetLogSourceType::NONE));
+        /*report_ecn=*/true, NetLogWithSource::Make(NetLogSourceType::NONE));
     if (connectivity_monitor_) {
       connectivity_monitor_->SetInitialDefaultNetwork(default_network_);
       session_->AddConnectivityObserver(connectivity_monitor_.get());
@@ -1549,7 +1549,7 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocket) {
       kQuicYieldAfterPacketsRead,
       quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds),
-      net_log_with_source_);
+      /*report_ecn=*/true, net_log_with_source_);
   new_reader->StartReading();
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
       CreateQuicChromiumPacketWriter(new_reader->socket(), session_.get()));
@@ -1640,7 +1640,7 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
         kQuicYieldAfterPacketsRead,
         quic::QuicTime::Delta::FromMilliseconds(
             kQuicYieldAfterDurationMilliseconds),
-        net_log_with_source_);
+        /*report_ecn=*/true, net_log_with_source_);
     new_reader->StartReading();
     std::unique_ptr<QuicChromiumPacketWriter> new_writer(
         CreateQuicChromiumPacketWriter(new_reader->socket(), session_.get()));
@@ -1681,7 +1681,7 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketMaxReaders) {
       kQuicYieldAfterPacketsRead,
       quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds),
-      net_log_with_source_);
+      /*report_ecn=*/true, net_log_with_source_);
   new_reader->StartReading();
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
       CreateQuicChromiumPacketWriter(new_reader->socket(), session_.get()));
@@ -1750,7 +1750,7 @@ TEST_P(QuicChromiumClientSessionTest, MigrateToSocketReadError) {
       kQuicYieldAfterPacketsRead,
       quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds),
-      net_log_with_source_);
+      /*report_ecn=*/true, net_log_with_source_);
   new_reader->StartReading();
   std::unique_ptr<QuicChromiumPacketWriter> new_writer(
       CreateQuicChromiumPacketWriter(new_reader->socket(), session_.get()));
@@ -2153,7 +2153,7 @@ TEST_P(QuicChromiumClientSessionTest, WriteErrorAfterHandshakeConfirmed) {
 // Much like above, but checking that ECN marks are reported.
 TEST_P(QuicChromiumClientSessionTest, ReportsReceivedEcn) {
   base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(net::features::kReceiveEcn);
+  scoped_feature_list_.InitAndEnableFeature(net::features::kReportEcn);
 
   MockQuicData mock_quic_data(version_);
   int write_packet_num = 1, read_packet_num = 0;

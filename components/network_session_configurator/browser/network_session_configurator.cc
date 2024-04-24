@@ -315,6 +315,13 @@ bool ShouldQuicUseNewAlpsCodepoint(
       base::FeatureList::IsEnabled(net::features::kUseNewAlpsCodepointQUIC));
 }
 
+bool ShouldQuicReportEcn(
+    const VariationParameters& quic_trial_params) {
+  return GetVariationBoolParamOrFeatureSetting(
+      quic_trial_params, "report_ecn",
+      base::FeatureList::IsEnabled(net::features::kReportEcn));
+}
+
 bool ShouldQuicMigrateSessionsEarlyV2(
     const VariationParameters& quic_trial_params) {
   return base::EqualsCaseInsensitiveASCII(
@@ -680,6 +687,7 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
     if (DelayMainJobWithAvailableSpdySession(quic_trial_params)) {
       quic_params->delay_main_job_with_available_spdy_session = true;
     }
+    quic_params->report_ecn = ShouldQuicReportEcn(quic_trial_params);
     SetQuicFlags(quic_trial_params);
   }
 

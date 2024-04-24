@@ -931,6 +931,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     base::SequencedTaskRunner* task_runner,
     std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
     const ConnectionEndpointMetadata& metadata,
+    bool report_ecn,
     const NetLogWithSource& net_log)
     : quic::QuicSpdyClientSessionBase(connection,
                                       /*visitor=*/nullptr,
@@ -962,6 +963,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       transport_security_state_(transport_security_state),
       ssl_config_service_(ssl_config_service),
       server_info_(std::move(server_info)),
+      report_ecn_(report_ecn),
       task_runner_(task_runner),
       net_log_(NetLogWithSource::Make(net_log.net_log(),
                                       NetLogSourceType::QUIC_SESSION)),
@@ -977,7 +979,7 @@ QuicChromiumClientSession::QuicChromiumClientSession(
   auto* socket_raw = socket.get();
   packet_readers_.push_back(std::make_unique<QuicChromiumPacketReader>(
       std::move(socket), clock, this, yield_after_packets, yield_after_duration,
-      net_log_));
+      report_ecn, net_log_));
   crypto_stream_ = crypto_client_stream_factory->CreateQuicCryptoClientStream(
       session_key.server_id(), this,
       std::make_unique<ProofVerifyContextChromium>(cert_verify_flags, net_log_),
@@ -3103,7 +3105,7 @@ void QuicChromiumClientSession::FinishCreateContextForMultiPortPath(
       probing_socket.get(), task_runner_);
   auto probing_reader = std::make_unique<QuicChromiumPacketReader>(
       std::move(probing_socket), clock_, this, yield_after_packets_,
-      yield_after_duration_, net_log_);
+      yield_after_duration_, session_pool_->report_ecn(), net_log_);
 
   probing_reader->StartReading();
   path_validation_writer_delegate_.set_network(default_network_);
@@ -3199,7 +3201,7 @@ void QuicChromiumClientSession::FinishStartProbing(
       probing_socket.get(), task_runner_);
   auto probing_reader = std::make_unique<QuicChromiumPacketReader>(
       std::move(probing_socket), clock_, this, yield_after_packets_,
-      yield_after_duration_, net_log_);
+      yield_after_duration_, session_pool_->report_ecn(), net_log_);
 
   probing_reader->StartReading();
   path_validation_writer_delegate_.set_network(network);
@@ -3782,7 +3784,7 @@ void QuicChromiumClientSession::FinishMigrate(
   // Create new packet reader and writer on the new socket.
   auto new_reader = std::make_unique<QuicChromiumPacketReader>(
       std::move(socket), clock_, this, yield_after_packets_,
-      yield_after_duration_, net_log_);
+      yield_after_duration_, session_pool_->report_ecn(), net_log_);
   new_reader->StartReading();
   auto new_writer = std::make_unique<QuicChromiumPacketWriter>(
       new_reader->socket(), task_runner_);
