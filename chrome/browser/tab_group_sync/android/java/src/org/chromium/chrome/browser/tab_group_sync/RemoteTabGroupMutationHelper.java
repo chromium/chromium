@@ -41,15 +41,15 @@ public class RemoteTabGroupMutationHelper {
     /**
      * Creates a remote tab group corresponding to the given local tab group.
      *
-     * @param groupId The root ID of the local tab group.
+     * @param groupId The ID of the local tab group.
      */
-    public void createRemoteTabGroup(int groupId) {
+    public void createRemoteTabGroup(LocalTabGroupId groupId) {
         // Create an empty group and set visuals.
-        String syncId = mTabGroupSyncService.createGroup(new LocalTabGroupId(groupId));
+        String syncId = mTabGroupSyncService.createGroup(groupId);
         updateVisualData(groupId);
 
         // Add tabs to the group.
-        List<Tab> tabs = mTabGroupModelFilter.getRelatedTabList(groupId);
+        List<Tab> tabs = mTabGroupModelFilter.getRelatedTabList(groupId.rootId);
         for (int position = 0; position < tabs.size(); position++) {
             addTab(groupId, tabs.get(position), position);
         }
@@ -62,16 +62,17 @@ public class RemoteTabGroupMutationHelper {
      * Called to update the visual data of a remote tab group. Uses default values, if title or
      * color are still unset for the local tab group.
      *
-     * @param groupId The root ID of the local tab group.
+     * @param groupId The ID the local tab group.
      */
-    public void updateVisualData(int groupId) {
-        String title = mTabGroupModelFilter.getTabGroupTitle(groupId);
+    public void updateVisualData(LocalTabGroupId groupId) {
+        int rootId = groupId.rootId;
+        String title = mTabGroupModelFilter.getTabGroupTitle(rootId);
         if (title == null) title = new String();
 
-        int color = mTabGroupModelFilter.getTabGroupColor(groupId);
+        int color = mTabGroupModelFilter.getTabGroupColor(rootId);
         if (color == TabGroupColorUtils.INVALID_COLOR_ID) color = TabGroupColorId.GREY;
 
-        mTabGroupSyncService.updateVisualData(new LocalTabGroupId(groupId), title, color);
+        mTabGroupSyncService.updateVisualData(groupId, title, color);
     }
 
     /**
@@ -79,43 +80,35 @@ public class RemoteTabGroupMutationHelper {
      *
      * @param groupId The local tab group ID.
      */
-    public void removeGroup(int groupId) {
-        mTabGroupSyncService.removeGroup(new LocalTabGroupId(groupId));
+    public void removeGroup(LocalTabGroupId groupId) {
+        mTabGroupSyncService.removeGroup(groupId);
     }
 
     /**
-     * Updates the tab group ID mapping when the root ID of the group changes.
+     * Updates the tab group ID mapping when the ID of the group changes.
      *
      * @param oldGroupId The old local tab group ID.
      * @param newGroupId The new local tab group ID.
      */
-    public void onLocalGroupIdChanged(int oldGroupId, int newGroupId) {
+    public void onLocalGroupIdChanged(LocalTabGroupId oldGroupId, LocalTabGroupId newGroupId) {
         unmapTabGroupId(oldGroupId);
-        SavedTabGroup group = mTabGroupSyncService.getGroup(new LocalTabGroupId(oldGroupId));
+        SavedTabGroup group = mTabGroupSyncService.getGroup(oldGroupId);
         if (group == null) return;
         mapTabGroupId(newGroupId, group.syncId);
     }
 
-    public void addTab(int tabGroupId, Tab tab, int position) {
+    public void addTab(LocalTabGroupId tabGroupId, Tab tab, int position) {
         mTabGroupSyncService.addTab(
-                new LocalTabGroupId(tabGroupId),
-                tab.getId(),
-                tab.getTitle(),
-                tab.getUrl(),
-                position);
+                tabGroupId, tab.getId(), tab.getTitle(), tab.getUrl(), position);
     }
 
-    public void updateTab(int tabGroupId, Tab tab, int position) {
+    public void updateTab(LocalTabGroupId tabGroupId, Tab tab, int position) {
         mTabGroupSyncService.updateTab(
-                new LocalTabGroupId(tabGroupId),
-                tab.getId(),
-                tab.getTitle(),
-                tab.getUrl(),
-                position);
+                tabGroupId, tab.getId(), tab.getTitle(), tab.getUrl(), position);
     }
 
-    public void removeTab(int tabGroupId, int tabId) {
-        mTabGroupSyncService.removeTab(new LocalTabGroupId(tabGroupId), tabId);
+    public void removeTab(LocalTabGroupId tabGroupId, int tabId) {
+        mTabGroupSyncService.removeTab(tabGroupId, tabId);
     }
 
     /**
@@ -127,32 +120,30 @@ public class RemoteTabGroupMutationHelper {
      * @param updateTabIds Whether or not the tab IDs should also be updated.
      */
     public void updateIdMappingForGroupOnStartup(
-            String syncGroupId, int localGroupId, boolean updateTabIds) {
+            String syncGroupId, LocalTabGroupId localGroupId, boolean updateTabIds) {
         // Update tab group ID mapping.
-        mTabGroupSyncService.updateLocalTabGroupMapping(
-                syncGroupId, new LocalTabGroupId(localGroupId));
+        mTabGroupSyncService.updateLocalTabGroupMapping(syncGroupId, localGroupId);
         if (!updateTabIds) return;
 
         // Update tab ID mapping for tabs in the group.
-        SavedTabGroup group = mTabGroupSyncService.getGroup(new LocalTabGroupId(localGroupId));
-        List<Integer> tabIds = mTabGroupModelFilter.getRelatedTabIds(localGroupId);
+        SavedTabGroup group = mTabGroupSyncService.getGroup(localGroupId);
+        List<Integer> tabIds = mTabGroupModelFilter.getRelatedTabIds(localGroupId.rootId);
         for (int i = 0; i < group.savedTabs.size() && i < tabIds.size(); i++) {
             SavedTabGroupTab savedTab = group.savedTabs.get(i);
-            mTabGroupSyncService.updateLocalTabId(
-                    new LocalTabGroupId(localGroupId), savedTab.syncId, tabIds.get(i));
+            mTabGroupSyncService.updateLocalTabId(localGroupId, savedTab.syncId, tabIds.get(i));
         }
     }
 
     /** Adds mapping for a tab group ID to the service and persistence. */
-    public void mapTabGroupId(int groupId, String syncId) {
-        mTabGroupSyncService.updateLocalTabGroupMapping(syncId, new LocalTabGroupId(groupId));
-        mTabGroupModelFilter.setTabGroupSyncId(groupId, syncId);
+    public void mapTabGroupId(LocalTabGroupId groupId, String syncId) {
+        mTabGroupSyncService.updateLocalTabGroupMapping(syncId, groupId);
+        mTabGroupModelFilter.setTabGroupSyncId(groupId.rootId, syncId);
     }
 
     /** Removes mapping for a tab group ID from service and persistence. */
-    public void unmapTabGroupId(int groupId) {
-        mTabGroupSyncService.removeLocalTabGroupMapping(new LocalTabGroupId(groupId));
-        mTabGroupModelFilter.setTabGroupSyncId(groupId, null);
+    public void unmapTabGroupId(LocalTabGroupId groupId) {
+        mTabGroupSyncService.removeLocalTabGroupMapping(groupId);
+        mTabGroupModelFilter.setTabGroupSyncId(groupId.rootId, null);
     }
 
     /**
@@ -172,7 +163,7 @@ public class RemoteTabGroupMutationHelper {
         // mapping from shared prefs and the service.
         Set<Integer> groupsClosing = findCompleteGroups(tabsInGroups);
         for (int groupId : groupsClosing) {
-            unmapTabGroupId(groupId);
+            unmapTabGroupId(new LocalTabGroupId(groupId));
         }
 
         // The rest of the tabs are the ones that are being removed from their groups. Remove them

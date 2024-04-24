@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.HashMap;
@@ -99,7 +100,7 @@ public class StartupHelper {
             if (localGroupId == null) continue;
 
             mRemoteTabGroupMutationHelper.updateIdMappingForGroupOnStartup(
-                    syncGroupId, localGroupId, /* updateTabIds= */ true);
+                    syncGroupId, new LocalTabGroupId(localGroupId), /* updateTabIds= */ true);
         }
     }
 
@@ -120,7 +121,7 @@ public class StartupHelper {
             String syncId = mTabGroupModelFilter.getTabGroupSyncId(tabGroupId);
             if (!TextUtils.isEmpty(syncId)) continue;
 
-            mRemoteTabGroupMutationHelper.createRemoteTabGroup(tabGroupId);
+            mRemoteTabGroupMutationHelper.createRemoteTabGroup(new LocalTabGroupId(tabGroupId));
         }
     }
 
