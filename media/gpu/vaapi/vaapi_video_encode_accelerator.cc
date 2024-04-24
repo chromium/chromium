@@ -15,6 +15,7 @@
 
 #include "base/bits.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -1133,7 +1134,15 @@ void VaapiVideoEncodeAccelerator::SetState(State state) {
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-  VLOGF(2) << "setting state to: " << state;
+  if (VLOG_IS_ON(2)) {
+    constexpr auto kStateToString = base::MakeFixedFlatMap<State, const char*>(
+        {{kUninitialized, "kUninitialized"},
+         {kEncoding, "kEncoding"},
+         {kError, "kError"}});
+    CHECK(base::Contains(kStateToString, state));
+    VLOGF(2) << "setting state to: " << kStateToString.at(state);
+  }
+
   state_ = state;
 }
 
