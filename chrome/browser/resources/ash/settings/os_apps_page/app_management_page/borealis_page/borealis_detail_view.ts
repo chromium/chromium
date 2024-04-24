@@ -13,6 +13,7 @@ import {getSelectedApp} from 'chrome://resources/cr_components/app_management/ut
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppManagementStoreMixin} from '../../../common/app_management/store_mixin.js';
+import {PrefsState} from '../../../common/types.js';
 import {Router, routes} from '../../../router.js';
 
 import {getTemplate} from './borealis_detail_view.html.js';
@@ -34,12 +35,18 @@ export class AppManagementBorealisDetailViewElement extends
 
   static get properties() {
     return {
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+
       app_: {
         type: Object,
       },
     };
   }
 
+  prefs: PrefsState;
   private app_: App;
 
   override connectedCallback(): void {

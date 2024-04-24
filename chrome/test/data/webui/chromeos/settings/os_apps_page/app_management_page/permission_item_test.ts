@@ -6,7 +6,7 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {AppManagementPermissionItemElement} from 'chrome://os-settings/lazy_load.js';
-import {AppManagementStore, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
+import {AppManagementStore, CrButtonElement, GeolocationAccessLevel, LocalizedLinkElement, updateSelectedAppId} from 'chrome://os-settings/os_settings.js';
 import {App, Permission, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
@@ -34,6 +34,21 @@ suite('AppManagementPermissionItemTest', function() {
     permissionItem = document.createElement('app-management-permission-item');
     permissionItem.app = getApp();
     permissionItem.permissionType = permissionType;
+    permissionItem.prefs = {
+      'ash': {
+        'user': {
+          'camera_allowed': {
+            value: true,
+          },
+          'microphone_allowed': {
+            value: true,
+          },
+          'geolocation_access_level': {
+            value: GeolocationAccessLevel.ALLOWED,
+          },
+        },
+      },
+    };
     document.body.appendChild(permissionItem);
     flush();
   }
@@ -79,19 +94,25 @@ suite('AppManagementPermissionItemTest', function() {
 
   suite('Permission item with description', () => {
     setup(() => {
-      loadTimeData.overrideValues({'privacyHubAppPermissionsV2Enabled': true});
+      loadTimeData.overrideValues({
+        'privacyHubAppPermissionsV2Enabled': true,
+        'privacyHubLocationAccessControlEnabled': true,
+      });
 
       createPermissionItem();
     });
 
     teardown(() => {
-      loadTimeData.overrideValues({'privacyHubAppPermissionsV2Enabled': false});
+      loadTimeData.overrideValues({
+        'privacyHubAppPermissionsV2Enabled': false,
+        'privacyHubLocationAccessControlEnabled': false,
+      });
     });
 
     function getPermissionDescriptionString(): string {
       return permissionItem.shadowRoot!
-          .querySelector<HTMLElement>(
-              '#permissionDescription')!.innerText.trim();
+          .querySelector<LocalizedLinkElement>(
+              '#permissionDescription')!.localizedString.toString();
     }
 
     async function togglePermission(): Promise<void> {
@@ -116,6 +137,116 @@ suite('AppManagementPermissionItemTest', function() {
       assertEquals(
           loadTimeData.getString('appManagementPermissionDenied'),
           getPermissionDescriptionString());
+    });
+
+    test('Turn on sensor system access button displayed', async () => {
+      assertEquals(
+          loadTimeData.getString('appManagementPermissionAsk'),
+          getPermissionDescriptionString());
+
+      await togglePermission();
+
+      assertEquals(
+          loadTimeData.getString('appManagementPermissionAllowed'),
+          getPermissionDescriptionString());
+
+      permissionItem.set(
+          'prefs.ash.user.geolocation_access_level.value',
+          GeolocationAccessLevel.DISALLOWED);
+
+      assertEquals(
+          loadTimeData.getString(
+              'permissionAllowedTextWithTurnOnLocationAccessButton'),
+          getPermissionDescriptionString());
+
+      permissionItem.set(
+          'prefs.ash.user.geolocation_access_level.value',
+          GeolocationAccessLevel.ALLOWED);
+
+      assertEquals(
+          loadTimeData.getString('appManagementPermissionAllowed'),
+          getPermissionDescriptionString());
+    });
+
+    function getDialogElement(): HTMLElement|null {
+      return permissionItem.shadowRoot!.querySelector<HTMLElement>('#dialog');
+    }
+
+    async function openDialog(): Promise<void> {
+      const permissionDescription =
+          permissionItem.shadowRoot!.querySelector<LocalizedLinkElement>(
+              '#permissionDescription');
+      assertTrue(!!permissionDescription);
+      const link = permissionDescription.shadowRoot!.querySelector('a');
+      assertTrue(!!link);
+      link.click();
+      await flushTasks();
+    }
+
+    test('Open dialog and close using cancel button', async () => {
+      await togglePermission();
+
+      permissionItem.set(
+          'prefs.ash.user.geolocation_access_level.value',
+          GeolocationAccessLevel.DISALLOWED);
+
+      assertEquals(
+          loadTimeData.getString(
+              'permissionAllowedTextWithTurnOnLocationAccessButton'),
+          getPermissionDescriptionString());
+
+      // Dialog not visible initially.
+      assertNull(getDialogElement());
+
+      await openDialog();
+
+      // Dialog is visible.
+      assertTrue(!!getDialogElement());
+
+      // Close dialog.
+      const cancelButton =
+          getDialogElement()!.shadowRoot!.querySelector<CrButtonElement>(
+              '#cancelButton');
+      assertTrue(!!cancelButton);
+      cancelButton.click();
+      await flushTasks();
+
+      // Dialog not visible anymore.
+      assertNull(getDialogElement());
+    });
+
+    test('Open dialog and turn on sensor access', async () => {
+      await togglePermission();
+
+      permissionItem.set(
+          'prefs.ash.user.geolocation_access_level.value',
+          GeolocationAccessLevel.DISALLOWED);
+
+      assertEquals(
+          loadTimeData.getString(
+              'permissionAllowedTextWithTurnOnLocationAccessButton'),
+          getPermissionDescriptionString());
+
+      // Dialog not visible initially.
+      assertNull(getDialogElement());
+
+      await openDialog();
+
+      // Dialog is visible.
+      assertTrue(!!getDialogElement());
+
+      // Turn on system sensor access.
+      const confirmButton =
+          getDialogElement()!.shadowRoot!.querySelector<CrButtonElement>(
+              '#confirmButton');
+      assertTrue(!!confirmButton);
+      confirmButton.click();
+      await flushTasks();
+
+      // Sensor access is turned ON.
+      assertEquals(
+          GeolocationAccessLevel.ALLOWED,
+          permissionItem.prefs.ash.user.geolocation_access_level.value);
     });
   });
 });

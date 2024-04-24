@@ -77,7 +77,8 @@ export class AppManagementReadOnlyPermissionItemElement extends
   private getPermissionDescriptionString_(
       app: App|undefined,
       permissionType: PermissionTypeIndex|undefined): string {
-    return getPermissionDescriptionString(app, permissionType);
+    return getPermissionDescriptionString(
+        app, permissionType, /*isSensorBlocked=*/ false);
   }
 
   private isManaged_(

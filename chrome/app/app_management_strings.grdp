@@ -177,6 +177,24 @@
   <message name="IDS_APP_MANAGEMENT_PERMISSION_DENIED" desc="Label explaining that access to a permission (e.g. camera access) is denied for an app.">
     Denied
   </message>
+  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_TURN_ON_SYSTEM_CAMERA_ACCESS_BUTTON" desc="Label explaining that access to camera is allowed for an app followed by a button to turn on system camera access." translateable="false">
+    Allowed. Turn on <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>system camera access<ph name="LINK_END">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_TURN_ON_SYSTEM_MICROPHONE_ACCESS_BUTTON" desc="Label explaining that access to microphone is allowed for an app followed by a button to turn on system microphone access." translateable="false">
+    Allowed. Turn on <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>system microphone access<ph name="LINK_END">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_TURN_ON_SYSTEM_LOCATION_ACCESS_BUTTON" desc="Label explaining that access to location is allowed for an app followed by a button to turn on system location access." translateable="false">
+    Allowed. Turn on <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>system location access<ph name="LINK_END">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_DETAILS_AND_TURN_ON_SYSTEM_CAMERA_ACCESS_BUTTON" desc="Label explaining that access to camera is allowed for an app followed by a button to turn on system camera access." translateable="false">
+    Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Turn on <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>system camera access<ph name="LINK_END">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_DETAILS_AND_TURN_ON_SYSTEM_MICROPHONE_ACCESS_BUTTON" desc="Label explaining that access to microphone is allowed for an app followed by a button to turn on system microphone access." translateable="false">
+    Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Turn on <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>system microphone access<ph name="LINK_END">&lt;/a&gt;</ph>.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_DETAILS_AND_TURN_ON_SYSTEM_LOCATION_ACCESS_BUTTON" desc="Label explaining that access to location is allowed for an app followed by a button to turn on system location access." translateable="false">
+    Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>. Turn on <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>system location access<ph name="LINK_END">&lt;/a&gt;</ph>.
+  </message>
 
   <!-- File Handling -->
   <message name="IDS_APP_MANAGEMENT_FILE_HANDLING_HEADER" desc="Main text for toggling a web app's ability to use the File Handling API. This controls whether the app can appear in an 'Open With' list in a file's context menu.">

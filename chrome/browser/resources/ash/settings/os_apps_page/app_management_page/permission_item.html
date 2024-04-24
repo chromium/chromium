@@ -26,9 +26,23 @@
       aria-description="Click to toggle [[permissionLabel]] permissions."
       i18n-aria-descrirption="Label for toggle button to change [[permissionLabel]] permissions.">
     <template is="dom-if" if="[[showPermissionDescriptionString_]]">
-      <div id="permissionDescription" slot="description">
-        [[getPermissionDescriptionString_(app, permissionType)]]
-      </div>
+      <localized-link
+          id="permissionDescription"
+          slot="description"
+          localized-string="[[getPermissionDescriptionString_(app,
+            permissionType, prefs.ash.user.camera_allowed.value,
+            prefs.ash.user.microphone_allowed.value,
+            prefs.ash.user.geolocation_access_level.value)]]"
+          on-link-clicked="launchAllowSensorAccessDialog_">
+      </localized-link>
     </template>
   </app-management-toggle-row>
+  <template is="dom-if" if="[[showAllowSensorAccessDialog_]]" restamp>
+    <settings-privacy-hub-allow-sensor-access-dialog
+        id="dialog"
+        prefs="{{prefs}}"
+        permission-type="[[permissionType]]"
+        on-close="onAllowSensorAccessDialogClose_">
+    </settings-privacy-hub-allow-sensor-access-dialog>
+  </template>
 </template>

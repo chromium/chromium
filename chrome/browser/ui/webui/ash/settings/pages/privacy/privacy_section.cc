@@ -608,6 +608,22 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_TOGGLE_NO_CAMERA_CONNECTED_TOOLTIP_TEXT},
       {"privacyHubNoMicrophoneConnectedTooltipText",
        IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_NO_MICROPHONE_CONNECTED_TOOLTIP_TEXT},
+      {"privacyHubAllowCameraAccessDialogTitle",
+       IDS_OS_SETTINGS_PRIVACY_HUB_ALLOW_CAMERA_ACCESS_DIALOG_TITLE},
+      {"privacyHubAllowLocationAccessDialogTitle",
+       IDS_OS_SETTINGS_PRIVACY_HUB_ALLOW_LOCATION_ACCESS_DIALOG_TITLE},
+      {"privacyHubAllowMicrophoneAccessDialogTitle",
+       IDS_OS_SETTINGS_PRIVACY_HUB_ALLOW_MICROPHONE_ACCESS_DIALOG_TITLE},
+      {"privacyHubAllowCameraAccessDialogBodyText",
+       IDS_OS_SETTINGS_PRIVACY_HUB_ALLOW_CAMERA_ACCESS_DIALOG_BODY_TEXT},
+      {"privacyHubAllowLocationAccessDialogBodyText",
+       IDS_OS_SETTINGS_PRIVACY_HUB_ALLOW_LOCATION_ACCESS_DIALOG_BODY_TEXT},
+      {"privacyHubAllowMicrophoneAccessDialogBodyText",
+       IDS_OS_SETTINGS_PRIVACY_HUB_ALLOW_MICROPHONE_ACCESS_DIALOG_BODY_TEXT},
+      {"privacyHubDialogConfirmButtonLabel",
+       IDS_OS_SETTINGS_PRIVACY_HUB_DIALOG_CONFIRM_BUTTON_LABEL},
+      {"privacyHubDialogCancelButtonLabel",
+       IDS_OS_SETTINGS_PRIVACY_HUB_DIALOG_CANCEL_BUTTON_LABEL},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);

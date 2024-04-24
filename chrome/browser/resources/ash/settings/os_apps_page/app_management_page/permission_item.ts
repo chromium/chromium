@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 import './app_management_cros_shared_style.css.js';
 import './toggle_row.js';
+import '../../os_privacy_page/privacy_hub_allow_sensor_access_dialog.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {App, InstallReason, Permission, PermissionType, TriState} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
@@ -14,11 +16,16 @@ import {getPermission, getPermissionValueBool, recordAppManagementUserAction} fr
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {GeolocationAccessLevel} from '../../os_privacy_page/privacy_hub_geolocation_subpage.js';
+
 import {getTemplate} from './permission_item.html.js';
 import {AppManagementToggleRowElement} from './toggle_row.js';
 import {getPermissionDescriptionString} from './util.js';
 
-export class AppManagementPermissionItemElement extends PolymerElement {
+const AppManagementPermissionItemElementBase = PrefsMixin(PolymerElement);
+
+export class AppManagementPermissionItemElement extends
+    AppManagementPermissionItemElementBase {
   static get is() {
     return 'app-management-permission-item';
   }
@@ -79,6 +86,11 @@ export class AppManagementPermissionItemElement extends PolymerElement {
         type: Boolean,
         computed: 'computeShowPermissionDescriptionString_(permissionType)',
       },
+
+      showAllowSensorAccessDialog_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -89,6 +101,7 @@ export class AppManagementPermissionItemElement extends PolymerElement {
   private syncPermissionManually: boolean;
   private available_: boolean;
   private disabled_: boolean;
+  private showAllowSensorAccessDialog_: boolean;
   private showPermissionDescriptionString_: boolean;
 
   override ready(): void {
@@ -304,10 +317,49 @@ export class AppManagementPermissionItemElement extends PolymerElement {
     }
   }
 
+  private isSensorBlocked_(permissionType: PermissionTypeIndex|
+                           undefined): boolean {
+    if (permissionType === undefined || !this.prefs) {
+      return false;
+    }
+
+    switch (PermissionType[permissionType]) {
+      case PermissionType.kCamera:
+        return !this.getPref('ash.user.camera_allowed').value;
+      case PermissionType.kLocation:
+        return loadTimeData.getBoolean(
+                   'privacyHubLocationAccessControlEnabled') &&
+            this.getPref<GeolocationAccessLevel>(
+                    'ash.user.geolocation_access_level')
+                .value !== GeolocationAccessLevel.ALLOWED;
+      case PermissionType.kMicrophone:
+        return !this.getPref('ash.user.microphone_allowed').value;
+      case PermissionType.kContacts:
+      case PermissionType.kStorage:
+      case PermissionType.kNotifications:
+      case PermissionType.kPrinting:
+        return false;
+      default:
+        assertNotReached();
+    }
+  }
+
   private getPermissionDescriptionString_(
       app: App|undefined,
       permissionType: PermissionTypeIndex|undefined): string {
-    return getPermissionDescriptionString(app, permissionType);
+    return getPermissionDescriptionString(
+        app, permissionType, this.isSensorBlocked_(permissionType));
+  }
+
+  private launchAllowSensorAccessDialog_(e: CustomEvent): void {
+    e.detail.event.preventDefault();
+    e.stopPropagation();
+
+    this.showAllowSensorAccessDialog_ = true;
+  }
+
+  private onAllowSensorAccessDialogClose_(): void {
+    this.showAllowSensorAccessDialog_ = false;
   }
 }
 

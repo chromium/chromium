@@ -9,15 +9,16 @@ import '../app_management_cros_shared_style.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
-import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {cast} from '../../../assert_extras.js';
 import {AppManagementStoreMixin} from '../../../common/app_management/store_mixin.js';
+import {PrefsState} from '../../../common/types.js';
 import {Router, routes} from '../../../router.js';
 import {AppManagementPermissionItemElement} from '../permission_item.js';
 
@@ -39,6 +40,11 @@ export class AppManagementPluginVmDetailViewElement extends
 
   static get properties() {
     return {
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+
       app_: Object,
 
       showDialog_: {
@@ -52,6 +58,7 @@ export class AppManagementPluginVmDetailViewElement extends
     };
   }
 
+  prefs: PrefsState;
   private app_: App;
   private dialogText_: string;
   private pendingPermissionItem_: AppManagementPermissionItemElement;

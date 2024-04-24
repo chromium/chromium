@@ -6743,6 +6743,30 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_NO_MICROPHONE_CONNECTED_TOOLTIP_TEXT" desc="Text displayed in the privacy hub subpage microphone toggle button tooltip when no microphone is connected to the device.">
     No microphone connected
   </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_ALLOW_CAMERA_ACCESS_DIALOG_TITLE" desc="The title of the dialog that asks users to enable system wide camera access." translateable="false">
+    Turn on camera access?
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_ALLOW_LOCATION_ACCESS_DIALOG_TITLE" desc="The title of the dialog that asks users to enable system wide location access." translateable="false">
+    Turn on location access?
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_ALLOW_MICROPHONE_ACCESS_DIALOG_TITLE" desc="The title of the dialog that asks users to enable system wide microphone access." translateable="false">
+    Turn on microphone access?
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_ALLOW_CAMERA_ACCESS_DIALOG_BODY_TEXT" desc="The text displayed on the body of the dialog that asks users to enable system wide camera access." translateable="false">
+    This allows camera access for apps, websites with the camera permission, and system services
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_ALLOW_LOCATION_ACCESS_DIALOG_BODY_TEXT" desc="The text displayed on the body of the dialog that asks users to enable system wide location access." translateable="false">
+    This allows location access for apps, websites with the location permission, and system services
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_ALLOW_MICROPHONE_ACCESS_DIALOG_BODY_TEXT" desc="The text displayed on the body of the dialog that asks users to enable system wide microphone access." translateable="false">
+    This allows microphone access for apps, websites with the microphone permission, and system services
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_DIALOG_CONFIRM_BUTTON_LABEL" desc="Label of the confirm button for the allow sensor access dialog." translateable="false">
+    Allow
+  </message>
+  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_DIALOG_CANCEL_BUTTON_LABEL" desc="Label of the cancel button for the allow sensor access dialog." translateable="false">
+    Cancel
+  </message>
 
   <!-- On Startup (OS settings) -->
   <message name="IDS_OS_SETTINGS_ON_STARTUP_SETTINGS_CARD_TITLE" desc="The title of the settings card that allows the user to configure the restore apps and pages options on startup.">

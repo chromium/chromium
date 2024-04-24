@@ -300,6 +300,7 @@ build_webui("build") {
     "os_privacy_page/metrics_consent_toggle_button.ts",
     "os_privacy_page/os_privacy_page.ts",
     "os_privacy_page/peripheral_data_access_protection_dialog.ts",
+    "os_privacy_page/privacy_hub_allow_sensor_access_dialog.ts",
     "os_privacy_page/privacy_hub_app_permission_row.ts",
     "os_privacy_page/privacy_hub_camera_subpage.ts",
     "os_privacy_page/privacy_hub_geolocation_advanced_subpage.ts",

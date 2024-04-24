@@ -526,6 +526,18 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"enableIsolatedWebAppsToggleLabel",
        IDS_SETTINGS_ENABLE_ISOLATED_WEB_APPS_LABEL},
       {"appManagementAppLanguageLabel", IDS_APP_MANAGEMENT_APP_LANGUAGE_LABEL},
+      {"permissionAllowedTextWithTurnOnCameraAccessButton",
+       IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_TURN_ON_SYSTEM_CAMERA_ACCESS_BUTTON},
+      {"permissionAllowedTextWithTurnOnMicrophoneAccessButton",
+       IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_TURN_ON_SYSTEM_MICROPHONE_ACCESS_BUTTON},
+      {"permissionAllowedTextWithTurnOnLocationAccessButton",
+       IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_TURN_ON_SYSTEM_LOCATION_ACCESS_BUTTON},
+      {"permissionAllowedTextWithDetailsAndTurnOnCameraAccessButton",
+       IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_DETAILS_AND_TURN_ON_SYSTEM_CAMERA_ACCESS_BUTTON},
+      {"permissionAllowedTextWithDetailsAndTurnOnMicrophoneAccessButton",
+       IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_DETAILS_AND_TURN_ON_SYSTEM_MICROPHONE_ACCESS_BUTTON},
+      {"permissionAllowedTextWithDetailsAndTurnOnLocationAccessButton",
+       IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_TEXT_WITH_DETAILS_AND_TURN_ON_SYSTEM_LOCATION_ACCESS_BUTTON},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -563,6 +575,9 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("privacyHubAppPermissionsV2Enabled",
                           features::IsCrosPrivacyHubAppPermissionsV2Enabled());
+
+  html_source->AddBoolean("privacyHubLocationAccessControlEnabled",
+                          ash::features::IsCrosPrivacyHubLocationEnabled());
 
   html_source->AddBoolean("isAppParentalControlsFeatureAvailable",
                           on_device_controls::AppControlsServiceFactory::
