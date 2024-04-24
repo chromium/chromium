@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/pdf_util.h"
 #include "components/pdf/browser/pdf_frame_util.h"
+#include "components/pdf/common/pdf_util.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -439,6 +440,10 @@ void PdfViewerStreamManager::DidFinishNavigation(
       about_blank_host->GetFrameTreeNodeId();
   stream_info->set_extension_host_frame_tree_node_id(
       extension_host_frame_tree_node_id);
+
+  ReportPDFLoadStatus(embedder_host->IsInPrimaryMainFrame()
+                          ? PDFLoadStatus::kLoadedFullPagePdfWithPdfium
+                          : PDFLoadStatus::kLoadedEmbeddedPdfWithPdfium);
 
   NavigateToPdfExtensionUrl(extension_host_frame_tree_node_id, stream_info,
                             embedder_host->GetSiteInstance(),

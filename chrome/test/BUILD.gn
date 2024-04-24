@@ -3179,6 +3179,7 @@ if (!is_android) {
         "../browser/pdf:pdf_extension_test_utils",
         "//components/pdf/browser",
         "//components/pdf/common:constants",
+        "//components/pdf/common:util",
         "//pdf:features",
         "//pdf/loader",
       ]

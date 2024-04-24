@@ -59,6 +59,7 @@
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/pdf/browser/pdf_frame_util.h"
+#include "components/pdf/common/pdf_util.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -2833,6 +2834,35 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, Metrics) {
 
   // User actions.
   EXPECT_EQ(1, actions.GetActionCount("PDF.LoadSuccess"));
+}
+
+// Test that the PDF.LoadStatus metric is incremented correctly when the PDF is
+// loaded with PDFium.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTest,
+                       MetricsPDFLoadStatusLoadedPdfWithPdfium) {
+  const char kPdfLoadStatusMetric[] = "PDF.LoadStatus";
+  base::HistogramTester histograms;
+
+  histograms.ExpectBucketCount(kPdfLoadStatusMetric,
+                               PDFLoadStatus::kLoadedFullPagePdfWithPdfium, 0);
+  histograms.ExpectBucketCount(kPdfLoadStatusMetric,
+                               PDFLoadStatus::kLoadedEmbeddedPdfWithPdfium, 0);
+
+  EXPECT_TRUE(
+      LoadPdf(embedded_test_server()->GetURL("/pdf/combobox_form.pdf")));
+
+  histograms.ExpectBucketCount(kPdfLoadStatusMetric,
+                               PDFLoadStatus::kLoadedFullPagePdfWithPdfium, 1);
+  histograms.ExpectBucketCount(kPdfLoadStatusMetric,
+                               PDFLoadStatus::kLoadedEmbeddedPdfWithPdfium, 0);
+
+  EXPECT_TRUE(LoadPdfInFirstChild(
+      embedded_test_server()->GetURL("/pdf/pdf_embed.html")));
+
+  histograms.ExpectBucketCount(kPdfLoadStatusMetric,
+                               PDFLoadStatus::kLoadedFullPagePdfWithPdfium, 1);
+  histograms.ExpectBucketCount(kPdfLoadStatusMetric,
+                               PDFLoadStatus::kLoadedEmbeddedPdfWithPdfium, 1);
 }
 
 // Flaky. See https://crbug.com/1101514.
