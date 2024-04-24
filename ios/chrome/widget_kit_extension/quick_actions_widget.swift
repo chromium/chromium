@@ -28,13 +28,20 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
   }
 
   func shouldUseColorLensAndVoiceIcons() -> Bool {
-    guard shouldUseLens() else { return false }
+    // On iOS 15, color icons are not supported in widget, always return false
+    // as no icon would be displayed.
+    // On iOS 16, color icons are displayed in monochrome, so still present
+    // the monochrome icon as it may be better adapted.
+    if #available(iOS 17, *) {
+      guard shouldUseLens() else { return false }
 
-    let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
-    let useColorLensAndVoiceIcons: Bool =
-      sharedDefaults.bool(
-        forKey: WidgetConstants.QuickActionsWidget.enableColorLensAndVoiceIconsInWidgetKey)
-    return useColorLensAndVoiceIcons
+      let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
+      let useColorLensAndVoiceIcons: Bool =
+        sharedDefaults.bool(
+          forKey: WidgetConstants.QuickActionsWidget.enableColorLensAndVoiceIconsInWidgetKey)
+      return useColorLensAndVoiceIcons
+    }
+    return false
   }
 
   func getSnapshot(
