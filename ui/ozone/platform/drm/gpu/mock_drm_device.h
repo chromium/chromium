@@ -15,8 +15,7 @@ namespace ui {
 class MockDrmDevice : public FakeDrmDevice {
  public:
   // Create atomic MockDrmDevice with a stub GbmDevice.
-  static scoped_refptr<MockDrmDevice> CreateAndInitializeFromState(
-      FakeDrmDevice::MockDrmState& drm_state);
+  static scoped_refptr<MockDrmDevice> Create();
 
   MockDrmDevice(const base::FilePath& path,
                 std::unique_ptr<GbmDevice> gbm_device,

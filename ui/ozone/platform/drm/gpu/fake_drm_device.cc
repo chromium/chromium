@@ -173,41 +173,45 @@ void FakeDrmDevice::PlaneProperties::SetProp(uint32_t prop_id, uint32_t value) {
 }
 
 FakeDrmDevice::MockDrmState::MockDrmState() = default;
-FakeDrmDevice::MockDrmState::MockDrmState(const MockDrmState&) = default;
 FakeDrmDevice::MockDrmState::~MockDrmState() = default;
 
-FakeDrmDevice::MockDrmState
-FakeDrmDevice::MockDrmState::CreateStateWithNoProperties() {
-  return MockDrmState();
+FakeDrmDevice::MockDrmState& FakeDrmDevice::ResetStateWithNoProperties() {
+  plane_manager_.reset();
+
+  drm_state_.crtc_properties.clear();
+  drm_state_.connector_properties.clear();
+  drm_state_.encoder_properties.clear();
+  drm_state_.plane_properties.clear();
+  drm_state_.property_names.clear();
+
+  return drm_state_;
 }
 
-FakeDrmDevice::MockDrmState
-FakeDrmDevice::MockDrmState::CreateStateWithAllProperties() {
-  MockDrmState state;
-  state.property_names.insert(kCrtcRequiredPropertyNames.begin(),
-                              kCrtcRequiredPropertyNames.end());
-  state.property_names.insert(kConnectorRequiredPropertyNames.begin(),
-                              kConnectorRequiredPropertyNames.end());
-  state.property_names.insert(kPlaneRequiredPropertyNames.begin(),
-                              kPlaneRequiredPropertyNames.end());
+FakeDrmDevice::MockDrmState& FakeDrmDevice::ResetStateWithAllProperties() {
+  ResetStateWithNoProperties();
+  drm_state_.property_names.insert(kCrtcRequiredPropertyNames.begin(),
+                                   kCrtcRequiredPropertyNames.end());
+  drm_state_.property_names.insert(kConnectorRequiredPropertyNames.begin(),
+                                   kConnectorRequiredPropertyNames.end());
+  drm_state_.property_names.insert(kPlaneRequiredPropertyNames.begin(),
+                                   kPlaneRequiredPropertyNames.end());
 
   // Separately add optional properties that will be used in some tests, but the
   // tests will append the property to the planes on a case-by-case basis.
-  state.property_names.insert(kCrtcOptionalPropertyNames.begin(),
-                              kCrtcOptionalPropertyNames.end());
+  drm_state_.property_names.insert(kCrtcOptionalPropertyNames.begin(),
+                                   kCrtcOptionalPropertyNames.end());
 
-  return state;
+  return drm_state_;
 }
 
-FakeDrmDevice::MockDrmState
-FakeDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
+FakeDrmDevice::MockDrmState& FakeDrmDevice::ResetStateWithDefaultObjects(
     size_t crtc_count,
     size_t planes_per_crtc,
     size_t movable_planes) {
-  MockDrmState state = CreateStateWithAllProperties();
+  ResetStateWithAllProperties();
   std::vector<uint32_t> crtc_ids;
   for (size_t i = 0; i < crtc_count; ++i) {
-    const auto& props = state.AddCrtcAndConnector();
+    const auto& props = drm_state_.AddCrtcAndConnector();
 
     // Add at least one mode, so the connector is not sterile.
     ConnectorProperties& connector = props.second;
@@ -218,18 +222,18 @@ FakeDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
     CrtcProperties& crtc = props.first;
     crtc_ids.push_back(crtc.id);
 
-    state.AddPlane(crtc.id, DRM_PLANE_TYPE_PRIMARY);
+    drm_state_.AddPlane(crtc.id, DRM_PLANE_TYPE_PRIMARY);
     for (size_t j = 0; j < planes_per_crtc - 1; ++j) {
-      state.AddPlane(crtc.id, DRM_PLANE_TYPE_OVERLAY);
+      drm_state_.AddPlane(crtc.id, DRM_PLANE_TYPE_OVERLAY);
     }
-    state.AddPlane(crtc.id, DRM_PLANE_TYPE_CURSOR);
+    drm_state_.AddPlane(crtc.id, DRM_PLANE_TYPE_CURSOR);
   }
 
   for (size_t i = 0; i < movable_planes; ++i) {
-    state.AddPlane(crtc_ids, DRM_PLANE_TYPE_OVERLAY);
+    drm_state_.AddPlane(crtc_ids, DRM_PLANE_TYPE_OVERLAY);
   }
 
-  return state;
+  return drm_state_;
 }
 
 FakeDrmDevice::ConnectorProperties&
@@ -332,7 +336,6 @@ FakeDrmDevice::FakeDrmDevice(std::unique_ptr<GbmDevice> gbm_device)
                 base::ScopedFD(),
                 true /* is_primary_device */,
                 std::move(gbm_device)) {
-  plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerLegacy>(this);
 }
 
 FakeDrmDevice::FakeDrmDevice(const base::FilePath& path,
@@ -342,7 +345,6 @@ FakeDrmDevice::FakeDrmDevice(const base::FilePath& path,
                 base::ScopedFD(),
                 is_primary_device,
                 std::move(gbm_device)) {
-  plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerLegacy>(this);
 }
 
 FakeDrmDevice::~FakeDrmDevice() {
@@ -379,20 +381,18 @@ ScopedDrmPropertyBlobPtr FakeDrmDevice::AllocateInFormatsBlob(
   return blob;
 }
 
-void FakeDrmDevice::InitializeState(MockDrmState& state, bool use_atomic) {
-  CHECK(InitializeStateWithResult(state, use_atomic));
+void FakeDrmDevice::InitializeState(bool use_atomic) {
+  CHECK(InitializeStateWithResult(use_atomic));
 }
 
-bool FakeDrmDevice::InitializeStateWithResult(MockDrmState& state,
-                                              bool use_atomic) {
+bool FakeDrmDevice::InitializeStateWithResult(bool use_atomic) {
+  DCHECK(!plane_manager_);
   if (use_atomic) {
     plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerAtomic>(this);
   } else {
     plane_manager_ = std::make_unique<HardwareDisplayPlaneManagerLegacy>(this);
   }
   SetCapability(DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
-
-  drm_state_ = state;
 
   // Update the connectors' link statuses to bad if they have no modes (probably
   // due to unsuccessful link-training.
@@ -422,10 +422,6 @@ bool FakeDrmDevice::InitializeStateWithResult(MockDrmState& state,
   }
 
   return plane_manager_->Initialize();
-}
-
-void FakeDrmDevice::UpdateStateBesidesPlaneManager(const MockDrmState& state) {
-  drm_state_ = state;
 }
 
 void FakeDrmDevice::SetModifiersOverhead(

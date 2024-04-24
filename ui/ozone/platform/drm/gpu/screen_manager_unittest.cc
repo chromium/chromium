@@ -103,8 +103,7 @@ class ScreenManagerTest : public testing::Test {
       }
     }
 
-    auto drm_state =
-        FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
+    auto& drm_state = drm->ResetStateWithAllProperties();
 
     // Set up the default format property ID for the cursor planes:
     drm->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
@@ -135,7 +134,7 @@ class ScreenManagerTest : public testing::Test {
     }
 
     drm->SetModifiersOverhead(modifiers_overhead_);
-    drm->InitializeState(drm_state, is_atomic);
+    drm->InitializeState(is_atomic);
   }
 
   void AddPlaneToCrtc(uint32_t crtc_id,
@@ -2135,7 +2134,7 @@ TEST_F(ScreenManagerTest, ReplaceDisplayControllersCrtcsComplex) {
   // Original state: {crtc_1 - connector_1}, {crtc_2 - connector_2}
   // After replacement: {crtc_2 - connector_1}, {crtc_3 - connector_2}
 
-  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto& drm_state = drm_->ResetStateWithAllProperties();
 
   // Set up the default format property ID for the cursor planes:
   drm_->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
@@ -2174,7 +2173,7 @@ TEST_F(ScreenManagerTest, ReplaceDisplayControllersCrtcsComplex) {
     connector_2 = connector.id;
   }
 
-  drm_->InitializeState(drm_state, /*is_atomic=*/true);
+  drm_->InitializeState(/*is_atomic=*/true);
 
   // Configure to {crtc_1 - connector_1}, {crtc_2 - connector_2}.
   screen_manager_->AddDisplayController(drm_, crtc_1, connector_1);

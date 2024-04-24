@@ -278,7 +278,7 @@ TEST(GetPossibleCrtcsBitmaskFromEncoders, MultipleCrtcsMultipleEncoders) {
       /*is_primary_device=*/true);
   FakeDrmDevice* fake_drm = static_cast<FakeDrmDevice*>(device.get());
 
-  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto& drm_state = fake_drm->ResetStateWithAllProperties();
   uint32_t first_encoder_id, second_encoder_id;
   {
     // Add 2 CRTCs
@@ -301,7 +301,7 @@ TEST(GetPossibleCrtcsBitmaskFromEncoders, MultipleCrtcsMultipleEncoders) {
         std::vector<uint32_t>{first_encoder_id, second_encoder_id};
   }
 
-  fake_drm->InitializeState(drm_state, /*use_atomic*/ true);
+  fake_drm->InitializeState(/*use_atomic*/ true);
 
   EXPECT_EQ(GetPossibleCrtcsBitmaskFromEncoders(
                 *fake_drm, {first_encoder_id, second_encoder_id}),
@@ -315,7 +315,7 @@ TEST(GetPossibleCrtcsBitmaskFromEncoders, EmptyEncodersList) {
       base::FilePath("/test/dri/card0"), base::ScopedFD(),
       /*is_primary_device=*/true);
   FakeDrmDevice* fake_drm = static_cast<FakeDrmDevice*>(device.get());
-  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto& drm_state = fake_drm->ResetStateWithAllProperties();
   {
     drm_state.AddCrtc();
     FakeDrmDevice::EncoderProperties& first_encoder = drm_state.AddEncoder();
@@ -326,7 +326,7 @@ TEST(GetPossibleCrtcsBitmaskFromEncoders, EmptyEncodersList) {
     connector.encoders = std::vector<uint32_t>{encoder_id};
   }
 
-  fake_drm->InitializeState(drm_state, /*use_atomic*/ true);
+  fake_drm->InitializeState(/*use_atomic*/ true);
 
   EXPECT_EQ(GetPossibleCrtcsBitmaskFromEncoders(*fake_drm, /*encoder_ids=*/{}),
             0u);
@@ -339,7 +339,7 @@ TEST(GetPossibleCrtcsBitmaskFromEncoders, InvalidEncoderID) {
       base::FilePath("/test/dri/card0"), base::ScopedFD(),
       /*is_primary_device=*/true);
   FakeDrmDevice* fake_drm = static_cast<FakeDrmDevice*>(device.get());
-  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto& drm_state = fake_drm->ResetStateWithAllProperties();
   {
     drm_state.AddCrtc();
     FakeDrmDevice::EncoderProperties& first_encoder = drm_state.AddEncoder();
@@ -350,7 +350,7 @@ TEST(GetPossibleCrtcsBitmaskFromEncoders, InvalidEncoderID) {
     connector.encoders = std::vector<uint32_t>{encoder_id};
   }
 
-  fake_drm->InitializeState(drm_state, /*use_atomic*/ true);
+  fake_drm->InitializeState(/*use_atomic*/ true);
 
   EXPECT_THAT(GetPossibleCrtcsBitmaskFromEncoders(*fake_drm,
                                                   /*invalid encoder_ids=*/{1}),
@@ -365,7 +365,7 @@ TEST(GetPossibleCrtcIdsFromBitmask, ValidBitmask) {
       /*is_primary_device=*/true);
   FakeDrmDevice* fake_drm = static_cast<FakeDrmDevice*>(device.get());
 
-  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto& drm_state = fake_drm->ResetStateWithAllProperties();
   uint32_t crtc_1_id, crtc_2_id;
   {
     // Add 2 CRTCs
@@ -388,7 +388,7 @@ TEST(GetPossibleCrtcIdsFromBitmask, ValidBitmask) {
         std::vector<uint32_t>{first_encoder_id, second_encoder_id};
   }
 
-  fake_drm->InitializeState(drm_state, /*use_atomic*/ true);
+  fake_drm->InitializeState(/*use_atomic*/ true);
 
   EXPECT_THAT(GetPossibleCrtcIdsFromBitmask(*fake_drm, 0b11),
               UnorderedElementsAre(crtc_1_id, crtc_2_id));
@@ -402,7 +402,7 @@ TEST(GetPossibleCrtcIdsFromBitmask, ZeroBitmask) {
       /*is_primary_device=*/true);
   FakeDrmDevice* fake_drm = static_cast<FakeDrmDevice*>(device.get());
 
-  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto& drm_state = fake_drm->ResetStateWithAllProperties();
   {
     drm_state.AddCrtc();
 
@@ -416,7 +416,7 @@ TEST(GetPossibleCrtcIdsFromBitmask, ZeroBitmask) {
     connector.encoders = std::vector<uint32_t>{first_encoder_id};
   }
 
-  fake_drm->InitializeState(drm_state, /*use_atomic*/ true);
+  fake_drm->InitializeState(/*use_atomic*/ true);
 
   EXPECT_THAT(
       GetPossibleCrtcIdsFromBitmask(*fake_drm, /*possible_crtcs_bitmask=*/0),
@@ -431,7 +431,7 @@ TEST(GetPossibleCrtcIdsFromBitmask, BitmaskTooLong) {
       /*is_primary_device=*/true);
   FakeDrmDevice* fake_drm = static_cast<FakeDrmDevice*>(device.get());
 
-  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto& drm_state = fake_drm->ResetStateWithAllProperties();
   uint32_t crtc_id;
   {
     crtc_id = drm_state.AddCrtc().id;
@@ -446,7 +446,7 @@ TEST(GetPossibleCrtcIdsFromBitmask, BitmaskTooLong) {
     connector.encoders = std::vector<uint32_t>{first_encoder_id};
   }
 
-  fake_drm->InitializeState(drm_state, /*use_atomic*/ true);
+  fake_drm->InitializeState(/*use_atomic*/ true);
 
   // Recall that there was only 1 CRTC, but the bitmask has 4.
   EXPECT_THAT(GetPossibleCrtcIdsFromBitmask(*fake_drm,

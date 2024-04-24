@@ -9,14 +9,12 @@
 
 namespace ui {
 // static
-scoped_refptr<MockDrmDevice> MockDrmDevice::CreateAndInitializeFromState(
-    MockDrmState& drm_state) {
+scoped_refptr<MockDrmDevice> MockDrmDevice::Create() {
   auto gbm_device = std::make_unique<MockGbmDevice>();
   auto drm_device = base::MakeRefCounted<testing::NiceMock<MockDrmDevice>>(
       base::FilePath(), std::move(gbm_device), true);
   drm_device->SetPropertyBlob(MockDrmDevice::AllocateInFormatsBlob(
       kInFormatsBlobIdBase, {DRM_FORMAT_XRGB8888}, {}));
-  drm_device->InitializeState(drm_state, /* use_atomic */ true);
   return drm_device;
 }
 

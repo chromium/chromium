@@ -156,23 +156,9 @@ class FakeDrmDevice : public DrmDevice {
 
   struct MockDrmState {
     MockDrmState();
-    MockDrmState(const MockDrmState&);
+    MockDrmState(const MockDrmState&) = delete;
+    MockDrmState& operator=(const MockDrmState&) = delete;
     ~MockDrmState();
-
-    // Creates a totally empty |MockDrmState| with no properties configured and
-    // no property names set.
-    static MockDrmState CreateStateWithNoProperties();
-    // Creates a |MockDrmState| with all properties registered with their names
-    // in |property_names|, but no objects configured.
-    static MockDrmState CreateStateWithAllProperties();
-    // Creates a generic |MockDrmState|. Will create |crtc_count| different
-    // CRTCs and connectors with 1 primary plane, 1 cursor plane (since some
-    // tests expect them), and |planes_per_crtc| - 1 overlay planes for each
-    // CRTC.
-    static MockDrmState CreateStateWithDefaultObjects(
-        size_t crtc_count,
-        size_t planes_per_crtc,
-        size_t movable_planes = 0u);
 
     ConnectorProperties& AddConnector();
     EncoderProperties& AddEncoder();
@@ -254,10 +240,32 @@ class FakeDrmDevice : public DrmDevice {
     return it != crtc_cursor_map_.end() ? it->second : 0;
   }
 
-  void InitializeState(MockDrmState& state, bool use_atomic);
-  bool InitializeStateWithResult(MockDrmState& state, bool use_atomic);
+  // Resets `drm_state_` to be empty, with no properties configured and no
+  // property names set. Resets `plane_manager_` to nullptr (it will not be
+  // re-created until InitializeState is called). Returns a reference to
+  // `drm_state_`.
+  MockDrmState& ResetStateWithNoProperties();
 
-  void UpdateStateBesidesPlaneManager(const MockDrmState& state);
+  // Calls `ResetStateWithNoProperties`, then configures `drm_state_` to have
+  // all properties registered with their names in `property_names`, but no
+  // objects configured. Returns a reference to `drm_state_`.
+  MockDrmState& ResetStateWithAllProperties();
+
+  // Calls `ResetStateWithNoProperties`, and then configures `drm_state_`. Will
+  // create `crtc_count` different CRTCs and connectors with 1 primary plane, 1
+  // cursor plane (since some tests expect them), and `planes_per_crtc` - 1
+  // overlay planes for each CRTC. Returns a reference to `drm_state_`.
+  MockDrmState& ResetStateWithDefaultObjects(size_t crtc_count,
+                                             size_t planes_per_crtc,
+                                             size_t movable_planes = 0u);
+
+  // Create `plane_manager_`, set the connector link status, and the EDID
+  // blob.
+  void InitializeState(bool use_atomic);
+  bool InitializeStateWithResult(bool use_atomic);
+
+  // Return true if InitializeState has been called yet.
+  bool IsInitialized() const { return !!plane_manager_; }
 
   void RunCallbacks();
 

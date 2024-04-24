@@ -161,7 +161,7 @@ void DrmOverlayValidatorTest::InitDrmStatesAndControllers(
            "same number of planes per CRTC";
   }
 
-  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto& drm_state = drm_->ResetStateWithAllProperties();
 
   // Set up the default format property ID for the cursor planes:
   drm_->SetPropertyBlob(FakeDrmDevice::AllocateInFormatsBlob(
@@ -192,7 +192,7 @@ void DrmOverlayValidatorTest::InitDrmStatesAndControllers(
     plane.SetProp(kInFormatsPropId, new_blob_id);
   }
 
-  drm_->InitializeState(drm_state, /*use_atomic=*/true);
+  drm_->InitializeState(/*use_atomic=*/true);
 
   SetupControllers();
 }

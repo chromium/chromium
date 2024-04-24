@@ -77,14 +77,14 @@ TEST_F(DrmGpuUtilTest, MAYBE_EmptyPossibleCrtcsForConnector) {
 }
 
 TEST_F(DrmGpuUtilTest, EmptyPossibleCrtcs) {
-  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto& drm_state = fake_drm_->ResetStateWithAllProperties();
 
   uint32_t connector_1 =
       CreateConnectorWithPossibleCrtcs(drm_state, /*possible_crtcs=*/0).id;
   uint32_t connector_2 =
       CreateConnectorWithPossibleCrtcs(drm_state, /*possible_crtcs=*/0).id;
 
-  fake_drm_->InitializeState(drm_state, /*use_atomic*/ true);
+  fake_drm_->InitializeState(/*use_atomic*/ true);
 
   EXPECT_THAT(GetAllCrtcConnectorPermutations(
                   *fake_drm_, {CreateFakeParamWithConnectorId(connector_1),
@@ -93,7 +93,7 @@ TEST_F(DrmGpuUtilTest, EmptyPossibleCrtcs) {
 }
 
 TEST_F(DrmGpuUtilTest, ThreeConnectorsSameThreeCrtcs) {
-  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto& drm_state = fake_drm_->ResetStateWithAllProperties();
 
   // Add 3 CRTCs
   uint32_t crtc_1 = drm_state.AddCrtc().id;
@@ -108,7 +108,7 @@ TEST_F(DrmGpuUtilTest, ThreeConnectorsSameThreeCrtcs) {
   uint32_t connector_3 =
       CreateConnectorWithPossibleCrtcs(drm_state, /*possible_crtcs=*/0b111).id;
 
-  fake_drm_->InitializeState(drm_state, /*use_atomic*/ true);
+  fake_drm_->InitializeState(/*use_atomic*/ true);
 
   // 3! = 6 permutations
   //   {{crtc_1, connector_1}, {crtc_2, connector_2}, {crtc_3, connector_3}},
@@ -146,7 +146,7 @@ TEST_F(DrmGpuUtilTest, ThreeConnectorsSameThreeCrtcs) {
 // all connectors are assigned a CRTC (But the inverse of not all CRTCs being
 // assigned connectors is OK).
 TEST_F(DrmGpuUtilTest, FilterConnectorWithoutCrtcPermutaitons) {
-  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto& drm_state = fake_drm_->ResetStateWithAllProperties();
 
   // Add 2 CRTCs
   drm_state.AddCrtc();
@@ -160,7 +160,7 @@ TEST_F(DrmGpuUtilTest, FilterConnectorWithoutCrtcPermutaitons) {
   uint32_t connector_3 =
       CreateConnectorWithPossibleCrtcs(drm_state, /*possible_crtcs=*/0b11).id;
 
-  fake_drm_->InitializeState(drm_state, /*use_atomic*/ true);
+  fake_drm_->InitializeState(/*use_atomic*/ true);
 
   EXPECT_THAT(GetAllCrtcConnectorPermutations(
                   *fake_drm_, {CreateFakeParamWithConnectorId(connector_1),
@@ -170,7 +170,7 @@ TEST_F(DrmGpuUtilTest, FilterConnectorWithoutCrtcPermutaitons) {
 }
 
 TEST_F(DrmGpuUtilTest, MoreCrtcsThanConnectors) {
-  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto& drm_state = fake_drm_->ResetStateWithAllProperties();
 
   // Add 3 CRTCs
   uint32_t crtc_1 = drm_state.AddCrtc().id;
@@ -183,7 +183,7 @@ TEST_F(DrmGpuUtilTest, MoreCrtcsThanConnectors) {
   uint32_t connector_2 =
       CreateConnectorWithPossibleCrtcs(drm_state, /*possible_crtcs=*/0b111).id;
 
-  fake_drm_->InitializeState(drm_state, /*use_atomic*/ true);
+  fake_drm_->InitializeState(/*use_atomic*/ true);
 
   // 2 * 3 = 6 permutations
   //   {{crtc_1, connector_1}, {crtc_2, connector_2},
@@ -211,7 +211,7 @@ TEST_F(DrmGpuUtilTest, MoreCrtcsThanConnectors) {
 }
 
 TEST_F(DrmGpuUtilTest, VaryingPossibleCrtcs) {
-  auto drm_state = FakeDrmDevice::MockDrmState::CreateStateWithAllProperties();
+  auto& drm_state = fake_drm_->ResetStateWithAllProperties();
 
   // Add 3 CRTCs
   uint32_t crtc_1 = drm_state.AddCrtc().id;
@@ -226,7 +226,7 @@ TEST_F(DrmGpuUtilTest, VaryingPossibleCrtcs) {
   uint32_t connector_3 =
       CreateConnectorWithPossibleCrtcs(drm_state, /*possible_crtcs=*/0b101).id;
 
-  fake_drm_->InitializeState(drm_state, /*use_atomic*/ true);
+  fake_drm_->InitializeState(/*use_atomic*/ true);
 
   //   {{crtc_1, connector_1}, {crtc_2, connector_2}, {crtc_3, connector_3}},
   //   {{crtc_2, connector_1}, {crtc_1, connector_2}, {crtc_3, connector_3}},
