@@ -82,8 +82,13 @@ def get_git_command_name():
 
 def get_tracked_files(directory, globroot, repository_root_relative, verbose):
   try:
-    git_cmd = get_git_command_name()
-    with subprocess.Popen([git_cmd, 'ls-files', '--error-unmatch', directory],
+    if os.getcwd().startswith('/google/cog/cloud'):
+      files = []
+      for root, _, filenames in os.walk(directory):
+        files.extend([os.path.join(root, f) for f in filenames])
+      return set(files)
+    cmd = [get_git_command_name(), 'ls-files', '--error-unmatch', directory]
+    with subprocess.Popen(cmd,
                           stdout=subprocess.PIPE,
                           stderr=subprocess.PIPE,
                           cwd=globroot) as p:
