@@ -1615,6 +1615,38 @@ PolicyContainerHost* RenderFrameHostImpl::GetPolicyContainerHost(
   return nullptr;
 }
 
+// static
+SiteInstanceImpl* RenderFrameHostImpl::GetSourceSiteInstanceFromFrameToken(
+    const blink::LocalFrameToken* frame_token,
+    int initiator_process_id,
+    StoragePartitionImpl* storage_partition) {
+  // There is no null check for `storage_partition` as tests can pass in a null
+  // StoragePartition in the case the initiator RenderFrameHost still exists.
+
+  if (!frame_token) {
+    return nullptr;
+  }
+
+  // Get the source SiteInstance directly from the RenderFrameHost if it's still
+  // alive.
+  RenderFrameHostImpl* initiator_rfh =
+      RenderFrameHostImpl::FromFrameToken(initiator_process_id, *frame_token);
+  if (initiator_rfh) {
+    return initiator_rfh->GetSiteInstance();
+  }
+
+  // Otherwise get it from the NavigationStateKeepAlive stored in
+  // `storage_partition`.
+  NavigationStateKeepAlive* navigation_state =
+      storage_partition->GetNavigationStateKeepAlive(*frame_token);
+  if (navigation_state) {
+    return navigation_state->source_site_instance();
+  }
+
+  // There is no source SiteInstance for the given `frame_token`.
+  return nullptr;
+}
+
 RenderFrameHostImpl::RenderFrameHostImpl(
     SiteInstance* site_instance,
     scoped_refptr<RenderViewHostImpl> render_view_host,

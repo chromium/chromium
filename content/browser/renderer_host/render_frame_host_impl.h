@@ -389,6 +389,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
       int initiator_process_id,
       StoragePartitionImpl* storage_partition);
 
+  // Get the SiteInstance for the RenderFrameHost associated with `frame_token`,
+  // looking it up via NavigationStateKeepAlive in the case that the
+  // RenderFrameHost has already been deleted after initiating a scheduled
+  // navigation. The `storage_partition` parameter is used for looking up
+  // NavigationStateKeepAlives when needed.
+  static SiteInstanceImpl* GetSourceSiteInstanceFromFrameToken(
+      const blink::LocalFrameToken* frame_token,
+      int initiator_process_id,
+      StoragePartitionImpl* storage_partition);
+
   RenderFrameHostImpl(const RenderFrameHostImpl&) = delete;
   RenderFrameHostImpl& operator=(const RenderFrameHostImpl&) = delete;
 

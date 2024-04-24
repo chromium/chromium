@@ -772,22 +772,24 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
   // the navigation start will be updated when the BeforeUnload ack is received.
   const auto navigation_start_time = base::TimeTicks::Now();
 
+  blink::LocalFrameToken* initiator_frame_token =
+      base::OptionalToPtr(params->initiator_frame_token);
+
   // TODO(lfg, lukasza): Remove |extra_headers| parameter from
   // RequestTransferURL method once both RenderFrameProxyHost and
   // RenderFrameHostImpl call RequestOpenURL from their OnOpenURL handlers.
   // See also https://crbug.com/647772.
   // TODO(clamy): The transition should probably be changed for POST navigations
   // to PAGE_TRANSITION_FORM_SUBMIT. See https://crbug.com/829827.
-  // TODO(crbug.com/40202433): Determine which source_site_instance from
-  // site_instance_group_ to use for navigations to about:blank, once
-  // RenderFrameProxyHost no longer has a site_instance_deprecated_.
   frame_tree_node_->navigator().NavigateFromFrameProxy(
-      current_rfh, validated_url,
-      base::OptionalToPtr(params->initiator_frame_token), GetProcess()->GetID(),
+      current_rfh, validated_url, initiator_frame_token, GetProcess()->GetID(),
       params->initiator_origin, params->initiator_base_url,
-      GetSiteInstanceDeprecated(), params->referrer.To<content::Referrer>(),
-      ui::PAGE_TRANSITION_LINK, params->should_replace_current_entry,
-      download_policy, params->post_body ? "POST" : "GET", params->post_body,
+      RenderFrameHostImpl::GetSourceSiteInstanceFromFrameToken(
+          initiator_frame_token, GetProcess()->GetID(),
+          current_rfh->GetStoragePartition()),
+      params->referrer.To<content::Referrer>(), ui::PAGE_TRANSITION_LINK,
+      params->should_replace_current_entry, download_policy,
+      params->post_body ? "POST" : "GET", params->post_body,
       params->extra_headers, std::move(blob_url_loader_factory),
       std::move(params->source_location), params->user_gesture,
       params->is_form_submission, params->impression,
