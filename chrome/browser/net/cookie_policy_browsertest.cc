@@ -82,9 +82,9 @@ class CookiePolicyBrowserTest : public InProcessBrowserTest {
   virtual std::vector<base::test::FeatureRef> DisabledFeatures() { return {}; }
 
   void SetUp() override {
-    // WebSQL is disabled by default as of M119 (crbug/695592).
-    // Enable feature in tests during deprecation trial and enterprise
-    // policy support.
+    // TODO(crbug.com/333756088): WebSQL is disabled everywhere by default as of
+    // M119 (crbug/695592) except on Android WebView. This is enabled for
+    // Android only to indirectly cover WebSQL deletions on WebView.
     feature_list_.InitWithFeatures(EnabledFeatures(), DisabledFeatures());
     InProcessBrowserTest::SetUp();
   }
@@ -883,13 +883,6 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(CookiePolicyStorageBrowserTest,
                        NestedFirstPartyIFrameStorage) {
-// TODO(http://crbug.com/1317431): WebSQL does not work on Fuchsia.
-#if BUILDFLAG(IS_FUCHSIA)
-  if (ContextType() == ContextType::kFrame) {
-    return;
-  }
-#endif
-
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/iframe.html");
   NavigateNestedFrameTo(kHostA, "/browsing_data/site_data.html");

@@ -1430,7 +1430,7 @@ const std::vector<std::string> kStorageTypes{
     "IndexedDb", "ServiceWorker", "CacheStorage", "MediaLicense",
 // TODO(crbug.com/333756088): WebSQL is disabled everywhere except Android
 // WebView.
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     "WebSql",
 #endif
 };
@@ -1507,7 +1507,7 @@ const std::vector<std::string> kSessionOnlyStorageTestTypes{
     "IndexedDb", "ServiceWorker", "CacheStorage", "MediaLicense",
 // TODO(crbug.com/333756088): WebSQL is disabled everywhere except Android
 // WebView.
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     "WebSql",
 #endif
 };

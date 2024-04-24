@@ -2355,10 +2355,14 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
       base::BindRepeating(&RenderProcessHostImpl::CreateDomStorageProvider,
                           instance_weak_factory_.GetWeakPtr()));
 
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/333756088): WebSQL is disabled everywhere except Android
+  // WebView.
   AddUIThreadInterface(
       registry.get(),
       base::BindRepeating(&RenderProcessHostImpl::BindWebDatabaseHostImpl,
                           instance_weak_factory_.GetWeakPtr()));
+#endif  // BUILDFLAG(IS_ANDROID)
 
   AddUIThreadInterface(
       registry.get(),
@@ -2551,6 +2555,7 @@ void RenderProcessHostImpl::BindWebDatabaseHostImpl(
     mojo::PendingReceiver<blink::mojom::WebDatabaseHost> receiver) {
   storage::DatabaseTracker* db_tracker =
       storage_partition_impl_->GetDatabaseTracker();
+  DCHECK(db_tracker);
   db_tracker->task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&WebDatabaseHostImpl::Create, GetID(),

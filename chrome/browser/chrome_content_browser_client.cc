@@ -4326,7 +4326,6 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
   // If the pref is not set, the default value (true) will be used:
   web_prefs->webxr_immersive_ar_allowed =
       prefs->GetBoolean(prefs::kWebXRImmersiveArEnabled);
-#endif
 
   // Only set `databases_enabled` if disabled, otherwise check blink::feature
   // settings.
@@ -4334,12 +4333,13 @@ void ChromeContentBrowserClient::OverrideWebkitPrefs(
       !web_prefs->databases_enabled
           ? false
           : base::FeatureList::IsEnabled(blink::features::kWebSQLAccess);
+#else
+  // TODO(crbug.com/333756088): WebSQL is disabled everywhere except Android
+  // WebView.
+  web_prefs->databases_enabled = false;
+#endif
 
 #if BUILDFLAG(IS_FUCHSIA)
-  // Disable WebSQL support since it is being removed from the web platform
-  // and does not work. See crbug.com/1317431.
-  web_prefs->databases_enabled = false;
-
   // TODO(crbug.com/42050450): Implement WebAuthn integration and remove.
   web_prefs->disable_webauthn = true;
 #endif

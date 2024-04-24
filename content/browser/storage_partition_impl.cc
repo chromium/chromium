@@ -1358,8 +1358,12 @@ void StoragePartitionImpl::Initialize(
   filesystem_context_ = CreateFileSystemContext(
       browser_context_, partition_path_, is_in_memory(), quota_manager_proxy);
 
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/333756088): WebSQL is disabled everywhere except Android
+  // WebView.
   database_tracker_ = storage::DatabaseTracker::Create(
       partition_path_, is_in_memory(), quota_manager_proxy);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   dom_storage_context_ = DOMStorageContextWrapper::Create(
       this, browser_context_->GetSpecialStoragePolicy());
