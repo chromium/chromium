@@ -18,7 +18,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {CurrentWallpaper, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {dismissTimeOfDayBanner} from '../ambient/ambient_controller.js';
-import {isTimeOfDayWallpaperForcedAutoScheduleEnabled} from '../load_time_booleans.js';
+import {isTimeOfDayWallpaperEnabled} from '../load_time_booleans.js';
 import {PersonalizationRouterElement} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {setColorModeAutoSchedule} from '../theme/theme_controller.js';
@@ -349,7 +349,7 @@ export class WallpaperImagesElement extends WithPersonalizationStore {
 
   private async shouldShowTimeOfDayWallpaperDialog_(tile: ImageTile):
       Promise<boolean> {
-    if (isTimeOfDayWallpaperForcedAutoScheduleEnabled()) {
+    if (isTimeOfDayWallpaperEnabled()) {
       await getShouldShowTimeOfDayWallpaperDialog(
           getWallpaperProvider(), this.getStore());
     }

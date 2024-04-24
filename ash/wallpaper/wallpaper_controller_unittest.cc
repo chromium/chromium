@@ -5070,9 +5070,6 @@ TEST_P(WallpaperControllerAutoScheduleTest,
     return;
   }
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kTimeOfDayWallpaperForcedAutoSchedule);
   const auto backdrop_image_data = TimeOfDayImageSet();
   client_.AddCollection(wallpaper_constants::kTimeOfDayWallpaperCollectionId,
                         backdrop_image_data);

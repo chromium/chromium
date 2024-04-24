@@ -535,9 +535,6 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
   source->AddBoolean("isTimeOfDayWallpaperEnabled",
                      features::IsTimeOfDayWallpaperEnabled());
 
-  source->AddBoolean("isTimeOfDayWallpaperForcedAutoScheduleEnabled",
-                     features::IsTimeOfDayWallpaperForcedAutoScheduleEnabled());
-
   source->AddBoolean("isCrosPrivacyHubLocationEnabled",
                      features::IsCrosPrivacyHubLocationEnabled());
 

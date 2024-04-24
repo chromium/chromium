@@ -343,7 +343,7 @@ suite('WallpaperImagesElementTest', function() {
 
   test('shows dialog when clicking on a time of day wallpaper', async () => {
     loadTimeData.overrideValues({
-      isTimeOfDayWallpaperForcedAutoScheduleEnabled: true,
+      isTimeOfDayWallpaperEnabled: true,
     });
     personalizationStore.setReducersEnabled(true);
     personalizationStore.data.theme.colorModeAutoScheduleEnabled = false;
@@ -362,7 +362,7 @@ suite('WallpaperImagesElementTest', function() {
       'clicking cancel dismisses the time of day wallpaper dialog',
       async () => {
         loadTimeData.overrideValues({
-          isTimeOfDayWallpaperForcedAutoScheduleEnabled: true,
+          isTimeOfDayWallpaperEnabled: true,
         });
         personalizationStore.setReducersEnabled(true);
         personalizationStore.data.theme.colorModeAutoScheduleEnabled = false;
@@ -389,7 +389,7 @@ suite('WallpaperImagesElementTest', function() {
 
   test('clicking confirm on the time of day wallpaper dialog', async () => {
     loadTimeData.overrideValues({
-      isTimeOfDayWallpaperForcedAutoScheduleEnabled: true,
+      isTimeOfDayWallpaperEnabled: true,
     });
     personalizationStore.setReducersEnabled(true);
     personalizationStore.data.theme.colorModeAutoScheduleEnabled = false;
@@ -416,7 +416,7 @@ suite('WallpaperImagesElementTest', function() {
 
   test('do not show time of day dialog with proper settings', async () => {
     loadTimeData.overrideValues({
-      isTimeOfDayWallpaperForcedAutoScheduleEnabled: true,
+      isTimeOfDayWallpaperEnabled: true,
     });
     personalizationStore.setReducersEnabled(true);
     wallpaperProvider.shouldShowTimeOfDayWallpaperDialogResponse = false;
