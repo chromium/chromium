@@ -15,6 +15,7 @@ import("//gpu/vulkan/features.gni")
 import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ppapi/buildflags/buildflags.gni")
+import("//third_party/inspector_protocol/inspector_protocol.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
@@ -132,9 +133,40 @@ static_library("content_shell_app") {
   ]
 }
 
+inspector_protocol_generate("protocol_sources") {
+  visibility = [ ":content_shell_lib" ]
+  deps = [ "//third_party/blink/public/devtools_protocol:protocol_version" ]
+  _blink_protocol_path = rebase_path(
+          "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json",
+          root_build_dir)
+
+  inspector_protocol_dir = "//third_party/inspector_protocol"
+  out_dir = "$target_gen_dir/browser"
+  config_file = "browser/protocol_config.json"
+  config_values = [ "protocol.path=$_blink_protocol_path" ]
+  use_embedder_types = true
+
+  inputs = [
+    "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json",
+    config_file,
+  ]
+
+  # These are relative to $target_gen_dir.
+  outputs = [
+    "protocol/browser.cc",
+    "protocol/browser.h",
+    "protocol/protocol.h",
+  ]
+}
+
 static_library("content_shell_lib") {
   testonly = true
   sources = [
+    "browser/protocol/browser_handler.cc",
+    "browser/protocol/browser_handler.h",
+    "browser/protocol/domain_handler.h",
+    "browser/protocol/shell_devtools_session.cc",
+    "browser/protocol/shell_devtools_session.h",
     "browser/shell.cc",
     "browser/shell.h",
     "browser/shell_browser_context.cc",
@@ -191,6 +223,8 @@ static_library("content_shell_lib") {
     "utility/shell_content_utility_client.cc",
     "utility/shell_content_utility_client.h",
   ]
+
+  sources += get_target_outputs(":protocol_sources")
 
   if (is_android) {
     sources += [
@@ -274,6 +308,7 @@ static_library("content_shell_lib") {
   ]
   deps = [
     ":content_browsertests_mojom",
+    ":protocol_sources",
     ":resources",
     ":shell_controller_mojom",
     "//base",
@@ -321,6 +356,7 @@ static_library("content_shell_lib") {
     "//third_party/blink/public:resources",
     "//third_party/blink/public/strings",
     "//third_party/blink/public/strings:accessibility_strings",
+    "//third_party/inspector_protocol:crdtp",
     "//ui/base",
     "//ui/base/clipboard",
     "//ui/base/ime/init",

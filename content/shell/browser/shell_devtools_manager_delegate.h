@@ -5,9 +5,10 @@
 #ifndef CONTENT_SHELL_BROWSER_SHELL_DEVTOOLS_MANAGER_DELEGATE_H_
 #define CONTENT_SHELL_BROWSER_SHELL_DEVTOOLS_MANAGER_DELEGATE_H_
 
-#include "base/containers/flat_set.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/devtools_manager_delegate.h"
+#include "content/shell/browser/protocol/shell_devtools_session.h"
 
 namespace content {
 
@@ -29,6 +30,9 @@ class ShellDevToolsManagerDelegate : public DevToolsManagerDelegate {
 
   // DevToolsManagerDelegate implementation.
   BrowserContext* GetDefaultBrowserContext() override;
+  void HandleCommand(content::DevToolsAgentHostClientChannel* channel,
+                     base::span<const uint8_t> message,
+                     NotHandledCallback callback) override;
   scoped_refptr<DevToolsAgentHost> CreateNewTarget(
       const GURL& url,
       TargetType target_type) override;
@@ -41,8 +45,9 @@ class ShellDevToolsManagerDelegate : public DevToolsManagerDelegate {
 
  private:
   raw_ptr<BrowserContext, DanglingUntriaged> browser_context_;
-  base::flat_set<raw_ptr<content::DevToolsAgentHostClient, CtnExperimental>>
-      clients_;
+  base::flat_map<raw_ptr<content::DevToolsAgentHostClientChannel>,
+                 std::unique_ptr<shell::protocol::ShellDevToolsSession>>
+      sessions_;
 };
 
 }  // namespace content

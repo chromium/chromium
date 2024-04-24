@@ -1,0 +1,4 @@
+include_rules = [
+  # For converting between JSON and CBOR in devtools_session_encoding.cc.
+  "+third_party/inspector_protocol/crdtp",
+]

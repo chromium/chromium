@@ -1,0 +1,12 @@
+Verifies Browser.getWindowForTarget method.
+Response{
+    bounds : {
+        height : <number>
+        left : <number>
+        top : <number>
+        width : <number>
+        windowState : normal
+    }
+    windowId : 1
+}
+

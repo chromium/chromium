@@ -1,0 +1,27 @@
+{
+    "use_snake_file_names": true,
+    "use_title_case_methods": true,
+
+    "protocol": {
+        "package": "content/shell/browser/protocol",
+        "output": "protocol",
+        "namespace": ["content", "shell", "protocol"],
+        "options": [
+            {
+                "domain": "Browser",
+                "include": ["getWindowForTarget"],
+                "include_events": []
+            }
+        ]
+    },
+
+    "lib": {
+        "package": "content/shell/browser/protocol",
+        "output": "protocol",
+        "protocol_traits": "third_party/inspector_protocol/crdtp/chromium/protocol_traits.h"
+    },
+
+    "crdtp": {
+        "namespace": "crdtp"
+    }
+}
