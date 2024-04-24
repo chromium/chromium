@@ -13,10 +13,6 @@
     padding-inline-end: 8px;
   }
 
-  :host-context(html:not([chrome-refresh-2023])) .cr2023 {
-    display: none;
-  }
-
   label {
     flex: 1;
     white-space: nowrap;
@@ -24,7 +20,7 @@
 </style>
 
 <h1>cr-input</h1>
-<h2 class="cr2023">Default "filled" inputs with built-in labels</h2>
+<h2>Default "filled" inputs with built-in labels</h2>
 <div class="demos">
   <cr-input
       class="no-error"
@@ -110,8 +106,8 @@
   </div>
 </div>
 
-<h2 class="cr2023">"Stroked" inputs without built-in labels</h2>
-<div class="demos cr2023">
+<h2>"Stroked" inputs without built-in labels</h2>
+<div class="demos">
   <cr-input class="stroked no-error"
       type="text" placeholder="Insert text here" aria-label="Some label">
   </cr-input>

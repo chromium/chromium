@@ -1,24 +1,5 @@
 <style include="cr-shared-style">
   :host {
-    --passcode-input-active-color: var(--google-blue-50);
-    --passcode-input-background-color: var(--google-grey-50);
-    --passcode-input-background-color-focused: var(--google-grey-100);
-    --passcode-input-color: var(--cr-primary-text-color);
-    --passcode-input-color-disabled: var(--google-grey-600);
-    --passcode-input-focus-color: var(--google-blue-600);
-    --passcode-input-border-radius: 4px;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :host {
-      --passcode-input-active-color: rgba(138, 180, 248, 0.3);
-      --passcode-input-background-color: rgba(0, 0, 0, 0.15);
-      --passcode-input-background-color-focused: rgba(0, 0, 0, 0.3);
-      --passcode-input-focus-color: var(--google-blue-300);
-    }
-  }
-
-  :host-context(html[chrome-refresh-2023]):host {
     --passcode-input-active-color: var(--color-sys-primary-container);
     --passcode-input-background-color: var(--color-textfield-filled-background);
     --passcode-input-background-color-focused: var(--color-sys-state-hover);

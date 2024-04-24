@@ -4,28 +4,21 @@
   }
 
   .side-panel-demo {
+    background: var(--color-side-panel-content-background);
     border: solid 1px var(--cr-separator-color);
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    padding: var(--sp-body-padding) 0;
     height: 500px;
     width: 304px;
   }
 
-  :host-context([chrome-refresh-2023]) .side-panel-demo {
-    background: var(--color-side-panel-content-background);
-    padding: var(--sp-body-padding) 0;
-  }
-
-  :host-context([chrome-refresh-2023]) .side-panel-demo:has(sp-footer) {
+  .side-panel-demo:has(sp-footer) {
     padding-block-end: 0;
   }
 
   sp-heading {
-    padding: 0 20px;
-  }
-
-  :host-context([chrome-refresh-2023]) sp-heading {
     padding: 0;
   }
 
