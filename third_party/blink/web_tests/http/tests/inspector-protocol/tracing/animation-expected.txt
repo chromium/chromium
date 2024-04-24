@@ -1,0 +1,25 @@
+Tests the data of an Animation event
+Recording started
+Tracing complete
+Object: {
+	args: {
+		data: {
+			displayName: simple-animation
+			id: string
+			name: 
+			nodeId: number
+			nodeName: string
+			state: running
+		}
+	}
+	cat: string
+	id2: {
+		local: string
+	}
+	name: Animation
+	ph: b
+	pid: number
+	tid: number
+	ts: number
+}
+
