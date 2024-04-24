@@ -46,9 +46,9 @@ class SVGAnimateMotionElement final : public SVGAnimationElement {
   void ClearAnimationValue() override;
   bool CalculateToAtEndOfDurationValue(
       const String& to_at_end_of_duration_string) override;
-  bool CalculateFromAndToValues(const String& from_string,
+  void CalculateFromAndToValues(const String& from_string,
                                 const String& to_string) override;
-  bool CalculateFromAndByValues(const String& from_string,
+  void CalculateFromAndByValues(const String& from_string,
                                 const String& by_string) override;
   void CalculateAnimationValue(SMILAnimationValue&,
                                float percentage,

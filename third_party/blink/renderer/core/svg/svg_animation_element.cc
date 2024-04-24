@@ -618,16 +618,20 @@ bool SVGAnimationElement::CheckAnimationParameters() const {
 bool SVGAnimationElement::UpdateAnimationValues() {
   switch (GetAnimationMode()) {
     case kFromToAnimation:
-      return CalculateFromAndToValues(FromValue(), ToValue());
+      CalculateFromAndToValues(FromValue(), ToValue());
+      break;
     case kToAnimation:
       // For to-animations the from value is the current accumulated value from
       // lower priority animations. The value is not static and is determined
       // during the animation.
-      return CalculateFromAndToValues(g_empty_string, ToValue());
+      CalculateFromAndToValues(g_empty_string, ToValue());
+      break;
     case kFromByAnimation:
-      return CalculateFromAndByValues(FromValue(), ByValue());
+      CalculateFromAndByValues(FromValue(), ByValue());
+      break;
     case kByAnimation:
-      return CalculateFromAndByValues(g_empty_string, ByValue());
+      CalculateFromAndByValues(g_empty_string, ByValue());
+      break;
     case kValuesAnimation:
       if (!CalculateToAtEndOfDurationValue(values_.back())) {
         return false;
@@ -687,10 +691,7 @@ void SVGAnimationElement::ApplyAnimation(SMILAnimationValue& animation_value) {
     effective_percent = CurrentValuesForValuesAnimation(percent, from, to);
     if (from != last_values_animation_from_ ||
         to != last_values_animation_to_) {
-      if (!CalculateFromAndToValues(from, to)) {
-        animation_valid_ = AnimationValidity::kInvalid;
-        return;
-      }
+      CalculateFromAndToValues(from, to);
       last_values_animation_from_ = from;
       last_values_animation_to_ = to;
     }

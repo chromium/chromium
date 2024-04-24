@@ -128,9 +128,9 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
 
   virtual bool CalculateToAtEndOfDurationValue(
       const String& to_at_end_of_duration_string) = 0;
-  virtual bool CalculateFromAndToValues(const String& from_string,
+  virtual void CalculateFromAndToValues(const String& from_string,
                                         const String& to_string) = 0;
-  virtual bool CalculateFromAndByValues(const String& from_string,
+  virtual void CalculateFromAndByValues(const String& from_string,
                                         const String& by_string) = 0;
   virtual void CalculateAnimationValue(SMILAnimationValue&,
                                        float percent,

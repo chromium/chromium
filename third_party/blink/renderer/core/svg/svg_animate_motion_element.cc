@@ -175,7 +175,7 @@ bool SVGAnimateMotionElement::CalculateToAtEndOfDurationValue(
   return true;
 }
 
-bool SVGAnimateMotionElement::CalculateFromAndToValues(
+void SVGAnimateMotionElement::CalculateFromAndToValues(
     const String& from_string,
     const String& to_string) {
   ParsePoint(from_string, from_point_);
@@ -183,10 +183,9 @@ bool SVGAnimateMotionElement::CalculateFromAndToValues(
   // TODO(fs): Looks like this would clobber the at-end-of-duration
   // value for a cumulative 'values' animation.
   to_point_at_end_of_duration_ = to_point_;
-  return true;
 }
 
-bool SVGAnimateMotionElement::CalculateFromAndByValues(
+void SVGAnimateMotionElement::CalculateFromAndByValues(
     const String& from_string,
     const String& by_string) {
   CalculateFromAndToValues(from_string, by_string);
@@ -195,7 +194,6 @@ bool SVGAnimateMotionElement::CalculateFromAndByValues(
   // of (0,0).
   to_point_ += from_point_.OffsetFromOrigin();
   to_point_at_end_of_duration_ = to_point_;
-  return true;
 }
 
 void SVGAnimateMotionElement::CalculateAnimationValue(
