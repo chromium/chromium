@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
@@ -147,26 +148,30 @@ class Delegate : public TurnSyncOnHelper::Delegate {
         NOTREACHED();
         break;
       case BlockingStep::kMergeData:
-        if (!choices_.merge_data_choice.has_value())
+        if (!choices_.merge_data_choice.has_value()) {
           break;
+        }
         std::move(absl::get<signin::SigninChoiceCallback>(callback))
             .Run(*choices_.merge_data_choice);
         return;
       case BlockingStep::kEnterpriseManagement:
-        if (!choices_.enterprise_management_choice.has_value())
+        if (!choices_.enterprise_management_choice.has_value()) {
           break;
+        }
         std::move(absl::get<signin::SigninChoiceCallback>(callback))
             .Run(*choices_.enterprise_management_choice);
         return;
       case BlockingStep::kSyncConfirmation:
-        if (!choices_.sync_optin_choice.has_value())
+        if (!choices_.sync_optin_choice.has_value()) {
           break;
+        }
         std::move(absl::get<SyncConfirmationCallback>(callback))
             .Run(*choices_.sync_optin_choice);
         return;
       case BlockingStep::kSyncDisabled:
-        if (!choices_.sync_disabled_choice.has_value())
+        if (!choices_.sync_disabled_choice.has_value()) {
           break;
+        }
         std::move(absl::get<SyncConfirmationCallback>(callback))
             .Run(*choices_.sync_disabled_choice);
         return;
@@ -189,22 +194,35 @@ class Delegate : public TurnSyncOnHelper::Delegate {
 
 }  // namespace
 
+// Test params:
+// - TurnSyncOnHelper::SigninAbortedMode: abort mode.
+// - bool: should_remove_initial_account
+// - bool: Explicit browser signin feature
 class TurnSyncOnHelperBrowserTestWithParam
     : public SigninBrowserTestBase,
       public testing::WithParamInterface<
-          std::tuple<TurnSyncOnHelper::SigninAbortedMode, bool>> {
+          std::tuple<TurnSyncOnHelper::SigninAbortedMode, bool, bool>> {
  public:
   TurnSyncOnHelperBrowserTestWithParam()
-      : SigninBrowserTestBase(/*use_main_profile=*/false) {}
+      : SigninBrowserTestBase(/*use_main_profile=*/false) {
+    scoped_feature_list_.InitWithFeatureState(
+        switches::kExplicitBrowserSigninUIOnDesktop,
+        is_explicit_browser_signin_enabled());
+  }
 
  protected:
-  bool should_remove_initial_account() const {
-    return std::get<bool>(GetParam());
-  }
+  bool should_remove_initial_account() const { return std::get<1>(GetParam()); }
 
   TurnSyncOnHelper::SigninAbortedMode aborted_mode() const {
     return std::get<TurnSyncOnHelper::SigninAbortedMode>(GetParam());
   }
+
+  bool is_explicit_browser_signin_enabled() const {
+    return std::get<2>(GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that aborting a Sync opt-in flow started with a secondary account
@@ -292,16 +310,21 @@ IN_PROC_BROWSER_TEST_P(TurnSyncOnHelperBrowserTestWithParam,
         EXPECT_EQ(second_account_id, identity_manager()->GetPrimaryAccountId(
                                          signin::ConsentLevel::kSignin));
 #else
-        // With Dice, the signin manager clears the primary account and removes
-        // all accounts because the first account in cookies doesn't match.
-        // Note: This check will fail with
-        // If `switches::ExplicitBrowserSigninPhase::kFull` is enabled, the
-        // primary account is set/cleared explicitly by the user and doesn't
-        // depend on cookies. This expectation should be updated accordingly
-        // when the feature is enabled in tests.
-        EXPECT_TRUE(identity_manager()->GetAccountsWithRefreshTokens().empty());
-        EXPECT_FALSE(identity_manager()->HasPrimaryAccount(
-            signin::ConsentLevel::kSignin));
+        // With `switches::ExplicitBrowserSigninPhase::kFull` enabled, the
+        // primary account isn't set implicitly based on cookies but by explicit
+        // user action, therefore it is also not removed when cookies change.
+        // The account should remain and Chrome still signed in.
+        if (is_explicit_browser_signin_enabled()) {
+          EXPECT_FALSE(
+              identity_manager()->GetAccountsWithRefreshTokens().empty());
+          EXPECT_TRUE(identity_manager()->HasPrimaryAccount(
+              signin::ConsentLevel::kSignin));
+        } else {
+          EXPECT_TRUE(
+              identity_manager()->GetAccountsWithRefreshTokens().empty());
+          EXPECT_FALSE(identity_manager()->HasPrimaryAccount(
+              signin::ConsentLevel::kSignin));
+        }
 #endif
       } else {
         // First account is still primary, second account was not removed.
@@ -329,7 +352,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(TurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT,
                         TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT),
         // Whether the initial account should be removed during the flow.
-        testing::Values(true, false)));
+        testing::Bool(),
+        testing::Bool()));
 
 class TurnSyncOnHelperBrowserTest : public SigninBrowserTestBase {
  public:
