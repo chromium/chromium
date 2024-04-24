@@ -108,7 +108,8 @@ void TaskContinuationView::TaskChipsView::AddTaskChip(views::View* task_chip) {
 }
 
 // views::View:
-gfx::Size TaskContinuationView::TaskChipsView::CalculatePreferredSize() const {
+gfx::Size TaskContinuationView::TaskChipsView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   auto chip_size = GetTaskContinuationChipSize();
   int width = chip_size.width() * kTaskContinuationChipsInRow +
               kTaskContinuationChipSpacing +

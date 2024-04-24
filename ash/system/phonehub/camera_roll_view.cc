@@ -121,7 +121,8 @@ void CameraRollView::CameraRollItemsView::Reset() {
 }
 
 // views::View:
-gfx::Size CameraRollView::CameraRollItemsView::CalculatePreferredSize() const {
+gfx::Size CameraRollView::CameraRollItemsView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   auto item_size = GetCameraRollItemSize();
   int width = item_size.width() * kCameraRollItemsInRow +
               kCameraRollItemHorizontalSpacing * (kCameraRollItemsInRow - 1) +

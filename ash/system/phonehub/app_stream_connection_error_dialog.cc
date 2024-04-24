@@ -227,8 +227,11 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
 
   ~ConnectionErrorDialogDelegateView() override = default;
 
-  gfx::Size CalculatePreferredSize() const override {
-    return gfx::Size(kDialogWidth, GetHeightForWidth(kDialogWidth));
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    return gfx::Size(
+        kDialogWidth,
+        GetLayoutManager()->GetPreferredHeightForWidth(this, kDialogWidth));
   }
 
   void OnStartTetheringClicked(const ui::Event& event) {

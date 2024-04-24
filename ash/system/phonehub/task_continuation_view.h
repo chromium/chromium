@@ -50,7 +50,8 @@ class ASH_EXPORT TaskContinuationView : public views::View,
     void AddTaskChip(views::View* task_chip);
 
     // views::View:
-    gfx::Size CalculatePreferredSize() const override;
+    gfx::Size CalculatePreferredSize(
+        const views::SizeBounds& available_size) const override;
     void Layout(PassKey) override;
 
     // Clear all existing tasks in the view and in |task_chips_|.

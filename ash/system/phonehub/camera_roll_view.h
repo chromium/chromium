@@ -57,7 +57,8 @@ class ASH_EXPORT CameraRollView : public views::View,
     void Reset();
 
     // views::View:
-    gfx::Size CalculatePreferredSize() const override;
+    gfx::Size CalculatePreferredSize(
+        const views::SizeBounds& available_size) const override;
     void Layout(PassKey) override;
 
    private:

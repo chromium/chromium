@@ -270,8 +270,8 @@ void PhoneHubRecentAppsView::OnRecentAppsUiStateUpdated() {
 }
 
 // views::View:
-gfx::Size PhoneHubRecentAppsView::RecentAppButtonsView::CalculatePreferredSize()
-    const {
+gfx::Size PhoneHubRecentAppsView::RecentAppButtonsView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   int width = kTrayMenuWidth - kBubbleHorizontalSidePaddingDip * 2;
   int height = kRecentAppButtonSize + kRecentAppButtonFocusPadding.height() +
                kRecentAppButtonsViewTopPadding;
@@ -323,7 +323,8 @@ PhoneHubRecentAppsView::LoadingView::LoadingView() {
 
 PhoneHubRecentAppsView::LoadingView::~LoadingView() = default;
 
-gfx::Size PhoneHubRecentAppsView::LoadingView::CalculatePreferredSize() const {
+gfx::Size PhoneHubRecentAppsView::LoadingView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   int width = kTrayMenuWidth - kBubbleHorizontalSidePaddingDip * 2;
   int height = kMoreAppsButtonSize + kRecentAppButtonFocusPadding.height() +
                kRecentAppButtonsViewTopPadding;

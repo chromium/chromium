@@ -175,7 +175,7 @@ TEST_F(CameraRollViewTest, ViewLayout) {
   // intentionally changed this test will need to be updated.
   fake_camera_roll_manager()->SetCurrentItems(CreateFakeItems(4));
   views::test::RunScheduledLayout(GetItemsView());
-  EXPECT_EQ(GetItemsView()->CalculatePreferredSize(), gfx::Size(328, 82));
+  EXPECT_EQ(GetItemsView()->CalculatePreferredSize({}), gfx::Size(328, 82));
   EXPECT_EQ(GetThumbnailView(0)->bounds(), gfx::Rect(4, 4, 74, 74));
   EXPECT_EQ(GetThumbnailView(1)->bounds(), gfx::Rect(86, 4, 74, 74));
   EXPECT_EQ(GetThumbnailView(2)->bounds(), gfx::Rect(168, 4, 74, 74));
