@@ -45,6 +45,7 @@
           "--test-machine-name",
           "${buildername}",
           "--git-revision=${got_revision}",
+          "--jobs=1",
           "--service-account=/creds/service_accounts/skylab-drone.json"
         ],
         "autotest_name": "chromium_Graphics",
@@ -74,7 +75,8 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--enforce-browser-version"
+          "--enforce-browser-version",
+          "--jobs=1"
         ],
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
@@ -98,7 +100,8 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--enforce-browser-version"
+          "--enforce-browser-version",
+          "--jobs=1"
         ],
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
@@ -126,7 +129,8 @@
           "--expected-vendor-id",
           "0",
           "--expected-device-id",
-          "0"
+          "0",
+          "--jobs=1"
         ],
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
@@ -154,8 +158,8 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--jobs=1",
           "--git-revision=${got_revision}",
+          "--jobs=1",
           "--service-account=/creds/service_accounts/skylab-drone.json"
         ],
         "autotest_name": "chromium_Graphics",
@@ -186,7 +190,8 @@
           "-v",
           "--stable-jobs",
           "--enforce-browser-version",
-          "--dont-restore-color-profile-after-test"
+          "--dont-restore-color-profile-after-test",
+          "--jobs=1"
         ],
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
@@ -329,8 +334,9 @@
           "--test-machine-name",
           "${buildername}",
           "--deploy-lacros",
-          "--remote=variable_chromeos_device_hostname",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--jobs=1",
+          "--remote=variable_chromeos_device_hostname"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -376,10 +382,10 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--jobs=1",
           "--deploy-lacros",
-          "--remote=variable_chromeos_device_hostname",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--jobs=1",
+          "--remote=variable_chromeos_device_hostname"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -424,8 +430,8 @@
           "--enforce-browser-version",
           "--webgl-conformance-version=2.0.1",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_linux_runtimes.json",
-          "--jobs=1",
           "--deploy-lacros",
+          "--jobs=1",
           "--remote=variable_chromeos_device_hostname"
         ],
         "merge": {
@@ -465,8 +471,8 @@
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
           "--enforce-browser-version",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_linux_runtimes.json",
-          "--jobs=1",
           "--deploy-lacros",
+          "--jobs=1",
           "--remote=variable_chromeos_device_hostname"
         ],
         "merge": {
@@ -517,8 +523,9 @@
           "--test-machine-name",
           "${buildername}",
           "--deploy-lacros",
-          "--remote=variable_chromeos_device_hostname",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--jobs=1",
+          "--remote=variable_chromeos_device_hostname"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -564,10 +571,10 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--jobs=1",
           "--deploy-lacros",
-          "--remote=variable_chromeos_device_hostname",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--jobs=1",
+          "--remote=variable_chromeos_device_hostname"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -612,8 +619,8 @@
           "--enforce-browser-version",
           "--webgl-conformance-version=2.0.1",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_linux_runtimes.json",
-          "--jobs=1",
           "--deploy-lacros",
+          "--jobs=1",
           "--remote=variable_chromeos_device_hostname"
         ],
         "merge": {
@@ -653,8 +660,8 @@
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
           "--enforce-browser-version",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_linux_runtimes.json",
-          "--jobs=1",
           "--deploy-lacros",
+          "--jobs=1",
           "--remote=variable_chromeos_device_hostname"
         ],
         "merge": {

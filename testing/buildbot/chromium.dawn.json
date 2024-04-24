@@ -12,7 +12,9 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--enforce-browser-version"
+          "--enforce-browser-version",
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -294,7 +296,9 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--enforce-browser-version"
+          "--enforce-browser-version",
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1305,7 +1309,9 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--enforce-browser-version"
+          "--enforce-browser-version",
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"

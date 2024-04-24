@@ -2164,7 +2164,8 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--jobs=1"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -2200,7 +2201,8 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--enforce-browser-version"
+          "--enforce-browser-version",
+          "--jobs=1"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -2231,7 +2233,8 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--enforce-browser-version"
+          "--enforce-browser-version",
+          "--jobs=1"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -2266,8 +2269,8 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--jobs=1",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--jobs=1"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -2304,7 +2307,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
           "--enforce-browser-version",
-          "--dont-restore-color-profile-after-test"
+          "--dont-restore-color-profile-after-test",
+          "--jobs=1"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3529,7 +3533,8 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--jobs=1"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3565,7 +3570,8 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--enforce-browser-version"
+          "--enforce-browser-version",
+          "--jobs=1"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3596,7 +3602,8 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--enforce-browser-version"
+          "--enforce-browser-version",
+          "--jobs=1"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3631,8 +3638,8 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--jobs=1",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--jobs=1"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -3669,7 +3676,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
           "--enforce-browser-version",
-          "--dont-restore-color-profile-after-test"
+          "--dont-restore-color-profile-after-test",
+          "--jobs=1"
         ],
         "isolate_profile_data": true,
         "merge": {

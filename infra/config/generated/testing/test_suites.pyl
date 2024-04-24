@@ -169,13 +169,12 @@
         'mixins': [
           'skia_gold_test',
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
           '${buildername}',
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
       },
     },
@@ -2199,45 +2198,18 @@
         'telemetry_test_name': 'info_collection',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '$$MAGIC_SUBSTITUTION_GPUExpectedVendorId',
           '$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId',
           '--extra-browser-args=--force_high_performance_gpu',
         ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
-        ],
       },
       'trace_test': {
         'mixins': [
           'has_native_resultdb_integration',
-        ],
-        'args': [
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
+          'gpu_integration_test_common_args',
         ],
       },
     },
@@ -2827,10 +2799,10 @@
         'telemetry_test_name': 'context_lost',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --disable-features=SkiaGraphite',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
       },
       'expected_color_pixel_gl_passthrough_ganesh_test': {
@@ -2838,6 +2810,7 @@
         'mixins': [
           'skia_gold_test',
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -2850,12 +2823,14 @@
         'telemetry_test_name': 'gpu_process',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
       },
       'hardware_accelerated_feature_tests': {
         'telemetry_test_name': 'hardware_accelerated_feature',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
       },
       'pixel_skia_gold_gl_passthrough_ganesh_test': {
@@ -2863,19 +2838,20 @@
         'mixins': [
           'skia_gold_test',
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
           '${buildername}',
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --disable-features=SkiaGraphite',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
       },
       'screenshot_sync_gl_passthrough_ganesh_tests': {
         'telemetry_test_name': 'screenshot_sync',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -2897,14 +2873,12 @@
         'telemetry_test_name': 'info_collection',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '$$MAGIC_SUBSTITUTION_GPUExpectedVendorId',
           '$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId',
           '--extra-browser-args=--force_high_performance_gpu',
-        ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
         ],
       },
     },
@@ -2932,10 +2906,10 @@
         'telemetry_test_name': 'context_lost',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --disable-features=SkiaGraphite',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
       },
       'expected_color_pixel_metal_passthrough_ganesh_test': {
@@ -2943,6 +2917,7 @@
         'mixins': [
           'skia_gold_test',
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -2955,12 +2930,14 @@
         'telemetry_test_name': 'gpu_process',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
       },
       'hardware_accelerated_feature_tests': {
         'telemetry_test_name': 'hardware_accelerated_feature',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
       },
       'pixel_skia_gold_metal_passthrough_ganesh_test': {
@@ -2968,19 +2945,20 @@
         'mixins': [
           'skia_gold_test',
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
           '${buildername}',
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --disable-features=SkiaGraphite',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
       },
       'screenshot_sync_metal_passthrough_ganesh_tests': {
         'telemetry_test_name': 'screenshot_sync',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -2994,10 +2972,10 @@
         'telemetry_test_name': 'context_lost',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --enable-features=SkiaGraphite',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
       },
       'expected_color_pixel_metal_passthrough_graphite_test': {
@@ -3005,6 +2983,7 @@
         'mixins': [
           'skia_gold_test',
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -3017,12 +2996,14 @@
         'telemetry_test_name': 'gpu_process',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
       },
       'hardware_accelerated_feature_tests': {
         'telemetry_test_name': 'hardware_accelerated_feature',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
       },
       'pixel_skia_gold_metal_passthrough_graphite_test': {
@@ -3030,19 +3011,20 @@
         'mixins': [
           'skia_gold_test',
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
           '${buildername}',
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --enable-features=SkiaGraphite',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
       },
       'screenshot_sync_metal_passthrough_graphite_tests': {
         'telemetry_test_name': 'screenshot_sync',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -3054,11 +3036,8 @@
     'gpu_noop_sleep_telemetry_test': {
       'noop_sleep_tests': {
         'telemetry_test_name': 'noop_sleep',
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        'mixins': [
+          'gpu_integration_test_common_args',
         ],
       },
     },
@@ -3069,6 +3048,7 @@
         'mixins': [
           'skia_gold_test',
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -3078,17 +3058,6 @@
         ],
         'android_args': [
           '--extra-browser-args=--force-online-connection-state-for-indicator',
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
       },
       'pixel_skia_gold_passthrough_graphite_test': {
@@ -3096,33 +3065,23 @@
         'mixins': [
           'skia_gold_test',
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
           '${buildername}',
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'android_args': [
           '--extra-browser-args=--force-online-connection-state-for-indicator',
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
       },
       'screenshot_sync_passthrough_graphite_tests': {
         'telemetry_test_name': 'screenshot_sync',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -3130,17 +3089,6 @@
         ],
         'android_args': [
           '--extra-browser-args=--force-online-connection-state-for-indicator',
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
       },
     },
@@ -3150,23 +3098,10 @@
         'telemetry_test_name': 'context_lost',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
       },
       'expected_color_pixel_passthrough_test': {
@@ -3174,6 +3109,7 @@
         'mixins': [
           'skia_gold_test',
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -3183,55 +3119,20 @@
         ],
         'android_args': [
           '--extra-browser-args=--force-online-connection-state-for-indicator',
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
       },
       'gpu_process_launch_tests': {
         'telemetry_test_name': 'gpu_process',
         'mixins': [
           'has_native_resultdb_integration',
-        ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
+          'gpu_integration_test_common_args',
         ],
       },
       'hardware_accelerated_feature_tests': {
         'telemetry_test_name': 'hardware_accelerated_feature',
         'mixins': [
           'has_native_resultdb_integration',
-        ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
+          'gpu_integration_test_common_args',
         ],
       },
       'pixel_skia_gold_passthrough_test': {
@@ -3239,33 +3140,23 @@
         'mixins': [
           'skia_gold_test',
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
           '${buildername}',
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'android_args': [
           '--extra-browser-args=--force-online-connection-state-for-indicator',
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
       },
       'screenshot_sync_passthrough_tests': {
         'telemetry_test_name': 'screenshot_sync',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -3273,17 +3164,6 @@
         ],
         'android_args': [
           '--extra-browser-args=--force-online-connection-state-for-indicator',
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
       },
     },
@@ -3294,15 +3174,13 @@
         'mixins': [
           'skia_gold_test',
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
           '${buildername}',
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
       },
       'pixel_skia_gold_passthrough_test': {
@@ -3310,16 +3188,13 @@
         'mixins': [
           'skia_gold_test',
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
           '${buildername}',
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
       },
     },
@@ -3330,17 +3205,16 @@
         'mixins': [
           'skia_gold_test',
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
           '${buildername}',
           '--extra-browser-args=--use-vulkan=native --disable-vulkan-fallback-to-gl-for-testing --enable-features=Vulkan --use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'android_args': [
           '--extra-browser-args=--force-online-connection-state-for-indicator',
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
         ],
       },
     },
@@ -3350,23 +3224,10 @@
         'telemetry_test_name': 'context_lost',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-cmd-decoder=validating',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
       },
       'expected_color_pixel_validating_test': {
@@ -3374,6 +3235,7 @@
         'mixins': [
           'skia_gold_test',
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -3383,55 +3245,20 @@
         ],
         'android_args': [
           '--extra-browser-args=--force-online-connection-state-for-indicator',
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
       },
       'gpu_process_launch_tests': {
         'telemetry_test_name': 'gpu_process',
         'mixins': [
           'has_native_resultdb_integration',
-        ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
+          'gpu_integration_test_common_args',
         ],
       },
       'hardware_accelerated_feature_tests': {
         'telemetry_test_name': 'hardware_accelerated_feature',
         'mixins': [
           'has_native_resultdb_integration',
-        ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
+          'gpu_integration_test_common_args',
         ],
       },
       'pixel_skia_gold_validating_test': {
@@ -3439,33 +3266,23 @@
         'mixins': [
           'skia_gold_test',
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
           '${buildername}',
           '--extra-browser-args=--use-cmd-decoder=validating',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'android_args': [
           '--extra-browser-args=--force-online-connection-state-for-indicator',
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
       },
       'screenshot_sync_validating_tests': {
         'telemetry_test_name': 'screenshot_sync',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--dont-restore-color-profile-after-test',
@@ -3473,17 +3290,6 @@
         ],
         'android_args': [
           '--extra-browser-args=--force-online-connection-state-for-indicator',
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
       },
     },
@@ -3504,10 +3310,10 @@
         'telemetry_test_name': 'webcodecs',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --disable-features=SkiaGraphite',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
       },
     },
@@ -3517,10 +3323,10 @@
         'telemetry_test_name': 'webcodecs',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --disable-features=SkiaGraphite',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
       },
     },
@@ -3530,10 +3336,10 @@
         'telemetry_test_name': 'webcodecs',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=metal --enable-features=SkiaGraphite',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
       },
     },
@@ -3543,22 +3349,7 @@
         'telemetry_test_name': 'webcodecs',
         'mixins': [
           'has_native_resultdb_integration',
-        ],
-        'args': [
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
+          'gpu_integration_test_common_args',
         ],
       },
     },
@@ -3568,23 +3359,10 @@
         'telemetry_test_name': 'webcodecs',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-cmd-decoder=validating',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
       },
     },
@@ -3594,12 +3372,12 @@
         'telemetry_test_name': 'webgl2_conformance',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--webgl-conformance-version=2.0.1',
           '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
           '--extra-browser-args=--use-gl=angle --use-angle=d3d11 --use-cmd-decoder=passthrough --force_high_performance_gpu',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'swarming': {
           'shards': 20,
@@ -3612,25 +3390,12 @@
         'telemetry_test_name': 'webgl2_conformance',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--webgl-conformance-version=2.0.1',
           '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
           '--extra-browser-args=--use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu --disable-features=SkiaGraphite',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
         'swarming': {
           'shards': 20,
@@ -3643,25 +3408,12 @@
         'telemetry_test_name': 'webgl2_conformance',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--webgl-conformance-version=2.0.1',
           '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
           '--extra-browser-args=--use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
         'swarming': {
           'shards': 5,
@@ -3674,18 +3426,12 @@
         'telemetry_test_name': 'webgl2_conformance',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--webgl-conformance-version=2.0.1',
           '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
           '--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
         'swarming': {
           'shards': 20,
@@ -3698,12 +3444,12 @@
         'telemetry_test_name': 'webgl2_conformance',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--webgl-conformance-version=2.0.1',
           '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
           '--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL,SkiaGraphite',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
           '--enable-metal-debug-layers',
         ],
         'swarming': {
@@ -3717,25 +3463,12 @@
         'telemetry_test_name': 'webgl2_conformance',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--webgl-conformance-version=2.0.1',
           '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
           '--extra-browser-args=--use-cmd-decoder=validating --force_high_performance_gpu',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
         'swarming': {
           'shards': 20,
@@ -3748,11 +3481,11 @@
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-gl=angle --use-angle=d3d11 --use-cmd-decoder=passthrough --force_high_performance_gpu',
           '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'swarming': {
           'shards': 2,
@@ -3765,11 +3498,11 @@
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-gl=angle --use-angle=d3d9 --use-cmd-decoder=passthrough --force_high_performance_gpu',
           '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'swarming': {
           'shards': 2,
@@ -3782,24 +3515,11 @@
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu --disable-features=SkiaGraphite',
           '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
         'swarming': {
           'shards': 2,
@@ -3812,24 +3532,11 @@
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough --force_high_performance_gpu',
           '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
         'swarming': {
           'shards': 2,
@@ -3842,24 +3549,11 @@
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu',
           '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
         'swarming': {
           'shards': 6,
@@ -3872,11 +3566,11 @@
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL --disable-features=SkiaGraphite',
           '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
           '--enable-metal-debug-layers',
         ],
       },
@@ -3887,11 +3581,11 @@
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-gl=angle --use-angle=metal --use-cmd-decoder=passthrough --enable-features=EGLDualGPURendering,ForceHighPerformanceGPUForWebGL,SkiaGraphite',
           '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
           '--enable-metal-debug-layers',
         ],
       },
@@ -3902,11 +3596,11 @@
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough --force_high_performance_gpu',
           '--test-filter=conformance/rendering/gl-drawelements.html',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'swarming': {
           'shards': 1,
@@ -3919,11 +3613,11 @@
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough',
           '--xvfb',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'swarming': {
           'shards': 1,
@@ -3936,17 +3630,11 @@
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--force_high_performance_gpu',
           '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
         'swarming': {
           'shards': 2,
@@ -3965,24 +3653,11 @@
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-cmd-decoder=validating --force_high_performance_gpu',
           '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'android_args': [
-          '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
-        ],
-        'chromeos_args': [
-          '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
-        ],
-        'lacros_args': [
-          '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
-          '--xvfb',
-          '--no-xvfb',
-          '--use-weston',
-          '--weston-use-gl',
         ],
         'swarming': {
           'shards': 2,
@@ -3998,10 +3673,10 @@
         'telemetry_test_name': 'webgl1_conformance',
         'mixins': [
           'has_native_resultdb_integration',
+          'gpu_integration_test_common_args',
         ],
         'args': [
           '--extra-browser-args=--use-angle=vulkan --use-cmd-decoder=passthrough --force_high_performance_gpu',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
         ],
         'swarming': {
           'shards': 2,

@@ -647,6 +647,29 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "gpu_integration_test_common_args",
+    args = [
+        "$$MAGIC_SUBSTITUTION_GPUParallelJobs",
+    ],
+    android_args = [
+        "$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices",
+        # See crbug.com/333414298 for context on why this is necessary.
+        "--initial-find-device-attempts=3",
+    ],
+    chromeos_args = [
+        "$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote",
+    ],
+    # TODO(https://crbug.com/1359405): having --xvfb and --no-xvfb is confusing.
+    lacros_args = [
+        "--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland",
+        "--xvfb",
+        "--no-xvfb",
+        "--use-weston",
+        "--weston-use-gl",
+    ],
+)
+
+targets.mixin(
     name = "gpu-swarming-pool",
     swarming = targets.swarming(
         dimensions = {

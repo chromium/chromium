@@ -104,8 +104,9 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--git-revision=${got_revision}",
           "--jobs=1",
-          "--git-revision=${got_revision}"
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -144,7 +145,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
           "--enforce-browser-version",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -178,7 +180,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
           "--enforce-browser-version",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -215,7 +218,9 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -257,7 +262,9 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -295,7 +302,9 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--enforce-browser-version"
+          "--enforce-browser-version",
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -328,7 +337,9 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--enforce-browser-version"
+          "--enforce-browser-version",
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -365,7 +376,9 @@
           "--expected-vendor-id",
           "0",
           "--expected-device-id",
-          "0"
+          "0",
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -402,8 +415,9 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--git-revision=${got_revision}",
           "--jobs=1",
-          "--git-revision=${got_revision}"
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -445,8 +459,9 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
+          "--git-revision=${got_revision}",
           "--jobs=1",
-          "--git-revision=${got_revision}"
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -485,7 +500,9 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --force-online-connection-state-for-indicator --disable-wcg-for-test",
           "--enforce-browser-version",
-          "--dont-restore-color-profile-after-test"
+          "--dont-restore-color-profile-after-test",
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -519,7 +536,9 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating --force-online-connection-state-for-indicator --disable-wcg-for-test",
           "--enforce-browser-version",
-          "--dont-restore-color-profile-after-test"
+          "--dont-restore-color-profile-after-test",
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -553,7 +572,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--enforce-browser-version",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -587,7 +607,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
           "--enforce-browser-version",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -623,7 +644,8 @@
           "--enforce-browser-version",
           "--webgl-conformance-version=2.0.1",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_android_runtimes.json",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -660,7 +682,8 @@
           "--enforce-browser-version",
           "--webgl-conformance-version=2.0.1",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_android_runtimes.json",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -696,7 +719,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
           "--enforce-browser-version",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_android_runtimes.json",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -732,7 +756,8 @@
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating --force_high_performance_gpu",
           "--enforce-browser-version",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_android_runtimes.json",
-          "--jobs=1"
+          "--jobs=1",
+          "--initial-find-device-attempts=3"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"

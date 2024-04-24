@@ -302,7 +302,8 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -344,7 +345,8 @@
           "--expected-vendor-id",
           "10de",
           "--expected-device-id",
-          "2184"
+          "2184",
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -381,7 +383,8 @@
           "--expected-vendor-id",
           "8086",
           "--expected-device-id",
-          "9bc5"
+          "9bc5",
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -447,8 +450,8 @@
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
-          "--jobs=4",
-          "--git-revision=${got_revision}"
+          "--git-revision=${got_revision}",
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -487,7 +490,8 @@
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle --enable-features=SkiaGraphite",
           "--enforce-browser-version",
-          "--dont-restore-color-profile-after-test"
+          "--dont-restore-color-profile-after-test",
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"

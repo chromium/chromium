@@ -121,7 +121,8 @@
           "--expected-vendor-id",
           "10de",
           "--expected-device-id",
-          "2184"
+          "2184",
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -157,7 +158,8 @@
           "--expected-vendor-id",
           "8086",
           "--expected-device-id",
-          "9bc5"
+          "9bc5",
+          "--jobs=4"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"

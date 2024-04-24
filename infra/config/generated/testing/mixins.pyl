@@ -503,6 +503,25 @@
       },
     },
   },
+  'gpu_integration_test_common_args': {
+    'args': [
+      '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
+    ],
+    'android_args': [
+      '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices',
+      '--initial-find-device-attempts=3',
+    ],
+    'chromeos_args': [
+      '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+    ],
+    'lacros_args': [
+      '--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland',
+      '--xvfb',
+      '--no-xvfb',
+      '--use-weston',
+      '--weston-use-gl',
+    ],
+  },
   'has_native_resultdb_integration': {
     'resultdb': {
       'enable': True,
