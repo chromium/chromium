@@ -455,7 +455,8 @@ std::string CaptureModeCameraController::GetDisplayNameOfSelectedCamera()
   return std::string();
 }
 
-void CaptureModeCameraController::SetSelectedCamera(CameraId camera_id) {
+void CaptureModeCameraController::SetSelectedCamera(CameraId camera_id,
+                                                    bool by_user) {
   // When cameras are disabled by policy, we don't allow any camera selection.
   if (IsCameraDisabledByPolicy()) {
     LOG(WARNING) << "Camera is disabled by policy. Selecting camera: "
@@ -465,6 +466,13 @@ void CaptureModeCameraController::SetSelectedCamera(CameraId camera_id) {
 
   if (selected_camera_ == camera_id)
     return;
+
+  did_user_ever_change_camera_ |= by_user;
+
+  // If camera auto-selection is on, and a camera change happened (either by
+  // user or due to disconnection), calling `MaybeRevertAutoCameraSelection()`
+  // should be a no-op, and the camera should not be restored to off.
+  did_make_camera_auto_selection_ = false;
 
   selected_camera_ = std::move(camera_id);
   camera_reconnect_timer_.Stop();

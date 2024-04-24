@@ -163,6 +163,9 @@ class ASH_EXPORT CaptureModeCameraController
   bool is_camera_preview_collapsed() const {
     return is_camera_preview_collapsed_;
   }
+  bool did_user_ever_change_camera() const {
+    return did_user_ever_change_camera_;
+  }
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -185,8 +188,9 @@ class ASH_EXPORT CaptureModeCameraController
 
   // Sets the currently selected camera to the whose ID is the given
   // `camera_id`. If `camera_id` is invalid (see CameraId::is_valid()), this
-  // clears the selected camera.
-  void SetSelectedCamera(CameraId camera_id);
+  // clears the selected camera. `by_user` is true if the selection was made
+  // explicitly by the user, false otherwise.
+  void SetSelectedCamera(CameraId camera_id, bool by_user = false);
 
   // Sets `should_show_preview_` to the given `value`, and refreshes the state
   // of the camera preview.
@@ -425,6 +429,10 @@ class ASH_EXPORT CaptureModeCameraController
   // `MaybeRevertAutoCameraSelection()` was called to revert back this automatic
   // selection.
   bool did_make_camera_auto_selection_ = false;
+
+  // True if the user ever made an explicit camera selection (i.e. from the
+  // capture mode settings menu).
+  bool did_user_ever_change_camera_ = false;
 
   base::WeakPtrFactory<CaptureModeCameraController> weak_ptr_factory_{this};
 };

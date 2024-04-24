@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/capture_mode/base_capture_mode_session.h"
+#include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
@@ -230,7 +231,11 @@ class GameDashboardBehavior : public CaptureModeBehavior,
   bool ShouldDemoToolsSettingsBeIncluded() const override { return false; }
   bool ShouldGifBeSupported() const override { return false; }
   bool ShouldShowUserNudge() const override { return false; }
-  bool ShouldAutoSelectFirstCamera() const override { return true; }
+  bool ShouldAutoSelectFirstCamera() const override {
+    return !CaptureModeController::Get()
+                ->camera_controller()
+                ->did_user_ever_change_camera();
+  }
 
   std::unique_ptr<CaptureModeBarView> CreateCaptureModeBarView() override {
     return std::make_unique<GameCaptureBarView>();
