@@ -207,6 +207,7 @@ class OpenXrRenderLoop : public XRThread,
   bool HasSessionEnded();
   bool SubmitCompositedFrame();
   void EnableSupportedFeatures(
+      device::mojom::XRSessionMode mode,
       const std::vector<device::mojom::XRSessionFeature>& requiredFeatures,
       const std::vector<device::mojom::XRSessionFeature>& optionalFeatures);
 

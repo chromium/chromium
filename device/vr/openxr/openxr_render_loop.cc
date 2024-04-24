@@ -19,6 +19,7 @@
 #include "device/vr/openxr/exit_xr_present_reason.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_input_helper.h"
+#include "device/vr/openxr/openxr_util.h"
 #include "device/vr/util/stage_utils.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -208,7 +209,8 @@ void OpenXrRenderLoop::RequestSession(
   frame_data_receiver_.reset();
   request_session_callback_ =
       base::BindPostTask(main_thread_task_runner_, std::move(callback));
-  EnableSupportedFeatures(options->required_features,
+
+  EnableSupportedFeatures(options->mode, options->required_features,
                           options->optional_features);
 
   StartRuntime(std::move(on_visibility_state_changed), std::move(options));
@@ -789,6 +791,7 @@ void OpenXrRenderLoop::StopRuntime() {
 }
 
 void OpenXrRenderLoop::EnableSupportedFeatures(
+    device::mojom::XRSessionMode mode,
     const std::vector<device::mojom::XRSessionFeature>& required_features,
     const std::vector<device::mojom::XRSessionFeature>& optional_features) {
   enabled_features_.clear();
@@ -809,8 +812,9 @@ void OpenXrRenderLoop::EnableSupportedFeatures(
   base::ranges::copy_if(
       optional_features,
       std::inserter(enabled_features_, enabled_features_.begin()),
-      [this](device::mojom::XRSessionFeature feature) {
-        return extension_helper_->IsFeatureSupported(feature);
+      [this, mode](device::mojom::XRSessionFeature feature) {
+        return IsFeatureSupportedForMode(feature, mode) &&
+               extension_helper_->IsFeatureSupported(feature);
       });
 }
 

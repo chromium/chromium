@@ -57,4 +57,41 @@ bool IsPoseValid(XrSpaceLocationFlags locationFlags) {
   return (locationFlags & PoseValidFlags) == PoseValidFlags;
 }
 
+bool IsArOnlyFeature(device::mojom::XRSessionFeature feature) {
+  switch (feature) {
+    case device::mojom::XRSessionFeature::REF_SPACE_VIEWER:
+    case device::mojom::XRSessionFeature::REF_SPACE_LOCAL:
+    case device::mojom::XRSessionFeature::REF_SPACE_LOCAL_FLOOR:
+    case device::mojom::XRSessionFeature::REF_SPACE_BOUNDED_FLOOR:
+    case device::mojom::XRSessionFeature::REF_SPACE_UNBOUNDED:
+    case device::mojom::XRSessionFeature::LAYERS:
+    case device::mojom::XRSessionFeature::HAND_INPUT:
+    case device::mojom::XRSessionFeature::SECONDARY_VIEWS:
+      return false;
+    case device::mojom::XRSessionFeature::DOM_OVERLAY:
+    case device::mojom::XRSessionFeature::HIT_TEST:
+    case device::mojom::XRSessionFeature::LIGHT_ESTIMATION:
+    case device::mojom::XRSessionFeature::ANCHORS:
+    case device::mojom::XRSessionFeature::CAMERA_ACCESS:
+    case device::mojom::XRSessionFeature::PLANE_DETECTION:
+    case device::mojom::XRSessionFeature::DEPTH:
+    case device::mojom::XRSessionFeature::IMAGE_TRACKING:
+    case device::mojom::XRSessionFeature::FRONT_FACING:
+      return true;
+  }
+}
+
+bool IsFeatureSupportedForMode(device::mojom::XRSessionFeature feature,
+                               device::mojom::XRSessionMode mode) {
+  // OpenXR doesn't support inline.
+  CHECK_NE(mode, device::mojom::XRSessionMode::kInline);
+  // If the feature is AR-only, then it's only supported if the mode is AR.
+  if (IsArOnlyFeature(feature)) {
+    return mode == device::mojom::XRSessionMode::kImmersiveAr;
+  }
+
+  // If the feature isn't AR-only, then it's supported.
+  return true;
+}
+
 }  // namespace device

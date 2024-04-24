@@ -7,6 +7,7 @@
 
 #include "base/logging.h"
 #include "device/vr/public/mojom/pose.h"
+#include "device/vr/public/mojom/xr_session.mojom.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -59,6 +60,9 @@ gfx::Transform XrPoseToGfxTransform(const XrPosef& pose);
 device::Pose XrPoseToDevicePose(const XrPosef& pose);
 XrPosef GfxTransformToXrPose(const gfx::Transform& transform);
 bool IsPoseValid(XrSpaceLocationFlags locationFlags);
+
+bool IsFeatureSupportedForMode(device::mojom::XRSessionFeature feature,
+                               device::mojom::XRSessionMode mode);
 
 }  // namespace device
 

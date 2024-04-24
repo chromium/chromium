@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_render_loop.h"
+#include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/cpp/features.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
@@ -36,22 +37,26 @@ const std::vector<mojom::XRSessionFeature>& GetSupportedFeatures() {
 }
 
 bool AreAllRequiredFeaturesSupported(
+    const mojom::XRSessionMode mode,
     const std::vector<mojom::XRSessionFeature>& required_features,
     const OpenXrExtensionHelper& extension_helper) {
   return base::ranges::all_of(
       required_features,
-      [&extension_helper](const mojom::XRSessionFeature& feature) {
-        // This function returns true for features that are supported entirely
-        // by the core spec. We rely on the Browser process pre-filtering and
-        // not passing us any features that we haven't already indicated that
-        // we could support, which is the union of core spec features and things
-        // that could theoretically be supported depending on enabled
-        // extensions (which we're now checking if they're actually supported,
-        // since we need to create an instance to confirm that).
-        return extension_helper.IsFeatureSupported(feature);
+      [&extension_helper, mode](const mojom::XRSessionFeature& feature) {
+        // First we check if we will allow the feature to be supported in the
+        // mode that has been requested; before querying if the feature can
+        // actually be supported by the current runtime.
+        // The extension helper returns true for features that are supported
+        // entirely by the core spec. We rely on the Browser process
+        // pre-filtering and not passing us any features that we haven't already
+        // indicated that we could support, which is the union of core spec
+        // features and things that could theoretically be supported depending
+        // on enabled extensions (which we're now checking if they're actually
+        // supported,since we need to create an instance to confirm that).
+        return IsFeatureSupportedForMode(feature, mode) &&
+               extension_helper.IsFeatureSupported(feature);
       });
 }
-
 }  // namespace
 
 OpenXrDevice::OpenXrDevice(
@@ -141,8 +146,8 @@ void OpenXrDevice::OnCreateInstanceResult(
   extension_helper_ = std::make_unique<OpenXrExtensionHelper>(
       instance_, platform_helper_->GetExtensionEnumeration());
 
-  if (!AreAllRequiredFeaturesSupported(options->required_features,
-                                       *extension_helper_)) {
+  if (!AreAllRequiredFeaturesSupported(
+          options->mode, options->required_features, *extension_helper_)) {
     DVLOG(1) << __func__ << " Missing a required feature";
     // Reject session request, and call ForceEndSession to ensure that we clean
     // up any objects that were already created.
