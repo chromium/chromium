@@ -99,3 +99,25 @@ try_.builder(
         custom_cq_run_modes = [try_.MEGA_CQ_DRY_RUN_NAME, try_.MEGA_CQ_FULL_RUN_NAME],
     ),
 )
+
+try_.builder(
+    name = "utr-tester",
+    description_html = "Tests the <a href=\"https://chromium.googlesource.com/chromium/src/+/HEAD/tools/utr/README.md\">Universal Test Runner</a> against cli changes.",
+    executable = "recipe:chromium/universal_test_runner_test",
+    builderless = True,
+    cores = 8,
+    os = os.LINUX_DEFAULT,
+    contact_team_email = "chrome-dev-infra-team@google.com",
+    execution_timeout = 2 * time.hour,
+    properties = {
+        "builder_suites": [{
+            "bucket": "try",
+            "builder_name": "linux-rel",
+            "test_names": [
+                "url_unittests",
+            ],
+            "build_dir": "out/linux-rel",
+        }],
+    },
+    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+)

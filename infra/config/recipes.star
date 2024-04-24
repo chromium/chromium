@@ -209,6 +209,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium/universal_test_runner_test",
+)
+
+build_recipe(
     name = "recipe:chromium_clang_coverage_tot",
 )
 
