@@ -282,7 +282,7 @@ int QuicChromiumClientStream::Handle::WritevStreamData(
 }
 
 int QuicChromiumClientStream::Handle::WriteConnectUdpPayload(
-    absl::string_view packet) {
+    std::string_view packet) {
   ScopedBoolSaver saver(&may_invoke_callbacks_, false);
   if (!stream_) {
     return net_error_;

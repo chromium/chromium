@@ -178,8 +178,8 @@ std::optional<std::vector<liburlpattern::Part>> ParsePatternInitField(
 
   StringUTF8Adaptor utf8(value);
   auto parse_result = liburlpattern::Parse(
-      absl::string_view(utf8.data(), utf8.size()),
-      [](absl::string_view input) { return std::string(input); });
+      utf8.AsStringView(),
+      [](std::string_view input) { return std::string(input); });
 
   if (parse_result.ok()) {
     std::vector<liburlpattern::Part> part_list;

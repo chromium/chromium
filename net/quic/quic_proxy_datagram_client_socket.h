@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <queue>
+#include <string_view>
 
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
@@ -110,7 +111,7 @@ class NET_EXPORT_PRIVATE QuicProxyDatagramClientSocket
 
   // Http3DatagramVisitor implementation.
   void OnHttp3Datagram(quic::QuicStreamId stream_id,
-                       absl::string_view payload) override;
+                       std::string_view payload) override;
   void OnUnknownCapsule(quic::QuicStreamId stream_id,
                         const quiche::UnknownCapsule& capsule) override;
 

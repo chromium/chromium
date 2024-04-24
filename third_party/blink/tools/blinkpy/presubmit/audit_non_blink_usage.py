@@ -1648,10 +1648,6 @@ _CONFIG = [
             "absl::Status",
             "absl::StatusOr",
 
-            # Required by liburlpattern API in order to pass string data
-            # efficiently.
-            "absl::string_view",
-
             # Needed to work with std::string values returned from
             # liburlpattern API.
             "base::IsStringASCII",
@@ -1792,7 +1788,6 @@ _CONFIG = [
 
             # Needed to use the liburlpattern API.
             "absl::StatusOr",
-            "absl::string_view",
             'liburlpattern::.+',
         ],
     },

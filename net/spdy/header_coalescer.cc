@@ -47,7 +47,7 @@ HeaderCoalescer::HeaderCoalescer(uint32_t max_header_list_size,
                                  const NetLogWithSource& net_log)
     : max_header_list_size_(max_header_list_size), net_log_(net_log) {}
 
-void HeaderCoalescer::OnHeader(std::string_view key, absl::string_view value) {
+void HeaderCoalescer::OnHeader(std::string_view key, std::string_view value) {
   if (error_seen_)
     return;
   if (!AddHeader(key, value)) {

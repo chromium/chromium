@@ -100,8 +100,7 @@ String EscapeBaseURLString(const String& input, ValueType type) {
   result.reserve(input.length());
 
   StringUTF8Adaptor utf8(input);
-  liburlpattern::EscapePatternStringAndAppend(
-      absl::string_view(utf8.data(), utf8.size()), result);
+  liburlpattern::EscapePatternStringAndAppend(utf8.AsStringView(), result);
 
   return String::FromUTF8(result);
 }
@@ -429,7 +428,7 @@ URLPattern* URLPattern::Create(v8::Isolate* isolate,
   const auto& input_string = input->GetAsUSVString();
   const StringUTF8Adaptor utf8_string(input_string);
   liburlpattern::ConstructorStringParser constructor_string_parser(
-      absl::string_view(utf8_string.data(), utf8_string.size()),
+      utf8_string.AsStringView(),
       liburlpattern::ConstructorStringParser::StringParserOptions{
           .more_wildcards =
               RuntimeEnabledFeatures::URLPatternWildcardMoreOftenEnabled()});
@@ -437,7 +436,7 @@ URLPattern* URLPattern::Create(v8::Isolate* isolate,
   Component* protocol_component = nullptr;
   absl::Status status = constructor_string_parser.Parse(
       [=, &protocol_component, &exception_state](
-          absl::string_view protocol_string) -> absl::StatusOr<bool> {
+          std::string_view protocol_string) -> absl::StatusOr<bool> {
         protocol_component = Component::Compile(
             isolate, String::FromUTF8(protocol_string),
             Component::Type::kProtocol,

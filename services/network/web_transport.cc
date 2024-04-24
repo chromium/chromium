@@ -251,7 +251,7 @@ class WebTransport::Stream final {
       DCHECK_EQ(result, MOJO_RESULT_OK);
 
       bool send_result = outgoing_->Write(
-          absl::string_view(reinterpret_cast<const char*>(data), available));
+          std::string_view(reinterpret_cast<const char*>(data), available));
       if (!send_result) {
         // TODO(yhirano): Handle this failure.
         readable_->EndReadData(0);
@@ -430,8 +430,7 @@ void WebTransport::SendDatagram(base::span<const uint8_t> data,
   datagram_callbacks_.emplace(std::move(callback));
 
   CHECK(transport_->session());
-  transport_->session()->SendOrQueueDatagram(absl::string_view(
-      reinterpret_cast<const char*>(data.data()), data.size()));
+  transport_->session()->SendOrQueueDatagram(base::as_string_view(data));
 }
 
 void WebTransport::CreateStream(

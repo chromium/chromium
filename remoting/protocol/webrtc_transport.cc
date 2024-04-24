@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -27,7 +28,6 @@
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/webrtc_audio_module.h"
-#include "third_party/abseil-cpp/absl/strings/string_view.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 #include "third_party/webrtc/api/audio_codecs/audio_decoder_factory_template.h"
 #include "third_party/webrtc/api/audio_codecs/audio_encoder_factory_template.h"
@@ -249,7 +249,7 @@ class RtcEventLogOutput : public webrtc::RtcEventLogOutput {
 
   // webrtc::RtcEventLogOutput interface
   bool IsActive() const override { return true; }
-  bool Write(absl::string_view output) override {
+  bool Write(std::string_view output) override {
     event_log_data_->Write(output);
     return true;
   }

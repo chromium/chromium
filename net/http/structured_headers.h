@@ -59,7 +59,7 @@ inline std::optional<std::string> SerializeDictionary(const Dictionary& value) {
   return quiche::structured_headers::SerializeDictionary(value);
 }
 
-inline absl::string_view ItemTypeToString(
+inline std::string_view ItemTypeToString(
     net::structured_headers::Item::ItemType type) {
   return quiche::structured_headers::ItemTypeToString(type);
 }

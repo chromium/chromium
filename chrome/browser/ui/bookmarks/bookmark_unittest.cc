@@ -103,8 +103,7 @@ TEST_F(BookmarkTest, NoTabsInGroups) {
   chrome::GetURLsAndFoldersForTabEntries(&(details.bookmark_data.children),
                                          tab_entries, groups_by_index);
 
-  EXPECT_EQ(details.bookmark_data.children.size(),
-            absl::string_view::size_type(6));
+  EXPECT_EQ(details.bookmark_data.children.size(), 6u);
   for (auto child : details.bookmark_data.children) {
     EXPECT_EQ(child.url.has_value(), true);
   }
@@ -128,11 +127,9 @@ TEST_F(BookmarkTest, AllTabsInOneGroup) {
   chrome::GetURLsAndFoldersForTabEntries(&(details.bookmark_data.children),
                                          tab_entries, groups_by_index);
 
-  EXPECT_EQ(details.bookmark_data.children.size(),
-            absl::string_view::size_type(1));
+  EXPECT_EQ(details.bookmark_data.children.size(), 1u);
   EXPECT_EQ(details.bookmark_data.children.begin()->url.has_value(), false);
-  EXPECT_EQ(details.bookmark_data.children.begin()->children.size(),
-            absl::string_view::size_type(6));
+  EXPECT_EQ(details.bookmark_data.children.begin()->children.size(), 6u);
 }
 
 TEST_F(BookmarkTest, AllTabsInMultipleGroups) {
@@ -153,11 +150,10 @@ TEST_F(BookmarkTest, AllTabsInMultipleGroups) {
   chrome::GetURLsAndFoldersForTabEntries(&(details.bookmark_data.children),
                                          tab_entries, groups_by_index);
 
-  EXPECT_EQ(details.bookmark_data.children.size(),
-            absl::string_view::size_type(6));
+  EXPECT_EQ(details.bookmark_data.children.size(), 6u);
   for (auto child : details.bookmark_data.children) {
     EXPECT_EQ(child.url.has_value(), false);
-    EXPECT_EQ(child.children.size(), absl::string_view::size_type(1));
+    EXPECT_EQ(child.children.size(), 1u);
   }
 }
 
@@ -181,13 +177,12 @@ TEST_F(BookmarkTest, SomeTabsInOneGroup) {
   chrome::GetURLsAndFoldersForTabEntries(&(details.bookmark_data.children),
                                          tab_entries, groups_by_index);
 
-  EXPECT_EQ(details.bookmark_data.children.size(),
-            absl::string_view::size_type(4));
+  EXPECT_EQ(details.bookmark_data.children.size(), 4u);
   for (size_t i = 0; i < details.bookmark_data.children.size(); i++) {
     auto child = details.bookmark_data.children.at(i);
     if (i == 1) {
       EXPECT_EQ(child.url.has_value(), false);
-      EXPECT_EQ(child.children.size(), absl::string_view::size_type(3));
+      EXPECT_EQ(child.children.size(), 3u);
     } else {
       EXPECT_EQ(child.url.has_value(), true);
     }
@@ -215,13 +210,12 @@ TEST_F(BookmarkTest, SomeTabsInMultipleGroups) {
   chrome::GetURLsAndFoldersForTabEntries(&(details.bookmark_data.children),
                                          tab_entries, groups_by_index);
 
-  EXPECT_EQ(details.bookmark_data.children.size(),
-            absl::string_view::size_type(6));
+  EXPECT_EQ(details.bookmark_data.children.size(), 6u);
   for (size_t i = 0; i < details.bookmark_data.children.size(); i++) {
     auto child = details.bookmark_data.children.at(i);
     if (i % 2 == 0) {
       EXPECT_EQ(child.url.has_value(), false);
-      EXPECT_EQ(child.children.size(), absl::string_view::size_type(1));
+      EXPECT_EQ(child.children.size(), 1u);
     } else {
       EXPECT_EQ(child.url.has_value(), true);
     }

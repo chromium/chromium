@@ -6,12 +6,12 @@
 
 #include <algorithm>
 #include <map>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/transport_context.h"
-#include "third_party/abseil-cpp/absl/strings/string_view.h"
 
 namespace remoting::protocol {
 
@@ -54,10 +54,10 @@ PortAllocator::PortAllocator(
 PortAllocator::~PortAllocator() = default;
 
 cricket::PortAllocatorSession* PortAllocator::CreateSessionInternal(
-    absl::string_view content_name,
+    std::string_view content_name,
     int component,
-    absl::string_view ice_username_fragment,
-    absl::string_view ice_password) {
+    std::string_view ice_username_fragment,
+    std::string_view ice_password) {
   return new PortAllocatorSession(this, std::string(content_name), component,
                                   std::string(ice_username_fragment),
                                   std::string(ice_password));

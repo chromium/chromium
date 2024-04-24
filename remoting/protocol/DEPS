@@ -7,9 +7,7 @@ include_rules = [
   "+media/video",
   "+remoting/codec",
   "+remoting/signaling",
-  # absl::string_view is used only to interface with third-party WebRTC code.
-  "+third_party/abseil-cpp/absl/strings/string_view.h",
-  "+third_party/boringssl",
+  "+third_party/boringssl/src/include/openssl",
   "+third_party/grpc",
   "+third_party/libjingle_xmpp/xmpp",
   "+third_party/protobuf/src",

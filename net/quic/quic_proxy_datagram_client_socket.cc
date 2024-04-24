@@ -148,7 +148,7 @@ int QuicProxyDatagramClientSocket::SetSendBufferSize(int32_t size) {
 
 void QuicProxyDatagramClientSocket::OnHttp3Datagram(
     quic::QuicStreamId stream_id,
-    absl::string_view payload) {
+    std::string_view payload) {
   DCHECK_EQ(stream_id, stream_handle_->id())
       << "Received datagram for unexpected stream.";
 
@@ -164,7 +164,7 @@ void QuicProxyDatagramClientSocket::OnHttp3Datagram(
                   << context_id;
     return;
   }
-  absl::string_view http_payload = reader.ReadRemainingPayload();
+  std::string_view http_payload = reader.ReadRemainingPayload();
 
   // If there's a read callback, process the payload immediately.
   if (read_callback_) {
@@ -315,7 +315,7 @@ int QuicProxyDatagramClientSocket::Write(
   net_log_.AddByteTransferEvent(NetLogEventType::SOCKET_BYTES_SENT, buf_len,
                                 buf->data());
 
-  absl::string_view packet(buf->data(), buf_len);
+  std::string_view packet(buf->data(), buf_len);
   int rv = stream_handle_->WriteConnectUdpPayload(packet);
   if (rv == OK) {
     return buf_len;

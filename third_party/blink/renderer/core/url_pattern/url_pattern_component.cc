@@ -197,7 +197,7 @@ Component* Component::Compile(v8::Isolate* isolate,
   // USVString webidl argument.
   StringUTF8Adaptor utf8(final_pattern);
   auto parse_result = liburlpattern::Parse(
-      absl::string_view(utf8.data(), utf8.size()),
+      utf8.AsStringView(),
       GetEncodeCallback(utf8.AsStringView(), type, protocol_component),
       options);
   if (!parse_result.ok()) {
@@ -350,14 +350,13 @@ bool Component::Match(StringView input,
   }
 
   // There is no regexp, so directly match against the pattern.
-  std::vector<std::pair<absl::string_view, std::optional<absl::string_view>>>
+  std::vector<std::pair<std::string_view, std::optional<std::string_view>>>
       pattern_group_list;
   // Lossy UTF8 conversion is fine given the input has come through a
   // USVString webidl argument.
   StringUTF8Adaptor utf8(input);
-  bool result =
-      pattern_.DirectMatch(absl::string_view(utf8.data(), utf8.size()),
-                           group_list ? &pattern_group_list : nullptr);
+  bool result = pattern_.DirectMatch(
+      utf8.AsStringView(), group_list ? &pattern_group_list : nullptr);
   if (group_list) {
     group_list->ReserveInitialCapacity(
         base::checked_cast<wtf_size_t>(pattern_group_list.size()));
