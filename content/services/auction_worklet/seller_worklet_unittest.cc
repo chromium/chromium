@@ -5288,6 +5288,17 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       /*expected_data_version=*/std::nullopt,
       /*expected_debug_loss_report_url=*/std::nullopt, GURL("https://win.url"));
 
+  // forDebuggingOnly binding errors are collected by seller worklets.
+  RunScoreAdWithJavascriptExpectingResult(
+      CreateScoreAdScript("1", R"(forDebuggingOnly.reportAdAuctionLoss(null))"),
+      0,
+      {"https://url.test/:4 Uncaught TypeError: "
+       "reportAdAuctionLoss must be passed a valid HTTPS url."},
+      mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt);
+
   // There should be no debugging report URLs when scoreAd() returns invalid
   // value type.
   RunScoreAdWithJavascriptExpectingResult(
@@ -5304,7 +5315,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       /*expected_debug_win_report_url=*/std::nullopt);
 }
 
-// Debugging loss/win report URLs should be nullopt if scoreAd() pareamters are
+// Debugging loss/win report URLs should be nullopt if scoreAd() parameters are
 // invalid.
 TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyReportsInvalidScoreAdParameter) {
@@ -5316,7 +5327,10 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
           "1",
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
             forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
-      0);
+      0, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt);
   // Setting it back to default value to avoid affecting following tests.
   auction_ad_config_non_shared_params_.auction_signals =
       blink::AuctionConfig::MaybePromiseJson::FromValue(
@@ -5330,100 +5344,6 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
           R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
             forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
       0);
-}
-
-TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
-       ForDebuggingOnlyReportsInvalidParameter) {
-  RunScoreAdWithJavascriptExpectingResult(
-      CreateScoreAdScript("1", R"(forDebuggingOnly.reportAdAuctionLoss(null))"),
-      0,
-      {"https://url.test/:4 Uncaught TypeError: "
-       "reportAdAuctionLoss must be passed a valid HTTPS url."});
-
-  RunScoreAdWithJavascriptExpectingResult(
-      CreateScoreAdScript("1", R"(forDebuggingOnly.reportAdAuctionWin([5]))"),
-      0,
-      {"https://url.test/:4 Uncaught TypeError: "
-       "reportAdAuctionWin must be passed a valid HTTPS url."});
-
-  std::vector<std::string> non_https_urls = {"http://report.url",
-                                             "file:///foo/", "Not a URL"};
-  for (const auto& url : non_https_urls) {
-    RunScoreAdWithJavascriptExpectingResult(
-        CreateScoreAdScript(
-            "1",
-            base::StringPrintf(R"(forDebuggingOnly.reportAdAuctionLoss("%s"))",
-                               url.c_str())),
-        0,
-        {"https://url.test/:4 Uncaught TypeError: "
-         "reportAdAuctionLoss must be passed a valid HTTPS url."});
-
-    RunScoreAdWithJavascriptExpectingResult(
-        CreateScoreAdScript(
-            "1",
-            base::StringPrintf(R"(forDebuggingOnly.reportAdAuctionWin("%s"))",
-                               url.c_str())),
-        0,
-        {"https://url.test/:4 Uncaught TypeError: "
-         "reportAdAuctionWin must be passed a valid HTTPS url."});
-  }
-
-  // No message if caught, but still no debug report URLs.
-  RunScoreAdWithJavascriptExpectingResult(
-      CreateScoreAdScript(
-          "1",
-          R"(try {forDebuggingOnly.reportAdAuctionLoss("http://loss.url")}
-            catch (e) {})"),
-      1, /*expected_errors=*/{});
-}
-
-TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
-       ForDebuggingOnlyReportsMultiCallsAllowed) {
-  RunScoreAdWithJavascriptExpectingResult(
-      CreateScoreAdScript(
-          "1",
-          R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
-            forDebuggingOnly.reportAdAuctionLoss("https://loss.url2"))"),
-      1, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/std::nullopt,
-      /*expected_debug_loss_report_url=*/GURL("https://loss.url2"),
-      /*expected_debug_win_report_url=*/std::nullopt);
-
-  // Test that the first URL is preserved when the second call throws.
-  RunScoreAdWithJavascriptExpectingResult(
-      CreateScoreAdScript(
-          "1",
-          R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
-             try {
-               forDebuggingOnly.reportAdAuctionLoss("http://invalidloss.url");
-             } catch (e) {})"),
-      1, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/std::nullopt,
-      /*expected_debug_loss_report_url=*/GURL("https://loss.url"),
-      /*expected_debug_win_report_url=*/std::nullopt);
-
-  RunScoreAdWithJavascriptExpectingResult(
-      CreateScoreAdScript(
-          "1",
-          R"(forDebuggingOnly.reportAdAuctionWin("https://win.url");
-            forDebuggingOnly.reportAdAuctionWin("https://win.url2"))"),
-      1, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/std::nullopt,
-      /*expected_debug_loss_report_url=*/std::nullopt,
-      /*expected_debug_win_report_url=*/GURL("https://win.url2"));
-
-  // Test that the first URL is preserved when the second call throws.
-  RunScoreAdWithJavascriptExpectingResult(
-      CreateScoreAdScript(
-          "1",
-          R"(forDebuggingOnly.reportAdAuctionWin("https://win.url");
-             try {
-              forDebuggingOnly.reportAdAuctionWin("http://invalidwin.url");
-             } catch (e) {})"),
-      1, /*expected_errors=*/{}, mojom::ComponentAuctionModifiedBidParamsPtr(),
-      /*expected_data_version=*/std::nullopt,
-      /*expected_debug_loss_report_url=*/std::nullopt,
-      /*expected_debug_win_report_url=*/GURL("https://win.url"));
 }
 
 // Loss report URLs before seller script times out should be kept.

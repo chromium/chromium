@@ -332,10 +332,32 @@ TEST_F(ContextRecyclerTest, ForDebuggingOnlyBindings) {
       blink::features::kBiddingAndScoringDebugReportingAPI);
 
   const char kScript[] = R"(
-    function test(suffix) {
-      forDebuggingOnly.reportAdAuctionLoss('https://example2.test/loss' + suffix);
-      forDebuggingOnly.reportAdAuctionWin('https://example2.test/win' + suffix);
+    function test() {
+      forDebuggingOnly.reportAdAuctionLoss('https://example2.test/loss');
+      forDebuggingOnly.reportAdAuctionWin('https://example2.test/win');
     }
+
+    function testMultiCalls() {
+      forDebuggingOnly.reportAdAuctionLoss('https://example2.test/loss1');
+      forDebuggingOnly.reportAdAuctionLoss('https://example2.test/loss2');
+      forDebuggingOnly.reportAdAuctionWin('https://example2.test/win1');
+      forDebuggingOnly.reportAdAuctionWin('https://example2.test/win2');
+    }
+
+    function testErrorCaught() {
+      try {
+        forDebuggingOnly.reportAdAuctionLoss("not-a-url");
+      } catch (e) {}
+    }
+
+    function testValidURLsPreserved() {
+      forDebuggingOnly.reportAdAuctionLoss('https://example2.test/loss');
+      forDebuggingOnly.reportAdAuctionWin('https://example2.test/win');
+      forDebuggingOnly.reportAdAuctionLoss("not-a-url");
+      forDebuggingOnly.reportAdAuctionWin("not-a-url");
+    }
+
+    function doNothing() {}
   )";
 
   v8::Local<v8::UnboundScript> script = Compile(kScript);
@@ -350,29 +372,204 @@ TEST_F(ContextRecyclerTest, ForDebuggingOnlyBindings) {
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
-    Run(scope, script, "test", error_msgs,
-        gin::ConvertToV8(helper_->isolate(), 1));
+    Run(scope, script, "test", error_msgs);
+
     EXPECT_THAT(error_msgs, ElementsAre());
     EXPECT_EQ(
-        GURL("https://example2.test/loss1"),
+        GURL("https://example2.test/loss"),
         context_recycler.for_debugging_only_bindings()->TakeLossReportUrl());
     EXPECT_EQ(
-        GURL("https://example2.test/win1"),
+        GURL("https://example2.test/win"),
         context_recycler.for_debugging_only_bindings()->TakeWinReportUrl());
+  }
+
+  // Should already be cleared between executions.
+  EXPECT_FALSE(context_recycler.for_debugging_only_bindings()
+                   ->TakeLossReportUrl()
+                   .has_value());
+  EXPECT_FALSE(context_recycler.for_debugging_only_bindings()
+                   ->TakeWinReportUrl()
+                   .has_value());
+
+  // Can be called multiple times, and the last call's argument is used.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "testMultiCalls", error_msgs);
+
+    EXPECT_THAT(error_msgs, ElementsAre());
+    EXPECT_EQ(
+        GURL("https://example2.test/loss2"),
+        context_recycler.for_debugging_only_bindings()->TakeLossReportUrl());
+    EXPECT_EQ(
+        GURL("https://example2.test/win2"),
+        context_recycler.for_debugging_only_bindings()->TakeWinReportUrl());
+  }
+
+  // Should already be cleared between executions.
+  EXPECT_FALSE(context_recycler.for_debugging_only_bindings()
+                   ->TakeLossReportUrl()
+                   .has_value());
+  EXPECT_FALSE(context_recycler.for_debugging_only_bindings()
+                   ->TakeWinReportUrl()
+                   .has_value());
+
+  // No message if caught, but still no debug report URLs.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "testErrorCaught", error_msgs);
+
+    EXPECT_THAT(error_msgs, ElementsAre());
+    EXPECT_FALSE(context_recycler.for_debugging_only_bindings()
+                     ->TakeLossReportUrl()
+                     .has_value());
+  }
+
+  // Valid debug report URLs before an exception happens are preserved.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "testValidURLsPreserved", error_msgs);
+
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:23 Uncaught TypeError: "
+                    "reportAdAuctionLoss must be passed a valid HTTPS url."));
+    EXPECT_EQ(
+        GURL("https://example2.test/loss"),
+        context_recycler.for_debugging_only_bindings()->TakeLossReportUrl());
+    EXPECT_EQ(
+        GURL("https://example2.test/win"),
+        context_recycler.for_debugging_only_bindings()->TakeWinReportUrl());
+  }
+
+  // No debug report URLs when APIs are not called.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "doNothing", error_msgs);
+
+    EXPECT_THAT(error_msgs, ElementsAre());
+    EXPECT_FALSE(context_recycler.for_debugging_only_bindings()
+                     ->TakeLossReportUrl()
+                     .has_value());
+    EXPECT_FALSE(context_recycler.for_debugging_only_bindings()
+                     ->TakeWinReportUrl()
+                     .has_value());
+  }
+}
+
+// Exercise ForDebuggingOnlyBindings, and test invalid arguments.
+TEST_F(ContextRecyclerTest, ForDebuggingOnlyBindingsInvalidArguments) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kBiddingAndScoringDebugReportingAPI);
+
+  // reportAdAuctionWin() and reportAdAuctionLoss() have the same code path
+  // handling their arguments, so will randomly use one of the two APIs to test
+  // different cases.
+  const char kScript[] = R"(
+    function testNoArgument() {
+      forDebuggingOnly.reportAdAuctionWin();
+    }
+
+    function testNonConvertibleToString() {
+      forDebuggingOnly.reportAdAuctionLoss({toString:42});
+    }
+
+    function testNotValidHttpsUrl(arg) {
+      forDebuggingOnly.reportAdAuctionLoss(arg);
+    }
+  )";
+
+  v8::Local<v8::UnboundScript> script = Compile(kScript);
+  ASSERT_FALSE(script.IsEmpty());
+
+  ContextRecycler context_recycler(helper_.get());
+  {
+    ContextRecyclerScope scope(context_recycler);  // Initialize context
+    context_recycler.AddForDebuggingOnlyBindings();
+  }
+
+  // No argument.
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "testNoArgument", error_msgs);
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre(
+            "https://example.test/script.js:3 Uncaught TypeError: "
+            "reportAdAuctionWin(): at least 1 argument(s) are required."));
+    EXPECT_FALSE(context_recycler.for_debugging_only_bindings()
+                     ->TakeWinReportUrl()
+                     .has_value());
   }
 
   {
     ContextRecyclerScope scope(context_recycler);
     std::vector<std::string> error_msgs;
-    Run(scope, script, "test", error_msgs,
-        gin::ConvertToV8(helper_->isolate(), 3));
-    EXPECT_THAT(error_msgs, ElementsAre());
-    EXPECT_EQ(
-        GURL("https://example2.test/loss3"),
-        context_recycler.for_debugging_only_bindings()->TakeLossReportUrl());
-    EXPECT_EQ(
-        GURL("https://example2.test/win3"),
-        context_recycler.for_debugging_only_bindings()->TakeWinReportUrl());
+    Run(scope, script, "testNonConvertibleToString", error_msgs);
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:7 Uncaught TypeError: "
+                    "Cannot convert object to primitive value."));
+    EXPECT_FALSE(context_recycler.for_debugging_only_bindings()
+                     ->TakeLossReportUrl()
+                     .has_value());
+  }
+
+  // Not valid HTTPS URL.
+  {
+    std::vector<std::string> non_https_urls = {"http://report.url",
+                                               "file:///foo/", "Not a URL"};
+    for (const auto& url_string : non_https_urls) {
+      ContextRecyclerScope scope(context_recycler);
+      std::vector<std::string> error_msgs;
+      Run(scope, script, "testNotValidHttpsUrl", error_msgs,
+          gin::ConvertToV8(helper_->isolate(), url_string));
+      EXPECT_THAT(
+          error_msgs,
+          ElementsAre("https://example.test/script.js:11 Uncaught TypeError: "
+                      "reportAdAuctionLoss must be passed a valid HTTPS url."));
+      EXPECT_FALSE(context_recycler.for_debugging_only_bindings()
+                       ->TakeLossReportUrl()
+                       .has_value());
+    }
+  }
+
+  // Null
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    Run(scope, script, "testNotValidHttpsUrl", error_msgs,
+        v8::Null(helper_->isolate()));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:11 Uncaught TypeError: "
+                    "reportAdAuctionLoss must be passed a valid HTTPS url."));
+    EXPECT_FALSE(context_recycler.for_debugging_only_bindings()
+                     ->TakeLossReportUrl()
+                     .has_value());
+  }
+
+  // Array
+  {
+    ContextRecyclerScope scope(context_recycler);
+    std::vector<std::string> error_msgs;
+    v8::LocalVector<v8::Value> arg(helper_->isolate());
+    arg.push_back(gin::ConvertToV8(helper_->isolate(), 5));
+
+    Run(scope, script, "testNotValidHttpsUrl", error_msgs,
+        gin::ConvertToV8(helper_->isolate(), arg));
+    EXPECT_THAT(
+        error_msgs,
+        ElementsAre("https://example.test/script.js:11 Uncaught TypeError: "
+                    "reportAdAuctionLoss must be passed a valid HTTPS url."));
+    EXPECT_FALSE(context_recycler.for_debugging_only_bindings()
+                     ->TakeLossReportUrl()
+                     .has_value());
   }
 }
 

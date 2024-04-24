@@ -8912,6 +8912,17 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       /*expected_data_version=*/std::nullopt,
       /*expected_errors=*/{}, /*expected_debug_loss_report_url=*/std::nullopt,
       GURL("https://win.url"));
+
+  // forDebuggingOnly binding errors are collected by bidder worklets.
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScriptWithDebuggingReport(
+          R"(forDebuggingOnly.reportAdAuctionLoss())"),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      {"https://url.test/:5 Uncaught TypeError: "
+       "reportAdAuctionLoss(): at least 1 argument(s) are required."},
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt);
 }
 
 // Test the case the debugging report URLs are exactly match and are just above
@@ -9018,127 +9029,6 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
 }
 
 TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
-       ForDebuggingOnlyReportsInvalidParameter) {
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateBasicGenerateBidScriptWithDebuggingReport(
-          R"(forDebuggingOnly.reportAdAuctionLoss())"),
-      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
-      /*expected_data_version=*/std::nullopt,
-      {"https://url.test/:5 Uncaught TypeError: "
-       "reportAdAuctionLoss(): at least 1 argument(s) are required."});
-
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateBasicGenerateBidScriptWithDebuggingReport(
-          R"(forDebuggingOnly.reportAdAuctionWin())"),
-      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
-      /*expected_data_version=*/std::nullopt,
-      {"https://url.test/:5 Uncaught TypeError: "
-       "reportAdAuctionWin(): at least 1 argument(s) are required."});
-
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateBasicGenerateBidScriptWithDebuggingReport(
-          R"(forDebuggingOnly.reportAdAuctionLoss({toString:42}))"),
-      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
-      /*expected_data_version=*/std::nullopt,
-      {"https://url.test/:5 Uncaught TypeError: Cannot convert object to "
-       "primitive value."});
-
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateBasicGenerateBidScriptWithDebuggingReport(
-          R"(forDebuggingOnly.reportAdAuctionWin({toString:42}))"),
-      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
-      /*expected_data_version=*/std::nullopt,
-      {"https://url.test/:5 Uncaught TypeError: Cannot convert object to "
-       "primitive value."});
-
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateBasicGenerateBidScriptWithDebuggingReport(
-          R"(forDebuggingOnly.reportAdAuctionLoss(null))"),
-      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
-      /*expected_data_version=*/std::nullopt,
-      {"https://url.test/:5 Uncaught TypeError: "
-       "reportAdAuctionLoss must be passed a valid HTTPS url."});
-
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateBasicGenerateBidScriptWithDebuggingReport(
-          R"(forDebuggingOnly.reportAdAuctionWin([5]))"),
-      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
-      /*expected_data_version=*/std::nullopt,
-      {"https://url.test/:5 Uncaught TypeError: "
-       "reportAdAuctionWin must be passed a valid HTTPS url."});
-
-  std::vector<std::string> non_https_urls = {"http://report.url",
-                                             "file:///foo/", "Not a URL"};
-  for (const auto& url : non_https_urls) {
-    RunGenerateBidWithJavascriptExpectingResult(
-        CreateBasicGenerateBidScriptWithDebuggingReport(base::StringPrintf(
-            R"(forDebuggingOnly.reportAdAuctionLoss("%s"))", url.c_str())),
-        /*expected_bids=*/mojom::BidderWorkletBidPtr(),
-        /*expected_data_version=*/std::nullopt,
-        {"https://url.test/:5 Uncaught TypeError: "
-         "reportAdAuctionLoss must be passed a valid HTTPS url."});
-
-    RunGenerateBidWithJavascriptExpectingResult(
-        CreateBasicGenerateBidScriptWithDebuggingReport(base::StringPrintf(
-            R"(forDebuggingOnly.reportAdAuctionWin("%s"))", url.c_str())),
-        /*expected_bids=*/mojom::BidderWorkletBidPtr(),
-        /*expected_data_version=*/std::nullopt,
-        {"https://url.test/:5 Uncaught TypeError: "
-         "reportAdAuctionWin must be passed a valid HTTPS url."});
-  }
-
-  // No message if caught, but still no debug report URLs.
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateBasicGenerateBidScriptWithDebuggingReport(
-          R"(try {forDebuggingOnly.reportAdAuctionLoss("http://loss.url")}
-            catch (e) {})"),
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[\"ad\"]", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt, base::TimeDelta()),
-      /*expected_data_version=*/std::nullopt,
-      /*expected_errors=*/{}, /*expected_debug_loss_report_url=*/std::nullopt,
-      /*expected_debug_win_report_url=*/std::nullopt);
-}
-
-TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
-       ForDebuggingOnlyReportsMultiCallsAllowed) {
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateBasicGenerateBidScriptWithDebuggingReport(
-          R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
-            forDebuggingOnly.reportAdAuctionLoss("https://loss.url2"))"),
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[\"ad\"]", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt, base::TimeDelta()),
-      /*expected_data_version=*/std::nullopt,
-      /*expected_errors=*/{}, GURL("https://loss.url2"),
-      /*expected_debug_win_report_url=*/std::nullopt);
-
-  RunGenerateBidWithJavascriptExpectingResult(
-      CreateBasicGenerateBidScriptWithDebuggingReport(
-          R"(forDebuggingOnly.reportAdAuctionWin("https://win.url");
-            forDebuggingOnly.reportAdAuctionWin("https://win.url2"))"),
-      mojom::BidderWorkletBid::New(
-          auction_worklet::mojom::BidRole::kUnenforcedKAnon, "[\"ad\"]", 1,
-          /*bid_currency=*/std::nullopt,
-          /*ad_cost=*/std::nullopt,
-          blink::AdDescriptor(GURL("https://response.test/")),
-          /*ad_component_descriptors=*/std::nullopt,
-          /*modeling_signals=*/std::nullopt, base::TimeDelta()),
-      /*expected_data_version=*/std::nullopt,
-      /*expected_errors=*/{},
-      /*expected_debug_loss_report_url=*/std::nullopt,
-      GURL("https://win.url2"));
-}
-
-TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyArgumentTimeout) {
   RunGenerateBidWithJavascriptExpectingResult(
       CreateBasicGenerateBidScriptWithDebuggingReport(
@@ -9157,6 +9047,22 @@ TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
       /*expected_bids=*/mojom::BidderWorkletBidPtr(),
       /*expected_data_version=*/std::nullopt,
       {"https://url.test/ execution of `generateBid` timed out."});
+}
+
+// Debugging loss/win report URLs should be nullopt if generateBid() parameters
+// are invalid.
+TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
+       ForDebuggingOnlyReportsInvalidGenerateBidParameter) {
+  auction_signals_ = "invalid json";
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScriptWithDebuggingReport(
+          R"(forDebuggingOnly.reportAdAuctionLoss("https://loss.url");
+            forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
+      /*expected_bids=*/mojom::BidderWorkletBidPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_errors=*/{},
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt);
 }
 
 TEST_F(BidderWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
