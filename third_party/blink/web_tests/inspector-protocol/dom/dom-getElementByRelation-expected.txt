@@ -1,0 +1,10 @@
+Tests DOM.getElementByRelation command.
+Node Id from query selector and getElementByRelation should be the same:
+true
+non-existent target id should be zero: 
+0
+non-existent target id should be zero: 
+0
+Node Id from query selector and getElementByRelation should be the same:
+true
+
