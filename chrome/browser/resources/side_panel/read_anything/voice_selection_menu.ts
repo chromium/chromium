@@ -21,6 +21,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import type {LanguageMenuElement} from './language_menu.js';
 import {isNatural} from './voice_language_util.js';
+import {areVoicesEqual} from './voice_language_util.js';
 import {getTemplate} from './voice_selection_menu.html.js';
 
 export interface VoiceSelectionMenuElement {
@@ -128,8 +129,8 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
             title: voice.name,
             voice,
             id: this.stringToHtmlTestId_(voice.name),
-            selected: voicesAreEqual(selectedVoice, voice),
-            previewPlaying: voicesAreEqual(previewVoicePlaying, voice),
+            selected: areVoicesEqual(selectedVoice, voice),
+            previewPlaying: areVoicesEqual(previewVoicePlaying, voice),
           };
 
           const lang =
@@ -284,17 +285,6 @@ function voiceQualityRankComparator(
 
   // voice2 is a Natural voice and voice1 is not
   return 1;
-}
-
-function voicesAreEqual(
-    voice1: SpeechSynthesisVoice|null,
-    voice2: SpeechSynthesisVoice|null): boolean {
-  if (!voice1 || !voice2) {
-    return false;
-  }
-  return voice1.default === voice2.default && voice1.lang === voice2.lang &&
-      voice1.localService === voice2.localService &&
-      voice1.name === voice2.name && voice1.voiceURI === voice2.voiceURI;
 }
 
 declare global {

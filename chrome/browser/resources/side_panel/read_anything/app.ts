@@ -20,7 +20,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './app.html.js';
 import {validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import {convertLangOrLocaleForVoicePackManager, createInitialListOfEnabledLanguages, isNatural, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from './voice_language_util.js';
+import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, createInitialListOfEnabledLanguages, isNatural, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -846,6 +846,53 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
                                      voicesForLanguage[0];
   }
 
+  // Attempt to get a new voice using the current language. In theory, the
+  // previously unavailable voice should no longer be showing up in
+  // getVoices, but we ensure that the alternative voice does not match
+  // the previously unavailable voice as an extra measure. This method should
+  // only be called when speech synthesis returns an error.
+  getAlternativeVoice(unavailableVoice: SpeechSynthesisVoice|
+                      null): SpeechSynthesisVoice|null {
+    const newVoice = this.defaultVoice();
+
+    // If the default voice is not the same as the original, unavailable voice,
+    // use that, only if the new voice is also defined.
+    if (newVoice !== undefined && !areVoicesEqual(newVoice, unavailableVoice)) {
+      return newVoice;
+    }
+
+    // If the default voice won't work, try another voice in that language.
+    const baseLang = chrome.readingMode.baseLanguageForSpeech;
+    const voicesForLanguage =
+        this.getVoices().filter(voice => voice.lang.startsWith(baseLang));
+
+    // TODO(b/40927698): It's possible we can get stuck in an infinite loop
+    // of jumping back and forth between two or more invalid voices, if
+    // multiple voices are invalid. Investigate if we need to do more to handle
+    // this case.
+
+    // TODO(b/336596926): If there still aren't voices for the language,
+    // attempt to fallback to the browser language, if we're using the page
+    // language.
+    if (!voicesForLanguage || (voicesForLanguage.length === 0)) {
+      return null;
+    }
+
+    let voiceIndex = 0;
+    while (voiceIndex < voicesForLanguage.length) {
+      if (!areVoicesEqual(voicesForLanguage[voiceIndex], unavailableVoice)) {
+        // Return another voice in the same language, ensuring we're not
+        // returning the previously unavailable voice for extra safety.
+        return voicesForLanguage[voiceIndex];
+      }
+      voiceIndex++;
+    }
+
+    // TODO(b/336596926): Handle language updates if there aren't any available
+    // voices in the current language other than the unavailable voice.
+    return null;
+  }
+
   private getVoices(refresh: boolean = false): SpeechSynthesisVoice[] {
     if (!this.availableVoices || refresh) {
       let availableVoices = this.synth.getVoices();
@@ -1218,6 +1265,14 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         // The voice designated in SpeechSynthesisUtterance voice attribute
         // is not available.
         chrome.readingMode.logSpeechError(error.error);
+
+        let newVoice = this.selectedVoice ? this.selectedVoice : null;
+        this.selectedVoice = undefined;
+        newVoice = this.getAlternativeVoice(newVoice);
+
+        if (newVoice) {
+          this.selectedVoice = newVoice;
+        }
       }
 
       // When we hit an error, stop speech to clear all utterances, update the

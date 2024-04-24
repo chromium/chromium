@@ -171,3 +171,14 @@ export const PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES = new Set([
   'km',    'ko', 'nb',  'ne', 'nl', 'pl',    'pt-br', 'pt-pt', 'si',
   'sk',    'sv', 'th',  'tr', 'uk', 'vi',    'yue',
 ]);
+
+export function areVoicesEqual(
+    voice1: SpeechSynthesisVoice|null,
+    voice2: SpeechSynthesisVoice|null): boolean {
+  if (!voice1 || !voice2) {
+    return false;
+  }
+  return voice1.default === voice2.default && voice1.lang === voice2.lang &&
+      voice1.localService === voice2.localService &&
+      voice1.name === voice2.name && voice1.voiceURI === voice2.voiceURI;
+}

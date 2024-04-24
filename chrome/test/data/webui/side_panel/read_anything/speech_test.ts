@@ -286,6 +286,73 @@ suite('Speech', () => {
       assertFalse(speechSynthesis.paused);
     });
 
+    suite('voice change to unavailable voice', () => {
+      setup(() => {
+        speechSynthesis.triggerErrorEventOnNextSpeak('voice-unavailable');
+        chrome.readingMode.onVoiceChange = () => {};
+      });
+
+      test('cancels and selects default voice', () => {
+        emitEvent(app, 'select-voice', {
+          detail: {
+            selectedVoice: {lang: 'en', name: 'Lisie'} as SpeechSynthesisVoice,
+          },
+        });
+
+        assertFalse(speechSynthesis.speaking);
+        assertTrue(speechSynthesis.canceled);
+        assertFalse(speechSynthesis.paused);
+        assertEquals(
+            app.getSpeechSynthesisVoice()?.name,
+            speechSynthesis.getVoices()[0]?.name);
+      });
+
+      test(
+          'with voice still in getVoices() cancels and selects another voice',
+          () => {
+            // Updating the language triggers a font update, which is unneeded
+            // for this test.
+            app.$.toolbar.updateFonts = () => {};
+            chrome.readingMode.setLanguageForTesting('en');
+            emitEvent(app, 'select-voice', {
+              detail: {
+                selectedVoice: {lang: 'en', name: 'Lauren', default:true} as
+                    SpeechSynthesisVoice,
+              },
+            });
+
+            assertFalse(speechSynthesis.speaking);
+            assertTrue(speechSynthesis.canceled);
+            assertFalse(speechSynthesis.paused);
+            assertEquals(
+                app.getSpeechSynthesisVoice()?.name,
+                speechSynthesis.getVoices()[1]?.name);
+          });
+
+      test(
+          'continues to select default voice if no voices available in language',
+          () => {
+            // Updating the language triggers a font update, which is unneeded
+            // for this test.
+            app.$.toolbar.updateFonts = () => {};
+            chrome.readingMode.setLanguageForTesting('elvish');
+
+            emitEvent(app, 'select-voice', {
+              detail: {
+                selectedVoice: {lang: 'en', name: 'Lauren'} as
+                    SpeechSynthesisVoice,
+              },
+            });
+
+            assertFalse(speechSynthesis.speaking);
+            assertTrue(speechSynthesis.canceled);
+            assertFalse(speechSynthesis.paused);
+            assertEquals(
+                app.getSpeechSynthesisVoice()?.name,
+                speechSynthesis.getVoices()[0]?.name);
+          });
+    });
+
     suite('and voice preview is played', () => {
       setup(() => {
         emitEvent(app, 'preview-voice', {detail: {previewVoice: null}});
