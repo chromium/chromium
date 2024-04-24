@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -267,7 +268,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   void OnPrintResult(const std::string& callback_id,
                      const base::Value& error);
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   // Called when enterprise policy returns a verdict.
   // Calls FinishHandleDoPrint() if it's allowed or calls OnPrintResult() to
   // report print not allowed.
@@ -279,7 +280,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
 
   // Wrapper for OnHidePreviewDialog() from PrintPreviewUI.
   void OnHidePreviewDialog();
-#endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
   // Whether we have already logged a failed print preview.
   bool reported_failed_preview_ = false;

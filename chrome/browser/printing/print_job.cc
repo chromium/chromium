@@ -20,6 +20,7 @@
 #include "chrome/browser/printing/print_job_manager.h"
 #include "chrome/browser/printing/print_job_worker.h"
 #include "chrome/browser/printing/printer_query.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -290,7 +291,7 @@ void PrintJob::Cancel() {
   is_canceling_ = false;
 }
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 void PrintJob::CleanupAfterContentAnalysisDenial() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   worker_->CleanupAfterContentAnalysisDenial();

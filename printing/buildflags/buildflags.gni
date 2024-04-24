@@ -41,10 +41,6 @@ declare_args() {
   # based on `enable_print_preview`; this feature could still be appropriate
   # for some build configurations which explicitly disable print preview.
   enable_oop_printing = enable_printing && !is_android && !is_fuchsia
-
-  # Enable snapshotting a page when printing for its content to be analyzed for
-  # sensitive content by enterprise users.
-  enable_print_content_analysis = is_chromeos || is_win || is_linux || is_mac
 }
 
 declare_args() {

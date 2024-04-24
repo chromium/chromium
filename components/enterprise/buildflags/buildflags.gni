@@ -6,7 +6,6 @@ import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
-import("//printing/buildflags/buildflags.gni")
 
 declare_args() {
   # Indicates support for content analysis against a cloud agent for Enterprise
@@ -39,8 +38,3 @@ declare_args() {
   enterprise_content_analysis =
       enterprise_cloud_content_analysis || enterprise_local_content_analysis
 }
-
-# These two flags are equivalent, but `enable_print_content_analysis` still
-# needs to exist separately as it lives under //printing which cannot depend
-# on //components.
-assert(enterprise_content_analysis == enable_print_content_analysis)

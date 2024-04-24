@@ -7166,7 +7166,7 @@ static_library("browser") {
     }
   }
 
-  if (enable_print_content_analysis) {
+  if (enterprise_content_analysis) {
     sources += [
       "enterprise/data_protection/print_utils.cc",
       "enterprise/data_protection/print_utils.h",

@@ -21,6 +21,7 @@
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
@@ -225,7 +226,7 @@ void PrintJobWorker::Cancel() {
   // context we run.
 }
 
-#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 void PrintJobWorker::CleanupAfterContentAnalysisDenial() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DVLOG(1) << "Canceling job due to content analysis";
