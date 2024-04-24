@@ -51,9 +51,6 @@ namespace blink {
 
 namespace {
 
-constexpr char kCannotDeserializeDataErrorMessage[] =
-    "Cannot deserialize data.";
-
 std::optional<ScriptValue> Deserialize(
     v8::Isolate* isolate,
     ExecutionContext* execution_context,
@@ -141,16 +138,14 @@ class SelectURLResolutionSuccessCallback final
     v8::Local<v8::Uint32> v8_result_index;
     if (!v8_value->ToUint32(context).ToLocal(&v8_result_index)) {
       std::move(request_->callback)
-          .Run(/*success=*/false,
-               "Promise did not resolve to an uint32 number.",
+          .Run(/*success=*/false, kSharedStorageReturnValueToIntErrorMessage,
                /*index=*/0);
     } else {
       uint32_t result_index = v8_result_index->Value();
       if (result_index >= request_->urls_size) {
         std::move(request_->callback)
             .Run(/*success=*/false,
-                 "Promise resolved to a number outside the length of the input "
-                 "urls.",
+                 kSharedStorageReturnValueOutOfRangeErrorMessage,
                  /*index=*/0);
       } else {
         std::move(request_->callback)
@@ -406,7 +401,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
       Deserialize(isolate, /*execution_context=*/this, serialized_data);
   if (!data_param) {
     std::move(combined_operation_completion_cb)
-        .Run(/*success=*/false, kCannotDeserializeDataErrorMessage,
+        .Run(/*success=*/false, kSharedStorageCannotDeserializeDataErrorMessage,
              /*index=*/0);
     return;
   }
@@ -424,7 +419,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
 
   if (result.IsNothing()) {
     std::move(combined_operation_completion_cb)
-        .Run(/*success=*/false, "Internal error.",
+        .Run(/*success=*/false, kSharedStorageEmptyScriptResultErrorMessage,
              /*index=*/0);
     return;
   }
@@ -483,7 +478,8 @@ void SharedStorageWorkletGlobalScope::RunOperation(
       Deserialize(isolate, /*execution_context=*/this, serialized_data);
   if (!data_param) {
     std::move(combined_operation_completion_cb)
-        .Run(/*success=*/false, kCannotDeserializeDataErrorMessage);
+        .Run(/*success=*/false,
+             kSharedStorageCannotDeserializeDataErrorMessage);
     return;
   }
 
@@ -499,7 +495,7 @@ void SharedStorageWorkletGlobalScope::RunOperation(
 
   if (result.IsNothing()) {
     std::move(combined_operation_completion_cb)
-        .Run(/*success=*/false, "Internal error.");
+        .Run(/*success=*/false, kSharedStorageEmptyScriptResultErrorMessage);
     return;
   }
 
@@ -655,13 +651,13 @@ bool SharedStorageWorkletGlobalScope::PerformCommonOperationChecks(
     // TODO(http://crbug/1249581): if this operation comes while fetching the
     // module script, we might want to queue the operation to be handled later
     // after addModule completes.
-    error_message = "The module script hasn't been loaded.";
+    error_message = kSharedStorageModuleScriptNotLoadedErrorMessage;
     return false;
   }
 
   auto it = operation_definition_map_.find(operation_name);
   if (it == operation_definition_map_.end()) {
-    error_message = "Cannot find operation name.";
+    error_message = kSharedStorageOperationNotFoundErrorMessage;
     return false;
   }
 
@@ -674,7 +670,7 @@ bool SharedStorageWorkletGlobalScope::PerformCommonOperationChecks(
   TraceWrapperV8Reference<v8::Value> instance =
       operation_definition->GetInstance();
   if (instance.IsEmpty()) {
-    error_message = "Internal error.";
+    error_message = kSharedStorageEmptyOperationDefinitionInstanceErrorMessage;
     return false;
   }
 

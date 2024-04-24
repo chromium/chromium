@@ -58,6 +58,64 @@ using SharedStorageURNMappingResult =
 using OperationResult = storage::SharedStorageManager::OperationResult;
 using GetResult = storage::SharedStorageManager::GetResult;
 
+void LogSharedStorageWorkletErrorFromErrorMessage(
+    bool from_select_url,
+    const std::string& error_message) {
+  if (error_message == blink::kSharedStorageModuleScriptNotLoadedErrorMessage) {
+    LogSharedStorageWorkletError(
+        from_select_url ? blink::SharedStorageWorkletErrorType::
+                              kSelectURLNonWebVisibleModuleScriptNotLoaded
+                        : blink::SharedStorageWorkletErrorType::
+                              kRunNonWebVisibleModuleScriptNotLoaded);
+  } else if (error_message ==
+             blink::kSharedStorageOperationNotFoundErrorMessage) {
+    LogSharedStorageWorkletError(
+        from_select_url ? blink::SharedStorageWorkletErrorType::
+                              kSelectURLNonWebVisibleOperationNotFound
+                        : blink::SharedStorageWorkletErrorType::
+                              kRunNonWebVisibleOperationNotFound);
+  } else if (error_message ==
+             blink::
+                 kSharedStorageEmptyOperationDefinitionInstanceErrorMessage) {
+    LogSharedStorageWorkletError(
+        from_select_url
+            ? blink::SharedStorageWorkletErrorType::
+                  kSelectURLNonWebVisibleEmptyOperationDefinitionInstance
+            : blink::SharedStorageWorkletErrorType::
+                  kRunNonWebVisibleEmptyOperationDefinitionInstance);
+  } else if (error_message ==
+             blink::kSharedStorageCannotDeserializeDataErrorMessage) {
+    LogSharedStorageWorkletError(
+        from_select_url ? blink::SharedStorageWorkletErrorType::
+                              kSelectURLNonWebVisibleCannotDeserializeData
+                        : blink::SharedStorageWorkletErrorType::
+                              kRunNonWebVisibleCannotDeserializeData);
+  } else if (error_message ==
+             blink::kSharedStorageEmptyScriptResultErrorMessage) {
+    LogSharedStorageWorkletError(
+        from_select_url ? blink::SharedStorageWorkletErrorType::
+                              kSelectURLNonWebVisibleEmptyScriptResult
+                        : blink::SharedStorageWorkletErrorType::
+                              kRunNonWebVisibleEmptyScriptResult);
+  } else if (error_message ==
+                 blink::kSharedStorageReturnValueToIntErrorMessage &&
+             from_select_url) {
+    LogSharedStorageWorkletError(blink::SharedStorageWorkletErrorType::
+                                     kSelectURLNonWebVisibleReturnValueToInt);
+  } else if (error_message ==
+                 blink::kSharedStorageReturnValueOutOfRangeErrorMessage &&
+             from_select_url) {
+    LogSharedStorageWorkletError(
+        blink::SharedStorageWorkletErrorType::
+            kSelectURLNonWebVisibleReturnValueOutOfRange);
+  } else {
+    LogSharedStorageWorkletError(
+        from_select_url
+            ? blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisibleOther
+            : blink::SharedStorageWorkletErrorType::kRunNonWebVisibleOther);
+  }
+}
+
 SharedStorageURNMappingResult CreateSharedStorageURNMappingResult(
     StoragePartition* storage_partition,
     BrowserContext* browser_context,
@@ -342,7 +400,8 @@ void SharedStorageWorkletHost::SelectURL(
         "Attempted to execute RunURLSelectionOperationOnWorklet with invalid "
         "URLs array length.");
     LogSharedStorageWorkletError(
-        blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible);
+        blink::SharedStorageWorkletErrorType::
+            kSelectURLNonWebVisibleInvalidURLArrayLength);
     return;
   }
 
@@ -357,7 +416,8 @@ void SharedStorageWorkletHost::SelectURL(
           base::StrCat({"Invalid fenced frame URL '",
                         url_with_metadata->url.possibly_invalid_spec(), "'"}));
       LogSharedStorageWorkletError(
-          blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible);
+          blink::SharedStorageWorkletErrorType::
+              kSelectURLNonWebVisibleInvalidFencedFrameURL);
       return;
     }
 
@@ -371,7 +431,8 @@ void SharedStorageWorkletHost::SelectURL(
                           metadata_pair.second.possibly_invalid_spec(),
                           "' for '", metadata_pair.first, "'"}));
         LogSharedStorageWorkletError(
-            blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible);
+            blink::SharedStorageWorkletErrorType::
+                kSelectURLNonWebVisibleInvalidReportingURL);
         return;
       }
       reporting_metadata.insert(
@@ -386,8 +447,8 @@ void SharedStorageWorkletHost::SelectURL(
       !blink::IsValidPrivateAggregationContextId(
           private_aggregation_config->context_id.value())) {
     receiver_.ReportBadMessage("Invalid context_id.");
-    LogSharedStorageWorkletError(
-        blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible);
+    LogSharedStorageWorkletError(blink::SharedStorageWorkletErrorType::
+                                     kSelectURLNonWebVisibleInvalidContextId);
     return;
   }
 
@@ -395,8 +456,8 @@ void SharedStorageWorkletHost::SelectURL(
     receiver_.ReportBadMessage(
         "Received further operations when previous operation did not include "
         "the option \'keepAlive: true\'.");
-    LogSharedStorageWorkletError(
-        blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible);
+    LogSharedStorageWorkletError(blink::SharedStorageWorkletErrorType::
+                                     kSelectURLNonWebVisibleKeepAliveFalse);
     return;
   }
 
@@ -460,7 +521,11 @@ void SharedStorageWorkletHost::SelectURL(
       // preferences for the worklet origin should not be revealed.
       //
       // TODO(cammie): Right now the metric will be recorded as `kSuccess`. We
-      // might want to record a separate metric for this distorted result.
+      // should record a separate metric for this distorted result using type
+      // `SharedStorageWorkletErrorType
+      // ::kSelectURLNonWebVisibleCrossOriginSharedStorageDisabled` and move
+      // logging of successes to the browser process to prevent counting this as
+      // a success as well.
       FencedFrameConfig config(urn_uuid, GURL());
       std::move(callback).Run(
           /*success=*/true, /*error_message=*/{},
@@ -537,8 +602,8 @@ void SharedStorageWorkletHost::Run(
       !blink::IsValidPrivateAggregationContextId(
           private_aggregation_config->context_id.value())) {
     receiver_.ReportBadMessage("Invalid context_id.");
-    LogSharedStorageWorkletError(
-        blink::SharedStorageWorkletErrorType::kRunNonWebVisible);
+    LogSharedStorageWorkletError(blink::SharedStorageWorkletErrorType::
+                                     kRunNonWebVisibleInvalidContextId);
     return;
   }
 
@@ -547,7 +612,7 @@ void SharedStorageWorkletHost::Run(
         "Received further operations when previous operation did not include "
         "the option \'keepAlive: true\'.");
     LogSharedStorageWorkletError(
-        blink::SharedStorageWorkletErrorType::kRunNonWebVisible);
+        blink::SharedStorageWorkletErrorType::kRunNonWebVisibleKeepAliveFalse);
     return;
   }
 
@@ -568,7 +633,11 @@ void SharedStorageWorkletHost::Run(
       // preferences for the worklet origin should not be revealed.
       //
       // TODO(cammie): Right now the metric will be recorded as `kSuccess`. We
-      // might want to record a separate metric for this distorted result.
+      // should record a separate metric for this distorted result using type
+      // `SharedStorageWorkletErrorType
+      // ::kRunNonWebVisibleCrossOriginSharedStorageDisabled` and move logging
+      // of successes to the browser process to prevent counting this as a
+      // success as well.
       std::move(callback).Run(
           /*success=*/true,
           /*error_message=*/{});
@@ -1022,8 +1091,8 @@ void SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
     bool success,
     const std::string& error_message) {
   if (!success) {
-    LogSharedStorageWorkletError(
-        blink::SharedStorageWorkletErrorType::kRunNonWebVisible);
+    LogSharedStorageWorkletErrorFromErrorMessage(/*from_select_url=*/false,
+                                                 error_message);
     if (document_service_) {
       DCHECK(!IsInKeepAlivePhase());
       devtools_instrumentation::LogWorkletMessage(
@@ -1055,7 +1124,8 @@ void SharedStorageWorkletHost::
     shared_storage_worklet_service_client_.ReportBadMessage(
         "Unexpected index number returned from selectURL().");
     LogSharedStorageWorkletError(
-        blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible);
+        blink::SharedStorageWorkletErrorType::
+            kSelectURLNonWebVisibleUnexpectedIndexReturned);
 
     unresolved_urns_.erase(it);
     DecrementPendingOperationsCount();
@@ -1109,15 +1179,16 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
             blink::mojom::ConsoleMessageLevel::kError,
             "Insufficient budget for selectURL().");
         LogSharedStorageWorkletError(
-            blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible);
+            blink::SharedStorageWorkletErrorType::
+                kSelectURLNonWebVisibleInsufficientBudget);
       } else if (!script_execution_succeeded) {
         devtools_instrumentation::LogWorkletMessage(
             static_cast<RenderFrameHostImpl&>(
                 document_service_->render_frame_host()),
             blink::mojom::ConsoleMessageLevel::kError,
             script_execution_error_message);
-        LogSharedStorageWorkletError(
-            blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible);
+        LogSharedStorageWorkletErrorFromErrorMessage(
+            /*from_select_url=*/true, script_execution_error_message);
       }
     }
 

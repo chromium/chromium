@@ -218,24 +218,142 @@ chromium-metrics-reviews@google.com.
 
 <enum name="SharedStorageWorkletErrorType">
   <int value="0" label="AddModuleWebVisible">
-    Errors in `addModule()` visible to the document.
+    Errors in `addModule()` or `createWorklet()` visible to the document.
   </int>
-  <int value="1" label="AddModuleNonWebVisible">
+  <int value="1" label="(Obsolete) AddModuleNonWebVisible">
     Errors in `addModule()` not visible to the document.
   </int>
   <int value="2" label="RunWebVisible">
     Errors in `run()` visible to the document.
   </int>
-  <int value="3" label="RunNonWebVisible">
+  <int value="3" label="(Obsolete) RunNonWebVisible">
     Errors in `run()` not visible to the document.
   </int>
   <int value="4" label="SelectURLWebVisible">
     Errors in `selectURL()` visible to the document.
   </int>
-  <int value="5" label="SelectURLNonWebVisible">
+  <int value="5" label="(Obsolete) SelectURLNonWebVisible">
     Errors in `selectURL()` not visible to the document.
   </int>
   <int value="6" label="Success"/>
+  <int value="7" label="AddModuleNonWebVisibleMulipleWorkletsDisabled">
+    Error in `addModule()` or `createWorklet()` not visible to the document:
+    browser received message from renderer trying to create multiple worklets
+    when &quot;SharedStorageAPIM125&quot; feature disabled.
+  </int>
+  <int value="8" label="AddModuleNonWebVisibleCrossOriginWorkletsDisabled">
+    Error in `addModule()` or `createWorklet()` not visible to the document:
+    browser received message from renderer trying to cross-origin worklet when
+    &quot;SharedStorageAPIM125&quot; feature disabled.
+  </int>
+  <int value="9"
+      label="kAddModuleNonWebVisibleCrossOriginSharedStorageDisabled">
+    Error in `addModule()` or `createWorklet()` not visible to the document:
+    cross-origin worklet cannot be created because shared storage is disabled
+    for the origin's site.
+  </int>
+  <int value="10" label="kAddModuleNonWebVisibleOther">
+    Other errors in `addModule()` or `createWorklet()` not visible to the
+    document.
+  </int>
+  <int value="11" label="RunNonWebVisibleInvalidContextId">
+    Error in `run()` not visible to the document: browser received message from
+    renderer with invalid context ID.
+  </int>
+  <int value="12" label="RunNonWebVisibleKeepAliveFalse">
+    Error in `run()` not visible to the document: browser received message from
+    renderer with keepAlive set to false.
+  </int>
+  <int value="13" label="RunNonWebVisibleCrossOriginSharedStorageDisabled">
+    Error in `run()` not visible to the document: cross-origin worklet operation
+    cannot be completed because shared storage is disabled for the origin's
+    site.
+  </int>
+  <int value="14" label="RunNonWebVisibleModuleScriptNotLoaded">
+    Error in `run()` not visible to the document: the module script hasn't been
+    loaded.
+  </int>
+  <int value="15" label="RunNonWebVisibleOperationNotFound">
+    Error in `run()` not visible to the document: cannot find operation name.
+  </int>
+  <int value="16" label="RunNonWebVisibleEmptyOperationDefinitionInstance">
+    Error in `run()` not visible to the document: the operation definition
+    instance was empty.
+  </int>
+  <int value="17" label="RunNonWebVisibleCannotDeserializeData">
+    Error in `run()` not visible to the document: cannot deserialize data.
+  </int>
+  <int value="18" label="RunNonWebVisibleEmptyScriptResult">
+    Error in `run()` not visible to the document: result of invoking script was
+    empty.
+  </int>
+  <int value="19" label="RunNonWebVisibleOther">
+    Other errors in `run()` not visible to the document.
+  </int>
+  <int value="20" label="SelectURLNonWebVisibleInvalidURLArrayLength">
+    Error in `selectURL()` not visible to the document: browser received message
+    from renderer with an invalid URL array length.
+  </int>
+  <int value="21" label="SelectURLNonWebVisibleInvalidFencedFrameURL">
+    Error in `selectURL()` not visible to the document: browser received message
+    from renderer with an invalid fenced frame URL.
+  </int>
+  <int value="22" label="SelectURLNonWebVisibleInvalidReportingURL">
+    Error in `selectURL()` not visible to the document: browser received message
+    from renderer with an invalid reporting URL.
+  </int>
+  <int value="23" label="SelectURLNonWebVisibleInvalidContextId">
+    Error in `selectURL()` not visible to the document: browser received message
+    from renderer with invalid context ID.
+  </int>
+  <int value="24" label="SelectURLNonWebVisibleKeepAliveFalse">
+    Error in `selectURL()` not visible to the document: browser received message
+    from renderer with keepAlive set to false.
+  </int>
+  <int value="25"
+      label="SelectURLNonWebVisibleCrossOriginSharedStorageDisabled">
+    Error in `selectURL()` not visible to the document: cross-origin worklet
+    operation cannot be completed because shared storage is disabled for the
+    origin's site.
+  </int>
+  <int value="26" label="SelectURLNonWebVisibleModuleScriptNotLoaded">
+    Error in `selectURL()` not visible to the document: the module script hasn't
+    been loaded.
+  </int>
+  <int value="27" label="SelectURLNonWebVisibleOperationNotFound">
+    Error in `selectURL()` not visible to the document: cannot find operation
+    name.
+  </int>
+  <int value="28"
+      label="SelectURLNonWebVisibleEmptyOperationDefinitionInstance">
+    Error in `selectURL()` not visible to the document: the operation definition
+    instance was empty.
+  </int>
+  <int value="29" label="SelectURLNonWebVisibleCannotDeserializeData">
+    Error in `selectURL()` not visible to the document: cannot deserialize data.
+  </int>
+  <int value="30" label="SelectURLNonWebVisibleEmptyScriptResult">
+    Error in `selectURL()` not visible to the document: result of invoking
+    script was empty.
+  </int>
+  <int value="31" label="SelectURLNonWebVisibleReturnValueToInt">
+    Error in `selectURL()` not visible to the document: promise did not resolve
+    to an uint32 number.
+  </int>
+  <int value="32" label="SelectURLNonWebVisibleReturnValueOutOfRange">
+    Error in `selectURL()` not visible to the document: promise resolved to a
+    number outside the length of the input urls.
+  </int>
+  <int value="33" label="SelectURLNonWebVisibleUnexpectedIndexReturned">
+    Error in `selectURL()` not visible to the document: browser received message
+    from renderer with unexpected index number returned.
+  </int>
+  <int value="34" label="SelectURLNonWebVisibleInsufficientBudget">
+    Error in `selectURL()` not visible to the document: insufficient budget.
+  </int>
+  <int value="35" label="SelectURLNonWebVisibleOther">
+    Other errors in `selectURL()` not visible to the document.
+  </int>
 </enum>
 
 <enum name="SqlRecoveryResult">

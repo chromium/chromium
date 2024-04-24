@@ -2340,7 +2340,8 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_NotRegisteredError) {
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
+      blink::SharedStorageWorkletErrorType::kRunNonWebVisibleOperationNotFound,
+      1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
@@ -2375,7 +2376,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_FunctionError) {
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
+      blink::SharedStorageWorkletErrorType::kRunNonWebVisibleOther, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
@@ -2410,7 +2411,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_ScriptError) {
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
+      blink::SharedStorageWorkletErrorType::kRunNonWebVisibleOther, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
@@ -2446,7 +2447,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
+      blink::SharedStorageWorkletErrorType::kRunNonWebVisibleOther, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
 
@@ -2543,7 +2544,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
+      blink::SharedStorageWorkletErrorType::
+          kSelectURLNonWebVisibleOperationNotFound,
+      1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
   histogram_tester_.ExpectUniqueSample(kSelectUrlCallsPerPageHistogram, 1, 1);
 }
@@ -2601,7 +2604,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
+      blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisibleOther, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
   histogram_tester_.ExpectUniqueSample(kSelectUrlCallsPerPageHistogram, 1, 1);
 }
@@ -2658,7 +2661,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, SelectUrl_ScriptError) {
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
+      blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisibleOther, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
   histogram_tester_.ExpectUniqueSample(kSelectUrlCallsPerPageHistogram, 1, 1);
 }
@@ -2716,7 +2719,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
+      blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisibleOther, 1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
   histogram_tester_.ExpectUniqueSample(kSelectUrlCallsPerPageHistogram, 1, 1);
 }
@@ -2774,7 +2777,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
+      blink::SharedStorageWorkletErrorType::
+          kSelectURLNonWebVisibleReturnValueOutOfRange,
+      1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
   histogram_tester_.ExpectUniqueSample(kSelectUrlCallsPerPageHistogram, 1, 1);
 }
@@ -2832,7 +2837,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kSuccess, 2);
   histogram_tester_.ExpectBucketCount(
       kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::kSelectURLNonWebVisible, 1);
+      blink::SharedStorageWorkletErrorType::
+          kSelectURLNonWebVisibleReturnValueToInt,
+      1);
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
   histogram_tester_.ExpectUniqueSample(kSelectUrlCallsPerPageHistogram, 1, 1);
 }

@@ -122,7 +122,8 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
       // This could indicate a compromised renderer, so let's terminate it.
       receiver_.ReportBadMessage("Attempted to create multiple worklets.");
       LogSharedStorageWorkletError(
-          blink::SharedStorageWorkletErrorType::kAddModuleNonWebVisible);
+          blink::SharedStorageWorkletErrorType::
+              kAddModuleNonWebVisibleMulipleWorkletsDisabled);
       return;
     }
   }
@@ -140,7 +141,8 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
     receiver_.ReportBadMessage(
         "Attempted to load a cross-origin module script.");
     LogSharedStorageWorkletError(
-        blink::SharedStorageWorkletErrorType::kAddModuleNonWebVisible);
+        blink::SharedStorageWorkletErrorType::
+            kAddModuleNonWebVisibleCrossOriginWorkletsDisabled);
     return;
   }
 
@@ -347,8 +349,14 @@ void SharedStorageDocumentServiceImpl::OnCreateWorkletResponseIntercepted(
   // When the worklet and the worklet creator are not same-origin, the user
   // preferences for the worklet origin should not be revealed.
   //
-  // TODO(cammie): Right now the metric will be recorded as `kSuccess`. We might
-  // want to record a separate metric for this distorted result.
+  // TODO(cammie): Right now the metric will be recorded as `kSuccess`. We
+  // should record a separate metric for the result when it's masking a failure,
+  // using `SharedStorageWorkletErrorType
+  // ::kAddModuleNonWebVisibleCrossOriginSharedStorageDisabled` or
+  // `SharedStorageWorkletErrorType::kAddModuleNonWebVisibleOther` as
+  // appropriate. We also need to move logging of successes to the browser
+  // process to prevent counting failures that happen here as successes in the
+  // renderer.
   if (!is_same_origin) {
     std::move(original_callback).Run(/*success=*/true, /*error_message=*/{});
     return;
