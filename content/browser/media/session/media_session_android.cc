@@ -68,10 +68,11 @@ ScopedJavaLocalRef<jobject> JNI_MediaSessionImpl_GetMediaSessionFromWebContents(
   if (!contents)
     return ScopedJavaLocalRef<jobject>();
 
-  MediaSessionImpl* session = MediaSessionImpl::Get(contents);
-  DCHECK(session);
-  return MediaSessionAndroid::JavaObjectGetter::GetJavaObject(
-      session->GetMediaSessionAndroid());
+  MediaSessionImpl* session =
+      static_cast<MediaSessionImpl*>(MediaSessionImpl::GetIfExists(contents));
+  return session ? MediaSessionAndroid::JavaObjectGetter::GetJavaObject(
+                       session->GetMediaSessionAndroid())
+                 : nullptr;
 }
 
 void MediaSessionAndroid::MediaSessionInfoChanged(

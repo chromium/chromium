@@ -14,6 +14,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.LoadCommittedDetails;
+import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -485,6 +486,17 @@ class WebContentsObserverProxy extends WebContentsObserver {
         Iterator<WebContentsObserver> observersIterator = mObservers.iterator();
         for (; observersIterator.hasNext(); ) {
             observersIterator.next().onTopLevelNativeWindowChanged(windowAndroid);
+        }
+        finishObserverCall();
+    }
+
+    @Override
+    @CalledByNative
+    public void mediaSessionCreated(MediaSession mediaSession) {
+        handleObserverCall();
+        Iterator<WebContentsObserver> observersIterator = mObservers.iterator();
+        for (; observersIterator.hasNext(); ) {
+            observersIterator.next().mediaSessionCreated(mediaSession);
         }
         finishObserverCall();
     }

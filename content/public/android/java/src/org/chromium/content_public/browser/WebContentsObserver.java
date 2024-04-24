@@ -232,6 +232,9 @@ public abstract class WebContentsObserver {
     /** Called when the top level WindowAndroid changes. */
     public void onTopLevelNativeWindowChanged(@Nullable WindowAndroid windowAndroid) {}
 
+    /** Called when a MediaSession is created for the WebContents. */
+    public void mediaSessionCreated(MediaSession mediaSession) {}
+
     /** Stop observing the web contents and clean up associated references. */
     public void destroy() {
         if (mWebContents == null) return;

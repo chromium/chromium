@@ -57,6 +57,8 @@ public class MediaNotificationTestTabHolder {
 
         MediaSessionHelper.sOverriddenMediaSession = mMediaSession;
         mMediaSessionTabHelper = new MediaSessionTabHelper(mTab);
+        mMediaSessionTabHelper.mMediaSessionHelper.mWebContentsObserver.mediaSessionCreated(
+                mMediaSession);
         mMediaSessionTabHelper.mMediaSessionHelper.mLargeIconBridge = new TestLargeIconBridge();
 
         simulateNavigation(url, false);

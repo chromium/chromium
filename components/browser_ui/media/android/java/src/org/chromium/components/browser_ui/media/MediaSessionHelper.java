@@ -290,12 +290,14 @@ public class MediaSessionHelper implements MediaImageCallback {
 
         if (mWebContentsObserver != null) mWebContentsObserver.destroy();
 
+        mMediaImageManager.setWebContents(mWebContents);
+
         if (webContents == null) {
             mWebContentsObserver = null;
             cleanupMediaSessionObserver();
-            mMediaImageManager.setWebContents(webContents);
             return;
         }
+
         mWebContentsObserver =
                 new WebContentsObserver(webContents) {
                     @Override
@@ -342,16 +344,24 @@ public class MediaSessionHelper implements MediaImageCallback {
                     public void wasShown() {
                         mDelegate.activateAndroidMediaSession();
                     }
+
+                    @Override
+                    public void mediaSessionCreated(MediaSession mediaSession) {
+                        setUpMediaSessionObserver(mediaSession);
+                    }
                 };
 
         MediaSession mediaSession = getMediaSession(webContents);
+        setUpMediaSessionObserver(mediaSession);
+    }
+
+    private void setUpMediaSessionObserver(MediaSession mediaSession) {
         if (mMediaSessionObserver != null
                 && mediaSession == mMediaSessionObserver.getMediaSession()) {
             return;
         }
 
         cleanupMediaSessionObserver();
-        mMediaImageManager.setWebContents(webContents);
         if (mediaSession != null) {
             mMediaSessionObserver = createMediaSessionObserver(mediaSession);
         }
