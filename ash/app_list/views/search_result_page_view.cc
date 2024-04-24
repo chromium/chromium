@@ -133,7 +133,8 @@ void SearchResultPageView::VisibilityChanged(View* starting_from,
   }
 }
 
-gfx::Size SearchResultPageView::CalculatePreferredSize() const {
+gfx::Size SearchResultPageView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   int adjusted_height =
       std::min(std::max(kMinHeight, search_view_->TabletModePreferredHeight() +
                                         kActiveSearchBoxHeight +
@@ -399,9 +400,10 @@ gfx::Rect SearchResultPageView::GetPageBoundsForState(
   bounding_rect.Inset(
       gfx::Insets::TLBR(0, 0, kSearchResultPageMinimumBottomMargin, 0));
 
-  gfx::Rect preferred_bounds = gfx::Rect(
-      search_box_bounds.origin(),
-      gfx::Size(search_box_bounds.width(), CalculatePreferredSize().height()));
+  gfx::Rect preferred_bounds =
+      gfx::Rect(search_box_bounds.origin(),
+                gfx::Size(search_box_bounds.width(),
+                          CalculatePreferredSize({}).height()));
   preferred_bounds.Intersect(bounding_rect);
 
   return preferred_bounds;

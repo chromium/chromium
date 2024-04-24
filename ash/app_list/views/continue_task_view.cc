@@ -197,7 +197,8 @@ gfx::Size ContinueTaskView::GetMinimumSize() const {
                    GetLayoutManager()->GetPreferredSize(this).height());
 }
 
-gfx::Size ContinueTaskView::CalculatePreferredSize() const {
+gfx::Size ContinueTaskView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return GetMinimumSize();
 }
 

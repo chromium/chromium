@@ -1124,7 +1124,8 @@ bool AppsGridView::IsAnimatingView(AppListItemView* view) const {
   return view->layer() && view->layer()->GetAnimator()->is_animating();
 }
 
-gfx::Size AppsGridView::CalculatePreferredSize() const {
+gfx::Size AppsGridView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return GetTileGridSize();
 }
 

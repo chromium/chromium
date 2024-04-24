@@ -34,7 +34,8 @@ class ASH_EXPORT SearchResultImageView : public SearchResultBaseView {
   void OnImageViewPressed(const ui::Event& event);
 
   // Overridden from views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // Updates `preferred_width_`.
   void ConfigureLayoutForAvailableWidth(int width);

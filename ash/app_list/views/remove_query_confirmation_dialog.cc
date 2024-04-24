@@ -168,9 +168,12 @@ RemoveQueryConfirmationDialog::RemoveQueryConfirmationDialog(
 
 RemoveQueryConfirmationDialog::~RemoveQueryConfirmationDialog() = default;
 
-gfx::Size RemoveQueryConfirmationDialog::CalculatePreferredSize() const {
+gfx::Size RemoveQueryConfirmationDialog::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int default_width = kDialogWidth;
-  return gfx::Size(default_width, GetHeightForWidth(default_width));
+  return gfx::Size(
+      default_width,
+      GetLayoutManager()->GetPreferredHeightForWidth(this, default_width));
 }
 
 void RemoveQueryConfirmationDialog::GetAccessibleNodeData(

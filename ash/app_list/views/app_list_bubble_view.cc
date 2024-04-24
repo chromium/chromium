@@ -115,7 +115,8 @@ class SeparatorWithLayer : public views::View {
   ~SeparatorWithLayer() override = default;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     // The parent's layout manager will stretch it horizontally.
     return gfx::Size(1, 1);
   }

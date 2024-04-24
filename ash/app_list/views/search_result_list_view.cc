@@ -334,8 +334,9 @@ void SearchResultListView::Layout(PassKey) {
   results_container_->SetBoundsRect(GetLocalBounds());
 }
 
-gfx::Size SearchResultListView::CalculatePreferredSize() const {
-  return results_container_->GetPreferredSize();
+gfx::Size SearchResultListView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return results_container_->GetPreferredSize(available_size);
 }
 
 int SearchResultListView::GetHeightForWidth(int w) const {

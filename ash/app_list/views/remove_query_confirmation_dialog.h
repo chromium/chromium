@@ -43,7 +43,8 @@ class RemoveQueryConfirmationDialog : public views::WidgetDelegateView {
   ~RemoveQueryConfirmationDialog() override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   views::Button* cancel_button_for_test() { return cancel_button_; }

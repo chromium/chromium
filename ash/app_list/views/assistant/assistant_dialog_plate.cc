@@ -124,8 +124,10 @@ AssistantDialogPlate::~AssistantDialogPlate() {
     AssistantInteractionController::Get()->GetModel()->RemoveObserver(this);
 }
 
-gfx::Size AssistantDialogPlate::CalculatePreferredSize() const {
-  return gfx::Size(INT_MAX, GetHeightForWidth(INT_MAX));
+gfx::Size AssistantDialogPlate::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return gfx::Size(
+      INT_MAX, GetLayoutManager()->GetPreferredHeightForWidth(this, INT_MAX));
 }
 
 void AssistantDialogPlate::OnButtonPressed(AssistantButtonId button_id) {

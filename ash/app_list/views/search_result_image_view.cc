@@ -116,7 +116,8 @@ void SearchResultImageView::OnImageViewPressed(const ui::Event& event) {
                                     true /* by_button_press */);
 }
 
-gfx::Size SearchResultImageView::CalculatePreferredSize() const {
+gfx::Size SearchResultImageView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // Keep the ratio of the width and height be 3:2.
   return gfx::Size(preferred_width_, 2 * preferred_width_ / 3);
 }

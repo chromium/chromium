@@ -37,7 +37,8 @@ class AppsCollectionsDismissDialog : public views::WidgetDelegateView {
   ~AppsCollectionsDismissDialog() override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   views::Button* cancel_button_for_test() { return cancel_button_; }
   views::Button* accept_button_for_test() { return accept_button_; }

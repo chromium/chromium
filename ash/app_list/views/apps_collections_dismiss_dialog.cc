@@ -150,9 +150,12 @@ AppsCollectionsDismissDialog::AppsCollectionsDismissDialog(
 
 AppsCollectionsDismissDialog::~AppsCollectionsDismissDialog() {}
 
-gfx::Size AppsCollectionsDismissDialog::CalculatePreferredSize() const {
+gfx::Size AppsCollectionsDismissDialog::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int default_width = kDialogWidth;
-  return gfx::Size(default_width, GetHeightForWidth(default_width));
+  return gfx::Size(
+      default_width,
+      GetLayoutManager()->GetPreferredHeightForWidth(this, default_width));
 }
 
 BEGIN_METADATA(AppsCollectionsDismissDialog)

@@ -1537,7 +1537,8 @@ void AppListItemView::Layout(PassKey) {
   }
 }
 
-gfx::Size AppListItemView::CalculatePreferredSize() const {
+gfx::Size AppListItemView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(app_list_config_->grid_tile_width(),
                    app_list_config_->grid_tile_height());
 }

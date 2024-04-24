@@ -1301,7 +1301,8 @@ void SearchResultView::OnSelectedResultChanged() {
   }
 }
 
-gfx::Size SearchResultView::CalculatePreferredSize() const {
+gfx::Size SearchResultView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kPreferredWidth, PreferredHeight());
 }
 

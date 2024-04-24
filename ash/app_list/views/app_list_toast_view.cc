@@ -330,7 +330,8 @@ void AppListToastView::SetAvailableWidth(int width) {
   available_width_ = width;
 }
 
-gfx::Size AppListToastView::CalculatePreferredSize() const {
+gfx::Size AppListToastView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int available_width = std::min(
       kToastMaximumWidth, available_width_.value_or(kToastMaximumWidth));
 

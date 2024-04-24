@@ -223,7 +223,8 @@ void TopIconAnimationView::TransformView(base::TimeDelta duration) {
   }
 }
 
-gfx::Size TopIconAnimationView::CalculatePreferredSize() const {
+gfx::Size TopIconAnimationView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(grid_->app_list_config()->grid_tile_width(),
                    grid_->app_list_config()->grid_tile_height());
 }

@@ -173,7 +173,8 @@ class ASH_EXPORT AppsGridView : public views::View,
   const AppListItem* drag_item() const { return drag_item_; }
 
   // Overridden from views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
   void ViewHierarchyChanged(
