@@ -416,19 +416,6 @@ void AXPlatformNodeWin::StateToUIAAriaProperty(
                        (value ? L"true" : L"false"));
 }
 
-void AXPlatformNodeWin::HtmlAttributeToUIAAriaProperty(
-    std::vector<std::wstring>& properties,
-    const char* html_attribute_name,
-    const char* uia_aria_property) {
-  std::u16string html_attribute_value;
-  if (GetHtmlAttribute(html_attribute_name, &html_attribute_value)) {
-    std::wstring wide_value = base::UTF16ToWide(html_attribute_value);
-    SanitizeStringAttributeForUIAAriaProperty(wide_value, &wide_value);
-    properties.push_back(base::ASCIIToWide(uia_aria_property) + L"=" +
-                         wide_value);
-  }
-}
-
 std::vector<AXPlatformNodeWin*>
 AXPlatformNodeWin::CreatePlatformNodeVectorFromRelationIdVector(
     const std::vector<int32_t>& relation_id_list) {

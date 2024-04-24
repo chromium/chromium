@@ -1371,12 +1371,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
                               ax::mojom::State state,
                               const char* uia_aria_property);
 
-  // If the Html attribute |html_attribute_name| is present, add its value as a
-  // UIA AriaProperties Property with the name |uia_aria_property|.
-  void HtmlAttributeToUIAAriaProperty(std::vector<std::wstring>& properties,
-                                      const char* html_attribute_name,
-                                      const char* uia_aria_property);
-
   // If the IntList attribute |attribute| is present, return an array
   // of automation elements referenced by the ids in the
   // IntList attribute. Otherwise return an empty array.
