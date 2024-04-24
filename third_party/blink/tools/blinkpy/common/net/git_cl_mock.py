@@ -23,7 +23,7 @@ class MockGitCL(object):
 
         Args:
             host: Host object, used for builder names.
-            try_job_results: A dict of Build to TryJobStatus.
+            try_job_results: A dict of Build to BuildStatus.
             status: CL status string.
             issue_number: CL issue number as a string.
             time_out: Whether to simulate timing out while waiting.

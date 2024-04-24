@@ -14,10 +14,10 @@ from blinkpy.common import exit_codes
 from blinkpy.common.net.rpc import Build
 from blinkpy.common.net.web import Web
 from blinkpy.common.net.git_cl import (
+    BuildStatus,
     BuildStatuses,
     CLRevisionID,
     GitCL,
-    TryJobStatus,
 )
 from blinkpy.tool.grammar import pluralize
 
@@ -37,14 +37,6 @@ class BuildResolver:
 
     This resolver fetches build information from Buildbucket.
     """
-    # Pseudo-status to indicate a build was triggered by this command run.
-    # More specific than the 'SCHEDULED' Buildbucket status.
-    TRIGGERED = TryJobStatus('TRIGGERED', None)
-
-    # Pseudo-status to indicate a try builder is missing a build and cannot
-    # get one from triggering a job.
-    MISSING = TryJobStatus('MISSING', None)
-
     # Build fields required by `_build_statuses_from_responses`.
     _build_fields = [
         'id',
@@ -124,8 +116,8 @@ class BuildResolver:
             build_statuses.update(try_build_statuses)
             # Re-request completed try builds so that the resolver can check
             # for interrupted steps.
-            for build, (status, _) in try_build_statuses.items():
-                if build.build_number and status == 'COMPLETED':
+            for build, status in try_build_statuses.items():
+                if build.build_number and status in BuildStatus.COMPLETED:
                     self._git_cl.bb_client.add_get_build_req(
                         build, build_fields=self._build_fields)
         # Find explicit or CI builds.
@@ -134,13 +126,13 @@ class BuildResolver:
                 self._git_cl.bb_client.execute_batch()))
         if build_statuses:
             self.log_builds(build_statuses)
-        if self.TRIGGERED in build_statuses.values():
+        if BuildStatus.TRIGGERED in build_statuses.values():
             raise UnresolvedBuildException(
                 'Once all pending try jobs have finished, '
                 'please re-run the tool to fetch new results.')
         return build_statuses
 
-    def _status_if_interrupted(self, raw_build) -> TryJobStatus:
+    def _status_if_interrupted(self, raw_build) -> BuildStatus:
         """Map non-browser-related failures to an infrastructue failure status.
 
         Such failures include shard-level timeouts and early exits caused by
@@ -162,14 +154,14 @@ class BuildResolver:
         # TODO(crbug.com/1496938): Investigate if this information can be
         # obtained by the absence of `full_results.json` instead.
         if output_props.get('failure_type') not in {None, 'TEST_FAILURE'}:
-            return TryJobStatus.from_bb_status('INFRA_FAILURE')
+            return BuildStatus.INFRA_FAILURE
         for step in raw_build.get('steps', []):
             if run_web_tests_pattern.fullmatch(step['name']):
                 summary = self._fetch_swarming_summary(step)
                 shards = (summary or {}).get('shards', [])
                 if any(map(_shard_interrupted, shards)):
-                    return TryJobStatus.from_bb_status('INFRA_FAILURE')
-        return TryJobStatus.from_bb_status(raw_build['status'])
+                    return BuildStatus.INFRA_FAILURE
+        return BuildStatus[raw_build['status']]
 
     def _fetch_swarming_summary(self,
                                 step,
@@ -217,10 +209,10 @@ class BuildResolver:
             build.builder_name
             for build in build_statuses
         }
-        placeholder_status = self.MISSING
+        placeholder_status = BuildStatus.MISSING
         if self._can_trigger_jobs and builders_without_results:
             self._git_cl.trigger_try_jobs(builders_without_results)
-            placeholder_status = self.TRIGGERED
+            placeholder_status = BuildStatus.TRIGGERED
         for builder in builders_without_results:
             build_statuses[Build(builder)] = placeholder_status
         return build_statuses
@@ -229,9 +221,9 @@ class BuildResolver:
         """Log builds in a tabular format."""
         self._warn_about_incomplete_results(build_statuses)
         finished_builds = {
-            build: result or '--'
-            for build, (status, result) in build_statuses.items()
-            if status == 'COMPLETED'
+            build: status.name or '--'
+            for build, status in build_statuses.items()
+            if status in BuildStatus.COMPLETED
         }
         if len(finished_builds) == len(build_statuses):
             _log.info('All builds finished.')
@@ -242,9 +234,9 @@ class BuildResolver:
         else:
             _log.info('No finished builds.')
         unfinished_builds = {
-            build: status
-            for build, (status, _) in build_statuses.items()
-            if build not in finished_builds and status != 'MISSING'
+            build: status.name
+            for build, status in build_statuses.items() if
+            build not in finished_builds and status is not BuildStatus.MISSING
         }
         if unfinished_builds:
             _log.info('Scheduled or started builds:')

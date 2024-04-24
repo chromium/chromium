@@ -9,7 +9,7 @@ import unittest
 from unittest import mock
 
 from blinkpy.common.host_mock import MockHost
-from blinkpy.common.net.git_cl import TryJobStatus
+from blinkpy.common.net.git_cl import BuildStatus
 from blinkpy.common.net.git_cl_mock import MockGitCL
 from blinkpy.common.net.results_fetcher import Build
 from blinkpy.common.net.web_test_results import WebTestResults
@@ -144,17 +144,13 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater.git_cl = MockGitCL(
             host, {
                 Build('MOCK Try Mac10.10', 333, 'Build-1'):
-                TryJobStatus('COMPLETED', 'FAILURE'),
+                BuildStatus.FAILURE,
                 Build('MOCK Try Mac10.11', 111, 'Build-2'):
-                TryJobStatus('COMPLETED', 'FAILURE'),
-                Build('MOCK Try Trusty', 222, 'Build-3'):
-                TryJobStatus('COMPLETED', 'FAILURE'),
-                Build('MOCK Try Precise', 333, 'Build-4'):
-                TryJobStatus('COMPLETED', 'FAILURE'),
-                Build('MOCK Try Win10', 444, 'Build-5'):
-                TryJobStatus('COMPLETED', 'FAILURE'),
-                Build('MOCK Try Win7', 555, 'Build-6'):
-                TryJobStatus('COMPLETED', 'FAILURE'),
+                BuildStatus.FAILURE,
+                Build('MOCK Try Trusty', 222, 'Build-3'): BuildStatus.FAILURE,
+                Build('MOCK Try Precise', 333, 'Build-4'): BuildStatus.FAILURE,
+                Build('MOCK Try Win10', 444, 'Build-5'): BuildStatus.FAILURE,
+                Build('MOCK Try Win7', 555, 'Build-6'): BuildStatus.FAILURE,
             })
         return updater
 
@@ -203,17 +199,13 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater.git_cl = MockGitCL(
             updater.host, {
                 Build('MOCK Try Mac10.10', 333, 'Build-1'):
-                TryJobStatus('COMPLETED', 'FAILURE'),
+                BuildStatus.FAILURE,
                 Build('MOCK Try Mac10.11', 111, 'Build-2'):
-                TryJobStatus('COMPLETED', 'SUCCESS'),
-                Build('MOCK Try Trusty', 222, 'Build-3'):
-                TryJobStatus('COMPLETED', 'SUCCESS'),
-                Build('MOCK Try Precise', 333, 'Build-4'):
-                TryJobStatus('COMPLETED', 'SUCCESS'),
-                Build('MOCK Try Win10', 444, 'Build-5'):
-                TryJobStatus('COMPLETED', 'SUCCESS'),
-                Build('MOCK Try Win7', 555, 'Build-6'):
-                TryJobStatus('COMPLETED', 'SUCCESS'),
+                BuildStatus.SUCCESS,
+                Build('MOCK Try Trusty', 222, 'Build-3'): BuildStatus.SUCCESS,
+                Build('MOCK Try Precise', 333, 'Build-4'): BuildStatus.SUCCESS,
+                Build('MOCK Try Win10', 444, 'Build-5'): BuildStatus.SUCCESS,
+                Build('MOCK Try Win7', 555, 'Build-6'): BuildStatus.SUCCESS,
             })
 
         # Set up failing results for one try bot. It shouldn't matter what
@@ -268,8 +260,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
         updater.git_cl = MockGitCL(
             updater.host, {
-                Build('MOCK Try Chrome', 333, 'Build-4'):
-                TryJobStatus('COMPLETED', 'FAILURE'),
+                Build('MOCK Try Chrome', 333, 'Build-4'): BuildStatus.FAILURE,
             })
         host.results_fetcher.set_results(
             Build('MOCK Try Chrome', 333, 'Build-4'),
@@ -329,8 +320,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
         updater.git_cl = MockGitCL(
             updater.host, {
-                Build('MOCK Try Chrome', 333, 'Build-4'):
-                TryJobStatus('COMPLETED', 'FAILURE'),
+                Build('MOCK Try Chrome', 333, 'Build-4'): BuildStatus.FAILURE,
             })
         host.results_fetcher.set_results(
             Build('MOCK Try Chrome', 333, 'Build-4'),
@@ -397,17 +387,14 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater.git_cl = MockGitCL(
             updater.host, {
                 Build('MOCK Try Mac10.10', 333, 'Build-1'):
-                TryJobStatus('COMPLETED', 'SUCCESS'),
+                BuildStatus.SUCCESS,
                 Build('MOCK Try Mac10.11', 111, 'Build-2'):
-                TryJobStatus('COMPLETED', 'FAILURE'),
-                Build('MOCK Try Trusty', 222, 'Build-3'):
-                TryJobStatus('COMPLETED', 'FAILURE'),
+                BuildStatus.FAILURE,
+                Build('MOCK Try Trusty', 222, 'Build-3'): BuildStatus.FAILURE,
                 Build('MOCK Try Precise', 333, 'Build-4'):
-                TryJobStatus('COMPLETED', 'INFRA_FAILURE'),
-                Build('MOCK Try Win10', 444, 'Build-5'):
-                TryJobStatus('COMPLETED', 'SUCCESS'),
-                Build('MOCK Try Win7', 555, 'Build-6'):
-                TryJobStatus('COMPLETED', 'SUCCESS'),
+                BuildStatus.INFRA_FAILURE,
+                Build('MOCK Try Win10', 444, 'Build-5'): BuildStatus.SUCCESS,
+                Build('MOCK Try Win7', 555, 'Build-6'): BuildStatus.SUCCESS,
             })
 
         rdb_results = {
@@ -462,17 +449,13 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         updater.git_cl = MockGitCL(
             updater.host, {
                 Build('MOCK Try Mac10.10', 333, 'Build-1'):
-                TryJobStatus('COMPLETED', 'SUCCESS'),
+                BuildStatus.SUCCESS,
                 Build('MOCK Try Mac10.11', 111, 'Build-2'):
-                TryJobStatus('COMPLETED', 'SUCCESS'),
-                Build('MOCK Try Trusty', 222, 'Build-3'):
-                TryJobStatus('COMPLETED', 'FAILURE'),
-                Build('MOCK Try Precise', 333, 'Build-4'):
-                TryJobStatus('COMPLETED', 'SUCCESS'),
-                Build('MOCK Try Win10', 444, 'Build-5'):
-                TryJobStatus('COMPLETED', 'SUCCESS'),
-                Build('MOCK Try Win7', 555, 'Build-6'):
-                TryJobStatus('COMPLETED', 'SUCCESS'),
+                BuildStatus.SUCCESS,
+                Build('MOCK Try Trusty', 222, 'Build-3'): BuildStatus.FAILURE,
+                Build('MOCK Try Precise', 333, 'Build-4'): BuildStatus.SUCCESS,
+                Build('MOCK Try Win10', 444, 'Build-5'): BuildStatus.SUCCESS,
+                Build('MOCK Try Win7', 555, 'Build-6'): BuildStatus.SUCCESS,
             })
 
         # Set up failing results for one try bot. It shouldn't matter what

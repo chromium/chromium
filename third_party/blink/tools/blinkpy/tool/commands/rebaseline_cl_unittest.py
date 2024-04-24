@@ -11,7 +11,7 @@ import textwrap
 from unittest import mock
 
 from blinkpy.common.checkout.git_mock import MockGit
-from blinkpy.common.net.git_cl import TryJobStatus
+from blinkpy.common.net.git_cl import BuildStatus
 from blinkpy.common.net.git_cl_mock import MockGitCL
 from blinkpy.common.net.results_fetcher import Build
 from blinkpy.common.net.web_test_results import (
@@ -43,13 +43,13 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         self.maxDiff = None
         self.builds = {
             Build('MOCK Try Win', 5000, 'Build-1'):
-            TryJobStatus('COMPLETED', 'FAILURE'),
+            BuildStatus.FAILURE,
             Build('MOCK Try Mac', 4000, 'Build-2'):
-            TryJobStatus('COMPLETED', 'FAILURE'),
+            BuildStatus.FAILURE,
             Build('MOCK Try Linux', 6000, 'Build-3'):
-            TryJobStatus('COMPLETED', 'FAILURE'),
+            BuildStatus.FAILURE,
             Build('MOCK Try Linux Multiple Steps', 9000, 'Build-5'):
-            TryJobStatus('COMPLETED', 'FAILURE'),
+            BuildStatus.FAILURE,
         }
 
         self.command.git_cl = MockGitCL(self.tool, self.builds)
@@ -431,8 +431,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
 
     def test_execute_one_missing_build(self):
         builds = {
-            Build('MOCK Try Win', 5000): TryJobStatus('COMPLETED', 'FAILURE'),
-            Build('MOCK Try Mac', 4000): TryJobStatus('COMPLETED', 'FAILURE'),
+            Build('MOCK Try Win', 5000): BuildStatus.FAILURE,
+            Build('MOCK Try Mac', 4000): BuildStatus.FAILURE,
         }
         self.command.git_cl = MockGitCL(self.tool, builds)
         exit_code = self.command.execute(self.command_options(), [], self.tool)
@@ -458,12 +458,9 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
 
     def test_execute_with_unfinished_jobs(self):
         builds = {
-            Build('MOCK Try Win', 5000, 'Build-1'):
-            TryJobStatus('COMPLETED', 'FAILURE'),
-            Build('MOCK Try Mac', 4000, 'Build-2'):
-            TryJobStatus('STARTED'),
-            Build('MOCK Try Linux', 6000, 'Build-3'):
-            TryJobStatus('SCHEDULED'),
+            Build('MOCK Try Win', 5000, 'Build-1'): BuildStatus.FAILURE,
+            Build('MOCK Try Mac', 4000, 'Build-2'): BuildStatus.STARTED,
+            Build('MOCK Try Linux', 6000, 'Build-3'): BuildStatus.SCHEDULED,
         }
         self.command.git_cl = MockGitCL(self.tool, builds)
         exit_code = self.command.execute(self.command_options(), [], self.tool)
@@ -491,12 +488,9 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
 
     def test_execute_with_passing_jobs(self):
         builds = {
-            Build('MOCK Try Win', 5000, 'Build-1'):
-            TryJobStatus('COMPLETED', 'FAILURE'),
-            Build('MOCK Try Mac', 4000, 'Build-2'):
-            TryJobStatus('COMPLETED', 'SUCCESS'),
-            Build('MOCK Try Linux', 6000, 'Build-3'):
-            TryJobStatus('COMPLETED', 'SUCCESS'),
+            Build('MOCK Try Win', 5000, 'Build-1'): BuildStatus.FAILURE,
+            Build('MOCK Try Mac', 4000, 'Build-2'): BuildStatus.SUCCESS,
+            Build('MOCK Try Linux', 6000, 'Build-3'): BuildStatus.SUCCESS,
         }
         self.command.git_cl = MockGitCL(self.tool, builds)
         exit_code = self.command.execute(self.command_options(), [], self.tool)
@@ -528,12 +522,9 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             crbug.com/1475247#c1
         """
         builds = {
-            Build('MOCK Try Win', 5000, 'Build-1'):
-            TryJobStatus('COMPLETED', 'FAILURE'),
-            Build('MOCK Try Mac', 4000, 'Build-2'):
-            TryJobStatus('COMPLETED', 'FAILURE'),
-            Build('MOCK Try Linux', 6000, 'Build-3'):
-            TryJobStatus('COMPLETED', 'FAILURE'),
+            Build('MOCK Try Win', 5000, 'Build-1'): BuildStatus.FAILURE,
+            Build('MOCK Try Mac', 4000, 'Build-2'): BuildStatus.FAILURE,
+            Build('MOCK Try Linux', 6000, 'Build-3'): BuildStatus.FAILURE,
         }
         for build in builds:
             self.tool.results_fetcher.set_results(
@@ -551,10 +542,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
 
     def test_execute_with_no_trigger_jobs_option(self):
         builds = {
-            Build('MOCK Try Win', 5000, 'Build-1'):
-            TryJobStatus('COMPLETED', 'FAILURE'),
-            Build('MOCK Try Mac', 4000, 'Build-2'):
-            TryJobStatus('COMPLETED', 'FAILURE'),
+            Build('MOCK Try Win', 5000, 'Build-1'): BuildStatus.FAILURE,
+            Build('MOCK Try Mac', 4000, 'Build-2'): BuildStatus.FAILURE,
         }
         self.command.git_cl = MockGitCL(self.tool, builds)
         exit_code = self.command.execute(
@@ -719,7 +708,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
 
     def test_execute_missing_results_with_no_fill_missing_prompts(self):
         build = Build('MOCK Try Win', 5000, 'Build-1')
-        self.builds[build] = TryJobStatus.from_bb_status('CANCELED')
+        self.builds[build] = BuildStatus.CANCELED
         exit_code = self.command.execute(self.command_options(), [], self.tool)
         self.assertEqual(exit_code, 1)
         self.assertLog([
@@ -746,7 +735,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
 
     def test_execute_interrupted_results_with_fill_missing(self):
         build = Build('MOCK Try Win', 5000, 'Build-1')
-        self.builds[build] = TryJobStatus.from_bb_status('INFRA_FAILURE')
+        self.builds[build] = BuildStatus.INFRA_FAILURE
         self.tool.user.set_canned_responses(['y'])
         exit_code = self.command.execute(self.command_options(),
                                          ['one/flaky-fail.html'], self.tool)

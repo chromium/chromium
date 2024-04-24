@@ -8,9 +8,10 @@ manage changelists and try jobs associated with them.
 """
 
 import collections
+import enum
 import logging
 import re
-from typing import Literal, Mapping, NamedTuple, Optional, Set
+from typing import Mapping, NamedTuple, Optional, Set
 
 from blinkpy.common.checkout.git import Git
 from blinkpy.common.net.results_fetcher import filter_latest_builds
@@ -23,30 +24,26 @@ _log = logging.getLogger(__name__)
 _COMMANDS_THAT_TAKE_REFRESH_TOKEN = ('try', )
 
 
-# TODO(crbug.com/1299650): Rename to `BuildStatus` to include CI builds.
-class TryJobStatus(NamedTuple):
-    """The current status of a particular build.
+class BuildStatus(enum.Flag):
+    """Buildbucket statuses [0]. The names should match where applicable.
 
-    Specifically, whether it is scheduled or started or finished, and if
-    it is finished, whether it failed or succeeded.
+    [0]: https://chromium.googlesource.com/infra/luci/luci-go/+/main/buildbucket/proto/common.proto
     """
-    status: Literal['MISSING', 'TRIGGERED', 'SCHEDULED', 'STARTED',
-                    'COMPLETED']
-    result: Literal[None, 'FAILURE', 'INFRA_FAILURE', 'SUCCESS',
-                    'CANCELED'] = None
-
-    @staticmethod
-    def from_bb_status(bb_status: str) -> 'TryJobStatus':
-        """Converts a buildbucket status into a TryJobStatus object."""
-        assert bb_status in ('SCHEDULED', 'STARTED', 'SUCCESS', 'FAILURE',
-                             'INFRA_FAILURE', 'CANCELED')
-        if bb_status in ('SCHEDULED', 'STARTED'):
-            return TryJobStatus(bb_status, None)
-        else:
-            return TryJobStatus('COMPLETED', bb_status)
+    SCHEDULED = enum.auto()
+    STARTED = enum.auto()
+    SUCCESS = enum.auto()
+    FAILURE = enum.auto()
+    INFRA_FAILURE = enum.auto()
+    CANCELED = enum.auto()
+    COMPLETED = SUCCESS | FAILURE | INFRA_FAILURE | CANCELED
+    # Pseudo-status more specific than `SCHEDULED` to indicate a build that was
+    # triggered by this run.
+    TRIGGERED = enum.auto()
+    # Pseudo-status to indicate a missing try build.
+    MISSING = enum.auto()
 
 
-BuildStatuses = Mapping[Build, TryJobStatus]
+BuildStatuses = Mapping[Build, BuildStatus]
 
 
 # TODO(crbug.com/41483974): Replace `issue_number` and `patchset` paired
@@ -65,7 +62,7 @@ class CLStatus(NamedTuple):
     """The current status of a particular CL.
 
     It contains both the CL's status as reported by `git-cl status' as well as
-    a mapping of Build objects to TryJobStatus objects.
+    a mapping of Build objects to BuildStatus objects.
     """
     status: str
     try_job_results: BuildStatuses
@@ -257,7 +254,7 @@ class GitCL:
                         builder_names=None,
                         cq_only=False,
                         patchset=None):
-        """Fetches a dict of Build to TryJobStatus for the latest try jobs.
+        """Fetches a dict of Build to BuildStatus for the latest try jobs.
 
         This variant fetches try job data from buildbucket directly.
 
@@ -272,7 +269,7 @@ class GitCL:
             patchset: If given, use this patchset instead of the latest.
 
         Returns:
-            A dict mapping Build objects to TryJobStatus objects, with
+            A dict mapping Build objects to BuildStatus objects, with
             only the latest jobs included.
         """
         if not issue_number:
@@ -286,7 +283,7 @@ class GitCL:
 
     @staticmethod
     def filter_latest(try_results):
-        """Returns the latest entries from from a Build to TryJobStatus dict."""
+        """Returns the latest entries from from a Build to BuildStatus dict."""
         if try_results is None:
             return None
         latest_builds = filter_latest_builds(try_results.keys())
@@ -294,10 +291,7 @@ class GitCL:
 
     @staticmethod
     def filter_incomplete(build_statuses: BuildStatuses) -> Set[Build]:
-        incomplete_statuses = {
-            TryJobStatus.from_bb_status('INFRA_FAILURE'),
-            TryJobStatus.from_bb_status('CANCELED'),
-        }
+        incomplete_statuses = {BuildStatus.INFRA_FAILURE, BuildStatus.CANCELED}
         return {
             build
             for build, status in build_statuses.items()
@@ -309,7 +303,7 @@ class GitCL:
                         builder_names=None,
                         cq_only=False,
                         patchset=None):
-        """Returns a dict mapping Build objects to TryJobStatus objects."""
+        """Returns a dict mapping Build objects to BuildStatus objects."""
         if not issue_number:
             issue_number = self.get_issue_number()
         builds = self.fetch_raw_try_job_results(issue_number, patchset)
@@ -331,10 +325,8 @@ class GitCL:
             build_number = build.get('number')
             status = build.get('status')
             build_id = build.get('id')
-            build_to_status[Build(
-                builder_name,
-                build_number,
-                build_id)] = TryJobStatus.from_bb_status(status)
+            build_to_status[Build(builder_name, build_number,
+                                  build_id)] = BuildStatus[status]
         return build_to_status
 
     def fetch_raw_try_job_results(self, issue_number, patchset=None):
@@ -407,19 +399,13 @@ class GitCL:
         return Build(builder_name, task_id)
 
     @staticmethod
-    def _try_job_status(result_dict):
-        """Converts a parsed try result dict to a TryJobStatus object."""
-        return TryJobStatus(result_dict['status'], result_dict['result'])
-
-    @staticmethod
     def all_finished(try_results):
-        return all(s.status == 'COMPLETED' for s in try_results.values())
+        return all(s in BuildStatus.COMPLETED for s in try_results.values())
 
     @staticmethod
     def all_success(try_results):
-        return all(s.status == 'COMPLETED' and s.result == 'SUCCESS'
-                   for s in try_results.values())
+        return all(s is BuildStatus.SUCCESS for s in try_results.values())
 
     @staticmethod
     def some_failed(try_results):
-        return any(s.result == 'FAILURE' for s in try_results.values())
+        return any(s is BuildStatus.FAILURE for s in try_results.values())

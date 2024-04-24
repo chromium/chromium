@@ -11,7 +11,7 @@ from unittest import mock
 from blinkpy.common.checkout.git import CommitRange
 from blinkpy.common.checkout.git_mock import MockGit
 from blinkpy.common.host_mock import MockHost
-from blinkpy.common.net.git_cl import TryJobStatus
+from blinkpy.common.net.git_cl import BuildStatus
 from blinkpy.common.net.git_cl_mock import MockGitCL
 from blinkpy.common.net.network_transaction import NetworkTimeout
 from blinkpy.common.net.results_fetcher import Build
@@ -118,12 +118,12 @@ class TestImporterTest(LoggingTestCase):
         host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'W3CImportExpectations', '')
         importer = self._get_test_importer(host)
-        importer.git_cl = MockGitCL(
-            host,
-            status='closed',
-            try_job_results={
-                Build('builder-a', 123): TryJobStatus('COMPLETED', 'SUCCESS'),
-            })
+        importer.git_cl = MockGitCL(host,
+                                    status='closed',
+                                    try_job_results={
+                                        Build('builder-a', 123):
+                                        BuildStatus.SUCCESS,
+                                    })
         success = importer.update_expectations_for_cl()
         self.assertFalse(success)
         self.assertLog([
@@ -139,12 +139,12 @@ class TestImporterTest(LoggingTestCase):
         host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'W3CImportExpectations', '')
         importer = self._get_test_importer(host)
-        importer.git_cl = MockGitCL(
-            host,
-            status='lgtm',
-            try_job_results={
-                Build('builder-a', 123): TryJobStatus('COMPLETED', 'SUCCESS'),
-            })
+        importer.git_cl = MockGitCL(host,
+                                    status='lgtm',
+                                    try_job_results={
+                                        Build('builder-a', 123):
+                                        BuildStatus.SUCCESS,
+                                    })
         success = importer.update_expectations_for_cl()
         self.assertLog([
             'INFO: Triggering try jobs for updating expectations:\n',
@@ -160,12 +160,12 @@ class TestImporterTest(LoggingTestCase):
         host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'W3CImportExpectations', '')
         importer = self._get_test_importer(host)
-        importer.git_cl = MockGitCL(
-            host,
-            status='lgtm',
-            try_job_results={
-                Build('builder-a', 123): TryJobStatus('COMPLETED', 'FAILURE'),
-            })
+        importer.git_cl = MockGitCL(host,
+                                    status='lgtm',
+                                    try_job_results={
+                                        Build('builder-a', 123):
+                                        BuildStatus.FAILURE,
+                                    })
         importer.fetch_new_expectations_and_baselines = lambda: None
         success = importer.update_expectations_for_cl()
         self.assertTrue(success)
@@ -185,15 +185,14 @@ class TestImporterTest(LoggingTestCase):
             MOCK_WEB_TESTS + 'W3CImportExpectations', '')
         importer = self._get_test_importer(host)
         # Only the latest job for each builder is counted.
-        importer.git_cl = MockGitCL(
-            host,
-            status='lgtm',
-            try_job_results={
-                Build('cq-builder-a', 120): TryJobStatus(
-                    'COMPLETED', 'FAILURE'),
-                Build('cq-builder-a', 123): TryJobStatus(
-                    'COMPLETED', 'SUCCESS'),
-            })
+        importer.git_cl = MockGitCL(host,
+                                    status='lgtm',
+                                    try_job_results={
+                                        Build('cq-builder-a', 120):
+                                        BuildStatus.FAILURE,
+                                        Build('cq-builder-a', 123):
+                                        BuildStatus.SUCCESS,
+                                    })
 
         success = importer.run_commit_queue_for_cl()
         self.assertTrue(success)
@@ -222,17 +221,16 @@ class TestImporterTest(LoggingTestCase):
         host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'W3CImportExpectations', '')
         importer = self._get_test_importer(host)
-        importer.git_cl = MockGitCL(
-            host,
-            status='lgtm',
-            try_job_results={
-                Build('cq-builder-a', 120): TryJobStatus(
-                    'COMPLETED', 'SUCCESS'),
-                Build('cq-builder-a', 123): TryJobStatus(
-                    'COMPLETED', 'FAILURE'),
-                Build('cq-builder-b', 200): TryJobStatus(
-                    'COMPLETED', 'SUCCESS'),
-            })
+        importer.git_cl = MockGitCL(host,
+                                    status='lgtm',
+                                    try_job_results={
+                                        Build('cq-builder-a', 120):
+                                        BuildStatus.SUCCESS,
+                                        Build('cq-builder-a', 123):
+                                        BuildStatus.FAILURE,
+                                        Build('cq-builder-b', 200):
+                                        BuildStatus.SUCCESS,
+                                    })
         importer.fetch_new_expectations_and_baselines = lambda: None
 
         success = importer.run_commit_queue_for_cl()
@@ -252,15 +250,14 @@ class TestImporterTest(LoggingTestCase):
             MOCK_WEB_TESTS + 'W3CImportExpectations', '')
         importer = self._get_test_importer(host)
         # Only the latest job for each builder is counted.
-        importer.git_cl = MockGitCL(
-            host,
-            status='lgtm',
-            try_job_results={
-                Build('cq-builder-a', 120): TryJobStatus(
-                    'COMPLETED', 'FAILURE'),
-                Build('cq-builder-a', 123): TryJobStatus(
-                    'COMPLETED', 'SUCCESS'),
-            })
+        importer.git_cl = MockGitCL(host,
+                                    status='lgtm',
+                                    try_job_results={
+                                        Build('cq-builder-a', 120):
+                                        BuildStatus.FAILURE,
+                                        Build('cq-builder-a', 123):
+                                        BuildStatus.SUCCESS,
+                                    })
         importer._need_sheriff_attention = lambda: False
         importer.git_cl.wait_for_closed_status = lambda timeout_seconds: False
 
@@ -291,15 +288,14 @@ class TestImporterTest(LoggingTestCase):
         host.filesystem.write_text_file(
             MOCK_WEB_TESTS + 'W3CImportExpectations', '')
         importer = self._get_test_importer(host)
-        importer.git_cl = MockGitCL(
-            host,
-            status='closed',
-            try_job_results={
-                Build('cq-builder-a', 120): TryJobStatus(
-                    'COMPLETED', 'SUCCESS'),
-                Build('cq-builder-b', 200): TryJobStatus(
-                    'COMPLETED', 'SUCCESS'),
-            })
+        importer.git_cl = MockGitCL(host,
+                                    status='closed',
+                                    try_job_results={
+                                        Build('cq-builder-a', 120):
+                                        BuildStatus.SUCCESS,
+                                        Build('cq-builder-b', 200):
+                                        BuildStatus.SUCCESS,
+                                    })
 
         success = importer.run_commit_queue_for_cl()
         self.assertFalse(success)
@@ -337,10 +333,8 @@ class TestImporterTest(LoggingTestCase):
             status='lgtm',
             # Only the latest job for each builder is counted.
             try_job_results={
-                Build('cq-builder-a', 120): TryJobStatus(
-                    'COMPLETED', 'FAILURE'),
-                Build('cq-builder-a', 123): TryJobStatus(
-                    'COMPLETED', 'SUCCESS')
+                Build('cq-builder-a', 120): BuildStatus.FAILURE,
+                Build('cq-builder-a', 123): BuildStatus.SUCCESS,
             })
         importer._need_sheriff_attention = lambda: False
         importer.git_cl.wait_for_closed_status = lambda timeout_seconds: False

@@ -14,7 +14,7 @@ from concurrent.futures import Executor
 from typing import Dict, List, Optional
 
 from blinkpy.common.checkout.baseline_optimizer import BaselineOptimizer
-from blinkpy.common.net.git_cl import GitCL, TryJobStatus
+from blinkpy.common.net.git_cl import BuildStatus, GitCL
 from blinkpy.common.net.rpc import Build, RPCError
 from blinkpy.common.net.web_test_results import WebTestResults
 from blinkpy.common.path_finder import PathFinder
@@ -204,7 +204,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
 
     def _fetch_results(
         self,
-        build_statuses: Dict[Build, TryJobStatus],
+        build_statuses: Dict[Build, BuildStatus],
     ) -> Dict[Build, List[WebTestResults]]:
         """Fetches results for all of the given builds.
 
@@ -223,14 +223,14 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         build_steps = []
 
         for build, status in build_statuses.items():
-            if status == TryJobStatus('COMPLETED', 'SUCCESS'):
+            if status is BuildStatus.SUCCESS:
                 _log.debug('No baselines to download for passing %r build %s.',
                            build.builder_name, build.build_number
                            or '(unknown)')
                 # This empty entry indicates the builder is not missing.
                 builds_to_results[build] = []
                 continue
-            if status != TryJobStatus('COMPLETED', 'FAILURE'):
+            if status is not BuildStatus.FAILURE:
                 # Only completed failed builds will contain actual failed
                 # web tests to download baselines for.
                 continue

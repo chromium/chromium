@@ -7,7 +7,7 @@ from unittest.mock import Mock, call
 
 from blinkpy.common import exit_codes
 from blinkpy.common.host_mock import MockHost
-from blinkpy.common.net.git_cl import TryJobStatus
+from blinkpy.common.net.git_cl import BuildStatus
 from blinkpy.common.net.git_cl_mock import MockGitCL
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.tool.commands.build_resolver import Build, BuildResolver
@@ -47,11 +47,10 @@ class BuildResolverTest(LoggingTestCase):
         })
         build_statuses = self.resolver.resolve_builds(
             [Build('Fake Test Linux', bucket='ci')])
-        self.assertEqual(
-            build_statuses, {
-                Build('Fake Test Linux', 123, '123', 'ci'):
-                TryJobStatus('COMPLETED', 'FAILURE'),
-            })
+        self.assertEqual(build_statuses, {
+            Build('Fake Test Linux', 123, '123', 'ci'):
+            BuildStatus.FAILURE,
+        })
         (_, body), = self.host.web.requests
         self.assertEqual(
             json.loads(body), {
@@ -109,9 +108,8 @@ class BuildResolverTest(LoggingTestCase):
         self.assertEqual(
             build_statuses, {
                 Build('Fake Test Linux', 123, '123', 'ci'):
-                TryJobStatus('COMPLETED', 'FAILURE'),
-                Build('linux-rel', 456, '456'):
-                TryJobStatus('SCHEDULED', None),
+                BuildStatus.FAILURE,
+                Build('linux-rel', 456, '456'): BuildStatus.SCHEDULED,
             })
         (_, body), = self.host.web.requests
         self.assertEqual(
@@ -216,12 +214,9 @@ class BuildResolverTest(LoggingTestCase):
         ] * 3, self.host.web.session.get.call_args_list)
         self.assertEqual(
             build_statuses, {
-                Build('linux-rel', 1, '1'):
-                TryJobStatus('COMPLETED', 'INFRA_FAILURE'),
-                Build('linux-rel', 2, '2'):
-                TryJobStatus('COMPLETED', 'INFRA_FAILURE'),
-                Build('linux-rel', 3, '3'):
-                TryJobStatus('COMPLETED', 'FAILURE'),
+                Build('linux-rel', 1, '1'): BuildStatus.INFRA_FAILURE,
+                Build('linux-rel', 2, '2'): BuildStatus.INFRA_FAILURE,
+                Build('linux-rel', 3, '3'): BuildStatus.FAILURE,
             })
 
     def test_detect_unrelated_failure(self):
@@ -244,8 +239,6 @@ class BuildResolverTest(LoggingTestCase):
             }],
         })
         build_statuses = self.resolver.resolve_builds([Build('linux-rel', 1)])
-        self.assertEqual(
-            build_statuses, {
-                Build('linux-rel', 1, '1'):
-                TryJobStatus('COMPLETED', 'INFRA_FAILURE'),
-            })
+        self.assertEqual(build_statuses, {
+            Build('linux-rel', 1, '1'): BuildStatus.INFRA_FAILURE,
+        })

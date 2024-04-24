@@ -5,7 +5,7 @@
 import unittest
 
 from blinkpy.common.host_mock import MockHost
-from blinkpy.common.net.git_cl import TryJobStatus
+from blinkpy.common.net.git_cl import BuildStatus
 from blinkpy.common.net.git_cl_mock import MockGitCL
 from blinkpy.common.net.results_fetcher import Build
 from blinkpy.common.net.web_test_results import WebTestResults
@@ -19,9 +19,9 @@ class TryFlagTest(unittest.TestCase):
         self.mac_build = Build('mac-rel', 101)
         self.win_build = Build('win7-rel', 102)
         self.mock_try_results = {
-            self.linux_build: TryJobStatus('COMPLETED', 'SUCCESS'),
-            self.win_build: TryJobStatus('COMPLETED', 'SUCCESS'),
-            self.mac_build: TryJobStatus('COMPLETED', 'SUCCESS')
+            self.linux_build: BuildStatus.SUCCESS,
+            self.win_build: BuildStatus.SUCCESS,
+            self.mac_build: BuildStatus.SUCCESS
         }
         super(TryFlagTest, self).__init__(*args, **kwargs)
 
