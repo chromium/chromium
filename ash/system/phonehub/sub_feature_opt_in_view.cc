@@ -210,7 +210,7 @@ void SubFeatureOptInView::InitLayout() {
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(
           IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_SET_UP_BUTTON),
-      PillButton::Type::kDefaultWithoutIcon, /*icon=*/nullptr));
+      PillButton::Type::kPrimaryWithoutIcon, /*icon=*/nullptr));
   set_up_button_->SetID(kSubFeatureOptInConfirmButton);
   set_up_button_->SetAccessibleName(
       l10n_util::GetStringUTF16(set_up_button_accessible_name_string_id_));
