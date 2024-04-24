@@ -7,6 +7,8 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/embedder_support/ios/delegate/color_chooser/color_chooser_ios.h"
+#import "components/embedder_support/ios/delegate/file_chooser/file_select_helper_ios.h"
+#import "content/public/browser/file_select_listener.h"
 #import "content/public/browser/navigation_entry.h"
 #import "content/public/browser/web_contents.h"
 #import "ios/web/content/content_browser_context.h"
@@ -747,6 +749,17 @@ std::unique_ptr<content::ColorChooser> ContentWebState::OpenColorChooser(
     const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
   return std::make_unique<web_contents_delegate_ios::ColorChooserIOS>(
       web_contents, color, suggestions);
+}
+
+// TODO(crbug.com/40255112): Need to consider showing a context menu that
+// contains 'Photo Library', 'Take Photo', and 'Choose File' sub menus as
+// browsers based on WebKit.
+void ContentWebState::RunFileChooser(
+    content::RenderFrameHost* render_frame_host,
+    scoped_refptr<content::FileSelectListener> listener,
+    const blink::mojom::FileChooserParams& params) {
+  web_contents_delegate_ios::FileSelectHelperIOS::RunFileChooser(
+      render_frame_host, listener, params);
 }
 
 }  // namespace web

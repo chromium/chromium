@@ -14,6 +14,8 @@ static_library("web_contents_delegate") {
     "delegate/color_chooser/color_chooser_ios.mm",
     "delegate/color_chooser/color_chooser_mediator_ios.h",
     "delegate/color_chooser/color_chooser_mediator_ios.mm",
+    "delegate/file_chooser/file_select_helper_ios.h",
+    "delegate/file_chooser/file_select_helper_ios.mm",
   ]
 
   deps = [
@@ -23,6 +25,7 @@ static_library("web_contents_delegate") {
     "//skia",
     "//ui/base",
     "//ui/gfx",
+    "//ui/shell_dialogs:shell_dialogs",
     "//url",
   ]
 }
