@@ -467,11 +467,6 @@ void ExternallyManagedAppManager::OnInstalled(
 
 void ExternallyManagedAppManager::MaybeEnqueueServiceWorkerRegistration(
     const ExternalInstallOptions& install_options) {
-  if (!base::FeatureList::IsEnabled(
-          features::kDesktopPWAsCacheDuringDefaultInstall)) {
-    return;
-  }
-
   if (IsShuttingDown()) {
     return;
   }

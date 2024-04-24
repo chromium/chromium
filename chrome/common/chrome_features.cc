@@ -267,12 +267,6 @@ BASE_FEATURE(kControlledFrame,
              "ControlledFrame",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When installing default installed PWAs, we wait for service workers
-// to cache resources.
-BASE_FEATURE(kDesktopPWAsCacheDuringDefaultInstall,
-             "DesktopPWAsCacheDuringDefaultInstall",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Moves the Extensions "puzzle piece" icon from the title bar into the app menu
 // for web app windows.
 BASE_FEATURE(kDesktopPWAsElidedExtensionsMenu,
