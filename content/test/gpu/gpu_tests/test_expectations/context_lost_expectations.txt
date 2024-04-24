@@ -180,6 +180,19 @@ crbug.com/524808 [ win8 nvidia ] ContextLost_WebGLContextLostFromSelectElement [
 crbug.com/923134 [ mac ] ContextLost_WebGL2Blocked [ Skip ]
 crbug.com/923134 [ android ] ContextLost_WebGL2Blocked [ Skip ]
 
+# Always fail and flakily hangs browser shutdown on Win/Intel UHD 770.
+crbug.com/335672567 [ win intel-0x4680 ] ContextLost_Canvas2dGPUCrash [ Skip ]
+crbug.com/335672567 [ win intel-0x4680 ] ContextLost_OffscreenCanvasRecoveryAfterGPUCrash [ Skip ]
+crbug.com/335672567 [ win intel-0x4680 ] ContextLost_WebGLBlockedAfterJSNavigation [ Skip ]
+crbug.com/335672567 [ win intel-0x4680 ] ContextLost_WebGLContextLostFromGPUProcessExit [ Skip ]
+crbug.com/335672567 [ win intel-0x4680 ] ContextLost_WebGLContextRestoredInHiddenTab [ Skip ]
+crbug.com/335672567 [ win intel-0x4680 ] ContextLost_WorkerWebGLRAFAfterGPUCrash [ Skip ]
+crbug.com/335672567 [ win intel-0x4680 ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Skip ]
+crbug.com/335672567 [ win intel-0x4680 ] ContextLost_WebGPUBlockedAfterJSNavigation [ Skip ]
+crbug.com/335672567 [ win intel-0x4680 ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Skip ]
+crbug.com/335672567 [ win intel-0x4680 ] GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash [ Skip ]
+crbug.com/335672567 [ win intel-0x4680 release ] GpuCrash_InfoForHardwareGpu [ Skip ]
+
 ###################
 # Failures/Flakes #
 ###################
@@ -192,7 +205,10 @@ crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGL2UnpackImag
 crbug.com/1419558 [ angle-swiftshader clang-coverage fuchsia fuchsia-board-qemu-x64 google-0xc0de ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
 
 # Fails with Graphite on Windows and Mac
-crbug.com/329145823 [ win release ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ win release amd ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ win release intel-0x9bc5 ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ win release nvidia ] GpuCrash_InfoForHardwareGpu [ Failure ]
+crbug.com/329145823 [ win release qualcomm ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ mac release ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ mac release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 

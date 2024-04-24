@@ -434,6 +434,15 @@ OVERLAY_CONFIGS = {
         AllHardwareSupportDirectCompositionConfig(),
         0x9bc5:
         AllHardwareSupportDirectCompositionConfig(),
+        0x4680: BasicDirectCompositionConfig()\
+                .WithHardwareNV12Support(supported_rotations=[
+                    VideoRotation.ROT180])\
+                .WithHardwareYUY2Support()\
+                .WithHardwareBGRA8Support()\
+                .WithZeroCopyConfig(ZeroCopyConfig(
+                    supports_scaled_video=False,
+                    supported_codecs=[
+                        ZeroCopyCodec.H264])),
     },
     constants.GpuVendor.NVIDIA: {
         # For some reason, software BGRA8 software overlay support changes

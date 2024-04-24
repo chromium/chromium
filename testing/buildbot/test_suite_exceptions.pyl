@@ -2767,6 +2767,11 @@
           },
         },
       },
+      'Win10 FYI x64 Release (Intel UHD 770)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/win.uhd_770.gl_tests_passthrough.filter',
+        ],
+      },
     },
   },
   'gl_tests_validating': {
@@ -5447,6 +5452,13 @@
     ],
     'modifications': {
       'Win10 FYI x64 Experimental Release (Intel)': {
+        'args': [
+          # TODO(crbug.com/40937024): Remove this once the flakes on Intel are
+          # resolved.
+          '--gtest_filter=-WebXrVrOpenXrBrowserTest.TestNoStalledFrameLoop',
+        ],
+      },
+      'Win10 FYI x64 Release (Intel UHD 770)': {
         'args': [
           # TODO(crbug.com/40937024): Remove this once the flakes on Intel are
           # resolved.

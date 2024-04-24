@@ -323,6 +323,10 @@ crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphi
 crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_VideoStreamFrom2DCanvas [ Skip ]
 crbug.com/41488897 [ android android-pixel-6 passthrough renderer-skia-gl graphite-enabled ] Pixel_Video_BackdropFilter [ Skip ]
 
+# Can flakily hang browser shutdown.
+crbug.com/335672567 [ win intel-0x4680 ] Pixel_WebGLContextRestored [ Skip ]
+crbug.com/335672567 [ win intel-0x4680 ] Pixel_WebGLSadCanvas [ Skip ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################
@@ -481,6 +485,10 @@ crbug.com/329235191 [ win graphite-enabled ] Pixel_WebGL_PremultipliedAlpha_Fals
 # Graphite was disabled on older NVIDIA drivers, and these tests fail under
 # ganesh.
 crbug.com/332731568 [ win nvidia graphite-disabled ] Pixel_Video_HEVC [ Failure ]
+
+# Consistently times out on Windows/UHD 770
+crbug.com/335325875 [ win10 intel-0x4680 ] Pixel_Video_Context_Loss_MP4 [ Failure ]
+crbug.com/335325875 [ win10 intel-0x4680 ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

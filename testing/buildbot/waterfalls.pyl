@@ -4669,8 +4669,8 @@
           'win10_intel_uhd_770_stable',
         ],
         'test_suites': {
-          # TODO(crbug.com/331316080): Enable tests on this config.
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+          'gtest_tests': 'gpu_fyi_win_gtests',
+          'gpu_telemetry_tests': 'gpu_fyi_win_intel_release_telemetry_tests',
         },
       },
       'Win10 FYI x64 Release (Intel)': {

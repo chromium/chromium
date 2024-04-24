@@ -176,7 +176,8 @@ crbug.com/326356910 [ chromeos chromeos-board-volteer ] WebCodecs_FrameSizeChang
 crbug.com/326356910 [ chromeos chromeos-board-volteer ] WebCodecs_FrameSizeChange_vp8_hw_decoder [ Failure ]
 crbug.com/326356910 [ chromeos chromeos-board-volteer ] WebCodecs_copyTo_hw_decoder [ Failure ]
 
-
+crbug.com/333426465 [ win intel-0x4680 ] WebCodecs_PerFrameQpEncoding_offscreen_avc1.42001E_prefer-hardware [ Failure ]
+crbug.com/333426465 [ win intel-0x4680 ] WebCodecs_SVC_vp09.00.10.08_prefer-hardware_layers_2 [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

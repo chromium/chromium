@@ -407,6 +407,8 @@ crbug.com/329130354 [ mac amd-0x679e ] deqp/functional/gles3/fborender/resize_03
 # the default 15 second heartbeat timeout because of that.
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] deqp/functional/gles3/uniformapi/random.html [ Slow ]
 
+[ win intel-0x4680 ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Slow ]
+
 ###################
 # Failures/Flakes #
 ###################
@@ -1007,6 +1009,7 @@ crbug.com/332743717 [ chromeos chromeos-board-amd64-generic ] conformance2/canva
 crbug.com/332743717 [ chromeos chromeos-board-octopus ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ chromeos chromeos-board-volteer ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ android android-pixel-2 ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
+crbug.com/332743717 [ win intel-0x4680 ] conformance2/query/occlusion-query-scissor.html [ Failure ]
 crbug.com/332743717 [ win qualcomm-0x41333430 ] conformance2/textures/image_bitmap_from_video/tex-2d-rgb8ui-rgb_integer-unsigned_byte.html [ Failure ]
 crbug.com/335203259 [ android android-pixel-2 ] conformance2/wasm/bufferdata-16gb-wasm-memory.html [ Failure ]
 crbug.com/335203259 [ android android-pixel-2 ] conformance2/wasm/bufferdata-4gb-wasm-memory.html [ Failure ]
