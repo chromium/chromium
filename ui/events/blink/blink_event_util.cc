@@ -617,7 +617,7 @@ std::unique_ptr<blink::WebInputEvent> TranslateAndScaleWebInputEvent(
     if (gesture_event->GetType() ==
             blink::WebInputEvent::Type::kGestureScrollUpdate &&
         trace_id.has_value()) {
-      TRACE_EVENT("input", "TranslateAndScaleWebInputEvent",
+      TRACE_EVENT("input,input.scrolling", "TranslateAndScaleWebInputEvent",
                   [trace_id_value = *trace_id,
                    delta_x = gesture_event->data.scroll_update.delta_x,
                    delta_y = gesture_event->data.scroll_update.delta_y](

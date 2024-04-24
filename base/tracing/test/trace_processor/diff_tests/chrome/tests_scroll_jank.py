@@ -83,7 +83,7 @@ class ChromeScrollJankStdlib(TestSuite):
 
   def test_chrome_scroll_input_offsets(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_offsets.pftrace'),
+        trace=DataPath('scroll_offsets_trace_2.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_offsets;
 
@@ -91,18 +91,19 @@ class ChromeScrollJankStdlib(TestSuite):
           scroll_update_id,
           ts,
           delta_y,
-          offset_y
+          relative_offset_y
         FROM chrome_scroll_input_offsets
+        WHERE scroll_update_id IS NOT NULL
         ORDER by ts
         LIMIT 5;
         """,
         out=Csv("""
-        "scroll_update_id","ts","delta_y","offset_y"
-        1983,4687296612739,-36.999939,-36.999939
-        1983,4687307175845,-39.000092,-76.000031
-        1987,4687313206739,-35.999969,-112.000000
-        1987,4687323152462,-35.000000,-147.000000
-        1991,4687329240739,-28.999969,-175.999969
+        "scroll_update_id","ts","delta_y","relative_offset_y"
+        130,1349914859791,-6.932281,-368.342689
+        132,1349923327791,-32.999954,-401.342643
+        134,1349931893791,-39.999954,-441.342597
+        140,1349956886791,-51.000046,-492.342643
+        147,1349982489791,-89.808540,-582.151184
         """))
 
   def test_chrome_janky_event_latencies_v3(self):
@@ -192,7 +193,7 @@ class ChromeScrollJankStdlib(TestSuite):
         """))
   def test_chrome_presented_scroll_offsets(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_offsets.pftrace'),
+        trace=DataPath('scroll_offsets_trace_2.pftrace'),
         query="""
         INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_offsets;
 
@@ -200,18 +201,19 @@ class ChromeScrollJankStdlib(TestSuite):
           scroll_update_id,
           ts,
           delta_y,
-          offset_y
+          relative_offset_y
         FROM chrome_presented_scroll_offsets
+        WHERE scroll_update_id IS NOT NULL
         ORDER by ts
         LIMIT 5;
         """,
         out=Csv("""
-        "scroll_update_id","ts","delta_y","offset_y"
-        1983,4687341817739,"[NULL]",0
-        1987,4687352950739,-50,-50
-        1991,4687364083739,-50,-100
-        1993,4687375224739,-81,-181
-        1996,4687386343739,-66,-247
+        "scroll_update_id","ts","delta_y","relative_offset_y"
+        130,1349963342791,-6.932281,-6.932281
+        132,1349985554791,-16.573090,-23.505371
+        134,1349996680791,-107.517273,-131.022644
+        140,1350007850791,-158.728424,-289.751068
+        147,1350018935791,-89.808540,-379.559608
         """))
 
   def test_scroll_jank_cause_map(self):
