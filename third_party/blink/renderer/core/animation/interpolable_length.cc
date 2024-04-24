@@ -610,9 +610,6 @@ void InterpolableLength::Interpolate(const InterpolableValue& to,
       CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           blended_from, blended_to, CSSMathOperator::kAdd);
   result_length.SetExpression(*result_expression);
-
-  DCHECK_EQ(result_length.HasPercentage(),
-            HasPercentage() || to_length.HasPercentage());
 }
 
 void InterpolableLength::Trace(Visitor* v) const {
