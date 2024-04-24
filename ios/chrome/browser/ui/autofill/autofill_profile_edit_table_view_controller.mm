@@ -119,7 +119,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
                                             inSection:section];
     NSInteger itemType = [_controller.tableViewModel itemTypeForIndexPath:path];
 
-    if (itemType == AutofillProfileDetailsItemTypeCountry) {
+    if (itemType == AutofillProfileDetailsItemTypeCountrySelectionField) {
       [_delegate updateProfileMetadataWithValue:[self countryFieldCurrentValue]
                            forAutofillFieldType:[self countryFieldKeyValue]];
       continue;
@@ -195,7 +195,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     return tableViewTextButtonCell;
   }
 
-  if (itemType == AutofillProfileDetailsItemTypeCountry) {
+  if (itemType == AutofillProfileDetailsItemTypeCountrySelectionField) {
     TableViewMultiDetailTextCell* multiDetailTextCell =
         base::apple::ObjCCastStrict<TableViewMultiDetailTextCell>(cell);
     multiDetailTextCell.accessibilityIdentifier =
@@ -214,7 +214,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   NSInteger itemType =
       [_controller.tableViewModel itemTypeForIndexPath:indexPath];
   if ([self showEditView]) {
-    if (itemType == AutofillProfileDetailsItemTypeCountry) {
+    if (itemType == AutofillProfileDetailsItemTypeCountrySelectionField) {
       [_delegate willSelectCountryWithCurrentlySelectedCountry:
                      [self countryFieldCurrentValue]];
     } else if (itemType != AutofillProfileDetailsItemTypeFooter &&
@@ -349,42 +349,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   [_delegate didSaveProfileFromModal];
 }
 
-#pragma mark - Conversion Helper Methods
-// Returns the item type corresponding to the `autofillUIType`.
-- (AutofillProfileDetailsItemType)itemTypeForAutofillType:
-    (autofill::FieldType)autofillType {
-  switch (autofillType) {
-    case autofill::COMPANY_NAME:
-      return AutofillProfileDetailsItemTypeCompanyName;
-    case autofill::NAME_FULL:
-      return AutofillProfileDetailsItemTypeFullName;
-    case autofill::ADDRESS_HOME_LINE1:
-      return AutofillProfileDetailsItemTypeLine1;
-    case autofill::ADDRESS_HOME_LINE2:
-      return AutofillProfileDetailsItemTypeLine2;
-    case autofill::ADDRESS_HOME_DEPENDENT_LOCALITY:
-      return AutofillProfileDetailsItemTypeDependentLocality;
-    case autofill::ADDRESS_HOME_ADMIN_LEVEL2:
-      return AutofillProfileDetailsItemTypeAdminLevel2;
-    case autofill::ADDRESS_HOME_CITY:
-      return AutofillProfileDetailsItemTypeCity;
-    case autofill::ADDRESS_HOME_STATE:
-      return AutofillProfileDetailsItemTypeState;
-    case autofill::ADDRESS_HOME_ZIP:
-      return AutofillProfileDetailsItemTypeZip;
-    case autofill::ADDRESS_HOME_COUNTRY:
-      return AutofillProfileDetailsItemTypeCountry;
-    case autofill::PHONE_HOME_WHOLE_NUMBER:
-      return AutofillProfileDetailsItemTypePhoneNumber;
-    case autofill::EMAIL_ADDRESS:
-      return AutofillProfileDetailsItemTypeEmailAddress;
-    default:
-      break;
-  }
-  NOTREACHED();
-  return AutofillProfileDetailsItemTypeError;
-}
-
 #pragma mark - Items
 
 // Creates and returns the `TableViewLinkHeaderFooterItem` footer item.
@@ -411,7 +375,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (AutofillProfileEditItem*)autofillEditItemFromField:
     (const AutofillProfileFieldDisplayInfo&)field {
   AutofillProfileEditItem* item = [[AutofillProfileEditItem alloc]
-      initWithType:[self itemTypeForAutofillType:field.autofillType]];
+      initWithType:AutofillProfileDetailsItemTypeTextField];
   item.fieldNameLabelText = l10n_util::GetNSString(field.displayStringID);
   item.autofillFieldType =
       base::SysUTF8ToNSString(autofill::FieldTypeToString(field.autofillType));
@@ -431,7 +395,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // settings view.
 - (TableViewMultiDetailTextItem*)countryItem {
   TableViewMultiDetailTextItem* item = [[TableViewMultiDetailTextItem alloc]
-      initWithType:AutofillProfileDetailsItemTypeCountry];
+      initWithType:AutofillProfileDetailsItemTypeCountrySelectionField];
   item.text = l10n_util::GetNSString(IDS_IOS_AUTOFILL_COUNTRY);
   item.trailingDetailText = [self countryFieldCurrentValue];
   item.trailingDetailTextColor = [UIColor colorNamed:kTextPrimaryColor];
@@ -640,19 +604,9 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // Returns YES if the `itemType` belongs to a text edit field.
 - (BOOL)isItemTypeTextEditCell:(NSInteger)itemType {
   switch (static_cast<AutofillProfileDetailsItemType>(itemType)) {
-    case AutofillProfileDetailsItemTypeCompanyName:
-    case AutofillProfileDetailsItemTypeFullName:
-    case AutofillProfileDetailsItemTypeLine1:
-    case AutofillProfileDetailsItemTypeLine2:
-    case AutofillProfileDetailsItemTypeDependentLocality:
-    case AutofillProfileDetailsItemTypeAdminLevel2:
-    case AutofillProfileDetailsItemTypeCity:
-    case AutofillProfileDetailsItemTypeState:
-    case AutofillProfileDetailsItemTypeZip:
-    case AutofillProfileDetailsItemTypePhoneNumber:
-    case AutofillProfileDetailsItemTypeEmailAddress:
+    case AutofillProfileDetailsItemTypeTextField:
       return YES;
-    case AutofillProfileDetailsItemTypeCountry:
+    case AutofillProfileDetailsItemTypeCountrySelectionField:
     case AutofillProfileDetailsItemTypeError:
     case AutofillProfileDetailsItemTypeFooter:
     case AutofillProfileDetailsItemTypeSaveButton:
@@ -669,7 +623,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   for (TableViewItem* item in [_controller.tableViewModel
            itemsInSectionWithIdentifier:
                AutofillProfileDetailsSectionIdentifierFields]) {
-    if (item.type == AutofillProfileDetailsItemTypeCountry) {
+    if (item.type == AutofillProfileDetailsItemTypeCountrySelectionField) {
       TableViewMultiDetailTextItem* multiDetailTextItem =
           base::apple::ObjCCastStrict<TableViewMultiDetailTextItem>(item);
       multiDetailTextItem.trailingDetailText = [self countryFieldCurrentValue];
