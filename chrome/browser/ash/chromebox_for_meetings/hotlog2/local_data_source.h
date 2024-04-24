@@ -9,6 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
+#include "components/feedback/redaction_tool/redaction_tool.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash::cfm {
@@ -21,7 +22,7 @@ inline constexpr int kMaxInternalBufferSize = 50000;  // ~7Mb
 
 class LocalDataSource : public mojom::DataSource {
  public:
-  explicit LocalDataSource(base::TimeDelta poll_rate);
+  LocalDataSource(base::TimeDelta poll_rate, bool data_needs_redacting);
   LocalDataSource(const LocalDataSource&) = delete;
   LocalDataSource& operator=(const LocalDataSource&) = delete;
   ~LocalDataSource() override;
@@ -50,9 +51,14 @@ class LocalDataSource : public mojom::DataSource {
 
  private:
   bool IsDataBufferOverMaxLimit();
+  void RedactUploadBuffer();
 
   base::RepeatingTimer poll_timer_;
   base::TimeDelta poll_rate_;
+
+  // True if we should pass the data through the redactor tool
+  // before uploading, False otherwise.
+  bool data_needs_redacting_;
 
   // Contains a chain of the most recent data. Will be moved into
   // pending_upload_buffer_ below upon a call to Fetch().
@@ -61,6 +67,9 @@ class LocalDataSource : public mojom::DataSource {
   // Contains a chain of data that are queued for upload. Will be
   // cleared upon a call to Flush();
   std::vector<std::string> pending_upload_buffer_;
+
+  // Redaction tool for PII redaction
+  redaction::RedactionTool redactor_;
 
   // Must be the last class member.
   base::WeakPtrFactory<LocalDataSource> weak_ptr_factory_{this};

@@ -19,7 +19,8 @@ namespace ash::cfm {
 constexpr int kFileBatchSize = 500;
 
 LogSource::LogSource(const std::string& filepath, base::TimeDelta poll_rate)
-    : LocalDataSource(poll_rate), log_file_(filepath) {
+    : LocalDataSource(poll_rate, /*data_needs_redacting=*/true),
+      log_file_(filepath) {
   // No point in proceeding here if the file can't be opened
   // TODO(b/322505142): load offset from persistent cache
   if (!log_file_.OpenAtOffset(0)) {

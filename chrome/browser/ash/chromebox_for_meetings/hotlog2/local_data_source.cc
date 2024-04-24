@@ -10,8 +10,11 @@
 
 namespace ash::cfm {
 
-LocalDataSource::LocalDataSource(base::TimeDelta poll_rate)
-    : poll_rate_(poll_rate) {}
+LocalDataSource::LocalDataSource(base::TimeDelta poll_rate,
+                                 bool data_needs_redacting)
+    : poll_rate_(poll_rate),
+      data_needs_redacting_(data_needs_redacting),
+      redactor_(nullptr) {}
 
 inline LocalDataSource::~LocalDataSource() = default;
 
@@ -27,11 +30,14 @@ void LocalDataSource::Fetch(FetchCallback callback) {
   // empty (from a previously-failed upload attempt), do nothing
   // and attempt to consume it again.
   if (pending_upload_buffer_.empty()) {
-    // TODO(b/327020292): redact data
-    // TODO(b/326441003): serialize data
     std::move(data_buffer_.begin(), data_buffer_.end(),
               std::back_inserter(pending_upload_buffer_));
     data_buffer_.clear();
+
+    if (data_needs_redacting_) {
+      RedactUploadBuffer();
+    }
+    // TODO(b/326441003): serialize upload buffer
   }
 
   std::move(callback).Run(pending_upload_buffer_);
@@ -82,6 +88,12 @@ void LocalDataSource::FillDataBuffer() {
 
 bool LocalDataSource::IsDataBufferOverMaxLimit() {
   return data_buffer_.size() > kMaxInternalBufferSize;
+}
+
+void LocalDataSource::RedactUploadBuffer() {
+  for (size_t i = 0; i < pending_upload_buffer_.size(); i++) {
+    pending_upload_buffer_[i] = redactor_.Redact(pending_upload_buffer_[i]);
+  }
 }
 
 }  // namespace ash::cfm

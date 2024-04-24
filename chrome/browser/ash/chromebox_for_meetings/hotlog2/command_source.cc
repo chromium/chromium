@@ -13,7 +13,8 @@ namespace ash::cfm {
 
 CommandSource::CommandSource(const std::string& command,
                              base::TimeDelta poll_rate)
-    : LocalDataSource(poll_rate), command_(command) {
+    : LocalDataSource(poll_rate, /*data_needs_redacting=*/false),
+      command_(command) {
   command_split_ = base::SplitString(command, " ", base::KEEP_WHITESPACE,
                                      base::SPLIT_WANT_NONEMPTY);
 }
