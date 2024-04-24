@@ -208,7 +208,8 @@ class ASH_EXPORT AshNotificationView
     void SetMaxAvailableWidth(int max_available_width);
 
     // views::View:
-    gfx::Size CalculatePreferredSize() const override;
+    gfx::Size CalculatePreferredSize(
+        const views::SizeBounds& available_size) const override;
     void OnThemeChanged() override;
 
     views::Label* title_view() { return title_view_; }

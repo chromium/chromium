@@ -127,7 +127,8 @@ class ASH_EXPORT NotificationListView
   void ChildPreferredSizeChanged(views::View* child) override;
   void PreferredSizeChanged() override;
   void Layout(PassKey) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // message_center::NotificationViewController:
   void AnimateResize() override;

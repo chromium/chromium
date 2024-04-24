@@ -120,7 +120,8 @@ void MessageViewContainer::TriggerPreferredSizeChangedForAnimation() {
   views::View::PreferredSizeChanged();
 }
 
-gfx::Size MessageViewContainer::CalculatePreferredSize() const {
+gfx::Size MessageViewContainer::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   if (list_view_ && list_view_->IsAnimatingExpandOrCollapseContainer(this)) {
     // Width should never change, only height.
     return gfx::Size(kNotificationInMessageCenterWidth,

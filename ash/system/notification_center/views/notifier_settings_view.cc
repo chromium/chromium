@@ -128,7 +128,8 @@ class NotifierButtonWrapperView : public views::View {
 
   // views::View:
   void Layout(PassKey) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnFocus() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
@@ -166,7 +167,8 @@ void NotifierButtonWrapperView::Layout(PassKey) {
                                            : FocusBehavior::NEVER);
 }
 
-gfx::Size NotifierButtonWrapperView::CalculatePreferredSize() const {
+gfx::Size NotifierButtonWrapperView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kWidth, kNotifierButtonWrapperHeight);
 }
 
@@ -801,7 +803,8 @@ gfx::Size NotifierSettingsView::GetMinimumSize() const {
   return size;
 }
 
-gfx::Size NotifierSettingsView::CalculatePreferredSize() const {
+gfx::Size NotifierSettingsView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   gfx::Size header_size = header_view_->GetPreferredSize();
   // |scroller_| and |no_notifiers_view_| do not exist when notifications
   // settings are split out of the notifier_settings_view.

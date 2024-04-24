@@ -391,7 +391,8 @@ gfx::Rect NotificationListView::GetNotificationBoundsBelowY(
   return (it == children().cend()) ? gfx::Rect() : (*it)->bounds();
 }
 
-gfx::Size NotificationListView::CalculatePreferredSize() const {
+gfx::Size NotificationListView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   if (state_ == State::IDLE) {
     return gfx::Size(message_view_width_, target_height_);
   }

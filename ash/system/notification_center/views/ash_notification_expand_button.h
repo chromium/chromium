@@ -52,7 +52,8 @@ class AshNotificationExpandButton : public views::Button {
 
   // views::Button:
   void OnThemeChanged() override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   void SetNotificationTitleForButtonTooltip(
       const std::u16string& notification_title);

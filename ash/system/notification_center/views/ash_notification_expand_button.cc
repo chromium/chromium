@@ -214,8 +214,9 @@ void AshNotificationExpandButton::OnThemeChanged() {
   UpdateBackgroundColor();
 }
 
-gfx::Size AshNotificationExpandButton::CalculatePreferredSize() const {
-  gfx::Size size = Button::CalculatePreferredSize();
+gfx::Size AshNotificationExpandButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size size = Button::CalculatePreferredSize(available_size);
 
   // When label is fading out, it is still visible but we should not consider
   // its size in our calculation here, so that size change animation can be

@@ -421,15 +421,16 @@ void AshNotificationView::NotificationTitleRow::SetMaxAvailableWidth(
   max_available_width_ = max_available_width;
 }
 
-gfx::Size AshNotificationView::NotificationTitleRow::CalculatePreferredSize()
-    const {
+gfx::Size AshNotificationView::NotificationTitleRow::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // TODO(crbug.com/1349528): The size constraint is not passed down from the
   // views tree in the first round of layout, so setting a fixed width to bound
   // the view. The layout manager can size the view beyond this width if there
   // is available space. This works similar to applying a max width on the
   // internal labels.
   return gfx::Size(max_available_width_,
-                   GetHeightForWidth(max_available_width_));
+                   GetLayoutManager()->GetPreferredHeightForWidth(
+                       this, max_available_width_));
 }
 
 void AshNotificationView::NotificationTitleRow::OnThemeChanged() {
