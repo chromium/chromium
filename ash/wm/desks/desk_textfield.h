@@ -38,7 +38,8 @@ class ASH_EXPORT DeskTextfield : public SystemTextfield,
   }
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;

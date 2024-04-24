@@ -43,7 +43,8 @@ void DeskTextfield::CommitChanges(views::Widget* widget) {
   focus_manager->SetStoredFocusView(nullptr);
 }
 
-gfx::Size DeskTextfield::CalculatePreferredSize() const {
+gfx::Size DeskTextfield::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const std::u16string& text = GetText();
   int width = 0;
   int height = 0;

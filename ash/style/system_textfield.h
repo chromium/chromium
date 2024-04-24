@@ -57,7 +57,8 @@ class ASH_EXPORT SystemTextfield : public views::Textfield {
   void UpdateBackground();
 
   // views::Textfield:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void SetBorder(std::unique_ptr<views::Border> b) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;

@@ -39,7 +39,8 @@ class PinTextfield : public views::Textfield {
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnThemeChanged() override;
 
  private:

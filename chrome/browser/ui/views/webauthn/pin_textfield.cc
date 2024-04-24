@@ -153,7 +153,8 @@ void PinTextfield::OnPaint(gfx::Canvas* canvas) {
   }
 }
 
-gfx::Size PinTextfield::CalculatePreferredSize() const {
+gfx::Size PinTextfield::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(
       pin_digits_count_ * kCellWidth + (pin_digits_count_ - 1) * kCellSpacing,
       kCellHeight);

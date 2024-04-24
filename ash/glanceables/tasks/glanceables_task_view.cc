@@ -145,7 +145,8 @@ class TaskViewTextField : public SystemTextfield,
   ~TaskViewTextField() override = default;
 
   // SystemTextfield:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size(0, TypographyProvider::Get()->ResolveLineHeight(
                             TypographyToken::kCrosButton2));
   }

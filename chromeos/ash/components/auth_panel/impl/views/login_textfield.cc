@@ -54,7 +54,8 @@ void LoginTextfield::OnFocus() {
       std::nullopt});
 }
 
-gfx::Size LoginTextfield::CalculatePreferredSize() const {
+gfx::Size LoginTextfield::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kPasswordTotalWidthDp, kIconSizeDp);
 }
 

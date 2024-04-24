@@ -335,7 +335,8 @@ class VIEWS_EXPORT Textfield : public View,
 
   // View overrides:
   int GetBaseline() const override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   void SetBorder(std::unique_ptr<Border> b) override;
   ui::Cursor GetCursor(const ui::MouseEvent& event) override;

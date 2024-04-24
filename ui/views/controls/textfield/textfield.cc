@@ -638,7 +638,8 @@ int Textfield::GetBaseline() const {
   return GetInsets().top() + GetRenderText()->GetBaseline();
 }
 
-gfx::Size Textfield::CalculatePreferredSize() const {
+gfx::Size Textfield::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
   DCHECK_GE(default_width_in_chars_, minimum_width_in_chars_);
   return gfx::Size(
       CharsToDips(default_width_in_chars_),

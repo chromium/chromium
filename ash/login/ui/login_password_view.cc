@@ -227,7 +227,8 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
 
   // This is useful when the display password button is not shown. In such a
   // case, the login text field needs to define its size.
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size(kPasswordTotalWidthDp, kIconSizeDp);
   }
 

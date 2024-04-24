@@ -213,7 +213,8 @@ class SearchBoxTextfield : public views::Textfield {
   ~SearchBoxTextfield() override = default;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     // Overridden so the BoxLayoutView 'text_container_' can properly layout
     // the search box and ghost text.
     const std::u16string& text = GetText();
