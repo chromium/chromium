@@ -76,6 +76,9 @@ FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kViewPasswordDetails:
       return FillingProduct::kPassword;
     case PopupItemId::kCompose:
+    case PopupItemId::kComposeDisable:
+    case PopupItemId::kComposeGoToSettings:
+    case PopupItemId::kComposeNeverShowOnThisSiteAgain:
     case PopupItemId::kComposeSavedStateNotification:
       return FillingProduct::kCompose;
     case PopupItemId::kCreateNewPlusAddress:

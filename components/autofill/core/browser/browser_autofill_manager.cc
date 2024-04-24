@@ -346,6 +346,9 @@ FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
     case PopupItemId::kAutofillOptions:
     case PopupItemId::kClearForm:
     case PopupItemId::kCompose:
+    case PopupItemId::kComposeDisable:
+    case PopupItemId::kComposeGoToSettings:
+    case PopupItemId::kComposeNeverShowOnThisSiteAgain:
     case PopupItemId::kComposeSavedStateNotification:
     case PopupItemId::kCreateNewPlusAddress:
     case PopupItemId::kCreditCardEntry:

@@ -26,7 +26,15 @@
   <message name="IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW" desc="The message read out by a screen reader whtn the Compose nudge is shown.">
     Resume Help me write. Tab and press enter to open
   </message>
-
+  <message name="IDS_COMPOSE_NEVER_SHOW_ON_THIS_SITE_AGAIN_CHILD_SUGGESTION_TEXT" desc="Text a user sees in one of the Autofill popup child suggestions for the Help me write feature. When selected, the Autofill popup will no longer be displayed on the current domain." translateable="false">
+    Never show on this site
+  </message>
+  <message name="IDS_COMPOSE_DISABLE_HELP_ME_WRITE_CHILD_SUGGESTION_TEXT" desc="Text a user sees in one of the Autofill popup child suggestions for the Help me write feature. When selected, the Help me write feature is disabled for all websites." translateable="false">
+    Disable Help me write
+  </message>
+  <message name="IDS_COMPOSE_GO_TO_SETTINGS_CHILD_SUGGESTION_TEXT" desc="Text a user sees in one of the Autofill popup child suggestions for the Help me write feature. When selected, the user is navigate to a decicated Help me write feature settings page." translateable="false">
+    Go to Settings
+  </message>
   <!-- FRE dialog -->
   <message name="IDS_COMPOSE_FRE_TITLE" desc="The title of the Help me write disclaimer dialog.">
     Write with more confidence anywhere on the web
