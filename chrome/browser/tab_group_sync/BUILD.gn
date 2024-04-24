@@ -37,12 +37,14 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/RemoteTabGroupMutationHelper.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/StartupHelper.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncController.java",
+      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncFeatures.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncLocalObserver.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncRemoteObserver.java",
     ]
 
     deps = [
       "//base:base_java",
+      "//chrome/browser/flags:java",
       "//chrome/browser/tab:java",
       "//chrome/browser/tab_group:java",
       "//chrome/browser/tabmodel:java",
