@@ -36,19 +36,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @interface FakeAutofillProfileEditConsumer
     : NSObject <AutofillProfileEditConsumer>
 // Stores the value displayed in the fields.
-@property(nonatomic, assign) NSString* honorificPrefix;
-@property(nonatomic, assign) NSString* companyName;
-@property(nonatomic, assign) NSString* fullName;
-@property(nonatomic, assign) NSString* homeAddressLine1;
-@property(nonatomic, assign) NSString* homeAddressLine2;
-@property(nonatomic, assign) NSString* homeAddressDependentLocality;
-@property(nonatomic, assign) NSString* homeAddressCity;
-@property(nonatomic, assign) NSString* homeAddressAdminLevel2;
-@property(nonatomic, assign) NSString* homeAddressState;
-@property(nonatomic, assign) NSString* homeAddressZip;
-@property(nonatomic, assign) NSString* homeAddressCountry;
-@property(nonatomic, assign) NSString* homePhoneWholeNumber;
-@property(nonatomic, assign) NSString* emailAddress;
 
 // YES, if the profile's source is autofill::AutofillProfile::Source::kAccount.
 @property(nonatomic, assign) BOOL accountProfile;
@@ -60,6 +47,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)didSelectCountry:(NSString*)country {
   self.countrySelected = country;
+}
+
+- (void)setFieldValuesMap:
+    (NSMutableDictionary<NSString*, NSString*>*)fieldValueMap {
 }
 
 @end

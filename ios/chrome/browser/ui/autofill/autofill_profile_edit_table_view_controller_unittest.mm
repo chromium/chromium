@@ -94,38 +94,49 @@ class AutofillProfileEditTableViewControllerTest
   void CreateProfileData() {
     full_name_ =
         base::SysUTF16ToNSString(profile_->GetRawInfo(autofill::NAME_FULL));
-    [autofill_profile_edit_table_view_controller_ setFullName:full_name_];
     company_name_ =
         base::SysUTF16ToNSString(profile_->GetRawInfo(autofill::COMPANY_NAME));
-    [autofill_profile_edit_table_view_controller_ setCompanyName:company_name_];
     address_home_line_1_ = base::SysUTF16ToNSString(
         profile_->GetRawInfo(autofill::ADDRESS_HOME_LINE1));
-    [autofill_profile_edit_table_view_controller_
-        setHomeAddressLine1:address_home_line_1_];
     address_home_line_2_ = base::SysUTF16ToNSString(
         profile_->GetRawInfo(autofill::ADDRESS_HOME_LINE2));
-    [autofill_profile_edit_table_view_controller_
-        setHomeAddressLine2:address_home_line_2_];
     city_ = base::SysUTF16ToNSString(
         profile_->GetRawInfo(autofill::ADDRESS_HOME_CITY));
-    [autofill_profile_edit_table_view_controller_ setHomeAddressCity:city_];
     state_ = base::SysUTF16ToNSString(
         profile_->GetRawInfo(autofill::ADDRESS_HOME_STATE));
-    [autofill_profile_edit_table_view_controller_ setHomeAddressState:state_];
     zip_ = base::SysUTF16ToNSString(
         profile_->GetRawInfo(autofill::ADDRESS_HOME_ZIP));
-    [autofill_profile_edit_table_view_controller_ setHomeAddressZip:zip_];
     country_ = base::SysUTF16ToNSString(
         profile_->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
-    [autofill_profile_edit_table_view_controller_
-        setHomeAddressCountry:country_];
     phone_home_whole_number_ = base::SysUTF16ToNSString(
         profile_->GetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER));
-    [autofill_profile_edit_table_view_controller_
-        setHomePhoneWholeNumber:phone_home_whole_number_];
     email_ =
         base::SysUTF16ToNSString(profile_->GetRawInfo(autofill::EMAIL_ADDRESS));
-    [autofill_profile_edit_table_view_controller_ setEmailAddress:email_];
+
+    const std::array<autofill::FieldType, 11> field_types = {
+        autofill::NAME_FULL,
+        autofill::COMPANY_NAME,
+        autofill::ADDRESS_HOME_LINE1,
+        autofill::ADDRESS_HOME_LINE2,
+        autofill::ADDRESS_HOME_DEPENDENT_LOCALITY,
+        autofill::ADDRESS_HOME_CITY,
+        autofill::ADDRESS_HOME_STATE,
+        autofill::ADDRESS_HOME_ZIP,
+        autofill::ADDRESS_HOME_COUNTRY,
+        autofill::PHONE_HOME_WHOLE_NUMBER,
+        autofill::EMAIL_ADDRESS};
+
+    NSMutableDictionary<NSString*, NSString*>* fieldValuesMap =
+        [[NSMutableDictionary alloc] initWithCapacity:field_types.size()];
+    for (const auto& type : field_types) {
+      NSString* fieldValueMapKey =
+          base::SysUTF8ToNSString(autofill::FieldTypeToStringView(type));
+      fieldValuesMap[fieldValueMapKey] =
+          base::SysUTF16ToNSString(profile_->GetRawInfo(type));
+    }
+
+    [autofill_profile_edit_table_view_controller_
+        setFieldValuesMap:fieldValuesMap];
   }
 
   NSString* GetFieldValue(int section, int index) {

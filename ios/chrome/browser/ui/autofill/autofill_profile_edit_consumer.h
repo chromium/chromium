@@ -14,18 +14,8 @@
 - (void)didSelectCountry:(NSString*)country;
 
 // Notifies the class that conforms this delegate to set the corresponding data.
-- (void)setCompanyName:(NSString*)companyName;
-- (void)setFullName:(NSString*)fullName;
-- (void)setHomeAddressLine1:(NSString*)homeAddressLine1;
-- (void)setHomeAddressLine2:(NSString*)homeAddressLine2;
-- (void)setHomeAddressDependentLocality:(NSString*)homeAddressDependentLocality;
-- (void)setHomeAddressCity:(NSString*)homeAddressCity;
-- (void)setHomeAddressAdminLevel2:(NSString*)homeAddressAdminLevel2;
-- (void)setHomeAddressState:(NSString*)homeAddressState;
-- (void)setHomeAddressZip:(NSString*)homeAddressZip;
-- (void)setHomeAddressCountry:(NSString*)homeAddressCountry;
-- (void)setHomePhoneWholeNumber:(NSString*)homePhoneWholeNumber;
-- (void)setEmailAddress:(NSString*)emailAddress;
+- (void)setFieldValuesMap:
+    (NSMutableDictionary<NSString*, NSString*>*)fieldValueMap;
 
 // Notifies the class that conforms this delegate to set whether the profile is
 // an account profile or not.

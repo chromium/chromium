@@ -126,43 +126,30 @@ class LegacyInfobarEditAddressProfileTableViewControllerTest
 
   void CreateProfileData() {
     autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
+    const std::array<autofill::FieldType, 11> field_types = {
+        autofill::NAME_FULL,
+        autofill::COMPANY_NAME,
+        autofill::ADDRESS_HOME_LINE1,
+        autofill::ADDRESS_HOME_LINE2,
+        autofill::ADDRESS_HOME_DEPENDENT_LOCALITY,
+        autofill::ADDRESS_HOME_CITY,
+        autofill::ADDRESS_HOME_STATE,
+        autofill::ADDRESS_HOME_ZIP,
+        autofill::ADDRESS_HOME_COUNTRY,
+        autofill::PHONE_HOME_WHOLE_NUMBER,
+        autofill::EMAIL_ADDRESS};
+
+    NSMutableDictionary<NSString*, NSString*>* fieldValuesMap =
+        [[NSMutableDictionary alloc] initWithCapacity:field_types.size()];
+    for (const auto& type : field_types) {
+      NSString* fieldValueMapKey =
+          base::SysUTF8ToNSString(autofill::FieldTypeToStringView(type));
+      fieldValuesMap[fieldValueMapKey] =
+          base::SysUTF16ToNSString(profile.GetRawInfo(type));
+    }
+
     [autofill_profile_edit_table_view_controller_
-        setFullName:base::SysUTF16ToNSString(
-                        profile.GetRawInfo(autofill::NAME_FULL))];
-    [autofill_profile_edit_table_view_controller_
-        setCompanyName:base::SysUTF16ToNSString(
-                           profile.GetRawInfo(autofill::COMPANY_NAME))];
-    [autofill_profile_edit_table_view_controller_
-        setHomeAddressLine1:base::SysUTF16ToNSString(profile.GetRawInfo(
-                                autofill::ADDRESS_HOME_LINE1))];
-    [autofill_profile_edit_table_view_controller_
-        setHomeAddressLine2:base::SysUTF16ToNSString(profile.GetRawInfo(
-                                autofill::ADDRESS_HOME_LINE2))];
-    [autofill_profile_edit_table_view_controller_
-        setHomeAddressDependentLocality:
-            base::SysUTF16ToNSString(
-                profile.GetRawInfo(autofill::ADDRESS_HOME_DEPENDENT_LOCALITY))];
-    [autofill_profile_edit_table_view_controller_
-        setHomeAddressCity:base::SysUTF16ToNSString(profile.GetRawInfo(
-                               autofill::ADDRESS_HOME_CITY))];
-    [autofill_profile_edit_table_view_controller_
-        setHomeAddressAdminLevel2:base::SysUTF16ToNSString(profile.GetRawInfo(
-                                      autofill::ADDRESS_HOME_ADMIN_LEVEL2))];
-    [autofill_profile_edit_table_view_controller_
-        setHomeAddressState:base::SysUTF16ToNSString(profile.GetRawInfo(
-                                autofill::ADDRESS_HOME_STATE))];
-    [autofill_profile_edit_table_view_controller_
-        setHomeAddressZip:base::SysUTF16ToNSString(
-                              profile.GetRawInfo(autofill::ADDRESS_HOME_ZIP))];
-    [autofill_profile_edit_table_view_controller_
-        setHomeAddressCountry:base::SysUTF16ToNSString(profile.GetRawInfo(
-                                  autofill::ADDRESS_HOME_COUNTRY))];
-    [autofill_profile_edit_table_view_controller_
-        setHomePhoneWholeNumber:base::SysUTF16ToNSString(profile.GetRawInfo(
-                                    autofill::PHONE_HOME_WHOLE_NUMBER))];
-    [autofill_profile_edit_table_view_controller_
-        setEmailAddress:base::SysUTF16ToNSString(
-                            profile.GetRawInfo(autofill::EMAIL_ADDRESS))];
+        setFieldValuesMap:fieldValuesMap];
   }
 
   AutofillProfileEditTableViewController*

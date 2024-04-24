@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_constants.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller_delegate.h"
-#import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_profile_edit_item.h"
 #import "ios/chrome/browser/ui/autofill/cells/country_item.h"
@@ -29,9 +28,6 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-using ::AutofillTypeFromAutofillUIType;
-using ::AutofillUITypeFromAutofillType;
-
 // A constant to separate the error and the footer text.
 const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
@@ -40,18 +36,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 @interface AutofillProfileEditTableViewController ()
 
 // Stores the value displayed in the fields.
-@property(nonatomic, strong) NSString* companyName;
-@property(nonatomic, strong) NSString* fullName;
-@property(nonatomic, strong) NSString* homeAddressLine1;
-@property(nonatomic, strong) NSString* homeAddressLine2;
-@property(nonatomic, strong) NSString* homeAddressDependentLocality;
-@property(nonatomic, strong) NSString* homeAddressCity;
-@property(nonatomic, strong) NSString* homeAddressAdminLevel2;
-@property(nonatomic, strong) NSString* homeAddressState;
-@property(nonatomic, strong) NSString* homeAddressZip;
-@property(nonatomic, strong) NSString* homeAddressCountry;
-@property(nonatomic, strong) NSString* homePhoneWholeNumber;
-@property(nonatomic, strong) NSString* emailAddress;
+@property(nonatomic, strong)
+    NSMutableDictionary<NSString*, NSString*>* fieldValuesMap;
 
 // YES, if the profile's source is autofill::AutofillProfile::Source::kAccount.
 @property(nonatomic, assign) BOOL accountProfile;
@@ -134,11 +120,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     NSInteger itemType = [_controller.tableViewModel itemTypeForIndexPath:path];
 
     if (itemType == AutofillProfileDetailsItemTypeCountry) {
-      [_delegate
-          updateProfileMetadataWithValue:self.homeAddressCountry
-                    forAutofillFieldType:
-                        base::SysUTF8ToNSString(autofill::FieldTypeToString(
-                            autofill::ADDRESS_HOME_COUNTRY))];
+      [_delegate updateProfileMetadataWithValue:[self countryFieldCurrentValue]
+                           forAutofillFieldType:[self countryFieldKeyValue]];
       continue;
     } else if (![self isItemTypeTextEditCell:itemType]) {
       continue;
@@ -176,8 +159,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       continue;
     }
 
-    if (AutofillUITypeFromAutofillType(field.autofillType) ==
-        AutofillUITypeProfileHomeAddressCountry) {
+    if (field.autofillType == autofill::ADDRESS_HOME_COUNTRY) {
       [model addItem:[self countryItem]
           toSectionWithIdentifier:
               AutofillProfileDetailsSectionIdentifierFields];
@@ -234,7 +216,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   if ([self showEditView]) {
     if (itemType == AutofillProfileDetailsItemTypeCountry) {
       [_delegate willSelectCountryWithCurrentlySelectedCountry:
-                     self.homeAddressCountry];
+                     [self countryFieldCurrentValue]];
     } else if (itemType != AutofillProfileDetailsItemTypeFooter &&
                itemType != AutofillProfileDetailsItemTypeError &&
                [self isItemTypeTextEditCell:itemType]) {
@@ -332,10 +314,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   [_controller reconfigureCellsForItems:@[ tableViewItem ]];
 
   // Record new value in current state.
-  [self
-      updateValueForAutofillFieldType:((AutofillProfileEditItem*)tableViewItem)
-                                          .autofillFieldType
-                                value:tableViewItem.textFieldValue];
+  self.fieldValuesMap[((AutofillProfileEditItem*)tableViewItem)
+                          .autofillFieldType] = tableViewItem.textFieldValue;
 }
 
 #pragma mark - AutofillProfileEditConsumer
@@ -357,7 +337,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   // Reload the table view with the new fields.
   [_controller.tableView reloadData];
 
-  self.homeAddressCountry = country;
+  self.fieldValuesMap[[self countryFieldKeyValue]] = country;
   [self findRequiredFieldsWithEmptyValues];
 }
 
@@ -370,68 +350,33 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 #pragma mark - Conversion Helper Methods
-
-// Returns the value corresponding to `autofillType`.
-- (NSString*)valueForAutofillUIType:(AutofillUIType)autofillUIType {
-  switch (autofillUIType) {
-    case AutofillUITypeProfileCompanyName:
-      return self.companyName;
-    case AutofillUITypeProfileFullName:
-      return self.fullName;
-    case AutofillUITypeProfileHomeAddressLine1:
-      return self.homeAddressLine1;
-    case AutofillUITypeProfileHomeAddressLine2:
-      return self.homeAddressLine2;
-    case AutofillUITypeProfileHomeAddressDependentLocality:
-      return self.homeAddressDependentLocality;
-    case AutofillUITypeProfileHomeAddressCity:
-      return self.homeAddressCity;
-    case AutofillUITypeProfileHomeAddressAdminLevel2:
-      return self.homeAddressAdminLevel2;
-    case AutofillUITypeProfileHomeAddressState:
-      return self.homeAddressState;
-    case AutofillUITypeProfileHomeAddressZip:
-      return self.homeAddressZip;
-    case AutofillUITypeProfileHomeAddressCountry:
-      return self.homeAddressCountry;
-    case AutofillUITypeProfileHomePhoneWholeNumber:
-      return self.homePhoneWholeNumber;
-    case AutofillUITypeProfileEmailAddress:
-      return self.emailAddress;
-    default:
-      break;
-  }
-  NOTREACHED();
-  return @"";
-}
-
 // Returns the item type corresponding to the `autofillUIType`.
-- (AutofillProfileDetailsItemType)itemTypeForAutofillUIType:
-    (AutofillUIType)autofillUIType {
-  switch (autofillUIType) {
-    case AutofillUITypeProfileCompanyName:
+- (AutofillProfileDetailsItemType)itemTypeForAutofillType:
+    (autofill::FieldType)autofillType {
+  switch (autofillType) {
+    case autofill::COMPANY_NAME:
       return AutofillProfileDetailsItemTypeCompanyName;
-    case AutofillUITypeProfileFullName:
+    case autofill::NAME_FULL:
       return AutofillProfileDetailsItemTypeFullName;
-    case AutofillUITypeProfileHomeAddressLine1:
+    case autofill::ADDRESS_HOME_LINE1:
       return AutofillProfileDetailsItemTypeLine1;
-    case AutofillUITypeProfileHomeAddressLine2:
+    case autofill::ADDRESS_HOME_LINE2:
       return AutofillProfileDetailsItemTypeLine2;
-    case AutofillUITypeProfileHomeAddressDependentLocality:
+    case autofill::ADDRESS_HOME_DEPENDENT_LOCALITY:
       return AutofillProfileDetailsItemTypeDependentLocality;
-    case AutofillUITypeProfileHomeAddressAdminLevel2:
+    case autofill::ADDRESS_HOME_ADMIN_LEVEL2:
       return AutofillProfileDetailsItemTypeAdminLevel2;
-    case AutofillUITypeProfileHomeAddressCity:
+    case autofill::ADDRESS_HOME_CITY:
       return AutofillProfileDetailsItemTypeCity;
-    case AutofillUITypeProfileHomeAddressState:
+    case autofill::ADDRESS_HOME_STATE:
       return AutofillProfileDetailsItemTypeState;
-    case AutofillUITypeProfileHomeAddressZip:
+    case autofill::ADDRESS_HOME_ZIP:
       return AutofillProfileDetailsItemTypeZip;
-    case AutofillUITypeProfileHomeAddressCountry:
+    case autofill::ADDRESS_HOME_COUNTRY:
       return AutofillProfileDetailsItemTypeCountry;
-    case AutofillUITypeProfileHomePhoneWholeNumber:
+    case autofill::PHONE_HOME_WHOLE_NUMBER:
       return AutofillProfileDetailsItemTypePhoneNumber;
-    case AutofillUITypeProfileEmailAddress:
+    case autofill::EMAIL_ADDRESS:
       return AutofillProfileDetailsItemTypeEmailAddress;
     default:
       break;
@@ -465,14 +410,12 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // prompts as well as the settings view.
 - (AutofillProfileEditItem*)autofillEditItemFromField:
     (const AutofillProfileFieldDisplayInfo&)field {
-  AutofillUIType autofillUIType =
-      AutofillUITypeFromAutofillType(field.autofillType);
   AutofillProfileEditItem* item = [[AutofillProfileEditItem alloc]
-      initWithType:[self itemTypeForAutofillUIType:autofillUIType]];
+      initWithType:[self itemTypeForAutofillType:field.autofillType]];
   item.fieldNameLabelText = l10n_util::GetNSString(field.displayStringID);
-  item.textFieldValue = [self valueForAutofillUIType:autofillUIType];
   item.autofillFieldType =
       base::SysUTF8ToNSString(autofill::FieldTypeToString(field.autofillType));
+  item.textFieldValue = self.fieldValuesMap[item.autofillFieldType];
   item.textFieldEnabled = [self showEditView];
   item.hideIcon = ![self showEditView];
   item.autoCapitalizationType = field.autoCapitalizationType;
@@ -490,7 +433,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   TableViewMultiDetailTextItem* item = [[TableViewMultiDetailTextItem alloc]
       initWithType:AutofillProfileDetailsItemTypeCountry];
   item.text = l10n_util::GetNSString(IDS_IOS_AUTOFILL_COUNTRY);
-  item.trailingDetailText = self.homeAddressCountry;
+  item.trailingDetailText = [self countryFieldCurrentValue];
   item.trailingDetailTextColor = [UIColor colorNamed:kTextPrimaryColor];
   item.useCustomSeparator = !_settingsView;
   if (!_settingsView) {
@@ -729,7 +672,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     if (item.type == AutofillProfileDetailsItemTypeCountry) {
       TableViewMultiDetailTextItem* multiDetailTextItem =
           base::apple::ObjCCastStrict<TableViewMultiDetailTextItem>(item);
-      multiDetailTextItem.trailingDetailText = self.homeAddressCountry;
+      multiDetailTextItem.trailingDetailText = [self countryFieldCurrentValue];
     } else if ([self isItemTypeTextEditCell:item.type]) {
       // No requirement checks for local profiles.
       if (self.accountProfile || self.migrationPrompt ||
@@ -750,52 +693,15 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
 }
 
-// Updates the value corresponding to `autofillUIType`.
-- (void)updateValueForAutofillFieldType:(NSString*)autofillFieldType
-                                  value:(NSString*)value {
-  autofill::FieldType serverFieldType =
-      autofill::TypeNameToFieldType(base::SysNSStringToUTF8(autofillFieldType));
-  switch (serverFieldType) {
-    case autofill::COMPANY_NAME:
-      self.companyName = value;
-      break;
-    case autofill::NAME_FULL:
-      self.fullName = value;
-      break;
-    case autofill::ADDRESS_HOME_LINE1:
-      self.homeAddressLine1 = value;
-      break;
-    case autofill::ADDRESS_HOME_LINE2:
-      self.homeAddressLine2 = value;
-      break;
-    case autofill::ADDRESS_HOME_DEPENDENT_LOCALITY:
-      self.homeAddressDependentLocality = value;
-      break;
-    case autofill::ADDRESS_HOME_CITY:
-      self.homeAddressCity = value;
-      break;
-    case autofill::ADDRESS_HOME_ADMIN_LEVEL2:
-      self.homeAddressAdminLevel2 = value;
-      break;
-    case autofill::ADDRESS_HOME_STATE:
-      self.homeAddressState = value;
-      break;
-    case autofill::ADDRESS_HOME_ZIP:
-      self.homeAddressZip = value;
-      break;
-    case autofill::ADDRESS_HOME_COUNTRY:
-      self.homeAddressCountry = value;
-      break;
-    case autofill::PHONE_HOME_WHOLE_NUMBER:
-      self.homePhoneWholeNumber = value;
-      break;
-    case autofill::EMAIL_ADDRESS:
-      self.emailAddress = value;
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
+// Returns the currently selected country value.
+- (NSString*)countryFieldCurrentValue {
+  return self.fieldValuesMap[[self countryFieldKeyValue]];
+}
+
+// Returns the key in the `self.fieldValuesMap` for the country field.
+- (NSString*)countryFieldKeyValue {
+  return base::SysUTF8ToNSString(
+      autofill::FieldTypeToString(autofill::ADDRESS_HOME_COUNTRY));
 }
 
 @end

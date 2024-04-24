@@ -316,54 +316,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Informs the consumer of the profile's data.
 - (void)sendAutofillProfileDataToConsumer {
+  NSMutableDictionary<NSString*, NSString*>* fieldValueMap =
+      [[NSMutableDictionary alloc]
+          initWithCapacity:std::size(kProfileFieldsToDisplay)];
   for (const AutofillProfileFieldDisplayInfo& field : kProfileFieldsToDisplay) {
-    AutofillUIType autofillUIType =
-        AutofillUITypeFromAutofillType(field.autofillType);
+    NSString* fieldType = base::SysUTF8ToNSString(
+        autofill::FieldTypeToStringView(field.autofillType));
     NSString* fieldValue = base::SysUTF16ToNSString(_autofillProfile->GetInfo(
         autofill::AutofillType(field.autofillType),
         GetApplicationContext()->GetApplicationLocale()));
-    switch (autofillUIType) {
-      case AutofillUITypeProfileCompanyName:
-        [self.consumer setCompanyName:fieldValue];
-        break;
-      case AutofillUITypeProfileFullName:
-        [self.consumer setFullName:fieldValue];
-        break;
-      case AutofillUITypeProfileHomeAddressLine1:
-        [self.consumer setHomeAddressLine1:fieldValue];
-        break;
-      case AutofillUITypeProfileHomeAddressLine2:
-        [self.consumer setHomeAddressLine2:fieldValue];
-        break;
-      case AutofillUITypeProfileHomeAddressDependentLocality:
-        [self.consumer setHomeAddressDependentLocality:fieldValue];
-        break;
-      case AutofillUITypeProfileHomeAddressCity:
-        [self.consumer setHomeAddressCity:fieldValue];
-        break;
-      case AutofillUITypeProfileHomeAddressAdminLevel2:
-        [self.consumer setHomeAddressAdminLevel2:fieldValue];
-        break;
-      case AutofillUITypeProfileHomeAddressState:
-        [self.consumer setHomeAddressState:fieldValue];
-        break;
-      case AutofillUITypeProfileHomeAddressZip:
-        [self.consumer setHomeAddressZip:fieldValue];
-        break;
-      case AutofillUITypeProfileHomeAddressCountry:
-        [self.consumer setHomeAddressCountry:fieldValue];
-        break;
-      case AutofillUITypeProfileHomePhoneWholeNumber:
-        [self.consumer setHomePhoneWholeNumber:fieldValue];
-        break;
-      case AutofillUITypeProfileEmailAddress:
-        [self.consumer setEmailAddress:fieldValue];
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
+    fieldValueMap[fieldType] = fieldValue;
   }
+
+  [self.consumer setFieldValuesMap:fieldValueMap];
 }
 
 // Returns YES if `autofillProfile` is an account profile.
