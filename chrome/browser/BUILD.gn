@@ -8493,7 +8493,6 @@ static_library("test_support") {
       "fast_checkout/mock_fast_checkout_capabilities_fetcher.cc",
       "fast_checkout/mock_fast_checkout_capabilities_fetcher.h",
     ]
-    deps += [ "//chrome/android:test_support_jni_headers" ]
   } else {
     sources += [
       "apps/intent_helper/preferred_apps_test_util.cc",

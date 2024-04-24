@@ -178,7 +178,7 @@ component("clipboard") {
   }
 
   if (is_android) {
-    deps += [ "//ui/base:ui_base_jni_headers" ]
+    deps += [ "//ui/base:clipboard_jni_headers" ]
   }
 
   if (is_mac) {

@@ -3173,11 +3173,11 @@ test("net_unittests") {
     deps += [
       ":net_jni_headers",
       "//base:base_unittest_support_java",
+      "//net/android:dummy_spnego_authenticator_java",
+      "//net/android:dummy_spnego_authenticator_jni",
       "//net/android:net_java",
       "//net/android:net_java_test_support",
       "//net/android:net_test_support_jni",
-      "//net/android:net_test_support_provider_java",
-      "//net/android:net_test_support_provider_jni",
       "//net/android:net_tests_java",
       "//net/android:net_tests_jni",
       "//net/android:net_unittests_apk_resources",

@@ -6,7 +6,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/base64.h"
-#include "net/android/net_test_support_provider_jni/DummySpnegoAuthenticator_jni.h"
+#include "net/android/dummy_spnego_authenticator_jni/DummySpnegoAuthenticator_jni.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::android::JavaParamRef;
