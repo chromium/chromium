@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // Windows doesn't support pthread_key_create's destr_function, and in fact
 // it's a bit tricky to get code to run when a thread exits.  This is
 // cargo-cult magic from http://www.codeproject.com/threads/tls.asp.
