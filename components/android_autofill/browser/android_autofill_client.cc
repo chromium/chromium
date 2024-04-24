@@ -210,12 +210,6 @@ void AndroidAutofillClient::UpdateAutofillDataListValues(
   // APIs.
 }
 
-std::vector<autofill::Suggestion> AndroidAutofillClient::GetPopupSuggestions()
-    const {
-  NOTIMPLEMENTED();
-  return {};
-}
-
 void AndroidAutofillClient::PinAutofillSuggestions() {
   NOTIMPLEMENTED();
 }

@@ -720,7 +720,7 @@ class AutofillClient {
   virtual std::optional<PopupScreenLocation> GetPopupScreenLocation() const;
 
   // Returns (not elided) suggestions currently held by the UI.
-  virtual std::vector<Suggestion> GetPopupSuggestions() const = 0;
+  virtual base::span<const Suggestion> GetAutofillSuggestions() const;
 
   // Updates the popup contents with the newly given suggestions.
   // `trigger_source` indicates the reason for updating the popup. (However, the

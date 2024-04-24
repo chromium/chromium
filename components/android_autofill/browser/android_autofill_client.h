@@ -120,7 +120,6 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
       base::WeakPtr<autofill::AutofillPopupDelegate> delegate) override;
   void UpdateAutofillDataListValues(
       base::span<const autofill::SelectOption> datalist) override;
-  std::vector<autofill::Suggestion> GetPopupSuggestions() const override;
   void PinAutofillSuggestions() override;
   void UpdatePopup(
       const std::vector<autofill::Suggestion>& suggestions,

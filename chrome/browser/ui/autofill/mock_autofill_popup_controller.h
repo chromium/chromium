@@ -60,7 +60,7 @@ class MockAutofillPopupController : public AutofillPopupController {
               GetPopupScreenLocation,
               (),
               (const override));
-  std::vector<Suggestion> GetSuggestions() const override {
+  const std::vector<Suggestion>& GetSuggestions() const override {
     return suggestions_;
   }
   MOCK_METHOD(const std::vector<SuggestionFilterMatch>&,

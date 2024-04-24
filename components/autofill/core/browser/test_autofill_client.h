@@ -430,7 +430,9 @@ class TestAutofillClientTemplate : public T {
   void UpdateAutofillDataListValues(
       base::span<const SelectOption> options) override {}
 
-  std::vector<Suggestion> GetPopupSuggestions() const override { return {}; }
+  base::span<const Suggestion> GetAutofillSuggestions() const override {
+    return {};
+  }
 
   void PinAutofillSuggestions() override {}
 

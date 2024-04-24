@@ -270,6 +270,11 @@ AutofillClient::GetPopupScreenLocation() const {
   return std::nullopt;
 }
 
+base::span<const Suggestion> AutofillClient::GetAutofillSuggestions() const {
+  NOTIMPLEMENTED();
+  return {};
+}
+
 void AutofillClient::set_test_addresses(
     std::vector<AutofillProfile> test_addresses) {}
 

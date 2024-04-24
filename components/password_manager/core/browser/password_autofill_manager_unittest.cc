@@ -220,13 +220,9 @@ class MockAutofillClient : public autofill::TestAutofillClient {
                base::WeakPtr<autofill::AutofillPopupDelegate> delegate),
               (override));
   MOCK_METHOD(void, PinAutofillSuggestions, (), (override));
-  MOCK_METHOD(std::vector<autofill::Suggestion>,
-              GetPopupSuggestions,
-              (),
-              (const, override));
   MOCK_METHOD(void,
               UpdatePopup,
-              (const std::vector<autofill::Suggestion>&,
+              (const std::vector<Suggestion>&,
                FillingProduct,
                autofill::AutofillSuggestionTriggerSource),
               (override));
@@ -234,6 +230,56 @@ class MockAutofillClient : public autofill::TestAutofillClient {
               HideAutofillSuggestions,
               (autofill::PopupHidingReason),
               (override));
+
+  base::span<const Suggestion> GetAutofillSuggestions() const override {
+    return autofill_suggestions_;
+  }
+  void set_autofill_suggestions(std::vector<Suggestion> suggestions) {
+    autofill_suggestions_ = std::move(suggestions);
+  }
+
+  void CreateTestSuggestions(
+      bool has_opt_in_and_fill,
+      bool has_opt_in_and_generate,
+      bool has_re_signin,
+      std::optional<size_t> loading_index = std::nullopt) {
+    autofill_suggestions_.clear();
+    autofill_suggestions_.emplace_back(
+        /*value=*/"User1", /*label=*/"PW1", /*icon=*/Suggestion::Icon::kNoIcon,
+        /*popup_item_id=*/autofill::PopupItemId::kPasswordEntry);
+    autofill_suggestions_.emplace_back(
+        /*value=*/"Show all pwds", /*label=*/"",
+        /*icon=*/Suggestion::Icon::kNoIcon,
+        /*popup_item_id=*/autofill::PopupItemId::kAllSavedPasswordsEntry);
+    if (has_opt_in_and_fill) {
+      autofill_suggestions_.emplace_back(
+          /*value=*/"Unlock passwords and fill", /*label=*/"",
+          /*icon=*/Suggestion::Icon::kNoIcon,
+          /*popup_item_id=*/
+          autofill::PopupItemId::kPasswordAccountStorageOptIn);
+    }
+    if (has_opt_in_and_generate) {
+      autofill_suggestions_.emplace_back(
+          /*value=*/"Unlock passwords and generate", /*label=*/"",
+          /*icon=*/Suggestion::Icon::kNoIcon,
+          /*popup_item_id=*/
+          autofill::PopupItemId::kPasswordAccountStorageOptInAndGenerate);
+    }
+    if (has_re_signin) {
+      autofill_suggestions_.emplace_back(
+          /*value=*/"Sign in to access passwords", /*label=*/"",
+          /*icon=*/Suggestion::Icon::kNoIcon,
+          /*popup_item_id=*/
+          autofill::PopupItemId::kPasswordAccountStorageReSignin);
+    }
+    if (loading_index) {
+      autofill_suggestions_[*loading_index].is_loading =
+          Suggestion::IsLoading(true);
+    }
+  }
+
+ private:
+  std::vector<Suggestion> autofill_suggestions_;
 };
 
 base::CancelableTaskTracker::TaskId
@@ -242,50 +288,6 @@ RespondWithTestIcon(Unused, FaviconImageCallback callback, Unused) {
   image_result.image = kTestFavicon;
   std::move(callback).Run(image_result);
   return 1;
-}
-
-std::vector<autofill::Suggestion> CreateTestSuggestions(
-    bool has_opt_in_and_fill,
-    bool has_opt_in_and_generate,
-    bool has_re_signin) {
-  std::vector<Suggestion> suggestions;
-  suggestions.emplace_back(
-      /*value=*/"User1", /*label=*/"PW1", /*icon=*/Suggestion::Icon::kNoIcon,
-      /*popup_item_id=*/autofill::PopupItemId::kPasswordEntry);
-  suggestions.emplace_back(
-      /*value=*/"Show all pwds", /*label=*/"",
-      /*icon=*/Suggestion::Icon::kNoIcon,
-      /*popup_item_id=*/autofill::PopupItemId::kAllSavedPasswordsEntry);
-  if (has_opt_in_and_fill) {
-    suggestions.emplace_back(
-        /*value=*/"Unlock passwords and fill", /*label=*/"",
-        /*icon=*/Suggestion::Icon::kNoIcon,
-        /*popup_item_id=*/
-        autofill::PopupItemId::kPasswordAccountStorageOptIn);
-  }
-  if (has_opt_in_and_generate) {
-    suggestions.emplace_back(
-        /*value=*/"Unlock passwords and generate", /*label=*/"",
-        /*icon=*/Suggestion::Icon::kNoIcon,
-        /*popup_item_id=*/
-        autofill::PopupItemId::kPasswordAccountStorageOptInAndGenerate);
-  }
-  if (has_re_signin) {
-    suggestions.emplace_back(
-        /*value=*/"Sign in to access passwords", /*label=*/"",
-        /*icon=*/Suggestion::Icon::kNoIcon,
-        /*popup_item_id=*/
-        autofill::PopupItemId::kPasswordAccountStorageReSignin);
-  }
-  return suggestions;
-}
-
-std::vector<autofill::Suggestion> SetLoading(
-    std::vector<autofill::Suggestion> suggestions,
-    int index_of_loading_element) {
-  suggestions[index_of_loading_element].is_loading =
-      Suggestion::IsLoading(true);
-  return suggestions;
 }
 
 }  // namespace
@@ -594,7 +596,9 @@ TEST_F(PasswordAutofillManagerTest,
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);
   client.SetAccountStorageOptIn(false);
-  testing::Mock::VerifyAndClearExpectations(&autofill_client);
+  autofill_client.CreateTestSuggestions(/*has_opt_in_and_fill=*/true,
+                                        /*has_opt_in_and_generate*/ false,
+                                        /*has_re_signin=*/false);
 
   // Accepting a suggestion should trigger a call to update the popup. The
   // update puts the unlock button into a loading state.
@@ -609,10 +613,6 @@ TEST_F(PasswordAutofillManagerTest,
                   autofill::AutofillSuggestionTriggerSource::kPasswordManager))
       .WillOnce(testing::SaveArg<0>(&suggestions));
   EXPECT_CALL(client, TriggerReauthForPrimaryAccount);
-  EXPECT_CALL(autofill_client, GetPopupSuggestions())
-      .WillOnce(Return(CreateTestSuggestions(/*has_opt_in_and_fill=*/true,
-                                             /*has_opt_in_and_generate*/ false,
-                                             /*has_re_signin=*/false)));
 
   password_autofill_manager_->DidAcceptSuggestion(
       autofill::test::CreateAutofillSuggestion(
@@ -630,7 +630,9 @@ TEST_F(PasswordAutofillManagerTest,
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);
   client.SetAccountStorageOptIn(false);
-  testing::Mock::VerifyAndClearExpectations(&autofill_client);
+  autofill_client.CreateTestSuggestions(/*has_opt_in_and_fill=*/false,
+                                        /*has_opt_in_and_generate*/ true,
+                                        /*has_re_signin=*/false);
 
   // Accepting a suggestion should trigger a call to update the popup. The
   // update puts the unlock-to-generate button in a loading state.
@@ -646,10 +648,6 @@ TEST_F(PasswordAutofillManagerTest,
           autofill::AutofillSuggestionTriggerSource::kPasswordManager))
       .WillOnce(testing::SaveArg<0>(&suggestions));
   EXPECT_CALL(client, TriggerReauthForPrimaryAccount);
-  EXPECT_CALL(autofill_client, GetPopupSuggestions())
-      .WillOnce(Return(CreateTestSuggestions(/*has_opt_in_and_fill=*/false,
-                                             /*has_opt_in_and_generate*/ true,
-                                             /*has_re_signin=*/false)));
 
   password_autofill_manager_->DidAcceptSuggestion(
       autofill::test::CreateAutofillSuggestion(
@@ -689,15 +687,13 @@ TEST_F(PasswordAutofillManagerTest, FailedOptInAndFillUpdatesPopup) {
   std::vector<autofill::Suggestion> suggestions;
   InitializePasswordAutofillManager(&client, &autofill_client);
   client.SetAccountStorageOptIn(false);
-  testing::Mock::VerifyAndClearExpectations(&autofill_client);
+  autofill_client.CreateTestSuggestions(/*has_opt_in_and_fill=*/true,
+                                        /*has_opt_in_and_generate*/ false,
+                                        /*has_re_signin=*/false);
 
   // Accepting a suggestion should trigger a call to update the popup.
-  // First the popup enters the waiting state.
-  EXPECT_CALL(autofill_client, GetPopupSuggestions)
-      .WillOnce(Return(CreateTestSuggestions(/*has_opt_in_and_fill=*/true,
-                                             /*has_opt_in_and_generate*/ false,
-                                             /*has_re_signin=*/false)));
-  // As soon as the waiting state is pending, the next update resets the popup.
+  // First the popup enters the waiting state. As soon as the waiting state is
+  // pending, the next update resets the popup.
   EXPECT_CALL(autofill_client, UpdatePopup).WillOnce([&] {
     testing::Mock::VerifyAndClear(&autofill_client);
     EXPECT_CALL(client,
@@ -737,15 +733,13 @@ TEST_F(PasswordAutofillManagerTest, FailedOptInAndGenerateUpdatesPopup) {
   std::vector<autofill::Suggestion> suggestions;
   InitializePasswordAutofillManager(&client, &autofill_client);
   client.SetAccountStorageOptIn(false);
-  testing::Mock::VerifyAndClearExpectations(&autofill_client);
+  autofill_client.CreateTestSuggestions(/*has_opt_in_and_fill=*/false,
+                                        /*has_opt_in_and_generate*/ true,
+                                        /*has_re_signin=*/false);
 
   // Accepting a suggestion should trigger a call to update the popup.
-  // First the popup enters the waiting state.
-  EXPECT_CALL(autofill_client, GetPopupSuggestions)
-      .WillOnce(Return(CreateTestSuggestions(/*has_opt_in_and_fill=*/false,
-                                             /*has_opt_in_and_generate*/ true,
-                                             /*has_re_signin=*/false)));
-  // As soon as the waiting state is pending, the next update resets the popup.
+  // First the popup enters the waiting state. As soon as the waiting state is
+  // pending, the next update resets the popup.
   EXPECT_CALL(autofill_client, UpdatePopup).WillOnce([&] {
     testing::Mock::VerifyAndClear(&autofill_client);
     EXPECT_CALL(
@@ -786,13 +780,11 @@ TEST_F(PasswordAutofillManagerTest, SuccessfullOptInAndFillHidesPopup) {
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);
   client.SetAccountStorageOptIn(false);
-  testing::Mock::VerifyAndClearExpectations(&autofill_client);
+  autofill_client.CreateTestSuggestions(/*has_opt_in_and_fill=*/true,
+                                        /*has_opt_in_and_generate*/ false,
+                                        /*has_re_signin=*/false);
 
   // Accepting a suggestion should trigger a call to update the popup.
-  EXPECT_CALL(autofill_client, GetPopupSuggestions)
-      .WillOnce(Return(CreateTestSuggestions(/*has_opt_in_and_fill=*/true,
-                                             /*has_opt_in_and_generate*/ false,
-                                             /*has_re_signin=*/false)));
   EXPECT_CALL(autofill_client, UpdatePopup);
   EXPECT_CALL(client,
               TriggerReauthForPrimaryAccount(
@@ -817,13 +809,11 @@ TEST_F(PasswordAutofillManagerTest,
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);
   client.SetAccountStorageOptIn(false);
-  testing::Mock::VerifyAndClearExpectations(&autofill_client);
+  autofill_client.CreateTestSuggestions(/*has_opt_in_and_fill=*/false,
+                                        /*has_opt_in_and_generate*/ true,
+                                        /*has_re_signin=*/false);
 
   // Accepting a suggestion should trigger a call to update the popup.
-  EXPECT_CALL(autofill_client, GetPopupSuggestions)
-      .WillOnce(Return(CreateTestSuggestions(/*has_opt_in_and_fill=*/false,
-                                             /*has_opt_in_and_generate*/ true,
-                                             /*has_re_signin=*/false)));
   EXPECT_CALL(autofill_client, UpdatePopup);
   EXPECT_CALL(
       client,
@@ -854,18 +844,18 @@ TEST_F(PasswordAutofillManagerTest, SuccessfullOptInMayShowEmptyState) {
   base::HistogramTester histograms;
   InitializePasswordAutofillManager(&client, &autofill_client);
   client.SetAccountStorageOptIn(true);
-  testing::Mock::VerifyAndClearExpectations(&autofill_client);
 
   // Only the unlock button was available. After being clicked, it's in a
   // loading state which the DeleteFillData() call will end.
-  Suggestion unlock_suggestion(
+  std::vector<Suggestion> unlock_suggestion;
+  unlock_suggestion.emplace_back(
       /*main_text=*/"Unlock passwords and fill", /*label=*/"",
       /*icon=*/Suggestion::Icon::kNoIcon,
       /*popup_item_id=*/
       autofill::PopupItemId::kPasswordAccountStorageOptIn);
-  unlock_suggestion.is_loading = Suggestion::IsLoading(true);
-  EXPECT_CALL(autofill_client, GetPopupSuggestions)
-      .WillRepeatedly(Return(std::vector<Suggestion>{unlock_suggestion}));
+  unlock_suggestion[0].is_loading = Suggestion::IsLoading(true);
+  autofill_client.set_autofill_suggestions(std::move(unlock_suggestion));
+
   EXPECT_CALL(autofill_client,
               HideAutofillSuggestions(autofill::PopupHidingReason::kStaleData));
   EXPECT_CALL(
@@ -889,7 +879,6 @@ TEST_F(PasswordAutofillManagerTest,
   base::HistogramTester histograms;
   InitializePasswordAutofillManager(&client, &autofill_client);
   client.SetAccountStorageOptIn(true);
-  testing::Mock::VerifyAndClearExpectations(&autofill_client);
 
   // Once the data is loaded, an update fills the new passwords:
   autofill::PasswordFormFillData new_data = CreateTestFormFillData();
@@ -898,12 +887,12 @@ TEST_F(PasswordAutofillManagerTest,
   additional.realm = "https://foobarrealm.org";
   additional.username_value = u"bar.foo@example.com";
   new_data.additional_logins.push_back(std::move(additional));
-  EXPECT_CALL(autofill_client, GetPopupSuggestions())
-      .WillRepeatedly(Return(SetLoading(
-          CreateTestSuggestions(
-              /*has_opt_in_and_fill=*/true, /*has_opt_in_and_generate*/ false,
-              /*has_re_signin=*/false),
-          /*index_of_loading_element=*/2)));  // Opt-in is at third position.
+
+  // Opt-in is at third position.
+  autofill_client.CreateTestSuggestions(
+      /*has_opt_in_and_fill=*/true, /*has_opt_in_and_generate*/ false,
+      /*has_re_signin=*/false, /*loading_index=*/2);
+
   EXPECT_CALL(autofill_client,
               HideAutofillSuggestions(autofill::PopupHidingReason::kStaleData));
   EXPECT_CALL(

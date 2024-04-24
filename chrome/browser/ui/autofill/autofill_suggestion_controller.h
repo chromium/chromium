@@ -63,7 +63,7 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
   virtual int GetLineCount() const = 0;
 
   // Returns the full set of autofill suggestions, if applicable.
-  virtual std::vector<Suggestion> GetSuggestions() const = 0;
+  virtual const std::vector<Suggestion>& GetSuggestions() const = 0;
 
   // Returns the suggestion at the given `row` index. The `Suggestion` is the
   // data model including information that is to be shown in the UI.

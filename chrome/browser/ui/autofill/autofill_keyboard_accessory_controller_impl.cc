@@ -376,7 +376,7 @@ int AutofillKeyboardAccessoryControllerImpl::GetLineCount() const {
   return suggestions_.size();
 }
 
-std::vector<Suggestion>
+const std::vector<Suggestion>&
 AutofillKeyboardAccessoryControllerImpl::GetSuggestions() const {
   return suggestions_;
 }

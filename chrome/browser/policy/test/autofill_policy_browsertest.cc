@@ -199,10 +199,12 @@ IN_PROC_BROWSER_TEST_F(AutofillPolicyTest, AutofillEnabledByPolicy) {
     })) << "Showing the Autofill Popup timed out.";
     // There may be more suggestions, but the first one in the vector
     // should be the expected and shown in the popup.
-    std::vector<autofill::Suggestion> suggestions =
-        autofill_client()->GetPopupSuggestions();
-    ASSERT_GE(suggestions.size(), 1u);
-    EXPECT_EQ(expectation, suggestions[0].main_text.value);
+    {
+      base::span<const autofill::Suggestion> suggestions =
+          autofill_client()->GetAutofillSuggestions();
+      ASSERT_GE(suggestions.size(), 1u);
+      EXPECT_EQ(expectation, suggestions[0].main_text.value);
+    }
     autofill_client()->ResetPopupShown();
   }
 }
@@ -220,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(AutofillPolicyTest, AutofillDisabledByPolicy) {
     // Showing the Autofill Popup is an asynchronous task.
     base::RunLoop().RunUntilIdle();
     EXPECT_FALSE(autofill_client()->HasShownAutofillPopup());
-    EXPECT_EQ(autofill_client()->GetPopupSuggestions().size(), 0u);
+    EXPECT_TRUE(autofill_client()->GetAutofillSuggestions().empty());
   }
 }
 

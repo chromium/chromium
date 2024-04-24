@@ -482,11 +482,6 @@ void ChromeAutofillClientIOS::UpdateAutofillDataListValues(
   // No op. ios/web_view does not support display datalist.
 }
 
-std::vector<Suggestion> ChromeAutofillClientIOS::GetPopupSuggestions() const {
-  NOTIMPLEMENTED();
-  return {};
-}
-
 void ChromeAutofillClientIOS::PinAutofillSuggestions() {
   NOTIMPLEMENTED();
 }

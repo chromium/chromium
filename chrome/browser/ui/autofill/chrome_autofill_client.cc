@@ -939,9 +939,10 @@ void ChromeAutofillClient::UpdateAutofillDataListValues(
   }
 }
 
-std::vector<Suggestion> ChromeAutofillClient::GetPopupSuggestions() const {
+base::span<const Suggestion> ChromeAutofillClient::GetAutofillSuggestions()
+    const {
   return suggestion_controller_ ? suggestion_controller_->GetSuggestions()
-                                : std::vector<Suggestion>();
+                                : base::span<const Suggestion>();
 }
 
 void ChromeAutofillClient::PinAutofillSuggestions() {

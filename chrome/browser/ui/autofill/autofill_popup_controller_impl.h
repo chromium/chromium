@@ -84,7 +84,7 @@ class AutofillPopupControllerImpl
       int list_index,
       AutofillMetrics::SingleEntryRemovalMethod removal_method) override;
   int GetLineCount() const override;
-  std::vector<Suggestion> GetSuggestions() const override;
+  const std::vector<Suggestion>& GetSuggestions() const override;
   const Suggestion& GetSuggestionAt(int row) const override;
   FillingProduct GetMainFillingProduct() const override;
   std::optional<AutofillClient::PopupScreenLocation> GetPopupScreenLocation()
@@ -163,11 +163,6 @@ class AutofillPopupControllerImpl
 
   // Returns `true` if this popup has no parent, and `false` for sub-popups.
   bool IsRootPopup() const;
-
-  // TODO(b/325246516): Rename non-const and remove const method once the public
-  // `GetSuggestions()` becomes returning a reference.
-  std::vector<Suggestion>& GetSuggestionsRef();
-  const std::vector<Suggestion>& GetSuggestionsRef() const;
 
   void UpdateFilteredSuggestions(bool notify_suggestions_changed);
 

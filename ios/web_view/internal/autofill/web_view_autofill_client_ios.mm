@@ -276,11 +276,6 @@ void WebViewAutofillClientIOS::UpdateAutofillDataListValues(
   // No op. ios/web_view does not support display datalist.
 }
 
-std::vector<Suggestion> WebViewAutofillClientIOS::GetPopupSuggestions() const {
-  NOTIMPLEMENTED();
-  return {};
-}
-
 void WebViewAutofillClientIOS::PinAutofillSuggestions() {
   NOTIMPLEMENTED();
 }

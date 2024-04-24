@@ -215,7 +215,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       base::WeakPtr<AutofillPopupDelegate> delegate) override;
   void UpdateAutofillDataListValues(
       base::span<const SelectOption> datalist) override;
-  std::vector<Suggestion> GetPopupSuggestions() const override;
+  base::span<const Suggestion> GetAutofillSuggestions() const override;
   void PinAutofillSuggestions() override;
   std::optional<PopupScreenLocation> GetPopupScreenLocation() const override;
   void UpdatePopup(const std::vector<Suggestion>& suggestions,

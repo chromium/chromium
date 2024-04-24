@@ -351,7 +351,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
     return;
   }
 
-  if (static_cast<size_t>(index) >= GetSuggestionsRef().size()) {
+  if (static_cast<size_t>(index) >= GetSuggestions().size()) {
     // Prevents crashes from crbug.com/521133. It seems that in rare cases or
     // races the suggestions_ and the user-selected index may be out of sync.
     // If the index points out of bounds, Chrome will crash. Prevent this by
@@ -371,7 +371,7 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
   // Use a copy instead of a reference here. Under certain circumstances,
   // `DidAcceptSuggestion()` can call `SetSuggestions()` and invalidate the
   // reference.
-  Suggestion suggestion = GetSuggestionsRef()[index];
+  Suggestion suggestion = GetSuggestions()[index];
   NotifyIphAboutAcceptedSuggestion(web_contents_->GetBrowserContext(),
                                    suggestion);
   if (suggestion.acceptance_a11y_announcement && view_) {
@@ -400,21 +400,13 @@ base::i18n::TextDirection AutofillPopupControllerImpl::GetElementTextDirection()
   return controller_common_.text_direction;
 }
 
-std::vector<Suggestion> AutofillPopupControllerImpl::GetSuggestions() const {
-  return GetSuggestionsRef();
-}
-
 bool AutofillPopupControllerImpl::IsRootPopup() const {
   return !parent_controller_;
 }
 
-std::vector<Suggestion>& AutofillPopupControllerImpl::GetSuggestionsRef() {
-  return filter_ ? filtered_suggestions_ : non_filtered_suggestions_;
-}
-
-const std::vector<Suggestion>& AutofillPopupControllerImpl::GetSuggestionsRef()
+const std::vector<Suggestion>& AutofillPopupControllerImpl::GetSuggestions()
     const {
-  return const_cast<AutofillPopupControllerImpl*>(this)->GetSuggestionsRef();
+  return filter_ ? filtered_suggestions_ : non_filtered_suggestions_;
 }
 
 void AutofillPopupControllerImpl::UpdateFilteredSuggestions(
@@ -434,11 +426,11 @@ void AutofillPopupControllerImpl::UpdateFilteredSuggestions(
 }
 
 int AutofillPopupControllerImpl::GetLineCount() const {
-  return GetSuggestionsRef().size();
+  return GetSuggestions().size();
 }
 
 const Suggestion& AutofillPopupControllerImpl::GetSuggestionAt(int row) const {
-  return GetSuggestionsRef()[row];
+  return GetSuggestions()[row];
 }
 
 bool AutofillPopupControllerImpl::RemoveSuggestion(
@@ -453,7 +445,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
   // still in bounds. If not, terminate the removing and consider it failed.
   // TODO(crbug.com/40766704): Replace these checks with a stronger identifier.
   if (list_index < 0 ||
-      static_cast<size_t>(list_index) >= GetSuggestionsRef().size()) {
+      static_cast<size_t>(list_index) >= GetSuggestions().size()) {
     return false;
   }
 
@@ -462,10 +454,10 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
     return false;
   }
 
-  if (!delegate_->RemoveSuggestion(GetSuggestionsRef()[list_index])) {
+  if (!delegate_->RemoveSuggestion(GetSuggestions()[list_index])) {
     return false;
   }
-  PopupItemId suggestion_type = GetSuggestionsRef()[list_index].popup_item_id;
+  PopupItemId suggestion_type = GetSuggestions()[list_index].popup_item_id;
   switch (GetFillingProductFromPopupItemId(suggestion_type)) {
     case FillingProduct::kAddress:
       switch (removal_method) {
@@ -485,7 +477,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
       if (view_) {
         view_->AxAnnounce(l10n_util::GetStringFUTF16(
             IDS_AUTOFILL_AUTOCOMPLETE_ENTRY_DELETED_A11Y_HINT,
-            GetSuggestionsRef()[list_index].main_text.value));
+            GetSuggestions()[list_index].main_text.value));
       }
       break;
     case FillingProduct::kCreditCard:
@@ -536,10 +528,10 @@ AutofillPopupControllerImpl::GetPopupScreenLocation() const {
 }
 
 bool AutofillPopupControllerImpl::HasSuggestions() const {
-  if (GetSuggestionsRef().empty()) {
+  if (GetSuggestions().empty()) {
     return false;
   }
-  PopupItemId popup_item_id = GetSuggestionsRef()[0].popup_item_id;
+  PopupItemId popup_item_id = GetSuggestions()[0].popup_item_id;
   return base::Contains(kItemsTriggeringFieldFilling, popup_item_id) ||
          popup_item_id == PopupItemId::kScanCreditCard;
 }
@@ -700,7 +692,7 @@ void AutofillPopupControllerImpl::KeyPressObserver::Reset() {
 // AutofillPopupController implementation.
 
 void AutofillPopupControllerImpl::SelectSuggestion(int index) {
-  CHECK_LT(base::checked_cast<size_t>(index), GetSuggestionsRef().size());
+  CHECK_LT(base::checked_cast<size_t>(index), GetSuggestions().size());
 
   if (IsPointerLocked(web_contents_.get())) {
     Hide(PopupHidingReason::kMouseLocked);
@@ -756,8 +748,8 @@ bool AutofillPopupControllerImpl::
 }
 
 void AutofillPopupControllerImpl::PerformButtonActionForSuggestion(int index) {
-  CHECK_LE(base::checked_cast<size_t>(index), GetSuggestionsRef().size());
-  delegate_->DidPerformButtonActionForSuggestion(GetSuggestionsRef()[index]);
+  CHECK_LE(base::checked_cast<size_t>(index), GetSuggestions().size());
+  delegate_->DidPerformButtonActionForSuggestion(GetSuggestions()[index]);
 }
 
 const std::vector<AutofillPopupController::SuggestionFilterMatch>&
