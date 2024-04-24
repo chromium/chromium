@@ -150,8 +150,6 @@ std::optional<HtmlFieldType> ParseNonStandarizedAutocompleteAttribute(
           {"promotion-code", HtmlFieldType::kMerchantPromoCode},
           {"region", HtmlFieldType::kAddressLevel1},
           {"tel-ext", HtmlFieldType::kTelExtension},
-          {"upi", HtmlFieldType::kUpiVpa},
-          {"upi-vpa", HtmlFieldType::kUpiVpa},
       });
 
   auto it = non_standardized_attributes.find(value);

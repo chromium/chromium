@@ -89,7 +89,6 @@ struct TestFormFlags {
   bool should_be_queried = false;
   bool should_be_uploaded = false;
   bool has_author_specified_types = false;
-  bool has_author_specified_upi_vpa_hint = false;
   // The implicit default value `std::nullopt` means no checking.
   std::optional<bool> is_complete_credit_card_form;
   std::optional<int> field_count;

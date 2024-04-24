@@ -289,10 +289,6 @@ class FormStructure {
     return has_author_specified_types_;
   }
 
-  bool has_author_specified_upi_vpa_hint() const {
-    return has_author_specified_upi_vpa_hint_;
-  }
-
   bool has_password_field() const { return has_password_field_; }
 
   // Returns whether the form comes from an HTML form with a <form> tag.
@@ -494,10 +490,6 @@ class FormStructure {
   // Whether the form includes any field types explicitly specified by the site
   // author, via the |autocompletetype| attribute.
   bool has_author_specified_types_ = false;
-
-  // Whether the form includes a field that explicitly sets it autocomplete
-  // type to "upi-vpa".
-  bool has_author_specified_upi_vpa_hint_ = false;
 
   // True if the form contains at least one password field.
   bool has_password_field_ = false;

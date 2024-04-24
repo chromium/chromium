@@ -56,7 +56,6 @@ extern const int kMaxBucketsCount;
 
 class AutofillMetrics {
  public:
-
   enum DeveloperEngagementMetric {
     // Parsed a form that is potentially autofillable and does not contain any
     // web developer-specified field type hint.
@@ -64,10 +63,8 @@ class AutofillMetrics {
     // Parsed a form that is potentially autofillable and contains at least one
     // web developer-specified field type hint, a la
     // http://is.gd/whatwg_autocomplete
-    FILLABLE_FORM_PARSED_WITH_TYPE_HINTS,
-    // Parsed a form that is potentially autofillable and contains at least one
-    // UPI Virtual Payment Address hint (upi-vpa)
-    FORM_CONTAINS_UPI_VPA_HINT,
+    FILLABLE_FORM_PARSED_WITH_TYPE_HINTS = 1,
+    FORM_CONTAINS_UPI_VPA_HINT_DEPRECATED = 2,
     NUM_DEVELOPER_ENGAGEMENT_METRICS,
   };
 

@@ -658,9 +658,6 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type) {
     case HtmlFieldType::kBirthdateYear:
       return FieldTypeGroup::kNoGroup;
 
-    case HtmlFieldType::kUpiVpa:
-      return FieldTypeGroup::kNoGroup;
-
     case HtmlFieldType::kOneTimeCode:
       return FieldTypeGroup::kNoGroup;
 
@@ -807,7 +804,6 @@ FieldType HtmlFieldTypeToBestCorrespondingFieldType(HtmlFieldType field_type) {
     case HtmlFieldType::kBirthdateDay:
     case HtmlFieldType::kBirthdateMonth:
     case HtmlFieldType::kBirthdateYear:
-    case HtmlFieldType::kUpiVpa:
     case HtmlFieldType::kTransactionAmount:
     case HtmlFieldType::kTransactionCurrency:
     case HtmlFieldType::kMerchantPromoCode:

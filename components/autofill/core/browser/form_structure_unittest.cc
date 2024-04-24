@@ -651,24 +651,18 @@ TEST_F(FormStructureTestImpl, HeuristicsAutocompleteAttribute) {
               {.label = u"",
                .name = u"field3",
                .autocomplete_attribute = "email",
-               .parsed_autocomplete = ParseAutocompleteAttribute("email")},
-              {.label = u"",
-               .name = u"field4",
-               .autocomplete_attribute = "upi-vpa",
-               .parsed_autocomplete = ParseAutocompleteAttribute("upi-vpa")}}},
+               .parsed_autocomplete = ParseAutocompleteAttribute("email")}}},
         {
             .determine_heuristic_type = true,
             .is_autofillable = true,
             .has_author_specified_types = true,
-            .has_author_specified_upi_vpa_hint = true,
-            .field_count = 4,
+            .field_count = 3,
             .autofill_count = 3,
         },
         {.expected_html_type = {HtmlFieldType::kGivenName,
                                 HtmlFieldType::kFamilyName,
-                                HtmlFieldType::kEmail,
-                                HtmlFieldType::kUnrecognized},
-         .expected_heuristic_type = {UNKNOWN_TYPE, UNKNOWN_TYPE, UNKNOWN_TYPE,
+                                HtmlFieldType::kEmail},
+         .expected_heuristic_type = {UNKNOWN_TYPE, UNKNOWN_TYPE,
                                      UNKNOWN_TYPE}}}});
 }
 

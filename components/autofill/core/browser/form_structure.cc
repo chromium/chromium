@@ -595,18 +595,10 @@ void FormStructure::LogDetermineHeuristicTypesMetrics() {
     developer_engagement_metrics_ |= 1 << metric;
     AutofillMetrics::LogDeveloperEngagementMetric(metric);
   }
-
-  if (has_author_specified_upi_vpa_hint_) {
-    AutofillMetrics::LogDeveloperEngagementMetric(
-        AutofillMetrics::FORM_CONTAINS_UPI_VPA_HINT);
-    developer_engagement_metrics_ |=
-        1 << AutofillMetrics::FORM_CONTAINS_UPI_VPA_HINT;
-  }
 }
 
 void FormStructure::SetFieldTypesFromAutocompleteAttribute() {
   has_author_specified_types_ = false;
-  has_author_specified_upi_vpa_hint_ = false;
   std::map<FieldSignature, size_t> field_rank_map;
   for (const std::unique_ptr<AutofillField>& field : fields_) {
     if (!field->parsed_autocomplete()) {
@@ -621,15 +613,6 @@ void FormStructure::SetFieldTypesFromAutocompleteAttribute() {
     if (field->parsed_autocomplete()->field_type ==
         HtmlFieldType::kUnspecified) {
       continue;
-    }
-
-    // TODO(crbug.com/702223): Flesh out support for UPI-VPA.
-    if (field->parsed_autocomplete()->field_type == HtmlFieldType::kUpiVpa) {
-      has_author_specified_upi_vpa_hint_ = true;
-      std::optional<AutocompleteParsingResult> parsed_autocomplete =
-          field->parsed_autocomplete();
-      parsed_autocomplete->field_type = HtmlFieldType::kUnrecognized;
-      field->set_parsed_autocomplete(std::move(parsed_autocomplete));
     }
 
     field->SetHtmlType(field->parsed_autocomplete()->field_type,

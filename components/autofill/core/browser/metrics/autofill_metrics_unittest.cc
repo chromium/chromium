@@ -953,27 +953,6 @@ TEST_F(AutofillMetricsTest, DeveloperEngagement) {
     histogram_tester.ExpectBucketCount(
         "Autofill.DeveloperEngagement",
         AutofillMetrics::FILLABLE_FORM_PARSED_WITH_TYPE_HINTS, 1);
-
-    histogram_tester.ExpectBucketCount(
-        "Autofill.DeveloperEngagement",
-        AutofillMetrics::FORM_CONTAINS_UPI_VPA_HINT, 0);
-  }
-
-  // Add a field with an author-specified UPI-VPA field type in the form.
-  form.fields.push_back(
-      CreateTestFormField("", "", "", FormControlType::kInputText, "upi-vpa"));
-
-  // Expect the "form parsed with type hints" metric, and the
-  // "author-specified upi-vpa type" metric to be logged.
-  {
-    base::HistogramTester histogram_tester;
-    SeeForm(form);
-    autofill_manager().Reset();
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples("Autofill.DeveloperEngagement"),
-        BucketsInclude(
-            Bucket(AutofillMetrics::FILLABLE_FORM_PARSED_WITH_TYPE_HINTS, 1),
-            Bucket(AutofillMetrics::FORM_CONTAINS_UPI_VPA_HINT, 1)));
   }
 }
 
@@ -1039,31 +1018,6 @@ TEST_F(AutofillMetricsTest,
         &test_ukm_recorder(), form, /*is_for_credit_card=*/false,
         {FormType::kAddressForm},
         {AutofillMetrics::FILLABLE_FORM_PARSED_WITH_TYPE_HINTS});
-  }
-}
-
-// Verify that we correctly log UKM for form parsed with type hints regarding
-// developer engagement.
-TEST_F(AutofillMetricsTest, UkmDeveloperEngagement_LogUpiVpaTypeHint) {
-  FormData form = CreateForm(
-      {CreateTestFormField("Name", "name", "", FormControlType::kInputText),
-       CreateTestFormField("Email", "email", "", FormControlType::kInputText),
-       CreateTestFormField("Payment", "payment", "",
-                           FormControlType::kInputText, "upi-vpa"),
-       CreateTestFormField("", "", "", FormControlType::kInputText,
-                           "address-line1")});
-
-  {
-    SCOPED_TRACE("VPA and other autocomplete hint present");
-    SeeForm(form);
-
-    VerifyDeveloperEngagementUkm(
-        &test_ukm_recorder(), form, /*is_for_credit_card=*/false,
-        /* UPI VPA has Unknown form type.*/
-        {FormType::kAddressForm, FormType::kUnknownFormType},
-        {AutofillMetrics::FILLABLE_FORM_PARSED_WITH_TYPE_HINTS,
-         AutofillMetrics::FORM_CONTAINS_UPI_VPA_HINT});
-    PurgeUKM();
   }
 }
 

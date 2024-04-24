@@ -200,8 +200,6 @@ void FormStructureTest::CheckFormStructureTestData(
       EXPECT_TRUE(form_structure->ShouldBeUploaded());
     if (test_case.form_flags.has_author_specified_types)
       EXPECT_TRUE(form_structure->has_author_specified_types());
-    if (test_case.form_flags.has_author_specified_upi_vpa_hint)
-      EXPECT_TRUE(form_structure->has_author_specified_upi_vpa_hint());
 
     if (test_case.form_flags.is_complete_credit_card_form.has_value()) {
       EXPECT_EQ(form_structure->IsCompleteCreditCardForm(),

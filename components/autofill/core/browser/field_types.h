@@ -572,7 +572,9 @@ constexpr HtmlFieldType ToSafeHtmlFieldType(
     return static_cast<underlying_type_t>(HtmlFieldType::kMinValue) <= t &&
            t <= static_cast<underlying_type_t>(HtmlFieldType::kMaxValue) &&
            // Full address is deprecated.
-           t != 17;
+           t != 17 &&
+           // UPI is deprecated.
+           t != 46;
   };
   return IsValid(raw_value) ? static_cast<HtmlFieldType>(raw_value)
                             : fallback_value;

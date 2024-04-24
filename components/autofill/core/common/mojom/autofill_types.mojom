@@ -110,8 +110,7 @@ enum HtmlFieldType {
   kCreditCardExp2DigitYear = 44,
   kCreditCardExp4DigitYear = 45,
 
-  // Universal Payment Interface - Virtual Payment Address.
-  kUpiVpa = 46,
+  // kUpiVpa = 46 is deprecated.
 
   // Phone number verification one-time-codes.
   kOneTimeCode = 47,

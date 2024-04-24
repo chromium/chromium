@@ -325,7 +325,8 @@ chromium-metrics-reviews@google.com.
 <enum name="AutofillDeveloperEngagement">
   <int value="0" label="Fillable form parsed without type hints"/>
   <int value="1" label="Fillable form parsed with type hints"/>
-  <int value="2" label="Includes UPI-VPA type hint"/>
+  <int value="2"
+      label="(Obsolete) Includes UPI-VPA type hint (removed 04/2024)"/>
 </enum>
 
 <enum name="AutofilledFieldUserEditingStatus">
