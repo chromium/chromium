@@ -1099,7 +1099,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="NetworkPortalStatus">
   <summary>
-    The portal status types from NetworkPortalDetector::CaptivePortalStatus
+    DEPRECATED. Remove with Network.NetworkPortalDetectorResult 2024-07-21.
   </summary>
   <int value="0" label="Unknown"/>
   <int value="1" label="Offline"/>

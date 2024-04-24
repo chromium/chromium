@@ -10,11 +10,6 @@ NetworkPortalDetectorStub::NetworkPortalDetectorStub() = default;
 
 NetworkPortalDetectorStub::~NetworkPortalDetectorStub() = default;
 
-NetworkPortalDetector::CaptivePortalStatus
-NetworkPortalDetectorStub::GetCaptivePortalStatus() {
-  return CAPTIVE_PORTAL_STATUS_UNKNOWN;
-}
-
 bool NetworkPortalDetectorStub::IsEnabled() {
   return false;
 }

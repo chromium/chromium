@@ -5,7 +5,6 @@
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "components/device_event_log/device_event_log.h"
 
 namespace ash {
@@ -15,35 +14,7 @@ namespace {
 bool set_for_testing_ = false;
 NetworkPortalDetector* network_portal_detector_ = nullptr;
 
-const char kCaptivePortalStatusUnknown[] = "Unknown";
-const char kCaptivePortalStatusOffline[] = "Offline";
-const char kCaptivePortalStatusOnline[] = "Online";
-const char kCaptivePortalStatusPortal[] = "Portal";
-const char kCaptivePortalStatusProxyAuthRequired[] = "ProxyAuthRequired";
-const char kCaptivePortalStatusUnrecognized[] = "Unrecognized";
-
 }  // namespace
-
-// static
-std::string NetworkPortalDetector::CaptivePortalStatusString(
-    CaptivePortalStatus status) {
-  switch (status) {
-    case CAPTIVE_PORTAL_STATUS_UNKNOWN:
-      return kCaptivePortalStatusUnknown;
-    case CAPTIVE_PORTAL_STATUS_OFFLINE:
-      return kCaptivePortalStatusOffline;
-    case CAPTIVE_PORTAL_STATUS_ONLINE:
-      return kCaptivePortalStatusOnline;
-    case CAPTIVE_PORTAL_STATUS_PORTAL:
-      return kCaptivePortalStatusPortal;
-    case CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED:
-      return kCaptivePortalStatusProxyAuthRequired;
-    case CAPTIVE_PORTAL_STATUS_COUNT:
-      break;
-  }
-  NOTREACHED();
-  return kCaptivePortalStatusUnrecognized;
-}
 
 namespace network_portal_detector {
 

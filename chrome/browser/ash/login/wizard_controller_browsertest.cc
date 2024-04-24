@@ -754,8 +754,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
     network_portal_detector_->SetDefaultNetworkForTesting(
         default_network->guid());
     network_portal_detector_->SetDetectionResultsForTesting(
-        default_network->guid(),
-        NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204);
+        default_network->guid(), 204);
   }
 
   void WaitUntilTimezoneResolved() {

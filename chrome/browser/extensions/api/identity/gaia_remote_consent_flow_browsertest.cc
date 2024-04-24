@@ -63,11 +63,6 @@ class GaiaRemoteConsentFlowParamBrowserTest : public InProcessBrowserTest {
         mock_network_portal_detector_ =
             std::make_unique<ash::MockNetworkPortalDetector>();
 
-    EXPECT_CALL(*mock_network_portal_detector_, GetCaptivePortalStatus())
-        .Times(testing::AnyNumber())
-        .WillRepeatedly(
-            testing::Return(ash::NetworkPortalDetector::CaptivePortalStatus::
-                                CAPTIVE_PORTAL_STATUS_ONLINE));
     ash::network_portal_detector::InitializeForTesting(
         mock_network_portal_detector_.release());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

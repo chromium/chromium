@@ -149,9 +149,7 @@ void InitNetwork() {
   auto* portal_detector = new ash::NetworkPortalDetectorTestImpl();
   portal_detector->SetDefaultNetworkForTesting(default_network->guid());
 
-  portal_detector->SetDetectionResultsForTesting(
-      default_network->guid(),
-      ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204);
+  portal_detector->SetDetectionResultsForTesting(default_network->guid(), 204);
 
   ash::network_portal_detector::InitializeForTesting(portal_detector);
 }

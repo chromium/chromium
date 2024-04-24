@@ -20,8 +20,6 @@ class MockNetworkPortalDetector : public NetworkPortalDetector {
 
   ~MockNetworkPortalDetector() override;
 
-  MOCK_METHOD0(GetCaptivePortalStatus,
-               NetworkPortalDetector::CaptivePortalStatus());
   MOCK_METHOD0(IsEnabled, bool());
   MOCK_METHOD0(Enable, void());
   MOCK_METHOD0(RequestCaptivePortalDetection, void());

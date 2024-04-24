@@ -121,8 +121,6 @@ class NetworkPortalDetectorImplBrowserTest
     EXPECT_EQ(default_network->GetPortalState(),
               NetworkState::PortalState::kOnline);
     EXPECT_FALSE(display_service_->GetNotification(kNotificationId));
-    EXPECT_EQ(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE,
-              network_portal_detector::GetInstance()->GetCaptivePortalStatus());
 
     // Setting a shill portal state should set portal detection and display a
     // notification
@@ -350,8 +348,6 @@ void NetworkPortalDetectorImplBrowserTestIgnoreProxy::TestImpl(
 
   // Check that the network is behind a portal and a notification is displayed.
   EXPECT_TRUE(display_service_->GetNotification(kNotificationId));
-  EXPECT_EQ(NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL,
-            network_portal_detector::GetInstance()->GetCaptivePortalStatus());
   EXPECT_EQ(default_network->GetPortalState(),
             NetworkState::PortalState::kPortal);
 

@@ -211,8 +211,7 @@ class ServicesCustomizationDocumentTest : public testing::Test {
         default_network ? default_network->guid() : std::string();
     network_portal_detector_.SetDefaultNetworkForTesting(guid);
     if (!guid.empty()) {
-      network_portal_detector_.SetDetectionResultsForTesting(
-          guid, NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204);
+      network_portal_detector_.SetDetectionResultsForTesting(guid, 204);
     }
 
     TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);

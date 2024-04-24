@@ -35,22 +35,6 @@ std::string StatusToState(NetworkPortalDetectorMixin::NetworkStatus status) {
   }
 }
 
-// TODO(b/331264838): Remove once CaptivePortalStatus is eliminated.
-NetworkPortalDetector::CaptivePortalStatus CaptivePortalStatusForNetworkStatus(
-    NetworkPortalDetectorMixin::NetworkStatus status) {
-  using NetworkStatus = NetworkPortalDetectorMixin::NetworkStatus;
-  switch (status) {
-    case NetworkStatus::kUnknown:
-      return NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN;
-    case NetworkStatus::kOffline:
-      return NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE;
-    case NetworkStatus::kOnline:
-      return NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE;
-    case NetworkStatus::kPortal:
-      return NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL;
-  }
-}
-
 }  // namespace
 
 NetworkPortalDetectorMixin::NetworkPortalDetectorMixin(
@@ -107,9 +91,8 @@ void NetworkPortalDetectorMixin::SimulateDefaultNetworkState(
     }
   }
 
-  network_portal_detector_->SetDetectionResultsForTesting(
-      default_network_guid, CaptivePortalStatusForNetworkStatus(status),
-      response_code);
+  network_portal_detector_->SetDetectionResultsForTesting(default_network_guid,
+                                                          response_code);
 }
 
 void NetworkPortalDetectorMixin::SetUpOnMainThread() {

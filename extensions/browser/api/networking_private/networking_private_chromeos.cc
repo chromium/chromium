@@ -244,26 +244,28 @@ private_api::Certificate GetCertDictionary(
   return api_cert;
 }
 
-// This returns the strings provided by NetworkPortalDetector for backwards
-// compatibility, even though the implementation no longer queries
-// NetworkPortalDetector directly.
+constexpr char kCaptivePortalStatusUnknown[] = "Unknown";
+constexpr char kCaptivePortalStatusOffline[] = "Offline";
+constexpr char kCaptivePortalStatusOnline[] = "Online";
+constexpr char kCaptivePortalStatusPortal[] = "Portal";
+constexpr char kCaptivePortalStatusUnrecognized[] = "Unrecognized";
+
+// This returns backwards compatible strings previously provided by
+// NetworkPortalDetector.
 // static
 std::string PortalStatusString(ash::NetworkState::PortalState portal_state) {
   using PortalState = ash::NetworkState::PortalState;
   switch (portal_state) {
     case PortalState::kUnknown:
-      return ash::NetworkPortalDetector::CaptivePortalStatusString(
-          ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_UNKNOWN);
+      return kCaptivePortalStatusUnknown;
     case PortalState::kOnline:
-      return ash::NetworkPortalDetector::CaptivePortalStatusString(
-          ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
+      return kCaptivePortalStatusOnline;
     case PortalState::kPortalSuspected:
     case PortalState::kPortal:
     case PortalState::kNoInternet:
-      return ash::NetworkPortalDetector::CaptivePortalStatusString(
-          ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL);
+      return kCaptivePortalStatusPortal;
   }
-  return "Unrecognized";
+  return kCaptivePortalStatusUnrecognized;
 }
 
 }  // namespace
@@ -574,9 +576,7 @@ void NetworkingPrivateChromeOS::GetCaptivePortalStatus(
     return;
   }
   if (!network->IsConnectedState()) {
-    std::move(success_callback)
-        .Run(ash::NetworkPortalDetector::CaptivePortalStatusString(
-            ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE));
+    std::move(success_callback).Run(kCaptivePortalStatusOffline);
     return;
   }
   std::move(success_callback)

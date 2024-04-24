@@ -31,29 +31,17 @@ void NetworkPortalDetectorTestImpl::SetDefaultNetworkForTesting(
 
 void NetworkPortalDetectorTestImpl::SetDetectionResultsForTesting(
     const std::string& guid,
-    CaptivePortalStatus status,
     int response_code) {
   DVLOG(1) << "SetDetectionResultsForTesting: " << guid << " = "
-           << NetworkPortalDetector::CaptivePortalStatusString(status);
-  if (!guid.empty())
-    portal_status_map_[guid] = status;
+           << response_code;
 }
 
 std::string NetworkPortalDetectorTestImpl::GetDefaultNetworkGuid() const {
-  if (!default_network_)
+  if (!default_network_) {
     return "";
+  }
 
   return default_network_->guid();
-}
-
-NetworkPortalDetector::CaptivePortalStatus
-NetworkPortalDetectorTestImpl::GetCaptivePortalStatus() {
-  if (!default_network_)
-    return CAPTIVE_PORTAL_STATUS_UNKNOWN;
-  auto it = portal_status_map_.find(default_network_->guid());
-  if (it == portal_status_map_.end())
-    return CAPTIVE_PORTAL_STATUS_UNKNOWN;
-  return it->second;
 }
 
 bool NetworkPortalDetectorTestImpl::IsEnabled() {

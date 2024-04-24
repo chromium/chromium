@@ -847,14 +847,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.CaptivePortalResult" enum="CaptivePortalNetworkState"
-    expires_after="2024-09-22">
+    expires_after="2024-05-14">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-health-team@google.com</owner>
-  <summary>
-    Captive portal detection state from Shill received by NetworkState. NOTE:
-    This metric used to be CaptivePortal.NetworkPortalDetectorResult which was
-    expired from 2021-04-01 to 2022-09-18.
-  </summary>
+  <summary>DEPRECATED: This metric is is invalid starting with M125.</summary>
 </histogram>
 
 <histogram name="Network.CaptivePortalStatusCode" enum="HttpResponseCode"
@@ -2059,14 +2055,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.NetworkPortalDetectorResult"
-    enum="NetworkPortalStatus" expires_after="2024-09-22">
+    enum="NetworkPortalStatus" expires_after="2024-05-14">
   <owner>stevenjb@chromium.org</owner>
   <owner>cros-network-health-team@google.com</owner>
-  <summary>
-    Chrome captive portal detection results on ChromeOS. NOTE: This metric used
-    to be CaptivePortal.NetworkPortalDetectorResult which was expired from
-    2021-09-27 to 2022-09-18.
-  </summary>
+  <summary>DEPRECATED: This metric is is invalid starting with M125.</summary>
 </histogram>
 
 <histogram name="Network.NetworkPortalDetectorRunCount" units="attempts"

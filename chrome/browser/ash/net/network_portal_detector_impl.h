@@ -44,9 +44,6 @@ class NetworkStateHandler;
 // 3. Observes the NetworkStateHandler class and triggers Chrome captive portal
 //    detection (captive_portal::CaptivePortalService) when the Shill state
 //    changes (if required) then updates NetworkStateHandler accordingly.
-// It also maintains a separate CaptivePortalStatus for historical reasons.
-// The status reflects the combined Shill + Chrome detection results
-// (as does NetworkState::GetPortalState()).
 class NetworkPortalDetectorImpl : public NetworkPortalDetector,
                                   public NetworkStateHandlerObserver {
  public:
@@ -60,7 +57,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   ~NetworkPortalDetectorImpl() override;
 
   // NetworkPortalDetector implementation:
-  CaptivePortalStatus GetCaptivePortalStatus() override;
   bool IsEnabled() override;
   void Enable() override;
   void RequestCaptivePortalDetection() override;
@@ -104,7 +100,7 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
                           NetworkState::PortalState portal_state) override;
 
   void DetectionCompleted(const NetworkState* network,
-                          const CaptivePortalStatus& results);
+                          NetworkState::PortalState portal_state);
 
   void ResetCountersAndSendMetrics();
 
@@ -149,7 +145,6 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   // Unique identifier of the default network.
   std::string default_network_id_;
 
-  CaptivePortalStatus default_portal_status_ = CAPTIVE_PORTAL_STATUS_UNKNOWN;
   int response_code_for_testing_ = -1;
 
   State state_ = STATE_IDLE;
