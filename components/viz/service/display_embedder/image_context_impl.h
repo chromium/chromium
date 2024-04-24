@@ -101,7 +101,7 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
  private:
   void DeleteFallbackTextures();
   void CreateFallbackImage(gpu::SharedContextState* context_state);
-  bool BeginAccessIfNecessaryForSharedImage(
+  bool BeginAccessIfNecessaryInternal(
       gpu::SharedContextState* context_state,
       gpu::SharedImageRepresentationFactory* representation_factory,
       std::vector<GrBackendSemaphore>* begin_semaphores,

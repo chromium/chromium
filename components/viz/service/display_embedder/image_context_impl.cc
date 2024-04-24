@@ -217,88 +217,10 @@ void ImageContextImpl::BeginAccessIfNecessary(
   if (representation_raster_scoped_access_)
     return;
 
-  // Prepare for accessing shared image.
-  if (mailbox_holder().mailbox.IsSharedImage()) {
-    if (!BeginAccessIfNecessaryForSharedImage(
-            context_state, representation_factory, begin_semaphores,
-            end_semaphores)) {
-      CreateFallbackImage(context_state);
-    }
-    return;
-  }
-
-  // Prepare for accessing legacy mailbox.
-  // The promise images have been fulfilled once, so we don't need to do
-  // anything.
-  if (!promise_image_textures_.empty()) {
-    return;
-  }
-
-  if (!graphite_textures_.empty()) {
-    return;
-  }
-
-  if (!context_state->GrContextIsGL()) {
-    // Probably this texture is created with wrong interface (GLES2Interface).
-    DLOG(ERROR) << "Failed to fulfill the promise texture whose backend is not "
-                   "compatible with vulkan or graphite.";
+  if (!BeginAccessIfNecessaryInternal(context_state, representation_factory,
+                                      begin_semaphores, end_semaphores)) {
     CreateFallbackImage(context_state);
-    return;
   }
-
-  auto* texture_base =
-      mailbox_manager->ConsumeTexture(mailbox_holder().mailbox);
-  if (!texture_base) {
-    DLOG(ERROR) << "Failed to fulfill the promise texture.";
-    CreateFallbackImage(context_state);
-    return;
-  }
-
-  if (texture_base->GetType() == gpu::TextureBase::Type::kValidated) {
-    // Verify that the client-provided size matches the size of the GPU
-    // resource, using a fallback texture otherwise.
-    // NOTE: This verification is possible only for the validating decoder, as
-    // the size of the GL texture isn't tracked in the passthrough decoder.
-    auto* texture = gpu::gles2::Texture::CheckedCast(texture_base);
-    GLsizei width, height;
-    texture->GetLevelSize(texture_base->target(), 0 /* level */, &width,
-                          &height, nullptr /* depth */);
-    gfx::Size texture_size(width, height);
-    if (texture_size != size()) {
-      DLOG(ERROR) << "Failed to fulfill the promise texture - texture "
-                     "size does not match TransferableResource size: "
-                  << texture_size.ToString() << " vs " << size().ToString();
-      CreateFallbackImage(context_state);
-      return;
-    }
-  }
-
-  // Legacy mailboxes support only single planar formats.
-  CHECK(format().is_single_plane());
-  GrBackendTexture backend_texture;
-  gpu::GLFormatDesc format_desc =
-      context_state->GetGLFormatCaps().ToGLFormatDesc(format(),
-                                                      /*plane_index=*/0);
-  gpu::GetGrBackendTexture(
-      context_state->feature_info(), texture_base->target(), size(),
-      texture_base->service_id(), format_desc.storage_internal_format,
-      context_state->gr_context()->threadSafeProxy(), &backend_texture);
-  if (!backend_texture.isValid()) {
-    DLOG(ERROR) << "Failed to fulfill the promise texture.";
-    CreateFallbackImage(context_state);
-    return;
-  }
-  SetPromiseImageTextures({GrPromiseImageTexture::Make(backend_texture)});
-
-  // Hold onto a reference to legacy GL textures while still in use, see
-  // https://crbug.com/1118166 for why this is necessary.
-  if (texture_base->GetType() == gpu::TextureBase::Type::kPassthrough) {
-    texture_passthrough_ =
-        gpu::gles2::TexturePassthrough::CheckedCast(texture_base);
-  }
-  // TODO(crbug.com/40145280): The case above handles textures with the
-  // passthrough command decoder, verify if something is required for the
-  // validating command decoder as well.
 }
 
 bool ImageContextImpl::BeginRasterAccess(
@@ -329,7 +251,7 @@ bool ImageContextImpl::BeginRasterAccess(
   return true;
 }
 
-bool ImageContextImpl::BeginAccessIfNecessaryForSharedImage(
+bool ImageContextImpl::BeginAccessIfNecessaryInternal(
     gpu::SharedContextState* context_state,
     gpu::SharedImageRepresentationFactory* representation_factory,
     std::vector<GrBackendSemaphore>* begin_semaphores,
