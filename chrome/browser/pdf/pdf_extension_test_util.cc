@@ -113,10 +113,13 @@ size_t CountPdfPluginProcesses(Browser* browser) {
 }
 
 testing::AssertionResult EnsurePDFHasLoaded(
+    const content::ToRenderFrameHost& frame) {
+  return EnsurePDFHasLoadedWithOptions(frame, EnsurePDFHasLoadedOptions());
+}
+
+testing::AssertionResult EnsurePDFHasLoadedWithOptions(
     const content::ToRenderFrameHost& frame,
-    bool wait_for_hit_test_data,
-    const std::string& pdf_element,
-    bool allow_multiple_frames) {
+    const EnsurePDFHasLoadedOptions& options) {
   // OOPIF PDF intentionally doesn't support postMessage() API for embedders.
   // postMessage() can still be used if the script is injected into the
   // extension frame.
@@ -149,9 +152,9 @@ testing::AssertionResult EnsurePDFHasLoaded(
   // Otherwise, it should be whatever frame was given.
   content::RenderFrameHost* frame_rfh = frame.render_frame_host();
   content::RenderFrameHost* target_frame =
-      use_oopif
-          ? GetPdfExtensionHostFromEmbedder(frame_rfh, allow_multiple_frames)
-          : frame_rfh;
+      use_oopif ? GetPdfExtensionHostFromEmbedder(frame_rfh,
+                                                  options.allow_multiple_frames)
+                : frame_rfh;
 
   if (use_oopif && !target_frame) {
     return testing::AssertionFailure() << "Failed to get PDF extension frame.";
@@ -159,7 +162,8 @@ testing::AssertionResult EnsurePDFHasLoaded(
 
   const std::string post_message_target =
       use_oopif ? kOopifPostMessageTarget
-                : content::JsReplace(kGuestViewPostMessageTarget, pdf_element);
+                : content::JsReplace(kGuestViewPostMessageTarget,
+                                     options.pdf_element);
   bool load_success =
       content::EvalJs(target_frame,
                       base::StringPrintf(kEnsurePdfHasLoadedScript,
@@ -170,7 +174,7 @@ testing::AssertionResult EnsurePDFHasLoaded(
     return testing::AssertionFailure() << "Load failed.";
   }
 
-  if (wait_for_hit_test_data) {
+  if (options.wait_for_hit_test_data) {
     frame.render_frame_host()->ForEachRenderFrameHost(
         [](content::RenderFrameHost* render_frame_host) {
           return content::WaitForHitTestData(render_frame_host);

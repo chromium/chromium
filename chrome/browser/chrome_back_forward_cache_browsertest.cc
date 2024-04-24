@@ -868,8 +868,10 @@ IN_PROC_BROWSER_TEST_P(
     ASSERT_TRUE(GetTestPdfViewerStreamManager(web_contents())
                     ->WaitUntilPdfLoadedInFirstChild());
   } else {
-    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(
-        web_contents(), /*wait_for_hit_test_data=*/true, std::string(tag)));
+    pdf_extension_test_util::EnsurePDFHasLoadedOptions options{
+        .pdf_element = std::string(tag)};
+    ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoadedWithOptions(
+        web_contents(), options));
   }
   content::RenderFrameHostWrapper rfh_a(current_frame_host());
 

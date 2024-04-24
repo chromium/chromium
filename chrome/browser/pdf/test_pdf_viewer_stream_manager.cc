@@ -117,9 +117,10 @@ TestPdfViewerStreamManager::WaitUntilPdfLoadedAllowMultipleFrames(
   WaitUntilPdfNavigationFinished(embedder_host);
 
   // Wait until the PDF extension and content are loaded.
-  return pdf_extension_test_util::EnsurePDFHasLoaded(
-      embedder_host, /*wait_for_hit_test_data=*/true, /*pdf_element=*/"embed",
-      /*allow_multiple_frames=*/true);
+  pdf_extension_test_util::EnsurePDFHasLoadedOptions options{
+      .allow_multiple_frames = true};
+  return pdf_extension_test_util::EnsurePDFHasLoadedWithOptions(embedder_host,
+                                                                options);
 }
 
 testing::AssertionResult
