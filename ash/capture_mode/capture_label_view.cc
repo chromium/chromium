@@ -339,7 +339,8 @@ void CaptureLabelView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 }
 
-gfx::Size CaptureLabelView::CalculatePreferredSize() const {
+gfx::Size CaptureLabelView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   if (countdown_finished_callback_)
     return gfx::Size(kCaptureLabelRadius * 2, kCaptureLabelRadius * 2);
 
