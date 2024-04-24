@@ -18133,7 +18133,6 @@ from previous Chrome versions.
   <int value="-1365859601" label="CCTPageInsightsHubBetterScroll:disabled"/>
   <int value="-1365795470"
       label="ServiceWorkerImportedScriptUpdateCheck:disabled"/>
-  <int value="-1365503870" label="enable-simplified-fullscreen-ui"/>
   <int value="-1364880645" label="OmniboxCr2023Umbrella:disabled"/>
   <int value="-1364703377" label="AppListDragAndDropRefactor:enabled"/>
   <int value="-1363709707" label="MaterialDesignHistory:disabled"/>
@@ -19018,7 +19017,6 @@ from previous Chrome versions.
   <int value="-979313250" label="enable-google-branded-context-menu"/>
   <int value="-979057409" label="enable-seccomp-filter-sandbox"/>
   <int value="-979034258" label="disable-ntp-other-sessions-menu"/>
-  <int value="-978700508" label="disable-simplified-fullscreen-ui"/>
   <int value="-978514039" label="SiteSearchSettingsPolicy:disabled"/>
   <int value="-977770313" label="AndroidSurfaceControl:enabled"/>
   <int value="-977476498" label="disable-eol-notification"/>
@@ -22669,6 +22667,7 @@ from previous Chrome versions.
   <int value="659051425"
       label="AdaptiveButtonInTopToolbarCustomizationV2:disabled"/>
   <int value="659086147" label="OverlayScrollbarFlashWhenMouseEnter:enabled"/>
+  <int value="659775785" label="(Obsolete) disable-simplified-fullscreen-ui"/>
   <int value="659871291"
       label="ClearCrossSiteCrossBrowsingContextGroupWindowName:enabled"/>
   <int value="661020875" label="AutofillSaveCardShowNoThanks:disabled"/>
@@ -23706,6 +23705,7 @@ from previous Chrome versions.
   <int value="1117795262" label="BloatedRendererDetection:disabled"/>
   <int value="1118109174" label="enable-launcher-search-provider-api"/>
   <int value="1118339487" label="MemoriesDebug:disabled"/>
+  <int value="1120211655" label="(Obsolete) enable-simplified-fullscreen-ui"/>
   <int value="1120428727" label="TabGridLayoutAndroid:enabled"/>
   <int value="1121879933" label="CrosPrivacyHubAppPermissions:enabled"/>
   <int value="1122217615" label="PasswordGenerationBottomSheet:enabled"/>

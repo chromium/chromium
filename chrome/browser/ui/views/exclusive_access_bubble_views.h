@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
+#include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 
 class ExclusiveAccessBubbleViewsContext;
@@ -32,6 +33,7 @@ class SubtleNotificationView;
 // moves to the screen top.
 class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
                                    public FullscreenObserver,
+                                   public gfx::AnimationDelegate,
                                    public views::WidgetObserver {
  public:
   ExclusiveAccessBubbleViews(
@@ -77,20 +79,16 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
   // Returns whether the popup is visible.
   bool IsVisible() const;
 
-  // Returns the root view containing |browser_view_|.
-  views::View* GetBrowserRootView() const;
+  // Returns the desired rect for the popup window in screen coordinates.
+  gfx::Rect GetPopupRect() const;
 
-  // ExclusiveAccessBubble:
+  // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
-  gfx::Rect GetPopupRect() const override;
-  gfx::Point GetCursorScreenPoint() override;
-  bool WindowContainsPoint(gfx::Point pos) override;
-  bool IsWindowActive() override;
+
+  // ExclusiveAccessBubble:
   void Hide() override;
   void Show() override;
-  bool IsAnimating() override;
-  bool CanTriggerOnMousePointer() const override;
 
   // FullscreenObserver:
   void OnFullscreenStateChanged() override;
@@ -105,9 +103,7 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
 
   raw_ptr<views::Widget> popup_;
 
-  // Classic mode: Bubble may show & hide multiple times. The callback only runs
-  // for the first hide.
-  // Simplified mode: Bubble only hides once.
+  // Callback that runs the first time the bubble hides.
   ExclusiveAccessBubbleHideCallback first_hide_callback_;
 
   // Animation controlling showing/hiding of the exit bubble.
@@ -116,6 +112,9 @@ class ExclusiveAccessBubbleViews : public ExclusiveAccessBubble,
   // The contents of the popup.
   raw_ptr<SubtleNotificationView> view_;
   std::u16string browser_fullscreen_exit_accelerator_;
+
+  // Whether the bubble was updated for a download while showing.
+  bool notify_overridden_ = false;
 
   base::ScopedObservation<FullscreenController, FullscreenObserver>
       fullscreen_observation_{this};

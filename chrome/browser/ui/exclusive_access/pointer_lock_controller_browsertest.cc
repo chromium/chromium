@@ -103,8 +103,8 @@ IN_PROC_BROWSER_TEST_F(PointerLockControllerTest,
   EXPECT_EQ(0ul, pointer_lock_bubble_hide_reason_recorder_.size());
 
   EXPECT_TRUE(task_runner->HasPendingTask());
-  // Must fast forward at least |ExclusiveAccessBubble::kInitialDelayMs|.
-  task_runner->FastForwardBy(base::Milliseconds(InitialBubbleDelayMs() + 20));
+  // Must fast forward at least `ExclusiveAccessBubble::kShowTime`.
+  task_runner->FastForwardBy(ExclusiveAccessBubble::kShowTime * 2);
   EXPECT_EQ(1ul, pointer_lock_bubble_hide_reason_recorder_.size());
   EXPECT_EQ(ExclusiveAccessBubbleHideReason::kTimeout,
             pointer_lock_bubble_hide_reason_recorder_[0]);
@@ -116,8 +116,8 @@ IN_PROC_BROWSER_TEST_F(PointerLockControllerTest, FastPointerLockUnlockRelock) {
   base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner.get());
 
   RequestToLockPointer(true, false);
-  // Shorter than |ExclusiveAccessBubble::kInitialDelayMs|.
-  task_runner->FastForwardBy(base::Milliseconds(InitialBubbleDelayMs() / 2));
+  // Shorter than `ExclusiveAccessBubble::kShowTime`.
+  task_runner->FastForwardBy(ExclusiveAccessBubble::kShowTime / 2);
   LostPointerLock();
   RequestToLockPointer(true, true);
 
@@ -135,8 +135,8 @@ IN_PROC_BROWSER_TEST_F(PointerLockControllerTest, SlowPointerLockUnlockRelock) {
   base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner.get());
 
   RequestToLockPointer(true, false);
-  // Longer than |ExclusiveAccessBubble::kInitialDelayMs|.
-  task_runner->FastForwardBy(base::Milliseconds(InitialBubbleDelayMs() + 20));
+  // Longer than `ExclusiveAccessBubble::kShowTime`.
+  task_runner->FastForwardBy(ExclusiveAccessBubble::kShowTime * 2);
   LostPointerLock();
   RequestToLockPointer(true, true);
 

@@ -104,8 +104,6 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
 
   void SetUserEscapeTimestampForTest(const base::TimeTicks timestamp);
 
-  int InitialBubbleDelayMs() const;
-
   void ExpectMockControllerReceivedEscape(int count);
 
   MockExclusiveAccessController* mock_controller() {

@@ -7927,6 +7927,7 @@ test("unit_tests") {
       "../browser/ui/commerce/price_tracking_page_action_controller_unittest.cc",
       "../browser/ui/content_settings/content_setting_bubble_model_unittest.cc",
       "../browser/ui/content_settings/content_setting_image_model_unittest.cc",
+      "../browser/ui/exclusive_access/exclusive_access_bubble_unittest.cc",
       "../browser/ui/exclusive_access/fullscreen_controller_state_unittest.cc",
       "../browser/ui/extensions/controlled_home_bubble_delegate_unittest.cc",
       "../browser/ui/extensions/extension_action_view_controller_unittest.cc",

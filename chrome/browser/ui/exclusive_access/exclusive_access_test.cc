@@ -284,10 +284,6 @@ void ExclusiveAccessTest::SetUserEscapeTimestampForTest(
       ->last_user_escape_time_ = timestamp;
 }
 
-int ExclusiveAccessTest::InitialBubbleDelayMs() const {
-  return ExclusiveAccessBubble::kInitialDelayMs;
-}
-
 void ExclusiveAccessTest::ExpectMockControllerReceivedEscape(int count) {
   EXPECT_EQ(count, mock_controller()->escape_pressed_count());
   mock_controller()->reset_escape_pressed_count();
