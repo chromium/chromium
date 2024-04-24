@@ -78,15 +78,6 @@ struct COMPONENT_EXPORT(GPU_MAILBOX) Mailbox {
   static Mailbox GenerateLegacySharedBitmapMailbox();
 
   friend class viz::SharedBitmap;
-
- public:
-  // Generate a legacy mailbox for usage in tests of production code that
-  // still interacts with the legacy mailbox system.
-  // TODO(crbug.com/40057997): Remove all tests that use this functionality, as
-  // they are testing codepaths no longer used in production.
-  static Mailbox GenerateLegacyMailboxForTesting() {
-    return GenerateLegacySharedBitmapMailbox();
-  }
 };
 
 }  // namespace gpu
