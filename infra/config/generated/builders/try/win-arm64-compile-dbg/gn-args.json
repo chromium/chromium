@@ -4,7 +4,7 @@
     "is_component_build": true,
     "is_debug": true,
     "proprietary_codecs": true,
-    "symbol_level": 1,
+    "symbol_level": 0,
     "target_cpu": "arm64",
     "use_remoteexec": true,
     "use_siso": true

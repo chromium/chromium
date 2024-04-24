@@ -390,6 +390,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/win-arm64-dbg",
+            "no_symbols",
         ],
     ),
     builderless = False,
