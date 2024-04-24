@@ -1389,6 +1389,8 @@ class InterestGroupAuction::BuyerHelper
       double bid,
       const std::optional<blink::AdCurrency>& bid_currency,
       const std::optional<std::string>& ad_metadata,
+      const std::optional<std::string>& buyer_reporting_id,
+      const std::optional<std::string>& buyer_and_seller_reporting_id,
       blink::AdDescriptor ad_descriptor,
       std::vector<blink::AdDescriptor> ad_component_descriptors) {
     CHECK_EQ(1u, bid_states_.size());
@@ -1411,6 +1413,17 @@ class InterestGroupAuction::BuyerHelper
       // Bid render url must match the interest group.
       return nullptr;
     }
+    // Reporting IDs used by the server (if any) must match the ad on device.
+    if (buyer_and_seller_reporting_id &&
+        matching_ad->buyer_and_seller_reporting_id !=
+            *buyer_and_seller_reporting_id) {
+      return nullptr;
+    }
+    if (buyer_reporting_id &&
+        matching_ad->buyer_reporting_id != *buyer_reporting_id) {
+      return nullptr;
+    }
+
     for (const auto& ad_component_descriptor : ad_component_descriptors) {
       const blink::InterestGroup::Ad* matching_ad_component = FindMatchingAd(
           *interest_group.ad_components, bid_state->kanon_keys, interest_group,
@@ -5237,7 +5250,8 @@ void InterestGroupAuction::CreateBidFromServerResponse() {
       buyer_helpers_[0]->TryToCreateBidFromServerResponse(
           auction_worklet::mojom::BidRole::kUnenforcedKAnon,
           saved_response_->bid.value_or(0.0001), saved_response_->bid_currency,
-          saved_response_->ad_metadata,
+          saved_response_->ad_metadata, saved_response_->buyer_reporting_id,
+          saved_response_->buyer_and_seller_reporting_id,
           /*ad_descriptor=*/
           blink::AdDescriptor(saved_response_->ad_render_url),
           /*ad_component_descriptors=*/std::move(ad_components));

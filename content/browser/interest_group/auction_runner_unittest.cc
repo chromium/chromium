@@ -36,6 +36,8 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
+#include "components/cbor/values.h"
+#include "components/cbor/writer.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
@@ -93,6 +95,7 @@
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
+#include "third_party/zlib/google/compression_utils.h"
 
 using auction_worklet::TestDevToolsAgentClient;
 using testing::HasSubstr;
@@ -21662,6 +21665,227 @@ TEST_F(AuctionRunnerTest, ServerResponseLogsErrors) {
             base::as_bytes(base::make_span(encrypted_response))));
 
     task_environment()->RunUntilIdle();
+    EXPECT_THAT(result_.errors, testing::ElementsAreArray(test_case.errors));
+    hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.Result",
+                            test_case.result, 1);
+  }
+}
+
+TEST_F(AuctionRunnerTest, MatcheReportingIdsInServerResponse) {
+  const struct {
+    std::string test_name;
+    std::string winner_name;
+    std::optional<std::string> response_buyer_reporting_id;
+    std::optional<std::string> response_buyer_and_seller_reporting_id;
+    std::vector<std::string> errors;
+    AuctionResult result;
+  } kTestCases[] = {
+      {
+          "Response no reportingId, winner no reportingId",
+          "NoReportingIds",
+          std::nullopt,
+          std::nullopt,
+          {},
+          AuctionResult::kSuccess,
+      },
+      {
+          "Response no reportingId, winner buyerReportingId",
+          "BuyerReportingId",
+          std::nullopt,
+          std::nullopt,
+          {},
+          AuctionResult::kSuccess,
+      },
+      {
+          "Response no reportingId, winner buyerAndSellerReportingId",
+          "BuyerAndSellerReportingId",
+          std::nullopt,
+          std::nullopt,
+          {},
+          AuctionResult::kSuccess,
+      },
+      {
+          "Response buyerReportingId, winner no reportingId",
+          "NoReportingIds",
+          "BuyerReportingId",
+          std::nullopt,
+          {"runAdAuction(): Couldn't reconstruct winning bid"},
+          AuctionResult::kInvalidServerResponse,
+      },
+      {
+          "Response buyerReportingId, winner buyerReportingId",
+          "BuyerReportingId",
+          "BuyerReportingId",
+          std::nullopt,
+          {},
+          AuctionResult::kSuccess,
+      },
+      {
+          // If server provided buyerReportingId to reporting, we should drop
+          // the bid because the server processed reporting with a different
+          // reportingId.
+          "Response buyerReportingId, winner buyerAndSellerReportingId",
+          "BuyerAndSellerReportingId",
+          "BuyerReportingId",
+          std::nullopt,
+          {"runAdAuction(): Couldn't reconstruct winning bid"},
+          AuctionResult::kInvalidServerResponse,
+      },
+      {
+          "Response misspelled buyerReportingId, winner buyerReportingId",
+          "BuyerReportingId",
+          "buyerreportingid",
+          std::nullopt,
+          {"runAdAuction(): Couldn't reconstruct winning bid"},
+          AuctionResult::kInvalidServerResponse,
+      },
+      {
+          "Response buyerAndSellerReportingId, winner no reportingId",
+          "NoReportingIds",
+          std::nullopt,
+          "BuyerAndSellerReportingId",
+          {"runAdAuction(): Couldn't reconstruct winning bid"},
+          AuctionResult::kInvalidServerResponse,
+      },
+      {
+          // If server provided buyerAndSellerReportingId to reporting, we
+          // should drop the bid because the server processed reporting with a
+          // different reportingId.
+          "Response buyerAndSellerReportingId, winner buyerReportingId",
+          "BuyerReportingId",
+          std::nullopt,
+          "BuyerAndSellerReportingId",
+          {"runAdAuction(): Couldn't reconstruct winning bid"},
+          AuctionResult::kInvalidServerResponse,
+      },
+      {
+          "Response buyerAndSellerReportingId, winner "
+          "buyerAndSellerReportingId",
+          "BuyerAndSellerReportingId",
+          std::nullopt,
+          "BuyerAndSellerReportingId",
+          {},
+          AuctionResult::kSuccess,
+      },
+      {
+          "Response misspelled buyerAndSellerReportingId, winner "
+          "buyerAndSellerReportingId",
+          "BuyerAndSellerReportingId",
+          std::nullopt,
+          "buyerandsellerreportingid",
+          {"runAdAuction(): Couldn't reconstruct winning bid"},
+          AuctionResult::kInvalidServerResponse,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.test_name);
+    base::HistogramTester hist;
+
+    cbor::Value::MapValue response_map;
+    response_map[cbor::Value("adRenderURL")] = cbor::Value("https://ad1.com");
+    response_map[cbor::Value("interestGroupName")] =
+        cbor::Value(test_case.winner_name);
+    response_map[cbor::Value("interestGroupOwner")] =
+        cbor::Value(kBidder1.Serialize());
+
+    if (test_case.response_buyer_reporting_id) {
+      response_map[cbor::Value("buyerReportingId")] =
+          cbor::Value(test_case.response_buyer_reporting_id.value());
+    }
+
+    if (test_case.response_buyer_and_seller_reporting_id) {
+      response_map[cbor::Value("buyerAndSellerReportingId")] =
+          cbor::Value(test_case.response_buyer_and_seller_reporting_id.value());
+    }
+
+    cbor::Value::MapValue bidding_groups_map;
+    cbor::Value::ArrayValue bidding_groups_array;
+    bidding_groups_array.emplace_back(0);
+    bidding_groups_array.emplace_back(1);
+    bidding_groups_array.emplace_back(2);
+    bidding_groups_map[cbor::Value(kBidder1.Serialize())] =
+        cbor::Value(std::move(bidding_groups_array));
+
+    response_map[cbor::Value("biddingGroups")] =
+        cbor::Value(std::move(bidding_groups_map));
+
+    std::optional<std::vector<uint8_t>> response_vector =
+        cbor::Writer::Write(cbor::Value(std::move(response_map)));
+    ASSERT_TRUE(response_vector);
+    std::string unframed_response;
+    ASSERT_TRUE(
+        compression::GzipCompress(response_vector.value(), &unframed_response));
+
+    uint32_t request_size = unframed_response.size();
+    std::string response = {0x02, static_cast<char>(request_size >> 24),
+                            static_cast<char>(request_size >> 16),
+                            static_cast<char>(request_size >> 8),
+                            static_cast<char>(request_size >> 0)};
+
+    response += unframed_response;
+
+    const base::Uuid request_id = base::Uuid::GenerateRandomV4();
+    server_response_request_id_ = request_id;
+
+    quiche::ObliviousHttpRequest::Context client_context =
+        CreateBiddingAndAuctionEncryptionContext();
+    std::string encrypted_response =
+        quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+            response, client_context,
+            kBiddingAndAuctionEncryptionResponseMediaType)
+            ->EncapsulateAndSerialize();
+
+    ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
+        web_contents()->GetPrimaryPage());
+
+    std::string witnessed_hash = crypto::SHA256HashString(encrypted_response);
+    ad_auction_page_data_->AddAuctionResultWitnessForOrigin(kSeller,
+                                                            witnessed_hash);
+
+    AdAuctionRequestContext context(
+        kSeller,
+        {{kBidder1,
+          {"NoReportingIds", "BuyerReportingId", "BuyerAndSellerReportingId"}}},
+        std::move(client_context), base::TimeTicks::Now());
+    ad_auction_page_data_->RegisterAdAuctionRequestContext(request_id,
+                                                           std::move(context));
+
+    std::vector<StorageInterestGroup> bidders;
+    StorageInterestGroup no_reporting_ids_group = MakeInterestGroup(
+        kBidder1, "NoReportingIds", kBidder1Url,
+        /*trusted_bidding_signals_url=*/std::nullopt,
+        /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+        /*ad_component_urls=*/std::nullopt);
+    bidders.emplace_back(std::move(no_reporting_ids_group));
+
+    StorageInterestGroup buyer_reporting_id_group = MakeInterestGroup(
+        kBidder1, "BuyerReportingId", kBidder1Url,
+        /*trusted_bidding_signals_url=*/std::nullopt,
+        /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com"),
+        /*ad_component_urls=*/std::nullopt);
+    buyer_reporting_id_group.interest_group.ads.value()[0].buyer_reporting_id =
+        "BuyerReportingId";
+    bidders.emplace_back(std::move(buyer_reporting_id_group));
+
+    StorageInterestGroup buyer_and_seller_reporting_id_group =
+        MakeInterestGroup(kBidder1, "BuyerAndSellerReportingId", kBidder1Url,
+                          /*trusted_bidding_signals_url=*/std::nullopt,
+                          /*trusted_bidding_signals_keys=*/{},
+                          GURL("https://ad1.com"),
+                          /*ad_component_urls=*/std::nullopt);
+    buyer_and_seller_reporting_id_group.interest_group.ads.value()[0]
+        .buyer_and_seller_reporting_id = "BuyerAndSellerReportingId";
+    bidders.emplace_back(std::move(buyer_and_seller_reporting_id_group));
+
+    StartAuction(kSellerUrl, std::move(bidders));
+
+    abortable_ad_auction_->ResolvedAuctionAdResponsePromise(
+        blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+        mojo_base::BigBuffer(
+            base::as_bytes(base::make_span(encrypted_response))));
+
+    auction_run_loop_->Run();
     EXPECT_THAT(result_.errors, testing::ElementsAreArray(test_case.errors));
     hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.Result",
                             test_case.result, 1);

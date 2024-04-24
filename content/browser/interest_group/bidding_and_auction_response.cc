@@ -194,6 +194,16 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
   if (maybe_ad_metadata) {
     output.ad_metadata = *maybe_ad_metadata;
   }
+  std::string* maybe_buyer_reporting_id =
+      input_dict->FindString("buyerReportingId");
+  if (maybe_buyer_reporting_id) {
+    output.buyer_reporting_id = *maybe_buyer_reporting_id;
+  }
+  std::string* maybe_buyer_and_seller_reporting_id =
+      input_dict->FindString("buyerAndSellerReportingId");
+  if (maybe_buyer_and_seller_reporting_id) {
+    output.buyer_and_seller_reporting_id = *maybe_buyer_and_seller_reporting_id;
+  }
 
   output.result = AuctionResult::kSuccess;
   return std::move(output);

@@ -134,6 +134,14 @@ MATCHER_P(EqualsBiddingAndAuctionResponse,
                      testing::Eq(other.get().score)),
       testing::Field("bid", &BiddingAndAuctionResponse::bid,
                      testing::Eq(other.get().bid)),
+      testing::Field("ad_metadata", &BiddingAndAuctionResponse::ad_metadata,
+                     testing::Eq(other.get().ad_metadata)),
+      testing::Field("buyer_reporting_id",
+                     &BiddingAndAuctionResponse::buyer_reporting_id,
+                     testing::Eq(other.get().buyer_reporting_id)),
+      testing::Field("buyer_and_seller_reporting_id",
+                     &BiddingAndAuctionResponse::buyer_and_seller_reporting_id,
+                     testing::Eq(other.get().buyer_and_seller_reporting_id)),
       testing::Field("error", &BiddingAndAuctionResponse::error,
                      testing::Eq(other.get().error)),
   };
@@ -615,6 +623,31 @@ TEST(BiddingAndAuctionResponseTest, ParseSucceeds) {
             BiddingAndAuctionResponse response = CreateExpectedValidResponse();
             response.top_level_seller =
                 url::Origin::Create(GURL("https://seller.test"));
+            return response;
+          }(),
+      },
+      {
+          base::Value(CreateValidResponseDict().Set("adMetadata", "data")),
+          []() {
+            BiddingAndAuctionResponse response = CreateExpectedValidResponse();
+            response.ad_metadata = "data";
+            return response;
+          }(),
+      },
+      {
+          base::Value(CreateValidResponseDict().Set("buyerReportingId", "foo")),
+          []() {
+            BiddingAndAuctionResponse response = CreateExpectedValidResponse();
+            response.buyer_reporting_id = "foo";
+            return response;
+          }(),
+      },
+      {
+          base::Value(CreateValidResponseDict().Set("buyerAndSellerReportingId",
+                                                    "bar")),
+          []() {
+            BiddingAndAuctionResponse response = CreateExpectedValidResponse();
+            response.buyer_and_seller_reporting_id = "bar";
             return response;
           }(),
       },
