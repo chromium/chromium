@@ -113,6 +113,19 @@ class AutotestPrivateLoginStatusFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class AutotestPrivateWaitForLoginAnimationEndFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.waitForLoginAnimationEnd",
+                             AUTOTESTPRIVATE_WAITFORLOGINANIMATIONEND)
+
+ private:
+  ~AutotestPrivateWaitForLoginAnimationEndFunction() override;
+  ResponseAction Run() override;
+
+  void OnLoginAnimationEnd();
+};
+
 class AutotestPrivateLockScreenFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("autotestPrivate.lockScreen",

@@ -2735,6 +2735,7 @@ Called by update_extension_histograms.py.-->
   <int value="1880" label="OS_DIAGNOSTICS_REPLYTOROUTINEINQUIRY"/>
   <int value="1881" label="USERSCRIPTS_GETWORLDCONFIGURATIONS"/>
   <int value="1882" label="USERSCRIPTS_RESETWORLDCONFIGURATION"/>
+  <int value="1883" label="AUTOTESTPRIVATE_WAITFORLOGINANIMATIONEND"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">

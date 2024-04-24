@@ -866,6 +866,10 @@ namespace autotestPrivate {
     // Get login status.
     static void loginStatus(LoginStatusCallback callback);
 
+    // Waits for the post login animation to be complete and then triggers the
+    // callback.
+    static void waitForLoginAnimationEnd(VoidCallback callback);
+
     // Locks the screen.
     static void lockScreen();
 

@@ -26,6 +26,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
@@ -1491,6 +1492,33 @@ ExtensionFunction::ResponseAction AutotestPrivateLoginStatusFunction::Run() {
     }
   }
   return RespondNow(WithArguments(std::move(result)));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateWaitForLoginAnimationEndFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateWaitForLoginAnimationEndFunction::
+    ~AutotestPrivateWaitForLoginAnimationEndFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateWaitForLoginAnimationEndFunction::Run() {
+  DVLOG(1) << "AutotestPrivateWaitForLoginAnimationEndFunction";
+  ash::Shell::Get()
+      ->login_unlock_throughput_recorder()
+      ->post_login_deferred_task_runner()
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(&AutotestPrivateWaitForLoginAnimationEndFunction::
+                             OnLoginAnimationEnd,
+                         this));
+  return RespondLater();
+}
+
+void AutotestPrivateWaitForLoginAnimationEndFunction::OnLoginAnimationEnd() {
+  DVLOG(1)
+      << "AutotestPrivateWaitForLoginAnimationEndFunction::OnLoginAnimationEnd";
+  Respond(NoArguments());
 }
 
 ///////////////////////////////////////////////////////////////////////////////
