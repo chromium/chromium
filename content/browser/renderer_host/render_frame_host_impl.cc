@@ -4078,7 +4078,8 @@ void RenderFrameHostImpl::DidNavigate(
   //
   // The URL is set regardless of whether it's for a net error or not.
   SetLastCommittedUrl(params.url);
-  SetLastCommittedOrigin(params.origin);
+  SetLastCommittedOrigin(params.origin,
+                         params.has_potentially_trustworthy_unique_origin);
 
   // If the navigation was a cross-document navigation and it's not the
   // synchronous about:blank commit, then it committed a document that is not
@@ -4197,8 +4198,16 @@ void RenderFrameHostImpl::DidNavigate(
   }
 }
 
-void RenderFrameHostImpl::SetLastCommittedOrigin(const url::Origin& origin) {
+void RenderFrameHostImpl::SetLastCommittedOrigin(
+    const url::Origin& origin,
+    bool is_potentially_trustworthy_unique_origin) {
   last_committed_origin_ = origin;
+  // TODO(https://crbug.com/40159049): Instead of passing
+  // `is_potentially_trustworthy_unique_origin`, maybe we can just check if the
+  // origin is opaque and use ``network::IsOriginPotentiallyTrustworthy()` on
+  // its precursor origin.
+  browsing_context_state()->SetCurrentOrigin(
+      origin, is_potentially_trustworthy_unique_origin);
 }
 
 void RenderFrameHostImpl::SetInheritedBaseUrl(const GURL& inherited_base_url) {
@@ -4207,7 +4216,13 @@ void RenderFrameHostImpl::SetInheritedBaseUrl(const GURL& inherited_base_url) {
 
 void RenderFrameHostImpl::SetLastCommittedOriginForTesting(
     const url::Origin& origin) {
-  SetLastCommittedOrigin(origin);
+  // Default setting `is_potentially_trustworthy_unique_origin` to just whether
+  // the origin is opaque or not, since we don't really have a way to get the
+  // correct value from a random origin. Since this function is used mostly for
+  // unit tests that won't actually use this value (which is only used in the
+  // renderer), it should be good enough.
+  SetLastCommittedOrigin(
+      origin, /*is_potentially_trustworthy_unique_origin=*/origin.opaque());
 }
 
 const url::Origin& RenderFrameHostImpl::ComputeTopFrameOrigin(
@@ -4509,7 +4524,19 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
       new_frame_origin, net::IsolationInfo::RequestType::kOther,
       IsCredentialless(),
       /*fenced_frame_nonce_for_navigation=*/std::nullopt);
-  SetLastCommittedOrigin(new_frame_origin);
+  // The `is_potentially_trustworthy_unique_origin` bit should be inherited from
+  // the creator frame if it exists. Note that we do this even when the new
+  // frame is sandboxed, following `DocumentLoader::CaclculateOrigin()`.
+  // TODO(https://crbug.com/40159049): Once we can always trust
+  // `network::IsOriginPotentiallyTrustworthy()` instead of passing around
+  // `has_potentially_trustworthy_unique_origin`, remove this.
+  bool is_potentially_trustworthy_unique_origin =
+      creator_frame ? creator_frame->browsing_context_state()
+                          ->current_replication_state()
+                          .has_potentially_trustworthy_unique_origin
+                    : false;
+  SetLastCommittedOrigin(new_frame_origin,
+                         is_potentially_trustworthy_unique_origin);
 
   if (creator_frame) {
     // If we're given a parent/opener frame, copy the

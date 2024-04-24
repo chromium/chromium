@@ -568,9 +568,8 @@ void Navigator::DidNavigate(
 
   // Save the new page's origin and other properties, and replicate them to
   // proxies, including the proxy created in DidNavigateFrame() to replace the
-  // old frame in cross-process navigation cases.
-  render_frame_host->browsing_context_state()->SetCurrentOrigin(
-      params.origin, params.has_potentially_trustworthy_unique_origin);
+  // old frame in cross-process navigation cases. Note that the origin-related
+  // bits are set separately, through `SetLastCommittedOrigin()`.
   render_frame_host->browsing_context_state()->SetInsecureRequestPolicy(
       params.insecure_request_policy);
   render_frame_host->browsing_context_state()->SetInsecureNavigationsSet(

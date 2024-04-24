@@ -3659,8 +3659,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Called by |beforeunload_timeout_| when the beforeunload timeout fires.
   void BeforeUnloadTimeout();
 
-  // Update this frame's last committed origin.
-  void SetLastCommittedOrigin(const url::Origin& origin);
+  // Update this frame's last committed origin. This will also update the origin
+  // and the "has_potentially_trustworthy_unique_origin" bit in the
+  // FrameReplicationState.
+  void SetLastCommittedOrigin(const url::Origin& origin,
+                              bool is_potentially_trustworthy_unique_origin);
 
   // Stores a snapshot of the inherited base URL from the initiator's
   // FrameLoadRequest, if this document inherited one (e.g., about:srcdoc).
