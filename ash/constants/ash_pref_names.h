@@ -878,6 +878,14 @@ const char kDisplayPopularityRevNumber[] = "display_popularity.revision_number";
 const char kInternalDisplayScreenBrightnessPercent[] =
     "settings.display.internal_screen_brightness_percent";
 
+// An integer pref which stores the reason that the ambient light sensor was
+// disabled. This pref can be used if we need to systematically re-enable the
+// ambient light sensor for a subset of users (e.g. those who didn't manually
+// disable the sensor from the Settings app).
+// Values are from `power_manager::AmbientLightSensorChange_Cause`.
+inline constexpr char kAmbientLightSensorDisabledReason[] =
+    "settings.display.ambient_light_sensor_disabled_reason";
+
 // A boolean pref that enable fullscreen alert bubble.
 // TODO(zxdan): Change to an allowlist in M89.
 inline constexpr char kFullscreenAlertEnabled[] =

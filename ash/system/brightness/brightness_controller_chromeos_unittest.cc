@@ -64,6 +64,30 @@ double GetBrightnessPrefValue(const user_manager::KnownUser& known_user,
       ->GetDouble();
 }
 
+// Return true if there is a KnownUser pref for the ambient light sensor
+// disabled reason.
+bool HasAmbientLightSensorDisabledReasonPrefValue(
+    const user_manager::KnownUser& known_user,
+    const AccountId& account_id) {
+  const base::Value* pref_value =
+      known_user.FindPath(account_id, prefs::kAmbientLightSensorDisabledReason);
+  if (!pref_value) {
+    return false;
+  }
+
+  return pref_value->is_int();
+}
+
+// Gets the KnownUser ambient light sensor disabled reason pref value. Only call
+// this function if HasAmbientLightSensorDisabledReasonPrefValue is true.
+int GetAmbientLightSensorDisabledReasonPrefValue(
+    const user_manager::KnownUser& known_user,
+    const AccountId& account_id) {
+  return known_user
+      .FindPath(account_id, prefs::kAmbientLightSensorDisabledReason)
+      ->GetInt();
+}
+
 constexpr char kUserEmail[] = "user@example.com";
 constexpr char kUserEmailSecondary[] = "user2@example.com";
 constexpr double kInitialBrightness = 51.0;
@@ -546,6 +570,84 @@ TEST_F(BrightnessControllerChromeosTest, HasAmbientLightSensor) {
       base::BindOnce([](std::optional<bool> has_ambient_light_sensor) {
         EXPECT_FALSE(has_ambient_light_sensor.value());
       }));
+}
+
+TEST_F(BrightnessControllerChromeosTest, AmbientLightSensorDisabledReasonPref) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  SetBatteryPower();
+
+  // Set the ambient light sensor to be enabled initially.
+  power_manager_client()->SetAmbientLightSensorEnabled(true);
+  // Wait for AmbientLightSensorEnabledChange observer to be notified.
+  run_loop_.RunUntilIdle();
+
+  // On the login screen, focus a user.
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  login_data_dispatcher()->NotifyFocusPod(account_id);
+
+  user_manager::KnownUser known_user(local_state());
+
+  // Confirm that no "disabled reason" pref exists for the given KnownUser.
+  EXPECT_FALSE(
+      HasAmbientLightSensorDisabledReasonPrefValue(known_user, account_id));
+
+  // Disable the ambient light sensor.
+  power_manager_client()->SetAmbientLightSensorEnabled(false);
+  // Wait for AmbientLightSensorEnabledChange observer to be notified.
+  run_loop_.RunUntilIdle();
+
+  // There should now be a "disabled reason" pref stored in KnownUser.
+  EXPECT_TRUE(
+      HasAmbientLightSensorDisabledReasonPrefValue(known_user, account_id));
+  // In this case, the cause is USER_REQUEST_SETTINGS_APP because the change was
+  // made from the PowerManagerClient SetAmbientLightSensorEnabled function.
+  EXPECT_EQ(
+      power_manager::AmbientLightSensorChange_Cause_USER_REQUEST_SETTINGS_APP,
+      GetAmbientLightSensorDisabledReasonPrefValue(known_user, account_id));
+
+  // Re-enable the ambient light sensor.
+  power_manager_client()->SetAmbientLightSensorEnabled(true);
+  // Wait for AmbientLightSensorEnabledChange observer to be notified.
+  run_loop_.RunUntilIdle();
+
+  // After the ambient light sensor is re-enabled, the "disabled reason" pref
+  // should be deleted.
+  EXPECT_FALSE(
+      HasAmbientLightSensorDisabledReasonPrefValue(known_user, account_id));
+
+  // Get a reference to the actual BrightnessControllerChromeos so that we can
+  // trigger its observer callback manually.
+  system::BrightnessControllerChromeos* brightness_controller =
+      static_cast<system::BrightnessControllerChromeos*>(
+          brightness_control_delegate());
+
+  // Disable the ambient light sensor, triggering the observer callback manually
+  // so we can manually set a cause.
+  {
+    power_manager::AmbientLightSensorChange change;
+    change.set_sensor_enabled(false);
+    power_manager::AmbientLightSensorChange_Cause expected_cause =
+        power_manager::AmbientLightSensorChange_Cause_BRIGHTNESS_USER_REQUEST;
+    change.set_cause(expected_cause);
+    brightness_controller->AmbientLightSensorEnabledChanged(change);
+    EXPECT_EQ(expected_cause, GetAmbientLightSensorDisabledReasonPrefValue(
+                                  known_user, account_id));
+  }
+
+  {
+    // Disable the ambient light sensor (again triggering the observer callback
+    // manually), choosing a different cause this time. Note that the pref will
+    // be set even if the ambient light sensor was previously disabled.
+    power_manager::AmbientLightSensorChange change;
+    change.set_sensor_enabled(false);
+    power_manager::AmbientLightSensorChange_Cause expected_cause =
+        power_manager::AmbientLightSensorChange_Cause_NO_READINGS_FROM_ALS;
+    change.set_cause(expected_cause);
+    brightness_controller->AmbientLightSensorEnabledChanged(change);
+    EXPECT_EQ(expected_cause, GetAmbientLightSensorDisabledReasonPrefValue(
+                                  known_user, account_id));
+  }
 }
 
 class BrightnessControllerChromeosTest_NonApplicableSessionStates

@@ -206,6 +206,30 @@ void BrightnessControllerChromeos::ScreenBrightnessChanged(
   }
 }
 
+void BrightnessControllerChromeos::AmbientLightSensorEnabledChanged(
+    const power_manager::AmbientLightSensorChange& change) {
+  // In tests and during OOBE, these may not be present.
+  if (!active_account_id_.has_value() || !local_state_) {
+    return;
+  }
+
+  // If the ambient light sensor was disabled, save the cause for that change
+  // into a KnownUser pref. This pref can be used if we need to systematically
+  // re-enable the ambient light sensor for a subset of users (e.g. those who
+  // didn't manually disable the sensor from the Settings app).
+  user_manager::KnownUser known_user(local_state_);
+  if (!change.sensor_enabled()) {
+    known_user.SetPath(
+        active_account_id_.value(), prefs::kAmbientLightSensorDisabledReason,
+        std::make_optional<base::Value>(static_cast<int>(change.cause())));
+  } else {
+    // If the ambient light sensor was enabled, remove the existing "disabled
+    // reason" pref.
+    known_user.RemovePref(active_account_id_.value(),
+                          prefs::kAmbientLightSensorDisabledReason);
+  }
+}
+
 void BrightnessControllerChromeos::RecordHistogramForBrightnessAction(
     BrightnessAction brightness_action) {
   // Only record the first brightness adjustment (resets on reboot).
