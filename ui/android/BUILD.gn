@@ -110,8 +110,10 @@ static_library("test_support") {
 generate_jni("ui_android_jni_headers") {
   sources = [
     "java/src/org/chromium/ui/OverscrollRefreshHandler.java",
+    "java/src/org/chromium/ui/base/Clipboard.java",
     "java/src/org/chromium/ui/base/EventForwarder.java",
     "java/src/org/chromium/ui/base/LocalizationUtils.java",
+    "java/src/org/chromium/ui/base/SelectFileDialog.java",
     "java/src/org/chromium/ui/base/UiAndroidFeatureMap.java",
     "java/src/org/chromium/ui/base/ViewAndroidDelegate.java",
     "java/src/org/chromium/ui/base/WindowAndroid.java",
@@ -450,8 +452,6 @@ android_library("ui_no_recycler_view_java") {
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_animated_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/accessibility:ax_base_java",
-    "//ui/base:clipboard_jni_headers_java",
-    "//ui/base:select_file_dialog_jni_headers_java",
     "//ui/base/cursor/mojom:cursor_type_java",
     "//ui/base/ime/mojom:mojom_java",
     "//url:gurl_java",

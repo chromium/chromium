@@ -259,6 +259,8 @@ source_set("tests") {
     ]
     deps += [
       ":device_service_jni_headers",
+      "//services/device/public/java:geolocation_java_test_support",
+      "//services/device/usb:java",
       "//services/device/vibration/android:vibration_jni_headers",
     ]
   } else {

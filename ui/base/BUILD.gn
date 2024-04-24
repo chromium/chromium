@@ -925,19 +925,14 @@ static_library("test_support") {
 if (is_android) {
   generate_jni("ui_base_jni_headers") {
     sources = [
+      "../android/java/src/org/chromium/ui/base/Clipboard.java",
       "../android/java/src/org/chromium/ui/base/DeviceFormFactor.java",
       "../android/java/src/org/chromium/ui/base/IdleDetector.java",
       "../android/java/src/org/chromium/ui/base/LocalizationUtils.java",
       "../android/java/src/org/chromium/ui/base/ResourceBundle.java",
+      "../android/java/src/org/chromium/ui/base/SelectFileDialog.java",
       "../android/java/src/org/chromium/ui/base/TouchDevice.java",
     ]
-  }
-  generate_jni("select_file_dialog_jni_headers") {
-    sources =
-        [ "../android/java/src/org/chromium/ui/base/SelectFileDialog.java" ]
-  }
-  generate_jni("clipboard_jni_headers") {
-    sources = [ "../android/java/src/org/chromium/ui/base/Clipboard.java" ]
   }
 }
 

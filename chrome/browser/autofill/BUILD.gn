@@ -147,6 +147,7 @@ static_library("test_support") {
       "mock_manual_filling_view.h",
     ]
     deps += [
+      "//chrome/android:test_support_jni_headers",
       "//chrome/browser",
       "//chrome/browser/autofill",
       "//chrome/browser/keyboard_accessory/test_utils/android",

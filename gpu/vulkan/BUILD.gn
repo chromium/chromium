@@ -219,7 +219,10 @@ if (enable_vulkan) {
 
     if (is_android) {
       sources += [ "tests/native_window_android.cc" ]
-      deps += [ "//ui/gl" ]
+      deps += [
+        "//ui/android:ui_java",
+        "//ui/gl",
+      ]
     }
   }
 

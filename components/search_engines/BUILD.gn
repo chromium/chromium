@@ -149,6 +149,10 @@ source_set("search_engine_utils") {
   ]
 
   deps = [ "//url" ]
+
+  if (is_android) {
+    deps += [ "//components/search_engines/android:jni_headers" ]
+  }
 }
 
 source_set("search_engine_type") {
