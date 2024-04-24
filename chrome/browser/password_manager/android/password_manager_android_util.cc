@@ -300,7 +300,29 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
     const base::FilePath& login_db_directory) {
   CHECK_NE(GetSplitStoresAndLocalUpmPrefValue(pref_service), kOff);
 
-  // Only deactivate based on the *NoMigration* flag.
+  if (GetSplitStoresAndLocalUpmPrefValue(pref_service) ==
+      kOffAndMigrationPending) {
+    // The migration was previously scheduled but didn't succeed yet. Cancel it
+    // if the WithMigration flag was disabled since, or if the GmsCore version
+    // is no longer suitable. This provides an escape hatch for users who fail
+    // the migration every time and would otherwise stay with sync supppressed
+    // forever.
+    //
+    // Note: disabling the WithMigration flag does nothing to users who were
+    // already activated (kOn), see below.
+    ActivationError error = CheckMinGmsVersionAndFlagEnabled(
+        password_manager::features::
+            kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration);
+    // See comment in the other RecordActivationError() call below.
+    RecordActivationError(GetUserType(pref_service, login_db_directory), error);
+    if (error != ActivationError::kNone) {
+      pref_service->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
+                               static_cast<int>(kOff));
+    }
+    return;
+  }
+
+  // The user was activated. Only deactivate based on the *NoMigration* flag.
   // - If problems arise when rolling out NoMigration (first launch), disable
   //   that flag server-side. Non-syncing users will revert to using the login
   //   DB. Syncing users will revert to a single PasswordStore talking to
