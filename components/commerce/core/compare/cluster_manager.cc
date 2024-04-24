@@ -156,6 +156,28 @@ void ClusterManager::DidNavigateAway(const GURL& from_url) {
   RemoveCandidateProductURLIfNotOpen(from_url);
 }
 
+std::optional<ProductGroup> ClusterManager::GetProductGroupForCandidateProduct(
+    const GURL& product_url) {
+  if (candidate_product_map_.find(product_url) ==
+      candidate_product_map_.end()) {
+    return std::nullopt;
+  }
+
+  CandidateProduct* candidate = candidate_product_map_[product_url].get();
+  for (const auto& product_group : product_group_map_) {
+    if (product_group.second->member_products.find(product_url) !=
+        product_group.second->member_products.end()) {
+      // The product is already in this group, ignore it.
+      continue;
+    }
+    if (IsProductSimilarToGroup(candidate->category_data,
+                                product_group.second->categories)) {
+      return *(product_group.second);
+    }
+  }
+  return std::nullopt;
+}
+
 void ClusterManager::OnProductInfoRetrieved(
     const GURL& url,
     const std::optional<const ProductInfo>& product_info) {
@@ -233,6 +255,15 @@ std::vector<GURL> ClusterManager::FindSimilarCandidateProductsForProductGroup(
     }
   }
   return candidate_products;
+}
+
+std::set<GURL> ClusterManager::FindSimilarCandidateProducts(
+    const GURL& product_url) {
+  if (candidate_product_map_.find(product_url) ==
+      candidate_product_map_.end()) {
+    return std::set<GURL>();
+  }
+  return candidate_product_map_[product_url]->similar_candidate_products_urls;
 }
 
 }  // namespace commerce

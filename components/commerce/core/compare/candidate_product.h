@@ -28,9 +28,6 @@ struct CandidateProduct {
   // potentially be clustered into one product group.
   std::set<GURL> similar_candidate_products_urls;
 
-  // Set of IDs of product groups that are similar to this product.
-  std::set<std::string> similar_product_group_ids;
-
   // Category information about the product.
   CategoryData category_data;
 };

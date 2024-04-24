@@ -20,8 +20,8 @@ struct ProductGroup {
   ProductGroup(const base::Uuid& uuid, const std::vector<GURL>& urls);
   ~ProductGroup();
 
-  ProductGroup(const ProductGroup&) = delete;
-  ProductGroup& operator=(const ProductGroup&) = delete;
+  ProductGroup(const ProductGroup&);
+  ProductGroup& operator=(const ProductGroup&);
 
   // Unique ID to identify the product group.
   base::Uuid uuid;

@@ -152,16 +152,19 @@ TEST_F(ClusterManagerTest, NewCandidateProductClustered) {
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(3u, GetCandidateProductMap()->size());
 
-  CandidateProduct* product1 = (*GetCandidateProductMap())[foo1].get();
-  ASSERT_EQ(product1->similar_candidate_products_urls.size(), 1u);
-  ASSERT_EQ(product1->similar_candidate_products_urls.count(foo3), 1u);
+  std::set<GURL> similar_candidate_products =
+      cluster_manager_->FindSimilarCandidateProducts(foo1);
+  ASSERT_EQ(similar_candidate_products.size(), 1u);
+  ASSERT_EQ(similar_candidate_products.count(foo3), 1u);
 
-  CandidateProduct* product2 = (*GetCandidateProductMap())[foo2].get();
-  ASSERT_EQ(product2->similar_candidate_products_urls.size(), 0u);
+  similar_candidate_products =
+      cluster_manager_->FindSimilarCandidateProducts(foo2);
+  ASSERT_EQ(similar_candidate_products.size(), 0u);
 
-  CandidateProduct* product3 = (*GetCandidateProductMap())[foo3].get();
-  ASSERT_EQ(product3->similar_candidate_products_urls.size(), 1u);
-  ASSERT_EQ(product3->similar_candidate_products_urls.count(foo1), 1u);
+  similar_candidate_products =
+      cluster_manager_->FindSimilarCandidateProducts(foo3);
+  ASSERT_EQ(similar_candidate_products.size(), 1u);
+  ASSERT_EQ(similar_candidate_products.count(foo1), 1u);
 }
 
 TEST_F(ClusterManagerTest, CandidateProductWithMultipleLabelsClustered) {
@@ -184,18 +187,21 @@ TEST_F(ClusterManagerTest, CandidateProductWithMultipleLabelsClustered) {
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(3u, GetCandidateProductMap()->size());
 
-  CandidateProduct* product1 = (*GetCandidateProductMap())[foo1].get();
-  ASSERT_EQ(product1->similar_candidate_products_urls.size(), 2u);
-  ASSERT_EQ(product1->similar_candidate_products_urls.count(foo2), 1u);
-  ASSERT_EQ(product1->similar_candidate_products_urls.count(foo3), 1u);
+  std::set<GURL> similar_candidate_products =
+      cluster_manager_->FindSimilarCandidateProducts(foo1);
+  ASSERT_EQ(similar_candidate_products.size(), 2u);
+  ASSERT_EQ(similar_candidate_products.count(foo2), 1u);
+  ASSERT_EQ(similar_candidate_products.count(foo3), 1u);
 
-  CandidateProduct* product2 = (*GetCandidateProductMap())[foo2].get();
-  ASSERT_EQ(product2->similar_candidate_products_urls.size(), 1u);
-  ASSERT_EQ(product2->similar_candidate_products_urls.count(foo1), 1u);
+  similar_candidate_products =
+      cluster_manager_->FindSimilarCandidateProducts(foo2);
+  ASSERT_EQ(similar_candidate_products.size(), 1u);
+  ASSERT_EQ(similar_candidate_products.count(foo1), 1u);
 
-  CandidateProduct* product3 = (*GetCandidateProductMap())[foo3].get();
-  ASSERT_EQ(product3->similar_candidate_products_urls.size(), 1u);
-  ASSERT_EQ(product3->similar_candidate_products_urls.count(foo1), 1u);
+  similar_candidate_products =
+      cluster_manager_->FindSimilarCandidateProducts(foo3);
+  ASSERT_EQ(similar_candidate_products.size(), 1u);
+  ASSERT_EQ(similar_candidate_products.count(foo1), 1u);
 }
 
 TEST_F(ClusterManagerTest, RemoveClusteredCandidateProduct) {
@@ -216,11 +222,13 @@ TEST_F(ClusterManagerTest, RemoveClusteredCandidateProduct) {
   cluster_manager_->DidNavigateAway(foo3);
   ASSERT_EQ(2u, GetCandidateProductMap()->size());
 
-  CandidateProduct* product1 = (*GetCandidateProductMap())[foo1].get();
-  ASSERT_EQ(product1->similar_candidate_products_urls.size(), 0u);
+  std::set<GURL> similar_candidate_products =
+      cluster_manager_->FindSimilarCandidateProducts(foo1);
+  ASSERT_EQ(similar_candidate_products.size(), 0u);
 
-  CandidateProduct* product2 = (*GetCandidateProductMap())[foo2].get();
-  ASSERT_EQ(product2->similar_candidate_products_urls.size(), 0u);
+  similar_candidate_products =
+      cluster_manager_->FindSimilarCandidateProducts(foo2);
+  ASSERT_EQ(similar_candidate_products.size(), 0u);
 }
 
 TEST_F(ClusterManagerTest,
@@ -246,8 +254,9 @@ TEST_F(ClusterManagerTest,
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(2u, GetCandidateProductMap()->size());
 
-  CandidateProduct* product1 = (*GetCandidateProductMap())[foo1].get();
-  ASSERT_EQ(product1->similar_candidate_products_urls.size(), 0u);
+  std::set<GURL> similar_candidate_products =
+      cluster_manager_->FindSimilarCandidateProducts(foo1);
+  ASSERT_EQ(similar_candidate_products.size(), 0u);
 }
 
 TEST_F(ClusterManagerTest, FindSimilarCandidateProductsForProductGroup) {
@@ -358,6 +367,44 @@ TEST_F(ClusterManagerTest, RemoveProductGroup) {
   RemoveProductSpecificationSet(uuid);
   ASSERT_FALSE((*GetProductGroupMap())[uuid]);
   ASSERT_EQ(3u, GetCandidateProductMap()->size());
+}
+
+TEST_F(ClusterManagerTest, GetProductGroupForCandidateProduct) {
+  base::Uuid uuid = AddProductSpecificationSet();
+  ProductGroup* product_group = (*GetProductGroupMap())[uuid].get();
+  ASSERT_EQ(1u, product_group->member_products.size());
+  base::RunLoop().RunUntilIdle();
+  GURL foo1(kTestUrl1);
+  ASSERT_FALSE(cluster_manager_->GetProductGroupForCandidateProduct(foo1));
+
+  UpdateUrlInfos(std::vector<GURL>{foo1});
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo1);
+  base::RunLoop().RunUntilIdle();
+  auto possible_product_group =
+      cluster_manager_->GetProductGroupForCandidateProduct(foo1);
+  ASSERT_TRUE(possible_product_group);
+  ASSERT_EQ(possible_product_group->uuid, product_group->uuid);
+
+  UpdateUrlInfos(std::vector<GURL>());
+  cluster_manager_->DidNavigateAway(foo1);
+  ASSERT_FALSE(cluster_manager_->GetProductGroupForCandidateProduct(foo1));
+}
+
+TEST_F(ClusterManagerTest, AddCandidateProductAlreadyInProductGroups) {
+  base::Uuid uuid = AddProductSpecificationSet();
+  ProductGroup* product_group = (*GetProductGroupMap())[uuid].get();
+  ASSERT_EQ(1u, product_group->member_products.size());
+  GURL foo1(kProductUrl);
+  UpdateUrlInfos(std::vector<GURL>{foo1});
+
+  cluster_manager_->DidNavigatePrimaryMainFrame(foo1);
+  base::RunLoop().RunUntilIdle();
+  std::vector<GURL> candidates =
+      FindSimilarCandidateProductsForProductGroup(uuid);
+  ASSERT_EQ(0u, candidates.size());
+
+  ASSERT_FALSE(cluster_manager_->GetProductGroupForCandidateProduct(foo1));
+  ASSERT_EQ(1u, product_group->member_products.size());
 }
 
 }  // namespace commerce

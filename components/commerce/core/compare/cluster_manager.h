@@ -52,12 +52,24 @@ class ClusterManager : public ProductSpecificationsSet::Observer {
   void DidNavigatePrimaryMainFrame(const GURL& url);
   // A notification that the user navigated away from `from_url`.
   void DidNavigateAway(const GURL& from_url);
- private:
-  friend class ClusterManagerTest;
 
-  // Find similar candidate products for a product group.
+  // Gets a product group that the given product can be clustered into,
+  // or returns the product group this product already belongs to.
+  // TODO(qinmin): Check if we need to support the case that a candidate
+  // product can belong to multiple product groups.
+  std::optional<ProductGroup> GetProductGroupForCandidateProduct(
+      const GURL& product_url);
+
+  // Finds similar candidate products for a product group.
   std::vector<GURL> FindSimilarCandidateProductsForProductGroup(
       const base::Uuid& uuid);
+
+  // Finds similar candidate products for a candidate product. The returned
+  // URLs doesn't include the `product_url`.
+  std::set<GURL> FindSimilarCandidateProducts(const GURL& product_url);
+
+ private:
+  friend class ClusterManagerTest;
 
   // Called when information about a product is retrieved.
   void OnProductInfoRetrieved(

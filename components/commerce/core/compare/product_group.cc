@@ -12,4 +12,8 @@ ProductGroup::ProductGroup(const base::Uuid& uuid,
 
 ProductGroup::~ProductGroup() = default;
 
+ProductGroup::ProductGroup(const ProductGroup&) = default;
+
+ProductGroup& ProductGroup::operator=(const ProductGroup&) = default;
+
 }  // namespace commerce
