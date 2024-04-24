@@ -119,18 +119,6 @@ Matcher<Suggestion> EqualsIbanSuggestion(
                                      {Suggestion::Text(first_label_value)}}));
 }
 
-Matcher<Suggestion> EqualsClearFormSuggestion() {
-  return EqualsSuggestion(PopupItemId::kClearForm,
-#if BUILDFLAG(IS_ANDROID)
-                          base::i18n::ToUpper(l10n_util::GetStringUTF16(
-                              IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM)),
-#else
-                          l10n_util::GetStringUTF16(
-                              IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM),
-#endif
-                          Suggestion::Icon::kClear);
-}
-
 #if !BUILDFLAG(IS_IOS)
 Matcher<Suggestion> EqualsUndoAutofillSuggestion() {
   return EqualsSuggestion(PopupItemId::kClearForm,
@@ -2271,30 +2259,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
   EXPECT_EQ(profiles_to_suggest_from_manual_fallback.size(), 2u);
 }
 
-// TODO(crbug.com/1441410): Clean up when the feature is launched.
-TEST_F(AutofillSuggestionGeneratorTest, ClearAddressFormSuggestion) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kAutofillUndo);
-
-  personal_data().AddProfile(test::GetFullProfile());
-  FormFieldData field;
-  field.set_is_autofilled(true);
-  std::vector<Suggestion> suggestions =
-      suggestion_generator().GetSuggestionsForProfiles(
-          {NAME_FIRST}, field, NAME_FIRST,
-          /*last_targeted_fields=*/std::nullopt,
-          AutofillSuggestionTriggerSource::kFormControlElementClicked);
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsSuggestion(PopupItemId::kAddressEntry),
-                          EqualsSuggestion(PopupItemId::kSeparator),
-                          EqualsClearFormSuggestion(),
-                          EqualsManageAddressesSuggestion()));
-}
-
 #if !BUILDFLAG(IS_IOS)
 TEST_F(AutofillSuggestionGeneratorTest, UndoAutofillOnAddressForm) {
-  base::test::ScopedFeatureList features(features::kAutofillUndo);
-
   personal_data().AddProfile(test::GetFullProfile());
   FormFieldData field;
   field.set_is_autofilled(true);
@@ -2480,38 +2446,9 @@ TEST_F(AutofillSuggestionGeneratorTest,
               ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/true));
 }
 
-TEST_F(AutofillSuggestionGeneratorTest,
-       GetSuggestionsForVirtualCardStandaloneCvc_ClearForm) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kAutofillUndo);
-  CreditCard server_card = CreateServerCard();
-  personal_data().AddServerCreditCard(CreateServerCard());
-
-  base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>
-      virtual_card_guid_to_last_four_map;
-  virtual_card_guid_to_last_four_map.insert(
-      {server_card.guid(), VirtualCardUsageData::VirtualCardLastFour(u"4444")});
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
-  FormFieldData field;
-  field.set_is_autofilled(true);
-  std::vector<Suggestion> suggestions =
-      suggestion_generator().GetSuggestionsForVirtualCardStandaloneCvc(
-          field, metadata_logging_context, virtual_card_guid_to_last_four_map);
-
-  EXPECT_THAT(
-      suggestions,
-      ElementsAre(
-          EqualsSuggestion(PopupItemId::kVirtualCreditCardEntry),
-          EqualsSuggestion(PopupItemId::kSeparator),
-          EqualsClearFormSuggestion(),
-          EqualsManagePaymentsMethodsSuggestion(/*with_gpay_logo=*/true)));
-}
-
 #if !BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1441410): Clean up when the feature is launched.
 TEST_F(AutofillSuggestionGeneratorTest,
        GetSuggestionsForVirtualCardStandaloneCvc_UndoAutofill) {
-  base::test::ScopedFeatureList features(features::kAutofillUndo);
   CreditCard server_card = CreateServerCard();
   personal_data().AddServerCreditCard(CreateServerCard());
 
@@ -2707,36 +2644,9 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowCardsFromAccount) {
               ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
 }
 
-// TODO(crbug.com/1441410): Clean up when the feature is launched.
-TEST_F(AutofillSuggestionGeneratorTest,
-       FieldWasAutofilled_ClearCreditCardFormSuggestion) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kAutofillUndo);
-  personal_data().AddCreditCard(test::GetCreditCard());
-  bool with_offer;
-  bool with_cvc;
-  autofill_metrics::CardMetadataLoggingContext metadata_logging_context;
-  FormFieldData field;
-  field.set_is_autofilled(true);
-  std::vector<Suggestion> suggestions =
-      suggestion_generator().GetSuggestionsForCreditCards(
-          field, CREDIT_CARD_NUMBER, kDefaultTriggerSource,
-          /*should_show_scan_credit_card=*/false,
-          /*should_show_cards_from_account=*/false, with_offer, with_cvc,
-          metadata_logging_context);
-
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsSuggestion(PopupItemId::kCreditCardEntry),
-                          EqualsSuggestion(PopupItemId::kSeparator),
-                          EqualsClearFormSuggestion(),
-                          EqualsManagePaymentsMethodsSuggestion(
-                              /*with_gpay_logo=*/false)));
-}
-
 #if !BUILDFLAG(IS_IOS)
 TEST_F(AutofillSuggestionGeneratorTest,
        FieldWasAutofilled_UndoAutofillOnCreditCardForm) {
-  base::test::ScopedFeatureList features(features::kAutofillUndo);
   personal_data().AddCreditCard(test::GetCreditCard());
   bool with_offer;
   bool with_cvc;

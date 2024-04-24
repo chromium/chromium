@@ -1029,9 +1029,6 @@ class AutofillMetrics {
   // Log the reason for which the Autofill popup disappeared.
   static void LogAutofillPopupHidingReason(PopupHidingReason reason);
 
-  // Logs that the user cleared the form.
-  static void LogAutofillFormCleared();
-
   // Log the number of days since an Autocomplete suggestion was last used.
   static void LogAutocompleteDaysSinceLastUse(size_t days);
 

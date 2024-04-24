@@ -397,7 +397,6 @@ struct FormFieldData_FillData {
   FieldRendererId renderer_id;
   FormRendererId host_form_id;
   bool is_autofilled;
-  Section section;
   bool force_override;
 };
 

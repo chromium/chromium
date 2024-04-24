@@ -579,11 +579,6 @@ struct FormFieldData::FillData {
   // DOM in case this ID is null).
   FormRendererId host_form_id;
 
-  // The unique identifier of the section (e.g. billing vs. shipping address)
-  // of this field.
-  // TODO(crbug.com/1441410): Remove when `kAutofillUndo` launches.
-  Section section;
-
   // Whether the renderer should mark the field as autofilled or not. In most
   // filling cases this will be true. However for the case of UndoAutofill we
   // might wanna revert a field state into not autofilled, in which case this

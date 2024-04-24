@@ -1589,17 +1589,12 @@ Suggestion AutofillSuggestionGenerator::CreateClearFormSuggestion() {
   Suggestion suggestion(value, PopupItemId::kClearForm);
   suggestion.icon = Suggestion::Icon::kClear;
 #else
-  std::u16string value =
-      base::FeatureList::IsEnabled(features::kAutofillUndo)
-          ? l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM)
-          : l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM);
+  std::u16string value = l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM);
   if constexpr (BUILDFLAG(IS_ANDROID)) {
     value = base::i18n::ToUpper(value);
   }
   Suggestion suggestion(value, PopupItemId::kClearForm);
-  suggestion.icon = base::FeatureList::IsEnabled(features::kAutofillUndo)
-                        ? Suggestion::Icon::kUndo
-                        : Suggestion::Icon::kClear;
+  suggestion.icon = Suggestion::Icon::kUndo;
 #endif
   suggestion.acceptance_a11y_announcement =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);

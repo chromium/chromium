@@ -419,7 +419,6 @@ FormFieldData::FillData::FillData(const FormFieldData& field)
     : value(field.value()),
       renderer_id(field.renderer_id()),
       host_form_id(field.host_form_id()),
-      section(field.section()),
       is_autofilled(field.is_autofilled()),
       force_override(field.force_override()) {}
 

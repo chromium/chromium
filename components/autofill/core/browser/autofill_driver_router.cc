@@ -565,12 +565,6 @@ void AutofillDriverRouter::RendererShouldAcceptDataListSuggestion(
   }
 }
 
-void AutofillDriverRouter::RendererShouldClearFilledSection(
-    AutofillDriver* source,
-    void (*callback)(AutofillDriver* target)) {
-  ForEachFrame(form_forest_, callback);
-}
-
 void AutofillDriverRouter::RendererShouldClearPreviewedForm(
     AutofillDriver* source,
     void (*callback)(AutofillDriver* target)) {

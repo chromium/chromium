@@ -465,46 +465,6 @@ void FillAndCheckState(
   }
 }
 
-TEST_F(FormCacheBrowserTest, FillAndClear) {
-  // TODO(crbug.com/40259488): Make test work without explicit <selectlist>
-  // tabindex.
-  LoadHTML(R"(
-    <input type="text" name="text" id="text">
-    <select name="select" id="select">
-      <option value="first">first</option>
-      <option value="second" selected>second</option>
-    </select>
-    <selectlist name="selectlist" id="selectlist" tabindex=0>
-      <option value="uno">uno</option>
-      <option value="dos" selected>dos</option>
-    </selectlist>
-  )");
-
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms = UpdateFormCache(form_cache);
-
-  EXPECT_THAT(forms.updated_forms, ElementsAre(HasId(FormRendererId())));
-  EXPECT_TRUE(forms.removed_forms.empty());
-
-  WebDocument doc = GetMainFrame()->GetDocument();
-  auto text = GetFormControlElementById(doc, "text");
-  auto select_element = GetFormControlElementById(doc, "select");
-  auto selectlist_element = GetFormControlElementById(doc, "selectlist");
-
-  FillAndCheckState(doc, forms.updated_forms[0], GetFieldDataManager(),
-                    {{raw_ref(text), u"test"},
-                     {raw_ref(select_element), u"first"},
-                     {raw_ref(selectlist_element), u"uno"}});
-
-  // Validate that clearing works, in particular that the previous values
-  // were saved correctly.
-  form_cache.ClearSectionWithElement(text, GetFieldDataManager());
-
-  EXPECT_EQ("", text.Value().Ascii());
-  EXPECT_EQ("second", select_element.Value().Ascii());
-  EXPECT_EQ("dos", selectlist_element.Value().Ascii());
-}
-
 // Tests that correct focus, change and blur events are emitted during the
 // autofilling and clearing of the form with an initially focused element.
 TEST_F(FormCacheBrowserTest,
@@ -545,9 +505,6 @@ TEST_F(FormCacheBrowserTest,
                                mojom::ActionPersistence::kFill,
                                GetFieldDataManager());
 
-  // Simulate clearing the form.
-  form_cache.ClearSectionWithElement(fname, GetFieldDataManager());
-
   // Expected Result in order:
   // - from filling
   //  * Change fname
@@ -556,55 +513,7 @@ TEST_F(FormCacheBrowserTest,
   //  * Change lname
   //  * Blur lname
   //  * Focus fname
-  // - from clearing
-  //  * Change fname
-  //  * Blur fname
-  //  * Focus lname
-  //  * Change lname
-  //  * Blur lname
-  //  * Focus fname
-  EXPECT_EQ(GetFocusLog(), "c0b0f1c1b1f0c0b0f1c1b1f0");
-}
-
-TEST_F(FormCacheBrowserTest, FreeDataOnElementRemoval) {
-  LoadHTML(R"(
-    <div id="container">
-      <input type="text" name="text" id="text">
-      <input type="checkbox" checked name="checkbox" id="checkbox">
-      <select name="select" id="select">
-        <option value="first">first</option>
-        <option value="second" selected>second</option>
-      </select>
-      <selectlist name="selectlist" id="selectlist">
-        <option value="first">first</option>
-        <option value="second" selected>second</option>
-      </selectlist>
-    </div>
-  )");
-
-  FormCache form_cache(GetMainFrame());
-  FormCache::UpdateFormCacheResult forms = UpdateFormCache(form_cache);
-
-  EXPECT_THAT(forms.updated_forms, ElementsAre(HasId(FormRendererId())));
-  EXPECT_TRUE(forms.removed_forms.empty());
-
-  EXPECT_EQ(1u, test_api(form_cache).initial_select_values_size());
-  EXPECT_EQ(1u, test_api(form_cache).initial_selectlist_values_size());
-  EXPECT_EQ(1u, test_api(form_cache).initial_checked_state_size());
-
-  ExecuteJavaScriptForTests(R"(
-    const container = document.getElementById('container');
-    while (container.childElementCount > 0) {
-      container.removeChild(container.children.item(0));
-    }
-  )");
-
-  forms = UpdateFormCache(form_cache);
-  EXPECT_TRUE(forms.updated_forms.empty());
-  EXPECT_THAT(forms.removed_forms, ElementsAre(FormRendererId()));
-  EXPECT_EQ(0u, test_api(form_cache).initial_select_values_size());
-  EXPECT_EQ(0u, test_api(form_cache).initial_selectlist_values_size());
-  EXPECT_EQ(0u, test_api(form_cache).initial_checked_state_size());
+  EXPECT_EQ(GetFocusLog(), "c0b0f1c1b1f0");
 }
 
 // Test that the FormCache does not contain empty forms.

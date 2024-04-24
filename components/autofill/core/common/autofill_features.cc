@@ -386,9 +386,6 @@ BASE_FEATURE(kAutofillUploadVotesForFieldsWithEmail,
              "AutofillUploadVotesForFieldsWithEmail",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Changes Autofill Clear Form into Undo Autofill.
-BASE_FEATURE(kAutofillUndo, "AutofillUndo", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, some local heuristic predictions will take precedence over the
 // autocomplete attribute and server predictions, when determining a field's
 // overall type.

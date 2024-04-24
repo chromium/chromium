@@ -214,10 +214,6 @@ void HTMLFormControlElement::SetAutofillState(WebAutofillState autofill_state) {
   PseudoStateChanged(CSSSelector::kPseudoAutofillPreviewed);
 }
 
-void HTMLFormControlElement::SetAutofillSection(const WebString& section) {
-  autofill_section_ = section;
-}
-
 bool HTMLFormControlElement::IsAutocompleteEmailUrlOrPassword() const {
   DEFINE_STATIC_LOCAL(HashSet<AtomicString>, values,
                       ({AtomicString("username"), AtomicString("new-password"),

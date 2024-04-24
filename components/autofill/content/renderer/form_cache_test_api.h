@@ -20,18 +20,6 @@ class FormCacheTestApi {
  public:
   explicit FormCacheTestApi(FormCache* form_cache) : form_cache_(*form_cache) {}
 
-  size_t initial_select_values_size() {
-    return form_cache_->initial_select_values_.size();
-  }
-
-  size_t initial_selectlist_values_size() {
-    return form_cache_->initial_selectlist_values_.size();
-  }
-
-  size_t initial_checked_state_size() {
-    return form_cache_->initial_checked_state_.size();
-  }
-
   size_t extracted_forms_size() { return form_cache_->extracted_forms_.size(); }
 
  private:

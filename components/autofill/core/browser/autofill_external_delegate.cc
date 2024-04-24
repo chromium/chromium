@@ -400,10 +400,8 @@ void AutofillExternalDelegate::DidSelectSuggestion(
   switch (suggestion.popup_item_id) {
     case PopupItemId::kClearForm:
 #if !BUILDFLAG(IS_IOS)
-      if (base::FeatureList::IsEnabled(features::kAutofillUndo)) {
-        manager_->UndoAutofill(mojom::ActionPersistence::kPreview, query_form_,
-                               query_field_);
-      }
+      manager_->UndoAutofill(mojom::ActionPersistence::kPreview, query_form_,
+                             query_field_);
 #endif
       break;
     case PopupItemId::kAddressEntry:
@@ -547,17 +545,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     }
     case PopupItemId::kClearForm:
-#if BUILDFLAG(IS_IOS)
-      AutofillMetrics::LogAutofillFormCleared();
-      manager_->driver().RendererShouldClearFilledSection();
-#else
-      if (base::FeatureList::IsEnabled(features::kAutofillUndo)) {
-        manager_->UndoAutofill(mojom::ActionPersistence::kFill, query_form_,
-                               query_field_);
-      } else {
-        AutofillMetrics::LogAutofillFormCleared();
-        manager_->driver().RendererShouldClearFilledSection();
-      }
+#if !BUILDFLAG(IS_IOS)
+      manager_->UndoAutofill(mojom::ActionPersistence::kFill, query_form_,
+                             query_field_);
 #endif
       break;
     case PopupItemId::kDatalistEntry:

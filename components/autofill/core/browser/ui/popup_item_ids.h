@@ -88,6 +88,7 @@ enum class PopupItemId : int {
   // Other suggestions.
   kTitle,
   kSeparator,
+  // TODO(b/40266549): Rename to Undo.
   kClearForm,
   kMixedFormMessage,
 

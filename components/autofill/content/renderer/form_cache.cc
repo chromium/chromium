@@ -90,22 +90,6 @@ bool IsFormInteresting(const FormData& form) {
                               &FormFieldData::autocomplete_attribute);
 }
 
-void ClearSelectOrSelectListElement(
-    WebFormControlElement& element,
-    const std::map<FieldRendererId, std::u16string>& initial_values) {
-  auto initial_value_iter =
-      initial_values.find(form_util::GetFieldRendererId(element));
-  if (initial_value_iter != initial_values.end() &&
-      element.Value().Utf16() != initial_value_iter->second) {
-    element.SetAutofillValue(
-        blink::WebString::FromUTF16(initial_value_iter->second),
-        blink::WebAutofillState::kNotFilled);
-    element.SetUserHasEditedTheField(false);
-  } else {
-    element.SetAutofillState(WebAutofillState::kNotFilled);
-  }
-}
-
 }  // namespace
 
 FormCache::UpdateFormCacheResult::UpdateFormCacheResult() = default;
@@ -120,10 +104,6 @@ FormCache::~FormCache() = default;
 
 FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     const FieldDataManager& field_data_manager) {
-  initial_checked_state_.clear();
-  initial_select_values_.clear();
-  initial_selectlist_values_.clear();
-
   std::set<FieldRendererId> observed_renderer_ids;
 
   // |extracted_forms_| is re-populated below in ProcessForm().
@@ -170,7 +150,6 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
       auto it = old_extracted_forms.find(form_id);
       if (it == old_extracted_forms.end() ||
           !FormData::DeepEqual(std::move(it->second), form)) {
-        SaveInitialValues(form.fields);
         r.updated_forms.push_back(form);
       }
       r.removed_forms.erase(form_id);
@@ -194,7 +173,6 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
     if (std::optional<FormData> form = ExtractFormData(
             document, form_element, field_data_manager, extract_options)) {
       if (!ProcessForm(std::move(*form))) {
-        PruneInitialValueCaches(observed_renderer_ids);
         return r;
       }
     }
@@ -204,125 +182,10 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   // from them.
   std::optional<FormData> synthetic_form = ExtractFormData(
       document, WebFormElement(), field_data_manager, extract_options);
-  if (!synthetic_form) {
-    PruneInitialValueCaches(observed_renderer_ids);
-    return r;
+  if (synthetic_form) {
+    ProcessForm(std::move(*synthetic_form));
   }
-  if (!ProcessForm(std::move(*synthetic_form))) {
-    PruneInitialValueCaches(observed_renderer_ids);
-    return r;
-  }
-  PruneInitialValueCaches(observed_renderer_ids);
   return r;
-}
-
-void FormCache::ClearElement(WebFormControlElement& control_element,
-                             const WebFormControlElement& trigger_element,
-                             FieldDataManager& field_data_manager) {
-  // Don't modify the value of disabled fields.
-  if (!control_element.IsEnabled())
-    return;
-
-  // Don't clear the fields that were not autofilled.
-  if (!control_element.IsAutofilled())
-    return;
-
-  if (control_element.AutofillSection() != trigger_element.AutofillSection())
-    return;
-
-  if (!form_util::IsAutofillableElement(control_element)) {
-    // TODO(crbug.com/1427153): Make NOTREACHED() once AutofillEnableSelectList
-    // feature flag is removed.
-    CHECK(form_util::IsSelectListElement(control_element));
-    return;
-  }
-
-  WebInputElement web_input_element =
-      control_element.DynamicTo<WebInputElement>();
-  bool is_text_input = form_util::IsTextInput(web_input_element);
-  if (is_text_input || form_util::IsMonthInput(web_input_element)) {
-    web_input_element.SetAutofillValue(blink::WebString(),
-                                       WebAutofillState::kNotFilled);
-    if (is_text_input) {
-      field_data_manager.UpdateFieldDataMap(
-          form_util::GetFieldRendererId(web_input_element), std::u16string(),
-          FieldPropertiesFlags::kNoFlags);
-    }
-
-    // Clearing the value in the focused node (above) can cause the selection
-    // to be lost. We force the selection range to restore the text cursor.
-    if (trigger_element == web_input_element) {
-      auto length =
-          base::checked_cast<unsigned>(web_input_element.Value().length());
-      web_input_element.SetSelectionRange(length, length);
-    }
-  } else if (form_util::IsTextAreaElement(control_element)) {
-    control_element.SetAutofillValue(blink::WebString(),
-                                     WebAutofillState::kNotFilled);
-  } else if (form_util::IsSelectElement(control_element)) {
-    ClearSelectOrSelectListElement(control_element, initial_select_values_);
-  } else if (form_util::IsSelectListElement(control_element)) {
-    ClearSelectOrSelectListElement(control_element, initial_selectlist_values_);
-  } else if (form_util::IsCheckableElement(web_input_element)) {
-    WebInputElement input_element = control_element.To<WebInputElement>();
-    auto checkable_element_it = initial_checked_state_.find(
-        form_util::GetFieldRendererId(input_element));
-    if (checkable_element_it != initial_checked_state_.end() &&
-        input_element.IsChecked() != checkable_element_it->second) {
-      input_element.SetChecked(checkable_element_it->second, true,
-                               WebAutofillState::kNotFilled);
-    }
-  } else {
-    NOTREACHED();
-  }
-}
-
-bool FormCache::ClearSectionWithElement(const WebFormControlElement& element,
-                                        FieldDataManager& field_data_manager) {
-  // The intended behaviour is:
-  // * Clear the currently focused element.
-  // * Send the blur event.
-  // * For each other element, focus -> clear -> blur.
-  // * Send the focus event.
-  WebFormElement form_element = form_util::GetOwningForm(element);
-  std::vector<WebFormControlElement> control_elements =
-      form_util::GetAutofillableFormControlElements(element.GetDocument(),
-                                                    form_element);
-
-  if (control_elements.empty())
-    return true;
-
-  if (control_elements.size() < 2 && control_elements[0].Focused()) {
-    // If there is no other field to be cleared, sending the blur event and then
-    // the focus event for the currently focused element does not make sense.
-    ClearElement(control_elements[0], element, field_data_manager);
-    return true;
-  }
-
-  WebFormControlElement* initially_focused_element = nullptr;
-  for (WebFormControlElement& control_element : control_elements) {
-    if (control_element.Focused()) {
-      initially_focused_element = &control_element;
-      ClearElement(control_element, element, field_data_manager);
-      // A blur event is emitted for the focused element if it is an initiating
-      // element before the clearing happens.
-      initially_focused_element->DispatchBlurEvent();
-      break;
-    }
-  }
-
-  for (WebFormControlElement& control_element : control_elements) {
-    if (control_element.Focused())
-      continue;
-    ClearElement(control_element, element, field_data_manager);
-  }
-
-  // A focus event is emitted for the initiating element after clearing is
-  // completed.
-  if (initially_focused_element)
-    initially_focused_element->DispatchFocusEvent();
-
-  return true;
 }
 
 bool FormCache::ShowPredictions(const FormDataPredictions& form,
@@ -445,30 +308,6 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
   logger.Flush();
 
   return true;
-}
-
-void FormCache::SaveInitialValues(base::span<const FormFieldData> fields) {
-  for (const FormFieldData& field : fields) {
-    if (field.form_control_type() == FormControlType::kSelectOne) {
-      initial_select_values_.insert({field.renderer_id(), field.value()});
-    } else if (field.form_control_type() == FormControlType::kSelectList) {
-      initial_selectlist_values_.insert({field.renderer_id(), field.value()});
-    } else if (form_util::IsCheckable(field.form_control_type())) {
-      initial_checked_state_.insert(
-          {field.renderer_id(),
-           field.check_status() == FormFieldData::CheckStatus::kChecked});
-    }
-  }
-}
-
-void FormCache::PruneInitialValueCaches(
-    const std::set<FieldRendererId>& ids_to_retain) {
-  auto should_not_retain = [&ids_to_retain](const auto& p) {
-    return !base::Contains(ids_to_retain, p.first);
-  };
-  std::erase_if(initial_select_values_, should_not_retain);
-  std::erase_if(initial_selectlist_values_, should_not_retain);
-  std::erase_if(initial_checked_state_, should_not_retain);
 }
 
 }  // namespace autofill

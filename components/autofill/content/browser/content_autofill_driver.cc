@@ -368,13 +368,6 @@ void ContentAutofillDriver::RendererShouldAcceptDataListSuggestion(
       });
 }
 
-void ContentAutofillDriver::RendererShouldClearFilledSection() {
-  router().RendererShouldClearFilledSection(
-      this, [](autofill::AutofillDriver* target) {
-        cast(target)->GetAutofillAgent()->ClearSection();
-      });
-}
-
 void ContentAutofillDriver::RendererShouldClearPreviewedForm() {
   router().RendererShouldClearPreviewedForm(
       this, [](autofill::AutofillDriver* target) {

@@ -126,7 +126,7 @@ base::flat_set<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
     const base::flat_map<FieldGlobalId, FieldType>& field_type_map) {
   switch (action_type) {
     case mojom::FormActionType::kUndo:
-      // TODO(crbug.com/1441410) Add Undo support on iOS.
+      // TODO(crbug.com/40266549) Add Undo support on iOS.
       return {};
     case mojom::FormActionType::kFill:
       web::WebFrame* frame = web_frame();
@@ -202,8 +202,6 @@ void AutofillDriverIOS::GetFourDigitCombinationsFromDOM(
   // TODO(crbug.com/40260122): Implement GetFourDigitCombinationsFromDOM in iOS.
   NOTIMPLEMENTED();
 }
-
-void AutofillDriverIOS::RendererShouldClearFilledSection() {}
 
 void AutofillDriverIOS::RendererShouldClearPreviewedForm() {
 }

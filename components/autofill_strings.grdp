@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
 
-  <if expr="not is_ios">
-    <message name="IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM" desc="The entry in the suggestions dropdown that clears an auto-filled form.">
-      Clear form
-    </message>
-  </if>
-  <if expr="is_ios">
-    <message name="IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM" desc="iOS: The entry in the suggestions keyboard accessory that clears an auto-filled form. Title-cased.">
-      Clear Form
-    </message>
-  </if>
+  <!-- TODO(crbug.com/40266549): Remove when Undo launches on iOS. -->
+  <message name="IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM" desc="iOS: The entry in the suggestions keyboard accessory that clears an auto-filled form. Title-cased.">
+    Clear Form
+  </message>
 
   <if expr="not is_ios">
     <message name="IDS_AUTOFILL_UNDO_MENU_ITEM" desc="The entry in the suggestions dropdown that undoes the last filling operation on a field.">
@@ -130,6 +124,7 @@
     The delete address option was selected
   </message>
 
+  <!-- TODO(crbug.com/40266549): Update when Undo launches on iOS. -->
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM" desc="Screen reader announcement indicating that current form autofilled values were cleared.">
     The autofilled info was cleared from the form
   </message>

@@ -741,15 +741,6 @@ void AutofillAgent::FieldTypePredictionsAvailable(
   }
 }
 
-void AutofillAgent::ClearSection() {
-  WebFormControlElement last_queried_element = last_queried_element_.GetField();
-  if (last_queried_element.IsNull() || !form_cache_) {
-    return;
-  }
-  form_cache_->ClearSectionWithElement(last_queried_element,
-                                       field_data_manager());
-}
-
 void AutofillAgent::ClearPreviewedForm() {
   WebFormControlElement last_queried_element = last_queried_element_.GetField();
   // TODO(crbug.com/40564702): It is very rare, but it looks like the |element_|

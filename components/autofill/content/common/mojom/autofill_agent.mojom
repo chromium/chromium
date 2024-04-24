@@ -47,11 +47,6 @@ interface AutofillAgent {
   // Sends the heuristic and server field type predictions to the renderer.
   FieldTypePredictionsAvailable(array<FormDataPredictions> forms);
 
-  // Clears the currently displayed Autofill results of the current section.
-  // The current section is the section to which the element corresponding to
-  // the last request belongs.
-  ClearSection();
-
   // Tells the renderer that the Autofill previewed form should be cleared.
   ClearPreviewedForm();
 

@@ -113,14 +113,6 @@ void WebFormControlElement::SetAutofillState(WebAutofillState autofill_state) {
   Unwrap<HTMLFormControlElement>()->SetAutofillState(autofill_state);
 }
 
-WebString WebFormControlElement::AutofillSection() const {
-  return ConstUnwrap<HTMLFormControlElement>()->AutofillSection();
-}
-
-void WebFormControlElement::SetAutofillSection(const WebString& section) {
-  Unwrap<HTMLFormControlElement>()->SetAutofillSection(section);
-}
-
 FormElementPiiType WebFormControlElement::GetFormElementPiiType() const {
   return ConstUnwrap<HTMLFormControlElement>()->GetFormElementPiiType();
 }

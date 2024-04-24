@@ -171,7 +171,6 @@ class AutofillAgent : public content::RenderFrameObserver,
                        callback) override;
   void FieldTypePredictionsAvailable(
       const std::vector<FormDataPredictions>& forms) override;
-  void ClearSection() override;
   // Besides cases that "actually" clear the form, this function needs to be
   // called before all filling operations. This is because filled fields are no
   // longer considered previewed - and any state tied to the preview needs to

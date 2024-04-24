@@ -154,11 +154,6 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   }
   void SetAutofillState(WebAutofillState = WebAutofillState::kAutofilled);
 
-  // The autofill section to which this element belongs (e.g. billing address,
-  // shipping address, .. .)
-  WebString AutofillSection() const { return autofill_section_; }
-  void SetAutofillSection(const WebString&);
-
   bool IsAutocompleteEmailUrlOrPassword() const;
 
   const AtomicString& autocapitalize() const final;
@@ -210,7 +205,6 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   void HandlePopoverTriggering(HTMLElement* popover,
                                PopoverTriggerAction action);
 
-  WebString autofill_section_;
   enum WebAutofillState autofill_state_;
 
   bool blocks_form_submission_ : 1;

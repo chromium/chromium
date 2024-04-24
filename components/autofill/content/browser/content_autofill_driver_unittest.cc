@@ -87,7 +87,6 @@ MATCHER(EqualsFillData, "") {
   return lhs_field.value() == rhs_field.value &&
          lhs_field.renderer_id() == rhs_field.renderer_id &&
          lhs_field.host_form_id() == rhs_field.host_form_id &&
-         lhs_field.section() == rhs_field.section &&
          lhs_field.is_autofilled() == rhs_field.is_autofilled &&
          lhs_field.force_override() == rhs_field.force_override;
 }
@@ -127,10 +126,6 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   GetFieldTypePredictionsAvailable() {
     return predictions_;
   }
-
-  // Returns whether mojo interface method mojom::AutofillAgent::ClearForm() got
-  // called.
-  bool GetCalledClearSection() { return called_clear_section_; }
 
   // Returns whether mojo interface method
   // mojom::AutofillAgent::ClearPreviewedForm() got called.
@@ -239,11 +234,6 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
     CallDone();
   }
 
-  void ClearSection() override {
-    called_clear_section_ = true;
-    CallDone();
-  }
-
   void ClearPreviewedForm() override {
     called_clear_previewed_form_ = true;
     CallDone();
@@ -293,8 +283,6 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   std::optional<std::vector<FormFieldData::FillData>> preview_form_fields_;
   // Records data received from FieldTypePredictionsAvailable() call.
   std::optional<std::vector<FormDataPredictions>> predictions_;
-  // Records whether ClearSection() got called.
-  bool called_clear_section_ = false;
   // Records whether ClearPreviewedForm() got called.
   bool called_clear_previewed_form_ = false;
   // Records the trigger source received from a TriggerSuggestions() call.
@@ -802,16 +790,6 @@ TEST_F(ContentAutofillDriverTestWithAddressForm, AcceptDataListSuggestion) {
   run_loop.RunUntilIdle();
 
   EXPECT_EQ(input_value, agent().GetString16AcceptDataListSuggestion(field));
-}
-
-TEST_F(ContentAutofillDriverTestWithAddressForm,
-       ClearFilledSectionSentToRenderer) {
-  base::RunLoop run_loop;
-  agent().SetQuitLoopClosure(run_loop.QuitClosure());
-  driver().browser_events().RendererShouldClearFilledSection();
-  run_loop.RunUntilIdle();
-
-  EXPECT_TRUE(agent().GetCalledClearSection());
 }
 
 TEST_F(ContentAutofillDriverTestWithAddressForm,

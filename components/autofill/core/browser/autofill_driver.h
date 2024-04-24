@@ -211,9 +211,6 @@ class AutofillDriver {
       const FieldGlobalId& field_id,
       const std::u16string& value) = 0;
 
-  // Tells the renderer to clear the current section of the autofilled values.
-  virtual void RendererShouldClearFilledSection() = 0;
-
   // Tells the renderer to clear the currently previewed Autofill results.
   virtual void RendererShouldClearPreviewedForm() = 0;
 

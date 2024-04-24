@@ -2269,8 +2269,6 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFieldsAction(
     if (element.IsNull()) {
       continue;
     }
-    element.SetAutofillSection(WebString::FromUTF8(field.section.ToString()));
-
     if ((action_type == mojom::FormActionType::kFill &&
          ShouldSkipFillField(field, element,
                              /*is_initiating_element=*/element.Focused())) ||
@@ -2278,7 +2276,6 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFieldsAction(
          !element.IsAutofilled())) {
       continue;
     }
-
     if (element.Focused()) {
       focused_field = {&field, element};
     } else {

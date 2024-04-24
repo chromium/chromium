@@ -168,7 +168,6 @@ class MockAutofillDriver : public TestAutofillDriver {
               RendererShouldAcceptDataListSuggestion,
               (const FieldGlobalId&, const std::u16string&),
               (override));
-  MOCK_METHOD(void, RendererShouldClearFilledSection, (), (override));
   MOCK_METHOD(void, RendererShouldClearPreviewedForm, (), (override));
   MOCK_METHOD(void,
               RendererShouldTriggerSuggestions,
@@ -2139,57 +2138,24 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateOpensComposeAndFills) {
                                           SuggestionPosition{.row = 0});
 }
 
-class AutofillExternalDelegateUnitTest_UndoAutofill
-    : public AutofillExternalDelegateUnitTest,
-      public testing::WithParamInterface<bool> {
- public:
-  bool UndoInsteadOfClear() { return GetParam(); }
-
- private:
-  void SetUp() override {
-    UndoInsteadOfClear()
-        ? scoped_feature_list_.InitAndEnableFeature(features::kAutofillUndo)
-        : scoped_feature_list_.InitAndDisableFeature(features::kAutofillUndo);
-    AutofillExternalDelegateUnitTest::SetUp();
-  }
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(AutofillExternalDelegateUnitTest,
-                         AutofillExternalDelegateUnitTest_UndoAutofill,
-#if BUILDFLAG(IS_IOS)
-                         testing::Values(false)
-#else
-                         testing::Bool()
-#endif
-);
-
+#if !BUILDFLAG(IS_IOS)
 // Test that the driver is directed to clear or undo the form after being
 // notified that the user accepted the suggestion to clear or undo the form.
-TEST_P(AutofillExternalDelegateUnitTest_UndoAutofill,
-       ExternalDelegateUndoAndClearForm) {
+TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateUndoForm) {
   IssueOnQuery();
-  if (UndoInsteadOfClear()) {
-    EXPECT_CALL(manager(), UndoAutofill);
-  } else {
-    EXPECT_CALL(client(),
-                HideAutofillSuggestions(PopupHidingReason::kAcceptSuggestion));
-    EXPECT_CALL(driver(), RendererShouldClearFilledSection());
-  }
+  EXPECT_CALL(manager(), UndoAutofill);
   external_delegate().DidAcceptSuggestion(Suggestion(PopupItemId::kClearForm),
                                           SuggestionPosition{.row = 0});
 }
 
 // Test that the driver is directed to undo the form after being notified that
 // the user selected the suggestion to undo the form.
-TEST_P(AutofillExternalDelegateUnitTest_UndoAutofill,
-       ExternalDelegateUndoAndClearPreviewForm) {
+TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateUndoPreviewForm) {
   IssueOnQuery();
-  if (UndoInsteadOfClear()) {
-    EXPECT_CALL(manager(), UndoAutofill);
-  }
+  EXPECT_CALL(manager(), UndoAutofill);
   external_delegate().DidSelectSuggestion(Suggestion(PopupItemId::kClearForm));
 }
+#endif
 
 // Test that autofill client will scan a credit card after use accepted the
 // suggestion to scan a credit card.

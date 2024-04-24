@@ -1541,11 +1541,6 @@ void AutofillMetrics::LogAutofillPopupHidingReason(PopupHidingReason reason) {
   base::UmaHistogramEnumeration("Autofill.PopupHidingReason", reason);
 }
 
-// static
-void AutofillMetrics::LogAutofillFormCleared() {
-  base::RecordAction(base::UserMetricsAction("Autofill_ClearedForm"));
-}
-
 void AutofillMetrics::LogSectioningMetrics(
     const base::flat_map<Section, size_t>& fields_per_section) {
   constexpr std::string_view kBaseHistogramName = "Autofill.Sectioning.";

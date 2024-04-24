@@ -314,9 +314,6 @@ class AutofillDriverRouter {
       void (*callback)(AutofillDriver* target,
                        const FieldRendererId& field,
                        const std::u16string& value));
-  void RendererShouldClearFilledSection(
-      AutofillDriver* source,
-      void (*callback)(AutofillDriver* target));
   void RendererShouldClearPreviewedForm(
       AutofillDriver* source,
       void (*callback)(AutofillDriver* target));

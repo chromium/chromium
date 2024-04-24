@@ -368,11 +368,6 @@ struct StructTraits<autofill::mojom::FormFieldData_FillDataDataView,
     return r.is_autofilled;
   }
 
-  static const autofill::Section& section(
-      const autofill::FormFieldData::FillData& r) {
-    return r.section;
-  }
-
   static bool Read(autofill::mojom::FormFieldData_FillDataDataView data,
                    autofill::FormFieldData::FillData* out);
 

@@ -378,9 +378,6 @@ bool StructTraits<autofill::mojom::FormFieldData_FillDataDataView,
   if (!data.ReadValue(&out->value)) {
     return false;
   }
-  if (!data.ReadSection(&out->section)) {
-    return false;
-  }
   if (!data.ReadRendererId(&out->renderer_id)) {
     return false;
   }

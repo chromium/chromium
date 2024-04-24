@@ -4316,6 +4316,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Autofill_ClearedForm">
+  <obsolete>Deprecated in M126.</obsolete>
   <owner>battre@chromium.org</owner>
   <description>
     This user action is logged when a user has cleared the form after having

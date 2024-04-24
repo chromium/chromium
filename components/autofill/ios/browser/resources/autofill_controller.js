@@ -294,7 +294,6 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
  * |fieldIdentifier| cannot be found all autofilled form fields get cleared.
  * Field contents are cleared, and Autofill flag and styling are removed.
  * 'change' events are sent for fields whose contents changed.
- * Based on FormCache::ClearSectionWithElement().
  *
  * @param {string} formUniqueID Unique ID of the form element.
  * @param {string} fieldUniqueID Unique ID of the field initiating the

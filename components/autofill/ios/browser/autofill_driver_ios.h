@@ -85,7 +85,6 @@ class AutofillDriverIOS : public AutofillDriver,
   void SendAutofillTypePredictionsToRenderer(
       const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms)
       override;
-  void RendererShouldClearFilledSection() override;
   void RendererShouldClearPreviewedForm() override;
   void RendererShouldTriggerSuggestions(
       const FieldGlobalId& field_id,

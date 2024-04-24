@@ -78,6 +78,7 @@ struct Suggestion {
   enum class Icon {
     kNoIcon,
     kAccount,
+    // TODO(b/40266549): Rename to Undo.
     kClear,
     kCreate,
     kCode,
