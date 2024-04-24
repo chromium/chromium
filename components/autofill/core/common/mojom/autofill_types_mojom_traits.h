@@ -30,8 +30,9 @@ namespace mojo {
 
 template <>
 struct StructTraits<autofill::mojom::FrameTokenDataView, autofill::FrameToken> {
-  static base::UnguessableToken token(const autofill::FrameToken& r) {
-    return absl::visit([](const auto& t) { return t.value(); }, r);
+  static const base::UnguessableToken& token(const autofill::FrameToken& r) {
+    return absl::visit([](const auto& t) -> const auto& { return t.value(); },
+                       r);
   }
 
   static bool is_local(const autofill::FrameToken& r) {
@@ -45,7 +46,7 @@ struct StructTraits<autofill::mojom::FrameTokenDataView, autofill::FrameToken> {
 template <>
 struct StructTraits<autofill::mojom::FrameTokenWithPredecessorDataView,
                     autofill::FrameTokenWithPredecessor> {
-  static autofill::FrameToken token(
+  static const autofill::FrameToken& token(
       const autofill::FrameTokenWithPredecessor& r) {
     return r.token;
   }
@@ -102,12 +103,12 @@ struct UnionTraits<autofill::mojom::SectionValueDataView,
     return true;
   }
 
-  static autofill::Section::Autocomplete autocomplete(
+  static const autofill::Section::Autocomplete& autocomplete(
       const autofill::Section::SectionValue& r) {
     return absl::get<autofill::Section::Autocomplete>(r);
   }
 
-  static autofill::Section::FieldIdentifier field_identifier(
+  static const autofill::Section::FieldIdentifier& field_identifier(
       const autofill::Section::SectionValue& r) {
     return absl::get<autofill::Section::FieldIdentifier>(r);
   }
@@ -224,7 +225,7 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.autocomplete_attribute();
   }
 
-  static const std::optional<autofill::AutocompleteParsingResult>
+  static const std::optional<autofill::AutocompleteParsingResult>&
   parsed_autocomplete(const autofill::FormFieldData& r) {
     return r.parsed_autocomplete();
   }
@@ -329,7 +330,7 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.label_source();
   }
 
-  static gfx::RectF bounds(const autofill::FormFieldData& r) {
+  static const gfx::RectF& bounds(const autofill::FormFieldData& r) {
     return r.bounds();
   }
 
@@ -436,7 +437,7 @@ struct StructTraits<autofill::mojom::FormDataDataView, autofill::FormData> {
     return r.fields;
   }
 
-  static const std::vector<autofill::FieldRendererId> username_predictions(
+  static const std::vector<autofill::FieldRendererId>& username_predictions(
       const autofill::FormData& r) {
     return r.username_predictions;
   }
