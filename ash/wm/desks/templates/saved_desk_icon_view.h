@@ -58,7 +58,8 @@ class SavedDeskIconView : public views::View {
   ~SavedDeskIconView() override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // Sets `count_` to `count` and updates the `count_label_`. Please note,
   // currently it does not support update on regular icon.

@@ -53,7 +53,8 @@ class ASH_PUBLIC_EXPORT RoundedImageView : public views::View {
   void SetCornerRadius(int corner_radius);
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
   const gfx::ImageSkia& original_image() const { return original_image_; }

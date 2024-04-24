@@ -210,7 +210,8 @@ bool SavedDeskGridView::IsSavedDeskNameBeingModified() const {
   return false;
 }
 
-gfx::Size SavedDeskGridView::CalculatePreferredSize() const {
+gfx::Size SavedDeskGridView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   if (grid_items_.empty())
     return gfx::Size();
 

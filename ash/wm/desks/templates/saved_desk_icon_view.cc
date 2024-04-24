@@ -82,20 +82,23 @@ SavedDeskIconView::SavedDeskIconView(int count, size_t sorting_key)
 
 SavedDeskIconView::~SavedDeskIconView() = default;
 
-gfx::Size SavedDeskIconView::CalculatePreferredSize() const {
+gfx::Size SavedDeskIconView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // The width for the icon. The overflow icon doesn't have an icon so it's
   // zero.
   int width = (IsOverflowIcon() ? 0 : kIconViewSize);
 
-  // Add the label width if the label view exists. The reason for having the max
-  // is to have a minimum width.
-  width += count_label_
-               ? std::max(kIconViewSize,
-                          count_label_
-                              ->CalculatePreferredSize(
-                                  views::SizeBounds(count_label_->width(), {}))
-                              .width())
-               : 0;
+  if (count_label_) {
+    views::SizeBound label_width = std::max<views::SizeBound>(
+        kIconViewSize, available_size.width() - width);
+
+    // Add the label width if the label view exists. The reason for having the
+    // max is to have a minimum width.
+    width += std::max(
+        kIconViewSize,
+        count_label_->CalculatePreferredSize(views::SizeBounds(label_width, {}))
+            .width());
+  }
 
   return gfx::Size(width, kIconViewSize);
 }
@@ -149,7 +152,7 @@ SavedDeskRegularIconView::~SavedDeskRegularIconView() = default;
 
 void SavedDeskRegularIconView::Layout(PassKey) {
   DCHECK(icon_view_);
-  gfx::Size icon_preferred_size = icon_view_->CalculatePreferredSize();
+  gfx::Size icon_preferred_size = icon_view_->CalculatePreferredSize({});
   icon_view_->SetBoundsRect(gfx::Rect(
       base::ClampFloor((kIconViewSize - icon_preferred_size.width()) / 2.0),
       base::ClampFloor((kIconViewSize - icon_preferred_size.height()) / 2.0),
