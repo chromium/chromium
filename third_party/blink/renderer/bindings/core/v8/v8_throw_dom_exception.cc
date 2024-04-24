@@ -92,11 +92,12 @@ v8::Local<v8::Value> V8ThrowDOMException::AttachStackProperty(
   v8::Local<v8::Value> error =
       v8::Exception::Error(V8String(isolate, dom_exception->message()));
 
-  // The context passed to SetAccessor is used to create an error object if
-  // needed, and so should be the isolate's current context.
+  // The context passed to SetNativeDataProperty is used to create an error
+  // object if needed, and so should be the isolate's current context.
   exception_obj
-      ->SetAccessor(current_context, V8AtomicString(isolate, "stack"),
-                    DomExceptionStackGetter, DomExceptionStackSetter, error)
+      ->SetNativeDataProperty(current_context, V8AtomicString(isolate, "stack"),
+                              DomExceptionStackGetter, DomExceptionStackSetter,
+                              error)
       .ToChecked();
 
   auto private_error =
