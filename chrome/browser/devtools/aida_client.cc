@@ -65,17 +65,6 @@ bool IsAidaBlockedByAge(std::optional<AccountInfo> account_info) {
          signin::Tribool::kTrue;
 }
 
-bool IsAidaBlockedByEnterpriseOrEdu(std::optional<AccountInfo> account_info) {
-  if (!account_info.has_value()) {
-    return true;
-  }
-  return account_info.value()
-                 .capabilities.is_subject_to_enterprise_policies() !=
-             signin::Tribool::kFalse ||
-         account_info.value().capabilities.can_use_edu_features() !=
-             signin::Tribool::kFalse;
-}
-
 AidaClient::BlockedReason AidaClient::CanUseAida(Profile* profile) {
   struct BlockedReason result;
   // Console insights is only available on branded builds
@@ -118,9 +107,12 @@ AidaClient::BlockedReason AidaClient::CanUseAida(Profile* profile) {
   auto account_info = AccountInfoForProfile(profile);
   result.blocked_by_age = IsAidaBlockedByAge(account_info);
   result.blocked_by_enterprise_policy =
-      IsAidaBlockedByEnterpriseOrEdu(account_info) ||
-      profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings) !=
-          static_cast<int>(DevToolsGenAiEnterprisePolicyValue::kAllow);
+      profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings) ==
+      static_cast<int>(DevToolsGenAiEnterprisePolicyValue::kDisable);
+  result.disallow_logging =
+      profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings) ==
+      static_cast<int>(
+          DevToolsGenAiEnterprisePolicyValue::kAllowWithoutLogging);
   result.blocked = result.blocked_by_age || result.blocked_by_enterprise_policy;
   return result;
 #endif

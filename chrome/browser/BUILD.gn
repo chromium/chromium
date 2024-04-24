@@ -1941,8 +1941,6 @@ static_library("browser") {
       "picture_in_picture/auto_pip_setting_overlay_view.h",
       "picture_in_picture/auto_pip_setting_view.cc",
       "picture_in_picture/auto_pip_setting_view.h",
-      "policy/devtools_gen_ai_policy_handler.cc",
-      "policy/devtools_gen_ai_policy_handler.h",
       "preloading/preview/preview_manager.cc",
       "preloading/preview/preview_manager.h",
       "preloading/preview/preview_navigation_throttle.cc",

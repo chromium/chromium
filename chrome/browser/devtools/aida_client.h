@@ -48,6 +48,7 @@ class AidaClient {
     bool blocked_by_feature_flag = false;
     bool blocked_by_geo = false;
     bool blocked_by_rollout = false;
+    bool disallow_logging = false;
   };
 
   static BlockedReason CanUseAida(Profile* profile);

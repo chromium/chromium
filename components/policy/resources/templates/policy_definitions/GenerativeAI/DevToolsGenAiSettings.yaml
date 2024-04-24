@@ -7,7 +7,7 @@ desc: |-
 
   0 is the default value, except when noted below.
 
-  1 = Enable the feature for users, but do not send data to Google to train or improve AI models. This value is not fully supported yet, and is being treated as "fully disabled" for now. 1 is the default value for Enterprise users managed by <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.
+  1 = Enable the feature for users, but do not send data to Google to train or improve AI models. 1 is the default value for Enterprise users managed by <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.
 
   2 = Disable the feature. 2 is the default value for Education accounts managed by <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph>.
 

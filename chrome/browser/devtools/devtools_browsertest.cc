@@ -3910,17 +3910,13 @@ class DevToolsConsoleInsightsTest : public DevToolsTest {
         &policy_provider_);
   }
 
-  void SetupAccountCapabilities(bool is_minor = false,
-                                bool is_edu = false,
-                                bool is_enterprise = false) {
+  void SetupAccountCapabilities(bool is_minor = false) {
     auto* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
     auto account_info = signin::MakePrimaryAccountAvailable(
         identity_manager, "test@example.com", signin::ConsentLevel::kSync);
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     mutator.set_can_use_devtools_generative_ai_features(!is_minor);
-    mutator.set_can_use_edu_features(is_edu);
-    mutator.set_is_subject_to_enterprise_policies(is_enterprise);
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   }
 
@@ -3959,7 +3955,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
 
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsNotEnabledForMinors) {
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
-  SetupAccountCapabilities(true, false, false);
+  SetupAccountCapabilities(true);
   OpenDevToolsWindow(kDebuggerTestPage, false);
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -3970,42 +3966,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsNotEnabledForMinors) {
   EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));
 #endif
   EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
-  CloseDevToolsWindow();
-}
-
-IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest, IsNotEnabledForEduUsers) {
-  g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
-  SetupAccountCapabilities(false, true, false);
-  OpenDevToolsWindow(kDebuggerTestPage, false);
-  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
-  EXPECT_TRUE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
-#else
-  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
-#endif
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
-  CloseDevToolsWindow();
-}
-
-IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
-                       IsNotEnabledForEnterpriseUsers) {
-  g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
-  SetupAccountCapabilities(true, false, true);
-  OpenDevToolsWindow(kDebuggerTestPage, false);
-  WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
-  EXPECT_TRUE(hasQueryParam(wc, "&ci_blockedByAge=true"));
-  EXPECT_TRUE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
-#else
-  EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByAge=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
-#endif
   EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByGeo=true"));
   CloseDevToolsWindow();
 }
@@ -4057,11 +4017,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
                        IsDisabledWhenPolicySetToOne) {
   g_browser_process->variations_service()->OverrideStoredPermanentCountry("us");
   policy::PolicyMap policies;
-  // Use value for a potential future "enable and don't store data for model
-  // training" policy to disable via enterprise policy.
-  policies.Set(policy::key::kDevToolsGenAiSettings,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
+  policies.Set(
+      policy::key::kDevToolsGenAiSettings, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+      base::Value(/* enable and don't use data for training */ 1), nullptr);
   policy_provider_.UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
 
@@ -4069,11 +4028,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(hasQueryParam(wc, "&enableAida=true"));
-  EXPECT_TRUE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
+  EXPECT_TRUE(hasQueryParam(wc, "&ci_disallowLogging"));
 #else
   EXPECT_FALSE(hasQueryParam(wc, "&enableAida=true"));
-  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
 #endif
+  EXPECT_FALSE(hasQueryParam(wc, "&ci_blockedByEnterprisePolicy=true"));
   CloseDevToolsWindow();
 }
 

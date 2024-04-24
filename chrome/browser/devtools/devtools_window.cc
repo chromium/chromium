@@ -1332,6 +1332,9 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
       if (blocked_reason.blocked_by_enterprise_policy) {
         url += "&ci_blockedByEnterprisePolicy=true";
       }
+      if (blocked_reason.disallow_logging) {
+        url += "&ci_disallowLogging=true";
+      }
       if (blocked_reason.blocked_by_geo) {
         url += "&ci_blockedByGeo=true";
       }

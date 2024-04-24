@@ -404,6 +404,10 @@ std::string SanitizeFrontendQueryParam(
     return value;
   }
 
+  if (key == "ci_disallowLogging" && value == "true") {
+    return value;
+  }
+
   if (key == "ci_blockedByGeo" && value == "true") {
     return value;
   }
