@@ -179,7 +179,7 @@ bool WaylandWindowDragController::Drag(WaylandToplevelWindow* window,
   SetDraggedWindow(nullptr, {});
 
   DCHECK(state_ == State::kAttaching || state_ == State::kDropped ||
-         state_ == State::kCancelled);
+         state_ == State::kCancelled) << "Drag state: " << int(state_);
   if (state_ == State::kAttaching) {
     state_ = State::kAttached;
     return false;
