@@ -231,8 +231,10 @@ export class Preview {
     const deviceOperator = DeviceOperator.getInstance();
     const {pan, tilt, zoom} = this.getVideoTrack().getCapabilities();
     const {deviceId} = getVideoTrackSettings(this.getVideoTrack());
+    // TODO(b/336480993): Enable digital zoom in portrait mode.
     const isDigitalZoomSupported = this.digitalZoomFlag &&
-        (await deviceOperator?.isDigitalZoomSupported(deviceId) ?? false);
+        (await deviceOperator?.isDigitalZoomSupported(deviceId) ?? false) &&
+        !state.get(Mode.PORTRAIT);
 
     if (isDigitalZoomSupported) {
       this.isSupportPTZInternal = true;
