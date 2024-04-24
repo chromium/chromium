@@ -73,7 +73,8 @@ void DisplayChangeDialog::OnCancelButtonClicked() {
   std::move(on_cancel_callback_).Run(/*display_was_removed=*/false);
 }
 
-gfx::Size DisplayChangeDialog::CalculatePreferredSize() const {
+gfx::Size DisplayChangeDialog::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(350, 100);
 }
 

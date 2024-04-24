@@ -250,15 +250,13 @@ class IndicatorPillView : public views::View {
   ~IndicatorPillView() override = default;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     // Pill is laid out as:
     // ( | | text )
     // Has max width of kMaxPillWidth.
 
-    const int text_width = text_label_
-                               ->CalculatePreferredSize(
-                                   views::SizeBounds(text_label_->width(), {}))
-                               .width();
+    const int text_width = text_label_->CalculatePreferredSize({}).width();
     const int width = kArrowAllocatedWidth + text_width + kTextMarginNormal;
 
     return gfx::Size(std::min(width, kMaxPillWidth), kPillHeight);
@@ -281,7 +279,7 @@ class IndicatorPillView : public views::View {
 
     // If width of the pill is equal or greater than the max pill width, then
     // text is elided and thus side margin must be reduced.
-    const int side_margin = CalculatePreferredSize().width() >= kMaxPillWidth
+    const int side_margin = CalculatePreferredSize({}).width() >= kMaxPillWidth
                                 ? kTextMarginElided
                                 : kTextMarginNormal;
 
