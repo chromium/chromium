@@ -8,10 +8,12 @@
 #include "base/functional/function_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/js_injection/browser/js_to_browser_messaging.h"
+#include "components/js_injection/browser/navigation_web_message_sender.h"
 #include "components/js_injection/browser/web_message_host.h"
 #include "components/js_injection/browser/web_message_host_factory.h"
 #include "components/js_injection/common/origin_matcher.h"
 #include "components/js_injection/common/origin_matcher_mojom_traits.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -153,6 +155,23 @@ std::u16string JsCommunicationHost::AddWebMessageHostFactory(
     }
   }
 
+  if (base::FeatureList::IsEnabled(features::kEnableNavigationListener) &&
+      js_object_name ==
+          NavigationWebMessageSender::kNavigationListenerObjectName) {
+    // This is the special navigationListener object that is registered to
+    // listen for navigation events instead of establishing a connection to
+    // the renderer. This shouldn't create an object in the renderer. Instead,
+    // create a NavigationWebMessageSender for the primary Page, so that
+    // navigation notifications for it will be sent.
+    // TODO(https://crbug.com/332809183): Guard this behind an origin trial
+    // check later on.
+    has_navigation_listener_ = true;
+    NavigationWebMessageSender::CreateForPage(web_contents()->GetPrimaryPage(),
+                                              factory.get());
+    NavigationWebMessageSender::GetForPage(web_contents()->GetPrimaryPage())
+        ->DispatchOptInMessage();
+  }
+
   js_objects_.push_back(std::make_unique<JsObject>(
       js_object_name, origin_matcher, std::move(factory)));
 
@@ -250,6 +269,21 @@ void JsCommunicationHost::NotifyFrameForWebMessageListener(
   std::vector<mojom::JsObjectPtr> js_objects;
   js_objects.reserve(js_objects_.size());
   for (const auto& js_object : js_objects_) {
+    if (base::FeatureList::IsEnabled(features::kEnableNavigationListener) &&
+        js_object->name ==
+            NavigationWebMessageSender::kNavigationListenerObjectName) {
+      // This is the special navigationListener object that is registered to
+      // listen for navigation events instead of establishing a connection to
+      // the renderer. Don't create an object in the renderer. The
+      // NavigationWebMessageSender for  `render_frame_host`'s Page should
+      // either already be created when the object is first registered (see
+      // `AddWebMessageHostFactory()`) or when the Page becomes the primary Page
+      // (see `PrimaryPageChanged()`).
+      // TODO(https://crbug.com/332809183): Guard this behind an origin trial
+      // check later on.
+      CHECK(has_navigation_listener_);
+      continue;
+    }
     mojo::PendingAssociatedRemote<mojom::JsToBrowserMessaging> pending_remote;
     js_to_browser_messagings_[render_frame_host->GetGlobalId()].emplace_back(
         std::make_unique<JsToBrowserMessaging>(
@@ -261,6 +295,29 @@ void JsCommunicationHost::NotifyFrameForWebMessageListener(
                                               js_object->allowed_origin_rules));
   }
   configurator_remote->SetJsObjects(std::move(js_objects));
+}
+
+void JsCommunicationHost::PrimaryPageChanged(content::Page& page) {
+  // TODO(https://crbug.com/332809183): Guard this behind an origin trial check
+  // later on.
+  if (!base::FeatureList::IsEnabled(features::kEnableNavigationListener) ||
+      !has_navigation_listener_) {
+    return;
+  }
+  for (const auto& js_object : js_objects_) {
+    if (js_object->name ==
+        NavigationWebMessageSender::kNavigationListenerObjectName) {
+      // The active Page in the primary main frame just changed. Ensure that a
+      // NavigationWebMessageSender is created for the primary Page, so that
+      // navigation notifications for it will be sent correctly, including the
+      // navigation that committed the primary Page. Note that some Pages
+      // might not be primary even when navigations happen on them (e.g.
+      // prerendering Pages), but we won't send notifications for those pages,
+      // so there is no need to create the NavigationWebMessageSenders for
+      // them before they become the primary Page.
+      NavigationWebMessageSender::CreateForPage(page, js_object->factory.get());
+    }
+  }
 }
 
 void JsCommunicationHost::NotifyFrameForAddDocumentStartJavaScript(

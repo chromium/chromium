@@ -334,6 +334,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // * same page history navigation
   virtual bool IsSameDocument() const = 0;
 
+  // Whether the navigation is a history traversal navigation, which navigates
+  // to a pre-existing NavigationEntry. Note that this will return false for
+  // reloads, and return true for session restore navigations.
+  virtual bool IsHistory() const = 0;
+
   // Whether the navigation has encountered a server redirect or not.
   virtual bool WasServerRedirect() = 0;
 

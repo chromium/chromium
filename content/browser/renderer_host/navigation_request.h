@@ -360,6 +360,7 @@ class CONTENT_EXPORT NavigationRequest
   net::Error GetNetErrorCode() override;
   RenderFrameHostImpl* GetRenderFrameHost() const override;
   bool IsSameDocument() const override;
+  bool IsHistory() const override;
   bool HasCommitted() const override;
   bool IsErrorPage() const override;
   bool HasSubframeNavigationEntryCommitted() override;

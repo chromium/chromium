@@ -108,6 +108,7 @@ class JsCommunicationHost : public content::WebContentsObserver {
       content::RenderFrameHost* render_frame_host,
       content::RenderFrameHost::LifecycleState old_state,
       content::RenderFrameHost::LifecycleState new_state) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
  private:
   void NotifyFrameForWebMessageListener(
@@ -127,6 +128,7 @@ class JsCommunicationHost : public content::WebContentsObserver {
   std::map<content::GlobalRenderFrameHostId,
            std::vector<std::unique_ptr<JsToBrowserMessaging>>>
       js_to_browser_messagings_;
+  bool has_navigation_listener_ = false;
 };
 
 }  // namespace js_injection

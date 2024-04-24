@@ -393,6 +393,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/MultiProfileTest.java",
     "../javatests/src/org/chromium/android_webview/test/MultiProfileTestRule.java",
     "../javatests/src/org/chromium/android_webview/test/NavigationHistoryTest.java",
+    "../javatests/src/org/chromium/android_webview/test/NavigationListenerTest.java",
     "../javatests/src/org/chromium/android_webview/test/OnDiskFileTest.java",
     "../javatests/src/org/chromium/android_webview/test/PolicyUrlFilteringTest.java",
     "../javatests/src/org/chromium/android_webview/test/PopupWindowTest.java",

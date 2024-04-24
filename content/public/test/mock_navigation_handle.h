@@ -129,6 +129,10 @@ class MockNavigationHandle : public NavigationHandle {
     return render_frame_host_;
   }
   bool IsSameDocument() const override { return is_same_document_; }
+  bool IsHistory() const override {
+    NOTIMPLEMENTED();
+    return false;
+  }
   MOCK_METHOD0(WasServerRedirect, bool());
   const std::vector<GURL>& GetRedirectChain() override {
     return redirect_chain_;

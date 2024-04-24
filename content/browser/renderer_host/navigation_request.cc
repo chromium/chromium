@@ -6938,6 +6938,10 @@ bool NavigationRequest::IsSameDocument() const {
   return NavigationTypeUtils::IsSameDocument(common_params_->navigation_type);
 }
 
+bool NavigationRequest::IsHistory() const {
+  return NavigationTypeUtils::IsHistory(common_params_->navigation_type);
+}
+
 bool NavigationRequest::IsRestore() const {
   return NavigationTypeUtils::IsRestore(common_params_->navigation_type);
 }
