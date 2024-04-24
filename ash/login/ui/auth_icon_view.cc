@@ -302,7 +302,8 @@ void AuthIconView::OnPaint(gfx::Canvas* canvas) {
   }
 }
 
-gfx::Size AuthIconView::CalculatePreferredSize() const {
+gfx::Size AuthIconView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kAuthIconViewDp, kAuthIconViewDp);
 }
 

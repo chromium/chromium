@@ -139,8 +139,10 @@ void PublicAccountMonitoringInfoDialog::AddedToWidget() {
   frame_view->SetTitleView(std::move(title_label));
 }
 
-gfx::Size PublicAccountMonitoringInfoDialog::CalculatePreferredSize() const {
-  return {kDialogWidthDp, GetHeightForWidth(kDialogWidthDp)};
+gfx::Size PublicAccountMonitoringInfoDialog::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return {kDialogWidthDp,
+          GetLayoutManager()->GetPreferredHeightForWidth(this, kDialogWidthDp)};
 }
 
 BEGIN_METADATA(PublicAccountMonitoringInfoDialog)

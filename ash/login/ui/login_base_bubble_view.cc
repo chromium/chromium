@@ -294,10 +294,12 @@ void LoginBaseBubbleView::OnLayerAnimationAborted(
   NOTREACHED();
 }
 
-gfx::Size LoginBaseBubbleView::CalculatePreferredSize() const {
+gfx::Size LoginBaseBubbleView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   gfx::Size size;
   size.set_width(kBubbleTotalWidthDp);
-  size.set_height(GetHeightForWidth(kBubbleTotalWidthDp));
+  size.set_height(GetLayoutManager()->GetPreferredHeightForWidth(
+      this, kBubbleTotalWidthDp));
   return size;
 }
 

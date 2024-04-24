@@ -201,7 +201,8 @@ void AnimatedAuthFactorsLabelWrapper::SetLabelTextAndAccessibleName(
       current_label_opacity_seq.release());
 }
 
-gfx::Size AnimatedAuthFactorsLabelWrapper::CalculatePreferredSize() const {
+gfx::Size AnimatedAuthFactorsLabelWrapper::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(kAuthFactorsViewWidthDp, kLabelWrapperHeightDp);
 }
 

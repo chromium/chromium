@@ -91,7 +91,8 @@ class ASH_EXPORT LocalAuthenticationRequestView
   // views::DialogDelegateView:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void RequestFocus() override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   views::View* GetInitiallyFocusedView() override;
   std::u16string GetAccessibleWindowTitle() const override;
 

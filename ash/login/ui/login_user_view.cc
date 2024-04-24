@@ -587,7 +587,8 @@ LoginButton* LoginUserView::GetDropdownButton() {
   return dropdown_;
 }
 
-gfx::Size LoginUserView::CalculatePreferredSize() const {
+gfx::Size LoginUserView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   switch (display_style_) {
     case LoginDisplayStyle::kLarge:
       return gfx::Size(kLargeUserViewWidthDp, kLargeUserViewHeightDp);

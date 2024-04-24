@@ -426,7 +426,8 @@ void PinRequestView::RequestFocus() {
   access_code_view_->RequestFocus();
 }
 
-gfx::Size PinRequestView::CalculatePreferredSize() const {
+gfx::Size PinRequestView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return GetPinRequestViewSize();
 }
 
@@ -522,7 +523,7 @@ void PinRequestView::SetInputEnabled(bool input_enabled) {
 }
 
 void PinRequestView::UpdatePreferredSize() {
-  SetPreferredSize(CalculatePreferredSize());
+  SetPreferredSize(CalculatePreferredSize({}));
   if (GetWidget()) {
     GetWidget()->CenterWindow(GetPreferredSize());
   }

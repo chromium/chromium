@@ -129,7 +129,8 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   bool IsReadOnly() const;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void RequestFocus() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
 

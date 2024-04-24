@@ -56,7 +56,8 @@ class ASH_EXPORT AnimatedRoundedImageView : public views::View {
   void SetAnimationPlayback(Playback playback);
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
  private:

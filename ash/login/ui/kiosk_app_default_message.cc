@@ -75,7 +75,8 @@ KioskAppDefaultMessage::KioskAppDefaultMessage()
 
 KioskAppDefaultMessage::~KioskAppDefaultMessage() = default;
 
-gfx::Size KioskAppDefaultMessage::CalculatePreferredSize() const {
+gfx::Size KioskAppDefaultMessage::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   auto* layout_provider = views::LayoutProvider::Get();
 
   // width = left_margin + icon_width + component_distance + title_width +

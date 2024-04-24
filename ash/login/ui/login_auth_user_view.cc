@@ -1031,8 +1031,9 @@ base::WeakPtr<views::View> LoginAuthUserView::GetActiveInputView() {
   return password_view_ != nullptr ? password_view_->AsWeakPtr() : nullptr;
 }
 
-gfx::Size LoginAuthUserView::CalculatePreferredSize() const {
-  gfx::Size size = views::View::CalculatePreferredSize();
+gfx::Size LoginAuthUserView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size size = views::View::CalculatePreferredSize(available_size);
   // Make sure we are at least as big as the user view. If we do not do this
   // the view will be below minimum size when no auth methods are displayed.
   size.SetToMax(user_view_->GetPreferredSize());

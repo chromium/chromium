@@ -89,7 +89,8 @@ class ASH_EXPORT AuthIconView : public views::View {
   void AddedToWidget() override;
   void OnThemeChanged() override;
   void OnPaint(gfx::Canvas* canvas) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
 

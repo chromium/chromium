@@ -255,9 +255,11 @@ class UserAddingScreenIndicator : public views::View {
   ~UserAddingScreenIndicator() override = default;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     return gfx::Size(kUserAddingScreenIndicatorWidth,
-                     GetHeightForWidth(kUserAddingScreenIndicatorWidth));
+                     GetLayoutManager()->GetPreferredHeightForWidth(
+                         this, kUserAddingScreenIndicatorWidth));
   }
 
  private:

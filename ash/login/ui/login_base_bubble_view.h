@@ -69,7 +69,8 @@ class ASH_EXPORT LoginBaseBubbleView : public views::View,
       ui::LayerAnimationSequence* sequence) override {}
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
   void OnBlur() override;
 

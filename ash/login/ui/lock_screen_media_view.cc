@@ -143,7 +143,8 @@ LockScreenMediaView::~LockScreenMediaView() {
 ///////////////////////////////////////////////////////////////////////////////
 // views::View implementations:
 
-gfx::Size LockScreenMediaView::CalculatePreferredSize() const {
+gfx::Size LockScreenMediaView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return global_media_controls::kCrOSMediaItemUpdatedUISize;
 }
 

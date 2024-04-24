@@ -88,7 +88,8 @@ class ASH_EXPORT LoginPinInputView : public views::View,
   void SetReadOnly(bool read_only);
   bool IsReadOnly() const;
   // views::View
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void RequestFocus() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
 

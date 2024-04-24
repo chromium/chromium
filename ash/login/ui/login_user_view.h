@@ -93,7 +93,8 @@ class ASH_EXPORT LoginUserView : public views::View,
   LoginButton* GetDropdownButton();
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
   void RequestFocus() override;
   views::View::Views GetChildrenInZOrder() override;

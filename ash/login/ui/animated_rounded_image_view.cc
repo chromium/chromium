@@ -71,7 +71,8 @@ void AnimatedRoundedImageView::SetAnimationPlayback(Playback playback) {
   StartOrStopAnimation();
 }
 
-gfx::Size AnimatedRoundedImageView::CalculatePreferredSize() const {
+gfx::Size AnimatedRoundedImageView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(image_size_.width() + GetInsets().width(),
                    image_size_.height() + GetInsets().height());
 }

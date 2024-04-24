@@ -62,7 +62,8 @@ class ASH_EXPORT LoginPublicAccountUserView : public NonAccessibleView {
   const LoginUserInfo& current_user() const;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   bool auth_enabled() const { return auth_enabled_; }
   LoginUserView* user_view() { return user_view_; }

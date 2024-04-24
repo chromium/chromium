@@ -457,8 +457,9 @@ LockScreenMediaControlsView::~LockScreenMediaControlsView() {
   base::PowerMonitor::RemovePowerSuspendObserver(this);
 }
 
-gfx::Size LockScreenMediaControlsView::CalculatePreferredSize() const {
-  return contents_view_->GetPreferredSize();
+gfx::Size LockScreenMediaControlsView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return contents_view_->GetPreferredSize(available_size);
 }
 
 void LockScreenMediaControlsView::Layout(PassKey) {

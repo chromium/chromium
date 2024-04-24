@@ -215,7 +215,8 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   views::Button* pin_password_toggle() { return pin_password_toggle_; }
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void RequestFocus() override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 

@@ -277,7 +277,8 @@ bool LoginPinInputView::IsReadOnly() const {
   return is_read_only_;
 }
 
-gfx::Size LoginPinInputView::CalculatePreferredSize() const {
+gfx::Size LoginPinInputView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int ideal_size = kFieldWidth * length_ + kFieldSpace * (length_ - 1);
   return gfx::Size(std::min(kMaxWidthPinInputDp, ideal_size),
                    kPinInputTotalHeightDp);

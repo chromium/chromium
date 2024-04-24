@@ -499,8 +499,11 @@ int LoginAuthFactorsView::GetDefaultLabelId() const {
 }
 
 // views::View:
-gfx::Size LoginAuthFactorsView::CalculatePreferredSize() const {
-  gfx::Size size = views::View::CalculatePreferredSize();
+gfx::Size LoginAuthFactorsView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  views::SizeBounds content_available_size(available_size);
+  content_available_size.set_width(kAuthFactorsViewWidthDp);
+  gfx::Size size = views::View::CalculatePreferredSize(content_available_size);
   size.set_width(kAuthFactorsViewWidthDp);
   return size;
 }

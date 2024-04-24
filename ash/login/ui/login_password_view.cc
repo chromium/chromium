@@ -530,8 +530,11 @@ bool LoginPasswordView::IsReadOnly() const {
   return textfield_->GetReadOnly();
 }
 
-gfx::Size LoginPasswordView::CalculatePreferredSize() const {
-  gfx::Size size = views::View::CalculatePreferredSize();
+gfx::Size LoginPasswordView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  views::SizeBounds content_available_size(available_size);
+  content_available_size.set_width(kPasswordTotalWidthDp);
+  gfx::Size size = views::View::CalculatePreferredSize(content_available_size);
   size.set_width(kPasswordTotalWidthDp);
   return size;
 }

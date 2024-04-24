@@ -349,7 +349,8 @@ void LocalAuthenticationRequestView::UpdateState(
   description_label_->SetEnabledColorId(color_id);
 }
 
-gfx::Size LocalAuthenticationRequestView::CalculatePreferredSize() const {
+gfx::Size LocalAuthenticationRequestView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return GetLocalAuthenticationRequestViewSize();
 }
 
@@ -372,7 +373,7 @@ void LocalAuthenticationRequestView::OnClose() {
 }
 
 void LocalAuthenticationRequestView::UpdatePreferredSize() {
-  SetPreferredSize(CalculatePreferredSize());
+  SetPreferredSize(CalculatePreferredSize({}));
   if (GetWidget()) {
     GetWidget()->CenterWindow(GetPreferredSize());
   }
