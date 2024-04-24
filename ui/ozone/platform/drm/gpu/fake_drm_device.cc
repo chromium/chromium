@@ -392,20 +392,12 @@ bool FakeDrmDevice::InitializeStateWithResult(MockDrmState& state,
   }
   SetCapability(DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
 
-  UpdateConnectors(state);
-  UpdateStateBesidesPlaneManager(state);
+  drm_state_ = state;
 
-  return plane_manager_->Initialize();
-}
-
-void FakeDrmDevice::UpdateConnectors(MockDrmState& state) {
-  UpdateConnectorsLinkStatus(state);
-  MaybeSetEdidBlobsForConnectors(state);
-}
-
-void FakeDrmDevice::UpdateConnectorsLinkStatus(MockDrmState& state) {
+  // Update the connectors' link statuses to bad if they have no modes (probably
+  // due to unsuccessful link-training.
   for (FakeDrmDevice::ConnectorProperties& connector :
-       state.connector_properties) {
+       drm_state_.connector_properties) {
     if (connector.connection && connector.modes.empty()) {
       DrmWrapper::Property* connector_link_status =
           FindObjectById(kLinkStatusPropId, connector.properties);
@@ -414,30 +406,22 @@ void FakeDrmDevice::UpdateConnectorsLinkStatus(MockDrmState& state) {
       }
     }
   }
-}
 
-void FakeDrmDevice::MaybeSetEdidBlobsForConnectors(MockDrmState& state) {
-  for (auto& mock_connector : state.connector_properties) {
+  // Set EDID blobs as property blobs so they can be fetched when needed via
+  // GetPropertyBlob().
+  for (auto& mock_connector : drm_state_.connector_properties) {
     const std::vector<uint8_t> edid_blob = mock_connector.edid_blob;
     if (edid_blob.empty()) {
       continue;
     }
 
-    DrmWrapper::Property* mock_blob_prop =
-        FindObjectById(kEdidBlobPropId, mock_connector.properties);
-    DCHECK(mock_blob_prop);
-    // Update the mock EDID property's value to the EDID blob's ID.
-    mock_blob_prop->value = GetNextId(state.blobs, kBaseBlobId);
-    state.blobs.push_back(*mock_blob_prop);
-
-    ScopedDrmPropertyBlobPtr drm_prop_blob(
-        DrmAllocator<drmModePropertyBlobRes>());
-    drm_prop_blob->id = mock_blob_prop->value;
-    drm_prop_blob->length = mock_connector.edid_blob.size();
-    drm_prop_blob->data = drmMalloc(drm_prop_blob->length);
-    memcpy(drm_prop_blob->data, edid_blob.data(), edid_blob.size());
-    SetPropertyBlob(std::move(drm_prop_blob));
+    auto edid_property_blob =
+        CreatePropertyBlob(edid_blob.data(), edid_blob.size());
+    UpdateProperty(mock_connector.id, kEdidBlobPropId,
+                   edid_property_blob->id());
   }
+
+  return plane_manager_->Initialize();
 }
 
 void FakeDrmDevice::UpdateStateBesidesPlaneManager(const MockDrmState& state) {
@@ -691,12 +675,48 @@ bool FakeDrmDevice::SetProperty(uint32_t connector_id,
 ScopedDrmPropertyBlob FakeDrmDevice::CreatePropertyBlob(const void* blob,
                                                         size_t size) {
   uint32_t id = GetUniqueNumber();
-  allocated_property_blobs_.insert(id);
+  auto& blob_state = allocated_blobs_[id];
+  DCHECK(blob_state.ref_count == 0);
+  blob_state.ref_count = 1;
+  const uint8_t* blob_uint8 = reinterpret_cast<const uint8_t*>(blob);
+  blob_state.data.assign(blob_uint8, blob_uint8 + size);
   return std::make_unique<DrmPropertyBlobMetadata>(this, id);
 }
 
 void FakeDrmDevice::DestroyPropertyBlob(uint32_t id) {
-  EXPECT_TRUE(allocated_property_blobs_.erase(id));
+  bool did_release = ReleaseBlob(id);
+  // ReleaseBlob will return true if there exists a blob with `id`. It should
+  // never be the case that we are are destroying a blob that does not exist.
+  DCHECK(did_release);
+}
+
+FakeDrmDevice::BlobState::BlobState() = default;
+
+FakeDrmDevice::BlobState::BlobState(const BlobState&) = default;
+
+FakeDrmDevice::BlobState::~BlobState() = default;
+
+bool FakeDrmDevice::RetainBlob(uint32_t id) {
+  auto it = allocated_blobs_.find(id);
+  if (it == allocated_blobs_.end()) {
+    return false;
+  }
+  DCHECK(it->second.ref_count > 0);
+  it->second.ref_count += 1;
+  return true;
+}
+
+bool FakeDrmDevice::ReleaseBlob(uint32_t id) {
+  auto it = allocated_blobs_.find(id);
+  if (it == allocated_blobs_.end()) {
+    return false;
+  }
+  DCHECK(it->second.ref_count > 0);
+  it->second.ref_count -= 1;
+  if (it->second.ref_count == 0) {
+    allocated_blobs_.erase(it);
+  }
+  return true;
 }
 
 bool FakeDrmDevice::GetCapability(uint64_t capability, uint64_t* value) const {
@@ -710,15 +730,16 @@ bool FakeDrmDevice::GetCapability(uint64_t capability, uint64_t* value) const {
 
 ScopedDrmPropertyBlobPtr FakeDrmDevice::GetPropertyBlob(
     uint32_t property_id) const {
-  auto it = blob_property_map_.find(property_id);
-  if (it == blob_property_map_.end())
+  auto it = allocated_blobs_.find(property_id);
+  if (it == allocated_blobs_.end()) {
     return nullptr;
+  }
 
   ScopedDrmPropertyBlobPtr blob(DrmAllocator<drmModePropertyBlobRes>());
   blob->id = property_id;
-  blob->length = it->second->length;
+  blob->length = it->second.data.size();
   blob->data = drmMalloc(blob->length);
-  memcpy(blob->data, it->second->data, blob->length);
+  memcpy(blob->data, it->second.data.data(), blob->length);
 
   return blob;
 }
@@ -924,7 +945,16 @@ void FakeDrmDevice::RunCallbacks() {
 }
 
 void FakeDrmDevice::SetPropertyBlob(ScopedDrmPropertyBlobPtr blob) {
-  blob_property_map_[blob->id] = std::move(blob);
+  BlobState& blob_state = allocated_blobs_[blob->id];
+  // Blobs set by SetPropertyBlob just exist forever. Set the refcount to
+  // something huge (999) to be emphatic about this. This blob may be
+  // retained if a property is set to it.
+  // TODO(b/335542790): Remove SetPropertyBlob entirely.
+  DCHECK(blob_state.ref_count == 0 || blob_state.ref_count == 999);
+  blob_state.ref_count = 999;
+
+  const uint8_t* blob_uint8 = reinterpret_cast<const uint8_t*>(blob->data);
+  blob_state.data.assign(blob_uint8, blob_uint8 + blob->length);
 }
 
 bool FakeDrmDevice::UpdateProperty(
@@ -934,6 +964,16 @@ bool FakeDrmDevice::UpdateProperty(
   DrmDevice::Property* property = FindObjectById(id, *properties);
   if (!property)
     return false;
+
+  // Retain the blob corresponding to the new value (if one exists). This
+  // ensures that the blob will remain valid even if DestroyPropertyBlob is
+  // subsequently called on it.
+  RetainBlob(value);
+
+  // Release the blob corresponding to the old value (if one exists). This may
+  // trigger the destruction of the blob, if DestroyPropertyBlob has already
+  // been called on it.
+  ReleaseBlob(property->value);
 
   property->value = value;
   return true;
@@ -973,7 +1013,7 @@ bool FakeDrmDevice::ValidatePropertyValue(uint32_t id, uint64_t value) {
   std::vector<std::string> blob_properties = {"CTM", "DEGAMMA_LUT", "GAMMA_LUT",
                                               "PLANE_CTM"};
   if (base::Contains(blob_properties, it->second))
-    return base::Contains(allocated_property_blobs_, value);
+    return base::Contains(allocated_blobs_, value);
 
   return true;
 }

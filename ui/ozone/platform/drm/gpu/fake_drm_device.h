@@ -189,7 +189,6 @@ class FakeDrmDevice : public DrmDevice {
     std::vector<ConnectorProperties> connector_properties;
     std::vector<EncoderProperties> encoder_properties;
     std::vector<PlaneProperties> plane_properties;
-    std::vector<DrmWrapper::Property> blobs;
     std::map<uint32_t, std::string> property_names;
   };
 
@@ -257,17 +256,6 @@ class FakeDrmDevice : public DrmDevice {
 
   void InitializeState(MockDrmState& state, bool use_atomic);
   bool InitializeStateWithResult(MockDrmState& state, bool use_atomic);
-
-  // Runs all connector update utility functions on |state|.
-  void UpdateConnectors(MockDrmState& state);
-
-  // Update a connector's link status to bad if it has no modes (probably due
-  // to unsuccessful link-training.
-  void UpdateConnectorsLinkStatus(MockDrmState& state);
-
-  // Sets EDID blobs as property blobs so they can be fetched when needed via
-  // GetPropertyBlob().
-  void MaybeSetEdidBlobsForConnectors(MockDrmState& state);
 
   void UpdateStateBesidesPlaneManager(const MockDrmState& state);
 
@@ -431,8 +419,6 @@ class FakeDrmDevice : public DrmDevice {
 
   std::map<uint32_t, uint32_t> crtc_cursor_map_;
 
-  std::map<uint32_t, ScopedDrmPropertyBlobPtr> blob_property_map_;
-
   std::set<uint32_t> framebuffer_ids_;
   std::map<uint32_t, uint32_t> crtc_fb_;
   std::map<uint64_t, uint64_t> capabilities_;
@@ -441,7 +427,25 @@ class FakeDrmDevice : public DrmDevice {
 
   MockDrmState drm_state_;
 
-  std::set<uint32_t> allocated_property_blobs_;
+  struct BlobState {
+    BlobState();
+    BlobState(const BlobState&);
+    ~BlobState();
+
+    // The reference count for this blob. The blob is retained and released
+    // with the lifetime of the ScopedDrmPropertyBlob returned by
+    // CreatePropertyBlob. It is also retained when its id is set as a value in
+    // UpdateProperty and released when that value is overwritten.
+    uint32_t ref_count = 0;
+    std::vector<uint8_t> data;
+  };
+  std::map<uint32_t, BlobState> allocated_blobs_;
+
+  // Retain or release the blob with id `id`. Returns true if the blob was found
+  // and retained or released. If no blob exists with `id`, return false and
+  // do nothing.
+  bool RetainBlob(uint32_t id);
+  bool ReleaseBlob(uint32_t id);
 
   // Props of the plane associated with the generated fb_id.
   base::flat_map<uint32_t /*fb_id*/, FramebufferProps> fb_props_;
