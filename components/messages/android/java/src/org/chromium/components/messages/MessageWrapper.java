@@ -104,6 +104,16 @@ public final class MessageWrapper implements ListMenu.Delegate {
     }
 
     @CalledByNative
+    int getPrimaryButtonTextMaxLines() {
+        return mMessageProperties.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT_MAX_LINES);
+    }
+
+    @CalledByNative
+    void setPrimaryButtonTextMaxLines(int maxLines) {
+        mMessageProperties.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT_MAX_LINES, maxLines);
+    }
+
+    @CalledByNative
     String getSecondaryButtonMenuText() {
         return mMessageProperties.get(MessageBannerProperties.SECONDARY_BUTTON_MENU_TEXT);
     }

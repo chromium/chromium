@@ -94,6 +94,18 @@ void MessageWrapper::SetPrimaryButtonText(
                                            jprimary_button_text);
 }
 
+int MessageWrapper::GetPrimaryButtonTextMaxLines() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_MessageWrapper_getPrimaryButtonTextMaxLines(
+      env, java_message_wrapper_);
+}
+
+void MessageWrapper::SetPrimaryButtonTextMaxLines(int max_lines) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_MessageWrapper_setPrimaryButtonTextMaxLines(env, java_message_wrapper_,
+                                                   max_lines);
+}
+
 std::u16string MessageWrapper::GetSecondaryButtonMenuText() {
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> jsecondary_button_menu_text =

@@ -69,6 +69,12 @@ public class MessageWrapperTest {
                 "Primary button",
                 messageProperties.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
 
+        message.setPrimaryButtonTextMaxLines(1);
+        Assert.assertEquals(
+                "Button text max lines doesn't match provided value",
+                1,
+                messageProperties.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT_MAX_LINES));
+
         message.setSecondaryButtonMenuText("Secondary button");
         Assert.assertEquals(
                 "Button text doesn't match provided value",

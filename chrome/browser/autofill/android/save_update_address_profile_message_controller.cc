@@ -73,6 +73,7 @@ void SaveUpdateAddressProfileMessageController::DisplayMessage(
   message_->SetDescription(GetDescription());
   message_->SetDescriptionMaxLines(kDescriptionMaxLines);
   message_->SetPrimaryButtonText(GetPrimaryButtonText());
+  message_->SetPrimaryButtonTextMaxLines(1);
   message_->SetIconResourceId(ResourceMapper::MapToJavaDrawableId(
       is_migration_to_account ? IDR_ANDROID_AUTOFILL_UPLOAD_ADDRESS
                               : IDR_ANDROID_AUTOFILL_ADDRESS));

@@ -43,6 +43,8 @@ public class MessageBannerProperties {
 
     public static final WritableObjectPropertyKey<String> PRIMARY_BUTTON_TEXT =
             new WritableObjectPropertyKey<>();
+    public static final WritableIntPropertyKey PRIMARY_BUTTON_TEXT_MAX_LINES =
+            new WritableIntPropertyKey();
 
     /**
      * See the documentation of PrimaryActionClickBehavior in
@@ -150,6 +152,7 @@ public class MessageBannerProperties {
             new PropertyKey[] {
                 MESSAGE_IDENTIFIER,
                 PRIMARY_BUTTON_TEXT,
+                PRIMARY_BUTTON_TEXT_MAX_LINES,
                 PRIMARY_BUTTON_CLICK_LISTENER,
                 TITLE,
                 TITLE_CONTENT_DESCRIPTION,

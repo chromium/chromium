@@ -189,6 +189,11 @@ public class MessageBannerView extends BoundedLinearLayout {
         updatePrimaryWidgetAppearance();
     }
 
+    void setPrimaryButtonTextMaxLines(int maxLines) {
+        mPrimaryButton.setMaxLines(maxLines);
+        updatePrimaryWidgetAppearance();
+    }
+
     private void updatePrimaryWidgetAppearance() {
         if (mPrimaryWidgetAppearance == PrimaryWidgetAppearance.BUTTON_IF_TEXT_IS_SET
                 && !TextUtils.isEmpty(mPrimaryButtonText)) {

@@ -181,6 +181,7 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL),
             GetMessageWrapper()->GetPrimaryButtonText());
+  EXPECT_EQ(1, GetMessageWrapper()->GetPrimaryButtonTextMaxLines());
   EXPECT_EQ(SaveUpdateAddressProfileMessageController::kDescriptionMaxLines,
             GetMessageWrapper()->GetDescriptionMaxLines());
   EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS),
@@ -212,6 +213,7 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL),
             GetMessageWrapper()->GetPrimaryButtonText());
+  EXPECT_EQ(1, GetMessageWrapper()->GetPrimaryButtonTextMaxLines());
   EXPECT_EQ(SaveUpdateAddressProfileMessageController::kDescriptionMaxLines,
             GetMessageWrapper()->GetDescriptionMaxLines());
   EXPECT_EQ(
@@ -243,6 +245,7 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest,
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL),
             GetMessageWrapper()->GetPrimaryButtonText());
+  EXPECT_EQ(1, GetMessageWrapper()->GetPrimaryButtonTextMaxLines());
   EXPECT_EQ(SaveUpdateAddressProfileMessageController::kDescriptionMaxLines,
             GetMessageWrapper()->GetDescriptionMaxLines());
   EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_AUTOFILL_ADDRESS),
@@ -262,6 +265,7 @@ TEST_F(SaveUpdateAddressProfileMessageControllerTest, UpdateMessageContent) {
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL),
             GetMessageWrapper()->GetPrimaryButtonText());
+  EXPECT_EQ(1, GetMessageWrapper()->GetPrimaryButtonTextMaxLines());
   EXPECT_EQ(u"Jane A. Smith, 123 Main Street",
             GetMessageWrapper()->GetDescription());
   EXPECT_EQ(SaveUpdateAddressProfileMessageController::kDescriptionMaxLines,
