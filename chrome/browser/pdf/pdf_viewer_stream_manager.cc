@@ -14,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/common/pdf_util.h"
 #include "components/pdf/browser/pdf_frame_util.h"
 #include "components/pdf/common/pdf_util.h"
 #include "content/public/browser/global_routing_id.h"
