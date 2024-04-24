@@ -430,6 +430,21 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.APIKeyMatchesFeatureOnStartup" enum="Boolean"
+    expires_after="2024-12-15">
+  <owner>alexilin@chromium.org</owner>
+  <owner>msarda@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records whether the API key matches the value passed via the experiment
+    feature. Recorded once on startup.
+
+    Note: This histogram is meaningful only when feature OverrideAPIKey is
+    enabled. It should thus only be used from the Finch tab of the UMA
+    dashboard.
+  </summary>
+</histogram>
+
 <histogram name="Signin.AuthError" enum="GoogleServiceAuthError"
     expires_after="2024-09-22">
   <owner>msarda@chromium.org</owner>

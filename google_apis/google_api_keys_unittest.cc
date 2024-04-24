@@ -14,12 +14,15 @@
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "google_apis/gaia/gaia_config.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/google_api_keys.h"
+#include "google_apis/google_api_keys_utils.h"
 
 // The Win builders fail (with a linker crash) when trying to link unit_tests,
 // and the Android builders complain about multiply defined symbols (likely they
@@ -366,6 +369,103 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeys) {
   EXPECT_EQ("SECRET_REMOTING", secret_remoting);
   EXPECT_EQ("ID_REMOTING_HOST", id_remoting_host);
   EXPECT_EQ("SECRET_REMOTING_HOST", secret_remoting_host);
+}
+
+// Override API key via an experiment feature.
+namespace override_api_key_via_feature_without_param {
+
+// We start every test by creating a clean environment for the
+// preprocessor defines used in google_api_keys.cc
+#undef DUMMY_API_TOKEN
+#undef GOOGLE_API_KEY
+#undef GOOGLE_CLIENT_ID_MAIN
+#undef GOOGLE_CLIENT_SECRET_MAIN
+#undef GOOGLE_CLIENT_ID_REMOTING
+#undef GOOGLE_CLIENT_SECRET_REMOTING
+#undef GOOGLE_CLIENT_ID_REMOTING_HOST
+#undef GOOGLE_CLIENT_SECRET_REMOTING_HOST
+#undef GOOGLE_DEFAULT_CLIENT_ID
+#undef GOOGLE_DEFAULT_CLIENT_SECRET
+
+#define GOOGLE_API_KEY "API_KEY"
+
+// Undef include guard so things get defined again, within this namespace.
+#undef GOOGLE_APIS_GOOGLE_API_KEYS_H_
+#undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
+#include "google_apis/google_api_keys-inc.cc"
+
+}  // namespace override_api_key_via_feature_without_param
+
+TEST_F(GoogleAPIKeysTest, OverrideApiKeyViaFeatureWithNoParamIsIgnored) {
+  namespace testcase = override_api_key_via_feature_without_param::google_apis;
+
+  static int test_iteration = 0;
+  test_iteration++;
+
+  // Use base::test::ScopedFeatureList::InitFromCommandLine() to enable the
+  // feature to avoid exposing the feature flag in the header file and exposing
+  // it as a component exported symbol.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine("OverrideAPIKey", "");
+
+  base::HistogramTester tester;
+  EXPECT_EQ("API_KEY", testcase::g_api_key_cache.Get().api_key());
+
+  // |g_api_key_cache| is loaded only once, so the histogram is only logged
+  // during the first iteration of the test.
+  if (test_iteration == 1) {
+    tester.ExpectUniqueSample("Signin.APIKeyMatchesFeatureOnStartup", 0, 1);
+  } else {
+    tester.ExpectUniqueSample("Signin.APIKeyMatchesFeatureOnStartup", 0, 0);
+  }
+}
+
+// Override API key via an experiment feature.
+namespace override_api_key_via_feature {
+
+// We start every test by creating a clean environment for the
+// preprocessor defines used in google_api_keys.cc
+#undef DUMMY_API_TOKEN
+#undef GOOGLE_API_KEY
+#undef GOOGLE_CLIENT_ID_MAIN
+#undef GOOGLE_CLIENT_SECRET_MAIN
+#undef GOOGLE_CLIENT_ID_REMOTING
+#undef GOOGLE_CLIENT_SECRET_REMOTING
+#undef GOOGLE_CLIENT_ID_REMOTING_HOST
+#undef GOOGLE_CLIENT_SECRET_REMOTING_HOST
+#undef GOOGLE_DEFAULT_CLIENT_ID
+#undef GOOGLE_DEFAULT_CLIENT_SECRET
+
+#define GOOGLE_API_KEY "API_KEY"
+
+// Undef include guard so things get defined again, within this namespace.
+#undef GOOGLE_APIS_GOOGLE_API_KEYS_H_
+#undef GOOGLE_APIS_INTERNAL_GOOGLE_CHROME_API_KEYS_
+#include "google_apis/google_api_keys-inc.cc"
+
+}  // namespace override_api_key_via_feature
+
+TEST_F(GoogleAPIKeysTest, OverrideApiKeyViaFeature) {
+  namespace testcase = override_api_key_via_feature::google_apis;
+  static int test_iteration = 0;
+  test_iteration++;
+
+  // Use base::test::ScopedFeatureList::InitFromCommandLine() to enable the
+  // feature to avoid exposing the feature flag in the header file and exposing
+  // it as a component exported symbol.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine(
+      "OverrideAPIKey<foo.bar:api_key/API_KEY2", "");
+
+  base::HistogramTester tester;
+  EXPECT_EQ("API_KEY2", testcase::g_api_key_cache.Get().api_key());
+  // |g_api_key_cache| is loaded only once, so the histogram is only logged
+  // during the first iteration of the test.
+  if (test_iteration == 1) {
+    tester.ExpectUniqueSample("Signin.APIKeyMatchesFeatureOnStartup", 1, 1);
+  } else {
+    tester.ExpectUniqueSample("Signin.APIKeyMatchesFeatureOnStartup", 0, 0);
+  }
 }
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
