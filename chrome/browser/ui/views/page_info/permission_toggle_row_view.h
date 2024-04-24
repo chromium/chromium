@@ -6,19 +6,20 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PERMISSION_TOGGLE_ROW_VIEW_H_
 
 #include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view_observer.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 
 class ChromePageInfoUiDelegate;
 class PageInfoNavigationHandler;
 
 namespace views {
-class Label;
 class ToggleButton;
 }  // namespace views
 
@@ -33,6 +34,8 @@ class PermissionToggleRowView : public views::View {
   METADATA_HEADER(PermissionToggleRowView, views::View)
 
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRowSubTitleCameraElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRowSubTitleMicrophoneElementId);
   PermissionToggleRowView(ChromePageInfoUiDelegate* delegate,
                           PageInfoNavigationHandler* navigation_handler,
                           const PageInfo::PermissionInfo& permission,
@@ -49,6 +52,10 @@ class PermissionToggleRowView : public views::View {
 
   const std::u16string& GetRowTitleForTesting() const {
     return row_view_->GetTitleForTesting();
+  }
+
+  const std::u16string& GetRowSubTitleForTesting() const {
+    return state_label_->GetText();
   }
 
   bool GetToggleButtonStateForTesting() const;

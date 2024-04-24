@@ -29,7 +29,10 @@
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionChipView, kChipElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionChipView,
+                                      kRequestChipElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionChipView,
+                                      kIndicatorChipElementId);
 
 PermissionChipView::PermissionChipView(PressedCallback callback)
     : MdTextButton(std::move(callback),
@@ -37,7 +40,6 @@ PermissionChipView::PermissionChipView(PressedCallback callback)
                    views::style::CONTEXT_BUTTON_MD,
                    /*use_text_color_for_icon=*/true,
                    std::make_unique<MultiImageContainer>()) {
-  SetProperty(views::kElementIdentifierKey, kChipElementId);
   views::InstallPillHighlightPathGenerator(this);
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
   SetElideBehavior(gfx::ElideBehavior::FADE_TAIL);
@@ -164,6 +166,13 @@ void PermissionChipView::SetUserDecision(
 void PermissionChipView::SetTheme(PermissionChipTheme theme) {
   theme_ = theme;
   UpdateIconAndColors();
+
+  if (theme == PermissionChipTheme::kNormalVisibility ||
+      theme == PermissionChipTheme::kLowVisibility) {
+    SetProperty(views::kElementIdentifierKey, kRequestChipElementId);
+  } else {
+    SetProperty(views::kElementIdentifierKey, kIndicatorChipElementId);
+  }
 }
 
 void PermissionChipView::SetBlockedIconShowing(bool should_show_blocked_icon) {
