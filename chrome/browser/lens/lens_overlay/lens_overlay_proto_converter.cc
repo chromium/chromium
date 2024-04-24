@@ -62,7 +62,9 @@ lens::mojom::PolygonPtr CreatePolygonMojomFromProto(
 lens::mojom::GeometryPtr CreateGeometryMojomFromProto(
     lens::Geometry response_geometry) {
   lens::mojom::GeometryPtr geometry = lens::mojom::Geometry::New();
-  CHECK(response_geometry.has_bounding_box());
+  if (!response_geometry.has_bounding_box()) {
+    return geometry;
+  }
 
   auto bounding_box_response = response_geometry.bounding_box();
   lens::mojom::CenterRotatedBoxPtr center_rotated_box =
