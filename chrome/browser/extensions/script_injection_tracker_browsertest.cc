@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/script_injection_tracker.h"
+
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -35,7 +38,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/script_executor.h"
-#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
@@ -148,8 +150,8 @@ class ScriptInjectionTrackerBrowserTest : public ExtensionBrowserTest {
 
   // Navigates to url for given `hostname` and `relative_url`. Returns whether
   // the navigation is in a new process compared to the currently active tab.
-  [[nodiscard]] bool NavigateToURLInNewProcess(base::StringPiece hostname,
-                                               base::StringPiece relative_url) {
+  [[nodiscard]] bool NavigateToURLInNewProcess(std::string_view hostname,
+                                               std::string_view relative_url) {
     content::WebContents* original_web_contents = GetActiveWebContents();
 
     // Opening the URL in a new tab should force it into a new process.

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -24,7 +26,7 @@ class WasmExtensionCachingBrowserTest
   WasmExtensionCachingBrowserTest() = default;
   ~WasmExtensionCachingBrowserTest() override = default;
 
-  static constexpr base::StringPiece kHistogram = "V8.WasmCodeCaching";
+  static constexpr std::string_view kHistogram = "V8.WasmCodeCaching";
 
   // The enum values need to match "WasmCodeCaching" in
   // tools/metrics/histograms/metadata/v8/enums.xml.
@@ -70,7 +72,7 @@ class WasmExtensionCachingBrowserTest
 
   // Fetch the `bucket` from the `histogram` in every renderer process until
   // reaching, but not exceeding, `expected_samples`.
-  void WaitForHistogramSamples(base::StringPiece histogram,
+  void WaitForHistogramSamples(std::string_view histogram,
                                int expected_samples) {
     // We sleep for an increasing amount of time for the background task to
     // finish.

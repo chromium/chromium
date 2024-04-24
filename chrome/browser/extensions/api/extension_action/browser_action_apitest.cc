@@ -4,10 +4,11 @@
 
 #include <stdint.h>
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -161,7 +162,7 @@ class BrowserActionApiTestWithContextType
       const BrowserActionApiTestWithContextType&) = delete;
 
  protected:
-  void RunUpdateTest(base::StringPiece path, bool expect_failure) {
+  void RunUpdateTest(std::string_view path, bool expect_failure) {
     ExtensionTestMessageListener ready_listener("ready",
                                                 ReplyBehavior::kWillReply);
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -201,7 +202,7 @@ class BrowserActionApiTestWithContextType
               action->GetBadgeBackgroundColor(ExtensionAction::kDefaultTabId));
   }
 
-  void RunEnableTest(base::StringPiece path, bool start_enabled) {
+  void RunEnableTest(std::string_view path, bool start_enabled) {
     ExtensionTestMessageListener ready_listener("ready",
                                                 ReplyBehavior::kWillReply);
     const Extension* extension =

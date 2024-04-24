@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_APITEST_H_
 
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
@@ -116,7 +116,7 @@ class ExtensionApiTest : public ExtensionBrowserTest {
 
   // Sets the additional string argument |customArg| to the test config object,
   // which is available to javascript tests using chrome.test.getConfig().
-  void SetCustomArg(base::StringPiece custom_arg);
+  void SetCustomArg(std::string_view custom_arg);
 
   // Test that exactly one extension loaded.  If so, return a pointer to
   // the extension.  If not, return NULL and set message_.

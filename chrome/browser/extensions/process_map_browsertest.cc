@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/process_map.h"
+
 #include <memory>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,7 +25,6 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
-#include "extensions/browser/process_map.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -62,8 +63,8 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
   // Adds a new extension with the given `extension_name` and host permission to
   // the given `host_pattern`.
   const Extension* AddExtensionWithHostPermission(
-      base::StringPiece extension_name,
-      base::StringPiece host_pattern) {
+      std::string_view extension_name,
+      std::string_view host_pattern) {
     static constexpr char kManifestTemplate[] =
         R"({
              "name": "%s",
@@ -83,8 +84,8 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
   // that runs on `content_script_pattern`, sending a message when the script
   // injects.
   const Extension* AddExtensionWithContentScript(
-      base::StringPiece extension_name,
-      base::StringPiece content_script_pattern) {
+      std::string_view extension_name,
+      std::string_view content_script_pattern) {
     static constexpr char kManifestTemplate[] =
         R"({
              "name": "%s",
@@ -416,7 +417,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
   }
 
   // Opens a new tab to the given `domain`.
-  void OpenDomain(base::StringPiece domain) {
+  void OpenDomain(std::string_view domain) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL(domain, "/simple.html")));
   }
@@ -435,7 +436,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
 
   // Opens a new tab to the given `domain` and waits for a content script to
   // inject.
-  void OpenDomainAndWaitForContentScript(base::StringPiece domain) {
+  void OpenDomainAndWaitForContentScript(std::string_view domain) {
     ExtensionTestMessageListener listener("script injected");
     OpenDomain(domain);
     ASSERT_TRUE(listener.WaitUntilSatisfied());
@@ -489,7 +490,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
       const Extension* extension,
       const content::RenderProcessHost& process,
       const std::vector<mojom::ContextType>& allowed_contexts,
-      base::StringPiece debug_string) {
+      std::string_view debug_string) {
     std::vector<mojom::ContextType> all_types = {
         mojom::ContextType::kUnspecified,
         mojom::ContextType::kPrivilegedExtension,

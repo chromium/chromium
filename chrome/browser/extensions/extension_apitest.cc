@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/base_switches.h"
@@ -278,7 +279,7 @@ bool ExtensionApiTest::StartWebSocketServer(
   return true;
 }
 
-void ExtensionApiTest::SetCustomArg(base::StringPiece custom_arg) {
+void ExtensionApiTest::SetCustomArg(std::string_view custom_arg) {
   test_config_->Set(kTestCustomArg, base::Value(custom_arg));
 }
 

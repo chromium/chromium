@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_KEEPLIST_CHROMEOS_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "build/chromeos_buildflags.h"
@@ -21,17 +22,17 @@ BuildStandaloneBrowserAppServiceBlockListInitParam();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Returns ids of the extensions that are allow to run in both Ash and Lacros.
-base::span<const base::StringPiece> GetExtensionsRunInOSAndStandaloneBrowser();
+base::span<const std::string_view> GetExtensionsRunInOSAndStandaloneBrowser();
 
 // Returns ids of the chrome apps that are allow to run in both Ash and Lacros.
-base::span<const base::StringPiece>
+base::span<const std::string_view>
 GetExtensionAppsRunInOSAndStandaloneBrowser();
 
 // Returns ids of the extensions that are allow to run in Ash only.
-base::span<const base::StringPiece> GetExtensionsRunInOSOnly();
+base::span<const std::string_view> GetExtensionsRunInOSOnly();
 
 // Returns ids of the chrome apps that are allow to run in Ash only.
-base::span<const base::StringPiece> GetExtensionAppsRunInOSOnly();
+base::span<const std::string_view> GetExtensionAppsRunInOSOnly();
 
 // By default an extension should only be enabled in either Ash or Lacros, but
 // not both. Some extensions may not work properly if enabled in both. This is
@@ -62,14 +63,14 @@ bool ExtensionAppRunsInOS(const std::string& app_id);
 // used to support Chrome OS features such as text to speech or vox, or they are
 // not compatible with Lacros yet. When this method is invoked in Lacros, it may
 // not know about OS-specific extension apps that are compiled into ash.
-bool ExtensionAppRunsInOSOnly(base::StringPiece app_id);
+bool ExtensionAppRunsInOSOnly(std::string_view app_id);
 
 // Returns true if the extension is kept to run in Ash ONLY. A small list of
 // 1st party extensions will continue to run in Ash either since they are
 // used to support Chrome OS features such as text to speech or vox, or they are
 // not compatible with Lacros yet. When this method is invoked in Lacros, it may
 // not know about OS-specific extensions that are compiled into ash.
-bool ExtensionRunsInOSOnly(base::StringPiece extension_id);
+bool ExtensionRunsInOSOnly(std::string_view extension_id);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool IsAppServiceBlocklistCrosapiSupported();
@@ -77,12 +78,12 @@ bool IsAppServiceBlocklistCrosapiSupported();
 // Returns true if the app is on app service block list in Lacros, i.e.,
 // the app can't be published in app service by Lacros.
 bool ExtensionAppBlockListedForAppServiceInStandaloneBrowser(
-    base::StringPiece app_id);
+    std::string_view app_id);
 
 // Returns true if the extension is on app service block list in Lacros, i.e.,
 // the extension can't be published in app service by Lacros.
 bool ExtensionBlockListedForAppServiceInStandaloneBrowser(
-    base::StringPiece extension_id);
+    std::string_view extension_id);
 
 // Some Lacros chrome apps related browser tests and unit tests run without Ash,
 // therefore, Lacros won't get the Ash extension keeplist data from Ash via
@@ -96,11 +97,11 @@ void SetEmptyAshKeeplistForTest();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns true if the app is on app service block list in Ash, i.e.,
 // the app can't be published in app service by Ash.
-bool ExtensionAppBlockListedForAppServiceInOS(base::StringPiece app_id);
+bool ExtensionAppBlockListedForAppServiceInOS(std::string_view app_id);
 
 // Returns true if the extension is on app service block list in Ash, i.e.,
 // the extension can't be published in app service by Ash.
-bool ExtensionBlockListedForAppServiceInOS(base::StringPiece extension_id);
+bool ExtensionBlockListedForAppServiceInOS(std::string_view extension_id);
 
 // Returns ids of the extensions and extension apps that are allow to run in
 // both Ash and Lacros.

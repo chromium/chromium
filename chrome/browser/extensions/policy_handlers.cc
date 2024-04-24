@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -49,7 +49,7 @@ namespace {
 // Returns true if extensions_ids contains a list of valid extension ids,
 // divided by comma.
 bool IsValidIdList(const std::string& extension_ids) {
-  std::vector<base::StringPiece> ids = base::SplitStringPiece(
+  std::vector<std::string_view> ids = base::SplitStringPiece(
       extension_ids, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
   if (ids.size() == 0) {

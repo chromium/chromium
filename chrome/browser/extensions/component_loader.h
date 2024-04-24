@@ -9,6 +9,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -59,7 +60,7 @@ class ComponentLoader {
   //
   //   ssh-keygen -t rsa -b 1024 -N '' -f /tmp/key.pem
   //   openssl rsa -pubout -outform DER < /tmp/key.pem 2>/dev/null | base64 -w 0
-  ExtensionId Add(const base::StringPiece& manifest_contents,
+  ExtensionId Add(std::string_view manifest_contents,
                   const base::FilePath& root_directory);
 
   // Convenience method for registering a component extension by resource id.
@@ -175,9 +176,9 @@ class ComponentLoader {
   // Parses the given JSON manifest. Returns `std::nullopt` if it cannot be
   // parsed or if the result is not a base::Value::Dict.
   std::optional<base::Value::Dict> ParseManifest(
-      base::StringPiece manifest_contents) const;
+      std::string_view manifest_contents) const;
 
-  ExtensionId Add(const base::StringPiece& manifest_contents,
+  ExtensionId Add(std::string_view manifest_contents,
                   const base::FilePath& root_directory,
                   bool skip_allowlist);
   ExtensionId Add(base::Value::Dict parsed_manifest,

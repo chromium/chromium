@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -458,7 +459,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
 
       base::FilePath path = base::FilePath::FromUTF8Unsafe(*external_crx);
       if (path.value().find(base::FilePath::kParentDirectory) !=
-          base::StringPiece::npos) {
+          std::string_view::npos) {
         install_stage_tracker->ReportFailure(
             extension_id, InstallStageTracker::FailureReason::
                               MALFORMED_EXTENSION_DICT_FILE_PATH);

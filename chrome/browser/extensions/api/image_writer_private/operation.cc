@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/image_writer_private/operation.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -313,7 +314,7 @@ void Operation::MD5Chunk(
 
     if (len == read_size) {
       // Process data.
-      base::MD5Update(&md5_context_, base::StringPiece(buffer.get(), len));
+      base::MD5Update(&md5_context_, std::string_view(buffer.get(), len));
       int percent_curr =
           ((bytes_processed + len) * progress_scale) / bytes_total +
           progress_offset;

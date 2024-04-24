@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -42,8 +43,8 @@ const char kUnsupportedPermissionId[] =
 // Extracts an API permission that supports arguments. In practice, this is
 // restricted to the UsbDevicePermission.
 std::unique_ptr<APIPermission> UnpackPermissionWithArguments(
-    base::StringPiece permission_name,
-    base::StringPiece permission_arg,
+    std::string_view permission_name,
+    std::string_view permission_arg,
     const std::string& permission_str,
     std::string* error) {
   std::optional<base::Value> permission_json =
@@ -95,7 +96,7 @@ bool UnpackAPIPermissions(const std::vector<std::string>& permissions_input,
     // http://code.google.com/p/chromium/issues/detail?id=162042
     size_t delimiter = permission_str.find(kDelimiter);
     if (delimiter != std::string::npos) {
-      base::StringPiece permission_piece(permission_str);
+      std::string_view permission_piece(permission_str);
       std::unique_ptr<APIPermission> permission = UnpackPermissionWithArguments(
           permission_piece.substr(0, delimiter),
           permission_piece.substr(delimiter + 1), permission_str, error);

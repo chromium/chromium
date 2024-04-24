@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -10,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -82,7 +82,7 @@ class ContentCapabilitiesTest : public extensions::ExtensionApiTest {
   std::string MakeJSONList(const std::string& s0 = "",
                            const std::string& s1 = "",
                            const std::string& s2 = "") {
-    std::vector<base::StringPiece> v;
+    std::vector<std::string_view> v;
     if (!s0.empty())
       v.push_back(s0);
     if (!s1.empty())

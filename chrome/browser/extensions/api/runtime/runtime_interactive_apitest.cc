@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -32,8 +34,7 @@ class RuntimeGetContextsInteractiveApiTest : public ExtensionApiTest {
 
   // Runs `chrome.runtime.getContexts()` and returns the result as a
   // base::Value.
-  base::Value GetContexts(const Extension& extension,
-                          base::StringPiece filter) {
+  base::Value GetContexts(const Extension& extension, std::string_view filter) {
     static constexpr char kScriptTemplate[] =
         R"((async () => {
              chrome.test.sendScriptResult(

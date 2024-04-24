@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <span>  // std::size.
+#include <string_view>
 
 #include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
@@ -219,7 +220,7 @@ PrefTransformerInterface* PrefMapping::FindTransformerForBrowserPref(
 crosapi::mojom::PrefPath PrefMapping::GetPrefPathForPrefName(
     const std::string& pref_name) const {
   static constexpr auto name_to_extension_prefpath = base::MakeFixedFlatMap<
-      base::StringPiece, crosapi::mojom::PrefPath>(
+      std::string_view, crosapi::mojom::PrefPath>(
       {{chromeos::prefs::kDockedMagnifierEnabled,
         crosapi::mojom::PrefPath::kDockedMagnifierEnabled},
        {chromeos::prefs::kAccessibilityAutoclickEnabled,

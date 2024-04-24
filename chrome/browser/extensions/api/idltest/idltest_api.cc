@@ -7,10 +7,10 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 namespace {
@@ -43,7 +43,7 @@ ExtensionFunction::ResponseAction IdltestSendArrayBufferViewFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction IdltestGetArrayBufferFunction::Run() {
-  static constexpr base::StringPiece kHello = "hello world";
+  static constexpr std::string_view kHello = "hello world";
   return RespondNow(
       WithArguments(base::Value(base::as_bytes(base::make_span(kHello)))));
 }

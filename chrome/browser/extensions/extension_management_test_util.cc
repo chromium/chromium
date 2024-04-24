@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/extension_management_test_util.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -31,11 +32,11 @@ std::string make_path(const std::string& a, const std::string& b) {
   return a + "." + b;
 }
 
-void RemoveDictionaryPath(base::Value::Dict& dict, base::StringPiece path) {
-  base::StringPiece current_path(path);
+void RemoveDictionaryPath(base::Value::Dict& dict, std::string_view path) {
+  std::string_view current_path(path);
   base::Value::Dict* current_dictionary = &dict;
   size_t delimiter_position = current_path.rfind('.');
-  if (delimiter_position != base::StringPiece::npos) {
+  if (delimiter_position != std::string_view::npos) {
     current_dictionary =
         dict.FindDictByDottedPath(current_path.substr(0, delimiter_position));
     if (!current_dictionary)

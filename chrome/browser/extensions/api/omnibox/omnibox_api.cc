@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -284,7 +285,7 @@ ExtensionFunction::ResponseAction OmniboxSendSuggestionsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params_);
 
   if (is_from_service_worker() && !params_->suggest_results.empty()) {
-    std::vector<base::StringPiece> inputs;
+    std::vector<std::string_view> inputs;
     inputs.reserve(params_->suggest_results.size());
     for (const auto& suggestion : params_->suggest_results)
       inputs.push_back(suggestion.description);

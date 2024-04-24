@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/public/browser/back_forward_cache.h"
+
 #include <string>
+#include <string_view>
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -14,7 +17,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -1199,7 +1201,7 @@ class ExtensionBackForwardCacheMetricsBrowserTest
     // Enable extension sync, otherwise the new source url entry will be
     // dropped.
     test_ukm_recorder_->SetIsWebstoreExtensionCallback(
-        base::BindRepeating([](base::StringPiece) { return true; }));
+        base::BindRepeating([](std::string_view) { return true; }));
   }
 
  protected:

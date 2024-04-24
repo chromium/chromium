@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/search/search_api.h"
 
+#include <string_view>
+
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
@@ -63,7 +65,7 @@ class SearchApiUnitTest : public ExtensionServiceTestBase {
   TabStripModel* GetTabStripModel() { return browser_->tab_strip_model(); }
   extensions::SearchQueryFunction* function() { return function_.get(); }
   void RunFunctionAndExpectError(const std::string& input,
-                                 const base::StringPiece expected);
+                                 const std::string_view expected);
 
  private:
   void SetUp() override;
@@ -110,7 +112,7 @@ void SearchApiUnitTest::TearDown() {
 
 void SearchApiUnitTest::RunFunctionAndExpectError(
     const std::string& input,
-    const base::StringPiece expected) {
+    const std::string_view expected) {
   auto result = api_test_utils::RunFunctionAndReturnError(function(), input,
                                                           browser()->profile());
   EXPECT_EQ(expected, result);

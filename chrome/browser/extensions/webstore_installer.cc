@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "base/rand_util.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -191,7 +191,7 @@ GURL WebstoreInstaller::GetWebstoreInstallURL(
     return GURL(base::StringPrintfNonConstexpr(download_url.c_str(),
                                                extension_id.c_str()));
   }
-  std::vector<base::StringPiece> params;
+  std::vector<std::string_view> params;
   std::string extension_param = "id=" + extension_id;
   std::string installsource_param = "installsource=" + install_source;
   params.push_back(extension_param);

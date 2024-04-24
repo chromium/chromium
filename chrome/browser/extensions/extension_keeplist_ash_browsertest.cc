@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
 #include "base/containers/contains.h"
-#include "base/strings/string_piece.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/crosapi/ash_requires_lacros_extension_apitest.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
@@ -19,7 +19,7 @@ using crosapi::AshRequiresLacrosExtensionApiTest;
 
 namespace {
 
-bool IsIdenticalList(base::span<const base::StringPiece> keep_list_from_ash,
+bool IsIdenticalList(base::span<const std::string_view> keep_list_from_ash,
                      const std::vector<std::string>& keep_list_from_lacros) {
   if (keep_list_from_ash.size() != keep_list_from_lacros.size())
     return false;

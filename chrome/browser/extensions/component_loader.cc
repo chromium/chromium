@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -217,7 +218,7 @@ void ComponentLoader::LoadAll() {
 }
 
 std::optional<base::Value::Dict> ComponentLoader::ParseManifest(
-    base::StringPiece manifest_contents) const {
+    std::string_view manifest_contents) const {
   JSONStringValueDeserializer deserializer(manifest_contents);
   std::unique_ptr<base::Value> manifest =
       deserializer.Deserialize(nullptr, nullptr);
@@ -237,7 +238,7 @@ ExtensionId ComponentLoader::Add(int manifest_resource_id,
     return std::string();
   }
 
-  base::StringPiece manifest_contents =
+  std::string_view manifest_contents =
       ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
           manifest_resource_id);
   return Add(manifest_contents, root_directory, true);
@@ -248,12 +249,12 @@ ExtensionId ComponentLoader::Add(base::Value::Dict manifest,
   return Add(std::move(manifest), root_directory, false);
 }
 
-ExtensionId ComponentLoader::Add(const base::StringPiece& manifest_contents,
+ExtensionId ComponentLoader::Add(std::string_view manifest_contents,
                                  const base::FilePath& root_directory) {
   return Add(manifest_contents, root_directory, false);
 }
 
-ExtensionId ComponentLoader::Add(const base::StringPiece& manifest_contents,
+ExtensionId ComponentLoader::Add(std::string_view manifest_contents,
                                  const base::FilePath& root_directory,
                                  bool skip_allowlist) {
   // The Value is kept for the lifetime of the ComponentLoader. This is
@@ -388,7 +389,7 @@ void ComponentLoader::AddWithNameAndDescription(
     return;
   }
 
-  base::StringPiece manifest_contents =
+  std::string_view manifest_contents =
       ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
           manifest_resource_id);
 

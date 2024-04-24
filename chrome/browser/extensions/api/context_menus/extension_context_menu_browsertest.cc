@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -244,7 +245,7 @@ class ExtensionContextMenuLazyTest
 
  protected:
   const extensions::Extension* LoadContextMenuExtension(
-      base::StringPiece subdirectory) {
+      std::string_view subdirectory) {
     base::FilePath extension_dir = GetRootDir().AppendASCII(subdirectory);
     return LoadExtension(extension_dir);
   }
@@ -252,14 +253,14 @@ class ExtensionContextMenuLazyTest
   // Helper to load an extension from context_menus/top_level/|subdirectory| in
   // the extensions test data dir.
   const extensions::Extension* LoadTopLevelContextMenuExtension(
-      base::StringPiece subdirectory) {
+      std::string_view subdirectory) {
     base::FilePath extension_dir =
         GetRootDir().AppendASCII("top_level").AppendASCII(subdirectory);
     return LoadExtension(extension_dir, {});
   }
 
   const extensions::Extension* LoadContextMenuExtensionWithIncognitoFlags(
-      base::StringPiece subdirectory) {
+      std::string_view subdirectory) {
     base::FilePath extension_dir = GetRootDir().AppendASCII(subdirectory);
     return LoadExtension(extension_dir, {.allow_in_incognito = true});
   }
@@ -305,7 +306,7 @@ class ExtensionContextMenuPersistentTest
   // Helper to load an extension from context_menus/|subdirectory| in the
   // extensions test data dir.
   const extensions::Extension* LoadContextMenuExtension(
-      base::StringPiece subdirectory) {
+      std::string_view subdirectory) {
     base::FilePath extension_dir = GetRootDir().AppendASCII(subdirectory);
     return LoadExtension(extension_dir);
   }

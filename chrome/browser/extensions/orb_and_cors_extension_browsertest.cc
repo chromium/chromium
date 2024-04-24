@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/to_vector.h"
@@ -357,7 +358,7 @@ class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  const Extension* InstallExtensionWithManifest(base::StringPiece manifest) {
+  const Extension* InstallExtensionWithManifest(std::string_view manifest) {
     dir_.WriteManifest(manifest);
     dir_.WriteFile(FILE_PATH_LITERAL("background_script.js"), "");
     dir_.WriteFile(FILE_PATH_LITERAL("page.html"), "");

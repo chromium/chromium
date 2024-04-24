@@ -5,13 +5,14 @@
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 
 #include <stddef.h>
+
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
@@ -40,7 +41,7 @@ namespace {
 // can be passed by ash commandline switches, but this is ONLY allowed
 // for testing use.
 std::vector<std::string> GetIdsFromCmdlineSwitch(
-    const base::StringPiece ash_switch) {
+    const std::string_view ash_switch) {
   std::vector<std::string> ids;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(ash_switch)) {
     ids = base::SplitString(
@@ -54,15 +55,15 @@ std::vector<std::string> GetIdsFromCmdlineSwitch(
 // For any extension running in both Ash and Lacros, if it needs to be published
 // in app service, it must be added to one of app service block lists (Ash or
 // Lacros), so that it won't be published by both.
-base::span<const base::StringPiece>
+base::span<const std::string_view>
 ExtensionsRunInOSAndStandaloneBrowserAllowlist() {
-  static const base::StringPiece kKeeplist[] = {
+  static const std::string_view kKeeplist[] = {
       extension_misc::kGnubbyV3ExtensionId,
       extension_misc::kPdfExtensionId,
   };
 
-  static const base::NoDestructor<std::vector<base::StringPiece>> keep_list([] {
-    std::vector<base::StringPiece> ids;
+  static const base::NoDestructor<std::vector<std::string_view>> keep_list([] {
+    std::vector<std::string_view> ids;
     for (const auto& id : kKeeplist) {
       ids.push_back(id);
     }
@@ -77,17 +78,17 @@ ExtensionsRunInOSAndStandaloneBrowserAllowlist() {
 // For any extension apps running in both Ash and Lacros, it must be added to
 // one of app service block lists (Ash or Lacros), so that it won't be published
 // by both.
-base::span<const base::StringPiece>
+base::span<const std::string_view>
 ExtensionAppsRunInOSAndStandaloneBrowserAllowlist() {
-  static const base::StringPiece kKeeplist[] = {
+  static const std::string_view kKeeplist[] = {
       extension_misc::kGnubbyAppId,
   };
 
   return base::make_span(kKeeplist);
 }
 
-base::span<const base::StringPiece> ExtensionsRunInOSOnlyAllowlist() {
-  static const base::StringPiece kKeeplist[] = {
+base::span<const std::string_view> ExtensionsRunInOSOnlyAllowlist() {
+  static const std::string_view kKeeplist[] = {
       extension_misc::kAccessibilityCommonExtensionId,
       extension_misc::kEnhancedNetworkTtsExtensionId,
       extension_misc::kEspeakSpeechSynthesisExtensionId,
@@ -106,8 +107,8 @@ base::span<const base::StringPiece> ExtensionsRunInOSOnlyAllowlist() {
   return base::make_span(kKeeplist);
 }
 
-base::span<const base::StringPiece> ExtensionAppsRunInOSOnlyAllowlist() {
-  static const base::StringPiece kKeeplist[] = {
+base::span<const std::string_view> ExtensionAppsRunInOSOnlyAllowlist() {
+  static const std::string_view kKeeplist[] = {
       arc::kPlayStoreAppId,
       extension_misc::kFilesManagerAppId,
   };
@@ -119,12 +120,12 @@ base::span<const base::StringPiece> ExtensionAppsRunInOSOnlyAllowlist() {
 // The app on the block list can run in Ash but can't be published to app
 // service by Ash. For an app running in both Ash and Lacros, if it should be
 // published by Lacros, it must be blocked in Ash.
-base::span<const base::StringPiece> ExtensionAppsAppServiceBlocklistInOS() {
+base::span<const std::string_view> ExtensionAppsAppServiceBlocklistInOS() {
   // Note: gnubbyd chrome app is running in both Ash and Lacros, but only the
   // app running in Lacros should be published in app service so that it can be
   // launched by users, the one running in Ash is blocked from app service and
   // is invisible to users.
-  static const base::StringPiece kBlocklist[] = {
+  static const std::string_view kBlocklist[] = {
       extension_misc::kGnubbyAppId,
   };
 
@@ -135,9 +136,9 @@ base::span<const base::StringPiece> ExtensionAppsAppServiceBlocklistInOS() {
 // The extension on the block list can run in Ash but can't be published to app
 // service by Ash. For an extension running in both Ash and Lacros, if it should
 // be published by Lacros, it must be blocked in Ash.
-const std::vector<base::StringPiece>& ExtensionsAppServiceBlocklistInOS() {
+const std::vector<std::string_view>& ExtensionsAppServiceBlocklistInOS() {
   // Note: Add extensions to be blocked if there are any in the future.
-  static const base::NoDestructor<std::vector<base::StringPiece>> block_list;
+  static const base::NoDestructor<std::vector<std::string_view>> block_list;
   return *block_list;
 }
 
@@ -145,10 +146,10 @@ const std::vector<base::StringPiece>& ExtensionsAppServiceBlocklistInOS() {
 // The app on the block list can run in Lacros but can't be published to app
 // service by Lacros. For an app running in both Ash and Lacros, if it should be
 // published by Ash, it must be blocked in Lacros.
-const std::vector<base::StringPiece>&
+const std::vector<std::string_view>&
 ExtensionAppsAppServiceBlocklistInStandaloneBrowser() {
   // Note: Add extension apps to be blocked if there are any in the future.
-  static const base::NoDestructor<std::vector<base::StringPiece>> block_list;
+  static const base::NoDestructor<std::vector<std::string_view>> block_list;
   return *block_list;
 }
 
@@ -156,10 +157,10 @@ ExtensionAppsAppServiceBlocklistInStandaloneBrowser() {
 // The extension on the block list can run in Lacros but can't be published to
 // app service by Lacros. For an extension running in both Ash and Lacros, if it
 // should be published by Ash, it must be blocked in Lacros.
-const std::vector<base::StringPiece>&
+const std::vector<std::string_view>&
 ExtensionsAppServiceBlocklistInStandaloneBrowser() {
   // Note: Add extensions to be blocked if there are any in the future.
-  static const base::NoDestructor<std::vector<base::StringPiece>> block_list;
+  static const base::NoDestructor<std::vector<std::string_view>> block_list;
   return *block_list;
 }
 
@@ -174,14 +175,14 @@ ExtensionsAppServiceBlocklistInStandaloneBrowser() {
 // crosapi::mojom:::BrowserInitParams.
 bool g_set_empty_ash_keeplist_for_test = false;
 
-const std::vector<base::StringPiece>&
+const std::vector<std::string_view>&
 ExtensionsRunInOSAndStandaloneBrowserFromBrowserInitParams() {
   // Cache the ash extension keeplist data (passed from Ash to Lacros) provided
   // by chromeos::BrowserParamsProxy. chromeos::BrowserParamsProxy::Get()
   // accesses a static object constructed with base::NoDestructor, which is
   // guaranteed not to be destroyed when it is accessed.
-  static const base::NoDestructor<std::vector<base::StringPiece>> keep_list([] {
-    std::vector<base::StringPiece> ids;
+  static const base::NoDestructor<std::vector<std::string_view>> keep_list([] {
+    std::vector<std::string_view> ids;
     auto& ash_keep_list_param =
         chromeos::BrowserParamsProxy::Get()->ExtensionKeepList();
     CHECK(!ash_keep_list_param.is_null());
@@ -194,14 +195,14 @@ ExtensionsRunInOSAndStandaloneBrowserFromBrowserInitParams() {
   return *keep_list;
 }
 
-const std::vector<base::StringPiece>&
+const std::vector<std::string_view>&
 ExtensionAppsRunInOSAndStandaloneBrowserFromBrowserInitParams() {
   // Cache the ash extension keeplist data (passed from Ash to Lacros) provided
   // by chromeos::BrowserParamsProxy. chromeos::BrowserParamsProxy::Get()
   // accesses a static object constructed with base::NoDestructor, which is
   // guaranteed not to be destroyed when it is accessed.
-  static const base::NoDestructor<std::vector<base::StringPiece>> keep_list([] {
-    std::vector<base::StringPiece> ids;
+  static const base::NoDestructor<std::vector<std::string_view>> keep_list([] {
+    std::vector<std::string_view> ids;
     auto& ash_keep_list_param =
         chromeos::BrowserParamsProxy::Get()->ExtensionKeepList();
     CHECK(!ash_keep_list_param.is_null());
@@ -214,14 +215,14 @@ ExtensionAppsRunInOSAndStandaloneBrowserFromBrowserInitParams() {
   return *keep_list;
 }
 
-const std::vector<base::StringPiece>&
+const std::vector<std::string_view>&
 ExtensionsRunInOSOnlyFromBrowserInitParams() {
   // Cache the ash extension keeplist data (passed from Ash to Lacros) provided
   // by chromeos::BrowserParamsProxy. chromeos::BrowserParamsProxy::Get()
   // accesses a static object constructed with base::NoDestructor, which is
   // guaranteed not to be destroyed when it is accessed.
-  static const base::NoDestructor<std::vector<base::StringPiece>> keep_list([] {
-    std::vector<base::StringPiece> ids;
+  static const base::NoDestructor<std::vector<std::string_view>> keep_list([] {
+    std::vector<std::string_view> ids;
     auto& ash_keep_list_param =
         chromeos::BrowserParamsProxy::Get()->ExtensionKeepList();
     CHECK(!ash_keep_list_param.is_null());
@@ -233,14 +234,14 @@ ExtensionsRunInOSOnlyFromBrowserInitParams() {
   return *keep_list;
 }
 
-const std::vector<base::StringPiece>&
+const std::vector<std::string_view>&
 ExtensionAppsRunInOSOnlyFromBrowserInitParams() {
   // Cache the ash extension keeplist data (passed from Ash to Lacros) provided
   // by chromeos::BrowserParamsProxy. chromeos::BrowserParamsProxy::Get()
   // accesses a static object constructed with base::NoDestructor, which is
   // guaranteed not to be destroyed when it is accessed.
-  static const base::NoDestructor<std::vector<base::StringPiece>> keep_list([] {
-    std::vector<base::StringPiece> ids;
+  static const base::NoDestructor<std::vector<std::string_view>> keep_list([] {
+    std::vector<std::string_view> ids;
     auto& ash_keep_list_param =
         chromeos::BrowserParamsProxy::Get()->ExtensionKeepList();
     CHECK(!ash_keep_list_param.is_null());
@@ -252,10 +253,10 @@ ExtensionAppsRunInOSOnlyFromBrowserInitParams() {
   return *keep_list;
 }
 
-base::span<const base::StringPiece>
+base::span<const std::string_view>
 GetExtensionsRunInOSAndStandaloneBrowserLacros() {
   if (g_set_empty_ash_keeplist_for_test) {
-    return base::span<const base::StringPiece>();
+    return base::span<const std::string_view>();
   }
 
   return base::make_span(
@@ -263,10 +264,10 @@ GetExtensionsRunInOSAndStandaloneBrowserLacros() {
       ExtensionsRunInOSAndStandaloneBrowserFromBrowserInitParams().size());
 }
 
-base::span<const base::StringPiece>
+base::span<const std::string_view>
 GetExtensionAppsRunInOSAndStandaloneBrowserLacros() {
   if (g_set_empty_ash_keeplist_for_test) {
-    return base::span<const base::StringPiece>();
+    return base::span<const std::string_view>();
   }
 
   return base::make_span(
@@ -274,16 +275,16 @@ GetExtensionAppsRunInOSAndStandaloneBrowserLacros() {
       ExtensionAppsRunInOSAndStandaloneBrowserFromBrowserInitParams().size());
 }
 
-base::span<const base::StringPiece> GetExtensionsRunInOSOnlyLacros() {
+base::span<const std::string_view> GetExtensionsRunInOSOnlyLacros() {
   if (g_set_empty_ash_keeplist_for_test) {
-    return base::span<const base::StringPiece>();
+    return base::span<const std::string_view>();
   }
   return ExtensionsRunInOSOnlyFromBrowserInitParams();
 }
 
-base::span<const base::StringPiece> GetExtensionAppsRunInOSOnlyLacros() {
+base::span<const std::string_view> GetExtensionAppsRunInOSOnlyLacros() {
   if (g_set_empty_ash_keeplist_for_test) {
-    return base::span<const base::StringPiece>();
+    return base::span<const std::string_view>();
   }
   return ExtensionAppsRunInOSOnlyFromBrowserInitParams();
 }
@@ -355,7 +356,7 @@ BuildStandaloneBrowserAppServiceBlockListInitParam() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-base::span<const base::StringPiece>
+base::span<const std::string_view>
 GetExtensionAppsRunInOSAndStandaloneBrowser() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return ExtensionAppsRunInOSAndStandaloneBrowserAllowlist();
@@ -364,7 +365,7 @@ GetExtensionAppsRunInOSAndStandaloneBrowser() {
 #endif
 }
 
-base::span<const base::StringPiece> GetExtensionAppsRunInOSOnly() {
+base::span<const std::string_view> GetExtensionAppsRunInOSOnly() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return ExtensionAppsRunInOSOnlyAllowlist();
 #else  // IS_CHROMEOS_LACROS
@@ -372,7 +373,7 @@ base::span<const base::StringPiece> GetExtensionAppsRunInOSOnly() {
 #endif
 }
 
-base::span<const base::StringPiece> GetExtensionsRunInOSAndStandaloneBrowser() {
+base::span<const std::string_view> GetExtensionsRunInOSAndStandaloneBrowser() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return ExtensionsRunInOSAndStandaloneBrowserAllowlist();
 #else  // IS_CHROMEOS_LACROS
@@ -380,7 +381,7 @@ base::span<const base::StringPiece> GetExtensionsRunInOSAndStandaloneBrowser() {
 #endif
 }
 
-base::span<const base::StringPiece> GetExtensionsRunInOSOnly() {
+base::span<const std::string_view> GetExtensionsRunInOSOnly() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return ExtensionsRunInOSOnlyAllowlist();
 #else  // IS_CHROMEOS_LACROS
@@ -435,7 +436,7 @@ bool ExtensionAppRunsInOS(const std::string& app_id) {
          base::Contains(GetExtensionAppsRunInOSOnly(), app_id);
 }
 
-bool ExtensionAppRunsInOSOnly(base::StringPiece app_id) {
+bool ExtensionAppRunsInOSOnly(std::string_view app_id) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_DEVICE)
   return base::Contains(GetExtensionAppsRunInOSOnly(), app_id);
 #else
@@ -446,7 +447,7 @@ bool ExtensionAppRunsInOSOnly(base::StringPiece app_id) {
 #endif
 }
 
-bool ExtensionRunsInOSOnly(base::StringPiece extension_id) {
+bool ExtensionRunsInOSOnly(std::string_view extension_id) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_CHROMEOS_DEVICE)
   return base::Contains(GetExtensionsRunInOSOnly(), extension_id);
 #else
@@ -465,7 +466,7 @@ bool IsAppServiceBlocklistCrosapiSupported() {
 }
 
 bool ExtensionAppBlockListedForAppServiceInStandaloneBrowser(
-    base::StringPiece app_id) {
+    std::string_view app_id) {
   const auto* block_list = chromeos::BrowserParamsProxy::Get()
                                ->StandaloneBrowserAppServiceBlockList();
   DCHECK(block_list);
@@ -473,7 +474,7 @@ bool ExtensionAppBlockListedForAppServiceInStandaloneBrowser(
 }
 
 bool ExtensionBlockListedForAppServiceInStandaloneBrowser(
-    base::StringPiece extension_id) {
+    std::string_view extension_id) {
   const auto* block_list = chromeos::BrowserParamsProxy::Get()
                                ->StandaloneBrowserAppServiceBlockList();
   DCHECK(block_list);
@@ -486,7 +487,7 @@ void SetEmptyAshKeeplistForTest() {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-bool ExtensionAppBlockListedForAppServiceInOS(base::StringPiece app_id) {
+bool ExtensionAppBlockListedForAppServiceInOS(std::string_view app_id) {
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
   return base::Contains(ExtensionAppsAppServiceBlocklistInOS(), app_id);
 #else
@@ -498,7 +499,7 @@ bool ExtensionAppBlockListedForAppServiceInOS(base::StringPiece app_id) {
 #endif
 }
 
-bool ExtensionBlockListedForAppServiceInOS(base::StringPiece extension_id) {
+bool ExtensionBlockListedForAppServiceInOS(std::string_view extension_id) {
   return base::Contains(ExtensionsAppServiceBlocklistInOS(), extension_id);
 }
 
