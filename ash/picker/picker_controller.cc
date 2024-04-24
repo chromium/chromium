@@ -308,7 +308,7 @@ void PickerController::ToggleWidget(
   CHECK(client_);
 
   if (widget_) {
-    session_metrics_->RecordOutcome(
+    session_metrics_->SetOutcome(
         PickerSessionMetrics::SessionOutcome::kAbandoned);
     widget_->Close();
     model_.reset();
@@ -452,7 +452,7 @@ void PickerController::InsertResultOnNextFocus(
       },
       GetInsertionContentForResult(result));
 
-  session_metrics_->RecordOutcome(
+  session_metrics_->SetOutcome(
       PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
 }
 

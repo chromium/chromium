@@ -2287,6 +2287,105 @@
     </metric>
   </event>
 
+  <enum name="PickerSessionOutcome">
+    <variant value="0">UNKNOWN</variant>
+    <variant value="1">INSERTED_OR_COPIED</variant>
+    <variant value="2">ABANDONED</variant>
+    <variant value="3">REDIRECTED</variant>
+    <variant value="4">FORMAT</variant>
+  </enum>
+
+  <enum name="PickerAction">
+    <variant value="0">UNKNOWN</variant>
+    <variant value="1">OPEN_EDITOR_WRITE</variant>
+    <variant value="2">OPEN_EDITOR_REWRITE</variant>
+    <variant value="3">OPEN_LINKS</variant>
+    <variant value="4">OPEN_EXPRESSIONS</variant>
+    <variant value="5">OPEN_CLIPBOARD</variant>
+    <variant value="6">OPEN_DRIVE_FILES</variant>
+    <variant value="7">OPEN_LOCAL_FILES</variant>
+    <variant value="8">OPEN_DATES_TIMES</variant>
+    <variant value="9">OPEN_UNITS_MATHS</variant>
+    <variant value="10">TRANSFORM_UPPER_CASE</variant>
+    <variant value="11">TRANSFORM_LOWER_CASE</variant>
+    <variant value="12">TRANSFORM_SENTENCE_CASE</variant>
+    <variant value="13">TRANSFORM_TITLE_CASE</variant>
+    <variant value="14">CAPS_ON</variant>
+    <variant value="15">CAPS_OFF</variant>
+  </enum>
+
+  <enum name="PickerResultSource">
+    <variant value="0">UNKNOWN</variant>
+    <variant value="1">OMNIBOX</variant>
+    <variant value="2">EMOJI</variant>
+    <variant value="3">CLIPBOARD</variant>
+    <variant value="4">DRIVE_FILES</variant>
+    <variant value="5">LOCAL_FILES</variant>
+    <variant value="6">DATES_TIMES</variant>
+    <variant value="7">UNITS_MATHS</variant>
+    <variant value="8">CASE_TRANSFORM</variant>
+    <variant value="9">TENOR</variant>
+  </enum>
+
+  <enum name="PickerResultType">
+    <variant value="0">UNKNOWN</variant>
+    <variant value="1">TEXT</variant>
+    <variant value="2">EMOJI</variant>
+    <variant value="3">SYMBOL</variant>
+    <variant value="4">EMOTICON</variant>
+    <variant value="5">CLIPBOARD_FILE</variant>
+    <variant value="6">CLIPBOARD_TEXT</variant>
+    <variant value="7">CLIPBOARD_IMAGE</variant>
+    <variant value="8">CLIPBOARD_HTML</variant>
+    <variant value="9">GIF</variant>
+    <variant value="10">LINK</variant>
+    <variant value="11">LOCAL_FILE</variant>
+    <variant value="12">DRIVE_FILE</variant>
+  </enum>
+
+  <event name="Picker.FinishSession">
+    <summary>
+      Recorded when user closes the picker window and finishes a session.
+    </summary>
+    <metric name="Outcome" type="PickerSessionOutcome">
+      <summary>
+        Outcome of the session.
+      </summary>
+    </metric>
+    <metric name="Action" type="PickerAction">
+      <summary>
+        Action the user takes during a session. The user can only take at most
+        1 action during a session. UNKNOWN if the user didn't take any action.
+      </summary>
+    </metric>
+    <metric name="ResultSource" type="PickerResultSource">
+      <summary>
+        Source of the inserted result. UNKNOWN if no result is inserted.
+      </summary>
+    </metric>
+    <metric name="ResultType" type="PickerResultType">
+      <summary>
+        Type of the inserted result. UNKNOWN if no result is inserted.
+      </summary>
+    </metric>
+    <metric name="TotalEdits" type="int">
+      <summary>
+        Total number of edits of the query text during the session.
+      </summary>
+    </metric>
+    <metric name="FinalQuerySize" type="int">
+      <summary>
+        Number of UTF-16 code units of the query text when the session
+        finishes.
+      </summary>
+    </metric>
+    <metric name="ResultIndex" type="int">
+      <summary>
+        Index of the inserted result. -1 no result is inserted.
+      </summary>
+    </metric>
+  </event>
+
   <event name="UserLogin">
     <summary>
       An event to signify a user is using the system.
