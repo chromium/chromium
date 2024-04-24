@@ -3514,6 +3514,8 @@ static_library("ui") {
       "webui/ash/settings/pages/apps/android_apps_handler.h",
       "webui/ash/settings/pages/apps/app_notification_handler.cc",
       "webui/ash/settings/pages/apps/app_notification_handler.h",
+      "webui/ash/settings/pages/apps/app_parental_controls_handler.cc",
+      "webui/ash/settings/pages/apps/app_parental_controls_handler.h",
       "webui/ash/settings/pages/apps/apps_section.cc",
       "webui/ash/settings/pages/apps/apps_section.h",
       "webui/ash/settings/pages/apps/plugin_vm_handler.cc",

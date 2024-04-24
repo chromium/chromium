@@ -5210,6 +5210,7 @@ source_set("unit_tests") {
     "../ui/webui/ash/settings/pages/a11y/pdf_ocr_handler_unittest.cc",
     "../ui/webui/ash/settings/pages/about/device_name_handler_unittest.cc",
     "../ui/webui/ash/settings/pages/apps/app_notification_handler_unittest.cc",
+    "../ui/webui/ash/settings/pages/apps/app_parental_controls_handler_unittest.cc",
     "../ui/webui/ash/settings/pages/apps/mojom/app_type_mojom_traits_unittest.cc",
     "../ui/webui/ash/settings/pages/bluetooth/bluetooth_handler_unittest.cc",
     "../ui/webui/ash/settings/pages/bluetooth/fast_pair_saved_devices_handler_unittest.cc",

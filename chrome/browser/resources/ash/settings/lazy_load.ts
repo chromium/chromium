@@ -265,6 +265,7 @@ export {AppManagementUninstallButtonElement} from './os_apps_page/app_management
 export {AppNotificationRowElement} from './os_apps_page/app_notifications_page/app_notification_row.js';
 export {SettingsAppNotificationsManagerSubpage} from './os_apps_page/app_notifications_page/app_notifications_manager_subpage.js';
 export {AppNotificationsSubpage} from './os_apps_page/app_notifications_page/app_notifications_subpage.js';
+export {SettingsAppParentalControlsSubpageElement} from './os_apps_page/app_parental_controls/app_parental_controls_subpage.js';
 export {ManageIsolatedWebAppsSubpageElement} from './os_apps_page/manage_isolated_web_apps_page/manage_isolated_web_apps_subpage.js';
 export {SettingsBluetoothChangeDeviceNameDialogElement} from './os_bluetooth_page/os_bluetooth_change_device_name_dialog.js';
 export {SettingsBluetoothDeviceDetailSubpageElement} from './os_bluetooth_page/os_bluetooth_device_detail_subpage.js';

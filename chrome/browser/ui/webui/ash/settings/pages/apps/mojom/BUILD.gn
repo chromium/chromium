@@ -8,7 +8,10 @@ import("//mojo/public/tools/bindings/mojom.gni")
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 mojom("mojom") {
-  sources = [ "app_notification_handler.mojom" ]
+  sources = [
+    "app_notification_handler.mojom",
+    "app_parental_controls_handler.mojom",
+  ]
 
   webui_module_path = "/"
 

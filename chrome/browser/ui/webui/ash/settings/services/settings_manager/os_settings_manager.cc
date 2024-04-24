@@ -10,6 +10,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/app_notification_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/apps/app_parental_controls_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_sections.h"
@@ -62,6 +63,8 @@ OsSettingsManager::OsSettingsManager(
           std::make_unique<AppNotificationHandler>(app_service_proxy)),
       app_permission_handler_(
           std::make_unique<AppPermissionHandler>(app_service_proxy)),
+      app_parental_controls_handler_(
+          std::make_unique<AppParentalControlsHandler>(app_service_proxy)),
       input_device_settings_provider_(
           std::make_unique<InputDeviceSettingsProvider>()),
       display_settings_provider_(std::make_unique<DisplaySettingsProvider>()),

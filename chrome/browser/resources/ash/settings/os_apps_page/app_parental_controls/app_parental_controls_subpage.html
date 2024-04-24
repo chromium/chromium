@@ -1,3 +1,36 @@
-<style include="settings-shared"></style>
+<style include="settings-shared">
+  .cr-row {
+    align-items: center;
+    border-bottom: var(--card-separator);
+    color: var(--cros-text-color-primary);
+    display: flex;
+    flex-direction: row;
+    font-weight: var(--cros-body-2-font-weight);
+    height: 48px;
+    padding: 0;
+  }
 
-<div id="mainContainer"></div>
+  .app-title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .app-icon {
+    height: 32px;
+    margin-inline-end: 20px;
+    margin-inline-start: 24px;
+    width: 32px;
+  }
+</style>
+
+<div id="appParentalControlsList" class="hr">
+  <template is="dom-repeat" items="[[appList_]]" as="app"
+      sort="alphabeticalSort_">
+    <div class="cr-row">
+      <img class="app-icon" src="chrome://app-icon/[[app.id]]/64"
+          alt="[[app.title]] app icon." aria-hidden="true">
+      <div class="app-title" aria-hidden="true">[[app.title]]</div>
+    </div>
+  </template>
+</div>

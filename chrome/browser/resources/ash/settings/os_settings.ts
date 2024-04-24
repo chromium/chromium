@@ -183,6 +183,7 @@ export {MainPageContainerElement} from './main_page_container/main_page_containe
 export {PageDisplayerElement} from './main_page_container/page_displayer.js';
 export {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from './metrics_recorder.js';
 export * as appNotificationHandlerMojom from './mojom-webui/app_notification_handler.mojom-webui.js';
+export * as appParentalControlsHandlerMojom from './mojom-webui/app_parental_controls_handler.mojom-webui.js';
 export * as appPermissionHandlerMojom from './mojom-webui/app_permission_handler.mojom-webui.js';
 export * as crosAudioConfigMojom from './mojom-webui/cros_audio_config.mojom-webui.js';
 export * as displaySettingsProviderMojom from './mojom-webui/display_settings_provider.mojom-webui.js';
@@ -219,6 +220,7 @@ export {PluginVmBrowserProxy, PluginVmBrowserProxyImpl} from './os_apps_page/app
 export {AppManagementSupportedLinksItemElement} from './os_apps_page/app_management_page/supported_links_item.js';
 export {AppManagementToggleRowElement} from './os_apps_page/app_management_page/toggle_row.js';
 export {setAppNotificationProviderForTesting} from './os_apps_page/app_notifications_page/mojo_interface_provider.js';
+export {setAppParentalControlsProviderForTesting} from './os_apps_page/app_parental_controls/mojo_interface_provider.js';
 export {OsSettingsAppsPageElement} from './os_apps_page/os_apps_page.js';
 export {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_page/os_bluetooth_devices_subpage_browser_proxy.js';
 export {SettingsBluetoothPageElement} from './os_bluetooth_page/os_bluetooth_page.js';

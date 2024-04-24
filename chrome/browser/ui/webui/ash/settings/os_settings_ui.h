@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_base.h"
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/apps/mojom/app_notification_handler.mojom-forward.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/apps/mojom/app_parental_controls_handler.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/display_settings/display_settings_provider.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/google_drive_page_handler_factory.h"
@@ -124,6 +125,12 @@ class OSSettingsUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<app_notification::mojom::AppNotificationsHandler>
           receiver);
+
+  // Instantiates implementor of the mojom::AppParentalControlsHandler mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<
+          app_parental_controls::mojom::AppParentalControlsHandler> receiver);
 
   // Instantiates implementor of the mojom::AppPermissionsHandler mojo interface
   // passing the pending receiver that will be internally bound.
