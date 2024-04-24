@@ -503,15 +503,8 @@ bool CampaignsMatcher::MatchRuntimeTargeting(const RuntimeTargeting& targeting,
          MatchEvents(targeting.GetEventsConfig(), campaign_id);
 }
 
-bool CampaignsMatcher::Matched(const Targetings* targetings,
+bool CampaignsMatcher::Matched(const Targeting* targeting,
                                int campaign_id) const {
-  if (!targetings || targetings->empty()) {
-    return true;
-  }
-
-  // TODO(b/299334282): Implement AND targeting operator when the list contains
-  // more than one targeting.
-  const auto* targeting = targetings->front().GetIfDict();
   if (!targeting) {
     // Targeting is invalid. Skip the current campaign.
     LOG(ERROR) << "Invalid targeting.";
@@ -523,6 +516,21 @@ bool CampaignsMatcher::Matched(const Targetings* targetings,
          MaybeMatchDemoModeTargeting(DemoModeTargeting(targeting)) &&
          MatchDeviceTargeting(DeviceTargeting(targeting)) &&
          MatchRuntimeTargeting(RuntimeTargeting(targeting), campaign_id);
+}
+
+bool CampaignsMatcher::Matched(const Targetings* targetings,
+                               int campaign_id) const {
+  if (!targetings || targetings->empty()) {
+    return true;
+  }
+
+  for (const auto& targeting : *targetings) {
+    if (Matched(targeting.GetIfDict(), campaign_id)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 }  // namespace growth

@@ -36,7 +36,7 @@ namespace {
 inline constexpr char kValidCampaignsFileTemplate[] = R"(
     {
       "0": [
-        // Invalid targeting.
+        // List is an invalid targeting.
         {
           "id": 1,
           "targetings": [
@@ -44,6 +44,7 @@ inline constexpr char kValidCampaignsFileTemplate[] = R"(
           ],
           "payload": {}
         },
+        // String is an invalid campaign.
         "Invalid campaign",
         {
           "id": 3,
@@ -53,6 +54,36 @@ inline constexpr char kValidCampaignsFileTemplate[] = R"(
               %s
             }
           ],
+          "payload": {
+            "demoModeApp": {
+              "attractionLoop": {
+                "videoSrcLang1": "/asset/peripherals_lang1.mp4",
+                "videoSrcLang2": "/asset/peripherals_lang2.mp4"
+              }
+            }
+          }
+        }
+      ]
+    }
+)";
+
+inline constexpr char kValidCampaignsFileMultiTargetingsTemplate[] = R"(
+    {
+      "0": [
+        // List is an invalid targeting.
+        {
+          "id": 1,
+          "targetings": [
+            []
+          ],
+          "payload": {}
+        },
+        // String is an invalid campaign.
+        "Invalid campaign",
+        {
+          "id": 3,
+          "studyId":1,
+          "targetings": %s,
           "payload": {
             "demoModeApp": {
               "attractionLoop": {
@@ -77,6 +108,27 @@ inline constexpr char kValidDemoModeTargeting[] = R"(
       }
     }
 )";
+
+inline constexpr char kValidMultiTargetings[] = R"([
+    // Targeting 1.
+    {
+      "runtime": {
+        "appsOpened": [{"appId": "app_id_1"}]
+      }
+    },
+    // Targeting 2.
+    {
+      "runtime": {
+        "appsOpened": [{"appId": "app_id_2"}]
+      }
+    },
+    // Targeting 3.
+    {
+      "runtime": {
+        "appsOpened": [{"appId": "app_id_3"}]
+      }
+    }
+  ])";
 
 inline constexpr char kCampaignsFileName[] = "campaigns.json";
 
@@ -288,6 +340,11 @@ class CampaignsManagerTest : public testing::Test {
                                                 apps_opened.c_str());
     LoadComponentAndVerifyLoadComplete(base::StringPrintf(
         kValidCampaignsFileTemplate, session_targeting.c_str()));
+  }
+
+  void LoadComponentWithMultiTargetings(const std::string& targetings) {
+    LoadComponentAndVerifyLoadComplete(base::StringPrintf(
+        kValidCampaignsFileMultiTargetingsTemplate, targetings.c_str()));
   }
 
   void LoadComponentWithActiveUrlTargeting(const std::string& active_url) {
@@ -1328,6 +1385,29 @@ TEST_F(CampaignsManagerTest, GetCampaignAppOpenedNoOpenedApp) {
       {"appId": "app_id_15"}
     ])");
 
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignMatchFirstTargeting) {
+  campaigns_manager_->SetOpenedApp("app_id_1");
+
+  LoadComponentWithMultiTargetings(kValidMultiTargetings);
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignMatchSecondTargeting) {
+  campaigns_manager_->SetOpenedApp("app_id_2");
+
+  LoadComponentWithMultiTargetings(kValidMultiTargetings);
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignMatchMultiTargetingsMismatch) {
+  campaigns_manager_->SetOpenedApp("app_id_20");
+
+  LoadComponentWithMultiTargetings(kValidMultiTargetings);
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
