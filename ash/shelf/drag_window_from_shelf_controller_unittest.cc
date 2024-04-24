@@ -42,6 +42,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/test/views_test_utils.h"
@@ -116,18 +117,20 @@ class DragWindowFromShelfControllerTest : public AshTestBase {
   void CancelDrag() { window_drag_controller_->CancelDrag(); }
   void WaitForHomeLauncherAnimationToFinish() {
     // Wait until home launcher animation finishes.
-    ui::Layer* layer =
+    ui::Layer* const layer =
         GetAppListTestHelper()->GetAppListView()->GetWidget()->GetLayer();
-    ui::Compositor* compositor = layer->GetCompositor();
+    ui::Compositor* const compositor = layer->GetCompositor();
 
-    while (layer->GetAnimator()->is_animating()) {
-      EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
+    ui::LayerAnimationStoppedWaiter animation_waiter;
+    animation_waiter.Wait(layer);
+
+    // Force frames and wait for all throughput trackers to be gone to allow
+    // animation throughput data to be passed from cc to ui.
+    while (compositor->has_throughput_trackers_for_testing()) {
+      compositor->ScheduleFullRedraw();
+      std::ignore = ui::WaitForNextFrameToBePresented(compositor,
+                                                      base::Milliseconds(500));
     }
-
-    // Ensure there is one more frame presented after animation finishes
-    // to allow animation throughput data is passed from cc to ui.
-    std::ignore =
-        ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(200));
   }
 
   SplitViewController* split_view_controller() {
@@ -507,18 +510,9 @@ TEST_F(DragWindowFromShelfControllerTest, FlingInOverview) {
   EXPECT_TRUE(WindowState::Get(window.get())->IsMinimized());
 }
 
-// TODO(crbug.com/1473400): Re-enable the test once the bug is fixed.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_VerifyHomeLauncherAnimationMetrics \
-  DISABLED_VerifyHomeLauncherAnimationMetrics
-#else
-#define MAYBE_VerifyHomeLauncherAnimationMetrics \
-  VerifyHomeLauncherAnimationMetrics
-#endif
 // Verify that metrics of home launcher animation are recorded correctly when
 // swiping up from shelf with sufficient velocity.
-TEST_F(DragWindowFromShelfControllerTest,
-       MAYBE_VerifyHomeLauncherAnimationMetrics) {
+TEST_F(DragWindowFromShelfControllerTest, VerifyHomeLauncherAnimationMetrics) {
   // Set non-zero animation duration to report animation metrics.
   ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
