@@ -114,6 +114,7 @@ android_library("java") {
     "//components/security_state/content/android:java",
     "//components/security_state/core:security_state_enums_java",
     "//components/strings:components_strings_grd",
+    "//components/strings:privacy_sandbox_strings_grd",
     "//components/url_formatter/android:url_formatter_java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",

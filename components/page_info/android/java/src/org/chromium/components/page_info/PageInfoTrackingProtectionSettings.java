@@ -151,8 +151,8 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
                 (preference, newValue) -> {
                     boolean boolValue = (Boolean) newValue;
                     if (mShowLaunchUI) mTpStatus.setTrackingProtectionStatus(boolValue);
-                    // Invert since the switch is inverted.
-                    boolValue = !boolValue;
+                    // Invert since the switch is inverted (only old UI).
+                    if (!mShowLaunchUI) boolValue = !boolValue;
                     params.onThirdPartyCookieToggleChanged.onResult(boolValue);
                     return true;
                 });
@@ -245,7 +245,12 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
                                     ? R.drawable.ic_visibility_off_black
                                     : R.drawable.ic_visibility_black));
         }
-        mCookieSwitch.setChecked(!protectionsOn);
+        // Switch is only inverted in the old UI.
+        if (mShowLaunchUI) {
+            mCookieSwitch.setChecked(protectionsOn);
+        } else {
+            mCookieSwitch.setChecked(!protectionsOn);
+        }
         if (mShowLaunchUI) mTpStatus.setTrackingProtectionStatus(protectionsOn);
         mCookieSwitch.setEnabled(!isEnforced);
         mCookieSwitch.setManagedPreferenceDelegate(
@@ -268,7 +273,10 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
 
         if (protectionsOn) {
             mThirdPartyCookiesTitle.setTitle(
-                    getString(R.string.page_info_cookies_site_not_working_title));
+                    getString(
+                            mShowLaunchUI
+                                    ? R.string.page_info_tracking_protection_title_on
+                                    : R.string.page_info_cookies_site_not_working_title));
             int resId =
                     willCreatePermanentException()
                             ? R.string.page_info_cookies_site_not_working_description_permanent
@@ -277,7 +285,10 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
             mThirdPartyCookiesSummary.setSummary(getString(resId));
         } else if (permanentException) {
             mThirdPartyCookiesTitle.setTitle(
-                    getString(R.string.page_info_cookies_permanent_allowed_title));
+                    getString(
+                            mShowLaunchUI
+                                    ? R.string.page_info_tracking_protection_title_off_permanent
+                                    : R.string.page_info_cookies_permanent_allowed_title));
             int resId = R.string.page_info_cookies_tracking_protection_description;
             mThirdPartyCookiesSummary.setSummary(
                     SpanApplier.applySpans(
@@ -289,7 +300,7 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
                             ? EXPIRATION_FOR_TESTING
                             : calculateDaysUntilExpiration(
                                     TimeUtils.currentTimeMillis(), expiration);
-            updateThirdPartyCookiesTitleTemporary(days);
+            updateTrackingProtectionTitleTemporary(days);
             int resId = R.string.page_info_cookies_tracking_protection_description;
             mThirdPartyCookiesSummary.setSummary(
                     SpanApplier.applySpans(
@@ -388,7 +399,12 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
         }
     }
 
-    private void updateThirdPartyCookiesTitleTemporary(int days) {
+    private void updateTrackingProtectionTitleTemporary(int days) {
+        if (mShowLaunchUI) {
+            mThirdPartyCookiesTitle.setTitle(
+                    getQuantityString(R.plurals.page_info_tracking_protection_title_off, days));
+            return;
+        }
         if (mBlockAll3PC || mIsIncognito) {
             mThirdPartyCookiesTitle.setTitle(
                     days == 0
