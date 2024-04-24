@@ -1487,6 +1487,16 @@ TEST_P(PasswordManagerTest, IsPasswordFieldDetectedOnPage) {
   EXPECT_FALSE(manager()->IsPasswordFieldDetectedOnPage());
 }
 
+TEST_P(PasswordManagerTest, ObservedParsedFormIsAssignedAfterParsing) {
+  FormData form_data(MakeSimpleFormData());
+  manager()->OnPasswordFormsParsed(&driver_, {form_data});
+  task_environment_.RunUntilIdle();
+  const PasswordForm* parsed_form = manager()->GetParsedObservedForm(
+      &driver_, form_data.fields[0].renderer_id());
+  EXPECT_TRUE(parsed_form != nullptr);
+  EXPECT_TRUE(FormData::DeepEqual(form_data, parsed_form->form_data));
+}
+
 TEST_P(PasswordManagerTest, FormSubmitWhenPasswordsCannotBeSaved) {
   // Test that a plain form submit doesn't result in offering to save passwords.
   auto store = base::MakeRefCounted<PasswordStore>(

@@ -1370,6 +1370,17 @@ const PasswordFormCache* PasswordManager::GetPasswordFormCache() const {
   return &password_form_cache_;
 }
 
+const PasswordForm* PasswordManager::GetParsedObservedForm(
+    PasswordManagerDriver* driver,
+    autofill::FieldRendererId field_id) const {
+  PasswordFormManager* form_manager =
+      password_form_cache_.GetMatchedManager(driver, field_id);
+  if (!form_manager) {
+    return nullptr;
+  }
+  return form_manager->GetParsedObservedForm();
+}
+
 void PasswordManager::ResetSubmittedManager() {
   client_->ResetSubmissionTrackingAfterTouchToFill();
 

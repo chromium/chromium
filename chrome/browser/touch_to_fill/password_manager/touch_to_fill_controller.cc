@@ -60,8 +60,13 @@ bool TouchToFillController::Show(
     webauthn::WebAuthnCredManDelegate* cred_man_delegate,
     base::WeakPtr<password_manager::ContentPasswordManagerDriver>
         frame_driver) {
+  if (!ttf_delegate->ShouldShowTouchToFill()) {
+    return false;
+  }
+
   DCHECK(!ttf_delegate_);
   ttf_delegate_ = std::move(ttf_delegate);
+
   cred_man_delegate_ = cred_man_delegate;
   visibility_controller_->SetVisible(std::move(frame_driver));
 

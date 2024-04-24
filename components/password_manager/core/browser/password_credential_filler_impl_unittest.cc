@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/password_credential_filler_impl.h"
+
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -21,7 +23,7 @@ using autofill::mojom::SubmissionReadinessState;
 using ToShowVirtualKeyboard =
     password_manager::PasswordManagerDriver::ToShowVirtualKeyboard;
 using password_manager::PasswordCredentialFillerImpl;
-using password_manager::SubmissionReadinessParams;
+using password_manager::PasswordFillingParams;
 using testing::ReturnRefOfCopy;
 
 constexpr char kExampleCom[] = "https://example.com/";
@@ -66,85 +68,94 @@ const FormData PrepareFormData(
   return form;
 }
 
-const std::vector<
-    std::tuple<SubmissionReadinessParams, SubmissionReadinessState>>
+const std::vector<std::tuple<PasswordFillingParams, SubmissionReadinessState>>
     kPasswordCredentialFillerV2TestCases = {
         // empty form data. field indices should not matter.
-        {SubmissionReadinessParams(PrepareFormData({}),
-                                   /*username_field_index=*/0,
-                                   /*password_field_index=*/0,
-                                   SubmissionReadinessState::kNoInformation),
+        {PasswordFillingParams(
+             PrepareFormData({}),
+             /*username_field_index=*/0,
+             /*password_field_index=*/0,
+             /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
+             SubmissionReadinessState::kNoInformation),
          SubmissionReadinessState::kError},
-        {SubmissionReadinessParams(
+        {PasswordFillingParams(
              PrepareFormData({FormFieldFocusabilityType::kNonFocusableInput,
                               FormFieldFocusabilityType::kNonFocusableInput}),
              /*username_field_index=*/2,
              /*password_field_index=*/2,
+             /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
              SubmissionReadinessState::kNoInformation),
          SubmissionReadinessState::kError},
         // There's no password field in this case, so expected
         // SubmissionReadiness is `kNoPasswordField`.
-        {SubmissionReadinessParams(
+        {PasswordFillingParams(
              PrepareFormData({FormFieldFocusabilityType::kFocusableInput,
                               FormFieldFocusabilityType::kFocusableInput}),
              /*username_field_index=*/0,
              /*password_field_index=*/2,
+             /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
              SubmissionReadinessState::kNoInformation),
          SubmissionReadinessState::kNoPasswordField},
         // There's no username field in this case, so expected
         // SubmissionReadiness is `kNoUsernameField`.
-        {SubmissionReadinessParams(
+        {PasswordFillingParams(
              PrepareFormData({FormFieldFocusabilityType::kFocusableInput,
                               FormFieldFocusabilityType::kFocusableInput}),
              /*username_field_index=*/2,
              /*password_field_index=*/0,
+             /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
              SubmissionReadinessState::kNoInformation),
          SubmissionReadinessState::kNoUsernameField},
         // There's a focusable field between username and password fields
-        {SubmissionReadinessParams(
+        {PasswordFillingParams(
              PrepareFormData({FormFieldFocusabilityType::kFocusableInput,
                               FormFieldFocusabilityType::kFocusableInput,
                               FormFieldFocusabilityType::kFocusableInput}),
              /*username_field_index=*/0,
              /*password_field_index=*/2,
+             /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
              SubmissionReadinessState::kNoInformation),
          SubmissionReadinessState::kFieldBetweenUsernameAndPassword},
         // There's an ignorable field between username and password fields. It's
         // doesn't matter if it's empty.
-        {SubmissionReadinessParams(
+        {PasswordFillingParams(
              PrepareFormData({FormFieldFocusabilityType::kFocusableInput,
                               FormFieldFocusabilityType::kNonFocusableInput,
                               FormFieldFocusabilityType::kFocusableInput}),
              /*username_field_index=*/0,
              /*password_field_index=*/2,
+             /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
              SubmissionReadinessState::kNoInformation),
          SubmissionReadinessState::kTwoFields},
         // There's a focusable field after password field.
-        {SubmissionReadinessParams(
+        {PasswordFillingParams(
              PrepareFormData({FormFieldFocusabilityType::kFocusableInput,
                               FormFieldFocusabilityType::kFocusableInput,
                               FormFieldFocusabilityType::kFocusableInput}),
              /*username_field_index=*/0,
              /*password_field_index=*/1,
+             /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
              SubmissionReadinessState::kNoInformation),
          SubmissionReadinessState::kFieldAfterPasswordField},
         // There are unfocusable fields other than username and password fields.
-        {SubmissionReadinessParams(
+        {PasswordFillingParams(
              PrepareFormData({FormFieldFocusabilityType::kFocusableInput,
                               FormFieldFocusabilityType::kNonFocusableInput,
                               FormFieldFocusabilityType::kFocusableInput,
                               FormFieldFocusabilityType::kNonFocusableInput}),
              /*username_field_index=*/0,
              /*password_field_index=*/2,
+             /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
              SubmissionReadinessState::kNoInformation),
          SubmissionReadinessState::kTwoFields},
         // There is a checkbox field after the password field.
-        {SubmissionReadinessParams(
+        {PasswordFillingParams(
              PrepareFormData({FormFieldFocusabilityType::kFocusableInput,
                               FormFieldFocusabilityType::kFocusableInput,
                               FormFieldFocusabilityType::kFocusableCheckbox}),
              /*username_field_index=*/0,
              /*password_field_index=*/1,
+             /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
              SubmissionReadinessState::kNoInformation),
          SubmissionReadinessState::kTwoFields},
 };
@@ -172,7 +183,8 @@ class PasswordCredentialFillerTest
     const FormData form;
     return PasswordCredentialFillerImpl(
         driver().AsWeakPtr(),
-        SubmissionReadinessParams(form, 0, 0, GetParam()));
+        PasswordFillingParams(form, 0, 0, autofill::FieldRendererId(),
+                              GetParam()));
   }
 };
 
@@ -260,14 +272,14 @@ INSTANTIATE_TEST_SUITE_P(
 class PasswordCredentialFillerV2Test
     : public PasswordCredentialFillerBaseTest,
       public testing::WithParamInterface<
-          std::tuple<SubmissionReadinessParams, SubmissionReadinessState>> {
+          std::tuple<PasswordFillingParams, SubmissionReadinessState>> {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       password_manager::features::kPasswordSuggestionBottomSheetV2};
 };
 
 TEST_P(PasswordCredentialFillerV2Test, SubmissionReadiness) {
-  SubmissionReadinessParams params = std::get<0>(GetParam());
+  PasswordFillingParams params = std::get<0>(GetParam());
 
   PasswordCredentialFillerImpl filler(driver().AsWeakPtr(), params);
   EXPECT_EQ(filler.GetSubmissionReadinessState(), std::get<1>(GetParam()));

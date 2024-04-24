@@ -12,13 +12,13 @@
 
 namespace password_manager {
 
-struct SubmissionReadinessParams;
+struct PasswordFillingParams;
 
 class PasswordCredentialFillerImpl final : public PasswordCredentialFiller {
  public:
   PasswordCredentialFillerImpl(
       base::WeakPtr<PasswordManagerDriver> driver,
-      const SubmissionReadinessParams& submission_readiness);
+      const PasswordFillingParams& password_filling_params);
   PasswordCredentialFillerImpl(const PasswordCredentialFillerImpl&) = delete;
   PasswordCredentialFillerImpl& operator=(const PasswordCredentialFillerImpl&) =
       delete;

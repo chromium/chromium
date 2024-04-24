@@ -239,6 +239,12 @@ class PasswordManager : public PasswordManagerInterface {
   // the web page.
   const PasswordFormCache* GetPasswordFormCache() const;
 
+  // Returns the observed parsed password form to which the field with the
+  // renderer id `field_id` belongs.
+  const PasswordForm* GetParsedObservedForm(
+      PasswordManagerDriver* driver,
+      autofill::FieldRendererId field_id) const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(
       PasswordManagerTest,

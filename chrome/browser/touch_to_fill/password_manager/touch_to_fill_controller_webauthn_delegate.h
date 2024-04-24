@@ -52,6 +52,7 @@ class TouchToFillControllerWebAuthnDelegate
   void OnDismiss(base::OnceClosure action_completed) override;
   void OnCredManDismissed(base::OnceClosure action_completed) override;
   GURL GetFrameUrl() override;
+  bool ShouldShowTouchToFill() override;
   bool ShouldTriggerSubmission() override;
   bool ShouldShowHybridOption() override;
   bool ShouldShowNoPasskeysSheetIfRequired() override;

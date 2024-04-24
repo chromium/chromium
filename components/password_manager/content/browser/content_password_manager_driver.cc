@@ -520,9 +520,9 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
     // feature is launched.
     if (client_->ShowKeyboardReplacingSurface(
             this,
-            SubmissionReadinessParams(
+            PasswordFillingParams(
                 request.form_data, request.username_field_index,
-                request.password_field_index,
+                request.password_field_index, request.element_id,
                 autofill::mojom::SubmissionReadinessState::kNoInformation),
             request.show_webauthn_credentials)) {
       return;
@@ -546,8 +546,15 @@ void ContentPasswordManagerDriver::ShowKeyboardReplacingSurface(
     return;
   }
   autofill::FormData form;
+  // This is only called when `kPasswordSuggestionBottomSheetV2` feature flag is
+  // disabled. In this scenario only `submission_readiness` field of the
+  // `PasswordFillingParams` is used later, other fields are not needed. This
+  // call will be removed after launching the `kPasswordSuggestionBottomSheetV2`
+  // feature.
   client_->ShowKeyboardReplacingSurface(
-      this, SubmissionReadinessParams(form, 0, 0, submission_readiness),
+      this,
+      PasswordFillingParams(form, 0, 0, autofill::FieldRendererId(),
+                            submission_readiness),
       is_webauthn_form);
 }
 #endif

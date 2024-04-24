@@ -12,7 +12,9 @@
 #include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_delegate.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/gfx/native_widget_types.h"
@@ -84,6 +86,8 @@ class TouchToFillControllerAutofillDelegate
       base::WeakPtr<password_manager::WebAuthnCredentialsDelegate>
           webauthn_delegate,
       std::unique_ptr<password_manager::PasswordCredentialFiller> filler,
+      const password_manager::PasswordForm* form_to_fill,
+      autofill::FieldRendererId focused_field_renderer_id,
       ShowHybridOption should_show_hybrid_option,
       ShowPasswordMigrationWarningCallback show_password_migration_warning);
 
@@ -93,6 +97,8 @@ class TouchToFillControllerAutofillDelegate
       base::WeakPtr<password_manager::WebAuthnCredentialsDelegate>
           webauthn_delegate,
       std::unique_ptr<password_manager::PasswordCredentialFiller> filler,
+      const password_manager::PasswordForm* form_to_fill,
+      autofill::FieldRendererId focused_field_renderer_id,
       ShowHybridOption should_show_hybrid_option);
   TouchToFillControllerAutofillDelegate(
       const TouchToFillControllerAutofillDelegate&) = delete;
@@ -115,6 +121,7 @@ class TouchToFillControllerAutofillDelegate
   void OnDismiss(base::OnceClosure action_completed) override;
   void OnCredManDismissed(base::OnceClosure action_completed) override;
   GURL GetFrameUrl() override;
+  bool ShouldShowTouchToFill() override;
   bool ShouldTriggerSubmission() override;
   bool ShouldShowHybridOption() override;
   bool ShouldShowNoPasskeysSheetIfRequired() override;
@@ -157,6 +164,11 @@ class TouchToFillControllerAutofillDelegate
   // to fill the username and password. PasswordCredentialFiller also submits
   // the form if required.
   std::unique_ptr<password_manager::PasswordCredentialFiller> filler_;
+
+  // The form which should be autofilled.
+  raw_ptr<const password_manager::PasswordForm> form_to_fill_ = nullptr;
+
+  autofill::FieldRendererId focused_field_renderer_id_;
 
   // Shows the password migration warning (expected to be shown after filing
   // user's credentials).

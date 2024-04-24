@@ -106,10 +106,11 @@ struct PasswordForm;
 enum class ErrorMessageFlowType { kSaveFlow, kFillFlow };
 
 #if BUILDFLAG(IS_ANDROID)
-struct SubmissionReadinessParams {
+struct PasswordFillingParams {
   autofill::FormData form;
   uint64_t username_field_index;
   uint64_t password_field_index;
+  autofill::FieldRendererId focused_field_renderer_id_;
   // TODO(crbug/1462532): Remove this param after
   // PasswordSuggestionBottomSheetV2 is launched.
   autofill::mojom::SubmissionReadinessState submission_readiness;
@@ -214,7 +215,7 @@ class PasswordManagerClient {
   // TouchToFill).
   virtual bool ShowKeyboardReplacingSurface(
       PasswordManagerDriver* driver,
-      const SubmissionReadinessParams& submission_readiness_params,
+      const PasswordFillingParams& password_filling_params,
       bool is_webauthn_form);
 #endif
 

@@ -36,7 +36,7 @@ void PasswordManagerClient::ShowPasswordManagerErrorMessage(
 
 bool PasswordManagerClient::ShowKeyboardReplacingSurface(
     PasswordManagerDriver* driver,
-    const SubmissionReadinessParams& submission_readiness_params,
+    const PasswordFillingParams& password_filling_params,
     bool is_webauthn_form) {
   return false;
 }

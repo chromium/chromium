@@ -147,7 +147,7 @@ class ChromePasswordManagerClient
 
   bool ShowKeyboardReplacingSurface(
       password_manager::PasswordManagerDriver* driver,
-      const password_manager::SubmissionReadinessParams& submission_readiness,
+      const password_manager::PasswordFillingParams& password_filling_params,
       bool is_webauthn_form) override;
 #endif
 

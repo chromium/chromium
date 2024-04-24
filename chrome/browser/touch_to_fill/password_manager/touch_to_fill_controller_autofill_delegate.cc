@@ -15,10 +15,12 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_credential_filler.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -51,6 +53,8 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
     base::WeakPtr<password_manager::WebAuthnCredentialsDelegate>
         webauthn_delegate,
     std::unique_ptr<password_manager::PasswordCredentialFiller> filler,
+    const password_manager::PasswordForm* form_to_fill,
+    autofill::FieldRendererId focused_field_renderer_id,
     ShowHybridOption should_show_hybrid_option,
     ShowPasswordMigrationWarningCallback show_password_migration_warning)
     : password_client_(password_client),
@@ -58,6 +62,8 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
       authenticator_(std::move(authenticator)),
       webauthn_delegate_(webauthn_delegate),
       filler_(std::move(filler)),
+      form_to_fill_(form_to_fill),
+      focused_field_renderer_id_(focused_field_renderer_id),
       show_password_migration_warning_(
           std::move(show_password_migration_warning)),
       should_show_hybrid_option_(should_show_hybrid_option) {}
@@ -68,6 +74,8 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
     base::WeakPtr<password_manager::WebAuthnCredentialsDelegate>
         webauthn_delegate,
     std::unique_ptr<password_manager::PasswordCredentialFiller> filler,
+    const password_manager::PasswordForm* form_to_fill,
+    autofill::FieldRendererId focused_field_renderer_id,
     ShowHybridOption should_show_hybrid_option)
     : password_client_(password_client),
       // |TouchToFillControllerTest| doesn't provide an instance of
@@ -78,6 +86,8 @@ TouchToFillControllerAutofillDelegate::TouchToFillControllerAutofillDelegate(
       authenticator_(std::move(authenticator)),
       webauthn_delegate_(webauthn_delegate),
       filler_(std::move(filler)),
+      form_to_fill_(form_to_fill),
+      focused_field_renderer_id_(focused_field_renderer_id),
       show_password_migration_warning_(
           base::BindRepeating(&local_password_migration::ShowWarning)),
       should_show_hybrid_option_(should_show_hybrid_option),
@@ -216,6 +226,42 @@ void TouchToFillControllerAutofillDelegate::OnCredManDismissed(
 GURL TouchToFillControllerAutofillDelegate::GetFrameUrl() {
   CHECK(filler_);
   return filler_->GetFrameUrl();
+}
+
+bool TouchToFillControllerAutofillDelegate::ShouldShowTouchToFill() {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordSuggestionBottomSheetV2)) {
+    // For password suggesion bottom sheet version 1 all the conditions for
+    // showing TTF are checked in the renderer (see
+    // `PasswordAutofillAgent::TryToShowKeyboardReplacingSurface`). That's why
+    // no additional checks are needed here.
+    return true;
+  }
+
+  if (!form_to_fill_) {
+    return false;
+  }
+
+  // Always show TTF for a current password field.
+  if (focused_field_renderer_id_ ==
+      form_to_fill_->password_element_renderer_id) {
+    return true;
+  }
+
+  // Do not show TTF if it's not a current password and not a username field.
+  if (focused_field_renderer_id_ !=
+      form_to_fill_->username_element_renderer_id) {
+    return false;
+  }
+
+  // Show TTF if the form has a current password field or if it's a single
+  // username form.
+  if (form_to_fill_->HasPasswordElement() ||
+      form_to_fill_->IsSingleUsername()) {
+    return true;
+  }
+
+  return false;
 }
 
 bool TouchToFillControllerAutofillDelegate::ShouldTriggerSubmission() {

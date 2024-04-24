@@ -201,6 +201,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   bool IsPasswordUpdate() const;
   base::WeakPtr<PasswordManagerDriver> GetDriver() const;
   const PasswordForm* GetSubmittedForm() const;
+  const PasswordForm* GetParsedObservedForm() const;
 
   // Returns the frame id of the corresponding PasswordManagerDriver. See
   // `GetFrameId()` in PasswordManagerDriver for more details.
@@ -445,6 +446,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   bool is_submitted_ = false;
   autofill::FormData submitted_form_;
   std::unique_ptr<PasswordForm> parsed_submitted_form_;
+
+  // The form cached after the form parsing corresponding to this form manager.
+  std::unique_ptr<PasswordForm> parsed_observed_form_;
 
   // If Chrome has already autofilled a few times, it is probable that autofill
   // is triggered by programmatic changes in the page. We set a maximum number

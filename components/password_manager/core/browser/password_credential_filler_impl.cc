@@ -40,7 +40,7 @@ bool CalculateTriggerSubmission(SubmissionReadinessState submission_readiness) {
 // password_autofill_agent.cc. Remove the logic in the agent when
 // PasswordSuggestionBottomSheetV2 is launched.
 SubmissionReadinessState CalculateSubmissionReadiness(
-    password_manager::SubmissionReadinessParams params) {
+    const password_manager::PasswordFillingParams& params) {
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kPasswordSuggestionBottomSheetV2)) {
     return params.submission_readiness;
@@ -115,10 +115,10 @@ namespace password_manager {
 
 PasswordCredentialFillerImpl::PasswordCredentialFillerImpl(
     base::WeakPtr<PasswordManagerDriver> driver,
-    const SubmissionReadinessParams& submission_readiness_params)
+    const PasswordFillingParams& password_filling_params)
     : driver_(driver),
       submission_readiness_(
-          CalculateSubmissionReadiness(submission_readiness_params)),
+          CalculateSubmissionReadiness(password_filling_params)),
       trigger_submission_(CalculateTriggerSubmission(submission_readiness_)) {}
 
 PasswordCredentialFillerImpl::~PasswordCredentialFillerImpl() = default;

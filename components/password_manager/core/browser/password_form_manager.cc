@@ -683,6 +683,10 @@ const PasswordForm* PasswordFormManager::GetSubmittedForm() const {
   return parsed_submitted_form_.get();
 }
 
+const PasswordForm* PasswordFormManager::GetParsedObservedForm() const {
+  return parsed_observed_form_.get();
+}
+
 #if BUILDFLAG(IS_IOS)
 void PasswordFormManager::UpdateStateOnUserInput(
     FormRendererId form_id,
@@ -1068,44 +1072,47 @@ void PasswordFormManager::FillNow() {
   CHECK(observed_form());
   auto [observed_password_form, username_detection_method] =
       ParseFormAndMakeLogging(*observed_form(), FormDataParser::Mode::kFilling);
-  RecordMetricOnReadonly(parser_.readonly_status(), !!observed_password_form,
-                         FormDataParser::Mode::kFilling);
-  if (!observed_password_form)
-    return;
-  metrics_recorder_->CacheParsingResultInFillingMode(
-      *observed_password_form.get());
+  parsed_observed_form_ = std::move(observed_password_form);
 
-  if (observed_password_form->is_new_password_reliable && !IsBlocklisted()) {
+  RecordMetricOnReadonly(parser_.readonly_status(), !!parsed_observed_form_,
+                         FormDataParser::Mode::kFilling);
+  if (!parsed_observed_form_) {
+    return;
+  }
+  metrics_recorder_->CacheParsingResultInFillingMode(
+      *parsed_observed_form_.get());
+
+  if (parsed_observed_form_->is_new_password_reliable && !IsBlocklisted()) {
     driver_->FormEligibleForGenerationFound({
 #if BUILDFLAG(IS_IOS)
-        .form_renderer_id = observed_password_form->form_data.renderer_id,
+        .form_renderer_id = parsed_observed_form_->form_data.renderer_id,
 #endif
         .new_password_renderer_id =
-            observed_password_form->new_password_element_renderer_id,
+            parsed_observed_form_->new_password_element_renderer_id,
         .confirmation_password_renderer_id =
-            observed_password_form->confirmation_password_element_renderer_id,
+            parsed_observed_form_->confirmation_password_element_renderer_id,
     });
   }
 
 #if BUILDFLAG(IS_IOS)
   // On iOS, filling on username first flow is only supported when the feature
   // is enabled.
-  if (observed_password_form->IsSingleUsername() &&
+  if (parsed_observed_form_->IsSingleUsername() &&
       !base::FeatureList::IsEnabled(
           password_manager::features::kIOSPasswordSignInUff)) {
     return;
   }
 #endif
 
-  if (observed_password_form->HasPasswordElement() &&
-      !observed_password_form->IsSingleUsername()) {
+  if (parsed_observed_form_->HasPasswordElement() &&
+      !parsed_observed_form_->IsSingleUsername()) {
     metrics_recorder_->RecordPotentialPreferredMatch(
         form_fetcher_->GetPreferredMatch(),
         form_fetcher_->WereGroupedCredentialsAvailable());
   }
 
   SendFillInformationToRenderer(
-      client_, driver_.get(), *observed_password_form.get(),
+      client_, driver_.get(), *parsed_observed_form_.get(),
       form_fetcher_->GetBestMatches(), form_fetcher_->GetFederatedMatches(),
       form_fetcher_->GetPreferredMatch(), metrics_recorder_.get(),
       WebAuthnCredentialsAvailable());
