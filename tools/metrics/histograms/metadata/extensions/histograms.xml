@@ -873,9 +873,9 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.ManifestEnabledRulesCount2"
-    units="rules" expires_after="2024-04-28">
+    units="rules" expires_after="2025-04-28">
   <owner>kelvinjiang@chromium.org</owner>
-  <owner>src/extensions/OWNERS</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
     The number of enabled indexed declarative rules provided by an extension
     manifest for the Declarative Net Request API. This is emitted whenever a
@@ -884,9 +884,9 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.ReadDynamicRulesJSONStatus"
-    enum="ReadDynamicRulesJSONStatus" expires_after="2024-06-01">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>src/extensions/OWNERS</owner>
+    enum="ReadDynamicRulesJSONStatus" expires_after="2025-06-01">
+  <owner>kelvinjiang@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
     Indicates the result of reading the dynamic JSON rules for an extension from
     the disk. Logged whenever an extension calls the getDynamicRules extension
@@ -957,9 +957,9 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram name="Extensions.DeclarativeNetRequest.RegexRuleSize" units="bytes"
-    expires_after="2024-06-01">
+    expires_after="2025-06-01">
   <owner>kelvinjiang@chromium.org</owner>
-  <owner>src/extensions/OWNERS</owner>
+  <owner>extensions-core@chromium.org</owner>
   <summary>
     Logs the size of a regex rule in bytes, including rules that exceed the
     per-rule memory limit that aren't indexed. Note that any rules above 100Kb
