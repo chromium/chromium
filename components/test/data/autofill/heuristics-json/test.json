@@ -268,7 +268,7 @@
             "field_signature": "4103469401",
             "id": "7542824740940430359_4103469401_0",
             "label_attr": "Email address",
-            "last_classification": "UNKNOWN_TYPE",
+            "last_classification": "EMAIL_ADDRESS",
             "last_correctness": "ignored: USERNAME_AND_EMAIL_ADDRESS",
             "name_attr": "emailAddress",
             "tester_type": [ "USERNAME_AND_EMAIL_ADDRESS" ],
