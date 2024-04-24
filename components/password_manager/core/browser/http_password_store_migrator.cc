@@ -131,7 +131,7 @@ void HttpPasswordStoreMigrator::ProcessPasswordStoreResults() {
     store_->AddLogin(new_form);
 
     if (mode_ == HttpPasswordMigrationMode::kMove)
-      store_->RemoveLogin(*form);
+      store_->RemoveLogin(FROM_HERE, *form);
     *form = std::move(new_form);
   }
 

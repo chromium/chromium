@@ -5,12 +5,14 @@
 #include "chrome/browser/password_manager/android/password_store_bridge.h"
 
 #include <jni.h>
+
 #include <memory>
 #include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreBridge_jni.h"
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreCredential_jni.h"
@@ -138,9 +140,11 @@ void PasswordStoreBridge::GetAllCredentials(
 }
 
 void PasswordStoreBridge::ClearAllPasswords(JNIEnv* env) {
-  profile_store_->RemoveLoginsCreatedBetween(base::Time(), base::Time::Max());
+  profile_store_->RemoveLoginsCreatedBetween(FROM_HERE, base::Time(),
+                                             base::Time::Max());
   if (account_store_) {
-    account_store_->RemoveLoginsCreatedBetween(base::Time(), base::Time::Max());
+    account_store_->RemoveLoginsCreatedBetween(FROM_HERE, base::Time(),
+                                               base::Time::Max());
   }
 }
 

@@ -7,6 +7,7 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/location.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -186,7 +187,7 @@ PasswordForm CreateSampleFormWithIndex(int index) {
 
 bool ClearProfilePasswordStore() {
   GetPasswordProfileStore()->RemoveLoginsCreatedBetween(
-      base::Time(), base::Time(), base::DoNothing());
+      FROM_HERE, base::Time(), base::Time(), base::DoNothing());
   FakeStoreConsumer consumer;
   if (!consumer.FetchProfileStoreResults()) {
     return false;
@@ -196,7 +197,7 @@ bool ClearProfilePasswordStore() {
 
 bool ClearAccountPasswordStore() {
   GetPasswordAccountStore()->RemoveLoginsCreatedBetween(
-      base::Time(), base::Time(), base::DoNothing());
+      FROM_HERE, base::Time(), base::Time(), base::DoNothing());
   FakeStoreConsumer consumer;
   if (!consumer.FetchAccountStoreResults()) {
     return false;
@@ -206,9 +207,9 @@ bool ClearAccountPasswordStore() {
 
 bool ClearPasswordStores() {
   GetPasswordProfileStore()->RemoveLoginsCreatedBetween(
-      base::Time(), base::Time(), base::DoNothing());
+      FROM_HERE, base::Time(), base::Time(), base::DoNothing());
   GetPasswordAccountStore()->RemoveLoginsCreatedBetween(
-      base::Time(), base::Time(), base::DoNothing());
+      FROM_HERE, base::Time(), base::Time(), base::DoNothing());
   FakeStoreConsumer consumer;
   if (!consumer.FetchProfileStoreResults()) {
     return false;

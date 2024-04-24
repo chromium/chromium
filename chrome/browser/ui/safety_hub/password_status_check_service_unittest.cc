@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/json/values_util.h"
+#include "base/location.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/password_manager/password_manager_test_util.h"
@@ -344,10 +345,10 @@ TEST_P(PasswordStatusCheckServiceParameterizedIssueTest,
   EXPECT_EQ(service()->reused_credential_count(), include_reused() ? 2UL : 0UL);
 
   // Removing the credentials with the issues is also detected.
-  profile_store().RemoveLogin(weak_form);
-  profile_store().RemoveLogin(leaked_form);
-  profile_store().RemoveLogin(reused_form_1);
-  profile_store().RemoveLogin(reused_form_2);
+  profile_store().RemoveLogin(FROM_HERE, weak_form);
+  profile_store().RemoveLogin(FROM_HERE, leaked_form);
+  profile_store().RemoveLogin(FROM_HERE, reused_form_1);
+  profile_store().RemoveLogin(FROM_HERE, reused_form_2);
   RunUntilIdle();
 
   EXPECT_EQ(service()->weak_credential_count(), 0UL);

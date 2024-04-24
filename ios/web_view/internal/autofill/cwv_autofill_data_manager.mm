@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#import "base/location.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -290,7 +291,7 @@ class WebViewPasswordStoreObserver
 }
 
 - (void)deletePassword:(CWVPassword*)password {
-  _passwordStore->RemoveLogin(*[password internalPasswordForm]);
+  _passwordStore->RemoveLogin(FROM_HERE, *[password internalPasswordForm]);
 }
 
 - (void)addNewPasswordForUsername:(NSString*)username

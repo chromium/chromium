@@ -1309,7 +1309,7 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
       password_manager::MockPasswordStoreInterface* store) {
     EXPECT_CALL(*store, RemoveLoginsByURLAndTime)
         .WillOnce(
-            testing::WithArgs<3, 4>([](auto callback, auto sync_callback) {
+            testing::WithArgs<4, 5>([](auto callback, auto sync_callback) {
               std::move(callback).Run();
               if (sync_callback) {
                 std::move(sync_callback).Run(false);
@@ -1320,10 +1320,10 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
   void ExpectRemoveLoginsByURLAndTimeWithFilter(
       password_manager::MockPasswordStoreInterface* store,
       base::RepeatingCallback<bool(const GURL&)> filter) {
-    EXPECT_CALL(*store, RemoveLoginsByURLAndTime(ProbablySameFilter(filter), _,
-                                                 _, _, _))
+    EXPECT_CALL(*store, RemoveLoginsByURLAndTime(_, ProbablySameFilter(filter),
+                                                 _, _, _, _))
         .WillOnce(
-            testing::WithArgs<3, 4>([](auto callback, auto sync_callback) {
+            testing::WithArgs<4, 5>([](auto callback, auto sync_callback) {
               std::move(callback).Run();
               if (sync_callback) {
                 std::move(sync_callback).Run(false);
@@ -4065,9 +4065,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest,
   ON_CALL(*account_password_store(), DisableAutoSignInForOrigins)
       .WillByDefault(MoveArgToFuture<1>(&account_auto_signin_cb));
   ON_CALL(*profile_password_store(), RemoveLoginsByURLAndTime)
-      .WillByDefault(MoveArgToFuture<3>(&profile_remove_cb));
+      .WillByDefault(MoveArgToFuture<4>(&profile_remove_cb));
   ON_CALL(*account_password_store(), RemoveLoginsByURLAndTime)
-      .WillByDefault(WithArgs<3, 4>([&](auto remove_cb, auto sync_cb) {
+      .WillByDefault(WithArgs<4, 5>([&](auto remove_cb, auto sync_cb) {
         account_remove_cb.SetValue(std::move(remove_cb));
         account_sync_cb.SetValue(std::move(sync_cb));
       }));

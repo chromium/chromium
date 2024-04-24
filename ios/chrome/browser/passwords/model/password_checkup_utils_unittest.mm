@@ -6,6 +6,7 @@
 
 #import <string_view>
 
+#import "base/location.h"
 #import "base/strings/string_piece.h"
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
@@ -379,7 +380,7 @@ TEST_F(PasswordCheckupUtilsTest,
   RunUntilIdle();
 
   // Remove one of the reused passwords.
-  store().RemoveLogin(reused_form1);
+  store().RemoveLogin(FROM_HERE, reused_form1);
   RunUntilIdle();
 
   std::vector<CredentialUIEntry> insecure_credentials =

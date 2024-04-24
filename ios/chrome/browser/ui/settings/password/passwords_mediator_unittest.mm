@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
-#import "ios/chrome/browser/ui/settings/password/passwords_mediator+Testing.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/location.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/string_piece.h"
 #import "base/strings/string_util.h"
@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/passwords_mediator+Testing.h"
 #import "ios/chrome/browser/ui/settings/utils/password_auto_fill_status_observer.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -202,7 +203,7 @@ TEST_F(PasswordsMediatorTest, NotifiesConsumerOnPasswordChange) {
   EXPECT_THAT(affiliatedGroups[0].GetCredentials(),
               testing::ElementsAre(credential));
   // Remove form from the store.
-  store()->RemoveLogin(form);
+  store()->RemoveLogin(FROM_HERE, form);
   RunUntilIdle();
   affiliatedGroups = [consumer() affiliatedGroups];
   EXPECT_THAT(affiliatedGroups, testing::IsEmpty());

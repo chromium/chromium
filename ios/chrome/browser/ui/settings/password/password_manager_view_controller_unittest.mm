@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_view_controller+Testing.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
+#import "base/location.h"
 #import "base/strings/string_piece.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/ui/settings/cells/inline_promo_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/inline_promo_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_view_controller+Testing.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_settings_commands.h"
@@ -1200,7 +1201,7 @@ TEST_F(PasswordManagerViewControllerTest, PasswordStoreListener) {
 
   auto password =
       GetTestStore().stored_passwords().at("http://www.example.com/").at(0);
-  GetTestStore().RemoveLogin(password);
+  GetTestStore().RemoveLogin(FROM_HERE, password);
   RunUntilIdle();
   EXPECT_EQ(1, NumberOfItemsInSection(
                    GetSectionIndex(SectionIdentifierSavedPasswords)));

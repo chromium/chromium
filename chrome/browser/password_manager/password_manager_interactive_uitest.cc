@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   WaitForElementValue("username_field", "admin");
 
   // Delete one credential. It should not be in the dropdown.
-  password_store->RemoveLogin(admin_form);
+  password_store->RemoveLogin(FROM_HERE, admin_form);
   WaitForPasswordStore();
 
   // Wait for the refetch to finish.
@@ -403,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   WaitForElementValue("username_field", "user");
 
   // Delete all the credentials.
-  password_store->RemoveLogin(user_form);
+  password_store->RemoveLogin(FROM_HERE, user_form);
   WaitForPasswordStore();
 
   // Wait for the refetch to finish.

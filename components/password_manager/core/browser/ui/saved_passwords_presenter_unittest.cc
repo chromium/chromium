@@ -172,7 +172,7 @@ TEST_F(SavedPasswordsPresenterTest, NotifyObservers) {
 
   // Remove should notify, and observers should be passed an empty list.
   EXPECT_CALL(observer, OnSavedPasswordsChanged);
-  store().RemoveLogin(form);
+  store().RemoveLogin(FROM_HERE, form);
   RunUntilIdle();
   EXPECT_TRUE(store().IsEmpty());
 
@@ -1146,7 +1146,7 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, AddCredentialsToBothStores) {
   RunUntilIdle();
 
   EXPECT_CALL(observer, OnSavedPasswordsChanged);
-  profile_store().RemoveLogin(profile_store_form);
+  profile_store().RemoveLogin(FROM_HERE, profile_store_form);
   RunUntilIdle();
 
   EXPECT_CALL(observer, OnSavedPasswordsChanged);
@@ -2024,8 +2024,8 @@ TEST_F(SavedPasswordsPresenterMoveToAccountTest, MovesToAccount) {
 
   EXPECT_CALL(*account_store(), AddLogin(form_1, _));
   EXPECT_CALL(*account_store(), AddLogin(form_2, _));
-  EXPECT_CALL(*profile_store(), RemoveLogin(form_1));
-  EXPECT_CALL(*profile_store(), RemoveLogin(form_2));
+  EXPECT_CALL(*profile_store(), RemoveLogin(_, form_1));
+  EXPECT_CALL(*profile_store(), RemoveLogin(_, form_2));
 
   presenter().MoveCredentialsToAccount(
       credentials,
@@ -2060,7 +2060,7 @@ TEST_F(SavedPasswordsPresenterMoveToAccountTest,
   RunUntilIdle();
 
   EXPECT_CALL(*account_store(), AddLogin).Times(0);
-  EXPECT_CALL(*profile_store(), RemoveLogin(form_profile));
+  EXPECT_CALL(*profile_store(), RemoveLogin(_, form_profile));
 
   presenter().MoveCredentialsToAccount(
       credentials,

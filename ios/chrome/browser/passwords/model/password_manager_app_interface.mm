@@ -122,7 +122,8 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
   auto completion_callback =
       base::BindOnce([](bool* done, bool _) { *done = true; }, &done);
   // Remove credentials stored during executing the test.
-  passwordStore->RemoveLoginsCreatedBetween(base::Time(), base::Time::Now(),
+  passwordStore->RemoveLoginsCreatedBetween(FROM_HERE, base::Time(),
+                                            base::Time::Now(),
                                             std::move(completion_callback));
   return WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
     return done;

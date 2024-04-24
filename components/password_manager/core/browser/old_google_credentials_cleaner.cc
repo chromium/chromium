@@ -50,7 +50,7 @@ void OldGoogleCredentialCleaner::OnGetPasswordStoreResults(
 
   for (const auto& form : results) {
     if (IsOldGoogleForm(form)) {
-      store_->RemoveLogin(*form);
+      store_->RemoveLogin(FROM_HERE, *form);
     }
   }
   prefs_->SetBoolean(prefs::kWereOldGoogleLoginsRemoved, true);

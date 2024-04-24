@@ -474,7 +474,7 @@ TEST_F(PasswordGenerationManagerTest, PasswordNoLongerGenerated) {
   EXPECT_CALL(store(), AddLogin);
   manager().PresaveGeneratedPassword(generated, {}, &form_saver());
 
-  EXPECT_CALL(store(), RemoveLogin(FormHasUniqueKey(generated)));
+  EXPECT_CALL(store(), RemoveLogin(_, FormHasUniqueKey(generated)));
   manager().PasswordNoLongerGenerated(&form_saver());
   EXPECT_FALSE(manager().HasGeneratedPassword());
 }
@@ -491,7 +491,7 @@ TEST_F(PasswordGenerationManagerTest,
   EXPECT_CALL(store(), AddLogin(generated_with_date, _));
   manager().PresaveGeneratedPassword(generated, {}, &form_saver());
 
-  EXPECT_CALL(store(), RemoveLogin(FormHasUniqueKey(generated_with_date)));
+  EXPECT_CALL(store(), RemoveLogin(_, FormHasUniqueKey(generated_with_date)));
   manager().PasswordNoLongerGenerated(&form_saver());
 
   ForwardByMinute();

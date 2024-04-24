@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_samples.h"
@@ -1922,7 +1923,7 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   WaitForElementValue("username_field", "admin");
 
   // Now the credential is removed via the settings or the bubble.
-  password_store->RemoveLogin(signin_form);
+  password_store->RemoveLogin(FROM_HERE, signin_form);
   WaitForPasswordStore();
 
   // Submit the form. It shouldn't revive the credential in the store.

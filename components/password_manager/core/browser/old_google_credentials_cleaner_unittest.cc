@@ -84,7 +84,7 @@ TEST_F(OldGoogleCredentialCleanerTest, TestOldGooglePasswordsAreDeleted) {
 
   ExpectPasswords(forms);
   for (const auto& form : forms) {
-    EXPECT_CALL(*store(), RemoveLogin(form));
+    EXPECT_CALL(*store(), RemoveLogin(testing::_, form));
   }
 
   EXPECT_CALL(observer, CleaningCompleted);
@@ -109,7 +109,7 @@ TEST_F(OldGoogleCredentialCleanerTest, TestNewerGooglePasswordsAreNotDeleted) {
   ASSERT_TRUE(cleaner.NeedsCleaning());
 
   ExpectPasswords({old_form, new_form, CreateForm("http://test.com/")});
-  EXPECT_CALL(*store(), RemoveLogin(old_form));
+  EXPECT_CALL(*store(), RemoveLogin(testing::_, old_form));
   EXPECT_CALL(observer, CleaningCompleted);
   cleaner.StartCleaning(&observer);
 

@@ -455,7 +455,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
       // It doesn't matter whether any logins were removed so bool argument can
       // be omitted.
       profile_password_store->RemoveLoginsCreatedBetween(
-          delete_begin, delete_end,
+          FROM_HERE, delete_begin, delete_end,
           IgnoreArgument<bool>(CreatePendingTaskCompletionClosure()));
     }
 
@@ -466,7 +466,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
 
     if (account_password_store) {
       account_password_store->RemoveLoginsCreatedBetween(
-          delete_begin, delete_end,
+          FROM_HERE, delete_begin, delete_end,
           IgnoreArgument<bool>(CreatePendingTaskCompletionClosure()));
     }
   }

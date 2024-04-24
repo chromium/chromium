@@ -192,8 +192,8 @@ void HttpPasswordStoreMigratorTest::TestFullStore(bool is_hsts) {
 
   EXPECT_CALL(store(), AddLogin(expected_form, _));
   EXPECT_CALL(store(), AddLogin(expected_federated_form, _));
-  EXPECT_CALL(store(), RemoveLogin(form)).Times(is_hsts);
-  EXPECT_CALL(store(), RemoveLogin(federated_form)).Times(is_hsts);
+  EXPECT_CALL(store(), RemoveLogin(_, form)).Times(is_hsts);
+  EXPECT_CALL(store(), RemoveLogin(_, federated_form)).Times(is_hsts);
   EXPECT_CALL(consumer(),
               ProcessMigratedForms(ElementsAre(
                   Pointee(expected_form), Pointee(expected_federated_form))));

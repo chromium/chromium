@@ -151,7 +151,7 @@ void SaveLocalPasswordForm(const GURL& url) {
 // Removes all credentials from the profile store.
 void ClearProfilePasswordStore() {
   GetPasswordProfileStore()->RemoveLoginsCreatedBetween(
-      base::Time(), base::Time(), base::DoNothing());
+      FROM_HERE, base::Time(), base::Time(), base::DoNothing());
   TestStoreConsumer consumer;
 }
 

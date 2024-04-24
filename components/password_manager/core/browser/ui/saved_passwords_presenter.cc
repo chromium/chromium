@@ -163,7 +163,7 @@ bool SavedPasswordsPresenter::RemoveCredential(
       // |current_form| is unchanged result obtained from
       // 'OnGetPasswordStoreResultsFrom'. So it can be present only in one
       // store at a time.
-      GetStoreFor(current_form).RemoveLogin(current_form);
+      GetStoreFor(current_form).RemoveLogin(FROM_HERE, current_form);
       undo_helper_->PasswordRemoved(current_form);
     }
   }
@@ -330,7 +330,7 @@ void SavedPasswordsPresenter::MoveCredentialsToAccount(
       if (!account_credentials_signon_realms.contains(form.signon_realm)) {
         account_store_->AddLogin(form);
       }
-      profile_store_->RemoveLogin(form);
+      profile_store_->RemoveLogin(FROM_HERE, form);
     }
   }
 

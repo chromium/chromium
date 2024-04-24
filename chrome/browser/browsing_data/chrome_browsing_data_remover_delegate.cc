@@ -920,7 +920,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       // TODO:(crbug.com/1167715) - Test that associated compromised credentials
       // are removed.
       password_store->RemoveLoginsByURLAndTime(
-          filter, delete_begin_, delete_end_,
+          FROM_HERE, filter, delete_begin_, delete_end_,
           CreateTaskCompletionClosure(TracingDataType::kPasswords));
     }
 
@@ -987,7 +987,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
                                        constants::DATA_TYPE_ACCOUNT_PASSWORDS);
 #endif
       account_store->RemoveLoginsByURLAndTime(
-          filter, delete_begin_, delete_end_,
+          FROM_HERE, filter, delete_begin_, delete_end_,
           CreateTaskCompletionClosure(TracingDataType::kAccountPasswords),
           std::move(sync_completion));
     }

@@ -12,6 +12,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -586,7 +587,7 @@ TEST_F(PasswordCheckDelegateTest, MuteInsecureCredentialStaleData) {
 
   PasswordUiEntry credential =
       std::move(delegate().GetInsecureCredentials().at(0));
-  store().RemoveLogin(form);
+  store().RemoveLogin(FROM_HERE, form);
   RunUntilIdle();
 
   EXPECT_FALSE(delegate().MuteInsecureCredential(credential));
@@ -639,7 +640,7 @@ TEST_F(PasswordCheckDelegateTest, UnmuteInsecureCredentialStaleData) {
 
   PasswordUiEntry credential =
       std::move(delegate().GetInsecureCredentials().at(0));
-  store().RemoveLogin(form);
+  store().RemoveLogin(FROM_HERE, form);
   RunUntilIdle();
 
   EXPECT_FALSE(delegate().UnmuteInsecureCredential(credential));
@@ -669,7 +670,7 @@ TEST_F(PasswordCheckDelegateTest, OnLeakFoundDoesNotCreateCredential) {
   RunUntilIdle();
   delegate().StartPasswordCheck(
       password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
-  store().RemoveLogin(form);
+  store().RemoveLogin(FROM_HERE, form);
   RunUntilIdle();
   static_cast<BulkLeakCheckDelegateInterface*>(service())->OnFinishedCredential(
       LeakCheckCredential(kUsername1, kPassword1), IsLeaked(true));
@@ -818,7 +819,7 @@ TEST_F(PasswordCheckDelegateTest, GetPasswordCheckStatusRunning) {
 
   // Make sure that even though the store is emptied after starting a check we
   // don't report a negative number for already processed.
-  store().RemoveLogin(MakeSavedPassword(kExampleCom, kUsername1));
+  store().RemoveLogin(FROM_HERE, MakeSavedPassword(kExampleCom, kUsername1));
   RunUntilIdle();
 
   status = delegate().GetPasswordCheckStatus();
@@ -1112,7 +1113,7 @@ TEST_F(PasswordCheckDelegateTest,
   EXPECT_EQ(1u, delegate().GetCredentialsWithReusedPassword().size());
 
   store().RemoveLogin(
-      MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
+      FROM_HERE, MakeSavedPassword(kExampleCom, kUsername1, kWeakPassword1));
   RunUntilIdle();
 
   EXPECT_THAT(delegate().GetCredentialsWithReusedPassword(), IsEmpty());

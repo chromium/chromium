@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
@@ -125,7 +126,8 @@ std::vector<std::unique_ptr<PasswordForm>> GetAllLogins(
 
 void RemoveLogins(PasswordStoreInterface* store) {
   // Null Time values enforce unbounded deletion in both direction
-  store->RemoveLoginsCreatedBetween(/*delete_begin=*/base::Time(),
+  store->RemoveLoginsCreatedBetween(FROM_HERE,
+                                    /*delete_begin=*/base::Time(),
                                     /*delete_end=*/base::Time::Max());
 }
 PasswordStoreInterface* GetProfilePasswordStoreInterface(int index) {

@@ -9,6 +9,7 @@
 #import <utility>
 #import <vector>
 
+#import "base/location.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
@@ -201,7 +202,7 @@ TEST_F(CredentialProviderServiceTest, TwoStores) {
               UnorderedElementsAre("local.com", "account.com",
                                    "local-and-account.com"));
 
-  password_store_->RemoveLogin(local_and_account_form);
+  password_store_->RemoveLogin(FROM_HERE, local_and_account_form);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(credential_store_.credentials.count, 3u);
@@ -209,7 +210,7 @@ TEST_F(CredentialProviderServiceTest, TwoStores) {
               UnorderedElementsAre("local.com", "account.com",
                                    "local-and-account.com"));
 
-  account_password_store_->RemoveLogin(local_and_account_form);
+  account_password_store_->RemoveLogin(FROM_HERE, local_and_account_form);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(credential_store_.credentials.count, 2u);
@@ -243,7 +244,7 @@ TEST_F(CredentialProviderServiceTest, PasswordChanges) {
   ASSERT_EQ(1u, credential_store_.credentials.count);
   EXPECT_NSEQ(credential_store_.credentials[0].password, @"Qwerty123!");
 
-  password_store_->RemoveLogin(form);
+  password_store_->RemoveLogin(FROM_HERE, form);
   task_environment_.RunUntilIdle();
 
   // Expect the store to be empty.

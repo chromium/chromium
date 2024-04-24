@@ -186,11 +186,13 @@ void PasswordStore::UpdateLoginWithPrimaryKey(
   backend_->RecordAddLoginAsyncCalledFromTheStore();
 }
 
-void PasswordStore::RemoveLogin(const PasswordForm& form) {
+void PasswordStore::RemoveLogin(const base::Location& location,
+                                const PasswordForm& form) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (!backend_) {
     return;  // Once the shutdown started, ignore new requests.
   }
+  // TODO(crbug.com/334001702): Propagate the location to the backend.
   backend_->RemoveLoginAsync(
       form, base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
                 .Then(base::BindOnce(
@@ -199,6 +201,7 @@ void PasswordStore::RemoveLogin(const PasswordForm& form) {
 }
 
 void PasswordStore::RemoveLoginsByURLAndTime(
+    const base::Location& location,
     const base::RepeatingCallback<bool(const GURL&)>& url_filter,
     base::Time delete_begin,
     base::Time delete_end,
@@ -209,6 +212,7 @@ void PasswordStore::RemoveLoginsByURLAndTime(
     std::move(sync_completion).Run(false);
     return;  // Once the shutdown started, ignore new requests.
   }
+  // TODO(crbug.com/334001702): Propagate the location to the backend.
   backend_->RemoveLoginsByURLAndTimeAsync(
       url_filter, delete_begin, delete_end, std::move(sync_completion),
       base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)
@@ -219,6 +223,7 @@ void PasswordStore::RemoveLoginsByURLAndTime(
 }
 
 void PasswordStore::RemoveLoginsCreatedBetween(
+    const base::Location& location,
     base::Time delete_begin,
     base::Time delete_end,
     base::OnceCallback<void(bool)> completion) {
@@ -230,6 +235,7 @@ void PasswordStore::RemoveLoginsCreatedBetween(
   auto callback =
       base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this,
                      LoginsChangedTrigger::BatchDeletion);
+  // TODO(crbug.com/334001702): Propagate the location to the backend.
   backend_->RemoveLoginsCreatedBetweenAsync(
       delete_begin, delete_end,
       base::BindOnce(&GetPasswordChangesOrNulloptOnFailure)

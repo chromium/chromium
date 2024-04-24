@@ -403,7 +403,8 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
         ++moved_passwords_counter;
       }
       // Remove `profile_password` from the local store.
-      helper_->profile_password_store_->RemoveLogin(*profile_password);
+      helper_->profile_password_store_->RemoveLogin(FROM_HERE,
+                                                    *profile_password);
     }
 
     // Log number of passwords moved to account.

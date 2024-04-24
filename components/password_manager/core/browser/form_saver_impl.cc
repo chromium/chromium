@@ -67,7 +67,7 @@ void PostProcessMatches(
     if (same_password && username_was_added &&
         (match_type == password_manager_util::GetLoginMatchType::kExact ||
          is_affiliated_android_match)) {
-      store->RemoveLogin(*match);
+      store->RemoveLogin(FROM_HERE, *match);
       continue;
     }
     const bool same_username = match->username_value == pending.username_value;
@@ -140,7 +140,7 @@ void FormSaverImpl::UpdateReplace(
 }
 
 void FormSaverImpl::Remove(const PasswordForm& form) {
-  store_->RemoveLogin(form);
+  store_->RemoveLogin(FROM_HERE, form);
 }
 
 std::unique_ptr<FormSaver> FormSaverImpl::Clone() {

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/password_manager/core/browser/password_store/password_store.h"
+
 #include <stddef.h>
 
 #include <memory>
@@ -11,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -34,7 +37,6 @@
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_consumer.h"
-#include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_built_in_backend.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
@@ -422,7 +424,7 @@ TEST_F(PasswordStoreTest, RemoveLoginsCreatedBetweenCallbackIsCalled) {
   EXPECT_CALL(mock_observer, OnLoginsChanged(_, testing::SizeIs(1u)));
   base::RunLoop run_loop;
   store->RemoveLoginsCreatedBetween(
-      base::Time::FromSecondsSinceUnixEpoch(0),
+      FROM_HERE, base::Time::FromSecondsSinceUnixEpoch(0),
       base::Time::FromSecondsSinceUnixEpoch(2),
       base::BindLambdaForTesting([&run_loop](bool) { run_loop.Quit(); }));
   run_loop.Run();
@@ -1249,7 +1251,7 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfRemovalProvidesChanges) {
   EXPECT_CALL(mock_observer, OnLoginsRetained).Times(0);
   EXPECT_CALL(mock_observer,
               OnLoginsChanged(store.get(), ElementsAre(EqRemoval(kTestForm))));
-  store->RemoveLogin(kTestForm);
+  store->RemoveLogin(FROM_HERE, kTestForm);
   WaitForPasswordStore();
   histogram_tester.ExpectTotalCount(kOnLoginsChangedMetric, 1);
 
@@ -1764,8 +1766,8 @@ TEST_F(PasswordStoreOriginTest,
   EXPECT_CALL(observer,
               OnLoginsChanged(_, ElementsAre(PasswordStoreChange(
                                      PasswordStoreChange::REMOVE, *form))));
-  store()->RemoveLoginsByURLAndTime(filter, base::Time(), base::Time::Max(),
-                                    run_loop.QuitClosure());
+  store()->RemoveLoginsByURLAndTime(FROM_HERE, filter, base::Time(),
+                                    base::Time::Max(), run_loop.QuitClosure());
   run_loop.Run();
 
   store()->RemoveObserver(&observer);
@@ -1794,8 +1796,8 @@ TEST_F(PasswordStoreOriginTest,
   EXPECT_CALL(observer,
               OnLoginsChanged(_, ElementsAre(PasswordStoreChange(
                                      PasswordStoreChange::REMOVE, *form))));
-  store()->RemoveLoginsByURLAndTime(filter, base::Time(), base::Time::Max(),
-                                    run_loop.QuitClosure());
+  store()->RemoveLoginsByURLAndTime(FROM_HERE, filter, base::Time(),
+                                    base::Time::Max(), run_loop.QuitClosure());
   run_loop.Run();
 
   store()->RemoveObserver(&observer);
@@ -1817,8 +1819,8 @@ TEST_F(PasswordStoreOriginTest,
       base::BindRepeating(&MatchesOrigin, other_origin);
   base::RunLoop run_loop;
   EXPECT_CALL(observer, OnLoginsChanged).Times(0);
-  store()->RemoveLoginsByURLAndTime(filter, base::Time(), base::Time::Max(),
-                                    run_loop.QuitClosure());
+  store()->RemoveLoginsByURLAndTime(FROM_HERE, filter, base::Time(),
+                                    base::Time::Max(), run_loop.QuitClosure());
   run_loop.Run();
 
   store()->RemoveObserver(&observer);
@@ -1841,7 +1843,7 @@ TEST_F(PasswordStoreOriginTest,
   base::Time time_after_creation_date = form->date_created + base::Days(1);
   base::RunLoop run_loop;
   EXPECT_CALL(observer, OnLoginsChanged).Times(0);
-  store()->RemoveLoginsByURLAndTime(filter, time_after_creation_date,
+  store()->RemoveLoginsByURLAndTime(FROM_HERE, filter, time_after_creation_date,
                                     base::Time::Max(), run_loop.QuitClosure());
   run_loop.Run();
 

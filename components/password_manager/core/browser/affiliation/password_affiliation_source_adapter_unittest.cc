@@ -107,7 +107,7 @@ class PasswordAffiliationSourceAdapterTest : public testing::Test {
   }
 
   void RemoveLoginAndWait(const PasswordForm& form) {
-    password_store_->RemoveLogin(form);
+    password_store_->RemoveLogin(FROM_HERE, form);
     RunUntilIdle();
   }
 

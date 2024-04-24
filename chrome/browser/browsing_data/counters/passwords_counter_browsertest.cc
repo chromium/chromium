@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/browsing_data/core/counters/passwords_counter.h"
+
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,7 +19,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
-#include "components/browsing_data/core/counters/passwords_counter.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -59,7 +61,8 @@ class PasswordsCounterTest : public InProcessBrowserTest {
                    bool blocked_by_user) {
     // Remove login and wait until the password store actually changes
     // on the database thread.
-    store_->RemoveLogin(CreateCredentials(origin, username, blocked_by_user));
+    store_->RemoveLogin(FROM_HERE,
+                        CreateCredentials(origin, username, blocked_by_user));
     // GetLogins() blocks until reading on the background thread is finished.
     passwords_helper::GetLogins(store_);
   }

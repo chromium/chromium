@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/ui/password_undo_helper.h"
 
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -80,7 +81,7 @@ TEST_F(PasswordUndoHelperTest, UndoSingleForm) {
 
   // Remove form
   UndoHelper().StartGroupingActions();
-  ProfileStore()->RemoveLogin(form);
+  ProfileStore()->RemoveLogin(FROM_HERE, form);
   UndoHelper().PasswordRemoved(form);
   UndoHelper().EndGroupingActions();
   RunUntilIdle();
@@ -115,9 +116,9 @@ TEST_F(PasswordUndoHelperTest, UndoMultipleForms) {
 
   // Remove all forms
   UndoHelper().StartGroupingActions();
-  ProfileStore()->RemoveLogin(form_1);
-  ProfileStore()->RemoveLogin(form_2);
-  ProfileStore()->RemoveLogin(form_1_duplicate);
+  ProfileStore()->RemoveLogin(FROM_HERE, form_1);
+  ProfileStore()->RemoveLogin(FROM_HERE, form_2);
+  ProfileStore()->RemoveLogin(FROM_HERE, form_1_duplicate);
   UndoHelper().PasswordRemoved(form_1);
   UndoHelper().PasswordRemoved(form_2);
   UndoHelper().PasswordRemoved(form_1_duplicate);
@@ -154,8 +155,8 @@ TEST_F(PasswordUndoHelperTest, UndoFormsMultipleStores) {
 
   // Remove forms
   UndoHelper().StartGroupingActions();
-  ProfileStore()->RemoveLogin(profile_form);
-  AccountStore()->RemoveLogin(account_form);
+  ProfileStore()->RemoveLogin(FROM_HERE, profile_form);
+  AccountStore()->RemoveLogin(FROM_HERE, account_form);
   UndoHelper().PasswordRemoved(profile_form);
   UndoHelper().PasswordRemoved(account_form);
   UndoHelper().EndGroupingActions();

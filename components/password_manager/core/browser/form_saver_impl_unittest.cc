@@ -164,7 +164,7 @@ TEST_P(FormSaverImplSaveTest, Write_AndDeleteEmptyUsernameCredentials) {
   const std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches = {
       &non_empty_username, &no_username};
 
-  EXPECT_CALL(*mock_store_, RemoveLogin(no_username));
+  EXPECT_CALL(*mock_store_, RemoveLogin(_, no_username));
   SaveCredential(pending, matches, std::u16string());
 }
 
@@ -179,7 +179,7 @@ TEST_P(FormSaverImplSaveTest,
   no_username.username_value.clear();
   no_username.password_value = u"abcd";
 
-  EXPECT_CALL(*mock_store_, RemoveLogin(_)).Times(0);
+  EXPECT_CALL(*mock_store_, RemoveLogin).Times(0);
   SaveCredential(pending, {&no_username}, std::u16string());
 }
 
@@ -192,7 +192,7 @@ TEST_P(FormSaverImplSaveTest, Write_EmptyUsernameWillNotCauseDeletion) {
   PasswordForm with_username = pending;
   with_username.username_value = u"nameofuser";
 
-  EXPECT_CALL(*mock_store_, RemoveLogin(_)).Times(0);
+  EXPECT_CALL(*mock_store_, RemoveLogin).Times(0);
   SaveCredential(pending, {&with_username}, std::u16string());
 }
 
@@ -209,7 +209,7 @@ TEST_P(FormSaverImplSaveTest, Write_AndDoNotDeleteEmptyUsernamePSLCredentials) {
   const std::vector<raw_ptr<const PasswordForm, VectorExperimental>> matches = {
       &stored, &no_username_psl};
 
-  EXPECT_CALL(*mock_store_, RemoveLogin(_)).Times(0);
+  EXPECT_CALL(*mock_store_, RemoveLogin).Times(0);
   SaveCredential(pending, matches, std::u16string());
 }
 
@@ -221,7 +221,7 @@ TEST_P(FormSaverImplSaveTest, Write_AndDoNotDeleteNonEmptyUsernameCredentials) {
   PasswordForm other_username = pending;
   other_username.username_value = u"other username";
 
-  EXPECT_CALL(*mock_store_, RemoveLogin(_)).Times(0);
+  EXPECT_CALL(*mock_store_, RemoveLogin).Times(0);
   SaveCredential(pending, {&other_username}, std::u16string());
 }
 
@@ -359,7 +359,7 @@ TEST_F(FormSaverImplTest, Blocklist) {
 TEST_F(FormSaverImplTest, Remove) {
   PasswordForm form = CreatePending(u"nameofuser", u"wordToP4a55");
 
-  EXPECT_CALL(*mock_store_, RemoveLogin(form));
+  EXPECT_CALL(*mock_store_, RemoveLogin(_, form));
   form_saver_.Remove(form);
 }
 

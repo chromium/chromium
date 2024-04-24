@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
@@ -199,7 +200,7 @@ TEST_F(InsecureCredentialsManagerTest,
 
   // Removing a saved password should notify observers.
   EXPECT_CALL(observer, OnInsecureCredentialsChanged);
-  store().RemoveLogin(saved_password);
+  store().RemoveLogin(FROM_HERE, saved_password);
   RunUntilIdle();
 
   // After an observer is removed it should no longer receive notifications.
@@ -274,12 +275,12 @@ TEST_F(InsecureCredentialsManagerTest, ReactToChangesInBothTables) {
               testing::UnorderedElementsAre(CredentialUIEntry(password1),
                                             CredentialUIEntry(password2)));
 
-  store().RemoveLogin(password1);
+  store().RemoveLogin(FROM_HERE, password1);
   RunUntilIdle();
   EXPECT_THAT(provider().GetInsecureCredentialEntries(),
               ElementsAre(CredentialUIEntry(password2)));
 
-  store().RemoveLogin(password2);
+  store().RemoveLogin(FROM_HERE, password2);
   RunUntilIdle();
   EXPECT_THAT(provider().GetInsecureCredentialEntries(), IsEmpty());
 }
