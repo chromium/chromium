@@ -119,4 +119,8 @@ bool DPAPIKeyProvider::UseForEncryption() {
   return true;
 }
 
+bool DPAPIKeyProvider::IsCompatibleWithOsCryptSync() {
+  return true;
+}
+
 }  // namespace os_crypt_async

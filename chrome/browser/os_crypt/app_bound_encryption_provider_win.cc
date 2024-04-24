@@ -177,6 +177,10 @@ bool AppBoundEncryptionProviderWin::UseForEncryption() {
   return g_enable_encryption_for_testing;
 }
 
+bool AppBoundEncryptionProviderWin::IsCompatibleWithOsCryptSync() {
+  return false;
+}
+
 base::expected<std::vector<const uint8_t>,
                AppBoundEncryptionProviderWin::KeyRetrievalStatus>
 AppBoundEncryptionProviderWin::RetrieveEncryptedKey() {

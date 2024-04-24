@@ -23,8 +23,9 @@ class TestOSCryptAsync : public OSCryptAsync {
         encryptor_(GetTestEncryptorForTesting()) {}
 
   [[nodiscard]] base::CallbackListSubscription GetInstance(
-      InitCallback callback) override {
-    std::move(callback).Run(encryptor_.Clone(), true);
+      InitCallback callback,
+      Encryptor::Option option) override {
+    std::move(callback).Run(encryptor_.Clone(option), true);
     return base::CallbackListSubscription();
   }
 

@@ -51,6 +51,7 @@ class DPAPIKeyProvider : public KeyProvider {
   // os_crypt_async::KeyProvider interface.
   void GetKey(KeyCallback callback) override;
   bool UseForEncryption() override;
+  bool IsCompatibleWithOsCryptSync() override;
 
   // Attempt to retrieve `encrypted_key` from `pref_path`. If a key is found
   // that matches and has correct `key_prefix` then the raw encrypted key is

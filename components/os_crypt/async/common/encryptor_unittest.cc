@@ -61,10 +61,10 @@ bool EncryptStringWithDPAPI(const std::string& plaintext,
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-// Helper function to verify that decryption using OSCrypt worked. This is
+// Helper function to verify that decryption using OSCrypt failed. This is
 // platform dependent, as Windows will fail, but other platforms will return the
 // ciphertext back.
-[[nodiscard]] bool MaybeVerifyDecryptOperation(
+[[nodiscard]] bool MaybeVerifyFailedDecryptOperation(
     const std::optional<std::string>& decrypted,
     base::span<const uint8_t> ciphertext) {
 #if BUILDFLAG(IS_WIN)
@@ -119,10 +119,12 @@ class EncryptorTestBase : public ::testing::Test {
     return crypto::RandBytesAsVector(length);
   }
 
-  static Encryptor::Key GenerateRandomAES256TestKey() {
-    return Encryptor::Key(
-        GenerateRandomTestKey(Encryptor::Key::kAES256GCMKeySize),
-        mojom::Algorithm::kAES256GCM);
+  static Encryptor::Key GenerateRandomAES256TestKey(
+      bool is_os_crypt_sync_compatible = false) {
+    Encryptor::Key key(GenerateRandomTestKey(Encryptor::Key::kAES256GCMKeySize),
+                       mojom::Algorithm::kAES256GCM);
+    key.is_os_crypt_sync_compatible_ = is_os_crypt_sync_compatible;
+    return key;
   }
 };
 
@@ -350,7 +352,7 @@ TEST_F(EncryptorTestBase, MultipleKeys) {
     key_ring_bar.emplace("BAR", bar_key.Clone());
     const Encryptor encryptor = GetEncryptor(std::move(key_ring_bar), "BAR");
     auto decrypted = encryptor.DecryptData(*ciphertext);
-    EXPECT_TRUE(MaybeVerifyDecryptOperation(decrypted, *ciphertext));
+    EXPECT_TRUE(MaybeVerifyFailedDecryptOperation(decrypted, *ciphertext));
   }
 
   // Verify that order of keys in the keyring does not matter.
@@ -391,7 +393,7 @@ TEST_F(EncryptorTestBase, MultipleKeys) {
   {
     const Encryptor encryptor = GetEncryptor();
     auto decrypted = encryptor.DecryptData(*ciphertext);
-    EXPECT_TRUE(MaybeVerifyDecryptOperation(decrypted, *ciphertext));
+    EXPECT_TRUE(MaybeVerifyFailedDecryptOperation(decrypted, *ciphertext));
   }
 }
 
@@ -425,7 +427,7 @@ TEST_F(EncryptorTestWithOSCrypt, ShortCiphertext) {
     bad_data += "a";
     auto decrypted =
         encryptor.DecryptData(base::as_bytes(base::make_span(bad_data)));
-    EXPECT_TRUE(MaybeVerifyDecryptOperation(
+    EXPECT_TRUE(MaybeVerifyFailedDecryptOperation(
         decrypted, base::as_bytes(base::make_span(bad_data))));
   }
 }
@@ -519,6 +521,49 @@ TEST_F(EncryptorTestBase, AlgorithmEncryptCompatibility) {
 }
 
 #endif  // BUILDFLAG(IS_WIN)
+
+// Test that Clone respects the option to a key that is os_crypt sync
+// compatible.
+TEST_F(EncryptorTestBase, Clone) {
+  {
+    Encryptor::KeyRing key_ring;
+    key_ring.emplace("BLAH", GenerateRandomAES256TestKey(
+                                 /*is_os_crypt_sync_compatible=*/true));
+    key_ring.emplace("TEST", GenerateRandomAES256TestKey());
+    auto encryptor = GetEncryptor(std::move(key_ring), "TEST");
+    EXPECT_EQ(encryptor.provider_for_encryption_, "TEST");
+
+    {
+      auto cloned_encryptor = encryptor.Clone(Encryptor::Option::kNone);
+      EXPECT_EQ(cloned_encryptor.provider_for_encryption_, "TEST");
+      EXPECT_EQ(cloned_encryptor.keys_.size(), 2u);
+    }
+
+    {
+      auto cloned_encryptor =
+          encryptor.Clone(Encryptor::Option::kEncryptSyncCompat);
+      EXPECT_EQ(cloned_encryptor.provider_for_encryption_, "BLAH");
+      EXPECT_EQ(cloned_encryptor.keys_.size(), 2u);
+    }
+  }
+
+  // Test empty keyring.
+  {
+    const auto empty_encryptor = GetEncryptor();
+    EXPECT_TRUE(empty_encryptor.provider_for_encryption_.empty());
+    {
+      auto cloned_encryptor =
+          empty_encryptor.Clone(Encryptor::Option::kEncryptSyncCompat);
+      EXPECT_TRUE(cloned_encryptor.provider_for_encryption_.empty());
+    }
+
+    {
+      auto cloned_encryptor =
+          empty_encryptor.Clone(Encryptor::Option::kEncryptSyncCompat);
+      EXPECT_TRUE(cloned_encryptor.provider_for_encryption_.empty());
+    }
+  }
+}
 
 class EncryptorTraitsTest : public EncryptorTestBase {};
 

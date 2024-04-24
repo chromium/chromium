@@ -48,7 +48,9 @@ Encryptor::Key& Encryptor::Key::operator=(Key&& other) = default;
 Encryptor::Key::~Key() = default;
 
 Encryptor::Key Encryptor::Key::Clone() const {
-  return Key(key_, *algorithm_);
+  Encryptor::Key key(key_, *algorithm_);
+  key.is_os_crypt_sync_compatible_ = is_os_crypt_sync_compatible_;
+  return key;
 }
 
 Encryptor::Encryptor() = default;
@@ -198,13 +200,29 @@ std::optional<std::string> Encryptor::DecryptData(
   return std::nullopt;
 }
 
-Encryptor Encryptor::Clone() const {
+Encryptor Encryptor::Clone(Option option) const {
   KeyRing keyring;
   for (const auto& [provider, key] : keys_) {
     keyring.emplace(provider, key.Clone());
   }
+  std::string provider_for_encryption = provider_for_encryption_;
 
-  return Encryptor(std::move(keyring), provider_for_encryption_);
+  switch (option) {
+    case Option::kNone:
+      break;
+    case Option::kEncryptSyncCompat:
+      for (const auto& [provider, key] : keyring) {
+        if (key.is_os_crypt_sync_compatible_) {
+          // Keys are already sorted by precedence, so if multiple keys are
+          // compatible, the one with the highest precedence (later in the
+          // keyring) is picked.
+          provider_for_encryption = provider;
+        }
+      }
+      break;
+  }
+
+  return Encryptor(std::move(keyring), provider_for_encryption);
 }
 
 }  // namespace os_crypt_async

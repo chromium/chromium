@@ -52,6 +52,7 @@ class AppBoundEncryptionProviderWin : public os_crypt_async::KeyProvider {
   // os_crypt_async::KeyProvider interface.
   void GetKey(KeyCallback callback) override;
   bool UseForEncryption() override;
+  bool IsCompatibleWithOsCryptSync() override;
 
   base::expected<std::vector<const uint8_t>, KeyRetrievalStatus>
   RetrieveEncryptedKey();
