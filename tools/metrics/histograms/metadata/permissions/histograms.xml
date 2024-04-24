@@ -1130,19 +1130,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Permissions.QuietNotificationPrompts.DidEnableAdapativelyInPrefs"
-    enum="Boolean" expires_after="2024-04-28">
-  <owner>andypaicu@chromium.org</owner>
-  <owner>engedy@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records, each time the quiet UI gets enabled in preferences, whether it was
-    enabled by the adaptive activation logic.
-  </summary>
-</histogram>
-
-<histogram
     name="Permissions.QuietNotificationPrompts.EnabledStateInPrefsChangedTo"
     enum="BooleanEnabled" expires_after="2024-09-01">
   <owner>andypaicu@chromium.org</owner>

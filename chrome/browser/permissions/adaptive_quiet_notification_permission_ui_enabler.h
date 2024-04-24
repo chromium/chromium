@@ -82,7 +82,6 @@ class AdaptiveQuietNotificationPermissionUiEnabler : public KeyedService {
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  bool is_enabling_adaptively_ = false;
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_ADAPTIVE_QUIET_NOTIFICATION_PERMISSION_UI_ENABLER_H_

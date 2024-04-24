@@ -45,8 +45,6 @@ using EnablingMethod = QuietNotificationPermissionUiState::EnablingMethod;
 // Enable the quiet UX after 3 consecutive denies in adapative activation mode.
 constexpr int kConsecutiveDeniesThresholdForActivation = 3u;
 
-constexpr char kDidAdaptivelyEnableQuietUiInPrefs[] =
-    "Permissions.QuietNotificationPrompts.DidEnableAdapativelyInPrefs";
 constexpr char kIsQuietUiEnabledInPrefs[] =
     "Permissions.QuietNotificationPrompts.RegularProfile.IsEnabledInPrefs";
 constexpr char kQuietUiEnabledStateInPrefsChangedTo[] =
@@ -171,10 +169,6 @@ void AdaptiveQuietNotificationPermissionUiEnabler::PermissionPromptResolved() {
   if (QuietNotificationPermissionUiConfig::IsAdaptiveActivationEnabled() &&
       !profile_->GetPrefs()->GetBoolean(
           prefs::kEnableQuietNotificationPermissionUi)) {
-    // Set |is_enabling_adaptively_| for the duration of the pref update to
-    // inform OnQuietUiStateChanged() that the quiet UI is being enabled
-    // adaptively, so that it can record the correct metrics.
-    base::AutoReset<bool> enabling_adaptively(&is_enabling_adaptively_, true);
     profile_->GetPrefs()->SetBoolean(
         prefs::kEnableQuietNotificationPermissionUi, true /* value */);
     // TODO(crbug.com/40156618): If
@@ -229,12 +223,9 @@ void AdaptiveQuietNotificationPermissionUiEnabler::OnQuietUiStateChanged() {
                             is_quiet_ui_enabled_in_prefs);
 
   if (is_quiet_ui_enabled_in_prefs) {
-    base::UmaHistogramBoolean(kDidAdaptivelyEnableQuietUiInPrefs,
-                              is_enabling_adaptively_);
     profile_->GetPrefs()->SetInteger(
         prefs::kQuietNotificationPermissionUiEnablingMethod,
-        static_cast<int>(is_enabling_adaptively_ ? EnablingMethod::kAdaptive
-                                                 : EnablingMethod::kManual));
+        static_cast<int>(EnablingMethod::kManual));
   } else {
     // Reset the promo state so that if the quiet UI is enabled adaptively
     // again, the promo will be shown again.
