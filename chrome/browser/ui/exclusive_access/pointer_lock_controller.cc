@@ -215,11 +215,8 @@ void PointerLockController::OnBubbleHidden(
 
   // Allow silent pointer lock if the bubble has been display for a period of
   // time and dismissed due to timeout.
-  if (reason == ExclusiveAccessBubbleHideReason::kTimeout) {
+  if (reason == ExclusiveAccessBubbleHideReason::kTimeout)
     web_contents_granted_silent_pointer_lock_permission_ = web_contents;
-  } else {
-    web_contents_granted_silent_pointer_lock_permission_ = nullptr;
-  }
 }
 
 bool PointerLockController::ShouldSuppressBubbleReshowForStateChange() {

@@ -2000,22 +2000,13 @@ void BrowserView::UpdateExclusiveAccessBubble(
     // Perform the destroy async. State updates in the exclusive access bubble
     // view may call back into this method. This otherwise results in premature
     // deletion of the bubble view and UAFs. See crbug.com/1426521.
-    exclusive_access_bubble_destruction_task_id_ =
-        exclusive_access_bubble_cancelable_task_tracker_.PostTask(
-            base::SingleThreadTaskRunner::GetCurrentDefault().get(), FROM_HERE,
-            base::BindOnce(&BrowserView::DestroyAnyExclusiveAccessBubble,
-                           GetAsWeakPtr()));
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&BrowserView::DestroyAnyExclusiveAccessBubble,
+                                  GetAsWeakPtr()));
     return;
   }
 
   if (exclusive_access_bubble_) {
-    if (exclusive_access_bubble_destruction_task_id_) {
-      // We previously posted a destruction task, but now we want to reuse the
-      // bubble. Cancel the destruction task.
-      exclusive_access_bubble_cancelable_task_tracker_.TryCancel(
-          exclusive_access_bubble_destruction_task_id_.value());
-      exclusive_access_bubble_destruction_task_id_.reset();
-    }
     exclusive_access_bubble_->Update(params, std::move(first_hide_callback));
     return;
   }
