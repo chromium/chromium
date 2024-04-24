@@ -114,13 +114,8 @@ public class HostZoomMapImpl {
     }
 
     /**
-     * Returns true when the field trial param to adjust zoom for OS-level font setting is true,
-     * false otherwise.
-     *
-     * <p>Note: The former text-autoscaling feature takes the OS-level font setting into account, so
-     * this will be included in any text-size-adjust changes. We default to false here so that we do
-     * not double-apply the setting.
-     *
+     * Returns true when the field trial param to adjust zoom for OS-level font setting is
+     * true, false otherwise.
      * @return bool True if zoom should be adjusted.
      */
     public static boolean shouldAdjustForOSLevel() {
@@ -128,7 +123,7 @@ public class HostZoomMapImpl {
                 .getFieldTrialParamByFeatureAsBoolean(
                         ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM,
                         ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_PARAM,
-                        false);
+                        true);
     }
 
     /**

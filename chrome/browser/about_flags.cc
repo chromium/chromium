@@ -769,20 +769,6 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
-const FeatureEntry::FeatureParam kAccessibilityPageZoomNoOSAdjustment[] = {
-    {"AdjustForOSLevel", "false"},
-};
-const FeatureEntry::FeatureParam kAccessibilityPageZoomWithOSAdjustment[] = {
-    {"AdjustForOSLevel", "true"},
-};
-
-const FeatureEntry::FeatureVariation kAccessibilityPageZoomVariations[] = {
-    {"- With OS Adjustment", kAccessibilityPageZoomWithOSAdjustment,
-     std::size(kAccessibilityPageZoomWithOSAdjustment), nullptr},
-    {"- No OS Adjustment (default)", kAccessibilityPageZoomNoOSAdjustment,
-     std::size(kAccessibilityPageZoomNoOSAdjustment), nullptr},
-};
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -5390,9 +5376,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-accessibility-page-zoom",
      flag_descriptions::kAccessibilityPageZoomName,
      flag_descriptions::kAccessibilityPageZoomDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kAccessibilityPageZoom,
-                                    kAccessibilityPageZoomVariations,
-                                    "AccessibilityPageZoom")},
+     FEATURE_VALUE_TYPE(features::kAccessibilityPageZoom)},
     {"enable-accessibility-page-zoom-enhancements",
      flag_descriptions::kAccessibilityPageZoomEnhancementsName,
      flag_descriptions::kAccessibilityPageZoomEnhancementsDescription,
