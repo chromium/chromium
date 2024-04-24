@@ -224,6 +224,10 @@ class ParentPermissionInputSection : public views::TextfieldController {
   ParentPermissionInputSection& operator=(const ParentPermissionInputSection&) =
       delete;
 
+  ~ParentPermissionInputSection() override {
+    credential_input_field_->set_controller(nullptr);
+  }
+
   // views::TextfieldController
   void ContentsChanged(views::Textfield* sender,
                        const std::u16string& new_contents) override {
