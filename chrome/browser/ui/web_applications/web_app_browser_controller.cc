@@ -531,16 +531,17 @@ bool WebAppBrowserController::IsUrlInHomeTabScope(const GURL& url) const {
     return false;
   }
 
+  // Retrieve the start URL for the app. Start URL is always in home tab scope.
+  // TODO(b/330640982): rename GetAppPinnedHomeTabUrl() to something more
+  // sensible.
   std::optional<GURL> pinned_home_url =
       registrar().GetAppPinnedHomeTabUrl(app_id());
   if (!pinned_home_url) {
     return false;
   }
 
-  // We ignore query params and hash ref when deciding what should be
-  // opened as the home tab.
+  // We ignore hash ref when deciding what should be opened as the home tab.
   GURL::Replacements replacements;
-  replacements.ClearQuery();
   replacements.ClearRef();
   if (url.ReplaceComponents(replacements) ==
       pinned_home_url.value().ReplaceComponents(replacements)) {

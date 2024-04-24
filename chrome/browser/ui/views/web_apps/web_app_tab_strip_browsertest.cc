@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, NonTabbedWebApp) {
 
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, InstallingPinsHomeTab) {
   GURL start_url = embedded_test_server()->GetURL(
-      "/web_apps/tab_strip_customizations.html?some_query#blah");
+      "/web_apps/tab_strip_customizations.html#blah");
   webapps::AppId app_id = InstallTestWebApp(start_url);
   Browser* app_browser = FindWebAppBrowser(browser()->profile(), app_id);
   TabStripModel* tab_strip = app_browser->tab_strip_model();
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, InstallingPinsHomeTab) {
 
   EXPECT_EQ(tab_strip->count(), 1);
   EXPECT_TRUE(tab_strip->IsTabPinned(0));
-  // The URL of the pinned home tab should include the query params.
+  // The URL of the pinned home tab should include the fragment.
   EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
   EXPECT_EQ(tab_strip->active_index(), 0);
 
@@ -833,16 +833,37 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, QueryParamsInStartUrl) {
   // Expect only the home tab was opened.
   EXPECT_EQ(tab_strip->count(), 1);
   EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  EXPECT_EQ(tab_strip->active_index(), 0);
   EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
 
-  // Navigate to start_url without query params.
-  OpenUrlAndWait(app_browser,
-                 embedded_test_server()->GetURL("/web_apps/get_manifest.html"));
+  // Navigate to start_url with different query params.
+  OpenUrlAndWait(app_browser, embedded_test_server()->GetURL(
+                                  "/web_apps/get_manifest.html?query=param"));
 
-  // Expect navigation to happen in home tab.
-  EXPECT_EQ(tab_strip->count(), 1);
+  // Expect navigation to happen in a new tab in that window.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
+  EXPECT_EQ(tab_strip->active_index(), 1);
+  EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(), start_url);
+  EXPECT_EQ(tab_strip->GetWebContentsAt(1)->GetVisibleURL(),
+            embedded_test_server()->GetURL(
+                "/web_apps/get_manifest.html?query=param"));
+
+  // Navigate to start_url.
+  GURL start_url_with_fragment = embedded_test_server()->GetURL(
+      "/web_apps/"
+      "get_manifest.html?tab_strip_query_params_in_start_url.json#param");
+  OpenUrlAndWait(app_browser, start_url_with_fragment);
+
+  // Expect that the home tab is focused and the new tab.
+  EXPECT_EQ(tab_strip->count(), 2);
+  EXPECT_EQ(tab_strip->active_index(), 0);
+  EXPECT_TRUE(tab_strip->IsTabPinned(0));
   EXPECT_EQ(tab_strip->GetWebContentsAt(0)->GetVisibleURL(),
-            embedded_test_server()->GetURL("/web_apps/get_manifest.html"));
+            start_url_with_fragment);
+  EXPECT_EQ(tab_strip->GetWebContentsAt(1)->GetVisibleURL(),
+            embedded_test_server()->GetURL(
+                "/web_apps/get_manifest.html?query=param"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
