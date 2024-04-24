@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
+#import "components/autofill/core/browser/test_personal_data_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/autofill/autofill_constants.h"
+#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_profile_edit_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -46,12 +48,25 @@ class AutofillProfileEditTableViewControllerTest
     CreateController();
     [controller() loadModel];
     CheckController();
+    personal_data_manager_ =
+        std::make_unique<autofill::TestPersonalDataManager>();
+    profile_ = std::make_unique<autofill::AutofillProfile>(
+        autofill::test::GetFullProfile2());
+    autofill_profile_edit_mediator_ = [[AutofillProfileEditMediator alloc]
+           initWithDelegate:nil
+        personalDataManager:personal_data_manager_.get()
+            autofillProfile:profile_.get()
+                countryCode:@"US"
+          isMigrationPrompt:(GetParam().prompt_mode ==
+                             AutofillSaveProfilePromptMode::kMigrateProfile)];
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewController alloc]
-            initWithDelegate:nil
+            initWithDelegate:autofill_profile_edit_mediator_
                    userEmail:base::SysUTF16ToNSString(kTestSyncingEmail)
                   controller:controller()
                 settingsView:GetParam().is_settings];
+    autofill_profile_edit_mediator_.consumer =
+        autofill_profile_edit_table_view_controller_;
 
     [autofill_profile_edit_table_view_controller_
         setAccountProfile:GetParam().account_profile];
@@ -77,40 +92,39 @@ class AutofillProfileEditTableViewControllerTest
   }
 
   void CreateProfileData() {
-    autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
     full_name_ =
-        base::SysUTF16ToNSString(profile.GetRawInfo(autofill::NAME_FULL));
+        base::SysUTF16ToNSString(profile_->GetRawInfo(autofill::NAME_FULL));
     [autofill_profile_edit_table_view_controller_ setFullName:full_name_];
     company_name_ =
-        base::SysUTF16ToNSString(profile.GetRawInfo(autofill::COMPANY_NAME));
+        base::SysUTF16ToNSString(profile_->GetRawInfo(autofill::COMPANY_NAME));
     [autofill_profile_edit_table_view_controller_ setCompanyName:company_name_];
     address_home_line_1_ = base::SysUTF16ToNSString(
-        profile.GetRawInfo(autofill::ADDRESS_HOME_LINE1));
+        profile_->GetRawInfo(autofill::ADDRESS_HOME_LINE1));
     [autofill_profile_edit_table_view_controller_
         setHomeAddressLine1:address_home_line_1_];
     address_home_line_2_ = base::SysUTF16ToNSString(
-        profile.GetRawInfo(autofill::ADDRESS_HOME_LINE2));
+        profile_->GetRawInfo(autofill::ADDRESS_HOME_LINE2));
     [autofill_profile_edit_table_view_controller_
         setHomeAddressLine2:address_home_line_2_];
     city_ = base::SysUTF16ToNSString(
-        profile.GetRawInfo(autofill::ADDRESS_HOME_CITY));
+        profile_->GetRawInfo(autofill::ADDRESS_HOME_CITY));
     [autofill_profile_edit_table_view_controller_ setHomeAddressCity:city_];
     state_ = base::SysUTF16ToNSString(
-        profile.GetRawInfo(autofill::ADDRESS_HOME_STATE));
+        profile_->GetRawInfo(autofill::ADDRESS_HOME_STATE));
     [autofill_profile_edit_table_view_controller_ setHomeAddressState:state_];
     zip_ = base::SysUTF16ToNSString(
-        profile.GetRawInfo(autofill::ADDRESS_HOME_ZIP));
+        profile_->GetRawInfo(autofill::ADDRESS_HOME_ZIP));
     [autofill_profile_edit_table_view_controller_ setHomeAddressZip:zip_];
     country_ = base::SysUTF16ToNSString(
-        profile.GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
+        profile_->GetRawInfo(autofill::ADDRESS_HOME_COUNTRY));
     [autofill_profile_edit_table_view_controller_
         setHomeAddressCountry:country_];
     phone_home_whole_number_ = base::SysUTF16ToNSString(
-        profile.GetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER));
+        profile_->GetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER));
     [autofill_profile_edit_table_view_controller_
         setHomePhoneWholeNumber:phone_home_whole_number_];
     email_ =
-        base::SysUTF16ToNSString(profile.GetRawInfo(autofill::EMAIL_ADDRESS));
+        base::SysUTF16ToNSString(profile_->GetRawInfo(autofill::EMAIL_ADDRESS));
     [autofill_profile_edit_table_view_controller_ setEmailAddress:email_];
   }
 
@@ -165,7 +179,8 @@ class AutofillProfileEditTableViewControllerTest
   }
 
   AutofillProfileEditTableViewController*
-      autofill_profile_edit_table_view_controller_ = nil;
+      autofill_profile_edit_table_view_controller_;
+  AutofillProfileEditMediator* autofill_profile_edit_mediator_;
   NSString* full_name_;
   NSString* company_name_;
   NSString* address_home_line_1_;
@@ -176,6 +191,8 @@ class AutofillProfileEditTableViewControllerTest
   NSString* country_;
   NSString* phone_home_whole_number_;
   NSString* email_;
+  std::unique_ptr<autofill::AutofillProfile> profile_;
+  std::unique_ptr<autofill::TestPersonalDataManager> personal_data_manager_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -287,11 +304,6 @@ TEST_P(AutofillProfileEditTableViewControllerTest, TestItems) {
 
 // Test the contents of the view when the value requirements fail.
 TEST_P(AutofillProfileEditTableViewControllerTest, TestRequirements) {
-  [autofill_profile_edit_table_view_controller_ setLine1Required:YES];
-  [autofill_profile_edit_table_view_controller_ setCityRequired:YES];
-  [autofill_profile_edit_table_view_controller_ setStateRequired:YES];
-  [autofill_profile_edit_table_view_controller_ setZipRequired:YES];
-
   TableViewTextEditItem* city_item =
       static_cast<TableViewTextEditItem*>(GetTableViewItem(0, 4));
   // Remove the city field value.

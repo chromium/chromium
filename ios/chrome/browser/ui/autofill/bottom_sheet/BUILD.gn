@@ -95,7 +95,6 @@ source_set("bottom_sheet_ui") {
 source_set("bottom_sheet_unit_tests") {
   testonly = true
   sources = [
-    "autofill_edit_profile_bottom_sheet_table_view_controller_unittest.mm",
     "payments_suggestion_bottom_sheet_coordinator_unittest.mm",
     "payments_suggestion_bottom_sheet_mediator_unittest.mm",
   ]
@@ -108,7 +107,6 @@ source_set("bottom_sheet_unit_tests") {
     "//components/autofill/ios/form_util",
     "//components/prefs",
     "//components/sync:test_support",
-    "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/model/credit_card",
     "//ios/chrome/browser/default_browser/model:utils",
@@ -116,12 +114,9 @@ source_set("bottom_sheet_unit_tests") {
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
-    "//ios/chrome/browser/shared/ui/table_view:test_support",
-    "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/tabs/model",
-    "//ios/chrome/browser/ui/autofill:autofill_shared_ui",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",

@@ -45,6 +45,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // YES, when the mediator belongs to the migration prompt.
   BOOL _isMigrationPrompt;
+
+  // If YES, denote that the particular field requires a value.
+  BOOL _line1Required;
+  BOOL _cityRequired;
+  BOOL _stateRequired;
+  BOOL _zipRequired;
+
+  // Stores the required field names whose values are empty;
+  NSMutableSet<NSString*>* _requiredFieldsWithEmptyValue;
 }
 
 - (instancetype)initWithDelegate:
@@ -62,6 +71,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _delegate = delegate;
     _selectedCountryCode = countryCode;
     _isMigrationPrompt = isMigrationPrompt;
+    _requiredFieldsWithEmptyValue = [[NSMutableSet<NSString*> alloc] init];
 
     [self loadCountries];
   }
@@ -133,18 +143,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [_delegate didSaveProfile];
 }
 
-- (BOOL)fieldValueEmptyOnProfileLoadForType:
-    (autofill::FieldType)serverFieldType {
-  return _autofillProfile
-      ->GetInfo(serverFieldType,
-                GetApplicationContext()->GetApplicationLocale())
-      .empty();
-}
-
 - (void)updateProfileMetadataWithValue:(NSString*)value
                   forAutofillFieldType:(NSString*)autofillFieldType {
   autofill::FieldType serverFieldType =
-      autofill::TypeNameToFieldType(base::SysNSStringToUTF8(autofillFieldType));
+      [self typeNameToFieldType:autofillFieldType];
 
   // Since the country field is a text field, we should use SetInfo() to
   // make sure they get converted to country codes.
@@ -164,6 +166,35 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
+- (BOOL)fieldContainsValidValue:(NSString*)autofillFieldType
+                  hasEmptyValue:(BOOL)hasEmptyValue
+      moveToAccountFromSettings:(BOOL)moveToAccountFromSettings {
+  if (![self isAutofillFieldTypeRequiredField:autofillFieldType] ||
+      [self requiredFieldWasEmptyOnProfileLoadForType:autofillFieldType
+                            moveToAccountFromSettings:
+                                moveToAccountFromSettings]) {
+    // Early return if the text field is not a required field or contained an
+    // empty value when the profile was loaded.
+    return YES;
+  }
+
+  // If the required text field contains a value now, remove it from
+  // `_requiredFieldsWithEmptyValue`.
+  if ([_requiredFieldsWithEmptyValue containsObject:autofillFieldType] &&
+      !hasEmptyValue) {
+    [_requiredFieldsWithEmptyValue removeObject:autofillFieldType];
+    return YES;
+  }
+
+  // If the required field is empty, add it to `_requiredFieldsWithEmptyValue`.
+  if (hasEmptyValue) {
+    [_requiredFieldsWithEmptyValue addObject:autofillFieldType];
+    return NO;
+  }
+
+  return hasEmptyValue;
+}
+
 - (void)viewDidDisappear {
   [_delegate autofillEditProfileMediatorDidFinish:self];
 }
@@ -172,7 +203,41 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _selectedCountryCode;
 }
 
+- (int)requiredFieldsWithEmptyValuesCount {
+  return (int)[_requiredFieldsWithEmptyValue count];
+}
+
+- (void)resetRequiredFieldsWithEmptyValuesCount {
+  [_requiredFieldsWithEmptyValue removeAllObjects];
+}
+
 #pragma mark - Private
+
+// Returns true if the `autofillFieldType` belongs to a required field.
+- (BOOL)isAutofillFieldTypeRequiredField:(NSString*)autofillFieldType {
+  autofill::FieldType serverFieldType =
+      [self typeNameToFieldType:autofillFieldType];
+  return (serverFieldType == autofill::ADDRESS_HOME_LINE1 && _line1Required) ||
+         (serverFieldType == autofill::ADDRESS_HOME_CITY && _cityRequired) ||
+         (serverFieldType == autofill::ADDRESS_HOME_STATE && _stateRequired) ||
+         (serverFieldType == autofill::ADDRESS_HOME_ZIP && _zipRequired);
+}
+
+// Returns YES if the profile contained an empty value for the required
+// `itemType`.
+- (BOOL)requiredFieldWasEmptyOnProfileLoadForType:(NSString*)autofillFieldType
+                        moveToAccountFromSettings:
+                            (BOOL)moveToAccountFromSettings {
+  if (moveToAccountFromSettings) {
+    return NO;
+  }
+  autofill::FieldType serverFieldType =
+      [self typeNameToFieldType:autofillFieldType];
+  return _autofillProfile
+      ->GetInfo(serverFieldType,
+                GetApplicationContext()->GetApplicationLocale())
+      .empty();
+}
 
 // Loads the country codes and names and sets the default selected country code.
 - (void)loadCountries {
@@ -220,7 +285,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
 
-  [self sendRequirementsToConsumer];
+  [self setRequirementsForFields];
 }
 
 // Fetches and updates the required fields for the `country`.
@@ -234,19 +299,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
 
-  [self sendRequirementsToConsumer];
+  [self setRequirementsForFields];
 }
 
-// Informs the consumer about the required fields corresponding to the
+// Computes the required fields based on the country value
 // `_selectedCountryCode`.
-- (void)sendRequirementsToConsumer {
+- (void)setRequirementsForFields {
   autofill::AutofillCountry country(
       base::SysNSStringToUTF8(_selectedCountryCode),
       GetApplicationContext()->GetApplicationLocale());
-  [self.consumer setLine1Required:country.requires_line1()];
-  [self.consumer setCityRequired:country.requires_city()];
-  [self.consumer setStateRequired:country.requires_state()];
-  [self.consumer setZipRequired:country.requires_zip()];
+  _line1Required = country.requires_line1();
+  _cityRequired = country.requires_city();
+  _stateRequired = country.requires_state();
+  _zipRequired = country.requires_zip();
 }
 
 // Informs the consumer of the profile's data.
@@ -305,6 +370,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (BOOL)isAccountProfile {
   return _autofillProfile->source() ==
          autofill::AutofillProfile::Source::kAccount;
+}
+
+- (autofill::FieldType)typeNameToFieldType:(NSString*)autofillFieldType {
+  return autofill::TypeNameToFieldType(
+      base::SysNSStringToUTF8(autofillFieldType));
 }
 
 @end

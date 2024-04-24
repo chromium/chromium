@@ -13,22 +13,6 @@
 // Called when the country is selected from the dropdown.
 - (void)didSelectCountry:(NSString*)country;
 
-// Notifies the class that conforms this delegate to set that whether the
-// address line 1 data is required or not.
-- (void)setLine1Required:(BOOL)line1Required;
-
-// Notifies the class that conforms this delegate to set that whether the city
-// data is required or not.
-- (void)setCityRequired:(BOOL)cityRequired;
-
-// Notifies the class that conforms this delegate  to set that whether the state
-// data is required or not.
-- (void)setStateRequired:(BOOL)stateRequired;
-
-// Notifies the class that conforms this delegate to set that whether the zip
-// code data is required or not.
-- (void)setZipRequired:(BOOL)zipRequired;
-
 // Notifies the class that conforms this delegate to set the corresponding data.
 - (void)setCompanyName:(NSString*)companyName;
 - (void)setFullName:(NSString*)fullName;

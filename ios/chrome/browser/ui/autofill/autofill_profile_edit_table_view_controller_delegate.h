@@ -18,14 +18,16 @@
 // Notifies the class that conforms this delegate to save the profile.
 - (void)didSaveProfileFromModal;
 
-// Returns true if the field value is empty.
-- (BOOL)fieldValueEmptyOnProfileLoadForType:
-    (autofill::FieldType)serverFieldType;
-
 // Notifies the class that conforms this delegate to update the profile
 // `serverFieldType` with `value`.
 - (void)updateProfileMetadataWithValue:(NSString*)value
                   forAutofillFieldType:(NSString*)autofillUIType;
+
+// For `autofillFieldType`, computes whether the field contains a valid value or
+// not. If not,
+- (BOOL)fieldContainsValidValue:(NSString*)autofillFieldType
+                  hasEmptyValue:(BOOL)hasEmptyValue
+      moveToAccountFromSettings:(BOOL)moveToAccountFromSettings;
 
 // Notifies the class that conforms this delegate that the view has moved out of
 // the view hierarchy.
@@ -33,6 +35,12 @@
 
 // The selected country' country code
 - (NSString*)selectedCountryCode;
+
+// Returns the count of the fields that are required and contain no value.
+- (int)requiredFieldsWithEmptyValuesCount;
+
+// Resets the container that stores the required fields with empty values.
+- (void)resetRequiredFieldsWithEmptyValuesCount;
 
 @end
 

@@ -53,12 +53,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 @property(nonatomic, strong) NSString* homePhoneWholeNumber;
 @property(nonatomic, strong) NSString* emailAddress;
 
-// If YES, denote that the particular field requires a value.
-@property(nonatomic, assign) BOOL line1Required;
-@property(nonatomic, assign) BOOL cityRequired;
-@property(nonatomic, assign) BOOL stateRequired;
-@property(nonatomic, assign) BOOL zipRequired;
-
 // YES, if the profile's source is autofill::AutofillProfile::Source::kAccount.
 @property(nonatomic, assign) BOOL accountProfile;
 
@@ -72,9 +66,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
   // The AutofillProfileEditTableViewControllerDelegate for this ViewController.
   __weak id<AutofillProfileEditTableViewControllerDelegate> _delegate;
-
-  // Stores the required field names whose values are empty;
-  NSMutableSet<NSString*>* _requiredFieldsWithEmptyValue;
 
   // Yes, if the error section has been presented.
   BOOL _errorSectionPresented;
@@ -112,7 +103,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     _userEmail = userEmail;
     _errorSectionPresented = NO;
     _accountProfile = NO;
-    _requiredFieldsWithEmptyValue = [[NSMutableSet<NSString*> alloc] init];
     _controller = controller;
     _settingsView = settingsView;
     _moveToAccountFromSettings = NO;
@@ -381,70 +371,6 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 #pragma mark - Conversion Helper Methods
 
-// Returns `autofill::FieldType` corresponding to the `itemType`.
-- (autofill::FieldType)serverFieldTypeCorrespondingToRequiredItemType:
-    (AutofillProfileDetailsItemType)itemType {
-  switch (itemType) {
-    case AutofillProfileDetailsItemTypeFullName:
-      return autofill::NAME_FULL;
-    case AutofillProfileDetailsItemTypeLine1:
-      return autofill::ADDRESS_HOME_LINE1;
-    case AutofillProfileDetailsItemTypeCity:
-      return autofill::ADDRESS_HOME_CITY;
-    case AutofillProfileDetailsItemTypeState:
-      return autofill::ADDRESS_HOME_STATE;
-    case AutofillProfileDetailsItemTypeZip:
-      return autofill::ADDRESS_HOME_ZIP;
-    case AutofillProfileDetailsItemTypeCompanyName:
-    case AutofillProfileDetailsItemTypeLine2:
-    case AutofillProfileDetailsItemTypeDependentLocality:
-    case AutofillProfileDetailsItemTypeAdminLevel2:
-    case AutofillProfileDetailsItemTypePhoneNumber:
-    case AutofillProfileDetailsItemTypeEmailAddress:
-    case AutofillProfileDetailsItemTypeCountry:
-    case AutofillProfileDetailsItemTypeError:
-    case AutofillProfileDetailsItemTypeFooter:
-    case AutofillProfileDetailsItemTypeSaveButton:
-    case AutofillProfileDetailsItemTypeMigrateToAccountButton:
-    case AutofillProfileDetailsItemTypeMigrateToAccountRecommendation:
-      break;
-  }
-  NOTREACHED();
-  return autofill::UNKNOWN_TYPE;
-}
-
-// Returns the label corresponding to the item type for a required field.
-- (NSString*)labelCorrespondingToRequiredItemType:
-    (AutofillProfileDetailsItemType)itemType {
-  switch (itemType) {
-    case AutofillProfileDetailsItemTypeFullName:
-      return l10n_util::GetNSString(IDS_IOS_AUTOFILL_FULLNAME);
-    case AutofillProfileDetailsItemTypeLine1:
-      return l10n_util::GetNSString(IDS_IOS_AUTOFILL_ADDRESS1);
-    case AutofillProfileDetailsItemTypeCity:
-      return l10n_util::GetNSString(IDS_IOS_AUTOFILL_CITY);
-    case AutofillProfileDetailsItemTypeState:
-      return l10n_util::GetNSString(IDS_IOS_AUTOFILL_STATE);
-    case AutofillProfileDetailsItemTypeZip:
-      return l10n_util::GetNSString(IDS_IOS_AUTOFILL_ZIP);
-    case AutofillProfileDetailsItemTypeCompanyName:
-    case AutofillProfileDetailsItemTypeLine2:
-    case AutofillProfileDetailsItemTypeDependentLocality:
-    case AutofillProfileDetailsItemTypeAdminLevel2:
-    case AutofillProfileDetailsItemTypePhoneNumber:
-    case AutofillProfileDetailsItemTypeEmailAddress:
-    case AutofillProfileDetailsItemTypeCountry:
-    case AutofillProfileDetailsItemTypeError:
-    case AutofillProfileDetailsItemTypeFooter:
-    case AutofillProfileDetailsItemTypeSaveButton:
-    case AutofillProfileDetailsItemTypeMigrateToAccountButton:
-    case AutofillProfileDetailsItemTypeMigrateToAccountRecommendation:
-      break;
-  }
-  NOTREACHED();
-  return @"";
-}
-
 // Returns the value corresponding to `autofillType`.
 - (NSString*)valueForAutofillUIType:(AutofillUIType)autofillUIType {
   switch (autofillUIType) {
@@ -611,79 +537,14 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 #pragma mark - Private
 
-// Returns true if the itemType belongs to a required field.
-- (BOOL)isItemTypeRequiredField:(AutofillProfileDetailsItemType)itemType {
-  switch (itemType) {
-    case AutofillProfileDetailsItemTypeLine1:
-      return self.line1Required;
-    case AutofillProfileDetailsItemTypeCity:
-      return self.cityRequired;
-    case AutofillProfileDetailsItemTypeState:
-      return self.stateRequired;
-    case AutofillProfileDetailsItemTypeZip:
-      return self.zipRequired;
-    case AutofillProfileDetailsItemTypeFullName:
-    case AutofillProfileDetailsItemTypeCompanyName:
-    case AutofillProfileDetailsItemTypeLine2:
-    case AutofillProfileDetailsItemTypeDependentLocality:
-    case AutofillProfileDetailsItemTypeAdminLevel2:
-    case AutofillProfileDetailsItemTypePhoneNumber:
-    case AutofillProfileDetailsItemTypeEmailAddress:
-    case AutofillProfileDetailsItemTypeCountry:
-    case AutofillProfileDetailsItemTypeError:
-    case AutofillProfileDetailsItemTypeFooter:
-    case AutofillProfileDetailsItemTypeSaveButton:
-    case AutofillProfileDetailsItemTypeMigrateToAccountButton:
-    case AutofillProfileDetailsItemTypeMigrateToAccountRecommendation:
-      break;
-  }
-  return NO;
-}
-
 // Computes whether the `tableViewItem` is a required field and empty.
 - (void)computeErrorIfRequiredTextField:(TableViewTextEditItem*)tableViewItem {
-  AutofillProfileDetailsItemType itemType =
-      static_cast<AutofillProfileDetailsItemType>(tableViewItem.type);
-  if (![self isItemTypeRequiredField:itemType] ||
-      [self requiredFieldWasEmptyOnProfileLoadForItemType:itemType]) {
-    // Early return if the text field is not a required field or contained an
-    // empty value when the profile was loaded.
-    tableViewItem.hasValidText = YES;
-    return;
-  }
-
-  NSString* requiredTextFieldLabel =
-      [self labelCorrespondingToRequiredItemType:itemType];
-  BOOL isValueEmpty = (tableViewItem.textFieldValue.length == 0);
-
-  // If the required text field contains a value now, remove it from
-  // `_requiredFieldsWithEmptyValue`.
-  if ([_requiredFieldsWithEmptyValue containsObject:requiredTextFieldLabel] &&
-      !isValueEmpty) {
-    [_requiredFieldsWithEmptyValue removeObject:requiredTextFieldLabel];
-    tableViewItem.hasValidText = YES;
-  }
-
-  // If the required field is empty, add it to `_requiredFieldsWithEmptyValue`.
-  if (isValueEmpty) {
-    [_requiredFieldsWithEmptyValue addObject:requiredTextFieldLabel];
-    tableViewItem.hasValidText = NO;
-  }
-}
-
-// Returns YES if the profile contained an empty value for the required
-// `itemType`.
-- (BOOL)requiredFieldWasEmptyOnProfileLoadForItemType:
-    (AutofillProfileDetailsItemType)itemType {
-  DCHECK([self isItemTypeRequiredField:itemType]);
-
-  if (_moveToAccountFromSettings) {
-    return NO;
-  }
-
-  return [_delegate
-      fieldValueEmptyOnProfileLoadForType:
-          [self serverFieldTypeCorrespondingToRequiredItemType:itemType]];
+  AutofillProfileEditItem* profileItem =
+      static_cast<AutofillProfileEditItem*>(tableViewItem);
+  tableViewItem.hasValidText = [_delegate
+        fieldContainsValidValue:profileItem.autofillFieldType
+                  hasEmptyValue:(profileItem.textFieldValue.length == 0)
+      moveToAccountFromSettings:_moveToAccountFromSettings];
 }
 
 // Removes the given section if it exists.
@@ -728,21 +589,22 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
                                  indexSetWithIndex:fieldsSectionIndex + 1]
             withRowAnimation:UITableViewRowAnimationTop];
         [strongSelf->_controller.tableViewModel
-                           setFooter:(([strongSelf
-                                               ->_requiredFieldsWithEmptyValue
-                                                   count] > 0)
-                                          ? [strongSelf errorMessageItem]
-                                          : [strongSelf footerItem])
+                           setFooter:
+                               (([strongSelf->_delegate
+                                         requiredFieldsWithEmptyValuesCount] >
+                                 0)
+                                    ? [strongSelf errorMessageItem]
+                                    : [strongSelf footerItem])
             forSectionWithIdentifier:addSection];
       }
                         completion:nil];
 }
 
-// Updates the Done button status based on `_requiredFieldsWithEmptyValue`
+// Updates the Done button status based on the required fields that are empty
 // and shows/removes the error footer if required.
 - (void)updateDoneButtonStatus {
   CHECK(_settingsView);
-  BOOL shouldShowError = ([_requiredFieldsWithEmptyValue count] > 0);
+  BOOL shouldShowError = ([_delegate requiredFieldsWithEmptyValuesCount] > 0);
   _controller.navigationItem.rightBarButtonItem.enabled = !shouldShowError;
   if (shouldShowError != _errorSectionPresented) {
     AutofillProfileDetailsSectionIdentifier addSection =
@@ -763,11 +625,11 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   }
 }
 
-// Updates the Save/Update button status based on
-// `_requiredFieldsWithEmptyValue`.
+// Updates the Save/Update button status based on the required fields that are
+// empty.
 - (void)updateSaveButtonStatus {
   CHECK(!_settingsView);
-  BOOL shouldShowError = ([_requiredFieldsWithEmptyValue count] > 0);
+  BOOL shouldShowError = ([_delegate requiredFieldsWithEmptyValuesCount] > 0);
   _modalSaveUpdateButton.enabled = !shouldShowError;
   [_controller reconfigureCellsForItems:@[ _modalSaveUpdateButton ]];
 }
@@ -804,11 +666,11 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 // Returns the error message combined with footer.
 - (NSAttributedString*)errorAndFooterMessage {
-  CHECK([_requiredFieldsWithEmptyValue count] > 0);
+  CHECK([_delegate requiredFieldsWithEmptyValuesCount] > 0);
   CHECK(_settingsView);
   NSString* error = l10n_util::GetPluralNSStringF(
       IDS_IOS_SETTINGS_EDIT_AUTOFILL_ADDRESS_REQUIREMENT_ERROR,
-      (int)[_requiredFieldsWithEmptyValue count]);
+      [_delegate requiredFieldsWithEmptyValuesCount]);
 
   NSString* finalErrorString =
       [NSString stringWithFormat:@"%@\n%@", error, [self footerMessage]];
@@ -860,7 +722,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 // Recomputes the required fields that are empty.
 - (void)findRequiredFieldsWithEmptyValues {
-  [_requiredFieldsWithEmptyValue removeAllObjects];
+  [_delegate resetRequiredFieldsWithEmptyValuesCount];
   for (TableViewItem* item in [_controller.tableViewModel
            itemsInSectionWithIdentifier:
                AutofillProfileDetailsSectionIdentifierFields]) {

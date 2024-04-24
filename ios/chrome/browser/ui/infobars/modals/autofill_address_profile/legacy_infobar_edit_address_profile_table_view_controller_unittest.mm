@@ -105,54 +105,11 @@ class LegacyInfobarEditAddressProfileTableViewControllerTest
                             profile.GetRawInfo(autofill::EMAIL_ADDRESS))];
   }
 
-  // Tests that the save button behaviour changes as the requirements change
-  // depending on the view.
-  void TestRequirements(bool account_profile_or_migration_prompt) {
-    [autofill_profile_edit_table_view_controller_ setLine1Required:YES];
-    [autofill_profile_edit_table_view_controller_ setCityRequired:YES];
-    [autofill_profile_edit_table_view_controller_ setStateRequired:YES];
-    [autofill_profile_edit_table_view_controller_ setZipRequired:NO];
-
-    TableViewTextButtonItem* button_item =
-        static_cast<TableViewTextButtonItem*>(
-            GetTableViewItem(0, NumberOfItemsInSection(0) - 1));
-    EXPECT_EQ(button_item.enabled, YES);
-
-    TableViewTextEditItem* zip_item =
-        static_cast<TableViewTextEditItem*>(GetTableViewItem(0, 6));
-    zip_item.textFieldValue = @"";
-    [autofill_profile_edit_table_view_controller_
-        tableViewItemDidChange:zip_item];
-    // Since, zip was set as not required, the button should be enabled.
-    EXPECT_EQ(button_item.enabled, YES);
-
-    TableViewTextEditItem* name_item =
-        static_cast<TableViewTextEditItem*>(GetTableViewItem(0, 0));
-    name_item.textFieldValue = @"";
-    [autofill_profile_edit_table_view_controller_
-        tableViewItemDidChange:name_item];
-    // Should be still enabled.
-    EXPECT_EQ(button_item.enabled, YES);
-
-    TableViewTextEditItem* city_item =
-        static_cast<TableViewTextEditItem*>(GetTableViewItem(0, 4));
-    city_item.textFieldValue = @"";
-    [autofill_profile_edit_table_view_controller_
-        tableViewItemDidChange:city_item];
-    // Should not be enabled for account profile or migration prompt.
-    EXPECT_EQ(button_item.enabled, !account_profile_or_migration_prompt);
-  }
-
   AutofillProfileEditTableViewController*
       autofill_profile_edit_table_view_controller_;
   id delegate_mock_;
   id delegate_modal_mock_;
 };
-
-// Tests that there are no requirement checks for the profiles saved to sync.
-TEST_F(LegacyInfobarEditAddressProfileTableViewControllerTest, TestNoRequirements) {
-  TestRequirements(NO);
-}
 
 // TODO(crbug.com/1348294): Merge into main test fixture.
 class LegacyInfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled
@@ -247,13 +204,6 @@ TEST_F(LegacyInfobarEditAddressProfileTableViewControllerTestWithUnionViewEnable
       l10n_util::GetNSString(IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL));
 }
 
-// Tests that the save in account prompt runs requirement checks.
-TEST_F(LegacyInfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled,
-       TestRequirements) {
-  CreateAccountProfile();
-  TestRequirements(YES);
-}
-
 class LegacyInfobarEditAddressProfileTableViewControllerMigrationPromptTest
     : public LegacyInfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled {
  protected:
@@ -274,12 +224,6 @@ TEST_F(LegacyInfobarEditAddressProfileTableViewControllerMigrationPromptTest,
       [controller() tableViewModel], expected_footer_text,
       l10n_util::GetNSString(
           IDS_AUTOFILL_ADDRESS_MIGRATION_TO_ACCOUNT_PROMPT_OK_BUTTON_LABEL));
-}
-
-// Tests that the migration prompt runs requirement checks.
-TEST_F(LegacyInfobarEditAddressProfileTableViewControllerMigrationPromptTest,
-       TestRequirements) {
-  TestRequirements(YES);
 }
 
 }  // namespace
