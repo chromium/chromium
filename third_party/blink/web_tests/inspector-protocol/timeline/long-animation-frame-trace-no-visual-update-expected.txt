@@ -4,4 +4,5 @@ Tracing complete
 Found matching LoAF event
 duration-blockingDuration>=50
 numScripts=1
+Found matching short LoaF events >=4
 

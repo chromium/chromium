@@ -6,4 +6,5 @@ duration-blockingDuration>=50
 renderDuration>0
 styleAndLayoutDuration>0
 numScripts=1
+Found matching short LoaF events >=4
 

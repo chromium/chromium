@@ -114,8 +114,8 @@ void AnimationFrameTimingMonitor::DidBeginMainFrame() {
     current_frame_timing_info_->SetTotalBlockingDuration(blocking_duration);
 
     client_.ReportLongAnimationFrameTiming(current_frame_timing_info_);
-    RecordLongAnimationFrameUKMAndTrace(*current_frame_timing_info_);
   }
+  RecordLongAnimationFrameUKMAndTrace(*current_frame_timing_info_);
 
   first_ui_event_timestamp_ = base::TimeTicks();
   current_frame_timing_info_.Clear();
@@ -212,7 +212,11 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
     return;
   }
 
-  if (!frame || (task_duration < kLongAnimationFrameDuration)) {
+  bool tracing_enabled;
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED("devtools.timeline", &tracing_enabled);
+
+  if (!frame ||
+      (task_duration < kLongAnimationFrameDuration && !tracing_enabled)) {
     return;
   }
 
@@ -227,7 +231,8 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
   }
 
   if (RuntimeEnabledFeatures::LongAnimationFrameTimingEnabled(
-          frame->DomWindow())) {
+          frame->DomWindow()) &&
+      task_duration >= kLongAnimationFrameDuration) {
     DOMWindowPerformance::performance(*frame->DomWindow())
         ->ReportLongAnimationFrameTiming(timing_info);
   }
@@ -267,17 +272,21 @@ void RecordLongAnimationFrameTrace(const AnimationFrameTimingInfo& info,
   uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      "devtools.timeline", "LongAnimationFrame", trace_id,
-      info.FrameStartTime(), "data", std::move(traced_value));
-  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0("devtools.timeline",
-                                                 "LongAnimationFrame", trace_id,
-                                                 info.RenderEndTime());
+      "devtools.timeline", "AnimationFrame", trace_id, info.FrameStartTime(),
+      "data", std::move(traced_value));
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "devtools.timeline", "AnimationFrame", trace_id, info.RenderEndTime());
 }
 }  // namespace
 
 void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
     const AnimationFrameTimingInfo& info) {
+  // Record all animation frames to traces, but only long ones to UKM.
   RecordLongAnimationFrameTrace(info, this);
+  if (info.Duration() < kLongAnimationFrameDuration) {
+    return;
+  }
+
   ukm::UkmRecorder* recorder = client_.MainFrameUkmRecorder();
   ukm::SourceId source_id = client_.MainFrameUkmSourceId();
   if (!recorder || source_id == ukm::kInvalidSourceId) {
