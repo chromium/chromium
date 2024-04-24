@@ -828,6 +828,7 @@ void GPMEnclaveController::OnPasskeyCreated(
   webauthn::PasskeyModel* passkey_model =
       PasskeyModelFactory::GetInstance()->GetForProfile(GetProfile());
   passkey_model->CreatePasskey(passkey);
+  model_->SetStep(Step::kGPMPasskeySaved);
 }
 
 bool GPMEnclaveController::GetFailedPINAttemptCount() {

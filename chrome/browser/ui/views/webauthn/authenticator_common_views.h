@@ -6,6 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_COMMON_VIEWS_H_
 
 #include <memory>
+#include <string>
+
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
 
 namespace views {
 class View;
@@ -19,5 +24,13 @@ class View;
 // +---------------------+
 std::unique_ptr<views::View> CreatePasskeyWithUsernameLabel(
     std::u16string username);
+
+// Creates a simple view with an icon and a label.
+// +---------------------+
+// | <icon>      label   |
+// +---------------------+
+std::unique_ptr<views::View> CreateIconWithLabelRow(
+    const gfx::VectorIcon& icon,
+    const std::u16string& label);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_COMMON_VIEWS_H_

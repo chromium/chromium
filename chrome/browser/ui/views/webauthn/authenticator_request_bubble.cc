@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webauthn/authenticator_request_bubble.h"
+
 #include <memory>
 
+#include "base/strings/utf_string_conversions.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -14,10 +17,11 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "chrome/browser/ui/webauthn/authenticator_request_bubble.h"
+#include "chrome/browser/ui/views/webauthn/authenticator_common_views.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/lottie/animation.h"
@@ -45,7 +49,6 @@ struct BubbleContents {
       &AuthenticatorRequestDialogModel::StartOver;
 };
 
-// TODO(rgod): Add username row and correct footer when mocks are ready.
 constexpr BubbleContents kGPMPasskeySavedContents = {
     .buttons = ui::DIALOG_BUTTON_NONE,
     .title = u"Passkey saved (UT)",
@@ -187,8 +190,7 @@ class AuthenticatorRequestBubbleDelegate
     if (bubble_contents_->show_footer) {
       auto label = std::make_unique<views::Label>(
           u"Your passkeys are saved to Google Password Manager for "
-          u"example@gmail.com and will also be available on your Android "
-          u"devices (UNTRANSLATED)",
+          u"example@gmail.com (UNTRANSLATED)",
           ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
           views::style::STYLE_SECONDARY);
       label->SetMultiLine(true);
@@ -219,6 +221,11 @@ class AuthenticatorRequestBubbleDelegate
               .SetText(bubble_contents_->body)
               .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
               .Build());
+    }
+    if (step_ == AuthenticatorRequestDialogModel::Step::kGPMPasskeySaved) {
+      AddChildView(CreateIconWithLabelRow(
+          vector_icons::kPasskeyIcon,
+          base::UTF8ToUTF16(model_->user_entity.name.value_or(""))));
     }
     AddChildView(std::move(primary_view));
   }

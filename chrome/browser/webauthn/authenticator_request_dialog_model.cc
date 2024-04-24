@@ -1140,7 +1140,9 @@ void AuthenticatorRequestDialogController::OnRequestComplete() {
           ->NotifyWebAuthnRequestAborted();
     }
   }
-  SetCurrentStep(Step::kClosed);
+  if (model_->step() != Step::kGPMPasskeySaved) {
+    SetCurrentStep(Step::kClosed);
+  }
 }
 
 void AuthenticatorRequestDialogController::OnRequestTimeout() {
