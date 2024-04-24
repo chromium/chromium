@@ -56,6 +56,7 @@ bool ShouldRequestEarlyExit(const SyncProtocolError& error) {
     case THROTTLED:
     case TRANSIENT_ERROR:
     case PARTIAL_FAILURE:
+    case UNKNOWN_ERROR:
       return false;
     case NOT_MY_BIRTHDAY:
     case CLIENT_DATA_OBSOLETE:
@@ -67,11 +68,6 @@ bool ShouldRequestEarlyExit(const SyncProtocolError& error) {
       // waiting forever. So assert we would send something.
       DCHECK_NE(error.action, UNKNOWN_ACTION);
       return true;
-    case UNKNOWN_ERROR:
-      // TODO(crbug.com/40691256): This NOTREACHED is questionable because the
-      // sync server can cause it.
-      NOTREACHED();
-      return false;
     case CONFLICT:
     case INVALID_MESSAGE:
       NOTREACHED();
