@@ -38,22 +38,14 @@
       }
 
       /* Links styles used within OOBE */
-
       .oobe-local-link {
-        color: var(--cros-link-color);
-        cursor: pointer;
-        text-decoration: none;
-      }
-      :host-context(.jelly-enabled) .oobe-local-link {
         color: var(--cros-sys-primary);
+        cursor: pointer;
+        text-decoration: underline;
       }
-
       .oobe-local-link:focus {
-        outline-color: var(--cros-focus-ring-color);
-        transition: outline-color 200ms;
-      }
-      :host-context(.jelly-enabled) .oobe-local-link:focus {
         outline-color: var(--cros-sys-focus_ring);
+        transition: outline-color 200ms;
       }
 
       .oobe-optin-row {
