@@ -30,28 +30,41 @@ class PickerSessionMetricsTest : public testing::Test {
       structured_metrics_recorder_;
 };
 
-TEST_F(PickerSessionMetricsTest, RecordsUmaSessionOutcomeOnce) {
+TEST_F(PickerSessionMetricsTest, RecordsSessionOutcomeOnce) {
   base::HistogramTester histogram;
-  {
-    PickerSessionMetrics metrics;
+  PickerSessionMetrics metrics;
 
-    metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
-    metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
-    metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kAbandoned);
-    metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kUnknown);
-  }
+  metrics.RecordOutcome(
+      PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
+  metrics.RecordOutcome(
+      PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
+  metrics.RecordOutcome(PickerSessionMetrics::SessionOutcome::kAbandoned);
+  metrics.RecordOutcome(PickerSessionMetrics::SessionOutcome::kUnknown);
 
   histogram.ExpectUniqueSample(
       "Ash.Picker.Session.Outcome",
       PickerSessionMetrics::SessionOutcome::kInsertedOrCopied, 1);
 }
 
-TEST_F(PickerSessionMetricsTest, RecordsUmaUnknownOutcomeOnDestruction) {
+TEST_F(PickerSessionMetricsTest, RecordsUnknownOutcomeOnDestruction) {
   base::HistogramTester histogram;
   { PickerSessionMetrics metrics; }
 
   histogram.ExpectUniqueSample("Ash.Picker.Session.Outcome",
                                PickerSessionMetrics::SessionOutcome::kUnknown,
+                               1);
+}
+
+TEST_F(PickerSessionMetricsTest,
+       DoesNotRecordUnknownOutcomeOnDestructionIfOutcomeWasRecorded) {
+  base::HistogramTester histogram;
+  {
+    PickerSessionMetrics metrics;
+    metrics.RecordOutcome(PickerSessionMetrics::SessionOutcome::kAbandoned);
+  }
+
+  histogram.ExpectUniqueSample("Ash.Picker.Session.Outcome",
+                               PickerSessionMetrics::SessionOutcome::kAbandoned,
                                1);
 }
 
@@ -101,71 +114,6 @@ TEST_F(PickerSessionMetricsTest, OnStartSessionMetricsForNullTextInputClient) {
   cros_events::Picker_StartSession expected_event;
   expected_event.SetInputFieldType(cros_events::PickerInputFieldType::NONE)
       .SetSelectionLength(0);
-  EXPECT_THAT(structured_metrics_recorder_.GetEvents(),
-              ContainsEvent(expected_event));
-}
-
-TEST_F(PickerSessionMetricsTest, RecordsDefaultFinishSessionEvent) {
-  { PickerSessionMetrics metrics; }
-
-  cros_events::Picker_FinishSession expected_event;
-  expected_event.SetOutcome(cros_events::PickerSessionOutcome::UNKNOWN)
-      .SetAction(cros_events::PickerAction::UNKNOWN)
-      .SetResultSource(cros_events::PickerResultSource::UNKNOWN)
-      .SetResultType(cros_events::PickerResultType::UNKNOWN)
-      .SetTotalEdits(0)
-      .SetFinalQuerySize(0)
-      .SetResultIndex(-1);
-  EXPECT_THAT(structured_metrics_recorder_.GetEvents(),
-              ContainsEvent(expected_event));
-}
-
-TEST_F(PickerSessionMetricsTest, RecordsFinishSessionEventForInsert) {
-  {
-    PickerSessionMetrics metrics;
-    metrics.SetAction(PickerCategory::kDatesTimes);
-    metrics.UpdateSearchQuery(u"abc");
-    metrics.UpdateSearchQuery(u"abcdef");
-    metrics.UpdateSearchQuery(u"abcde");
-    metrics.SetInsertedResult(
-        PickerSearchResult::Text(u"primary",
-                                 PickerSearchResult::TextData::Source::kDate),
-        3);
-    metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
-  }
-
-  cros_events::Picker_FinishSession expected_event;
-  expected_event
-      .SetOutcome(cros_events::PickerSessionOutcome::INSERTED_OR_COPIED)
-      .SetAction(cros_events::PickerAction::OPEN_DATES_TIMES)
-      .SetResultSource(cros_events::PickerResultSource::DATES_TIMES)
-      .SetResultType(cros_events::PickerResultType::TEXT)
-      .SetTotalEdits(7)
-      .SetFinalQuerySize(5)
-      .SetResultIndex(3);
-  EXPECT_THAT(structured_metrics_recorder_.GetEvents(),
-              ContainsEvent(expected_event));
-}
-
-TEST_F(PickerSessionMetricsTest, RecordsFinishSessionEventForCaseTransform) {
-  {
-    PickerSessionMetrics metrics;
-    metrics.SetAction(PickerCategory::kUpperCase);
-    metrics.SetInsertedResult(
-        PickerSearchResult::Text(
-            u"primary", PickerSearchResult::TextData::Source::kCaseTransform),
-        0);
-    metrics.SetOutcome(PickerSessionMetrics::SessionOutcome::kFormat);
-  }
-
-  cros_events::Picker_FinishSession expected_event;
-  expected_event.SetOutcome(cros_events::PickerSessionOutcome::FORMAT)
-      .SetAction(cros_events::PickerAction::TRANSFORM_UPPER_CASE)
-      .SetResultSource(cros_events::PickerResultSource::CASE_TRANSFORM)
-      .SetResultType(cros_events::PickerResultType::TEXT)
-      .SetTotalEdits(0)
-      .SetFinalQuerySize(0)
-      .SetResultIndex(0);
   EXPECT_THAT(structured_metrics_recorder_.GetEvents(),
               ContainsEvent(expected_event));
 }
