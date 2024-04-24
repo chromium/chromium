@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "device/fido/enclave/verify/hash.h"
 
@@ -100,6 +101,32 @@ struct RekorSignatureBundle {
   // The signature over the canonicalized JSON document.
   std::vector<uint8_t> signature;
 };
+
+// Verifies a Rekor LogEntry. This includes verifying:
+//
+// 1. the signature in `signed_entry_timestamp` using Rekor's public key,
+// 1. the signature in `body.spec.generic_signature` using the endorser's public
+//    key,
+// 1. that the content of the body equals `endorsement`.
+bool VerifyRekorLogEntry(base::span<const uint8_t> log_entry,
+                         base::span<const uint8_t> rekor_public_key,
+                         base::span<const uint8_t> endorsement);
+
+// Parses the given bytes into a Rekor `LogEntry` object, and returns its
+// `body` parsed into an instance of `Body`.
+std::optional<Body> GetRekorLogEntryBody(base::span<const uint8_t> log_entry);
+
+// Parses a blob into a Rekor log entry and verifies the signature in
+// `signed_entry_timestamp` using Rekor's public key.
+bool VerifyRekorSignature(base::span<const uint8_t> log_entry,
+                          base::span<const uint8_t> rekor_public_key);
+
+// Verifies the signature in the body over the contents.
+bool VerifyRekorBody(const Body&, base::span<const uint8_t> contents_bytes);
+
+// Parses `RekorSignatureBundle` from `log_entry`.
+std::optional<RekorSignatureBundle> RekorSignatureBundle(
+    base::span<const uint8_t> log_entry);
 
 }  // namespace device::enclave
 
