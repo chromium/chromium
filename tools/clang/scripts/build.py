@@ -616,6 +616,9 @@ def compiler_rt_cmake_flags(*, sanitizers, profile):
       # everywhere, even though we only need it on Linux.
       'COMPILER_RT_BUILD_CRT=ON',
       'COMPILER_RT_BUILD_LIBFUZZER=OFF',
+      # Turn off ctx_profile because it depends on the sanitizer libraries,
+      # which we don't always build.
+      'COMPILER_RT_BUILD_CTX_PROFILE=OFF',
       'COMPILER_RT_BUILD_MEMPROF=OFF',
       'COMPILER_RT_BUILD_ORC=OFF',
       'COMPILER_RT_BUILD_PROFILE=' + ('ON' if profile else 'OFF'),
