@@ -71,7 +71,8 @@ void AnimationFrameTimingMonitor::WillPerformStyleAndLayoutCalculation() {
       base::TimeTicks::Now());
 }
 
-void AnimationFrameTimingMonitor::DidBeginMainFrame() {
+void AnimationFrameTimingMonitor::DidBeginMainFrame(
+    LocalDOMWindow& local_root_window) {
   // This can happen if the AnimationFrameTimingMonitor instance is created
   // in the middle of a frame.
   if (!current_frame_timing_info_) {
@@ -114,7 +115,8 @@ void AnimationFrameTimingMonitor::DidBeginMainFrame() {
 
     client_.ReportLongAnimationFrameTiming(current_frame_timing_info_);
   }
-  RecordLongAnimationFrameUKMAndTrace(*current_frame_timing_info_);
+  RecordLongAnimationFrameUKMAndTrace(*current_frame_timing_info_,
+                                      local_root_window);
 
   first_ui_event_timestamp_ = base::TimeTicks();
   current_frame_timing_info_.Clear();
@@ -235,10 +237,7 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
     DOMWindowPerformance::performance(*frame->DomWindow())
         ->ReportLongAnimationFrameTiming(timing_info);
   }
-
-  if (frame->IsMainFrame()) {
-    RecordLongAnimationFrameUKMAndTrace(*timing_info);
-  }
+  RecordLongAnimationFrameUKMAndTrace(*timing_info, *frame->DomWindow());
 }
 
 namespace {
@@ -279,7 +278,8 @@ void RecordLongAnimationFrameTrace(const AnimationFrameTimingInfo& info,
 }  // namespace
 
 void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
-    const AnimationFrameTimingInfo& info) {
+    const AnimationFrameTimingInfo& info,
+    LocalDOMWindow& window) {
   // Record all animation frames to traces, but only long ones to UKM.
   RecordLongAnimationFrameTrace(info, this);
   if (info.Duration() < kLongAnimationFrameDuration) {
@@ -316,8 +316,8 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
     total_forced_style_and_layout_duration += script->StyleDuration();
     total_forced_style_and_layout_duration += script->LayoutDuration();
     ThirdPartyScriptDetector::Technology third_party_technology =
-        ThirdPartyScriptDetector::From(*(script->Window()))
-            .Detect(script->GetSourceLocation().url);
+        ThirdPartyScriptDetector::From(window).Detect(
+            script->GetSourceLocation().url);
     switch (script->GetInvokerType()) {
       case ScriptTimingInfo::InvokerType::kClassicScript:
       case ScriptTimingInfo::InvokerType::kModuleScript:
