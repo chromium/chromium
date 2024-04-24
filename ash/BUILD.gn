@@ -4352,8 +4352,6 @@ test("ash_unittests") {
     "//components/live_caption:constants",
     "//components/media_message_center",
     "//components/media_message_center:test_support",
-    "//components/metrics/structured:structured_events",
-    "//components/metrics/structured:test_support",
     "//components/onc",
     "//components/password_manager/core/browser:hash_password_manager",
     "//components/peripherals/logging:logging",

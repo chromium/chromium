@@ -9,10 +9,6 @@
 
 #include "ash/ash_export.h"
 
-namespace ui {
-class TextInputClient;
-}  // namespace ui
-
 namespace ash {
 
 // Records metrics for a session of using Picker.
@@ -34,9 +30,6 @@ class ASH_EXPORT PickerSessionMetrics {
   ~PickerSessionMetrics();
 
   void RecordOutcome(SessionOutcome outcome);
-
-  // Records CrOS event metrics when a picker session starts.
-  void OnStartSession(ui::TextInputClient* client);
 
  private:
   // Whether the outcome of this session has been recorded.
