@@ -7,12 +7,15 @@
 #include <string_view>
 #include <utility>
 
+#include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "chrome/browser/browsing_data/counters/site_data_counting_helper.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,6 +30,10 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_devtools_protocol_client.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_dictionary_encoding_names.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -152,6 +159,30 @@ void CheckSharedDictionaryUseCounter(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kSharedDictionaryUsedWithSharedZstd,
       expected_used_count_with_zstd_d);
+}
+
+std::string FetchUrlScript(const GURL& url) {
+  return content::JsReplace(R"(
+          (async () => {
+            try {
+              await fetch($1);
+            } catch (e) {
+            }
+          })();
+        )",
+                            url);
+}
+
+std::string FetchUrlWithNoCorsModeScript(const GURL& url) {
+  return content::JsReplace(R"(
+          (async () => {
+            try {
+              await fetch($1, {mode: 'no-cors'});
+            } catch (e) {
+            }
+          })();
+        )",
+                            url);
 }
 
 }  // namespace
@@ -681,4 +712,402 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, SiteDataCount) {
             GetSiteDataCount(response_time - base::Seconds(1), response_time));
   EXPECT_EQ(1,
             GetSiteDataCount(response_time, response_time + base::Seconds(1)));
+}
+
+class SharedDictionaryDevToolsBrowserTest
+    : public InProcessBrowserTest,
+      public content::TestDevToolsProtocolClient {
+ public:
+  explicit SharedDictionaryDevToolsBrowserTest(bool enable_feature = true) {
+    if (enable_feature) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {network::features::kCompressionDictionaryTransportBackend,
+           network::features::kCompressionDictionaryTransport},
+          /*disabled_features=*/
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/
+          {network::features::kCompressionDictionaryTransportBackend},
+          /*disabled_features=*/
+          {network::features::kCompressionDictionaryTransport});
+    }
+  }
+  ~SharedDictionaryDevToolsBrowserTest() override = default;
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+    embedded_https_test_server().ServeFilesFromSourceDirectory(
+        "content/test/data");
+  }
+  void TearDownOnMainThread() override {
+    DetachProtocolClient();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  content::RenderFrameHost* GetPrimaryMainFrame() {
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetPrimaryMainFrame();
+  }
+  void NavigateAndEnableAudits(const GURL& url) {
+    EXPECT_TRUE(NavigateToURL(
+        browser()->tab_strip_model()->GetActiveWebContents(), url));
+    AttachToWebContents(browser()->tab_strip_model()->GetActiveWebContents());
+    SendCommandSync("Network.enable");
+    SendCommandSync("Audits.enable");
+  }
+  base::Value::Dict WaitForSharedDictionaryIssueAdded(
+      const std::string& expected_error_type) {
+    auto matcher = [](const base::Value::Dict& params) {
+      const std::string* maybe_issue_code =
+          params.FindStringByDottedPath("issue.code");
+      return maybe_issue_code && *maybe_issue_code == "SharedDictionaryIssue";
+    };
+    base::Value::Dict notification = WaitForMatchingNotification(
+        "Audits.issueAdded", base::BindRepeating(matcher));
+    EXPECT_EQ(*notification.FindStringByDottedPath("issue.code"),
+              "SharedDictionaryIssue");
+    const std::string* maybe_error_type = notification.FindStringByDottedPath(
+        "issue.details.sharedDictionaryIssueDetails.sharedDictionaryError");
+    CHECK(maybe_error_type);
+    EXPECT_EQ(*maybe_error_type, expected_error_type);
+    return notification;
+  }
+  void RunCustomHeaderTest(
+      const std::string& expected_erorr_type,
+      const std::string& use_as_dictionary_header,
+      const std::string& cache_control_header = "max-age=3600") {
+    embedded_https_test_server().RegisterRequestHandler(
+        base::BindLambdaForTesting(
+            [&](const net::test_server::HttpRequest& request)
+                -> std::unique_ptr<net::test_server::HttpResponse> {
+              if (request.relative_url == "/test.dict") {
+                auto response =
+                    std::make_unique<net::test_server::BasicHttpResponse>();
+                response->AddCustomHeader("use-as-dictionary",
+                                          use_as_dictionary_header);
+                response->AddCustomHeader("cache-control",
+                                          cache_control_header);
+                response->set_content("dict");
+                return response;
+              }
+              return nullptr;
+            }));
+    auto handle = embedded_https_test_server().StartAndReturnHandle();
+    ASSERT_TRUE(handle);
+    NavigateAndEnableAudits(
+        embedded_https_test_server().GetURL("/shared_dictionary/blank.html"));
+    EXPECT_TRUE(ExecJs(
+        GetPrimaryMainFrame(),
+        FetchUrlScript(embedded_https_test_server().GetURL("/test.dict"))));
+    WaitForSharedDictionaryIssueAdded(expected_erorr_type);
+  }
+
+  std::vector<net::SharedDictionaryUsageInfo> GetSharedDictionaryUsageInfo() {
+    base::test::TestFuture<const std::vector<net::SharedDictionaryUsageInfo>&>
+        result;
+    browser()
+        ->profile()
+        ->GetDefaultStoragePartition()
+        ->GetNetworkContext()
+        ->GetSharedDictionaryUsageInfo(result.GetCallback());
+    return result.Get();
+  }
+
+  void WaitUntilDictionaryRegistered() {
+    while (GetSharedDictionaryUsageInfo().empty()) {
+      base::PlatformThread::Sleep(base::Milliseconds(10));
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class DevToolsSharedDictionaryFeatureDisabledBrowserTest
+    : public SharedDictionaryDevToolsBrowserTest {
+ public:
+  DevToolsSharedDictionaryFeatureDisabledBrowserTest()
+      : SharedDictionaryDevToolsBrowserTest(/*enable_feature=*/false) {}
+  ~DevToolsSharedDictionaryFeatureDisabledBrowserTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       UseErrorCrossOriginNoCorsRequest) {
+  const std::string kHostName = "www.example.com";
+  const std::string kCrossOriginHostName = "other.example.com";
+  embedded_https_test_server().SetCertHostnames(
+      {kHostName, kCrossOriginHostName});
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  NavigateAndEnableAudits(embedded_https_test_server().GetURL(
+      kHostName, "/shared_dictionary/blank.html"));
+  content::RenderFrameHost* rfh = GetPrimaryMainFrame();
+  EXPECT_TRUE(
+      ExecJs(rfh, FetchUrlScript(embedded_https_test_server().GetURL(
+                      kCrossOriginHostName, "/shared_dictionary/test.dict"))));
+  WaitUntilDictionaryRegistered();
+  EXPECT_TRUE(ExecJs(
+      rfh, FetchUrlWithNoCorsModeScript(embedded_https_test_server().GetURL(
+               kCrossOriginHostName, "/shared_dictionary/path/target"))));
+  WaitForSharedDictionaryIssueAdded("UseErrorCrossOriginNoCorsRequest");
+}
+
+// Can't cause the dictionary load failure by deletaing the disk cache directory
+// on Windows.
+#if !BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       UseErrorDictionaryLoadFailure) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  NavigateAndEnableAudits(
+      embedded_test_server()->GetURL("/shared_dictionary/blank.html"));
+  content::RenderFrameHost* rfh = GetPrimaryMainFrame();
+  EXPECT_TRUE(ExecJs(rfh, FetchUrlScript(embedded_test_server()->GetURL(
+                              "/shared_dictionary/test.dict"))));
+  WaitUntilDictionaryRegistered();
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::DeletePathRecursively(
+        browser()->profile()->GetDefaultStoragePartition()->GetPath().Append(
+            FILE_PATH_LITERAL("Shared Dictionary/cache/"))));
+  }
+  EXPECT_TRUE(ExecJs(rfh, FetchUrlScript(embedded_test_server()->GetURL(
+                              "/shared_dictionary/path/compressed.data"))));
+  WaitForSharedDictionaryIssueAdded("UseErrorDictionaryLoadFailure");
+}
+#endif  // !BUILDFLAG(IS_WIN)
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       UseErrorMatchingDictionaryNotUsed) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/shared_dictionary/path/target") {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_content("data");
+          return response;
+        }
+        return nullptr;
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+  NavigateAndEnableAudits(
+      embedded_test_server()->GetURL("/shared_dictionary/blank.html"));
+  content::RenderFrameHost* rfh = GetPrimaryMainFrame();
+  EXPECT_TRUE(ExecJs(rfh, FetchUrlScript(embedded_test_server()->GetURL(
+                              "/shared_dictionary/test.dict"))));
+  WaitUntilDictionaryRegistered();
+  EXPECT_TRUE(ExecJs(rfh, FetchUrlScript(embedded_test_server()->GetURL(
+                              "/shared_dictionary/path/target"))));
+  WaitForSharedDictionaryIssueAdded("UseErrorMatchingDictionaryNotUsed");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       UseErrorUnexpectedContentDictionaryHeader) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/shared_dictionary/path/target") {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->AddCustomHeader("Content-Encoding", "br-d");
+          response->AddCustomHeader("Content-Dictionary",
+                                    "Invalid Content-Dictionary");
+          return response;
+        }
+        return nullptr;
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+  NavigateAndEnableAudits(
+      embedded_test_server()->GetURL("/shared_dictionary/blank.html"));
+  content::RenderFrameHost* rfh = GetPrimaryMainFrame();
+  EXPECT_TRUE(ExecJs(rfh, FetchUrlScript(embedded_test_server()->GetURL(
+                              "/shared_dictionary/test.dict"))));
+  WaitUntilDictionaryRegistered();
+  EXPECT_TRUE(ExecJs(rfh, FetchUrlScript(embedded_test_server()->GetURL(
+                              "/shared_dictionary/path/target"))));
+  WaitForSharedDictionaryIssueAdded(
+      "UseErrorUnexpectedContentDictionaryHeader");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorCossOriginNoCorsRequest) {
+  const std::string kCrossOriginHostName = "example.com";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  NavigateAndEnableAudits(
+      embedded_test_server()->GetURL("/shared_dictionary/blank.html"));
+  EXPECT_TRUE(
+      ExecJs(GetPrimaryMainFrame(),
+             FetchUrlWithNoCorsModeScript(embedded_test_server()->GetURL(
+                 kCrossOriginHostName, "/shared_dictionary/test.dict"))));
+  WaitForSharedDictionaryIssueAdded("WriteErrorCossOriginNoCorsRequest");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorDisallowedBySettings) {
+  const std::string kHostName = "www.example.com";
+  const std::string kCrossOriginHostName = "other.example.com";
+  embedded_https_test_server().SetCertHostnames(
+      {kHostName, kCrossOriginHostName});
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  content_settings::CookieSettings* settings =
+      CookieSettingsFactory::GetForProfile(browser()->profile()).get();
+  settings->SetCookieSetting(
+      embedded_https_test_server().GetURL(kCrossOriginHostName, "/"),
+      CONTENT_SETTING_BLOCK);
+
+  NavigateAndEnableAudits(embedded_https_test_server().GetURL(
+      kHostName, "/shared_dictionary/blank.html"));
+  EXPECT_TRUE(
+      ExecJs(browser()
+                 ->tab_strip_model()
+                 ->GetActiveWebContents()
+                 ->GetPrimaryMainFrame(),
+             FetchUrlScript(embedded_https_test_server().GetURL(
+                 kCrossOriginHostName, "/shared_dictionary/test.dict"))));
+  WaitForSharedDictionaryIssueAdded("WriteErrorDisallowedBySettings");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorExpiredResponse) {
+  RunCustomHeaderTest("WriteErrorExpiredResponse",
+                      /*use_as_dictionary_header=*/"match=\"/test/*\"",
+                      /*cache_control_header=*/"no-store");
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsSharedDictionaryFeatureDisabledBrowserTest,
+                       WriteErrorFeatureDisabled) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  NavigateAndEnableAudits(
+      embedded_test_server()->GetURL("/shared_dictionary/blank.html"));
+  EXPECT_TRUE(ExecJs(GetPrimaryMainFrame(),
+                     FetchUrlScript(embedded_test_server()->GetURL(
+                         "/shared_dictionary/test.dict"))));
+  WaitForSharedDictionaryIssueAdded("WriteErrorFeatureDisabled");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorInvalidMatchField) {
+  RunCustomHeaderTest("WriteErrorInvalidMatchField", "match=\"(\"");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorInvalidStructuredHeader) {
+  RunCustomHeaderTest("WriteErrorInvalidStructuredHeader", "match=\"");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorNavigationRequest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  NavigateAndEnableAudits(
+      embedded_test_server()->GetURL("/shared_dictionary/blank.html"));
+  EXPECT_TRUE(NavigateToURL(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      embedded_test_server()->GetURL("/shared_dictionary/test_dict.html")));
+  WaitForSharedDictionaryIssueAdded("WriteErrorNavigationRequest");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorNoMatchField) {
+  RunCustomHeaderTest("WriteErrorNoMatchField", "id=\"dict_id\"");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorNonListMatchDestField) {
+  RunCustomHeaderTest("WriteErrorNonListMatchDestField",
+                      "match=\"/test/*\", match-dest=document");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorNonSecureContext) {
+  const std::string kHostName = "example.com";
+  ASSERT_TRUE(embedded_test_server()->Start());
+  NavigateAndEnableAudits(embedded_test_server()->GetURL(
+      kHostName, "/shared_dictionary/blank.html"));
+  EXPECT_TRUE(ExecJs(GetPrimaryMainFrame(),
+                     FetchUrlScript(embedded_test_server()->GetURL(
+                         kHostName, "/shared_dictionary/test.dict"))));
+  WaitForSharedDictionaryIssueAdded("WriteErrorNonSecureContext");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorNonStringIdField) {
+  RunCustomHeaderTest("WriteErrorNonStringIdField",
+                      "match=\"/test/*\", id=dict_id");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorNonStringInMatchDestList) {
+  RunCustomHeaderTest("WriteErrorNonStringInMatchDestList",
+                      "match=\"/test/*\", match-dest=(document)");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorNonStringMatchField) {
+  RunCustomHeaderTest("WriteErrorNonStringMatchField", "match=test");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorNonTokenTypeField) {
+  RunCustomHeaderTest("WriteErrorNonTokenTypeField",
+                      "match=\"/test/*\", type=\"raw\"");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorRequestAborted) {
+  auto dictionary_response =
+      std::make_unique<net::test_server::ControllableHttpResponse>(
+          embedded_test_server(), "/test.dict");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  NavigateAndEnableAudits(
+      embedded_test_server()->GetURL("/shared_dictionary/blank.html"));
+  content::RenderFrameHost* rfh = GetPrimaryMainFrame();
+  EXPECT_TRUE(ExecJs(
+      rfh, content::JsReplace(R"(
+          (() => {
+            const controller = new AbortController();
+            window.FETCH_ABORT_CONTROLLER = controller;
+            window.FETCH_RESULT = fetch($1, {signal: controller.signal});
+          })();
+        )",
+                              embedded_test_server()->GetURL("/test.dict"))));
+  dictionary_response->WaitForRequest();
+  dictionary_response->Send(
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/plain\r\n"
+      "Use-As-Dictionary: match=\"/test/*\"\r\n"
+      "Cache-Control: max-age=3600\r\n"
+      "\r\n"
+      "dict");
+  EXPECT_TRUE(ExecJs(rfh, R"(
+          (async () => {
+            try {
+              const response = await window.FETCH_RESULT;
+              const reader = response.body.getReader();
+              const result = await reader.read();
+              window.FETCH_ABORT_CONTROLLER.abort();
+            } catch (e) {
+            }
+          })();
+        )"));
+  dictionary_response->Done();
+  WaitForSharedDictionaryIssueAdded("WriteErrorRequestAborted");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorTooLongIdField) {
+  RunCustomHeaderTest(
+      "WriteErrorTooLongIdField",
+      base::StrCat({"match=\"/test/*\", id=\"", std::string(1025, 'a'), "\""}));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorUnsupportedType) {
+  RunCustomHeaderTest("WriteErrorUnsupportedType",
+                      "match=\"/test/*\", type=unsupported");
 }

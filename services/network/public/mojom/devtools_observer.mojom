@@ -19,6 +19,7 @@ import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 import "services/network/public/mojom/request_priority.mojom";
 import "services/network/public/mojom/service_worker_router_info.mojom";
+import "services/network/public/mojom/shared_dictionary_error.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/url_loader_completion_status.mojom";
@@ -195,6 +196,14 @@ interface DevToolsObserver {
     url.mojom.Url url,
     string error_message,
     string? bundle_request_devtools_id);
+
+  // Called when an error occurs while handling a response with
+  // "Use-As-Dictionary" header, or fetching request with a registered
+  // dictionary.
+  OnSharedDictionaryError(
+    string devtool_request_id,
+    url.mojom.Url url,
+    SharedDictionaryError error);
 
   // Used by the NetworkService to create a copy of this observer.
   // (e.g. when creating an observer for URLLoader from URLLoaderFactory's

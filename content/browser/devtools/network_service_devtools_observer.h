@@ -97,6 +97,10 @@ class NetworkServiceDevToolsObserver : public network::mojom::DevToolsObserver {
       const GURL& url,
       const std::string& error_message,
       const std::optional<std::string>& bundle_request_devtools_id) override;
+  void OnSharedDictionaryError(
+      const std::string& devtool_request_id,
+      const GURL& url,
+      network::mojom::SharedDictionaryError error) override;
   void Clone(mojo::PendingReceiver<network::mojom::DevToolsObserver> listener)
       override;
 
