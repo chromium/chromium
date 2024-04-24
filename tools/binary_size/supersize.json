@@ -12,6 +12,12 @@
     "assets/snapshot_blob_64.bin": {
       "source_path": "v8/snapshot_blob_64.bin"
     },
+    "assets/v8_context_snapshot_32.bin": {
+      "source_path": "v8/v8_context_snapshot_32.bin"
+    },
+    "assets/v8_context_snapshot_64.bin": {
+      "source_path": "v8/v8_context_snapshot_64.bin"
+    },
     "assets/unwind_cfi_32": {
       "source_path": "../../base/trace_event/cfi_backtrace_android.cc"
     },
