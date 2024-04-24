@@ -74,17 +74,21 @@ BASE_FEATURE(kPasswordGenerationExperiment,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// TODO(crbug.com/330686628): Keep disabled for Android when enabling on Desktop
-// and iOS.
 BASE_FEATURE(kPasswordManagerEnableReceiverService,
              "PasswordManagerEnableReceiverService",
+#if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/330686628): Keep disabled for Android when enabling on Desktop
-// and iOS.
 BASE_FEATURE(kPasswordManagerEnableSenderService,
              "PasswordManagerEnableSenderService",
+#if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kPasswordManagerLogToTerminal,
              "PasswordManagerLogToTerminal",
@@ -106,7 +110,7 @@ BASE_FEATURE(kRestartToGainAccessToKeychain,
 
 BASE_FEATURE(kSharedPasswordNotificationUI,
              "SharedPasswordNotificationUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSkipUndecryptablePasswords,
              "SkipUndecryptablePasswords",
