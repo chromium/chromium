@@ -358,7 +358,12 @@ class _ExeDelegate:
     return constants.TEST_EXECUTABLE_DIR
 
   def Run(self, test, device, flags=None, **kwargs):
-    cmd = [posixpath.join(self._device_dist_dir, self._exe_file_name)]
+    tool = self._test_run.GetTool(device).GetTestWrapper()
+    if tool:
+      cmd = [tool]
+    else:
+      cmd = []
+    cmd.append(posixpath.join(self._device_dist_dir, self._exe_file_name))
 
     if test:
       cmd.append('--gtest_filter=%s' % ':'.join(test))
@@ -368,8 +373,7 @@ class _ExeDelegate:
     cwd = constants.TEST_EXECUTABLE_DIR
 
     env = {
-        'LD_LIBRARY_PATH': self._device_dist_dir,
-        'UBSAN_OPTIONS': constants.UBSAN_OPTIONS,
+      'LD_LIBRARY_PATH': self._device_dist_dir
     }
 
     if self._coverage_dir:
@@ -379,6 +383,8 @@ class _ExeDelegate:
           device_coverage_dir, self._suite, self._coverage_index)
       self._coverage_index += 1
 
+    if self._env.tool != 'asan':
+      env['UBSAN_OPTIONS'] = constants.UBSAN_OPTIONS
 
     try:
       gcov_strip_depth = os.environ['NATIVE_COVERAGE_DEPTH_STRIP']
@@ -478,7 +484,11 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
                               check_return=True,
                               as_root=self._env.force_main_user)
 
-      def start_servers(dev):
+      def init_tool_and_start_servers(dev):
+        tool = self.GetTool(dev)
+        tool.CopyFiles(dev)
+        tool.SetupEnvironment()
+
         if self._env.disable_test_server:
           logging.warning('Not starting test server. Some tests may fail.')
           return
@@ -502,7 +512,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
         if self.TestPackage() in _SUITE_REQUIRES_TEST_SERVER_SPAWNER:
           self._servers[str(dev)].append(
               local_test_server_spawner.LocalTestServerSpawner(
-                  ports.AllocateTestServerPort(), dev))
+                  ports.AllocateTestServerPort(), dev, tool))
 
         for s in self._servers[str(dev)]:
           s.SetUp()
@@ -512,8 +522,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
 
       steps = [
           bind_crash_handler(s, device)
-          for s in (install_apk, push_test_data, start_servers)
-      ]
+          for s in (install_apk, push_test_data, init_tool_and_start_servers)]
       if self._env.concurrent_adb:
         reraiser_thread.RunAsync(steps)
       else:
@@ -761,7 +770,9 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
   #override
   def _RunTest(self, device, test):
     # Run the test.
-    timeout = self._test_instance.shard_timeout * _GetDeviceTimeoutMultiplier()
+    timeout = (self._test_instance.shard_timeout *
+               self.GetTool(device).GetTimeoutScale() *
+               _GetDeviceTimeoutMultiplier())
     if self._test_instance.wait_for_java_debugger:
       timeout = None
     if self._test_instance.store_tombstones:
@@ -954,5 +965,8 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     def individual_device_tear_down(dev):
       for s in self._servers.get(str(dev), []):
         s.TearDown()
+
+      tool = self.GetTool(dev)
+      tool.CleanUpEnvironment()
 
     self._env.parallel_devices.pMap(individual_device_tear_down)

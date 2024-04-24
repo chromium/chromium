@@ -108,6 +108,7 @@ class LocalDeviceEnvironment(environment.Environment):
     self._preferred_abis = None
     self._recover_devices = args.recover_devices
     self._skip_clear_data = args.skip_clear_data
+    self._tool_name = args.tool
     self._trace_output = None
     # Must check if arg exist because this class is used by
     # //third_party/catapult's browser_options.py
@@ -253,6 +254,10 @@ class LocalDeviceEnvironment(environment.Environment):
   @property
   def skip_clear_data(self):
     return self._skip_clear_data
+
+  @property
+  def tool(self):
+    return self._tool_name
 
   @property
   def trace_output(self):

@@ -93,18 +93,6 @@ if (enable_java_templates) {
   }
 }
 
-if (defined(sanitizer_arch)) {
-  action("generate_wrap_sh") {
-    script = "generate_wrap_sh.py"
-    outputs = [ "$target_gen_dir/$target_name/wrap.sh" ]
-    args = [
-      "--arch=$sanitizer_arch",
-      "--output",
-      rebase_path(outputs[0], root_build_dir),
-    ]
-  }
-}
-
 # TODO(go/turn-down-test-results): Remove once we turn down
 # test-results.appspot.com
 python_library("test_result_presentations_py") {
@@ -206,6 +194,9 @@ group("test_runner_device_support") {
     data += [ "//tools/android/avd/proto/" ]
     if (enable_chrome_android_internal) {
       data += [ "//clank/tools/android/avd/proto/" ]
+    }
+    if (is_asan) {
+      data_deps += [ "//tools/android/asan/third_party:asan_device_setup" ]
     }
     if (use_full_mte) {
       data_deps += [ "//tools/android/mte:mte_device_setup" ]
