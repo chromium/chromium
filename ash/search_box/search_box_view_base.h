@@ -126,7 +126,8 @@ class SearchBoxViewBase : public views::View,
   bool OnTextfieldEvent(ui::EventType type);
 
   // Overridden from views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnThemeChanged() override;
