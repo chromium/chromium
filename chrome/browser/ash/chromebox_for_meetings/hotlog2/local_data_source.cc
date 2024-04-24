@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/chromebox_for_meetings/hotlog2/local_data_source.h"
 
+#include "base/i18n/time_formatting.h"
 #include "base/process/launch.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
@@ -11,9 +12,11 @@
 namespace ash::cfm {
 
 LocalDataSource::LocalDataSource(base::TimeDelta poll_rate,
-                                 bool data_needs_redacting)
+                                 bool data_needs_redacting,
+                                 bool is_incremental)
     : poll_rate_(poll_rate),
       data_needs_redacting_(data_needs_redacting),
+      is_incremental_(is_incremental),
       redactor_(nullptr) {}
 
 inline LocalDataSource::~LocalDataSource() = default;
@@ -68,6 +71,18 @@ void LocalDataSource::FillDataBuffer() {
     return;
   }
 
+  if (!is_incremental_) {
+    if (next_data == last_unique_data_) {
+      return;
+    }
+
+    // Update our last known unique data and add a timestamp. Note that
+    // we're assuming non-incremental sources will not have their own
+    // timestamps already prepended, which should hold true.
+    last_unique_data_ = next_data;
+    AddTimestamps(next_data);
+  }
+
   std::move(next_data.begin(), next_data.end(),
             std::back_inserter(data_buffer_));
 
@@ -93,6 +108,14 @@ bool LocalDataSource::IsDataBufferOverMaxLimit() {
 void LocalDataSource::RedactUploadBuffer() {
   for (size_t i = 0; i < pending_upload_buffer_.size(); i++) {
     pending_upload_buffer_[i] = redactor_.Redact(pending_upload_buffer_[i]);
+  }
+}
+
+void LocalDataSource::AddTimestamps(std::vector<std::string>& data) {
+  auto formatted_time =
+      base::TimeFormatAsIso8601(base::Time::NowFromSystemTime());
+  for (size_t i = 0; i < data.size(); i++) {
+    data[i] = formatted_time + " " + data[i];
   }
 }
 

@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace ash::cfm {
 namespace {
@@ -18,11 +19,21 @@ constexpr std::string kDataSourceName = "fake_display_name";
 constexpr base::TimeDelta kPollFrequency = base::Seconds(0);
 constexpr bool kRedactData = true;
 constexpr bool kDoNotRedactData = false;
+constexpr bool kIsIncremental = true;
+constexpr bool kIsNotIncremental = false;
 
 // Define callbacks to use for verification
 void FetchCallbackFn(const std::vector<std::string>& expected_data,
                      const std::vector<std::string>& actual_data) {
   EXPECT_EQ(expected_data, actual_data);
+}
+
+void FetchCallbackFnWithRegex(const std::vector<std::string>& expected_data,
+                              const std::vector<std::string>& actual_data) {
+  EXPECT_EQ(expected_data.size(), actual_data.size());
+  for (size_t i = 0; i < expected_data.size(); i++) {
+    EXPECT_TRUE(RE2::FullMatch(actual_data[i], expected_data[i]));
+  }
 }
 
 void AddWatchDogCallbackFn(bool expected_success, bool actual_success) {
@@ -33,8 +44,11 @@ void AddWatchDogCallbackFn(bool expected_success, bool actual_success) {
 // for pure-virtuals and control data creation.
 class LocalDataSourcePeer : public LocalDataSource {
  public:
-  LocalDataSourcePeer(base::TimeDelta poll_rate, bool data_needs_redacting)
-      : LocalDataSource(poll_rate, data_needs_redacting), fake_data_index_(0) {
+  LocalDataSourcePeer(base::TimeDelta poll_rate,
+                      bool data_needs_redacting,
+                      bool is_incremental)
+      : LocalDataSource(poll_rate, data_needs_redacting, is_incremental),
+        fake_data_index_(0) {
     // Arbitrary data. Each call to FillDataBufferForTesting() will load the
     // internal buffer with the next value (per the overridden GetNextData()
     // call) and increment the index for the next invocation. This replaces
@@ -93,7 +107,9 @@ class LocalDataSourcePeer : public LocalDataSource {
 
 // Define tests
 TEST(HotlogLocalDataSourceTest, TestFetchWithBasicUsage) {
-  auto source = LocalDataSourcePeer(kPollFrequency, kDoNotRedactData);
+  auto source =
+      LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsIncremental);
+
   source.SetFakeData({"a", "b", "c", "d", "e", "f"});
 
   // No data in buffer yet, so expecting empty data
@@ -106,8 +122,36 @@ TEST(HotlogLocalDataSourceTest, TestFetchWithBasicUsage) {
   source.RunFetchWithExpectedData({"a", "b", "c"});
 }
 
+TEST(HotlogLocalDataSourceTest, TestNonIncrementalSource) {
+  auto source =
+      LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsNotIncremental);
+
+  source.SetFakeData({"aa", "aa", "b", "b", "bb", "aa"});
+
+  // Consume everything
+  source.FillDataBufferForTesting();
+  source.FillDataBufferForTesting();
+  source.FillDataBufferForTesting();
+  source.FillDataBufferForTesting();
+  source.FillDataBufferForTesting();
+  source.FillDataBufferForTesting();
+
+  // Verify we only get the unique data, and that it has a timestamp
+  const std::string ts_regex = "[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:\\.]+Z ";
+  std::vector<std::string> expected_data = {"aa", "b", "bb", "aa"};
+  for (size_t i = 0; i < expected_data.size(); i++) {
+    expected_data[i] = ts_regex + expected_data[i];
+  }
+
+  // Using special regex callback to account for timestamps
+  auto callback = base::BindOnce(&FetchCallbackFnWithRegex, expected_data);
+  source.Fetch(std::move(callback));
+}
+
 TEST(HotlogLocalDataSourceTest, TestFlushWithVariousFetches) {
-  auto source = LocalDataSourcePeer(kPollFrequency, kDoNotRedactData);
+  auto source =
+      LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsIncremental);
+
   source.SetFakeData({"a", "b", "c", "d", "e", "f"});
 
   source.FillDataBufferForTesting();
@@ -142,7 +186,9 @@ TEST(HotlogLocalDataSourceTest, TestFlushWithVariousFetches) {
 }
 
 TEST(HotlogLocalDataSourceTest, TestBufferSizeIsCapped) {
-  auto source = LocalDataSourcePeer(kPollFrequency, kDoNotRedactData);
+  auto source =
+      LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsIncremental);
+
   source.SetFakeData({"a", "b", "c", "d", "e", "f"});
 
   // Fill buffer to the max limit
@@ -167,7 +213,8 @@ TEST(HotlogLocalDataSourceTest, TestBufferSizeIsCapped) {
 }
 
 TEST(HotlogLocalDataSourceTest, TestWatchdogCallbackAlwaysFalse) {
-  auto source = LocalDataSourcePeer(kPollFrequency, kDoNotRedactData);
+  auto source =
+      LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsIncremental);
 
   // TODO(b/326440932): watchdog support
   bool expected_result = false; /* success */
@@ -180,7 +227,8 @@ TEST(HotlogLocalDataSourceTest, TestWatchdogCallbackAlwaysFalse) {
 }
 
 TEST(HotlogLocalDataSourceTest, TestRedactionWorksAsExpected) {
-  auto source = LocalDataSourcePeer(kPollFrequency, kRedactData);
+  auto source =
+      LocalDataSourcePeer(kPollFrequency, kRedactData, kIsIncremental);
 
   source.SetFakeData({"192.168.0.1", "fake@email.com"});
   source.FillDataBufferForTesting();
@@ -188,7 +236,8 @@ TEST(HotlogLocalDataSourceTest, TestRedactionWorksAsExpected) {
   source.RunFetchWithExpectedData({"(192.168.0.0/16: 1)", "(email: 1)"});
 
   // Make a new source with redaction disabled
-  auto new_source = LocalDataSourcePeer(kPollFrequency, kDoNotRedactData);
+  auto new_source =
+      LocalDataSourcePeer(kPollFrequency, kDoNotRedactData, kIsIncremental);
 
   new_source.SetFakeData({"192.168.0.1", "fake@email.com"});
   new_source.FillDataBufferForTesting();

@@ -29,10 +29,6 @@ class CommandSource : public LocalDataSource {
   std::string command_;
   std::vector<std::string> command_split_;
 
-  // Contains the most recent command output. Only updated if
-  // the output is different from the last last_output_ value.
-  std::string last_output_;
-
   // Must be the last class member.
   base::WeakPtrFactory<CommandSource> weak_ptr_factory_{this};
 };

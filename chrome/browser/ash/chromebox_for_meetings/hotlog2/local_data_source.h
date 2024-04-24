@@ -22,7 +22,9 @@ inline constexpr int kMaxInternalBufferSize = 50000;  // ~7Mb
 
 class LocalDataSource : public mojom::DataSource {
  public:
-  LocalDataSource(base::TimeDelta poll_rate, bool data_needs_redacting);
+  LocalDataSource(base::TimeDelta poll_rate,
+                  bool data_needs_redacting,
+                  bool is_incremental);
   LocalDataSource(const LocalDataSource&) = delete;
   LocalDataSource& operator=(const LocalDataSource&) = delete;
   ~LocalDataSource() override;
@@ -52,6 +54,7 @@ class LocalDataSource : public mojom::DataSource {
  private:
   bool IsDataBufferOverMaxLimit();
   void RedactUploadBuffer();
+  void AddTimestamps(std::vector<std::string>& data);
 
   base::RepeatingTimer poll_timer_;
   base::TimeDelta poll_rate_;
@@ -59,6 +62,10 @@ class LocalDataSource : public mojom::DataSource {
   // True if we should pass the data through the redactor tool
   // before uploading, False otherwise.
   bool data_needs_redacting_;
+
+  // Set to True when the data source yields incremental data, like a
+  // log file, and False when the source simply yields current state.
+  const bool is_incremental_;
 
   // Contains a chain of the most recent data. Will be moved into
   // pending_upload_buffer_ below upon a call to Fetch().
@@ -70,6 +77,10 @@ class LocalDataSource : public mojom::DataSource {
 
   // Redaction tool for PII redaction
   redaction::RedactionTool redactor_;
+
+  // Contains the most recent unique data from GetNextData(). Only used
+  // for non-incremental sources to avoid spamming the same data.
+  std::vector<std::string> last_unique_data_;
 
   // Must be the last class member.
   base::WeakPtrFactory<LocalDataSource> weak_ptr_factory_{this};
