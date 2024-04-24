@@ -402,11 +402,25 @@ std::u16string FindChildTextWithIgnoreList(
     const blink::WebNode& node,
     const std::set<blink::WebNode>& divs_to_skip);
 
+struct InferredLabel {
+  // Returns an `InferredLabel` if `label` is valid as per `IsLabelValid()`, see
+  // form_autofill_util.cc.
+  static std::optional<InferredLabel> BuildIfValid(
+      std::u16string label,
+      FormFieldData::LabelSource source);
+
+  std::u16string label;
+  FormFieldData::LabelSource source = FormFieldData::LabelSource::kUnknown;
+
+ private:
+  InferredLabel(std::u16string label, FormFieldData::LabelSource source);
+};
+
 // Infers corresponding label for `element` from surrounding context in the DOM,
 // e.g. the contents of the preceding <p> tag or text element. Returns an empty
 // string if it could not find a label for `element`.
-std::u16string InferLabelForElement(const blink::WebFormControlElement& element,
-                                    FormFieldData::LabelSource& label_source);
+std::optional<InferredLabel> InferLabelForElement(
+    const blink::WebFormControlElement& element);
 
 // Returns the form element by unique renderer id. Returns the null element if
 // there is no form with the |form_renderer_id|.

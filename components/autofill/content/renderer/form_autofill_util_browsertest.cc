@@ -57,6 +57,7 @@ using blink::WebNode;
 using blink::WebSelectElement;
 using blink::WebString;
 using blink::WebVector;
+using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::Field;
@@ -69,9 +70,9 @@ using ::testing::Property;
 using ::testing::Values;
 
 struct AutofillFieldUtilCase {
-  const char* description;
-  const char* html;
-  const char16_t* expected_label;
+  std::string_view description;
+  std::string_view html;
+  std::u16string_view expected_label;
 };
 
 // An <input> with a label placed on top of it (usually used as a placeholder
@@ -410,11 +411,13 @@ TEST_F(FormAutofillUtilsTest, InferLabelForElementTest) {
     ASSERT_NE(nullptr, web_frame);
     WebFormControlElement form_target =
         GetFormControlElementById(web_frame->GetDocument(), "target");
-
-    FormFieldData::LabelSource label_source =
-        FormFieldData::LabelSource::kUnknown;
-    EXPECT_EQ(test_case.expected_label,
-              InferLabelForElement(form_target, label_source));
+    if (test_case.expected_label.empty()) {
+      EXPECT_EQ(InferLabelForElement(form_target), std::nullopt);
+    } else {
+      EXPECT_THAT(
+          InferLabelForElement(form_target),
+          Optional(Field(&InferredLabel::label, test_case.expected_label)));
+    }
   }
 }
 
@@ -460,11 +463,10 @@ TEST_F(FormAutofillUtilsTest, InferLabelSourceTest) {
     WebFormControlElement form_target =
         GetFormControlElementById(web_frame->GetDocument(), "target");
 
-    FormFieldData::LabelSource label_source =
-        FormFieldData::LabelSource::kUnknown;
-    EXPECT_EQ(kLabelSourceExpectedLabel,
-              InferLabelForElement(form_target, label_source));
-    EXPECT_EQ(test_case.label_source, label_source);
+    EXPECT_THAT(
+        InferLabelForElement(form_target),
+        Optional(AllOf(Field(&InferredLabel::label, kLabelSourceExpectedLabel),
+                       Field(&InferredLabel::source, test_case.label_source))));
   }
 }
 

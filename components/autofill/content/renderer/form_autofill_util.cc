@@ -100,6 +100,8 @@ struct ShadowFieldData {
 
 namespace {
 
+using LabelSource = FormFieldData::LabelSource;
+
 // Maximal length of a button's title.
 constexpr int kMaxLengthForSingleButtonTitle = 30;
 // Maximal length of all button titles.
@@ -317,25 +319,27 @@ std::u16string FindChildTextInner(const WebNode& node,
   return node_text;
 }
 
+// Returns true if `inferred_label` is non-empty and contains other characters
+// than " *:" (or " *:-–()" if kAutofillConsiderPhoneNumberSeparatorsValidLabels
+// is enabled).
 bool IsLabelValid(std::u16string_view inferred_label) {
   // List of characters a label can't be entirely made of (this list can grow).
   const std::u16string_view invalid_chars =
       base::FeatureList::IsEnabled(
           features::kAutofillConsiderPhoneNumberSeparatorsValidLabels)
           ? u" *:"
-          : u" *:-–()";  // U+2013 dash
-  return !base::ranges::all_of(inferred_label, [&](char16_t c) {
-    return base::Contains(invalid_chars, c);
+          : u" *:-\u2013()";  // U+2013 is the En Dash "–".
+  return base::ranges::any_of(inferred_label, [&](char16_t c) {
+    return !base::Contains(invalid_chars, c);
   });
 }
 
 // Shared function for InferLabelFromPrevious() and InferLabelFromNext().
-std::u16string InferLabelFromSibling(const WebFormControlElement& element,
-                                     bool forward,
-                                     FormFieldData::LabelSource& label_source) {
+std::optional<InferredLabel> InferLabelFromSibling(
+    const WebFormControlElement& element,
+    bool forward) {
   std::u16string inferred_label;
-  FormFieldData::LabelSource inferred_label_source =
-      FormFieldData::LabelSource::kUnknown;
+  LabelSource inferred_label_source = LabelSource::kUnknown;
   WebNode sibling = element;
   while (true) {
     sibling = forward ? sibling.NextSibling() : sibling.PreviousSibling();
@@ -360,7 +364,7 @@ std::u16string InferLabelFromSibling(const WebFormControlElement& element,
       std::u16string value = FindChildText(sibling);
       // A text node's value will be empty if it is for a line break.
       bool add_space = sibling.IsTextNode() && value.empty();
-      inferred_label_source = FormFieldData::LabelSource::kCombined;
+      inferred_label_source = LabelSource::kCombined;
       if (forward) {
         inferred_label =
             CombineAndCollapseWhitespace(inferred_label, value, add_space);
@@ -376,7 +380,7 @@ std::u16string InferLabelFromSibling(const WebFormControlElement& element,
     std::u16string trimmed_label;
     base::TrimWhitespace(inferred_label, base::TRIM_ALL, &trimmed_label);
     if (!trimmed_label.empty()) {
-      inferred_label_source = FormFieldData::LabelSource::kCombined;
+      inferred_label_source = LabelSource::kCombined;
       break;
     }
 
@@ -390,20 +394,15 @@ std::u16string InferLabelFromSibling(const WebFormControlElement& element,
     bool has_label_tag = HasTagName<kLabel>(sibling);
     if (HasTagName<kParagraph>(sibling) || has_label_tag) {
       inferred_label = FindChildText(sibling);
-      inferred_label_source = has_label_tag
-                                  ? FormFieldData::LabelSource::kLabelTag
-                                  : FormFieldData::LabelSource::kPTag;
+      inferred_label_source =
+          has_label_tag ? LabelSource::kLabelTag : LabelSource::kPTag;
     }
 
     break;
   }
 
   base::TrimWhitespace(inferred_label, base::TRIM_ALL, &inferred_label);
-  if (IsLabelValid(inferred_label)) {
-    label_source = inferred_label_source;
-    return inferred_label;
-  }
-  return u"";
+  return InferredLabel::BuildIfValid(inferred_label, inferred_label_source);
 }
 
 // Helper function to add a button's |title| to the |list|.
@@ -469,27 +468,33 @@ void FindElementsWithButtonFeatures(const WebElementCollection& elements,
 // or   <label>Some Text</label> <input ...>
 // or   Some Text <img><input ...>
 // or   <b>Some Text</b><br/> <input ...>.
-std::u16string InferLabelFromPrevious(
-    const WebFormControlElement& element,
-    FormFieldData::LabelSource& label_source) {
-  return InferLabelFromSibling(element, /*forward=*/false, label_source);
+std::optional<InferredLabel> InferLabelFromPrevious(
+    const WebFormControlElement& element) {
+  return InferLabelFromSibling(element, /*forward=*/false);
 }
 
 // Same as InferLabelFromPrevious(), but in the other direction.
 // Useful for cases like: <span><input type="checkbox">Label For Checkbox</span>
-std::u16string InferLabelFromNext(const WebFormControlElement& element,
-                                  FormFieldData::LabelSource& label_source) {
-  return InferLabelFromSibling(element, /*forward=*/true, label_source);
+std::optional<InferredLabel> InferLabelFromNext(
+    const WebFormControlElement& element) {
+  return InferLabelFromSibling(element, /*forward=*/true);
 }
 
 // Helper for |InferLabelForElement()| that infers a label, if possible, from
 // the placeholder text. e.g. <input placeholder="foo">
-std::u16string InferLabelFromPlaceholder(const WebFormControlElement& element) {
+std::optional<InferredLabel> InferLabelFromPlaceholder(
+    const WebFormControlElement& element) {
   if (HasAttribute<kPlaceholder>(element)) {
-    return GetAttribute<kPlaceholder>(element).Utf16();
+    return InferredLabel::BuildIfValid(
+        GetAttribute<kPlaceholder>(element).Utf16(), LabelSource::kPlaceHolder);
   }
+  return std::nullopt;
+}
 
-  return std::u16string();
+std::optional<InferredLabel> InferLabelFromAriaLabel(
+    const WebFormControlElement& element) {
+  return InferredLabel::BuildIfValid(
+      GetAriaLabel(element.GetDocument(), element), LabelSource::kAriaLabel);
 }
 
 // Detects a label declared after the `element`, which is visually positioned
@@ -504,7 +509,7 @@ std::u16string InferLabelFromPlaceholder(const WebFormControlElement& element) {
 // input element (they need to overlap a bit). We want to disregard elements
 // that are primarily below the input element (even if they overlap) because
 // that place is often used to indicate incorrect inputs.
-std::u16string InferLabelFromOverlayingSuccessor(
+std::optional<InferredLabel> InferLabelFromOverlayingSuccessor(
     const WebFormControlElement& element) {
   WebNode next = element.NextSibling();
   while (!next.IsNull() && !next.IsElementNode())
@@ -552,23 +557,24 @@ std::u16string InferLabelFromOverlayingSuccessor(
         // however exceed the `element` (case a above), so that condition is not
         // tested.
         !(next_bounds.bottom() > element_bounds.bottom())) {
-      return FindChildText(next);
+      return InferredLabel::BuildIfValid(FindChildText(next),
+                                         LabelSource::kOverlayingLabel);
     }
   }
-  return std::u16string();
+  return std::nullopt;
 }
 
 // Helper for |InferLabelForElement()| that infers a label, from
 // the value attribute when it is present and user has not typed in (if
 // element's value attribute is same as the element's value).
-std::u16string InferLabelFromValueAttribute(
+std::optional<InferredLabel> InferLabelFromValueAttribute(
     const WebFormControlElement& element) {
   if (HasAttribute<kValue>(element) &&
       GetAttribute<kValue>(element) == element.Value()) {
-    return GetAttribute<kValue>(element).Utf16();
+    return InferredLabel::BuildIfValid(GetAttribute<kValue>(element).Utf16(),
+                                       LabelSource::kValue);
   }
-
-  return std::u16string();
+  return std::nullopt;
 }
 
 // Helper for `InferLabelForElement()` that infers a label, if possible, from
@@ -578,7 +584,7 @@ std::u16string InferLabelFromValueAttribute(
 // or   <tr><td><b>Some Text</b></td><td><b><input ...></b></td></tr>
 // or   <tr><th><b>Some Text</b></th><td><b><input ...></b></td></tr>
 // `cell` represents the <td> tag containing the input element.
-std::u16string InferLabelFromTableColumn(const WebNode& cell) {
+std::optional<InferredLabel> InferLabelFromTableColumn(const WebNode& cell) {
   DCHECK(HasTagName<kTableCell>(cell));
   // Check all previous siblings, skipping non-element nodes, until we find a
   // non-empty text block.
@@ -593,7 +599,7 @@ std::u16string InferLabelFromTableColumn(const WebNode& cell) {
     previous = previous.PreviousSibling();
   }
 
-  return inferred_label;
+  return InferredLabel::BuildIfValid(inferred_label, LabelSource::kTdTag);
 }
 
 // Helper for `InferLabelForElement()` that infers a label, if possible, from
@@ -607,9 +613,8 @@ std::u16string InferLabelFromTableColumn(const WebNode& cell) {
 // Otherwise, just look in the entire previous row.
 // e.g. <tr><td>Some Text</td></tr><tr><td><input ...></td></tr>
 // `cell` represents the <td> tag containing the input element.
-std::u16string InferLabelFromTableRow(const WebNode& cell) {
+std::optional<InferredLabel> InferLabelFromTableRow(const WebNode& cell) {
   DCHECK(HasTagName<kTableCell>(cell));
-  std::u16string inferred_label;
 
   // Count the cell holding the input element.
   size_t cell_count = CalculateTableCellColumnSpan(cell.To<WebElement>());
@@ -641,8 +646,9 @@ std::u16string InferLabelFromTableRow(const WebNode& cell) {
   while (!parent.IsNull() && !HasTagName<kTableRow>(parent)) {
     parent = parent.ParentNode();
   }
-  if (parent.IsNull())
-    return inferred_label;
+  if (parent.IsNull()) {
+    return std::nullopt;
+  }
 
   // Now find the previous row.
   WebNode row_it = parent.PreviousSibling();
@@ -673,9 +679,10 @@ std::u16string InferLabelFromTableRow(const WebNode& cell) {
       prev_row_it = prev_row_it.NextSibling();
     }
     if ((cell_count == prev_row_count) && !matching_cell.IsNull()) {
-      inferred_label = FindChildText(matching_cell);
-      if (!inferred_label.empty())
-        return inferred_label;
+      std::u16string inferred_label = FindChildText(matching_cell);
+      if (!inferred_label.empty()) {
+        return InferredLabel::BuildIfValid(inferred_label, LabelSource::kTdTag);
+      }
     }
   }
 
@@ -683,14 +690,14 @@ std::u16string InferLabelFromTableRow(const WebNode& cell) {
   // align, check all previous siblings, skipping non-element nodes, until we
   // find a non-empty text block.
   WebNode previous = parent.PreviousSibling();
+  std::u16string inferred_label;
   while (inferred_label.empty() && !previous.IsNull()) {
     if (HasTagName<kTableRow>(previous)) {
       inferred_label = FindChildText(previous);
     }
     previous = previous.PreviousSibling();
   }
-
-  return inferred_label;
+  return InferredLabel::BuildIfValid(inferred_label, LabelSource::kTdTag);
 }
 
 // Helper for `InferLabelForElement()` that infers a label, if possible, from
@@ -706,7 +713,8 @@ std::u16string InferLabelFromTableRow(const WebNode& cell) {
 // and "Last name" for the two inputs, respectively, by picking up the text
 // nodes on the way to the surrounding div. Without doing so, the label of both
 // inputs becomes "First nameLast name".
-std::u16string InferLabelFromDivTable(const WebFormControlElement& element) {
+std::optional<InferredLabel> InferLabelFromDivTable(
+    const WebFormControlElement& element) {
   WebNode node = element.ParentNode();
   bool looking_for_parent = true;
   std::set<WebNode> divs_to_skip;
@@ -757,15 +765,14 @@ std::u16string InferLabelFromDivTable(const WebFormControlElement& element) {
 
     node = looking_for_parent ? node.ParentNode() : node.PreviousSibling();
   }
-
-  return inferred_label;
+  return InferredLabel::BuildIfValid(inferred_label, LabelSource::kDivTable);
 }
 
 // Helper for `InferLabelForElement()` that infers a label, if possible, from
 // a surrounding definition list,
 // e.g. <dl><dt>Some Text</dt><dd><input ...></dd></dl>
 // e.g. <dl><dt><b>Some Text</b></dt><dd><b><input ...></b></dd></dl>
-std::u16string InferLabelFromDefinitionList(const WebNode& dd) {
+std::optional<InferredLabel> InferLabelFromDefinitionList(const WebNode& dd) {
   DCHECK(HasTagName<kDefinitionDescriptionTag>(dd));
 
   // Skip by any intervening text nodes.
@@ -774,9 +781,10 @@ std::u16string InferLabelFromDefinitionList(const WebNode& dd) {
     previous = previous.PreviousSibling();
 
   if (previous.IsNull() || !HasTagName<kDefinitionTermTag>(previous)) {
-    return std::u16string();
+    return std::nullopt;
   }
-  return FindChildText(previous);
+  return InferredLabel::BuildIfValid(FindChildText(previous),
+                                     LabelSource::kDdTag);
 }
 
 // Helper for `InferLabelForElement()` that infers a label, if possible, from
@@ -785,9 +793,8 @@ std::u16string InferLabelFromDefinitionList(const WebNode& dd) {
 // `InferLabelFromTableColumn()`, `InferLabelFromTableRow()` and
 // `InferLabelFromDefinitionList()` for examples how a label is extracted from
 // the different tags.
-std::u16string InferLabelFromAncestors(
-    const WebFormControlElement& element,
-    FormFieldData::LabelSource& label_source) {
+std::optional<InferredLabel> InferLabelFromAncestors(
+    const WebFormControlElement& element) {
   std::set<std::string> seen_tag_names;
   for (WebNode parent = element.ParentNode(); !parent.IsNull();
        parent = parent.ParentNode()) {
@@ -799,35 +806,30 @@ std::u16string InferLabelFromAncestors(
       continue;
     seen_tag_names.insert(tag_name);
 
-    FormFieldData::LabelSource ancestor_label_source;
-    std::u16string inferred_label;
+    std::optional<InferredLabel> r;
     if (tag_name == "LABEL") {
-      ancestor_label_source = FormFieldData::LabelSource::kLabelTag;
-      inferred_label = FindChildText(parent);
+      r = InferredLabel::BuildIfValid(FindChildText(parent),
+                                      LabelSource::kLabelTag);
     } else if (tag_name == "DIV") {
-      ancestor_label_source = FormFieldData::LabelSource::kDivTable;
-      inferred_label = InferLabelFromDivTable(element);
+      r = InferLabelFromDivTable(element);
     } else if (tag_name == "TD") {
-      ancestor_label_source = FormFieldData::LabelSource::kTdTag;
-      inferred_label = InferLabelFromTableColumn(parent);
-      if (!IsLabelValid(inferred_label))
-        inferred_label = InferLabelFromTableRow(parent);
+      r = InferLabelFromTableColumn(parent);
+      if (!r) {
+        r = InferLabelFromTableRow(parent);
+      }
     } else if (tag_name == "DD") {
-      ancestor_label_source = FormFieldData::LabelSource::kDdTag;
-      inferred_label = InferLabelFromDefinitionList(parent);
+      r = InferLabelFromDefinitionList(parent);
     } else if (tag_name == "LI") {
-      ancestor_label_source = FormFieldData::LabelSource::kLiTag;
-      inferred_label = FindChildText(parent);
+      r = InferredLabel::BuildIfValid(FindChildText(parent),
+                                      LabelSource::kLiTag);
     } else if (tag_name == "FIELDSET") {
       break;
     }
-
-    if (IsLabelValid(inferred_label)) {
-      label_source = ancestor_label_source;
-      return inferred_label;
+    if (r) {
+      return r;
     }
   }
-  return u"";
+  return std::nullopt;
 }
 
 // Removes the duplicate titles and limits totals length. The order of the list
@@ -1160,7 +1162,7 @@ FormFieldData* SearchForFormControlByName(
     const std::u16string& field_name,
     const base::flat_set<std::pair<FormFieldData*, ShadowFieldData>,
                          CompareByRendererId>& field_set,
-    FormFieldData::LabelSource& label_source) {
+    LabelSource& label_source) {
   if (field_name.empty())
     return nullptr;
 
@@ -1177,11 +1179,11 @@ FormFieldData* SearchForFormControlByName(
     if (it != end) {
       label_source =
           base::Contains(it->second.shadow_host_name_attributes, field_name)
-              ? FormFieldData::LabelSource::kForShadowHostName
-              : FormFieldData::LabelSource::kForShadowHostId;
+              ? LabelSource::kForShadowHostName
+              : LabelSource::kForShadowHostId;
     }
   } else {
-    label_source = FormFieldData::LabelSource::kForName;
+    label_source = LabelSource::kForName;
   }
   return it != end ? it->first : nullptr;
 }
@@ -1206,7 +1208,7 @@ void MatchLabelsAndFields(
     WebLabelElement label = item.To<WebLabelElement>();
     WebElement control = label.CorrespondingControl();
     FormFieldData* field_data = nullptr;
-    auto label_source = FormFieldData::LabelSource::kForId;
+    LabelSource label_source = LabelSource::kForId;
 
     if (control.IsNull()) {
       // Sometimes site authors will incorrectly specify the corresponding
@@ -1247,9 +1249,10 @@ void MatchLabelsAndFields(
       // </label>
       // Thus, consider text behind the <input> as a fallback.
       // Since associated labels are counted as `kFor`, the source is ignored.
-      FormFieldData::LabelSource irrelevant_source;
-      label_text = InferLabelFromNext(control.To<WebFormControlElement>(),
-                                      irrelevant_source);
+      if (auto inferred_label =
+              InferLabelFromNext(control.To<WebFormControlElement>())) {
+        label_text = inferred_label->label;
+      }
       if (label_text.empty()) {
         continue;
       }
@@ -1462,9 +1465,10 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
         control_elements[element_index];
     FormFieldData& field = form.fields[field_index++];
     if (field.label().empty()) {
-      FormFieldData::LabelSource label_source = field.label_source();
-      field.set_label(InferLabelForElement(control_element, label_source));
-      field.set_label_source(label_source);
+      if (auto label = InferLabelForElement(control_element)) {
+        field.set_label(std::move(label->label));
+        field.set_label_source(label->source);
+      }
     }
     field.set_label(std::move(field.label()).substr(0, kMaxStringLength));
   }
@@ -1559,6 +1563,18 @@ std::vector<WebFormControlElement> GetUnownedFormControlElements(
 }
 
 }  // namespace
+
+InferredLabel::InferredLabel(std::u16string label, LabelSource source)
+    : label(std::move(label)), source(source) {}
+
+// static
+std::optional<InferredLabel> InferredLabel::BuildIfValid(std::u16string label,
+                                                         LabelSource source) {
+  if (IsLabelValid(label)) {
+    return InferredLabel{std::move(label), source};
+  }
+  return std::nullopt;
+}
 
 std::vector<WebElement> GetWebElementsFromIdList(const WebDocument& document,
                                                  const WebString& id_list) {
@@ -2447,54 +2463,38 @@ std::u16string FindChildTextWithIgnoreList(
   return node_text;
 }
 
-std::u16string InferLabelForElement(const WebFormControlElement& element,
-                                    FormFieldData::LabelSource& label_source) {
+std::optional<InferredLabel> InferLabelForElement(
+    const WebFormControlElement& element) {
   if (IsCheckableElement(element)) {
-    if (std::u16string inferred_label_from_next =
-            InferLabelFromNext(element, label_source);
-        !inferred_label_from_next.empty()) {
-      return inferred_label_from_next;
+    if (auto r = InferLabelFromNext(element)) {
+      return r;
     }
   }
-  if (std::u16string inferred_label_from_previous =
-          InferLabelFromPrevious(element, label_source);
-      !inferred_label_from_previous.empty()) {
-    return inferred_label_from_previous;
+  if (auto r = InferLabelFromPrevious(element)) {
+    return r;
   }
   if (!base::FeatureList::IsEnabled(
           features::kAutofillAlwaysParsePlaceholders)) {
-    std::u16string inferred_label = InferLabelFromPlaceholder(element);
-    if (IsLabelValid(inferred_label)) {
-      label_source = FormFieldData::LabelSource::kPlaceHolder;
-      return inferred_label;
+    if (auto r = InferLabelFromPlaceholder(element)) {
+      return r;
     }
   }
-  if (std::u16string inferred_label_from_overlaying_successor =
-          InferLabelFromOverlayingSuccessor(element);
-      IsLabelValid(inferred_label_from_overlaying_successor)) {
-    label_source = FormFieldData::LabelSource::kOverlayingLabel;
-    return inferred_label_from_overlaying_successor;
+  if (auto r = InferLabelFromOverlayingSuccessor(element)) {
+    return r;
   }
   // If we didn't find a placeholder, check for aria-label text.
-  if (std::u16string aria_label = GetAriaLabel(element.GetDocument(), element);
-      IsLabelValid(aria_label)) {
-    label_source = FormFieldData::LabelSource::kAriaLabel;
-    return aria_label;
+  if (auto r = InferLabelFromAriaLabel(element)) {
+    return r;
   }
   // If we didn't find a label, check the `element`'s ancestors.
-  if (std::u16string inferred_label_from_ancestor =
-          InferLabelFromAncestors(element, label_source);
-      !inferred_label_from_ancestor.empty()) {
-    return inferred_label_from_ancestor;
+  if (auto r = InferLabelFromAncestors(element)) {
+    return r;
   }
   // If we didn't find a label, check the value attr used as the placeholder.
-  if (std::u16string inferred_label_from_value_attribute =
-          InferLabelFromValueAttribute(element);
-      IsLabelValid(inferred_label_from_value_attribute)) {
-    label_source = FormFieldData::LabelSource::kValue;
-    return inferred_label_from_value_attribute;
+  if (auto r = InferLabelFromValueAttribute(element)) {
+    return r;
   }
-  return u"";
+  return std::nullopt;
 }
 
 WebFormElement GetFormByRendererId(FormRendererId form_renderer_id) {
