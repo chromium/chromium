@@ -330,7 +330,7 @@ void HTMLPermissionElement::AttachLayoutTree(AttachContext& context) {
       return;
     }
   }
-  DisableClickingTemporarily(DisableReason::kRecentlyAttachedToDOM,
+  DisableClickingTemporarily(DisableReason::kRecentlyAttachedToLayoutTree,
                              kDefaultDisableTimeout);
   if (embedded_permission_control_receiver_.is_bound()) {
     return;
@@ -357,6 +357,18 @@ Vector<PermissionDescriptorPtr>
 HTMLPermissionElement::ParsePermissionDescriptorsForTesting(
     const AtomicString& type) {
   return ParsePermissionDescriptorsFromString(type);
+}
+
+// static
+String HTMLPermissionElement::DisableReasonToString(DisableReason reason) {
+  switch (reason) {
+    case DisableReason::kRecentlyAttachedToLayoutTree:
+      return "being recently attached to layout tree";
+    case DisableReason::kIntersectionChanged:
+      return "intersection change";
+    case DisableReason::kInvalidStyle:
+      return "invalid style";
+  }
 }
 
 PermissionService* HTMLPermissionElement::GetPermissionService() {
@@ -611,7 +623,10 @@ void HTMLPermissionElement::OnEmbeddedPermissionControlRegistered(
   CHECK_EQ(permission_status_map_.size(), 0U);
   CHECK(!permissions_granted_);
   if (!allowed) {
-    // TODO(crbug.com/1462930): We will not display the element in this case.
+    AddConsoleError(String::Format(
+        "The permission '%s' has not passed security checks or has surpassed "
+        "the maximum instances quota per page.",
+        GetType().Utf8().c_str()));
     return;
   }
 
@@ -665,10 +680,17 @@ HTMLPermissionElement::GetTaskRunner() {
 
 bool HTMLPermissionElement::IsClickingEnabled() {
   if (permission_descriptors_.empty()) {
+    AddConsoleError(String::Format(
+        "The permission element '%s' cannot be activated due to invalid type.",
+        GetType().Utf8().c_str()));
     return false;
   }
 
   if (!IsRegisteredInBrowserProcess()) {
+    AddConsoleError(String::Format(
+        "The permission element '%s' cannot be activated because of security "
+        "checks or because the page's quota has been exceeded.",
+        GetType().Utf8().c_str()));
     return false;
   }
 
@@ -683,11 +705,14 @@ bool HTMLPermissionElement::IsClickingEnabled() {
   base::TimeTicks now = base::TimeTicks::Now();
   while (!clicking_disabled_reasons_.empty()) {
     auto it = clicking_disabled_reasons_.begin();
-    if (it->value < now) {
-      clicking_disabled_reasons_.erase(it);
-    } else {
+    if (it->value >= now) {
+      AddConsoleError(String::Format(
+          "The permission element '%s' cannot be activated due to %s.",
+          GetType().Utf8().c_str(),
+          DisableReasonToString(it->key).Utf8().c_str()));
       return false;
     }
+    clicking_disabled_reasons_.erase(it);
   }
 
   return true;
@@ -750,6 +775,11 @@ void HTMLPermissionElement::AddConsoleError(String error) {
                     mojom::blink::ConsoleMessageLevel::kError, error);
 }
 
+void HTMLPermissionElement::AddConsoleWarning(String warning) {
+  AddConsoleMessage(mojom::blink::ConsoleMessageSource::kRendering,
+                    mojom::blink::ConsoleMessageLevel::kWarning, warning);
+}
+
 void HTMLPermissionElement::OnIntersectionChanged(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
   CHECK(!entries.empty());
@@ -772,14 +802,25 @@ void HTMLPermissionElement::OnIntersectionChanged(
 bool HTMLPermissionElement::IsStyleValid() {
   // No computed style when using `display: none`.
   if (!GetComputedStyle()) {
+    AddConsoleWarning(
+        String::Format("Cannot compute style for the permission element '%s'",
+                       GetType().Utf8().c_str()));
     return false;
   }
 
   if (AreColorsNonOpaque(GetComputedStyle())) {
+    AddConsoleWarning(String::Format(
+        "Color or background color of the permission element '%s' is opaque",
+        GetType().Utf8().c_str()));
     return false;
   }
+
   if (ContrastBetweenColorAndBackgroundColor(GetComputedStyle()) <
       kMinimumAllowedContrast) {
+    AddConsoleWarning(
+        String::Format("Contrast between color and background color of the "
+                       "permission element '%s' is too low",
+                       GetType().Utf8().c_str()));
     return false;
   }
 
@@ -787,6 +828,9 @@ bool HTMLPermissionElement::IsStyleValid() {
       FontSizeFunctions::FontSizeForKeyword(
           &GetDocument(), FontSizeFunctions::KeywordSize(CSSValueID::kSmall),
           GetComputedStyle()->GetFontDescription().IsMonospace())) {
+    AddConsoleWarning(
+        String::Format("Font size of the permission element '%s' is too small",
+                       GetType().Utf8().c_str()));
     return false;
   }
 
@@ -794,6 +838,9 @@ bool HTMLPermissionElement::IsStyleValid() {
       FontSizeFunctions::FontSizeForKeyword(
           &GetDocument(), FontSizeFunctions::KeywordSize(CSSValueID::kXxxLarge),
           GetComputedStyle()->GetFontDescription().IsMonospace())) {
+    AddConsoleWarning(
+        String::Format("Font size of the permission element '%s' is too large",
+                       GetType().Utf8().c_str()));
     return false;
   }
 
@@ -809,7 +856,7 @@ Length HTMLPermissionElement::AdjustedBoundedLength(
       length.HasContentOrIntrinsic() || length.HasStretch();
   if (is_content_or_stretch && !length_console_error_sent_) {
     length_console_error_sent_ = true;
-    AddConsoleError(
+    AddConsoleWarning(
         "content, intrinsic, or stretch sizes are not supported as values for "
         "the min/max width and height of the permission element");
   }
@@ -889,8 +936,9 @@ void HTMLPermissionElement::DidFinishLifecycleUpdate(
 
   if (intersection_rect_ != intersection_rect) {
     intersection_rect_ = intersection_rect;
-    DisableClickingTemporarily(DisableReason::kRecentlyAttachedToDOM,
+    DisableClickingTemporarily(DisableReason::kRecentlyAttachedToLayoutTree,
                                kDefaultDisableTimeout);
   }
 }
+
 }  // namespace blink

@@ -406,7 +406,7 @@ class ClickingEnabledChecker {
 
   void ResetClickingEnabled() {
     element_->EnableClicking(
-        HTMLPermissionElement::DisableReason::kRecentlyAttachedToDOM);
+        HTMLPermissionElement::DisableReason::kRecentlyAttachedToLayoutTree);
     element_->EnableClicking(
         HTMLPermissionElement::DisableReason::kIntersectionChanged);
     element_->EnableClicking(
@@ -604,7 +604,7 @@ TEST_F(HTMLPemissionElementClickingEnabledTest, UnclickableBeforeRegistered) {
     permission_service()->set_should_defer_registered_callback(
         /*should_defer*/ true);
     // Check if the element is still unclickable even after the default timeout
-    // of `kRecentlyAttachedToDOM`.
+    // of `kRecentlyAttachedToLayoutTree`.
     FastForwardBy(base::Milliseconds(600));
     EXPECT_FALSE(permission_element->IsClickingEnabled());
     std::move(permission_service()->TakePEPCRegisteredCallback()).Run();

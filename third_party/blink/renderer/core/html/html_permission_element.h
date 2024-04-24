@@ -95,8 +95,8 @@ class CORE_EXPORT HTMLPermissionElement final
 
   enum class DisableReason {
     // This element is temporarily disabled for a short period
-    // (`kDefaultDisableTimeout`) after being attached to the DOM.
-    kRecentlyAttachedToDOM,
+    // (`kDefaultDisableTimeout`) after being attached to the layout tree.
+    kRecentlyAttachedToLayoutTree,
 
     // This element is temporarily disabled for a short period
     // (`kDefaultDisableTimeout`) after its intersection status changed from
@@ -106,6 +106,10 @@ class CORE_EXPORT HTMLPermissionElement final
     // This element is disabled because of the element's style.
     kInvalidStyle,
   };
+
+  // Translates `DisableReason` into strings, primarily used for logging
+  // console messages.
+  static String DisableReasonToString(DisableReason reason);
 
   // Ensure there is a connection to the permission service and return it.
   mojom::blink::PermissionService* GetPermissionService();
@@ -149,6 +153,8 @@ class CORE_EXPORT HTMLPermissionElement final
     return !permission_status_map_.empty();
   }
 
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
+
   // Checks whether clicking is enabled at the moment. Clicking is disabled if
   // either:
   // 1) |DisableClickingIndefinitely| has been called and |EnableClicking| has
@@ -184,14 +190,10 @@ class CORE_EXPORT HTMLPermissionElement final
   void UpdateText();
 
   void AddConsoleError(String error);
+  void AddConsoleWarning(String warning);
 
   void OnIntersectionChanged(
       const HeapVector<Member<IntersectionObserverEntry>>& entries);
-
-  // LocalFrameView::LifecycleNotificationObserver
-  void DidFinishLifecycleUpdate(const LocalFrameView&) override;
-
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
   bool IsStyleValid();
 
@@ -209,6 +211,9 @@ class CORE_EXPORT HTMLPermissionElement final
                                float bound,
                                bool is_lower_bound,
                                bool should_multiply_by_content_size);
+
+  // LocalFrameView::LifecycleNotificationObserver
+  void DidFinishLifecycleUpdate(const LocalFrameView&) override;
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 
