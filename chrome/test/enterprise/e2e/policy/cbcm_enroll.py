@@ -14,7 +14,7 @@ from test_util import getElementFromShadowRoot
 
 def main(argv):
   options = webdriver.ChromeOptions()
-  os.environ["CHROME_LOG_FILE"] = r"c:\temp\chrome_log.txt"
+  os.environ["CHROME_LOG_FILE"] = r"C:\temp\chrome_log.txt"
 
   # Flag which tells Chrome to send events to our test endpoint.
   # Debugging tip: this flag only works for Dev and Canary builds.
@@ -35,6 +35,13 @@ def main(argv):
   time.sleep(25)
 
   try:
+    # Print CHROME_LOG_FILE
+    print("PRINTING CHROME LOG FILE....")
+    with open(os.environ["CHROME_LOG_FILE"]) as file:
+      content = file.read()
+      print(content)
+    print("DONE PRINTING CHROME LOG FILE.")
+
     # Verify Policy status legend in chrome://policy page
     policy_url = "chrome://policy"
     driver.get(policy_url)
