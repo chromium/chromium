@@ -39,7 +39,7 @@ void DeprecatedUrlLazyFiller::HandleDeprecatedUrl(
     v8::Local<v8::Name> name,
     const v8::PropertyCallbackInfo<v8::Value>& info) {
   DeprecatedUrlLazyFiller* self = GetSelf<DeprecatedUrlLazyFiller>(info);
-  self->v8_logger_->LogConsoleWarning(self->warning_);
+  self->v8_logger_->LogConsoleWarning(self->warning_.get());
 
   AuctionV8Helper* v8_helper = self->v8_helper();
   v8::Isolate* isolate = v8_helper->isolate();

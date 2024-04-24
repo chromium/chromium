@@ -4,6 +4,7 @@
 
 #include "content/services/auction_worklet/auction_v8_logger.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
@@ -37,13 +38,19 @@ AuctionV8Logger::AuctionV8Logger(AuctionV8Helper* v8_helper,
 
 AuctionV8Logger::~AuctionV8Logger() = default;
 
-void AuctionV8Logger::LogConsoleWarning(const char* message) {
+void AuctionV8Logger::LogConsoleWarning(std::string_view message) {
   v8::Isolate* isolate = v8_helper_->isolate();
   v8::Local<v8::Function> console_warn = console_warn_.Get(isolate);
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
 
+  v8::Local<v8::String> v8_string;
+  if (!v8_helper_->CreateUtf8String(message).ToLocal(&v8_string)) {
+    // Drop message on error.
+    return;
+  }
+
   v8::LocalVector<v8::Value> args(isolate);
-  args.push_back(v8_helper_->CreateStringFromLiteral(message));
+  args.emplace_back(std::move(v8_string));
 
   AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper_->GetTimeLimit());
   v8::TryCatch try_catch(isolate);

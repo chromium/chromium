@@ -17,13 +17,16 @@
 
 namespace auction_worklet {
 
+class AuctionV8Logger;
+
 // Class to manage bindings for setting a debugging report URL. Expected to be
 // used for a context managed by ContextRecycler. The URL passed to the last
 // successful call will be used as the reporting URL. Throws on invalid URLs or
 // non-HTTPS URLs.
 class CONTENT_EXPORT ForDebuggingOnlyBindings : public Bindings {
  public:
-  explicit ForDebuggingOnlyBindings(AuctionV8Helper* v8_helper);
+  ForDebuggingOnlyBindings(AuctionV8Helper* v8_helper,
+                           AuctionV8Logger* v8_logger);
   ForDebuggingOnlyBindings(const ForDebuggingOnlyBindings&) = delete;
   ForDebuggingOnlyBindings& operator=(const ForDebuggingOnlyBindings&) = delete;
   ~ForDebuggingOnlyBindings() override;
@@ -43,6 +46,7 @@ class CONTENT_EXPORT ForDebuggingOnlyBindings : public Bindings {
       const v8::FunctionCallbackInfo<v8::Value>& args);
 
   const raw_ptr<AuctionV8Helper> v8_helper_;
+  const raw_ptr<AuctionV8Logger> v8_logger_;
 
   std::optional<GURL> loss_report_url_;
   std::optional<GURL> win_report_url_;
