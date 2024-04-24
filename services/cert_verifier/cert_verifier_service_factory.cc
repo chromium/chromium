@@ -102,18 +102,6 @@ internal::CertVerifierServiceImpl* GetNewCertVerifierImpl(
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-std::string GetName(const bssl::ParsedCertificate& cert) {
-  bssl::RDNSequence subject_rdn;
-  if (!bssl::ParseName(cert.subject_tlv(), &subject_rdn)) {
-    return "UNKNOWN";
-  }
-  std::string subject_string;
-  if (!bssl::ConvertToRFC2253(subject_rdn, &subject_string)) {
-    return "UNKNOWN";
-  }
-  return subject_string;
-}
-
 std::string GetHash(const bssl::ParsedCertificate& cert) {
   net::SHA256HashValue hash =
       net::X509Certificate::CalculateFingerprint256(cert.cert_buffer());
@@ -342,27 +330,28 @@ void CertVerifierServiceFactoryImpl::UpdateChromeRootStore(
 void CertVerifierServiceFactoryImpl::GetChromeRootStoreInfo(
     GetChromeRootStoreInfoCallback callback) {
   mojom::ChromeRootStoreInfoPtr info_ptr = mojom::ChromeRootStoreInfo::New();
+
+  std::vector<net::ChromeRootStoreData::Anchor> anchors;
   if (proc_params_.root_store_data) {
     info_ptr->version = proc_params_.root_store_data->version();
-    for (const auto& anchor : proc_params_.root_store_data->anchors()) {
-      if (!IsAnchorTrustedOnThisChromeVersion(anchor)) {
-        continue;
-      }
-      const bssl::ParsedCertificate* cert = anchor.certificate.get();
-      info_ptr->root_cert_info.push_back(
-          mojom::ChromeRootCertInfo::New(GetName(*cert), GetHash(*cert)));
-    }
+    anchors = proc_params_.root_store_data->anchors();
   } else {
     info_ptr->version = net::CompiledChromeRootStoreVersion();
-    for (const auto& anchor : net::CompiledChromeRootStoreAnchors()) {
-      if (!IsAnchorTrustedOnThisChromeVersion(anchor)) {
-        continue;
-      }
-      const bssl::ParsedCertificate* cert = anchor.certificate.get();
-      info_ptr->root_cert_info.push_back(
-          mojom::ChromeRootCertInfo::New(GetName(*cert), GetHash(*cert)));
-    }
+    anchors = net::CompiledChromeRootStoreAnchors();
   }
+
+  for (const auto& anchor : anchors) {
+    if (!IsAnchorTrustedOnThisChromeVersion(anchor)) {
+      continue;
+    }
+    const bssl::ParsedCertificate* cert = anchor.certificate.get();
+    base::span<const uint8_t> cert_bytes =
+        net::x509_util::CryptoBufferAsSpan(cert->cert_buffer());
+    info_ptr->root_cert_info.push_back(mojom::ChromeRootCertInfo::New(
+        GetHash(*cert),
+        std::vector<uint8_t>(cert_bytes.begin(), cert_bytes.end())));
+  }
+
   std::move(callback).Run(std::move(info_ptr));
 }
 #endif

@@ -41,9 +41,9 @@ struct CertVerifierCreationParams {
 
 // Information about a certificate in the Chrome Root Store
 struct ChromeRootCertInfo {
-  // Human-readable name for the certificate.
-  string name;
   string sha256hash_hex;
+
+  array<uint8> cert;
 };
 
 // Information about the Chrome Root Store

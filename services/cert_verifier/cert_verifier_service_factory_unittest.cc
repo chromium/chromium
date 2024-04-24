@@ -480,17 +480,14 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithUpdatedRootStore) {
   EXPECT_EQ(info_ptr->version, root_store.version_major());
   ASSERT_EQ(info_ptr->root_cert_info.size(), static_cast<std::size_t>(1));
 
-  bssl::der::Input subject_tlv(root->GetSubject());
-  bssl::RDNSequence subject_rdn;
-  ASSERT_TRUE(bssl::ParseName(subject_tlv, &subject_rdn));
-  std::string subject_string;
-  ASSERT_TRUE(bssl::ConvertToRFC2253(subject_rdn, &subject_string));
-  EXPECT_EQ(info_ptr->root_cert_info[0]->name, subject_string);
-
   net::SHA256HashValue root_hash =
       net::X509Certificate::CalculateFingerprint256(root->GetCertBuffer());
   EXPECT_EQ(info_ptr->root_cert_info[0]->sha256hash_hex,
             base::HexEncode(root_hash.data));
+  EXPECT_TRUE(net::x509_util::CryptoBufferEqual(
+      net::x509_util::CreateCryptoBuffer(info_ptr->root_cert_info[0]->cert)
+          .get(),
+      root->GetCertBuffer()));
 }
 
 std::string CurVersionString() {
