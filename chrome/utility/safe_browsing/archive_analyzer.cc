@@ -89,6 +89,9 @@ bool ArchiveAnalyzer::UpdateResultsForEntry(base::File entry,
   if (base::FeatureList::IsEnabled(kNestedArchives) && !is_encrypted) {
     nested_analyzer_ = ArchiveAnalyzer::CreateForArchiveType(GetFileType(path));
     if (nested_analyzer_) {
+      // Archive analyzers expect to start at the beginning of the
+      // archive, but we may be at the end.
+      entry.Seek(base::File::FROM_BEGIN, 0);
       nested_analyzer_->Analyze(
           entry.Duplicate(), path, password(),
           base::BindOnce(&ArchiveAnalyzer::NestedAnalysisFinished, GetWeakPtr(),

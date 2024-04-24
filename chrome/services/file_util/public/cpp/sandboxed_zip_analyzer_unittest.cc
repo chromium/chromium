@@ -582,3 +582,21 @@ TEST_F(SandboxedZipAnalyzerTest, InvalidPath) {
   EXPECT_EQ(results.analysis_result,
             safe_browsing::ArchiveAnalysisResult::kFailedToOpen);
 }
+
+TEST_F(SandboxedZipAnalyzerTest, NestedEncryptedZip) {
+  safe_browsing::ArchiveAnalyzerResults results;
+  RunAnalyzer(dir_test_data_.AppendASCII(
+                  "download_protection/zipfile_nested_encrypted_zip.zip"),
+              &results);
+  EXPECT_TRUE(results.success);
+  EXPECT_TRUE(results.encryption_info.is_encrypted);
+}
+
+TEST_F(SandboxedZipAnalyzerTest, NestedEncryptedRar) {
+  safe_browsing::ArchiveAnalyzerResults results;
+  RunAnalyzer(dir_test_data_.AppendASCII(
+                  "download_protection/zipfile_nested_encrypted_archives.zip"),
+              &results);
+  EXPECT_TRUE(results.success);
+  EXPECT_TRUE(results.encryption_info.is_encrypted);
+}

@@ -98,7 +98,7 @@ bool ZipAnalyzer::ResumeExtraction() {
     }
   }
 
-  results()->encryption_info.is_encrypted = has_encrypted_;
+  results()->encryption_info.is_encrypted |= has_encrypted_;
   if (has_encrypted_) {
     base::UmaHistogramBoolean("SBClientDownload.EncryptedZipUsesAes",
                               has_aes_encrypted_);
