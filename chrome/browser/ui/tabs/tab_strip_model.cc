@@ -539,7 +539,7 @@ std::unique_ptr<DetachedWebContents> TabStripModel::DetachWebContentsImpl(
       DetermineNewSelectedIndex(index_at_time_of_removal);
 
   UngroupTab(index_at_time_of_removal,
-             GetTabGroupForTab(index_before_any_removals));
+             GetTabGroupForTab(index_at_time_of_removal));
 
   std::unique_ptr<tabs::TabModel> old_data;
   if (IsContentsDataVector()) {
