@@ -107,6 +107,10 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
                        WarningAction action,
                        int64_t action_latency_msec,
                        bool is_terminal_action);
+
+    // Serializes the surface, action, and action_latency_msec into a string
+    // in a colon-separated format such as "DOWNLOADS_PAGE:DISCARD:10000".
+    std::string ToString() const;
   };
 
   // Enum representing the trigger of the scan request.
