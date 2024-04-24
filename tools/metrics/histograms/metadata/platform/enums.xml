@@ -308,8 +308,9 @@ chromium-metrics-reviews@google.com.
     greatest set can be found in
     https://chromium.googlesource.com/chromiumos/platform/ec/+/refs/heads/main/include/flash_log.h
     (enum flash_event_type and enum nvmem_failure_type). Note that NVMEM errors
-    are logged as subevents of flash log event 5, we register them offset by
-    200.
+    and AP RO verification events are logged as subevents. AP RO verification
+    subevents are registered with an offset of 160. Nvmem subevents are
+    registered with an offset of 200.
   </summary>
   <int value="0" label="Start"/>
   <int value="1" label="Corrupted Log"/>
@@ -319,9 +320,20 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="TPM Wipe"/>
   <int value="7" label="TRNG Stall"/>
   <int value="8" label="Dcrypto Failure"/>
-  <int value="9" label="AP RO Verification Failure"/>
+  <int value="9" label="AP RO Verification Event"/>
   <int value="10" label="FIPS Failure"/>
   <int value="11" label="Invalid Board Properties"/>
+  <int value="163" label="AP RO Triggered"/>
+  <int value="164" label="AP RO Space Not Programmed"/>
+  <int value="165" label="AP RO Space Invalid"/>
+  <int value="166" label="AP RO Check Failed"/>
+  <int value="167" label="AP RO Check Succeeded"/>
+  <int value="168" label="AP RO Check Unsupported"/>
+  <int value="169" label="AP RO Fail Cleared"/>
+  <int value="170" label="AP RO Saved GBBD"/>
+  <int value="171" label="AP RO Fail - to Save GBBD"/>
+  <int value="172" label="AP RO Fail - Corrupted V1 Data"/>
+  <int value="173" label="AP RO Fail - Corrupted GBBD"/>
   <int value="200" label="Nvmem Malloc"/>
   <int value="201" label="Nvmem Page Header Size Mismatch"/>
   <int value="202" label="Nvmem Read Underrun"/>
