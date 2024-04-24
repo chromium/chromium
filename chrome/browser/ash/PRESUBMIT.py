@@ -34,25 +34,28 @@ def _CheckDepsFileProhibitingChromeExists(input_api, output_api):
     if len(splitPath) <= 1:
       continue
 
+    # DEPS relative to chrome/browser/ash.
     relative_deps_files_path = input_api.os_path.join(splitPath[0], 'DEPS')
+    # Absolute DEPS path.
     deps_file_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
                                             relative_deps_files_path)
+    # DEPS relative to repo root.
+    local_deps_file_path = input_api.os_path.join(_CHROME_BROWSER_ASH,
+                                                  relative_deps_files_path)
 
     if not input_api.os_path.exists(deps_file_path):
-      missing_deps_files.add(
-          input_api.os_path.join(_CHROME_BROWSER_ASH, relative_deps_files_path))
+      missing_deps_files.add(local_deps_file_path)
       continue
 
     # If the affected file is not a DEPS file, move onto the next file to check.
-    if f.LocalPath() != deps_file_path:
+    if f.LocalPath() != local_deps_file_path:
       continue
 
     # If the affected file *is* a DEPS file, confirm that it has a "-chrome"
     # rule, prohibiting new //chrome dependencies.
     prohibit_chrome_pattern = input_api.re.compile(r'\"\-chrome\"')
     if not prohibit_chrome_pattern.search(input_api.ReadFile(deps_file_path)):
-      deps_files_not_prohibiting_chrome.add(
-          input_api.os_path.join(_CHROME_BROWSER_ASH, relative_deps_files_path))
+      deps_files_not_prohibiting_chrome.add(local_deps_file_path)
 
   results = []
   if missing_deps_files:
