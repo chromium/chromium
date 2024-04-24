@@ -5,7 +5,6 @@
 #include "content/browser/media/key_system_support_impl.h"
 
 #include "base/logging.h"
-#include "base/no_destructor.h"
 
 namespace content {
 
@@ -27,19 +26,8 @@ bool IsValidKeySystemCapabilities(KeySystemCapabilities capabilities) {
 
 }  // namespace
 
-// static
-KeySystemSupportImpl* KeySystemSupportImpl::GetInstance() {
-  static base::NoDestructor<KeySystemSupportImpl> impl;
-  return impl.get();
-}
-
-// static
-void KeySystemSupportImpl::BindReceiver(
-    mojo::PendingReceiver<media::mojom::KeySystemSupport> receiver) {
-  KeySystemSupportImpl::GetInstance()->Bind(std::move(receiver));
-}
-
-KeySystemSupportImpl::KeySystemSupportImpl() = default;
+KeySystemSupportImpl::KeySystemSupportImpl(RenderFrameHost* render_frame_host)
+    : DocumentUserData(render_frame_host) {}
 KeySystemSupportImpl::~KeySystemSupportImpl() = default;
 
 void KeySystemSupportImpl::SetGetKeySystemCapabilitiesUpdateCbForTesting(
@@ -105,5 +93,7 @@ void KeySystemSupportImpl::OnKeySystemCapabilitiesUpdated(
   for (auto& observer : observer_remotes_)
     observer->OnKeySystemSupportUpdated(key_system_capabilities_.value());
 }
+
+DOCUMENT_USER_DATA_KEY_IMPL(KeySystemSupportImpl);
 
 }  // namespace content

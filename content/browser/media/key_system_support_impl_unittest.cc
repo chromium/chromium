@@ -13,6 +13,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
 #include "media/base/cdm_capability.h"
 #include "media/base/key_system_capability.h"
 #include "media/base/video_codecs.h"
@@ -87,14 +88,15 @@ KeySystemCapabilities TestKeySystemCapabilities(
 
 }  // namespace
 
-class KeySystemSupportImplTest : public testing::Test {
+class KeySystemSupportImplTest : public RenderViewHostTestHarness {
  public:
-  KeySystemSupportImplTest() {
+  void SetUp() override {
     LOG(ERROR) << __func__;
-    key_system_support_impl_.SetGetKeySystemCapabilitiesUpdateCbForTesting(
-        get_support_cb_.Get());
-    key_system_support_impl_.Bind(
-        key_system_support_.BindNewPipeAndPassReceiver());
+    RenderViewHostTestHarness::SetUp();
+    KeySystemSupportImpl::GetOrCreateForCurrentDocument(main_rfh())
+        ->SetGetKeySystemCapabilitiesUpdateCbForTesting(get_support_cb_.Get());
+    KeySystemSupportImpl::GetOrCreateForCurrentDocument(main_rfh())
+        ->Bind(key_system_support_.BindNewPipeAndPassReceiver());
   }
 
   void OnKeySystemSupportUpdated(int observer_id,
@@ -119,8 +121,6 @@ class KeySystemSupportImplTest : public testing::Test {
     run_loop.Run();
   }
 
-  BrowserTaskEnvironment task_environment_;
-  KeySystemSupportImpl key_system_support_impl_;
   mojo::Remote<media::mojom::KeySystemSupport> key_system_support_;
   base::MockCallback<KeySystemSupportImpl::GetKeySystemCapabilitiesUpdateCB>
       get_support_cb_;

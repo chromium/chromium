@@ -12409,7 +12409,8 @@ void RenderFrameHostImpl::BindMediaInterfaceFactoryReceiver(
 
 void RenderFrameHostImpl::BindKeySystemSupportReceiver(
     mojo::PendingReceiver<media::mojom::KeySystemSupport> receiver) {
-  KeySystemSupportImpl::BindReceiver(std::move(receiver));
+  KeySystemSupportImpl::GetOrCreateForCurrentDocument(this)->Bind(
+      std::move(receiver));
 }
 
 void RenderFrameHostImpl::BindMediaMetricsProviderReceiver(
