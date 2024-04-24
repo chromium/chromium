@@ -130,14 +130,16 @@ base::flat_set<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
       return {};
     case mojom::FormActionType::kFill:
       web::WebFrame* frame = web_frame();
+      std::vector<FieldGlobalId> safe_field_ids;
       if (frame) {
-        [bridge_ fillFormData:data inFrame:frame];
+        std::vector<FormFieldData::FillData> fields;
+        for (const FormFieldData& field : data.fields) {
+          safe_field_ids.push_back(field.global_id());
+          fields.push_back(FormFieldData::FillData(field));
+        }
+        [bridge_ fillData:fields inFrame:frame];
       }
-      std::vector<FieldGlobalId> safe_fields;
-      for (const auto& field : data.fields) {
-        safe_fields.push_back(field.global_id());
-      }
-      return safe_fields;
+      return safe_field_ids;
   }
 }
 

@@ -440,9 +440,9 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 
 #pragma mark - AutofillDriverIOSBridge
 
-- (void)fillFormData:(const autofill::FormData&)form
-             inFrame:(web::WebFrame*)frame {
-  [_autofillAgent fillFormData:form inFrame:frame];
+- (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)form
+         inFrame:(web::WebFrame*)frame {
+  [_autofillAgent fillData:form inFrame:frame];
 }
 
 - (void)fillSpecificFormField:(const autofill::FieldRendererId&)field

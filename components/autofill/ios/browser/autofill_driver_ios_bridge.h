@@ -5,14 +5,15 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_DRIVER_IOS_BRIDGE_H_
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_DRIVER_IOS_BRIDGE_H_
 
-#include <stdint.h>
+#import <stdint.h>
 
-#include <vector>
+#import <vector>
 
-#include "components/autofill/core/common/form_data_predictions.h"
+#import "components/autofill/core/common/form_data_predictions.h"
+#import "components/autofill/core/common/form_field_data.h"
+#import "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
-struct FormData;
 class FormStructure;
 }
 
@@ -24,8 +25,8 @@ class WebFrame;
 // Interface used to pipe form data from AutofillDriverIOS to the embedder.
 @protocol AutofillDriverIOSBridge
 
-- (void)fillFormData:(const autofill::FormData&)form
-             inFrame:(web::WebFrame*)frame;
+- (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)form
+         inFrame:(web::WebFrame*)frame;
 
 - (void)fillSpecificFormField:(const autofill::FieldRendererId&)field
                     withValue:(const std::u16string)value

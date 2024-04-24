@@ -190,13 +190,11 @@ bool ExtractFormData(const base::Value::Dict& form,
   std::optional<base::UnguessableToken> host_frame;
   if (const std::string* frame_id = form.FindString("frame_id")) {
     form_data->frame_id = *frame_id;
-    if (include_frame_metadata) {
       host_frame = DeserializeJavaScriptFrameId(*frame_id);
       if (!host_frame) {
         return false;
       }
       form_data->host_frame = LocalFrameToken(*host_frame);
-    }
   }
 
   // main_frame_origin is used for logging UKM.
@@ -250,9 +248,9 @@ bool ExtractFormData(const base::Value::Dict& form,
                              &field_data)) {
       // Some data is extracted at the form level, but also appears at the
       // field level. Reuse the extracted values.
+      field_data.set_host_form_id(form_data->renderer_id);
       if (include_frame_metadata) {
         field_data.set_host_frame(form_data->host_frame);
-        field_data.set_host_form_id(form_data->renderer_id);
         field_data.set_origin(frame_origin_object);
       }
       form_data->fields.push_back(std::move(field_data));

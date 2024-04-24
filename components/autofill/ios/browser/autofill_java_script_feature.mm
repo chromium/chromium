@@ -6,19 +6,25 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/command_line.h"
-#include "base/feature_list.h"
-#include "base/no_destructor.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/values.h"
-#include "components/autofill/core/common/autofill_features.h"
+#import "base/command_line.h"
+#import "base/feature_list.h"
+#import "base/no_destructor.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/values.h"
+#import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/web_state.h"
 
 namespace {
 const char kScriptName[] = "autofill_controller";
+constexpr char kFormFilledCommand[] = "formFilled";
 
 // The timeout for any JavaScript call in this file.
 const int64_t kJavaScriptExecutionTimeoutInSeconds = 5;
@@ -114,6 +120,48 @@ void AutofillJavaScriptFeature::FillPredictionData(web::WebFrame* frame,
                                                    base::Value::Dict data) {
   CallJavaScriptFunction(frame, "autofill.fillPredictionData",
                          base::Value::List().Append(std::move(data)));
+}
+
+std::optional<std::string>
+AutofillJavaScriptFeature::GetScriptMessageHandlerName() const {
+  return kScriptName;
+}
+
+void AutofillJavaScriptFeature::ScriptMessageReceived(
+    web::WebState* web_state,
+    const web::ScriptMessage& message) {
+  if (!message.body() || !message.body()->is_dict()) {
+    return;
+  }
+  const std::string* command = message.body()->GetDict().FindString("command");
+  const std::string* frame_id = message.body()->GetDict().FindString("frame");
+  const base::Value::Dict* form_dict =
+      message.body()->GetDict().FindDict("form_data");
+  if (!command || !frame_id || !form_dict || *command != kFormFilledCommand) {
+    return;
+  }
+
+  web::WebFrame* frame =
+      GetWebFramesManager(web_state)->GetFrameWithId(*frame_id);
+  if (!frame) {
+    return;
+  }
+
+  auto* driver =
+      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(web_state, frame);
+
+  const scoped_refptr<FieldDataManager> field_data_manager =
+      FieldDataManagerFactoryIOS::GetRetainable(frame);
+
+  autofill::FormData form_data;
+  if (!ExtractFormData(*form_dict, /*filtered=*/false, /*form_name=*/u"",
+                       web_state->GetLastCommittedURL(),
+                       frame->GetSecurityOrigin(), *field_data_manager,
+                       &form_data)) {
+    return;
+  }
+
+  driver->DidFillAutofillFormData(form_data, base::TimeTicks::Now());
 }
 
 }  // namespace autofill

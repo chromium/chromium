@@ -145,12 +145,7 @@ TEST_F(AutofillAgentTests,
   autofill::AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_,
                                                         &client_, nil, locale);
 
-  autofill::FormData form;
-  form.url = GURL("https://myform.com");
-  form.action = GURL("https://myform.com/submit");
-  form.name = u"CC form";
-  form.renderer_id = FormRendererId(1);
-
+  std::vector<autofill::FormFieldData::FillData> fill_data;
   autofill::FormFieldData field;
   field.set_form_control_type(autofill::FormControlType::kInputText);
   field.set_label(u"Card number");
@@ -160,7 +155,7 @@ TEST_F(AutofillAgentTests,
   field.set_value(u"number_value");
   field.set_is_autofilled(true);
   field.set_renderer_id(FieldRendererId(2));
-  form.fields.push_back(field);
+  fill_data.push_back(autofill::FormFieldData::FillData(field));
   field.set_label(u"Name on Card");
   field.set_name(u"name");
   field.set_name_attribute(field.name());
@@ -168,7 +163,7 @@ TEST_F(AutofillAgentTests,
   field.set_value(u"name_value");
   field.set_is_autofilled(true);
   field.set_renderer_id(FieldRendererId(3));
-  form.fields.push_back(field);
+  fill_data.push_back(autofill::FormFieldData::FillData(field));
   field.set_label(u"Expiry Month");
   field.set_name(u"expiry_month");
   field.set_name_attribute(field.name());
@@ -176,7 +171,7 @@ TEST_F(AutofillAgentTests,
   field.set_value(u"01");
   field.set_is_autofilled(false);
   field.set_renderer_id(FieldRendererId(4));
-  form.fields.push_back(field);
+  fill_data.push_back(autofill::FormFieldData::FillData(field));
   field.set_label(u"Unknown field");
   field.set_name(u"unknown");
   field.set_name_attribute(field.name());
@@ -184,14 +179,16 @@ TEST_F(AutofillAgentTests,
   field.set_value(u"");
   field.set_is_autofilled(true);
   field.set_renderer_id(FieldRendererId(5));
-  form.fields.push_back(field);
-  [autofill_agent_ fillFormData:form
-                        inFrame:fake_web_frames_manager_->GetMainWebFrame()];
+  fill_data.push_back(autofill::FormFieldData::FillData(field));
+
+  [autofill_agent_ fillData:fill_data
+                    inFrame:fake_web_frames_manager_->GetMainWebFrame()];
   fake_web_state_.WasShown();
-  EXPECT_EQ(u"__gCrWeb.autofill.fillForm({\"fields\":{\"2\":{\"section\":\"-"
-            u"default\",\"value\":\"number_value\"},\"3\":{\"section\":\"-"
-            u"default\",\"value\":\"name_value\"}},\"formName\":\"CC "
-            u"form\",\"formRendererID\":1}, 0);",
+
+  EXPECT_EQ(u"__gCrWeb.autofill.fillForm({\"fields\":{\"2\":{\"hostFormId\":0,"
+            u"\"section\":\"-default\",\"value\":\"number_value\"},\"3\":{"
+            u"\"hostFormId\":0,\"section\":\"-default\","
+            u"\"value\":\"name_value\"}}}, 0);",
             fake_main_frame_->GetLastJavaScriptCall());
 }
 
