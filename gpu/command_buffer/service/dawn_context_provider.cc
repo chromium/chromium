@@ -15,8 +15,12 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_arguments.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -514,6 +518,12 @@ bool DawnContextProvider::Initialize(
   }
 #endif  // BUILDFLAG(IS_WIN)
 
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+        this, "DawnContextProvider",
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+  }
+
   return true;
 }
 
@@ -603,6 +613,50 @@ void DawnContextProvider::OnError(WGPUErrorType error_type,
   } else {
     context_lost_reason_ = error::kUnknown;
   }
+}
+
+namespace {
+class DawnMemoryDump : public dawn::native::MemoryDump {
+ public:
+  DawnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) : pmd_(pmd) {
+    CHECK(pmd_);
+  }
+
+  ~DawnMemoryDump() override = default;
+
+  void AddScalar(const char* name,
+                 const char* key,
+                 const char* units,
+                 uint64_t value) override {
+    pmd_->GetOrCreateAllocatorDump(base::JoinString({kPrefix, name}, ""))
+        ->AddScalar(key, units, value);
+  }
+
+  void AddString(const char* name,
+                 const char* key,
+                 const std::string& value) override {
+    pmd_->GetOrCreateAllocatorDump(base::JoinString({kPrefix, name}, ""))
+        ->AddString(key, "", value);
+  }
+
+ private:
+  static constexpr char kPrefix[] = "gpu/dawn/";
+
+  const raw_ptr<base::trace_event::ProcessMemoryDump> pmd_;
+};
+}  // namespace
+
+bool DawnContextProvider::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  // TODO(https://crbug.com/330806170): Implement background level of
+  // detail support for emitting to UMA GPU memory histograms.
+  if (args.level_of_detail !=
+      base::trace_event::MemoryDumpLevelOfDetail::kBackground) {
+    DawnMemoryDump dump(pmd);
+    dawn::native::DumpMemoryStatistics(device_.Get(), &dump);
+  }
+  return true;
 }
 
 // static

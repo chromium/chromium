@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
@@ -37,7 +38,8 @@ namespace webgpu {
 class DawnInstance;
 }  // namespace webgpu
 
-class GPU_GLES2_EXPORT DawnContextProvider {
+class GPU_GLES2_EXPORT DawnContextProvider
+    : public base::trace_event::MemoryDumpProvider {
  public:
   using CacheBlobCallback = webgpu::DawnCachingInterface::CacheBlobCallback;
   static std::unique_ptr<DawnContextProvider> Create(
@@ -57,7 +59,7 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   DawnContextProvider(const DawnContextProvider&) = delete;
   DawnContextProvider& operator=(const DawnContextProvider&) = delete;
 
-  ~DawnContextProvider();
+  ~DawnContextProvider() override;
 
   wgpu::Device GetDevice() const { return device_; }
   wgpu::BackendType backend_type() const { return backend_type_; }
@@ -106,6 +108,9 @@ class GPU_GLES2_EXPORT DawnContextProvider {
                   bool force_fallback_adapter,
                   const GpuPreferences& gpu_preferences,
                   const GpuDriverBugWorkarounds& gpu_driver_workarounds);
+
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
 
   std::unique_ptr<webgpu::DawnCachingInterface> caching_interface_;
   std::unique_ptr<dawn::platform::Platform> platform_;
