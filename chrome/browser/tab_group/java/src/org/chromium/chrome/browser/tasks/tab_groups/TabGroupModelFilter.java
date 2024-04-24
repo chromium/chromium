@@ -1404,6 +1404,39 @@ public class TabGroupModelFilter extends TabModelFilter {
         TabGroupSyncIdUtils.putTabGroupSyncId(rootId, syncId);
     }
 
+    /**
+     * Given a tab group's stable ID, finds out the root ID, or {@link Tab.INVALID_TAB_ID} if the
+     * tab group doesn't exist in the model.
+     *
+     * @param stableId The stable ID of the tab group.
+     * @return The root ID of the tab group or {@link Tab.INVALID_TAB_ID} if the group isn't found
+     *     in the tab model.
+     */
+    public int getRootIdFromStableId(@NonNull Token stableId) {
+        for (int i = 0; i < getTabModel().getCount(); i++) {
+            Tab tab = getTabModel().getTabAt(i);
+            if (stableId.equals(tab.getTabGroupId())) return tab.getRootId();
+        }
+        return Tab.INVALID_TAB_ID;
+    }
+
+    /**
+     * Given a tab group's root ID, finds out the stable ID, or null if the tab group doesn't exist
+     * in the model.
+     *
+     * @param rootId The root ID of the tab group.
+     * @return The stable ID of the tab group or null if the group isn't found in the tab model.
+     */
+    public @Nullable Token getStableIdFromRootId(int rootId) {
+        TabGroup tabGroup = mRootIdToGroupMap.get(rootId);
+        if (tabGroup == null) return null;
+
+        Tab tab = TabModelUtils.getTabById(getTabModel(), tabGroup.getLastShownTabId());
+        if (tab == null) return null;
+
+        return tab.getTabGroupId();
+    }
+
     private static Token getOrCreateTabGroupId(@NonNull Tab tab) {
         return getOrCreateTabGroupIdWithDefault(tab, null);
     }

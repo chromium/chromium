@@ -504,6 +504,21 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    public void rootIdToStableIdAndBackConversion() {
+        // Test existing IDs.
+        assertEquals(TAB2_ROOT_ID, mTabGroupModelFilter.getRootIdFromStableId(TAB2_TAB_GROUP_ID));
+        assertEquals(TAB2_TAB_GROUP_ID, mTabGroupModelFilter.getStableIdFromRootId(TAB2_ROOT_ID));
+
+        assertEquals(null, mTabGroupModelFilter.getStableIdFromRootId(TAB1_ROOT_ID));
+
+        // Test non-existing IDs.
+        assertEquals(
+                Tab.INVALID_TAB_ID,
+                mTabGroupModelFilter.getRootIdFromStableId(new Token(93L, 42L)));
+        assertEquals(null, mTabGroupModelFilter.getStableIdFromRootId(1000));
+    }
+
+    @Test
     public void addTab_TabLaunchedFromTabGroupUi() {
         Tab newTab = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, null, TAB1_ID);
         doReturn(TabLaunchType.FROM_TAB_GROUP_UI).when(newTab).getLaunchType();
