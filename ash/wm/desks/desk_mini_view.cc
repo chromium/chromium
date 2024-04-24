@@ -554,7 +554,8 @@ void DeskMiniView::Layout(PassKey) {
   }
 }
 
-gfx::Size DeskMiniView::CalculatePreferredSize() const {
+gfx::Size DeskMiniView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const gfx::Rect preview_bounds = GetDeskPreviewBounds(root_window_);
 
   // The preferred size takes into account only the width of the preview

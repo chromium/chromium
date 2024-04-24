@@ -72,7 +72,8 @@ void DeskButtonContainer::OnFirstSessionStarted() {
   }
 }
 
-gfx::Size DeskButtonContainer::CalculatePreferredSize() const {
+gfx::Size DeskButtonContainer::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   if (zero_state_) {
     return {kDeskButtonContainerWidthVertical, GetPreferredLength()};
   }

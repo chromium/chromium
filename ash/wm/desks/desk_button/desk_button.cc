@@ -62,7 +62,8 @@ DeskButton::DeskButton()
 
 DeskButton::~DeskButton() {}
 
-gfx::Size DeskButton::CalculatePreferredSize() const {
+gfx::Size DeskButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   if (zero_state_) {
     return {kDeskButtonWidthVertical, kDeskButtonHeightVertical};
   }

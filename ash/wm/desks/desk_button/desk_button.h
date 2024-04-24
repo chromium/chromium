@@ -46,7 +46,8 @@ class ASH_EXPORT DeskButton : public views::Button {
   void set_zero_state(bool zero_state) { zero_state_ = zero_state; }
 
   // views::Button:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
