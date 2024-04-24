@@ -4,21 +4,13 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.ui.test.util.MockitoHelper.doCallback;
-
 import android.app.Activity;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -38,16 +30,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.components.bookmarks.BookmarkId;
-import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.ui.base.TestActivity;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 
 /** Unit tests for {@link BookmarkManagerViewBinder}. */
 @Batch(Batch.UNIT_TESTS)
@@ -61,7 +48,6 @@ public class BookmarkManagerViewBinderTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock View mView;
-    @Mock BookmarkRow mBookmarkRow;
     @Mock TextView mTextView;
     @Mock LinearLayout mLinearLayout;
     @Mock PersonalizedSigninPromoView mPromoView;
@@ -77,14 +63,6 @@ public class BookmarkManagerViewBinderTest {
     public void before() {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
         mModel = new PropertyModel(BookmarkManagerProperties.ALL_KEYS);
-    }
-
-    private void setModelForSharedEntryView(boolean isHighlighted) {
-        mModel.set(BookmarkManagerProperties.BOOKMARK_ID, new BookmarkId(0, BookmarkType.NORMAL));
-        mModel.set(BookmarkManagerProperties.LOCATION, Location.TOP);
-        mModel.set(BookmarkManagerProperties.IS_FROM_FILTER_VIEW, false);
-        mModel.set(BookmarkManagerProperties.IS_HIGHLIGHTED, isHighlighted);
-        mModel.set(BookmarkManagerProperties.CLEAR_HIGHLIGHT, mClearHighlightCallback);
     }
 
     @Test
@@ -133,70 +111,9 @@ public class BookmarkManagerViewBinderTest {
     }
 
     @Test
-    public void testBindBookmarkFolderView() {
-        setModelForSharedEntryView(/* isHighlighted= */ false);
-
-        PropertyModelChangeProcessor.create(
-                mModel, mBookmarkRow, BookmarkManagerViewBinder::bindBookmarkFolderView);
-
-        verify(mBookmarkRow).setBookmarkId(any(), anyInt(), anyBoolean());
-        verify(mClearHighlightCallback, never()).run();
-    }
-
-    @Test
-    public void testBindBookmarkItemView() {
-        when(mBookmarkRow.getContext()).thenReturn(mActivity);
-        setModelForSharedEntryView(/* isHighlighted= */ true);
-
-        PropertyModelChangeProcessor.create(
-                mModel, mBookmarkRow, BookmarkManagerViewBinder::bindBookmarkItemView);
-
-        verify(mBookmarkRow).setBookmarkId(any(), anyInt(), anyBoolean());
-        verify(mClearHighlightCallback).run();
-    }
-
-    @Test
-    public void testBindShoppingItemView() {
-        setModelForSharedEntryView(/* isHighlighted= */ false);
-
-        PropertyModelChangeProcessor.create(
-                mModel, mBookmarkRow, BookmarkManagerViewBinder::bindShoppingItemView);
-
-        verify(mBookmarkRow).setBookmarkId(any(), anyInt(), anyBoolean());
-        verify(mClearHighlightCallback, never()).run();
-    }
-
-    @Test
     public void testBindDividerView() {
         mModel.set(BookmarkManagerProperties.BOOKMARK_ID, null);
         PropertyModelChangeProcessor.create(
                 mModel, mView, BookmarkManagerViewBinder::bindDividerView);
-    }
-
-    @Test
-    public void testBindShoppingFilterView() {
-        mModel.set(BookmarkManagerProperties.OPEN_FOLDER, mOpenFolderCallback);
-        doCallback((OnClickListener l) -> l.onClick(mLinearLayout))
-                .when(mLinearLayout)
-                .setOnClickListener(any());
-
-        PropertyModelChangeProcessor.create(
-                mModel, mLinearLayout, BookmarkManagerViewBinder::bindShoppingFilterView);
-
-        verify(mOpenFolderCallback).onResult(BookmarkId.SHOPPING_FOLDER);
-    }
-
-    @Test
-    public void testBindDraggableViewHolder() {
-        ViewHolder viewHolder =
-                new SimpleRecyclerViewAdapter(new ModelList()).new ViewHolder(mBookmarkRow, null);
-        MotionEvent motionEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
-        doCallback((OnTouchListener l) -> l.onTouch(mBookmarkRow, motionEvent))
-                .when(mBookmarkRow)
-                .setDragHandleOnTouchListener(any());
-
-        BookmarkManagerViewBinder.bindDraggableViewHolder(viewHolder, mItemTouchHelper);
-
-        verify(mItemTouchHelper).startDrag(viewHolder);
     }
 }

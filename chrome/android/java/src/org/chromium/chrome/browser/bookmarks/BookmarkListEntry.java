@@ -27,13 +27,8 @@ public final class BookmarkListEntry {
         ViewType.PERSONALIZED_SIGNIN_PROMO,
         ViewType.PERSONALIZED_SYNC_PROMO,
         ViewType.SYNC_PROMO,
-        ViewType.FOLDER,
-        ViewType.BOOKMARK,
         ViewType.DIVIDER,
         ViewType.SECTION_HEADER,
-        ViewType.SHOPPING_POWER_BOOKMARK,
-        ViewType.TAG_CHIP_LIST,
-        ViewType.SHOPPING_FILTER,
         ViewType.IMPROVED_BOOKMARK_VISUAL,
         ViewType.IMPROVED_BOOKMARK_COMPACT,
         ViewType.SEARCH_BOX
@@ -43,16 +38,11 @@ public final class BookmarkListEntry {
         int PERSONALIZED_SIGNIN_PROMO = 0;
         int PERSONALIZED_SYNC_PROMO = 1;
         int SYNC_PROMO = 2;
-        int FOLDER = 3;
-        int BOOKMARK = 4;
-        int DIVIDER = 5;
-        int SECTION_HEADER = 6;
-        int SHOPPING_POWER_BOOKMARK = 7;
-        int TAG_CHIP_LIST = 8;
-        int SHOPPING_FILTER = 9;
-        int IMPROVED_BOOKMARK_VISUAL = 10;
-        int IMPROVED_BOOKMARK_COMPACT = 11;
-        int SEARCH_BOX = 12;
+        int DIVIDER = 3;
+        int SECTION_HEADER = 4;
+        int IMPROVED_BOOKMARK_VISUAL = 5;
+        int IMPROVED_BOOKMARK_COMPACT = 6;
+        int SEARCH_BOX = 7;
     }
 
     /** Contains data used by section header in bookmark UI. */
@@ -93,15 +83,11 @@ public final class BookmarkListEntry {
             @Nonnull BookmarkItem bookmarkItem,
             @Nullable PowerBookmarkMeta meta,
             @BookmarkRowDisplayPref int displayPref) {
-        @ViewType int viewType = bookmarkItem.isFolder() ? ViewType.FOLDER : ViewType.BOOKMARK;
-        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            viewType =
-                    displayPref == BookmarkRowDisplayPref.VISUAL
-                            ? ViewType.IMPROVED_BOOKMARK_VISUAL
-                            : ViewType.IMPROVED_BOOKMARK_COMPACT;
-        } else if (meta != null && meta.hasShoppingSpecifics()) {
-            viewType = ViewType.SHOPPING_POWER_BOOKMARK;
-        }
+        @ViewType
+        int viewType =
+                displayPref == BookmarkRowDisplayPref.VISUAL
+                        ? ViewType.IMPROVED_BOOKMARK_VISUAL
+                        : ViewType.IMPROVED_BOOKMARK_COMPACT;
 
         return new BookmarkListEntry(viewType, bookmarkItem, /* sectionHeaderData= */ null, meta);
     }
@@ -126,15 +112,6 @@ public final class BookmarkListEntry {
     static BookmarkListEntry createDivider() {
         return new BookmarkListEntry(
                 ViewType.DIVIDER,
-                /* bookmarkItem= */ null,
-                /* sectionHeaderData= */ null,
-                /* meta= */ null);
-    }
-
-    /** Creates a price-tracking filter. */
-    static BookmarkListEntry createShoppingFilter() {
-        return new BookmarkListEntry(
-                ViewType.SHOPPING_FILTER,
                 /* bookmarkItem= */ null,
                 /* sectionHeaderData= */ null,
                 /* meta= */ null);

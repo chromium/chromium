@@ -17,6 +17,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.view.MenuItem;
 import android.view.View;
@@ -55,6 +56,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.bookmarks.BookmarkPromoHeader;
 import org.chromium.chrome.browser.bookmarks.BookmarkToolbar;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.TestingDelegate;
@@ -190,6 +192,11 @@ public class ReadingListTest {
         return bookmarkId;
     }
 
+    private void setReadStatusForReadingList(BookmarkId id, boolean read) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mBookmarkModel.setReadStatusForReadingList(id, read));
+    }
+
     private TestingDelegate getTestingDelegate() {
         return mBookmarkManagerCoordinator.getTestingDelegate();
     }
@@ -246,7 +253,7 @@ public class ReadingListTest {
         openReadingList();
 
         // Open the three-dot menu and verify the menu options being shown.
-        View readingListItem = mItemsContainer.findViewHolderForAdapterPosition(1).itemView;
+        View readingListItem = mItemsContainer.findViewHolderForAdapterPosition(2).itemView;
         View more = readingListItem.findViewById(R.id.more);
 
         TestThreadUtils.runOnUiThreadBlocking(more::callOnClick);
@@ -276,7 +283,7 @@ public class ReadingListTest {
         openReadingList();
 
         // Open the three-dot menu and verify the menu options being shown.
-        View readingListItem = mItemsContainer.findViewHolderForAdapterPosition(2).itemView;
+        View readingListItem = mItemsContainer.findViewHolderForAdapterPosition(3).itemView;
         View more = readingListItem.findViewById(R.id.more);
 
         TestThreadUtils.runOnUiThreadBlocking(more::callOnClick);
@@ -307,10 +314,16 @@ public class ReadingListTest {
                 "Wrong state, should be searching",
                 BookmarkUiMode.SEARCHING,
                 getBookmarkDelegate().getCurrentUiMode());
+
+        runOnUiThreadBlocking(
+                () ->
+                        mBookmarkManagerCoordinator
+                                .getTestingDelegate()
+                                .searchForTesting(TEST_PAGE_TITLE_GOOGLE));
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
 
         // Delete the reading list page in search state.
-        View readingListItem = mItemsContainer.findViewHolderForAdapterPosition(0).itemView;
+        View readingListItem = mItemsContainer.findViewHolderForAdapterPosition(1).itemView;
         View more = readingListItem.findViewById(R.id.more);
         TestThreadUtils.runOnUiThreadBlocking(more::callOnClick);
         onView(withText("Delete")).check(matches(isDisplayed())).perform(click());
@@ -351,11 +364,11 @@ public class ReadingListTest {
         openRootFolder();
         openReadingList();
 
-        View readingListRow = mItemsContainer.findViewHolderForAdapterPosition(1).itemView;
+        View readingListRow = mItemsContainer.findViewHolderForAdapterPosition(2).itemView;
         Assert.assertEquals(
                 "The 2nd view should be reading list.",
                 BookmarkType.READING_LIST,
-                getIdByPosition(1).getType());
+                getIdByPosition(2).getType());
         TestThreadUtils.runOnUiThreadBlocking(() -> TouchCommon.singleClickView(readingListRow));
 
         ChromeTabbedActivity activity = BookmarkTestUtil.waitForTabbedActivity();
@@ -386,11 +399,11 @@ public class ReadingListTest {
         openRootFolder();
         openReadingList();
 
-        View readingListRow = mItemsContainer.findViewHolderForAdapterPosition(1).itemView;
+        View readingListRow = mItemsContainer.findViewHolderForAdapterPosition(2).itemView;
         Assert.assertEquals(
                 "The 2nd view should be reading list.",
                 BookmarkType.READING_LIST,
-                getIdByPosition(1).getType());
+                getIdByPosition(2).getType());
         TestThreadUtils.runOnUiThreadBlocking(() -> TouchCommon.singleClickView(readingListRow));
 
         ChromeTabbedActivity activity = BookmarkTestUtil.waitForTabbedActivity();
@@ -408,10 +421,6 @@ public class ReadingListTest {
         onView(withText("Reading list")).check(matches(isDisplayed()));
     }
 
-    /**
-     * Verifies the top level elements with the reading list folder. Layout: - Reading list folder.
-     * - Divider - Mobile bookmark folder.
-     */
     @Test
     @SmallTest
     public void testReadingListFolderShown() throws Exception {
@@ -444,27 +453,69 @@ public class ReadingListTest {
     @Test
     @SmallTest
     public void testReadingListFolderShownOneUnreadPage() throws Exception {
-        addReadingListBookmark("a", new GURL("https://a.com/reading_list_0"));
+        // Add two reading list items and set one as read.
+        setReadStatusForReadingList(
+                addReadingListBookmark("a", new GURL("https://a.com/reading_list_0")), true);
+        addReadingListBookmark("b", new GURL("https://b.com/reading_list_0"));
 
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         openBookmarkManager();
+        runOnUiThreadBlocking(
+                () -> {
+                    mBookmarkManagerCoordinator
+                            .getBookmarkUiPrefsForTesting()
+                            .setBookmarkRowDisplayPref(BookmarkRowDisplayPref.COMPACT);
+                });
         openRootFolder();
-        onView(withText("Reading list")).check(matches(isDisplayed()));
-        onView(withText("1 unread page")).check(matches(isDisplayed()));
+
+        onView(withText("Reading list (1)")).check(matches(isDisplayed()));
     }
 
     @Test
     @SmallTest
     public void testReadingListFolderShownMultipleUnreadPages() throws Exception {
-        addReadingListBookmark("a", new GURL("https://a.com/reading_list_0"));
-        addReadingListBookmark("b", new GURL("https://a.com/reading_list_1"));
+        // Add three reading list items and set one as read.
+        setReadStatusForReadingList(
+                addReadingListBookmark("a", new GURL("https://a.com/reading_list_0")), true);
+        addReadingListBookmark("b", new GURL("https://b.com/reading_list_1"));
+        addReadingListBookmark("c", new GURL("https://c.com/reading_list_1"));
 
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         openBookmarkManager();
+        runOnUiThreadBlocking(
+                () -> {
+                    mBookmarkManagerCoordinator
+                            .getBookmarkUiPrefsForTesting()
+                            .setBookmarkRowDisplayPref(BookmarkRowDisplayPref.COMPACT);
+                });
         openRootFolder();
 
-        onView(withText("Reading list")).check(matches(isDisplayed()));
-        onView(withText("2 unread pages")).check(matches(isDisplayed()));
+        onView(withText("Reading list (2)")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testReadingListFolderShown_SetReadingListStatus() throws Exception {
+        // Add three reading list items and set one as read.
+        BookmarkId id1 = addReadingListBookmark("a", new GURL("https://a.com/reading_list_0"));
+        BookmarkId id2 = addReadingListBookmark("b", new GURL("https://a.com/reading_list_1"));
+
+        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
+        openBookmarkManager();
+        runOnUiThreadBlocking(
+                () -> {
+                    mBookmarkManagerCoordinator
+                            .getBookmarkUiPrefsForTesting()
+                            .setBookmarkRowDisplayPref(BookmarkRowDisplayPref.COMPACT);
+                });
+        openRootFolder();
+        onView(withText("Reading list (2)")).check(matches(isDisplayed()));
+
+        setReadStatusForReadingList(id1, true);
+        onView(withText("Reading list (1)")).check(matches(isDisplayed()));
+
+        setReadStatusForReadingList(id2, true);
+        onView(withText("Reading list (0)")).check(matches(isDisplayed()));
     }
 
     @Test

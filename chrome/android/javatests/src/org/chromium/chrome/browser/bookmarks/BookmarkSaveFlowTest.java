@@ -411,7 +411,7 @@ public class BookmarkSaveFlowTest {
                     return null;
                 });
         ClickUtils.clickButton(mActivity.findViewById(R.id.bookmark_select_folder));
-        onView(withText(mActivity.getResources().getString(R.string.bookmark_choose_folder)))
+        onView(withText(mActivity.getResources().getString(R.string.bookmark_item_move)))
                 .check(matches(isDisplayed()));
 
         // Dismiss the activity.

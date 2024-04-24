@@ -97,11 +97,6 @@
         android:theme="@style/Theme.Chromium.Activity.Fullscreen"
         android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
     </activity>  # DIFF-ANCHOR: dc170161
-    <activity  # DIFF-ANCHOR: d8508de6
-        android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
-        android:exported="false"
-        android:theme="@style/Theme.Chromium.DialogWhenLarge">
     </activity>  # DIFF-ANCHOR: d8508de6
     <activity  # DIFF-ANCHOR: 766e66bd
         android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity"
@@ -119,14 +114,6 @@
         android:theme="@style/Theme.Chromium.DialogWhenLarge"
         android:windowSoftInputMode="stateAlwaysHidden">
     </activity>  # DIFF-ANCHOR: 002f9e99
-    <activity  # DIFF-ANCHOR: 8f8d0c81
-        android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
-        android:exported="false"
-        android:label="@string/bookmark_choose_folder"
-        android:theme="@style/Theme.Chromium.DialogWhenLarge"
-        android:windowSoftInputMode="stateAlwaysHidden">
-    </activity>  # DIFF-ANCHOR: 8f8d0c81
     <activity  # DIFF-ANCHOR: 9bfe10ab
         android:name="org.chromium.chrome.browser.app.creator.CreatorActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"

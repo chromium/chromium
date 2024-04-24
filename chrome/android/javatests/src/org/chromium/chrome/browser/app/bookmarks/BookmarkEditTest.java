@@ -377,15 +377,6 @@ public class BookmarkEditTest {
                 () -> sBookmarkModel.addFolder(parent, index, title));
     }
 
-    private void waitForMoveFolderActivity() {
-        CriteriaHelper.pollUiThread(
-                () ->
-                        ApplicationStatus.getLastTrackedFocusedActivity()
-                                instanceof BookmarkFolderSelectActivity,
-                "Timed out waiting for BookmarkFolderSelectActivity");
-        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-    }
-
     private void waitForEditActivity() {
         CriteriaHelper.pollUiThread(
                 () ->

@@ -38,7 +38,7 @@ public class BookmarkSearchBoxRow extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mSearchText = findViewById(R.id.search_text);
+        mSearchText = findViewById(R.id.row_search_text);
         mSearchText.setOnEditorActionListener(this::onEditorAction);
         mSearchText.addTextChangedListener(
                 new EmptyTextWatcher() {

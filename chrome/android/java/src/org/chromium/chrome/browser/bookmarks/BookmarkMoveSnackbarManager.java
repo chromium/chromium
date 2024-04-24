@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.util.Pair;
 
@@ -130,12 +129,8 @@ public class BookmarkMoveSnackbarManager implements ActivityStateListener {
         mIsObserving = mBookmarkModel.areAccountBookmarkFoldersActive();
         mBookmarkIds = Arrays.asList(bookmarkIds);
 
-        // TODO(crbug.com/40923660): Record user action.
-        Intent intent = new Intent(mContext, BookmarkFolderPickerActivity.class);
-        intent.putStringArrayListExtra(
-                BookmarkFolderPickerActivity.INTENT_BOOKMARK_IDS,
-                BookmarkUtils.bookmarkIdsToStringList(bookmarkIds));
-        mContext.startActivity(intent);
+        // TODO(crbug.com/1465757): Record user action.
+        BookmarkUtils.startFolderPickerActivity(mContext, bookmarkIds);
     }
 
     // ActivityStateListener implementation.

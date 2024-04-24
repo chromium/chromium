@@ -123,9 +123,6 @@ public class SharedBookmarkModelMocks {
                                 URL_BOOKMARK_ID_H))
                 .when(bookmarkModel)
                 .getChildIds(MOBILE_BOOKMARK_ID);
-        doReturn(Arrays.asList(URL_BOOKMARK_ID_B, URL_BOOKMARK_ID_C))
-                .when(bookmarkModel)
-                .getChildIds(BookmarkId.SHOPPING_FOLDER);
         ShoppingSpecifics shoppingSpecifics =
                 ShoppingSpecifics.newBuilder().setIsPriceTracked(true).build();
         PowerBookmarkMeta powerBookmarkMeta =

@@ -216,11 +216,9 @@ found in the LICENSE file.
     <dimen name="recent_tabs_count_text_size">10dp</dimen>
 
     <!-- Bookmarks dimensions -->
-    <dimen name="bookmark_folder_item_left">16dp</dimen>
     <dimen name="bookmark_minimum_dialog_size_tablet">500dp</dimen>
     <dimen name="bookmark_dialog_toolbar_shadow_height">4dp</dimen>
     <dimen name="bookmark_reading_list_section_header_padding_top">15dp</dimen>
-    <dimen name="bookmark_favicon_display_size">20dp</dimen>
     <dimen name="improved_bookmark_favicon_text_size">18dp</dimen>
 
      <!-- Improved bookmark row properties. -->
@@ -243,9 +241,6 @@ found in the LICENSE file.
     <dimen name="improved_bookmark_save_flow_outer_radius">8dp</dimen>
     <dimen name="improved_bookmark_save_flow_inner_radius">4dp</dimen>
     <dimen name="improved_bookmark_save_flow_image_size">75dp</dimen>
-
-    <!-- Bookmark visual refresh dimensions. -->
-     <dimen name="bookmark_refresh_circular_monogram_text_size">18dp</dimen>
 
     <!-- Bookmark widget dimensions -->
     <dimen name="bookmark_widget_min_width">64dp</dimen>

@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.MOBILE_BOOKMARK_ID;
 
@@ -28,8 +26,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.commerce.core.ShoppingService;
-import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
-import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -103,51 +99,6 @@ public class BasicBookmarkQueryHandlerTest {
         assertEquals(id2, result.get(2).getBookmarkItem().getId());
         assertEquals(id3, result.get(3).getBookmarkItem().getId());
         assertEquals(id4, result.get(4).getBookmarkItem().getId());
-    }
-
-    @Test
-    public void testBuildBookmarkListForParent_shopping() {
-        BookmarkId id =
-                mBookmarkModel.addBookmark(
-                        mBookmarkModel.getMobileFolderId(),
-                        0,
-                        "test",
-                        new GURL("https://test.com"));
-
-        doReturn(true).when(mShoppingService).isSubscribedFromCache(any());
-        ShoppingSpecifics shoppingSpecifics =
-                ShoppingSpecifics.newBuilder().setProductClusterId(12345L).build();
-        PowerBookmarkMeta powerBookmarkMeta =
-                PowerBookmarkMeta.newBuilder().setShoppingSpecifics(shoppingSpecifics).build();
-        mBookmarkModel.setPowerBookmarkMeta(id, powerBookmarkMeta);
-
-        List<BookmarkListEntry> result =
-                mHandler.buildBookmarkListForParent(BookmarkId.SHOPPING_FOLDER);
-
-        assertEquals(1, result.size());
-        assertEquals(id, result.get(0).getBookmarkItem().getId());
-    }
-
-    @Test
-    public void testBuildBookmarkListForParent_shoppingNotSubscribed() {
-        BookmarkId id =
-                mBookmarkModel.addBookmark(
-                        mBookmarkModel.getMobileFolderId(),
-                        0,
-                        "test",
-                        new GURL("https://test.com"));
-
-        doReturn(false).when(mShoppingService).isSubscribedFromCache(any());
-        ShoppingSpecifics shoppingSpecifics =
-                ShoppingSpecifics.newBuilder().setProductClusterId(12345L).build();
-        PowerBookmarkMeta powerBookmarkMeta =
-                PowerBookmarkMeta.newBuilder().setShoppingSpecifics(shoppingSpecifics).build();
-        mBookmarkModel.setPowerBookmarkMeta(id, powerBookmarkMeta);
-
-        List<BookmarkListEntry> result =
-                mHandler.buildBookmarkListForParent(BookmarkId.SHOPPING_FOLDER);
-
-        assertEquals(0, result.size());
     }
 
     @Test

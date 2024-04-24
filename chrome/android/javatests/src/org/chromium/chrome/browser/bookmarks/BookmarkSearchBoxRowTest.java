@@ -129,7 +129,7 @@ public class BookmarkSearchBoxRowTest {
                             layoutInflater
                                     .inflate(R.layout.bookmark_search_box_row, contentView)
                                     .findViewById(R.id.bookmark_toolbar);
-                    mEditText = mBookmarkSearchBoxRow.findViewById(R.id.search_text);
+                    mEditText = mBookmarkSearchBoxRow.findViewById(R.id.row_search_text);
                     mShoppingFilterChip =
                             mBookmarkSearchBoxRow.findViewById(R.id.shopping_filter_chip);
 
@@ -172,7 +172,7 @@ public class BookmarkSearchBoxRowTest {
     @Test
     @MediumTest
     public void testFocusAndEnter() {
-        onView(withId(R.id.search_text)).perform(click());
+        onView(withId(R.id.row_search_text)).perform(click());
         CriteriaHelper.pollUiThread(() -> checkThat(mEditText.hasFocus(), is(true)));
 
         TestThreadUtils.runOnUiThreadBlocking(

@@ -97,7 +97,6 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkFolderViewRenderTest.java",
   "javatests/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkRowRenderTest.java",
   "javatests/src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkSaveFlowRenderTest.java",
-  "javatests/src/org/chromium/chrome/browser/bookmarks/PowerBookmarkShoppingItemRowRenderTest.java",
   "javatests/src/org/chromium/chrome/browser/bookmarks/ShoppingAccessoryViewRenderTest.java",
   "javatests/src/org/chromium/chrome/browser/browserservices/ManageTrustedWebActivityDataActivityTest.java",
   "javatests/src/org/chromium/chrome/browser/browserservices/RunningInChromeTest.java",
