@@ -4648,8 +4648,7 @@
         # should be running the same test_suites as
         # 'Win10 FYI x64 Release (Intel)'
         'test_suites': {
-          'gtest_tests': 'gpu_fyi_win_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_win_intel_release_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
         },
       },
       'Win10 FYI x64 Release (AMD RX 5500 XT)': {
