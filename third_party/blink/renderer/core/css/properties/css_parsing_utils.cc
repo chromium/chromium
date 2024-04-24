@@ -4078,8 +4078,7 @@ CSSValue* ConsumeAnimationTimingFunction(CSSParserTokenRange& range,
   }
 
   CSSValueID function = range.Peek().FunctionId();
-  if (function == CSSValueID::kLinear &&
-      RuntimeEnabledFeatures::CSSLinearTimingFunctionEnabled()) {
+  if (function == CSSValueID::kLinear) {
     return ConsumeLinear(range, context);
   }
   if (function == CSSValueID::kSteps) {

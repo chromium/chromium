@@ -874,11 +874,6 @@
       name: "CSSLightDarkColors",
       status: "stable",
     },
-
-    {
-      name: "CSSLinearTimingFunction",
-      status: "stable"
-    },
     {
       name: "CSSLineClamp",
     },
