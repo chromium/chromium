@@ -441,135 +441,91 @@ void D3DImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
 bool D3DImageBacking::UploadFromMemory(const std::vector<SkPixmap>& pixmaps) {
   DCHECK_EQ(pixmaps.size(), static_cast<size_t>(format().NumberOfPlanes()));
 
+  ID3D11Texture2D* staging_texture = GetOrCreateStagingTexture();
+  if (!staging_texture) {
+    return false;
+  }
+
   CHECK(texture_d3d11_device_);
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
   texture_d3d11_device_->GetImmediateContext(&device_context);
 
-  if (d3d11_texture_desc_.CPUAccessFlags & D3D11_CPU_ACCESS_WRITE) {
-    // D3D doesn't support mappable+default YUV textures.
-    DCHECK(format().is_single_plane());
-
-    Microsoft::WRL::ComPtr<ID3D11Device3> device3;
-    HRESULT hr = texture_d3d11_device_.As(&device3);
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to retrieve ID3D11Device3. hr=" << std::hex << hr;
-      return false;
-    }
-    hr = device_context->Map(d3d11_texture_.Get(), 0, D3D11_MAP_WRITE, 0,
-                             nullptr);
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to map texture for write. hr = " << std::hex << hr;
-      return false;
-    }
-
-    const uint8_t* source_memory =
-        static_cast<const uint8_t*>(pixmaps[0].addr());
-    const size_t source_stride = pixmaps[0].rowBytes();
-    device3->WriteToSubresource(d3d11_texture_.Get(), 0, nullptr, source_memory,
-                                source_stride, 0);
-    device_context->Unmap(d3d11_texture_.Get(), 0);
-  } else {
-    ID3D11Texture2D* staging_texture = GetOrCreateStagingTexture();
-    if (!staging_texture) {
-      return false;
-    }
-    D3D11_MAPPED_SUBRESOURCE mapped_resource = {};
-    HRESULT hr = device_context->Map(staging_texture, 0, D3D11_MAP_WRITE, 0,
-                                     &mapped_resource);
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to map texture for write. hr=" << std::hex << hr;
-      return false;
-    }
-
-    // The mapped staging texture pData points to the first plane's data so an
-    // offset is needed for subsequent planes.
-    size_t dest_offset = 0;
-
-    for (int plane = 0; plane < format().NumberOfPlanes(); ++plane) {
-      auto& pixmap = pixmaps[plane];
-      const uint8_t* source_memory = static_cast<const uint8_t*>(pixmap.addr());
-      const size_t source_stride = pixmap.rowBytes();
-
-      uint8_t* dest_memory =
-          static_cast<uint8_t*>(mapped_resource.pData) + dest_offset;
-      const size_t dest_stride = mapped_resource.RowPitch;
-
-      gfx::Size plane_size = format().GetPlaneSize(plane, size());
-      CopyPlane(source_memory, source_stride, dest_memory, dest_stride,
-                pixmap.info().minRowBytes(), plane_size);
-
-      dest_offset += mapped_resource.RowPitch * plane_size.height();
-    }
-
-    device_context->Unmap(staging_texture, 0);
-    device_context->CopyResource(d3d11_texture_.Get(), staging_texture);
+  D3D11_MAPPED_SUBRESOURCE mapped_resource = {};
+  HRESULT hr = device_context->Map(staging_texture, 0, D3D11_MAP_WRITE, 0,
+                                    &mapped_resource);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to map texture for write. hr=" << std::hex << hr;
+    return false;
   }
+
+  // The mapped staging texture pData points to the first plane's data so an
+  // offset is needed for subsequent planes.
+  size_t dest_offset = 0;
+
+  for (int plane = 0; plane < format().NumberOfPlanes(); ++plane) {
+    auto& pixmap = pixmaps[plane];
+    const uint8_t* source_memory = static_cast<const uint8_t*>(pixmap.addr());
+    const size_t source_stride = pixmap.rowBytes();
+
+    uint8_t* dest_memory =
+        static_cast<uint8_t*>(mapped_resource.pData) + dest_offset;
+    const size_t dest_stride = mapped_resource.RowPitch;
+
+    gfx::Size plane_size = format().GetPlaneSize(plane, size());
+    CopyPlane(source_memory, source_stride, dest_memory, dest_stride,
+              pixmap.info().minRowBytes(), plane_size);
+
+    dest_offset += mapped_resource.RowPitch * plane_size.height();
+  }
+
+  device_context->Unmap(staging_texture, 0);
+  device_context->CopyResource(d3d11_texture_.Get(), staging_texture);
   return true;
 }
 
 bool D3DImageBacking::ReadbackToMemory(const std::vector<SkPixmap>& pixmaps) {
+  DCHECK_EQ(pixmaps.size(), static_cast<size_t>(format().NumberOfPlanes()));
+
+  ID3D11Texture2D* staging_texture = GetOrCreateStagingTexture();
+  if (!staging_texture) {
+    return false;
+  }
+
   CHECK(texture_d3d11_device_);
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
   texture_d3d11_device_->GetImmediateContext(&device_context);
 
-  if (d3d11_texture_desc_.CPUAccessFlags & D3D11_CPU_ACCESS_READ) {
-    // D3D doesn't support mappable+default YUV textures.
-    DCHECK(format().is_single_plane());
+  device_context->CopyResource(staging_texture, d3d11_texture_.Get());
 
-    Microsoft::WRL::ComPtr<ID3D11Device3> device3;
-    HRESULT hr = texture_d3d11_device_.As(&device3);
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to retrieve ID3D11Device3. hr=" << std::hex << hr;
-      return false;
-    }
-    hr = device_context->Map(d3d11_texture_.Get(), 0, D3D11_MAP_READ, 0,
-                             nullptr);
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to map texture for read. hr=" << std::hex << hr;
-      return false;
-    }
-
-    uint8_t* dest_memory = static_cast<uint8_t*>(pixmaps[0].writable_addr());
-    const size_t dest_stride = pixmaps[0].rowBytes();
-    device3->ReadFromSubresource(dest_memory, dest_stride, 0,
-                                 d3d11_texture_.Get(), 0, nullptr);
-    device_context->Unmap(d3d11_texture_.Get(), 0);
-  } else {
-    ID3D11Texture2D* staging_texture = GetOrCreateStagingTexture();
-    if (!staging_texture) {
-      return false;
-    }
-    device_context->CopyResource(staging_texture, d3d11_texture_.Get());
-    D3D11_MAPPED_SUBRESOURCE mapped_resource = {};
-    HRESULT hr = device_context->Map(staging_texture, 0, D3D11_MAP_READ, 0,
-                                     &mapped_resource);
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to map texture for read. hr=" << std::hex << hr;
-      return false;
-    }
-
-    // The mapped staging texture pData points to the first plane's data so an
-    // offset is needed for subsequent planes.
-    size_t source_offset = 0;
-
-    for (int plane = 0; plane < format().NumberOfPlanes(); ++plane) {
-      auto& pixmap = pixmaps[plane];
-      uint8_t* dest_memory = static_cast<uint8_t*>(pixmap.writable_addr());
-      const size_t dest_stride = pixmap.rowBytes();
-
-      const uint8_t* source_memory =
-          static_cast<uint8_t*>(mapped_resource.pData) + source_offset;
-      const size_t source_stride = mapped_resource.RowPitch;
-
-      gfx::Size plane_size = format().GetPlaneSize(plane, size());
-      CopyPlane(source_memory, source_stride, dest_memory, dest_stride,
-                pixmap.info().minRowBytes(), plane_size);
-
-      source_offset += mapped_resource.RowPitch * plane_size.height();
-    }
-
-    device_context->Unmap(staging_texture, 0);
+  D3D11_MAPPED_SUBRESOURCE mapped_resource = {};
+  HRESULT hr = device_context->Map(staging_texture, 0, D3D11_MAP_READ, 0,
+                                    &mapped_resource);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to map texture for read. hr=" << std::hex << hr;
+    return false;
   }
+
+  // The mapped staging texture pData points to the first plane's data so an
+  // offset is needed for subsequent planes.
+  size_t source_offset = 0;
+
+  for (int plane = 0; plane < format().NumberOfPlanes(); ++plane) {
+    auto& pixmap = pixmaps[plane];
+    uint8_t* dest_memory = static_cast<uint8_t*>(pixmap.writable_addr());
+    const size_t dest_stride = pixmap.rowBytes();
+
+    const uint8_t* source_memory =
+        static_cast<uint8_t*>(mapped_resource.pData) + source_offset;
+    const size_t source_stride = mapped_resource.RowPitch;
+
+    gfx::Size plane_size = format().GetPlaneSize(plane, size());
+    CopyPlane(source_memory, source_stride, dest_memory, dest_stride,
+              pixmap.info().minRowBytes(), plane_size);
+
+    source_offset += mapped_resource.RowPitch * plane_size.height();
+  }
+
+  device_context->Unmap(staging_texture, 0);
   return true;
 }
 

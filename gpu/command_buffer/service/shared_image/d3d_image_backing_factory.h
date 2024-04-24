@@ -152,13 +152,11 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
       SkAlphaType alpha_type,
       uint32_t usage,
       std::string debug_label);
-  bool UseMapOnDefaultTextures();
   bool SupportsBGRA8UnormStorage();
 
   // D3D11 device used for creating textures. This is also Skia's D3D11 device.
   // Can be different from |angle_d3d11_device_| when using Graphite.
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
-  std::optional<bool> map_on_default_textures_;
   std::optional<bool> supports_bgra8unorm_storage_;
 
   scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager_;

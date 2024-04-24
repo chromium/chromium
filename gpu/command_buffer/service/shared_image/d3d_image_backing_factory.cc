@@ -334,10 +334,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   DXGI_FORMAT dxgi_format = GetDXGIFormatForCreateTexture(format);
   DCHECK_NE(dxgi_format, DXGI_FORMAT_UNKNOWN);
 
-  // SHARED_IMAGE_USAGE_CPU_UPLOAD is set for shared memory GMBs.
-  const bool is_shm_gmb = usage & SHARED_IMAGE_USAGE_CPU_UPLOAD;
-  // GL_TEXTURE_2D is okay to use here as D3D11_BIND_RENDER_TARGET is being
-  // used.
+  // GL_TEXTURE_2D is ok to use here as D3D11_BIND_RENDER_TARGET is being used.
   const GLenum texture_target = GL_TEXTURE_2D;
 
   D3D11_TEXTURE2D_DESC desc;
@@ -357,15 +354,13 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
       format.is_single_plane()) {
     DCHECK(usage &
            (SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE));
-    // WebGPU can use RGBA_8888 and RGBA_16 for STORAGE_BINDING.
-
+    // WebGPU can always use RGBA_8888 and RGBA_16 for STORAGE_BINDING.
     if (format == viz::SinglePlaneFormat::kRGBA_8888 ||
         format == viz::SinglePlaneFormat::kRGBA_F16) {
       desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
     }
 
-      // WebGPU can use BGRA_8888 for STORAGE_BINDING when BGRA_8888 is
-      // supported as UAV.
+    // WebGPU can use BGRA_8888 for STORAGE_BINDING only when supported for UAV.
     if (format == viz::SinglePlaneFormat::kBGRA_8888) {
       if (SupportsBGRA8UnormStorage()) {
         desc.BindFlags |= D3D11_BIND_UNORDERED_ACCESS;
@@ -376,10 +371,11 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
       }
     }
   }
-  // D3D doesn't support mappable+default shared resource or YUV textures.
+
   const bool has_webgpu_usage = usage & (SHARED_IMAGE_USAGE_WEBGPU_READ |
                                          SHARED_IMAGE_USAGE_WEBGPU_WRITE);
   const bool has_gl_usage = HasGLES2ReadOrWriteUsage(usage);
+  // TODO(crbug.com/40204134): Look into using DXGI handle when MF VEA is used.
   const bool needs_shared_handle =
       has_webgpu_usage ||
       (has_gl_usage && (d3d11_device_ != angle_d3d11_device_));
@@ -391,9 +387,6 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
                      (gfx::D3DSharedFence::IsSupported(d3d11_device_.Get())
                           ? D3D11_RESOURCE_MISC_SHARED
                           : D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX);
-  } else if (is_shm_gmb && format.is_single_plane() &&
-             !format.IsLegacyMultiplanar() && UseMapOnDefaultTextures()) {
-    desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
   }
 
   D3D11_SUBRESOURCE_DATA initial_data = {};
@@ -504,25 +497,6 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   return CreateSharedImageGMBs(mailbox, std::move(handle), format, plane, size,
                                color_space, surface_origin, alpha_type, usage,
                                std::move(debug_label));
-}
-
-bool D3DImageBackingFactory::UseMapOnDefaultTextures() {
-  if (!map_on_default_textures_.has_value()) {
-    D3D11_FEATURE_DATA_D3D11_OPTIONS2 features;
-    HRESULT hr = d3d11_device_->CheckFeatureSupport(
-        D3D11_FEATURE_D3D11_OPTIONS2, &features,
-        sizeof(D3D11_FEATURE_DATA_D3D11_OPTIONS2));
-    if (SUCCEEDED(hr)) {
-      map_on_default_textures_.emplace(features.MapOnDefaultTextures &&
-                                       features.UnifiedMemoryArchitecture);
-    } else {
-      VLOG(1) << "Failed to retrieve D3D11_FEATURE_D3D11_OPTIONS2. hr = "
-              << std::hex << hr;
-      map_on_default_textures_.emplace(false);
-    }
-    VLOG(1) << "UseMapOnDefaultTextures = " << map_on_default_textures_.value();
-  }
-  return map_on_default_textures_.value();
 }
 
 bool D3DImageBackingFactory::SupportsBGRA8UnormStorage() {
