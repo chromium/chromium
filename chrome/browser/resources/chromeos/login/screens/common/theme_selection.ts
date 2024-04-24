@@ -86,14 +86,6 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
       selectedTheme: {type: String, value: 'auto', observer: 'onThemeChanged_'},
 
       /**
-       * Indicates if the device is used in tablet mode
-       */
-      isInTabletMode_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
        * Whether the button to return to CHOOBE screen should be shown.
        */
       shouldShowReturn_: {
@@ -104,7 +96,6 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
   }
 
   private selectedTheme: string;
-  private isInTabletMode_: boolean;
   private shouldShowReturn_: boolean;
 
   override get UI_STEPS() {
@@ -114,15 +105,6 @@ class ThemeSelectionScreen extends ThemeSelectionScreenElementBase {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   override defaultUIStep(): ThemeSelectionStep {
     return ThemeSelectionStep.OVERVIEW;
-  }
-
-  /**
-   * Updates "device in tablet mode" state when tablet mode is changed.
-   * Overridden from LoginScreenBehavior.
-   * @param isInTabletMode True when in tablet mode.
-   */
-  override setTabletModeState(isInTabletMode: boolean) {
-    this.isInTabletMode_ = isInTabletMode;
   }
 
   override ready(): void {

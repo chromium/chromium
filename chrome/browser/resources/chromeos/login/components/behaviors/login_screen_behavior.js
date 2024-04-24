@@ -83,13 +83,6 @@ export const LoginScreenBehavior = {
   },
 
   /**
-   * If defined, invoked when tablet mode is changed.
-   * Boolean parameter is true when device is in tablet mode.
-   * @type {function(boolean)|undefined}
-   */
-  setTabletModeState: undefined,
-
-  /**
    * If defined, invoked for the currently active screen when screen localized
    * data needs to be updated.
    * @type {function()|undefined}
@@ -135,8 +128,6 @@ export class LoginScreenBehaviorInterface {
   get EXTERNAL_API() {}
   /** @return {HTMLElement|null} */
   get defaultControl() {}
-  /** @param {boolean} isInTabletMode */
-  setTabletModeState(isInTabletMode) {}
   updateLocalizedContent() {}
   /** @param {!OobeTypes.OobeConfiguration} configuration */
   updateOobeConfiguration(configuration) {}

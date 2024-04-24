@@ -20,6 +20,14 @@ found in the LICENSE file.
       padding-inline-start: 24px;
     }
   }
+
+  :host-context(html:not([tablet])) #theme-selection-subtitle-tablet {
+    display: none;
+  }
+
+  :host-context(html[tablet]) #theme-selection-subtitle-clamshell {
+    display: none;
+  }
 </style>
 <oobe-adaptive-dialog id="themeSelectionDialog" role="presentation"
     for-step="overview" aria-live="polite"
@@ -28,13 +36,13 @@ found in the LICENSE file.
   <h1 slot="title" id="theme-selection-title">
     [[i18nDynamic(locale, 'themeSelectionScreenTitle')]]
   </h1>
-  <div hidden="[[isInTabletMode_]]" slot="subtitle"
-      id="theme-selection-subtitle-clamshell">
-    [[i18nDynamic(locale, 'themeSelectionScreenDescriptionClamshell')]]
-  </div>
-  <div hidden="[[!isInTabletMode_]]" slot="subtitle"
-      id="theme-selection-subtitle-tablet">
-    [[i18nDynamic(locale, 'themeSelectionScreenDescriptionTablet')]]
+  <div slot="subtitle">
+    <div id="theme-selection-subtitle-clamshell">
+      [[i18nDynamic(locale, 'themeSelectionScreenDescriptionClamshell')]]
+    </div>
+    <div id="theme-selection-subtitle-tablet">
+      [[i18nDynamic(locale, 'themeSelectionScreenDescriptionTablet')]]
+    </div>
   </div>
   <div slot="content" class="layout vertical landscape-vertical-centered">
     <cr-radio-group id="theme" selected="{{selectedTheme}}">

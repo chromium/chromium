@@ -103,11 +103,6 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
         readOnly: true,
       },
 
-      isInTabletMode: {
-        type: Boolean,
-        value: false,
-      },
-
       isOobeLoaded: {
         type: Boolean,
         value: false,
@@ -125,7 +120,6 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
   private isMeet: boolean;
   private isBootAnimation: boolean;
   private isDeviceRequisitionConfigurable: boolean;
-  isInTabletMode: boolean;
   private isOobeLoaded: boolean;
   isQuickStartEnabled: boolean;
 

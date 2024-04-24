@@ -381,15 +381,6 @@ export class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   }
 
   /**
-   * Updates "device in tablet mode" state when tablet mode is changed.
-   * Overridden from LoginScreenBehavior.
-   * @param isInTabletMode True when in tablet mode.
-   */
-  override setTabletModeState(isInTabletMode: boolean): void {
-    this.getWelcomeScreenDialog().isInTabletMode = isInTabletMode;
-  }
-
-  /**
    * Returns true if timezone button should be visible.
    */
   private isTimezoneButtonVisible(highlightStrength: string): boolean {
@@ -838,7 +829,7 @@ export class OobeWelcomeScreen extends OobeWelcomeScreenBase {
     }
     this.cleanupChromeVoxHint();
     // |msgId| depends on both feature enabled status and tablet mode.
-    const msgId = this.getWelcomeScreenDialog().isInTabletMode ?
+    const msgId = document.documentElement.hasAttribute('tablet') ?
         'chromeVoxHintAnnouncementTextTabletExpanded' :
         'chromeVoxHintAnnouncementTextLaptopExpanded';
 

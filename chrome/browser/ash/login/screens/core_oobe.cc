@@ -39,6 +39,7 @@ CoreOobe::CoreOobe(const std::string& display_type,
   version_info_updater_.StartUpdate(false);
 #endif
 
+  OnTabletModeChanged(display::Screen::GetScreen()->InTabletMode());
   UpdateClientAreaSize(
       display::Screen::GetScreen()->GetPrimaryDisplay().size());
 

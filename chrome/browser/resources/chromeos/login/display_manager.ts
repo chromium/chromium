@@ -380,8 +380,6 @@ export class DisplayManager {
         child.i18nUpdateLocale();
       }
     }
-    const isInTabletMode = loadTimeData.getBoolean('isInTabletMode');
-    this.setTabletModeState(isInTabletMode);
   }
 
   /**
@@ -396,22 +394,6 @@ export class DisplayManager {
       if ('updateOobeConfiguration' in screen &&
           typeof screen.updateOobeConfiguration === 'function') {
         screen.updateOobeConfiguration(configuration);
-      }
-    }
-  }
-
-  /**
-   * Updates "device in tablet mode" state when tablet mode is changed.
-   * @param isInTabletMode True when in tablet mode.
-   */
-  setTabletModeState(isInTabletMode: boolean): void {
-    document.documentElement.toggleAttribute('tablet', isInTabletMode);
-    for (let i = 0; i < this.screens.length; ++i) {
-      const screenId = this.screens[i];
-      const screen = $(screenId);
-      if ('setTabletModeState' in screen &&
-          typeof screen.setTabletModeState === 'function') {
-        screen.setTabletModeState(isInTabletMode);
       }
     }
   }

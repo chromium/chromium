@@ -229,8 +229,6 @@ export class Oobe extends DisplayManager {
       const localizedString = loadTimeData.getValue(stringName);
       document.documentElement.setAttribute(attribute, localizedString);
     }
-    document.documentElement.toggleAttribute(
-        'tablet', loadTimeData.getBoolean('isInTabletMode'));
 
     document.querySelector<ApiKeysNoticeElement>('#api-keys-notice')
         ?.updateLocaleAndMaybeShowNotice();
@@ -241,7 +239,7 @@ export class Oobe extends DisplayManager {
    * @param isInTabletMode True when in tablet mode.
    */
   static setTabletModeState(isInTabletMode: boolean): void {
-    Oobe.getInstance().setTabletModeState(isInTabletMode);
+    document.documentElement.toggleAttribute('tablet', isInTabletMode);
   }
 
   /**
