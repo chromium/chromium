@@ -29,26 +29,12 @@ namespace {
 const std::string kTestUrl1 = "http://www.foo1.com";
 const std::string kTestUrl2 = "http://www.foo2.com";
 const std::string kTestUrl3 = "http://www.foo3.com";
-const std::string kProduct1Url = "http://www.chair.com";
-const std::string kProduct2Url = "http://www.lamp.com";
+const std::string kProductUrl = "http://www.chair.com";
 const std::string kCategoryLamp = "Lamp";
 const std::string kCategoryChair = "Chair";
 const std::string kCategoryGamingChair = "GamingChair";
 const std::string kProductGroupName = "Furniture";
 }  // namespace
-
-class MockProductSpecificationsService : public ProductSpecificationsService {
- public:
-  explicit MockProductSpecificationsService(
-      std::unique_ptr<ProductSpecificationsSyncBridge> bridge)
-      : ProductSpecificationsService(std::move(bridge)) {}
-  ~MockProductSpecificationsService() override = default;
-
-  MOCK_METHOD(const std::vector<ProductSpecificationsSet>,
-              GetAllProductSpecifications,
-              (),
-              (override));
-};
 
 class ClusterManagerTest : public testing::Test {
  public:
@@ -58,13 +44,11 @@ class ClusterManagerTest : public testing::Test {
   void SetUp() override {
     store_ = syncer::ModelTypeStoreTestUtil::CreateInMemoryStoreForTest();
     product_specification_service_ =
-        std::make_unique<MockProductSpecificationsService>(
+        std::make_unique<ProductSpecificationsService>(
             std::make_unique<ProductSpecificationsSyncBridge>(
                 syncer::ModelTypeStoreTestUtil::FactoryForForwardingStore(
                     store_.get()),
                 processor_.CreateForwardingProcessor()));
-    EXPECT_CALL(*product_specification_service_, GetAllProductSpecifications())
-        .Times(1);
     cluster_manager_ = std::make_unique<ClusterManager>(
         product_specification_service_.get(),
         base::BindRepeating(&ClusterManagerTest::GetProductInfo,
@@ -100,11 +84,11 @@ class ClusterManagerTest : public testing::Test {
   }
 
   base::Uuid AddProductSpecificationSet() {
-    ProductSpecificationsSet product_specifications_set =
-        CreateProductSpecificationsSet(kProduct1Url);
-    cluster_manager_->OnProductSpecificationsSetAdded(
-        product_specifications_set);
-    return product_specifications_set.uuid();
+    base::Uuid uuid = base::Uuid::GenerateRandomV4();
+    std::vector<GURL> url_group = {GURL(kProductUrl)};
+    cluster_manager_->OnProductSpecificationsSetAdded(ProductSpecificationsSet(
+        uuid.AsLowercaseString(), 0, 0, url_group, kProductGroupName));
+    return uuid;
   }
 
   void RemoveProductSpecificationSet(const base::Uuid& uuid) {
@@ -117,14 +101,6 @@ class ClusterManagerTest : public testing::Test {
   }
 
  protected:
-  ProductSpecificationsSet CreateProductSpecificationsSet(
-      const std::string& url) {
-    base::Uuid uuid = base::Uuid::GenerateRandomV4();
-    std::vector<GURL> url_group = {GURL(url)};
-    return ProductSpecificationsSet(uuid.AsLowercaseString(), 0, 0, url_group,
-                                    kProductGroupName);
-  }
-
   ProductInfo CreateProductInfo(const std::string& label) {
     ProductInfo product_info = ProductInfo();
     product_info.category_data.add_product_categories()
@@ -137,14 +113,12 @@ class ClusterManagerTest : public testing::Test {
     product_infos_[GURL(kTestUrl1)] = CreateProductInfo(kCategoryLamp);
     product_infos_[GURL(kTestUrl2)] = CreateProductInfo(kCategoryChair);
     product_infos_[GURL(kTestUrl3)] = CreateProductInfo(kCategoryLamp);
-    product_infos_[GURL(kProduct1Url)] = CreateProductInfo(kCategoryLamp);
-    product_infos_[GURL(kProduct2Url)] = CreateProductInfo(kCategoryChair);
+    product_infos_[GURL(kProductUrl)] = CreateProductInfo(kCategoryLamp);
   }
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<syncer::ModelTypeStore> store_;
-  std::unique_ptr<MockProductSpecificationsService>
-      product_specification_service_;
+  std::unique_ptr<ProductSpecificationsService> product_specification_service_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
   std::unique_ptr<ClusterManager> cluster_manager_;
   std::map<GURL, ProductInfo> product_infos_;
@@ -163,42 +137,6 @@ TEST_F(ClusterManagerTest, AddAndRemoveCandidateProduct) {
   url_infos_.clear();
   cluster_manager_->DidNavigateAway(url);
   ASSERT_EQ(0u, GetCandidateProductMap()->size());
-}
-
-TEST_F(ClusterManagerTest,
-       ClusterManagerInitializationWithExistingProductSpecificationsSets) {
-  ProductSpecificationsSet set1 = CreateProductSpecificationsSet(kProduct1Url);
-  ProductSpecificationsSet set2 = CreateProductSpecificationsSet(kProduct2Url);
-  ON_CALL(*product_specification_service_, GetAllProductSpecifications())
-      .WillByDefault(
-          testing::Return(std::vector<ProductSpecificationsSet>{set1, set2}));
-  EXPECT_CALL(*product_specification_service_, GetAllProductSpecifications())
-      .Times(1);
-  cluster_manager_ = std::make_unique<ClusterManager>(
-      product_specification_service_.get(),
-      base::BindRepeating(&ClusterManagerTest::GetProductInfo,
-                          base::Unretained(this)),
-      base::BindRepeating(&ClusterManagerTest::url_infos,
-                          base::Unretained(this)));
-  ASSERT_EQ(GetProductGroupMap()->size(), 2u);
-  ASSERT_EQ(GetProductGroupMap()->count(set1.uuid()), 1u);
-  ASSERT_EQ(GetProductGroupMap()->count(set2.uuid()), 1u);
-  base::RunLoop().RunUntilIdle();
-
-  ProductGroup* product1 = (*GetProductGroupMap())[set1.uuid()].get();
-  ASSERT_EQ(product1->categories.size(), 1u);
-  ASSERT_EQ(product1->categories[0].product_categories_size(), 1);
-  auto category = product1->categories[0].product_categories(0);
-  ASSERT_EQ(category.category_labels_size(), 1);
-  ASSERT_EQ(category.category_labels(0).category_default_label(),
-            kCategoryLamp);
-  ProductGroup* product2 = (*GetProductGroupMap())[set2.uuid()].get();
-  ASSERT_EQ(product2->categories.size(), 1u);
-  ASSERT_EQ(product2->categories[0].product_categories_size(), 1);
-  category = product2->categories[0].product_categories(0);
-  ASSERT_EQ(category.category_labels_size(), 1);
-  ASSERT_EQ(category.category_labels(0).category_default_label(),
-            kCategoryChair);
 }
 
 TEST_F(ClusterManagerTest, NewCandidateProductClustered) {
@@ -386,7 +324,7 @@ TEST_F(ClusterManagerTest,
   product_info.category_data.add_product_categories()
       ->add_category_labels()
       ->set_category_default_label(kCategoryChair);
-  product_infos_[GURL(kProduct1Url)] = product_info;
+  product_infos_[GURL(kProductUrl)] = product_info;
 
   base::Uuid uuid = AddProductSpecificationSet();
   ProductGroup* product_group = (*GetProductGroupMap())[uuid].get();
