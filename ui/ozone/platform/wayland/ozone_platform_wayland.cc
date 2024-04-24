@@ -395,9 +395,11 @@ class OzonePlatformWayland : public OzonePlatform,
           zaura_shell_get_version(connection_->zaura_shell()->wl_object()) >=
               ZAURA_TOPLEVEL_ACTIVATE_SINCE_VERSION;
       properties.supports_subwindows_as_accelerated_widgets =
-          connection_->ShouldUseOverlayDelegation() &&
-          connection_->surface_augmenter() &&
-          connection_->surface_augmenter()->SupportsCompositingOnlySurface();
+          connection_->ShouldUseOverlayDelegation()
+              ? connection_->surface_augmenter() &&
+                    connection_->surface_augmenter()
+                        ->SupportsCompositingOnlySurface()
+              : true;
 
       if (surface_factory_) {
         DCHECK(has_initialized_gpu());
