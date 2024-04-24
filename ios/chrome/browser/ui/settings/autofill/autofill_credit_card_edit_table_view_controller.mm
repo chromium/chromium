@@ -27,7 +27,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
-#import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
+#import "ios/chrome/browser/ui/autofill/cells/autofill_credit_card_edit_item.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_util.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_settings_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -124,8 +124,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
     for (NSInteger itemIndex = 0; itemIndex < itemCount; ++itemIndex) {
       NSIndexPath* path = [NSIndexPath indexPathForItem:itemIndex
                                               inSection:section];
-      AutofillEditItem* item = base::apple::ObjCCastStrict<AutofillEditItem>(
-          [model itemAtIndexPath:path]);
+      AutofillCreditCardEditItem* item =
+          base::apple::ObjCCastStrict<AutofillCreditCardEditItem>(
+              [model itemAtIndexPath:path]);
       if ([self.tableViewModel itemTypeForIndexPath:path] == ItemTypeNickname) {
         NSString* trimmedNickname = [item.textFieldValue
             stringByTrimmingCharactersInSet:
@@ -159,7 +160,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   BOOL isEditing = self.tableView.editing;
 
-  NSArray<AutofillEditItem*>* editItems = @[
+  NSArray<AutofillCreditCardEditItem*>* editItems = @[
     [self cardNumberItem:isEditing],
     [self expirationMonthItem:isEditing],
     [self expirationYearItem:isEditing],
@@ -168,7 +169,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ];
 
   [model addSectionWithIdentifier:SectionIdentifierFields];
-  for (AutofillEditItem* item in editItems) {
+  for (AutofillCreditCardEditItem* item in editItems) {
     [model addItem:item toSectionWithIdentifier:SectionIdentifierFields];
   }
 }
@@ -181,10 +182,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)tableViewItemDidChange:(TableViewTextEditItem*)tableViewTextEditItem {
-  if ([tableViewTextEditItem isKindOfClass:[AutofillEditItem class]]) {
+  if ([tableViewTextEditItem
+          isKindOfClass:[AutofillCreditCardEditItem class]]) {
     self.navigationItem.rightBarButtonItem.enabled = [self isValidCreditCard];
 
-    AutofillEditItem* item = (AutofillEditItem*)tableViewTextEditItem;
+    AutofillCreditCardEditItem* item =
+        (AutofillCreditCardEditItem*)tableViewTextEditItem;
 
     // If the user is typing in the credit card number field, update the card
     // type icon (e.g. "Visa") to reflect the number being typed.
@@ -216,8 +219,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
     return;
   }
 
-  if ([tableViewTextEditItem isKindOfClass:[AutofillEditItem class]]) {
-    AutofillEditItem* item = (AutofillEditItem*)tableViewTextEditItem;
+  if ([tableViewTextEditItem
+          isKindOfClass:[AutofillCreditCardEditItem class]]) {
+    AutofillCreditCardEditItem* item =
+        (AutofillCreditCardEditItem*)tableViewTextEditItem;
 
     switch (item.type) {
       case ItemTypeCardNumber:
@@ -346,9 +351,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
-- (AutofillEditItem*)cardholderNameItem:(bool)isEditing {
-  AutofillEditItem* cardholderNameItem =
-      [[AutofillEditItem alloc] initWithType:ItemTypeCardholderName];
+- (AutofillCreditCardEditItem*)cardholderNameItem:(bool)isEditing {
+  AutofillCreditCardEditItem* cardholderNameItem =
+      [[AutofillCreditCardEditItem alloc] initWithType:ItemTypeCardholderName];
   cardholderNameItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_CARDHOLDER);
   cardholderNameItem.textFieldValue = autofill::GetCreditCardName(
@@ -359,9 +364,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return cardholderNameItem;
 }
 
-- (AutofillEditItem*)cardNumberItem:(bool)isEditing {
-  AutofillEditItem* cardNumberItem =
-      [[AutofillEditItem alloc] initWithType:ItemTypeCardNumber];
+- (AutofillCreditCardEditItem*)cardNumberItem:(bool)isEditing {
+  AutofillCreditCardEditItem* cardNumberItem =
+      [[AutofillCreditCardEditItem alloc] initWithType:ItemTypeCardNumber];
   cardNumberItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_CARD_NUMBER);
   // Never show full card number for Wallet cards, even if copied locally.
@@ -382,9 +387,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return cardNumberItem;
 }
 
-- (AutofillEditItem*)expirationMonthItem:(bool)isEditing {
-  AutofillEditItem* expirationMonthItem =
-      [[AutofillEditItem alloc] initWithType:ItemTypeExpirationMonth];
+- (AutofillCreditCardEditItem*)expirationMonthItem:(bool)isEditing {
+  AutofillCreditCardEditItem* expirationMonthItem =
+      [[AutofillCreditCardEditItem alloc] initWithType:ItemTypeExpirationMonth];
   expirationMonthItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_EXP_MONTH);
   expirationMonthItem.textFieldValue =
@@ -397,10 +402,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return expirationMonthItem;
 }
 
-- (AutofillEditItem*)expirationYearItem:(bool)isEditing {
+- (AutofillCreditCardEditItem*)expirationYearItem:(bool)isEditing {
   // Expiration year.
-  AutofillEditItem* expirationYearItem =
-      [[AutofillEditItem alloc] initWithType:ItemTypeExpirationYear];
+  AutofillCreditCardEditItem* expirationYearItem =
+      [[AutofillCreditCardEditItem alloc] initWithType:ItemTypeExpirationYear];
   expirationYearItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_EXP_YEAR);
   expirationYearItem.textFieldValue =
@@ -414,9 +419,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return expirationYearItem;
 }
 
-- (AutofillEditItem*)nicknameItem:(bool)isEditing {
-  AutofillEditItem* nicknameItem =
-      [[AutofillEditItem alloc] initWithType:ItemTypeNickname];
+- (AutofillCreditCardEditItem*)nicknameItem:(bool)isEditing {
+  AutofillCreditCardEditItem* nicknameItem =
+      [[AutofillCreditCardEditItem alloc] initWithType:ItemTypeNickname];
   nicknameItem.fieldNameLabelText =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_NICKNAME);
   nicknameItem.textFieldValue =
@@ -451,8 +456,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSIndexPath* indexPath =
       [self.tableViewModel indexPathForItemType:itemType
                               sectionIdentifier:SectionIdentifierFields];
-  AutofillEditItem* item = base::apple::ObjCCastStrict<AutofillEditItem>(
-      [self.tableViewModel itemAtIndexPath:indexPath]);
+  AutofillCreditCardEditItem* item =
+      base::apple::ObjCCastStrict<AutofillCreditCardEditItem>(
+          [self.tableViewModel itemAtIndexPath:indexPath]);
   return item.textFieldValue;
 }
 

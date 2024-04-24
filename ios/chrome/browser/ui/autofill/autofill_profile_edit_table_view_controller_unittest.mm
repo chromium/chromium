@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller.h"
-#import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
+#import "ios/chrome/browser/ui/autofill/cells/autofill_profile_edit_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
@@ -121,7 +121,7 @@ class AutofillProfileEditTableViewControllerTest
           .trailingDetailText;
     }
 
-    return base::apple::ObjCCastStrict<AutofillEditItem>(
+    return base::apple::ObjCCastStrict<AutofillProfileEditItem>(
                GetTableViewItem(section, index))
         .textFieldValue;
   }

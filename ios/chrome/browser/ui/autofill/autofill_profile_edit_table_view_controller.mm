@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
-#import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
+#import "ios/chrome/browser/ui/autofill/cells/autofill_profile_edit_item.h"
 #import "ios/chrome/browser/ui/autofill/cells/country_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -152,8 +152,9 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       continue;
     }
 
-    AutofillEditItem* item = base::apple::ObjCCastStrict<AutofillEditItem>(
-        [model itemAtIndexPath:path]);
+    AutofillProfileEditItem* item =
+        base::apple::ObjCCastStrict<AutofillProfileEditItem>(
+            [model itemAtIndexPath:path]);
     [_delegate updateProfileMetadataWithValue:item.textFieldValue
                             forAutofillUIType:item.autofillUIType];
   }
@@ -339,7 +340,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
   [_controller reconfigureCellsForItems:@[ tableViewItem ]];
 
   // Record new value in current state.
-  [self updateValueForAutofillUIType:((AutofillEditItem*)tableViewItem)
+  [self updateValueForAutofillUIType:((AutofillProfileEditItem*)tableViewItem)
                                          .autofillUIType
                                value:tableViewItem.textFieldValue];
 }
@@ -533,11 +534,11 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
 // Returns text fields displaying autofill field info used in save/update
 // prompts as well as the settings view.
-- (AutofillEditItem*)autofillEditItemFromField:
+- (AutofillProfileEditItem*)autofillEditItemFromField:
     (const AutofillProfileFieldDisplayInfo&)field {
   AutofillUIType autofillUIType =
       AutofillUITypeFromAutofillType(field.autofillType);
-  AutofillEditItem* item = [[AutofillEditItem alloc]
+  AutofillProfileEditItem* item = [[AutofillProfileEditItem alloc]
       initWithType:[self itemTypeForAutofillUIType:autofillUIType]];
   item.fieldNameLabelText = l10n_util::GetNSString(field.displayStringID);
   item.textFieldValue = [self valueForAutofillUIType:autofillUIType];
