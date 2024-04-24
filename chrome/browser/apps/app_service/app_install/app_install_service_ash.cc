@@ -255,16 +255,7 @@ void AppInstallServiceAsh::PerformInstallHeadless(
     return;
   }
 
-  if (absl::holds_alternative<AndroidAppInstallData>(data->app_type_data)) {
-    arc_app_installer_.InstallApp(surface, std::move(*data),
-                                  std::move(callback));
-  } else if (absl::holds_alternative<WebAppInstallData>(data->app_type_data)) {
-    web_app_installer_.InstallApp(surface, std::move(*data),
-                                  std::move(callback));
-  } else {
-    LOG(ERROR) << "Unsupported AppInstallData type";
-    std::move(callback).Run(false);
-  }
+  PerformInstall(surface, *data, std::move(callback));
 }
 
 void AppInstallServiceAsh::ShowDialogAndInstall(
@@ -346,7 +337,8 @@ void AppInstallServiceAsh::InstallIfDialogAccepted(
     std::move(callback).Run(AppInstallResult::kInstallDialogNotAccepted);
     return;
   }
-  web_app_installer_.InstallApp(
+
+  PerformInstall(
       surface, data,
       base::BindOnce(&AppInstallServiceAsh::ProcessInstallResult,
                      weak_ptr_factory_.GetWeakPtr(), surface,
@@ -377,6 +369,22 @@ void AppInstallServiceAsh::ProcessInstallResult(
       &AppInstallServiceAsh::InstallIfDialogAccepted,
       weak_ptr_factory_.GetWeakPtr(), surface, expected_package_id,
       std::move(data), dialog, std::move(callback)));
+}
+
+void AppInstallServiceAsh::PerformInstall(
+    AppInstallSurface surface,
+    AppInstallData data,
+    base::OnceCallback<void(bool)> install_callback) {
+  if (absl::holds_alternative<AndroidAppInstallData>(data.app_type_data)) {
+    arc_app_installer_.InstallApp(surface, std::move(data),
+                                  std::move(install_callback));
+  } else if (absl::holds_alternative<WebAppInstallData>(data.app_type_data)) {
+    web_app_installer_.InstallApp(surface, std::move(data),
+                                  std::move(install_callback));
+  } else {
+    LOG(ERROR) << "Unsupported AppInstallData type";
+    std::move(install_callback).Run(false);
+  }
 }
 
 }  // namespace apps

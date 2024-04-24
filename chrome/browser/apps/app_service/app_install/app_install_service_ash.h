@@ -109,6 +109,13 @@ class AppInstallServiceAsh : public AppInstallService {
       base::OnceCallback<void(AppInstallResult)> callback,
       bool install_success);
 
+  // Installs the requested app from the given `data`. This method is
+  // called by both headless and dialog-based flows, and assumes that all
+  // relevant policy checks have already been completed.
+  void PerformInstall(AppInstallSurface surface,
+                      AppInstallData data,
+                      base::OnceCallback<void(bool)> install_callback);
+
   raw_ref<Profile> profile_;
   DeviceInfoManager device_info_manager_;
   AppInstallAlmanacConnector connector_;
