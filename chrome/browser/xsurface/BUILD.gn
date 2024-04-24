@@ -25,6 +25,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/xsurface/SurfaceScope.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/SurfaceScopeDependencyProvider.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/FeedActionsHandler.java",
+    "android/java/src/org/chromium/chrome/browser/xsurface/feed/FeedCardOpeningReliabilityLogger.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/FeedLaunchReliabilityLogger.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/FeedNetworkRequestReliabilityLogger.java",
     "android/java/src/org/chromium/chrome/browser/xsurface/feed/FeedSurfaceScope.java",
