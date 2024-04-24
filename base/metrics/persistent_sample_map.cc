@@ -212,7 +212,8 @@ PersistentSampleMap::CreatePersistentRecord(
       SCOPED_CRASH_KEY_BOOL("PersistentSampleMap", "corrupted",
                             allocator->IsCorrupt());
 #endif  // !BUILDFLAG(IS_NACL)
-      NOTREACHED() << "corrupt=" << allocator->IsCorrupt();
+      DUMP_WILL_BE_NOTREACHED_NORETURN()
+          << "corrupt=" << allocator->IsCorrupt();
     }
     return 0;
   }

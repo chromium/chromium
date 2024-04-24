@@ -77,7 +77,7 @@ class CORE_EXPORT StylePendingImage final : public StyleImage {
                                 const Document&,
                                 const ComputedStyle&,
                                 const gfx::SizeF& target_size) const override {
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     return nullptr;
   }
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const override {

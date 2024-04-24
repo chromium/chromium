@@ -834,7 +834,7 @@ GamepadBusType BusTypeFromDeviceInfo(const mojom::HidDeviceInfo* device_info) {
     default:
       break;
   }
-  NOTREACHED();
+  DUMP_WILL_BE_NOTREACHED_NORETURN();
   return GAMEPAD_BUS_UNKNOWN;
 }
 }  // namespace

@@ -991,7 +991,7 @@ void ScaledLinearHistogram::AddScaledCount(Sample value, int64_t count) {
   if (count == 0)
     return;
   if (count < 0) {
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     return;
   }
 

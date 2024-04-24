@@ -275,7 +275,7 @@ bool PaintController::UseCachedSubsequenceIfPossible(
     // created multiple subsequences. If DCHECK_IS_ON(), then we should have
     // encountered the DCHECK at the end of EndSubsequence() during the previous
     // paint.
-    NOTREACHED();
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     return false;
   }
 
