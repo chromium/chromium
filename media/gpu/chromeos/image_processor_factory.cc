@@ -70,9 +70,13 @@ std::unique_ptr<ImageProcessor> CreateVaapiImageProcessorWithInputCandidates(
 
   // Note: the VaapiImageProcessorBackend doesn't use the ColorPlaneLayouts in
   // the PortConfigs, so we just pass an empty list of plane layouts.
+  // This factory is only used by VideoDecoderPipeline. If the VAAPI
+  // ImageProcessor is in use, then the input frames are being created by the
+  // auxiliary video frame pool. The input VideoFrame::StorageType needs to
+  // match that type.
   ImageProcessor::PortConfig input_config(
       chosen_input_candidate->fourcc, chosen_input_candidate->size,
-      /*planes=*/{}, input_visible_rect, VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+      /*planes=*/{}, input_visible_rect, VideoFrame::STORAGE_DMABUFS);
   ImageProcessor::PortConfig output_config(
       /*fourcc=*/*chosen_output_format, /*size=*/output_size, /*planes=*/{},
       /*visible_rect=*/gfx::Rect(output_size), output_storage_type);

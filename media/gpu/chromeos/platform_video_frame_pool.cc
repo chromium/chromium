@@ -14,8 +14,8 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_util.h"
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
+#include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
-#include "media/gpu/chromeos/video_frame_resource.h"
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
 
@@ -26,7 +26,7 @@ namespace {
 // This needs to be synchronized with the frame type from DefaultCreateFrame().
 // There is a runtime CHECK() to validate this.
 constexpr VideoFrame::StorageType kDefaultFrameStorageType =
-    VideoFrame::STORAGE_GPU_MEMORY_BUFFER;
+    VideoFrame::STORAGE_DMABUFS;
 
 // The default method to create frames.
 CroStatus::Or<scoped_refptr<FrameResource>> DefaultCreateFrame(
@@ -43,15 +43,13 @@ CroStatus::Or<scoped_refptr<FrameResource>> DefaultCreateFrame(
     return CroStatus::Codes::kFailedToCreateVideoFrame;
   }
 
-  // TODO(nhebert): change this to create a NativePixmap-backed FrameResource
-  // when it is ready.
-  scoped_refptr<FrameResource> frame =
-      VideoFrameResource::Create(CreateGpuMemoryBufferVideoFrame(
-          format, coded_size, visible_rect, natural_size, timestamp,
-          use_protected
-              ? gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE
-              : (use_linear_buffers ? gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
-                                    : gfx::BufferUsage::SCANOUT_VDA_WRITE)));
+  scoped_refptr<FrameResource> frame = NativePixmapFrameResource::Create(
+      format, coded_size, visible_rect, natural_size, timestamp,
+      use_protected
+          ? gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE
+          : (use_linear_buffers ? gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
+                                : gfx::BufferUsage::SCANOUT_VDA_WRITE));
+
   if (!frame)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
 
