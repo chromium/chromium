@@ -34,7 +34,7 @@ LanguagePackFontService::LanguagePackFontService(PrefService* prefs,
     : prefs_(CHECK_DEREF(prefs)), add_font_dir_(std::move(add_font_dir)) {
   pref_accept_language_.Init(
       language::prefs::kPreferredLanguages, &*prefs_,
-      base::BindRepeating(&LanguagePackFontService::InstallFontDlcs,
+      base::BindRepeating(&LanguagePackFontService::OnAcceptLanguageChanged,
                           weak_factory_.GetWeakPtr()));
 
   // Add installed fonts to fontconfig.
@@ -46,9 +46,8 @@ LanguagePackFontService::LanguagePackFontService(PrefService* prefs,
   for (std::string& language_pack : GetLanguagePacksForAcceptLanguage()) {
     LanguagePackManager::GetPackState(
         kFontsFeatureId, language_pack,
-        base::BindOnce(
-            &LanguagePackFontService::AddDlcFontDirsToFontConfigPackCallback,
-            weak_factory_.GetWeakPtr()));
+        base::BindOnce(&LanguagePackFontService::GetPackStateOnInitCallback,
+                       weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -73,14 +72,14 @@ LanguagePackFontService::GetLanguagePacksForAcceptLanguage() {
   return language_packs;
 }
 
-void LanguagePackFontService::InstallFontDlcs() {
+void LanguagePackFontService::OnAcceptLanguageChanged() {
   for (std::string& language_pack : GetLanguagePacksForAcceptLanguage()) {
     LanguagePackManager::InstallPack(kFontsFeatureId, language_pack,
                                      base::DoNothing());
   }
 }
 
-void LanguagePackFontService::AddDlcFontDirsToFontConfigPackCallback(
+void LanguagePackFontService::GetPackStateOnInitCallback(
     const PackResult& result) {
   if (result.pack_state != PackResult::StatusCode::kInstalled &&
       !result.language_code.empty()) {
