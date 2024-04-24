@@ -13990,27 +13990,6 @@
             ]
         }
     ],
-    "PasswordSharing": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SendPasswords"
-                    ]
-                }
-            ]
-        }
-    ],
     "PasswordSharingBackendAndroid": [
         {
             "platforms": [
@@ -14043,6 +14022,26 @@
                         "PasswordManagerEnableReceiverService",
                         "PasswordManagerEnableSenderService",
                         "SharedPasswordNotificationUI"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PasswordSharingSendingUI": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SendPasswords"
                     ]
                 }
             ]
