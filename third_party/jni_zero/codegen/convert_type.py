@@ -79,12 +79,13 @@ def to_jni_assignment(sb, dest_var_name, src_var_name, java_type):
     to_jni_expression(sb, src_var_name, java_type)
 
 
-def from_jni_expression(sb, rvalue, java_type):
+def from_jni_expression(sb, rvalue, java_type, release_ref=False):
   """Writes a FromJniType() expression to |sb|.
 
   Args:
     rvalue: Snippet to use as input to FromJniType().
     java_type: Type containing the @JniType annotation.
+    release_ref: Whether to release |rvalue| after conversion.
   """
   T = java_type.converted_type()
   assert T
@@ -98,7 +99,10 @@ def from_jni_expression(sb, rvalue, java_type):
   else:
     jtype = 'jobject'
 
-  rvalue = f'jni_zero::JavaParamRef<{jtype}>(env, {rvalue})'
+  if release_ref:
+    rvalue = f'jni_zero::ScopedJavaLocalRef<{jtype}>(env, {rvalue})'
+  else:
+    rvalue = f'jni_zero::JavaParamRef<{jtype}>(env, {rvalue})'
 
   if not java_type.is_array():
     sb(f'jni_zero::FromJniType<{T}>')

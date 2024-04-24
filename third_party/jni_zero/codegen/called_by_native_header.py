@@ -131,7 +131,7 @@ def _single_method(sb, cbn):
         with sb.statement():
           sb('return ')
           if return_type.converted_type():
-            convert_type.from_jni_expression(sb, return_rvalue, return_type)
+            convert_type.from_jni_expression(sb, return_rvalue, return_type, release_ref=True)
           else:
             sb(return_rvalue)
         return

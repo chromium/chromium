@@ -352,7 +352,7 @@ static std::string Java_SampleForTests_getFirstString(
       converted_finalArg.obj());
   return jni_zero::FromJniType<std::string>(
       env,
-      jni_zero::JavaParamRef<jobject>(env, _ret));
+      jni_zero::ScopedJavaLocalRef<jobject>(env, _ret));
 }
 
 static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(
@@ -499,7 +499,7 @@ static std::vector<int32_t> Java_SampleForTests_jniTypesAndAnnotations(
       converted_bat);
   return jni_zero::ConvertArray<std::vector<int32_t>>::FromJniType(
       env,
-      jni_zero::JavaParamRef<jintArray>(env, static_cast<jintArray>(_ret)));
+      jni_zero::ScopedJavaLocalRef<jintArray>(env, static_cast<jintArray>(_ret)));
 }
 
 static void Java_SampleForTests_methodThatThrowsException(
