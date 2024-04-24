@@ -46,11 +46,6 @@ class ScopedAcceleratedSkImage {
     GrDirectContext* gr_context = provider->GrContext();
     DCHECK(gr_context);
 
-    if (!mailbox_holder.mailbox.IsSharedImage()) {
-      DLOG(ERROR) << "Cannot created SkImage for non-SharedImage mailbox.";
-      return nullptr;
-    }
-
     ri->WaitSyncTokenCHROMIUM(mailbox_holder.sync_token.GetConstData());
 
     uint32_t texture_id =
@@ -143,9 +138,6 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
       provider->ContextCapabilities().supports_rgb_to_yuv_conversion ||
       !provider->GrContext());
 
-  // It shouldn't be possible to reach here with legacy mailbox.
-  DUMP_WILL_BE_CHECK(src_mailbox_holder.mailbox.IsSharedImage());
-
   // With OOP raster, if RGB->YUV conversion is unsupported, the CopySharedImage
   // calls will fail on the service side with no ability to detect failure on
   // the client side. Check for support here and early out if it's unsupported.
@@ -163,8 +155,7 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  if (provider->ContextCapabilities().supports_rgb_to_yuv_conversion &&
-      src_mailbox_holder.mailbox.IsSharedImage()) {
+  if (provider->ContextCapabilities().supports_rgb_to_yuv_conversion) {
     ri->WaitSyncTokenCHROMIUM(src_mailbox_holder.sync_token.GetConstData());
     if (dst_video_frame->shared_image_format_type() ==
         SharedImageFormatType::kLegacy) {
