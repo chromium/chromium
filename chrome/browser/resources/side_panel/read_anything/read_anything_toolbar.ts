@@ -36,7 +36,7 @@ export interface ReadAnythingToolbarElement {
     letterSpacingMenu: CrLazyRenderElement<CrActionMenuElement>,
     fontMenu: CrLazyRenderElement<CrActionMenuElement>,
     fontSizeMenu: CrLazyRenderElement<CrActionMenuElement>,
-    moreOptionsMenu: CrActionMenuElement,
+    moreOptionsMenu: CrLazyRenderElement<CrActionMenuElement>,
     voiceSelectionMenu: VoiceSelectionMenuElement,
     toolbarContainer: HTMLElement,
     more: CrIconButtonElement,
@@ -83,7 +83,7 @@ enum ReadAnythingSettingsChange {
 }
 
 const SETTINGS_CHANGE_UMA = 'Accessibility.ReadAnything.SettingsChange';
-const moreOptionsClass = '.more-options-icon';
+export const moreOptionsClass = '.more-options-icon';
 const activeClass = ' active';
 
 // Link toggle button constants.
@@ -144,17 +144,12 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     assert(moreOptionsButton, 'more options button doesn\'t exist');
     ReadAnythingToolbarElement.hideElement(moreOptionsButton, false);
 
-    // Show all the buttons that would go in the overflow menu to see if they
-    // fit
-    const buttons = Array.from(toolbar.querySelectorAll('.toolbar-button'));
+    // Show all the buttons to see if they fit.
+    const buttons =
+        Array.from(toolbar.querySelectorAll<HTMLElement>('.toolbar-button'));
     assert(buttons, 'no toolbar buttons');
-    const moreOptionsButtons = toolbar.querySelectorAll(moreOptionsClass);
-    assert(moreOptionsButtons, 'no buttons to put in the more options menu');
-    const buttonsOnToolbarToMaybeHide =
-        buttons.slice(buttons.length - moreOptionsButtons.length);
-    buttonsOnToolbarToMaybeHide.forEach(btn => {
-      ReadAnythingToolbarElement.showElement(btn as HTMLElement);
-    });
+    buttons.forEach(btn => ReadAnythingToolbarElement.showElement(btn));
+    toolbar.dispatchEvent(new CustomEvent('reset-toolbar'));
 
     if (!toolbar.offsetParent) {
       return;
@@ -166,18 +161,31 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     if (toolbar.clientWidth > parentWidth) {
       ReadAnythingToolbarElement.showElement(moreOptionsButton);
 
-      // Ensure the more options menu is visible.
-      const moreOptionsMenu =
-          toolbar.querySelector<HTMLElement>('#moreOptionsMenu');
-      assert(moreOptionsMenu, 'more options menu doesn\'t exist');
-      ReadAnythingToolbarElement.showElement(moreOptionsMenu);
+      // Hide at least 3 buttons and more if needed.
+      let numOverflowButtons = 3;
+      let nextOverflowButton = buttons[buttons.length - numOverflowButtons];
+      // No need to hide a button if it only exceeds the width by a little (i.e.
+      // only the padding overflows).
+      const maxDiff = 10;
+      while ((nextOverflowButton.offsetLeft + nextOverflowButton.offsetWidth -
+              parentWidth) > maxDiff) {
+        numOverflowButtons++;
+        nextOverflowButton = buttons[buttons.length - numOverflowButtons];
+      }
 
-      // Hide all the buttons on the toolbar that are in the more options menu
-      buttonsOnToolbarToMaybeHide.forEach(btn => {
-        ReadAnythingToolbarElement.hideElement(btn as HTMLElement, true);
-      });
-      toolbar.insertBefore(moreOptionsButton, buttonsOnToolbarToMaybeHide[0]);
-      (moreOptionsButtons.item(0) as HTMLElement).style.marginLeft = '16px';
+      // Notify the toolbar to populate the more options menu.
+      toolbar.dispatchEvent(new CustomEvent('toolbar-overflow', {
+        bubbles: true,
+        composed: true,
+        detail: {numOverflowButtons},
+      }));
+      // Hide the overflowed buttons and show the more options button in front
+      // of them.
+      const overflowedButtons =
+          buttons.slice(buttons.length - numOverflowButtons);
+      overflowedButtons.forEach(
+          btn => ReadAnythingToolbarElement.hideElement(btn, true));
+      toolbar.insertBefore(moreOptionsButton, overflowedButtons[0]);
     }
   }
 
@@ -296,7 +304,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private rateOptions_: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
 
-  private moreOptionsButtons_: MenuButton[] = [
+  private moreOptionsButtons_: MenuButton[] = [];
+
+  private textStyleOptions_: MenuButton[] = [
     {
       id: 'color',
       icon: 'read-anything:color',
@@ -316,8 +326,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       menuToOpen: () => this.$.letterSpacingMenu.get(),
     },
   ];
-
-  private textStyleOptions_: MenuButton[] = [];
 
   private showAtPositionConfig_: ShowAtPositionConfig = {
     top: 20,
@@ -363,7 +371,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         'Accessibility.ReadAnything.' +
             'TimeFromToolbarConstructorStartedToConnectedCallback');
     if (this.isReadAloudEnabled_) {
-      this.textStyleOptions_.push(
+      this.textStyleOptions_.unshift(
           {
             id: 'font-size',
             icon: 'read-anything:font-size',
@@ -384,8 +392,6 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       this.windowResizeCallback_ = this.onWindowResize_.bind(this);
       window.addEventListener('resize', this.windowResizeCallback_);
     }
-    this.textStyleOptions_ =
-        this.textStyleOptions_.concat(this.moreOptionsButtons_);
 
     // TODO(b/329677511): Font names should be displayed as
     // "Font name (loading)" until the fonts have been loaded.
@@ -424,6 +430,18 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   setFontsLoaded() {
     this.areFontsLoaded_ = true;
+  }
+
+  private onResetToolbar_() {
+    this.$.moreOptionsMenu.getIfExists()?.close();
+    this.moreOptionsButtons_ = [];
+  }
+
+  private onToolbarOverflow_(event: CustomEvent<{numOverflowButtons: number}>) {
+    const firstHiddenButton =
+        this.textStyleOptions_.length - event.detail.numOverflowButtons;
+    this.moreOptionsButtons_ = this.textStyleOptions_.slice(firstHiddenButton);
+    console.error('more options length', this.moreOptionsButtons_.length);
   }
 
   private onWindowResize_() {
@@ -607,7 +625,13 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private onMoreOptionsClick_(event: MouseEvent) {
-    this.openMenu_(this.$.moreOptionsMenu, event.target as HTMLElement);
+    const menu = this.$.moreOptionsMenu.get();
+    // The min width of the dialog can't be lowered so center the buttons if
+    // there are only 3 in the more options menu. There's an extra wrapper child
+    // in the menu so we check for 4 children, which indicates 3 buttons.
+    (menu.firstChild as HTMLElement).style.marginLeft =
+        (menu.children.length === 4) ? '16px' : '6px';
+    this.openMenu_(menu, event.target as HTMLElement);
   }
 
   private openMenu_(
@@ -917,9 +941,9 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     const elementToFocus = focusableElements[newIndex];
     assert(elementToFocus, 'no element to focus');
     if (elementToFocus.className !== moreOptionsClass.slice(1)) {
-      this.$.moreOptionsMenu.close();
-    } else if (!this.$.moreOptionsMenu.open) {
-      this.openMenu_(this.$.moreOptionsMenu, this.$.more);
+      this.$.moreOptionsMenu.getIfExists()?.close();
+    } else if (!this.$.moreOptionsMenu.getIfExists()?.open) {
+      this.openMenu_(this.$.moreOptionsMenu.get(), this.$.more);
     }
 
     // When the user tabs away from the toolbar and then tabs back, we want to

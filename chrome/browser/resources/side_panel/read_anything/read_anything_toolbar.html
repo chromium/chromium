@@ -110,7 +110,8 @@
 </style>
 <div id="toolbarContainer" class="toolbar-container"
      role="toolbar" aria-label="$i18n{readingModeToolbarLabel}"
-     on-keydown="onToolbarKeyDown_">
+     on-keydown="onToolbarKeyDown_" on-reset-toolbar="onResetToolbar_"
+     on-toolbar-overflow="onToolbarOverflow_">
   <template id="read-aloud-container" is="dom-if" if="[[isReadAloudEnabled_]]">
     <span id="audio-controls" class$="audio-background-when-paused-[[paused]]">
       <cr-icon-button
@@ -233,7 +234,7 @@
     </cr-icon-button>
   </template>
 
-  <template is="dom-repeat" items="[[textStyleOptions_]]" initial-count="2">
+  <template is="dom-repeat" items="[[textStyleOptions_]]" initial-count="3">
     <cr-icon-button
       class="toolbar-button"
       id="[[item.id]]"
@@ -256,31 +257,25 @@
       on-click="onMoreOptionsClick_">
   </cr-icon-button>
 
-   <!-- The more options menu is a menu of cr-icon-buttons that should be
-       hidden behind a separate menu if the Read Anything toolbar overflows.
-       All Reading Mode menu items should be wrapped with a cr-lazy-render for
-       efficiency, but given that we must first render all the menu items
-       in the more options menu to handle menu positioning, it doesn't
-       make sense to lazily render the more options menu. Therefore, this
-       menu should just stay as a cr-action-menu, rendered on load.
-       TODO(b/329676284): Investigate refactor to handle the menu item
-       positioning via data binding, so that styling can happen without
-       rendering the menu.
-       -->
-  <cr-action-menu id="moreOptionsMenu" on-keydown="onToolbarKeyDown_"
-        hidden>
-    <template is="dom-repeat" items="[[moreOptionsButtons_]]" inital-count="3">
-      <cr-icon-button
-        id="[[item.id]]"
-        class="more-options-icon"
-        aria-label="[[item.ariaLabel]]"
-        title="[[item.ariaLabel]]"
-        aria-haspopup="menu"
-        iron-icon="[[item.icon]]"
-        on-click="onTextStyleMenuButtonClick_">
-      </cr-icon-button>
+  <cr-lazy-render id="moreOptionsMenu">
+    <template>
+      <cr-action-menu on-keydown="onToolbarKeyDown_">
+        <template is="dom-repeat"
+                  items="[[moreOptionsButtons_]]"
+                  inital-count="0">
+          <cr-icon-button
+            id="[[item.id]]"
+            class="more-options-icon"
+            aria-label="[[item.ariaLabel]]"
+            title="[[item.ariaLabel]]"
+            aria-haspopup="menu"
+            iron-icon="[[item.icon]]"
+            on-click="onTextStyleMenuButtonClick_">
+          </cr-icon-button>
+        </template>
+      </cr-action-menu>
     </template>
-  </cr-action-menu>
+  </cr-lazy-render>
   <cr-lazy-render id="rateMenu">
     <template>
       <cr-action-menu>

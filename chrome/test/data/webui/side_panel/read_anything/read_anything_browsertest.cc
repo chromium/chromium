@@ -153,6 +153,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateVoicePack) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ToolbarOverflow) {
+  RunSidePanelTest("side_panel/read_anything/toolbar_overflow_test.js",
+                   "mocha.run()");
+}
+
 // Integration tests that need the actual Read Aloud flag enabled because they
 // use the full C++ pipeline
 class ReadAnythingReadAloudMochaTest : public ReadAnythingMochaBrowserTest {
