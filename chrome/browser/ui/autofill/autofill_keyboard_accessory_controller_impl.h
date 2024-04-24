@@ -86,15 +86,13 @@ class AutofillKeyboardAccessoryControllerImpl
   bool GetRemovalConfirmationText(int index,
                                   std::u16string* title,
                                   std::u16string* body) override;
-  base::WeakPtr<AutofillKeyboardAccessoryController> GetWeakPtrToController()
-      override;
   void SetViewForTesting(
       std::unique_ptr<AutofillKeyboardAccessoryView> view) override;
 
-  AutofillKeyboardAccessoryView* view() { return view_.get(); }
   base::WeakPtr<AutofillKeyboardAccessoryControllerImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
+  AutofillKeyboardAccessoryView* view() { return view_.get(); }
 
  private:
   friend class AutofillSuggestionController;

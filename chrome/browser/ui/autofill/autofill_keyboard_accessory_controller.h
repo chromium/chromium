@@ -34,12 +34,6 @@ class AutofillKeyboardAccessoryController
                                           std::u16string* title,
                                           std::u16string* body) = 0;
 
-  // TODO(crbug.com/333316034): Rename to `GetWeakPtr` once
-  // `AutofillKeyboardAccessoryAdapter` does not exist anymore and there are no
-  // nameclashes with `AutofillPopupView`'s methods.
-  virtual base::WeakPtr<AutofillKeyboardAccessoryController>
-  GetWeakPtrToController() = 0;
-
   virtual void SetViewForTesting(
       std::unique_ptr<AutofillKeyboardAccessoryView> view) = 0;
 };

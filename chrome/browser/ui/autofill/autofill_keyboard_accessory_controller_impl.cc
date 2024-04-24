@@ -85,7 +85,7 @@ AutofillSuggestionController::GetOrCreate(
     }
     previous_impl->controller_common_ = std::move(controller_common);
     previous_impl->suggestions_.clear();
-    return previous_impl->GetWeakPtrToController();
+    return previous_impl->GetWeakPtr();
   }
 
   if (previous) {
@@ -94,7 +94,7 @@ AutofillSuggestionController::GetOrCreate(
   auto* controller = new AutofillKeyboardAccessoryControllerImpl(
       delegate, web_contents, std::move(controller_common),
       base::BindRepeating(&local_password_migration::ShowWarning));
-  return controller->GetWeakPtrToController();
+  return controller->GetWeakPtr();
 }
 
 AutofillKeyboardAccessoryControllerImpl::
@@ -307,7 +307,7 @@ bool AutofillKeyboardAccessoryControllerImpl::RemoveSuggestion(
       title, body,
       base::BindOnce(
           &AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed,
-          weak_ptr_factory_.GetWeakPtr(), index));
+          GetWeakPtr(), index));
   return true;
 }
 
@@ -445,7 +445,7 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
   if (view_) {
     OnSuggestionsChanged();
   } else {
-    view_ = AutofillKeyboardAccessoryView::Create(GetWeakPtrToController());
+    view_ = AutofillKeyboardAccessoryView::Create(GetWeakPtr());
     // It is possible to fail to create the accessory view.
     if (!view_) {
       Hide(PopupHidingReason::kViewDestroyed);
@@ -574,11 +574,6 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
   }
 
   return false;  // The ID was valid. The entry may have been deleted in a race.
-}
-
-base::WeakPtr<AutofillKeyboardAccessoryController>
-AutofillKeyboardAccessoryControllerImpl::GetWeakPtrToController() {
-  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void AutofillKeyboardAccessoryControllerImpl::
