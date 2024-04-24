@@ -58,7 +58,7 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   void BeginMainFrame(base::TimeTicks frame_time);
   void WillPerformStyleAndLayoutCalculation();
-  void DidBeginMainFrame();
+  void DidBeginMainFrame(LocalDOMWindow& local_root_window);
   void OnTaskCompleted(base::TimeTicks start_time,
                        base::TimeTicks end_time,
                        LocalFrame* frame);
@@ -124,7 +124,8 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
 
   bool PushScriptEntryPoint(ScriptState*);
 
-  void RecordLongAnimationFrameUKMAndTrace(const AnimationFrameTimingInfo&);
+  void RecordLongAnimationFrameUKMAndTrace(const AnimationFrameTimingInfo&,
+                                           LocalDOMWindow& window);
   void ApplyTaskDuration(base::TimeDelta task_duration);
 
   std::optional<PendingScriptInfo> pending_script_info_;
