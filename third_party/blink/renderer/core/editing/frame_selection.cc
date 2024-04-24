@@ -358,11 +358,31 @@ void FrameSelection::DidSetSelectionDeprecated(
   NotifyAccessibilityForSelectionChange();
   NotifyCompositorForSelectionChange();
   NotifyEventHandlerForSelectionChange();
-  // The task source should be kDOMManipulation, but the spec doesn't say
-  // anything about this.
-  frame_->DomWindow()->EnqueueDocumentEvent(
-      *Event::Create(event_type_names::kSelectionchange),
-      TaskType::kMiscPlatformAPI);
+
+  // Dispatch selectionchange events per element based on the new spec:
+  // https://w3c.github.io/selection-api/#selectionchange-event
+  if (RuntimeEnabledFeatures::DispatchSelectionchangeEventPerElementEnabled()) {
+    TextControlElement* text_control =
+        EnclosingTextControl(GetSelectionInDOMTree().Anchor());
+    if (text_control) {
+      text_control->EnqueueEvent(
+          *Event::CreateBubble(event_type_names::kSelectionchange),
+          TaskType::kMiscPlatformAPI);
+    } else {
+      frame_->DomWindow()->EnqueueDocumentEvent(
+          *Event::Create(event_type_names::kSelectionchange),
+          TaskType::kMiscPlatformAPI);
+    }
+  }
+  // When DispatchSelectionchangeEventPerElement is disabled, fall back to old
+  // path.
+  else {
+    // The task source should be kDOMManipulation, but the spec doesn't say
+    // anything about this.
+    frame_->DomWindow()->EnqueueDocumentEvent(
+        *Event::Create(event_type_names::kSelectionchange),
+        TaskType::kMiscPlatformAPI);
+  }
 }
 
 void FrameSelection::SetSelectionForAccessibility(

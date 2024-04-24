@@ -24,7 +24,7 @@ Received mousedown on target
 Received mouseup on target
 Received click on target
 PASS tapHandled is false
-Received selectionchange on #document anchor=BODY[2]
+Received selectionchange on target anchor=BODY[2]
 PASS isFocused(target) is true
 
 

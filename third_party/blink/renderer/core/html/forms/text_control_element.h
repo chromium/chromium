@@ -234,6 +234,7 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
                          mojom::blink::FocusType,
                          InputDeviceCapabilities* source_capabilities) final;
   void ScheduleSelectEvent();
+  void ScheduleSelectionchangeEvent();
   void DisabledOrReadonlyAttributeChanged(const QualifiedName&);
 
   // Called in dispatchFocusEvent(), after placeholder process, before calling

@@ -1337,6 +1337,12 @@
       base_feature: "DispatchHiddenVisibilityTransitions",
     },
     {
+      // Dispatch selectionchange event per element according to the new spec:
+      // https://w3c.github.io/selection-api/#selectionchange-event
+      name: "DispatchSelectionchangeEventPerElement",
+      status: "experimental",
+    },
+    {
       // Allowing elements with display:contents to have focus.
       // See https://crbug.com/1366037
       name: "DisplayContentsFocusable",
