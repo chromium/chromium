@@ -1203,7 +1203,7 @@ gpu::Mailbox SkiaRenderer::GetProtectedSharedImage() {
 
   protected_buffer_queue_->Reshape(
       gfx::Size(kMaxProtectedContentWidth, kMaxProtectedContentHeight),
-      gfx::ColorSpace::CreateSRGB(), gfx::BufferFormat::RGBA_8888);
+      gfx::ColorSpace::CreateSRGB(), gfx::BufferFormat::BGRA_8888);
 
   return protected_buffer_queue_->GetCurrentBuffer();
 }
@@ -2979,7 +2979,7 @@ void SkiaRenderer::ScheduleOverlays() {
           static_cast<float>(overlay.display_rect.height() /
                              static_cast<float>(kMaxProtectedContentHeight)));
       overlay.mailbox = detiled_image;
-      overlay.format = gfx::BufferFormat::RGBA_8888;
+      overlay.format = gfx::BufferFormat::BGRA_8888;
       overlay.transform = gfx::OVERLAY_TRANSFORM_NONE;
 
       continue;

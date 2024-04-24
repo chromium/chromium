@@ -886,7 +886,7 @@ TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
       gpu::SharedImageUsage::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel",
       std::move(in_gmb));
   shared_image_factory.CreateSharedImage(
-      output_mailbox, viz::SinglePlaneFormat::kRGBA_8888, coded_size,
+      output_mailbox, viz::SinglePlaneFormat::kBGRA_8888, coded_size,
       gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
       kUnpremul_SkAlphaType,
       gpu::SharedImageUsage::SHARED_IMAGE_USAGE_DISPLAY_WRITE |

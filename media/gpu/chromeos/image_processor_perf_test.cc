@@ -889,7 +889,7 @@ TEST_P(VulkanImageProcessorPerfTest, Detile) {
                : VideoPixelFormat::PIXEL_FORMAT_ARGB;
   const viz::SharedImageFormat out_viz_format =
       is_10bit ? viz::SinglePlaneFormat::kBGRA_1010102
-               : viz::SinglePlaneFormat::kRGBA_8888;
+               : viz::SinglePlaneFormat::kBGRA_8888;
 
   // Initialize shared image infrastructure.
   auto share_group = base::MakeRefCounted<gl::GLShareGroup>();

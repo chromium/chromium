@@ -1016,6 +1016,9 @@ void VulkanImageProcessor::Process(gpu::VulkanImage& in_image,
   CHECK(crop_rect.height() <= 1.0f && crop_rect.height() >= 0.0f);
   CHECK(crop_rect.x() <= 1.0f && crop_rect.x() >= 0.0f);
   CHECK(crop_rect.y() <= 1.0f && crop_rect.y() >= 0.0f);
+  CHECK(in_image.format() == VK_FORMAT_G8_B8R8_2PLANE_420_UNORM);
+  CHECK(out_image.format() == VK_FORMAT_B8G8R8A8_UNORM ||
+        out_image.format() == VK_FORMAT_A2R10G10B10_UNORM_PACK32);
   constexpr size_t kMM21TileWidth = 16;
   constexpr size_t kMM21TileHeight = 32;
   const gfx::Size input_coded_size(
