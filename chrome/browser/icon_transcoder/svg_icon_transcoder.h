@@ -18,9 +18,8 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
-class Profile;
-
 namespace content {
+class BrowserContext;
 class WebContents;
 }  // namespace content
 
@@ -39,7 +38,7 @@ using IconContentCallback = base::OnceCallback<void(std::string)>;
 // SvgIconTranscoder always checks if its WebContents must be recreated.
 class SvgIconTranscoder : public content::RenderProcessHostObserver {
  public:
-  explicit SvgIconTranscoder(Profile* profile);
+  explicit SvgIconTranscoder(content::BrowserContext* context);
 
   SvgIconTranscoder(const SvgIconTranscoder&) = delete;
   SvgIconTranscoder& operator=(const SvgIconTranscoder&) = delete;
@@ -89,7 +88,7 @@ class SvgIconTranscoder : public content::RenderProcessHostObserver {
                        const std::vector<SkBitmap>& bitmaps,
                        const std::vector<gfx::Size>& sizes);
 
-  const raw_ptr<Profile, DanglingUntriaged> profile_;
+  const raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
   std::unique_ptr<content::WebContents> web_contents_;
   bool web_contents_ready_{false};
   base::WeakPtrFactory<SvgIconTranscoder> weak_ptr_factory_{this};

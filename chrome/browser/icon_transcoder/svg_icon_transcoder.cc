@@ -7,7 +7,7 @@
 #include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -48,7 +48,8 @@ void SaveIconOnFileThread(const base::FilePath& icon_path,
 
 }  // namespace
 
-SvgIconTranscoder::SvgIconTranscoder(Profile* profile) : profile_(profile) {}
+SvgIconTranscoder::SvgIconTranscoder(content::BrowserContext* context)
+    : browser_context_(context) {}
 
 SvgIconTranscoder::~SvgIconTranscoder() {
   RemoveObserver();
@@ -114,7 +115,7 @@ void SvgIconTranscoder::Transcode(const std::string& svg_data,
 
 void SvgIconTranscoder::MaybeCreateWebContents() {
   if (!web_contents_) {
-    auto params = content::WebContents::CreateParams(profile_);
+    auto params = content::WebContents::CreateParams(browser_context_);
     params.initially_hidden = true;
     params.desired_renderer_state =
         content::WebContents::CreateParams::kInitializeAndWarmupRendererProcess;

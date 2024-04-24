@@ -4196,6 +4196,7 @@ source_set("ash") {
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
     "//chrome/browser/google",
+    "//chrome/browser/icon_transcoder",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/metrics/structured:features",
     "//chrome/browser/nearby_sharing/common",
