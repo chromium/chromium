@@ -100,6 +100,7 @@ include_rules = [
 
 specific_include_rules = {
   "file_manager_browsertest_base.cc": [
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
     "+chrome/browser/ui/views/select_file_dialog_extension.h",
   ],
 }
