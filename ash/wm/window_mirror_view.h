@@ -50,7 +50,8 @@ class ASH_EXPORT WindowMirrorView : public views::View,
   void OnWindowDestroying(aura::Window* window) override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
   void OnVisibleBoundsChanged() override;

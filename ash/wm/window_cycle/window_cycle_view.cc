@@ -553,7 +553,8 @@ int WindowCycleView::CalculateMaxWidth() const {
          2 * kBackgroundHorizontalInsetDp;
 }
 
-gfx::Size WindowCycleView::CalculatePreferredSize() const {
+gfx::Size WindowCycleView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   gfx::Size size = GetContentContainerBounds().size();
   // `mirror_container_` can have window list that overflow out of the
   // screen, but the window cycle view with a bandshield, cropping the

@@ -39,7 +39,8 @@ class ASH_EXPORT WindowPreviewView
   void RecreatePreviews();
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
 
   // aura::client::TransientWindowClientObserver:

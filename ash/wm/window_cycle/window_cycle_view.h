@@ -131,7 +131,8 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   int CalculateMaxWidth() const;
 
   // views::WidgetDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
 
   // ui::ImplicitAnimationObserver:

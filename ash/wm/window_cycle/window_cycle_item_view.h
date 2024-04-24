@@ -50,7 +50,8 @@ class ASH_EXPORT WindowCycleItemView : public WindowMiniView {
   void Layout(PassKey) override;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
 
   // WindowMiniViewBase:

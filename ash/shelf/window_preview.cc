@@ -85,7 +85,7 @@ void WindowPreview::Layout(PassKey) {
                 content_rect.y(), kCloseButtonSize, kCloseButtonSize));
 
   const gfx::Size container_size = GetPreviewContainerSize();
-  gfx::Size mirror_size = preview_view_->CalculatePreferredSize();
+  gfx::Size mirror_size = preview_view_->CalculatePreferredSize({});
   float preview_ratio = static_cast<float>(mirror_size.width()) /
                         static_cast<float>(mirror_size.height());
 

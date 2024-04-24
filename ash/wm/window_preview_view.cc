@@ -64,7 +64,8 @@ void WindowPreviewView::RecreatePreviews() {
     entry.second->RecreateMirrorLayers();
 }
 
-gfx::Size WindowPreviewView::CalculatePreferredSize() const {
+gfx::Size WindowPreviewView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // The preferred size of this view is the union of all the windows it is made
   // up of with, scaled to match the ratio of the main window to its mirror
   // view's preferred size.
@@ -75,7 +76,7 @@ gfx::Size WindowPreviewView::CalculatePreferredSize() const {
   gfx::SizeF window_size(1.f, 1.f);
   auto it = mirror_views_.find(root);
   if (it != mirror_views_.end()) {
-    window_size = gfx::SizeF(it->second->CalculatePreferredSize());
+    window_size = gfx::SizeF(it->second->CalculatePreferredSize({}));
     if (window_size.IsEmpty())
       return gfx::Size();  // Avoids divide by zero below.
   }

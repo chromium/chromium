@@ -163,7 +163,8 @@ void WindowCycleItemView::Layout(PassKey) {
                       source_window(), /*include_header_rounding=*/false)));
 }
 
-gfx::Size WindowCycleItemView::CalculatePreferredSize() const {
+gfx::Size WindowCycleItemView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // Previews can range in width from half to double of
   // |kFixedPreviewHeightDp|. Padding will be added to the
   // sides to achieve this if the preview is too narrow.

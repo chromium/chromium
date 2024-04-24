@@ -67,7 +67,8 @@ void WindowMirrorView::OnWindowDestroying(aura::Window* window) {
   }
 }
 
-gfx::Size WindowMirrorView::CalculatePreferredSize() const {
+gfx::Size WindowMirrorView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return show_non_client_view_ ? source_->bounds().size()
                                : GetClientAreaBounds().size();
 }
