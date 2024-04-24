@@ -112,7 +112,14 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   AppLaunchConfiguration config;
   config.additional_args.push_back(
       std::string("--") + switches::kSearchEngineChoiceCountry + "=US");
-  config.features_enabled.push_back(switches::kSearchEngineChoiceTrigger);
+  if ([self isRunningTest:@selector
+            (testDeleteSelectedCustomSearchEngineBySwipe)]) {
+    config.features_disabled.push_back(switches::kSearchEngineChoiceTrigger);
+  } else {
+    config.additional_args.push_back(
+        "--enable-features=SearchEngineChoiceTrigger:for_tagged_profiles_only/"
+        "false");
+  }
   return config;
 }
 

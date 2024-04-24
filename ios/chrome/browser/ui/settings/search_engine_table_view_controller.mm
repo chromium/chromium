@@ -42,6 +42,7 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
+
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierFirstList = kSectionIdentifierEnumZero,
   SectionIdentifierSecondList,
@@ -60,6 +61,16 @@ constexpr base::TimeDelta kMaxVisitAge = base::Days(2);
 const size_t kMaxcustomSearchEngines = 3;
 const char kUmaSelectDefaultSearchEngine[] =
     "Search.iOS.SelectDefaultSearchEngine";
+
+// Version of the search engine settings.
+enum class SearchEngineSettingVersion {
+  // Search engine settings for EEA countries.
+  kEEASettings,
+  // Search engine settings for non-EEA countries with the updated settings.
+  kUpdatedSettings,
+  // Search engine settings with kSearchEngineChoiceTrigger disabled.
+  kDeprecatedSettings,
+};
 
 }  // namespace
 
@@ -100,7 +111,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   // favicon images.
   raw_ptr<FaviconLoader> _faviconLoader;
   // Determines which version of the settings UI should be displayed.
-  BOOL _shouldShowEEASettings;
+  SearchEngineSettingVersion _searchEngineSettingVersion;
 }
 
 #pragma mark - Initialization
@@ -121,10 +132,19 @@ const char kUmaSelectDefaultSearchEngine[] =
 
     search_engines::SearchEngineChoiceService* search_engine_choice_service =
         ios::SearchEngineChoiceServiceFactory::GetForBrowserState(browserState);
-    _shouldShowEEASettings =
-        search_engines::IsEeaChoiceCountry(
-            search_engine_choice_service->GetCountryId()) &&
+    BOOL shouldShowUpdatedSettings =
         search_engine_choice_service->ShouldShowUpdatedSettings();
+    if (search_engines::IsEeaChoiceCountry(
+            search_engine_choice_service->GetCountryId()) &&
+        shouldShowUpdatedSettings) {
+      _searchEngineSettingVersion = SearchEngineSettingVersion::kEEASettings;
+    } else if (shouldShowUpdatedSettings) {
+      _searchEngineSettingVersion =
+          SearchEngineSettingVersion::kUpdatedSettings;
+    } else {
+      _searchEngineSettingVersion =
+          SearchEngineSettingVersion::kDeprecatedSettings;
+    }
     [self setTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_ENGINE_SETTING_TITLE)];
     self.shouldDisableDoneButtonOnEdit = YES;
   }
@@ -244,7 +264,8 @@ const char kUmaSelectDefaultSearchEngine[] =
   if (_firstList.size() > 0) {
     [model addSectionWithIdentifier:SectionIdentifierFirstList];
 
-    if (_shouldShowEEASettings) {
+    if (_searchEngineSettingVersion ==
+        SearchEngineSettingVersion::kEEASettings) {
       TableViewTextHeaderFooterItem* header =
           [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeHeader];
       header.subtitle =
@@ -255,7 +276,8 @@ const char kUmaSelectDefaultSearchEngine[] =
 
     for (const TemplateURL* templateURL : _firstList) {
       TableViewItem* item = nil;
-      if (_shouldShowEEASettings) {
+      if (_searchEngineSettingVersion ==
+          SearchEngineSettingVersion::kEEASettings) {
         item =
             [self createEEASettingsSearchEngineItemFromTemplateURL:templateURL];
       } else {
@@ -280,7 +302,8 @@ const char kUmaSelectDefaultSearchEngine[] =
     for (const TemplateURL* templateURL : _secondList) {
       DCHECK(templateURL->prepopulate_id() == 0);
       TableViewItem* item = nil;
-      if (_shouldShowEEASettings) {
+      if (_searchEngineSettingVersion ==
+          SearchEngineSettingVersion::kEEASettings) {
         item =
             [self createEEASettingsSearchEngineItemFromTemplateURL:templateURL];
       } else {
@@ -337,16 +360,23 @@ const char kUmaSelectDefaultSearchEngine[] =
 }
 
 - (BOOL)editButtonEnabled {
-  if (_shouldShowEEASettings) {
-    // With the updated settings, custom search engine can only be deleted when
-    // they are not selected (so in the second section).
-    return [self.tableViewModel hasItemForItemType:ItemTypeCustomEngine
-                                 sectionIdentifier:SectionIdentifierSecondList];
+  switch (_searchEngineSettingVersion) {
+    case SearchEngineSettingVersion::kEEASettings:
+    case SearchEngineSettingVersion::kUpdatedSettings:
+      // With the updated settings, custom search engine can only be deleted
+      // when they are not selected (so in the second section).
+      return
+          [self.tableViewModel hasItemForItemType:ItemTypeCustomEngine
+                                sectionIdentifier:SectionIdentifierSecondList];
+    case SearchEngineSettingVersion::kDeprecatedSettings:
+      // Custom search engine can only be deleted even when being selected.
+      return
+          [self.tableViewModel hasItemForItemType:ItemTypeCustomEngine
+                                sectionIdentifier:SectionIdentifierFirstList] ||
+          [self.tableViewModel hasItemForItemType:ItemTypeCustomEngine
+                                sectionIdentifier:SectionIdentifierSecondList];
   }
-  return [self.tableViewModel hasItemForItemType:ItemTypeCustomEngine
-                               sectionIdentifier:SectionIdentifierFirstList] ||
-         [self.tableViewModel hasItemForItemType:ItemTypeCustomEngine
-                               sectionIdentifier:SectionIdentifierSecondList];
+  NOTREACHED_NORETURN();
 }
 
 - (void)updateUIForEditState {
@@ -442,19 +472,25 @@ const char kUmaSelectDefaultSearchEngine[] =
 
 - (BOOL)tableView:(UITableView*)tableView
     canEditRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (!_shouldShowEEASettings) {
-    // With the default search engine settings, all custom search engines can
-    // be deleted, even the selected one.
-    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-    return item.type == ItemTypeCustomEngine;
+  switch (_searchEngineSettingVersion) {
+    case SearchEngineSettingVersion::kDeprecatedSettings: {
+      // With the deprecated search engine settings, all custom search engines
+      // can be deleted, even the selected one.
+      TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+      return item.type == ItemTypeCustomEngine;
+    }
+    case SearchEngineSettingVersion::kEEASettings:
+    case SearchEngineSettingVersion::kUpdatedSettings: {
+      // Only the search engines from the second section can be removed.
+      // In the first section, search engines are either prepopulated or
+      // selected custom search engines.
+      TableViewModel* model = self.tableViewModel;
+      NSInteger sectionIdentifier =
+          [model sectionIdentifierForSectionIndex:indexPath.section];
+      return sectionIdentifier == SectionIdentifierSecondList;
+    }
   }
-  // Only the search engines from the second section can be removed.
-  // In the first section, search engines are either prepopulated or selected
-  // custom search engines.
-  TableViewModel* model = self.tableViewModel;
-  NSInteger sectionIdentifier =
-      [model sectionIdentifierForSectionIndex:indexPath.section];
-  return sectionIdentifier == SectionIdentifierSecondList;
+  NOTREACHED_NORETURN();
 }
 
 - (void)tableView:(UITableView*)tableView
@@ -617,9 +653,10 @@ const char kUmaSelectDefaultSearchEngine[] =
 }
 
 // Deletes custom search engines at `indexPaths`.
-// When `_shouldShowEEASettings` is YES:
+// When `_searchEngineSettingVersion` is either `kEEASettings` or
+//    `kUpdatedSettings`:
 // The selected custom search engine cannot be removed.
-// When `_shouldShowEEASettings` is NO:
+// When `_searchEngineSettingVersion` is `kDeprecatedSettings`:
 // If a custom engine is selected as the default engine, resets default engine
 // to the first prepopulated engine.
 - (void)deleteItemAtIndexPaths:(NSArray<NSIndexPath*>*)indexPaths {
@@ -645,7 +682,9 @@ const char kUmaSelectDefaultSearchEngine[] =
       // section, when showing the updated settings. The updated settings should
       // either contains a selected custom search engine (which cannot be
       // removed as long as it is selected), or prepopulated search engine.
-      CHECK(!_shouldShowEEASettings, base::NotFatalUntil::M127);
+      CHECK_EQ(_searchEngineSettingVersion,
+               SearchEngineSettingVersion::kDeprecatedSettings,
+               base::NotFatalUntil::M127);
       // The custom search engine in the first section should be the last one.
       DCHECK(path.row == static_cast<int>(_firstList.size()) - 1);
       std::erase(_firstList, engineItem.templateURL);
@@ -656,8 +695,10 @@ const char kUmaSelectDefaultSearchEngine[] =
     // engine to the first prepopulated engine.
     if (engineItem.templateURL ==
         _templateURLService->GetDefaultSearchProvider()) {
-      CHECK(!_shouldShowEEASettings, base::NotFatalUntil::M127);
-      DCHECK(_firstList.size() > 0);
+      CHECK_EQ(_searchEngineSettingVersion,
+               SearchEngineSettingVersion::kDeprecatedSettings,
+               base::NotFatalUntil::M127);
+      CHECK(_firstList.size() > 0, base::NotFatalUntil::M127);
       _templateURLService->SetUserSelectedDefaultSearchProvider(_firstList[0]);
       resetDefaultEngine = true;
     }
@@ -722,15 +763,17 @@ const char kUmaSelectDefaultSearchEngine[] =
   if (_settingsAreDismissed)
     return;
   // All prepopulated items in the first section should be updated.
-  // When `_shouldShowEEASettings` is YES, the selected custom item should
-  // be updated since the user is not allowed to remove it.
+  // When `_searchEngineSettingVersion` is not `kDeprecatedSettings`,
+  // the selected custom item should be updated since the user is not allowed
+  // to remove it.
   NSArray<TableViewItem*>* items = [self.tableViewModel
       itemsInSectionWithIdentifier:SectionIdentifierFirstList];
   for (TableViewItem* item in items) {
     SettingsSearchEngineItem* engineItem =
         base::apple::ObjCCastStrict<SettingsSearchEngineItem>(item);
     if (engineItem.type == ItemTypePrepopulatedEngine ||
-        _shouldShowEEASettings) {
+        _searchEngineSettingVersion !=
+            SearchEngineSettingVersion::kDeprecatedSettings) {
       engineItem.enabled = !editing;
     }
     if (!editing && [self isItem:engineItem
