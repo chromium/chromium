@@ -182,6 +182,9 @@ constexpr CGFloat kOriginScale = 0.1;
   gridView.translatesAutoresizingMaskIntoConstraints = NO;
   [self addChildViewController:_gridViewController];
   [self.view addSubview:gridView];
+
+  [self updateGridSafeAreaInsets];
+
   [_gridViewController didMoveToParentViewController:self];
 
   [self.view addSubview:primaryTitle];
@@ -192,12 +195,9 @@ constexpr CGFloat kOriginScale = 0.1;
                        constant:kHorizontalMargin],
     [primaryTitle.topAnchor
         constraintEqualToAnchor:_navigationBar.bottomAnchor],
-    [gridView.leadingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
-    [gridView.trailingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
-    [gridView.bottomAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor],
+    [gridView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    [gridView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+    [gridView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
     [gridView.topAnchor constraintEqualToAnchor:primaryTitle.bottomAnchor],
   ]];
 }
@@ -210,6 +210,11 @@ constexpr CGFloat kOriginScale = 0.1;
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridTabGroupCreateNewTab"));
   [self openNewTab];
+}
+
+- (void)viewSafeAreaInsetsDidChange {
+  [super viewSafeAreaInsetsDidChange];
+  [self updateGridSafeAreaInsets];
 }
 
 #pragma mark - UINavigationBarDelegate
@@ -435,6 +440,14 @@ constexpr CGFloat kOriginScale = 0.1;
 - (void)deleteGroup {
   [self.mutator deleteGroup];
   [_handler hideTabGroup];
+}
+
+// Updates the safe area inset of the grid based on this VC safe areas, except
+// the top one as the grid is below a toolbar.
+- (void)updateGridSafeAreaInsets {
+  UIEdgeInsets safeAreaInsets = self.view.safeAreaInsets;
+  safeAreaInsets.top = 0;
+  _gridViewController.contentInsets = safeAreaInsets;
 }
 
 #pragma mark - UIResponder
