@@ -566,7 +566,7 @@ suite('shimless3pDiagTest', function() {
         {path: '/fake/installable.swbn'});
     service.setInstallLastFound3pDiagnosticsApp({
       name: 'Test Diag App',
-      permissionMessage: undefined,
+      permissionMessage: null,
     });
     service.setShow3pDiagnosticsAppResult(Show3pDiagnosticsAppResult.kOk);
     await initialize();

@@ -75,9 +75,11 @@ build_webui("build") {
     "shimless_rma_util.ts",
   ]
 
-  mojo_files = [ "$root_gen_dir/mojom-webui/ash/webui/shimless_rma/mojom/shimless_rma.mojom-webui.js" ]
+  mojo_files = [
+    "$root_gen_dir/ash/webui/shimless_rma/mojom/shimless_rma.mojom-webui.ts",
+  ]
 
-  mojo_files_deps = [ "//ash/webui/shimless_rma/mojom:mojom_webui_js" ]
+  mojo_files_deps = [ "//ash/webui/shimless_rma/mojom:mojom_ts__generator" ]
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
 

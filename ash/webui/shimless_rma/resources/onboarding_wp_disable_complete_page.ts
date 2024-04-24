@@ -18,12 +18,14 @@ type DisableActionTextKeys = {
 };
 
 const disableActionTextKeys: DisableActionTextKeys = {
+  [WriteProtectDisableCompleteAction.kUnknown]: '',
   [WriteProtectDisableCompleteAction.kSkippedAssembleDevice]:
       'wpDisableReassembleNowText',
   [WriteProtectDisableCompleteAction.kCompleteAssembleDevice]:
       'wpDisableReassembleNowText',
   [WriteProtectDisableCompleteAction.kCompleteKeepDeviceOpen]:
       'wpDisableLeaveDisassembledText',
+  [WriteProtectDisableCompleteAction.kCompleteNoOp]: '',
 };
 
 /**
