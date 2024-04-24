@@ -1186,6 +1186,8 @@ source_set("ash") {
     "file_manager/filesystem_api_util.h",
     "file_manager/fusebox_daemon.cc",
     "file_manager/fusebox_daemon.h",
+    "file_manager/indexing/augmented_term_table.cc",
+    "file_manager/indexing/augmented_term_table.h",
     "file_manager/indexing/file_index.h",
     "file_manager/indexing/file_index_service.cc",
     "file_manager/indexing/file_index_service.h",

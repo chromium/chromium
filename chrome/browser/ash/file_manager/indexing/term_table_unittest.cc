@@ -56,13 +56,13 @@ TEST_F(TermTableTest, GetTermId) {
   TermTable table(db_.get());
   EXPECT_TRUE(table.Init());
 
-  EXPECT_EQ(table.GetTermId("hello", false), -1);
-  EXPECT_EQ(table.GetTermId("hello", true), 1);
-  EXPECT_EQ(table.GetTermId("hello", false), 1);
-  EXPECT_EQ(table.GetTermId("there", true), 2);
-  EXPECT_EQ(table.GetTermId("there", false), 2);
-  EXPECT_EQ(table.GetTermId("O'Neill", false), -1);
-  EXPECT_EQ(table.GetTermId("O'Neill", true), 3);
+  EXPECT_EQ(table.GetTermId("hello"), -1);
+  EXPECT_EQ(table.GetOrCreateTermId("hello"), 1);
+  EXPECT_EQ(table.GetTermId("hello"), 1);
+  EXPECT_EQ(table.GetOrCreateTermId("there"), 2);
+  EXPECT_EQ(table.GetTermId("there"), 2);
+  EXPECT_EQ(table.GetTermId("O'Neill"), -1);
+  EXPECT_EQ(table.GetOrCreateTermId("O'Neill"), 3);
 }
 
 TEST_F(TermTableTest, DeleteTerm) {
@@ -70,7 +70,7 @@ TEST_F(TermTableTest, DeleteTerm) {
   EXPECT_TRUE(table.Init());
 
   EXPECT_EQ(table.DeleteTerm("hello"), -1);
-  EXPECT_EQ(table.GetTermId("hello", true), 1);
+  EXPECT_EQ(table.GetOrCreateTermId("hello"), 1);
   EXPECT_EQ(table.DeleteTerm("hello"), 1);
 }
 

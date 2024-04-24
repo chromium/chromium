@@ -9,8 +9,10 @@
 
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
+#include "chrome/browser/ash/file_manager/indexing/augmented_term_table.h"
 #include "chrome/browser/ash/file_manager/indexing/file_info.h"
 #include "chrome/browser/ash/file_manager/indexing/file_info_table.h"
+#include "chrome/browser/ash/file_manager/indexing/term.h"
 #include "chrome/browser/ash/file_manager/indexing/term_table.h"
 #include "chrome/browser/ash/file_manager/indexing/url_table.h"
 #include "sql/database.h"
@@ -51,12 +53,28 @@ class SqlStorage {
   bool Close();
 
   // Returns the ID corresponding to the given term bytes. If the term bytes
-  // cannot be located, we return -1, unless create is set to true.
-  int64_t GetTermId(const std::string& term_bytes, bool create);
+  // cannot be located, we return -1.
+  int64_t GetTermId(const std::string& term_bytes) const;
+
+  // Returns the ID corresponding to the given term bytes. If the term bytes
+  // cannot be located, a new ID is created and returned.
+  int64_t GetOrCreateTermId(const std::string& term_bytes);
 
   // Removes the term ID. If the term was present in the database, it returns
   // the ID that was assigned to the term. Otherwise, it returns - 1.
   int64_t DeleteTerm(const std::string& term);
+
+  // Returns the ID corresponding to the given augmented term. If the augmented
+  // term cannot be located, the method returns -1.
+  int64_t GetAugmentedTermId(const Term& term) const;
+
+  // Returns the ID corresponding to the augmented term. If the augmented term
+  // cannot be located, a new ID is allocated and returned.
+  int64_t GetOrCreateAugmentedTermId(const Term& term);
+
+  // Deletes augmented term ID by it ID. If successful, this method returns the
+  // `augmented_term_id`. Otherwise, it returns -1.
+  int64_t DeleteAugmentedTerm(int64_t augmented_term_id);
 
   // Gets an ID for the given URL. Creates a new one, if this URL is seen for
   // the first time.
@@ -97,8 +115,11 @@ class SqlStorage {
   // The actual SQL Lite database.
   sql::Database db_;
 
-  // The table that holds a mapping from tags to tag IDs.
+  // The table that holds a mapping from terms to term IDs.
   TermTable term_table_;
+
+  // The table that holds a mapping from  augmented terms to their IDs.
+  AugmentedTermTable augmented_term_table_;
 
   // The table that holds a mapping from URLs to URL IDs.
   UrlTable url_table_;

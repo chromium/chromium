@@ -33,10 +33,12 @@ class TermTable : public TextTable {
   // found. Otherwise, returns the ID that the term was assigned.
   int64_t DeleteTerm(const std::string& term);
 
-  // Gets the term ID for the given term. If `create` is false, and the term
-  // does not exists, this method returns -1. Otherwise it either inserts a new
-  // term and returns its ID, or returns the existing term ID.
-  int64_t GetTermId(const std::string& term, bool create);
+  // Gets the term ID for the given term. If the term cannot be found, this
+  // method returns -1.
+  int64_t GetTermId(const std::string& term) const;
+
+  // Gets or creates the unique term ID for the given term.
+  int64_t GetOrCreateTermId(const std::string& term);
 
  protected:
   std::unique_ptr<sql::Statement> MakeGetStatement() const override;

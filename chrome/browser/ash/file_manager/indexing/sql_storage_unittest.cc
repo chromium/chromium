@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/file_manager/indexing/term.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -26,6 +27,9 @@ const base::FilePath::CharType kDatabaseName[] =
 
 class SqlStorageTest : public testing::Test {
  public:
+  SqlStorageTest()
+      : pinned_("label", u"pinned"), downloaded_("label", u"downloaded") {}
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     storage_ = std::make_unique<SqlStorage>(db_file_path(), "test_uma_tag");
@@ -42,6 +46,8 @@ class SqlStorageTest : public testing::Test {
   }
 
  protected:
+  Term pinned_;
+  Term downloaded_;
   GURL foo_url_;
   base::Time foo_modified_time_;
   base::ScopedTempDir temp_dir_;
@@ -60,9 +66,11 @@ TEST_F(SqlStorageTest, GetTermId) {
   // Must initialize before use.
   ASSERT_TRUE(storage_->Init());
 
-  EXPECT_EQ(storage_->GetTermId("foo", false), -1);
-  EXPECT_EQ(storage_->GetTermId("foo", true), 1);
-  EXPECT_EQ(storage_->GetTermId("foo", false), 1);
+  EXPECT_EQ(storage_->GetTermId("foo"), -1);
+  EXPECT_EQ(storage_->GetOrCreateTermId("foo"), 1);
+  EXPECT_EQ(storage_->GetTermId("foo"), 1);
+  // Adding the same term twice does not create a second version of "foo".
+  EXPECT_EQ(storage_->GetOrCreateTermId("foo"), 1);
 }
 
 TEST_F(SqlStorageTest, DeleteTerm) {
@@ -70,8 +78,28 @@ TEST_F(SqlStorageTest, DeleteTerm) {
   ASSERT_TRUE(storage_->Init());
 
   EXPECT_EQ(storage_->DeleteTerm("foo"), -1);
-  EXPECT_EQ(storage_->GetTermId("foo", true), 1);
+  EXPECT_EQ(storage_->GetOrCreateTermId("foo"), 1);
   EXPECT_EQ(storage_->DeleteTerm("foo"), 1);
+}
+
+TEST_F(SqlStorageTest, GetAugmentedTermId) {
+  // Must initialize before use.
+  ASSERT_TRUE(storage_->Init());
+
+  EXPECT_EQ(storage_->GetAugmentedTermId(pinned_), -1);
+  EXPECT_EQ(storage_->GetOrCreateAugmentedTermId(pinned_), 1);
+  EXPECT_EQ(storage_->GetAugmentedTermId(pinned_), 1);
+  EXPECT_EQ(storage_->GetAugmentedTermId(downloaded_), -1);
+  EXPECT_EQ(storage_->GetOrCreateAugmentedTermId(downloaded_), 2);
+}
+
+TEST_F(SqlStorageTest, DeleteAugmentedTerm) {
+  // Must initialize before use.
+  ASSERT_TRUE(storage_->Init());
+
+  EXPECT_EQ(storage_->DeleteAugmentedTerm(1), -1);
+  EXPECT_EQ(storage_->GetOrCreateAugmentedTermId(pinned_), 1);
+  EXPECT_EQ(storage_->DeleteAugmentedTerm(1), 1);
 }
 
 TEST_F(SqlStorageTest, GetOrCreateUrlId) {
