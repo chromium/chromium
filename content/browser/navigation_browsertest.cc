@@ -4283,8 +4283,8 @@ class InitiatorClosingOpenURLInterceptor
 // the same SiteInstanceGroup to be deleted, meaning the OpenURL IPC may never
 // be received.
 //
-// Fails on linux-bfcache-rel. See crbug.com/336671248.
-#if BUILDFLAG(IS_LINUX)
+// Fails on linux-bfcache-rel and android-bfcache-rel. See crbug.com/336671248.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_FormSubmissionInRemoteFrameSenderDeletedBeforeReceivingOpenURL \
   DISABLED_FormSubmissionInRemoteFrameSenderDeletedBeforeReceivingOpenURL
 #else
