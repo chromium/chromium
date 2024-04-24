@@ -1,4 +1,0 @@
-Test the Device Posture API default javascript API.
-Initial Device Posture Type: continuous
-Updated Device Posture Type: folded
-
