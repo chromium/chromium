@@ -33,6 +33,8 @@ source_set("unit_tests") {
     ":wifi_direct",
     "//ash/constants",
     "//base/test:test_support",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/patchpanel",
     "//chromeos/ash/components/dbus/shill:test_support",
     "//testing/gtest",
   ]

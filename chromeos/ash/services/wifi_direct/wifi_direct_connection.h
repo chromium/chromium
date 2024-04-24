@@ -24,6 +24,7 @@ class WifiDirectConnection : public mojom::WifiDirectConnection {
   static InstanceWithPendingRemotePair Create(
       int shill_id,
       uint32_t frequency,
+      int network_id,
       base::OnceClosure disconnect_handler);
 
   WifiDirectConnection(const WifiDirectConnection&) = delete;
@@ -34,17 +35,20 @@ class WifiDirectConnection : public mojom::WifiDirectConnection {
 
   // mojom::WifiDirectConnection
   void GetFrequency(GetFrequencyCallback callback) override;
+  void AssociateSocket(mojo::PlatformHandle socket,
+                       AssociateSocketCallback callback) override;
 
   void FlushForTesting();
 
  private:
-  WifiDirectConnection(int shill_id, uint32_t frequency);
+  WifiDirectConnection(int shill_id, uint32_t frequency, int network_id);
   mojo::PendingRemote<mojom::WifiDirectConnection> CreateRemote(
       base::OnceClosure disconnect_handler);
 
   mojo::Receiver<mojom::WifiDirectConnection> receiver_{this};
   int shill_id_;
   uint32_t frequency_;
+  int network_id_;
 };
 
 }  // namespace ash::wifi_direct

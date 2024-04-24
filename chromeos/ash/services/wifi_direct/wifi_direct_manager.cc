@@ -111,7 +111,7 @@ void WifiDirectManager::OnCreateOrConnectWifiDirectGroup(
 
   // TODO: set disconnect handler when Destroy/Disconnect group is implemented.
   auto wifi_direct_connection_pair = WifiDirectConnection::Create(
-      shill_id, metadata->frequency,
+      shill_id, metadata->frequency, metadata->network_id,
       base::BindOnce(&WifiDirectManager::OnClientRequestedDisconnection,
                      weak_ptr_factory_.GetWeakPtr(), shill_id));
   if (base::Contains(shill_id_to_wifi_direct_connection_, shill_id)) {

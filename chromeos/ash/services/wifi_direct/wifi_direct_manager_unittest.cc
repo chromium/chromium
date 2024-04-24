@@ -5,10 +5,12 @@
 #include "chromeos/ash/services/wifi_direct/wifi_direct_manager.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/sync_socket.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "chromeos/ash/components/dbus/patchpanel/fake_patchpanel_client.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_manager_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
@@ -36,6 +38,7 @@ class WifiDirectManagerTest : public testing::Test {
 
   void SetUp() override {
     shill_clients::InitializeFakes();
+    PatchPanelClient::InitializeFake();
     feature_list_.InitAndEnableFeature(features::kWifiDirect);
     WifiP2PController::Initialize();
     wifi_direct_manager_ = std::make_unique<WifiDirectManager>();
@@ -44,6 +47,7 @@ class WifiDirectManagerTest : public testing::Test {
   void TearDown() override {
     wifi_direct_manager_.reset();
     WifiP2PController::Shutdown();
+    PatchPanelClient::Shutdown();
     shill_clients::Shutdown();
   }
 
@@ -89,6 +93,18 @@ class WifiDirectManagerTest : public testing::Test {
     return frequency;
   }
 
+  bool AssociateSocket(
+      const mojo::Remote<mojom::WifiDirectConnection>& wifi_direct_connection) {
+    auto wifi_direct_connection_async_waiter =
+        mojom::WifiDirectConnectionAsyncWaiter(wifi_direct_connection.get());
+    bool success;
+    base::SyncSocket socket1, socket2;
+    base::SyncSocket::CreatePair(&socket1, &socket2);
+    wifi_direct_connection_async_waiter.AssociateSocket(
+        mojo::PlatformHandle(socket1.Take()), &success);
+    return success;
+  }
+
   void ExpectConnectionsCount(size_t expected_connections_count) {
     wifi_direct_manager_->FlushForTesting();
     EXPECT_EQ(expected_connections_count,
@@ -116,6 +132,7 @@ TEST_F(WifiDirectManagerTest, CreateWifiDirectGroupSuccess) {
       std::move(result_arguments.wifi_direct_connection));
   ExpectConnectionsCount(1);
   EXPECT_EQ(1000u, GetFrequency(wifi_direct_connection));
+  EXPECT_TRUE(AssociateSocket(wifi_direct_connection));
   // Request disconnection from client side.
   wifi_direct_connection.reset();
   ExpectConnectionsCount(0);
@@ -148,6 +165,7 @@ TEST_F(WifiDirectManagerTest, ConnectToWifiDirectGroupSuccess) {
       std::move(result_arguments.wifi_direct_connection));
   ExpectConnectionsCount(1);
   EXPECT_EQ(5200u, GetFrequency(wifi_direct_connection));
+  EXPECT_TRUE(AssociateSocket(wifi_direct_connection));
   // Request disconnection from client side.
   wifi_direct_connection.reset();
   ExpectConnectionsCount(0);
