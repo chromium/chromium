@@ -687,6 +687,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
   mojom::blink::FetchPriorityHint fetch_priority_hint_;
   network::mojom::CredentialsMode credentials_mode_;
   network::mojom::RedirectMode redirect_mode_;
+  // Exposed as Request.integrity in Service Workers
   String fetch_integrity_;
   String referrer_string_;
   network::mojom::ReferrerPolicy referrer_policy_;

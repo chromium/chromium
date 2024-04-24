@@ -174,6 +174,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
       mojom::IPAddressSpace::kUnknown;
   mojom::CredentialsMode credentials_mode = mojom::CredentialsMode::kInclude;
   mojom::RedirectMode redirect_mode = mojom::RedirectMode::kFollow;
+  // Exposed as Request.integrity in Service Workers
   std::string fetch_integrity;
   mojom::RequestDestination destination = mojom::RequestDestination::kEmpty;
   mojom::RequestDestination original_destination =

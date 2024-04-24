@@ -303,7 +303,7 @@ struct URLRequest {
   // This member must be kFollow as long as |mode| is kNoCors.
   RedirectMode redirect_mode;
 
-  // The integrity used in Fetch API.
+  // Exposed as Request.integrity in Service Workers
   string fetch_integrity;
 
   // https://fetch.spec.whatwg.org/#concept-request-destination
