@@ -72,8 +72,7 @@ void AnimationFrameTimingMonitor::WillPerformStyleAndLayoutCalculation() {
       base::TimeTicks::Now());
 }
 
-void AnimationFrameTimingMonitor::DidBeginMainFrame(
-    LocalDOMWindow& local_root_window) {
+void AnimationFrameTimingMonitor::DidBeginMainFrame() {
   // This can happen if the AnimationFrameTimingMonitor instance is created
   // in the middle of a frame.
   if (!current_frame_timing_info_) {
@@ -117,11 +116,6 @@ void AnimationFrameTimingMonitor::DidBeginMainFrame(
     client_.ReportLongAnimationFrameTiming(current_frame_timing_info_);
     RecordLongAnimationFrameUKMAndTrace(*current_frame_timing_info_);
   }
-<<<<<<< HEAD   (8338f9 Incrementing VERSION to 126.0.6437.3)
-=======
-  RecordLongAnimationFrameUKMAndTrace(*current_frame_timing_info_,
-                                      local_root_window);
->>>>>>> CHANGE (2931c6 3P Script Detector Share Between Iframes)
 
   first_ui_event_timestamp_ = base::TimeTicks();
   current_frame_timing_info_.Clear();
@@ -237,7 +231,10 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
     DOMWindowPerformance::performance(*frame->DomWindow())
         ->ReportLongAnimationFrameTiming(timing_info);
   }
-  RecordLongAnimationFrameUKMAndTrace(*timing_info, *frame->DomWindow());
+
+  if (frame->IsMainFrame()) {
+    RecordLongAnimationFrameUKMAndTrace(*timing_info);
+  }
 }
 
 namespace {
@@ -279,13 +276,7 @@ void RecordLongAnimationFrameTrace(const AnimationFrameTimingInfo& info,
 }  // namespace
 
 void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
-<<<<<<< HEAD   (8338f9 Incrementing VERSION to 126.0.6437.3)
     const AnimationFrameTimingInfo& info) {
-=======
-    const AnimationFrameTimingInfo& info,
-    LocalDOMWindow& window) {
-  // Record all animation frames to traces, but only long ones to UKM.
->>>>>>> CHANGE (2931c6 3P Script Detector Share Between Iframes)
   RecordLongAnimationFrameTrace(info, this);
   ukm::UkmRecorder* recorder = client_.MainFrameUkmRecorder();
   ukm::SourceId source_id = client_.MainFrameUkmSourceId();
@@ -317,8 +308,8 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
     total_forced_style_and_layout_duration += script->StyleDuration();
     total_forced_style_and_layout_duration += script->LayoutDuration();
     ThirdPartyScriptDetector::Technology third_party_technology =
-        ThirdPartyScriptDetector::From(window).Detect(
-            script->GetSourceLocation().url);
+        ThirdPartyScriptDetector::From(*(script->Window()))
+            .Detect(script->GetSourceLocation().url);
     switch (script->GetInvokerType()) {
       case ScriptTimingInfo::InvokerType::kClassicScript:
       case ScriptTimingInfo::InvokerType::kModuleScript:

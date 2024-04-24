@@ -1551,22 +1551,18 @@ void WebFrameWidgetImpl::OnTaskCompletedForFrame(
 }
 
 void WebFrameWidgetImpl::DidBeginMainFrame() {
-  LocalFrame* local_root_frame = LocalRootImpl()->GetFrame();
-  CHECK(local_root_frame);
+  LocalFrame* root_frame = LocalRootImpl()->GetFrame();
+  DCHECK(root_frame);
 
-  if (LocalFrameView* frame_view = local_root_frame->View()) {
+  if (LocalFrameView* frame_view = root_frame->View())
     frame_view->RunPostLifecycleSteps();
-  }
 
   if (animation_frame_timing_monitor_) {
-    CHECK(local_root_frame->DomWindow());
-    animation_frame_timing_monitor_->DidBeginMainFrame(
-        *local_root_frame->DomWindow());
+    animation_frame_timing_monitor_->DidBeginMainFrame();
   }
 
-  if (Page* page = local_root_frame->GetPage()) {
+  if (Page* page = root_frame->GetPage())
     page->Animator().PostAnimate();
-  }
 }
 
 void WebFrameWidgetImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
