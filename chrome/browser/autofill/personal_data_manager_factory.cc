@@ -31,7 +31,6 @@ namespace {
 const std::string GetCountryCodeFromVariations() {
   variations::VariationsService* variation_service =
       g_browser_process->variations_service();
-
   return variation_service
              ? base::ToUpperASCII(variation_service->GetLatestCountry())
              : std::string();
@@ -77,9 +76,10 @@ PersonalDataManagerFactory::PersonalDataManagerFactory()
 
 PersonalDataManagerFactory::~PersonalDataManagerFactory() = default;
 
-KeyedService* PersonalDataManagerFactory::BuildPersonalDataManager(
-    content::BrowserContext* context) {
-  Profile* profile = Profile::FromBrowserContext(context);
+std::unique_ptr<KeyedService>
+PersonalDataManagerFactory::BuildServiceInstanceForBrowserContext(
+    content::BrowserContext* context) const {
+ Profile* profile = Profile::FromBrowserContext(context);
   // WebDataServiceFactory redirects to the original profile.
   auto local_storage = WebDataServiceFactory::GetAutofillWebDataForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
@@ -107,18 +107,13 @@ KeyedService* PersonalDataManagerFactory::BuildPersonalDataManager(
                 *shared_storage_manager)
           : nullptr;
 
-  return new PersonalDataManager(
+  return std::make_unique<PersonalDataManager>(
       local_storage, account_storage, profile->GetPrefs(),
       g_browser_process->local_state(), identity_manager, history_service,
       sync_service, strike_database, image_fetcher,
       std::move(shared_storage_handler),
       g_browser_process->GetApplicationLocale(),
       GetCountryCodeFromVariations());
-}
-
-KeyedService* PersonalDataManagerFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
-  return BuildPersonalDataManager(context);
 }
 
 }  // namespace autofill

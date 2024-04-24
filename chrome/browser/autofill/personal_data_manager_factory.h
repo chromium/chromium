@@ -36,9 +36,6 @@ class PersonalDataManagerFactory : public ProfileKeyedServiceFactory {
 
   static PersonalDataManagerFactory* GetInstance();
 
-  static KeyedService* BuildPersonalDataManager(
-      content::BrowserContext* context);
-
  private:
   friend base::NoDestructor<PersonalDataManagerFactory>;
 
@@ -46,7 +43,7 @@ class PersonalDataManagerFactory : public ProfileKeyedServiceFactory {
   ~PersonalDataManagerFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 

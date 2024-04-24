@@ -146,16 +146,6 @@ using content::DownloadManagerDelegate;
 using testing::NiceMock;
 using testing::Return;
 
-namespace {
-
-std::unique_ptr<KeyedService> BuildPersonalDataManagerInstanceFor(
-    content::BrowserContext* context) {
-  return std::unique_ptr<KeyedService>(
-      autofill::PersonalDataManagerFactory::BuildPersonalDataManager(context));
-}
-
-}  // namespace
-
 TestingProfile::TestingFactory::TestingFactory(
     BrowserContextKeyedServiceFactory* service_factory,
     BrowserContextKeyedServiceFactory::TestingFactory testing_factory)
@@ -396,9 +386,6 @@ void TestingProfile::Init(bool is_supervised_profile) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (!AreKeyedServicesDisabledForProfileByDefault(this)) {
-    autofill::PersonalDataManagerFactory::GetInstance()->SetTestingFactory(
-        this, base::BindRepeating(&BuildPersonalDataManagerInstanceFor));
-
     ReadingListModelFactory::GetInstance()->SetTestingFactory(
         this, ReadingListModelFactory::GetDefaultFactoryForTesting());
 
