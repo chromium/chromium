@@ -11,10 +11,12 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
@@ -258,6 +260,38 @@ TEST_F(SavedTabGroupSyncBridgeTest, MergeFullSyncDataWithExistingData) {
   EXPECT_TRUE(AreTabSpecificsEqual(
       *updated_tab_1.ToSpecifics(),
       *group_from_model->GetTab(tab_1_guid)->ToSpecifics()));
+}
+
+// Verify that on sign-out, all data is locally deleted.
+TEST_F(SavedTabGroupSyncBridgeTest, DisableSyncDeletesAllLocalData) {
+  std::map<std::string, std::string> params = {
+      {"close_all_tab_groups_on_sign_out", "true"},
+  };
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(kTabGroupSyncUno, params);
+
+  EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
+
+  SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {}, 0);
+  SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
+                         group.saved_guid(), /*position=*/std::nullopt);
+  group.AddTabLocally(tab_1);
+  bridge_->MergeFullSyncData(
+      bridge_->CreateMetadataChangeList(),
+      CreateEntityChangeListFromGroup(
+          group, syncer::EntityChange::ChangeType::ACTION_ADD));
+  EXPECT_TRUE(saved_tab_group_model_.Contains(group.saved_guid()));
+  EXPECT_EQ(saved_tab_group_model_.saved_tab_groups().size(), 1u);
+
+  const SavedTabGroup* group_from_model =
+      saved_tab_group_model_.Get(group.saved_guid());
+  EXPECT_EQ(group_from_model->saved_tabs().size(), 1u);
+
+  // Disable sync. Expect all groups to be deleted locally from the model, but
+  // not from sync.
+  EXPECT_CALL(processor_, Delete(_, _, _)).Times(0);
+  bridge_->ApplyDisableSyncChanges(bridge_->CreateMetadataChangeList());
+  EXPECT_EQ(saved_tab_group_model_.saved_tab_groups().size(), 0u);
 }
 
 // Verify orphaned tabs (tabs missing their group) are added into the correct

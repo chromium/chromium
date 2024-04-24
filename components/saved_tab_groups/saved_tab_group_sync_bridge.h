@@ -54,6 +54,8 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
   std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
+  void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
+                                   delete_metadata_change_list) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;

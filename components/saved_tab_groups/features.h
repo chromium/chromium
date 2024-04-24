@@ -14,9 +14,13 @@ BASE_DECLARE_FEATURE(kTabGroupsSaveV2);
 
 BASE_DECLARE_FEATURE(kTabGroupsSaveUIUpdate);
 
+BASE_DECLARE_FEATURE(kTabGroupSyncUno);
+
 extern bool IsTabGroupsSaveV2Enabled();
 
 extern bool IsTabGroupsSaveUIUpdateEnabled();
+
+extern bool ShouldCloseAllTabGroupsOnSignOut();
 
 }  // namespace tab_groups
 

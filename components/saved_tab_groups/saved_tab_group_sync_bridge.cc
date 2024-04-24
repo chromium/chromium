@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
@@ -141,6 +142,22 @@ SavedTabGroupSyncBridge::ApplyIncrementalSyncChanges(
       base::BindOnce(&SavedTabGroupSyncBridge::OnDatabaseSave,
                      weak_ptr_factory_.GetWeakPtr()));
   return {};
+}
+
+void SavedTabGroupSyncBridge::ApplyDisableSyncChanges(
+    std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
+  if (!ShouldCloseAllTabGroupsOnSignOut()) {
+    return;
+  }
+
+  // Close all the groups locally. They should still exist in sync server.
+  std::vector<base::Uuid> group_ids;
+  for (const SavedTabGroup& group : model_->saved_tab_groups()) {
+    model_->RemovedFromSync(group.saved_guid());
+  }
+
+  // Wipe out all the local data.
+  store_->DeleteAllDataAndMetadata(base::DoNothing());
 }
 
 std::string SavedTabGroupSyncBridge::GetStorageKey(
@@ -396,6 +413,7 @@ void SavedTabGroupSyncBridge::DeleteDataFromLocalStorage(
   write_batch->DeleteData(guid.AsLowercaseString());
   // Check if the model contains the group guid. If so, remove that group and
   // all of its tabs.
+  // TODO(b/336586617): Close tabs on desktop on receiving this event.
   if (model_->Contains(guid)) {
     model_->RemovedFromSync(guid);
     return;
