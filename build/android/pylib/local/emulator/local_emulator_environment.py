@@ -43,6 +43,7 @@ class LocalEmulatorEnvironment(local_device_environment.LocalDeviceEnvironment):
 
     self._emulator_instances = []
     self._device_serials = []
+    self._emulator_start_timeout = 60
 
   #override
   def SetUp(self):
@@ -52,6 +53,10 @@ class LocalEmulatorEnvironment(local_device_environment.LocalDeviceEnvironment):
         self._avd_config.CreateInstance(output_manager=self.output_manager)
         for _ in range(self._emulator_count)
     ]
+
+    if 'car' in self._avd_config.avd_name or self._writable_system:
+      logging.info("Use longer timeout for AVD")
+      self._emulator_start_timeout = 120
 
     def start_emulator_instance(inst):
       def is_timeout_error(exc):
@@ -72,12 +77,13 @@ class LocalEmulatorEnvironment(local_device_environment.LocalDeviceEnvironment):
         except base_error.BaseError as e:
           # Timeout error usually indicates the emulator is not responding.
           # In this case, we should stop it forcely.
+          logging.info("Force stop the emulator")
           inst.Stop(force=is_timeout_error(e))
           raise
         return inst
 
       return timeout_retry.Run(impl,
-                               timeout=120 if self._writable_system else 60,
+                               timeout=self._emulator_start_timeout,
                                retries=2,
                                args=[inst],
                                retry_if_func=is_timeout_error)
