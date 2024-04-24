@@ -1710,19 +1710,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="SafeBrowsing.HPRT.WouldBeIneligibleForSessionOrLatestCountry"
-    enum="BooleanIneligible" expires_after="2024-09-19">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs whether hash-prefix real-time lookups would be ineligible due to the
-    feature being disabled for the session or the location, if the location
-    check was based on the latest country instead of the permanent country.
-    Logged when a browser URL loader throttle is created. Additionally, logged
-    when creating a SafeBrowsing URL checker on iOS.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.IOS.IsCheckCompletedOnShouldAllowResponse"
     enum="BooleanCompleted" expires_after="2024-09-01">
   <owner>ajuma@chromium.org</owner>

@@ -5643,8 +5643,6 @@ ChromeContentBrowserClient::MaybeCreateSafeBrowsingURLLoaderThrottle(
                 profile->IsOffTheRecord(), profile->GetPrefs(),
                 safe_browsing::hash_realtime_utils::GetCountryCode(
                     g_browser_process->variations_service()),
-                safe_browsing::hash_realtime_utils::GetLatestCountryCode(
-                    g_browser_process->variations_service()),
                 /*log_usage_histograms=*/true);
     safe_browsing::AsyncCheckTracker* async_check_tracker =
         GetAsyncCheckTracker(wc_getter, is_enterprise_lookup_enabled,

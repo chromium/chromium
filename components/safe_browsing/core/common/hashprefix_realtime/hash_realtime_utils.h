@@ -56,6 +56,15 @@ class GoogleChromeBrandingPretenderForTesting {
   void StopApplyingBranding();
 };
 
+struct HashRealTimeSelectionConfiguringPrefs {
+  HashRealTimeSelectionConfiguringPrefs(
+      std::vector<const char*>& profile_prefs,
+      std::vector<const char*>& local_state_prefs);
+  ~HashRealTimeSelectionConfiguringPrefs();
+  std::vector<const char*> profile_prefs;
+  std::vector<const char*> local_state_prefs;
+};
+
 // Returns whether the |url| is eligible for hash-prefix real-time checks.
 // It's never eligible if the |request_destination| is not mainframe.
 bool CanCheckUrl(const GURL& url,
@@ -77,44 +86,37 @@ bool IsHashRealTimeLookupEligibleInSession();
 
 // Based on the user's browser session and location, specifies whether
 // hash-prefix real-time lookups are eligible. Outside of tests,
-// |stored_permanent_country| should be determined with the helper function
+// |latest_country| should be determined with the helper function
 // |hash_realtime_utils::GetCountryCode|. If it's passed in as std::nullopt,
 // the location is considered eligible.
 bool IsHashRealTimeLookupEligibleInSessionAndLocation(
-    std::optional<std::string> stored_permanent_country);
-
-// Returns the stored permanent country. If |variations_service| is null,
-// returns std::nullopt. This should be used only as a helper to determine the
-// country code to pass into |IsHashRealTimeLookupEligibleInSessionAndLocation|
-// and |DetermineHashRealTimeSelection|. This is separated out into a function
-// to simplify tests.
-std::optional<std::string> GetCountryCode(
-    variations::VariationsService* variations_service);
+    std::optional<std::string> latest_country);
 
 // Returns the latest country. If |variations_service| is null, returns
-// std::nullopt. This is used for logging purposes only.
-std::optional<std::string> GetLatestCountryCode(
+// std::nullopt. This should be used only as a helper to determine the country
+// code to pass into |IsHashRealTimeLookupEligibleInSessionAndLocation| and
+// |DetermineHashRealTimeSelection|. This is separated out into a function
+// to simplify tests.
+std::optional<std::string> GetCountryCode(
     variations::VariationsService* variations_service);
 
 // Based on the user's settings and session, determines which hash-prefix
 // real-time lookup should be used, if any. If |log_usage_histograms| is true,
 // this will log metrics related to whether hash real-time lookups were
-// available or why not. Outside of tests, |stored_permanent_country| should be
+// available or why not. Outside of tests, |latest_country| should be
 // determined with the helper function |hash_realtime_utils::GetCountryCode|.
 // If it's passed in as std::nullopt, the location is considered eligible.
-// |latest_country| is used for logging purposes only. It should be determined
-// with the helper function |hash_realtime_utils::GetLatestCountryCode|.
 HashRealTimeSelection DetermineHashRealTimeSelection(
     bool is_off_the_record,
     PrefService* prefs,
-    std::optional<std::string> stored_permanent_country,
     std::optional<std::string> latest_country,
     bool log_usage_histograms = false);
 
 // A helper for consumers that want to recompute
 // |DetermineHashRealTimeSelection| when there are pref changes. This returns
 // all prefs that modify the outcome of that method.
-std::vector<const char*> GetHashRealTimeSelectionConfiguringPrefs();
+HashRealTimeSelectionConfiguringPrefs
+GetHashRealTimeSelectionConfiguringPrefs();
 
 }  // namespace safe_browsing::hash_realtime_utils
 

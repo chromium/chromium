@@ -57,8 +57,8 @@ OhttpKeyServiceFactory::BuildServiceInstanceForBrowserContext(
               profile));
   return std::make_unique<OhttpKeyService>(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
-      profile->GetPrefs(),
-      base::BindRepeating(&OhttpKeyServiceFactory::GetStoredPermanentCountry));
+      profile->GetPrefs(), g_browser_process->local_state(),
+      base::BindRepeating(&OhttpKeyServiceFactory::GetCountry));
 #endif
 }
 
@@ -79,7 +79,7 @@ OhttpKeyServiceAllowerForTesting::~OhttpKeyServiceAllowerForTesting() {
 }
 
 // static
-std::optional<std::string> OhttpKeyServiceFactory::GetStoredPermanentCountry() {
+std::optional<std::string> OhttpKeyServiceFactory::GetCountry() {
   return safe_browsing::hash_realtime_utils::GetCountryCode(
       g_browser_process->variations_service());
 }

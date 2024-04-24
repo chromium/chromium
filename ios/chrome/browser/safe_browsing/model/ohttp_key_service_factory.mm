@@ -50,7 +50,8 @@ std::unique_ptr<KeyedService> OhttpKeyServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<safe_browsing::OhttpKeyService>(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
       chrome_browser_state->GetPrefs(),
-      base::BindRepeating(&OhttpKeyServiceFactory::GetStoredPermanentCountry));
+      GetApplicationContext()->GetLocalState(),
+      base::BindRepeating(&OhttpKeyServiceFactory::GetCountry));
 }
 
 bool OhttpKeyServiceFactory::ServiceIsCreatedWithBrowserState() const {
@@ -70,7 +71,7 @@ OhttpKeyServiceAllowerForTesting::~OhttpKeyServiceAllowerForTesting() {
 }
 
 // static
-std::optional<std::string> OhttpKeyServiceFactory::GetStoredPermanentCountry() {
+std::optional<std::string> OhttpKeyServiceFactory::GetCountry() {
   return safe_browsing::hash_realtime_utils::GetCountryCode(
       GetApplicationContext()->GetVariationsService());
 }

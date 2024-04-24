@@ -132,9 +132,10 @@ class TestOhttpKeyService : public OhttpKeyService {
   TestOhttpKeyService()
       : OhttpKeyService(/*url_loader_factory=*/nullptr,
                         /*pref_service=*/nullptr,
-                        /*stored_permanent_country_getter=*/
-                        base::BindRepeating(
-                            &TestOhttpKeyService::GetStoredPermanentCountry)) {}
+                        /*local_state=*/nullptr,
+                        /*country_getter=*/
+                        base::BindRepeating(&TestOhttpKeyService::GetCountry)) {
+  }
 
   void GetOhttpKey(OhttpKeyService::Callback callback) override {
     std::move(callback).Run(ohttp_key_);
@@ -151,9 +152,7 @@ class TestOhttpKeyService : public OhttpKeyService {
     lookup_response_notified_ = true;
   }
 
-  static std::optional<std::string> GetStoredPermanentCountry() {
-    return std::nullopt;
-  }
+  static std::optional<std::string> GetCountry() { return std::nullopt; }
 
   bool lookup_response_notified() { return lookup_response_notified_; }
 

@@ -45,7 +45,7 @@ class OhttpKeyServiceFactory : public BrowserStateKeyedServiceFactory {
   bool ServiceIsCreatedWithBrowserState() const override;
   bool ServiceIsNULLWhileTesting() const override;
 
-  static std::optional<std::string> GetStoredPermanentCountry();
+  static std::optional<std::string> GetCountry();
 };
 
 // Used only for tests. By default, the OHTTP key service is null for tests,

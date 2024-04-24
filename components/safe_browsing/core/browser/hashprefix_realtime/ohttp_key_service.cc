@@ -109,15 +109,12 @@ constexpr net::NetworkTrafficAnnotationTag kOhttpKeyTrafficAnnotation =
       "default."
   )");
 
-bool IsEnabled(PrefService* pref_service,
-               std::optional<std::string> stored_permanent_country) {
+bool IsEnabled(PrefService* pref_service, std::optional<std::string> country) {
   // If this class has been created, it is already known that the session is not
   // off-the-record, so |is_off_the_record| is passed through as false.
-  // |latest_country| is passed through as null because it is not used.
   return safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
              /*is_off_the_record=*/false, pref_service,
-             /*stored_permanent_country=*/stored_permanent_country,
-             /*latest_country=*/std::nullopt) ==
+             /*latest_country=*/country) ==
          safe_browsing::hash_realtime_utils::HashRealTimeSelection::
              kHashRealTimeService;
 }
@@ -138,8 +135,8 @@ namespace safe_browsing {
 OhttpKeyService::OhttpKeyService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService* pref_service,
-    base::RepeatingCallback<std::optional<std::string>()>
-        stored_permanent_country_getter)
+    PrefService* local_state,
+    base::RepeatingCallback<std::optional<std::string>()> country_getter)
     : url_loader_factory_(url_loader_factory),
       pref_service_(pref_service),
       backoff_operator_(std::make_unique<BackoffOperator>(
@@ -148,7 +145,7 @@ OhttpKeyService::OhttpKeyService(
           kMinBackOffResetDurationInSeconds,
           /*max_backoff_reset_duration_in_seconds=*/
           kMaxBackOffResetDurationInSeconds)),
-      stored_permanent_country_getter_(stored_permanent_country_getter) {
+      country_getter_(country_getter) {
   // |pref_service_| can be null in tests.
   if (!pref_service_) {
     return;
@@ -156,21 +153,30 @@ OhttpKeyService::OhttpKeyService(
 
   PopulateKeyFromPref();
 
+  hash_realtime_utils::HashRealTimeSelectionConfiguringPrefs configuring_prefs =
+      hash_realtime_utils::GetHashRealTimeSelectionConfiguringPrefs();
+  // Set up listener for profile prefs.
   pref_change_registrar_.Init(pref_service_);
-  for (const char* pref :
-       hash_realtime_utils::GetHashRealTimeSelectionConfiguringPrefs()) {
+  for (const char* pref : configuring_prefs.profile_prefs) {
     pref_change_registrar_.Add(
         pref, base::BindRepeating(&OhttpKeyService::OnConfiguringPrefsChanged,
                                   weak_factory_.GetWeakPtr()));
   }
+  // Set up listener for local state prefs.
+  local_state_pref_change_registrar_.Init(local_state);
+  for (const char* pref : configuring_prefs.local_state_prefs) {
+    local_state_pref_change_registrar_.Add(
+        pref, base::BindRepeating(&OhttpKeyService::OnConfiguringPrefsChanged,
+                                  weak_factory_.GetWeakPtr()));
+  }
 
-  SetEnabled(IsEnabled(pref_service_, stored_permanent_country_getter_.Run()));
+  SetEnabled(IsEnabled(pref_service_, country_getter_.Run()));
 }
 
 OhttpKeyService::~OhttpKeyService() = default;
 
 void OhttpKeyService::OnConfiguringPrefsChanged() {
-  SetEnabled(IsEnabled(pref_service_, stored_permanent_country_getter_.Run()));
+  SetEnabled(IsEnabled(pref_service_, country_getter_.Run()));
 }
 
 void OhttpKeyService::SetEnabled(bool enable) {
@@ -193,8 +199,7 @@ void OhttpKeyService::SetEnabled(bool enable) {
 void OhttpKeyService::GetOhttpKey(Callback callback) {
   base::UmaHistogramBoolean(
       "SafeBrowsing.HPRT.OhttpKeyService.IsEnabledFreshnessOnKeyFetch",
-      enabled_ ==
-          IsEnabled(pref_service_, stored_permanent_country_getter_.Run()));
+      enabled_ == IsEnabled(pref_service_, country_getter_.Run()));
   if (!enabled_) {
     std::move(callback).Run(std::nullopt);
     return;
@@ -400,6 +405,7 @@ void OhttpKeyService::Shutdown() {
   url_loader_.reset();
   pending_callbacks_.Notify(std::nullopt);
   pref_change_registrar_.RemoveAll();
+  local_state_pref_change_registrar_.RemoveAll();
   async_fetch_timer_.Stop();
 }
 
