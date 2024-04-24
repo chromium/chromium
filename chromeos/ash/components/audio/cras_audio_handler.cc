@@ -2239,20 +2239,71 @@ void CrasAudioHandler::UpdateDevicesAndSwitchActive(
   has_alternative_input_ = false;
   has_alternative_output_ = false;
 
+  // Local variables to help determine if there are more than one audio devices
+  // currently connected. Note that kInternalMic, kFrontMic and kRearMic are
+  // considered one audio device since they are all displayed as internal mic in
+  // UI and user can not switch between them.
+  bool has_internal_input_device = false;
+  bool has_external_input_device = false;
+  bool has_internal_output_device = false;
+  bool has_external_output_device = false;
+
   for (AudioDevice device : devices) {
     audio_devices_[device.id] = device;
-    if (!has_alternative_input_ && device.is_input &&
-        device.IsExternalDevice()) {
-      has_alternative_input_ = true;
-    } else if (!has_alternative_output_ && !device.is_input &&
-               device.IsExternalDevice()) {
-      has_alternative_output_ = true;
-    }
 
     if (device.is_input) {
       input_devices.push_back(device);
+
+      // If has_alternative_input_ has already been determined as true, no need
+      // to calculate it again.
+      if (has_alternative_input_) {
+        continue;
+      }
+
+      bool has_two_external_input_devices =
+          has_external_input_device && device.IsExternalDevice();
+      bool has_one_internal_and_one_external_input_device =
+          has_internal_input_device && device.IsExternalDevice();
+      bool has_one_external_and_one_internal_input_device =
+          has_external_input_device && device.IsInternalMic();
+      if (has_two_external_input_devices ||
+          has_one_internal_and_one_external_input_device ||
+          has_one_external_and_one_internal_input_device) {
+        has_alternative_input_ = true;
+      }
+
+      if (device.IsInternalMic()) {
+        has_internal_input_device = true;
+      } else if (device.IsExternalDevice()) {
+        has_external_input_device = true;
+      }
+
     } else {
       output_devices.push_back(device);
+
+      // If has_alternative_output_ has already been determined as true, no need
+      // to calculate it again.
+      if (has_alternative_output_) {
+        continue;
+      }
+
+      bool has_two_external_output_devices =
+          has_external_output_device && device.IsExternalDevice();
+      bool has_one_internal_and_one_external_output_device =
+          has_internal_output_device && device.IsExternalDevice();
+      bool has_one_external_and_one_internal_output_device =
+          has_external_output_device && device.IsInternalSpeaker();
+      if (has_two_external_output_devices ||
+          has_one_internal_and_one_external_output_device ||
+          has_one_external_and_one_internal_output_device) {
+        has_alternative_output_ = true;
+      }
+
+      if (device.IsInternalSpeaker()) {
+        has_internal_output_device = true;
+      } else if (device.IsExternalDevice()) {
+        has_external_output_device = true;
+      }
     }
   }
 

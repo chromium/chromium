@@ -3395,7 +3395,7 @@ TEST_P(CrasAudioHandlerTest, PersistActiveSpeakerAcrossReboot) {
   EXPECT_EQ(audio_nodes.size(), audio_devices.size());
   ExpectActiveDevice(/*is_input=*/false,
                      /*expected_active_device=*/kUSBHeadphone1,
-                     /*has_alternative_device=*/true);
+                     /*has_alternative_device=*/false);
 
   // Simulate another NodesChanged signal coming later with all ndoes.
   audio_nodes.push_back(GenerateAudioNode(kInternalSpeaker));
@@ -6642,6 +6642,100 @@ TEST_P(CrasAudioHandlerTest, AudioSurveyOutputProc) {
   EXPECT_EQ(test_observer_->survey_triggerd_recv().type(),
             CrasAudioHandler::SurveyType::kOutputProc);
   EXPECT_EQ(test_observer_->survey_triggerd_recv().data().size(), 0u);
+}
+
+// Tests that two internal input devices don't set alternative_device to be
+// true.
+TEST_P(CrasAudioHandlerTest,
+       AlternativeInputDeviceWithTwoInternalInputDevices) {
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kInternalMic, kFrontMic},
+      /*expected_active_input_node=*/kInternalMic,
+      /*expected_active_output_node=*/nullptr,
+      /*expected_has_alternative_input=*/false,
+      /*expected_has_alternative_output=*/std::nullopt);
+}
+
+// Tests that three internal input devices don't set alternative_device to be
+// true.
+TEST_P(CrasAudioHandlerTest,
+       AlternativeInputDeviceWithThreeInternalInputDevices) {
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kInternalMic, kFrontMic, kRearMic},
+      /*expected_active_input_node=*/kInternalMic,
+      /*expected_active_output_node=*/nullptr,
+      /*expected_has_alternative_input=*/false,
+      /*expected_has_alternative_output=*/std::nullopt);
+}
+
+// Tests that one external input devices doesn't set alternative_device to be
+// true.
+TEST_P(CrasAudioHandlerTest, AlternativeInputDeviceWithOneExternalInputDevice) {
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kUSBMic1},
+      /*expected_active_input_node=*/kUSBMic1,
+      /*expected_active_output_node=*/nullptr,
+      /*expected_has_alternative_input=*/false,
+      /*expected_has_alternative_output=*/std::nullopt);
+}
+
+// Tests that two external input devices set alternative_device to be
+// true.
+TEST_P(CrasAudioHandlerTest,
+       AlternativeInputDeviceWithTwoExternalInputDevices) {
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kUSBMic1, kUSBMic2},
+      /*expected_active_input_node=*/kUSBMic1,
+      /*expected_active_output_node=*/nullptr,
+      /*expected_has_alternative_input=*/true,
+      /*expected_has_alternative_output=*/std::nullopt);
+}
+
+// Tests that one external output devices doesn't set alternative_device to be
+// true.
+TEST_P(CrasAudioHandlerTest,
+       AlternativeInputDeviceWithOneExternalOutputDevice) {
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kUSBHeadphone1},
+      /*expected_active_input_node=*/nullptr,
+      /*expected_active_output_node=*/kUSBHeadphone1,
+      /*expected_has_alternative_input=*/std::nullopt,
+      /*expected_has_alternative_output=*/false);
+}
+
+// Tests that two external output devices set alternative_device to be true.
+TEST_P(CrasAudioHandlerTest,
+       AlternativeInputDeviceWithTwoExternalOutputDevices) {
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kUSBHeadphone1, kHDMIOutput},
+      /*expected_active_input_node=*/nullptr,
+      /*expected_active_output_node=*/kUSBHeadphone1,
+      /*expected_has_alternative_input=*/std::nullopt,
+      /*expected_has_alternative_output=*/true);
+}
+
+// Tests that one internal and one external output devices set
+// alternative_device to be true.
+TEST_P(CrasAudioHandlerTest,
+       AlternativeInputDeviceWithOneInternalAndOneExternalOutputDevice) {
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kInternalSpeaker, kHDMIOutput},
+      /*expected_active_input_node=*/nullptr,
+      /*expected_active_output_node=*/kHDMIOutput,
+      /*expected_has_alternative_input=*/std::nullopt,
+      /*expected_has_alternative_output=*/true);
+}
+
+// Tests that one internal and one external input devices set alternative_device
+// to be true.
+TEST_P(CrasAudioHandlerTest,
+       AlternativeInputDeviceWithOneInternalAndOneExternalInputDevice) {
+  SetupAudioNodesAndExpectActiveNodes(
+      /*initial_nodes=*/{kUSBMic1, kInternalMic},
+      /*expected_active_input_node=*/kUSBMic1,
+      /*expected_active_output_node=*/nullptr,
+      /*expected_has_alternative_input=*/true,
+      /*expected_has_alternative_output=*/std::nullopt);
 }
 
 }  // namespace ash

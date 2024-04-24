@@ -94,6 +94,8 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevice {
 
   bool IsInternalMic() const;
 
+  bool IsInternalSpeaker() const;
+
   bool is_input = false;
 
   // Id of this audio device. The legacy |id| is assigned to be unique everytime

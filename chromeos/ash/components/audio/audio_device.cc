@@ -203,11 +203,7 @@ bool AudioDevice::IsExternalDevice() const {
     return false;
   }
 
-  if (is_input) {
-    return !IsInternalMic();
-  } else {
-    return (type != AudioDeviceType::kInternalSpeaker);
-  }
+  return is_input ? !IsInternalMic() : !IsInternalSpeaker();
 }
 
 bool AudioDevice::IsInternalMic() const {
@@ -219,6 +215,10 @@ bool AudioDevice::IsInternalMic() const {
     default:
       return false;
   }
+}
+
+bool AudioDevice::IsInternalSpeaker() const {
+  return type == AudioDeviceType::kInternalSpeaker;
 }
 
 bool LessBuiltInPriority(const AudioDevice& a, const AudioDevice& b) {
