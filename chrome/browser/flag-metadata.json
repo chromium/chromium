@@ -7605,7 +7605,7 @@
   {
     "name": "show-metered-toggle",
     "owners": [ "stevenjb@chromium.org", "azeemarshad@chromium.org", "cros-connectivity@google.com" ],
-    "expiry_milestone": 122
+    "expiry_milestone": 127
   },
   {
     "name": "show-overdraw-feedback",
