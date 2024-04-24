@@ -1264,48 +1264,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="WebApp.Preinstalled.WindowExperiment.{UserGroup}.{DisplayModeChange}"
-    enum="DefaultAppName" expires_after="2024-05-05">
-  <owner>glenrob@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Records that a preinstalled app's display mode is changed by the user.
-    Recorded when the display mode changes for a user in the experiment group,
-    which is new ChromeOS users.
-  </summary>
-  <token key="UserGroup">
-    <variant name="Control" summary="Control user group."/>
-    <variant name="Tab" summary="Tab user group."/>
-    <variant name="Window" summary="Window user group."/>
-  </token>
-  <token key="DisplayModeChange">
-    <variant name="ChangedToTab" summary="Changed to open in tab."/>
-    <variant name="ChangedToWindow" summary="Changed to open in window."/>
-  </token>
-</histogram>
-
-<histogram
-    name="WebApp.Preinstalled.WindowExperiment.{UserGroup}.{LinkCapturingChange}"
-    enum="DefaultAppName" expires_after="2024-10-20">
-  <owner>glenrob@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Records that a preinstalled app's link capturing setting is changed by the
-    user. Recorded when the link capturing mode changes for a user in the
-    experiment group, which is new ChromeOS users.
-  </summary>
-  <token key="UserGroup">
-    <variant name="Control" summary="Control user group."/>
-    <variant name="Tab" summary="Tab user group."/>
-    <variant name="Window" summary="Window user group."/>
-  </token>
-  <token key="LinkCapturingChange">
-    <variant name="LinkCapturingDisabled" summary="Link capturing disabled."/>
-    <variant name="LinkCapturingEnabled" summary="Link capturing enabled."/>
-  </token>
-</histogram>
-
 <histogram name="WebApp.ProtocolHandlers.Registration.Result"
     enum="BooleanSuccess" expires_after="2025-09-10">
   <owner>dibyapal@chromium.org</owner>
