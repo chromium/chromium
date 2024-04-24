@@ -4262,8 +4262,8 @@
     "gtest_tests": [
       {
         "args": [
-          "--lacros-chrome-path=lacros_clang_x64/test_lacros_chrome",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-chromeos.branded.browser_tests.require_lacros.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-chromeos.browser_tests.require_lacros.filter",
+          "--lacros-chrome-path=lacros_clang_x64/test_lacros_chrome"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
