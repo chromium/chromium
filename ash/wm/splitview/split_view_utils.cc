@@ -80,14 +80,15 @@ constexpr char kWindowLayoutCompleteOnSessionExitRootWord[] =
 
 constexpr char kExitPointRootWord[] = "ExitPoint";
 
-// Gets the duration, tween type and delay before animation based on |type|.
-void GetAnimationValuesForType(
-    SplitviewAnimationType type,
-    base::TimeDelta* out_duration,
-    gfx::Tween::Type* out_tween_type,
-    ui::LayerAnimator::PreemptionStrategy* out_preemption_strategy,
-    base::TimeDelta* out_delay) {
-  *out_preemption_strategy = ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET;
+struct AnimationValues {
+  base::TimeDelta duration;
+  gfx::Tween::Type tween_type;
+  ui::LayerAnimator::PreemptionStrategy preemption_strategy =
+      ui::LayerAnimator::IMMEDIATELY_SET_NEW_TARGET;
+  base::TimeDelta delay;
+};
+
+AnimationValues GetAnimationValuesForType(SplitviewAnimationType type) {
   switch (type) {
     case SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_IN:
     case SPLITVIEW_ANIMATION_HIGHLIGHT_FADE_IN_CANNOT_SNAP:
@@ -101,65 +102,58 @@ void GetAnimationValuesForType(
     case SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_OUT:
     case SPLITVIEW_ANIMATION_PREVIEW_AREA_TEXT_SLIDE_IN:
     case SPLITVIEW_ANIMATION_PREVIEW_AREA_TEXT_SLIDE_OUT:
-      *out_duration = kHighlightsFadeInOut;
-      *out_tween_type = gfx::Tween::FAST_OUT_SLOW_IN;
-      return;
+      return {.duration = kHighlightsFadeInOut,
+              .tween_type = gfx::Tween::FAST_OUT_SLOW_IN};
     case SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_FADE_IN:
     case SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_FADE_IN_CANNOT_SNAP:
     case SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_SLIDE_IN:
     case SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_TEXT_SLIDE_IN:
-      *out_delay = kOtherFadeInDelay;
-      *out_duration = kOtherFadeInOut;
-      *out_tween_type = gfx::Tween::LINEAR_OUT_SLOW_IN;
-      *out_preemption_strategy = ui::LayerAnimator::ENQUEUE_NEW_ANIMATION;
-      return;
+      return {.duration = kOtherFadeInOut,
+              .tween_type = gfx::Tween::LINEAR_OUT_SLOW_IN,
+              .preemption_strategy = ui::LayerAnimator::ENQUEUE_NEW_ANIMATION,
+              .delay = kOtherFadeInDelay};
     case SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_FADE_OUT:
     case SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_SLIDE_OUT:
     case SPLITVIEW_ANIMATION_OTHER_HIGHLIGHT_TEXT_SLIDE_OUT:
-      *out_duration = kOtherFadeInOut;
-      *out_tween_type = gfx::Tween::FAST_OUT_LINEAR_IN;
-      return;
+      return {.duration = kOtherFadeInOut,
+              .tween_type = gfx::Tween::FAST_OUT_LINEAR_IN};
     case SPLITVIEW_ANIMATION_PREVIEW_AREA_FADE_OUT:
     case SPLITVIEW_ANIMATION_PREVIEW_AREA_NIX_INSET:
-      *out_duration = kPreviewAreaFadeOut;
-      *out_tween_type = gfx::Tween::FAST_OUT_LINEAR_IN;
-      return;
+      return {.duration = kPreviewAreaFadeOut,
+              .tween_type = gfx::Tween::FAST_OUT_LINEAR_IN};
     case SPLITVIEW_ANIMATION_TEXT_FADE_IN:
-      *out_delay = kLabelAnimationDelay;
-      *out_duration = kLabelAnimation;
-      *out_tween_type = gfx::Tween::LINEAR_OUT_SLOW_IN;
-      *out_preemption_strategy = ui::LayerAnimator::ENQUEUE_NEW_ANIMATION;
-      return;
+      return {.duration = kLabelAnimation,
+              .tween_type = gfx::Tween::LINEAR_OUT_SLOW_IN,
+              .preemption_strategy = ui::LayerAnimator::ENQUEUE_NEW_ANIMATION,
+              .delay = kLabelAnimationDelay};
     case SPLITVIEW_ANIMATION_TEXT_FADE_OUT:
-      *out_duration = kLabelAnimation;
-      *out_tween_type = gfx::Tween::FAST_OUT_LINEAR_IN;
-      return;
+      return {.duration = kLabelAnimation,
+              .tween_type = gfx::Tween::FAST_OUT_LINEAR_IN};
     case SPLITVIEW_ANIMATION_SET_WINDOW_TRANSFORM:
-      *out_duration = kSplitviewWindowTransformDuration;
-      *out_tween_type = gfx::Tween::FAST_OUT_SLOW_IN;
-      *out_preemption_strategy =
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET;
-      return;
+      return {.duration = kSplitviewWindowTransformDuration,
+              .tween_type = gfx::Tween::FAST_OUT_SLOW_IN,
+              .preemption_strategy =
+                  ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET};
   }
 
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
-// Helper function to apply animation values to |settings|.
 void ApplyAnimationSettings(
-    ui::ScopedLayerAnimationSettings* settings,
     ui::LayerAnimator* animator,
     ui::LayerAnimationElement::AnimatableProperties animated_property,
     base::TimeDelta duration,
     gfx::Tween::Type tween,
     ui::LayerAnimator::PreemptionStrategy preemption_strategy,
-    base::TimeDelta delay) {
-  DCHECK_EQ(settings->GetAnimator(), animator);
-  settings->SetTransitionDuration(duration);
-  settings->SetTweenType(tween);
-  settings->SetPreemptionStrategy(preemption_strategy);
-  if (!delay.is_zero())
+    base::TimeDelta delay,
+    ui::ScopedLayerAnimationSettings& out_settings) {
+  CHECK_EQ(out_settings.GetAnimator(), animator);
+  out_settings.SetTransitionDuration(duration);
+  out_settings.SetTweenType(tween);
+  out_settings.SetPreemptionStrategy(preemption_strategy);
+  if (!delay.is_zero()) {
     animator->SchedulePauseForProperties(delay, animated_property);
+  }
 }
 
 // Returns BubbleDialogDelegateView if |transient_window| is a bubble dialog.
@@ -311,18 +305,12 @@ void DoSplitviewOpacityAnimation(ui::Layer* layer,
   if (layer->GetTargetOpacity() == target_opacity)
     return;
 
-  base::TimeDelta duration;
-  gfx::Tween::Type tween;
-  ui::LayerAnimator::PreemptionStrategy preemption_strategy;
-  base::TimeDelta delay;
-  GetAnimationValuesForType(type, &duration, &tween, &preemption_strategy,
-                            &delay);
-
+  const AnimationValues values = GetAnimationValuesForType(type);
   ui::LayerAnimator* animator = layer->GetAnimator();
   ui::ScopedLayerAnimationSettings settings(animator);
-  ApplyAnimationSettings(&settings, animator,
-                         ui::LayerAnimationElement::OPACITY, duration, tween,
-                         preemption_strategy, delay);
+  ApplyAnimationSettings(animator, ui::LayerAnimationElement::OPACITY,
+                         values.duration, values.tween_type,
+                         values.preemption_strategy, values.delay, settings);
   layer->SetOpacity(target_opacity);
 }
 
@@ -347,20 +335,16 @@ void DoSplitviewTransformAnimation(
       return;
   }
 
-  base::TimeDelta duration;
-  gfx::Tween::Type tween;
-  ui::LayerAnimator::PreemptionStrategy preemption_strategy;
-  base::TimeDelta delay;
-  GetAnimationValuesForType(type, &duration, &tween, &preemption_strategy,
-                            &delay);
-
+  const AnimationValues values = GetAnimationValuesForType(type);
   ui::LayerAnimator* animator = layer->GetAnimator();
   ui::ScopedLayerAnimationSettings settings(animator);
-  for (ui::ImplicitAnimationObserver* animation_observer : animation_observers)
+  for (ui::ImplicitAnimationObserver* animation_observer :
+       animation_observers) {
     settings.AddObserver(animation_observer);
-  ApplyAnimationSettings(&settings, animator,
-                         ui::LayerAnimationElement::TRANSFORM, duration, tween,
-                         preemption_strategy, delay);
+  }
+  ApplyAnimationSettings(animator, ui::LayerAnimationElement::TRANSFORM,
+                         values.duration, values.tween_type,
+                         values.preemption_strategy, values.delay, settings);
   layer->SetTransform(target_transform);
 }
 
@@ -385,18 +369,14 @@ void DoSplitviewClipRectAnimation(
       return;
   }
 
-  base::TimeDelta duration;
-  gfx::Tween::Type tween;
-  ui::LayerAnimator::PreemptionStrategy preemption_strategy;
-  base::TimeDelta delay;
-  GetAnimationValuesForType(type, &duration, &tween, &preemption_strategy,
-                            &delay);
-
+  const AnimationValues values = GetAnimationValuesForType(type);
   ui::ScopedLayerAnimationSettings settings(animator);
-  if (animation_observer.get())
+  if (animation_observer.get()) {
     settings.AddObserver(animation_observer.release());
-  ApplyAnimationSettings(&settings, animator, ui::LayerAnimationElement::CLIP,
-                         duration, tween, preemption_strategy, delay);
+  }
+  ApplyAnimationSettings(animator, ui::LayerAnimationElement::CLIP,
+                         values.duration, values.tween_type,
+                         values.preemption_strategy, values.delay, settings);
   layer->SetClipRect(target_clip_rect);
 }
 
