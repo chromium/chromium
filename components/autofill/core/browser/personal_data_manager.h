@@ -181,9 +181,6 @@ class PersonalDataManager : public KeyedService,
   bool IsPaymentsDownloadActive() const;
   void AddProfile(const AutofillProfile& profile);
   void UpdateProfile(const AutofillProfile& profile);
-  AutofillProfile* GetProfileByGUID(const std::string& guid) const;
-  bool IsCountryEligibleForAccountStorage(std::string_view country_code) const;
-  void MigrateProfileToAccount(const AutofillProfile& profile);
   std::string AddAsLocalIban(Iban iban);
   void AddCreditCard(const CreditCard& credit_card);
   void UpdateCreditCard(const CreditCard& credit_card);
@@ -197,9 +194,6 @@ class PersonalDataManager : public KeyedService,
   void AddCreditCardBenefitForTest(CreditCardBenefit benefit);
   std::vector<AutofillProfile*> GetProfiles(
       ProfileOrder order = ProfileOrder::kNone) const;
-  std::vector<AutofillProfile*> GetProfilesFromSource(
-      AutofillProfile::Source profile_source,
-      ProfileOrder order = ProfileOrder::kNone) const;
   std::vector<CreditCard*> GetLocalCreditCards() const;
   std::vector<CreditCard*> GetServerCreditCards() const;
   std::vector<CreditCard*> GetCreditCards() const;
@@ -210,8 +204,6 @@ class PersonalDataManager : public KeyedService,
   GetActiveAutofillPromoCodeOffersForOrigin(GURL origin) const;
   GURL GetCardArtURL(const CreditCard& credit_card) const;
   gfx::Image* GetCreditCardArtImageForUrl(const GURL& card_art_url) const;
-  std::vector<AutofillProfile*> GetProfilesToSuggest() const;
-  std::vector<AutofillProfile*> GetProfilesForSettings() const;
   std::vector<CreditCard*> GetCreditCardsToSuggest() const;
   std::vector<VirtualCardUsageData*> GetVirtualCardUsageData() const;
   bool HasPendingPaymentQueriesForTesting() const;

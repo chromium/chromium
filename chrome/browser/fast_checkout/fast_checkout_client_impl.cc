@@ -469,8 +469,9 @@ void FastCheckoutClientImpl::FillCreditCardForm(
 autofill::AutofillProfile*
 FastCheckoutClientImpl::GetSelectedAutofillProfile() {
   autofill::AutofillProfile* autofill_profile =
-      personal_data_helper_->GetPersonalDataManager()->GetProfileByGUID(
-          selected_autofill_profile_guid_.value());
+      personal_data_helper_->GetPersonalDataManager()
+          ->address_data_manager()
+          .GetProfileByGUID(selected_autofill_profile_guid_.value());
   if (!autofill_profile) {
     OnRunComplete(FastCheckoutRunOutcome::kAutofillProfileDeleted);
   }

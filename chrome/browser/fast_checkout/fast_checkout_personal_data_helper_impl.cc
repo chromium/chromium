@@ -28,7 +28,9 @@ FastCheckoutPersonalDataHelperImpl::GetPersonalDataManager() const {
 
 std::vector<autofill::AutofillProfile*>
 FastCheckoutPersonalDataHelperImpl::GetProfilesToSuggest() const {
-  return GetPersonalDataManager()->GetProfilesToSuggest();
+  return GetPersonalDataManager()
+      ->address_data_manager()
+      .GetProfilesToSuggest();
 }
 
 std::vector<autofill::CreditCard*>
@@ -73,7 +75,7 @@ FastCheckoutPersonalDataHelperImpl::GetValidAddressProfiles() const {
   autofill::PersonalDataManager* pdm = GetPersonalDataManager();
   // Trigger only if there is at least 1 complete address profile on file.
   std::vector<autofill::AutofillProfile*> profiles =
-      pdm->GetProfilesToSuggest();
+      pdm->address_data_manager().GetProfilesToSuggest();
 
   std::erase_if(profiles,
                 [&pdm, this](const autofill::AutofillProfile* profile) {

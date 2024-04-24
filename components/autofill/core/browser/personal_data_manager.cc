@@ -155,22 +155,6 @@ void PersonalDataManager::UpdateProfile(const AutofillProfile& profile) {
   address_data_manager_->UpdateProfile(profile);
 }
 
-AutofillProfile* PersonalDataManager::GetProfileByGUID(
-    const std::string& guid) const {
-  return address_data_manager_->GetProfileByGUID(guid);
-}
-
-bool PersonalDataManager::IsCountryEligibleForAccountStorage(
-    std::string_view country_code) const {
-  return address_data_manager_->IsCountryEligibleForAccountStorage(
-      country_code);
-}
-
-void PersonalDataManager::MigrateProfileToAccount(
-    const AutofillProfile& profile) {
-  address_data_manager_->MigrateProfileToAccount(profile);
-}
-
 std::string PersonalDataManager::AddAsLocalIban(Iban iban) {
   return payments_data_manager_->AddAsLocalIban(std::move(iban));
 }
@@ -244,12 +228,6 @@ std::vector<AutofillProfile*> PersonalDataManager::GetProfiles(
   return address_data_manager_->GetProfiles(order);
 }
 
-std::vector<AutofillProfile*> PersonalDataManager::GetProfilesFromSource(
-    AutofillProfile::Source profile_source,
-    ProfileOrder order) const {
-  return address_data_manager_->GetProfilesFromSource(profile_source, order);
-}
-
 std::vector<CreditCard*> PersonalDataManager::GetLocalCreditCards() const {
   return payments_data_manager_->GetLocalCreditCards();
 }
@@ -307,16 +285,6 @@ void PersonalDataManager::SetSyncingForTest(bool is_syncing_for_test) {
 void PersonalDataManager::Refresh() {
   address_data_manager_->LoadProfiles();
   payments_data_manager_->Refresh();
-}
-
-std::vector<AutofillProfile*> PersonalDataManager::GetProfilesToSuggest()
-    const {
-  return address_data_manager_->GetProfilesToSuggest();
-}
-
-std::vector<AutofillProfile*> PersonalDataManager::GetProfilesForSettings()
-    const {
-  return address_data_manager_->GetProfilesForSettings();
 }
 
 std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest() const {

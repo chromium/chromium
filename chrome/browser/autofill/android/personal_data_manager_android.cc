@@ -205,8 +205,9 @@ PersonalDataManagerAndroid::GetProfileGUIDsToSuggest(JNIEnv* env) {
 ScopedJavaLocalRef<jobject> PersonalDataManagerAndroid::GetProfileByGUID(
     JNIEnv* env,
     const JavaParamRef<jstring>& jguid) {
-  AutofillProfile* profile = personal_data_manager_->GetProfileByGUID(
-      ConvertJavaStringToUTF8(env, jguid));
+  AutofillProfile* profile =
+      personal_data_manager_->address_data_manager().GetProfileByGUID(
+          ConvertJavaStringToUTF8(env, jguid));
   if (!profile)
     return ScopedJavaLocalRef<jobject>();
 
@@ -243,7 +244,8 @@ ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfile(
   std::string guid = ConvertJavaStringToUTF8(env, jguid);
 
   AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
-      jprofile, personal_data_manager_->GetProfileByGUID(guid),
+      jprofile,
+      personal_data_manager_->address_data_manager().GetProfileByGUID(guid),
       g_browser_process->GetApplicationLocale());
 
   if (guid.empty()) {
@@ -260,7 +262,7 @@ ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::SetProfileToLocal(
     const JavaParamRef<jobject>& jprofile,
     const JavaParamRef<jstring>& jguid) {
   const AutofillProfile* target_profile =
-      personal_data_manager_->GetProfileByGUID(
+      personal_data_manager_->address_data_manager().GetProfileByGUID(
           ConvertJavaStringToUTF8(env, jguid));
   AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
       jprofile, target_profile, g_browser_process->GetApplicationLocale());
@@ -316,7 +318,7 @@ PersonalDataManagerAndroid::GetShippingAddressLabelForPaymentRequest(
 
   AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
       jprofile,
-      personal_data_manager_->GetProfileByGUID(
+      personal_data_manager_->address_data_manager().GetProfileByGUID(
           ConvertJavaStringToUTF8(env, jguid)),
       g_browser_process->GetApplicationLocale());
 
@@ -431,8 +433,9 @@ void PersonalDataManagerAndroid::OnPersonalDataChanged() {
 void PersonalDataManagerAndroid::RecordAndLogProfileUse(
     JNIEnv* env,
     const JavaParamRef<jstring>& jguid) {
-  AutofillProfile* profile = personal_data_manager_->GetProfileByGUID(
-      ConvertJavaStringToUTF8(env, jguid));
+  AutofillProfile* profile =
+      personal_data_manager_->address_data_manager().GetProfileByGUID(
+          ConvertJavaStringToUTF8(env, jguid));
   if (profile) {
     personal_data_manager_->address_data_manager().RecordUseOf(*profile);
   }
@@ -445,8 +448,9 @@ void PersonalDataManagerAndroid::SetProfileUseStatsForTesting(
     jint days_since_last_used) {
   DCHECK(count >= 0 && days_since_last_used >= 0);
 
-  AutofillProfile* profile = personal_data_manager_->GetProfileByGUID(
-      ConvertJavaStringToUTF8(env, jguid));
+  AutofillProfile* profile =
+      personal_data_manager_->address_data_manager().GetProfileByGUID(
+          ConvertJavaStringToUTF8(env, jguid));
   profile->set_use_count(static_cast<size_t>(count));
   profile->set_use_date(AutofillClock::Now() -
                         base::Days(days_since_last_used));
@@ -457,16 +461,18 @@ void PersonalDataManagerAndroid::SetProfileUseStatsForTesting(
 jint PersonalDataManagerAndroid::GetProfileUseCountForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& jguid) {
-  AutofillProfile* profile = personal_data_manager_->GetProfileByGUID(
-      ConvertJavaStringToUTF8(env, jguid));
+  AutofillProfile* profile =
+      personal_data_manager_->address_data_manager().GetProfileByGUID(
+          ConvertJavaStringToUTF8(env, jguid));
   return profile->use_count();
 }
 
 jlong PersonalDataManagerAndroid::GetProfileUseDateForTesting(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& jguid) {
-  AutofillProfile* profile = personal_data_manager_->GetProfileByGUID(
-      ConvertJavaStringToUTF8(env, jguid));
+  AutofillProfile* profile =
+      personal_data_manager_->address_data_manager().GetProfileByGUID(
+          ConvertJavaStringToUTF8(env, jguid));
   return profile->use_date().ToTimeT();
 }
 

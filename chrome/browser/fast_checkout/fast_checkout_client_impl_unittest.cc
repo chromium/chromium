@@ -370,7 +370,7 @@ class FastCheckoutClientImplTest : public ChromeRenderViewHostTestHarness {
         std::move(autofill_profile_unique_ptr),
         std::move(credit_card_unique_ptr));
     return {
-        personal_data_manager()->GetProfileByGUID(
+        personal_data_manager()->address_data_manager().GetProfileByGUID(
             fast_checkout_client()->selected_autofill_profile_guid_.value()),
         (local_card
              ? personal_data_manager()->GetCreditCardByGUID(
