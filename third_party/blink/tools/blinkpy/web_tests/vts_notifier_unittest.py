@@ -74,7 +74,7 @@ class VTSNotifierTest(unittest.TestCase):
             [],
         ]
 
-        self.notifier.run()
+        self.notifier.run(argv=[])
         self.notifier.buganizer_client.GetIssueList.assert_has_calls([
             mock.call('title:"[VT Expire Notice] Virtual test suite '
                       'fake-vts-1 expired on Jan 01, 2000, action required"'),

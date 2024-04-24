@@ -5,6 +5,7 @@
 web_tests/VirtualTestSuites
 """
 
+import argparse
 import datetime
 import logging
 from typing import Optional
@@ -41,9 +42,14 @@ class VTSNotifier:
         self.host = host
         self.port: Port = host.port_factory.get()
         self.buganizer_client = buganizer_client or BuganizerClient()
+        self._dry_run = False
 
-    def run(self):
-        configure_logging(logging_level=logging.DEBUG, include_time=True)
+    def run(self, argv=None):
+        options = self.parse_args(argv)
+        configure_logging(
+            logging_level=logging.DEBUG if options.verbose else logging.INFO,
+            include_time=True)
+        self._dry_run = options.dry_run
         virtual_test_suites = self.port.virtual_test_suites()
         _log.info(
             f'Processing {len(virtual_test_suites)} virtual test suites.')
@@ -55,17 +61,33 @@ class VTSNotifier:
             bug = self.create_draft_bug(expired_virtual_test_suite)
             self.process_draft_bug(bug)
 
+    def parse_args(self, argv):
+        parser = argparse.ArgumentParser(description=__doc__)
+        parser.add_argument(
+            '-v',
+            '--verbose',
+            action='store_true',
+            help='Log extra details that may be helpful when debugging.')
+        parser.add_argument(
+            '--dry-run',
+            action='store_true',
+            help='See what would be done without actually creating bug.')
+        return parser.parse_args(argv)
+
     def process_draft_bug(self, bug):
         """Issue new bug if bug with the same title does not already exist"""
         try:
             # Checks if a bug with the same title exists on Buganizer
             existing_bugs = self.buganizer_client.GetIssueList(
                 f'title:"{bug.title}"')
-            if not existing_bugs:
+            if existing_bugs:
+                _log.info(f'Bug already created: {existing_bugs[0].link}')
+            elif self._dry_run:
+                _log.info('[dry_run] would have created the following bug:\n'
+                          f'{bug}')
+            else:
                 bug = self.buganizer_client.NewIssue(bug)
                 _log.info(f'Filed bug: {bug.link}')
-            else:
-                _log.info(f'Bug already created: {existing_bugs[0].link}')
         except BuganizerError as e:
             _log.exception(f'Failed to process bug: {e}')
 
