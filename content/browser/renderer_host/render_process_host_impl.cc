@@ -4041,7 +4041,8 @@ void RenderProcessHostImpl::Cleanup() {
         });
     LogDelayReasonForCleanup(DelayShutdownReason::kListener);
     return;
-  } else if (keep_alive_ref_count_ != 0) {
+  }
+  if (keep_alive_ref_count_ > 0) {
     CHECK(IsKeepAliveRefCountAllowed());
     TRACE_EVENT(
         "shutdown", "RenderProcessHostImpl::Cleanup : Have keep_alive_ref.",
@@ -4053,7 +4054,8 @@ void RenderProcessHostImpl::Cleanup() {
         });
     LogDelayReasonForCleanup(DelayShutdownReason::kFetchKeepAlive);
     return;
-  } else if (shutdown_delay_ref_count_ != 0) {
+  }
+  if (shutdown_delay_ref_count_ > 0) {
     TRACE_EVENT(
         "shutdown", "RenderProcessHostImpl::Cleanup : Have shutdown_delay_ref.",
         ChromeTrackEvent::kRenderProcessHost, *this,
@@ -4064,7 +4066,8 @@ void RenderProcessHostImpl::Cleanup() {
         });
     LogDelayReasonForCleanup(DelayShutdownReason::kShutdownDelay);
     return;
-  } else if (worker_ref_count_ != 0) {
+  }
+  if (worker_ref_count_ > 0) {
     TRACE_EVENT(
         "shutdown", "RenderProcessHostImpl::Cleanup : Have worker_ref.",
         ChromeTrackEvent::kRenderProcessHost, *this,
@@ -4075,7 +4078,8 @@ void RenderProcessHostImpl::Cleanup() {
         });
     LogDelayReasonForCleanup(DelayShutdownReason::kWorker);
     return;
-  } else if (pending_reuse_ref_count_ != 0) {
+  }
+  if (pending_reuse_ref_count_ > 0) {
     TRACE_EVENT(
         "shutdown", "RenderProcessHostImpl::Cleanup : Have pending_reuse_ref.",
         ChromeTrackEvent::kRenderProcessHost, *this,
@@ -4087,7 +4091,7 @@ void RenderProcessHostImpl::Cleanup() {
     LogDelayReasonForCleanup(DelayShutdownReason::kPendingReuse);
     return;
   }
-  if (navigation_state_keepalive_count_ != 0) {
+  if (navigation_state_keepalive_count_ > 0) {
     TRACE_EVENT(
         "shutdown",
         "RenderProcessHostImpl::Cleanup : Have NavigationStateKeepAlive.",
