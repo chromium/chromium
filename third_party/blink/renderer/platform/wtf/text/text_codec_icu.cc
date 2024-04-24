@@ -83,8 +83,6 @@ void TextCodecICU::RegisterEncodingNames(EncodingNameRegistrar registrar) {
   // apart; ICU treats these names as synonyms.
   registrar("ISO-8859-8-I", "ISO-8859-8-I");
 
-  const bool is_text_codec_cjk_enabled =
-      base::FeatureList::IsEnabled(blink::features::kTextCodecCJKEnabled);
   int32_t num_encodings = ucnv_countAvailable();
   for (int32_t i = 0; i < num_encodings; ++i) {
     const char* name = ucnv_getAvailableName(i);
@@ -117,7 +115,7 @@ void TextCodecICU::RegisterEncodingNames(EncodingNameRegistrar registrar) {
     }
 #endif
     // Avoid codecs supported by `TextCodecCJK`.
-    if (is_text_codec_cjk_enabled && TextCodecCJK::IsSupported(standard_name)) {
+    if (TextCodecCJK::IsSupported(standard_name)) {
       continue;
     }
 
@@ -150,8 +148,7 @@ void TextCodecICU::RegisterEncodingNames(EncodingNameRegistrar registrar) {
 
     // Avoid registering codecs registered by
     // `TextCodecCJK::RegisterEncodingNames`.
-    if (!is_text_codec_cjk_enabled ||
-        !TextCodecCJK::IsSupported(standard_name)) {
+    if (!TextCodecCJK::IsSupported(standard_name)) {
       registrar(standard_name, standard_name);
     }
 
@@ -272,8 +269,6 @@ void TextCodecICU::RegisterCodecs(TextCodecRegistrar registrar) {
   // See comment above in registerEncodingNames.
   registrar("ISO-8859-8-I", Create, nullptr);
 
-  const bool is_text_codec_cjk_enabled =
-      base::FeatureList::IsEnabled(blink::features::kTextCodecCJKEnabled);
   int32_t num_encodings = ucnv_countAvailable();
   for (int32_t i = 0; i < num_encodings; ++i) {
     const char* name = ucnv_getAvailableName(i);
@@ -295,7 +290,7 @@ void TextCodecICU::RegisterCodecs(TextCodecRegistrar registrar) {
     }
 #endif
     // Avoid codecs supported by `TextCodecCJK`.
-    if (is_text_codec_cjk_enabled && TextCodecCJK::IsSupported(standard_name)) {
+    if (TextCodecCJK::IsSupported(standard_name)) {
       continue;
     }
     registrar(standard_name, Create, nullptr);

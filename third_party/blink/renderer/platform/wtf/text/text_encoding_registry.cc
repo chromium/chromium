@@ -210,10 +210,8 @@ static void ExtendTextCodecMaps() {
   TextCodecReplacement::RegisterEncodingNames(AddToTextEncodingNameMap);
   TextCodecReplacement::RegisterCodecs(AddToTextCodecMap);
 
-  if (base::FeatureList::IsEnabled(blink::features::kTextCodecCJKEnabled)) {
-    TextCodecCJK::RegisterEncodingNames(AddToTextEncodingNameMap);
-    TextCodecCJK::RegisterCodecs(AddToTextCodecMap);
-  }
+  TextCodecCJK::RegisterEncodingNames(AddToTextEncodingNameMap);
+  TextCodecCJK::RegisterCodecs(AddToTextCodecMap);
 
   TextCodecICU::RegisterEncodingNames(AddToTextEncodingNameMap);
   TextCodecICU::RegisterCodecs(AddToTextCodecMap);
