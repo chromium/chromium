@@ -76,6 +76,7 @@ luci.bucket(
             ],
             users = [
                 "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+                "chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com",
                 "infra-try-recipes-tester@chops-service-accounts.iam.gserviceaccount.com",
             ],
         ),
