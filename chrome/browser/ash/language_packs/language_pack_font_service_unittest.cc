@@ -104,6 +104,29 @@ class LanguagePackFontServiceTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 };
 
+struct ValidFontLanguageTestCase {
+  std::string test_name;
+  std::string_view preferred_languages_one_locale;
+  std::string_view preferred_languages_two_locales;
+  std::string dlc_prefix;
+  std::string dlc_path;
+};
+
+class LanguagePackFontServiceValidFontLanguageTest
+    : public LanguagePackFontServiceTest,
+      public testing::WithParamInterface<ValidFontLanguageTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    LanguagePackFontServiceValidFontLanguageTest,
+    testing::ValuesIn<ValidFontLanguageTestCase>(
+        {{"Japanese", "zz,ja", "zz,ja,ja-JP", "extrafonts-ja", "/path/for/ja"},
+         {"Korean", "zz,ko", "zz,ko,ko-KR", "extrafonts-ko", "/path/for/ko"}}),
+    [](const testing::TestParamInfo<
+        LanguagePackFontServiceValidFontLanguageTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
 TEST_F(LanguagePackFontServiceTest, InstallNothingOnUnrelatedLocaleChange) {
   // Ensure that we don't install any DLCs / add any fonts to begin with.
   // Both zz and xx (used below) are not valid ISO 639 locales as of 2024.
@@ -119,29 +142,8 @@ TEST_F(LanguagePackFontServiceTest, InstallNothingOnUnrelatedLocaleChange) {
   EXPECT_THAT(dlcs.dlc_infos(), IsEmpty());
 }
 
-struct ValidFontLanguageTestCase {
-  std::string test_name;
-  std::string_view preferred_languages_one_locale;
-  std::string_view preferred_languages_two_locales;
-  std::string dlc_prefix;
-  std::string dlc_path;
-};
-
-class ValidFontLanguageTest
-    : public LanguagePackFontServiceTest,
-      public testing::WithParamInterface<ValidFontLanguageTestCase> {};
-
-INSTANTIATE_TEST_SUITE_P(
-    LanguagePackFontServiceTest,
-    ValidFontLanguageTest,
-    testing::ValuesIn<ValidFontLanguageTestCase>(
-        {{"Japanese", "zz,ja", "zz,ja,ja-JP", "extrafonts-ja", "/path/for/ja"},
-         {"Korean", "zz,ko", "zz,ko,ko-KR", "extrafonts-ko", "/path/for/ko"}}),
-    [](const testing::TestParamInfo<ValidFontLanguageTest::ParamType>& info) {
-      return info.param.test_name;
-    });
-
-TEST_P(ValidFontLanguageTest, InstallValidLanguageOnValidLanguageLocaleChange) {
+TEST_P(LanguagePackFontServiceValidFontLanguageTest,
+       InstallValidLanguageOnValidLanguageLocaleChange) {
   const ValidFontLanguageTestCase& test_case = GetParam();
 
   prefs()->SetString(language::prefs::kPreferredLanguages, "zz");
@@ -159,7 +161,7 @@ TEST_P(ValidFontLanguageTest, InstallValidLanguageOnValidLanguageLocaleChange) {
                                    StartsWith(test_case.dlc_prefix))));
 }
 
-TEST_P(ValidFontLanguageTest,
+TEST_P(LanguagePackFontServiceValidFontLanguageTest,
        InstallValidLanguageOnlyOnceOnMultipleValidLanguageLocalesChange) {
   const ValidFontLanguageTestCase& test_case = GetParam();
 
@@ -195,7 +197,7 @@ TEST_F(LanguagePackFontServiceTest, InstallNothingOnInitWithUnrelatedLocales) {
   EXPECT_THAT(dlcs.dlc_infos(), IsEmpty());
 }
 
-TEST_P(ValidFontLanguageTest,
+TEST_P(LanguagePackFontServiceValidFontLanguageTest,
        InstallValidLanguageOnInitWithValidLanguageLocale) {
   const ValidFontLanguageTestCase& test_case = GetParam();
 
@@ -218,7 +220,7 @@ TEST_P(ValidFontLanguageTest,
                                    StartsWith(test_case.dlc_prefix))));
 }
 
-TEST_P(ValidFontLanguageTest,
+TEST_P(LanguagePackFontServiceValidFontLanguageTest,
        InstallValidLanguageOnlyOnceOnInitWithMultipleValidLanguageLocales) {
   const ValidFontLanguageTestCase& test_case = GetParam();
 
@@ -258,7 +260,8 @@ TEST_F(LanguagePackFontServiceTest, AddNothingOnUnrelatedLocaleChange) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_P(ValidFontLanguageTest, AddNothingOnValidLanguageLocaleChange) {
+TEST_P(LanguagePackFontServiceValidFontLanguageTest,
+       AddNothingOnValidLanguageLocaleChange) {
   const ValidFontLanguageTestCase& test_case = GetParam();
 
   ON_CALL(*add_font_dir(), Call).WillByDefault(Return(true));
@@ -291,7 +294,8 @@ TEST_F(LanguagePackFontServiceTest, AddNothingOnInitWithUnrelatedLocale) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_P(ValidFontLanguageTest, AddValidLanguageOnInitWithValidLanguageLocale) {
+TEST_P(LanguagePackFontServiceValidFontLanguageTest,
+       AddValidLanguageOnInitWithValidLanguageLocale) {
   const ValidFontLanguageTestCase& test_case = GetParam();
 
   ON_CALL(*add_font_dir(), Call).WillByDefault(Return(true));
@@ -312,7 +316,7 @@ TEST_P(ValidFontLanguageTest, AddValidLanguageOnInitWithValidLanguageLocale) {
 }
 
 TEST_P(
-    ValidFontLanguageTest,
+    LanguagePackFontServiceValidFontLanguageTest,
     AddValidLanguageOnInitWithValidLanguageLocaleWhenDownloadedButNotMounted) {
   const ValidFontLanguageTestCase& test_case = GetParam();
 
@@ -335,7 +339,7 @@ TEST_P(
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_P(ValidFontLanguageTest,
+TEST_P(LanguagePackFontServiceValidFontLanguageTest,
        AddValidLanguageOnlyOnceOnInitWithMultipleValidLanguageLocales) {
   const ValidFontLanguageTestCase& test_case = GetParam();
 
