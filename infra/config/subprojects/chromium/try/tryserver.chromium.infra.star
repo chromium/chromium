@@ -101,7 +101,7 @@ try_.builder(
 )
 
 try_.builder(
-    name = "utr-tester",
+    name = "linux-utr-tester",
     description_html = "Tests the <a href=\"https://chromium.googlesource.com/chromium/src/+/HEAD/tools/utr/README.md\">Universal Test Runner</a> against cli changes.",
     executable = "recipe:chromium/universal_test_runner_test",
     builderless = True,
