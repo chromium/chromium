@@ -4599,8 +4599,8 @@ void RenderFrameImpl::DidChangePerformanceTiming() {
 
 void RenderFrameImpl::DidObserveUserInteraction(
     base::TimeTicks max_event_start,
-    base::TimeTicks max_event_commit_finish,
     base::TimeTicks max_event_queued_main_thread,
+    base::TimeTicks max_event_commit_finish,
     base::TimeTicks max_event_end,
     blink::UserInteractionType interaction_type,
     uint64_t interaction_offset) {
