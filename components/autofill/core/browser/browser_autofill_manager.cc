@@ -1169,8 +1169,12 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   if (should_offer_other_suggestions &&
       (field.form_control_type() == FormControlType::kTextArea ||
        field.form_control_type() == FormControlType::kContentEditable)) {
-    if (std::optional<Suggestion> maybe_compose_suggestion =
-            MaybeGetComposeSuggestion(field, trigger_source)) {
+    AutofillComposeDelegate* compose_delegate = client().GetComposeDelegate();
+    std::optional<Suggestion> maybe_compose_suggestion =
+        compose_delegate
+            ? compose_delegate->GetSuggestion(field, trigger_source)
+            : std::nullopt;
+    if (maybe_compose_suggestion) {
       suggestions.push_back(*std::move(maybe_compose_suggestion));
     }
   }
@@ -2807,40 +2811,6 @@ bool BrowserAutofillManager::ShouldUploadUkm(
   }
 
   return true;
-}
-
-std::optional<Suggestion> BrowserAutofillManager::MaybeGetComposeSuggestion(
-    const FormFieldData& field,
-    AutofillSuggestionTriggerSource trigger_source) {
-  AutofillComposeDelegate* compose_delegate = client().GetComposeDelegate();
-  if (!compose_delegate ||
-      !compose_delegate->ShouldOfferComposePopup(field, trigger_source)) {
-    return std::nullopt;
-  }
-  std::u16string suggestion_text;
-  std::u16string label_text;
-  PopupItemId popup_item_id = PopupItemId::kCompose;
-  if (compose_delegate->HasSavedState(field.global_id())) {
-    // The nudge text indicates that the user can resume where they left off in
-    // the Compose dialog.
-    suggestion_text =
-        l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_TEXT);
-    label_text = l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_SAVED_LABEL);
-    if (trigger_source ==
-        AutofillSuggestionTriggerSource::kComposeDialogLostFocus) {
-      popup_item_id = PopupItemId::kComposeSavedStateNotification;
-    }
-  } else {
-    // Text for a new Compose session.
-    suggestion_text =
-        l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_MAIN_TEXT);
-    label_text = l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_LABEL);
-  }
-  Suggestion suggestion(std::move(suggestion_text));
-  suggestion.labels = {{Suggestion::Text(std::move(label_text))}};
-  suggestion.popup_item_id = popup_item_id;
-  suggestion.icon = Suggestion::Icon::kPenSpark;
-  return suggestion;
 }
 
 void BrowserAutofillManager::LogEventCountsUMAMetric(
