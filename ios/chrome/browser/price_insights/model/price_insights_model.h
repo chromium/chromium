@@ -52,12 +52,10 @@ struct PriceInsightsExecution {
 
   // Configuration for Price Insights
   std::unique_ptr<PriceInsightsItemConfiguration> config;
-  // Indicates if product info has been processed.
-  bool is_product_info_processed = false;
   // Indicates if price insights info has been processed.
   bool is_price_insights_info_processed = false;
-  // Indicates if the configuration is valid.
-  bool is_valid_config = false;
+  // Indicates if is_subscribed has been processed.
+  bool is_subscribed_processed = false;
 };
 
 // Price Insights contextual panel model object responsible for managing Price
@@ -86,7 +84,11 @@ class PriceInsightsModel : public ContextualPanelModel, public KeyedService {
       const GURL& url,
       const std::optional<commerce::PriceInsightsInfo>& info);
   // Runs callbacks associated with a given URL.
-  void RunCallbacks(const GURL& product_url);
+  void RunCallbacks(const GURL& url, bool with_valid_config);
+  // Callback function called when IsSubscribed returns whether or not the
+  // current page is being tracked.
+  void OnIsSubscribedReceived(const GURL& url, bool is_subscribed);
+  bool HasPendingExecutions(const GURL& url);
   // Pointer to the shopping service.
   raw_ptr<commerce::ShoppingService> shopping_service_ = nullptr;
   // Map containing Price Insights execution status for each URL.

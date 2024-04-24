@@ -58,6 +58,7 @@ class PriceInsightsModelTest : public PlatformTest {
             test_chrome_browser_state_.get()));
     shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);
     shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(std::nullopt);
+    shopping_service_->SetIsSubscribedCallbackValue(false);
     fetch_configuration_callback_count = 0;
   }
 
@@ -96,7 +97,7 @@ TEST_F(PriceInsightsModelTest, TestFetchConfigurationNoProductInfo) {
   base::RunLoop run_loop;
 
   EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
-  EXPECT_CALL(*shopping_service_, GetPriceInsightsInfoForUrl(_, _)).Times(1);
+  EXPECT_CALL(*shopping_service_, GetPriceInsightsInfoForUrl(_, _)).Times(0);
 
   price_insights_model_->FetchConfigurationForWebState(
       web_state_.get(),
@@ -123,6 +124,7 @@ TEST_F(PriceInsightsModelTest, TestFetchProductInfo) {
   shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
 
   EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
+  EXPECT_CALL(*shopping_service_, IsSubscribed(_, _)).Times(0);
 
   price_insights_model_->FetchConfigurationForWebState(
       web_state_.get(),
@@ -153,14 +155,22 @@ TEST_F(PriceInsightsModelTest, TestFetchProductInfo) {
 TEST_F(PriceInsightsModelTest, TestFetchPriceInsightsInfo) {
   base::RunLoop run_loop;
 
-  std::optional<commerce::PriceInsightsInfo> info;
+  std::optional<commerce::ProductInfo> info;
   info.emplace();
-  info->product_cluster_id = 123u;
-  info->catalog_history_prices.emplace_back("2021-01-01", 3330000);
-  info->catalog_history_prices.emplace_back("2021-01-02", 4440000);
-  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(std::move(info));
+  info->title = kTestTitle;
+  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
 
+  std::optional<commerce::PriceInsightsInfo> price_info;
+  price_info.emplace();
+  price_info->product_cluster_id = 123u;
+  price_info->catalog_history_prices.emplace_back("2021-01-01", 3330000);
+  price_info->catalog_history_prices.emplace_back("2021-01-02", 4440000);
+  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
+      std::move(price_info));
+
+  EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
   EXPECT_CALL(*shopping_service_, GetPriceInsightsInfoForUrl(_, _)).Times(1);
+  EXPECT_CALL(*shopping_service_, IsSubscribed(_, _)).Times(0);
 
   price_insights_model_->FetchConfigurationForWebState(
       web_state_.get(),
@@ -177,7 +187,7 @@ TEST_F(PriceInsightsModelTest, TestFetchPriceInsightsInfo) {
       static_cast<PriceInsightsItemConfiguration*>(
           returned_configuration_.get());
 
-  EXPECT_EQ(false, config->product_info.has_value());
+  EXPECT_EQ(true, config->product_info.has_value());
   EXPECT_EQ(true, config->price_insights_info.has_value());
   commerce::PriceInsightsInfo info2 = config->price_insights_info.value();
   EXPECT_EQ(123u, info2.product_cluster_id);
@@ -199,7 +209,6 @@ TEST_F(PriceInsightsModelTest, TestMultipleRequestForTheSameURL) {
 
   std::optional<commerce::PriceInsightsInfo> price_insights_info;
   price_insights_info.emplace();
-  price_insights_info->product_cluster_id = 123u;
   price_insights_info->catalog_history_prices.emplace_back("2021-01-01",
                                                            3330000);
   shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
@@ -207,6 +216,7 @@ TEST_F(PriceInsightsModelTest, TestMultipleRequestForTheSameURL) {
 
   EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
   EXPECT_CALL(*shopping_service_, GetPriceInsightsInfoForUrl(_, _)).Times(1);
+  EXPECT_CALL(*shopping_service_, IsSubscribed(_, _)).Times(0);
 
   price_insights_model_->FetchConfigurationForWebState(
       web_state_.get(),
@@ -256,7 +266,6 @@ TEST_F(PriceInsightsModelTest, TestMultipleRequestForDifferentURL) {
 
   std::optional<commerce::PriceInsightsInfo> price_insights_info;
   price_insights_info.emplace();
-  price_insights_info->product_cluster_id = 123u;
   price_insights_info->catalog_history_prices.emplace_back("2021-01-01",
                                                            3330000);
   shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
@@ -264,6 +273,7 @@ TEST_F(PriceInsightsModelTest, TestMultipleRequestForDifferentURL) {
 
   EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(2);
   EXPECT_CALL(*shopping_service_, GetPriceInsightsInfoForUrl(_, _)).Times(2);
+  EXPECT_CALL(*shopping_service_, IsSubscribed(_, _)).Times(0);
 
   price_insights_model_->FetchConfigurationForWebState(
       web_state_.get(),
@@ -299,4 +309,102 @@ TEST_F(PriceInsightsModelTest, TestMultipleRequestForDifferentURL) {
 
   EXPECT_EQ(0, GetPriceInsightsCallbacksCount());
   EXPECT_EQ(0, GetPriceInsightsExecutionsCount());
+}
+
+// Test that GetProductInfoForUrl return data when the configuration is fetched.
+TEST_F(PriceInsightsModelTest, TestFetchIsSubscribed) {
+  base::RunLoop run_loop;
+
+  std::optional<commerce::ProductInfo> info;
+  info.emplace();
+  info->title = kTestTitle;
+  info->product_cluster_id = 12345L;
+  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
+  shopping_service_->SetIsSubscribedCallbackValue(true);
+
+  EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
+  EXPECT_CALL(*shopping_service_, IsSubscribed(_, _)).Times(1);
+
+  price_insights_model_->FetchConfigurationForWebState(
+      web_state_.get(),
+      base::BindOnce(&PriceInsightsModelTest::FetchConfigurationCallback,
+                     base::Unretained(this))
+          .Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
+
+  PriceInsightsItemConfiguration* config =
+      static_cast<PriceInsightsItemConfiguration*>(
+          returned_configuration_.get());
+
+  EXPECT_EQ(true, config->is_subscribed);
+}
+
+// Test that GetProductInfoForUrl return data when the configuration is fetched.
+TEST_F(PriceInsightsModelTest, TestFetchProductInfoWithPriceTrackAvailable) {
+  base::RunLoop run_loop;
+
+  std::optional<commerce::ProductInfo> info;
+  info.emplace();
+  info->title = kTestTitle;
+  info->product_cluster_id = 12345L;
+  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
+  shopping_service_->SetIsSubscribedCallbackValue(false);
+
+  EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
+  EXPECT_CALL(*shopping_service_, IsSubscribed(_, _)).Times(1);
+
+  price_insights_model_->FetchConfigurationForWebState(
+      web_state_.get(),
+      base::BindOnce(&PriceInsightsModelTest::FetchConfigurationCallback,
+                     base::Unretained(this))
+          .Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
+
+  PriceInsightsItemConfiguration* config =
+      static_cast<PriceInsightsItemConfiguration*>(
+          returned_configuration_.get());
+
+  EXPECT_EQ(true, config->can_price_track);
+}
+
+// Test that GetProductInfo, GetProductInfoForUrl, and IsSubscribed all return
+// data for the config.
+TEST_F(PriceInsightsModelTest, TestFetchCompleteConfig) {
+  base::RunLoop run_loop;
+
+  shopping_service_->SetIsSubscribedCallbackValue(true);
+
+  std::optional<commerce::ProductInfo> info;
+  info.emplace();
+  info->title = kTestTitle;
+  info->product_cluster_id = 12345L;
+  shopping_service_->SetResponseForGetProductInfoForUrl(std::move(info));
+
+  std::optional<commerce::PriceInsightsInfo> price_info;
+  price_info.emplace();
+  price_info->product_cluster_id = 123u;
+  price_info->catalog_history_prices.emplace_back("2021-01-01", 3330000);
+  price_info->catalog_history_prices.emplace_back("2021-01-02", 4440000);
+  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
+      std::move(price_info));
+
+  EXPECT_CALL(*shopping_service_, GetProductInfoForUrl(_, _)).Times(1);
+  EXPECT_CALL(*shopping_service_, GetPriceInsightsInfoForUrl(_, _)).Times(1);
+  EXPECT_CALL(*shopping_service_, IsSubscribed(_, _)).Times(1);
+
+  price_insights_model_->FetchConfigurationForWebState(
+      web_state_.get(),
+      base::BindOnce(&PriceInsightsModelTest::FetchConfigurationCallback,
+                     base::Unretained(this))
+          .Then(run_loop.QuitClosure()));
+
+  run_loop.Run();
+
+  PriceInsightsItemConfiguration* config =
+      static_cast<PriceInsightsItemConfiguration*>(
+          returned_configuration_.get());
+
+  EXPECT_EQ(true, config->is_subscribed);
 }

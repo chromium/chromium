@@ -13,6 +13,7 @@ source_set("model") {
     "//base",
     "//components/commerce/core:commerce_types",
     "//components/commerce/core:shopping_service",
+    "//components/commerce/core/subscriptions",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//ios/chrome/browser/commerce/model:shopping_service",
