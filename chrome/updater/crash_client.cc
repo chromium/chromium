@@ -102,7 +102,7 @@ bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
     VLOG(1) << "Found " << reports_completed.size()
             << " completed crash reports";
     for (const auto& report : reports_completed) {
-      VLOG(1) << "Crash since last run: ID \"" << report.id << "\", created at "
+      VLOG(3) << "Crash since last run: ID \"" << report.id << "\", created at "
               << report.creation_time << ", " << report.upload_attempts
               << " upload attempts, file path \"" << report.file_path
               << "\", unique ID \"" << report.uuid.ToString()
