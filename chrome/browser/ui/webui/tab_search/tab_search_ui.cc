@@ -32,6 +32,17 @@
 #include "ui/views/style/platform_style.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 
+TabSearchUIConfig::TabSearchUIConfig()
+    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUITabSearchHost) {}
+
+TabSearchUIConfig::~TabSearchUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+TabSearchUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                         const GURL& url) {
+  return std::make_unique<TabSearchUI>(web_ui);
+}
+
 TabSearchUI::TabSearchUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui,
                                true /* Needed for webui browser tests */),

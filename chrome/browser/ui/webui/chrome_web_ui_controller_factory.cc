@@ -165,7 +165,6 @@
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui.h"
 #include "chrome/browser/ui/webui/sync_file_system_internals/sync_file_system_internals_ui.h"
 #include "chrome/browser/ui/webui/system/system_info_ui.h"
-#include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
 #include "chrome/browser/ui/webui/webui_gallery/webui_gallery_ui.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
@@ -574,8 +573,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   // Settings are implemented with native UI elements on Android.
   if (url.host_piece() == chrome::kChromeUISettingsHost)
     return &NewWebUI<settings::SettingsUI>;
-  if (url.host_piece() == chrome::kChromeUITabSearchHost)
-    return &NewWebUI<TabSearchUI>;
   if (url.host_piece() == chrome::kChromeUIProfileInternalsHost)
     return &NewWebUI<ProfileInternalsUI>;
   if (url.host_piece() == chrome::kChromeUISyncFileSystemInternalsHost)
