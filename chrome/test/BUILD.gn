@@ -2349,6 +2349,7 @@ if (!is_android) {
       "../browser/file_system_access/chrome_file_system_access_permission_context_browsertest.cc",
       "../browser/file_system_access/file_system_access_picker_requires_user_gesture_browsertest.cc",
       "../browser/file_system_access/file_system_access_tab_helper_browsertest.cc",
+      "../browser/file_system_access/file_system_file_handle_browsertest.cc",
       "../browser/first_party_sets/first_party_sets_policy_browsertest.cc",
       "../browser/first_run/first_run_browsertest.cc",
       "../browser/geolocation/geolocation_browsertest.cc",

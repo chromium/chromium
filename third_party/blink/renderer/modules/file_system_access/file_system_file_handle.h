@@ -7,6 +7,7 @@
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -83,7 +84,23 @@ class FileSystemFileHandle final : public FileSystemHandle {
           mojom::blink::FileSystemAccessErrorPtr,
           Vector<mojom::blink::FileSystemAccessCloudIdentifierPtr>)>) override;
 
+  void CreateSyncAccessHandleImpl(
+      const FileSystemCreateSyncAccessHandleOptions* options,
+      ScriptPromiseResolver<FileSystemSyncAccessHandle>* resolver);
+
+  // Checks if the File System Storage Access is allowed for the current
+  // frame.
+  void CheckFileSystemStorageAccessIsAllowed(
+      ExecutionContext* context,
+      base::OnceCallback<void(bool)> callback);
+  void OnGotFileSystemStorageAccessStatus(
+      ScriptPromiseResolver<FileSystemSyncAccessHandle>* resolver,
+      base::OnceClosure on_allowed_callback,
+      bool allow_access);
+
   HeapMojoRemote<mojom::blink::FileSystemAccessFileHandle> mojo_ptr_;
+
+  std::optional<bool> file_system_storage_access_allowed_;
 };
 
 template <>
