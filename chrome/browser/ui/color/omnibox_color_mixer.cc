@@ -243,6 +243,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
   // Results background, button, and focus colors.
   mixer[kColorOmniboxResultsBackground] =
       ui::GetColorWithMaxContrast(kColorOmniboxText);
+  mixer[kColorOmniboxResultsBackgroundIPH] = {ui::kColorSysSurface2};
   mixer[kColorOmniboxResultsBackgroundHovered] = ui::BlendTowardMaxContrast(
       kColorOmniboxResultsBackground, gfx::kGoogleGreyAlpha200);
   mixer[kColorOmniboxResultsBackgroundSelected] = ui::BlendTowardMaxContrast(

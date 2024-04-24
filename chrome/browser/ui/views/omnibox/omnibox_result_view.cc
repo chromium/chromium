@@ -318,8 +318,9 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
                           view->GetNativeTheme()->UserHasContrastPreference();
   // TODO(tapted): Consider using background()->SetNativeControlColor() and
   // always have a background.
-  if (part_state == OmniboxPartState::NORMAL && !prefers_contrast)
+  if (part_state == OmniboxPartState::NORMAL && !prefers_contrast) {
     return nullptr;
+  }
 
   if (OmniboxFieldTrial::IsStarterPackIPHEnabled() &&
       part_state == OmniboxPartState::IPH) {
@@ -400,8 +401,9 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
                                     ? kColorOmniboxResultsTextDimmedSelected
                                     : kColorOmniboxResultsTextDimmed;
   suggestion_view_->separator()->ApplyTextColor(dimmed_id);
-  if (remove_suggestion_button_->GetVisible())
+  if (remove_suggestion_button_->GetVisible()) {
     views::FocusRing::Get(remove_suggestion_button_)->SchedulePaint();
+  }
 
   // Recreate the icons in case the color needs to change.
   // Note: if this is an extension icon or favicon then this can be done in
@@ -409,10 +411,11 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   //       be an optimization opportunity here.
   // TODO(dschuyler): determine whether to optimize the color changes.
   auto icon = GetIcon();
-  if (icon.IsEmpty())
+  if (icon.IsEmpty()) {
     suggestion_view_->ClearIcon();
-  else
+  } else {
     suggestion_view_->SetIcon(*icon.ToImageSkia(), match_);
+  }
 
   // We must reapply colors for all the text fields here. If we don't, we can
   // break theme changes for ZeroSuggest. See https://crbug.com/1095205.
@@ -430,7 +433,11 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
     suggestion_view_->content()->ApplyTextColor(default_id);
     suggestion_view_->description()->ApplyTextColor(dimmed_id);
   } else if (match_.type == AutocompleteMatchType::NULL_RESULT_MESSAGE) {
-    suggestion_view_->content()->ApplyTextColor(kColorOmniboxText);
+    bool is_iph = OmniboxFieldTrial::IsStarterPackIPHEnabled() &&
+                  match_.provider->type() ==
+                      AutocompleteProvider::Type::TYPE_FEATURED_SEARCH;
+    suggestion_view_->content()->ApplyTextColor(
+        is_iph ? kColorOmniboxResultsTextDimmed : kColorOmniboxText);
   } else if (prefers_contrast || force_reapply_styles) {
     // Normally, OmniboxTextView caches its appearance, but in high contrast,
     // selected-ness changes the text colors, so the styling of the text part of
@@ -517,8 +524,9 @@ OmniboxPartState OmniboxResultView::GetThemeState() const {
     return is_iph ? OmniboxPartState::IPH : OmniboxPartState::NORMAL;
   }
 
-  if (GetMatchSelected())
+  if (GetMatchSelected()) {
     return OmniboxPartState::SELECTED;
+  }
 
   // If we don't highlight the whole row when the user has the mouse over the
   // remove suggestion button, it's unclear which suggestion is being removed.
@@ -647,8 +655,9 @@ void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                              autocomplete_controller->result().size());
 
   node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, is_selected);
-  if (IsMouseHovered())
+  if (IsMouseHovered()) {
     node_data->AddState(ax::mojom::State::kHovered);
+  }
 }
 
 void OmniboxResultView::OnThemeChanged() {
@@ -718,8 +727,9 @@ void OmniboxResultView::UpdateRemoveSuggestionVisibility() {
 
   remove_suggestion_button_->SetVisible(new_visibility);
 
-  if (old_visibility != new_visibility)
+  if (old_visibility != new_visibility) {
     InvalidateLayout();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

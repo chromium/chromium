@@ -620,8 +620,17 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
       return use_chrome_refresh_icons ? omnibox::kCalculatorChromeRefreshIcon
                                       : omnibox::kCalculatorIcon;
 
+    case Type::NULL_RESULT_MESSAGE: {
+      // The IPH suggestion uses the spark icon. Otherwise (for No Results
+      // Found), fallthrough to use the empty icon.
+      if (OmniboxFieldTrial::IsStarterPackIPHEnabled() &&
+          provider->type() ==
+              AutocompleteProvider::Type::TYPE_FEATURED_SEARCH) {
+        return omnibox::kSparkIcon;
+      }
+      ABSL_FALLTHROUGH_INTENDED;
+    }
     case Type::SEARCH_SUGGEST_TAIL:
-    case Type::NULL_RESULT_MESSAGE:
       return empty_icon;
 
     case Type::DOCUMENT_SUGGESTION:

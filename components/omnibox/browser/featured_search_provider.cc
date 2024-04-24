@@ -12,7 +12,9 @@
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
@@ -166,8 +168,13 @@ void FeaturedSearchProvider::AddIPHMatch() {
   // Use this suggestion's contents field to display a message to the user that
   // cannot be acted upon.
   match.contents = l10n_util::GetStringUTF16(IDS_OMNIBOX_GEMINI_IPH);
-  match.contents_class.emplace_back(0, ACMatchClassification::NONE);
-  match.from_keyword = true;
+
+  // Bolds just the "@gemini" portion of the IPH string. The rest of the string
+  // is dimmed.
+  TermMatches term_matches = MatchTermInString(u"@gemini", match.contents, 0);
+  match.contents_class = ClassifyTermMatches(
+      term_matches, match.contents.size(), ACMatchClassification::MATCH,
+      ACMatchClassification::DIM);
 
   matches_.push_back(match);
 }
