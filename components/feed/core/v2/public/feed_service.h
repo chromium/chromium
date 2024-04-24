@@ -143,6 +143,8 @@ class FeedService : public KeyedService {
   void OnApplicationStateChange(base::android::ApplicationState state);
 #endif
 
+  void Shutdown() override;
+
   // These components are owned for construction of |FeedApi|. These will
   // be null if |FeedApi| is created externally.
   std::unique_ptr<Delegate> delegate_;
