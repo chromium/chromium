@@ -1966,7 +1966,7 @@ inline const SpaceSplitString& Element::ClassNames() const {
 }
 
 inline bool Element::HasClassName(const AtomicString& class_name) const {
-  return HasClass() && ClassNames().Contains(class_name);
+  return HasElementData() && GetElementData()->ClassNames().Contains(class_name);
 }
 
 inline bool Element::HasID() const {
