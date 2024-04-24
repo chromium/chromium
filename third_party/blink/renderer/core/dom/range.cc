@@ -1384,19 +1384,8 @@ bool AreRangesEqual(const Range* a, const Range* b) {
 static inline void BoundaryNodeChildrenWillBeRemoved(
     RangeBoundaryPoint& boundary,
     ContainerNode& container) {
-  for (Node* node_to_be_removed = container.firstChild(); node_to_be_removed;
-       node_to_be_removed = node_to_be_removed->nextSibling()) {
-    if (boundary.ChildBefore() == node_to_be_removed) {
-      boundary.SetToStartOfNode(container);
-      return;
-    }
-
-    for (Node* n = &boundary.Container(); n; n = n->parentNode()) {
-      if (n == node_to_be_removed) {
-        boundary.SetToStartOfNode(container);
-        return;
-      }
-    }
+  if (container.contains(&boundary.Container())) {
+    boundary.SetToStartOfNode(container);
   }
 }
 

@@ -546,4 +546,75 @@ TEST_F(RangeTest, CollapsedRangeGetBorderAndTextQuadsWithFirstLetter) {
       << "Collapsed range in remaining text part";
 }
 
+TEST_F(RangeTest, ContainerNodeRemoval) {
+  GetDocument().body()->setInnerHTML("<p>aaaa</p><p>bbbbbb</p>");
+  auto* node_a = GetDocument().body()->firstChild();
+  auto* node_b = node_a->nextSibling();
+  auto* text_a = To<Text>(node_a->firstChild());
+  auto* text_b = To<Text>(node_b->firstChild());
+
+  auto* rangea0a2 =
+      MakeGarbageCollected<Range>(GetDocument(), text_a, 0, text_a, 2);
+  auto* rangea2a4 =
+      MakeGarbageCollected<Range>(GetDocument(), text_a, 2, text_a, 4);
+  auto* rangea2b2 =
+      MakeGarbageCollected<Range>(GetDocument(), text_a, 0, text_b, 2);
+  auto* rangeb2b6 =
+      MakeGarbageCollected<Range>(GetDocument(), text_b, 2, text_b, 6);
+
+  // remove children in node_a
+  node_a->setTextContent("");
+
+  EXPECT_TRUE(rangea0a2->BoundaryPointsValid());
+  EXPECT_EQ(node_a, rangea0a2->startContainer());
+  EXPECT_EQ(0u, rangea0a2->startOffset());
+  EXPECT_EQ(node_a, rangea0a2->endContainer());
+  EXPECT_EQ(0u, rangea0a2->endOffset());
+
+  EXPECT_TRUE(rangea2a4->BoundaryPointsValid());
+  EXPECT_EQ(node_a, rangea2a4->startContainer());
+  EXPECT_EQ(0u, rangea2a4->startOffset());
+  EXPECT_EQ(node_a, rangea2a4->endContainer());
+  EXPECT_EQ(0u, rangea2a4->endOffset());
+
+  EXPECT_TRUE(rangea2b2->BoundaryPointsValid());
+  EXPECT_EQ(node_a, rangea2b2->startContainer());
+  EXPECT_EQ(0u, rangea2b2->startOffset());
+  EXPECT_EQ(text_b, rangea2b2->endContainer());
+  EXPECT_EQ(2u, rangea2b2->endOffset());
+
+  EXPECT_TRUE(rangeb2b6->BoundaryPointsValid());
+  EXPECT_EQ(text_b, rangeb2b6->startContainer());
+  EXPECT_EQ(2u, rangeb2b6->startOffset());
+  EXPECT_EQ(text_b, rangeb2b6->endContainer());
+  EXPECT_EQ(6u, rangeb2b6->endOffset());
+
+  // remove children in body.
+  GetDocument().body()->setTextContent("");
+
+  EXPECT_TRUE(rangea0a2->BoundaryPointsValid());
+  EXPECT_EQ(GetDocument().body(), rangea0a2->startContainer());
+  EXPECT_EQ(0u, rangea0a2->startOffset());
+  EXPECT_EQ(GetDocument().body(), rangea0a2->endContainer());
+  EXPECT_EQ(0u, rangea0a2->endOffset());
+
+  EXPECT_TRUE(rangea2a4->BoundaryPointsValid());
+  EXPECT_EQ(GetDocument().body(), rangea2a4->startContainer());
+  EXPECT_EQ(0u, rangea2a4->startOffset());
+  EXPECT_EQ(GetDocument().body(), rangea2a4->endContainer());
+  EXPECT_EQ(0u, rangea2a4->endOffset());
+
+  EXPECT_TRUE(rangea2b2->BoundaryPointsValid());
+  EXPECT_EQ(GetDocument().body(), rangea2b2->startContainer());
+  EXPECT_EQ(0u, rangea2b2->startOffset());
+  EXPECT_EQ(GetDocument().body(), rangea2b2->endContainer());
+  EXPECT_EQ(0u, rangea2b2->endOffset());
+
+  EXPECT_TRUE(rangeb2b6->BoundaryPointsValid());
+  EXPECT_EQ(GetDocument().body(), rangeb2b6->startContainer());
+  EXPECT_EQ(0u, rangeb2b6->startOffset());
+  EXPECT_EQ(GetDocument().body(), rangeb2b6->endContainer());
+  EXPECT_EQ(0u, rangeb2b6->endOffset());
+}
+
 }  // namespace blink
