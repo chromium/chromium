@@ -586,8 +586,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
     return a
 
-  def initialize_args_for_test(
-      self, generated_test, tester_config, additional_arg_keys=None):
+  def initialize_args_for_test(self, generated_test, tester_config):
     args = []
     args.extend(generated_test.get('args', []))
     args.extend(tester_config.get('args', []))
@@ -605,10 +604,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     add_conditional_args('mac_args', self.is_mac)
     add_conditional_args('win_args', self.is_win)
     add_conditional_args('win64_args', self.is_win64)
-
-    for key in additional_arg_keys or []:
-      args.extend(generated_test.pop(key, []))
-      args.extend(tester_config.get(key, []))
 
     if args:
       generated_test['args'] = self.maybe_fixup_args_array(args)
@@ -750,8 +745,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     result.setdefault('test', test_name)
     self.initialize_swarming_dictionary_for_test(result, tester_config)
 
-    self.initialize_args_for_test(
-        result, tester_config, additional_arg_keys=['gtest_args'])
+    self.initialize_args_for_test(result, tester_config)
     result = self.update_and_cleanup_test(result, test_name, tester_name,
                                           tester_config, waterfall)
     if self.is_android(tester_config) and 'swarming' in result:
