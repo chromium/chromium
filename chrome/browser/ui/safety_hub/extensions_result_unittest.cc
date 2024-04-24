@@ -25,7 +25,8 @@ class SafetyHubExtensionsResultTest : public testing::Test {
   void SetUp() override {
     feature_list_.InitWithFeatures(
         {features::kSafetyHubExtensionsUwSTrigger,
-         features::kSafetyHubExtensionsOffStoreTrigger},
+         features::kSafetyHubExtensionsOffStoreTrigger,
+         features::kSafetyHubExtensionsNoPrivacyPracticesTrigger},
         /*disabled_features=*/{});
     extension_prefs_ = extensions::ExtensionPrefs::Get(profile());
   }
@@ -198,4 +199,35 @@ TEST_F(SafetyHubExtensionsResultTest, GetResult_OffStore_Extensions_Dev_Mode) {
   ASSERT_TRUE(sh_result.has_value());
   auto* result = static_cast<SafetyHubExtensionsResult*>(sh_result->get());
   EXPECT_EQ(0U, result->GetNumTriggeringExtensions());
+}
+
+TEST_F(SafetyHubExtensionsResultTest, GetResult_Extensions_NoPrivacyPractice) {
+  // Create one extension that has CWSinfo no_privacy_practice as true.
+  extensions::CWSInfoService::CWSInfo no_privacy_practice_extension_info{
+      /*is_present=*/true,
+      /*is_live=*/true,
+      /*last_update_time=*/base::Time::Now(),
+      /*violation_type=*/
+      extensions::CWSInfoService::CWSViolationType::kNone,
+      /*unpublished_long_ago=*/false,
+      /*no_privacy_practice=*/true};
+  const std::string extension_name_no_privacy_practice =
+      "TestExtensionNoPrivacyPractice";
+  safety_hub_test_util::AddExtension(
+      extension_name_no_privacy_practice,
+      extensions::mojom::ManifestLocation::kUnpacked, profile(),
+      extension_urls::kChromeWebstoreUpdateURL);
+  std::unique_ptr<testing::NiceMock<safety_hub_test_util::MockCWSInfoService>>
+      cws_info_service =
+          safety_hub_test_util::GetMockCWSInfoService(profile(),
+                                                      /*with_calls=*/false);
+  EXPECT_CALL(*cws_info_service, GetCWSInfo)
+      .Times(1)
+      .WillOnce(testing::Return(no_privacy_practice_extension_info));
+  std::optional<std::unique_ptr<SafetyHubService::Result>> sh_result =
+      SafetyHubExtensionsResult::GetResult(cws_info_service.get(), profile(),
+                                           false);
+  ASSERT_TRUE(sh_result.has_value());
+  auto* result = static_cast<SafetyHubExtensionsResult*>(sh_result->get());
+  EXPECT_EQ(1U, result->GetNumTriggeringExtensions());
 }

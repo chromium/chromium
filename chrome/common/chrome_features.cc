@@ -1115,6 +1115,11 @@ BASE_FEATURE(kSafetyCheckExtensions,
 BASE_FEATURE(kSafetyHubExtensionsUwSTrigger,
              "SafetyHubExtensionsUwSTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables extensions that do not display proper privacy practices in the
+// Safety Hub Extension Reivew Panel.
+BASE_FEATURE(kSafetyHubExtensionsNoPrivacyPracticesTrigger,
+             "SafetyHubExtensionsNoPrivacyPracticesTrigger",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables offstore extensions to be shown in the Safety Hub Extension
 // review panel.
 BASE_FEATURE(kSafetyHubExtensionsOffStoreTrigger,

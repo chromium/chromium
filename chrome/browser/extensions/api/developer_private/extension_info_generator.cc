@@ -849,6 +849,10 @@ ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
   bool potentially_unwanted =
       base::FeatureList::IsEnabled(features::kSafetyHubExtensionsUwSTrigger) &&
       blocklist_state == BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED;
+  bool no_privacy_practice =
+      base::FeatureList::IsEnabled(
+          features::kSafetyHubExtensionsNoPrivacyPracticesTrigger) &&
+      (valid_cws_info && cws_info->no_privacy_practice);
 
   bool warn_for_offstore_extension = false;
   if (base::FeatureList::IsEnabled(
@@ -899,6 +903,12 @@ ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
     panel_string_id = state == developer::ExtensionState::kEnabled
                           ? IDS_EXTENSIONS_SC_UNPUBLISHED_ON
                           : IDS_EXTENSIONS_SC_UNPUBLISHED_OFF;
+  } else if (no_privacy_practice) {
+    // TODO(crbug.com/335430214): Update strings to real values once finalized.
+    detail_string_id = IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE;
+    panel_string_id = state == developer::ExtensionState::kEnabled
+                          ? IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_ON
+                          : IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_OFF;
   } else if (warn_for_offstore_extension) {
     detail_string_id = IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE;
     panel_string_id = state == developer::ExtensionState::kEnabled

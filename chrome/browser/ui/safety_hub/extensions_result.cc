@@ -39,6 +39,7 @@ constexpr extensions::PrefMap kPrefAcknowledgeSafetyCheckWarning = {
 // -- Extensions that have been unpublished
 // -- Extensions marked as unwanted
 // -- Offstore extensions
+// -- Developer has not disclosed privacy practices
 bool ShouldExtensionBeReviewed(
     const extensions::Extension& extension,
     Profile* profile,
@@ -71,6 +72,10 @@ bool ShouldExtensionBeReviewed(
     return false;
   }
 
+  // Check the various categories to see if the extension needs to be reviewed.
+  // Note that the order of the checks does not matter here since we only care
+  // about a review/no-review decision and not the specific category that
+  // requires the review.
   if (extension_info.has_value() && extension_info->is_present) {
     switch (extension_info->violation_type) {
       case extensions::CWSInfoService::CWSViolationType::kMalware:
@@ -83,6 +88,11 @@ bool ShouldExtensionBeReviewed(
           return true;
         }
         break;
+    }
+    if (base::FeatureList::IsEnabled(
+            features::kSafetyHubExtensionsNoPrivacyPracticesTrigger) &&
+        extension_info->no_privacy_practice) {
+      return true;
     }
   }
 

@@ -137,6 +137,16 @@ class MockCWSInfoService : public CWSInfoService {
         /*unpublished_long_ago=*/false,
         /*no_privacy_practice=*/false};
   }
+  static CWSInfoService::CWSInfo GetCWSInfoNoPrivacyPractice() {
+    return CWSInfoService::CWSInfo{
+        /*is_present=*/true,
+        /*is_live=*/false,
+        /*last_update_time=*/base::Time::Now(),
+        /*violation_type=*/
+        extensions::CWSInfoService::CWSViolationType::kNone,
+        /*unpublished_long_ago=*/false,
+        /*no_privacy_practice=*/true};
+  }
 };
 
 }  // namespace
@@ -159,7 +169,8 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
     extension_action_test_util::CreateToolbarModelForProfile(profile());
     feature_list_.InitWithFeatures(
         {features::kSafetyHubExtensionsUwSTrigger,
-         features::kSafetyHubExtensionsOffStoreTrigger},
+         features::kSafetyHubExtensionsOffStoreTrigger,
+         features::kSafetyHubExtensionsNoPrivacyPracticesTrigger},
         /*disabled_features=*/{});
   }
 
@@ -202,6 +213,7 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
     kUnpublished,
     kOffstore,
     kUnwantedSoftware,
+    kNoPrivacyPractice,
     kNone,
   };
 
@@ -237,6 +249,14 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
         detail_page_string = IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION;
         panel_string = extension_state ? IDS_EXTENSIONS_SC_POLICY_VIOLATION_ON
                                        : IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF;
+        break;
+      case SafetyCheckWarningReason::kNoPrivacyPractice:
+        // TODO(crbug.com/335430214): Update strings to real values
+        // once finalized.
+        detail_page_string = IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE;
+        panel_string = extension_state
+                           ? IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_ON
+                           : IDS_EXTENSIONS_SAFETY_CHECK_OFFSTORE_OFF;
         break;
       case SafetyCheckWarningReason::kNone:
         EXPECT_FALSE(info->safety_check_text->detail_string.has_value());
@@ -634,6 +654,21 @@ TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest_Malware) {
     CheckSafetyCheckDisplayString(SafetyCheckWarningReason::kMalware,
                                   info.get());
   }
+}
+
+TEST_F(ExtensionInfoGeneratorUnitTest,
+       SafetyCheckStringsTest_NoPrivacyPractice) {
+  // CWSInfo - No Privacy Practice.
+  const scoped_refptr<const Extension> extension =
+      CreateExtension("test", base::Value::List(), ManifestLocation::kInternal);
+  EXPECT_CALL(mock_cws_info_service_, GetCWSInfo)
+      .Times(1)
+      .WillOnce(
+          testing::Return(MockCWSInfoService::GetCWSInfoNoPrivacyPractice()));
+  std::unique_ptr<developer::ExtensionInfo> info =
+      GenerateExtensionInfo(extension->id());
+  CheckSafetyCheckDisplayString(SafetyCheckWarningReason::kNoPrivacyPractice,
+                                info.get());
 }
 
 TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest_OffStore) {
