@@ -48,6 +48,11 @@ class PointerLockController : public ExclusiveAccessControllerBase {
 
   void UnlockPointer();
 
+  void set_bubble_hide_callback_for_test(
+      ExclusiveAccessBubbleHideCallbackForTest callback) {
+    bubble_hide_callback_for_test_ = std::move(callback);
+  }
+
   void set_lock_state_callback_for_test(base::OnceClosure callback) {
     lock_state_callback_for_test_ = std::move(callback);
   }

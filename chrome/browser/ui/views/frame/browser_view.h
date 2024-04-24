@@ -15,6 +15,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/branding_buildflags.h"
@@ -109,7 +110,7 @@ enum class Channel;
 namespace views {
 class ExternalFocusTracker;
 class WebView;
-}
+}  // namespace views
 
 namespace webapps {
 enum class InstallableWebAppCheckResult;
@@ -981,9 +982,8 @@ class BrowserView : public BrowserWindow,
 
   // Calls |method| which is either WebContents::Cut, ::Copy, or ::Paste on
   // the given WebContents, returning true if it consumed the event.
-  bool DoCutCopyPasteForWebContents(
-      content::WebContents* contents,
-      void (content::WebContents::*method)());
+  bool DoCutCopyPasteForWebContents(content::WebContents* contents,
+                                    void (content::WebContents::*method)());
 
   // Shows the next app-modal dialog box, if there is one to be shown, or moves
   // an existing showing one to the front.
@@ -1269,6 +1269,10 @@ class BrowserView : public BrowserWindow,
   bool in_process_fullscreen_ = false;
 
   std::unique_ptr<ExclusiveAccessBubbleViews> exclusive_access_bubble_;
+  // Tracks the task to asynchronously destroy the exclusive access bubble.
+  base::CancelableTaskTracker exclusive_access_bubble_cancelable_task_tracker_;
+  std::optional<base::CancelableTaskTracker::TaskId>
+      exclusive_access_bubble_destruction_task_id_;
 
   // True when we do not want to allow exiting fullscreen, e.g. in Chrome OS
   // Kiosk session.
