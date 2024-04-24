@@ -11,8 +11,8 @@
  * becomes visible.
  */
 
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import '//resources/cr_elements/icons.html.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
+import '//resources/cr_elements/icons_lit.html.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';

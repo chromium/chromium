@@ -27,7 +27,7 @@ a[href] {
   color: var(--cr-link-color);
 }
 
-iron-icon {
+cr-icon {
   align-self: flex-start;
   flex-shrink: 0;
   height: 20px;

@@ -60,7 +60,7 @@ suite('ManagedFootnoteTest', function() {
 
     assertNotEquals('none', getComputedStyle(footnote).display);
     assertEquals(
-        footnote.shadowRoot!.querySelector('iron-icon')!.icon,
+        footnote.shadowRoot!.querySelector('cr-icon')!.icon,
         'cr:jumping_fox');
     assertTrue(footnote.shadowRoot!.textContent!.includes(browserMessage));
   });
