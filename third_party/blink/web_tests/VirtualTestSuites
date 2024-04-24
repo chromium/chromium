@@ -82,6 +82,19 @@
     "expires": "Jul 1, 2024"
   },
   {
+    "prefix": "reduce-accept-language",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["http/tests/navigation/language",
+              "http/tests/inspector-protocol/network",
+              "http/tests/serviceworker/reduce-accept-language/fetch-event-headers.html",
+              "navigator_language/reduce_accept_language"],
+    "exclusive_tests": ["http/tests/serviceworker/reduce-accept-language/fetch-event-headers.html",
+                        "navigator_language/reduce_accept_language"],
+    "args": ["--enable-features=ReduceAcceptLanguage",
+             "--disable-threaded-compositing", "--disable-threaded-animation"],
+    "expires": "Jul 1, 2024"
+  },
+  {
     "prefix": "gpu",
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": [ "fast/canvas",

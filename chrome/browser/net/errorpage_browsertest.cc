@@ -994,23 +994,12 @@ class ErrorPageForIDNTest : public InProcessBrowserTest {
   static const char kHostname[];
   static const char kHostnameJSUnicode[];
 
-  ErrorPageForIDNTest() {
-    // TODO(crbug.com/334954143) This test clears the AcceptLanguage Prefs which
-    // causes Accept-Language to not work correctly. Fix the tests when turning
-    // on the reduce accept-language feature.
-    scoped_feature_list_.InitWithFeatures(
-        {}, {network::features::kReduceAcceptLanguage});
-  }
-
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     // Clear AcceptLanguages to force punycode decoding.
     browser()->profile()->GetPrefs()->SetString(
         language::prefs::kAcceptLanguages, std::string());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 const char ErrorPageForIDNTest::kHostname[] =

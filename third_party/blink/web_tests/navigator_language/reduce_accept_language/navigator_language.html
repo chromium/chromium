@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+
+async function languageChange() {
+    return new Promise(resolve => window.onlanguagechange = resolve);
+}
+
+async function languageChangeEvent() {
+    return new Promise(resolve => window.addEventListener('languagechange', resolve));
+}
+
+promise_test(async () => {
+    var testValues = [
+        { accept_languages: 'foo', languages: ['foo'] },
+        { accept_languages: '', languages: ['en-US'] },
+        { accept_languages: 'foo,bar', languages: [ 'foo' ] },
+        { accept_languages: '  foo , bar ', languages: [ 'foo' ] },
+        { accept_languages: '  foo ; bar ', languages: [ 'foo ; bar' ] },
+        { accept_languages: '_foo_', languages: ['_foo_'] },
+        { accept_languages: 'en_', languages: ['en-'] },
+        { accept_languages: 'en__', languages: ['en-_'] },
+        { accept_languages: 'en_US, fr_FR', languages: ['en-US'] },
+        { accept_languages: 'en_US_CA', languages: ['en-US_CA'] },
+    ];
+
+    for (var i = 0; i < testValues.length; ++i) {
+        var data = testValues[i];
+
+        var languageChangePromise = languageChange();
+        testRunner.setAcceptLanguages(data.accept_languages);
+        await languageChangePromise;
+
+        assert_equals(navigator.languages.length, 1);
+        assert_equals(navigator.language, data.languages[0]);
+        // Verify usage count metric records.
+        var ReduceAcceptLanguage = 4386; // From UseCounter.h
+        assert_true(internals.isUseCounted(document, ReduceAcceptLanguage));
+        for (var j = 0; j < navigator.languages.length; ++j) {
+            console.log(j);
+            assert_equals(data.languages[j], navigator.languages[j]);
+        }
+    }
+}, "Test that navigator.languages reflects the accept languages value.");
+
+
+</script>
+</body>
+</html>

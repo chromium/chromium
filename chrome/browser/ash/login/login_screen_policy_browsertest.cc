@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenLocalePolicyWithVPDTest,
   profile_network_context->ConfigureNetworkContextParams(
       /*in_memory=*/true, empty_relative_partition_path,
       &network_context_params, &cert_verifier_creation_params);
-  ASSERT_EQ(network_context_params.accept_language, "fr-FR");
+  ASSERT_EQ(network_context_params.accept_language, "fr-FR,fr;q=0.9");
 }
 
 class LoginScreenButtonsLocalePolicy : public LoginScreenLocalePolicyTestBase {

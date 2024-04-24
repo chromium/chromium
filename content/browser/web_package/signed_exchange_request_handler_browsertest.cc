@@ -262,13 +262,7 @@ class SignedExchangeRequestHandlerBrowserTest
     : public testing::WithParamInterface<bool>,
       public SignedExchangeRequestHandlerBrowserTestBase {
  public:
-  SignedExchangeRequestHandlerBrowserTest() {
-    // TODO(crbug.com/334954143) Fix the AcceptLanguage tests when turning on
-    // the ReduceAcceptLanguage feature.
-    scoped_feature_list_.InitWithFeatures(
-        {}, {network::features::kReduceAcceptLanguage});
-    use_prefetch_ = GetParam();
-  }
+  SignedExchangeRequestHandlerBrowserTest() { use_prefetch_ = GetParam(); }
 
   SignedExchangeRequestHandlerBrowserTest(
       const SignedExchangeRequestHandlerBrowserTest&) = delete;
@@ -335,7 +329,6 @@ class SignedExchangeRequestHandlerBrowserTest
   }
 
   bool use_prefetch_ = false;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, Simple) {
