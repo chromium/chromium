@@ -26,7 +26,6 @@ suite('CellularSetupButtonBarTest', function() {
 
   function setStateForAllButtons(state: ButtonState): void {
     buttonBar.buttonState = {
-      backward: state,
       cancel: state,
       forward: state,
     };
@@ -48,16 +47,12 @@ suite('CellularSetupButtonBarTest', function() {
   test('individual buttons appear if enabled', function() {
     setStateForAllButtons(ButtonState.ENABLED);
 
-    const backward =
-        buttonBar.shadowRoot!.querySelector<CrButtonElement>('#backward');
     const cancel =
         buttonBar.shadowRoot!.querySelector<CrButtonElement>('#cancel');
     const forward =
         buttonBar.shadowRoot!.querySelector<CrButtonElement>('#forward');
-    assertTrue(!!backward);
     assertTrue(!!cancel);
     assertTrue(!!forward);
-    assertTrue(isButtonShownAndEnabled(backward));
     assertTrue(isButtonShownAndEnabled(cancel));
     assertTrue(isButtonShownAndEnabled(forward));
   });
@@ -65,32 +60,24 @@ suite('CellularSetupButtonBarTest', function() {
   test('individual buttons appear but are disabled', function() {
     setStateForAllButtons(ButtonState.DISABLED);
 
-    const backward =
-        buttonBar.shadowRoot!.querySelector<CrButtonElement>('#backward');
     const cancel =
         buttonBar.shadowRoot!.querySelector<CrButtonElement>('#cancel');
     const forward =
         buttonBar.shadowRoot!.querySelector<CrButtonElement>('#forward');
-    assertTrue(!!backward);
     assertTrue(!!cancel);
     assertTrue(!!forward);
-    assertTrue(isButtonShownAndDisabled(backward));
     assertTrue(isButtonShownAndDisabled(cancel));
     assertTrue(isButtonShownAndDisabled(forward));
   });
 
   test('individual buttons are hidden', function() {
     setStateForAllButtons(ButtonState.HIDDEN);
-    const backward =
-        buttonBar.shadowRoot!.querySelector<CrButtonElement>('#backward');
     const cancel =
         buttonBar.shadowRoot!.querySelector<CrButtonElement>('#cancel');
     const forward =
         buttonBar.shadowRoot!.querySelector<CrButtonElement>('#forward');
-    assertTrue(!!backward);
     assertTrue(!!cancel);
     assertTrue(!!forward);
-    assertTrue(isButtonHidden(backward));
     assertTrue(isButtonHidden(cancel));
     assertTrue(isButtonHidden(forward));
   });
@@ -108,8 +95,7 @@ suite('CellularSetupButtonBarTest', function() {
 
   test('default focus is on first button if rest are hidden', function() {
     buttonBar.buttonState = {
-      backward: ButtonState.ENABLED,
-      cancel: ButtonState.HIDDEN,
+      cancel: ButtonState.ENABLED,
       forward: ButtonState.HIDDEN,
     };
     buttonBar.focusDefaultButton();
@@ -118,15 +104,14 @@ suite('CellularSetupButtonBarTest', function() {
 
     assertEquals(
         buttonBar.shadowRoot!.activeElement,
-        buttonBar.shadowRoot!.querySelector('#backward'));
+        buttonBar.shadowRoot!.querySelector('#cancel'));
   });
 
   test(
       'default focus is on first button if rest are visible but disabled',
       function() {
         buttonBar.buttonState = {
-          backward: ButtonState.ENABLED,
-          cancel: ButtonState.DISABLED,
+          cancel: ButtonState.ENABLED,
           forward: ButtonState.DISABLED,
         };
         buttonBar.focusDefaultButton();
@@ -135,6 +120,6 @@ suite('CellularSetupButtonBarTest', function() {
 
         assertEquals(
             buttonBar.shadowRoot!.activeElement,
-            buttonBar.shadowRoot!.querySelector('#backward'));
+            buttonBar.shadowRoot!.querySelector('#cancel'));
       });
 });

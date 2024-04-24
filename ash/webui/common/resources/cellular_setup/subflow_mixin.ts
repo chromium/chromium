@@ -36,10 +36,6 @@ export const SubflowMixin = dedupingMixin(
           assertNotReached();
         }
 
-        navigateBackward(): void {
-          assertNotReached();
-        }
-
         maybeFocusPageElement(): boolean {
           return false;
         }
@@ -52,6 +48,5 @@ export interface SubflowMixinInterface {
   buttonState: ButtonBarState;
   initSubflow(): void;
   navigateForward(): void;
-  navigateBackward(): void;
   maybeFocusPageElement(): boolean;
 }

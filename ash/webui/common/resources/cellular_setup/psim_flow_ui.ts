@@ -368,7 +368,6 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
       case PsimUiState.WAITING_FOR_USER_PAYMENT:
         this.forwardButtonLabel = this.i18n('next');
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: ButtonState.ENABLED,
           forward: ButtonState.DISABLED,
         };
@@ -376,7 +375,6 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
       case PsimUiState.TIMEOUT_START_ACTIVATION:
         this.forwardButtonLabel = this.i18n('tryAgain');
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: ButtonState.ENABLED,
           forward: ButtonState.ENABLED,
         };
@@ -384,7 +382,6 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
       case PsimUiState.ACTIVATION_SUCCESS:
         this.forwardButtonLabel = this.i18n('next');
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: ButtonState.ENABLED,
           forward: ButtonState.ENABLED,
         };
@@ -394,7 +391,6 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
       case PsimUiState.FINAL_TIMEOUT_START_ACTIVATION:
         this.forwardButtonLabel = this.i18n('done');
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: ButtonState.ENABLED,
           forward: ButtonState.ENABLED,
         };
@@ -403,7 +399,6 @@ export class PsimFlowUiElement extends PsimFlowUiElementBase {
       case PsimUiState.TIMEOUT_FINISH_ACTIVATION:
         this.forwardButtonLabel = this.i18n('done');
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: ButtonState.HIDDEN,
           forward: ButtonState.ENABLED,
         };

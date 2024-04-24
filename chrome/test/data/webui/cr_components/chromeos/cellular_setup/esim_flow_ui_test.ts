@@ -166,12 +166,10 @@ suite(`CrComponentsEsimFlowUiTest`, function() {
    */
   async function navigateForwardForInstall(page: HTMLElement) {
     assertEquals(eSimPage.buttonState.forward, ButtonState.ENABLED);
-    assertEquals(eSimPage.buttonState.backward, ButtonState.HIDDEN);
 
     eSimPage.navigateForward();
 
     assertEquals(eSimPage.buttonState.forward, ButtonState.DISABLED);
-    assertEquals(eSimPage.buttonState.backward, ButtonState.HIDDEN);
     assertEquals(eSimPage.buttonState.cancel, ButtonState.DISABLED);
 
     if (page !== profileLoadingPage && page !== profileDiscoveryConsentPage &&
@@ -203,7 +201,6 @@ suite(`CrComponentsEsimFlowUiTest`, function() {
     assertEquals(
         !!finalPage.shadowRoot!.querySelector('.error'), shouldBeShowingError);
     assertEquals(ButtonState.ENABLED, eSimPage.buttonState.forward);
-    assertEquals(ButtonState.HIDDEN, eSimPage.buttonState.backward);
     assertEquals(ButtonState.HIDDEN, eSimPage.buttonState.cancel);
     assertEquals(eSimPage.forwardButtonLabel, 'Done');
     let exitCellularSetupEventFired = false;
@@ -218,7 +215,6 @@ suite(`CrComponentsEsimFlowUiTest`, function() {
 
   function assertButtonState(forwardButtonShouldBeEnabled: boolean) {
     const buttonState = eSimPage.buttonState;
-    assertEquals(buttonState.backward, ButtonState.HIDDEN);
     assertEquals(buttonState.cancel, ButtonState.ENABLED);
     assertEquals(
         buttonState.forward,

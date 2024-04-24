@@ -74,13 +74,6 @@ export class ButtonBarElement extends ButtonBarElementBase {
     }
   }
 
-  private onBackwardButtonClicked_(): void {
-    this.dispatchEvent(new CustomEvent('backward-nav-requested', {
-      bubbles: true,
-      composed: true,
-    }));
-  }
-
   private onCancelButtonClicked_(): void {
     this.dispatchEvent(new CustomEvent('cancel-requested', {
       bubbles: true,
@@ -98,8 +91,6 @@ export class ButtonBarElement extends ButtonBarElementBase {
   private getButtonBarState_(button: Button): ButtonState|undefined {
     assert(this.buttonState);
     switch (button) {
-      case Button.BACKWARD:
-        return this.buttonState.backward;
       case Button.CANCEL:
         return this.buttonState.cancel;
       case Button.FORWARD:

@@ -18,13 +18,11 @@ export enum ButtonState {
 }
 
 export enum Button {
-  BACKWARD = 1,
-  CANCEL = 2,
-  FORWARD = 3,
+  CANCEL = 1,
+  FORWARD = 2,
 }
 
 export interface ButtonBarState {
-  backward?: ButtonState;
   cancel?: ButtonState;
   forward?: ButtonState;
 }

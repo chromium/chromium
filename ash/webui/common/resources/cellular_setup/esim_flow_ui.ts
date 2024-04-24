@@ -462,7 +462,6 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       cancelButtonStateIfEnabled: ButtonState): ButtonBarState {
     this.forwardButtonLabel = this.i18n('next');
     return {
-      backward: ButtonState.HIDDEN,
       cancel: cancelButtonStateIfEnabled,
       forward: enableForwardBtn ? ButtonState.ENABLED : ButtonState.DISABLED,
     };
@@ -473,7 +472,6 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       cancelButtonStateIfEnabled: ButtonState): ButtonBarState {
     this.forwardButtonLabel = this.i18n('confirm');
     return {
-      backward: ButtonState.HIDDEN,
       cancel: cancelButtonStateIfEnabled,
       forward: enableForwardBtn ? ButtonState.ENABLED : ButtonState.DISABLED,
     };
@@ -491,7 +489,6 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       case EsimUiState.PROFILE_SEARCH:
         this.forwardButtonLabel = this.i18n('next');
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: cancelButtonStateIfEnabled,
           forward: ButtonState.DISABLED,
         };
@@ -499,7 +496,6 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       case EsimUiState.PROFILE_SEARCH_CONSENT:
         this.forwardButtonLabel = this.i18n('profileDiscoveryConsentScan');
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: ButtonState.ENABLED,
           forward: ButtonState.ENABLED,
         };
@@ -510,9 +506,7 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
         break;
       case EsimUiState.ACTIVATION_CODE_ENTRY_READY:
         buttonState = this.generateButtonStateForActivationPage_(
-            /*enableForwardBtn*/ true,
-            cancelButtonStateIfEnabled,
-        );
+            /*enableForwardBtn*/ true, cancelButtonStateIfEnabled);
         break;
       case EsimUiState.ACTIVATION_CODE_ENTRY_INSTALLING:
         buttonState = this.generateButtonStateForActivationPage_(
@@ -533,14 +527,12 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       case EsimUiState.PROFILE_SELECTION:
         this.updateForwardButtonLabel_();
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: cancelButtonStateIfEnabled,
           forward: ButtonState.ENABLED,
         };
         break;
       case EsimUiState.PROFILE_SELECTION_INSTALLING:
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: cancelButtonStateIfDisabled,
           forward: ButtonState.DISABLED,
         };
@@ -548,7 +540,6 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       case EsimUiState.SETUP_FINISH:
         this.forwardButtonLabel = this.i18n('done');
         buttonState = {
-          backward: ButtonState.HIDDEN,
           cancel: ButtonState.HIDDEN,
           forward: ButtonState.ENABLED,
         };
@@ -678,31 +669,6 @@ export class EsimFlowUiElement extends EsimFlowUiElementBase {
       default:
         assertNotReached();
     }
-  }
-
-  /** SubflowMixin override */
-  override navigateBackward(): void {
-    if (this.profilesFound_() &&
-        (this.state_ === EsimUiState.ACTIVATION_CODE_ENTRY ||
-         this.state_ === EsimUiState.ACTIVATION_CODE_ENTRY_READY)) {
-      this.state_ = EsimUiState.PROFILE_SELECTION;
-      return;
-    }
-
-    if (this.state_ === EsimUiState.CONFIRMATION_CODE_ENTRY ||
-        this.state_ === EsimUiState.CONFIRMATION_CODE_ENTRY_READY) {
-      if (this.activationCode_) {
-        this.state_ = EsimUiState.ACTIVATION_CODE_ENTRY_READY;
-        return;
-      } else if (this.profilesFound_()) {
-        this.state_ = EsimUiState.PROFILE_SELECTION;
-        return;
-      }
-    }
-    console.error(
-        'Navigate backward faled for : ' + this.state_ +
-        ' this state does not support backward navigation.');
-    assertNotReached();
   }
 
   /** SubflowMixin override */

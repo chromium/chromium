@@ -117,8 +117,6 @@ export class CellularSetupElement extends PolymerElement {
   override ready() {
     super.ready();
 
-    this.addEventListener(
-        'backward-nav-requested', this.onBackwardNavRequested_);
     this.addEventListener('retry-requested', this.onRetryRequested_);
     this.addEventListener('forward-nav-requested', this.onForwardNavRequested_);
     this.addEventListener('cancel-requested', this.onCancelRequested_);
@@ -130,10 +128,6 @@ export class CellularSetupElement extends PolymerElement {
       this.flowPsimBanner = '';
       this.currentPage_.initSubflow();
     }
-  }
-
-  private onBackwardNavRequested_(): void {
-    this.currentPage_.navigateBackward();
   }
 
   private onCancelRequested_(): void {
