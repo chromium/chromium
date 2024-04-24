@@ -57,7 +57,9 @@
     withReplacementItem:(GridItemIdentifier*)replacementItem {
   auto it =
       std::find(_items.begin(), _items.end(), item.tabSwitcherItem.identifier);
-  *it = replacementItem.tabSwitcherItem.identifier;
+  if (it != _items.end()) {
+    *it = replacementItem.tabSwitcherItem.identifier;
+  }
 }
 
 - (void)moveItem:(GridItemIdentifier*)item

@@ -723,6 +723,45 @@ TEST_P(BaseGridMediatorTest, UngroupGroup) {
   EXPECT_EQ(nullptr, web_state_list->GetGroupOfWebStateAt(1));
 }
 
+// Tests that closing the last tab of a selected group clears the selection.
+TEST_P(BaseGridMediatorTest, CloseSelectedGroup) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web_state_list->CreateGroup({1}, {});
+  const TabGroup* group = web_state_list->GetGroupOfWebStateAt(1);
+  [mediator_ switchToMode:TabGridModeSelection];
+  [mediator_
+      addToSelectionItemID:[GridItemIdentifier groupIdentifier:group
+                                              withWebStateList:web_state_list]];
+  EXPECT_EQ(1UL, [mediator_ allSelectedDragItems].count);
+
+  browser_->GetWebStateList()->CloseWebStateAt(1,
+                                               WebStateList::CLOSE_USER_ACTION);
+
+  EXPECT_EQ(0UL, [mediator_ allSelectedDragItems].count);
+}
+
+// Tests that closing the last tab of a selected group in a batch operation
+// clears the selection.
+TEST_P(BaseGridMediatorTest, CloseSelectedGroupInBatch) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  web_state_list->CreateGroup({1}, {});
+  const TabGroup* group = web_state_list->GetGroupOfWebStateAt(1);
+  [mediator_ switchToMode:TabGridModeSelection];
+  [mediator_
+      addToSelectionItemID:[GridItemIdentifier groupIdentifier:group
+                                              withWebStateList:web_state_list]];
+  EXPECT_EQ(1UL, [mediator_ allSelectedDragItems].count);
+
+  {
+    WebStateList::ScopedBatchOperation lock =
+        browser_->GetWebStateList()->StartBatchOperation();
+    browser_->GetWebStateList()->CloseWebStateAt(
+        1, WebStateList::CLOSE_USER_ACTION);
+  }
+
+  EXPECT_EQ(0UL, [mediator_ allSelectedDragItems].count);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* No InstantiationName */,
     BaseGridMediatorTest,
