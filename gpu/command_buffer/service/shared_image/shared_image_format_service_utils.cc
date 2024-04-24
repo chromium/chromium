@@ -610,10 +610,10 @@ skgpu::graphite::TextureInfo GraphiteBackendTextureInfo(
   } else {
     CHECK_EQ(gr_context_type, GrContextType::kGraphiteDawn);
 #if BUILDFLAG(SKIA_USE_DAWN)
-    return DawnBackendTextureInfo(format, readonly, is_yuv_plane, plane_index,
-                                  mipmapped, scanout_dcomp_surface,
-                                  supports_multiplanar_rendering,
-                                  supports_multiplanar_copy);
+    return DawnBackendTextureInfo(
+        format, readonly, is_yuv_plane, plane_index,
+        /*array_slice=*/0, mipmapped, scanout_dcomp_surface,
+        supports_multiplanar_rendering, supports_multiplanar_copy);
 #endif
   }
   NOTREACHED_NORETURN();
@@ -666,6 +666,7 @@ skgpu::graphite::DawnTextureInfo DawnBackendTextureInfo(
     bool readonly,
     bool is_yuv_plane,
     int plane_index,
+    int array_slice,
     bool mipmapped,
     bool scanout_dcomp_surface,
     bool supports_multiplanar_rendering,
@@ -691,6 +692,7 @@ skgpu::graphite::DawnTextureInfo DawnBackendTextureInfo(
   }
   dawn_texture_info.fMipmapped =
       mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
+  dawn_texture_info.fSlice = array_slice;
   return dawn_texture_info;
 }
 #endif

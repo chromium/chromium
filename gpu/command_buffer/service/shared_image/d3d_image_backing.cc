@@ -1056,7 +1056,7 @@ D3DImageBacking::ProduceSkiaGraphite(
   return SkiaGraphiteDawnImageRepresentation::Create(
       std::move(dawn_representation), context_state,
       context_state->gpu_main_graphite_recorder(), manager, this, tracker,
-      is_yuv_plane, plane_index_);
+      is_yuv_plane, plane_index_, array_slice_);
 }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 

@@ -197,6 +197,7 @@ GPU_GLES2_EXPORT skgpu::graphite::DawnTextureInfo DawnBackendTextureInfo(
     bool readonly,
     bool is_yuv_plane,
     int plane_index,
+    int array_slice,
     bool mipmapped,
     bool scanout_dcomp_surface,
     bool supports_multiplanar_rendering,

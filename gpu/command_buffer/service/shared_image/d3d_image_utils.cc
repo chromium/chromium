@@ -152,7 +152,7 @@ std::unique_ptr<ExternalImageDXGI> CreateDawnExternalImageDXGI(
   wgpu_texture_desc.usage = wgpu_allowed_usage;
   wgpu_texture_desc.dimension = wgpu::TextureDimension::e2D;
   wgpu_texture_desc.size = {d3d11_texture_desc.Width, d3d11_texture_desc.Height,
-                            1};
+                            d3d11_texture_desc.ArraySize};
   wgpu_texture_desc.mipLevelCount = 1;
   wgpu_texture_desc.sampleCount = 1;
   wgpu_texture_desc.viewFormatCount =
