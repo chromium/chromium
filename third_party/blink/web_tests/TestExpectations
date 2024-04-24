@@ -1473,8 +1473,6 @@ crbug.com/40275672 external/wpt/css/css-contain/contain-style-counters-002.html 
 # css-pseudo
 crbug.com/1500288 external/wpt/css/css-pseudo/grammar-spelling-errors-001.html [ Failure ]
 crbug.com/1500288 external/wpt/css/css-pseudo/grammar-spelling-errors-002.html [ Failure ]
-crbug.com/40856519 external/wpt/css/css-pseudo/highlight-painting-001.html [ Failure ]
-crbug.com/40856519 external/wpt/css/css-pseudo/highlight-painting-002.html [ Failure ]
 crbug.com/1172333 external/wpt/css/css-pseudo/first-letter-hi-001.html [ Failure ]
 crbug.com/1172333 external/wpt/css/css-pseudo/first-letter-digraph.html [ Failure ]
 crbug.com/1353352 [ Mac ] fast/css3-text/css3-text-decoration/text-decoration-line-grammar-error.html [ Failure ]

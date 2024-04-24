@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8" />
+<title>CSS Pseudo-Elements Test: Shadow on a spelling error</title>
+<link rel="author" title="Stephen Chenney" href="mailto:schenney@igalia.com">
+<link rel="help" href="https://drafts.csswg.org/css-pseudo/#selectordef-spelling-error">
+<meta name="assert" content="Verify that a shadow on a spelling marker is rendered correctly.">
+<link rel="match" href="spelling-error-shadow-ref.html">
+<script src="../support/markers.js"></script>
+<style>
+  ::spelling-error {
+    color: green;
+    text-shadow: 0.25em 0.25em 3px rgba(0,0,128,0.5);
+    text-decoration-line: none;
+  }
+  div {
+    color: black;
+    text-shadow: 0.1em 0.1em 3px rgba(0,0,0,0.5);
+  }
+</style>
+
+<p>The test passes if "quikc" has a spelling error marker that is green with a green shadow.</p>
+<div id="target" contenteditable spellcheck>The quikc brown fox.</div>
+
+<script>
+  target.focus();
+  addSpellingMarker(target, 4, 9);
+</script>
+</html>

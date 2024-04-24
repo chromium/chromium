@@ -421,9 +421,21 @@ void TextPainter::PaintSelectedText(
       &selection_start, &selection_end);
 
   // Because only a part of the text glyph can be selected, we need to draw
-  // the selection twice. First, draw the glyphs outside the selection area,
-  // with the original style.
+  // the selection twice. First, draw any shadow for the selection clipped.
   gfx::RectF float_selection_rect(selection_rect);
+  if (UNLIKELY(selection_style.shadow)) {
+    std::optional<base::AutoReset<bool>> is_painting_selection_reset;
+    if (TextPainter::SvgTextPaintState* state = GetSvgState()) {
+      is_painting_selection_reset.emplace(&state->is_painting_selection_, true);
+    }
+    GraphicsContextStateSaver state_saver(graphics_context_);
+    gfx::RectF selection_shadow_rect = float_selection_rect;
+    selection_style.shadow->AdjustRectForShadow(selection_shadow_rect);
+    graphics_context_.Clip(selection_shadow_rect);
+    Paint(fragment_paint_info.Slice(selection_start, selection_end),
+          selection_style, node_id, auto_dark_mode, TextPainter::kShadowsOnly);
+  }
+  // Then draw the glyphs outside the selection area, with the original style.
   {
     GraphicsContextStateSaver state_saver(graphics_context_);
     graphics_context_.ClipOut(float_selection_rect);
@@ -439,7 +451,8 @@ void TextPainter::PaintSelectedText(
     GraphicsContextStateSaver state_saver(graphics_context_);
     graphics_context_.Clip(float_selection_rect);
     Paint(fragment_paint_info.Slice(selection_start, selection_end),
-          selection_style, node_id, auto_dark_mode);
+          selection_style, node_id, auto_dark_mode,
+          TextPainter::kTextProperOnly);
   }
 }
 

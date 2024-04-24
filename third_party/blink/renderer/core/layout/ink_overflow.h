@@ -24,6 +24,7 @@ class Font;
 class FragmentItem;
 class InlineCursor;
 class InlinePaintContext;
+class ShadowList;
 class Text;
 struct LogicalRect;
 struct TextFragmentPaintInfo;
@@ -161,6 +162,11 @@ class CORE_EXPORT InkOverflow {
       const PhysicalSize& size,
       const LogicalRect& ink_overflow);
 
+  // Expands the given overflow to account for shadows.
+  static void ExpandForShadowOverflow(LogicalRect& ink_overflow,
+                                      const ShadowList& text_shadow,
+                                      const WritingMode writing_mode);
+
   // Returns ink-overflow with text decoration overflow in logical direction.
   // |inline_context| may be null.
   // Note: |ink_overflow| should be in logical direction.
@@ -172,7 +178,8 @@ class CORE_EXPORT InkOverflow {
       const Font& scaled_font,
       const PhysicalOffset& container_offset,
       const LogicalRect& ink_overflow,
-      const InlinePaintContext* inline_context);
+      const InlinePaintContext* inline_context,
+      const WritingMode writing_mode);
 
 #if DCHECK_IS_ON()
   struct ReadUnsetAsNoneScope {
@@ -207,7 +214,8 @@ class CORE_EXPORT InkOverflow {
       const Font& scaled_font,
       const PhysicalOffset& offset_in_container,
       const LogicalRect& ink_overflow,
-      const InlinePaintContext* inline_context);
+      const InlinePaintContext* inline_context,
+      const WritingMode writing_mode);
 
   static LogicalRect ComputeCustomHighlightOverflow(
       const DocumentMarkerVector& markers,

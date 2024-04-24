@@ -537,9 +537,9 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
           auto_dark_mode);
       break;
     case HighlightPainter::kOverlay:
-      // Slow path: paint suppressing text proper where highlighted, then
-      // paint each highlight overlay, suppressing unless topmost highlight.
+      // Paint originating shadows at the bottom, below all highlight pseudos.
       highlight_painter.PaintOriginatingShadow(text_style, node_id);
+      // Paint each highlight overlay, including originating and selection.
       highlight_painter.PaintHighlightOverlays(
           text_style, node_id, paint_marker_backgrounds, rotation);
       break;
