@@ -60,14 +60,13 @@ class CORE_EXPORT ElementAnimations final
   ~ElementAnimations();
 
   enum class CompositedPaintStatus {
-    // Either no animation is running that affects the target property, or a
-    // fresh compositing decision is required for an animated property.
+    // A fresh compositing decision is required for an animated property.
     // Any style change for the corresponding property requires paint
     // invalidation. Even if rendered by a composited animation, we need to
     // trigger repaint in order to set up a worklet paint image. If the property
     // is animated, paint will decide if the animation is composited and will
     // update the status accordingly.
-    kNeedsRepaintOrNoAnimation = 0,
+    kNeedsRepaint = 0,
 
     // An animation is affecting the target property, but it is not being
     // composited. Paint can short-circuit setting up a worklet paint image
@@ -79,7 +78,11 @@ class CORE_EXPORT ElementAnimations final
     // compositor. Though repaint won't get triggered by a change to the
     // property, it can still be triggered for other reasons, in which case a
     // worklet paint image must be generated.
-    kComposited = 2
+    kComposited = 2,
+
+    // No animation affects the targeted property, so no paint invalidation or
+    // image generation is required.
+    kNoAnimation = 3
   };
 
   // Animations that are currently active for this element, their effects will
@@ -113,6 +116,8 @@ class CORE_EXPORT ElementAnimations final
   bool UpdateBoxSizeAndCheckTransformAxisAlignment(const gfx::SizeF& box_size);
   bool IsIdentityOrTranslation() const;
 
+  void InvalidatePaintForCompositedAnimationsIfNecessary(Element* element);
+
   // TODO(crbug.com/1301961): Consider converting to an array or flat map of
   // fields for paint properties that can be composited.
   CompositedPaintStatus CompositedBackgroundColorStatus() {
@@ -133,6 +138,8 @@ class CORE_EXPORT ElementAnimations final
   void Trace(Visitor*) const override;
 
  private:
+  bool HasAnimationForProperty(const CSSProperty& property);
+
   EffectStack effect_stack_;
   CSSAnimations css_animations_;
   AnimationCountedSet animations_;

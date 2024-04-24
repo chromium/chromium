@@ -223,36 +223,6 @@ bool HasClipPathPaintWorklet(Node* node) {
          ElementAnimations::CompositedPaintStatus::kComposited;
 }
 
-// If there's a composited clip path animation, and it doesn't have a cached
-// value for CompositedClipPathStatus, that means we need to regenerate the
-// paint properties, as the composited clip path status is calculated then. See
-// HasCompositeClipPathAnimation in clip_path_clipper.cc
-bool ShouldRefreshPaintPropertiesForClipPath(Node* node,
-                                             const ComputedStyle* style) {
-  if (!RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled()) {
-    return false;
-  }
-
-  // We don't care what the composited clip path status is if there's no
-  // composited clip path animation.
-  if (!style->HasCurrentClipPathAnimation()) {
-    return false;
-  }
-
-  Element* element = DynamicTo<Element>(node);
-  if (!element) {
-    return false;
-  }
-
-  ElementAnimations* element_animations = element->GetElementAnimations();
-  if (!element_animations) {
-    return false;
-  }
-
-  return element_animations->CompositedClipPathStatus() ==
-         ElementAnimations::CompositedPaintStatus::kNeedsRepaintOrNoAnimation;
-}
-
 StyleDifference AdjustForCompositableAnimationPaint(
     const ComputedStyle* old_style,
     const ComputedStyle* new_style,
@@ -260,32 +230,9 @@ StyleDifference AdjustForCompositableAnimationPaint(
     StyleDifference diff) {
   DCHECK(new_style);
 
-  // Background color changes that are triggered by animations on the compositor
-  // thread can skip paint invalidation.
-  bool had_background_color_animation =
-      old_style ? old_style->HasCurrentBackgroundColorAnimation() : false;
-
-  bool has_background_color_animation =
-      new_style->HasCurrentBackgroundColorAnimation();
-  // If animation status changed, we need a paint invalidation regardless of
-  // whether the background color changed.
-  if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
-      (had_background_color_animation != has_background_color_animation))
-    diff.SetNeedsNormalPaintInvalidation();
-
   bool skip_background_color_paint_invalidation =
       !diff.BackgroundColorChanged() || HasNativeBackgroundPainter(node);
   if (!skip_background_color_paint_invalidation)
-    diff.SetNeedsNormalPaintInvalidation();
-
-  bool had_clip_path_animation =
-      old_style ? old_style->HasCurrentClipPathAnimation() : false;
-
-  bool has_clip_path_animation = new_style->HasCurrentClipPathAnimation();
-  // If animation status changed, we need a paint invalidation regardless of
-  // whether the background color changed.
-  if (RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() &&
-      (had_clip_path_animation != has_clip_path_animation))
     diff.SetNeedsNormalPaintInvalidation();
 
   bool skip_clip_path_paint_invalidation =
@@ -2842,8 +2789,7 @@ void LayoutObject::SetStyle(const ComputedStyle* style,
   // Clip Path animations need a property update when they're composited, as it
   // changes between mask based and path based clip.
   if ((diff.NeedsNormalPaintInvalidation() && old_style &&
-       !old_style->ClipPathDataEquivalent(*style_)) ||
-      ShouldRefreshPaintPropertiesForClipPath(GetNode(), style_)) {
+       !old_style->ClipPathDataEquivalent(*style_))) {
     SetNeedsPaintPropertyUpdate();
     PaintingLayer()->SetNeedsCompositingInputsUpdate();
   }

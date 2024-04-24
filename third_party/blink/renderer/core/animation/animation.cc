@@ -3309,12 +3309,12 @@ void Animation::UpdateCompositedPaintStatus() {
       keyframe_effect->Affects(
           PropertyHandle(GetCSSPropertyBackgroundColor()))) {
     element_animations->SetCompositedBackgroundColorStatus(
-        ElementAnimations::CompositedPaintStatus::kNeedsRepaintOrNoAnimation);
+        ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
   }
   if (RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() &&
       keyframe_effect->Affects(PropertyHandle(GetCSSPropertyClipPath()))) {
     element_animations->SetCompositedClipPathStatus(
-        ElementAnimations::CompositedPaintStatus::kNeedsRepaintOrNoAnimation);
+        ElementAnimations::CompositedPaintStatus::kNeedsRepaint);
   }
 }
 

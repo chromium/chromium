@@ -1897,17 +1897,6 @@ void UpdateAnimationFlagsForEffect(const AnimationEffect& effect,
   }
 }
 
-void SetCompositablePaintAnimationChangedIfAffected(
-    const AnimationEffect& effect,
-    ComputedStyleBuilder& builder) {
-  if ((RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
-       AffectsBackgroundColor(effect)) ||
-      (RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() &&
-       AffectsClipPath(effect))) {
-    builder.SetCompositablePaintAnimationChanged(true);
-  }
-}
-
 // Called for animations that are newly created or updated.
 void UpdateAnimationFlagsForInertEffect(const InertEffect& effect,
                                         ComputedStyleBuilder& builder) {
@@ -1915,10 +1904,6 @@ void UpdateAnimationFlagsForInertEffect(const InertEffect& effect,
     return;
 
   UpdateAnimationFlagsForEffect(effect, builder);
-
-  // We defensively assume that any update to an existing animation
-  // would result in CompositorPending()==true.
-  SetCompositablePaintAnimationChangedIfAffected(effect, builder);
 }
 
 // Called for existing animations that are not modified in this update.
@@ -1931,19 +1916,6 @@ void UpdateAnimationFlagsForAnimation(const Animation& animation,
   }
 
   UpdateAnimationFlagsForEffect(effect, builder);
-
-  if (animation.CalculateAnimationPlayState() != Animation::kIdle &&
-      animation.CompositorPending()) {
-    // If something about the animation changed since the last frame (e.g. the
-    // effect was modified), we may need to repaint. We use the
-    // CompositorPending flag to detect such changes, and conditionally set
-    // the CompositablePaintAnimationChanged on ComputedStyle which ultimately
-    // invalidates paint.
-    //
-    // See ComputedStyle::UpdatePropertySpecificDifferences for how this flag
-    // is used.
-    SetCompositablePaintAnimationChangedIfAffected(effect, builder);
-  }
 }
 
 }  // namespace
@@ -1982,15 +1954,6 @@ void CSSAnimations::UpdateAnimationFlags(Element& animating_element,
       // style once the timing of effect is ready to use.
       // https://crbug.com/814851.
       UpdateAnimationFlagsForEffect(*entry->GetEffect(), builder);
-    }
-
-    // All Animations in this list will get SetCompositorPending(true)
-    // during MaybeApplyPendingUpdate.
-    for (const Animation* animation : update.UpdatedCompositorKeyframes()) {
-      if (!is_suppressed(*animation)) {
-        SetCompositablePaintAnimationChangedIfAffected(*animation->effect(),
-                                                       builder);
-      }
     }
 
     EffectStack& effect_stack = element_animations->GetEffectStack();

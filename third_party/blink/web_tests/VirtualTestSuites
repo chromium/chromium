@@ -421,6 +421,7 @@
     "bases": ["external/wpt/css/css-masking/clip-path/animations",
               "animations/responsive/interpolation/clip-path-responsive.html",
               "css3/masking/clip-path-animation.html",
+              "css3/masking/clip-path-animation-stress.html",
               "fast/css/clip-path-crash.html",
               "paint/invalidation/svg/invalid-clip-path-crash.html",
               "transitions/webkit-clip-path-equality.html"],

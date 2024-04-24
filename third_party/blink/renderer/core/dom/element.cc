@@ -4105,12 +4105,6 @@ StyleRecalcChange Element::RecalcOwnStyle(
         apply_changes = LayoutObject::ApplyStyleChanges::kYes;
       }
     }
-    // TODO(crbug.com/1246826): Remove CompositablePaintAnimationChanged.
-    if (NativePaintImageGenerator::NativePaintWorkletAnimationsEnabled()) {
-      if (layout_style->CompositablePaintAnimationChanged()) {
-        apply_changes = LayoutObject::ApplyStyleChanges::kYes;
-      }
-    }
     if (style_recalc_context.is_interleaved_oof) {
       // If we're in interleaved style recalc from out-of-flow,
       // we're already in the middle of laying out the objects

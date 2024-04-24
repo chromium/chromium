@@ -746,12 +746,13 @@ bool PaintBGColorWithPaintWorklet(const Document& document,
   CompositedPaintStatus status = CompositedBackgroundColorStatus(node);
 
   switch (status) {
+    case CompositedPaintStatus::kNoAnimation:
     case CompositedPaintStatus::kNotComposited:
       // Once an animation has been downgraded to run on the main thread, it
       // cannot restart on the compositor without a pending animation update.
       return false;
 
-    case CompositedPaintStatus::kNeedsRepaintOrNoAnimation:
+    case CompositedPaintStatus::kNeedsRepaint:
     case CompositedPaintStatus::kComposited:
       if (CanCompositeBackgroundColorAnimation(node)) {
         SetHasNativeBackgroundPainter(node, true);

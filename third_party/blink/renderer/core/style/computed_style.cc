@@ -1294,14 +1294,6 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
       PotentialCompositingReasonsFor3DTransformChanged(other)) {
     diff.SetCompositingReasonsChanged();
   }
-
-  // TODO(crbug.com/1246826): Remove CompositablePaintAnimationChanged.
-  if (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
-      (HasCurrentBackgroundColorAnimation() !=
-           other.HasCurrentBackgroundColorAnimation() ||
-       other.CompositablePaintAnimationChanged())) {
-    diff.SetCompositablePaintEffectChanged();
-  }
 }
 
 bool ComputedStyle::HasCSSPaintImagesUsingCustomProperty(

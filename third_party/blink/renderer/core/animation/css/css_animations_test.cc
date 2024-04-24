@@ -569,7 +569,7 @@ TEST_P(CSSAnimationsTest, AllAnimationFlags_JSAnimations_Compositor) {
   }
 }
 
-TEST_P(CSSAnimationsTest, AnimationFlags_CompositablePaintAnimationChanged) {
+TEST_P(CSSAnimationsTest, CompositedAnimationUpdateCausesPaintInvalidation) {
   ScopedCompositeBGColorAnimationForTest scoped_feature(true);
 
   SetBodyInnerHTML(R"HTML(
@@ -587,36 +587,43 @@ TEST_P(CSSAnimationsTest, AnimationFlags_CompositablePaintAnimationChanged) {
   )HTML");
 
   Element* element = GetDocument().getElementById(AtomicString("test"));
+  LayoutObject* lo = element->GetLayoutObject();
   ASSERT_TRUE(element);
 
   // Not animating yet:
   EXPECT_FALSE(
       element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
-  EXPECT_FALSE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
 
   // Newly created CSS animation:
   element->classList().Add(AtomicString("animate"));
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_TRUE(lo->ShouldDoFullPaintInvalidation());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
-  EXPECT_TRUE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
-
   // Do an unrelated change to clear the flag.
   element->classList().toggle(AtomicString("unrelated"), ASSERT_NO_EXCEPTION);
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(lo->ShouldDoFullPaintInvalidation());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
-  EXPECT_FALSE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
 
   // Updated CSS animation:
   element->classList().Add(AtomicString("newtiming"));
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_TRUE(lo->ShouldDoFullPaintInvalidation());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
-  EXPECT_TRUE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
 
   // Do an unrelated change to clear the flag.
   element->classList().toggle(AtomicString("unrelated"), ASSERT_NO_EXCEPTION);
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(lo->ShouldDoFullPaintInvalidation());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
-  EXPECT_FALSE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
 
   // Modify the animation outside of a style resolve:
   ElementAnimations* animations = element->GetElementAnimations();
@@ -625,45 +632,38 @@ TEST_P(CSSAnimationsTest, AnimationFlags_CompositablePaintAnimationChanged) {
   animation->setStartTime(MakeGarbageCollected<V8CSSNumberish>(0.5),
                           ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(animation->CompositorPending());
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_TRUE(lo->ShouldDoFullPaintInvalidation());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
-  EXPECT_TRUE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
   EXPECT_FALSE(animation->CompositorPending());
 
   // Do an unrelated change to clear the flag.
   element->classList().toggle(AtomicString("unrelated"), ASSERT_NO_EXCEPTION);
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(lo->ShouldDoFullPaintInvalidation());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
-  EXPECT_FALSE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
 
   // Change compositor snapshot values:
-  //
-  // TODO(crbug.com/1245806): We could invalidate the keyframes by using e.g.
-  // var()-references, and changing them in the base style, but it does
-  // currently not work for composited animations, hence the snapshot is
-  // invalidated artificially.
   InvalidateCompositorKeyframesSnapshot(animation);
   // Also do an "unrelated" change, to avoid IsAnimationStyleChange()==true.
   element->classList().toggle(AtomicString("unrelated"), ASSERT_NO_EXCEPTION);
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_TRUE(lo->ShouldDoFullPaintInvalidation());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
-  EXPECT_TRUE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
 
   // Do an unrelated change to clear the flag.
   element->classList().toggle(AtomicString("unrelated"), ASSERT_NO_EXCEPTION);
+  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kTest);
+  EXPECT_FALSE(lo->ShouldDoFullPaintInvalidation());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
-  EXPECT_FALSE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
-
-  // Verify that paint is invalidated by a forced style resolve.
-  ASSERT_TRUE(element->GetLayoutObject());
-  EXPECT_FALSE(element->GetLayoutObject()->ShouldCheckForPaintInvalidation());
-  element->classList().toggle(AtomicString("newtiming"), ASSERT_NO_EXCEPTION);
-  GetDocument().UpdateStyleAndLayoutTree();
-  EXPECT_TRUE(element->ComputedStyleRef().HasCurrentBackgroundColorAnimation());
-  EXPECT_TRUE(element->ComputedStyleRef().CompositablePaintAnimationChanged());
-  ASSERT_TRUE(element->GetLayoutObject());
-  EXPECT_TRUE(element->GetLayoutObject()->ShouldCheckForPaintInvalidation());
 }
 
 TEST_P(CSSAnimationsTest, UpdateAnimationFlags_AnimatingElement) {

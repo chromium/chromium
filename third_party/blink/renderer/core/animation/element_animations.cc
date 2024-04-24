@@ -40,9 +40,9 @@ namespace blink {
 ElementAnimations::ElementAnimations()
     : animation_style_change_(false),
       composited_background_color_status_(static_cast<unsigned>(
-          CompositedPaintStatus::kNeedsRepaintOrNoAnimation)),
+          CompositedPaintStatus::kNoAnimation)),
       composited_clip_path_status_(static_cast<unsigned>(
-          CompositedPaintStatus::kNeedsRepaintOrNoAnimation)) {}
+          CompositedPaintStatus::kNoAnimation)) {}
 
 ElementAnimations::~ElementAnimations() = default;
 
@@ -106,6 +106,49 @@ void ElementAnimations::SetCompositedBackgroundColorStatus(
     }
   }
   composited_background_color_status_ = static_cast<unsigned>(status);
+}
+
+bool ElementAnimations::HasAnimationForProperty(const CSSProperty& property) {
+  for (auto& entry : Animations()) {
+    KeyframeEffect* effect = DynamicTo<KeyframeEffect>(entry.key->effect());
+    if (effect && effect->Affects(PropertyHandle(property)) &&
+        (entry.key->CalculateAnimationPlayState() !=
+         Animation::AnimationPlayState::kIdle)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void ElementAnimations::InvalidatePaintForCompositedAnimationsIfNecessary(
+    Element* element) {
+  if (!element->GetLayoutObject()) {
+    return;
+  }
+  if (CompositedBackgroundColorStatus() ==
+      CompositedPaintStatus::kNeedsRepaint) {
+    element->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
+    // If the animation has been canceled, we need to revert back to
+    // kNoAniamtion to avoid repainting next frame. If there's still an
+    // animation, it's the responsibility of the deferred paint worklet image
+    // painter to set the composited status.
+    // TODO(clchambers): The reason this check is required is because cancelled
+    // animations are not synchronously pruned from the list of animation.
+    // Check whether it is possible to make this the case.
+    if (!HasAnimationForProperty(GetCSSPropertyBackgroundColor())) {
+      SetCompositedBackgroundColorStatus(CompositedPaintStatus::kNoAnimation);
+    }
+  }
+
+  if (CompositedClipPathStatus() == CompositedPaintStatus::kNeedsRepaint) {
+    element->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
+    // For clip paths, we also need to update the paint properties to switch
+    // from path based to mask based clip.
+    element->GetLayoutObject()->SetNeedsPaintPropertyUpdate();
+    if (!HasAnimationForProperty(GetCSSPropertyClipPath())) {
+      SetCompositedClipPathStatus(CompositedPaintStatus::kNoAnimation);
+    }
+  }
 }
 
 }  // namespace blink
