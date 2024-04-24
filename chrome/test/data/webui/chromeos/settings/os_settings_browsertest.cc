@@ -100,13 +100,8 @@ class OSSettingsMochaTestRevampDisabled : public OSSettingsMochaTest {
 };
 
 class OSSettingsMochaTestApnRevamp : public OSSettingsRevampMochaTest {
- protected:
-  OSSettingsMochaTestApnRevamp() {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kApnRevamp);
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{ash::features::kApnRevamp};
 };
 
 INSTANTIATE_TEST_SUITE_P(RevampParameterized,
@@ -140,14 +135,9 @@ class OSSettingsCrostiniTestRevampDisabled
 
 class OSSettingsRevampMochaTestReducedAnimationsEnabled
     : public OSSettingsRevampMochaTest {
- protected:
-  OSSettingsRevampMochaTestReducedAnimationsEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityReducedAnimations);
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ::features::kAccessibilityReducedAnimations};
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -158,37 +148,22 @@ INSTANTIATE_TEST_SUITE_P(
 
 class OSSettingsMochaTestMagnifierFollowsStsEnabled
     : public OSSettingsMochaTest {
- protected:
-  OSSettingsMochaTestMagnifierFollowsStsEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityMagnifierFollowsSts);
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ::features::kAccessibilityMagnifierFollowsSts};
 };
 
 class OSSettingsMochaTestOverscrollFeatureEnabled : public OSSettingsMochaTest {
- protected:
-  OSSettingsMochaTestOverscrollFeatureEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityOverscrollSettingFeature);
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ::features::kAccessibilityOverscrollSettingFeature};
 };
 
 class OSSettingsRevampMochaTestMouseKeysEnabled
     : public OSSettingsRevampMochaTest {
- protected:
-  OSSettingsRevampMochaTestMouseKeysEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityMouseKeys);
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ::features::kAccessibilityMouseKeys};
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -199,14 +174,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 class OSSettingsRevampMochaTestCaretBlinkSettingEnabled
     : public OSSettingsRevampMochaTest {
- protected:
-  OSSettingsRevampMochaTestCaretBlinkSettingEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityCaretBlinkIntervalSetting);
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ::features::kAccessibilityCaretBlinkIntervalSetting};
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -262,14 +232,9 @@ class OSSettingsMochaTestLacrosEnabledRevampDisabled
 
 class OSSettingsMochaTestLacrosAndRevampEnabled
     : public OSSettingsMochaTestLacrosOnlyEnabled {
- protected:
-  OSSettingsMochaTestLacrosAndRevampEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kOsSettingsRevampWayfinding);
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ash::features::kOsSettingsRevampWayfinding};
 };
 
 class OSSettingsRevampMochaTestAppParentalControlsEnabled
@@ -357,14 +322,9 @@ INSTANTIATE_TEST_SUITE_P(
     OSSettingsRevampDeviceTestSplitAndAltAndFKeyEnabled::DescribeParams);
 
 class OSSettingsRevampMochaTestSplitEnabled : public OSSettingsRevampMochaTest {
- protected:
-  OSSettingsRevampMochaTestSplitEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kInputDeviceSettingsSplit);
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ash::features::kInputDeviceSettingsSplit};
 };
 
 INSTANTIATE_TEST_SUITE_P(RevampParameterized,
@@ -469,13 +429,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 class OSSettingsRevampInternetTestHotspotEnabled
     : public OSSettingsRevampMochaTest {
- protected:
-  OSSettingsRevampInternetTestHotspotEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kHotspot);
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{ash::features::kHotspot};
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -509,18 +464,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 class OSSettingsRevampInternetTestPasspointEnabled
     : public OSSettingsRevampMochaTest {
- protected:
-  OSSettingsRevampInternetTestPasspointEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {
-            ash::features::kPasspointSettings,
-        },
-        /*disabled=*/{});
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ash::features::kPasspointSettings};
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -531,13 +477,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 class OSSettingsRevampNearbyShareTestSharingEnabled
     : public OSSettingsRevampMochaTest {
- protected:
-  OSSettingsRevampNearbyShareTestSharingEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(::features::kNearbySharing);
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ::features::kNearbySharing};
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -548,13 +490,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 class OSSettingsRevampOsA11yTestPdfOcrEnabled
     : public OSSettingsRevampMochaTest {
- protected:
-  OSSettingsRevampOsA11yTestPdfOcrEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(::features::kPdfOcr);
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{::features::kPdfOcr};
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -588,18 +525,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 class OSSettingsRevampPrivacyTestPrivacyHubV0AndPermissionsEnabled
     : public OSSettingsRevampMochaTest {
- protected:
-  OSSettingsRevampPrivacyTestPrivacyHubV0AndPermissionsEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {
-            ash::features::kCrosPrivacyHubAppPermissions,
-        },
-        /*disabled=*/{});
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ash::features::kCrosPrivacyHubAppPermissions};
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -611,18 +539,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 class OSSettingsRevampPrivacyTestPrivacyHubAndV0Enabled
     : public OSSettingsRevampMochaTest {
- protected:
-  OSSettingsRevampPrivacyTestPrivacyHubAndV0Enabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/
-        {
-            ash::features::kCrosPrivacyHub,
-        },
-        /*disabled=*/{});
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ash::features::kCrosPrivacyHub};
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -633,14 +552,9 @@ INSTANTIATE_TEST_SUITE_P(
 
 class OSSettingsRevampPrivacyTestDeprecateDnsDialogEnabled
     : public OSSettingsRevampMochaTest {
- protected:
-  OSSettingsRevampPrivacyTestDeprecateDnsDialogEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kOsSettingsDeprecateDnsDialog);
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ash::features::kOsSettingsDeprecateDnsDialog};
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -702,15 +616,9 @@ INSTANTIATE_TEST_SUITE_P(RevampParameterized,
 
 class OSSettingsRevampMochaTestFasterSplitScreenEnabled
     : public OSSettingsRevampMochaTest {
- public:
-  OSSettingsRevampMochaTestFasterSplitScreenEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled=*/{ash::features::kFasterSplitScreenSetup},
-        /*disabled=*/{});
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      ash::features::kFasterSplitScreenSetup};
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1705,6 +1613,33 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsPeoplePage) {
   RunSettingsTest("os_people_page/os_people_page_test.js");
 }
 
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+                       OsPeoplePageAccountManagerSettingsCard) {
+  RunSettingsTest("os_people_page/account_manager_settings_card_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampAndLacrosOnlyDisabled,
+                       OsPeoplePageAccountManagerSubpage) {
+  RunSettingsTest("os_people_page/account_manager_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    OSSettingsMochaTestLacrosEnabledRevampDisabled,
+    OsPeoplePageAccountManagerSubpageWithArcAccountRestrictionsEnabled) {
+  RunSettingsTest("os_people_page/account_manager_subpage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       OsPeoplePageAdditionalAccountsSettingsCard) {
+  RunSettingsTest("os_people_page/additional_accounts_settings_card_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    OSSettingsMochaTestLacrosAndRevampEnabled,
+    OsPeoplePageAdditionalAccountsSettingsCardWithLacrosEnabled) {
+  RunSettingsTest("os_people_page/additional_accounts_settings_card_test.js");
+}
+
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsPeoplePageAddUserDialog) {
   RunSettingsTest("os_people_page/add_user_dialog_test.js");
 }
@@ -1964,33 +1899,6 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsSettingsUiToolbar) {
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsSettingsUiUserActionRecorder) {
   RunSettingsTest("os_settings_ui/user_action_recorder_test.js");
-}
-
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
-                       OsPeoplePageAccountManagerSettingsCard) {
-  RunSettingsTest("os_people_page/account_manager_settings_card_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampAndLacrosOnlyDisabled,
-                       OsPeoplePageAccountManagerSubpage) {
-  RunSettingsTest("os_people_page/account_manager_subpage_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(
-    OSSettingsMochaTestLacrosEnabledRevampDisabled,
-    OsPeoplePageAccountManagerSubpageWithArcAccountRestrictionsEnabled) {
-  RunSettingsTest("os_people_page/account_manager_subpage_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
-                       OsPeoplePageAdditionalAccountsSettingsCard) {
-  RunSettingsTest("os_people_page/additional_accounts_settings_card_test.js");
-}
-
-IN_PROC_BROWSER_TEST_F(
-    OSSettingsMochaTestLacrosAndRevampEnabled,
-    OsPeoplePageAdditionalAccountsSettingsCardWithLacrosEnabled) {
-  RunSettingsTest("os_people_page/additional_accounts_settings_card_test.js");
 }
 
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, ParentalControlsPage) {
