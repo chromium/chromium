@@ -3454,8 +3454,11 @@ TEST_F(SplitViewControllerTest, SwapPartialWindows) {
                          ->GetDividerBoundsInScreen(
                              /*is_dragging=*/false)
                          .x();
-  // TODO(sammiequon): Investigate why these are off by 1 pixel but were not
-  // earlier.
+
+  // These are off by 1 pixel because the original snap ratio was 0.66repeating.
+  // When swapping windows, we go through another code path that updates the
+  // snap ratio based on the window dimensions, resulting in a similar but
+  // slightly different snap ratio of 0.6625.
   EXPECT_NEAR(
       divider_origin_x,
       std::round(work_area_bounds.width() * chromeos::kOneThirdSnapRatio) -
