@@ -439,12 +439,9 @@ void LegacyLongPressAndDragTabInTabStrip(NSString* moving_tab_identifier,
   [ChromeEarlGrey waitForWebStateContainingText:kMobileSiteLabel];
 
   // Type the beginning of the address to have the autocomplete suggestion.
-  [ChromeEarlGreyUI focusOmnibox];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"")];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(
-                        [pageString substringToIndex:[pageString length] - 6])];
+  NSString* beginningOfAddress =
+      [pageString substringToIndex:pageString.length - 6];
+  [ChromeEarlGreyUI focusOmniboxAndType:beginningOfAddress];
 
   // Wait until prerender request reaches the server.
   bool prerendered = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
