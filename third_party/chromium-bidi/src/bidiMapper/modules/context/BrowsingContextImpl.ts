@@ -1234,6 +1234,15 @@ export class BrowsingContextImpl {
             'Either name or role has to be specified'
           );
         }
+
+        // The next two commands cause a11y caches for the target to be
+        // preserved. We probably do not need to disable them if the
+        // client is using a11y features but we could by calling
+        // Accessibility.disable.
+        await Promise.all([
+          this.#cdpTarget.cdpClient.sendCommand('Accessibility.enable'),
+          this.#cdpTarget.cdpClient.sendCommand('Accessibility.getRootAXNode'),
+        ]);
         const bindings = await realm.evaluate(
           /* expression=*/ '({getAccessibleName, getAccessibleRole})',
           /* awaitPromise=*/ false,
