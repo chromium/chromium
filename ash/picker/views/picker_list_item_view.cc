@@ -32,7 +32,7 @@
 namespace ash {
 namespace {
 
-constexpr auto kPickerListItemBorderInsets = gfx::Insets::TLBR(8, 16, 8, 8);
+constexpr auto kPickerListItemBorderInsets = gfx::Insets::TLBR(8, 16, 8, 16);
 
 constexpr gfx::Size kLeadingIconSizeDip(20, 20);
 constexpr int kImageDisplayHeight = 72;
@@ -44,12 +44,17 @@ PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
     : PickerItemView(std::move(select_item_callback),
                      FocusIndicatorStyle::kFocusBar) {
   SetLayoutManager(std::make_unique<views::FlexLayout>());
-  auto* item_contents =
-      AddChildView(views::Builder<views::FlexLayoutView>()
-                       .SetOrientation(views::LayoutOrientation::kHorizontal)
-                       .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
-                       .SetCanProcessEventsWithinSubtree(false)
-                       .Build());
+  auto* item_contents = AddChildView(
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+          .SetProperty(
+              views::kFlexBehaviorKey,
+              views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                                       views::MinimumFlexSizeRule::kScaleToZero,
+                                       views::MaximumFlexSizeRule::kUnbounded))
+          .SetCanProcessEventsWithinSubtree(false)
+          .Build());
 
   leading_container_ = item_contents->AddChildView(
       views::Builder<views::FlexLayoutView>()
@@ -60,11 +65,18 @@ PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
   auto* main_container = item_contents->AddChildView(
       views::Builder<views::FlexLayoutView>()
           .SetOrientation(views::LayoutOrientation::kVertical)
+          .SetProperty(views::kFlexBehaviorKey,
+                       views::FlexSpecification(
+                           views::LayoutOrientation::kVertical,
+                           views::MinimumFlexSizeRule::kScaleToZero,
+                           views::MaximumFlexSizeRule::kUnbounded,
+                           /*adjust_height_for_width=*/false,
+                           views::MinimumFlexSizeRule::kScaleToZero))
           .Build());
-  primary_container_ =
-      main_container->AddChildView(std::make_unique<views::FlexLayoutView>());
-  secondary_container_ =
-      main_container->AddChildView(std::make_unique<views::FlexLayoutView>());
+  primary_container_ = main_container->AddChildView(
+      views::Builder<views::View>().SetUseDefaultFillLayout(true).Build());
+  secondary_container_ = main_container->AddChildView(
+      views::Builder<views::View>().SetUseDefaultFillLayout(true).Build());
 
   SetBorder(views::CreateEmptyBorder(kPickerListItemBorderInsets));
   SetProperty(views::kElementIdentifierKey,
@@ -75,9 +87,11 @@ PickerListItemView::~PickerListItemView() = default;
 
 void PickerListItemView::SetPrimaryText(const std::u16string& primary_text) {
   primary_container_->RemoveAllChildViews();
-  primary_container_->AddChildView(
+  views::Label* label = primary_container_->AddChildView(
       bubble_utils::CreateLabel(TypographyToken::kCrosBody2, primary_text,
                                 cros_tokens::kCrosSysOnSurface));
+  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  label->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
   SetAccessibleName(primary_text);
 }
 
@@ -116,9 +130,12 @@ void PickerListItemView::SetSecondaryText(
   if (secondary_text.empty()) {
     return;
   }
-  secondary_container_->AddChildView(bubble_utils::CreateLabel(
-      TypographyToken::kCrosAnnotation2, secondary_text,
-      cros_tokens::kCrosSysOnSurfaceVariant));
+  views::Label* label =
+      secondary_container_->AddChildView(bubble_utils::CreateLabel(
+          TypographyToken::kCrosAnnotation2, secondary_text,
+          cros_tokens::kCrosSysOnSurfaceVariant));
+  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  label->SetElideBehavior(gfx::ElideBehavior::ELIDE_TAIL);
 }
 
 std::u16string PickerListItemView::GetPrimaryTextForTesting() const {
