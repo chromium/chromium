@@ -25,6 +25,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
@@ -35,19 +37,28 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager.HomeModulesStateListener;
+import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
+import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /** Unit tests for {@link HomeModulesMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class HomeModulesMediatorUnitTest {
+
     @Rule public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -55,7 +66,10 @@ public class HomeModulesMediatorUnitTest {
     @Mock private Callback<Boolean> mSetVisibilityCallback;
     @Mock private ModuleDelegate mModuleDelegate;
     @Mock private ModuleRegistry mModuleRegistry;
+    @Mock private ModuleDelegateHost mModuleDelegateHost;
+    @Mock private HomeModulesConfigManager mHomeModulesConfigManager;
     @Spy private ModelList mModel;
+    @Captor private ArgumentCaptor<HomeModulesStateListener> mHomeModulesStateListener;
 
     private int[] mModuleTypeList;
     private ListItem[] mListItems;
@@ -80,7 +94,9 @@ public class HomeModulesMediatorUnitTest {
             mModuleProviders[i] = Mockito.mock(ModuleProvider.class);
         }
         when(mModuleDelegate.getHostSurfaceType()).thenReturn(mHostSurface);
-        mMediator = new HomeModulesMediator(mModel, mModuleRegistry);
+        mMediator =
+                new HomeModulesMediator(
+                        mModel, mModuleRegistry, mModuleDelegateHost, mHomeModulesConfigManager);
     }
 
     @Test
@@ -461,5 +477,232 @@ public class HomeModulesMediatorUnitTest {
 
         // After calling onModuleFetchTimeOut(), the mediator shouldn't throw any exception.
         mMediator.onModuleFetchTimeOut();
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
+    public void testGetModuleList_Default() {
+        when(mHomeModulesConfigManager.getEnabledModuleSet())
+                .thenReturn(
+                        new HashSet<>(
+                                Set.of(
+                                        ModuleType.SINGLE_TAB,
+                                        ModuleType.PRICE_CHANGE,
+                                        ModuleType.TAB_RESUMPTION)));
+
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
+        List<Integer> expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
+        assertEquals(expectedModuleList, mMediator.getFixedModuleList());
+
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(false);
+        expectedModuleList = List.of(ModuleType.PRICE_CHANGE);
+        assertEquals(expectedModuleList, mMediator.getFixedModuleList());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
+    public void testGetModuleList_DefaultWithTabResumption() {
+        when(mHomeModulesConfigManager.getEnabledModuleSet())
+                .thenReturn(
+                        new HashSet<>(
+                                Set.of(
+                                        ModuleType.SINGLE_TAB,
+                                        ModuleType.PRICE_CHANGE,
+                                        ModuleType.TAB_RESUMPTION)));
+
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
+        List<Integer> expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
+        assertEquals(expectedModuleList, mMediator.getFixedModuleList());
+
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(false);
+        expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.TAB_RESUMPTION);
+        assertEquals(expectedModuleList, mMediator.getFixedModuleList());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
+    @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER})
+    public void testGetModuleList_Segmentation() {
+        when(mHomeModulesConfigManager.getEnabledModuleSet())
+                .thenReturn(new HashSet<>(Set.of(ModuleType.SINGLE_TAB, ModuleType.PRICE_CHANGE)));
+        ClassificationResult classificationResult =
+                new ClassificationResult(
+                        org.chromium.components.segmentation_platform.prediction_status
+                                .PredictionStatus.SUCCEEDED,
+                        new String[] {"PriceChange", "SingleTab", "TabResumption"});
+
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
+        List<Integer> expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
+        assertEquals(expectedModuleList, mMediator.onGetClassificationResult(classificationResult));
+
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(false);
+        expectedModuleList = List.of(ModuleType.PRICE_CHANGE);
+        assertEquals(expectedModuleList, mMediator.onGetClassificationResult(classificationResult));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
+        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER
+    })
+    public void testGetModuleList_SegmentationWithTabResumption() {
+        when(mHomeModulesConfigManager.getEnabledModuleSet())
+                .thenReturn(
+                        new HashSet<>(
+                                Set.of(
+                                        ModuleType.SINGLE_TAB,
+                                        ModuleType.PRICE_CHANGE,
+                                        ModuleType.TAB_RESUMPTION)));
+        ClassificationResult classificationResult =
+                new ClassificationResult(
+                        org.chromium.components.segmentation_platform.prediction_status
+                                .PredictionStatus.SUCCEEDED,
+                        new String[] {"PriceChange", "SingleTab", "TabResumption"});
+
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
+        List<Integer> expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
+        assertEquals(expectedModuleList, mMediator.onGetClassificationResult(classificationResult));
+
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(false);
+        expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.TAB_RESUMPTION);
+        assertEquals(expectedModuleList, mMediator.onGetClassificationResult(classificationResult));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetModuleList() {
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
+        when(mHomeModulesConfigManager.getEnabledModuleSet())
+                .thenReturn(new HashSet<>(Set.of(ModuleType.SINGLE_TAB)));
+        List<Integer> expectedModuleList = List.of(ModuleType.SINGLE_TAB);
+        assertEquals(expectedModuleList, mMediator.getFixedModuleList());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetModuleList_AllModules() {
+        HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES.setForTesting(true);
+        when(mHomeModulesConfigManager.getEnabledModuleSet())
+                .thenReturn(
+                        new HashSet<>(
+                                Set.of(
+                                        ModuleType.SINGLE_TAB,
+                                        ModuleType.PRICE_CHANGE,
+                                        ModuleType.TAB_RESUMPTION)));
+
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
+        List<Integer> expectedModuleList =
+                List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB, ModuleType.TAB_RESUMPTION);
+        assertEquals(expectedModuleList, mMediator.getFixedModuleList());
+
+        // Verifies that the single tab module isn't shown if it isn't the home surface even with
+        // "show all modules" parameter is enabled.
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(false);
+        expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.TAB_RESUMPTION);
+        assertEquals(expectedModuleList, mMediator.getFixedModuleList());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
+    @DisableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER})
+    public void testGetModuleList_CombineTabs_TabResumptionEnabled() {
+        HomeModulesMetricsUtils.HOME_MODULES_COMBINE_TABS.setForTesting(true);
+        when(mHomeModulesConfigManager.getEnabledModuleSet())
+                .thenReturn(
+                        new HashSet<>(
+                                Set.of(
+                                        ModuleType.SINGLE_TAB,
+                                        ModuleType.PRICE_CHANGE,
+                                        ModuleType.TAB_RESUMPTION)));
+
+        // Verifies that the tab resumption module will be added to the list without the single tab
+        // module.
+        List<Integer> expectedModuleList =
+                List.of(ModuleType.PRICE_CHANGE, ModuleType.TAB_RESUMPTION);
+        assertEquals(expectedModuleList, mMediator.getFixedModuleList());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
+        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER
+    })
+    public void testGetModuleList_CombineTabs_TabResumptionEnabled_Segmentation() {
+        HomeModulesMetricsUtils.HOME_MODULES_COMBINE_TABS.setForTesting(true);
+        when(mHomeModulesConfigManager.getEnabledModuleSet())
+                .thenReturn(
+                        new HashSet<>(
+                                Set.of(
+                                        ModuleType.SINGLE_TAB,
+                                        ModuleType.PRICE_CHANGE,
+                                        ModuleType.TAB_RESUMPTION)));
+        ClassificationResult classificationResult =
+                new ClassificationResult(
+                        org.chromium.components.segmentation_platform.prediction_status
+                                .PredictionStatus.SUCCEEDED,
+                        new String[] {"PriceChange", "SingleTab", "TabResumption"});
+
+        // Verifies that the tab resumption module will be added to the list without the single tab
+        // module.
+        List<Integer> expectedModuleList =
+                List.of(ModuleType.PRICE_CHANGE, ModuleType.TAB_RESUMPTION);
+        assertEquals(expectedModuleList, mMediator.onGetClassificationResult(classificationResult));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({
+        ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
+        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER
+    })
+    public void testGetModuleList_CombineTabs_TabResumptionDisabled() {
+        HomeModulesMetricsUtils.HOME_MODULES_COMBINE_TABS.setForTesting(true);
+        when(mHomeModulesConfigManager.getEnabledModuleSet())
+                .thenReturn(new HashSet<>(Set.of(ModuleType.SINGLE_TAB, ModuleType.PRICE_CHANGE)));
+
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
+        // Verifies that the single tab module will be added to the list if the tab resumption
+        // feature flag is disabled.
+        List<Integer> expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
+        assertEquals(expectedModuleList, mMediator.getFixedModuleList());
+
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(false);
+        // Verifies that the single tab module won't be added to the list if it isn't on home
+        // surface.
+        expectedModuleList = List.of(ModuleType.PRICE_CHANGE);
+        assertEquals(expectedModuleList, mMediator.getFixedModuleList());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
+    @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER})
+    public void testGetModuleList_CombineTabs_TabResumptionDisabled_Segmentation() {
+        HomeModulesMetricsUtils.HOME_MODULES_COMBINE_TABS.setForTesting(true);
+        when(mHomeModulesConfigManager.getEnabledModuleSet())
+                .thenReturn(new HashSet<>(Set.of(ModuleType.SINGLE_TAB, ModuleType.PRICE_CHANGE)));
+        ClassificationResult classificationResult =
+                new ClassificationResult(
+                        org.chromium.components.segmentation_platform.prediction_status
+                                .PredictionStatus.SUCCEEDED,
+                        new String[] {"PriceChange", "SingleTab", "TabResumption"});
+
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
+        // Verifies that the single tab module will be added to the list if the tab resumption
+        // feature flag is disabled.
+        List<Integer> expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
+        assertEquals(expectedModuleList, mMediator.onGetClassificationResult(classificationResult));
+
+        when(mModuleDelegateHost.isHomeSurface()).thenReturn(false);
+        // Verifies that the single tab module won't be added to the list if it isn't on home
+        // surface.
+        expectedModuleList = List.of(ModuleType.PRICE_CHANGE);
+        assertEquals(expectedModuleList, mMediator.onGetClassificationResult(classificationResult));
     }
 }

@@ -90,4 +90,7 @@ public interface ModuleDelegate {
     /** Gets the local Tab that is showing on the magic stack. */
     @Nullable
     Tab getTrackingTab();
+
+    /** Called before build and show modules. */
+    void prepareBuildAndShow();
 }

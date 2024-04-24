@@ -49,7 +49,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -61,9 +60,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayS
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
-import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
-import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.HashSet;
@@ -206,192 +203,6 @@ public class HomeModulesCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
-    public void testGetModuleList_Default() {
-        when(mHomeModulesConfigManager.getEnabledModuleSet())
-                .thenReturn(
-                        new HashSet<>(
-                                Set.of(
-                                        ModuleType.SINGLE_TAB,
-                                        ModuleType.PRICE_CHANGE,
-                                        ModuleType.TAB_RESUMPTION)));
-        assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
-        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
-
-        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
-        List<Integer> expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
-        assertEquals(expectedModuleList, mCoordinator.getFixedModuleList());
-
-        when(mModuleDelegateHost.isHomeSurface()).thenReturn(false);
-        expectedModuleList = List.of(ModuleType.PRICE_CHANGE);
-        assertEquals(expectedModuleList, mCoordinator.getFixedModuleList());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
-    public void testGetModuleList_DefaultWithTabResumption() {
-        when(mHomeModulesConfigManager.getEnabledModuleSet())
-                .thenReturn(
-                        new HashSet<>(
-                                Set.of(
-                                        ModuleType.SINGLE_TAB,
-                                        ModuleType.PRICE_CHANGE,
-                                        ModuleType.TAB_RESUMPTION)));
-        assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
-        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
-
-        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
-        List<Integer> expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
-        assertEquals(expectedModuleList, mCoordinator.getFixedModuleList());
-
-        when(mModuleDelegateHost.isHomeSurface()).thenReturn(false);
-        expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.TAB_RESUMPTION);
-        assertEquals(expectedModuleList, mCoordinator.getFixedModuleList());
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
-    @EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER})
-    public void testGetModuleList_Segmentation() {
-        when(mHomeModulesConfigManager.getEnabledModuleSet())
-                .thenReturn(
-                        new HashSet<>(
-                                Set.of(
-                                        ModuleType.SINGLE_TAB,
-                                        ModuleType.PRICE_CHANGE,
-                                        ModuleType.TAB_RESUMPTION)));
-        assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
-        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
-        ClassificationResult classificationResult =
-                new ClassificationResult(
-                        PredictionStatus.SUCCEEDED,
-                        new String[] {"PriceChange", "SingleTab", "TabResumption"});
-
-        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
-        List<Integer> expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
-        assertEquals(
-                expectedModuleList, mCoordinator.onGetClassificationResult(classificationResult));
-
-        when(mModuleDelegateHost.isHomeSurface()).thenReturn(false);
-        expectedModuleList = List.of(ModuleType.PRICE_CHANGE);
-        assertEquals(
-                expectedModuleList, mCoordinator.onGetClassificationResult(classificationResult));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({
-        ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
-        ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER
-    })
-    public void testGetModuleList_SegmentationWithTabResumption() {
-        when(mHomeModulesConfigManager.getEnabledModuleSet())
-                .thenReturn(
-                        new HashSet<>(
-                                Set.of(
-                                        ModuleType.SINGLE_TAB,
-                                        ModuleType.PRICE_CHANGE,
-                                        ModuleType.TAB_RESUMPTION)));
-        assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
-        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
-        ClassificationResult classificationResult =
-                new ClassificationResult(
-                        PredictionStatus.SUCCEEDED,
-                        new String[] {"PriceChange", "SingleTab", "TabResumption"});
-
-        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
-        List<Integer> expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
-        assertEquals(
-                expectedModuleList, mCoordinator.onGetClassificationResult(classificationResult));
-
-        when(mModuleDelegateHost.isHomeSurface()).thenReturn(false);
-        expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.TAB_RESUMPTION);
-        assertEquals(
-                expectedModuleList, mCoordinator.onGetClassificationResult(classificationResult));
-    }
-
-    @Test
-    @SmallTest
-    public void testGetModuleList() {
-        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
-        when(mHomeModulesConfigManager.getEnabledModuleSet())
-                .thenReturn(new HashSet<>(Set.of(ModuleType.SINGLE_TAB)));
-        assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
-        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
-        List<Integer> expectedModuleList = List.of(ModuleType.SINGLE_TAB);
-        assertEquals(expectedModuleList, mCoordinator.getFixedModuleList());
-    }
-
-    @Test
-    @SmallTest
-    public void testGetModuleList_AllModules() {
-        HomeModulesMetricsUtils.HOME_MODULES_SHOW_ALL_MODULES.setForTesting(true);
-        when(mHomeModulesConfigManager.getEnabledModuleSet())
-                .thenReturn(
-                        new HashSet<>(
-                                Set.of(
-                                        ModuleType.SINGLE_TAB,
-                                        ModuleType.PRICE_CHANGE,
-                                        ModuleType.TAB_RESUMPTION)));
-        assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
-        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
-
-        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
-        List<Integer> expectedModuleList =
-                List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB, ModuleType.TAB_RESUMPTION);
-        assertEquals(expectedModuleList, mCoordinator.getFixedModuleList());
-
-        when(mModuleDelegateHost.isHomeSurface()).thenReturn(false);
-        assertEquals(expectedModuleList, mCoordinator.getFixedModuleList());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
-    public void testGetModuleList_CombineTabs_TabResumptionEnabled() {
-        HomeModulesMetricsUtils.HOME_MODULES_COMBINE_TABS.setForTesting(true);
-        when(mHomeModulesConfigManager.getEnabledModuleSet())
-                .thenReturn(
-                        new HashSet<>(
-                                Set.of(
-                                        ModuleType.SINGLE_TAB,
-                                        ModuleType.PRICE_CHANGE,
-                                        ModuleType.TAB_RESUMPTION)));
-        assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
-        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
-
-        // Verifies that the tab resumption module will be added to the list without the single tab
-        // module.
-        List<Integer> expectedModuleList =
-                List.of(ModuleType.PRICE_CHANGE, ModuleType.TAB_RESUMPTION);
-        assertEquals(expectedModuleList, mCoordinator.getFixedModuleList());
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
-    public void testGetModuleList_CombineTabs_TabResumptionDisabled() {
-        HomeModulesMetricsUtils.HOME_MODULES_COMBINE_TABS.setForTesting(true);
-        when(mHomeModulesConfigManager.getEnabledModuleSet())
-                .thenReturn(
-                        new HashSet<>(
-                                Set.of(
-                                        ModuleType.SINGLE_TAB,
-                                        ModuleType.PRICE_CHANGE,
-                                        ModuleType.TAB_RESUMPTION)));
-        assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
-        mCoordinator = createCoordinator(/* skipInitProfile= */ false);
-
-        // Verifies that the single tab module will be added to the list if the tab resumption
-        // feature flag is disabled.
-        List<Integer> expectedModuleList = List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
-        assertEquals(expectedModuleList, mCoordinator.getFixedModuleList());
-    }
-
-    @Test
-    @SmallTest
     public void testOnModuleConfigChanged() {
         assertFalse(DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity));
         when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
@@ -400,14 +211,17 @@ public class HomeModulesCoordinatorUnitTest {
         verify(mHomeModulesConfigManager).addListener(mHomeModulesStateListener.capture());
         List<Integer> expectedModuleListBeforeHidingModule =
                 List.of(ModuleType.PRICE_CHANGE, ModuleType.SINGLE_TAB);
-        assertEquals(expectedModuleListBeforeHidingModule, mCoordinator.getFixedModuleList());
+        assertEquals(
+                expectedModuleListBeforeHidingModule, mCoordinator.getFixedModuleListForTesting());
 
         mHomeModulesStateListener.getValue().onModuleConfigChanged(ModuleType.PRICE_CHANGE, false);
         List<Integer> expectedModuleListAfterHidingModule = List.of(ModuleType.SINGLE_TAB);
-        assertEquals(expectedModuleListAfterHidingModule, mCoordinator.getFixedModuleList());
+        assertEquals(
+                expectedModuleListAfterHidingModule, mCoordinator.getFixedModuleListForTesting());
 
         mHomeModulesStateListener.getValue().onModuleConfigChanged(ModuleType.PRICE_CHANGE, true);
-        assertEquals(expectedModuleListBeforeHidingModule, mCoordinator.getFixedModuleList());
+        assertEquals(
+                expectedModuleListBeforeHidingModule, mCoordinator.getFixedModuleListForTesting());
 
         mCoordinator.destroy();
         verify(mHomeModulesConfigManager).removeListener(mHomeModulesStateListener.capture());
@@ -446,12 +260,10 @@ public class HomeModulesCoordinatorUnitTest {
         ChromeFeatureList.SEGMENTATION_PLATFORM_ANDROID_HOME_MODULE_RANKER
     })
     public void testRecordMagicStackScroll_Scrolled() {
-        when(mModuleDelegateHost.isHomeSurface()).thenReturn(true);
         mCoordinator = createCoordinator(/* skipInitProfile= */ true);
-        Callback<Boolean> callback = Mockito.mock(Callback.class);
-        when(mProfileSupplier.hasValue()).thenReturn(true);
         mCoordinator.setMediatorForTesting(mMediator);
-        mCoordinator.show(callback);
+
+        mCoordinator.prepareBuildAndShow();
 
         // Besides the onScrollListener added in {@link HomeModulesCoordinator}, there is another
         // one added in {@link SnapHelper}.
@@ -500,7 +312,6 @@ public class HomeModulesCoordinatorUnitTest {
                         mHomeModulesConfigManager,
                         mProfileSupplier,
                         mModuleRegistry);
-        homeModulesCoordinator.ensureEnabledModuleSetCreated();
         return homeModulesCoordinator;
     }
 }
