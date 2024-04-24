@@ -195,16 +195,8 @@ test_deps = [
 js2gtest("switch_access_mv3_extjs_tests") {
   test_type = "extension"
   parameterized = "true"
-  sources = [ "focus_ring_manager_test.js" ]
-  gen_include_files = test_includes
-  deps = test_deps
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-}
-
-js2gtest("switch_access_extjs_tests") {
-  test_type = "extension"
   sources = [
-    "auto_scan_manager_test.js",
+    "focus_ring_manager_test.js",
     "item_scan_manager_test.js",
     "nodes/basic_node_test.js",
     "nodes/desktop_node_test.js",
@@ -215,6 +207,14 @@ js2gtest("switch_access_extjs_tests") {
     "switch_access_test.js",
     "text_navigation_manager_test.js",
   ]
+  gen_include_files = test_includes
+  deps = test_deps
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}
+
+js2gtest("switch_access_extjs_tests") {
+  test_type = "extension"
+  sources = [ "auto_scan_manager_test.js" ]
   gen_include_files = test_includes
   deps = test_deps
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
