@@ -6,14 +6,18 @@
 
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/data_controls/features.h"
+#include "components/enterprise/data_controls/test_utils.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
 
@@ -25,6 +29,8 @@ class PasteAllowedRequestTest : public testing::Test {
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user-1");
+    scoped_features_.InitAndEnableFeature(
+        data_controls::kEnableDesktopDataControls);
   }
 
   void SetUp() override {
@@ -77,6 +83,7 @@ class PasteAllowedRequestTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList scoped_features_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> main_web_contents_;
@@ -154,6 +161,63 @@ TEST_F(PasteAllowedRequestTest, SameDestinationSource) {
 
   ASSERT_TRUE(future.Get());
   ASSERT_EQ(future.Get()->text, kText);
+
+  // When the same document writes and then reads from the clipboard, content
+  // checks should be skipped.
+  EXPECT_EQ(0u, PasteAllowedRequest::requests_count_for_testing());
+}
+
+TEST_F(PasteAllowedRequestTest, SameDestinationSource_AfterReplacement) {
+  data_controls::SetDataControls(profile_->GetPrefs(), {
+                                                           R"({
+                    "sources": {
+                      "urls": ["google.com"]
+                    },
+                    "destinations": {
+                      "os_clipboard": true
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  const std::u16string kText = u"text";
+  content::ClipboardPasteData copied_data;
+  copied_data.text = kText;
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      copy_future;
+
+  IsClipboardCopyAllowedByPolicy(main_endpoint(), {}, copied_data,
+                                 copy_future.GetCallback());
+  auto replacement = copy_future.Get<std::optional<std::u16string>>();
+  EXPECT_TRUE(replacement);
+  EXPECT_EQ(*replacement,
+            u"Pasting this content here is blocked by your administrator.");
+
+  // This triggers the clipboard observer started by the
+  // `IsClipboardCopyAllowedByPolicy` calls so that they're aware of the new
+  // seqno.
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  auto seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+      ui::ClipboardBuffer::kCopyPaste);
+  main_rfh().MarkClipboardOwner(seqno);
+
+  // After the data was replaced when initially copied, it should be put back
+  // when pasting in the same tab.
+  content::ClipboardPasteData pasted_data;
+  pasted_data.html = u"to be replaced";
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>>
+      paste_future;
+  PasteAllowedRequest::StartPasteAllowedRequest(
+      /*source*/ main_endpoint(), /*destination*/ main_endpoint(),
+      {.seqno = seqno}, pasted_data, paste_future.GetCallback());
+
+  ASSERT_TRUE(paste_future.Get());
+  ASSERT_EQ(paste_future.Get()->text, kText);
+  ASSERT_TRUE(paste_future.Get()->html.empty());
 
   // When the same document writes and then reads from the clipboard, content
   // checks should be skipped.

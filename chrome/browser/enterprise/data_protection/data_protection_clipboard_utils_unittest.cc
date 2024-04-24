@@ -275,13 +275,20 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, StringReplacement) {
   EXPECT_EQ(first_paste_data->text, u"foo");
   EXPECT_TRUE(first_paste_data->png.empty());
 
+  // Same-tab replacement should also work when the same seqno that was replaced
+  // is used.
+  content::ClipboardPasteData same_tab_data;
+  ReplaceSameTabClipboardDataIfRequiredByPolicy(metadata.seqno, same_tab_data);
+  EXPECT_EQ(same_tab_data.text, u"foo");
+  EXPECT_TRUE(same_tab_data.png.empty());
+
   // Pasting again with a new seqno implies new data in the clipboard from
   // outside of Chrome, so it should be let through without replacement when it
   // triggers no rule.
   base::test::TestFuture<std::optional<content::ClipboardPasteData>>
       second_paste_future;
-  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(),
-                         /*metadata=*/{},
+  content::ClipboardMetadata new_metadata;
+  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(), new_metadata,
                          MakeClipboardPasteData("text", "image", {}),
                          second_paste_future.GetCallback());
 
@@ -291,6 +298,12 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, StringReplacement) {
   EXPECT_EQ(
       std::string(second_paste_data->png.begin(), second_paste_data->png.end()),
       "image");
+
+  // Same-tab replacement should also do nothing with that new seqno.
+  same_tab_data = {};
+  ReplaceSameTabClipboardDataIfRequiredByPolicy(new_metadata.seqno,
+                                                same_tab_data);
+  EXPECT_TRUE(same_tab_data.empty());
 }
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
@@ -347,13 +360,19 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
       std::string(first_paste_data->png.begin(), first_paste_data->png.end()),
       "kept");
 
+  // Same-tab replacement should still be allow to be replaced as it happened in
+  // a known browser context.
+  content::ClipboardPasteData same_tab_data;
+  ReplaceSameTabClipboardDataIfRequiredByPolicy(metadata.seqno, same_tab_data);
+  EXPECT_EQ(same_tab_data.text, u"foo");
+
   // Pasting again with a new seqno implies new data in the clipboard from
   // outside of Chrome, so it should be let through without replacement when it
   // triggers no rule.
   base::test::TestFuture<std::optional<content::ClipboardPasteData>>
       second_paste_future;
-  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(),
-                         /*metadata=*/{},
+  content::ClipboardMetadata new_metadata;
+  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(), new_metadata,
                          MakeClipboardPasteData("text", "image", {}),
                          second_paste_future.GetCallback());
 
@@ -363,6 +382,13 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
   EXPECT_EQ(
       std::string(second_paste_data->png.begin(), second_paste_data->png.end()),
       "image");
+
+  // Same-tab replacement should still do nothing since the data wasn't
+  // replaced.
+  same_tab_data = {};
+  ReplaceSameTabClipboardDataIfRequiredByPolicy(new_metadata.seqno,
+                                                same_tab_data);
+  EXPECT_TRUE(same_tab_data.empty());
 }
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
@@ -439,13 +465,21 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
       std::string(first_paste_data->png.begin(), first_paste_data->png.end()),
       "bar");
 
+  // Same-tab replacement should use the cached data as well.
+  content::ClipboardPasteData same_tab_data;
+  ReplaceSameTabClipboardDataIfRequiredByPolicy(text_metadata.seqno,
+                                                same_tab_data);
+  EXPECT_EQ(same_tab_data.text, u"foo");
+  EXPECT_EQ(std::string(same_tab_data.png.begin(), same_tab_data.png.end()),
+            "bar");
+
   // Pasting again with a new seqno implies new data in the clipboard from
   // outside of Chrome, so it should be let through without replacement when it
   // triggers no rule.
   base::test::TestFuture<std::optional<content::ClipboardPasteData>>
       second_paste_future;
-  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(),
-                         /*metadata=*/{},
+  content::ClipboardMetadata new_metadata;
+  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(), new_metadata,
                          MakeClipboardPasteData("text", "image", {}),
                          second_paste_future.GetCallback());
 
@@ -455,6 +489,13 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
   EXPECT_EQ(
       std::string(second_paste_data->png.begin(), second_paste_data->png.end()),
       "image");
+
+  // Same-tab replacement should do nothing with the new seqno as no replacement
+  // was performed.
+  same_tab_data = {};
+  ReplaceSameTabClipboardDataIfRequiredByPolicy(new_metadata.seqno,
+                                                same_tab_data);
+  EXPECT_TRUE(same_tab_data.empty());
 }
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, NoStringReplacement) {
@@ -475,8 +516,9 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, NoStringReplacement) {
                          const content::ClipboardPasteData&,
                          std::optional<std::u16string>>
       future;
+  content::ClipboardMetadata metadata = CopyMetadata();
   IsClipboardCopyAllowedByPolicy(
-      CopyEndpoint(GURL("https://random.com")), CopyMetadata(),
+      CopyEndpoint(GURL("https://random.com")), metadata,
       MakeClipboardPasteData("foo", "", {}), future.GetCallback());
 
   auto data = future.Get<content::ClipboardPasteData>();
@@ -484,6 +526,10 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, NoStringReplacement) {
 
   auto replacement = future.Get<std::optional<std::u16string>>();
   EXPECT_FALSE(replacement);
+
+  content::ClipboardPasteData same_tab_data;
+  ReplaceSameTabClipboardDataIfRequiredByPolicy(metadata.seqno, same_tab_data);
+  EXPECT_TRUE(same_tab_data.empty());
 }
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, BitmapReplacement) {
@@ -548,13 +594,23 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, BitmapReplacement) {
   EXPECT_TRUE(gfx::BitmapsAreEqual(kBitmap, pasted_bitmap));
   EXPECT_TRUE(first_paste_data->bitmap.empty());
 
+  // Same-tab replacement should apply to the cached bitmap as well.
+  content::ClipboardPasteData same_tab_data;
+  ReplaceSameTabClipboardDataIfRequiredByPolicy(metadata.seqno, same_tab_data);
+
+  pasted_bitmap = SkBitmap();
+  gfx::PNGCodec::Decode(same_tab_data.png.data(), same_tab_data.png.size(),
+                        &pasted_bitmap);
+  EXPECT_TRUE(gfx::BitmapsAreEqual(kBitmap, pasted_bitmap));
+  EXPECT_TRUE(same_tab_data.bitmap.empty());
+
   // Pasting again with a new seqno implies new data in the clipboard from
   // outside of Chrome, so it should be let through without replacement when it
   // triggers no rule.
   base::test::TestFuture<std::optional<content::ClipboardPasteData>>
       second_paste_future;
-  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(),
-                         /*metadata=*/{},
+  content::ClipboardMetadata new_metadata;
+  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(), new_metadata,
                          MakeClipboardPasteData("text", "image", {}),
                          second_paste_future.GetCallback());
 
@@ -564,6 +620,13 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, BitmapReplacement) {
   EXPECT_EQ(
       std::string(second_paste_data->png.begin(), second_paste_data->png.end()),
       "image");
+
+  // Same-tab replacement should do nothing with the new seqno as no replacement
+  // was performed.
+  same_tab_data = {};
+  ReplaceSameTabClipboardDataIfRequiredByPolicy(new_metadata.seqno,
+                                                same_tab_data);
+  EXPECT_TRUE(same_tab_data.empty());
 }
 
 }  // namespace enterprise_data_protection

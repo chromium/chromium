@@ -467,4 +467,12 @@ void IsClipboardCopyAllowedByPolicy(
   IsCopyRestrictedByDialog(source, metadata, data, std::move(callback));
 }
 
+void ReplaceSameTabClipboardDataIfRequiredByPolicy(
+    ui::ClipboardSequenceNumberToken seqno,
+    content::ClipboardPasteData& data) {
+  if (seqno == GetLastReplacedClipboardData().seqno) {
+    data = GetLastReplacedClipboardData().clipboard_paste_data;
+  }
+}
+
 }  // namespace enterprise_data_protection

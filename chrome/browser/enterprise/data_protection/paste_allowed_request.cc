@@ -65,6 +65,7 @@ void PasteAllowedRequest::StartPasteAllowedRequest(
 
   // Always allow if the source of the last clipboard commit was this host.
   if (rfh.IsClipboardOwner(seqno)) {
+    ReplaceSameTabClipboardDataIfRequiredByPolicy(seqno, clipboard_paste_data);
     std::move(callback).Run(std::move(clipboard_paste_data));
     return;
   }

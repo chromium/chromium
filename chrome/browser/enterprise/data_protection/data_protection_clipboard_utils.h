@@ -30,7 +30,7 @@ void PasteIfAllowedByPolicy(
     content::ClipboardPasteData clipboard_paste_data,
     content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback);
 
-// This funcction checks if data copied from a browser tab is allowed to be
+// This function checks if data copied from a browser tab is allowed to be
 // written to the OS clipboard according to the following policies:
 // - CopyPreventionSettings
 // - DataControlsRules
@@ -42,6 +42,14 @@ void IsClipboardCopyAllowedByPolicy(
     const content::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback);
+
+// This function replaces sub-fields in `data` depending internally tracked
+// clipboard data that's been replaced due to the "DataControlsRules" policy.
+// This should only be called for clipboard pastes within the same tab. If
+// "DataControlsRules" is unset, this function does nothing.
+void ReplaceSameTabClipboardDataIfRequiredByPolicy(
+    ui::ClipboardSequenceNumberToken seqno,
+    content::ClipboardPasteData& data);
 
 }  // namespace enterprise_data_protection
 
