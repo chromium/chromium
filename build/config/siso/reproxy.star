@@ -7,6 +7,7 @@
 load("@builtin//encoding.star", "json")
 load("@builtin//lib/gn.star", "gn")
 load("@builtin//path.star", "path")
+load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
 load("./clang_code_coverage_wrapper.star", "clang_code_coverage_wrapper")
 load("./config.star", "config")
@@ -32,7 +33,7 @@ def __parse_rewrapper_cmdline(ctx, cmd):
     wrapped_command_pos = -1
     cfg_file = None
     skip = ""
-    rw_ops = {}
+    rw_cmd_opts = {}
     for i, arg in enumerate(cmd.args):
         if i == 0:
             continue
@@ -40,7 +41,7 @@ def __parse_rewrapper_cmdline(ctx, cmd):
             cfg_file = ctx.fs.canonpath(arg.removeprefix("-cfg="))
             continue
         if arg.startswith("-inputs=") or skip == "-inputs":
-            rw_ops["inputs"] = arg.removeprefix("-inputs=").split(",")
+            rw_cmd_opts["inputs"] = arg.removeprefix("-inputs=").split(",")
             skip = ""
             continue
         if arg == "-inputs":
@@ -50,14 +51,24 @@ def __parse_rewrapper_cmdline(ctx, cmd):
             wrapped_command_pos = i
             break
     if wrapped_command_pos < 1:
-        fail("couldn't find first non-arg passed to rewrapper for %s" % str(cmd.args))
+        fail("couldn't find first non-arg passed to rewrapper from %s" % str(cmd.args))
     if not cfg_file:
-        return cmd.args[wrapped_command_pos:], rw_ops, True
-    rw_cfg_opts = rewrapper_cfg.parse(ctx, cfg_file)
+        fail("couldn't find rewrapper cfg file from %s" % str(cmd.args))
 
-    # Command line options have higher priority than the ones in the cfg file.
-    rw_cfg_opts.update(rw_ops)
-    return cmd.args[wrapped_command_pos:], rw_cfg_opts, True
+    # Config options are the lowest prioity.
+    rw_opts = rewrapper_cfg.parse(ctx, cfg_file)
+
+    # TODO: Read RBE_* envvars.
+    if runtime.os == "windows":
+        # Experimenting if longer timeouts resolve slow Windows developer builds. b/335525655
+        rw_opts.update({
+            "exec_timeout": "4m",
+            "reclient_timeout": "8m",
+        })
+
+    # Command line options are the highest priority.
+    rw_opts.update(rw_cmd_opts)
+    return cmd.args[wrapped_command_pos:], rw_opts, True
 
 def __parse_cros_rewrapper_cmdline(ctx, cmd):
     # fix cros sdk clang command line and extract rewrapper cfg.
