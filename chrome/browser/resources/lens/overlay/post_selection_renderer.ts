@@ -7,6 +7,7 @@ import {EventTracker} from '//resources/js/event_tracker.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
+import {toPercent} from './values_converter.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import {getTemplate} from './post_selection_renderer.html.js';
@@ -38,12 +39,6 @@ export const PERIMETER_SELECTION_PADDING_PX = 4;
 // The value for the corner length when the animation finishes and the box is
 // in a resting state. Exported for testing.
 export const RESTING_CORNER_LENGTH_PX = 22;
-
-// Takes the value between 0-1 and returns a string in the from '__%';
-// TODO(b/333620724): Move to a separate file and reuse across codebase.
-function toPercent(value: number): string {
-  return `${value * 100}%`;
-}
 
 function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);

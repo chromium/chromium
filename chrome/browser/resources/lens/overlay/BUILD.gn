@@ -26,6 +26,7 @@ build_webui("build_overlay") {
 
   non_web_component_files = [
     "browser_proxy.ts",
+    "values_converter.ts",
     "hit.ts",
     "post_selection_paint_worklet.ts",
     "selection_utils.ts",

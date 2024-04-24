@@ -10,17 +10,13 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
+import {toPercent} from './values_converter.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import {bestHit} from './hit.js';
 import type {LensPageCallbackRouter} from './lens.mojom-webui.js';
 import type {GestureEvent} from './selection_utils.js';
 import type {Text, Word} from './text.mojom-webui.js';
 import {getTemplate} from './text_layer.html.js';
-
-// Takes the value between 0-1 and returns a string in the from '__%';
-function toPercent(value: number): string {
-  return `${value * 100}%`;
-}
 
 // Returns true if the word has a valid bounding box and is renderable by the
 // TextLayer.

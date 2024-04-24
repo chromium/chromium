@@ -10,6 +10,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import type {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
+import {toPercent} from './values_converter.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import type {LensPageCallbackRouter} from './lens.mojom-webui.js';
@@ -22,11 +23,6 @@ import type {GestureEvent} from './selection_utils.js';
 // The percent of the selection layer width and height the object needs to take
 // up to be considered full page.
 const FULLSCREEN_OBJECT_THRESHOLD_PERCENT = 0.95;
-
-// Takes the value between 0-1 and returns a string in the from '__%';
-function toPercent(value: number): string {
-  return `${value * 100}%`;
-}
 
 // Returns true if the object has a valid bounding box and is renderable by the
 // ObjectLayer.
