@@ -12,6 +12,7 @@
 
 @protocol ContextualPanelEntrypointConsumer;
 @protocol ContextualPanelEntrypointMediatorDelegate;
+@protocol ContextualSheetCommands;
 
 // Mediator for Contextual Panel Entrypoint.
 @interface ContextualPanelEntrypointMediator
@@ -28,6 +29,9 @@
 // The delegate for this mediator.
 @property(nonatomic, weak) id<ContextualPanelEntrypointMediatorDelegate>
     delegate;
+
+// The command handler for sheet UI commands.
+@property(nonatomic, weak) id<ContextualSheetCommands> contextualSheetHandler;
 
 // Cleanup and disconnect the mediator.
 - (void)disconnect;

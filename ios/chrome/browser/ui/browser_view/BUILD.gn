@@ -55,6 +55,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/commerce/model/price_notifications",
     "//ios/chrome/browser/commerce/model/push_notification",
     "//ios/chrome/browser/content_settings/model",
+    "//ios/chrome/browser/contextual_panel/coordinator",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/docking_promo/coordinator",

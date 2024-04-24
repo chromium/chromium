@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/ui/fullscreen/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
@@ -40,24 +41,27 @@
   [super start];
   _viewController = [[ContextualPanelEntrypointViewController alloc] init];
 
-  ContextualPanelBrowserAgent* browser_agent =
+  ContextualPanelBrowserAgent* browserAgent =
       ContextualPanelBrowserAgent::FromBrowser(self.browser);
 
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+
   _mediator = [[ContextualPanelEntrypointMediator alloc]
-      initWithBrowserAgent:browser_agent];
+      initWithBrowserAgent:browserAgent];
   _mediator.delegate = self;
+  _mediator.contextualSheetHandler =
+      HandlerForProtocol(dispatcher, ContextualSheetCommands);
 
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;
 
-  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   [dispatcher
       startDispatchingToTarget:_mediator
                    forProtocol:@protocol(ContextualPanelEntrypointCommands)];
 
-  id<ContextualPanelEntrypointCommands> entrypoint_handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ContextualPanelEntrypointCommands);
-  browser_agent->SetEntrypointCommandsHandler(entrypoint_handler);
+  id<ContextualPanelEntrypointCommands> entrypointHandler =
+      HandlerForProtocol(dispatcher, ContextualPanelEntrypointCommands);
+  browserAgent->SetEntrypointCommandsHandler(entrypointHandler);
 
   _contextualPanelEntrypointFullscreenUIUpdater =
       std::make_unique<FullscreenUIUpdater>(

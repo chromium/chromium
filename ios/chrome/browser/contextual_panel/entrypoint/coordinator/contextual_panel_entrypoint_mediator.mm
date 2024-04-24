@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_browser_agent.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
@@ -47,7 +48,7 @@
 #pragma mark - ContextualPanelEntrypointMutator
 
 - (void)entrypointTapped {
-  // Do something.
+  [self.contextualSheetHandler showContextualSheet];
 }
 
 - (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered {

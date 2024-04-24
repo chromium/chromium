@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/contextual_panel/coordinator/contextual_sheet_coordinator.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
@@ -80,6 +81,7 @@
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/feed_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
@@ -271,6 +273,7 @@ enum class ToolbarKind {
     AutofillAddCreditCardCoordinatorDelegate,
     BrowserCoordinatorCommands,
     BubblePresenterDelegate,
+    ContextualSheetCommands,
     DefaultBrowserPromoCommands,
     DefaultPromoNonModalPresentationDelegate,
     EnterprisePromptCoordinatorDelegate,
@@ -566,6 +569,7 @@ enum class ToolbarKind {
   OmniboxPositionChoiceCoordinator* _omniboxPositionChoiceCoordinator;
   std::unique_ptr<WebUsageEnablerBrowserAgentObserverBridge>
       _webUsageEnablerObserver;
+  ContextualSheetCoordinator* _contextualSheetCoordinator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -864,6 +868,7 @@ enum class ToolbarKind {
     @protocol(ActivityServiceCommands),
     @protocol(AutofillCommands),
     @protocol(BrowserCoordinatorCommands),
+    @protocol(ContextualSheetCommands),
     @protocol(DefaultBrowserPromoNonModalCommands),
     @protocol(FeedCommands),
     @protocol(PromosManagerCommands),
@@ -2008,6 +2013,21 @@ enum class ToolbarKind {
 - (void)dismissOmniboxPositionChoice {
   [_omniboxPositionChoiceCoordinator stop];
   _omniboxPositionChoiceCoordinator = nil;
+}
+
+#pragma mark - ContextualSheetCommands
+
+- (void)showContextualSheet {
+  _contextualSheetCoordinator = [[ContextualSheetCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  _contextualSheetCoordinator.presenter = self.viewController;
+  [_contextualSheetCoordinator start];
+}
+
+- (void)hideContextualSheet {
+  [_contextualSheetCoordinator stop];
+  _contextualSheetCoordinator = nil;
 }
 
 #pragma mark - DefaultBrowserPromoCommands

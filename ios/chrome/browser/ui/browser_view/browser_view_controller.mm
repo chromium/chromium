@@ -2607,4 +2607,12 @@ enum HeaderBehaviour {
   return UIEdgeInsetsInsetRect(self.contentArea.bounds, viewportInsets);
 }
 
+#pragma mark - ContextualSheetPresenter
+
+- (void)insertContextualSheet:(UIView*)contextualSheet {
+  [self.view
+      insertSubview:contextualSheet
+       aboveSubview:self.toolbarCoordinator.primaryToolbarViewController.view];
+}
+
 @end
