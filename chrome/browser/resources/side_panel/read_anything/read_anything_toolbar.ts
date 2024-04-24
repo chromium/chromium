@@ -332,7 +332,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   private colorSuffix_: string = '';
 
   private toolbarContainerObserver_: ResizeObserver|null;
-  private dragResizeCallback_: () => void;
+  private windowResizeCallback_: () => void;
 
   // If Read Aloud is in the paused state. This is set from the parent element
   // via one way data binding.
@@ -381,9 +381,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       this.toolbarContainerObserver_ =
           new ResizeObserver(this.onToolbarResize_);
       this.toolbarContainerObserver_.observe(this.$.toolbarContainer);
-
-      this.dragResizeCallback_ = this.onDragResize_.bind(this);
-      window.addEventListener('resize', this.dragResizeCallback_);
+      this.windowResizeCallback_ = this.onWindowResize_.bind(this);
+      window.addEventListener('resize', this.windowResizeCallback_);
     }
     this.textStyleOptions_ =
         this.textStyleOptions_.concat(this.moreOptionsButtons_);
@@ -396,8 +395,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    if (this.dragResizeCallback_) {
-      window.removeEventListener('resize', this.dragResizeCallback_);
+    if (this.windowResizeCallback_) {
+      window.removeEventListener('resize', this.windowResizeCallback_);
     }
     this.toolbarContainerObserver_?.disconnect();
   }
@@ -427,7 +426,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.areFontsLoaded_ = true;
   }
 
-  private onDragResize_() {
+  private onWindowResize_() {
     ReadAnythingToolbarElement.maybeUpdateMoreOptions(this.$.toolbarContainer);
   }
 
