@@ -114,7 +114,7 @@ component("shell_dialogs") {
     ]
     deps += [
       "//ui/android",
-      "//ui/base:ui_base_jni_headers",
+      "//ui/base:select_file_dialog_jni_headers",
     ]
     include_dirs = [ "$root_gen_dir/ui" ]
     libs = [ "jnigraphics" ]

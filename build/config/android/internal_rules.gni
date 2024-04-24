@@ -4034,12 +4034,6 @@ if (enable_java_templates) {
         }
       }
 
-      if (_skip_header_jar) {
-        group(_header_target_name) {
-          public_deps = [ ":$_compile_java_target" ]
-        }
-      }
-
       if (_enable_errorprone) {
         _compile_java_errorprone_target = "${_main_target_name}__errorprone"
         compile_java_helper(_compile_java_errorprone_target) {
@@ -4214,6 +4208,12 @@ if (enable_java_templates) {
         } else {
           assert(_unprocessed_jar_path == _device_processed_jar_path)
           _process_device_jar_deps = _unprocessed_jar_deps
+        }
+
+        if (_skip_header_jar) {
+          group(_header_target_name) {
+            public_deps = [ ":$_process_device_jar_target_name" ]
+          }
         }
 
         _dex_target_name = "${target_name}__dex"
