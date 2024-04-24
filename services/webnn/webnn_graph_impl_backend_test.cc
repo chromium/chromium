@@ -2784,6 +2784,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {1, 0, 1, 0, 0, 0}}}
         .Test(*this);
   }
+#endif  // !BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_MAC)
   {
     ElementWiseUnaryTester<float>{
         .input = test_operand_info_float32_scalar,
@@ -2812,6 +2813,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .output = test_operand_info_int32}
         .Test(*this);
   }
+#if !BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_MAC)
   {
     ElementWiseUnaryTester<int8_t>{
         .input = test_operand_info_int8,
@@ -2854,7 +2856,7 @@ TEST_F(WebNNGraphImplBackendTest,
 
   // TODO(https://crbug.com/326356909): Enable these tests when using TFLite,
   // after adding support for float16 and other unary operators.
-#if !BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(WEBNN_USE_TFLITE)
   {
     ElementWiseUnaryTester<float16>{
         .input = {.type = mojom::Operand::DataType::kFloat16,
@@ -2866,7 +2868,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = Float16FromFloat32({0, 2, 5, 4, 8, 7})}}
         .Test(*this);
   }
-#endif  // !BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(WEBNN_USE_TFLITE)
 #if !BUILDFLAG(WEBNN_USE_TFLITE)
   {
     ElementWiseUnaryTester<float>{
@@ -2880,7 +2882,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .Test(*this);
   }
 #endif  // !BUILDFLAG(WEBNN_USE_TFLITE)
-#if !BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(WEBNN_USE_TFLITE)
   {
     ElementWiseUnaryTester<float16>{
         .input = {.type = mojom::Operand::DataType::kFloat16,
@@ -2892,7 +2894,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = Float16FromFloat32({0, 1, 0, 1, 1, -1})}}
         .Test(*this);
   }
-#endif  // !BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(WEBNN_USE_TFLITE)
 #if !BUILDFLAG(WEBNN_USE_TFLITE)
   {
     ElementWiseUnaryTester<float>{
@@ -2907,7 +2909,7 @@ TEST_F(WebNNGraphImplBackendTest,
         .Test(*this);
   }
 #endif  // !BUILDFLAG(WEBNN_USE_TFLITE)
-#if !BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(WEBNN_USE_TFLITE)
   {
     ElementWiseUnaryTester<float16>{
         .input = {.type = mojom::Operand::DataType::kFloat16,
@@ -2921,8 +2923,7 @@ TEST_F(WebNNGraphImplBackendTest,
                         std::numeric_limits<float>::infinity()})}}
         .Test(*this);
   }
-#endif  // !BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_MAC)
-#if !BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(WEBNN_USE_TFLITE)
   {
     ElementWiseUnaryTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -2934,7 +2935,6 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = {1, 4, 2, 16, 64, 0}}}
         .Test(*this);
   }
-#endif  // !BUILDFLAG(IS_MAC)
   {
     ElementWiseUnaryTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -2971,7 +2971,7 @@ TEST_F(WebNNGraphImplBackendTest,
 
   // TODO(https://crbug.com/326356909): Enable these tests when using TFLite,
   // after adding support for other unary operators.
-#if !BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(WEBNN_USE_TFLITE)
   {
     ElementWiseUnaryTester<float16>{
         .input = {.type = mojom::Operand::DataType::kFloat16,
@@ -2983,7 +2983,7 @@ TEST_F(WebNNGraphImplBackendTest,
                    .values = Float16FromFloat32({-2, 0, 1, -3, 0, 2})}}
         .Test(*this);
   }
-#endif  // !BUILDFLAG(WEBNN_USE_TFLITE) && !BUILDFLAG(IS_MAC)
+#endif  // !BUILDFLAG(WEBNN_USE_TFLITE)
   {
     ElementWiseUnaryTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,

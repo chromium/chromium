@@ -155,16 +155,18 @@ class GraphBuilder {
   [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddOutput(
       uint64_t output_id);
 
-  // Helper function for simple unary operations that take a single
-  // float32/float16 input.
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddUnaryFloatsOperation(
+  // Helper function for simple unary operations.
+  enum class SupportedDataType { kFloats, kFloatsAndInt32 };
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddUnaryOperation(
+      SupportedDataType supported_data_type,
       std::string_view op_name,
       std::string_view input_name,
       CoreML::Specification::MILSpec::DataType input_mil_data_type,
       uint64_t output_operand_id,
       CoreML::Specification::MILSpec::Block& block);
   template <typename T>
-  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddUnaryFloatsOperation(
+  [[nodiscard]] base::expected<void, mojom::ErrorPtr> AddUnaryOperation(
+      SupportedDataType supported_data_type,
       std::string_view op_name,
       const T& operation,
       CoreML::Specification::MILSpec::Block& block);

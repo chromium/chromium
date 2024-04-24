@@ -125,10 +125,12 @@ constexpr char kOpLogicalGreater[] = "greater";
 constexpr char kOpLogicalGreaterEqual[] = "greater_equal";
 constexpr char kOpLogicalLess[] = "less";
 constexpr char kOpLogicalLessEqual[] = "less_equal";
+constexpr char kOpAbsTypeName[] = "abs";
 constexpr char kOpCeilTypeName[] = "ceil";
 constexpr char kOpCosTypeName[] = "cos";
 constexpr char kOpExpTypeName[] = "exp";
 constexpr char kOpFloorTypeName[] = "floor";
+constexpr char kOpIdentityTypeName[] = "identity";
 constexpr char kOpSinTypeName[] = "sin";
 constexpr char kOpTanTypeName[] = "tan";
 constexpr char kOpErfTypeName[] = "erf";
@@ -609,8 +611,9 @@ GraphBuilder::BuildCoreMLModel() {
         break;
       }
       case mojom::Operation::Tag::kRelu: {
-        RETURN_IF_ERROR(AddUnaryFloatsOperation(kOpReluTypeName,
-                                                *operation->get_relu(), block));
+        RETURN_IF_ERROR(AddUnaryOperation(SupportedDataType::kFloats,
+                                          kOpReluTypeName,
+                                          *operation->get_relu(), block));
         break;
       }
       case mojom::Operation::Tag::kResample2d: {
@@ -624,18 +627,21 @@ GraphBuilder::BuildCoreMLModel() {
         break;
       }
       case mojom::Operation::Tag::kSigmoid: {
-        RETURN_IF_ERROR(AddUnaryFloatsOperation(
-            kOpSigmoidTypeName, *operation->get_sigmoid(), block));
+        RETURN_IF_ERROR(AddUnaryOperation(SupportedDataType::kFloats,
+                                          kOpSigmoidTypeName,
+                                          *operation->get_sigmoid(), block));
         break;
       }
       case mojom::Operation::Tag::kSoftsign: {
-        RETURN_IF_ERROR(AddUnaryFloatsOperation(
-            kOpSoftsignTypeName, *operation->get_softsign(), block));
+        RETURN_IF_ERROR(AddUnaryOperation(SupportedDataType::kFloats,
+                                          kOpSoftsignTypeName,
+                                          *operation->get_softsign(), block));
         break;
       }
       case mojom::Operation::Tag::kTanh: {
-        RETURN_IF_ERROR(AddUnaryFloatsOperation(kOpTanhTypeName,
-                                                *operation->get_tanh(), block));
+        RETURN_IF_ERROR(AddUnaryOperation(SupportedDataType::kFloats,
+                                          kOpTanhTypeName,
+                                          *operation->get_tanh(), block));
         break;
       }
       case mojom::Operation::Tag::kTranspose: {
@@ -840,14 +846,26 @@ void GraphBuilder::AddPlaceholderInput(
   return base::ok();
 }
 
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddUnaryFloatsOperation(
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddUnaryOperation(
+    SupportedDataType supported_data_type,
     std::string_view op_name,
     std::string_view input_name,
     CoreML::Specification::MILSpec::DataType input_mil_data_type,
     uint64_t output_operand_id,
     CoreML::Specification::MILSpec::Block& block) {
-  if (!kFloatDataTypes.contains(input_mil_data_type)) {
-    return NewNotSupportedError("Unsupported input datatype.");
+  switch (supported_data_type) {
+    case SupportedDataType::kFloats: {
+      if (!kFloatDataTypes.contains(input_mil_data_type)) {
+        return NewNotSupportedError("Unsupported input datatype.");
+      }
+      break;
+    }
+    case SupportedDataType::kFloatsAndInt32: {
+      if (!kFloatsAndInt32DataTypes.contains(input_mil_data_type)) {
+        return NewNotSupportedError("Unsupported input datatype.");
+      }
+      break;
+    }
   }
 
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
@@ -860,15 +878,16 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddUnaryFloatsOperation(
 }
 
 template <typename T>
-base::expected<void, mojom::ErrorPtr> GraphBuilder::AddUnaryFloatsOperation(
+base::expected<void, mojom::ErrorPtr> GraphBuilder::AddUnaryOperation(
+    SupportedDataType supported_data_type,
     std::string_view op_name,
     const T& operation,
     CoreML::Specification::MILSpec::Block& block) {
   const OperandInfo& input_operand_info =
       GetOperandInfo(operation.input_operand_id);
-  return AddUnaryFloatsOperation(op_name, input_operand_info.coreml_name,
-                                 input_operand_info.mil_data_type,
-                                 operation.output_operand_id, block);
+  return AddUnaryOperation(
+      supported_data_type, op_name, input_operand_info.coreml_name,
+      input_operand_info.mil_data_type, operation.output_operand_id, block);
 }
 
 base::expected<void, mojom::ErrorPtr>
@@ -1108,27 +1127,29 @@ base::expected<void, mojom::ErrorPtr> GraphBuilder::AddOperationForConv2d(
         break;
       }
       case webnn::mojom::Activation::Tag::kRelu: {
-        RETURN_IF_ERROR(AddUnaryFloatsOperation(
-            kOpReluTypeName, internal_output_name, output_operand.mil_data_type,
-            operation.output_operand_id, block));
+        RETURN_IF_ERROR(AddUnaryOperation(
+            SupportedDataType::kFloats, kOpReluTypeName, internal_output_name,
+            output_operand.mil_data_type, operation.output_operand_id, block));
         break;
       }
       case webnn::mojom::Activation::Tag::kSigmoid: {
-        RETURN_IF_ERROR(AddUnaryFloatsOperation(
-            kOpSigmoidTypeName, internal_output_name,
-            output_operand.mil_data_type, operation.output_operand_id, block));
+        RETURN_IF_ERROR(AddUnaryOperation(
+            SupportedDataType::kFloats, kOpSigmoidTypeName,
+            internal_output_name, output_operand.mil_data_type,
+            operation.output_operand_id, block));
         break;
       }
       case webnn::mojom::Activation::Tag::kSoftsign: {
-        RETURN_IF_ERROR(AddUnaryFloatsOperation(
-            kOpSoftsignTypeName, internal_output_name,
-            output_operand.mil_data_type, operation.output_operand_id, block));
+        RETURN_IF_ERROR(AddUnaryOperation(
+            SupportedDataType::kFloats, kOpSoftsignTypeName,
+            internal_output_name, output_operand.mil_data_type,
+            operation.output_operand_id, block));
         break;
       }
       case webnn::mojom::Activation::Tag::kTanh: {
-        RETURN_IF_ERROR(AddUnaryFloatsOperation(
-            kOpTanhTypeName, internal_output_name, output_operand.mil_data_type,
-            operation.output_operand_id, block));
+        RETURN_IF_ERROR(AddUnaryOperation(
+            SupportedDataType::kFloats, kOpTanhTypeName, internal_output_name,
+            output_operand.mil_data_type, operation.output_operand_id, block));
         break;
       }
       // TODO: crbug.com/41481333 Support these when implemented.
@@ -1253,34 +1274,50 @@ GraphBuilder::AddOperationForElementwiseUnary(
     const mojom::ElementWiseUnary& operation,
     CoreML::Specification::MILSpec::Block& block) {
   switch (operation.kind) {
+    case mojom::ElementWiseUnary::Kind::kAbs: {
+      return AddUnaryOperation(SupportedDataType::kFloatsAndInt32,
+                               kOpAbsTypeName, operation, block);
+    }
     case mojom::ElementWiseUnary::Kind::kCast: {
       const OperandInfo& input = GetOperandInfo(operation.input_operand_id);
       return AddOperationForCast(input.coreml_name, operation.output_operand_id,
                                  input.data_type, block);
     }
     case mojom::ElementWiseUnary::Kind::kCeil: {
-      return AddUnaryFloatsOperation(kOpCeilTypeName, operation, block);
+      return AddUnaryOperation(SupportedDataType::kFloats, kOpCeilTypeName,
+                               operation, block);
     }
     case mojom::ElementWiseUnary::Kind::kCos: {
-      return AddUnaryFloatsOperation(kOpCosTypeName, operation, block);
+      return AddUnaryOperation(SupportedDataType::kFloats, kOpCosTypeName,
+                               operation, block);
     }
     case mojom::ElementWiseUnary::Kind::kExp: {
-      return AddUnaryFloatsOperation(kOpExpTypeName, operation, block);
+      return AddUnaryOperation(SupportedDataType::kFloats, kOpExpTypeName,
+                               operation, block);
     }
     case mojom::ElementWiseUnary::Kind::kFloor: {
-      return AddUnaryFloatsOperation(kOpFloorTypeName, operation, block);
+      return AddUnaryOperation(SupportedDataType::kFloats, kOpFloorTypeName,
+                               operation, block);
+    }
+    case mojom::ElementWiseUnary::Kind::kIdentity: {
+      return AddUnaryOperation(SupportedDataType::kFloatsAndInt32,
+                               kOpIdentityTypeName, operation, block);
     }
     case mojom::ElementWiseUnary::Kind::kSin: {
-      return AddUnaryFloatsOperation(kOpSinTypeName, operation, block);
+      return AddUnaryOperation(SupportedDataType::kFloats, kOpSinTypeName,
+                               operation, block);
     }
     case mojom::ElementWiseUnary::Kind::kTan: {
-      return AddUnaryFloatsOperation(kOpTanTypeName, operation, block);
+      return AddUnaryOperation(SupportedDataType::kFloats, kOpTanTypeName,
+                               operation, block);
     }
     case mojom::ElementWiseUnary::Kind::kErf: {
-      return AddUnaryFloatsOperation(kOpErfTypeName, operation, block);
+      return AddUnaryOperation(SupportedDataType::kFloats, kOpErfTypeName,
+                               operation, block);
     }
     case mojom::ElementWiseUnary::Kind::kSqrt: {
-      return AddUnaryFloatsOperation(kOpSqrtTypeName, operation, block);
+      return AddUnaryOperation(SupportedDataType::kFloats, kOpSqrtTypeName,
+                               operation, block);
     }
     case mojom::ElementWiseUnary::Kind::kReciprocal: {
       // CoreML's reciprocal operator requires an epsilon value, the default
@@ -1301,8 +1338,6 @@ GraphBuilder::AddOperationForElementwiseUnary(
                                                 /*epsilon=*/0, block);
     }
     case mojom::ElementWiseUnary::Kind::kNeg:
-    case mojom::ElementWiseUnary::Kind::kAbs:
-    case mojom::ElementWiseUnary::Kind::kIdentity:
     case mojom::ElementWiseUnary::Kind::kLogicalNot:
       return NewNotSupportedError("Unimplemented Unary Operator.");
   }
