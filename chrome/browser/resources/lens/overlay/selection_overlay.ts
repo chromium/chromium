@@ -126,14 +126,10 @@ export class SelectionOverlayElement extends PolymerElement {
     if (this.$.textSelectionLayer.handleDownGesture(this.currentGesture)) {
       // Text is responding to this sequence of gestures.
       this.draggingRespondent = DragFeature.TEXT;
+      this.$.postSelectionRenderer.clearSelection();
     } else if (this.$.postSelectionRenderer.handleDownGesture(
                    this.currentGesture)) {
       this.draggingRespondent = DragFeature.POST_SELECTION;
-    }
-
-    // Clear selection if user is dragging on anything but post selection.
-    if (this.draggingRespondent !== DragFeature.POST_SELECTION) {
-      this.$.postSelectionRenderer.clearSelection();
     }
   }
 
@@ -189,6 +185,7 @@ export class SelectionOverlayElement extends PolymerElement {
       } else {
         // Let the features respond to the current drag if no other feature
         // responded first.
+        this.$.postSelectionRenderer.clearSelection();
         this.draggingRespondent = DragFeature.MANUAL_REGION;
         this.$.regionSelectionLayer.handleDragGesture(this.currentGesture);
       }

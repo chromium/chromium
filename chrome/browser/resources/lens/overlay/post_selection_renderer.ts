@@ -372,6 +372,12 @@ export class PostSelectionRendererElement extends PolymerElement {
     };
   }
 
+  private getScrimStyleProperties() {
+    // If there is no selection, set opacity to zero to trigger fade out
+    // CSS transition.
+    return !this.hasSelection() ? 'opacity: 0;' : '';
+  }
+
   // Used in HTML template to know if there is currently a selection to render.
   private hasSelection(): boolean {
     return this.width > 0 && this.height > 0;

@@ -40,21 +40,18 @@
     max-height: calc(100vh - 24px);
   }
 
+  #selectionElements {
+    /* Background color #151C26 with 5% transparency */
+    background-color: #151C260D;
+  }
+
   #selectionElements > * {
     inset: 0;
     position: absolute;
   }
-  /* Temporary red scrim to make it evident the overlay is opened. */
-  #scrim {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(255, 0, 0, 0.15);
-    pointer-events: none;
-  }
 </style>
 <div id="selectionOverlay">
   <img id="backgroundImage" draggable="false" src="[[screenshotDataUri]]">
-  <div id="scrim"></div>
   <!-- Wrapper div is needed to stack the seleciton elements on top of
   background image. -->
   <div id="selectionElements">

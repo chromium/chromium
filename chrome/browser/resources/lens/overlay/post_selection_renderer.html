@@ -9,6 +9,14 @@
     position: relative;
   }
 
+  #postSelectionScrim {
+    background-color: #151C26;
+    height: 100%;
+    opacity: 20%;
+    transition: opacity cubic-bezier(0.2, 0.0, 0, 1.0) 400ms;
+    width: 100%;
+  }
+
   /** Render the selected part of the image again so it appears glowing over
       the scrim */
   #backgroundImage {
@@ -87,6 +95,9 @@
     transform: translate(-25%, 25%)
   }
 </style>
+<div id="postSelectionScrim"
+    style$="[[getScrimStyleProperties(height, width)]]">
+</div>
 <div hidden$="[[!hasSelection(height, width)]]">
   <img id="backgroundImage" src="[[screenshotDataUri]]">
   <!-- This inner postSelection div isn't technically required, but helps make
