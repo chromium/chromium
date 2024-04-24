@@ -1012,7 +1012,7 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
 
     case ax::mojom::Role::kFeed:
       return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
-              L"group"};
+              L"feed"};
 
     case ax::mojom::Role::kFigcaption:
       return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
