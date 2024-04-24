@@ -8,11 +8,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
-
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -38,7 +37,7 @@ namespace {
 // |label_string| and the second displaying |color_id| with its color and
 // equivalent components as text.
 void InsertColorRow(View* parent,
-                    base::StringPiece16 label_string,
+                    std::u16string_view label_string,
                     ui::ColorId color_id) {
   auto* label_view = parent->AddChildView(
       std::make_unique<Label>(std::u16string(label_string)));

@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -80,7 +81,7 @@ gfx::ImageSkia ParseLottieAsStillImageForTesting(std::vector<uint8_t> data) {
 #endif
 
 // Returns |bitmap_data| with |custom_chunk| inserted after the IHDR chunk.
-void AddCustomChunk(const base::StringPiece& custom_chunk,
+void AddCustomChunk(std::string_view custom_chunk,
                     std::vector<unsigned char>* bitmap_data) {
   size_t chunk_offset = 0u;
 
@@ -114,7 +115,7 @@ void AddCustomChunk(const base::StringPiece& custom_chunk,
 // in the encoded bitmap data.
 void CreateDataPackWithSingleBitmap(const base::FilePath& path,
                                     int edge_size,
-                                    const base::StringPiece& custom_chunk) {
+                                    std::string_view custom_chunk) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(edge_size, edge_size);
   bitmap.eraseColor(SK_ColorWHITE);
@@ -124,8 +125,8 @@ void CreateDataPackWithSingleBitmap(const base::FilePath& path,
   if (custom_chunk.size() > 0)
     AddCustomChunk(custom_chunk, &bitmap_data);
 
-  std::map<uint16_t, base::StringPiece> resources;
-  resources[3u] = base::StringPiece(
+  std::map<uint16_t, std::string_view> resources;
+  resources[3u] = std::string_view(
       reinterpret_cast<const char*>(&bitmap_data[0]), bitmap_data.size());
   DataPack::WritePack(path, resources, ui::DataPack::BINARY);
 }
@@ -261,7 +262,7 @@ TEST_F(ResourceBundleTest, DelegateGetRawDataResource) {
 
   // Create the string piece for testing purposes.
   char data[] = "My test data";
-  base::StringPiece string_piece(data);
+  std::string_view string_piece(data);
 
   int resource_id = 5;
 
@@ -270,8 +271,7 @@ TEST_F(ResourceBundleTest, DelegateGetRawDataResource) {
       .Times(1)
       .WillOnce(DoAll(SetArgPointee<2>(string_piece), Return(true)));
 
-  base::StringPiece result = resource_bundle->GetRawDataResource(
-      resource_id);
+  std::string_view result = resource_bundle->GetRawDataResource(resource_id);
   EXPECT_EQ(string_piece.data(), result.data());
 }
 
@@ -569,8 +569,8 @@ TEST_F(ResourceBundleImageTest, GetImageNamed) {
   base::FilePath data_2x_path = dir_path().AppendASCII("sample_2x.pak");
 
   // Create the pak files.
-  CreateDataPackWithSingleBitmap(data_1x_path, 10, base::StringPiece());
-  CreateDataPackWithSingleBitmap(data_2x_path, 20, base::StringPiece());
+  CreateDataPackWithSingleBitmap(data_1x_path, 10, std::string_view());
+  CreateDataPackWithSingleBitmap(data_2x_path, 20, std::string_view());
 
   // Load the regular and 2x pak files.
   ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
@@ -623,13 +623,13 @@ TEST_F(ResourceBundleImageTest, GetImageNamedFallback1x) {
   base::FilePath data_2x_path = dir_path().AppendASCII("sample_2x.pak");
 
   // Create the pak files.
-  CreateDataPackWithSingleBitmap(data_path, 10, base::StringPiece());
+  CreateDataPackWithSingleBitmap(data_path, 10, std::string_view());
   // 2x data pack bitmap has custom chunk to indicate that the 2x bitmap is not
   // available and that GRIT fell back to 1x.
   CreateDataPackWithSingleBitmap(
       data_2x_path, 10,
-      base::StringPiece(reinterpret_cast<const char*>(kPngScaleChunk),
-                        std::size(kPngScaleChunk)));
+      std::string_view(reinterpret_cast<const char*>(kPngScaleChunk),
+                       std::size(kPngScaleChunk)));
 
   // Load the regular and 2x pak files.
   ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
@@ -657,9 +657,9 @@ TEST_F(ResourceBundleImageTest, FallbackToNone) {
   base::FilePath data_default_path = dir_path().AppendASCII("sample.pak");
 
   // Create the pak files.
-  CreateDataPackWithSingleBitmap(data_default_path, 10, base::StringPiece());
+  CreateDataPackWithSingleBitmap(data_default_path, 10, std::string_view());
 
-    // Load the regular pak files only.
+  // Load the regular pak files only.
   ResourceBundle* resource_bundle = CreateResourceBundleWithEmptyLocalePak();
   resource_bundle->AddDataPackFromPath(data_default_path, kScaleFactorNone);
 
@@ -674,7 +674,7 @@ TEST_F(ResourceBundleImageTest, Lottie) {
   // Create the pak files.
   const base::FilePath data_unscaled_path =
       dir_path().AppendASCII("sample.pak");
-  const std::map<uint16_t, base::StringPiece> resources = {
+  const std::map<uint16_t, std::string_view> resources = {
       std::make_pair(3u, kLottieData)};
   DataPack::WritePack(data_unscaled_path, resources, ui::DataPack::BINARY);
 

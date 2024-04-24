@@ -4,6 +4,8 @@
 
 #include "ui/color/color_provider_utils.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/no_destructor.h"
@@ -151,7 +153,7 @@ ColorProviderUtilsCallbacks* g_color_provider_utils_callbacks = nullptr;
 
 ColorProviderUtilsCallbacks::~ColorProviderUtilsCallbacks() = default;
 
-base::StringPiece ColorModeName(ColorProviderKey::ColorMode color_mode) {
+std::string_view ColorModeName(ColorProviderKey::ColorMode color_mode) {
   switch (color_mode) {
     case ColorProviderKey::ColorMode::kLight:
       return "kLight";
@@ -162,7 +164,7 @@ base::StringPiece ColorModeName(ColorProviderKey::ColorMode color_mode) {
   }
 }
 
-base::StringPiece ContrastModeName(
+std::string_view ContrastModeName(
     ColorProviderKey::ContrastMode contrast_mode) {
   switch (contrast_mode) {
     case ColorProviderKey::ContrastMode::kNormal:
@@ -174,7 +176,7 @@ base::StringPiece ContrastModeName(
   }
 }
 
-base::StringPiece ForcedColorsName(
+std::string_view ForcedColorsName(
     ColorProviderKey::ForcedColors forced_colors) {
   switch (forced_colors) {
     case ColorProviderKey::ForcedColors::kNone:
@@ -196,7 +198,7 @@ base::StringPiece ForcedColorsName(
   }
 }
 
-base::StringPiece SystemThemeName(ui::SystemTheme system_theme) {
+std::string_view SystemThemeName(ui::SystemTheme system_theme) {
   switch (system_theme) {
     case ui::SystemTheme::kDefault:
       return "kDefault";
@@ -219,7 +221,7 @@ std::string ColorIdName(ColorId color_id) {
   auto i = color_id_map.find(color_id);
   if (i != color_id_map.cend())
     return {i->second};
-  base::StringPiece color_name;
+  std::string_view color_name;
   if (g_color_provider_utils_callbacks &&
       g_color_provider_utils_callbacks->ColorIdName(color_id, &color_name))
     return std::string(color_name.data(), color_name.length());

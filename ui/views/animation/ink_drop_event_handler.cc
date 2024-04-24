@@ -5,6 +5,7 @@
 #include "ui/views/animation/ink_drop_event_handler.h"
 
 #include <memory>
+#include <string_view>
 
 #include "build/build_config.h"
 #include "ui/events/scoped_target_handler.h"
@@ -125,7 +126,7 @@ void InkDropEventHandler::OnMouseEvent(ui::MouseEvent* event) {
   }
 }
 
-base::StringPiece InkDropEventHandler::GetLogContext() const {
+std::string_view InkDropEventHandler::GetLogContext() const {
   return "InkDropEventHandler";
 }
 

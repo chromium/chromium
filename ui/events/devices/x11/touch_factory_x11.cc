@@ -6,13 +6,14 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
@@ -32,7 +33,7 @@ void AddPointerDevicesFromString(
     const std::string& pointer_devices,
     EventPointerType type,
     std::vector<std::pair<int, EventPointerType>>* devices) {
-  for (const base::StringPiece& dev : base::SplitStringPiece(
+  for (std::string_view dev : base::SplitStringPiece(
            pointer_devices, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
     int devid;
     if (base::StringToInt(dev, &devid))

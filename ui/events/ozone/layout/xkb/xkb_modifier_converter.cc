@@ -8,6 +8,7 @@
 #include <xkbcommon/xkbcommon.h>
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/ranges/algorithm.h"
@@ -59,7 +60,7 @@ XkbModifierConverter XkbModifierConverter::CreateFromKeymap(
 }
 
 xkb_mod_mask_t XkbModifierConverter::MaskFromNames(
-    const std::vector<base::StringPiece>& names) const {
+    const std::vector<std::string_view>& names) const {
   xkb_mod_mask_t xkb_modifier_mask = 0;
   for (const auto& name : names)
     xkb_modifier_mask |= MaskFromName(name);
@@ -85,8 +86,7 @@ int XkbModifierConverter::UiFlagsFromMask(xkb_mod_mask_t mask) const {
   return ui_flags;
 }
 
-xkb_mod_mask_t XkbModifierConverter::MaskFromName(
-    base::StringPiece name) const {
+xkb_mod_mask_t XkbModifierConverter::MaskFromName(std::string_view name) const {
   auto it = base::ranges::find(names_, name);
   if (it == names_.end())
     return 0;

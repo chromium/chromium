@@ -5,9 +5,10 @@
 #ifndef UI_WM_CORE_COMPOUND_EVENT_FILTER_H_
 #define UI_WM_CORE_COMPOUND_EVENT_FILTER_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/native_widget_types.h"
@@ -80,7 +81,7 @@ class COMPONENT_EXPORT(UI_WM) CompoundEventFilter : public ui::EventHandler {
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  base::StringPiece GetLogContext() const override;
+  std::string_view GetLogContext() const override;
 
   // Additional pre-target event handlers.
   base::ObserverList<ui::EventHandler, true>::Unchecked handlers_;

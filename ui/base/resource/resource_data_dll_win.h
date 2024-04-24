@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "ui/base/resource/resource_handle.h"
@@ -27,7 +28,7 @@ class ResourceDataDLL : public ResourceHandle {
 
   // ResourceHandle implementation:
   bool HasResource(uint16_t resource_id) const override;
-  std::optional<base::StringPiece> GetStringPiece(
+  std::optional<std::string_view> GetStringPiece(
       uint16_t resource_id) const override;
   base::RefCountedStaticMemory* GetStaticMemory(
       uint16_t resource_id) const override;

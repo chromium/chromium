@@ -7,12 +7,12 @@
 #include <filesystem>
 #include <map>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/data_pack.h"
 #include "ui/base/resource/resource_scale_factor.h"
@@ -50,16 +50,16 @@ TEST_P(DataPackWithResourceSharingTest, LoadFromPathWithAshResource) {
   std::string three("three");
   std::string zero("zero");
 
-  std::map<uint16_t, base::StringPiece> lacros_resources;
-  lacros_resources.emplace(1, base::StringPiece(one));
-  lacros_resources.emplace(2, base::StringPiece(two));
-  lacros_resources.emplace(3, base::StringPiece(three));
+  std::map<uint16_t, std::string_view> lacros_resources;
+  lacros_resources.emplace(1, std::string_view(one));
+  lacros_resources.emplace(2, std::string_view(two));
+  lacros_resources.emplace(3, std::string_view(three));
   ASSERT_TRUE(DataPack::WritePack(lacros_file, lacros_resources, GetParam()));
 
-  std::map<uint16_t, base::StringPiece> ash_resources;
-  ash_resources.emplace(1, base::StringPiece(one));
-  ash_resources.emplace(2, base::StringPiece(zero));
-  ash_resources.emplace(4, base::StringPiece(three));
+  std::map<uint16_t, std::string_view> ash_resources;
+  ash_resources.emplace(1, std::string_view(one));
+  ash_resources.emplace(2, std::string_view(zero));
+  ash_resources.emplace(4, std::string_view(three));
   ASSERT_TRUE(DataPack::WritePack(ash_file, ash_resources, GetParam()));
 
   ASSERT_TRUE(DataPackWithResourceSharing::MaybeGenerateFallbackAndMapping(
@@ -68,9 +68,9 @@ TEST_P(DataPackWithResourceSharingTest, LoadFromPathWithAshResource) {
   DataPackWithResourceSharing pack(k100Percent);
   ASSERT_TRUE(pack.LoadFromPathWithAshResource(shared_resource_file, ash_file));
 
-  ASSERT_EQ(pack.GetStringPiece(1), std::optional<base::StringPiece>(one));
-  ASSERT_EQ(pack.GetStringPiece(2), std::optional<base::StringPiece>(two));
-  ASSERT_EQ(pack.GetStringPiece(3), std::optional<base::StringPiece>(three));
+  ASSERT_EQ(pack.GetStringPiece(1), std::optional<std::string_view>(one));
+  ASSERT_EQ(pack.GetStringPiece(2), std::optional<std::string_view>(two));
+  ASSERT_EQ(pack.GetStringPiece(3), std::optional<std::string_view>(three));
 
   EXPECT_EQ(2U, pack.GetMappingTableSizeForTesting());
   EXPECT_EQ(pack.GetMappingByMappingTableIndexForTesting(0)->lacros_resource_id,
@@ -98,20 +98,20 @@ TEST_P(DataPackWithResourceSharingTest, LoadFromPathWithAshResourceWithAlias) {
   std::string three("three");
   std::string zero("zero");
 
-  std::map<uint16_t, base::StringPiece> lacros_resources;
-  lacros_resources.emplace(1, base::StringPiece(one));
-  lacros_resources.emplace(2, base::StringPiece(two));
-  lacros_resources.emplace(3, base::StringPiece(three));
+  std::map<uint16_t, std::string_view> lacros_resources;
+  lacros_resources.emplace(1, std::string_view(one));
+  lacros_resources.emplace(2, std::string_view(two));
+  lacros_resources.emplace(3, std::string_view(three));
   // Add resources registered as Alias.
-  lacros_resources.emplace(11, base::StringPiece(one));
-  lacros_resources.emplace(12, base::StringPiece(two));
-  lacros_resources.emplace(13, base::StringPiece(three));
+  lacros_resources.emplace(11, std::string_view(one));
+  lacros_resources.emplace(12, std::string_view(two));
+  lacros_resources.emplace(13, std::string_view(three));
   ASSERT_TRUE(DataPack::WritePack(lacros_file, lacros_resources, GetParam()));
 
-  std::map<uint16_t, base::StringPiece> ash_resources;
-  ash_resources.emplace(1, base::StringPiece(one));
-  ash_resources.emplace(2, base::StringPiece(zero));
-  ash_resources.emplace(4, base::StringPiece(three));
+  std::map<uint16_t, std::string_view> ash_resources;
+  ash_resources.emplace(1, std::string_view(one));
+  ash_resources.emplace(2, std::string_view(zero));
+  ash_resources.emplace(4, std::string_view(three));
   ASSERT_TRUE(DataPack::WritePack(ash_file, ash_resources, GetParam()));
 
   ASSERT_TRUE(DataPackWithResourceSharing::MaybeGenerateFallbackAndMapping(
@@ -120,12 +120,12 @@ TEST_P(DataPackWithResourceSharingTest, LoadFromPathWithAshResourceWithAlias) {
   DataPackWithResourceSharing pack(k100Percent);
   ASSERT_TRUE(pack.LoadFromPathWithAshResource(shared_resource_file, ash_file));
 
-  ASSERT_EQ(pack.GetStringPiece(1), std::optional<base::StringPiece>(one));
-  ASSERT_EQ(pack.GetStringPiece(2), std::optional<base::StringPiece>(two));
-  ASSERT_EQ(pack.GetStringPiece(3), std::optional<base::StringPiece>(three));
-  ASSERT_EQ(pack.GetStringPiece(11), std::optional<base::StringPiece>(one));
-  ASSERT_EQ(pack.GetStringPiece(12), std::optional<base::StringPiece>(two));
-  ASSERT_EQ(pack.GetStringPiece(13), std::optional<base::StringPiece>(three));
+  ASSERT_EQ(pack.GetStringPiece(1), std::optional<std::string_view>(one));
+  ASSERT_EQ(pack.GetStringPiece(2), std::optional<std::string_view>(two));
+  ASSERT_EQ(pack.GetStringPiece(3), std::optional<std::string_view>(three));
+  ASSERT_EQ(pack.GetStringPiece(11), std::optional<std::string_view>(one));
+  ASSERT_EQ(pack.GetStringPiece(12), std::optional<std::string_view>(two));
+  ASSERT_EQ(pack.GetStringPiece(13), std::optional<std::string_view>(three));
 
   EXPECT_EQ(4U, pack.GetMappingTableSizeForTesting());
   EXPECT_EQ(pack.GetMappingByMappingTableIndexForTesting(0)->lacros_resource_id,
@@ -157,9 +157,9 @@ TEST_P(DataPackWithResourceSharingTest, LoadMappingTableWithAshIDNotExisting) {
   std::string one("one");
   std::string zero("zero");
 
-  std::map<uint16_t, base::StringPiece> ash_resources;
-  ash_resources.emplace(1, base::StringPiece(one));
-  ash_resources.emplace(2, base::StringPiece(zero));
+  std::map<uint16_t, std::string_view> ash_resources;
+  ash_resources.emplace(1, std::string_view(one));
+  ash_resources.emplace(2, std::string_view(zero));
   ASSERT_TRUE(DataPack::WritePack(ash_file, ash_resources, GetParam()));
 
   using Mapping = DataPackWithResourceSharing::Mapping;
@@ -188,9 +188,9 @@ TEST_P(DataPackWithResourceSharingTest,
   std::string one("one");
   std::string zero("zero");
 
-  std::map<uint16_t, base::StringPiece> ash_resources;
-  ash_resources.emplace(1, base::StringPiece(one));
-  ash_resources.emplace(2, base::StringPiece(zero));
+  std::map<uint16_t, std::string_view> ash_resources;
+  ash_resources.emplace(1, std::string_view(one));
+  ash_resources.emplace(2, std::string_view(zero));
   ASSERT_TRUE(DataPack::WritePack(ash_file, ash_resources, GetParam()));
 
   using Mapping = DataPackWithResourceSharing::Mapping;
@@ -221,9 +221,9 @@ TEST_P(DataPackWithResourceSharingTest, OnFailedToGenerateFile) {
   std::string one("one");
   std::string two("two");
 
-  std::map<uint16_t, base::StringPiece> lacros_resources;
-  lacros_resources.emplace(1, base::StringPiece(one));
-  lacros_resources.emplace(2, base::StringPiece(two));
+  std::map<uint16_t, std::string_view> lacros_resources;
+  lacros_resources.emplace(1, std::string_view(one));
+  lacros_resources.emplace(2, std::string_view(two));
   ASSERT_TRUE(DataPack::WritePack(lacros_file, lacros_resources, GetParam()));
 
   ASSERT_FALSE(DataPackWithResourceSharing::MaybeGenerateFallbackAndMapping(

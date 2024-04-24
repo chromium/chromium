@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -69,43 +70,43 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
       const std::optional<ClipboardFormatType>& custom_data_format) const;
 
   const std::string& text() const { return text_; }
-  void set_text(base::StringPiece text) {
+  void set_text(std::string_view text) {
     text_ = text;
     format_ |= static_cast<int>(ClipboardInternalFormat::kText);
   }
 
   const std::string& markup_data() const { return markup_data_; }
-  void set_markup_data(base::StringPiece markup_data) {
+  void set_markup_data(std::string_view markup_data) {
     markup_data_ = markup_data;
     format_ |= static_cast<int>(ClipboardInternalFormat::kHtml);
   }
 
   const std::string& svg_data() const { return svg_data_; }
-  void set_svg_data(base::StringPiece svg_data) {
+  void set_svg_data(std::string_view svg_data) {
     svg_data_ = svg_data;
     format_ |= static_cast<int>(ClipboardInternalFormat::kSvg);
   }
 
   const std::string& rtf_data() const { return rtf_data_; }
-  void SetRTFData(base::StringPiece rtf_data) {
+  void SetRTFData(std::string_view rtf_data) {
     rtf_data_ = rtf_data;
     format_ |= static_cast<int>(ClipboardInternalFormat::kRtf);
   }
 
   const std::string& url() const { return url_; }
-  void set_url(base::StringPiece url) {
+  void set_url(std::string_view url) {
     url_ = url;
     format_ |= static_cast<int>(ClipboardInternalFormat::kHtml);
   }
 
   const std::string& bookmark_title() const { return bookmark_title_; }
-  void set_bookmark_title(base::StringPiece bookmark_title) {
+  void set_bookmark_title(std::string_view bookmark_title) {
     bookmark_title_ = bookmark_title;
     format_ |= static_cast<int>(ClipboardInternalFormat::kBookmark);
   }
 
   const std::string& bookmark_url() const { return bookmark_url_; }
-  void set_bookmark_url(base::StringPiece bookmark_url) {
+  void set_bookmark_url(std::string_view bookmark_url) {
     bookmark_url_ = bookmark_url;
     format_ |= static_cast<int>(ClipboardInternalFormat::kBookmark);
   }

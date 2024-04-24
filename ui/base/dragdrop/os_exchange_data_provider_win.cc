@@ -17,6 +17,7 @@
 #include <iterator>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -325,7 +326,7 @@ std::optional<url::Origin> OSExchangeDataProviderWin::GetRendererTaintedOrigin()
   if (data.size() == 0) {
     return url::Origin();
   }
-  return url::Origin::Create(GURL(base::StringPiece(data.data(), data.size())));
+  return url::Origin::Create(GURL(std::string_view(data.data(), data.size())));
 }
 
 void OSExchangeDataProviderWin::MarkAsFromPrivileged() {

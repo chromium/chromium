@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -441,7 +442,7 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 // Examples:
 //
 //   VIEW_BUILDER_METHOD_ALIAS(
-//       AddTab, AddTab<View>, StringPiece, unique_ptr<View>)
+//       AddTab, AddTab<View>, std::string_view, unique_ptr<View>)
 //
 //   VIEW_BUILDER_METHOD_ALIAS(UnambiguousName, AmbiguousName, int)
 //

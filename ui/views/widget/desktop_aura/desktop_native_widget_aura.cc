@@ -5,6 +5,7 @@
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -1349,7 +1350,7 @@ void DesktopNativeWidgetAura::OnGestureEvent(ui::GestureEvent* event) {
     native_widget_delegate_->OnGestureEvent(event);
 }
 
-base::StringPiece DesktopNativeWidgetAura::GetLogContext() const {
+std::string_view DesktopNativeWidgetAura::GetLogContext() const {
   return "DesktopNativeWidgetAura";
 }
 

@@ -7,6 +7,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
@@ -191,7 +192,7 @@ class TestSkottieFrameDataProvider : public cc::SkottieFrameDataProvider {
   ~TestSkottieFrameDataProvider() override = default;
 
   scoped_refptr<ImageAsset> LoadImageAsset(
-      base::StringPiece resource_id,
+      std::string_view resource_id,
       const base::FilePath& resource_path,
       const std::optional<gfx::Size>& size) override {
     auto new_asset = base::MakeRefCounted<ImageAssetImpl>();

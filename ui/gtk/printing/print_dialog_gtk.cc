@@ -8,6 +8,7 @@
 #include <cmath>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -160,7 +161,7 @@ class GtkPrinterList {
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
 ScopedGKeyFile GetGKeyFileFromDict(const base::Value::Dict& data,
-                                   base::StringPiece key) {
+                                   std::string_view key) {
   const std::string* data_string = data.FindString(key);
   CHECK(data_string);
 

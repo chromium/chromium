@@ -6,6 +6,7 @@
 
 #include <list>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -263,8 +263,7 @@ InteractionSequence::StepBuilder::SetElementID(ElementIdentifier element_id) {
 }
 
 InteractionSequence::StepBuilder&
-InteractionSequence::StepBuilder::SetElementName(
-    const base::StringPiece& name) {
+InteractionSequence::StepBuilder::SetElementName(std::string_view name) {
   step_->element_name = std::string(name);
   step_->context = ContextMode::kAny;
   return *this;
@@ -377,15 +376,14 @@ InteractionSequence::StepBuilder::SetEndCallback(
 }
 
 InteractionSequence::StepBuilder&
-InteractionSequence::StepBuilder::SetDescription(
-    const base::StringPiece& description) {
+InteractionSequence::StepBuilder::SetDescription(std::string_view description) {
   step_->description = std::string(description);
   return *this;
 }
 
 InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::FormatDescription(
-    const base::StringPiece& format_string) {
+    std::string_view format_string) {
   step_->description = base::StringPrintfNonConstexpr(
       format_string.data(), step_->description.c_str());
   return *this;
@@ -472,7 +470,7 @@ void InteractionSequence::FailForTesting() {
 }
 
 void InteractionSequence::NameElement(TrackedElement* element,
-                                      const base::StringPiece& name) {
+                                      std::string_view name) {
   DCHECK(!name.empty());
   named_elements_[std::string(name)] = SafeElementReference(element);
   DCHECK(!current_step_ || current_step_->element_name != name);
@@ -493,8 +491,7 @@ void InteractionSequence::NameElement(TrackedElement* element,
   MaybeWatchForEarlyTrigger(current_step_.get());
 }
 
-TrackedElement* InteractionSequence::GetNamedElement(
-    const base::StringPiece& name) {
+TrackedElement* InteractionSequence::GetNamedElement(std::string_view name) {
   const auto it = named_elements_.find(std::string(name));
   TrackedElement* result = nullptr;
   if (it != named_elements_.end()) {
@@ -506,7 +503,7 @@ TrackedElement* InteractionSequence::GetNamedElement(
 }
 
 const TrackedElement* InteractionSequence::GetNamedElement(
-    const base::StringPiece& name) const {
+    std::string_view name) const {
   return const_cast<InteractionSequence*>(this)->GetNamedElement(name);
 }
 
@@ -1177,9 +1174,8 @@ bool InteractionSequence::AbortedDuringCallback() const {
   return true;
 }
 
-bool InteractionSequence::MatchesNameIfSpecified(
-    const TrackedElement* element,
-    const base::StringPiece& name) const {
+bool InteractionSequence::MatchesNameIfSpecified(const TrackedElement* element,
+                                                 std::string_view name) const {
   if (name.empty())
     return true;
 

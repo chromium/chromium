@@ -8,9 +8,9 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "ui/base/ime/grammar_fragment.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_mode.h"
@@ -41,14 +41,14 @@ class ZWPTextInputWrapperClient {
   // current cursor position. Any previously set composing text should
   // be removed.
   // Note that the preedit_cursor is byte-offset.
-  virtual void OnPreeditString(base::StringPiece text,
+  virtual void OnPreeditString(std::string_view text,
                                const std::vector<SpanStyle>& spans,
                                int32_t preedit_cursor) = 0;
 
   // Called when a complete input sequence has been entered.  The text to
   // commit could be either just a single character after a key press or the
   // result of some composing (pre-edit).
-  virtual void OnCommitString(base::StringPiece text) = 0;
+  virtual void OnCommitString(std::string_view text) = 0;
 
   // Called when the cursor position or selection should be modified. The new
   // cursor position is applied on the next OnCommitString. |index| and |anchor|

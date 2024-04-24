@@ -4,9 +4,9 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -24,7 +24,7 @@ std::vector<Font> GetFallbackFonts(const Font& font) {
 
 bool GetFallbackFont(const Font& font,
                      const std::string& locale,
-                     base::StringPiece16 text,
+                     std::u16string_view text,
                      Font* result) {
   TRACE_EVENT0("fonts", "gfx::GetFallbackFont");
 

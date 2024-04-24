@@ -5,6 +5,7 @@
 #include "ui/base/interaction/interactive_test_internal.h"
 
 #include <memory>
+#include <string_view>
 #include <variant>
 
 #include "base/callback_list.h"
@@ -12,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -180,14 +180,14 @@ void SpecifyElement(ui::InteractionSequence::StepBuilder& builder,
   std::visit(
       base::Overloaded{
           [&builder](ElementIdentifier id) { builder.SetElementID(id); },
-          [&builder](base::StringPiece name) { builder.SetElementName(name); }},
+          [&builder](std::string_view name) { builder.SetElementName(name); }},
       element);
 }
 
 std::string DescribeElement(ElementSpecifier element) {
   return std::visit(
       base::Overloaded{[](ElementIdentifier id) { return id.GetName(); },
-                       [](base::StringPiece name) {
+                       [](std::string_view name) {
                          return base::StringPrintf("\"%s\"", name.data());
                        }},
       element);

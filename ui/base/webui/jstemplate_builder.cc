@@ -7,6 +7,8 @@
 
 #include "ui/base/webui/jstemplate_builder.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_string_value_serializer.h"
@@ -55,7 +57,7 @@ void AppendLoadTimeData(std::string* output) {
 
 }  // namespace
 
-std::string GetI18nTemplateHtml(base::StringPiece html_template,
+std::string GetI18nTemplateHtml(std::string_view html_template,
                                 const base::Value::Dict& json) {
   ui::TemplateReplacements replacements;
   ui::TemplateReplacementsFromDictionaryValue(json, &replacements);

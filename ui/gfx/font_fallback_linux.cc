@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
@@ -16,7 +17,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
 #include "base/trace_event/trace_event.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
@@ -223,7 +223,7 @@ void ClearAllFontFallbackCachesForTesting() {
 
 bool GetFallbackFont(const Font& font,
                      const std::string& locale,
-                     base::StringPiece16 text,
+                     std::u16string_view text,
                      Font* result) {
   TRACE_EVENT0("fonts", "gfx::GetFallbackFont");
 

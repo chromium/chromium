@@ -7,11 +7,11 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <variant>
 
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_run_loop_timeout.h"
@@ -270,7 +270,7 @@ InteractiveTestApi::MultiStep InteractiveTestApi::EnsurePresent(
 }
 
 InteractionSequence::StepBuilder InteractiveTestApi::NameElement(
-    base::StringPiece name,
+    std::string_view name,
     AbsoluteElementSpecifier spec) {
   return NameElementRelative(kInteractiveTestPivotElementId, name,
                              GetFindElementCallback(std::move(spec)));
@@ -434,7 +434,7 @@ void InteractiveTestApi::AddStep(MultiStep& dest, MultiStep src) {
 
 // static
 void InteractiveTestApi::AddDescription(MultiStep& steps,
-                                        const base::StringPiece& format) {
+                                        std::string_view format) {
   for (auto& step : steps) {
     step.FormatDescription(format);
   }

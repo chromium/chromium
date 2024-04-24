@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/i18n/break_iterator.h"
 #include "base/memory/raw_ptr.h"
@@ -45,7 +46,7 @@ using ::testing::Values;
 namespace ui {
 
 // Returns the number of grapheme clusters in the text.
-std::optional<size_t> CountGraphemeCluster(base::StringPiece16 text) {
+std::optional<size_t> CountGraphemeCluster(std::u16string_view text) {
   base::i18n::BreakIterator iter(text,
                                  base::i18n::BreakIterator::BREAK_CHARACTER);
   if (!iter.Init())

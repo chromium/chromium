@@ -9,6 +9,7 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/files/file.h"
@@ -16,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -47,14 +47,14 @@ TEST(DataPackTest, LoadFromPath) {
 
   ASSERT_TRUE(pack.HasResource(4));
   ASSERT_EQ(pack.GetStringPiece(4),
-            std::make_optional(base::StringPiece{"this is id 4"}));
+            std::make_optional(std::string_view{"this is id 4"}));
   ASSERT_TRUE(pack.HasResource(6));
   ASSERT_EQ(pack.GetStringPiece(6),
-            std::make_optional(base::StringPiece{"this is id 6"}));
+            std::make_optional(std::string_view{"this is id 6"}));
 
   // Try reading zero-length data blobs, just in case.
-  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(base::StringPiece{}));
-  ASSERT_EQ(pack.GetStringPiece(10), std::make_optional(base::StringPiece{}));
+  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(std::string_view{}));
+  ASSERT_EQ(pack.GetStringPiece(10), std::make_optional(std::string_view{}));
 
   // Try looking up an invalid key.
   ASSERT_FALSE(pack.HasResource(140));
@@ -79,14 +79,14 @@ TEST(DataPackTest, LoadFromPathCompressed) {
 
   ASSERT_TRUE(pack.HasResource(4));
   ASSERT_EQ(pack.GetStringPiece(4),
-            std::make_optional(base::StringPiece{"this is id 4"}));
+            std::make_optional(std::string_view{"this is id 4"}));
   ASSERT_TRUE(pack.HasResource(6));
   ASSERT_EQ(pack.GetStringPiece(6),
-            std::make_optional(base::StringPiece{"this is id 6"}));
+            std::make_optional(std::string_view{"this is id 6"}));
 
   // Try reading zero-length data blobs, just in case.
-  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(base::StringPiece{}));
-  ASSERT_EQ(pack.GetStringPiece(10), std::make_optional(base::StringPiece{}));
+  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(std::string_view{}));
+  ASSERT_EQ(pack.GetStringPiece(10), std::make_optional(std::string_view{}));
 
   // Try looking up an invalid key.
   ASSERT_FALSE(pack.HasResource(140));
@@ -112,14 +112,14 @@ TEST(DataPackTest, LoadFromFile) {
 
   ASSERT_TRUE(pack.HasResource(4));
   ASSERT_EQ(pack.GetStringPiece(4),
-            std::make_optional(base::StringPiece{"this is id 4"}));
+            std::make_optional(std::string_view{"this is id 4"}));
   ASSERT_TRUE(pack.HasResource(6));
   ASSERT_EQ(pack.GetStringPiece(6),
-            std::make_optional(base::StringPiece{"this is id 6"}));
+            std::make_optional(std::string_view{"this is id 6"}));
 
   // Try reading zero-length data blobs, just in case.
-  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(base::StringPiece{}));
-  ASSERT_EQ(pack.GetStringPiece(10), std::make_optional(base::StringPiece{}));
+  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(std::string_view{}));
+  ASSERT_EQ(pack.GetStringPiece(10), std::make_optional(std::string_view{}));
 
   // Try looking up an invalid key.
   ASSERT_FALSE(pack.HasResource(140));
@@ -149,14 +149,14 @@ TEST(DataPackTest, LoadFromFileRegion) {
 
   ASSERT_TRUE(pack.HasResource(4));
   ASSERT_EQ(pack.GetStringPiece(4),
-            std::make_optional(base::StringPiece{"this is id 4"}));
+            std::make_optional(std::string_view{"this is id 4"}));
   ASSERT_TRUE(pack.HasResource(6));
   ASSERT_EQ(pack.GetStringPiece(6),
-            std::make_optional(base::StringPiece{"this is id 6"}));
+            std::make_optional(std::string_view{"this is id 6"}));
 
   // Try reading zero-length data blobs, just in case.
-  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(base::StringPiece{}));
-  ASSERT_EQ(pack.GetStringPiece(10), std::make_optional(base::StringPiece{}));
+  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(std::string_view{}));
+  ASSERT_EQ(pack.GetStringPiece(10), std::make_optional(std::string_view{}));
 
   // Try looking up an invalid key.
   ASSERT_FALSE(pack.HasResource(140));
@@ -170,14 +170,14 @@ TEST(DataPackTest, LoadFromBufferV4) {
 
   ASSERT_TRUE(pack.HasResource(4));
   ASSERT_EQ(pack.GetStringPiece(4),
-            std::make_optional(base::StringPiece{"this is id 4"}));
+            std::make_optional(std::string_view{"this is id 4"}));
   ASSERT_TRUE(pack.HasResource(6));
   ASSERT_EQ(pack.GetStringPiece(6),
-            std::make_optional(base::StringPiece{"this is id 6"}));
+            std::make_optional(std::string_view{"this is id 6"}));
 
   // Try reading zero-length data blobs, just in case.
-  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(base::StringPiece{}));
-  ASSERT_EQ(pack.GetStringPiece(10), std::make_optional(base::StringPiece{}));
+  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(std::string_view{}));
+  ASSERT_EQ(pack.GetStringPiece(10), std::make_optional(std::string_view{}));
 
   // Try looking up an invalid key.
   ASSERT_FALSE(pack.HasResource(140));
@@ -192,13 +192,13 @@ TEST(DataPackTest, LoadFromBufferV5) {
 
   ASSERT_TRUE(pack.HasResource(4));
   ASSERT_EQ(pack.GetStringPiece(4),
-            std::make_optional(base::StringPiece{"this is id 4"}));
+            std::make_optional(std::string_view{"this is id 4"}));
   ASSERT_TRUE(pack.HasResource(6));
   ASSERT_TRUE(pack.GetStringPiece(6).has_value());
   ASSERT_TRUE(pack.HasResource(8));
   ASSERT_TRUE(pack.GetStringPiece(8).has_value());
   ASSERT_EQ(pack.GetStringPiece(10),
-            std::make_optional(base::StringPiece{"this is id 4"}));
+            std::make_optional(std::string_view{"this is id 4"}));
 
   // Try looking up an invalid key.
   ASSERT_FALSE(pack.HasResource(140));
@@ -235,12 +235,12 @@ TEST_P(DataPackTest, Write) {
   std::string four("four");
   std::string fifteen("fifteen");
 
-  std::map<uint16_t, base::StringPiece> resources;
-  resources.emplace(1, base::StringPiece(one));
-  resources.emplace(2, base::StringPiece(two));
-  resources.emplace(15, base::StringPiece(fifteen));
-  resources.emplace(3, base::StringPiece(three));
-  resources.emplace(4, base::StringPiece(four));
+  std::map<uint16_t, std::string_view> resources;
+  resources.emplace(1, std::string_view(one));
+  resources.emplace(2, std::string_view(two));
+  resources.emplace(15, std::string_view(fifteen));
+  resources.emplace(3, std::string_view(three));
+  resources.emplace(4, std::string_view(four));
   ASSERT_TRUE(DataPack::WritePack(file, resources, GetParam()));
 
   // Now try to read the data back in.
@@ -248,14 +248,13 @@ TEST_P(DataPackTest, Write) {
   ASSERT_TRUE(pack.LoadFromPath(file));
   EXPECT_EQ(pack.GetTextEncodingType(), GetParam());
 
-  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(base::StringPiece{one}));
-  ASSERT_EQ(pack.GetStringPiece(2), std::make_optional(base::StringPiece{two}));
+  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(std::string_view{one}));
+  ASSERT_EQ(pack.GetStringPiece(2), std::make_optional(std::string_view{two}));
   ASSERT_EQ(pack.GetStringPiece(3),
-            std::make_optional(base::StringPiece{three}));
-  ASSERT_EQ(pack.GetStringPiece(4),
-            std::make_optional(base::StringPiece{four}));
+            std::make_optional(std::string_view{three}));
+  ASSERT_EQ(pack.GetStringPiece(4), std::make_optional(std::string_view{four}));
   ASSERT_EQ(pack.GetStringPiece(15),
-            std::make_optional(base::StringPiece{fifteen}));
+            std::make_optional(std::string_view{fifteen}));
 
   EXPECT_EQ(5U, pack.GetResourceTableSizeForTesting());
   EXPECT_EQ(0U, pack.GetAliasTableSize());
@@ -272,14 +271,14 @@ TEST_P(DataPackTest, WriteWithAliases) {
   std::string four("four");
   std::string fifteen("fifteen");
 
-  std::map<uint16_t, base::StringPiece> resources;
-  resources.emplace(1, base::StringPiece(one));
-  resources.emplace(2, base::StringPiece(two));
-  resources.emplace(15, base::StringPiece(fifteen));
-  resources.emplace(3, base::StringPiece(three));
-  resources.emplace(4, base::StringPiece(four));
-  resources.emplace(10, base::StringPiece(one));
-  resources.emplace(11, base::StringPiece(three));
+  std::map<uint16_t, std::string_view> resources;
+  resources.emplace(1, std::string_view(one));
+  resources.emplace(2, std::string_view(two));
+  resources.emplace(15, std::string_view(fifteen));
+  resources.emplace(3, std::string_view(three));
+  resources.emplace(4, std::string_view(four));
+  resources.emplace(10, std::string_view(one));
+  resources.emplace(11, std::string_view(three));
   ASSERT_TRUE(DataPack::WritePack(file, resources, GetParam()));
 
   // Now try to read the data back in.
@@ -287,18 +286,16 @@ TEST_P(DataPackTest, WriteWithAliases) {
   ASSERT_TRUE(pack.LoadFromPath(file));
   EXPECT_EQ(pack.GetTextEncodingType(), GetParam());
 
-  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(base::StringPiece{one}));
-  ASSERT_EQ(pack.GetStringPiece(2), std::make_optional(base::StringPiece{two}));
+  ASSERT_EQ(pack.GetStringPiece(1), std::make_optional(std::string_view{one}));
+  ASSERT_EQ(pack.GetStringPiece(2), std::make_optional(std::string_view{two}));
   ASSERT_EQ(pack.GetStringPiece(3),
-            std::make_optional(base::StringPiece{three}));
-  ASSERT_EQ(pack.GetStringPiece(4),
-            std::make_optional(base::StringPiece{four}));
+            std::make_optional(std::string_view{three}));
+  ASSERT_EQ(pack.GetStringPiece(4), std::make_optional(std::string_view{four}));
   ASSERT_EQ(pack.GetStringPiece(15),
-            std::make_optional(base::StringPiece{fifteen}));
-  ASSERT_EQ(pack.GetStringPiece(10),
-            std::make_optional(base::StringPiece{one}));
+            std::make_optional(std::string_view{fifteen}));
+  ASSERT_EQ(pack.GetStringPiece(10), std::make_optional(std::string_view{one}));
   ASSERT_EQ(pack.GetStringPiece(11),
-            std::make_optional(base::StringPiece{three}));
+            std::make_optional(std::string_view{three}));
 
   ASSERT_EQ(pack.GetStringPiece(1)->data(), pack.GetStringPiece(10)->data());
   ASSERT_EQ(pack.GetStringPiece(3)->data(), pack.GetStringPiece(11)->data());

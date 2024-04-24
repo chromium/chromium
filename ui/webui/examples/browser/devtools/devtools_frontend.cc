@@ -6,11 +6,11 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -57,8 +57,8 @@ class DevToolsFrontend::AgentHostClient
   // content::DevToolsAgentHostClient
   void DispatchProtocolMessage(content::DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override {
-    base::StringPiece str_message(reinterpret_cast<const char*>(message.data()),
-                                  message.size());
+    std::string_view str_message(reinterpret_cast<const char*>(message.data()),
+                                 message.size());
     if (str_message.length() < kMaxMessageChunkSize) {
       CallClientFunction("DevToolsAPI", "dispatchMessage",
                          base::Value(std::string(str_message)));
@@ -66,7 +66,7 @@ class DevToolsFrontend::AgentHostClient
       size_t total_size = str_message.length();
       for (size_t pos = 0; pos < str_message.length();
            pos += kMaxMessageChunkSize) {
-        base::StringPiece str_message_chunk =
+        std::string_view str_message_chunk =
             str_message.substr(pos, kMaxMessageChunkSize);
 
         CallClientFunction(

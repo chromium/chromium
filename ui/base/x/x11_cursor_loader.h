@@ -5,6 +5,7 @@
 #ifndef UI_BASE_X_X11_CURSOR_LOADER_H_
 #define UI_BASE_X_X11_CURSOR_LOADER_H_
 
+#include <string_view>
 #include <unordered_map>
 
 #include "base/component_export.h"
@@ -59,7 +60,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XCursorLoader {
 
   // Populate the |rm_*| variables from the value of the RESOURCE_MANAGER
   // property on the root window.
-  void ParseXResources(base::StringPiece resources);
+  void ParseXResources(std::string_view resources);
 
   uint16_t CursorNamesToChar(const std::vector<std::string>& names) const;
 

@@ -4,12 +4,13 @@
 
 #include "ui/shell_dialogs/select_file_dialog_linux_portal.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -864,7 +865,7 @@ SelectFileDialogLinuxPortal::DialogInfo::ConvertUrisToPaths(
       continue;
     }
 
-    base::StringPiece encoded_path(uri);
+    std::string_view encoded_path(uri);
     encoded_path.remove_prefix(strlen(kFileUriPrefix));
 
     url::RawCanonOutputT<char16_t> decoded_path;

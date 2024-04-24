@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/font_list.h"
@@ -144,7 +144,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     // false to attempt retrieval of the default resource.
     virtual bool GetRawDataResource(int resource_id,
                                     ResourceScaleFactor scale_factor,
-                                    base::StringPiece* value) const = 0;
+                                    std::string_view* value) const = 0;
 
     // Retrieve a localized string. Return true if a string was provided or
     // false to attempt retrieval of the default string.
@@ -337,14 +337,14 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
       ResourceScaleFactor scale_factor) const;
 
   // Return the contents of a scale independent resource in a
-  // StringPiece given the resource id.
-  base::StringPiece GetRawDataResource(int resource_id) const;
+  // std::string_view given the resource id.
+  std::string_view GetRawDataResource(int resource_id) const;
 
-  // Return the contents of a resource in a StringPiece given the resource id
-  // nearest the scale factor |scale_factor|.
-  // Use ResourceHandle::kScaleFactorNone for scale independent image resources
+  // Return the contents of a resource in a std::string_view given the resource
+  // id nearest the scale factor |scale_factor|. Use
+  // ResourceHandle::kScaleFactorNone for scale independent image resources
   // (such as wallpaper).
-  base::StringPiece GetRawDataResourceForScale(
+  std::string_view GetRawDataResourceForScale(
       int resource_id,
       ResourceScaleFactor scale_factor,
       ResourceScaleFactor* loaded_scale_factor = nullptr) const;

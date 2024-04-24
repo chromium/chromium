@@ -8,10 +8,10 @@
 #include <xkbcommon/xkbcommon.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 
 namespace ui {
 
@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbModifierConverter {
 
   // Returns a bit-mask of the modifiers represented by the given |names|.
   xkb_mod_mask_t MaskFromNames(
-      const std::vector<base::StringPiece>& names) const;
+      const std::vector<std::string_view>& names) const;
 
   // Returns the converted xkb_mod_mask_t corresponding to the given flags.
   // flags should be the bit-or of ui::EventFlags key modifiers.
@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) XkbModifierConverter {
  private:
   // Returns a bit mask of the xkb modifier of the given name.
   // If it is not known, returns 0.
-  xkb_mod_index_t MaskFromName(base::StringPiece name) const;
+  xkb_mod_index_t MaskFromName(std::string_view name) const;
 
   // Holds the list of modifier names. The position of the name corresponds
   // to the bit position. See constructor's example for details.

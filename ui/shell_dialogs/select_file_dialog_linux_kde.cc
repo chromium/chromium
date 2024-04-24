@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <memory>
 #include <set>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -229,7 +230,7 @@ SelectFileDialogLinuxKde::SelectFileDialogLinuxKde(
   // whitespace and then try to parse a version from the second piece. If
   // parsing fails for whatever reason, we fall back to the behavior that works
   // with all currently known versions of kdialog.
-  std::vector<base::StringPiece> version_pieces = base::SplitStringPiece(
+  std::vector<std::string_view> version_pieces = base::SplitStringPiece(
       kdialog_version, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (version_pieces.size() >= 2) {
     base::Version parsed_version(version_pieces[1]);
@@ -600,7 +601,7 @@ void SelectFileDialogLinuxKde::OnSelectMultiFileDialogResponse(
   }
 
   std::vector<base::FilePath> filenames_fp;
-  for (const base::StringPiece& line :
+  for (std::string_view line :
        base::SplitStringPiece(results->output, "\n", base::KEEP_WHITESPACE,
                               base::SPLIT_WANT_NONEMPTY)) {
     base::FilePath path(line);

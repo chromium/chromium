@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <queue>
+#include <string_view>
 
 #include "base/ranges/algorithm.h"
 #include "ui/aura/client/aura_constants.h"
@@ -132,7 +133,7 @@ void WindowModalityController::OnTouchEvent(ui::TouchEvent* event) {
     event->SetHandled();
 }
 
-base::StringPiece WindowModalityController::GetLogContext() const {
+std::string_view WindowModalityController::GetLogContext() const {
   return "WindowModalityController";
 }
 

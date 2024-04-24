@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -135,7 +136,7 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   if (command_line->HasSwitch(cc::switches::kUIShowCompositedLayerBorders)) {
     std::string layer_borders_string = command_line->GetSwitchValueASCII(
         cc::switches::kUIShowCompositedLayerBorders);
-    std::vector<base::StringPiece> entries = base::SplitStringPiece(
+    std::vector<std::string_view> entries = base::SplitStringPiece(
         layer_borders_string, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (entries.empty()) {
       settings.initial_debug_state.show_debug_borders.set();

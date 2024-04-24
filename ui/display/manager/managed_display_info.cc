@@ -8,12 +8,12 @@
 
 #include <limits>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -190,13 +190,13 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
   const int kDefaultHostWindowHeight = 768;
   gfx::Rect bounds_in_native(kDefaultHostWindowX, kDefaultHostWindowY,
                              kDefaultHostWindowWidth, kDefaultHostWindowHeight);
-  base::StringPiece main_spec = spec;
+  std::string_view main_spec = spec;
 
   gfx::RoundedCornersF panel_corners_radii;
-  std::vector<base::StringPiece> parts = base::SplitStringPiece(
+  std::vector<std::string_view> parts = base::SplitStringPiece(
       main_spec, "~", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (parts.size() == 2) {
-    std::vector<base::StringPiece> radii_part = base::SplitStringPiece(
+    std::vector<std::string_view> radii_part = base::SplitStringPiece(
         parts[1], "|", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
     DCHECK(radii_part.size() == 1 || radii_part.size() == 4);
@@ -204,7 +204,7 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
     float radii[4];
     int radius_in_int = 0;
     for (size_t idx = 0; idx < radii_part.size(); ++idx) {
-      const base::StringPiece& radius = radii_part[idx];
+      std::string_view radius = radii_part[idx];
       bool conversion_success = base::StringToInt(radius, &radius_in_int);
       DCHECK(conversion_success);
       radii[idx] = static_cast<float>(radius_in_int);
@@ -236,7 +236,7 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
   if (!parts.empty()) {
     main_spec = parts[0];
     if (parts.size() >= 2) {
-      base::StringPiece options = parts[1];
+      std::string_view options = parts[1];
       for (char c : options) {
         switch (c) {
           case 'o':
@@ -273,7 +273,7 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
       int largest_area = -1;
       float highest_refresh_rate = -1.0f;
       main_spec = parts[0];
-      base::StringPiece resolution_list = parts[1];
+      std::string_view resolution_list = parts[1];
       parts =
           base::SplitStringPiece(resolution_list, "|", base::KEEP_WHITESPACE,
                                  base::SPLIT_WANT_NONEMPTY);
@@ -283,7 +283,7 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
         bool is_interlaced = false;
 
         gfx::Rect mode_bounds;
-        std::vector<base::StringPiece> resolution = base::SplitStringPiece(
+        std::vector<std::string_view> resolution = base::SplitStringPiece(
             parts[i], "%", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
         float device_scale_factor_for_mode = device_scale_factor;
         GetDisplayBounds(std::string(resolution[0]), &mode_bounds,

@@ -7,9 +7,10 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <string>
 
-#include "base/strings/string_piece.h"
+#include <string>
+#include <string_view>
+
 #include "build/build_config.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -98,7 +99,7 @@ class KeycodeConverter {
   // Conversion between DOM Code string and DomCode enum values.
   // Returns the invalid value if the supplied code is not recognized,
   // or has no mapping.
-  static DomCode CodeStringToDomCode(base::StringPiece code);
+  static DomCode CodeStringToDomCode(std::string_view code);
   static std::string DomCodeToCodeString(DomCode dom_code);
 
   // Return the DomKeyLocation of a DomCode. The DomKeyLocation distinguishes
@@ -112,7 +113,7 @@ class KeycodeConverter {
   // - a key name from http://www.w3.org/TR/DOM-Level-3-Events-key/, or
   // - a single Unicode character (represented in UTF-8).
   // Returns DomKey::NONE for other inputs, including |nullptr|.
-  static DomKey KeyStringToDomKey(base::StringPiece key);
+  static DomKey KeyStringToDomKey(std::string_view key);
 
   // Convert a DomKey into a UI Events |key| string value.
   // Returns an empty string for invalid DomKey values.

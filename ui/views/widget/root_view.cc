@@ -6,13 +6,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -193,7 +193,7 @@ class PreEventDispatchHandler : public ui::EventHandler {
 #endif
   }
 
-  base::StringPiece GetLogContext() const override {
+  std::string_view GetLogContext() const override {
     return "PreEventDispatchHandler";
   }
 
@@ -243,7 +243,7 @@ class PostEventDispatchHandler : public ui::EventHandler {
     }
   }
 
-  base::StringPiece GetLogContext() const override {
+  std::string_view GetLogContext() const override {
     return "PostEventDispatchHandler";
   }
 

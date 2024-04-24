@@ -5,6 +5,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -60,7 +61,7 @@ constexpr CharacterComposer::PreeditStringMode kPreeditStringMode =
     CharacterComposer::PreeditStringMode::kHexModeOnly;
 #endif  // BUILDFLAG(IS_LINUX)
 
-std::optional<size_t> OffsetFromUTF8Offset(const base::StringPiece& text,
+std::optional<size_t> OffsetFromUTF8Offset(std::string_view text,
                                            uint32_t offset) {
   if (offset > text.length())
     return std::nullopt;
@@ -136,7 +137,7 @@ ConvertStyle(uint32_t style) {
 // but whose start/end points are at the UTF-8 boundary.
 // If the given range is bigger than the given text_utf8,
 // it will be trimmed to the text_utf8 size.
-gfx::Range AdjustUtf8Alignment(base::StringPiece text_utf8, gfx::Range range) {
+gfx::Range AdjustUtf8Alignment(std::string_view text_utf8, gfx::Range range) {
   // Truncate the text to fit into the wayland message size and adjust indices
   // of |selection_range|. Since the text is in UTF8 form, we need to adjust
   // the text and selection range positions where all characters are valid.
@@ -169,7 +170,7 @@ struct OffsetText {
 // the surrounding text around the selection with respecting UTF-8 boundary.
 // Returns the trimmed string and UTF-8 offset.
 std::optional<OffsetText> TrimSurroundingTextForStandard(
-    base::StringPiece text_utf8,
+    std::string_view text_utf8,
     gfx::Range selection_utf8) {
   // The text length for set_surrounding_text can not be longer than the maximum
   // length of wayland messages. The maximum length of the text is explicitly
@@ -224,7 +225,7 @@ std::optional<OffsetText> TrimSurroundingTextForStandard(
 }
 
 std::optional<OffsetText> TrimSurroundingTextForExtension(
-    base::StringPiece text_utf8,
+    std::string_view text_utf8,
     const base::span<size_t> offsets) {
   // Heuristically, send leading/trailing (almost) 500 bytes in addition to
   // offsets.
@@ -445,7 +446,7 @@ void WaylandInputMethodContext::SetSurroundingText(
   }
 
   size_t extra_offset_utf16 =
-      base::UTF8ToUTF16(base::StringPiece(text_utf8).substr(0, trimmed->offset))
+      base::UTF8ToUTF16(std::string_view(text_utf8).substr(0, trimmed->offset))
           .length();
   text_utf8 = std::move(trimmed->text);
   surrounding_text_offset_ = trimmed->offset;
@@ -528,7 +529,7 @@ bool WaylandInputMethodContext::IsKeyboardVisible() {
 }
 
 void WaylandInputMethodContext::OnPreeditString(
-    base::StringPiece text,
+    std::string_view text,
     const std::vector<SpanStyle>& spans,
     int32_t preedit_cursor) {
   CompositionText composition_text;
@@ -564,7 +565,7 @@ void WaylandInputMethodContext::OnPreeditString(
   ime_delegate_->OnPreeditChanged(composition_text);
 }
 
-void WaylandInputMethodContext::OnCommitString(base::StringPiece text) {
+void WaylandInputMethodContext::OnCommitString(std::string_view text) {
   if (pending_keep_selection_) {
     surrounding_text_tracker_.OnConfirmCompositionText(true);
     ime_delegate_->OnConfirmCompositionText(true);
@@ -693,10 +694,10 @@ void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
   // To avoid accident, we also check text_input_extension, which is available
   // only on ash-chrome.
   // We can remove this workaround check in M104 or later.
-  std::optional<std::vector<base::StringPiece>> modifiers;
+  std::optional<std::vector<std::string_view>> modifiers;
   if (!connection_->text_input_extension_v1() ||
       base::Contains(modifiers_map_, XKB_MOD_NAME_CAPS)) {
-    std::vector<base::StringPiece> modifier_content;
+    std::vector<std::string_view> modifier_content;
     for (size_t i = 0; i < modifiers_map_.size(); ++i) {
       if (modifiers_bits & (1 << i))
         modifier_content.emplace_back(modifiers_map_[i]);

@@ -5,6 +5,8 @@
 #ifndef UI_WEBUI_UNTRUSTED_WEB_UI_BROWSERTEST_UTIL_H_
 #define UI_WEBUI_UNTRUSTED_WEB_UI_BROWSERTEST_UTIL_H_
 
+#include <string_view>
+
 #include "content/public/browser/webui_config.h"
 #include "content/public/test/web_ui_browsertest_util.h"
 
@@ -16,9 +18,9 @@ namespace ui {
 
 class TestUntrustedWebUIConfig : public content::WebUIConfig {
  public:
-  explicit TestUntrustedWebUIConfig(base::StringPiece host);
+  explicit TestUntrustedWebUIConfig(std::string_view host);
   TestUntrustedWebUIConfig(
-      base::StringPiece host,
+      std::string_view host,
       const content::TestUntrustedDataSourceHeaders& headers);
   ~TestUntrustedWebUIConfig() override;
 

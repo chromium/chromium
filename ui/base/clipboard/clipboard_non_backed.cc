@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -369,24 +370,24 @@ class ClipboardDataBuilder {
     clipboard.WriteData(TakeCurrentData());
   }
 
-  static void WriteText(base::StringPiece text) {
+  static void WriteText(std::string_view text) {
     ClipboardData* data = GetCurrentData();
     data->set_text(text);
   }
 
-  static void WriteHTML(base::StringPiece markup,
-                        std::optional<base::StringPiece> source_url) {
+  static void WriteHTML(std::string_view markup,
+                        std::optional<std::string_view> source_url) {
     ClipboardData* data = GetCurrentData();
     data->set_markup_data(markup);
     data->set_url(source_url ? *source_url : std::string());
   }
 
-  static void WriteSvg(base::StringPiece markup) {
+  static void WriteSvg(std::string_view markup) {
     ClipboardData* data = GetCurrentData();
     data->set_svg_data(markup);
   }
 
-  static void WriteRTF(base::StringPiece rtf) {
+  static void WriteRTF(std::string_view rtf) {
     ClipboardData* data = GetCurrentData();
     data->SetRTFData(rtf);
   }
@@ -396,7 +397,7 @@ class ClipboardDataBuilder {
     data->set_filenames(std::move(filenames));
   }
 
-  static void WriteBookmark(base::StringPiece title, base::StringPiece url) {
+  static void WriteBookmark(std::string_view title, std::string_view url) {
     ClipboardData* data = GetCurrentData();
     data->set_bookmark_title(title);
     data->set_bookmark_url(url);
@@ -913,21 +914,20 @@ void ClipboardNonBacked::WritePortableAndPlatformRepresentations(
       clipboard_internal, base::OptionalFromPtr(data_src.get()));
 }
 
-void ClipboardNonBacked::WriteText(base::StringPiece text) {
+void ClipboardNonBacked::WriteText(std::string_view text) {
   ClipboardDataBuilder::WriteText(text);
 }
 
-void ClipboardNonBacked::WriteHTML(
-    base::StringPiece markup,
-    std::optional<base::StringPiece> source_url) {
+void ClipboardNonBacked::WriteHTML(std::string_view markup,
+                                   std::optional<std::string_view> source_url) {
   ClipboardDataBuilder::WriteHTML(markup, source_url);
 }
 
-void ClipboardNonBacked::WriteSvg(base::StringPiece markup) {
+void ClipboardNonBacked::WriteSvg(std::string_view markup) {
   ClipboardDataBuilder::WriteSvg(markup);
 }
 
-void ClipboardNonBacked::WriteRTF(base::StringPiece rtf) {
+void ClipboardNonBacked::WriteRTF(std::string_view rtf) {
   ClipboardDataBuilder::WriteRTF(rtf);
 }
 
@@ -935,8 +935,8 @@ void ClipboardNonBacked::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   ClipboardDataBuilder::WriteFilenames(std::move(filenames));
 }
 
-void ClipboardNonBacked::WriteBookmark(base::StringPiece title,
-                                       base::StringPiece url) {
+void ClipboardNonBacked::WriteBookmark(std::string_view title,
+                                       std::string_view url) {
   ClipboardDataBuilder::WriteBookmark(title, url);
 }
 

@@ -8,6 +8,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <variant>
@@ -16,7 +17,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
@@ -134,25 +134,25 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
     requires ui::test::internal::HasSignature<C, R*(V*)>
   [[nodiscard]] static StepBuilder NameViewRelative(
       ElementSpecifier relative_to,
-      base::StringPiece name,
+      std::string_view name,
       C&& find_callback);
 
-  [[nodiscard]] static StepBuilder NameView(base::StringPiece name,
+  [[nodiscard]] static StepBuilder NameView(std::string_view name,
                                             AbsoluteViewSpecifier spec);
 
   [[nodiscard]] static StepBuilder NameChildView(ElementSpecifier parent,
-                                                 base::StringPiece name,
+                                                 std::string_view name,
                                                  ChildViewSpecifier spec);
 
   [[nodiscard]] static StepBuilder NameDescendantView(ElementSpecifier ancestor,
-                                                      base::StringPiece name,
+                                                      std::string_view name,
                                                       ViewMatcher matcher);
 
   // Names the `index` (0-indexed) child view of `parent` that is of type `V`.
   template <typename V>
     requires internal::IsView<V>
   [[nodiscard]] static StepBuilder NameChildViewByType(ElementSpecifier parent,
-                                                       base::StringPiece name,
+                                                       std::string_view name,
                                                        size_t index = 0);
 
   // Names the `index` (0-indexed) descendant view of `parent` in depth-first
@@ -161,7 +161,7 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
     requires internal::IsView<V>
   [[nodiscard]] static StepBuilder NameDescendantViewByType(
       ElementSpecifier ancestor,
-      base::StringPiece name,
+      std::string_view name,
       size_t index = 0);
 
   // As WithElement(), but `view` should resolve to a TrackedElementViews
@@ -437,7 +437,7 @@ class InteractiveViewsTestApi : public ui::test::InteractiveTestApi {
   }
 
   // Creates the follow-up step for a mouse action.
-  StepBuilder CreateMouseFollowUpStep(const base::StringPiece& description);
+  StepBuilder CreateMouseFollowUpStep(std::string_view description);
 
   base::WeakPtr<Widget> context_widget_;
 };
@@ -514,7 +514,7 @@ template <typename C, typename V, typename R>
   requires ui::test::internal::HasSignature<C, R*(V*)>
 ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::NameViewRelative(
     ElementSpecifier relative_to,
-    base::StringPiece name,
+    std::string_view name,
     C&& find_callback) {
   StepBuilder builder;
   builder.SetDescription(
@@ -661,7 +661,7 @@ template <typename V>
   requires internal::IsView<V>
 ui::InteractionSequence::StepBuilder
 InteractiveViewsTestApi::NameChildViewByType(ElementSpecifier parent,
-                                             base::StringPiece name,
+                                             std::string_view name,
                                              size_t index) {
   return std::move(NameChildView(parent, name,
                                  base::BindRepeating(
@@ -685,7 +685,7 @@ template <typename V>
   requires internal::IsView<V>
 ui::InteractionSequence::StepBuilder
 InteractiveViewsTestApi::NameDescendantViewByType(ElementSpecifier ancestor,
-                                                  base::StringPiece name,
+                                                  std::string_view name,
                                                   size_t index) {
   return std::move(NameDescendantView(ancestor, name,
                                       base::BindRepeating(

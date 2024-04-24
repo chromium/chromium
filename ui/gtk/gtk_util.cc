@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/environment.h"
@@ -259,7 +260,7 @@ void ParseButtonLayout(const std::string& button_string,
         left_side = false;
       }
     } else {
-      base::StringPiece token = tokenizer.token_piece();
+      std::string_view token = tokenizer.token_piece();
       if (token == "minimize") {
         (left_side ? leading_buttons : trailing_buttons)
             ->push_back(views::FrameButton::kMinimize);

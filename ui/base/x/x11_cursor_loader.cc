@@ -8,6 +8,7 @@
 
 #include <limits>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -22,7 +23,6 @@
 #include "base/numerics/checked_math.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
@@ -466,7 +466,7 @@ uint32_t XCursorLoader::GetPreferredCursorSize() const {
          kScreenCursorRatio;
 }
 
-void XCursorLoader::ParseXResources(base::StringPiece resources) {
+void XCursorLoader::ParseXResources(std::string_view resources) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::StringPairs pairs;
   base::SplitStringIntoKeyValuePairs(resources, ':', '\n', &pairs);
@@ -517,7 +517,7 @@ void XCursorLoader::OnPropertyChanged(x11::Atom property,
   size_t size = 0;
   if (const char* resource_manager =
           x11::PropertyCache::GetAs<char>(value, &size)) {
-    ParseXResources(base::StringPiece(resource_manager, size));
+    ParseXResources(std::string_view(resource_manager, size));
   }
 
   if (on_cursor_config_changed_) {

@@ -5,6 +5,7 @@
 #include "ui/base/test/skia_gold_pixel_diff.h"
 
 #include <memory>
+#include <string_view>
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -28,7 +29,6 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_switches.h"
@@ -440,7 +440,7 @@ std::string SkiaGoldPixelDiff::GetGoldenImageName(
     const std::string& test_suite_name,
     const std::string& test_name,
     const std::optional<std::string>& suffix) {
-  std::vector<base::StringPiece> parts;
+  std::vector<std::string_view> parts;
 
   // Test suites can have "/" in their names from a parameterization
   // instantiation, which isn't allowed in file names.

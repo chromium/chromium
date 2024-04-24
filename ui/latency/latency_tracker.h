@@ -5,7 +5,8 @@
 #ifndef UI_LATENCY_LATENCY_TRACKER_H_
 #define UI_LATENCY_LATENCY_TRACKER_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/time/time.h"
 #include "ui/latency/latency_info.h"
 
@@ -71,11 +72,11 @@ class LatencyTracker {
   static int GetHistogramIndex(ScrollType scroll_type,
                                ScrollInputModality input_modality);
 
-  static base::StringPiece ToString(ScrollInputModality modality);
-  static base::StringPiece ToString(ScrollType type);
+  static std::string_view ToString(ScrollInputModality modality);
+  static std::string_view ToString(ScrollType type);
 
   // Returns Event.Latency.<scroll_type>.<input_modality>.<suffix>
-  static std::string GetHistogramName(base::StringPiece suffix,
+  static std::string GetHistogramName(std::string_view suffix,
                                       ScrollType scroll_type,
                                       ScrollInputModality input_modality);
 

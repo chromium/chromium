@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/gfx/render_text.h"
+
+#include <string_view>
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
@@ -12,7 +16,6 @@
 #include "build/build_config.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/font_util.h"
-#include "ui/gfx/render_text.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "third_party/test_fonts/fontconfig/fontconfig_util_linux.h"
@@ -57,7 +60,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       gfx::RenderText::CreateRenderText();
   gfx::Canvas canvas;
   render_text->SetText(base::UTF8ToUTF16(
-      base::StringPiece(reinterpret_cast<const char*>(data), size)));
+      std::string_view(reinterpret_cast<const char*>(data), size)));
   render_text->Draw(&canvas);
   return 0;
 }

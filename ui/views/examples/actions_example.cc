@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/callback_list.h"
@@ -15,7 +16,6 @@
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/actions/action_id.h"
@@ -113,12 +113,12 @@ std::u16string ViewsComboboxModel::GetItemAt(size_t index) const {
     if (IsViewClass<MdTextButton>(view)) {
       std::stringstream ss;
       ss << index;
-      return base::ASCIIToUTF16(base::StringPiece("Button: " + ss.str()));
+      return base::ASCIIToUTF16(std::string_view("Button: " + ss.str()));
     }
     if (IsViewClass<Checkbox>(view)) {
       std::stringstream ss;
       ss << index;
-      return base::ASCIIToUTF16(base::StringPiece("Checkbox: " + ss.str()));
+      return base::ASCIIToUTF16(std::string_view("Checkbox: " + ss.str()));
     }
   }
   return u"<Unknown>";

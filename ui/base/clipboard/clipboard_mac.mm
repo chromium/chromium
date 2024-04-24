@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <string_view>
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
@@ -472,14 +473,13 @@ void ClipboardMac::WritePortableAndPlatformRepresentationsInternal(
   }
 }
 
-void ClipboardMac::WriteText(base::StringPiece text) {
+void ClipboardMac::WriteText(std::string_view text) {
   [GetPasteboard() setString:base::SysUTF8ToNSString(text)
                      forType:NSPasteboardTypeString];
 }
 
-void ClipboardMac::WriteHTML(
-    base::StringPiece markup,
-    std::optional<base::StringPiece> /* source_url */) {
+void ClipboardMac::WriteHTML(std::string_view markup,
+                             std::optional<std::string_view> /* source_url */) {
   // We need to mark it as utf-8. (see crbug.com/40759159)
   std::string html_fragment_str("<meta charset='utf-8'>");
   html_fragment_str.append(markup);
@@ -488,12 +488,12 @@ void ClipboardMac::WriteHTML(
   [GetPasteboard() setString:html_fragment forType:NSPasteboardTypeHTML];
 }
 
-void ClipboardMac::WriteSvg(base::StringPiece markup) {
+void ClipboardMac::WriteSvg(std::string_view markup) {
   [GetPasteboard() setString:base::SysUTF8ToNSString(markup)
                      forType:ClipboardFormatType::SvgType().ToNSString()];
 }
 
-void ClipboardMac::WriteRTF(base::StringPiece rtf) {
+void ClipboardMac::WriteRTF(std::string_view rtf) {
   WriteData(ClipboardFormatType::RtfType(),
             base::as_bytes(base::make_span(rtf)));
 }
@@ -502,8 +502,7 @@ void ClipboardMac::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   clipboard_util::WriteFilesToPasteboard(GetPasteboard(), filenames);
 }
 
-void ClipboardMac::WriteBookmark(base::StringPiece title,
-                                 base::StringPiece url) {
+void ClipboardMac::WriteBookmark(std::string_view title, std::string_view url) {
   NSArray<NSPasteboardItem*>* items = clipboard_util::PasteboardItemsFromUrls(
       @[ base::SysUTF8ToNSString(url) ], @[ base::SysUTF8ToNSString(title) ]);
   clipboard_util::AddDataToPasteboard(GetPasteboard(), items.firstObject);

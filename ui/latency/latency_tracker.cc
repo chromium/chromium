@@ -6,12 +6,13 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <string_view>
+
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_entry_builder.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -135,7 +136,7 @@ void EmitScrollUpdateTime(base::TimeDelta dur, bool janky) {
 }  // namespace
 
 // static
-base::StringPiece LatencyTracker::ToString(ScrollInputModality modality) {
+std::string_view LatencyTracker::ToString(ScrollInputModality modality) {
   switch (modality) {
     case ScrollInputModality::kWheel:
       return "Wheel";
@@ -147,7 +148,7 @@ base::StringPiece LatencyTracker::ToString(ScrollInputModality modality) {
 }
 
 // static
-base::StringPiece LatencyTracker::ToString(ScrollType type) {
+std::string_view LatencyTracker::ToString(ScrollType type) {
   switch (type) {
     case ScrollType::kBegin:
       return "ScrollBegin";
@@ -168,7 +169,7 @@ int LatencyTracker::GetHistogramIndex(ScrollType scroll_type,
 
 // static
 std::string LatencyTracker::GetHistogramName(
-    base::StringPiece suffix,
+    std::string_view suffix,
     ScrollType scroll_type,
     ScrollInputModality input_modality) {
   return base::StrCat({"Event.Latency.", ToString(scroll_type), ".",

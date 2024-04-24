@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -341,7 +342,7 @@ void TestClipboard::WritePortableAndPlatformRepresentations(
   default_store_buffer_ = ClipboardBuffer::kCopyPaste;
 }
 
-void TestClipboard::WriteText(base::StringPiece text) {
+void TestClipboard::WriteText(std::string_view text) {
   GetDefaultStore().data[ClipboardFormatType::PlainTextType()] = text;
 #if BUILDFLAG(IS_WIN)
   // Create a dummy entry.
@@ -353,19 +354,19 @@ void TestClipboard::WriteText(base::StringPiece text) {
   ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
-void TestClipboard::WriteHTML(base::StringPiece markup,
-                              std::optional<base::StringPiece> source_url) {
+void TestClipboard::WriteHTML(std::string_view markup,
+                              std::optional<std::string_view> source_url) {
   GetDefaultStore().data[ClipboardFormatType::HtmlType()] = markup;
   GetDefaultStore().html_src_url = source_url.value_or("");
   ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
-void TestClipboard::WriteSvg(base::StringPiece markup) {
+void TestClipboard::WriteSvg(std::string_view markup) {
   GetDefaultStore().data[ClipboardFormatType::SvgType()] = markup;
   ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
-void TestClipboard::WriteRTF(base::StringPiece rtf) {
+void TestClipboard::WriteRTF(std::string_view rtf) {
   GetDefaultStore().data[ClipboardFormatType::RtfType()] = rtf;
 }
 
@@ -373,8 +374,8 @@ void TestClipboard::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   GetDefaultStore().filenames = std::move(filenames);
 }
 
-void TestClipboard::WriteBookmark(base::StringPiece title,
-                                  base::StringPiece url) {
+void TestClipboard::WriteBookmark(std::string_view title,
+                                  std::string_view url) {
   GetDefaultStore().data[ClipboardFormatType::UrlType()] = url;
 #if !BUILDFLAG(IS_WIN)
   GetDefaultStore().url_title = title;

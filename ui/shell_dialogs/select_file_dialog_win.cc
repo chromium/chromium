@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
@@ -125,7 +126,7 @@ std::vector<FileFilterSpec> FormatFilterForExtensions(
       // Having '*' in the description could cause the windows file dialog to
       // not include the file extension in the file dialog. So strip out any '*'
       // characters if `keep_extension_visible` is set.
-      base::ReplaceChars(desc, u"*", base::StringPiece16(), &desc);
+      base::ReplaceChars(desc, u"*", std::u16string_view(), &desc);
     }
 
     result.push_back({desc, ext});

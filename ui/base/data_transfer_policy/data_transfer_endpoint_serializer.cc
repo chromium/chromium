@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/json/json_reader.h"
@@ -67,18 +68,18 @@ std::string EndpointTypeToString(EndpointType type) {
 std::optional<EndpointType> EndpointStringToType(
     const std::string& endpoint_string) {
   static constexpr auto kEndpointStringToTypeMap =
-      base::MakeFixedFlatMap<base::StringPiece, ui::EndpointType>({
+      base::MakeFixedFlatMap<std::string_view, ui::EndpointType>({
 #if BUILDFLAG(IS_CHROMEOS)
-        {kUnknownVmString, EndpointType::kUnknownVm},
-        {kArcString, EndpointType::kArc},
-        {kBorealisString, EndpointType::kBorealis},
-        {kCrostiniString, EndpointType::kCrostini},
-        {kPluginVmString, EndpointType::kPluginVm},
-        {kLacrosString, EndpointType::kLacros},
+          {kUnknownVmString, EndpointType::kUnknownVm},
+          {kArcString, EndpointType::kArc},
+          {kBorealisString, EndpointType::kBorealis},
+          {kCrostiniString, EndpointType::kCrostini},
+          {kPluginVmString, EndpointType::kPluginVm},
+          {kLacrosString, EndpointType::kLacros},
 #endif  // BUILDFLAG(IS_CHROMEOS)
-        {kDefaultString, EndpointType::kDefault},
-        {kUrlString, EndpointType::kUrl},
-        {kClipboardHistoryString, EndpointType::kClipboardHistory},
+          {kDefaultString, EndpointType::kDefault},
+          {kUrlString, EndpointType::kUrl},
+          {kClipboardHistoryString, EndpointType::kClipboardHistory},
       });
 
   auto it = kEndpointStringToTypeMap.find(endpoint_string);

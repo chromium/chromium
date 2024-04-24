@@ -5,6 +5,7 @@
 #include "ui/gl/gl_version_info.h"
 
 #include <map>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
@@ -101,13 +102,13 @@ void GLVersionInfo::ParseVersionString(const char* version_str) {
   is_es3 = false;
   if (!version_str)
     return;
-  base::StringPiece lstr(version_str);
-  constexpr base::StringPiece kESPrefix = "OpenGL ES ";
+  std::string_view lstr(version_str);
+  constexpr std::string_view kESPrefix = "OpenGL ES ";
   if (base::StartsWith(lstr, kESPrefix, base::CompareCase::SENSITIVE)) {
     is_es = true;
     lstr.remove_prefix(kESPrefix.size());
   }
-  std::vector<base::StringPiece> pieces = base::SplitStringPiece(
+  std::vector<std::string_view> pieces = base::SplitStringPiece(
       lstr, " -()@", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (pieces.size() == 0) {
     // This should never happen, but let's just tolerate bad driver behavior.
@@ -145,12 +146,12 @@ void GLVersionInfo::ParseVersionString(const char* version_str) {
 void GLVersionInfo::ParseDriverInfo(const char* version_str) {
   if (!version_str)
     return;
-  base::StringPiece lstr(version_str);
-  constexpr base::StringPiece kESPrefix = "OpenGL ES ";
+  std::string_view lstr(version_str);
+  constexpr std::string_view kESPrefix = "OpenGL ES ";
   if (base::StartsWith(lstr, kESPrefix, base::CompareCase::SENSITIVE)) {
     lstr.remove_prefix(kESPrefix.size());
   }
-  std::vector<base::StringPiece> pieces = base::SplitStringPiece(
+  std::vector<std::string_view> pieces = base::SplitStringPiece(
       lstr, " -()@", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (pieces.size() == 0) {
     // This should never happen, but let's just tolerate bad driver behavior.
@@ -173,7 +174,7 @@ void GLVersionInfo::ParseDriverInfo(const char* version_str) {
 
   // Map key strings to driver vendors. We assume the key string is followed by
   // the driver version.
-  const std::map<base::StringPiece, base::StringPiece> kVendors = {
+  const std::map<std::string_view, std::string_view> kVendors = {
       {"ANGLE", "ANGLE"},       {"Mesa", "Mesa"},   {"INTEL", "INTEL"},
       {"NVIDIA", "NVIDIA"},     {"ATI", "ATI"},     {"FireGL", "FireGL"},
       {"Chromium", "Chromium"}, {"APPLE", "APPLE"}, {"AMD", "AMD"},
@@ -195,15 +196,15 @@ void GLVersionInfo::ParseDriverInfo(const char* version_str) {
     driver_version = pieces[1];
     return;
   }
-  constexpr base::StringPiece kMaliPrefix = "v1.r";
+  constexpr std::string_view kMaliPrefix = "v1.r";
   if (base::StartsWith(pieces[1], kMaliPrefix, base::CompareCase::SENSITIVE)) {
     // Mali drivers: v1.r12p0-04rel0.44f2946824bb8739781564bffe2110c9
     pieces[1].remove_prefix(kMaliPrefix.size());
-    std::vector<base::StringPiece> numbers = base::SplitStringPiece(
+    std::vector<std::string_view> numbers = base::SplitStringPiece(
         pieces[1], "p", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (numbers.size() != 2)
       return;
-    std::vector<base::StringPiece> parts = base::SplitStringPiece(
+    std::vector<std::string_view> parts = base::SplitStringPiece(
         pieces[2], ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (parts.size() != 2)
       return;
@@ -223,13 +224,13 @@ void GLVersionInfo::ExtractDriverVendorANGLE(const char* renderer_str) {
   DCHECK(renderer_str);
   DCHECK(is_angle);
   DCHECK_EQ("ANGLE", driver_vendor);
-  base::StringPiece rstr(renderer_str);
+  std::string_view rstr(renderer_str);
   DCHECK(base::StartsWith(rstr, "ANGLE (", base::CompareCase::SENSITIVE));
   rstr = rstr.substr(sizeof("ANGLE (") - 1, rstr.size() - sizeof("ANGLE ("));
 
   // ANGLE's renderer string returns a format matching ANGLE (GL_VENDOR,
   // GL_RENDERER, GL_VERSION)
-  std::vector<base::StringPiece> gl_strings = base::SplitStringPiece(
+  std::vector<std::string_view> gl_strings = base::SplitStringPiece(
       rstr, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   // The 3rd part of the renderer string contains the native driver's version
@@ -263,7 +264,7 @@ void GLVersionInfo::ExtractDriverVendorANGLE(const char* renderer_str) {
   else if (base::StartsWith(rstr, "Radeon ", base::CompareCase::SENSITIVE))
     driver_vendor = "ANGLE (AMD)";
   else if (base::StartsWith(rstr, "Intel", base::CompareCase::SENSITIVE)) {
-    std::vector<base::StringPiece> pieces = base::SplitStringPiece(
+    std::vector<std::string_view> pieces = base::SplitStringPiece(
         rstr, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     for (size_t ii = 0; ii < pieces.size(); ++ii) {
       if (base::StartsWith(pieces[ii], "Intel(R) ",

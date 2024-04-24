@@ -8,10 +8,10 @@
 #include <fuchsia/ui/composition/cpp/fidl.h>
 
 #include <memory>
+#include <string_view>
 
 #include "base/containers/queue.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 
 namespace ui {
@@ -28,7 +28,7 @@ class FlatlandConnection final {
   using OnErrorCallback =
       base::OnceCallback<void(fuchsia::ui::composition::FlatlandError error)>;
 
-  explicit FlatlandConnection(base::StringPiece debug_name,
+  explicit FlatlandConnection(std::string_view debug_name,
                               OnErrorCallback callback);
   ~FlatlandConnection();
 

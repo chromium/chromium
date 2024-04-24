@@ -5,6 +5,8 @@
 #ifndef UI_GFX_X_XPROTO_INTERNAL_H_
 #define UI_GFX_X_XPROTO_INTERNAL_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 
 #ifndef IS_X11_IMPL
@@ -68,8 +70,8 @@ class COMPONENT_EXPORT(X11) MallocedRefCountedMemory
 };
 
 // Wraps another RefCountedMemory, giving a view into it.  Similar to
-// base::StringPiece, the data is some contiguous subarray, but unlike
-// StringPiece, a counted reference is kept on the underlying memory.
+// std::string_view, the data is some contiguous subarray, but unlike
+// std::string_view, a counted reference is kept on the underlying memory.
 class COMPONENT_EXPORT(X11) OffsetRefCountedMemory
     : public UnsizedRefCountedMemory {
  public:

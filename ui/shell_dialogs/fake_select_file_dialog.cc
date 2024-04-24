@@ -4,6 +4,8 @@
 
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 
+#include <string_view>
+
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
@@ -75,7 +77,7 @@ void FakeSelectFileDialog::SelectFileImpl(
 }
 
 bool FakeSelectFileDialog::CallFileSelected(const base::FilePath& file_path,
-                                            base::StringPiece filter_text) {
+                                            std::string_view filter_text) {
   for (size_t index = 0; index < file_types_.extensions.size(); ++index) {
     for (const base::FilePath::StringType& ext :
          file_types_.extensions[index]) {

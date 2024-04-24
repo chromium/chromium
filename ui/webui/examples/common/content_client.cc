@@ -4,6 +4,8 @@
 
 #include "ui/webui/examples/common/content_client.h"
 
+#include <string_view>
+
 #include "ui/base/resource/resource_bundle.h"
 
 namespace webui_examples {
@@ -11,7 +13,7 @@ namespace webui_examples {
 ContentClient::ContentClient() = default;
 ContentClient::~ContentClient() = default;
 
-base::StringPiece ContentClient::GetDataResource(
+std::string_view ContentClient::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(

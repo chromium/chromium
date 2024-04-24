@@ -10,7 +10,9 @@
 #include <objidl.h>
 #include <shellapi.h>
 #include <shlobj.h>
+
 #include <cstdint>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
@@ -716,14 +718,14 @@ void ClipboardWin::WritePortableAndPlatformRepresentations(
   }
 }
 
-void ClipboardWin::WriteText(base::StringPiece text) {
+void ClipboardWin::WriteText(std::string_view text) {
   HGLOBAL glob = CreateGlobalData(base::UTF8ToUTF16(text));
 
   WriteToClipboard(ClipboardFormatType::PlainTextType(), glob);
 }
 
-void ClipboardWin::WriteHTML(base::StringPiece markup,
-                             std::optional<base::StringPiece> source_url) {
+void ClipboardWin::WriteHTML(std::string_view markup,
+                             std::optional<std::string_view> source_url) {
   // Add Windows specific headers to the HTML payload before writing to the
   // clipboard.
   std::string html_fragment =
@@ -733,13 +735,13 @@ void ClipboardWin::WriteHTML(base::StringPiece markup,
   WriteToClipboard(ClipboardFormatType::HtmlType(), glob);
 }
 
-void ClipboardWin::WriteSvg(base::StringPiece markup) {
+void ClipboardWin::WriteSvg(std::string_view markup) {
   HGLOBAL glob = CreateGlobalData(base::UTF8ToUTF16(markup));
 
   WriteToClipboard(ClipboardFormatType::SvgType(), glob);
 }
 
-void ClipboardWin::WriteRTF(base::StringPiece rtf) {
+void ClipboardWin::WriteRTF(std::string_view rtf) {
   WriteData(ClipboardFormatType::RtfType(),
             base::as_bytes(base::make_span(rtf)));
 }
@@ -751,8 +753,7 @@ void ClipboardWin::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   WriteToClipboard(ClipboardFormatType::CFHDropType(), storage.hGlobal);
 }
 
-void ClipboardWin::WriteBookmark(base::StringPiece title,
-                                 base::StringPiece url) {
+void ClipboardWin::WriteBookmark(std::string_view title, std::string_view url) {
   // On Windows, CFSTR_INETURLW is expected to only contain the URL & not the
   // title separated by a newline.
   // https://docs.microsoft.com/en-us/windows/win32/shell/clipboard#cfstr_ineturl.

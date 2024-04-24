@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -323,7 +324,7 @@ void TooltipController::OnCancelMode(ui::CancelModeEvent* event) {
   HideAndReset();
 }
 
-base::StringPiece TooltipController::GetLogContext() const {
+std::string_view TooltipController::GetLogContext() const {
   return "TooltipController";
 }
 

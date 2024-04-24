@@ -8,6 +8,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -850,9 +851,9 @@ std::u16string GetStringFUTF16(int message_id,
                                const std::vector<std::u16string>& replacements,
                                std::vector<size_t>* offsets) {
   // TODO(tc): We could save a string copy if we got the raw string as
-  // a StringPiece and were able to call ReplaceStringPlaceholders with
-  // a StringPiece format string and std::u16string substitution strings.  In
-  // practice, the strings should be relatively short.
+  // a std::string_view and were able to call ReplaceStringPlaceholders with
+  // a std::string_view format string and std::u16string substitution strings.
+  // In practice, the strings should be relatively short.
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   const std::u16string& format_string = rb.GetLocalizedString(message_id);
   return FormatString(format_string, replacements, offsets);

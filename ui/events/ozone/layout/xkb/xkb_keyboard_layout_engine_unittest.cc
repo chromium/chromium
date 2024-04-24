@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <xkbcommon/xkbcommon-names.h>
 
+#include <string_view>
 #include <tuple>
 
 #include "base/memory/raw_ptr.h"
@@ -994,9 +995,9 @@ TEST_F(XkbLayoutEngineVkTest, GetDomCodeByKeysym) {
   };
 
   for (const auto& test_case : kTestCases) {
-    std::optional<std::vector<base::StringPiece>> modifiers;
+    std::optional<std::vector<std::string_view>> modifiers;
     if (test_case.modifiers != kNullopt) {
-      std::vector<base::StringPiece> modifiers_content;
+      std::vector<std::string_view> modifiers_content;
       if (test_case.modifiers & kShiftMask)
         modifiers_content.push_back(XKB_MOD_NAME_SHIFT);
       if (test_case.modifiers & kCapsLockMask)

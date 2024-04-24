@@ -4,6 +4,8 @@
 
 #include "ui/views/widget/focus_manager_event_handler.h"
 
+#include <string_view>
+
 #include "ui/aura/window.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
@@ -29,7 +31,7 @@ void FocusManagerEventHandler::OnKeyEvent(ui::KeyEvent* event) {
   }
 }
 
-base::StringPiece FocusManagerEventHandler::GetLogContext() const {
+std::string_view FocusManagerEventHandler::GetLogContext() const {
   return "FocusManagerEventHandler";
 }
 

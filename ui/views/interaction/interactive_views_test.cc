@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <optional>
+#include <string_view>
 #include <variant>
 
 #include "base/functional/callback_forward.h"
@@ -57,7 +58,7 @@ InteractiveViewsTestApi::InteractiveViewsTestApi(
 InteractiveViewsTestApi::~InteractiveViewsTestApi() = default;
 
 ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::NameView(
-    base::StringPiece name,
+    std::string_view name,
     AbsoluteViewSpecifier spec) {
   return NameViewRelative(kInteractiveTestPivotElementId, name,
                           GetFindViewCallback(std::move(spec)));
@@ -66,7 +67,7 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::NameView(
 // static
 ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::NameChildView(
     ElementSpecifier parent,
-    base::StringPiece name,
+    std::string_view name,
     ChildViewSpecifier spec) {
   return std::move(
       NameViewRelative(parent, name, GetFindViewCallback(std::move(spec)))
@@ -77,7 +78,7 @@ ui::InteractionSequence::StepBuilder InteractiveViewsTestApi::NameChildView(
 // static
 ui::InteractionSequence::StepBuilder
 InteractiveViewsTestApi::NameDescendantView(ElementSpecifier parent,
-                                            base::StringPiece name,
+                                            std::string_view name,
                                             ViewMatcher matcher) {
   return std::move(
       NameViewRelative(

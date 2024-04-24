@@ -7,7 +7,9 @@
 
 #include <shlobj.h>
 #include <stddef.h>
+
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -104,13 +106,13 @@ bool GetWebCustomData(
 // Helper method for converting between MS CF_HTML format and plain
 // text/html.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
-std::string HtmlToCFHtml(base::StringPiece html, base::StringPiece base_url);
+std::string HtmlToCFHtml(std::string_view html, std::string_view base_url);
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
-void CFHtmlToHtml(base::StringPiece cf_html,
+void CFHtmlToHtml(std::string_view cf_html,
                   std::string* html,
                   std::string* base_url);
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
-void CFHtmlExtractMetadata(base::StringPiece cf_html,
+void CFHtmlExtractMetadata(std::string_view cf_html,
                            std::string* base_url,
                            size_t* html_start,
                            size_t* fragment_start,

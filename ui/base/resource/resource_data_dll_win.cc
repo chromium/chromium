@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/win/resource_util.h"
@@ -29,7 +31,7 @@ bool ResourceDataDLL::HasResource(uint16_t resource_id) const {
                                               &data_size);
 }
 
-std::optional<base::StringPiece> ResourceDataDLL::GetStringPiece(
+std::optional<std::string_view> ResourceDataDLL::GetStringPiece(
     uint16_t resource_id) const {
   void* data_ptr;
   size_t data_size;
@@ -37,7 +39,7 @@ std::optional<base::StringPiece> ResourceDataDLL::GetStringPiece(
                                            resource_id,
                                            &data_ptr,
                                            &data_size)) {
-    return base::StringPiece(static_cast<const char*>(data_ptr), data_size);
+    return std::string_view(static_cast<const char*>(data_ptr), data_size);
   }
   return std::nullopt;
 }

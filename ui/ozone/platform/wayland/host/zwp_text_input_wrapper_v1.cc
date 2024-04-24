@@ -7,13 +7,13 @@
 #include <sys/mman.h>
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "ui/base/wayland/wayland_client_input_types.h"
@@ -96,9 +96,9 @@ uint32_t InputFlagsToContentHint(int input_flags) {
 // '\0' character.
 std::vector<std::string> ParseModifiersMap(wl_array* array) {
   return base::SplitString(
-      base::StringPiece(static_cast<char*>(array->data),
-                        array->size - 1),  // exclude trailing '\0'.
-      base::StringPiece("\0", 1),          // '\0' as a delimiter.
+      std::string_view(static_cast<char*>(array->data),
+                       array->size - 1),  // exclude trailing '\0'.
+      std::string_view("\0", 1),          // '\0' as a delimiter.
       base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 }
 

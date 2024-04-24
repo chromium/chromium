@@ -8,6 +8,7 @@
 #include <xkbcommon/xkbcommon-names.h>
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -969,7 +970,7 @@ int XkbKeyboardLayoutEngine::UpdateModifiers(uint32_t depressed,
 
 DomCode XkbKeyboardLayoutEngine::GetDomCodeByKeysym(
     uint32_t keysym,
-    const std::optional<std::vector<base::StringPiece>>& modifiers) const {
+    const std::optional<std::vector<std::string_view>>& modifiers) const {
   // Look up all candidates.
   auto range = std::equal_range(
       xkb_keysym_map_.begin(), xkb_keysym_map_.end(), XkbKeysymMapEntry{keysym},

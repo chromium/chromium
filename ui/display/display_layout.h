@@ -9,9 +9,9 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include "base/strings/string_piece.h"
 #include "ui/display/display_export.h"
 
 namespace gfx {
@@ -81,8 +81,7 @@ struct DISPLAY_EXPORT DisplayPlacement {
   std::string ToString() const;
 
   static std::string PositionToString(Position position);
-  static bool StringToPosition(const base::StringPiece& string,
-                               Position* position);
+  static bool StringToPosition(std::string_view string, Position* position);
 };
 
 class DISPLAY_EXPORT DisplayLayout final {

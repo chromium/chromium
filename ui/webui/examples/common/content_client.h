@@ -5,6 +5,8 @@
 #ifndef UI_WEBUI_EXAMPLES_COMMON_CONTENT_CLIENT_H_
 #define UI_WEBUI_EXAMPLES_COMMON_CONTENT_CLIENT_H_
 
+#include <string_view>
+
 #include "content/public/common/content_client.h"
 
 namespace webui_examples {
@@ -18,7 +20,7 @@ class ContentClient : public content::ContentClient {
 
  private:
   // content::ContentClient:
-  base::StringPiece GetDataResource(
+  std::string_view GetDataResource(
       int resource_id,
       ui::ResourceScaleFactor scale_factor) override;
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) override;

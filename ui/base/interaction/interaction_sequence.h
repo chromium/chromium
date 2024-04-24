@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <variant>
 
 #include "base/component_export.h"
@@ -15,7 +16,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 
@@ -347,7 +347,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // Sets the step to refer to a named element instead of an
     // ElementIdentifier. Either this or SetElementID() is required for all
     // step types other than kCustomEvent.
-    StepBuilder& SetElementName(const base::StringPiece& name);
+    StepBuilder& SetElementName(std::string_view name);
 
     // Sets the context for the step; useful for setting up the initial
     // element of the sequence if you do not know the context ahead of time, or
@@ -425,12 +425,12 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     StepBuilder& SetEndCallback(base::OnceClosure end_callback);
 
     // Sets the description of the step.
-    StepBuilder& SetDescription(const base::StringPiece& description);
+    StepBuilder& SetDescription(std::string_view description);
 
     // Formats the existing description into a new string; allows for adding
     // modifiers to an existing description. `format_string` should contain
     // exactly one "%s".
-    StepBuilder& FormatDescription(const base::StringPiece& format_string);
+    StepBuilder& FormatDescription(std::string_view format_string);
 
     // Builds the step. The builder will not be valid after calling Build().
     std::unique_ptr<Step> Build();
@@ -484,7 +484,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // It is safe to call this method from a step start callback, but not a step
   // end or aborted callback, as in the latter case the sequence might be in
   // the process of being destructed.
-  void NameElement(TrackedElement* element, const base::StringPiece& name);
+  void NameElement(TrackedElement* element, std::string_view name);
 
   // Retrieves a named element, which may be null if we specified "no element"
   // or if the element has gone away.
@@ -492,8 +492,8 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // It is safe to call this method from a step start callback, but not a step
   // end or aborted callback, as in the latter case the sequence might be in
   // the process of being destructed.
-  TrackedElement* GetNamedElement(const base::StringPiece& name);
-  const TrackedElement* GetNamedElement(const base::StringPiece& name) const;
+  TrackedElement* GetNamedElement(std::string_view name);
+  const TrackedElement* GetNamedElement(std::string_view name) const;
 
   // Builds aborted data for the current step and the given reason.
   AbortedData BuildAbortedData(AbortedReason reason) const;
@@ -549,7 +549,7 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
   // with the specified name, or if `name` is empty (indicating we don't care
   // about it being a named element). Otherwise returns false.
   bool MatchesNameIfSpecified(const TrackedElement* element,
-                              const base::StringPiece& name) const;
+                              std::string_view name) const;
 
   // Returns the next step, or null if none.
   Step* next_step();

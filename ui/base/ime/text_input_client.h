@@ -10,6 +10,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -238,7 +239,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient
   virtual void ExtendSelectionAndReplace(
       size_t length_before_selection,
       size_t length_after_selection,
-      base::StringPiece16 replacement_string);
+      std::u16string_view replacement_string);
 #endif
 
   // Ensure the caret is not in |rect|.  |rect| is in screen coordinates in

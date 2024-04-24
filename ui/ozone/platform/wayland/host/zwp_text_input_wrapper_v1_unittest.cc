@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/wayland/host/zwp_text_input_wrapper_v1.h"
 
+#include <string_view>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -26,10 +28,10 @@ class TestZWPTextInputWrapperClient : public ZWPTextInputWrapperClient {
       const TestZWPTextInputWrapperClient&) = delete;
   ~TestZWPTextInputWrapperClient() override = default;
 
-  void OnPreeditString(base::StringPiece text,
+  void OnPreeditString(std::string_view text,
                        const std::vector<SpanStyle>& spans,
                        int32_t preedit_cursor) override {}
-  void OnCommitString(base::StringPiece text) override {}
+  void OnCommitString(std::string_view text) override {}
   void OnCursorPosition(int32_t index, int32_t anchor) override {}
   void OnDeleteSurroundingText(int32_t index, uint32_t length) override {}
   void OnKeysym(uint32_t key,

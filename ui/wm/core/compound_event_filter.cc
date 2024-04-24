@@ -4,6 +4,8 @@
 
 #include "ui/wm/core/compound_event_filter.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/observer_list.h"
 #include "base/trace_event/trace_event.h"
@@ -266,7 +268,7 @@ void CompoundEventFilter::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-base::StringPiece CompoundEventFilter::GetLogContext() const {
+std::string_view CompoundEventFilter::GetLogContext() const {
   return "CompoundEventFilter";
 }
 

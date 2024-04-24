@@ -4,6 +4,7 @@
 
 #include "ui/base/prediction/prediction_metrics_handler.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/cpu_reduction_experiment.h"
@@ -12,8 +13,8 @@
 
 namespace ui {
 namespace {
-base::HistogramBase* GetHistogram(base::StringPiece name,
-                                  base::StringPiece suffix) {
+base::HistogramBase* GetHistogram(std::string_view name,
+                                  std::string_view suffix) {
   return base::Histogram::FactoryGet(
       base::StrCat({name, ".", suffix}), 1, 1000, 50,
       base::HistogramBase::kUmaTargetedHistogramFlag);

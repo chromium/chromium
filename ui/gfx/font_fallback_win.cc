@@ -6,9 +6,9 @@
 
 #include <algorithm>
 #include <map>
+#include <string_view>
 
 #include "base/memory/singleton.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -208,7 +208,7 @@ std::vector<Font> GetFallbackFonts(const Font& font) {
 
 bool GetFallbackFont(const Font& font,
                      const std::string& locale,
-                     base::StringPiece16 text,
+                     std::u16string_view text,
                      Font* result) {
   TRACE_EVENT0("fonts", "gfx::GetFallbackFont");
   // Creating a DirectWrite font fallback can be expensive. It's ok in the
@@ -225,8 +225,9 @@ bool GetFallbackFont(const Font& font,
   // text than expected then DirectWrite will become confused and crash. This
   // shouldn't happen, but crbug.com/624905 shows that it happens sometimes.
   constexpr char16_t kNulCharacter = '\0';
-  if (text.find(kNulCharacter) != base::StringPiece16::npos)
+  if (text.find(kNulCharacter) != std::u16string_view::npos) {
     return false;
+  }
 
   sk_sp<SkTypeface> fallback_typeface =
       GetSkiaFallbackTypeface(font, locale, text);

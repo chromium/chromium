@@ -6,11 +6,11 @@
 #define UI_COLOR_COLOR_PROVIDER_UTILS_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_piece.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_id.mojom.h"
@@ -24,7 +24,7 @@ using RendererColorMap = base::flat_map<color::mojom::RendererColorId, SkColor>;
 class COMPONENT_EXPORT(COLOR) ColorProviderUtilsCallbacks {
  public:
   virtual ~ColorProviderUtilsCallbacks();
-  virtual bool ColorIdName(ColorId color_id, base::StringPiece* color_name) = 0;
+  virtual bool ColorIdName(ColorId color_id, std::string_view* color_name) = 0;
 };
 
 // The following functions convert various values to strings intended for
@@ -32,19 +32,19 @@ class COMPONENT_EXPORT(COLOR) ColorProviderUtilsCallbacks {
 // functions are called.
 
 // Converts the ColorMode.
-base::StringPiece COMPONENT_EXPORT(COLOR)
+std::string_view COMPONENT_EXPORT(COLOR)
     ColorModeName(ColorProviderKey::ColorMode color_mode);
 
 // Converts the ContrastMode.
-base::StringPiece COMPONENT_EXPORT(COLOR)
+std::string_view COMPONENT_EXPORT(COLOR)
     ContrastModeName(ColorProviderKey::ContrastMode contrast_mode);
 
 // Converts the ForcedColors.
-base::StringPiece COMPONENT_EXPORT(COLOR)
+std::string_view COMPONENT_EXPORT(COLOR)
     ForcedColorsName(ColorProviderKey::ForcedColors forced_colors);
 
 // Converts SystemTheme.
-base::StringPiece COMPONENT_EXPORT(COLOR)
+std::string_view COMPONENT_EXPORT(COLOR)
     SystemThemeName(ui::SystemTheme system_theme);
 
 // Converts ColorId.

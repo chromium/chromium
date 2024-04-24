@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <limits>
 #include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -480,7 +481,7 @@ void ClipboardOzone::ReadText(ClipboardBuffer buffer,
     return;
 
   RecordRead(ClipboardFormatMetric::kText);
-  *result = base::UTF8ToUTF16(base::StringPiece(
+  *result = base::UTF8ToUTF16(std::string_view(
       reinterpret_cast<char*>(clipboard_data.data()), clipboard_data.size()));
 }
 
@@ -523,7 +524,7 @@ void ClipboardOzone::ReadHTML(ClipboardBuffer buffer,
   *fragment_start = 0;
   *fragment_end = 0;
 
-  *markup = base::UTF8ToUTF16(base::StringPiece(
+  *markup = base::UTF8ToUTF16(std::string_view(
       reinterpret_cast<char*>(clipboard_data.data()), clipboard_data.size()));
   DCHECK_LE(markup->length(), std::numeric_limits<uint32_t>::max());
   *fragment_end = static_cast<uint32_t>(markup->length());
@@ -542,7 +543,7 @@ void ClipboardOzone::ReadSvg(ClipboardBuffer buffer,
     return;
 
   RecordRead(ClipboardFormatMetric::kSvg);
-  *result = base::UTF8ToUTF16(base::StringPiece(
+  *result = base::UTF8ToUTF16(std::string_view(
       reinterpret_cast<char*>(clipboard_data.data()), clipboard_data.size()));
 }
 
@@ -693,7 +694,7 @@ void ClipboardOzone::WritePortableAndPlatformRepresentations(
   WritePortableTextRepresentation(buffer, objects);
 }
 
-void ClipboardOzone::WriteText(base::StringPiece text) {
+void ClipboardOzone::WriteText(std::string_view text) {
   std::vector<uint8_t> data(text.begin(), text.end());
   async_clipboard_ozone_->InsertData(
       std::move(data), {kMimeTypeText, kMimeTypeLinuxText, kMimeTypeLinuxString,
@@ -701,18 +702,18 @@ void ClipboardOzone::WriteText(base::StringPiece text) {
 }
 
 void ClipboardOzone::WriteHTML(
-    base::StringPiece markup,
-    std::optional<base::StringPiece> /* source_url */) {
+    std::string_view markup,
+    std::optional<std::string_view> /* source_url */) {
   std::vector<uint8_t> data(markup.begin(), markup.end());
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeHTML});
 }
 
-void ClipboardOzone::WriteSvg(base::StringPiece markup) {
+void ClipboardOzone::WriteSvg(std::string_view markup) {
   std::vector<uint8_t> data(markup.begin(), markup.end());
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeSvg});
 }
 
-void ClipboardOzone::WriteRTF(base::StringPiece rtf) {
+void ClipboardOzone::WriteRTF(std::string_view rtf) {
   std::vector<uint8_t> data(rtf.begin(), rtf.end());
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeRTF});
 }
@@ -723,8 +724,8 @@ void ClipboardOzone::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeURIList});
 }
 
-void ClipboardOzone::WriteBookmark(base::StringPiece title,
-                                   base::StringPiece url) {
+void ClipboardOzone::WriteBookmark(std::string_view title,
+                                   std::string_view url) {
   // Writes a Mozilla url (UTF16: URL, newline, title)
   std::u16string bookmark =
       base::StrCat({base::UTF8ToUTF16(url) + u"\n" + base::UTF8ToUTF16(title)});

@@ -14,9 +14,9 @@
 #define UI_BASE_WEBUI_JSTEMPLATE_BUILDER_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 
 namespace webui {
@@ -25,7 +25,7 @@ namespace webui {
 // string includes the HTML and the javascript code necessary to generate the
 // full page with support for i18n Templates.
 COMPONENT_EXPORT(UI_BASE)
-std::string GetI18nTemplateHtml(base::StringPiece html_template,
+std::string GetI18nTemplateHtml(std::string_view html_template,
                                 const base::Value::Dict& json);
 
 // Assigns the given json data into |loadTimeData|, without a <script> tag.

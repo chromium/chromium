@@ -7,6 +7,7 @@
 #include <map>
 #include <set>
 #include <sstream>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -453,7 +454,7 @@ std::string DisplayPlacement::PositionToString(Position position) {
 }
 
 // static
-bool DisplayPlacement::StringToPosition(const base::StringPiece& string,
+bool DisplayPlacement::StringToPosition(std::string_view string,
                                         Position* position) {
   if (string == kTop) {
     *position = TOP;

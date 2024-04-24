@@ -4,6 +4,8 @@
 
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -299,7 +301,7 @@ KeyboardCode KeycodeConverter::MapPositionalDomCodeToUSShortcutKey(
 #endif
 
 // static
-DomCode KeycodeConverter::CodeStringToDomCode(base::StringPiece code) {
+DomCode KeycodeConverter::CodeStringToDomCode(std::string_view code) {
   if (code.empty())
     return DomCode::NONE;
   for (auto& mapping : kDomCodeMappings) {
@@ -393,7 +395,7 @@ DomKeyLocation KeycodeConverter::DomCodeToLocation(DomCode dom_code) {
 }
 
 // static
-DomKey KeycodeConverter::KeyStringToDomKey(base::StringPiece key) {
+DomKey KeycodeConverter::KeyStringToDomKey(std::string_view key) {
   if (key.empty())
     return DomKey::NONE;
   // Check for standard key names.

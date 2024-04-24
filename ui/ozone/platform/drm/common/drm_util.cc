@@ -14,6 +14,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "ui/base/ui_base_switches.h"
@@ -733,7 +733,7 @@ std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob) {
   std::string path_str(
       static_cast<char*>(path_blob.data),
       base::strict_cast<std::string::size_type>(path_blob.length));
-  base::StringPiece path_string_piece(path_str);
+  std::string_view path_string_piece(path_str);
   path_string_piece = base::TrimString(path_string_piece, std::string("\0", 1u),
                                        base::TRIM_TRAILING);
 

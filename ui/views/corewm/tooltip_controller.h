@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
@@ -82,7 +83,7 @@ class VIEWS_EXPORT TooltipController
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
   void OnCancelMode(ui::CancelModeEvent* event) override;
-  base::StringPiece GetLogContext() const override;
+  std::string_view GetLogContext() const override;
 
   // Overridden from aura::client::CursorClientObserver.
   void OnCursorVisibilityChanged(bool is_visible) override;

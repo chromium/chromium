@@ -4,6 +4,8 @@
 
 #include "ui/wm/core/focus_controller.h"
 
+#include <string_view>
+
 #include "base/auto_reset.h"
 #include "base/observer_list.h"
 #include "ui/aura/client/aura_constants.h"
@@ -152,7 +154,7 @@ void FocusController::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-base::StringPiece FocusController::GetLogContext() const {
+std::string_view FocusController::GetLogContext() const {
   return "FocusController";
 }
 

@@ -13,6 +13,7 @@
 #include <memory>
 #include <optional>
 #include <sstream>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -1681,7 +1682,7 @@ void View::OnTouchEvent(ui::TouchEvent* event) {
 
 void View::OnGestureEvent(ui::GestureEvent* event) {}
 
-base::StringPiece View::GetLogContext() const {
+std::string_view View::GetLogContext() const {
   return GetClassName();
 }
 

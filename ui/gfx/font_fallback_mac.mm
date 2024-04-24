@@ -7,12 +7,13 @@
 #include <CoreText/CoreText.h>
 #import <Foundation/Foundation.h>
 
+#include <string_view>
+
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/i18n/char_iterator.h"
 #import "base/mac/mac_util.h"
-#include "base/strings/string_piece.h"
 #import "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
@@ -24,7 +25,7 @@ namespace gfx {
 
 namespace {
 
-bool TextSequenceHasEmoji(base::StringPiece16 text) {
+bool TextSequenceHasEmoji(std::u16string_view text) {
   for (base::i18n::UTF16CharIterator iter(text); !iter.end(); iter.Advance()) {
     const UChar32 codepoint = iter.get();
     if (u_hasBinaryProperty(codepoint, UCHAR_EMOJI))
@@ -70,7 +71,7 @@ std::vector<Font> GetFallbackFonts(const Font& font) {
 
 bool GetFallbackFont(const Font& font,
                      const std::string& locale,
-                     base::StringPiece16 text,
+                     std::u16string_view text,
                      Font* result) {
   TRACE_EVENT0("fonts", "gfx::GetFallbackFont");
 

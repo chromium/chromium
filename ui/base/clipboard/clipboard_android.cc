@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <map>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -119,7 +120,7 @@ class ClipboardMap {
   std::vector<ClipboardFormatType> GetFormats();
   void OnPrimaryClipboardChanged();
   void OnPrimaryClipTimestampInvalidated(int64_t timestamp_ms);
-  void Set(const ClipboardFormatType& format, base::StringPiece data);
+  void Set(const ClipboardFormatType& format, std::string_view data);
   void CommitToAndroidClipboard();
   void Clear();
   void MarkPasswordData();
@@ -316,7 +317,7 @@ void ClipboardMap::OnPrimaryClipTimestampInvalidated(int64_t timestamp_ms) {
 }
 
 void ClipboardMap::Set(const ClipboardFormatType& format,
-                       base::StringPiece data) {
+                       std::string_view data) {
   base::AutoLock lock(lock_);
   map_[format] = data;
   map_state_ = MapState::kPreparingCommit;
@@ -700,21 +701,21 @@ void ClipboardAndroid::WritePortableAndPlatformRepresentations(
   g_map.Get().CommitToAndroidClipboard();
 }
 
-void ClipboardAndroid::WriteText(base::StringPiece text) {
+void ClipboardAndroid::WriteText(std::string_view text) {
   g_map.Get().Set(ClipboardFormatType::PlainTextType(), text);
 }
 
 void ClipboardAndroid::WriteHTML(
-    base::StringPiece markup,
-    std::optional<base::StringPiece> /* source_url */) {
+    std::string_view markup,
+    std::optional<std::string_view> /* source_url */) {
   g_map.Get().Set(ClipboardFormatType::HtmlType(), markup);
 }
 
-void ClipboardAndroid::WriteSvg(base::StringPiece markup) {
+void ClipboardAndroid::WriteSvg(std::string_view markup) {
   g_map.Get().Set(ClipboardFormatType::SvgType(), markup);
 }
 
-void ClipboardAndroid::WriteRTF(base::StringPiece rtf) {
+void ClipboardAndroid::WriteRTF(std::string_view rtf) {
   NOTIMPLEMENTED();
 }
 
@@ -724,8 +725,8 @@ void ClipboardAndroid::WriteFilenames(std::vector<ui::FileInfo> filenames) {
 
 // According to other platforms implementations, this really writes the
 // URL spec.
-void ClipboardAndroid::WriteBookmark(base::StringPiece title,
-                                     base::StringPiece url) {
+void ClipboardAndroid::WriteBookmark(std::string_view title,
+                                     std::string_view url) {
   g_map.Get().Set(ClipboardFormatType::UrlType(), url);
 }
 

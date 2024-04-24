@@ -4,13 +4,15 @@
 
 #include "ui/ozone/platform/wayland/mojom/wayland_overlay_config_mojom_traits.h"
 
+#include <string_view>
+
 #include "components/crash/core/common/crash_key.h"
 
 namespace mojo {
 
 namespace {
 
-void SetDeserializationCrashKeyString(base::StringPiece str) {
+void SetDeserializationCrashKeyString(std::string_view str) {
   static crash_reporter::CrashKeyString<128> key("wayland_deserialization");
   key.Set(str);
 }
