@@ -123,7 +123,8 @@ iron-list.cr-separators > *:not([first]) {
   margin-inline-start: 8px;
 }
 
-paper-tooltip::part(tooltip) {
+paper-tooltip::part(tooltip),
+cr-tooltip::part(tooltip) {
   border-radius: var(--paper-tooltip-border-radius, 2px);
   font-size: 92.31%;  /* Effectively 12px if the host default is 13px. */
   font-weight: 500;

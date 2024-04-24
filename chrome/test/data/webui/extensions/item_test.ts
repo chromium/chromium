@@ -9,7 +9,7 @@ import {navigation, Page} from 'chrome://extensions/extensions.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible} from 'chrome://webui-test/test_util.js';
+import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {createExtensionInfo, MockItemDelegate, testVisible} from './test_util.js';
@@ -447,18 +447,18 @@ suite('ExtensionItemTest', function() {
   // Test that the correct tooltip text is shown when the enable toggle is
   // hovered over, depending on if the extension is enabled/disabled and its
   // permissions.
-  test('EnableExtensionToggleTooltips', function() {
-    const paperTooltip =
+  test('EnableExtensionToggleTooltips', async() => {
+    const crTooltip =
         item.shadowRoot!.querySelector<HTMLElement>('#enable-toggle-tooltip')!;
     testVisible(item, '#enable-toggle-tooltip', false);
 
     item.$.enableToggle.dispatchEvent(
-        new MouseEvent('mouseenter', {bubbles: true, composed: true}));
-    flush();
+        new CustomEvent('pointerenter', {bubbles: true, composed: true}));
+    await microtasksFinished();
     testVisible(item, '#enable-toggle-tooltip', true);
     assertEquals(
         loadTimeData.getString('enableToggleTooltipEnabled'),
-        paperTooltip.textContent!.trim());
+        crTooltip.textContent!.trim());
 
     item.set(
         'data.permissions',
@@ -466,12 +466,12 @@ suite('ExtensionItemTest', function() {
     flush();
     assertEquals(
         loadTimeData.getString('enableToggleTooltipEnabledWithSiteAccess'),
-        paperTooltip.textContent!.trim());
+        crTooltip.textContent!.trim());
 
     item.set('data.state', 'DISABLED');
     flush();
     assertEquals(
         loadTimeData.getString('enableToggleTooltipDisabled'),
-        paperTooltip.textContent!.trim());
+        crTooltip.textContent!.trim());
   });
 });

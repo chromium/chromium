@@ -251,11 +251,11 @@
             disabled$="[[!isEnableToggleEnabled_(data.*)]]"
             hidden$="[[!showEnableToggle_(data.*)]]">
         </cr-toggle>
-        <paper-tooltip id="enable-toggle-tooltip" for="enableToggle"
+        <cr-tooltip id="enable-toggle-tooltip" for="enableToggle"
             position="left" aria-hidden="true" animation-delay="0"
             fit-to-visible-bounds>
           [[getEnableToggleTooltipText_(data.*)]]
-        </paper-tooltip>
+        </cr-tooltip>
       </div>
     </div>
     <div id="warnings" hidden$="[[!hasSevereWarnings_(data.*)]]">

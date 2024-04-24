@@ -9,11 +9,12 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './profile_card_menu.js';
 import './profile_picker_shared.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import type {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_browser_proxy.js';
@@ -23,9 +24,9 @@ import {getTemplate} from './profile_card.html.js';
 export interface ProfileCardElement {
   $: {
     gaiaName: HTMLElement,
-    gaiaNameTooltip: PaperTooltipElement,
+    gaiaNameTooltip: CrTooltipElement,
     nameInput: CrInputElement,
-    tooltip: PaperTooltipElement,
+    tooltip: CrTooltipElement,
   };
 }
 
@@ -66,7 +67,9 @@ export class ProfileCardElement extends ProfileCardElementBase {
 
   private addNameInputTooltipListeners_() {
     const showTooltip = () => {
-      const inputElement = this.$.tooltip.target.inputElement;
+      const target = this.$.tooltip.target;
+      assert(target);
+      const inputElement = (target as CrInputElement).inputElement;
       // Disable tooltip if the local name editing is in progress.
       if (this.isNameTruncated_(inputElement) &&
           !this.$.nameInput.hasAttribute('focused_')) {
@@ -77,6 +80,7 @@ export class ProfileCardElement extends ProfileCardElementBase {
     };
     const hideTooltip = () => this.$.tooltip.hide();
     const target = this.$.tooltip.target;
+    assert(target);
     target.addEventListener('mouseenter', showTooltip);
     target.addEventListener('focus', hideTooltip);
     target.addEventListener('mouseleave', hideTooltip);
@@ -94,6 +98,7 @@ export class ProfileCardElement extends ProfileCardElementBase {
     };
     const hideTooltip = () => this.$.gaiaNameTooltip.hide();
     const target = this.$.gaiaNameTooltip.target;
+    assert(target);
     target.addEventListener('mouseenter', showTooltip);
     target.addEventListener('focus', showTooltip);
     target.addEventListener('mouseleave', hideTooltip);

@@ -101,7 +101,7 @@
     width: 130px;
   }
 
-  paper-tooltip {
+  cr-tooltip {
     --paper-tooltip-delay-in: 200ms;
     --paper-tooltip-duration-in: 200ms;
     --paper-tooltip-duration-out: 200ms;
@@ -160,11 +160,11 @@
   </div>
   <profile-card-menu profile-state="[[profileState]]"></profile-card-menu>
 </div>
-<paper-tooltip id="gaiaNameTooltip" for="gaiaName" manual-mode offset="0"
+<cr-tooltip id="gaiaNameTooltip" for="gaiaName" manual-mode offset="0"
     position="bottom" aria-hidden="true">
   [[profileState.gaiaName]]
-</paper-tooltip>
-<paper-tooltip id="tooltip" for="nameInput" manual-mode offset="-10"
+</cr-tooltip>
+<cr-tooltip id="tooltip" for="nameInput" manual-mode offset="-10"
     aria-hidden="true">
   [[profileState.localProfileName]]
-</paper-tooltip>
+</cr-tooltip>
