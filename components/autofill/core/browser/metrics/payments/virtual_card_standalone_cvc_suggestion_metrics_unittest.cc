@@ -39,7 +39,6 @@ class VirtualCardStandaloneCvcMetricsTest : public AutofillMetricsBaseTest,
     personal_data().test_payments_data_manager().AddVirtualCardUsageData(
         virtual_card_usage_data);
     personal_data().AddServerCreditCard(card_);
-    personal_data().Refresh();
 
     // Set four_digit_combinations_in_dom_ to simulate the list of last four
     // digits detected from the origin webpage.

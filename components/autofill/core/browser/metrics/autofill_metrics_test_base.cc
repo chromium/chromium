@@ -126,7 +126,6 @@ void AutofillMetricsBaseTest::CreateAmbiguousProfiles() {
                        "Texas", "79401", "US", "2345678901");
   profile.set_guid("00000000-0000-0000-0000-000000000003");
   personal_data().AddProfile(profile);
-  personal_data().Refresh();
 }
 
 void AutofillMetricsBaseTest::RecreateProfile() {
@@ -134,7 +133,6 @@ void AutofillMetricsBaseTest::RecreateProfile() {
   AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
   SetProfileTestData(&profile);
   personal_data().AddProfile(profile);
-  personal_data().Refresh();
 }
 
 void AutofillMetricsBaseTest::SetFidoEligibility(bool is_verifiable) {
@@ -251,7 +249,6 @@ void AutofillMetricsBaseTest::CreateCreditCards(
     full_server_credit_card.set_instrument_id(2);
     personal_data().AddServerCreditCard(full_server_credit_card);
   }
-  personal_data().Refresh();
 }
 
 void AutofillMetricsBaseTest::CreateLocalAndDuplicateServerCreditCard() {
@@ -273,8 +270,6 @@ void AutofillMetricsBaseTest::CreateLocalAndDuplicateServerCreditCard() {
   masked_server_credit_card.SetNetworkForMaskedCard(kMasterCard);
   masked_server_credit_card.SetNumber(u"5454");
   personal_data().AddServerCreditCard(masked_server_credit_card);
-
-  personal_data().Refresh();
 }
 
 void AutofillMetricsBaseTest::AddMaskedServerCreditCardWithOffer(
@@ -308,7 +303,6 @@ void AutofillMetricsBaseTest::AddMaskedServerCreditCardWithOffer(
       offer_id, expiry, merchant_origins, offer_details_url, display_strings,
       eligible_instrument_id, offer_reward_amount);
   personal_data().AddAutofillOfferData(offer_data);
-  personal_data().Refresh();
 }
 
 void AutofillMetricsBaseTest::CreateTestAutofillProfiles() {

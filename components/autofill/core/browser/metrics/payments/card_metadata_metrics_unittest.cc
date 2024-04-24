@@ -84,7 +84,6 @@ class CardMetadataFormEventMetricsTest
     }
 
     personal_data().AddServerCreditCard(card_);
-    personal_data().Refresh();
   }
 
   void TearDown() override { TearDownHelper(); }
@@ -509,7 +508,6 @@ class CardMetadataLatencyMetricsTest
           GURL("https://www.example.com/cardart.png"));
     }
     personal_data().AddServerCreditCard(masked_server_card);
-    personal_data().Refresh();
   }
 
   void TearDown() override { TearDownHelper(); }

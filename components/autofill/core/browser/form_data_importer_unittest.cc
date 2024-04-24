@@ -2474,11 +2474,7 @@ TEST_F(FormDataImporterTest,
                           "4111 1111 1111 1111" /* Visa */, "01", "2998", "");
   EXPECT_TRUE(credit_card.IsVerified());
 
-  // Add the credit card to the database.
   personal_data_manager_->AddCreditCard(credit_card);
-
-  // Make sure everything is set up correctly.
-  personal_data_manager_->Refresh();
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // Simulate a form submission with conflicting expiration year.
@@ -3395,7 +3391,6 @@ TEST_F(FormDataImporterTest,
     personal_data_manager_->AddCreditCard(local_card);
   }
 
-  personal_data_manager_->Refresh();
   EXPECT_EQ(4U, personal_data_manager_->GetCreditCards().size());
 
   // A user re-types (or fills with) an unmasked card. Don't offer to save
