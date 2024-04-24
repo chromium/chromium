@@ -42,7 +42,7 @@ const char* GetProcessType() {
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("type");
   const char* process_type = type == ""              ? "Browser"
                              : type == "renderer"    ? "Renderer"
-                             : type == "gpu-process" ? "Gpu"
+                             : type == "gpu-process" ? "GPU"
                              : type == "utility"     ? "Utility"
                                                      : "Unknown";
   return process_type;
