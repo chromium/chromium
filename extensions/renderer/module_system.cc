@@ -481,30 +481,8 @@ void ModuleSystem::LazyFieldGetter(
   // that the extension doesn't have permission to use them.
   CHECK(!new_field.IsEmpty());
 
-  // Delete the getter and set this field to |new_field| so the same object is
-  // returned every time a certain API is accessed.
-  v8::Local<v8::Value> val = info.This();
-  if (val->IsObject()) {
-    v8::Local<v8::Object> object = v8::Local<v8::Object>::Cast(val);
-    auto maybe_deleted = object->Delete(context, property);
-    if (!maybe_deleted.IsJust()) {
-      // In theory, deletion should never result in throwing an error. But
-      // crazier things have happened.
-      NOTREACHED();
-      return;
-    }
-    if (!maybe_deleted.FromJust()) {
-      // Deletion can *fail* in certain cases, such as when the script does
-      // Object.freeze(chrome).
-      return;
-    }
-    auto maybe_set = object->CreateDataProperty(context, property, new_field);
-    // Setting a new value can fail in multiple scenarios. Bail out if it does.
-    if (!maybe_set.IsJust() || !maybe_set.FromJust())
-      return;
-  } else {
-    NOTREACHED();
-  }
+  // v8::Object::SetLazyDataProperty() machinery will reconfigure the property
+  // to a regular data property with |new_field| value.
   info.GetReturnValue().Set(new_field);
 }
 
@@ -525,9 +503,9 @@ void ModuleSystem::SetLazyField(v8::Local<v8::Object> object,
                      ToV8StringUnsafe(GetIsolate(), module_name.c_str()));
   SetPrivateProperty(context, parameters, kModuleField,
                      ToV8StringUnsafe(GetIsolate(), module_field.c_str()));
-  auto maybe = object->SetAccessor(
+  auto maybe = object->SetLazyDataProperty(
       context, ToV8StringUnsafe(GetIsolate(), field.c_str()),
-      &ModuleSystem::LazyFieldGetter, nullptr, parameters);
+      &ModuleSystem::LazyFieldGetter, parameters);
   CHECK(v8_helpers::IsTrue(maybe));
 }
 
