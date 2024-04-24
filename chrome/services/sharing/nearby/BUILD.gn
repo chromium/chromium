@@ -33,6 +33,7 @@ source_set("nearby") {
     "//third_party/nearby:connections",
     "//third_party/nearby:connections_credential_proto",
     "//third_party/nearby:connections_metadata_proto",
+    "//third_party/nearby:interop_device",
     "//third_party/nearby:presence",
   ]
 

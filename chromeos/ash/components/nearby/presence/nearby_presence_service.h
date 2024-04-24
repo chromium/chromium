@@ -10,11 +10,14 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/nearby/src/presence/presence_device.h"
 
 namespace ash::nearby::presence {
+
+class NearbyPresenceConnectionsManager;
 
 // This service implements Nearby Presence on top of the Nearby Presence .mojom
 // interface.
@@ -114,6 +117,9 @@ class NearbyPresenceService {
   //     2. Downloading remote devices' credentials from the NP server and
   //        saving them to the NP library.
   virtual void UpdateCredentials() = 0;
+
+  virtual std::unique_ptr<NearbyPresenceConnectionsManager>
+  CreateNearbyPresenceConnectionsManager() = 0;
 };
 
 }  // namespace ash::nearby::presence

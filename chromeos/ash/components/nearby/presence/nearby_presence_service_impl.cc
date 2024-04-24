@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "chromeos/ash/components/nearby/presence/conversions/proto_conversions.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_credential_manager_impl.h"
+#include "chromeos/ash/components/nearby/presence/nearby_presence_connections_manager.h"
 #include "chromeos/ash/components/nearby/presence/nearby_presence_service_enum_coversions.h"
 #include "chromeos/ash/components/nearby/presence/prefs/nearby_presence_prefs.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
@@ -185,6 +186,11 @@ void NearbyPresenceServiceImpl::UpdateCredentials() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+std::unique_ptr<NearbyPresenceConnectionsManager>
+NearbyPresenceServiceImpl::CreateNearbyPresenceConnectionsManager() {
+  return std::make_unique<NearbyPresenceConnectionsManager>(process_manager_);
+}
+
 void NearbyPresenceServiceImpl::Shutdown() {
   process_reference_.reset();
   scan_delegate_set_.clear();
@@ -300,5 +306,4 @@ void NearbyPresenceServiceImpl::
   CHECK(credential_manager_);
   credential_manager_->UpdateCredentials();
 }
-
 }  // namespace ash::nearby::presence

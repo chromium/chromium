@@ -16,7 +16,6 @@
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connection_impl.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_file_handler.h"
-#include "chromeos/ash/components/nearby/presence/nearby_presence_service.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
@@ -85,6 +84,12 @@ class NearbyConnectionsManagerImpl
   void DisconnectV3(
       nearby::presence::PresenceDevice remote_presence_device) override;
 
+ protected:
+  raw_ptr<nearby::connections::mojom::NearbyConnections> GetNearbyConnections();
+
+  raw_ptr<ash::nearby::NearbyProcessManager> process_manager_;
+  const std::string service_id_;
+
  private:
   using AdvertisingOptions = nearby::connections::mojom::AdvertisingOptions;
   using ConnectionInfoPtr = nearby::connections::mojom::ConnectionInfoPtr;
@@ -103,7 +108,6 @@ class NearbyConnectionsManagerImpl
   using PayloadStatus = nearby::connections::mojom::PayloadStatus;
   using PayloadTransferUpdatePtr =
       nearby::connections::mojom::PayloadTransferUpdatePtr;
-  using NearbyPresenceService = ash::nearby::presence::NearbyPresenceService;
   using ConnectionListenerV3 = nearby::connections::mojom::ConnectionListenerV3;
   using PresenceDevicePtr = ash::nearby::presence::mojom::PresenceDevicePtr;
   using InitialConnectionInfoV3Ptr =
@@ -155,7 +159,6 @@ class NearbyConnectionsManagerImpl
   void OnNearbyProcessStopped(
       ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason
           shutdown_reason);
-  nearby::connections::mojom::NearbyConnections* GetNearbyConnections();
   void Reset();
 
   void OnFileCreated(int64_t payload_id,
@@ -165,7 +168,6 @@ class NearbyConnectionsManagerImpl
   // For metrics.
   std::optional<Medium> GetUpgradedMedium(const std::string& endpoint_id) const;
 
-  raw_ptr<ash::nearby::NearbyProcessManager> process_manager_;
   std::unique_ptr<ash::nearby::NearbyProcessManager::NearbyProcessReference>
       process_reference_;
   NearbyFileHandler file_handler_;
@@ -207,8 +209,6 @@ class NearbyConnectionsManagerImpl
   // For metrics. A map of endpoint_id to current upgraded medium for V3
   // connections.
   base::flat_map<std::string, Medium> current_upgraded_mediums_v3_;
-
-  const std::string service_id_;
 
   mojo::Receiver<EndpointDiscoveryListener> endpoint_discovery_listener_{this};
   mojo::ReceiverSet<ConnectionLifecycleListener>

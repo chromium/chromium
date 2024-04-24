@@ -20,6 +20,7 @@ static_library("presence") {
   ]
 
   deps = [
+    ":nearby_presence_connections_manager",
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
@@ -37,18 +38,51 @@ static_library("presence") {
     "//components/prefs",
     "//components/push_notification:push_notification",
     "//content/public/browser",
-    "//third_party/nearby:presence_types",
   ]
 
-  public_deps = [ "//third_party/nearby:connections_metadata_proto" ]
+  public_deps = [
+    "//third_party/nearby:connections_metadata_proto",
+    "//third_party/nearby:presence_types",
+  ]
+}
+
+source_set("nearby_presence_connections_manager") {
+  sources = [
+    "nearby_presence_connections_manager.cc",
+    "nearby_presence_connections_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/nearby/common/connections_manager:connections_manager",
+    "//components/cross_device/logging:logging",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_nearby_presence_service.cc",
+    "fake_nearby_presence_service.h",
+  ]
+  deps = [
+    ":nearby_presence_connections_manager",
+    ":presence",
+    "//base",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "nearby_presence_service_impl_unittest.cc" ]
+  sources = [
+    "nearby_presence_connections_manager_unittest.cc",
+    "nearby_presence_service_impl_unittest.cc",
+  ]
 
   deps = [
+    ":nearby_presence_connections_manager",
     ":presence",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/test:test_support",

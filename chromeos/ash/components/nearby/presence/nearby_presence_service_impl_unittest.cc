@@ -10,7 +10,9 @@
 #include "base/test/mock_callback.h"
 #include "chromeos/ash/components/nearby/presence/credentials/fake_nearby_presence_credential_manager.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_credential_manager_impl.h"
+#include "chromeos/ash/components/nearby/presence/nearby_presence_connections_manager.h"
 #include "chromeos/ash/services/nearby/public/cpp/fake_nearby_presence.h"
+#include "chromeos/ash/services/nearby/public/cpp/mock_nearby_connections.h"
 #include "chromeos/ash/services/nearby/public/cpp/mock_nearby_process_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -106,6 +108,9 @@ class NearbyPresenceServiceImplTest : public testing::Test {
           EXPECT_CALL(*(nearby_process_reference_.get()), GetNearbyPresence)
               .WillRepeatedly(
                   testing::ReturnRef(fake_nearby_presence_.shared_remote()));
+          ON_CALL(*(nearby_process_reference_.get()), GetNearbyConnections)
+              .WillByDefault(
+                  testing::ReturnRef(nearby_connections_.shared_remote()));
           return std::move(nearby_process_reference_);
         });
     push_notification_service_ =
@@ -178,6 +183,7 @@ class NearbyPresenceServiceImplTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   FakeNearbyPresence fake_nearby_presence_;
+  testing::NiceMock<ash::nearby::MockNearbyConnections> nearby_connections_;
   testing::NiceMock<MockNearbyProcessManager> nearby_process_manager_;
   std::unique_ptr<
       ash::nearby::MockNearbyProcessManager::MockNearbyProcessReference>
@@ -453,6 +459,12 @@ TEST_F(NearbyPresenceServiceImplTest, Reset) {
   // TODO(b/277819923): When metric is added for Nearby Process shutdown
   // reason, test the metric is correctly recorded here.
   nearby_process_reference_.reset();
+}
+
+TEST_F(NearbyPresenceServiceImplTest, CreateNearbyPresenceConnectionsManager) {
+  auto connections_manager =
+      nearby_presence_service_->CreateNearbyPresenceConnectionsManager();
+  EXPECT_TRUE(connections_manager);
 }
 
 }  // namespace ash::nearby::presence

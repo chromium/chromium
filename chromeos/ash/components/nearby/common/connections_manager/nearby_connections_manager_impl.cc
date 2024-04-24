@@ -254,7 +254,7 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
   DCHECK(listener);
   DCHECK(!incoming_connection_listener_);
 
-  nearby::connections::mojom::NearbyConnections* nearby_connections =
+  raw_ptr<nearby::connections::mojom::NearbyConnections> nearby_connections =
       GetNearbyConnections();
   if (!nearby_connections) {
     std::move(callback).Run(ConnectionsStatus::kError);
@@ -339,7 +339,7 @@ void NearbyConnectionsManagerImpl::StartDiscovery(
   DCHECK(listener);
   DCHECK(!discovery_listener_);
 
-  nearby::connections::mojom::NearbyConnections* nearby_connections =
+  raw_ptr<nearby::connections::mojom::NearbyConnections> nearby_connections =
       GetNearbyConnections();
   if (!nearby_connections) {
     std::move(callback).Run(ConnectionsStatus::kError);
@@ -700,7 +700,7 @@ void NearbyConnectionsManagerImpl::ConnectV3(
     nearby::presence::PresenceDevice remote_presence_device,
     NearbyConnectionsManager::DataUsage data_usage,
     NearbyConnectionCallback callback) {
-  nearby::connections::mojom::NearbyConnections* nearby_connections =
+  raw_ptr<nearby::connections::mojom::NearbyConnections> nearby_connections =
       GetNearbyConnections();
   CHECK(nearby_connections);
 
@@ -1194,7 +1194,7 @@ void NearbyConnectionsManagerImpl::OnBandwidthChanged(
   }
 }
 
-nearby::connections::mojom::NearbyConnections*
+raw_ptr<nearby::connections::mojom::NearbyConnections>
 NearbyConnectionsManagerImpl::GetNearbyConnections() {
   if (!process_reference_) {
     process_reference_ = process_manager_->GetNearbyProcessReference(

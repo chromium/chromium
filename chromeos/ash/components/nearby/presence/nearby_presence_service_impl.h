@@ -66,6 +66,8 @@ class NearbyPresenceServiceImpl
           on_start_scan_callback) override;
   void Initialize(base::OnceClosure on_initialized_callback) override;
   void UpdateCredentials() override;
+  std::unique_ptr<NearbyPresenceConnectionsManager>
+  CreateNearbyPresenceConnectionsManager() override;
 
  private:
   // KeyedService:

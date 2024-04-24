@@ -30,7 +30,6 @@ source_set("connections_manager") {
 
   public_deps = [
     "//base",
-    "//chromeos/ash/components/nearby/presence:presence",
     "//chromeos/ash/services/nearby/public/cpp:cpp",
     "//chromeos/ash/services/nearby/public/mojom",
     "//components/cross_device/nearby:platform",
