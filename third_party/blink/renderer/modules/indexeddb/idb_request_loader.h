@@ -8,19 +8,16 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
-#include "base/memory/raw_ptr.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-class IDBRequestQueueItem;
-class IDBRequest;
 class IDBValue;
 
 // Loads IndexedDB values that have been wrapped in Blobs by IDBValueWrapper.
@@ -35,22 +32,30 @@ class IDBValue;
 class IDBRequestLoader : public GarbageCollected<IDBRequestLoader>,
                          public FileReaderClient {
  public:
-  // Creates a loader that will unwrap IDBValues received by a IDBRequest.
+  // |values| contains the unwrapped values; null |error| indicates success.
+  using LoadCompleteCallback =
+      base::OnceCallback<void(Vector<std::unique_ptr<IDBValue>>&& values,
+                              DOMException* error)>;
+
+  // Creates a loader that will unwrap IDBValues.
   //
-  // result_values must be kept alive until the loader calls
-  // IDBRequestQueueItem::OnResultLoadComplete().
-  IDBRequestLoader(IDBRequestQueueItem*,
-                   Vector<std::unique_ptr<IDBValue>>& result_values);
+  // Unwrapping of |values| is done in-place on |execution_context| and is
+  // stopped if the context is destroyed. The unwrapped values are returned to
+  // the caller through |load_complete_callback| or when `Cancel()` is called.
+  IDBRequestLoader(Vector<std::unique_ptr<IDBValue>>&& values,
+                   ExecutionContext* execution_context,
+                   LoadCompleteCallback&& load_complete_callback);
 
   ~IDBRequestLoader() override;
 
   // Start unwrapping values.
   //
-  // When the unwrapping completes, the loader will call OnResultLoadComplete()
-  // on the request queue item.
+  // When the unwrapping completes, the loader will call
+  // load_complete_callback_.
   void Start();
-  // Halt the process of unwrapping values, if possible.
-  void Cancel();
+  // Halt the process of unwrapping values, if possible, and return the values
+  // that were passed in the constructor.
+  Vector<std::unique_ptr<IDBValue>>&& Cancel();
 
   // FileReaderClient implementation.
   FileErrorCode DidStartLoading(uint64_t) override;
@@ -60,30 +65,30 @@ class IDBRequestLoader : public GarbageCollected<IDBRequestLoader>,
   void Trace(Visitor* visitor) const override {
     FileReaderClient::Trace(visitor);
     visitor->Trace(loader_);
+    visitor->Trace(execution_context_);
   }
 
  private:
   // Starts unwrapping the next wrapped IDBValue.
   //
-  // If no more wrapped IDBValues are found, this calls ReportSuccess(), which
-  // ends up calling IDBRequestQueueItem::OnResultLoadComplete().
+  // If no more wrapped IDBValues are found, this calls OnLoadComplete() which
+  // calls load_complete_callback_.
   void StartNextValue();
 
-  void ReportSuccess();
-  void ReportError();
+  // Called when unwrapping of all values is complete.
+  void OnLoadComplete(bool error);
 
   Member<FileReaderLoader> loader_;
 
-  // Transaction result queue item for the IDBRequest.
-  //
-  // The IDBRequestQueueItem owns this loader.
-  raw_ptr<IDBRequestQueueItem, DanglingUntriaged> queue_item_;
+  // All the values to be unwrapped. These are moved back to the caller when
+  // `load_complete_callback_` is run or when the load is canceled.
+  Vector<std::unique_ptr<IDBValue>> values_;
 
-  // All the values that will be passed back to the IDBRequest.
-  //
-  // The Vector is owned by the IDBRequestLoader owner, which is currently a
-  // IDBRequestQueueItem.
-  const raw_ref<Vector<std::unique_ptr<IDBValue>>, DanglingUntriaged> values_;
+  // The execution context on which blob data is read by `loader_`.
+  WeakMember<ExecutionContext> execution_context_;
+
+  // The callback to run when unwrapping is complete (successfully or not).
+  LoadCompleteCallback load_complete_callback_;
 
   // Buffer used to unwrap an IDBValue.
   Vector<char> wrapped_data_;

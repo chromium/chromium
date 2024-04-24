@@ -10,8 +10,6 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_request_queue_item.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -21,10 +19,13 @@
 namespace blink {
 
 IDBRequestLoader::IDBRequestLoader(
-    IDBRequestQueueItem* queue_item,
-    Vector<std::unique_ptr<IDBValue>>& result_values)
-    : queue_item_(queue_item), values_(result_values) {
-  DCHECK(IDBValueUnwrapper::IsWrapped(*values_));
+    Vector<std::unique_ptr<IDBValue>>&& values,
+    ExecutionContext* execution_context,
+    LoadCompleteCallback&& load_complete_callback)
+    : values_(std::move(values)),
+      execution_context_(execution_context),
+      load_complete_callback_(std::move(load_complete_callback)) {
+  DCHECK(IDBValueUnwrapper::IsWrapped(values_));
 }
 
 IDBRequestLoader::~IDBRequestLoader() {}
@@ -39,11 +40,11 @@ void IDBRequestLoader::Start() {
   //               Consider parallelizing. The main issue is that the Blob reads
   //               will have to be throttled somewhere, and the extra complexity
   //               only benefits applications that use getAll().
-  current_value_ = values_->begin();
+  current_value_ = values_.begin();
   StartNextValue();
 }
 
-void IDBRequestLoader::Cancel() {
+Vector<std::unique_ptr<IDBValue>>&& IDBRequestLoader::Cancel() {
 #if DCHECK_IS_ON()
   DCHECK(started_) << "Cancel() called on a loader that hasn't been Start()ed";
   DCHECK(!canceled_) << "Cancel() was already called";
@@ -52,31 +53,38 @@ void IDBRequestLoader::Cancel() {
   DCHECK(file_reader_loading_);
   file_reader_loading_ = false;
 #endif  // DCHECK_IS_ON()
-  if (loader_)
+  if (loader_) {
     loader_->Cancel();
+  }
+  // We're not expected to unwrap any more values or run the callback.
+  load_complete_callback_.Reset();
+  execution_context_.Clear();
+  return std::move(values_);
 }
 
 void IDBRequestLoader::StartNextValue() {
   IDBValueUnwrapper unwrapper;
 
   while (true) {
-    if (current_value_ == values_->end()) {
-      ReportSuccess();
+    if (current_value_ == values_.end()) {
+      OnLoadComplete(/*error=*/false);
       return;
     }
-    if (unwrapper.Parse(current_value_->get()))
+    if (unwrapper.Parse(current_value_->get())) {
       break;
+    }
     ++current_value_;
   }
 
-  DCHECK(current_value_ != values_->end());
+  DCHECK(current_value_ != values_.end());
 
-  ExecutionContext* exection_context =
-      queue_item_->Request()->GetExecutionContext();
   // The execution context was torn down. The loader will eventually get a
-  // Cancel() call.
-  if (!exection_context)
+  // Cancel() call. Note that WeakMember sets `execution_context_` to null
+  // only when the ExecutionContext is GC-ed, but the context destruction may
+  // have happened earlier. Hence, check `IsContextDestroyed()` explicitly.
+  if (!execution_context_ || execution_context_->IsContextDestroyed()) {
     return;
+  }
 
   wrapped_data_.reserve(unwrapper.WrapperBlobSize());
 #if DCHECK_IS_ON()
@@ -84,7 +92,7 @@ void IDBRequestLoader::StartNextValue() {
   file_reader_loading_ = true;
 #endif  // DCHECK_IS_ON()
   loader_ = MakeGarbageCollected<FileReaderLoader>(
-      this, exection_context->GetTaskRunner(TaskType::kDatabaseAccess));
+      this, execution_context_->GetTaskRunner(TaskType::kDatabaseAccess));
   loader_->Start(unwrapper.WrapperBlobHandle());
 }
 
@@ -129,24 +137,20 @@ void IDBRequestLoader::DidFail(FileErrorCode) {
   DCHECK(file_reader_loading_);
   file_reader_loading_ = false;
 #endif  // DCHECK_IS_ON()
-  ReportError();
+  OnLoadComplete(/*error=*/true);
 }
 
-void IDBRequestLoader::ReportSuccess() {
+void IDBRequestLoader::OnLoadComplete(bool error) {
 #if DCHECK_IS_ON()
   DCHECK(started_);
   DCHECK(!canceled_);
 #endif  // DCHECK_IS_ON()
-  queue_item_->OnResultLoadComplete();
-}
-
-void IDBRequestLoader::ReportError() {
-#if DCHECK_IS_ON()
-  DCHECK(started_);
-  DCHECK(!canceled_);
-#endif  // DCHECK_IS_ON()
-  queue_item_->OnResultLoadComplete(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kDataError, "Failed to read large IndexedDB value"));
+  std::move(load_complete_callback_)
+      .Run(std::move(values_), error
+                                   ? MakeGarbageCollected<DOMException>(
+                                         DOMExceptionCode::kDataError,
+                                         "Failed to read large IndexedDB value")
+                                   : nullptr);
 }
 
 }  // namespace blink

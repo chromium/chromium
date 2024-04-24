@@ -9,6 +9,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -23,6 +24,7 @@ class IDBDatabaseGetAllResultSinkImpl;
 class IDBKey;
 class IDBRequest;
 class IDBRequestLoader;
+class IDBRequestTest;
 class IDBValue;
 
 // Queues up a transaction's IDBRequest results for orderly delivery.
@@ -110,14 +112,9 @@ class MODULES_EXPORT IDBRequestQueueItem {
   // This should only be called by the request's IDBTransaction.
   void SendResult();
 
-  // Called by the associated IDBRequestLoader when result processing is done.
-  void OnResultLoadComplete();
-
-  // Called by the associated IDBRequestLoader when result processing fails.
-  void OnResultLoadComplete(DOMException* error);
-
  private:
   friend class IDBDatabaseGetAllResultSinkImpl;
+  friend class IDBRequestTest;
 
   // The IDBRequest callback that will be called for this result.
   enum ResponseType {
@@ -131,6 +128,18 @@ class MODULES_EXPORT IDBRequestQueueItem {
     kValueArray,
     kVoid,
   };
+
+  // Checks `values_` for wrapped entries and, if there are any, creates
+  // `loader_` to unwrap them. Returns whether the loader was created.
+  // Note that `values_` is std::move'd into the loader when it's created.
+  bool MaybeCreateLoader();
+
+  // Callback run from IDBRequestLoader with the unwrapped values.
+  void OnLoadComplete(Vector<std::unique_ptr<IDBValue>>&& values,
+                      DOMException* error);
+
+  // Handle completion of post-processing, if any, of the result.
+  void OnResultReady();
 
   // The IDBRequest that will receive a callback for this result.
   Persistent<IDBRequest> request_;
@@ -190,6 +199,11 @@ class MODULES_EXPORT IDBRequestQueueItem {
   // `IDBRequest::SendResult()` call occurs.
   bool result_sent_ = false;
 #endif  // DCHECK_IS_ON()
+
+  // A WeakPtr to this class is passed in the callback to IDBRequestLoader for
+  // correctness and future-proofing. There is no known case currently where
+  // the callback is dispatched after we're destroyed.
+  base::WeakPtrFactory<IDBRequestQueueItem> weak_factory_{this};
 };
 
 using IDBRequestQueue = Deque<std::unique_ptr<IDBRequestQueueItem>>;

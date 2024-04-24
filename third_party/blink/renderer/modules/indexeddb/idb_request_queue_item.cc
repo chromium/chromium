@@ -46,7 +46,7 @@ class IDBDatabaseGetAllResultSinkImpl
     if (key_only_) {
       owner_->response_type_ = IDBRequestQueueItem::kKey;
       owner_->key_ = IDBKey::CreateArray(std::move(keys_));
-      owner_->OnResultLoadComplete();
+      owner_->OnResultReady();
     } else {
       owner_->response_type_ = IDBRequestQueueItem::kValueArray;
 
@@ -59,17 +59,14 @@ class IDBDatabaseGetAllResultSinkImpl
         idb_values.emplace_back(std::move(idb_value));
       }
 
-      bool is_wrapped = IDBValueUnwrapper::IsWrapped(idb_values);
       owner_->values_ = std::move(idb_values);
-      if (is_wrapped) {
-        owner_->loader_ =
-            MakeGarbageCollected<IDBRequestLoader>(owner_, owner_->values_);
+      if (owner_->MaybeCreateLoader()) {
         if (owner_->started_loading_) {
           // Try again now that the values exist.
           owner_->StartLoading();
         }
       } else {
-        owner_->OnResultLoadComplete();
+        owner_->OnResultReady();
       }
     }
   }
@@ -85,8 +82,9 @@ class IDBDatabaseGetAllResultSinkImpl
     }
 
     values_.reserve(values_.size() + values.size());
-    for (auto& value : values)
+    for (auto& value : values) {
       values_.emplace_back(std::move(value));
+    }
   }
 
   void ReceiveKeys(WTF::Vector<std::unique_ptr<IDBKey>> keys) override {
@@ -99,8 +97,9 @@ class IDBDatabaseGetAllResultSinkImpl
     }
 
     keys_.reserve(keys_.size() + keys.size());
-    for (auto& key : keys)
+    for (auto& key : keys) {
       keys_.emplace_back(std::move(key));
+    }
   }
 
   void OnError(mojom::blink::IDBErrorPtr error) override {
@@ -109,7 +108,7 @@ class IDBDatabaseGetAllResultSinkImpl
         static_cast<DOMExceptionCode>(error->error_code), error->error_message);
     // Prevent OnDisconnect from sending keys or values.
     receiver_.reset();
-    owner_->OnResultLoadComplete();
+    owner_->OnResultReady();
   }
 
  private:
@@ -176,11 +175,8 @@ IDBRequestQueueItem::IDBRequestQueueItem(IDBRequest* request,
   DCHECK(on_result_ready_);
   DCHECK_EQ(request->queue_item_, nullptr);
   request_->queue_item_ = this;
-  bool is_wrapped = IDBValueUnwrapper::IsWrapped(value.get());
   values_.push_back(std::move(value));
-  if (is_wrapped) {
-    loader_ = MakeGarbageCollected<IDBRequestLoader>(this, values_);
-  }
+  MaybeCreateLoader();
 }
 
 IDBRequestQueueItem::IDBRequestQueueItem(
@@ -194,9 +190,7 @@ IDBRequestQueueItem::IDBRequestQueueItem(
   DCHECK(on_result_ready_);
   DCHECK_EQ(request->queue_item_, nullptr);
   request_->queue_item_ = this;
-  if (IDBValueUnwrapper::IsWrapped(values_)) {
-    loader_ = MakeGarbageCollected<IDBRequestLoader>(this, values_);
-  }
+  MaybeCreateLoader();
 }
 
 IDBRequestQueueItem::IDBRequestQueueItem(IDBRequest* request,
@@ -212,11 +206,8 @@ IDBRequestQueueItem::IDBRequestQueueItem(IDBRequest* request,
   DCHECK(on_result_ready_);
   DCHECK_EQ(request->queue_item_, nullptr);
   request_->queue_item_ = this;
-  bool is_wrapped = IDBValueUnwrapper::IsWrapped(value.get());
   values_.push_back(std::move(value));
-  if (is_wrapped) {
-    loader_ = MakeGarbageCollected<IDBRequestLoader>(this, values_);
-  }
+  MaybeCreateLoader();
 }
 
 IDBRequestQueueItem::IDBRequestQueueItem(
@@ -235,11 +226,8 @@ IDBRequestQueueItem::IDBRequestQueueItem(
   DCHECK(on_result_ready_);
   DCHECK_EQ(request->queue_item_, nullptr);
   request_->queue_item_ = this;
-  bool is_wrapped = IDBValueUnwrapper::IsWrapped(value.get());
   values_.push_back(std::move(value));
-  if (is_wrapped) {
-    loader_ = MakeGarbageCollected<IDBRequestLoader>(this, values_);
-  }
+  MaybeCreateLoader();
 }
 
 IDBRequestQueueItem::IDBRequestQueueItem(
@@ -261,7 +249,7 @@ IDBRequestQueueItem::~IDBRequestQueueItem() {
 #endif  // DCHECK_IS_ON()
 }
 
-void IDBRequestQueueItem::OnResultLoadComplete() {
+void IDBRequestQueueItem::OnResultReady() {
   CHECK(!ready_);
   ready_ = true;
 
@@ -269,25 +257,42 @@ void IDBRequestQueueItem::OnResultLoadComplete() {
   std::move(on_result_ready_).Run();
 }
 
-void IDBRequestQueueItem::OnResultLoadComplete(DOMException* error) {
-  DCHECK(!ready_);
-  DCHECK(response_type_ != kError);
+bool IDBRequestQueueItem::MaybeCreateLoader() {
+  if (IDBValueUnwrapper::IsWrapped(values_)) {
+    loader_ = MakeGarbageCollected<IDBRequestLoader>(
+        std::move(values_), request_->GetExecutionContext(),
+        WTF::BindOnce(&IDBRequestQueueItem::OnLoadComplete,
+                      weak_factory_.GetWeakPtr()));
+    return true;
+  }
+  return false;
+}
 
-  response_type_ = kError;
-  error_ = error;
+void IDBRequestQueueItem::OnLoadComplete(
+    Vector<std::unique_ptr<IDBValue>>&& values,
+    DOMException* error) {
+  values_ = std::move(values);
+  if (error) {
+    DCHECK(!ready_);
+    DCHECK(response_type_ != kError);
 
-  // This is not necessary, but releases non-trivial amounts of memory early.
-  values_.clear();
+    response_type_ = kError;
+    error_ = error;
 
-  OnResultLoadComplete();
+    // This is not necessary, but releases non-trivial amounts of memory early.
+    values_.clear();
+  }
+
+  OnResultReady();
 }
 
 void IDBRequestQueueItem::StartLoading() {
   started_loading_ = true;
 
   // If waiting on results from get all before loading, early out.
-  if (get_all_sink_ && get_all_sink_->IsWaiting())
+  if (get_all_sink_ && get_all_sink_->IsWaiting()) {
     return;
+  }
 
   if (request_->request_aborted_) {
     // The backing store can get the result back to the request after it's been
@@ -308,19 +313,21 @@ void IDBRequestQueueItem::StartLoading() {
     DCHECK(!ready_);
     loader_->Start();
   } else {
-    OnResultLoadComplete();
+    OnResultReady();
   }
 }
 
 void IDBRequestQueueItem::CancelLoading() {
-  if (ready_)
+  if (ready_) {
     return;
+  }
 
-  if (get_all_sink_)
+  if (get_all_sink_) {
     get_all_sink_.reset();
+  }
 
   if (loader_) {
-    loader_->Cancel();
+    values_ = loader_->Cancel();
     loader_.Clear();
 
     // IDBRequestLoader::Cancel() should not call any of the SendResult
@@ -331,7 +338,7 @@ void IDBRequestQueueItem::CancelLoading() {
   // Mark this item as ready so the transaction's result queue can be drained.
   response_type_ = kCanceled;
   values_.clear();
-  OnResultLoadComplete();
+  OnResultReady();
 }
 
 void IDBRequestQueueItem::SendResult() {
