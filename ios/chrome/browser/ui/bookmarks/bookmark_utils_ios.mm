@@ -304,7 +304,6 @@ NSString* messageForAddingBookmarksInFolder(
     if (syncingBookmark) {
       // The user is signed-in, and syncing bookmark, but default bookmark
       // account is on a local folder.
-      CHECK(chosenByUser);
       std::u16string title = base::SysNSStringToUTF16(folderTitle);
       std::u16string pattern = l10n_util::GetStringUTF16(
           (showCount) ? IDS_IOS_BOOKMARK_PAGE_BULK_SAVED_FOLDER_TO_DEVICE
