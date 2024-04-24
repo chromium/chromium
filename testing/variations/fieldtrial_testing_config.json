@@ -14567,7 +14567,19 @@
             ],
             "experiments": [
                 {
-                    "name": "Enable",
+                    "name": "preload-on-make-contents",
+                    "params": {
+                        "preload-mode": "preload-on-make-contents"
+                    },
+                    "enable_features": [
+                        "PreloadTopChromeWebUI"
+                    ]
+                },
+                {
+                    "name": "preload-on-warmup",
+                    "params": {
+                        "preload-mode": "preload-on-warmup"
+                    },
                     "enable_features": [
                         "PreloadTopChromeWebUI"
                     ]
