@@ -23,7 +23,7 @@ type PrefObject = chrome.settingsPrivate.PrefObject;
 
 export interface PrefControlMixinInternalInterface {
   disabled: boolean;
-  isPrefEnforced: boolean;
+  readonly isPrefEnforced: boolean;
   pref?: PrefObject;
   validPrefTypes: chrome.settingsPrivate.PrefType[];
   dispatchPrefChange(value: any): void;

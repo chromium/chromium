@@ -63,14 +63,6 @@ suite('PrefControlMixinInternal', () => {
         assertEquals(isPrefEnforced, testElement.isPrefEnforced);
       });
     });
-
-    test('is readonly', () => {
-      // Attempt to set property.
-      testElement.isPrefEnforced = true;
-
-      // Property does not change.
-      assertFalse(testElement.isPrefEnforced);
-    });
   });
 
   suite('disabled property', () => {
