@@ -8,21 +8,17 @@ import android.os.Bundle;
 
 import androidx.preference.Preference;
 
-import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Fragment containing Safety hub. */
-public class SafetyHubFragment extends ChromeBaseSettingsFragment
-        implements SafetyHubModuleDelegate {
+public class SafetyHubFragment extends ChromeBaseSettingsFragment {
     private static final String PREF_PASSWORDS = "passwords_account";
+    private SafetyHubModuleDelegate mDelegate;
 
     @Override
     public void onCreatePreferences(Bundle bundle, String s) {
@@ -39,10 +35,13 @@ public class SafetyHubFragment extends ChromeBaseSettingsFragment
                         .with(SafetyHubModuleProperties.ICON, R.drawable.ic_vpn_key_grey)
                         .with(
                                 SafetyHubModuleProperties.IS_VISIBLE,
-                                shouldShowPasswordCheckModule(getProfile()))
+                                mDelegate.shouldShowPasswordCheckModule())
                         .with(
                                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT,
                                 compromisedPasswordsCount)
+                        .with(
+                                SafetyHubModuleProperties.ON_CLICK_LISTENER,
+                                () -> mDelegate.showPasswordCheckUI(getContext()))
                         .build();
 
         PropertyModelChangeProcessor.create(
@@ -51,11 +50,7 @@ public class SafetyHubFragment extends ChromeBaseSettingsFragment
                 SafetyHubModuleViewBinder::bindPasswordCheckProperties);
     }
 
-    @Override
-    public boolean shouldShowPasswordCheckModule(Profile profile) {
-        SyncService syncService = SyncServiceFactory.getForProfile(profile);
-        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(profile);
-        return PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
-                && passwordManagerHelper.canUseUpm();
+    public void setDelegate(SafetyHubModuleDelegate safetyHubModuleDelegate) {
+        mDelegate = safetyHubModuleDelegate;
     }
 }

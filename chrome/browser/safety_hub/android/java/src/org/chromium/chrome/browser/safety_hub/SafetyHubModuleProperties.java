@@ -15,10 +15,14 @@ public class SafetyHubModuleProperties {
 
     public static final PropertyModel.WritableBooleanPropertyKey IS_VISIBLE =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableObjectPropertyKey<Runnable> ON_CLICK_LISTENER =
+            new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableIntPropertyKey COMPROMISED_PASSWORDS_COUNT =
             new PropertyModel.WritableIntPropertyKey();
 
-    public static final PropertyKey[] COMMON_SAFETY_HUB_MODULE_KEYS = {ICON, IS_VISIBLE};
+    public static final PropertyKey[] COMMON_SAFETY_HUB_MODULE_KEYS = {
+        ICON, IS_VISIBLE, ON_CLICK_LISTENER
+    };
 
     public static final PropertyKey[] PASSWORD_CHECK_SAFETY_HUB_MODULE_KEYS =
             PropertyModel.concatKeys(

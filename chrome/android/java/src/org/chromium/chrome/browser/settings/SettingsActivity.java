@@ -75,6 +75,8 @@ import org.chromium.chrome.browser.safety_check.SafetyCheckBridge;
 import org.chromium.chrome.browser.safety_check.SafetyCheckCoordinator;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.safety_check.SafetyCheckUpdatesDelegateImpl;
+import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
+import org.chromium.chrome.browser.safety_hub.SafetyHubModuleDelegateImpl;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
@@ -664,6 +666,12 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (fragment instanceof AutofillIbanEditor) {
             ((AutofillIbanEditor) fragment)
                     .setModalDialogManagerSupplier(getModalDialogManagerSupplier());
+        }
+        if (fragment instanceof SafetyHubFragment) {
+            ((SafetyHubFragment) fragment)
+                    .setDelegate(
+                            new SafetyHubModuleDelegateImpl(
+                                    mProfile, getModalDialogManagerSupplier()));
         }
     }
 

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.safety_hub;
 
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -17,6 +18,17 @@ public class SafetyHubModuleViewBinder {
             PropertyModel model, Preference preference, PropertyKey propertyKey) {
         if (SafetyHubModuleProperties.IS_VISIBLE == propertyKey) {
             preference.setVisible(model.get(SafetyHubModuleProperties.IS_VISIBLE));
+        } else if (SafetyHubModuleProperties.ON_CLICK_LISTENER == propertyKey) {
+            Runnable onClickListener = model.get(SafetyHubModuleProperties.ON_CLICK_LISTENER);
+            assert onClickListener != null;
+            preference.setOnPreferenceClickListener(
+                    new Preference.OnPreferenceClickListener() {
+                        @Override
+                        public boolean onPreferenceClick(@NonNull Preference preference) {
+                            onClickListener.run();
+                            return true;
+                        }
+                    });
         }
     }
 

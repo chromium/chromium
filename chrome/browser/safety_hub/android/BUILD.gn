@@ -9,6 +9,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchService.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegate.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegateImpl.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleProperties.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleViewBinder.java",
   ]
@@ -43,6 +44,7 @@ robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.safety_hub"
   sources = [
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchServiceTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegateTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleViewBinderTest.java",
   ]
   deps = [
