@@ -39,7 +39,7 @@ const CGFloat kContainersMaxWidth = 400;
 const CGFloat kColoredButtonSize = 24;
 const CGFloat kColoredButtonContentInset = 8;
 const CGFloat kColorSelectionImageSize = 13;
-const CGFloat kColorListViewHeight = 44;
+const CGFloat kColoredButtonWidthAndHeight = 40;
 const CGFloat kColorListBottomMargin = 16;
 const CGFloat kColoredDotSize = 21;
 
@@ -433,6 +433,13 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
                     action:@selector(coloredButtonTapped:)
           forControlEvents:UIControlEventTouchUpInside];
 
+    [NSLayoutConstraint activateConstraints:@[
+      [colorButton.widthAnchor
+          constraintEqualToConstant:kColoredButtonWidthAndHeight],
+      [colorButton.heightAnchor
+          constraintEqualToAnchor:colorButton.widthAnchor],
+    ]];
+
     [buttons addObject:colorButton];
   }
 
@@ -442,23 +449,37 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
 // Returns the configured view, which contains all the available colors.
 - (UIView*)listOfColorView {
   UIStackView* colorsView = [[UIStackView alloc] init];
-  colorsView.distribution = UIStackViewDistributionEqualSpacing;
   colorsView.alignment = UIStackViewAlignmentCenter;
   colorsView.translatesAutoresizingMaskIntoConstraints = NO;
 
   UIScrollView* scrollView = [[UIScrollView alloc] init];
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
   scrollView.canCancelContentTouches = YES;
+  [scrollView setShowsHorizontalScrollIndicator:NO];
+  [scrollView setShowsVerticalScrollIndicator:NO];
   [scrollView addSubview:colorsView];
 
   for (UIButton* button in _colorSelectionButtons) {
     [colorsView addArrangedSubview:button];
   }
 
-  AddSameConstraints(colorsView, scrollView);
+  CGFloat viewWidth = self.view.safeAreaLayoutGuide.layoutFrame.size.width;
+  CGFloat selectionWidth =
+      [_colorSelectionButtons count] * kColoredButtonWidthAndHeight;
+
+  if (selectionWidth > viewWidth) {
+    [scrollView setContentInset:UIEdgeInsetsMake(0, kHorizontalMargin, 0,
+                                                 kHorizontalMargin)];
+  }
+
+  NSLayoutConstraint* scrollViewWidthConstraint = [scrollView.widthAnchor
+      constraintGreaterThanOrEqualToAnchor:colorsView.widthAnchor];
+  scrollViewWidthConstraint.priority = UILayoutPriorityDefaultLow;
+
+  AddSameConstraints(scrollView.contentLayoutGuide, colorsView);
   [NSLayoutConstraint activateConstraints:@[
-    [colorsView.heightAnchor constraintEqualToConstant:kColorListViewHeight],
-    [scrollView.heightAnchor constraintEqualToConstant:kColorListViewHeight],
+    [scrollView.heightAnchor constraintEqualToAnchor:colorsView.heightAnchor],
+    scrollViewWidthConstraint,
   ]];
 
   return scrollView;
@@ -501,20 +522,19 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
   UIView* dotAndFieldContainer = [self configuredDotAndFieldContainer];
   UILayoutGuide* snapshotsContainerLayoutGuide = [[UILayoutGuide alloc] init];
   _snapshotsContainer = [self configuredSnapshotsContainer];
-  UIView* colorsView = [self listOfColorView];
+  UIView* colorsScrollView = [self listOfColorView];
   UIButton* creationButton = [self configuredCreateGroupButton:NO];
   UIButton* cancelButton = [self configuredCancelButton:NO];
 
   _bottomStackView = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ colorsView, creationButton, cancelButton ]];
+      initWithArrangedSubviews:@[ creationButton, cancelButton ]];
   _bottomStackView.translatesAutoresizingMaskIntoConstraints = NO;
   _bottomStackView.axis = UILayoutConstraintAxisVertical;
-  [_bottomStackView setCustomSpacing:kColorListBottomMargin
-                           afterView:colorsView];
 
   [self.view addSubview:dotAndFieldContainer];
   [self.view addSubview:_snapshotsContainer];
   [self.view addLayoutGuide:snapshotsContainerLayoutGuide];
+  [self.view addSubview:colorsScrollView];
   [self.view addSubview:_bottomStackView];
 
   [NSLayoutConstraint activateConstraints:@[
@@ -534,6 +554,9 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
     [_bottomStackView.bottomAnchor
         constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor
                        constant:-kButtonsMargin],
+    [_bottomStackView.topAnchor
+        constraintEqualToAnchor:colorsScrollView.bottomAnchor
+                       constant:kColorListBottomMargin],
     [_bottomStackView.leadingAnchor
         constraintGreaterThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
                                                  .leadingAnchor
@@ -546,7 +569,7 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
         constraintEqualToAnchor:dotAndFieldContainer.bottomAnchor
                        constant:kSnapshotViewVerticalMargin],
     [snapshotsContainerLayoutGuide.bottomAnchor
-        constraintEqualToAnchor:colorsView.topAnchor
+        constraintEqualToAnchor:colorsScrollView.topAnchor
                        constant:-kSnapshotViewVerticalMargin],
     [snapshotsContainerLayoutGuide.leadingAnchor
         constraintGreaterThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
@@ -556,6 +579,15 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
         constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
                                               .trailingAnchor
                                  constant:-kHorizontalMargin],
+
+    [colorsScrollView.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
+                                                 .leadingAnchor],
+    [colorsScrollView.trailingAnchor
+        constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
+                                              .trailingAnchor],
+    [colorsScrollView.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
 
     [_snapshotsContainer.centerXAnchor
         constraintEqualToAnchor:snapshotsContainerLayoutGuide.centerXAnchor],
@@ -586,24 +618,19 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
 // Configures the view and subviews when the screen is small.
 - (void)compactConfiguration {
   UIView* dotAndFieldContainer = [self configuredDotAndFieldContainer];
-  UIView* colorsView = [self listOfColorView];
+  UIView* colorsScrollView = [self listOfColorView];
   UIButton* creationButton = [self configuredCreateGroupButton:YES];
   UIButton* cancelButton = [self configuredCancelButton:YES];
 
-  UIStackView* containedStackView = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ dotAndFieldContainer, colorsView ]];
-  containedStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  containedStackView.axis = UILayoutConstraintAxisVertical;
-  containedStackView.distribution = UIStackViewDistributionEqualSpacing;
-
   _bottomStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-    cancelButton, containedStackView, creationButton
+    cancelButton, dotAndFieldContainer, creationButton
   ]];
   _bottomStackView.translatesAutoresizingMaskIntoConstraints = NO;
   _bottomStackView.distribution = UIStackViewDistributionEqualSpacing;
   _bottomStackView.alignment = UIStackViewAlignmentTop;
 
   [self.view addSubview:_bottomStackView];
+  [self.view addSubview:colorsScrollView];
 
   [NSLayoutConstraint activateConstraints:@[
     [_bottomStackView.leadingAnchor
@@ -618,13 +645,19 @@ const CGFloat kButtonBackgroundCornerRadius = 15;
     [_bottomStackView.bottomAnchor
         constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor
                        constant:-kButtonsMargin],
-    [containedStackView.bottomAnchor
-        constraintEqualToAnchor:_bottomStackView.bottomAnchor],
 
     [dotAndFieldContainer.widthAnchor
         constraintLessThanOrEqualToConstant:kContainersMaxWidth],
-    [containedStackView.widthAnchor
-        constraintEqualToAnchor:dotAndFieldContainer.widthAnchor],
+    [colorsScrollView.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
+                                                 .leadingAnchor],
+    [colorsScrollView.trailingAnchor
+        constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
+                                              .trailingAnchor],
+    [colorsScrollView.bottomAnchor
+        constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor],
+    [colorsScrollView.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
   ]];
 }
 
