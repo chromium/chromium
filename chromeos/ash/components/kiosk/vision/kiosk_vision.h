@@ -35,7 +35,8 @@ class COMPONENT_EXPORT(KIOSK_VISION) KioskVision {
   PrefObserver pref_observer_;
 };
 
-inline constexpr std::string_view kKioskVisionDlcId = "kiosk-vision";
+inline constexpr std::string_view kKioskVisionDlcId =
+    "cros-camera-kiosk-vision-dlc";
 
 // Registers prefs used in Kiosk Vision.
 COMPONENT_EXPORT(KIOSK_VISION)
