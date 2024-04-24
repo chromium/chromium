@@ -4,6 +4,19 @@
 
 import("//device/vr/buildflags/buildflags.gni")
 
+declare_args() {
+  # Used to determine whether or not the OpenXR loader is allowed to consider
+  # paths specified by a ContentProvider on Android as valid paths to load an
+  # OpenXR runtime from. It is more secure, albeit potentially not spec
+  # compliant, to set this to false, but more spec compliant to set it to true.
+  # When set to true, ContentProvider paths will be considered as valid paths to
+  # load an OpenXR runtime from.
+  # When set to false, ContentProvider paths will be ignored.
+  # For more details see the "Android Active Runtime Location" section from:
+  # https://registry.khronos.org/OpenXR/specs/1.0/loader.html#active-runtime-information
+  allow_openxr_content_providers = false
+}
+
 if (enable_openxr) {
   source_set("openxr_headers") {
     # This visibility is done to help enforce the dependency that
@@ -107,7 +120,6 @@ if (enable_openxr) {
       "src/src/loader/loader_logger_recorders.cpp",
       "src/src/loader/loader_logger_recorders.hpp",
       "src/src/loader/loader_platform.hpp",
-      "src/src/loader/manifest_file.cpp",
       "src/src/loader/manifest_file.hpp",
       "src/src/loader/runtime_interface.cpp",
       "src/src/loader/runtime_interface.hpp",
@@ -115,12 +127,14 @@ if (enable_openxr) {
       "src/src/loader/xr_generated_loader.hpp",
       "src/src/xr_generated_dispatch_table_core.c",
       "src/src/xr_generated_dispatch_table_core.h",
+      "src_overrides/src/loader/manifest_file.cpp",
     ]
 
     include_dirs = [
       "src/include",
       "src/src/common",
       "src/src",
+      "src/src/loader",
     ]
 
     deps = [ "//third_party/jsoncpp" ]
@@ -131,6 +145,10 @@ if (enable_openxr) {
       "OPENXR_NON_CMAKE_BUILD",
       "DISABLE_STD_FILESYSTEM",
     ]
+
+    if (!allow_openxr_content_providers) {
+      defines += [ "XRLOADER_DISABLE_CONTENT_PROVIDERS" ]
+    }
 
     cflags_cc = [
       "-Wno-format",
@@ -143,8 +161,8 @@ if (enable_openxr) {
     if (is_android) {
       sources += [
         "dev/xr_android.h",
-        "src/src/loader/android_utilities.cpp",
         "src/src/loader/android_utilities.h",
+        "src_overrides/src/loader/android_utilities.cpp",
       ]
 
       deps += [ ":android-jni-wrappers" ]

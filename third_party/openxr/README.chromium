@@ -22,6 +22,9 @@ Added dev/xr_android.h for prototyping xr_android extensions that are currently
 under active development and not in any openxr release at present. This file is
 expected to be superceded by any official definitions and may require additional
 work before a roll containing those definitions can be conducted.
+Forked android_utilites.cpp and manifest_file.cpp to allow for customizing to
+ignore loading in Android ContentProvider supplied paths while investigating and
+waiting for upstreaming.
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
