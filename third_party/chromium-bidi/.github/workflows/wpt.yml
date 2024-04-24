@@ -86,10 +86,6 @@ jobs:
     needs: wpt
     if: ${{ !cancelled() && (github.event.inputs.auto-commit == 'true' || contains(github.event.pull_request.labels.*.name, 'update-expectations')) }}
     runs-on: ubuntu-latest
-    # Give GITHUB_TOKEN write permission to commit and push.
-    # Needed by stefanzweifel/git-auto-commit-action.
-    permissions:
-      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4.1.3
@@ -111,7 +107,7 @@ jobs:
           name: mapper-headless-wpt-metadata
           path: wpt-metadata/mapper/headless
       - name: Auto-commit WPT expectations
-        if: (success() || failure()) && github.event.inputs.auto-commit == 'true'
+        if: success() || failure()
         uses: stefanzweifel/git-auto-commit-action@8621497c8c39c72f3e2a999a26b4ca1b5058a842 # v5.0.1
         with:
           commit_message: Update WPT expectations
@@ -121,6 +117,7 @@ jobs:
   wpt:
     name: ${{ matrix.kind }}-${{ matrix.head }}
     runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'update-expectations') || github.event_name == 'workflow_dispatch' }}
     strategy:
       fail-fast: false
       matrix:
