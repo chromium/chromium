@@ -873,17 +873,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="8" label="SchemeBlob"/>
 </enum>
 
-<enum name="DevToolsElementsSidebarTab">
-  <int value="0" label="Other sidebar pane"/>
-  <int value="1" label="Elements - Styles"/>
-  <int value="2" label="Elements - Computed"/>
-  <int value="3" label="Elements - Layout"/>
-  <int value="4" label="Elements - Event Listeners"/>
-  <int value="5" label="Elements - DOM Breakpoints"/>
-  <int value="6" label="Elements - Properties"/>
-  <int value="7" label="Elements - Accessibility"/>
-</enum>
-
 <enum name="DevtoolsExperiments">
   <int value="0" label="applyCustomStylesheet"/>
   <int value="1" label="captureNodeCreationStacks"/>

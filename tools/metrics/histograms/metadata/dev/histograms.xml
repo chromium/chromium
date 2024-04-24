@@ -178,15 +178,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.Elements.SidebarTabShown"
-    enum="DevToolsElementsSidebarTab" expires_after="2024-05-05">
-  <owner>bmeurer@google.com</owner>
-  <owner>changhaohan@chromium.org</owner>
-  <summary>
-    Specified DevTools sidebar tab was shown in the Elements panel.
-  </summary>
-</histogram>
-
 <histogram name="DevTools.ExperimentDisabled" enum="DevtoolsExperiments"
     expires_after="2024-09-01">
   <owner>yangguo@chromium.org</owner>
