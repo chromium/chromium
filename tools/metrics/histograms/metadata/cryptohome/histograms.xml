@@ -789,9 +789,9 @@ fully migrated pinweaver_manager to libhwsec (target: M120)-->
 </histogram>
 
 <histogram name="Cryptohome.{AuthBlockType}.CredentialRevocationResult"
-    enum="CryptohomeLECredError" expires_after="2024-07-07">
-  <owner>antrim@chromium.org</owner>
-  <owner>cros-lurs@google.com</owner>
+    enum="CryptohomeLECredError" expires_after="2025-04-24">
+  <owner>hardikgoyal@chromium.org</owner>
+  <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     Records the result of credentials revocation Revoke() method, which removes
     the credential label from PinWeaver. Reported when an auth factor which uses
@@ -802,8 +802,8 @@ fully migrated pinweaver_manager to libhwsec (target: M120)-->
 
 <histogram name="Cryptohome.{AuthBlockType}.PrepareForRemovalResult"
     enum="CryptohomeCryptoError" expires_after="2024-09-15">
-  <owner>antrim@chromium.org</owner>
-  <owner>cros-lurs@google.com</owner>
+  <owner>hardikgoyal@chromium.org</owner>
+  <owner>cros-security-cryptohome+uma@google.com</owner>
   <summary>
     Records the result of PrepareForRemoval() call of an auth factor. Reported
     when an auth factor is deleted.
