@@ -95,6 +95,8 @@ class HoverButton : public views::LabelButton {
   // Set the text context and style of the footer.
   void SetFooterTextStyle(int text_context, views::style::TextStyle text_style);
 
+  void SetIconHorizontalMargins(int left, int right);
+
   PressedCallback& callback(base::PassKey<HoverButtonController>) {
     return callback_;
   }
@@ -135,6 +137,7 @@ class HoverButton : public views::LabelButton {
   PressedCallback callback_;
 
   raw_ptr<views::StyledLabel> title_ = nullptr;
+  raw_ptr<views::View> icon_wrapper_ = nullptr;
   raw_ptr<views::View> label_wrapper_ = nullptr;
   raw_ptr<views::Label> subtitle_ = nullptr;
   raw_ptr<views::Label> footer_ = nullptr;

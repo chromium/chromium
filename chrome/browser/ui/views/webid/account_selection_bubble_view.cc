@@ -820,10 +820,8 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateIdpLoginRow(
   auto image_view = std::make_unique<BrandIconImageView>(
       base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
                      weak_ptr_factory_.GetWeakPtr()),
-      kDesiredIdpIconSize, /*should_circle_crop=*/true);
-  image_view->SetImageSize(gfx::Size(kDesiredIdpIconSize, kDesiredIdpIconSize));
-  image_view->SetProperty(views::kMarginsKey,
-                          gfx::Insets().set_right(kLeftRightPadding));
+      kMultiIdpIconSize, /*should_circle_crop=*/true);
+  image_view->SetImageSize(gfx::Size(kMultiIdpIconSize, kMultiIdpIconSize));
   ConfigureBrandImageView(image_view.get(), idp_metadata.brand_icon_url);
 
   auto button = std::make_unique<HoverButton>(
@@ -835,6 +833,8 @@ std::unique_ptr<views::View> AccountSelectionBubbleView::CreateIdpLoginRow(
                                  idp_for_display));
   button->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
       /*vertical=*/kVerticalSpacing, /*horizontal=*/kLeftRightPadding)));
+  button->SetIconHorizontalMargins(kMultiIdpIconLeftMargin,
+                                   kMultiIdpIconRightMargin);
   return button;
 }
 
@@ -901,8 +901,7 @@ AccountSelectionBubbleView::CreateChooseAnAccountButton(
   // still taking the same amount of space.
   auto icon_view =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          kPersonFilledPaddedSmallIcon, ui::kColorMenuIcon,
-          kDesiredChooseAnAccountIconSize));
+          kPersonFilledPaddedSmallIcon, ui::kColorMenuIcon, kMultiIdpIconSize));
   auto button = std::make_unique<HoverButton>(
       base::BindOnce(&AccountSelectionViewBase::Observer::OnChooseAnAccount,
                      base::Unretained(observer_)),
@@ -916,6 +915,10 @@ AccountSelectionBubbleView::CreateChooseAnAccountButton(
                                          ui::kColorMenuIcon, kArrowIconSize)));
   button->SetSubtitleTextStyle(views::style::CONTEXT_LABEL,
                                views::style::STYLE_SECONDARY);
+  button->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
+      /*vertical=*/kVerticalSpacing, /*horizontal=*/kLeftRightPadding)));
+  button->SetIconHorizontalMargins(kMultiIdpIconLeftMargin,
+                                   kMultiIdpIconRightMargin);
   return button;
 }
 

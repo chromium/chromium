@@ -23,6 +23,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget_utils.h"
 
 namespace {
@@ -93,6 +94,10 @@ class HoverButtonTest : public ChromeViewsTestBase {
 
   views::Label* GetButtonFooter(const HoverButton& button) {
     return button.footer();
+  }
+
+  views::View* GetButtonIconWrapper(const HoverButton& button) {
+    return button.icon_wrapper_;
   }
 
  private:
@@ -260,6 +265,18 @@ TEST_F(HoverButtonTest, TapGestureThatDeletesTheButton) {
   EXPECT_TRUE(clicked);
 
   widget()->Close();
+}
+
+TEST_F(HoverButtonTest, SetIconHorizontalMargins) {
+  std::unique_ptr<views::View> primary_icon = CreateIcon();
+
+  HoverButton button(views::Button::PressedCallback(), std::move(primary_icon),
+                     u"Title");
+  button.SetIconHorizontalMargins(/*left=*/3, /*right=*/4);
+  gfx::Insets* margins =
+      GetButtonIconWrapper(button)->GetProperty(views::kMarginsKey);
+  EXPECT_EQ(margins->left(), 3);
+  EXPECT_EQ(margins->right(), 4);
 }
 
 #endif  // !BUILDFLAG(IS_MAC) || defined(USE_AURA)

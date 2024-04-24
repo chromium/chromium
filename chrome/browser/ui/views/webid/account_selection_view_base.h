@@ -44,8 +44,13 @@ inline constexpr int kLargeAvatarBadgeSize = 16;
 inline constexpr int kDesiredIdpIconSize = 20;
 // The desired size of the icon for the "Use another account" button.
 inline constexpr int kDesiredUseOtherAccountIconSize = 20;
-// The desired size of the icon for the "Choose an account" button.
-inline constexpr int kDesiredChooseAnAccountIconSize = 34;
+// The desired size of the icon for the "Choose an account" button or the "sign
+// in to IDP" button in the multi IDP UI.
+inline constexpr int kMultiIdpIconSize = 20;
+// The left margin of a multi IDP icon button.
+inline constexpr int kMultiIdpIconLeftMargin = 8;
+// The right margin of a multi IDP icon button.
+inline constexpr int kMultiIdpIconRightMargin = 10;
 // The size of the padding used at the top and bottom of the bubble.
 inline constexpr int kTopBottomPadding = 4;
 // The size of the horizontal padding between the bubble content and the edge of

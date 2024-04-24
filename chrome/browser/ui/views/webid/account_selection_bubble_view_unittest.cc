@@ -362,7 +362,10 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     ASSERT_TRUE(idp_button);
     EXPECT_EQ(GetHoverButtonTitle(idp_button), u"Sign in to " + expected_idp);
     EXPECT_EQ(GetHoverButtonSubtitle(idp_button), nullptr);
-    EXPECT_TRUE(GetHoverButtonIconView(idp_button));
+    ASSERT_TRUE(GetHoverButtonIconView(idp_button));
+    // Using GetPreferredSize() since BrandIconImageView uses a fetched image.
+    EXPECT_EQ(GetHoverButtonIconView(idp_button)->GetPreferredSize(),
+              gfx::Size(kMultiIdpIconSize, kMultiIdpIconSize));
   }
 
   void CheckUseOtherAccount(
@@ -383,11 +386,15 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     EXPECT_TRUE(IsViewClass<views::Separator>(accounts[accounts_index++]));
     views::View* button = accounts[accounts_index++];
     EXPECT_TRUE(IsViewClass<HoverButton>(button));
-    HoverButton* idp_button = static_cast<HoverButton*>(button);
-    ASSERT_TRUE(idp_button);
-    EXPECT_EQ(GetHoverButtonTitle(idp_button), u"Choose an account");
-    ASSERT_TRUE(GetHoverButtonSubtitle(idp_button));
-    EXPECT_EQ(GetHoverButtonSubtitle(idp_button)->GetText(), expected_subtitle);
+    HoverButton* choose_account_button = static_cast<HoverButton*>(button);
+    ASSERT_TRUE(choose_account_button);
+    EXPECT_EQ(GetHoverButtonTitle(choose_account_button), u"Choose an account");
+    ASSERT_TRUE(GetHoverButtonSubtitle(choose_account_button));
+    EXPECT_EQ(GetHoverButtonSubtitle(choose_account_button)->GetText(),
+              expected_subtitle);
+    ASSERT_TRUE(GetHoverButtonIconView(choose_account_button));
+    EXPECT_EQ(GetHoverButtonIconView(choose_account_button)->size(),
+              gfx::Size(kMultiIdpIconSize, kMultiIdpIconSize));
   }
 
   void SetUp() override {
