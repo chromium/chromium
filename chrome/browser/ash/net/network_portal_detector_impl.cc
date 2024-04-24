@@ -187,36 +187,34 @@ void NetworkPortalDetectorImpl::PortalStateChanged(
                  << " portal_state=" << portal_state
                  << " has_proxy=" << has_proxy;
 
+  bool schedule_attempt = false;
   switch (portal_state) {
     case NetworkState::PortalState::kUnknown:
-      // Not expected. Shill detection failed or unexpected results, use Chrome
-      // portal detection.
-      NET_LOG(ERROR) << "Unknown PortalState, scheduling Chrome detection.";
-      ScheduleAttempt();
-      return;
+      // Not expected. Shill detection failed.
+      NET_LOG(ERROR) << "Unknown PortalState";
+      break;
     case NetworkState::PortalState::kOnline:
       // If a proxy is configured, use captive_portal_detector_ to detect a
-      // proxy auth required (407) response.
+      // portal.
       if (has_proxy) {
-        ScheduleAttempt();
+        schedule_attempt = true;
       } else {
         default_portal_status_ = CAPTIVE_PORTAL_STATUS_ONLINE;
       }
-      return;
+      break;
     case NetworkState::PortalState::kPortalSuspected:
-      [[fallthrough]];
     case NetworkState::PortalState::kPortal:
       default_portal_status_ = CAPTIVE_PORTAL_STATUS_PORTAL;
-      return;
+      break;
     case NetworkState::PortalState::kNoInternet:
-      // If a proxy is configured it may be interfering with Shill portal
-      // detection
-      if (has_proxy) {
-        ScheduleAttempt();
-      } else {
-        default_portal_status_ = CAPTIVE_PORTAL_STATUS_OFFLINE;
-      }
-      return;
+      default_portal_status_ = CAPTIVE_PORTAL_STATUS_OFFLINE;
+      break;
+  }
+
+  if (schedule_attempt) {
+    ScheduleAttempt();
+  } else if (!is_idle()) {
+    StopDetection();
   }
 }
 
