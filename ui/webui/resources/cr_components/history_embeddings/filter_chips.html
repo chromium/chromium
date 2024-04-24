@@ -1,4 +1,4 @@
-<style>
+<style include="md-select">
 :host {
   display: flex;
   align-items: center;
@@ -24,13 +24,16 @@ hr {
 }
 </style>
 
-<cr-chip id="byGroupChip" selected$="[[showResultsByGroup]]"
-    on-click="onByGroupClick_">
-  <iron-icon id="byGroupChipIcon"
-      icon="[[getByGroupIcon_(showResultsByGroup)]]">
-  </iron-icon>
-  $i18n{historyClustersTabLabel}
-</cr-chip>
+<select id="showByGroupSelectMenu" class="md-select"
+    value="[[showResultsByGroup]]"
+    on-change="onShowByGroupSelectMenuChanged_">
+  <option value="false">
+    $i18n{historyEmbeddingsShowByDate}
+  </option>
+  <option value="true">
+    $i18n{historyEmbeddingsShowByGroup}
+  </option>
+</select>
 
 <hr></hr>
 

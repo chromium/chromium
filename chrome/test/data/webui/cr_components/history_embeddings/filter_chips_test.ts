@@ -28,29 +28,29 @@ suite('cr-history-embeddings-filter-chips', () => {
     return flushTasks();
   });
 
-  test('UpdatesByGroupChipByBinding', () => {
-    assertFalse(element.$.byGroupChip.hasAttribute('selected'));
-    assertEquals('history-embeddings:by-group', element.$.byGroupChipIcon.icon);
+  test('UpdatesShowByMenuByBinding', () => {
+    assertEquals('false', element.$.showByGroupSelectMenu.value);
     element.showResultsByGroup = true;
-    assertTrue(element.$.byGroupChip.hasAttribute('selected'));
-    assertEquals('cr:check', element.$.byGroupChipIcon.icon);
+    assertEquals('true', element.$.showByGroupSelectMenu.value);
   });
 
-  test('UpdatesByGroupChipByClicking', async () => {
+  test('UpdatesShowByGroupSelectMenu', async () => {
     let notifyEventPromise =
         eventToPromise('show-results-by-group-changed', element);
-    element.$.byGroupChip.click();
+    element.$.showByGroupSelectMenu.value = 'true';
+    element.$.showByGroupSelectMenu.dispatchEvent(new Event('change'));
     let notifyEvent = await notifyEventPromise;
     assertTrue(element.showResultsByGroup);
-    assertTrue(element.$.byGroupChip.hasAttribute('selected'));
+    assertEquals('true', element.$.showByGroupSelectMenu.value);
     assertTrue(notifyEvent.detail.value);
 
     notifyEventPromise =
         eventToPromise('show-results-by-group-changed', element);
-    element.$.byGroupChip.click();
+    element.$.showByGroupSelectMenu.value = 'false';
+    element.$.showByGroupSelectMenu.dispatchEvent(new Event('change'));
     notifyEvent = await notifyEventPromise;
     assertFalse(element.showResultsByGroup);
-    assertFalse(element.$.byGroupChip.hasAttribute('selected'));
+    assertEquals('false', element.$.showByGroupSelectMenu.value);
     assertFalse(notifyEvent.detail.value);
   });
 

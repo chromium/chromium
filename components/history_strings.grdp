@@ -131,6 +131,12 @@
   <message name="IDS_HISTORY_EMBEDDINGS_PROMO_BODY" desc="On the history page, the body text of the promo for history embeddings." translateable="false">
     Enter a search query to search through history. Here is some more placeholder text about how to search History and what data is available. Here is some more text to make this placeholder longer. View more in <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Settings<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SHOW_BY_DATE" desc="On the history page, the label on the option to show history results grouped by date." translateable="false">
+    Show by date
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SHOW_BY_GROUP" desc="On the history page, the label on the option to show history results grouped by history clusters." translateable="false">
+    Show by group
+  </message>
   <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_1" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from yesterday" translateable="false">
     Yesterday
   </message>

@@ -4,12 +4,9 @@
 
 import '//resources/cr_elements/cr_chip/cr_chip.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/cr_elements/icons.html.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './icons.html.js';
+import '//resources/cr_elements/md_select.css.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -49,8 +46,7 @@ function generateSuggestions(): Suggestion[] {
 
 export interface HistoryEmbeddingsFilterChips {
   $: {
-    byGroupChip: HTMLElement,
-    byGroupChipIcon: IronIconElement,
+    showByGroupSelectMenu: HTMLSelectElement,
   };
 }
 export class HistoryEmbeddingsFilterChips extends PolymerElement {
@@ -97,8 +93,8 @@ export class HistoryEmbeddingsFilterChips extends PolymerElement {
     return this.selectedSuggestion === suggestion;
   }
 
-  private onByGroupClick_() {
-    this.showResultsByGroup = !this.showResultsByGroup;
+  private onShowByGroupSelectMenuChanged_() {
+    this.showResultsByGroup = this.$.showByGroupSelectMenu.value === 'true';
   }
 
   private onTimeRangeStartChanged_() {

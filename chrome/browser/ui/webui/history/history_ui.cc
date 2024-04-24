@@ -171,6 +171,8 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"historyEmbeddingsDisclaimer", IDS_HISTORY_EMBEDDINGS_DISCLAIMER},
       {"historyEmbeddingsPromoHeading", IDS_HISTORY_EMBEDDINGS_PROMO_HEADING},
       {"historyEmbeddingsPromoBody", IDS_HISTORY_EMBEDDINGS_PROMO_BODY},
+      {"historyEmbeddingsShowByDate", IDS_HISTORY_EMBEDDINGS_SHOW_BY_DATE},
+      {"historyEmbeddingsShowByGroup", IDS_HISTORY_EMBEDDINGS_SHOW_BY_GROUP},
       {"historyEmbeddingsSuggestion1", IDS_HISTORY_EMBEDDINGS_SUGGESTION_1},
       {"historyEmbeddingsSuggestion2", IDS_HISTORY_EMBEDDINGS_SUGGESTION_2},
       {"historyEmbeddingsSuggestion3", IDS_HISTORY_EMBEDDINGS_SUGGESTION_3},
