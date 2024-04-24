@@ -899,10 +899,6 @@
       status: "stable",
     },
     {
-      name: "CSSOverflowMediaFeatures",
-      status: "stable",
-    },
-    {
       name: "CSSPaintAPIArguments",
       status: "experimental",
     },

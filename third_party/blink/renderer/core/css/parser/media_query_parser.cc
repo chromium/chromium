@@ -76,6 +76,8 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
            feature == media_feature_names::kPrefersColorSchemeMediaFeature ||
            feature == media_feature_names::kPrefersContrastMediaFeature ||
            feature == media_feature_names::kPrefersReducedMotionMediaFeature ||
+           feature == media_feature_names::kOverflowInlineMediaFeature ||
+           feature == media_feature_names::kOverflowBlockMediaFeature ||
            (feature == media_feature_names::kUpdateMediaFeature &&
             RuntimeEnabledFeatures::CSSUpdateMediaFeatureEnabled()) ||
            (feature == media_feature_names::kPrefersReducedDataMediaFeature &&
@@ -99,10 +101,6 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
                 execution_context)) ||
            (feature == media_feature_names::kDevicePostureMediaFeature &&
             RuntimeEnabledFeatures::DevicePostureEnabled(execution_context)) ||
-           (feature == media_feature_names::kOverflowInlineMediaFeature &&
-            RuntimeEnabledFeatures::CSSOverflowMediaFeaturesEnabled()) ||
-           (feature == media_feature_names::kOverflowBlockMediaFeature &&
-            RuntimeEnabledFeatures::CSSOverflowMediaFeaturesEnabled()) ||
            (feature == media_feature_names::kInvertedColorsMediaFeature &&
             RuntimeEnabledFeatures::InvertedColorsEnabled()) ||
            CSSVariableParser::IsValidVariableName(feature) ||
