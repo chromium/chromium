@@ -42,11 +42,13 @@ int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
   mojo::core::Init();
 
+  // GoogleMock alters the command line, so ensure we initialize it
+  // before passing it into the test suite
+  testing::InitGoogleMock(&argc, argv);
   GlTestsSuite gl_tests_suite(argc, argv);
 #if BUILDFLAG(IS_MAC)
   base::apple::ScopedNSAutoreleasePool pool;
 #endif
-  testing::InitGoogleMock(&argc, argv);
   return base::LaunchUnitTestsSerially(
       argc, argv,
       base::BindOnce(&GlTestsSuite::Run, base::Unretained(&gl_tests_suite)));
