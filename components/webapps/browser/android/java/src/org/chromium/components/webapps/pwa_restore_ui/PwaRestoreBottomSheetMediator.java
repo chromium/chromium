@@ -28,13 +28,18 @@ class PwaRestoreBottomSheetMediator {
     // The underlying property model for the bottom sheeet.
     private final PropertyModel mModel;
 
+    // The callback for the parent to get notified on when Restore is clicked.
+    private final Runnable mParentRestoreClickHandler;
+
     PwaRestoreBottomSheetMediator(
             ArrayList recentApps,
             ArrayList olderApps,
             Activity activity,
             Runnable onReviewButtonClicked,
+            Runnable onRestoreButtonClicked,
             Runnable onBackButtonClicked) {
         mActivity = activity;
+        mParentRestoreClickHandler = onRestoreButtonClicked;
         mModel =
                 PwaRestoreProperties.createModel(
                         onReviewButtonClicked,
@@ -113,6 +118,9 @@ class PwaRestoreBottomSheetMediator {
         }
         PwaRestoreBottomSheetMediatorJni.get()
                 .onRestoreWebapps(selectedAppLists.toArray(new String[selectedAppLists.size()]));
+
+        // Notify the parent.
+        mParentRestoreClickHandler.run();
     }
 
     private void onSelectionToggled(View view) {

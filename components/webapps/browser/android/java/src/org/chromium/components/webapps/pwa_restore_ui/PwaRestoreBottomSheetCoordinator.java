@@ -47,6 +47,7 @@ public class PwaRestoreBottomSheetCoordinator {
                         olderApps,
                         activity,
                         this::onReviewButtonClicked,
+                        this::onRestoreButtonClicked,
                         this::onBackButtonClicked);
 
         PropertyModelChangeProcessor.create(
@@ -70,6 +71,10 @@ public class PwaRestoreBottomSheetCoordinator {
     protected void onBackButtonClicked() {
         mMediator.setPeekingState();
         mController.collapseSheet(/* animate= */ true);
+    }
+
+    protected void onRestoreButtonClicked() {
+        mController.hideContent(mContent, /* animate= */ true);
     }
 
     protected PropertyModel getModelForTesting() {

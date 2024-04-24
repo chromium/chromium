@@ -66,6 +66,13 @@ public class PwaRestoreBottomSheetIntegrationTest {
 
     private static @DisplayStage int sFlagValueMissing = DisplayStage.UNKNOWN_STATUS;
 
+    private static String[][] sDefaultApps = {
+        {"https://example.com/app1/", "App 1"},
+        {"https://example.com/app2/", "App 2"},
+        {"https://example.com/app3/", "App 3"}
+    };
+    private static int[] sDefaultLastUsed = {1, 2, 3};
+
     private static final String TAG = "PwaRestoreIntegrTest";
 
     private SharedPreferencesManager mPreferences;
@@ -205,15 +212,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     public void testNoOlderAppsShown() {
         // This test is about ensuring that when all apps are recent,  we don't
         // show the separate ("Older") app list.
-        Assert.assertTrue(
-                setTestAppsForRestoring(
-                        new String[][] {
-                            {"https://example.com/app1/", "App 1"},
-                            {"https://example.com/app2/", "App 2"},
-                            {"https://example.com/app3/", "App 3"}
-                        },
-                        // Days since the apps were last used (respectively).
-                        new int[] {1, 2, 3}));
+        Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
 
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
@@ -229,15 +228,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @SmallTest
     @Feature({"PwaRestore"})
     public void testClickForwarding() {
-        Assert.assertTrue(
-                setTestAppsForRestoring(
-                        new String[][] {
-                            {"https://example.com/app1/", "App 1"},
-                            {"https://example.com/app2/", "App 2"},
-                            {"https://example.com/app3/", "App 3"}
-                        },
-                        // Days since the apps were last used (respectively).
-                        new int[] {1, 2, 4}));
+        Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
 
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
@@ -256,15 +247,7 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @SmallTest
     @Feature({"PwaRestore"})
     public void testDeselectAll() throws Exception {
-        Assert.assertTrue(
-                setTestAppsForRestoring(
-                        new String[][] {
-                            {"https://example.com/app1/", "App 1"},
-                            {"https://example.com/app2/", "App 2"},
-                            {"https://example.com/app3/", "App 3"}
-                        },
-                        // Days since the apps were last used (respectively).
-                        new int[] {1, 2, 4}));
+        Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
 
         // Ensure the promo dialog shows.
         setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
@@ -288,6 +271,26 @@ public class PwaRestoreBottomSheetIntegrationTest {
         onView(withText("App 1")).check(matches(isDisplayed()));
         onView(withText("App 1")).perform(click());
         assertIsComboCheckedAtIndex(1, true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PwaRestore"})
+    public void testRestoreClosesUi() throws Exception {
+        Assert.assertTrue(setTestAppsForRestoring(sDefaultApps, sDefaultLastUsed));
+
+        // Ensure the promo dialog shows.
+        setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
+
+        mActivityTestRule.startMainActivityFromLauncher();
+        onViewWaiting(withText("Restore your web apps")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.review_button)).perform(click());
+        onViewWaiting(withText("Web apps used in the last month")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.restore_button)).perform(click());
+        onView(withText("Restore your web apps")).check(doesNotExist());
+        onView(withText("Web apps used in the last month")).check(doesNotExist());
     }
 
     @Test
