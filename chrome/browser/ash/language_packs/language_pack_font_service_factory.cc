@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ash/language_packs/language_pack_font_service_factory.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/language_packs/language_pack_font_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile_selections.h"
 
 class KeyedService;

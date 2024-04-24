@@ -29,9 +29,8 @@ LanguagePackFontService::LanguagePackFontService(PrefService* prefs)
     : LanguagePackFontService(prefs, base::BindRepeating(&gfx::AddAppFontDir)) {
 }
 
-LanguagePackFontService::LanguagePackFontService(
-    PrefService* prefs,
-    base::RepeatingCallback<bool(base::FilePath)> add_font_dir)
+LanguagePackFontService::LanguagePackFontService(PrefService* prefs,
+                                                 AddFontDir add_font_dir)
     : prefs_(CHECK_DEREF(prefs)), add_font_dir_(std::move(add_font_dir)) {
   pref_accept_language_.Init(
       language::prefs::kPreferredLanguages, &*prefs_,
