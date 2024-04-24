@@ -404,10 +404,13 @@ const ClipboardHistoryItem* ClipboardHistoryItemView::GetClipboardHistoryItem()
   return GetClipboardHistoryItemImpl(item_id_, clipboard_history_);
 }
 
-gfx::Size ClipboardHistoryItemView::CalculatePreferredSize() const {
+gfx::Size ClipboardHistoryItemView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int preferred_width =
       clipboard_history_util::GetPreferredItemViewWidth();
-  return gfx::Size(preferred_width, GetHeightForWidth(preferred_width));
+  return gfx::Size(
+      preferred_width,
+      GetLayoutManager()->GetPreferredHeightForWidth(this, preferred_width));
 }
 
 void ClipboardHistoryItemView::GetAccessibleNodeData(ui::AXNodeData* data) {

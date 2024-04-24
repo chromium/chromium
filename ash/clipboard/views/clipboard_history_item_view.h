@@ -131,7 +131,8 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
   class DisplayView;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void GetAccessibleNodeData(ui::AXNodeData* data) override;
 
   // Initializes the menu item after its construction.
