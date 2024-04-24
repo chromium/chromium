@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.19](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.18...chromium-bidi-v0.5.19) (2024-04-24)
+
+
+### Bug Fixes
+
+* turn on a11y caches ([#2153](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2153)) ([49f6914](https://github.com/GoogleChromeLabs/chromium-bidi/commit/49f6914e9ab414ef0fb448b21d6c158db4f7a9cb))
+
 ## [0.5.18](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.17...chromium-bidi-v0.5.18) (2024-04-23)
 
 
