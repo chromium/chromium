@@ -4282,9 +4282,18 @@ class InitiatorClosingOpenURLInterceptor
 // (and only) frame of that SiteInstance. Deleting it usually causes proxies in
 // the same SiteInstanceGroup to be deleted, meaning the OpenURL IPC may never
 // be received.
+//
+// Fails on linux-bfcache-rel. See crbug.com/336671248.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_FormSubmissionInRemoteFrameSenderDeletedBeforeReceivingOpenURL \
+  DISABLED_FormSubmissionInRemoteFrameSenderDeletedBeforeReceivingOpenURL
+#else
+#define MAYBE_FormSubmissionInRemoteFrameSenderDeletedBeforeReceivingOpenURL \
+  FormSubmissionInRemoteFrameSenderDeletedBeforeReceivingOpenURL
+#endif
 IN_PROC_BROWSER_TEST_F(
     NavigationBrowserTest,
-    FormSubmissionInRemoteFrameSenderDeletedBeforeReceivingOpenURL) {
+    MAYBE_FormSubmissionInRemoteFrameSenderDeletedBeforeReceivingOpenURL) {
   // We crash a renderer in the OpenURL interceptor.
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
   content::IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
