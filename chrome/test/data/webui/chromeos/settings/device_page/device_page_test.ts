@@ -920,12 +920,14 @@ suite('<settings-device-page>', () => {
       const setNoiseCancellationEnabled = mockController.createFunctionMock(
           crosAudioConfig, 'setNoiseCancellationEnabled');
 
-      const noiseCancellationSubsection = audioPage.shadowRoot!.querySelector(
-          '#audioInputNoiseCancellationSubsection');
+      const noiseCancellationSubsection =
+          audioPage.shadowRoot!.querySelector<HTMLDivElement>(
+              '#audioInputNoiseCancellationSubsection');
       const noiseCancellationToggle =
           audioPage.shadowRoot!.querySelector<CrToggleElement>(
               '#audioInputNoiseCancellationToggle');
 
+      assertTrue(!!noiseCancellationSubsection);
       assertTrue(isVisible(noiseCancellationSubsection));
       assertTrue(!!noiseCancellationToggle);
       assertFalse(noiseCancellationToggle.checked);
@@ -938,6 +940,18 @@ suite('<settings-device-page>', () => {
       assertEquals(
           /* expected_call_count */ 1,
           setNoiseCancellationEnabled['calls_'].length);
+
+      // Clicking on the row should toggle the noise cancellation toggle.
+      noiseCancellationSubsection.click();
+      assertEquals(
+          /* expected_call_count */ 2,
+          setNoiseCancellationEnabled['calls_'].length);
+      const argsPassedToSetNoiseCancellationEnabled =
+          setNoiseCancellationEnabled['calls_'][1];
+      assertTrue(!!argsPassedToSetNoiseCancellationEnabled);
+      // "setNoiseCancellationEnabled" should have been called with "false"
+      // after the row was clicked on.
+      assertFalse(argsPassedToSetNoiseCancellationEnabled[0]);
 
       crosAudioConfig.setAudioSystemProperties(
           noiseCancellationNotSupportedAudioSystemProperties);

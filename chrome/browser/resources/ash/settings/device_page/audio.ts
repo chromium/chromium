@@ -16,8 +16,10 @@ import '../settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrSliderElement} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -438,6 +440,13 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
     this.startupSoundEnabled_ = !this.startupSoundEnabled_;
     this.audioAndCaptionsBrowserProxy_.setStartupSoundEnabled(
         this.startupSoundEnabled_);
+  }
+
+  private onNoiseCancellationRowClicked_(): void {
+    const noiseCancellationToggle = strictQuery(
+        '#audioInputNoiseCancellationToggle', this.shadowRoot, CrToggleElement);
+    this.crosAudioConfig_.setNoiseCancellationEnabled(
+        !noiseCancellationToggle.checked);
   }
 }
 
