@@ -95,17 +95,18 @@ void PersonalDataManagerTestBase::MakePrimaryAccountAvailable(
   sync_service_.SetHasSyncConsent(!use_sync_transport_mode);
 }
 
-void PersonalDataManagerTestBase::ResetPersonalDataManager(
-    bool use_sync_transport_mode,
-    PersonalDataManager* personal_data) {
+std::unique_ptr<PersonalDataManager>
+PersonalDataManagerTestBase::InitPersonalDataManager(
+    bool use_sync_transport_mode) {
   MakePrimaryAccountAvailable(use_sync_transport_mode);
-  PersonalDataChangedWaiter waiter(*personal_data);
-  personal_data->Init(
+  auto personal_data = std::make_unique<PersonalDataManager>(
       profile_database_service_, account_database_service_, prefs_.get(),
       prefs_.get(), identity_test_env_.identity_manager(),
       /*history_service=*/nullptr, &sync_service_, strike_database_.get(),
-      /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr);
-  std::move(waiter).Wait();
+      /*image_fetcher=*/nullptr, /*shared_storage_handler=*/nullptr, "en-US",
+      "US");
+  PersonalDataChangedWaiter(*personal_data).Wait();
+  return personal_data;
 }
 
 }  // namespace autofill

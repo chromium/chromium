@@ -36,10 +36,10 @@ class PersonalDataManagerTestBase {
   // `use_sync_transport_mode`, sync-the-feature is either activated or not.
   void MakePrimaryAccountAvailable(bool use_sync_transport_mode);
 
-  // Calls `MakePrimaryAccountAvailable()` and initializes the `personal_data`,
-  // waiting for the `Refresh()` to complete.
-  void ResetPersonalDataManager(bool use_sync_transport_mode,
-                                PersonalDataManager* personal_data);
+  // Calls `MakePrimaryAccountAvailable()`, initializes a PersonalDataManager
+  // and waits for the `Refresh()` to complete.
+  std::unique_ptr<PersonalDataManager> InitPersonalDataManager(
+      bool use_sync_transport_mode);
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PrefService> prefs_;

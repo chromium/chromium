@@ -22,9 +22,8 @@ class PersonalDataManagerTest : public PersonalDataManagerTestBase,
 
   void SetUp() override {
     SetUpTest();
-    personal_data_ = std::make_unique<PersonalDataManager>("EN", "US");
-    PersonalDataManagerTestBase::ResetPersonalDataManager(
-        /*use_sync_transport_mode=*/false, personal_data_.get());
+    personal_data_ = InitPersonalDataManager(
+        /*use_sync_transport_mode=*/false);
   }
   void TearDown() override { TearDownTest(); }
 

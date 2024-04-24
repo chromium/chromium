@@ -73,9 +73,6 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ChromeBrowserState* chrome_browser_state =
       ChromeBrowserState::FromBrowserState(context);
-  std::unique_ptr<PersonalDataManager> service(
-      new PersonalDataManager(GetApplicationContext()->GetApplicationLocale(),
-                              GetCountryCodeFromVariations()));
   auto local_storage =
       ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
           chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS);
@@ -95,14 +92,14 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(
                 chrome_browser_state)
           : nullptr;
 
-  service->Init(
+  return std::make_unique<PersonalDataManager>(
       local_storage, account_storage, chrome_browser_state->GetPrefs(),
       GetApplicationContext()->GetLocalState(),
       IdentityManagerFactory::GetForBrowserState(chrome_browser_state),
       history_service, sync_service, strike_database, autofill_image_fetcher,
-      /*shared_storage_handler=*/nullptr);
-
-  return service;
+      /*shared_storage_handler=*/nullptr,
+      GetApplicationContext()->GetApplicationLocale(),
+      GetCountryCodeFromVariations());
 }
 
 }  // namespace autofill

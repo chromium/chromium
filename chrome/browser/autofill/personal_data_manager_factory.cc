@@ -80,10 +80,6 @@ PersonalDataManagerFactory::~PersonalDataManagerFactory() = default;
 KeyedService* PersonalDataManagerFactory::BuildPersonalDataManager(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  PersonalDataManager* service =
-      new PersonalDataManager(g_browser_process->GetApplicationLocale(),
-                              GetCountryCodeFromVariations());
-
   // WebDataServiceFactory redirects to the original profile.
   auto local_storage = WebDataServiceFactory::GetAutofillWebDataForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
@@ -111,12 +107,13 @@ KeyedService* PersonalDataManagerFactory::BuildPersonalDataManager(
                 *shared_storage_manager)
           : nullptr;
 
-  service->Init(local_storage, account_storage, profile->GetPrefs(),
-                g_browser_process->local_state(), identity_manager,
-                history_service, sync_service, strike_database, image_fetcher,
-                std::move(shared_storage_handler));
-
-  return service;
+  return new PersonalDataManager(
+      local_storage, account_storage, profile->GetPrefs(),
+      g_browser_process->local_state(), identity_manager, history_service,
+      sync_service, strike_database, image_fetcher,
+      std::move(shared_storage_handler),
+      g_browser_process->GetApplicationLocale(),
+      GetCountryCodeFromVariations());
 }
 
 KeyedService* PersonalDataManagerFactory::BuildServiceInstanceFor(

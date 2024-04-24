@@ -28,15 +28,6 @@
 namespace autofill {
 
 PersonalDataManager::PersonalDataManager(
-    const std::string& app_locale,
-    const std::string& variations_country_code)
-    : app_locale_(app_locale),
-      variations_country_code_(GeoIpCountryCode(variations_country_code)) {}
-
-PersonalDataManager::PersonalDataManager(const std::string& app_locale)
-    : PersonalDataManager(app_locale, std::string()) {}
-
-void PersonalDataManager::Init(
     scoped_refptr<AutofillWebDataService> profile_database,
     scoped_refptr<AutofillWebDataService> account_database,
     PrefService* pref_service,
@@ -46,34 +37,30 @@ void PersonalDataManager::Init(
     syncer::SyncService* sync_service,
     StrikeDatabaseBase* strike_database,
     AutofillImageFetcherBase* image_fetcher,
-    std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler) {
-  // The TestPDM already initializes the (address|payments)_data_manager in it's
-  // constructor with dedicated test instances. In general, `Init()` should not
-  // be called on a TestPDM, since the TestPDM's purpose is to fake the PDM's
-  // dependencies, rather than inject them through `Init()`.
-  DCHECK(!address_data_manager_) << "Don't call Init() on a TestPDM";
+    std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
+    std::string app_locale,
+    std::string variations_country_code)
+    : alternative_state_name_map_updater_(
+          std::make_unique<AlternativeStateNameMapUpdater>(local_state, this)),
+      pref_service_(pref_service),
+      app_locale_(std::move(app_locale)),
+      history_service_(history_service) {
   auto notify_observers = base::BindRepeating(
       &PersonalDataManager::NotifyPersonalDataObserver, base::Unretained(this));
   address_data_manager_ = std::make_unique<AddressDataManager>(
       profile_database, pref_service, sync_service, identity_manager,
-      strike_database, notify_observers, variations_country_code_, app_locale_);
+      strike_database, notify_observers,
+      GeoIpCountryCode(variations_country_code), app_locale_);
   payments_data_manager_ = std::make_unique<PaymentsDataManager>(
       profile_database, account_database, image_fetcher,
       std::move(shared_storage_handler), pref_service, sync_service,
-      identity_manager, variations_country_code_, app_locale_,
-      notify_observers);
-
-  pref_service_ = pref_service;
-
-  alternative_state_name_map_updater_ =
-      std::make_unique<AlternativeStateNameMapUpdater>(local_state, this);
+      identity_manager, GeoIpCountryCode(std::move(variations_country_code)),
+      app_locale_, notify_observers);
 
   // Listen for URL deletions from browsing history.
-  history_service_ = history_service;
-  if (history_service_)
+  if (history_service_) {
     history_service_observation_.Observe(history_service_.get());
-
-  AutofillMetrics::LogIsAutofillEnabledAtStartup(IsAutofillEnabled());
+  }
 
   // WebDataService may not be available in tests.
   if (!profile_database) {
@@ -81,6 +68,8 @@ void PersonalDataManager::Init(
   }
 
   Refresh();
+
+  AutofillMetrics::LogIsAutofillEnabledAtStartup(IsAutofillEnabled());
 
   address_data_cleaner_ = std::make_unique<AddressDataCleaner>(
       *this, sync_service, CHECK_DEREF(pref_service),

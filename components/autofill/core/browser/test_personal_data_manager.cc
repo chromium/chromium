@@ -14,7 +14,19 @@
 namespace autofill {
 
 TestPersonalDataManager::TestPersonalDataManager()
-    : PersonalDataManager("en-US", "US") {
+    : PersonalDataManager(
+          /*profile_database=*/nullptr,
+          /*account_database=*/nullptr,
+          /*pref_service=*/nullptr,
+          /*local_state=*/nullptr,
+          /*identity_manager=*/nullptr,
+          /*history_service=*/nullptr,
+          /*sync_service=*/nullptr,
+          /*strike_database=*/nullptr,
+          /*image_fetcher=*/nullptr,
+          /*shared_storage_handler=*/nullptr,
+          "en-US",
+          "US") {
   auto notify_observers = base::BindRepeating(
       &PersonalDataManager::NotifyPersonalDataObserver, base::Unretained(this));
   address_data_manager_ =

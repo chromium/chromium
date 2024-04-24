@@ -27,9 +27,8 @@ class PaymentsDataCleanerTest : public PersonalDataManagerTestBase,
 
   void SetUp() override {
     SetUpTest();
-    personal_data_ = std::make_unique<PersonalDataManager>("EN", "US");
-    ResetPersonalDataManager(
-        /*use_sync_transport_mode=*/false, personal_data_.get());
+    personal_data_ = InitPersonalDataManager(
+        /*use_sync_transport_mode=*/false);
     payments_data_cleaner_ = std::make_unique<PaymentsDataCleaner>(
         &personal_data_->payments_data_manager());
   }

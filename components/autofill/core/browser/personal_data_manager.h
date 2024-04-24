@@ -85,13 +85,6 @@ class PersonalDataManagerObserver;
 class PersonalDataManager : public KeyedService,
                             public history::HistoryServiceObserver {
  public:
-  explicit PersonalDataManager(const std::string& app_locale);
-  PersonalDataManager(const std::string& app_locale,
-                      const std::string& country_code);
-  PersonalDataManager(const PersonalDataManager&) = delete;
-  PersonalDataManager& operator=(const PersonalDataManager&) = delete;
-  ~PersonalDataManager() override;
-
   // Kicks off asynchronous loading of profiles and credit cards.
   // |profile_database| is a profile-scoped database that will be used to save
   // local cards. |account_database| is scoped to the currently signed-in
@@ -102,8 +95,7 @@ class PersonalDataManager : public KeyedService,
   // (sync disabled by CLI) or outlives this object, it may not have started yet
   // but its preferences can already be queried. |image_fetcher| is to fetch the
   // customized images for autofill data.
-  // TODO(b/40100455): Merge with the constructor?
-  void Init(
+  PersonalDataManager(
       scoped_refptr<AutofillWebDataService> profile_database,
       scoped_refptr<AutofillWebDataService> account_database,
       PrefService* pref_service,
@@ -113,7 +105,12 @@ class PersonalDataManager : public KeyedService,
       syncer::SyncService* sync_service,
       StrikeDatabaseBase* strike_database,
       AutofillImageFetcherBase* image_fetcher,
-      std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler);
+      std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
+      std::string app_locale,
+      std::string country_code);
+  PersonalDataManager(const PersonalDataManager&) = delete;
+  PersonalDataManager& operator=(const PersonalDataManager&) = delete;
+  ~PersonalDataManager() override;
 
   // The (Address|Payments)DataManager classes are responsible for handling
   // address/payments specific functionality. All new address or payments
@@ -226,12 +223,10 @@ class PersonalDataManager : public KeyedService,
   void SetSyncServiceForTest(syncer::SyncService* sync_service);
 
  protected:
-  // Responsible for all address-related logic of the PDM.
-  // Non-null after `Init()`.
+  // Responsible for all address-related logic of the PDM. Non-null.
   std::unique_ptr<AddressDataManager> address_data_manager_;
 
-  // Responsible for all payments-related logic of the PDM.
-  // Non-null after `Init()`.
+  // Responsible for all payments-related logic of the PDM. Non-null.
   std::unique_ptr<PaymentsDataManager> payments_data_manager_;
 
   // The observers.
@@ -254,10 +249,6 @@ class PersonalDataManager : public KeyedService,
  private:
   // Stores the |app_locale| supplied on construction.
   const std::string app_locale_;
-
-  // Stores the country code that was provided from the variations service
-  // during construction.
-  const GeoIpCountryCode variations_country_code_;
 
   // The HistoryService to be observed by the personal data manager. Must
   // outlive this instance. This unowned pointer is retained so the PDM can
