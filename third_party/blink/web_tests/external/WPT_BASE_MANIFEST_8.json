@@ -1803,6 +1803,13 @@
         {}
        ]
       ],
+      "content-visibility-background-clip-crash.html": [
+       "1fa645f45777fd82fd5f95dbdf8d83b53f1f0f14",
+       [
+        null,
+        {}
+       ]
+      ],
       "content-visibility-continuations-crash.html": [
        "e20d26fceedfc0071c61750776afa62c346d308e",
        [
@@ -308762,7 +308769,7 @@
      ],
      "accessibility": {
       "display-contents-role-and-label-expected.txt": [
-       "1d9cf088aebbe6b00cc6c3b8cca82e49f600d0f4",
+       "2289286d4b23541fea0668fb36290faa643f80ef",
        []
       ]
      },
@@ -376950,7 +376957,7 @@
        []
       ],
       "utils.js": [
-       "aa537d39a780d9d402aebc49c43c2ed733ef343b",
+       "a3f3da0433305e4e9f77926548247fadf55a4120",
        []
       ]
      }
@@ -385182,7 +385189,7 @@
      []
     ],
     "onselectionchange-on-distinct-text-controls-expected.txt": [
-     "0ed464df8fa3dbe74dc4367791ce15a13cb3bed8",
+     "7727922e4c91cc16106a8ec5147d23e40e907037",
      []
     ],
     "onselectionchange-on-document-expected.txt": [
@@ -385249,7 +385256,7 @@
     ],
     "textcontrols": {
      "selectionchange-expected.txt": [
-      "3cc62548674b8d2553804b101f3c813d1a98de9f",
+      "658ebec3b91704480df99c1d113497ae684fe63b",
       []
      ]
     }
@@ -388244,7 +388251,7 @@
     "focus-navigation": {
      "resources": {
       "focus-utils.js": [
-       "0392cfb88792ee66d93eb7f1430fa6afd846c858",
+       "f4056dc1688442c2c41ce9421161bea448da7c2f",
        []
       ],
       "shadow-dom.js": [
@@ -396250,11 +396257,11 @@
      []
     ],
     "idlharness.any-expected.txt": [
-     "14735205a23bb704152760034d1761451248af8e",
+     "70b5024b8a7155d0b13a84f19ddf9117b2f08420",
      []
     ],
     "idlharness.any.worker-expected.txt": [
-     "14735205a23bb704152760034d1761451248af8e",
+     "70b5024b8a7155d0b13a84f19ddf9117b2f08420",
      []
     ]
    },
@@ -397111,7 +397118,7 @@
       ]
      },
      "utils.js": [
-      "d1dc0675a7f5e75d3faca852e70b8a43d6722ced",
+      "653e036cd119d3198fd1c83be548b4999214f0f4",
       []
      ],
      "utils_validation.js": [
@@ -447159,7 +447166,7 @@
     "css-display": {
      "accessibility": {
       "display-contents-role-and-label.html": [
-       "4a06d0ff5bf212648185c45f15c173c9437cfbc8",
+       "2c9d8581d240ca5614ac12a10aaa43a92ee7a7f6",
        [
         null,
         {
@@ -457447,6 +457454,24 @@
       [
        null,
        {}
+      ]
+     ],
+     "scroll-with-ancestor-border-radius.html": [
+      "9192c613e9eb54bfc0ad774dcd429b18528c3b58",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "scroll-with-border-radius.html": [
+      "88bb0f1fa88f7a9baaefcfcf9ab6c08a83836f95",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ],
      "scrollable-overflow-float.html": [
@@ -484073,7 +484098,7 @@
        ]
       ],
       "observable-filter.any.js": [
-       "8a49bcf4674624751c36924372bd8867d211a2aa",
+       "3c1a7d782488c8d7d2cfbfb0da0b26fc41bb70b0",
        [
         "dom/observable/tentative/observable-filter.any.html",
         {}
@@ -578113,6 +578138,13 @@
          {}
         ]
        ],
+       "input-stepdown-02.html": [
+        "db71d110092849c90f2f96a5ea476b5476dc8913",
+        [
+         null,
+         {}
+        ]
+       ],
        "input-stepdown-weekmonth.html": [
         "c50f67fce53cac40390ff24f4a15d22b3daf4a55",
         [
@@ -596647,6 +596679,33 @@
      ],
      "loaf-script-window-attribution.html": [
       "0b8f45bed02b2c88d0679410709dd37696724658",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "loaf-source-location-inline-classic-script.html": [
+      "30033c9a4d88e2ce7cca65aefb3fb5e2dab78e67",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "loaf-source-location-inline-event-listener.html": [
+      "bd7e8bb7c08a70ba412b44312898ccd3e2213b6b",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
+     "loaf-source-location-inline-module-script.html": [
+      "f40b3e410f4da2239058a6d83681dfde060f9b7c",
       [
        null,
        {
@@ -634565,7 +634624,65 @@
         "testdriver": true
        }
       ]
-     ]
+     ],
+     "reading-order": {
+      "tentative": {
+       "grid-order-on-shadow-host.html": [
+        "a48eda1b57cd26b642edeed2d890bbf01a6043fe",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "grid-order-with-iframe.html": [
+        "87b9e0a83dfec85132859156bc54aead6914cae4",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "grid-order-with-nested-grids.html": [
+        "d3da6682a3488e65bf2979aea344f5e43a956a49",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "grid-order-with-popover.html": [
+        "2e98c041570d935f89dd753e04460ab098d7dd89",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "grid-order-with-slots.html": [
+        "3045001e1d82525cbbf2e4524d86c28e4f208036",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "grid-order.html": [
+        "1b86ab0b25a1d0e92aeae09b6f55b17bb97f1ee7",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ]
+      }
+     }
     },
     "focus-within-shadow.html": [
      "c0a1e624fb79879f7601cba0da5854ae26988a00",
@@ -673968,6 +674085,57 @@
         }
        ]
       ],
+      "parallel-compute.https.any.js": [
+       "13f2757b54e4c6a691bd84133aee264eb38162db",
+       [
+        "webnn/conformance_tests/gpu/parallel-compute.https.any.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "test parallel WebNN API compute operations"
+          ],
+          [
+           "global",
+           "window,dedicatedworker"
+          ],
+          [
+           "script",
+           "../../resources/utils.js"
+          ],
+          [
+           "timeout",
+           "long"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ],
+       [
+        "webnn/conformance_tests/gpu/parallel-compute.https.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "test parallel WebNN API compute operations"
+          ],
+          [
+           "global",
+           "window,dedicatedworker"
+          ],
+          [
+           "script",
+           "../../resources/utils.js"
+          ],
+          [
+           "timeout",
+           "long"
+          ]
+         ],
+         "timeout": "long"
+        }
+       ]
+      ],
       "pooling.https.any.js": [
        "837bca2c71d80d77b1071595899dbc1d82cc138a",
        [
@@ -675175,6 +675343,57 @@
          [
           "title",
           "test WebNN API pad operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "parallel-compute.https.any.js": [
+      "304ea5f202fa895f41853e3b0864b297c4be5a56",
+      [
+       "webnn/conformance_tests/parallel-compute.https.any.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test parallel WebNN API compute operations"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/parallel-compute.https.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test parallel WebNN API compute operations"
          ],
          [
           "global",
