@@ -153,6 +153,8 @@ QuicSessionPoolTestBase::QuicSessionPoolTestBase(
                     /*use_priority_header=*/false),
       http_server_properties_(std::make_unique<HttpServerProperties>()),
       cert_verifier_(std::make_unique<MockCertVerifier>()),
+      net_log_(NetLogWithSource::Make(NetLog::Get(),
+                                      NetLogSourceType::QUIC_SESSION_POOL)),
       failed_on_default_network_callback_(base::BindRepeating(
           &QuicSessionPoolTestBase::OnFailedOnDefaultNetwork,
           base::Unretained(this))),
