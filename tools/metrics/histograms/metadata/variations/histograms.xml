@@ -65,7 +65,7 @@ chromium-metrics-reviews@google.com.
     enum="JsonDeserializationError" expires_after="2024-09-15">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
-  <component>Internals&gt;Metrics&gt;Variations</component>
+  <component>1456342</component>
   <summary>
     The error code given by JSONFileValueDeserializer::Deserialize(). Emitted
     during CleanExitBeacon initialization when the beacon file cannot be
@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
     enum="BeaconFileState" expires_after="2024-09-01">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
-  <component>Internals&gt;Metrics&gt;Variations</component>
+  <component>1456342</component>
   <summary>
     The state of the beacon file and its contents, e.g. readable or not
     deserializable. See the BeaconFileDeserializationError histogram for more
@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
     enum="BooleanSuccess" expires_after="2025-02-04">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
-  <component>Internals&gt;Metrics&gt;Variations</component>
+  <component>1456342</component>
   <summary>
     Denotes whether the beacon file was successfully written. Recorded
     immediately after Chrome tries to write the file.
@@ -202,7 +202,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-04-01">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
-  <component>Internals&gt;Metrics</component>
   <summary>
     The owner of the top-level domain from which certain subframe-initiated HTTP
     requests are made. It's logged after determining that (i) the request should
@@ -240,7 +239,6 @@ chromium-metrics-reviews@google.com.
   <owner>jwd@chromium.org</owner>
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
-  <component>Internals&gt;Metrics</component>
   <summary>
     Details about the request context in which an HTTP request is made. Logged
     after determining that the request should include variations headers but

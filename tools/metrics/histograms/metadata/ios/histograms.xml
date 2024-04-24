@@ -203,7 +203,6 @@ chromium-metrics-reviews@google.com.
     units="bookmarks" expires_after="2024-11-15">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
-  <component>Services&gt;Sync</component>
   <summary>
     The number of local bookmarks the user has moved to their account using the
     batch upload dialog in the bookmarks manager. This is logged when the user
@@ -215,7 +214,6 @@ chromium-metrics-reviews@google.com.
     enum="BooleanHit" expires_after="2024-11-15">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
-  <component>Services&gt;Sync</component>
   <summary>
     Recorded whenever the batch upload flow/dialog is shown to the user in the
     bookmarks manager.
@@ -229,7 +227,7 @@ chromium-metrics-reviews@google.com.
     enum="IOSDefaultBookmarkFolderOutcome" expires_after="2024-10-06">
   <owner>mastiz@chromium.org</owner>
   <owner>arthurmilchior@chromium.org</owner>
-  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <component>1457392</component>
   <summary>
     Logs how the default bookmark folder is determined, when one or more
     bookmarks are being saved by the user. Only recorded on iOS.

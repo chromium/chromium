@@ -7194,7 +7194,7 @@ chromium-metrics-reviews@google.com.
   <owner>tbansal@chromium.org</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
-  <component>Internals&gt;Preload</component>
+  <component>1457018</component>
   <summary>
     The status of when the optimization hints were received by the Loading
     Predictor. This will be recorded on navigations for which predictions from
@@ -7206,7 +7206,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-08-27">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
-  <component>Internals&gt;Preload</component>
+  <component>1457018</component>
   <summary>
     The number of origins that were preconnected for a page load. It includes
     preconnect attempts that don't result in new opened connection. Logged after
@@ -7218,7 +7218,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-09-17">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
-  <component>Internals&gt;Preload</component>
+  <component>1457018</component>
   <summary>
     The percentage of origins that were preconnected and requested by a page
     load to the total number of origins that were preconnected for a page load.
@@ -7231,7 +7231,7 @@ chromium-metrics-reviews@google.com.
     units="origins" expires_after="2023-07-16">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
-  <component>Internals&gt;Preload</component>
+  <component>1457018</component>
   <summary>
     When the loading predictor has origins in the local database for a given
     navigation to preconnect and preresolve, the count of predicted origins.
@@ -7242,7 +7242,7 @@ chromium-metrics-reviews@google.com.
     units="%" expires_after="2023-12-12">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
-  <component>Internals&gt;Preload</component>
+  <component>1457018</component>
   <summary>
     When the loading predictor has origins in the local database for a given
     navigation to preconnect and preresolve, the precision of the predictions in
@@ -7255,7 +7255,7 @@ chromium-metrics-reviews@google.com.
     units="%" expires_after="2023-09-17">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
-  <component>Internals&gt;Preload</component>
+  <component>1457018</component>
   <summary>
     When the loading predictor has origins in the local database for a given
     navigation to preconnect and preresolve, the recall of the predictions, in
@@ -7268,7 +7268,7 @@ chromium-metrics-reviews@google.com.
     enum="ResourcePrefetchPredictorRedirectStatus" expires_after="2023-06-25">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
-  <component>Internals&gt;Preload</component>
+  <component>1457018</component>
   <summary>
     When the prefetch predictor has origins in the local database for a given
     navigation to preconnect and preresolve, records stats about whether
@@ -7280,7 +7280,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-07-09">
   <owner>yoichio@chromium.org</owner>
   <owner>chrome-loading@chromium.org</owner>
-  <component>Internals&gt;Preload</component>
+  <component>1457018</component>
   <summary>
     The size, in kilobytes, of the database used for the loading prediction.
     Values can range from 1KiB to 1GiB. Logged at browser startup and daily.
@@ -7291,7 +7291,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-12-12">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
-  <component>Internals&gt;Preload</component>
+  <component>1457018</component>
   <summary>
     The number of hosts that were preresolved for a page load. It includes only
     successful DNS lookups. Logged after the preconnect manager completes all
@@ -7303,7 +7303,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2023-12-12">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@chromium.org</owner>
-  <component>Internals&gt;Preload</component>
+  <component>1457018</component>
   <summary>
     The percentage of hosts that were preresolved and requested by a page load
     to the total number of hosts that were preresolved for a page load. Logged
@@ -8518,7 +8518,7 @@ chromium-metrics-reviews@google.com.
     enum="PageImageServiceResult" expires_after="2024-09-01">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>Internals&gt;OptimizationGuide</component>
+  <component>1456757</component>
   <summary>
     Records the result of requests to the Optimization Guide Salient Images
     backend.
@@ -8533,7 +8533,7 @@ chromium-metrics-reviews@google.com.
     enum="PageImageServiceResult" expires_after="2024-09-01">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
+  <component>1457319</component>
   <summary>
     Records the result of requests to the Suggest backend.
 
@@ -8547,7 +8547,7 @@ chromium-metrics-reviews@google.com.
     enum="PageImageServiceBackend" expires_after="2024-09-01">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
+  <component>1457319</component>
   <summary>
     Records the backend chosen for the request. For requests with no valid
     backend, this is still recorded as the &quot;No Valid Backend&quot; bucket.
@@ -8561,7 +8561,7 @@ chromium-metrics-reviews@google.com.
     enum="PageImageServiceConsentStatus" expires_after="2024-09-01">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
+  <component>1457319</component>
   <summary>
     Records the result of the URL consent check after timeout has expired.
     Recorded for each request which was enqueued by the time when timeout
@@ -8573,7 +8573,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-09-01">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
+  <component>1457319</component>
   <summary>
     Recorded on each URL consent check request. This metric is used to compare
     numbers with consent check result in PageImageService.ConsentStatus.
@@ -8584,7 +8584,7 @@ chromium-metrics-reviews@google.com.
     enum="PageImageServiceConsentStatus" expires_after="2024-09-01">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
+  <component>1457319</component>
   <summary>
     Records the result of the URL consent check for this request. The number of
     consent check requests is recorded in
@@ -8600,7 +8600,7 @@ chromium-metrics-reviews@google.com.
     enum="SyncDownloadStatusWaitingForUpdatesReason" expires_after="2024-09-01">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
+  <component>1457319</component>
   <summary>
     Records the reason of the URL consent check timeout ({ClientId}). Recorded
     for each request which was enqueued by the time when timeout happened.
@@ -9867,7 +9867,6 @@ should be kept until we remove incident reporting. -->
     enum="SendTabToSelfClickResult" expires_after="2024-07-18">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>src/components/send_tab_to_self/OWNERS</owner>
-  <component>UI&gt;Browser&gt;Sharing</component>
   <summary>
     Records user flow for SendTabToSelf feature.
 

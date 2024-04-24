@@ -33,7 +33,6 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-12-01">
   <owner>agl@google.com</owner>
   <owner>mmoskvitin@google.com</owner>
-  <component>Services&gt;Sync</component>
   <summary>
     Records the results of DownloadAuthenticationFactorsRegistrationState calls.
     This function determines the recoverability state of a security domain.
@@ -50,7 +49,6 @@ chromium-metrics-reviews@google.com.
     enum="SecurityDomainId" expires_after="2024-06-14">
   <owner>mastiz@chromium.org</owner>
   <owner>martinkr@google.com</owner>
-  <component>Services&gt;Sync</component>
   <summary>
     Records the security domains passed as arguments to the Javascript API
     chrome.setClientEncryptionKeys() on the renderer side (one sample per
@@ -63,7 +61,6 @@ chromium-metrics-reviews@google.com.
     enum="BooleanValid" expires_after="2024-06-14">
   <owner>mastiz@chromium.org</owner>
   <owner>martinkr@google.com</owner>
-  <component>Services&gt;Sync</component>
   <summary>
     For each invocation of the Javascript API chrome.setClientEncryptionKeys(),
     records whether the passed arguments could be successfully parsed (one
@@ -76,7 +73,6 @@ chromium-metrics-reviews@google.com.
   <owner>mastiz@chromium.org</owner>
   <owner>mmoskvitin@chromium.org</owner>
   <owner>martinkr@google.com</owner>
-  <component>Services&gt;Sync</component>
   <summary>
     Counts of responses (both http code and net error code) for requests to the
     recovery key store server (aka Vault Service). Note that requests that timed
@@ -97,7 +93,6 @@ chromium-metrics-reviews@google.com.
   <owner>mastiz@chromium.org</owner>
   <owner>mmoskvitin@chromium.org</owner>
   <owner>martinkr@google.com</owner>
-  <component>Services&gt;Sync</component>
   <summary>
     Counts of responses (both http code and net error code) for requests to the
     Trusted Vault server (aka Security Domain Service), broken out by {Reason}
@@ -131,7 +126,6 @@ chromium-metrics-reviews@google.com.
     enum="SecurityDomainId" expires_after="2024-06-14">
   <owner>mastiz@chromium.org</owner>
   <owner>martinkr@google.com</owner>
-  <component>Services&gt;Sync</component>
   <summary>
     Records the security domains passed as arguments to the Javascript API
     chrome.setClientEncryptionKeys() (or chrome.setSyncEncryptionKeys()) on the

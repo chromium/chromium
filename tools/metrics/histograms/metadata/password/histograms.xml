@@ -3096,7 +3096,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-07-07">
   <owner>mamir@chromium.org</owner>
   <owner>rushans@google.com</owner>
-  <component>UI&gt;Browser&gt;Passwords</component>
+  <component>1457410</component>
   <summary>
     Records the result of processing incoming password sharing invitation.
     Invitation are either auto-approved and stored in the password store or
