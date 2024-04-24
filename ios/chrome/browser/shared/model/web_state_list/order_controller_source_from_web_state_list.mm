@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
 
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -55,4 +56,13 @@ bool OrderControllerSourceFromWebStateList::IsOpenerOfItemAt(
   const int navigation_index =
       web_state->GetNavigationManager()->GetLastCommittedItemIndex();
   return opener.navigation_index == navigation_index;
+}
+
+TabGroupRange OrderControllerSourceFromWebStateList::GetGroupRangeOfItemAt(
+    int index) const {
+  const TabGroup* group = web_state_list_->GetGroupOfWebStateAt(index);
+  if (group) {
+    return TabGroupRange(group->range());
+  }
+  return TabGroupRange::InvalidRange();
 }

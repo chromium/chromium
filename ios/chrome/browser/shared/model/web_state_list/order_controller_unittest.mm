@@ -7,6 +7,7 @@
 #import "base/check_op.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -21,8 +22,12 @@ struct ItemInfo {
 
 class FakeOrderControllerSource final : public OrderControllerSource {
  public:
-  FakeOrderControllerSource(int pinned_items_count, std::vector<ItemInfo> items)
-      : items_(std::move(items)), pinned_items_count_(pinned_items_count) {
+  FakeOrderControllerSource(int pinned_items_count,
+                            TabGroupRange tab_group_range,
+                            std::vector<ItemInfo> items)
+      : items_(std::move(items)),
+        pinned_items_count_(pinned_items_count),
+        tab_group_range_(tab_group_range) {
     DCHECK_GE(pinned_items_count_, 0);
     DCHECK_LE(pinned_items_count_, static_cast<int>(items_.size()));
   }
@@ -74,9 +79,18 @@ class FakeOrderControllerSource final : public OrderControllerSource {
            items_[opener_index].last_committed_navigation_index;
   }
 
+  TabGroupRange GetGroupRangeOfItemAt(int index) const final {
+    if (tab_group_range_.contains(index)) {
+      return tab_group_range_;
+    } else {
+      return TabGroupRange::InvalidRange();
+    }
+  }
+
  private:
   const std::vector<ItemInfo> items_;
   const int pinned_items_count_;
+  TabGroupRange tab_group_range_;
 };
 
 }  // namespace
@@ -86,15 +100,16 @@ using OrderControllerTest = PlatformTest;
 // Tests that DetermineInsertionIndex respects the pinned/regular group
 // when the insertion policy is "automatic".
 TEST_F(OrderControllerTest, DetermineInsertionIndex_Automatic) {
-  FakeOrderControllerSource source(2, {
-                                          // Pinned items
-                                          ItemInfo{},
-                                          ItemInfo{},
+  FakeOrderControllerSource source(2, TabGroupRange::InvalidRange(),
+                                   {
+                                       // Pinned items
+                                       ItemInfo{},
+                                       ItemInfo{},
 
-                                          // Regular items
-                                          ItemInfo{},
-                                          ItemInfo{},
-                                      });
+                                       // Regular items
+                                       ItemInfo{},
+                                       ItemInfo{},
+                                   });
   OrderController order_controller(source);
 
   // Verify that inserting an item with "automatic" policy put the item
@@ -113,15 +128,16 @@ TEST_F(OrderControllerTest, DetermineInsertionIndex_Automatic) {
 // Tests that DetermineInsertionIndex respects the desired index when
 // insertion policy is "forced".
 TEST_F(OrderControllerTest, DetermineInsertionIndex_ForceIndex) {
-  FakeOrderControllerSource source(2, {
-                                          // Pinned items
-                                          ItemInfo{},
-                                          ItemInfo{},
+  FakeOrderControllerSource source(2, TabGroupRange::InvalidRange(),
+                                   {
+                                       // Pinned items
+                                       ItemInfo{},
+                                       ItemInfo{},
 
-                                          // Regular items
-                                          ItemInfo{},
-                                          ItemInfo{},
-                                      });
+                                       // Regular items
+                                       ItemInfo{},
+                                       ItemInfo{},
+                                   });
   OrderController order_controller(source);
 
   // Verify that inserting an item with "forced" policy puts the item at
@@ -172,47 +188,48 @@ TEST_F(OrderControllerTest, DetermineInsertionIndex_ForceIndex) {
 // Tests that DetermineInsertionIndex correctly position an item with an
 // opener relative to its parent, siblings and the pinned/regular group.
 TEST_F(OrderControllerTest, DetermineInsertionIndex_WithOpener) {
-  FakeOrderControllerSource source(6, {
-                                          // Pinned items
-                                          ItemInfo{},
-                                          ItemInfo{
-                                              .opener_index = 5,
-                                              .opener_navigation_index = 0,
-                                          },
-                                          ItemInfo{
-                                              .opener_index = 1,
-                                              .opener_navigation_index = 0,
-                                          },
-                                          ItemInfo{
-                                              .opener_index = 1,
-                                              .opener_navigation_index = 0,
-                                          },
-                                          ItemInfo{
-                                              .opener_index = 1,
-                                              .opener_navigation_index = 1,
-                                          },
-                                          ItemInfo{},
+  FakeOrderControllerSource source(6, TabGroupRange::InvalidRange(),
+                                   {
+                                       // Pinned items
+                                       ItemInfo{},
+                                       ItemInfo{
+                                           .opener_index = 5,
+                                           .opener_navigation_index = 0,
+                                       },
+                                       ItemInfo{
+                                           .opener_index = 1,
+                                           .opener_navigation_index = 0,
+                                       },
+                                       ItemInfo{
+                                           .opener_index = 1,
+                                           .opener_navigation_index = 0,
+                                       },
+                                       ItemInfo{
+                                           .opener_index = 1,
+                                           .opener_navigation_index = 1,
+                                       },
+                                       ItemInfo{},
 
-                                          // Regular items
-                                          ItemInfo{},
-                                          ItemInfo{
-                                              .opener_index = 11,
-                                              .opener_navigation_index = 0,
-                                          },
-                                          ItemInfo{
-                                              .opener_index = 7,
-                                              .opener_navigation_index = 0,
-                                          },
-                                          ItemInfo{
-                                              .opener_index = 7,
-                                              .opener_navigation_index = 0,
-                                          },
-                                          ItemInfo{
-                                              .opener_index = 7,
-                                              .opener_navigation_index = 1,
-                                          },
-                                          ItemInfo{},
-                                      });
+                                       // Regular items
+                                       ItemInfo{},
+                                       ItemInfo{
+                                           .opener_index = 11,
+                                           .opener_navigation_index = 0,
+                                       },
+                                       ItemInfo{
+                                           .opener_index = 7,
+                                           .opener_navigation_index = 0,
+                                       },
+                                       ItemInfo{
+                                           .opener_index = 7,
+                                           .opener_navigation_index = 0,
+                                       },
+                                       ItemInfo{
+                                           .opener_index = 7,
+                                           .opener_navigation_index = 1,
+                                       },
+                                       ItemInfo{},
+                                   });
   OrderController order_controller(source);
 
   // Verify that inserting an item with an opener will position it after
@@ -261,17 +278,18 @@ TEST_F(OrderControllerTest, DetermineInsertionIndex_WithOpener) {
 // Tests that the selection of the next active element when closing tabs
 // respects the opener-opened relationship.
 TEST_F(OrderControllerTest, DetermineNewActiveIndex) {
-  FakeOrderControllerSource source(0, {
-                                          ItemInfo{},
-                                          ItemInfo{},
-                                          ItemInfo{.opener_index = 7},
-                                          ItemInfo{},
-                                          ItemInfo{.opener_index = 0},
-                                          ItemInfo{.opener_index = 0},
-                                          ItemInfo{.opener_index = 1},
-                                          ItemInfo{},
-                                          ItemInfo{},
-                                      });
+  FakeOrderControllerSource source(0, TabGroupRange::InvalidRange(),
+                                   {
+                                       ItemInfo{},
+                                       ItemInfo{},
+                                       ItemInfo{.opener_index = 7},
+                                       ItemInfo{},
+                                       ItemInfo{.opener_index = 0},
+                                       ItemInfo{.opener_index = 0},
+                                       ItemInfo{.opener_index = 1},
+                                       ItemInfo{},
+                                       ItemInfo{},
+                                   });
   OrderController order_controller(source);
 
   // Verify that if closing all the items, no item is selected.
@@ -332,4 +350,43 @@ TEST_F(OrderControllerTest, DetermineNewActiveIndex) {
   // after it, then the tab before it is selected.
   EXPECT_EQ(
       0, order_controller.DetermineNewActiveIndex(1, {1, 2, 3, 4, 5, 6, 7, 8}));
+}
+
+// Tests that when closing tabs from a group, the selection of the next active
+// tab respects the opener-opened order.
+TEST_F(OrderControllerTest, DetermineNewActiveIndex_TabGroup) {
+  FakeOrderControllerSource source(0, TabGroupRange(0, 3),
+                                   {
+                                       // Grouped items
+                                       ItemInfo{},
+                                       ItemInfo{},
+                                       ItemInfo{},
+                                       // Regular items
+                                       ItemInfo{},
+                                       ItemInfo{},
+                                       ItemInfo{},
+                                   });
+  OrderController order_controller(source);
+
+  // Closing a non-active tab correctly keeps the active tab index.
+  EXPECT_EQ(0, order_controller.DetermineNewActiveIndex(0, {1}));
+  EXPECT_EQ(3, order_controller.DetermineNewActiveIndex(3, {4, 5}));
+  EXPECT_EQ(2, order_controller.DetermineNewActiveIndex(2, {1, 3, 4}));
+
+  // Closing an active tab within a group selects the next available tab in the
+  // group.
+  EXPECT_EQ(2, order_controller.DetermineNewActiveIndex(1, {1}));
+  EXPECT_EQ(0, order_controller.DetermineNewActiveIndex(0, {1}));
+
+  // Closing the active last tab in a group selects the closest preceding tab in
+  // the group.
+  EXPECT_EQ(1, order_controller.DetermineNewActiveIndex(2, {2}));
+  EXPECT_EQ(0, order_controller.DetermineNewActiveIndex(2, {1, 2}));
+
+  // Closing all tabs in a group selects a tab outside the group.
+  EXPECT_EQ(3, order_controller.DetermineNewActiveIndex(1, {0, 1, 2}));
+
+  // Closing an active tab in a group and tabs outside the group selects the
+  // next available tab outside the group.
+  EXPECT_EQ(3, order_controller.DetermineNewActiveIndex(2, {2, 4}));
 }

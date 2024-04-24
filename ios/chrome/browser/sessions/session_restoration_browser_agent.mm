@@ -53,6 +53,7 @@ class OrderControllerSourceFromSessionWindowIOS final
   bool IsOpenerOfItemAt(int index,
                         int opener_index,
                         bool check_navigation_index) const final;
+  TabGroupRange GetGroupRangeOfItemAt(int index) const final;
 
  private:
   SessionWindowIOS* session_window_;
@@ -118,6 +119,17 @@ bool OrderControllerSourceFromSessionWindowIOS::IsOpenerOfItemAt(
   }
 
   return true;
+}
+
+TabGroupRange OrderControllerSourceFromSessionWindowIOS::GetGroupRangeOfItemAt(
+    int index) const {
+  for (SessionTabGroup* group in session_window_.tabGroups) {
+    const TabGroupRange group_range(group.rangeStart, group.rangeCount);
+    if (group_range.contains(index)) {
+      return group_range;
+    }
+  }
+  return TabGroupRange::InvalidRange();
 }
 
 // Determines the new active index.

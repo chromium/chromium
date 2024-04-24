@@ -212,12 +212,34 @@ int OrderController::DetermineNewActiveIndex(
   const int pinned_count = source_->GetPinnedCount();
   const bool is_pinned = active_index < pinned_count;
 
+  // The minimum range that contains all closed WebStates.
+  RemovingIndexes::Range removing_indexes_span = removing_indexes.span();
+  // Get the group range of the first and the last removed indexes.
+  const TabGroupRange first_group_range =
+      source_->GetGroupRangeOfItemAt(removing_indexes_span.start);
+  const TabGroupRange last_group_range = source_->GetGroupRangeOfItemAt(
+      removing_indexes_span.start + removing_indexes_span.count - 1);
+
+  // If all the `removing_indexes` are in the same tab group, the closest
+  // WebState in that group should become the next active cell.
+  if (first_group_range != TabGroupRange::InvalidRange() &&
+      first_group_range == last_group_range) {
+    Range range = Range{.begin = first_group_range.range_begin(),
+                        .end = first_group_range.range_end()};
+    int closest_index =
+        FindClosestWebStateInRange(removing_indexes, active_index, range);
+    // `False` when all WebStates in the tab group are begging to be closed.
+    if (closest_index != WebStateList::kInvalidIndex) {
+      return closest_index;
+    }
+  }
+
   // Look for the closest non-removed WebState in the same group (pinned or
   // regular WebStates).
-  int closest_index = FindClosestWebStateInRange(
-      removing_indexes, active_index,
-      Range{.begin = is_pinned ? 0 : pinned_count,
-            .end = is_pinned ? pinned_count : count});
+  Range range = Range{.begin = is_pinned ? 0 : pinned_count,
+                      .end = is_pinned ? pinned_count : count};
+  int closest_index =
+      FindClosestWebStateInRange(removing_indexes, active_index, range);
 
   if (closest_index == WebStateList::kInvalidIndex) {
     // If all items in the same group are removed, look for the closest

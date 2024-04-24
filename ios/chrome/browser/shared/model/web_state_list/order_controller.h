@@ -45,7 +45,6 @@ class OrderController {
 
   // Determines where to place a newly opened WebState according to the
   // requirements expressed by `params`.
-  // Logic diagram: crbug.com/1395319
   int DetermineInsertionIndex(InsertionParams params) const;
 
   // Determines where to shift the active index after a WebState is closed.
@@ -54,8 +53,6 @@ class OrderController {
   // closed. If the calling code needs the index after closing the elements,
   // it should use RemovingIndexes::IndexAfterRemoval(...) on the returned
   // value.
-  //
-  // Logic diagram: crbug.com/1395319
   int DetermineNewActiveIndex(int active_index,
                               const RemovingIndexes& removing_indexes) const;
 

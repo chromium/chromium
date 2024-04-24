@@ -37,6 +37,7 @@ class OrderControllerSourceFromWebStateListStorage final
   bool IsOpenerOfItemAt(int index,
                         int opener_index,
                         bool check_navigation_index) const final;
+  TabGroupRange GetGroupRangeOfItemAt(int index) const final;
 
  private:
   raw_ref<const ios::proto::WebStateListStorage> session_metadata_;
@@ -84,6 +85,19 @@ bool OrderControllerSourceFromWebStateListStorage::IsOpenerOfItemAt(
   }
 
   return item_storage.opener().index() == opener_index;
+}
+
+TabGroupRange
+OrderControllerSourceFromWebStateListStorage::GetGroupRangeOfItemAt(
+    int index) const {
+  for (auto& group_storage : session_metadata_->groups()) {
+    const ios::proto::RangeIndex range_index = group_storage.range();
+    const TabGroupRange group_range(range_index.start(), range_index.count());
+    if (group_range.contains(index)) {
+      return group_range;
+    }
+  }
+  return TabGroupRange::InvalidRange();
 }
 
 // Returns an ios::proto::WebStateListStorage representing an empty session.

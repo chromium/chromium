@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_ORDER_CONTROLLER_SOURCE_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_ORDER_CONTROLLER_SOURCE_H_
 
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
+
 // Class abstracting access to the WebStateList storage for use by
 // OrderController, allowing the use of the algorithms on either a
 // WebStateList or its serialized representation.
@@ -30,6 +32,10 @@ class OrderControllerSource {
   virtual bool IsOpenerOfItemAt(int index,
                                 int opener_index,
                                 bool check_navigation_index) const = 0;
+
+  // Returns the `TabGroupRange` for the item at `index`. If the item does not
+  // belong to a group, returns `TabGroupRange::InvalidRange()`.
+  virtual TabGroupRange GetGroupRangeOfItemAt(int index) const = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_ORDER_CONTROLLER_SOURCE_H_
