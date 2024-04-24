@@ -355,10 +355,6 @@ class UkmBrowserTest : public UkmBrowserTestBase {
     // would need to remove the pre-existing TabModel and add a new one.
     // Having an empty TabModelList allows us to simply add the appropriate
     // TabModel.
-    if (base::FeatureList::IsEnabled(chrome::android::kAndroidTabDeclutter)) {
-      EXPECT_EQ(2U, TabModelList::models().size());
-      TabModelList::RemoveTabModel(TabModelList::models()[1]);
-    }
     EXPECT_EQ(1U, TabModelList::models().size());
     TabModelList::RemoveTabModel(TabModelList::models()[0]);
     EXPECT_EQ(0U, TabModelList::models().size());

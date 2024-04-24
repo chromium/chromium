@@ -10,11 +10,7 @@
 #include "content/public/test/browser_test_utils.h"
 
 IN_PROC_BROWSER_TEST_F(AndroidBrowserTest, Smoke) {
-  if (base::FeatureList::IsEnabled(chrome::android::kAndroidTabDeclutter)) {
-    ASSERT_EQ(TabModelList::models().size(), 2u);
-  } else {
-    ASSERT_EQ(TabModelList::models().size(), 1u);
-  }
+  ASSERT_EQ(TabModelList::models().size(), 1u);
 
   // Grab a tab an navigate its contents
   const TabModel* tab_model = TabModelList::models()[0];
