@@ -140,6 +140,9 @@ struct DownloadAuthenticationFactorsRegistrationStateResult {
   // If a Google Password Manager PIN is a member of the domain, and is usable
   // for retrieval, then this will contain its metadata.
   std::optional<GpmPinMetadata> gpm_pin_metadata;
+
+  // The list of iCloud recovery key domain members as secure box public keys.
+  std::vector<std::unique_ptr<SecureBoxPublicKey>> icloud_keys;
 };
 
 // Authentication factor types:
@@ -147,6 +150,8 @@ using PhysicalDevice =
     base::StrongAlias<class PhysicalDeviceTag, absl::monostate>;
 using LockScreenKnowledgeFactor =
     base::StrongAlias<class VirtualDeviceTag, absl::monostate>;
+using ICloudKeychain =
+    base::StrongAlias<class ICloudKeychainTag, absl::monostate>;
 // UnspecifiedAuthenticationFactorType carries a type hint for the backend.
 using UnspecifiedAuthenticationFactorType =
     base::StrongAlias<class UnspecifiedAuthenticationFactorTypeTag, int>;
@@ -155,7 +160,8 @@ using AuthenticationFactorType =
     absl::variant<PhysicalDevice,
                   LockScreenKnowledgeFactor,
                   UnspecifiedAuthenticationFactorType,
-                  GpmPinMetadata>;
+                  GpmPinMetadata,
+                  ICloudKeychain>;
 
 struct TrustedVaultKeyAndVersion {
   TrustedVaultKeyAndVersion(const std::vector<uint8_t>& key, int version);

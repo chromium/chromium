@@ -4,6 +4,8 @@
 
 #include "components/trusted_vault/trusted_vault_connection.h"
 
+#include "components/trusted_vault/securebox.h"
+
 namespace trusted_vault {
 
 TrustedVaultKeyAndVersion::TrustedVaultKeyAndVersion(

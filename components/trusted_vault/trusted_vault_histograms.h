@@ -58,6 +58,7 @@ enum class TrustedVaultURLFetchReasonForUMA {
   kDownloadIsRecoverabilityDegraded,
   kDownloadAuthenticationFactorsRegistrationState,
   kRegisterGpmPin,
+  kRegisterICloudKeychain,
 };
 
 // Used to provide UMA metric breakdowns.

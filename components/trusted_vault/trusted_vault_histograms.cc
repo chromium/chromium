@@ -36,6 +36,8 @@ std::string GetTrustedVaultURLFetchReasonSuffix(
     case TrustedVaultURLFetchReasonForUMA::
         kDownloadAuthenticationFactorsRegistrationState:
       return "DownloadAuthenticationFactorsRegistrationState";
+    case TrustedVaultURLFetchReasonForUMA::kRegisterICloudKeychain:
+      return "RegisterICloudKeychain";
   }
 
   NOTREACHED_NORETURN();

@@ -136,6 +136,10 @@ trusted_vault_pb::SecurityDomainMember CreateSecurityDomainMember(
             auto* pin_metadata =
                 member_metadata->mutable_google_password_manager_pin_metadata();
             pin_metadata->set_encrypted_pin_hash(gpm_pin_metadata.wrapped_pin);
+          },
+          [&member](const ICloudKeychain&) {
+            member.set_member_type(trusted_vault_pb::SecurityDomainMember::
+                                       MEMBER_TYPE_ICLOUD_KEYCHAIN);
           }},
       authentication_factor_type);
   return member;
@@ -413,6 +417,15 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
         result_.gpm_pin_metadata.emplace(
             member.public_key(), pin_metadata.encrypted_pin_hash(),
             ToTime(pin_metadata.expiration_time()));
+      } else if (member.member_type() ==
+                 trusted_vault_pb::SecurityDomainMember::
+                     MEMBER_TYPE_ICLOUD_KEYCHAIN) {
+        std::unique_ptr<SecureBoxPublicKey> public_key =
+            SecureBoxPublicKey::CreateByImport(
+                ProtoStringToBytes(member.public_key()));
+        if (public_key) {
+          result_.icloud_keys.push_back(std::move(public_key));
+        }
       }
     }
 
@@ -461,6 +474,9 @@ GetURLFetchReasonForUMAForJoinSecurityDomainsRequest(
           },
           [](const GpmPinMetadata&) {
             return TrustedVaultURLFetchReasonForUMA::kRegisterGpmPin;
+          },
+          [](const ICloudKeychain&) {
+            return TrustedVaultURLFetchReasonForUMA::kRegisterICloudKeychain;
           }},
       authentication_factor_type);
 }

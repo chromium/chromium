@@ -81,7 +81,10 @@ trusted_vault_pb::JoinSecurityDomainsResponse MakeJoinSecurityDomainsResponse(
 }
 
 constexpr char kTestSerializedWrappedPIN[] = "wrapped PIN";
-constexpr char kTestMemberPublicKey[] = "public key";
+// A valid hex encoded securebox public key.
+constexpr char kTestMemberPublicKey[] =
+    "045C8A5DF0CE8205E62621449AD2C5F7320EE6D1BC41A4BBC423289ADAF9954996F9E893C6"
+    "13C99EDFC5B28BD119C80AD034DE52819963F3056E0F230264D62828";
 constexpr int kTestKeyVersion = 100;
 constexpr int kTestGPMExpirySeconds = 1000000;
 
@@ -91,6 +94,8 @@ enum class Member {
   kUsableVirtual,
   kUnusableVirtual,
   kGooglePasswordManagerPIN,
+  kICloudKeychain,
+  kInvalidICloudKeychain,
 };
 
 trusted_vault_pb::ListSecurityDomainMembersResponse MakeSecurityDomainMembers(
@@ -103,7 +108,9 @@ trusted_vault_pb::ListSecurityDomainMembersResponse MakeSecurityDomainMembers(
     trusted_vault_pb::SecurityDomainMember* member =
         response.add_security_domain_members();
     member->set_name("name");
-    member->set_public_key(kTestMemberPublicKey);
+    std::string public_key_bytes;
+    base::HexStringToString(kTestMemberPublicKey, &public_key_bytes);
+    member->set_public_key(std::move(public_key_bytes));
     member->add_memberships()->set_security_domain("other security domain");
     auto* membership = member->add_memberships();
     auto* key = membership->add_keys();
@@ -117,11 +124,30 @@ trusted_vault_pb::ListSecurityDomainMembersResponse MakeSecurityDomainMembers(
 
     switch (member_type) {
       case Member::kPhysical:
+        member->set_member_type(trusted_vault_pb::SecurityDomainMember::
+                                    MEMBER_TYPE_PHYSICAL_DEVICE);
+        break;
       case Member::kOtherSecurityDomain:
+        member->set_member_type(
+            trusted_vault_pb::SecurityDomainMember::MEMBER_TYPE_UNSPECIFIED);
+        break;
       case Member::kUnusableVirtual:
+        member->set_member_type(trusted_vault_pb::SecurityDomainMember::
+                                    MEMBER_TYPE_LOCKSCREEN_KNOWLEDGE_FACTOR);
         break;
       case Member::kUsableVirtual:
+        member->set_member_type(trusted_vault_pb::SecurityDomainMember::
+                                    MEMBER_TYPE_LOCKSCREEN_KNOWLEDGE_FACTOR);
         member->mutable_member_metadata()->set_usable_for_retrieval(true);
+        break;
+      case Member::kICloudKeychain:
+        member->set_member_type(trusted_vault_pb::SecurityDomainMember::
+                                    MEMBER_TYPE_ICLOUD_KEYCHAIN);
+        break;
+      case Member::kInvalidICloudKeychain:
+        member->set_public_key("invalid-public-key");
+        member->set_member_type(trusted_vault_pb::SecurityDomainMember::
+                                    MEMBER_TYPE_ICLOUD_KEYCHAIN);
         break;
       case Member::kGooglePasswordManagerPIN:
         member->set_member_type(trusted_vault_pb::SecurityDomainMember::
@@ -1105,8 +1131,10 @@ TEST_P(TrustedVaultConnectionImplTest,
 TEST_P(TrustedVaultConnectionImplTest,
        DownloadAuthenticationFactorsRegistrationState_Cases) {
   using State = DownloadAuthenticationFactorsRegistrationStateResult::State;
+  std::string member_public_key_bytes;
+  base::HexStringToString(kTestMemberPublicKey, &member_public_key_bytes);
   const GpmPinMetadata gpm_pin_metadata(
-      kTestMemberPublicKey, kTestSerializedWrappedPIN,
+      std::move(member_public_key_bytes), kTestSerializedWrappedPIN,
       /*expiry=*/base::Time::FromTimeT(kTestGPMExpirySeconds));
   const struct TestCase {
     // responses contains the set of security domain members included in each
@@ -1115,6 +1143,7 @@ TEST_P(TrustedVaultConnectionImplTest,
     State expected_result;
     std::optional<int> expected_key_version;
     std::optional<GpmPinMetadata> expected_gpm_pin_metadata;
+    std::vector<std::string> expected_icloud_keys;
   } kTestCases[] = {
       {
           {{}},
@@ -1189,6 +1218,20 @@ TEST_P(TrustedVaultConnectionImplTest,
           /*expected_key_version=*/kTestKeyVersion,
           /*expected_gpm_pin_metadata=*/gpm_pin_metadata,
       },
+      {
+          {{Member::kICloudKeychain}},
+          State::kIrrecoverable,
+          /*expected_key_version=*/kTestKeyVersion,
+          /*expected_gpm_pin_metadata=*/std::nullopt,
+          /*expected_icloud_keys=*/{kTestMemberPublicKey},
+      },
+      {
+          {{Member::kInvalidICloudKeychain}},
+          State::kIrrecoverable,
+          /*expected_key_version=*/kTestKeyVersion,
+          /*expected_gpm_pin_metadata=*/std::nullopt,
+          /*expected_icloud_keys=*/{},
+      },
   };
 
   int test_case = 0;
@@ -1235,6 +1278,11 @@ TEST_P(TrustedVaultConnectionImplTest,
     EXPECT_EQ(num_pages_downloaded, test.responses.size());
     EXPECT_EQ(result->state, test.expected_result);
     EXPECT_EQ(result->gpm_pin_metadata, test.expected_gpm_pin_metadata);
+    std::vector<std::string> result_icloud_keys;
+    for (const auto& key : result->icloud_keys) {
+      result_icloud_keys.push_back(base::HexEncode(key->ExportToBytes()));
+    }
+    EXPECT_EQ(result_icloud_keys, test.expected_icloud_keys);
   }
 }
 
