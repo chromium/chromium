@@ -32,11 +32,6 @@ namespace {
 
 const char kTestEmail[] = "test@gmail.com";
 
-// Short timeout to wait for asynchronously fetching already available system
-// capabilities.
-constexpr base::TimeDelta kFetchImmediatelyAvailableCapabilityDeadline =
-    base::Milliseconds(20);
-
 class HistorySyncCapabilitiesFetcherTest
     : public PlatformTest,
       public ::testing::WithParamInterface<std::tuple<bool, bool>> {
@@ -306,7 +301,8 @@ TEST_P(HistorySyncCapabilitiesFetcherTest, TestCapabilityFetchDeadline) {
   if (IsFetchingImmediatelyAvailableCapabilities()) {
     [fetcher_ fetchImmediatelyAvailableRestrictionCapabilityWithCallback:
                   std::move(callback)];
-    scoped_clock.Advance(kFetchImmediatelyAvailableCapabilityDeadline);
+    scoped_clock.Advance(base::Milliseconds(
+        switches::kFetchImmediatelyAvailableCapabilityDeadlineMs.Get()));
     run_loop.Run();
 
     histogram_tester.ExpectTotalCount(

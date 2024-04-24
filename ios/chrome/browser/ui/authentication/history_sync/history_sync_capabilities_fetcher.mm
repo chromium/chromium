@@ -32,11 +32,6 @@ namespace {
 // after `kMinorModeRestrictionsFetchDeadlineMs`.
 const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kFalse;
 
-// Short timeout to wait for asynchronously fetching already available system
-// capabilities.
-constexpr base::TimeDelta kFetchImmediatelyAvailableCapabilityDeadline =
-    base::Milliseconds(20);
-
 }  // namespace
 
 @interface HistorySyncCapabilitiesFetcher () <
@@ -98,8 +93,10 @@ constexpr base::TimeDelta kFetchImmediatelyAvailableCapabilityDeadline =
   _shouldRecordLatencyMetrics = NO;
   // System capabilities cannot be fetched synchronously. A short, non-zero
   // timeout is used to terminate async system capabilities fetch.
-  [self fetchRestrictionCapabilityWithTimeout:
-            kFetchImmediatelyAvailableCapabilityDeadline];
+  [self
+      fetchRestrictionCapabilityWithTimeout:
+          base::Milliseconds(
+              switches::kFetchImmediatelyAvailableCapabilityDeadlineMs.Get())];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
