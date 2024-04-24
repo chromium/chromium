@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/filters/h264_bitstream_buffer.h"
+#include "media/filters/h26x_annex_b_bitstream_builder.h"
 
 #include "base/bits.h"
 #include "base/containers/span.h"
@@ -10,14 +10,15 @@
 
 namespace media {
 
-H264BitstreamBuffer::H264BitstreamBuffer(bool insert_emulation_prevention_bytes)
+H26xAnnexBBitstreamBuilder::H26xAnnexBBitstreamBuilder(
+    bool insert_emulation_prevention_bytes)
     : insert_emulation_prevention_bytes_(insert_emulation_prevention_bytes) {
   Reset();
 }
 
-H264BitstreamBuffer::~H264BitstreamBuffer() = default;
+H26xAnnexBBitstreamBuilder::~H26xAnnexBBitstreamBuilder() = default;
 
-void H264BitstreamBuffer::Reset() {
+void H26xAnnexBBitstreamBuilder::Reset() {
   data_ = base::HeapArray<uint8_t>();
   pos_ = 0;
   bits_in_buffer_ = 0;
@@ -30,7 +31,7 @@ void H264BitstreamBuffer::Reset() {
   in_nalu_ = false;
 }
 
-void H264BitstreamBuffer::Grow() {
+void H26xAnnexBBitstreamBuilder::Grow() {
   auto grown = base::HeapArray<uint8_t>::Uninit(data_.size() + kGrowBytes);
   // The first `pos_` bytes in `data_` are initialized. Copy them but don't read
   // from the uninitialized stuff after it.
@@ -38,7 +39,7 @@ void H264BitstreamBuffer::Grow() {
   data_ = std::move(grown);
 }
 
-void H264BitstreamBuffer::FlushReg() {
+void H26xAnnexBBitstreamBuilder::FlushReg() {
   // Flush all bytes that have at least one bit cached, but not more
   // (on Flush(), reg_ may not be full).
   size_t bits_in_reg = kRegBitSize - bits_left_in_reg_;
@@ -91,7 +92,7 @@ void H264BitstreamBuffer::FlushReg() {
   bits_left_in_reg_ = kRegBitSize;
 }
 
-void H264BitstreamBuffer::AppendU64(size_t num_bits, uint64_t val) {
+void H26xAnnexBBitstreamBuilder::AppendU64(size_t num_bits, uint64_t val) {
   CHECK_LE(num_bits, kRegBitSize);
 
   while (num_bits > 0u) {
@@ -114,7 +115,7 @@ void H264BitstreamBuffer::AppendU64(size_t num_bits, uint64_t val) {
   }
 }
 
-void H264BitstreamBuffer::AppendBool(bool val) {
+void H26xAnnexBBitstreamBuilder::AppendBool(bool val) {
   if (bits_left_in_reg_ == 0u) {
     FlushReg();
   }
@@ -124,14 +125,14 @@ void H264BitstreamBuffer::AppendBool(bool val) {
   --bits_left_in_reg_;
 }
 
-void H264BitstreamBuffer::AppendSE(int val) {
+void H26xAnnexBBitstreamBuilder::AppendSE(int val) {
   if (val > 0)
     AppendUE(val * 2 - 1);
   else
     AppendUE(-val * 2);
 }
 
-void H264BitstreamBuffer::AppendUE(unsigned int val) {
+void H26xAnnexBBitstreamBuilder::AppendUE(unsigned int val) {
   size_t num_zeros = 0u;
   unsigned int v = val + 1u;
 
@@ -149,7 +150,8 @@ void H264BitstreamBuffer::AppendUE(unsigned int val) {
                                                "to the buffer, call "          \
                                                "FinishNALU() first."
 
-void H264BitstreamBuffer::BeginNALU(H264NALU::Type nalu_type, int nal_ref_idc) {
+void H26xAnnexBBitstreamBuilder::BeginNALU(H264NALU::Type nalu_type,
+                                           int nal_ref_idc) {
   DCHECK(!in_nalu_);
   DCHECK_FINISHED();
 
@@ -166,7 +168,22 @@ void H264BitstreamBuffer::BeginNALU(H264NALU::Type nalu_type, int nal_ref_idc) {
   AppendBits(5, nalu_type);
 }
 
-void H264BitstreamBuffer::FinishNALU() {
+void H26xAnnexBBitstreamBuilder::BeginNALU(H265NALU::Type nalu_type) {
+  DCHECK(!in_nalu_);
+  DCHECK_FINISHED();
+
+  DCHECK_LE(nalu_type, H265NALU::Type::EOS_NUT);
+
+  AppendBits(32, 0x00000001);
+  Flush();
+  in_nalu_ = true;
+  AppendBits(1, 0);          // forbidden_zero_bit
+  AppendBits(6, nalu_type);  // nal_unit_type
+  AppendBits(6, 0);          // nuh_layer_id
+  AppendBits(3, 1);          // nuh_temporal_id_plus_1
+}
+
+void H26xAnnexBBitstreamBuilder::FinishNALU() {
   // RBSP stop one bit.
   AppendBits(1, 1);
 
@@ -177,21 +194,21 @@ void H264BitstreamBuffer::FinishNALU() {
   in_nalu_ = false;
 }
 
-void H264BitstreamBuffer::Flush() {
+void H26xAnnexBBitstreamBuilder::Flush() {
   if (bits_left_in_reg_ != kRegBitSize)
     FlushReg();
 }
 
-size_t H264BitstreamBuffer::BitsInBuffer() const {
+size_t H26xAnnexBBitstreamBuilder::BitsInBuffer() const {
   return bits_in_buffer_;
 }
 
-size_t H264BitstreamBuffer::BytesInBuffer() const {
+size_t H26xAnnexBBitstreamBuilder::BytesInBuffer() const {
   DCHECK_FINISHED();
   return pos_;
 }
 
-const uint8_t* H264BitstreamBuffer::data() const {
+const uint8_t* H26xAnnexBBitstreamBuilder::data() const {
   DCHECK(!data_.empty());
   DCHECK_FINISHED();
 

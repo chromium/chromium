@@ -383,6 +383,12 @@ source_set("common") {
       "vp9_svc_layers.cc",
       "vp9_svc_layers.h",
     ]
+    if (enable_hevc_parser_and_hw_decoder) {
+      sources += [
+        "h265_builder.cc",
+        "h265_builder.h",
+      ]
+    }
   }
 
   if (use_av1_hw_decoder) {

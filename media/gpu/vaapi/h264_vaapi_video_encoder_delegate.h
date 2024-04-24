@@ -8,7 +8,7 @@
 #include <optional>
 
 #include "base/containers/circular_deque.h"
-#include "media/filters/h264_bitstream_buffer.h"
+#include "media/filters/h26x_annex_b_bitstream_builder.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
 
@@ -85,7 +85,7 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
   // Generate packed slice header from |pic_param|, |slice_param| and |pic|.
   void GeneratePackedSliceHeader(
-      H264BitstreamBuffer& packed_slice_header,
+      H26xAnnexBBitstreamBuilder& packed_slice_header,
       const VAEncPictureParameterBufferH264& pic_param,
       const VAEncSliceParameterBufferH264& sliice_param,
       const H264Picture& pic);
@@ -94,8 +94,8 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   // current profile and level.
   bool CheckConfigValidity(uint32_t bitrate, uint32_t framerate);
 
-  bool SubmitPackedHeaders(const H264BitstreamBuffer& packed_sps,
-                           const H264BitstreamBuffer& packed_pps);
+  bool SubmitPackedHeaders(const H26xAnnexBBitstreamBuilder& packed_sps,
+                           const H26xAnnexBBitstreamBuilder& packed_pps);
 
   bool SubmitFrameParameters(
       EncodeJob& job,
@@ -110,9 +110,9 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   // in AnnexB format *without* emulation prevention three-byte sequences
   // (those are expected to be added by the client as needed).
   H264SPS current_sps_;
-  std::optional<H264BitstreamBuffer> packed_sps_;
+  std::optional<H26xAnnexBBitstreamBuilder> packed_sps_;
   H264PPS current_pps_;
-  std::optional<H264BitstreamBuffer> packed_pps_;
+  std::optional<H26xAnnexBBitstreamBuilder> packed_pps_;
   bool submit_packed_headers_;
 
   // Current encoding parameters being used.

@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 #include "base/bits.h"
-#include "media/filters/h264_bitstream_buffer.h"
+#include "media/filters/h26x_annex_b_bitstream_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -30,13 +30,13 @@ uint64_t GetDataFromBuffer(const uint8_t* ptr, uint64_t num_bits) {
 }
 }
 
-class H264BitstreamBufferAppendBitsTest
+class H26xAnnexBBitstreamBuilderAppendBitsTest
     : public ::testing::TestWithParam<uint64_t> {};
 
 // TODO(posciak): More tests!
 
-TEST_P(H264BitstreamBufferAppendBitsTest, AppendAndVerifyBits) {
-  H264BitstreamBuffer b;
+TEST_P(H26xAnnexBBitstreamBuilderAppendBitsTest, AppendAndVerifyBits) {
+  H26xAnnexBBitstreamBuilder b;
   uint64_t num_bits = GetParam();
   // TODO(posciak): Tests for >64 bits.
   ASSERT_LE(num_bits, 64u);
@@ -57,8 +57,8 @@ TEST_P(H264BitstreamBufferAppendBitsTest, AppendAndVerifyBits) {
   EXPECT_EQ(got, expected) << std::hex << "0x" << got << " vs 0x" << expected;
 }
 
-TEST_F(H264BitstreamBufferAppendBitsTest, VerifyFlushAndBitsInBuffer) {
-  H264BitstreamBuffer b;
+TEST_F(H26xAnnexBBitstreamBuilderAppendBitsTest, VerifyFlushAndBitsInBuffer) {
+  H26xAnnexBBitstreamBuilder b;
   uint64_t num_bits = 20;
   uint64_t num_bytes = base::bits::AlignUp(num_bits, uint64_t{8}) / 8;
 
@@ -77,7 +77,7 @@ TEST_F(H264BitstreamBufferAppendBitsTest, VerifyFlushAndBitsInBuffer) {
 }
 
 INSTANTIATE_TEST_SUITE_P(AppendNumBits,
-                         H264BitstreamBufferAppendBitsTest,
+                         H26xAnnexBBitstreamBuilderAppendBitsTest,
                          ::testing::Range(static_cast<uint64_t>(1),
                                           static_cast<uint64_t>(65)));
 }  // namespace media

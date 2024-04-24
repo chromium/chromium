@@ -629,7 +629,7 @@ void H264VaapiVideoEncoderDelegate::UpdatePPS() {
 }
 
 void H264VaapiVideoEncoderDelegate::GeneratePackedSliceHeader(
-    H264BitstreamBuffer& packed_slice_header,
+    H26xAnnexBBitstreamBuilder& packed_slice_header,
     const VAEncPictureParameterBufferH264& pic_param,
     const VAEncSliceParameterBufferH264& slice_param,
     const H264Picture& pic) {
@@ -888,7 +888,7 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
       {VAEncMiscParameterBufferType, misc_buffers[2].size(),
        misc_buffers[2].data()}};
 
-  H264BitstreamBuffer packed_slice_header;
+  H26xAnnexBBitstreamBuilder packed_slice_header;
   VAEncPackedHeaderParameterBuffer packed_slice_param_buffer;
   if (submit_packed_headers_) {
     GeneratePackedSliceHeader(packed_slice_header, pic_param, slice_param,
@@ -908,8 +908,8 @@ bool H264VaapiVideoEncoderDelegate::SubmitFrameParameters(
 }
 
 bool H264VaapiVideoEncoderDelegate::SubmitPackedHeaders(
-    const H264BitstreamBuffer& packed_sps,
-    const H264BitstreamBuffer& packed_pps) {
+    const H26xAnnexBBitstreamBuilder& packed_sps,
+    const H26xAnnexBBitstreamBuilder& packed_pps) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(submit_packed_headers_);
 

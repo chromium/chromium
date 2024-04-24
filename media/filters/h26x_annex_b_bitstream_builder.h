@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// This file contains an implementation of a H264BitstreamBuffer class for
-// constructing raw bitstream buffers containing NAL units in
-// H.264 Annex-B stream format.
-// See H.264 spec Annex B and chapter 7for more details.
+// This file contains an implementation of a H26xAnnexBBitstreamBuilder class
+// for constructing raw bitstream buffers containing NAL units in H.264 Annex-B
+// stream format.
+// See H.264 spec Annex B and chapter 7 for more details.
 
-#ifndef MEDIA_FILTERS_H264_BITSTREAM_BUFFER_H_
-#define MEDIA_FILTERS_H264_BITSTREAM_BUFFER_H_
+#ifndef MEDIA_FILTERS_H26X_ANNEX_B_BITSTREAM_BUILDER_H_
+#define MEDIA_FILTERS_H26X_ANNEX_B_BITSTREAM_BUILDER_H_
 
 #include <stdint.h>
 
@@ -18,13 +18,14 @@
 #include "base/memory/ref_counted.h"
 #include "media/base/media_export.h"
 #include "media/video/h264_parser.h"
+#include "media/video/h265_nalu_parser.h"
 
 namespace media {
 
 // Holds one or more NALUs as a raw bitstream buffer in H.264 Annex-B format.
 // Note that this class currently does NOT insert emulation prevention
 // three-byte sequences (spec 7.3.1) by default.
-class MEDIA_EXPORT H264BitstreamBuffer {
+class MEDIA_EXPORT H26xAnnexBBitstreamBuilder {
  public:
   // This is used by VA-API encoder and D3D12 encoder.
   // - For VA-API encoder, set |insert_emulation_prevention_bytes| to |false| as
@@ -32,10 +33,12 @@ class MEDIA_EXPORT H264BitstreamBuffer {
   // - For D3D12 encoder, set |insert_emulation_prevention_bytes| to |true| as
   //   it only outputs slice NALU. We add SPS/PPS with EPB in Chromium to create
   //   an AnnexB bitstream.
-  explicit H264BitstreamBuffer(bool insert_emulation_prevention_bytes = false);
-  ~H264BitstreamBuffer();
-  H264BitstreamBuffer(const H264BitstreamBuffer&) = delete;
-  H264BitstreamBuffer& operator=(const H264BitstreamBuffer&) = delete;
+  explicit H26xAnnexBBitstreamBuilder(
+      bool insert_emulation_prevention_bytes = false);
+  ~H26xAnnexBBitstreamBuilder();
+  H26xAnnexBBitstreamBuilder(const H26xAnnexBBitstreamBuilder&) = delete;
+  H26xAnnexBBitstreamBuilder& operator=(const H26xAnnexBBitstreamBuilder&) =
+      delete;
 
   // Discard all data and reset the buffer for reuse.
   void Reset();
@@ -67,6 +70,9 @@ class MEDIA_EXPORT H264BitstreamBuffer {
   // aligned with trailing bits.
   void BeginNALU(H264NALU::Type nalu_type, int nal_ref_idc);
 
+  // Start a H265 NALU.
+  void BeginNALU(H265NALU::Type nalu_type);
+
   // Finish current NALU. This will flush any cached bits and correctly align
   // the buffer with RBSP trailing bits. This MUST be called for the stream
   // returned by data() to be correct.
@@ -97,7 +103,7 @@ class MEDIA_EXPORT H264BitstreamBuffer {
   const uint8_t* data() const;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(H264BitstreamBufferAppendBitsTest,
+  FRIEND_TEST_ALL_PREFIXES(H26xAnnexBBitstreamBuilderAppendBitsTest,
                            AppendAndVerifyBits);
 
   // Allocate additional memory (kGrowBytes bytes) for the buffer.
@@ -148,4 +154,4 @@ class MEDIA_EXPORT H264BitstreamBuffer {
 
 }  // namespace media
 
-#endif  // MEDIA_FILTERS_H264_BITSTREAM_BUFFER_H_
+#endif  // MEDIA_FILTERS_H26X_ANNEX_B_BITSTREAM_BUILDER_H_

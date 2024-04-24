@@ -237,8 +237,8 @@ source_set("filters") {
 
   if (is_win || use_vaapi) {
     sources += [
-      "h264_bitstream_buffer.cc",
-      "h264_bitstream_buffer.h",
+      "h26x_annex_b_bitstream_builder.cc",
+      "h26x_annex_b_bitstream_builder.h",
     ]
   }
 
@@ -392,8 +392,8 @@ source_set("unit_tests") {
     sources += [ "dav1d_video_decoder_unittest.cc" ]
   }
 
-  if (use_vaapi) {
-    sources += [ "h264_bitstream_buffer_unittest.cc" ]
+  if (is_win || use_vaapi) {
+    sources += [ "h26x_annex_b_bitstream_builder_unittest.cc" ]
   }
 
   if (proprietary_codecs) {

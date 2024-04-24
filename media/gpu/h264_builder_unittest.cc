@@ -5,7 +5,7 @@
 #include "media/gpu/h264_builder.h"
 
 #include "base/logging.h"
-#include "media/filters/h264_bitstream_buffer.h"
+#include "media/filters/h26x_annex_b_bitstream_builder.h"
 #include "media/video/h264_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,13 +50,13 @@ TEST_F(H264BuilderTest, H264BuildParseIdentity) {
   H264SPS sps = MakeTestSPS();
   H264PPS pps = MakeTestPPS();
 
-  H264BitstreamBuffer bitstream_buffer(
+  H26xAnnexBBitstreamBuilder bitstream_builder(
       /*insert_emulation_prevention_bytes=*/true);
-  BuildPackedH264SPS(bitstream_buffer, sps);
-  BuildPackedH264PPS(bitstream_buffer, sps, pps);
+  BuildPackedH264SPS(bitstream_builder, sps);
+  BuildPackedH264PPS(bitstream_builder, sps, pps);
 
   H264Parser parser;
-  parser.SetStream(bitstream_buffer.data(), bitstream_buffer.BytesInBuffer());
+  parser.SetStream(bitstream_builder.data(), bitstream_builder.BytesInBuffer());
   H264NALU nalu;
   EXPECT_EQ(parser.AdvanceToNextNALU(&nalu), H264Parser::Result::kOk);
   EXPECT_EQ(nalu.nal_unit_type, H264NALU::kSPS);
