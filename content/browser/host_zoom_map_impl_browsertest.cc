@@ -73,7 +73,17 @@ class HostZoomMapImplBrowserTestWithPageZoom
     : public HostZoomMapImplBrowserTest {
  public:
   HostZoomMapImplBrowserTestWithPageZoom() {
-    feature_list_.InitAndEnableFeature(features::kAccessibilityPageZoom);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kAccessibilityPageZoom, {{"AdjustForOSLevel", "true"}});
+  }
+};
+
+class HostZoomMapImplBrowserTestWithPageZoomNoOSAdjustment
+    : public HostZoomMapImplBrowserTest {
+ public:
+  HostZoomMapImplBrowserTestWithPageZoomNoOSAdjustment() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kAccessibilityPageZoom, {{"AdjustForOSLevel", "false"}});
   }
 };
 #endif
@@ -133,6 +143,30 @@ IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTestWithPageZoom,
   EXPECT_DOUBLE_EQ(0.77,
                    host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
                        url_.scheme(), url_.host()));
+}
+
+// Same as above test but without the OS-level adjustment.
+IN_PROC_BROWSER_TEST_F(HostZoomMapImplBrowserTestWithPageZoomNoOSAdjustment,
+                       GetZoomLevelForHostAndSchemeAndroid) {
+  // At the default level, there should be no adjustment.
+  EXPECT_DOUBLE_EQ(host_zoom_map_impl_->GetDefaultZoomLevel(),
+                   host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
+                       url_.scheme(), url_.host()));
+
+  // Test various levels of system font size.
+  // A scale of 1.3 is equivalent to an Android OS font size of XL.
+  // Zoom level should remain zero because we are ignoring OS setting.
+  host_zoom_map_impl_->SetSystemFontScaleForTesting(1.30);
+  EXPECT_DOUBLE_EQ(0, host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
+                          url_.scheme(), url_.host()));
+
+  host_zoom_map_impl_->SetSystemFontScaleForTesting(0.85);
+  EXPECT_DOUBLE_EQ(0, host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
+                          url_.scheme(), url_.host()));
+
+  host_zoom_map_impl_->SetSystemFontScaleForTesting(1.15);
+  EXPECT_DOUBLE_EQ(0, host_zoom_map_impl_->GetZoomLevelForHostAndSchemeAndroid(
+                          url_.scheme(), url_.host()));
 }
 
 #endif
