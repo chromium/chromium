@@ -56,18 +56,16 @@ class TabInterface {
   // and this WebContents will not change.
   virtual bool IsInForeground() const = 0;
 
-  // Register for these two callbacks to detect changes to IsForegrounded().
-  // DidEnterBackgroundCallback can be called repeatedly while the Tab remains
-  // in the background.
+  // Register for these two callbacks to detect changes to IsInForeground().
   using DidEnterForegroundCallback =
       base::RepeatingCallback<void(TabInterface*)>;
   virtual base::CallbackListSubscription RegisterDidEnterForeground(
       DidEnterForegroundCallback callback) = 0;
 
-  using DidEnterBackgroundCallback =
+  using WillEnterBackgroundCallback =
       base::RepeatingCallback<void(TabInterface*)>;
-  virtual base::CallbackListSubscription RegisterDidEnterBackground(
-      DidEnterBackgroundCallback callback) = 0;
+  virtual base::CallbackListSubscription RegisterWillEnterBackground(
+      WillEnterBackgroundCallback callback) = 0;
 
   // Features that want to show tab-modal UI are mutually exclusive. Before
   // showing a modal UI first check `CanShowModal`. Then call ShowModal() and

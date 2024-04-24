@@ -49,9 +49,6 @@ void TabModel::OnRemovedFromModel() {
   // Going through each field here:
   // Keep `contents_`, obviously.
 
-  // We are now unowned. In this case no UI is shown, which is functionally
-  // equivalent to being in the background.
-  did_enter_background_callback_list_.Notify(this);
   owning_model_->RemoveObserver(this);
   owning_model_ = nullptr;
 
@@ -80,6 +77,10 @@ void TabModel::OnReparented(TabCollection* parent,
   parent_collection_ = parent;
 }
 
+void TabModel::WillEnterBackground(base::PassKey<TabStripModel>) {
+  will_enter_background_callback_list_.Notify(this);
+}
+
 content::WebContents* TabModel::GetContents() const {
   return contents();
 }
@@ -103,9 +104,9 @@ base::CallbackListSubscription TabModel::RegisterDidEnterForeground(
   return did_enter_foreground_callback_list_.Add(std::move(callback));
 }
 
-base::CallbackListSubscription TabModel::RegisterDidEnterBackground(
-    TabInterface::DidEnterBackgroundCallback callback) {
-  return did_enter_background_callback_list_.Add(std::move(callback));
+base::CallbackListSubscription TabModel::RegisterWillEnterBackground(
+    TabInterface::WillEnterBackgroundCallback callback) {
+  return will_enter_background_callback_list_.Add(std::move(callback));
 }
 
 bool TabModel::CanShowModalUI() const {
@@ -136,10 +137,6 @@ void TabModel::OnTabStripModelChanged(
     did_enter_foreground_callback_list_.Notify(this);
     return;
   }
-
-  if (selection.old_contents == contents()) {
-    did_enter_background_callback_list_.Notify(this);
-  }
 }
 
 TabModel::ScopedTabModalUIImpl::ScopedTabModalUIImpl(TabModel* tab)
@@ -161,6 +158,9 @@ void TabModel::WriteIntoTrace(perfetto::TracedValue context) const {
 
 std::unique_ptr<content::WebContents> TabModel::ReplaceContents(
     std::unique_ptr<content::WebContents> contents) {
+  // We do not call will_enter_background_callback_list_ because it is
+  // guaranteed that if a tab is being discarded, it is already in the
+  // background.
   std::unique_ptr<content::WebContents> old_contents = RemoveContents();
   SetContents(std::move(contents));
   return old_contents;

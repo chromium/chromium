@@ -95,6 +95,11 @@ class TabModel final : public SupportsHandles<const TabModel>,
   // tab hierarchy, maintaining consistent organization.
   void OnReparented(TabCollection* parent, base::PassKey<TabCollection>);
 
+  // Called by TabStripModel when a tab is going to be backgrounded (any
+  // operation that makes the tab no longer visible, including removal from the
+  // TabStripModel). Not called if TabStripModel is being destroyed.
+  void WillEnterBackground(base::PassKey<TabStripModel>);
+
   // TabInterface overrides:
   content::WebContents* GetContents() const override;
   base::CallbackListSubscription RegisterDidAddContents(
@@ -104,8 +109,8 @@ class TabModel final : public SupportsHandles<const TabModel>,
   bool IsInForeground() const override;
   base::CallbackListSubscription RegisterDidEnterForeground(
       TabInterface::DidEnterForegroundCallback callback) override;
-  base::CallbackListSubscription RegisterDidEnterBackground(
-      TabInterface::DidEnterBackgroundCallback callback) override;
+  base::CallbackListSubscription RegisterWillEnterBackground(
+      TabInterface::WillEnterBackgroundCallback callback) override;
   bool CanShowModalUI() const override;
   std::unique_ptr<ScopedTabModalUI> ShowModalUI() override;
   bool IsInNormalWindow() const override;
@@ -162,9 +167,9 @@ class TabModel final : public SupportsHandles<const TabModel>,
       base::RepeatingCallbackList<void(TabInterface*)>;
   DidEnterForegroundCallbackList did_enter_foreground_callback_list_;
 
-  using DidEnterBackgroundCallbackList =
+  using WillEnterBackgroundCallbackList =
       base::RepeatingCallbackList<void(TabInterface*)>;
-  DidEnterBackgroundCallbackList did_enter_background_callback_list_;
+  WillEnterBackgroundCallbackList will_enter_background_callback_list_;
 
   // Tracks whether a modal UI is showing.
   bool showing_modal_ui_ = false;

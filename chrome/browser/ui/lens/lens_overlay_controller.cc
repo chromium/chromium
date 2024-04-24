@@ -117,16 +117,14 @@ LensOverlayController::LensOverlayController(
     : tab_(tab),
       variations_client_(variations_client),
       identity_manager_(identity_manager) {
-  if (tab_->GetContents()) {
-    LensOverlayControllerTabLookup::CreateForWebContents(tab_->GetContents(),
-                                                         this);
-  }
+  LensOverlayControllerTabLookup::CreateForWebContents(tab_->GetContents(),
+                                                       this);
 
   tab_subscriptions_.push_back(tab_->RegisterDidEnterForeground(
       base::BindRepeating(&LensOverlayController::TabForegrounded,
                           weak_factory_.GetWeakPtr())));
-  tab_subscriptions_.push_back(tab_->RegisterDidEnterBackground(
-      base::BindRepeating(&LensOverlayController::TabBackgrounded,
+  tab_subscriptions_.push_back(tab_->RegisterWillEnterBackground(
+      base::BindRepeating(&LensOverlayController::TabWillEnterBackground,
                           weak_factory_.GetWeakPtr())));
   tab_subscriptions_.push_back(tab_->RegisterDidAddContents(base::BindRepeating(
       &LensOverlayController::DidAddContents, weak_factory_.GetWeakPtr())));
@@ -136,12 +134,19 @@ LensOverlayController::LensOverlayController(
 }
 
 LensOverlayController::~LensOverlayController() {
-  CloseUI();
-  lens_overlay_query_controller_.reset();
-  if (tab_->GetContents()) {
-    tab_->GetContents()->RemoveUserData(
-        LensOverlayControllerTabLookup::UserDataKey());
+  // In the event that the tab is being closed or backgrounded, and the window
+  // is not closing, TabWillEnterBackground() will be called and the UI will be
+  // torn down via CloseUI(). This code path is only relevant for the case where
+  // the whole window is being torn down. In that case we need to clear the
+  // WebContents::SupportsUserData since it's technically possible for a
+  // WebContents to outlive the window, but we do not want to run through the
+  // usual teardown since the window is half-destroyed.
+  while (!glued_webviews_.empty()) {
+    RemoveGlueForWebView(glued_webviews_.front());
   }
+  glued_webviews_.clear();
+  tab_->GetContents()->RemoveUserData(
+      LensOverlayControllerTabLookup::UserDataKey());
 }
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(LensOverlayController, kOverlayId);
@@ -659,7 +664,7 @@ void LensOverlayController::TabForegrounded(tabs::TabInterface* tab) {
   }
 }
 
-void LensOverlayController::TabBackgrounded(tabs::TabInterface* tab) {
+void LensOverlayController::TabWillEnterBackground(tabs::TabInterface* tab) {
   // If the current tab was already backgrounded, do nothing.
   if (state_ == State::kBackground) {
     return;

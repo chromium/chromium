@@ -486,6 +486,10 @@ TabStripModel::DetachWebContentsWithReasonAt(
                                       "trying to detach web contents.";
   WebContents* initially_active_web_contents =
       GetWebContentsAtImpl(active_index());
+  if (index == active_index() && !closing_all_) {
+    GetTabAtIndex(active_index())
+        ->WillEnterBackground(base::PassKey<TabStripModel>());
+  }
 
   DetachNotifications notifications(initially_active_web_contents,
                                     selection_model_);
@@ -2012,6 +2016,13 @@ int TabStripModel::InsertTabAtImpl(
   const bool pin = (add_types & ADD_PINNED) != 0;
   index = ConstrainInsertionIndex(index, pin);
 
+  // If there's already an active tab, and the new tab will become active, send
+  // a notification.
+  if (selection_model_.active().has_value() && active && !closing_all_) {
+    GetTabAtIndex(active_index())
+        ->WillEnterBackground(base::PassKey<TabStripModel>());
+  }
+
   // Have to get the active contents before we monkey with the contents
   // otherwise we run into problems when we try to change the active contents
   // since the old contents and the new contents will be the same...
@@ -2142,6 +2153,14 @@ bool TabStripModel::CloseWebContentses(
   if (items.empty())
     return true;
 
+  for (size_t i = 0; i < items.size(); ++i) {
+    int index = GetIndexOfWebContents(items[i]);
+    if (index == active_index() && !closing_all_) {
+      GetTabAtIndex(active_index())
+          ->WillEnterBackground(base::PassKey<TabStripModel>());
+    }
+  }
+
   // We only try the fast shutdown path if the whole browser process is *not*
   // shutting down. Fast shutdown during browser termination is handled in
   // browser_shutdown::OnShutdownStarting.
@@ -2222,6 +2241,12 @@ TabStripSelectionChange TabStripModel::SetSelection(
   selection.old_contents = GetActiveWebContents();
   selection.new_model = new_model;
   selection.reason = reason;
+
+  if (selection_model_.active().has_value() && new_model.active().has_value() &&
+      selection_model_.active().value() != new_model.active().value()) {
+    GetTabAtIndex(active_index())
+        ->WillEnterBackground(base::PassKey<TabStripModel>());
+  }
 
   // Validate that |new_model| only selects tabs that actually exist.
   CHECK(empty() || new_model.active().has_value(), base::NotFatalUntil::M124);
@@ -2398,6 +2423,10 @@ void TabStripModel::SendMoveNotificationForWebContents(
     int to_position,
     bool select_after_move,
     WebContents* web_contents) {
+  if (select_after_move && GetActiveWebContents() != web_contents) {
+    GetTabAtIndex(active_index())
+        ->WillEnterBackground(base::PassKey<TabStripModel>());
+  }
   TabStripSelectionChange selection(GetActiveWebContents(), selection_model_);
 
   selection_model_.Move(index, to_position, 1);

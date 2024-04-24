@@ -308,8 +308,8 @@ class LensOverlayController : public LensSearchboxClient,
   // Called when the associated tab enters the foreground.
   void TabForegrounded(tabs::TabInterface* tab);
 
-  // Called when the associated tab enters the background.
-  void TabBackgrounded(tabs::TabInterface* tab);
+  // Called when the associated tab will enter the background.
+  void TabWillEnterBackground(tabs::TabInterface* tab);
 
   // Called when the tab's WebContents are removed.
   void WillRemoveContents(tabs::TabInterface* tab,
