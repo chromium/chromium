@@ -26,7 +26,8 @@ class ProductSpecificationsService : public KeyedService {
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetSyncControllerDelegate();
 
-  const std::vector<ProductSpecificationsSet> GetAllProductSpecifications();
+  virtual const std::vector<ProductSpecificationsSet>
+  GetAllProductSpecifications();
 
   // Add new product specifications set called |name| with product pages
   // corresponding to |urls|.
