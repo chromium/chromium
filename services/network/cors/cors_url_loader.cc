@@ -973,14 +973,8 @@ void CorsURLLoader::ReportOrbErrorToDevTools() {
 
 void CorsURLLoader::MaybeReportSharedDictionaryErrorToDevTools(
     mojom::SharedDictionaryError error) {
-  // No need to send AlreadyRegistered error to DevTools.
-  if (error == mojom::SharedDictionaryError::kWriteErrorAlreadyRegistered) {
-    return;
-  }
-  if (devtools_observer_ && request_.devtools_request_id) {
-    devtools_observer_->OnSharedDictionaryError(*request_.devtools_request_id,
-                                                request_.url, error);
-  }
+  // TODO(crbug.com/333756098): Send `error` to the browser process via
+  // `devtools_observer_`.
 }
 
 std::optional<URLLoaderCompletionStatus> CorsURLLoader::ConvertPreflightResult(
