@@ -24,7 +24,9 @@ void ApplyDefaultChromeRefreshToolbarColors(ui::ColorMixer& mixer,
       kColorTabForegroundInactiveFrameActive};
 
   if (key.custom_theme && key.custom_theme->HasCustomImage(IDR_THEME_TOOLBAR)) {
-    mixer[kColorAppMenuHighlightDefault] = {ui::kColorSysTonalContainer};
+    mixer[kColorAppMenuHighlightDefault] = {
+        kColorToolbarBackgroundSubtleEmphasis};
+    mixer[kColorAppMenuExpandedForegroundDefault] = {kColorToolbarButtonText};
   }
 
   mixer[kColorAppMenuHighlightSeverityLow] = {kColorAppMenuHighlightDefault};
