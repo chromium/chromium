@@ -160,7 +160,10 @@ PopupViewViews::PopupViewViews(
     PopupViewSearchBarConfig search_bar_config)
     : PopupBaseView(controller,
                     views::Widget::GetTopLevelWidgetForNativeView(
-                        controller->container_view())),
+                        controller->container_view()),
+                    search_bar_config.enabled
+                        ? views::Widget::InitParams::Activatable::kYes
+                        : views::Widget::InitParams::Activatable::kDefault),
       controller_(controller) {
   InitViews(search_bar_config);
 }
@@ -216,6 +219,8 @@ bool PopupViewViews::Show(
     AxAnnounce(
         l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW));
   }
+
+  // TODO(b/325246516): Focus the search bar if it is enabled.
 
   return true;
 }
@@ -593,8 +598,7 @@ PopupViewViews::GetPopupScreenLocation() const {
 }
 
 bool PopupViewViews::HasFocus() const {
-  // TODO(b/325246516): Add checking whether the search bar has focus.
-  return false;
+  return GetWidget() && GetWidget()->IsActive();
 }
 
 void PopupViewViews::OnWidgetVisibilityChanged(views::Widget* widget,

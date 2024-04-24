@@ -138,10 +138,6 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
           return GetFillingProductFromPopupItemId(
               controller.GetSuggestionAt(0).popup_item_id);
         });
-
-    widget_ = CreateTestWidget();
-    generator_ = std::make_unique<ui::test::EventGenerator>(
-        GetRootWindow(widget_.get()));
   }
 
   void TearDown() override {
@@ -157,14 +153,26 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
     view->Show(AutoselectFirstSuggestion(false));
   }
 
-  void CreateAndShowView() {
+  void CreateAndShowView(
+      std::optional<views::Widget::InitParams> widget_params = std::nullopt) {
+    view_ = nullptr;
+    generator_.reset();
+
+    widget_ = CreateTestWidget(
+        widget_params ? std::move(*widget_params)
+                      : CreateParamsForTestWidget(
+                            views::Widget::InitParams::Type::TYPE_POPUP));
+    generator_ = std::make_unique<ui::test::EventGenerator>(
+        GetRootWindow(widget_.get()));
     view_ = new PopupViewViews(controller().GetWeakPtr());
     ShowView(view_, *widget_);
   }
 
-  void CreateAndShowView(const std::vector<PopupItemId>& ids) {
+  void CreateAndShowView(
+      const std::vector<PopupItemId>& ids,
+      std::optional<views::Widget::InitParams> widget_params = std::nullopt) {
     controller().set_suggestions(ids);
-    CreateAndShowView();
+    CreateAndShowView(std::move(widget_params));
   }
 
   void UpdateSuggestions(const std::vector<PopupItemId>& ids) {
@@ -1507,5 +1515,23 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          PopupViewViewsTestWithClickablePopupItemId,
                          testing::ValuesIn(kClickablePopupItemIds));
+
+TEST_F(PopupViewViewsTest, ViewFocusOnShowDependsOnWidgetActivatability) {
+  views::Widget::InitParams activatable_widget_params =
+      CreateParamsForTestWidget(views::Widget::InitParams::Type::TYPE_POPUP);
+  activatable_widget_params.activatable =
+      views::Widget::InitParams::Activatable::kYes;
+  CreateAndShowView({PopupItemId::kAddressEntry},
+                    std::move(activatable_widget_params));
+  EXPECT_EQ(view().HasFocus(), true);
+
+  views::Widget::InitParams non_activatable_widget_params =
+      CreateParamsForTestWidget(views::Widget::InitParams::Type::TYPE_POPUP);
+  non_activatable_widget_params.activatable =
+      views::Widget::InitParams::Activatable::kNo;
+  CreateAndShowView({PopupItemId::kAddressEntry},
+                    std::move(non_activatable_widget_params));
+  EXPECT_EQ(view().HasFocus(), false);
+}
 
 }  // namespace autofill
