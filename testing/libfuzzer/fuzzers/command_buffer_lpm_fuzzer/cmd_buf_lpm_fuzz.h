@@ -147,7 +147,6 @@ class CmdBufFuzz : public base::TestSuite {
   std::unique_ptr<dawn::wire::WireServer> wire_server_;
   scoped_refptr<webgpu::APIChannel> wire_channel_;
   std::unique_ptr<dawn::native::Instance> dawn_instance_;
-  std::unique_ptr<DawnProcTable> dawn_procs_;
   std::unique_ptr<dawn::wire::WireServerDescriptor> wire_descriptor_;
   scoped_refptr<Buffer> buffer_;
   int32_t command_buffer_id_ = -1;

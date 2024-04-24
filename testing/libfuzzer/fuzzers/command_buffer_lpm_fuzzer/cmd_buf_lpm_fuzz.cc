@@ -141,13 +141,12 @@ void CmdBufFuzz::GfxInit() {
 
   VLOG(3) << "Wire protocol setup";
   wire_channel_ = webgpu()->GetAPIChannel();
-  dawn_procs_ = std::make_unique<DawnProcTable>(wire_channel_->GetProcs());
-  dawnProcSetProcs(dawn_procs_.get());
+  dawnProcSetProcs(&dawn::wire::client::GetProcs());
   dawn_wire_services_ =
       static_cast<webgpu::DawnWireServices*>(wire_channel_.get());
   dawn_wire_serializer_ = dawn_wire_services_->serializer();
   wire_descriptor_ = std::make_unique<dawn::wire::WireServerDescriptor>();
-  wire_descriptor_->procs = dawn_procs_.get();
+  wire_descriptor_->procs = &dawn::wire::client::GetProcs();
   wire_descriptor_->serializer = dawn_wire_serializer_.get();
   wire_server_ = std::make_unique<dawn::wire::WireServer>(*wire_descriptor_);
   dawn_instance_ = std::make_unique<dawn::native::Instance>();
