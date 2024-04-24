@@ -13,7 +13,7 @@
 @implementation TabGroupItem {
   WebStateList* _webStateList;
   NSMutableArray<GroupTabInfo*>* _tabGroupInfos;
-  base::WeakPtr<const TabGroup> _tabGroup;
+  raw_ptr<const TabGroup> _tabGroup;
 }
 
 - (instancetype)initWithTabGroup:(const TabGroup*)tabGroup
@@ -23,7 +23,7 @@
   CHECK(webStateList->ContainsGroup(tabGroup));
   self = [super init];
   if (self) {
-    _tabGroup = tabGroup->GetWeakPtr();
+    _tabGroup = tabGroup;
     _webStateList = webStateList;
     _tabGroupInfos = [[NSMutableArray alloc] init];
   }
