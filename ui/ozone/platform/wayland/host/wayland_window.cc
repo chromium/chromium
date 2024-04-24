@@ -15,6 +15,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
+#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -1326,10 +1327,6 @@ void WaylandWindow::RequestStateFromClient(
 void WaylandWindow::RequestState(PlatformWindowDelegate::State state,
                                  int64_t serial,
                                  bool force) {
-  // State should NOT be requested during the ongoing request handling.
-  CHECK(!requesting_state_) << "Detected re-enterancy of state request.";
-  base::AutoReset<bool> setter(&requesting_state_, true);
-
   LOG_IF(WARNING, in_flight_requests_.size() > 100u)
       << "The queue of configures is longer than 100!";
 
@@ -1511,6 +1508,14 @@ void WaylandWindow::LatchStateRequest(const StateRequest& req) {
 }
 
 void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
+  // Calling `MaybeApplyLatestStateRequest` re-entrantly is hard to reason about
+  // and also can lead to memory corruption during accesses to
+  // `in_flight_requests_`.
+  CHECK(!applying_state_)
+      << "MaybeApplyLatestStateRequest called re-entrantly.";
+  auto setter =
+      std::make_optional<base::AutoReset<bool>>(&applying_state_, true);
+
   if (in_flight_requests_.empty()) {
     return;
   }
@@ -1551,6 +1556,11 @@ void WaylandWindow::MaybeApplyLatestStateRequest(bool force) {
   // old and new states are the same, or it only changes the origin of the
   // bounds.
   latest.viz_seq = delegate()->OnStateUpdate(old, latest.state);
+
+  // `ProcessSequencePoint` may re-entrantly call
+  // `MaybeApplyLatestStateRequest`. This is safe as long as we do not access
+  // references to `in_flight_requests_` after here.
+  setter.reset();
 
   // If we have state requests which don't require synchronization to latch, or
   // if no frames will be produced, ack them immediately. Using -2 (or any

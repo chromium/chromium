@@ -734,9 +734,10 @@ class WaylandWindow : public PlatformWindow,
   bool disable_null_target_dcheck_for_test_ = false;
 #endif
 
-  // Set to true when the state is in the process of request. This is used to
-  // check there is no re-enterancy.
-  bool requesting_state_ = false;
+  // Set to true when we are already in the process of applying a state.
+  // This is used to detect re-entrancy which is hard to reason about and
+  // also will cause memory corruption with the current implementation.
+  bool applying_state_ = false;
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
