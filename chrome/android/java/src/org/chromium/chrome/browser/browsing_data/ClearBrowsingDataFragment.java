@@ -53,7 +53,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
+import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
 import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -231,6 +231,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
 
     private Profile mProfile;
     private SigninManager mSigninManager;
+    private SnackbarManager mSnackbarManager;
 
     private ProgressDialog mProgressDialog;
     private Item[] mItems;
@@ -766,15 +767,20 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
                                 requireContext(), createSignOutOfChromeCallback())));
     }
 
+    public void setSnackbarManager(SnackbarManager snackbarManager) {
+        mSnackbarManager = snackbarManager;
+    }
+
     private Callback<View> createSignOutOfChromeCallback() {
         return view ->
-                SignOutDialogCoordinator.show(
+                SignOutCoordinator.startSignOutFlow(
                         requireContext(),
                         mProfile,
                         getFragmentManager(),
                         ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
+                        mSnackbarManager,
                         SignoutReason.USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE,
-                        /* onSignOut= */ null);
+                        () -> {});
     }
 
     /**
@@ -896,17 +902,14 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         }
     }
 
-    private SnackbarManager getSnackbarManager() {
-        Activity activity = getLastFocusedActivity();
-        if (activity instanceof SnackbarManager.SnackbarManageable) {
-            return ((SnackbarManager.SnackbarManageable) activity).getSnackbarManager();
-        }
-        return null;
-    }
-
     /** A method to show the post-delete snack-bar confirmation. */
     private void showSnackbar() {
-        SnackbarManager snackbarManager = getSnackbarManager();
+        // This snack bar is not shown from SettingsActivity. So we can't use mSnackbarManager.
+        SnackbarManager snackbarManager = null;
+        Activity activity = getLastFocusedActivity();
+        if (activity instanceof SnackbarManager.SnackbarManageable) {
+            snackbarManager = ((SnackbarManager.SnackbarManageable) activity).getSnackbarManager();
+        }
         if (snackbarManager == null) return;
 
         String snackbarMessage;

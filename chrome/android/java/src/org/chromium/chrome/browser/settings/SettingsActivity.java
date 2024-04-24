@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.autofill.settings.AutofillCreditCardEditor;
 import org.chromium.chrome.browser.autofill.settings.AutofillIbanEditor;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
+import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentBasic;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
@@ -78,6 +79,9 @@ import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
+import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
+import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockLauncher;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
@@ -364,6 +368,18 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (fragment instanceof PrivacySandboxSettingsBaseFragment) {
             ((PrivacySandboxSettingsBaseFragment) fragment)
                     .setSnackbarManager(getSnackbarManager());
+        }
+        if (fragment instanceof ClearBrowsingDataFragment) {
+            ((ClearBrowsingDataFragment) fragment).setSnackbarManager(mSnackbarManager);
+        }
+        if (fragment instanceof AccountManagementFragment) {
+            ((AccountManagementFragment) fragment).setSnackbarManager(mSnackbarManager);
+        }
+        if (fragment instanceof GoogleServicesSettings) {
+            ((GoogleServicesSettings) fragment).setSnackbarManager(mSnackbarManager);
+        }
+        if (fragment instanceof ManageSyncSettings) {
+            ((ManageSyncSettings) fragment).setSnackbarManager(mSnackbarManager);
         }
         initBackPressHandler();
     }

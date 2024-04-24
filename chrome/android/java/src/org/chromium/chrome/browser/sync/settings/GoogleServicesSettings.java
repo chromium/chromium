@@ -29,7 +29,8 @@ import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
 import org.chromium.chrome.browser.usage_stats.UsageStatsConsentDialog;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
@@ -80,6 +81,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
     private @Nullable Preference mContextualSearch;
     private Preference mPriceNotificationSection;
     private Preference mUsageStatsReporting;
+    private SnackbarManager mSnackbarManager;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, String rootKey) {
@@ -196,11 +198,12 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
                 return true;
             }
 
-            SignOutDialogCoordinator.show(
+            SignOutCoordinator.startSignOutFlow(
                     requireContext(),
                     getProfile(),
                     getChildFragmentManager(),
                     ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
+                    mSnackbarManager,
                     SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                     () -> {
                         mPrefService.setBoolean(Pref.SIGNIN_ALLOWED, false);
@@ -221,6 +224,10 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
             PriceTrackingUtilities.setTrackPricesOnTabsEnabled((boolean) newValue);
         }
         return true;
+    }
+
+    public void setSnackbarManager(SnackbarManager snackbarManager) {
+        mSnackbarManager = snackbarManager;
     }
 
     private static void removePreference(PreferenceGroup from, Preference preference) {

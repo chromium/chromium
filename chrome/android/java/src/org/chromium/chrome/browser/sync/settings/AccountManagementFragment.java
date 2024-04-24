@@ -35,7 +35,8 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
@@ -99,6 +100,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
     private ProfileDataCache mProfileDataCache;
     private SyncService mSyncService;
     private @Nullable SyncService.SyncSetupInProgressHandle mSyncSetupInProgressHandle;
+    private SnackbarManager mSnackbarManager;
 
     @Override
     public void onCreatePreferences(Bundle savedState, String rootKey) {
@@ -209,6 +211,10 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         return !userManager.hasUserRestriction(UserManager.DISALLOW_MODIFY_ACCOUNTS);
     }
 
+    public void setSnackbarManager(SnackbarManager snackbarManager) {
+        mSnackbarManager = snackbarManager;
+    }
+
     private void configureSignOutSwitch() {
         Preference signOutPreference = findPreference(PREF_SIGN_OUT);
         if (isSupervisedUser()) {
@@ -234,14 +240,15 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                                         .getPrimaryAccountInfo(ConsentLevel.SYNC)
                                 != null) {
                             // Only show the sign-out dialog if the user has given sync consent.
-                            SignOutDialogCoordinator.show(
+                            SignOutCoordinator.startSignOutFlow(
                                     requireContext(),
                                     getProfile(),
                                     getChildFragmentManager(),
                                     ((ModalDialogManagerHolder) getActivity())
                                             .getModalDialogManager(),
+                                    mSnackbarManager,
                                     SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
-                                    /* onSignOut= */ null);
+                                    () -> {});
                         } else {
                             IdentityServicesProvider.get()
                                     .getSigninManager(getProfile())

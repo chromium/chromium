@@ -479,8 +479,8 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
 
     @CalledByNative
     private static void onGetTypesWithUnsyncedDataResult(
-            Callback<Set<Integer>> callback, Set<Integer> types) {
-        callback.onResult(types);
+            Callback<Set<Integer>> callback, int[] types) {
+        callback.onResult(modelTypeArrayToSet(types));
     }
 
     /** Invokes the onResult method of the callback from native code. */

@@ -51,7 +51,8 @@ import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
 import org.chromium.chrome.browser.sync.ui.PassphraseCreationDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseDialogFragment;
 import org.chromium.chrome.browser.sync.ui.PassphraseTypeDialogFragment;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.signin.SignOutCoordinator;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
@@ -132,6 +133,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
 
     private SyncService mSyncService;
     private SettingsLauncher mSettingsLauncher;
+    private SnackbarManager mSnackbarManager;
 
     private boolean mIsFromSigninScreen;
 
@@ -619,6 +621,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         displayCustomPassphraseDialog();
     }
 
+    public void setSnackbarManager(SnackbarManager snackbarManager) {
+        mSnackbarManager = snackbarManager;
+    }
+
     private void onGoogleActivityControlsClicked(String signedInAccountName) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.LINKED_SERVICES_SETTING)
                 && isEeaChoiceCountry()) {
@@ -640,13 +646,14 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 .hasPrimaryAccount(ConsentLevel.SYNC)) {
             return;
         }
-        SignOutDialogCoordinator.show(
+        SignOutCoordinator.startSignOutFlow(
                 requireContext(),
                 getProfile(),
                 getChildFragmentManager(),
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
+                mSnackbarManager,
                 SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
-                /* onSignOut= */ null);
+                () -> {});
     }
 
     private void onTurnOffSyncClicked() {
@@ -656,13 +663,14 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 .hasPrimaryAccount(ConsentLevel.SYNC)) {
             return;
         }
-        SignOutDialogCoordinator.show(
+        SignOutCoordinator.startSignOutFlow(
                 requireContext(),
                 getProfile(),
                 getChildFragmentManager(),
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
+                mSnackbarManager,
                 SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS,
-                /* onSignOut= */ null);
+                () -> {});
     }
 
     private void onSyncEncryptionClicked() {
@@ -814,15 +822,16 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 startActivity(intent);
                 return;
             case SyncError.OTHER_ERRORS:
-                SignOutDialogCoordinator.show(
+                SignOutCoordinator.startSignOutFlow(
                         requireContext(),
                         profile,
                         getChildFragmentManager(),
                         ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
+                        mSnackbarManager,
                         profile.isChild()
                                 ? SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS
                                 : SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
-                        /* onSignOut= */ null);
+                        () -> {});
                 return;
             case SyncError.PASSPHRASE_REQUIRED:
                 displayPassphraseDialog();

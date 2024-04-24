@@ -180,7 +180,10 @@ public class SignOutCoordinator {
             @Override
             public void onClick(PropertyModel model, int buttonType) {
                 if (buttonType == ModalDialogProperties.ButtonType.POSITIVE) {
-                    signOut(signinManager, signOutReason, onSignOut);
+                    signOut(
+                            signinManager,
+                            signOutReason,
+                            () -> PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, onSignOut));
                     dialogManager.dismissDialog(
                             model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                 } else if (buttonType == ModalDialogProperties.ButtonType.NEGATIVE) {
@@ -204,22 +207,30 @@ public class SignOutCoordinator {
             SigninManager signinManager,
             @SignoutReason int signOutReason,
             Runnable onSignOut) {
-        signOut(
-                signinManager,
-                signOutReason,
-                () -> {
-                    snackbarManager.showSnackbar(
-                            Snackbar.make(
-                                    context.getString(R.string.sign_out_snackbar_message),
-                                    /* controller= */ null,
-                                    Snackbar.TYPE_ACTION,
-                                    Snackbar.UMA_SIGN_OUT));
-                    onSignOut.run();
-                });
+        SigninManager.SignOutCallback signOutCallback =
+                new SigninManager.SignOutCallback() {
+                    @Override
+                    public void preWipeData() {
+                        snackbarManager.showSnackbar(
+                                Snackbar.make(
+                                        context.getString(R.string.sign_out_snackbar_message),
+                                        /* controller= */ null,
+                                        Snackbar.TYPE_ACTION,
+                                        Snackbar.UMA_SIGN_OUT));
+                    }
+
+                    @Override
+                    public void signOutComplete() {
+                        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, onSignOut);
+                    }
+                };
+        signOut(signinManager, signOutReason, signOutCallback);
     }
 
     private static void signOut(
-            SigninManager signinManager, @SignoutReason int signOutReason, Runnable onSignOut) {
+            SigninManager signinManager,
+            @SignoutReason int signOutReason,
+            SigninManager.SignOutCallback signOutCallback) {
         signinManager.runAfterOperationInProgress(
                 () -> {
                     if (!signinManager.isSignOutAllowed()) {
@@ -227,8 +238,6 @@ public class SignOutCoordinator {
                         // asynchronous. In that case return early instead.
                         return;
                     }
-                    SigninManager.SignOutCallback signOutCallback =
-                            () -> PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, onSignOut);
                     signinManager.signOut(
                             signOutReason, signOutCallback, /* forceWipeUserData= */ true);
                 });

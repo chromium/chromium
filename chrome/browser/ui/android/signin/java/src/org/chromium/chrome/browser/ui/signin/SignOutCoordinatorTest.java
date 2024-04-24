@@ -172,8 +172,9 @@ public class SignOutCoordinatorTest {
                 .runAfterOperationInProgress(any(Runnable.class));
         doAnswer(
                         args -> {
-                            args.getArgument(1, SigninManager.SignOutCallback.class)
-                                    .signOutComplete();
+                            SigninManager.SignOutCallback signOutCallback = args.getArgument(1);
+                            signOutCallback.preWipeData();
+                            signOutCallback.signOutComplete();
                             return null;
                         })
                 .when(mSigninManagerMock)
