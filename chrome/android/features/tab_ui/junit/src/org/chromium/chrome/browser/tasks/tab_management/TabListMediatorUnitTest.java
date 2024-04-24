@@ -3348,6 +3348,26 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PANE_ANDROID)
+    public void testIsTabGroup_TabSwitcher() {
+        mMediator.setComponentNameForTesting(TabSwitcherCoordinator.COMPONENT_NAME);
+
+        List<Tab> tabs = new ArrayList<>();
+        for (int i = 0; i < mTabModel.getCount(); i++) {
+            tabs.add(mTabModel.getTabAt(i));
+        }
+
+        // Create tab group.
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> group1 = new ArrayList<>(Arrays.asList(mTab1, tab3));
+        createTabGroup(group1, TAB1_ID, TAB_GROUP_ID);
+        mMediator.resetWithListOfTabs(PseudoTab.getListOfPseudoTab(tabs), false);
+
+        // Assert that a tab group status was recorded.
+        assertTrue(mModel.get(POSITION1).model.get(TabProperties.IS_TAB_GROUP));
+    }
+
+    @Test
     public void testQuickDeleteAnimationTabFiltering() {
         // Add five more tabs.
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);

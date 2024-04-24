@@ -19,6 +19,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.chrome.browser.quick_delete.QuickDeleteAnimationGradientDrawable;
 import org.chromium.chrome.tab_ui.R;
@@ -79,25 +80,13 @@ public class ClosableTabGridView extends ViewLookupCachingFrameLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-
-        ImageView actionButton = (ImageView) fastFindViewById(R.id.action_button);
-
-        if (sCloseButtonBitmapWeakRef == null || sCloseButtonBitmapWeakRef.get() == null) {
-            int closeButtonSize =
-                    (int) getResources().getDimension(R.dimen.tab_grid_close_button_size);
-            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.btn_close);
-            sCloseButtonBitmapWeakRef =
-                    new WeakReference<>(
-                            Bitmap.createScaledBitmap(
-                                    bitmap, closeButtonSize, closeButtonSize, true));
-            bitmap.recycle();
-        }
-        actionButton.setImageBitmap(sCloseButtonBitmapWeakRef.get());
+        setTabActionButtonCloseDrawable();
     }
 
     /**
      * Play the zoom-in and zoom-out animations for tab grid card.
-     * @param status      The target animation status in {@link AnimationStatus}.
+     *
+     * @param status The target animation status in {@link AnimationStatus}.
      */
     void scaleTabGridCardView(@AnimationStatus int status) {
         assert status < AnimationStatus.NUM_ENTRIES;
@@ -176,6 +165,33 @@ public class ClosableTabGridView extends ViewLookupCachingFrameLayout {
             mQuickDeleteAnimationDrawable = null;
             contentView.setVisibility(VISIBLE);
         }
+    }
+
+    void setTabActionButtonDrawable(boolean isTabGroup) {
+        if (isTabGroup) {
+            ImageView actionButton = (ImageView) fastFindViewById(R.id.action_button);
+            actionButton.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                            getResources(), R.drawable.ic_more_vert_24dp, getContext().getTheme()));
+        } else {
+            setTabActionButtonCloseDrawable();
+        }
+    }
+
+    private void setTabActionButtonCloseDrawable() {
+        ImageView actionButton = (ImageView) fastFindViewById(R.id.action_button);
+
+        if (sCloseButtonBitmapWeakRef == null || sCloseButtonBitmapWeakRef.get() == null) {
+            int closeButtonSize =
+                    (int) getResources().getDimension(R.dimen.tab_grid_close_button_size);
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.btn_close);
+            sCloseButtonBitmapWeakRef =
+                    new WeakReference<>(
+                            Bitmap.createScaledBitmap(
+                                    bitmap, closeButtonSize, closeButtonSize, true));
+            bitmap.recycle();
+        }
+        actionButton.setImageBitmap(sCloseButtonBitmapWeakRef.get());
     }
 
     boolean getIsAnimatingForTesting() {

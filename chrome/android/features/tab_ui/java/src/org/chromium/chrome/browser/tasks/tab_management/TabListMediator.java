@@ -1501,11 +1501,27 @@ class TabListMediator {
         mModel.get(index).model.set(TabProperties.IS_SELECTED, isSelected);
         mModel.get(index).model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, false);
         mModel.get(index).model.set(TabProperties.TITLE, getLatestTitleForTab(pseudoTab));
-        mModel.get(index)
-                .model
-                .set(
-                        TabProperties.TAB_ACTION_BUTTON_LISTENER,
-                        isRealTab ? mTabClosedListener : null);
+
+        // A tab is deemed a tab group card representation if it is part of a tab group and
+        // based in the tab switcher.
+        boolean isTabGroup = isPseudoTabInTabGroup(pseudoTab) && isParentComponentTabSwitcher();
+        // The ordering of TAB_ACTION_BUTTON_LISTENER and IS_TAB_GROUP must be preserved when
+        // setting the property keys on the model. Both properties modify the onClickListener
+        // so ensure that the default behavior (close on click) is set first, and tab groups
+        // under valid circumstances will override the listener with alternate behavior.
+        if (!ChromeFeatureList.sTabGroupPaneAndroid.isEnabled() || !isTabGroup) {
+            mModel.get(index)
+                    .model
+                    .set(
+                            TabProperties.TAB_ACTION_BUTTON_LISTENER,
+                            isRealTab ? mTabClosedListener : null);
+        }
+        // Only set this for tab group representation cards. An onClickListener will be set in the
+        // view as part of the accompanying logic.
+        if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
+            mModel.get(index).model.set(TabProperties.IS_TAB_GROUP, isTabGroup);
+        }
+
         updateDescriptionString(pseudoTab, mModel.get(index).model);
         updateCloseButtonDescriptionString(pseudoTab, mModel.get(index).model);
         if (isRealTab) {
@@ -1858,9 +1874,25 @@ class TabListMediator {
                     TabProperties.SELECTABLE_TAB_CLICKED_LISTENER, mSelectableTabOnClickListener);
         } else {
             tabInfo.set(TabProperties.TAB_SELECTED_LISTENER, tabSelectedListener);
-            tabInfo.set(
-                    TabProperties.TAB_ACTION_BUTTON_LISTENER,
-                    isRealTab ? mTabClosedListener : null);
+
+            // A tab is deemed a tab group card representation if it is part of a tab group and
+            // based in the tab switcher.
+            boolean isTabGroup = isPseudoTabInTabGroup(pseudoTab) && isParentComponentTabSwitcher();
+            // The ordering of TAB_ACTION_BUTTON_LISTENER and IS_TAB_GROUP must be preserved when
+            // setting the property keys on the model. Both properties modify the onClickListener
+            // so ensure that the default behavior (close on click) is set first, and tab groups
+            // under valid circumstances will override the listener with alternate behavior.
+            if (!ChromeFeatureList.sTabGroupPaneAndroid.isEnabled() || !isTabGroup) {
+                tabInfo.set(
+                        TabProperties.TAB_ACTION_BUTTON_LISTENER,
+                        isRealTab ? mTabClosedListener : null);
+            }
+            // Only set this for tab group representation cards. An onClickListener will be set in
+            // the view as part of the accompanying logic.
+            if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
+                tabInfo.set(TabProperties.IS_TAB_GROUP, isTabGroup);
+            }
+
             updateDescriptionString(pseudoTab, tabInfo);
             updateCloseButtonDescriptionString(pseudoTab, tabInfo);
         }

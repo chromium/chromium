@@ -218,6 +218,9 @@ class TabGridViewBinder {
             ((ClosableTabGridView) view)
                     .hideTabGridCardViewForQuickDelete(
                             model.get(TabProperties.QUICK_DELETE_ANIMATION_STATUS));
+        } else if (TabProperties.IS_TAB_GROUP == propertyKey) {
+            ((ClosableTabGridView) view)
+                    .setTabActionButtonDrawable(model.get(TabProperties.IS_TAB_GROUP));
         }
     }
 
