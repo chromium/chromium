@@ -977,7 +977,8 @@ void NavigationURLLoaderImpl::OnReceiveRedirect(
       (int) global_request_id_.request_id
     );
     dict.Set("requestId", request_id);
-    dict.Set("originalUrl", url_chain_[0].spec());
+    dict.Set("originalUrl", url_chain_.size() > 0 ? url_chain_[0].spec()
+                                                  : url_.spec());
     dict.Set("requestMethod", resource_request_->method);
     dict.Set("requestUrl", redirect_info.new_url.spec());
 
