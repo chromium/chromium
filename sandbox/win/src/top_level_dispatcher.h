@@ -32,11 +32,15 @@ class TopLevelDispatcher : public Dispatcher {
   bool SetupService(InterceptionManager* manager, IpcTag service) override;
 
  private:
+  friend class PolicyDiagnostic;
+
   // Test IPC provider.
   bool Ping(IPCInfo* ipc, void* cookie);
 
   // Returns a dispatcher from ipc_targets_.
   Dispatcher* GetDispatcher(IpcTag ipc_tag);
+  // Helper that reports the set of IPCs this top level dispatcher can service.
+  std::vector<IpcTag> ipc_targets();
 
   raw_ptr<PolicyBase> policy_;
   std::unique_ptr<Dispatcher> filesystem_dispatcher_;

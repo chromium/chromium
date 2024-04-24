@@ -4,7 +4,8 @@
 
 #include "sandbox/win/src/sandbox_policy_diagnostic.h"
 
-#include <Windows.h>
+#include <windows.h>
+
 #include <stddef.h>
 
 #include <cinttypes>
@@ -24,6 +25,7 @@
 #include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/sandbox_policy_base.h"
 #include "sandbox/win/src/target_process.h"
+#include "sandbox/win/src/top_level_dispatcher.h"
 #include "sandbox/win/src/win_utils.h"
 
 namespace sandbox {
@@ -313,16 +315,17 @@ base::Value::List GetPolicyOpcodes(const PolicyGlobal* policy_rules,
   return entry;
 }
 
-base::Value::Dict GetPolicyRules(const PolicyGlobal* policy_rules) {
-  DCHECK(policy_rules);
+// policy_rules might be nullptr if no rules are defined.
+base::Value::Dict GetPolicyRules(const std::vector<IpcTag>& ipcs,
+                                 const PolicyGlobal* policy_rules) {
   base::Value::Dict results;
 
-  for (size_t i = 0; i < kMaxServiceCount; i++) {
-    if (!policy_rules->entry[i])
-      continue;
-    IpcTag service = static_cast<IpcTag>(i);
-    results.Set(GetIpcTagAsString(service),
-                GetPolicyOpcodes(policy_rules, service));
+  for (auto ipc : ipcs) {
+    if (policy_rules && policy_rules->entry[static_cast<size_t>(ipc)]) {
+      results.Set(GetIpcTagAsString(ipc), GetPolicyOpcodes(policy_rules, ipc));
+    } else {
+      results.Set(GetIpcTagAsString(ipc), base::Value::List());
+    }
   }
 
   return results;
@@ -364,10 +367,17 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
   tag_ = policy->tag_;
 
   // Select the final integrity level.
-  if (config->delayed_integrity_level_ == INTEGRITY_LEVEL_LAST)
+  if (config->delayed_integrity_level_ == INTEGRITY_LEVEL_LAST) {
     desired_integrity_level_ = config->integrity_level_;
-  else
+  } else {
     desired_integrity_level_ = config->delayed_integrity_level_;
+  }
+
+  if (policy->dispatcher_) {
+    // PolicyBase only ever holds a TopLevelDispatcher so this cast is safe.
+    ipcs_ = (static_cast<TopLevelDispatcher*>(policy->dispatcher_.get()))
+                ->ipc_targets();
+  }
 
   desired_mitigations_ = config->mitigations_ | config->delayed_mitigations_;
 
@@ -451,8 +461,11 @@ const char* PolicyDiagnostic::JsonString() {
                base::AsStringPiece16(GetSidAsString(*app_container_sid_)));
   }
 
-  if (policy_rules_)
-    dict.Set(kPolicyRules, GetPolicyRules(policy_rules_.get()));
+  if (ipcs_.size()) {
+    dict.Set(
+        kPolicyRules,
+        GetPolicyRules(ipcs_, policy_rules_ ? policy_rules_.get() : nullptr));
+  }
 
   dict.Set(kDisconnectCsrss, is_csrss_connected_ ? kDisabled : kEnabled);
   dict.Set(kZeroAppShim, zero_appshim_);

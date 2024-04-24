@@ -54,6 +54,16 @@ TopLevelDispatcher::TopLevelDispatcher(PolicyBase* policy) : policy_(policy) {
 
 TopLevelDispatcher::~TopLevelDispatcher() {}
 
+std::vector<IpcTag> TopLevelDispatcher::ipc_targets() {
+  std::vector<IpcTag> results = {IpcTag::PING1, IpcTag::PING2};
+  for (uint32_t ipc = 0; ipc < kMaxIpcTag; ipc++) {
+    if (ipc_targets_[ipc]) {
+      results.push_back(static_cast<IpcTag>(ipc));
+    }
+  }
+  return results;
+}
+
 // When an IPC is ready in any of the targets we get called. We manage an array
 // of IPC dispatchers which are keyed on the IPC tag so we normally delegate
 // to the appropriate dispatcher unless we can handle the IPC call ourselves.
