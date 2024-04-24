@@ -206,6 +206,20 @@ int MaximumViewHeight(bool is_internal) {
          (is_internal ? ReportQueryView::kMaximumHeight : 0);
 }
 
+// `MaybeASingleQuickAnswersTextLabel` returns a pointer of
+// `QuickAnswersTextLabel` if `container` only contains a
+// `QuickAnswersTextLabel`. Otherwise, this returns `nullptr`.
+quick_answers::QuickAnswersTextLabel* MaybeASingleQuickAnswersTextLabel(
+    views::View* container) {
+  if (container->children().size() != 1) {
+    return nullptr;
+  }
+
+  // `AsViewClass` returns `nullptr` if a view is not a specified class.
+  return views::AsViewClass<quick_answers::QuickAnswersTextLabel>(
+      container->children().front());
+}
+
 }  // namespace
 
 namespace quick_answers {
@@ -324,7 +338,6 @@ void QuickAnswersView::SendQuickAnswersQuery() {
 }
 
 void QuickAnswersView::UpdateView(const QuickAnswer& quick_answer) {
-  has_second_row_answer_ = !quick_answer.second_answer_row.empty();
   retry_label_ = nullptr;
 
   UpdateQuickAnswerResult(quick_answer);
@@ -608,38 +621,23 @@ void QuickAnswersView::UpdateQuickAnswerResult(
   }
 
   // Add first row answer.
-  View* first_answer_view = nullptr;
   if (!quick_answer.first_answer_row.empty()) {
-    first_answer_view = AddHorizontalUiElements(content_view_.view(),
-                                                quick_answer.first_answer_row);
-  }
-  bool first_answer_is_single_label =
-      first_answer_view->children().size() == 1 &&
-      std::string_view(first_answer_view->children().front()->GetClassName()) ==
-          std::string_view(
-              quick_answers::QuickAnswersTextLabel::kViewClassName);
-  if (first_answer_is_single_label) {
-    // Update announcement.
-    auto* answer_label =
-        static_cast<Label*>(first_answer_view->children().front());
-    GetViewAccessibility().SetDescription(l10n_util::GetStringFUTF8(
-        IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE_V2,
-        title_label->GetText(), answer_label->GetText()));
-  }
+    views::View* first_answer_row = AddHorizontalUiElements(
+        content_view_.view(), quick_answer.first_answer_row);
 
-  // Add second row answer.
-  if (!quick_answer.second_answer_row.empty()) {
-    AddHorizontalUiElements(content_view_.view(),
-                            quick_answer.second_answer_row);
-  } else {
-    // If secondary-answer does not exist and primary-answer is a single label,
-    // allow that label to wrap through to the row intended for the former.
-    if (first_answer_is_single_label) {
-      // Cache multi-line label for resizing when view bounds change.
-      first_answer_label_ = static_cast<quick_answers::QuickAnswersTextLabel*>(
-          first_answer_view->children().front());
-      first_answer_label_->SetMultiLine(true);
-      first_answer_label_->SetMaxLines(kMaxRows - /*exclude title*/ 1);
+    QuickAnswersTextLabel* quick_answers_text_label =
+        MaybeASingleQuickAnswersTextLabel(first_answer_row);
+    if (quick_answers_text_label) {
+      SetAccessibleDescription(l10n_util::GetStringFUTF16(
+          IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE_V2,
+          title_label->GetText(), quick_answers_text_label->GetText()));
+
+      quick_answers_text_label->SetMultiLine(true);
+      // Max lines is kMaxRows-1. 1 is for the title row.
+      quick_answers_text_label->SetMaxLines(kMaxRows - 1);
+
+      // TODO(b/331271987): Remove this caching and manual re-layout.
+      first_answer_label_ = quick_answers_text_label;
       UpdateBoundsForQuickAnswers();
     }
   }

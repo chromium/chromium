@@ -99,7 +99,6 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
       const quick_answers::PhoneticsInfo& phonetics_info);
 
   base::WeakPtr<QuickAnswersUiController> controller_;
-  bool has_second_row_answer_ = false;
   std::string title_;
   bool is_internal_ = false;
 

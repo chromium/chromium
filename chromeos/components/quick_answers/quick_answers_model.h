@@ -152,7 +152,6 @@ struct QuickAnswer {
   ResultType result_type = ResultType::kNoResult;
   std::vector<std::unique_ptr<QuickAnswerUiElement>> title;
   std::vector<std::unique_ptr<QuickAnswerUiElement>> first_answer_row;
-  std::vector<std::unique_ptr<QuickAnswerUiElement>> second_answer_row;
   std::unique_ptr<QuickAnswerImage> image;
 
   PhoneticsInfo phonetics_info;
