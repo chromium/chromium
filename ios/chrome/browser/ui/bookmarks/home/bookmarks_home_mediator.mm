@@ -242,16 +242,14 @@ bool IsABookmarkNodeSectionForIdentifier(
 - (void)generateTableViewDataForRootNode {
   BOOL showProfileSection =
       [self hasBookmarksOrFoldersInModel:_localOrSyncableBookmarkModel.get()];
-  BOOL optedInAccountStorage =
-      bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService);
-  // The node may not exists just after the user signed-in.
-  BOOL hasMobileNode = _accountBookmarkModel->mobile_node();
   // Whether the account part should be displayed, if possible.
   BOOL shouldShowIfPossible =
       [self hasBookmarksOrFoldersInModel:_accountBookmarkModel.get()] ||
       showProfileSection;
   BOOL showAccountSection =
-      shouldShowIfPossible && hasMobileNode && optedInAccountStorage;
+      shouldShowIfPossible &&
+      bookmark_utils_ios::IsAccountBookmarkStorageAvailable(
+          _syncService, _accountBookmarkModel.get());
   if (showProfileSection) {
     [self
         generateTableViewDataForModel:_localOrSyncableBookmarkModel.get()
@@ -337,7 +335,8 @@ bool IsABookmarkNodeSectionForIdentifier(
   *query.word_phrase_query = base::SysNSStringToUTF16(searchText);
   // Total count of search result for both models.
   int totalSearchResultCount = 0;
-  if (bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(self.syncService)) {
+  if (bookmark_utils_ios::IsAccountBookmarkStorageAvailable(
+          self.syncService, _accountBookmarkModel.get())) {
     totalSearchResultCount =
         [self populateNodeItemWithQuery:query
                           bookmarkModel:_accountBookmarkModel.get()
@@ -923,7 +922,8 @@ bool IsABookmarkNodeSectionForIdentifier(
             hasBookmarksOrFoldersInModel:_localOrSyncableBookmarkModel.get()]) {
       return YES;
     }
-    return bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService) &&
+    return bookmark_utils_ios::IsAccountBookmarkStorageAvailable(
+               _syncService, _accountBookmarkModel.get()) &&
            [self hasBookmarksOrFoldersInModel:_accountBookmarkModel.get()];
   }
   return self.displayedNode && !self.displayedNode->children().empty();

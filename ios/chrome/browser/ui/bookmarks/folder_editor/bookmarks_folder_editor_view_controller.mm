@@ -532,7 +532,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       bookmark_utils_ios::GetBookmarkModelForNode(
           _parentFolder, _localOrSyncableBookmarkModel.get(),
           _accountBookmarkModel.get());
-  if (!bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService) &&
+  if (!bookmark_utils_ios::IsAccountBookmarkStorageAvailable(
+          _syncService, _accountBookmarkModel.get()) &&
       parentFolderModel == _accountBookmarkModel.get()) {
     [self dismiss];
     return YES;

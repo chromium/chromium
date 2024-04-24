@@ -78,7 +78,7 @@ void SetLastUsedBookmarkFolder(PrefService* prefs,
 // priority:
 //- Last used folder
 //- Account mobile folder
-//- Profile mobile folder
+//- Local mobile folder
 const bookmarks::BookmarkNode* GetDefaultBookmarkFolder(
     PrefService* prefs,
     bool is_account_bookmark_model_available,

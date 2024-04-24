@@ -44,6 +44,8 @@ using bookmarks::BookmarkNode;
   raw_ptr<syncer::SyncService> _syncService;
   // Observer for sync service status changes.
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
+  // The account bookmark model.
+  LegacyBookmarkModel* _accountBookmarkModel;
 }
 
 - (instancetype)
@@ -71,6 +73,7 @@ using bookmarks::BookmarkNode;
       _accountDataSource = [[BookmarksFolderChooserSubDataSourceImpl alloc]
           initWithBookmarkModel:accountBookmarkModel
                parentDataSource:self];
+      _accountBookmarkModel = accountBookmarkModel;
     }
     _editedNodes = std::move(editedNodes);
     _authServiceBridge = std::make_unique<AuthenticationServiceObserverBridge>(
@@ -118,7 +121,8 @@ using bookmarks::BookmarkNode;
 }
 
 - (BOOL)shouldShowAccountBookmarks {
-  return bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService);
+  return bookmark_utils_ios::IsAccountBookmarkStorageAvailable(
+      _syncService, _accountBookmarkModel);
 }
 
 #pragma mark - BookmarksFolderChooserMutator

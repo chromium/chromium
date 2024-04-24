@@ -149,9 +149,9 @@ using bookmarks::BookmarkNode;
         // the corresponding section to be the parent folder.
         parentNode =
             (sectionID == SectionIdentifierAccountBookmarks &&
-             [_dataSource.accountDataSource mobileFolderNode] != nullptr)
-                ? [_dataSource.accountDataSource mobileFolderNode]
-                : [_dataSource.localOrSyncableDataSource mobileFolderNode];
+             [self.dataSource.accountDataSource mobileFolderNode] != nullptr)
+                ? [self.dataSource.accountDataSource mobileFolderNode]
+                : [self.dataSource.localOrSyncableDataSource mobileFolderNode];
       }
       [self.delegate showBookmarksFolderEditorWithParentFolderNode:parentNode];
       return;
@@ -187,7 +187,8 @@ using bookmarks::BookmarkNode;
       base::UserMetricsAction("MobileBookmarksFolderChooserDone"));
   [self.delegate
       bookmarksFolderChooserViewController:self
-                       didFinishWithFolder:[_dataSource selectedFolderNode]];
+                       didFinishWithFolder:[self.dataSource
+                                                   selectedFolderNode]];
 }
 
 - (void)cancel:(id)sender {
@@ -211,14 +212,15 @@ using bookmarks::BookmarkNode;
         removeSectionWithIdentifier:SectionIdentifierLocalOrSyncableBookmarks];
   }
 
-  if ([_dataSource shouldShowAccountBookmarks]) {
-    _accountFolderNodes = [_dataSource.accountDataSource visibleFolderNodes];
+  if ([self.dataSource shouldShowAccountBookmarks]) {
+    _accountFolderNodes =
+        [self.dataSource.accountDataSource visibleFolderNodes];
     [self reloadSectionWithIdentifier:SectionIdentifierAccountBookmarks];
   }
   _localOrSyncableFolderNodes =
-      [_dataSource.localOrSyncableDataSource visibleFolderNodes];
+      [self.dataSource.localOrSyncableDataSource visibleFolderNodes];
   [self reloadSectionWithIdentifier:SectionIdentifierLocalOrSyncableBookmarks];
-  if ([_dataSource shouldShowAccountBookmarks]) {
+  if ([self.dataSource shouldShowAccountBookmarks]) {
     // The headers are only shown if both sections are visible.
     [self.tableViewModel setHeader:[self headerForSectionWithIdentifier:
                                              SectionIdentifierAccountBookmarks]
@@ -248,7 +250,7 @@ using bookmarks::BookmarkNode;
             : kBookmarkCreateNewAccountFolderCellIdentifier;
     createFolderItem.shouldDisplayCloudSlashIcon =
         (sectionID == SectionIdentifierLocalOrSyncableBookmarks) &&
-        [_dataSource shouldDisplayCloudIconForLocalOrSyncableBookmarks];
+        [self.dataSource shouldDisplayCloudIconForLocalOrSyncableBookmarks];
     // Add the "New Folder" Item to the same section as the rest of the folder
     // entries.
     [self.tableViewModel addItem:createFolderItem
@@ -266,11 +268,12 @@ using bookmarks::BookmarkNode;
             initWithType:ItemTypeBookmarkFolder
                    style:BookmarksFolderStyleFolderEntry];
     folderItem.title = bookmark_utils_ios::TitleForBookmarkNode(folderNode);
-    folderItem.currentFolder = ([_dataSource selectedFolderNode] == folderNode);
+    folderItem.currentFolder =
+        [self.dataSource selectedFolderNode] == folderNode;
     folderItem.accessibilityIdentifier = folderItem.title;
     folderItem.shouldDisplayCloudSlashIcon =
         (sectionID == SectionIdentifierLocalOrSyncableBookmarks) &&
-        [_dataSource shouldDisplayCloudIconForLocalOrSyncableBookmarks];
+        [self.dataSource shouldDisplayCloudIconForLocalOrSyncableBookmarks];
 
     // Indentation level.
     NSInteger level = 0;

@@ -114,6 +114,11 @@ LegacyBookmarkModel* GetBookmarkModelForNode(
 // bookmark storage.
 bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service);
 
+// Returns true if the user opted-in and can use the account storage.
+// E.g. if the passphrase is missing, the storage may not be available.
+bool IsAccountBookmarkStorageAvailable(syncer::SyncService* sync_service,
+                                       LegacyBookmarkModel* account_model);
+
 // Updates `node`.
 // `folder` is the intended parent of `node`.
 // Returns a boolean signifying whether any change was performed.
