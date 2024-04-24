@@ -143,20 +143,12 @@ void PersonalDataManager::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-bool PersonalDataManager::IsPaymentsDownloadActive() const {
-  return payments_data_manager_->IsPaymentsDownloadActive();
-}
-
 void PersonalDataManager::AddProfile(const AutofillProfile& profile) {
   address_data_manager_->AddProfile(profile);
 }
 
 void PersonalDataManager::UpdateProfile(const AutofillProfile& profile) {
   address_data_manager_->UpdateProfile(profile);
-}
-
-std::string PersonalDataManager::AddAsLocalIban(Iban iban) {
-  return payments_data_manager_->AddAsLocalIban(std::move(iban));
 }
 
 void PersonalDataManager::AddCreditCard(const CreditCard& credit_card) {
@@ -267,11 +259,6 @@ GURL PersonalDataManager::GetCardArtURL(const CreditCard& credit_card) const {
 gfx::Image* PersonalDataManager::GetCreditCardArtImageForUrl(
     const GURL& card_art_url) const {
   return payments_data_manager_->GetCreditCardArtImageForUrl(card_art_url);
-}
-
-std::vector<VirtualCardUsageData*>
-PersonalDataManager::GetVirtualCardUsageData() const {
-  return payments_data_manager_->GetVirtualCardUsageData();
 }
 
 bool PersonalDataManager::HasPendingPaymentQueriesForTesting() const {

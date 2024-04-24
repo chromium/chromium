@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/payments/constants.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_test_base.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -2893,8 +2894,8 @@ TEST_F(AutofillSuggestionGeneratorTest,
 TEST_F(AutofillSuggestionGeneratorTest, GetTouchToFillIbansToSuggest) {
   Iban local_iban1;
   local_iban1.set_value(std::u16string(test::kIbanValue16));
-  local_iban1.set_identifier(
-      Iban::Guid(personal_data().AddAsLocalIban(local_iban1)));
+  local_iban1.set_identifier(Iban::Guid(
+      personal_data().payments_data_manager().AddAsLocalIban(local_iban1)));
   local_iban1.set_record_type(Iban::kLocalIban);
   Iban server_iban1 = test::GetServerIban2();
   Iban server_iban2 = test::GetServerIban3();

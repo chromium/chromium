@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/payments/mock_test_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -148,7 +149,7 @@ TEST_F(IbanSaveManagerTest, AttemptToOfferSave_NewIban_ShouldOfferSave) {
 TEST_F(IbanSaveManagerTest, AttemptToOfferSave_LocalIban_ShouldOfferSave) {
   Iban iban;
   iban.set_value(std::u16string(test::kIbanValue16));
-  personal_data().AddAsLocalIban(iban);
+  personal_data().payments_data_manager().AddAsLocalIban(iban);
 
   Iban another_iban;
   another_iban.set_value(iban.value());
@@ -179,7 +180,7 @@ TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_NewIban) {
 TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_LocalIban) {
   Iban iban;
   iban.set_value(std::u16string(test::kIbanValue16));
-  personal_data().AddAsLocalIban(iban);
+  personal_data().payments_data_manager().AddAsLocalIban(iban);
 
   Iban another_iban;
   another_iban.set_value(iban.value());
@@ -192,7 +193,7 @@ TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_LocalIban) {
 TEST_F(IbanSaveManagerTest, ShouldOfferUploadSave_LocalAndServerIban) {
   Iban local_iban;
   local_iban.set_value(u"DE91100000000123456789");
-  personal_data().AddAsLocalIban(local_iban);
+  personal_data().payments_data_manager().AddAsLocalIban(local_iban);
   Iban server_iban(Iban::InstrumentId(1234567));
   server_iban.set_prefix(u"DE91");
   server_iban.set_suffix(u"6789");
@@ -561,7 +562,7 @@ TEST_F(
 TEST_F(IbanSaveManagerTest, OfferUploadSave_LocalIban_Success) {
   Iban local_iban;
   local_iban.set_value(std::u16string(test::kIbanValue16));
-  personal_data().AddAsLocalIban(local_iban);
+  personal_data().payments_data_manager().AddAsLocalIban(local_iban);
   Iban another_iban;
   another_iban.set_value(local_iban.value());
 
@@ -581,7 +582,7 @@ TEST_F(IbanSaveManagerTest,
        OfferUploadSave_LocalIban_Failure_LocalSaveNotOffered) {
   Iban local_iban;
   local_iban.set_value(std::u16string(test::kIbanValue16));
-  personal_data().AddAsLocalIban(local_iban);
+  personal_data().payments_data_manager().AddAsLocalIban(local_iban);
   Iban another_iban;
   another_iban.set_value(local_iban.value());
 
@@ -702,7 +703,7 @@ TEST_F(IbanSaveManagerTest, Metric_UploadOfferedIbanOrigin_LocalIban) {
   base::HistogramTester histogram_tester;
   Iban iban;
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
-  personal_data().AddAsLocalIban(iban);
+  personal_data().payments_data_manager().AddAsLocalIban(iban);
 
   ASSERT_TRUE(GetIbanSaveManager().AttemptToOfferSave(iban));
 
@@ -743,7 +744,7 @@ TEST_F(IbanSaveManagerTest, Metric_AcceptedOfferedIbanOrigin_LocalIban) {
   SetUpUploadIbanResponse(/*is_successful=*/true);
   Iban iban;
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
-  personal_data().AddAsLocalIban(iban);
+  personal_data().payments_data_manager().AddAsLocalIban(iban);
 
   ASSERT_TRUE(GetIbanSaveManager().AttemptToOfferSave(iban));
   GetIbanSaveManager().OnUserDidDecideOnUploadSaveForTesting(
@@ -786,7 +787,7 @@ TEST_F(IbanSaveManagerTest, Metric_DeclinedOfferedIbanOrigin_LocalIban) {
   SetUpUploadIbanResponse(/*is_successful=*/true);
   Iban iban;
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
-  personal_data().AddAsLocalIban(iban);
+  personal_data().payments_data_manager().AddAsLocalIban(iban);
 
   ASSERT_TRUE(GetIbanSaveManager().AttemptToOfferSave(iban));
   GetIbanSaveManager().OnUserDidDecideOnUploadSaveForTesting(
@@ -829,7 +830,7 @@ TEST_F(IbanSaveManagerTest, Metric_IgnoredOfferedIbanOrigin_LocalIban) {
   SetUpUploadIbanResponse(/*is_successful=*/true);
   Iban iban;
   iban.set_value(base::UTF8ToUTF16(std::string(test::kIbanValue)));
-  personal_data().AddAsLocalIban(iban);
+  personal_data().payments_data_manager().AddAsLocalIban(iban);
 
   ASSERT_TRUE(GetIbanSaveManager().AttemptToOfferSave(iban));
   GetIbanSaveManager().OnUserDidDecideOnUploadSaveForTesting(

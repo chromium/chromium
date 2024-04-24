@@ -34,6 +34,7 @@
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_names.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/autofill/core/browser/validation.h"
@@ -786,7 +787,8 @@ ScopedJavaLocalRef<jstring> PersonalDataManagerAndroid::AddOrUpdateLocalIban(
   PopulateNativeIbanFromJava(jiban, env, &iban);
 
   if (guid.empty()) {
-    guid = personal_data_manager_->AddAsLocalIban(std::move(iban));
+    guid = personal_data_manager_->payments_data_manager().AddAsLocalIban(
+        std::move(iban));
   } else {
     guid = personal_data_manager_->payments_data_manager().UpdateIban(iban);
   }

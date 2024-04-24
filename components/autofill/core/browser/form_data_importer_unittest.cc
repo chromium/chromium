@@ -47,6 +47,7 @@
 #include "components/autofill/core/browser/mock_autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/strike_databases/payments/iban_save_strike_database.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -3185,7 +3186,8 @@ TEST_F(FormDataImporterTest,
 TEST_F(FormDataImporterTest, ExtractFormData_ImportIbanRecordType_LocalIban) {
   Iban iban;
   iban.set_value(std::u16string(test::kIbanValue16));
-  const std::string guid = personal_data_manager_->AddAsLocalIban(iban);
+  const std::string guid =
+      personal_data_manager_->payments_data_manager().AddAsLocalIban(iban);
   // Should set identifier and record_type manually here as `iban` has been
   // passed by value above in `AddAsLocalIban`, and `AddAsLocalIban` method sets
   // identifier and record_type to the given `iban`.
@@ -4072,7 +4074,7 @@ TEST_F(FormDataImporterTest,
        ExtractFormData_ProcessIbanImportCandidate_LocalIban) {
   Iban iban;
   iban.set_value(std::u16string(test::kIbanValue16));
-  personal_data_manager_->AddAsLocalIban(iban);
+  personal_data_manager_->payments_data_manager().AddAsLocalIban(iban);
 
   // Simulate a form submission with the same IBAN. The IBAN should not be
   // offered to be saved, because it already exists as a local IBAN.

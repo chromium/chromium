@@ -21,12 +21,10 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
-#include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
@@ -174,10 +172,8 @@ class PersonalDataManager : public KeyedService,
   // They should not be used anymore. Instead, callers should use the function
   // in the address/payments data manager instead.
   // TODO(b/322170538): Migrate existing callers.
-  bool IsPaymentsDownloadActive() const;
   void AddProfile(const AutofillProfile& profile);
   void UpdateProfile(const AutofillProfile& profile);
-  std::string AddAsLocalIban(Iban iban);
   void AddCreditCard(const CreditCard& credit_card);
   void UpdateCreditCard(const CreditCard& credit_card);
   void ClearAllServerDataForTesting();
@@ -202,7 +198,6 @@ class PersonalDataManager : public KeyedService,
   GURL GetCardArtURL(const CreditCard& credit_card) const;
   gfx::Image* GetCreditCardArtImageForUrl(const GURL& card_art_url) const;
   std::vector<CreditCard*> GetCreditCardsToSuggest() const;
-  std::vector<VirtualCardUsageData*> GetVirtualCardUsageData() const;
   bool HasPendingPaymentQueriesForTesting() const;
   void SetSyncingForTest(bool is_syncing_for_test);
   void SetCreditCards(std::vector<CreditCard>* credit_cards);

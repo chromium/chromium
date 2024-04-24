@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -674,7 +675,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveIbanFunction::Run() {
 
   // Add a new IBAN and return if this is not an update.
   if (!existing_iban) {
-    personal_data->AddAsLocalIban(iban_to_write);
+    personal_data->payments_data_manager().AddAsLocalIban(iban_to_write);
     base::RecordAction(base::UserMetricsAction("AutofillIbanAdded"));
     if (!iban_to_write.nickname().empty()) {
       base::RecordAction(

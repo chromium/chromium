@@ -96,6 +96,7 @@
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/profile_token_quality.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
@@ -2353,7 +2354,10 @@ BrowserAutofillManager::GetVirtualCreditCardsForStandaloneCvcField(
   const std::vector<CreditCard*> cards =
       client().GetPersonalDataManager()->GetCreditCards();
   const std::vector<VirtualCardUsageData*> usage_data =
-      client().GetPersonalDataManager()->GetVirtualCardUsageData();
+      client()
+          .GetPersonalDataManager()
+          ->payments_data_manager()
+          .GetVirtualCardUsageData();
 
   for (const CreditCard* credit_card : cards) {
     // As we only provide virtual card suggestions for standalone CVC fields,

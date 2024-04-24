@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
+#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -74,7 +75,7 @@ class IbanManagerTest : public testing::Test {
     Iban iban;
     iban.set_value(base::UTF8ToUTF16(std::string(value)));
     iban.set_nickname(base::UTF8ToUTF16(std::string(nickname)));
-    personal_data_manager_.AddAsLocalIban(iban);
+    personal_data_manager_.payments_data_manager().AddAsLocalIban(iban);
     return iban;
   }
 
