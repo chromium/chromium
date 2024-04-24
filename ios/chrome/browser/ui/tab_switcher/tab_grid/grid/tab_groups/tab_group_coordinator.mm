@@ -223,7 +223,6 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
   [self.tabGridIdleStatusHandler
       tabGridDidPerformAction:TabGridActionType::kInPageAction];
-  [handler hideTabGroup];
   [handler showActiveTab];
 }
 

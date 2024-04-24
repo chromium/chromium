@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_container_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_or_edit_tab_group_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_coordinator.h"
@@ -54,12 +56,35 @@
   NOTREACHED_NORETURN() << "This should be implemented in subclasses.";
 }
 
+- (BaseGridViewController*)gridViewController {
+  NOTREACHED_NORETURN() << "This should be implemented in subclasses.";
+}
+
 - (void)showTabGroupForTabGridOpening:(const TabGroup*)tabGroup {
   [self showTabGroup:tabGroup forTabGridOpening:YES];
 }
 
 - (LegacyGridTransitionLayout*)transitionLayout {
   NOTREACHED_NORETURN() << "This should be implemented in subclasses.";
+}
+
+- (BOOL)isSelectedCellVisible {
+  if (IsTabGroupInGridEnabled()) {
+    if (_tabGroupCoordinator) {
+      return _tabGroupCoordinator.viewController.gridViewController
+          .selectedCellVisible;
+    }
+  }
+  return self.gridViewController.selectedCellVisible;
+}
+
+- (UIView*)gridView {
+  if (IsTabGroupInGridEnabled()) {
+    if (_tabGroupCoordinator) {
+      return _tabGroupCoordinator.viewController.gridViewController.view;
+    }
+  }
+  return self.gridContainerViewController.view;
 }
 
 #pragma mark - Subclassing properties
@@ -70,6 +95,10 @@
 
 - (id<GridMediatorDelegate>)gridMediatorDelegate {
   return _gridMediatorDelegate;
+}
+
+- (TabGroupCoordinator*)tabGroupCoordinator {
+  return _tabGroupCoordinator;
 }
 
 - (LegacyGridTransitionLayout*)

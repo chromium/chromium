@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_tabs_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_helper.h"
@@ -65,18 +67,36 @@
 #pragma mark - Superclass overrides
 
 - (LegacyGridTransitionLayout*)transitionLayout {
-  LegacyGridTransitionLayout* regularTabsTransitionLayout =
+  if (IsTabGroupInGridEnabled()) {
+    if (self.tabGroupCoordinator) {
+      return [self.tabGroupCoordinator.viewController
+                  .gridViewController transitionLayout];
+    }
+  }
+
+  LegacyGridTransitionLayout* transitionLayout =
       [_gridViewController transitionLayout];
 
   if (IsPinnedTabsEnabled()) {
     LegacyGridTransitionLayout* pinnedTabsTransitionLayout =
         [self.pinnedTabsViewController transitionLayout];
 
-    return [self combineTransitionLayout:regularTabsTransitionLayout
+    return [self combineTransitionLayout:transitionLayout
                     withTransitionLayout:pinnedTabsTransitionLayout];
   }
 
-  return regularTabsTransitionLayout;
+  return transitionLayout;
+}
+
+- (BOOL)isSelectedCellVisible {
+  BOOL isSelectedCellVisible = [super isSelectedCellVisible];
+
+  if (IsPinnedTabsEnabled() &&
+      !(IsTabGroupInGridEnabled() && self.tabGroupCoordinator)) {
+    isSelectedCellVisible |= self.pinnedTabsViewController.selectedCellVisible;
+  }
+
+  return isSelectedCellVisible;
 }
 
 #pragma mark - ChromeCoordinator

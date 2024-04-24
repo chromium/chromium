@@ -496,6 +496,15 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                    completion:(ProceduralBlock)completion {
   DCHECK(viewController || self.bvcContainer);
 
+  __weak TabGridCoordinator* weakSelf = self;
+
+  completion = ^{
+    [weakSelf hideTabGroupsViews];
+    if (completion) {
+      completion();
+    }
+  };
+
   if (!self.tabGridEnterTime.is_null()) {
     // Record when the tab switcher is dismissed.
     base::RecordAction(base::UserMetricsAction("MobileTabGridExited"));
@@ -540,7 +549,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // that the animated "tab switcher dismissal" (that is, presenting something
   // on top of the tab switcher) transition has completed.
   // Finally, the launch mask view should be removed.
-  __weak TabGridCoordinator* weakSelf = self;
   ProceduralBlock extendedCompletion = ^{
     [self.delegate tabGridDismissTransitionDidEnd:self];
     if (self.baseViewController.tabGridMode == TabGridModeSearch) {
@@ -1597,7 +1605,14 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     return NO;
   }
 
-  return [self isSelectedCellVisibleForPage:self.baseViewController.activePage];
+  switch (self.baseViewController.activePage) {
+    case TabGridPageIncognitoTabs:
+      return [_incognitoGridCoordinator isSelectedCellVisible];
+    case TabGridPageRegularTabs:
+      return [_regularGridCoordinator isSelectedCellVisible];
+    case TabGridPageRemoteTabs:
+      return NO;
+  }
 }
 
 - (BOOL)shouldReparentSelectedCell:(GridAnimationDirection)animationDirection {
@@ -1633,12 +1648,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   UIView* potentialGridContainer;
   switch (self.baseViewController.activePage) {
     case TabGridPageIncognitoTabs:
-      potentialGridContainer =
-          _incognitoGridCoordinator.gridContainerViewController.view;
+      potentialGridContainer = [_incognitoGridCoordinator gridView];
       break;
     case TabGridPageRegularTabs:
-      potentialGridContainer =
-          _regularGridCoordinator.gridContainerViewController.view;
+      potentialGridContainer = [_regularGridCoordinator gridView];
       break;
     case TabGridPageRemoteTabs:
       NOTREACHED_NORETURN();
@@ -1648,31 +1661,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     potentialGridContainer = potentialGridContainer.superview;
   }
   return potentialGridContainer;
-}
-
-// Returns whether selcted cell is visible for the provided `page`.
-- (BOOL)isSelectedCellVisibleForPage:(TabGridPage)page {
-  switch (page) {
-    case TabGridPageIncognitoTabs:
-      return _incognitoGridCoordinator.gridViewController.selectedCellVisible;
-    case TabGridPageRegularTabs:
-      return [self isSelectedCellVisibleForRegularTabsPage];
-    case TabGridPageRemoteTabs:
-      return NO;
-  }
-}
-
-// Returns whether selcted cell is visible for the regular tabs `page`.
-- (BOOL)isSelectedCellVisibleForRegularTabsPage {
-  BOOL isSelectedCellVisible =
-      _regularGridCoordinator.gridViewController.selectedCellVisible;
-
-  if (IsPinnedTabsEnabled()) {
-    isSelectedCellVisible |=
-        _regularGridCoordinator.pinnedTabsViewController.selectedCellVisible;
-  }
-
-  return isSelectedCellVisible;
 }
 
 // Returns wether there is a selected pinned cell.

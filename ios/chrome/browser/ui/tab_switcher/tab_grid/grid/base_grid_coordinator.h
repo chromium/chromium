@@ -51,6 +51,12 @@ class Browser;
 // Returns the transition layout for this grid.
 - (LegacyGridTransitionLayout*)transitionLayout;
 
+// Returns whether the selected cell is visible.
+- (BOOL)isSelectedCellVisible;
+
+// The view displaying the grid. Used for layout purpose.
+- (UIView*)gridView;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_BASE_GRID_COORDINATOR_H_
