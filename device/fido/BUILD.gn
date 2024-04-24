@@ -70,6 +70,7 @@ component("fido") {
     "//components/apdu",
     "//components/cbor",
     "//components/device_event_log",
+    "//components/trusted_vault",
     "//crypto",
     "//device/base",
     "//device/fido/strings",
@@ -250,6 +251,8 @@ component("fido") {
 
   if (is_mac) {
     sources += [
+      "enclave/icloud_recovery_key_mac.h",
+      "enclave/icloud_recovery_key_mac.mm",
       "mac/authenticator.h",
       "mac/authenticator.mm",
       "mac/authenticator_config.h",

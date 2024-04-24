@@ -47,6 +47,7 @@ class CRYPTO_EXPORT FakeAppleKeychainV2 : public AppleKeychainV2 {
       CFErrorRef* error) override;
   base::apple::ScopedCFTypeRef<CFDictionaryRef> KeyCopyAttributes(
       SecKeyRef key) override;
+  OSStatus ItemAdd(CFDictionaryRef attributes, CFTypeRef* result) override;
   OSStatus ItemCopyMatching(CFDictionaryRef query, CFTypeRef* result) override;
   OSStatus ItemDelete(CFDictionaryRef query) override;
   OSStatus ItemUpdate(CFDictionaryRef query,

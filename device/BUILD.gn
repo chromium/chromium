@@ -219,6 +219,7 @@ test("device_unittests") {
 
   if (is_mac) {
     sources += [
+      "fido/enclave/icloud_recovery_key_mac_unittest.mm",
       "fido/mac/authenticator_unittest.mm",
       "fido/mac/browsing_data_deletion_unittest.mm",
       "fido/mac/credential_metadata_unittest.cc",
@@ -228,7 +229,10 @@ test("device_unittests") {
       "fido/mac/make_credential_operation_unittest_mac.mm",
       "fido/mac/util_unittest.cc",
     ]
-    deps += [ "//device/fido:icloud_keychain_test_support" ]
+    deps += [
+      "//components/trusted_vault",
+      "//device/fido:icloud_keychain_test_support",
+    ]
   }
 
   if (is_win) {

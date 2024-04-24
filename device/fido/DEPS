@@ -3,6 +3,7 @@ include_rules = [
   "+components/cbor",
   "+components/gcm_driver",
   "+components/sync/protocol",
+  "+components/trusted_vault",
   "+crypto",
   "+dbus",
   "+net/base",

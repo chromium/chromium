@@ -51,6 +51,8 @@ class CRYPTO_EXPORT AppleKeychainV2 {
   virtual base::apple::ScopedCFTypeRef<CFDictionaryRef> KeyCopyAttributes(
       SecKeyRef key);
 
+  // ItemAdd wraps the |SecItemAdd| function.
+  virtual OSStatus ItemAdd(CFDictionaryRef attributes, CFTypeRef* result);
   // ItemCopyMatching wraps the |SecItemCopyMatching| function.
   virtual OSStatus ItemCopyMatching(CFDictionaryRef query, CFTypeRef* result);
   // ItemDelete wraps the |SecItemDelete| function.
