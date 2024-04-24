@@ -14,7 +14,14 @@ class NewTabPageFocusTest : public WebUIMochaFocusTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(NewTabPageFocusTest, CustomizeDialogFocus) {
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/40894552): Test is flaky (see crbug.com/41483695) but can be
+// removed as part of the customize dialog deprecation.
+#define MAYBE_CustomizeDialogFocus DISABLED_CustomizeDialogFocus
+#else
+#define MAYBE_CustomizeDialogFocus CustomizeDialogFocus
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageFocusTest, MAYBE_CustomizeDialogFocus) {
   RunTest("new_tab_page/customize_dialog_focus_test.js", "mocha.run()");
 }
 
