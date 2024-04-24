@@ -63,8 +63,8 @@
       'lacros-amd64-generic-pgo': 'official_lacros_amd64_pgo',
       'lacros-arm64-generic-pgo': 'official_lacros_arm64_pgo',
       'linux-pgo': 'official_linux_pgo',
-      'mac-arm-pgo': 'official_mac_arm_pgo',
-      'mac-pgo': 'official_mac_pgo',
+      'mac-arm-pgo': 'official_mac_arm_pgo_with_symbols',
+      'mac-pgo': 'official_mac_pgo_with_symbols',
       'win-arm64-pgo': 'official_win_arm64_pgo',
       'win32-pgo': 'official_x86_pgo',
       'win64-pgo': 'official_x64_pgo',
@@ -764,16 +764,8 @@
       'official', 'reclient', 'minimal_symbols', 'pgo_phase_1', 'release'
     ],
 
-    'official_mac_arm_pgo': [
-      'official', 'reclient', 'no_widevine_cdm_host_verification', 'arm64', 'disable_widevine_signing', 'no_symbols', 'pgo_phase_1', 'release'
-    ],
-
     'official_mac_arm_pgo_with_symbols': [
       'official', 'reclient', 'no_widevine_cdm_host_verification', 'arm64', 'disable_widevine_signing', 'minimal_symbols', 'pgo_phase_1', 'release'
-    ],
-
-    'official_mac_pgo': [
-      'official', 'reclient', 'no_widevine_cdm_host_verification', 'disable_widevine_signing', 'no_symbols', 'pgo_phase_1', 'release'
     ],
 
     'official_mac_pgo_with_symbols': [

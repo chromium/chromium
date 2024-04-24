@@ -87,7 +87,7 @@
       "is_chrome_branded": true,
       "is_debug": false,
       "is_official_build": true,
-      "symbol_level": 0,
+      "symbol_level": 1,
       "target_cpu": "arm64",
       "use_remoteexec": true,
       "v8_is_on_release_branch": true
@@ -102,7 +102,7 @@
       "is_chrome_branded": true,
       "is_debug": false,
       "is_official_build": true,
-      "symbol_level": 0,
+      "symbol_level": 1,
       "use_remoteexec": true,
       "v8_is_on_release_branch": true
     }
