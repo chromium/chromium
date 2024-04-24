@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace views {
@@ -29,6 +30,10 @@ class ASH_EXPORT SystemToastView : public views::FlexLayoutView {
 
  public:
   explicit SystemToastView(const ToastData& toast_data);
+  SystemToastView(const std::u16string& text,
+                  const std::u16string& dismiss_text = std::u16string(),
+                  base::RepeatingClosure dismiss_callback = base::DoNothing(),
+                  const gfx::VectorIcon* leading_icon = &gfx::kNoneIcon);
   SystemToastView(const SystemToastView&) = delete;
   SystemToastView& operator=(const SystemToastView&) = delete;
   ~SystemToastView() override;

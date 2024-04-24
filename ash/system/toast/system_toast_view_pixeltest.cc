@@ -104,7 +104,7 @@ TEST_F(SystemToastViewPixelTest, WithButton) {
       std::make_unique<SystemToastView>(toast_data));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/4, GetContentsView()));
+      "screenshot", /*revision_number=*/5, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, WithLeadingIconAndButton) {
@@ -117,7 +117,7 @@ TEST_F(SystemToastViewPixelTest, WithLeadingIconAndButton) {
       std::make_unique<SystemToastView>(toast_data));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/4, GetContentsView()));
+      "screenshot", /*revision_number=*/5, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, Multiline_TextOnly) {

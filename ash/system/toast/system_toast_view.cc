@@ -34,7 +34,7 @@ namespace {
 constexpr gfx::Insets kToastInteriorMargin = gfx::Insets::VH(8, 16);
 constexpr gfx::Insets kMultilineToastInteriorMargin = gfx::Insets::VH(8, 24);
 constexpr gfx::Insets kToastWithButtonInteriorMargin =
-    gfx::Insets::TLBR(2, 16, 2, 0);
+    gfx::Insets::TLBR(2, 16, 2, 2);
 constexpr gfx::Insets kMultilineToastWithButtonInteriorMargin =
     gfx::Insets::TLBR(8, 24, 8, 12);
 
@@ -47,6 +47,15 @@ constexpr int kDismissButtonFocusRingHaloInset = 1;
 }  // namespace
 
 SystemToastView::SystemToastView(const ToastData& toast_data)
+    : SystemToastView(toast_data.text,
+                      toast_data.dismiss_text,
+                      toast_data.dismiss_callback,
+                      toast_data.leading_icon) {}
+
+SystemToastView::SystemToastView(const std::u16string& text,
+                                 const std::u16string& dismiss_text,
+                                 base::RepeatingClosure dismiss_callback,
+                                 const gfx::VectorIcon* leading_icon)
     : scoped_a11y_overrider_(
           std::make_unique<ScopedA11yOverrideWindowSetter>()) {
   // Paint to layer so the background can be transparent.
@@ -58,15 +67,14 @@ SystemToastView::SystemToastView(const ToastData& toast_data)
   SetOrientation(views::LayoutOrientation::kHorizontal);
   SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
-  if (!toast_data.leading_icon->is_empty()) {
-    AddChildView(
-        views::Builder<views::ImageView>()
-            .SetID(VIEW_ID_TOAST_IMAGE_VIEW)
-            .SetPreferredSize(
-                gfx::Size(kToastLeadingIconSize, kToastLeadingIconSize))
-            .SetImage(ui::ImageModel::FromVectorIcon(
-                *toast_data.leading_icon, cros_tokens::kCrosSysOnSurface))
-            .Build());
+  if (!leading_icon->is_empty()) {
+    AddChildView(views::Builder<views::ImageView>()
+                     .SetID(VIEW_ID_TOAST_IMAGE_VIEW)
+                     .SetPreferredSize(gfx::Size(kToastLeadingIconSize,
+                                                 kToastLeadingIconSize))
+                     .SetImage(ui::ImageModel::FromVectorIcon(
+                         *leading_icon, cros_tokens::kCrosSysOnSurface))
+                     .Build());
 
     auto* icon_padding = AddChildView(std::make_unique<views::View>());
     icon_padding->SetPreferredSize(
@@ -76,8 +84,8 @@ SystemToastView::SystemToastView(const ToastData& toast_data)
   auto* label = AddChildView(
       views::Builder<views::Label>()
           .SetID(VIEW_ID_TOAST_LABEL)
-          .SetText(toast_data.text)
-          .SetTooltipText(toast_data.text)
+          .SetText(text)
+          .SetTooltipText(text)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
           .SetAutoColorReadabilityEnabled(false)
@@ -88,15 +96,15 @@ SystemToastView::SystemToastView(const ToastData& toast_data)
           .SetMaxLines(2)
           .Build());
 
-  const bool has_button = !toast_data.dismiss_text.empty();
+  const bool has_button = !dismiss_text.empty();
   if (has_button) {
     AddChildView(
         views::Builder<PillButton>()
             .CopyAddressTo(&dismiss_button_)
             .SetID(VIEW_ID_TOAST_BUTTON)
-            .SetCallback(std::move(toast_data.dismiss_callback))
-            .SetText(toast_data.dismiss_text)
-            .SetTooltipText(toast_data.dismiss_text)
+            .SetCallback(std::move(dismiss_callback))
+            .SetText(dismiss_text)
+            .SetTooltipText(dismiss_text)
             .SetPillButtonType(PillButton::Type::kAccentFloatingWithoutIcon)
             .SetFocusBehavior(views::View::FocusBehavior::ALWAYS)
             .Build());
