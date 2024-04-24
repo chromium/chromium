@@ -2002,6 +2002,12 @@ void ChromeMainDelegate::InitializeMemorySystem() {
       command_line->GetSwitchValueASCII(switches::kProcessType);
   const bool is_browser_process = process_type.empty();
   const bool gwp_asan_boost_sampling = is_browser_process || IsCanaryDev();
+  const memory_system::DispatcherParameters::AllocationTraceRecorderInclusion
+      allocation_recorder_inclusion =
+          is_browser_process ? memory_system::DispatcherParameters::
+                                   AllocationTraceRecorderInclusion::kDynamic
+                             : memory_system::DispatcherParameters::
+                                   AllocationTraceRecorderInclusion::kIgnore;
 
   memory_system::Initializer()
       .SetGwpAsanParameters(gwp_asan_boost_sampling, process_type)
@@ -2009,8 +2015,6 @@ void ChromeMainDelegate::InitializeMemorySystem() {
                                     GetProfileParamsProcess(*command_line))
       .SetDispatcherParameters(memory_system::DispatcherParameters::
                                    PoissonAllocationSamplerInclusion::kEnforce,
-                               memory_system::DispatcherParameters::
-                                   AllocationTraceRecorderInclusion::kDynamic,
-                               process_type)
+                               allocation_recorder_inclusion, process_type)
       .Initialize(memory_system_);
 }

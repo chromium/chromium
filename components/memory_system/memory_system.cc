@@ -10,6 +10,7 @@
 #include "base/debug/debugging_buildflags.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/buildflags/buildflags.h"
+#include "components/memory_system/buildflags.h"
 #include "components/memory_system/parameters.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 
@@ -283,7 +284,12 @@ bool MemorySystem::Impl::DispatcherIncludesAllocationTraceRecorder(
     const DispatcherParameters& dispatcher_parameters) {
   switch (dispatcher_parameters.allocation_trace_recorder_inclusion) {
     case DispatcherParameters::AllocationTraceRecorderInclusion::kDynamic:
+#if BUILDFLAG( \
+    TREAT_DYNAMIC_INCLUSION_OF_ALLOCATION_RECORDER_AS_FORCED_INCLUSION)
+      return true;
+#else
       return base::CPU::GetInstanceNoAllocation().has_mte();
+#endif
     case DispatcherParameters::AllocationTraceRecorderInclusion::kIgnore:
       return false;
   }
