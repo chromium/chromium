@@ -54,6 +54,8 @@ source_set("mojom_mapped_types") {
   sources = [
     "signed_web_bundles/ecdsa_p256_public_key.cc",
     "signed_web_bundles/ecdsa_p256_public_key.h",
+    "signed_web_bundles/ecdsa_p256_sha256_signature.cc",
+    "signed_web_bundles/ecdsa_p256_sha256_signature.h",
     "signed_web_bundles/ecdsa_p256_utils.cc",
     "signed_web_bundles/ecdsa_p256_utils.h",
     "signed_web_bundles/ed25519_public_key.cc",

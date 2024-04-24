@@ -352,9 +352,15 @@ TEST_F(SafeWebBundleParserTest, ConnectionError) {
   EXPECT_EQ(response_error->message, kConnectionError);
 }
 
-TEST_F(SafeWebBundleParserTest, ParseSignedWebBundle) {
-  base::File test_file =
-      OpenTestFile(base::FilePath(FILE_PATH_LITERAL("simple_b2_signed.swbn")));
+class SafeSignedWebBundleParserTest
+    : public SafeWebBundleParserTest,
+      public testing::WithParamInterface<
+          std::tuple<base::FilePath, size_t, std::string>> {};
+
+TEST_P(SafeSignedWebBundleParserTest, ParseSignedWebBundle) {
+  const auto& [file_path, integrity_block_size, test_suffix] = GetParam();
+
+  base::File test_file = OpenTestFile(file_path);
   SafeWebBundleParser parser = SafeWebBundleParser(
       /*base_url=*/std::nullopt,
       data_decoder::SafeWebBundleParser::GetFileStrategy(std::move(test_file)));
@@ -366,7 +372,7 @@ TEST_F(SafeWebBundleParserTest, ParseSignedWebBundle) {
   auto [integrity_block, integrity_block_error] = integrity_block_future.Take();
   ASSERT_TRUE(integrity_block);
   ASSERT_FALSE(integrity_block_error);
-  ASSERT_EQ(integrity_block->size, 135u);
+  ASSERT_EQ(integrity_block->size, integrity_block_size);
   ASSERT_EQ(integrity_block->signature_stack.size(), 1u);
 
   base::test::TestFuture<web_package::mojom::BundleMetadataPtr,
@@ -399,6 +405,20 @@ TEST_F(SafeWebBundleParserTest, ParseSignedWebBundle) {
       "text/html; charset=UTF-8");
   EXPECT_TRUE(responses["https://test.example.org/index.html"]);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /**/,
+    SafeSignedWebBundleParserTest,
+    testing::Values(
+        std::make_tuple(
+            base::FilePath(FILE_PATH_LITERAL("simple_b2_signed.swbn")),
+            /*integrity_block_size=*/135u,
+            /*test_suffix=*/"Ed25519"),
+        std::make_tuple(base::FilePath(FILE_PATH_LITERAL(
+                            "simple_b2_signed_ecdsa_p256_sha256.swbn")),
+                        /*integrity_block_size=*/151u,
+                        /*test_suffix=*/"EcdsaP256SHA256")),
+    [](const auto& info) { return std::get<2>(info.param); });
 
 TEST_F(SafeWebBundleParserTest, ParseWebBundleWithRelativeUrls) {
   base::File test_file = OpenTestFile(

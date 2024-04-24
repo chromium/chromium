@@ -18,6 +18,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
+#include "components/web_package/signed_web_bundles/ecdsa_p256_utils.h"
 #include "components/web_package/signed_web_bundles/integrity_block_parser.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_stack_entry.h"
@@ -191,10 +192,9 @@ void SignedWebBundleSignatureVerifier::OnHashOfUnsignedWebBundleCalculated(
 
   bool valid_signature = absl::visit(
       base::Overloaded{
-          [&payload_to_verify](const SignedWebBundleSignatureInfoEd25519&
-                                   ed25519_signature_info) {
-            return ed25519_signature_info.signature().Verify(
-                payload_to_verify, ed25519_signature_info.public_key());
+          [&payload_to_verify](const auto& signature_info) {
+            return signature_info.signature().Verify(
+                payload_to_verify, signature_info.public_key());
           },
           [](const SignedWebBundleSignatureInfoUnknown&) { return false; }},
       signature_stack_entry.signature_info());

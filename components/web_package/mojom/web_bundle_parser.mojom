@@ -113,12 +113,30 @@ struct SignatureInfoEd25519 {
   Ed25519Signature signature;
 };
 
+// Mapped to `web_package::EcdsaP256PublicKey`
+struct EcdsaP256PublicKey {
+  array<uint8, 33> bytes;
+};
+
+// Mapped to `web_package::EcdsaP256SHA256Signature`
+struct EcdsaP256SHA256Signature {
+  array<uint8> bytes;
+};
+
+struct SignatureInfoEcdsaP256SHA256 {
+  // The public key of this signature stack entry.
+  EcdsaP256PublicKey public_key;
+  // The signature of this signature stack entry.
+  EcdsaP256SHA256Signature signature;
+};
+
 struct SignatureInfoUnknown {
 };
 
 union SignatureInfo {
   SignatureInfoUnknown unknown;
   SignatureInfoEd25519 ed25519;
+  SignatureInfoEcdsaP256SHA256 ecdsa_p256_sha256;
 };
 
 struct BundleIntegrityBlockSignatureStackEntry {

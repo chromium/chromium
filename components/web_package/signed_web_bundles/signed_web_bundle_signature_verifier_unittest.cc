@@ -30,6 +30,7 @@
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/constants.h"
 #include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
+#include "components/web_package/signed_web_bundles/ecdsa_p256_sha256_signature.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
@@ -93,16 +94,27 @@ constexpr uint8_t kCompleteEntryCbor[] = {
     0xc5, 0xcf, 0x04, 0x15, 0xdb, 0x63, 0x59, 0xb2, 0xff, 0xee, 0x13, 0x93,
     0x2c, 0x99, 0x68, 0x0d};
 
-using PublicKey = absl::variant<Ed25519PublicKey>;
+using PublicKey = absl::variant<Ed25519PublicKey, EcdsaP256PublicKey>;
 
 mojom::SignatureInfoPtr CreateSignatureInfo(
     const Ed25519PublicKey& public_key,
     base::span<const uint8_t> signature) {
   auto ed25519_signature_info = mojom::SignatureInfoEd25519::New();
   ed25519_signature_info->public_key = public_key;
-  ed25519_signature_info->signature =
-      *web_package::Ed25519Signature::Create(signature);
+  ed25519_signature_info->signature = *Ed25519Signature::Create(signature);
   return mojom::SignatureInfo::NewEd25519(std::move(ed25519_signature_info));
+}
+
+mojom::SignatureInfoPtr CreateSignatureInfo(
+    const EcdsaP256PublicKey& public_key,
+    base::span<const uint8_t> signature) {
+  auto ecdsa_p256_sha256_signature_info =
+      mojom::SignatureInfoEcdsaP256SHA256::New();
+  ecdsa_p256_sha256_signature_info->public_key = public_key;
+  ecdsa_p256_sha256_signature_info->signature =
+      *EcdsaP256SHA256Signature::Create(signature);
+  return mojom::SignatureInfo::NewEcdsaP256Sha256(
+      std::move(ecdsa_p256_sha256_signature_info));
 }
 
 mojom::BundleIntegrityBlockSignatureStackEntryPtr MakeSignatureStackEntry(
@@ -283,21 +295,29 @@ class SignedWebBundleSignatureVerifierTest
       const auto& signature =
           signature_stack_entry.GetArray()[1].GetBytestring();
 
-      auto public_key =
-          absl::visit(base::Overloaded{
-                          [&](const WebBundleSigner::Ed25519KeyPair& key_pair)
-                              -> PublicKey {
-                            auto ed25519_public_key = *Ed25519PublicKey::Create(
-                                base::FindOrNull(
-                                    attributes.GetMap(),
-                                    cbor::Value(kEd25519PublicKeyAttributeName))
-                                    ->GetBytestring());
-                            EXPECT_EQ(ed25519_public_key, key_pair.public_key);
-                            return ed25519_public_key;
-                          },
-                          [&](const WebBundleSigner::EcdsaP256KeyPair& key_pair)
-                              -> PublicKey { NOTREACHED_NORETURN(); }},
-                      key_pair);
+      auto public_key = absl::visit(
+          base::Overloaded{
+              [&](const WebBundleSigner::Ed25519KeyPair& key_pair)
+                  -> PublicKey {
+                auto ed25519_public_key = *Ed25519PublicKey::Create(
+                    base::FindOrNull(
+                        attributes.GetMap(),
+                        cbor::Value(kEd25519PublicKeyAttributeName))
+                        ->GetBytestring());
+                EXPECT_EQ(ed25519_public_key, key_pair.public_key);
+                return ed25519_public_key;
+              },
+              [&](const WebBundleSigner::EcdsaP256KeyPair& key_pair)
+                  -> PublicKey {
+                auto ecdsa_p256_public_key = *EcdsaP256PublicKey::Create(
+                    base::FindOrNull(
+                        attributes.GetMap(),
+                        cbor::Value(kEcdsaP256PublicKeyAttributeName))
+                        ->GetBytestring());
+                EXPECT_EQ(ecdsa_p256_public_key, key_pair.public_key);
+                return ecdsa_p256_public_key;
+              }},
+          key_pair);
 
       raw_signature_stack.push_back(MakeSignatureStackEntry(
           public_key, signature, complete_entry_cbor, attributes_cbor));
@@ -355,7 +375,17 @@ INSTANTIATE_TEST_SUITE_P(
             std::nullopt),
         std::make_pair(
             std::vector<WebBundleSigner::KeyPair>{
+                WebBundleSigner::EcdsaP256KeyPair::CreateRandom()},
+            std::nullopt),
+        std::make_pair(
+            std::vector<WebBundleSigner::KeyPair>{
                 WebBundleSigner::Ed25519KeyPair::CreateRandom(
+                    /*produce_invalid_signature=*/true)},
+            SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
+                "The signature is invalid.")),
+        std::make_pair(
+            std::vector<WebBundleSigner::KeyPair>{
+                WebBundleSigner::EcdsaP256KeyPair::CreateRandom(
                     /*produce_invalid_signature=*/true)},
             SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
                 "The signature is invalid.")),
@@ -364,6 +394,13 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_pair(
             std::vector<WebBundleSigner::KeyPair>{
                 WebBundleSigner::Ed25519KeyPair::CreateRandom(),
+                WebBundleSigner::Ed25519KeyPair::CreateRandom()},
+            SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
+                "Only a single signature is currently supported, got 2 "
+                "signatures.")),
+        std::make_pair(
+            std::vector<WebBundleSigner::KeyPair>{
+                WebBundleSigner::EcdsaP256KeyPair::CreateRandom(),
                 WebBundleSigner::Ed25519KeyPair::CreateRandom()},
             SignedWebBundleSignatureVerifier::Error::ForInvalidSignature(
                 "Only a single signature is currently supported, got 2 "

@@ -25,6 +25,12 @@ SignedWebBundleSignatureStackEntry CreateSignatureEntry(
           SignedWebBundleSignatureInfoEd25519(
               signature_info->get_ed25519()->public_key,
               signature_info->get_ed25519()->signature));
+    case mojom::SignatureInfo::Tag::kEcdsaP256Sha256:
+      return SignedWebBundleSignatureStackEntry(
+          entry->complete_entry_cbor, entry->attributes_cbor,
+          SignedWebBundleSignatureInfoEcdsaP256SHA256(
+              signature_info->get_ecdsa_p256_sha256()->public_key,
+              signature_info->get_ecdsa_p256_sha256()->signature));
     case mojom::SignatureInfo::Tag::kUnknown:
       return SignedWebBundleSignatureStackEntry(
           entry->complete_entry_cbor, entry->attributes_cbor,
