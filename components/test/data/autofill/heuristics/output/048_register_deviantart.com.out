@@ -1,4 +1,4 @@
-UNKNOWN_TYPE | emailAddress | Email Address |  | emailAddress_1
+EMAIL_ADDRESS | emailAddress | Email Address |  | emailAddress_1
 UNKNOWN_TYPE | password | Password |  | emailAddress_1
 UNKNOWN_TYPE | remember_me | Stay logged in | 1 | emailAddress_1
 

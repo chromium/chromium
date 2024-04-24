@@ -1,5 +1,5 @@
 # INCORRECT: 3rd field should be a last name, but the parser cannot return a last name without a first name.
-UNKNOWN_TYPE | loginID | Adresse e-mail |  | loginID_1
+EMAIL_ADDRESS | loginID | Adresse e-mail |  | loginID_1
 UNKNOWN_TYPE | password | Mot de passe |  | loginID_1
 
 UNKNOWN_TYPE | retrieveBookingByLastname.RecordLocator | Numéro de réservation |  | retrieveBookingByLastname.RecordLocator_1

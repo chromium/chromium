@@ -156,13 +156,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {syncer::kSyncWebauthnCredentials},
-        /*disabled_features=*/{
-            // Disable this feature explicitly, as it can cause unexpected email
-            // fields to be parsed in these tests.
-            // TODO(crbug.com/1493145): Remove when/if launched.
-            autofill::features::kAutofillEnableEmailHeuristicOnlyAddressForms});
+    scoped_feature_list_.InitWithFeatures({syncer::kSyncWebauthnCredentials},
+                                          /*disabled_features=*/{});
     ASSERT_TRUE(https_server_.InitializeAndListen());
 
     create_services_subscription_ =

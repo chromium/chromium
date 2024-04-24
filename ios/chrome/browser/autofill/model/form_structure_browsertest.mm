@@ -226,10 +226,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           // TODO(crbug.com/40222716): Remove once launched. This feature is
           // disabled since it is not supported on iOS.
           features::kAutofillAlwaysParsePlaceholders,
-          // TODO(crbug.com/40285735): Remove when/if launched. This feature
-          // changes default parsing behavior, so must be disabled to avoid
-          // fieldtrial_testing_config interference.
-          features::kAutofillEnableEmailHeuristicOnlyAddressForms,
       });
 }
 
