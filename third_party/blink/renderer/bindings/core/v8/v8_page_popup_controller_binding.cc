@@ -51,9 +51,10 @@ void V8PagePopupControllerBinding::InstallPagePopupController(
   }
 
   window_wrapper
-      ->SetAccessor(
+      ->SetNativeDataProperty(
           context, V8AtomicString(context->GetIsolate(), "pagePopupController"),
-          PagePopupControllerAttributeGetterCallback)
+          PagePopupControllerAttributeGetterCallback, nullptr,
+          v8::Local<v8::Value>(), v8::ReadOnly)
       .ToChecked();
 }
 
