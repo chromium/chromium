@@ -107,6 +107,9 @@ tast_disabled_tests_from_chrome_all = [
   "videoconferencing.TrayTriggersExtension@brya",
   "videoconferencing.TrayTriggersExtension.lacros@brya",
 
+  # b/336585651
+  "ui.ChromeCrashNotLoggedIn.browser_crashpad",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
