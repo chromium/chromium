@@ -126,9 +126,13 @@ const char kPageSetupScriptFormat[] = "setupHeaderFooterTemplate(%s);";
 
 constexpr int kAllowedIpcDepthForPrint = 1;
 
-template <typename Param>
-struct ParamWithFitToPageScale {
-  Param param;
+struct PrintParamsWithFitToPageScale {
+  mojom::PrintParamsPtr print_params;
+  double fit_to_page_scale_factor = 1.0f;
+};
+
+struct PageSizeMarginsWithFitToPageScale {
+  mojom::PageSizeMarginsPtr page_size_margins;
   double fit_to_page_scale_factor = 1.0f;
 };
 
@@ -282,22 +286,22 @@ mojom::PrintParamsPtr GetCssPrintParams(blink::WebLocalFrame* frame,
   return page_css_params;
 }
 
-ParamWithFitToPageScale<mojom::PrintParamsPtr> FitPrintParamsToPage(
+PrintParamsWithFitToPageScale FitPrintParamsToPage(
     const mojom::PrintParams& page_params,
     const mojom::PrintParams& css_params) {
-  ParamWithFitToPageScale<mojom::PrintParamsPtr> result;
-  result.param = css_params.Clone();
+  PrintParamsWithFitToPageScale result;
+  result.print_params = css_params.Clone();
 
-  if (page_params.page_size == result.param->page_size) {
+  if (page_params.page_size == result.print_params->page_size) {
     return result;
   }
 
-  float content_width = result.param->content_size.width();
-  float content_height = result.param->content_size.height();
+  float content_width = result.print_params->content_size.width();
+  float content_height = result.print_params->content_size.height();
   float default_page_size_height = page_params.page_size.height();
   float default_page_size_width = page_params.page_size.width();
-  float css_page_size_height = result.param->page_size.height();
-  float css_page_size_width = result.param->page_size.width();
+  float css_page_size_height = result.print_params->page_size.height();
+  float css_page_size_width = result.print_params->page_size.width();
 
   if ((default_page_size_width > default_page_size_height) !=
       (css_page_size_width > css_page_size_height)) {
@@ -316,15 +320,15 @@ ParamWithFitToPageScale<mojom::PrintParamsPtr> FitPrintParamsToPage(
     content_width *= scale_factor;
     content_height *= scale_factor;
   }
-  result.param->margin_top =
+  result.print_params->margin_top =
       (default_page_size_height - css_page_size_height * scale_factor) / 2 +
-      (result.param->margin_top * scale_factor);
-  result.param->margin_left =
+      (result.print_params->margin_top * scale_factor);
+  result.print_params->margin_left =
       (default_page_size_width - css_page_size_width * scale_factor) / 2 +
-      (result.param->margin_left * scale_factor);
-  result.param->content_size = gfx::SizeF(content_width, content_height);
-  result.param->page_size.SetSize(default_page_size_width,
-                                  default_page_size_height);
+      (result.print_params->margin_left * scale_factor);
+  result.print_params->content_size = gfx::SizeF(content_width, content_height);
+  result.print_params->page_size.SetSize(default_page_size_width,
+                                         default_page_size_height);
   result.fit_to_page_scale_factor = scale_factor;
 
   return result;
@@ -590,7 +594,7 @@ mojom::PrintScalingOption GetPrintScalingOption(
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 // Get page layout and fit to page if needed. The layout is in device pixels.
-ParamWithFitToPageScale<mojom::PageSizeMarginsPtr> ComputePageLayoutForCss(
+PageSizeMarginsWithFitToPageScale ComputePageLayoutForCss(
     blink::WebLocalFrame* frame,
     uint32_t page_index,
     const mojom::PrintParams& page_params,
@@ -601,7 +605,7 @@ ParamWithFitToPageScale<mojom::PageSizeMarginsPtr> ComputePageLayoutForCss(
   double fit_to_page_scale_factor = 1.0f;
   if (!ignore_css_margins && IsPrintScalingOptionCenterOnPaper(page_params)) {
     auto fitted = FitPrintParamsToPage(page_params, *css_params);
-    css_params = std::move(fitted.param);
+    css_params = std::move(fitted.print_params);
     fit_to_page_scale_factor = fitted.fit_to_page_scale_factor;
   }
   mojom::PageSizeMarginsPtr page_size_margins =
@@ -1769,7 +1773,7 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
   mojom::PageSizeMarginsPtr default_page_layout =
       ComputePageLayoutForCss(print_preview_context_.prepared_frame(), 0,
                               print_params, ignore_css_margins_)
-          .param;
+          .page_size_margins;
   int dpi = GetDPI(print_params);
   // Convert to points.
   default_page_layout =
@@ -2560,9 +2564,9 @@ void PrintRenderFrameHelper::PrintPageInternal(
     blink::WebLocalFrame* frame,
     blink::WebLocalFrame* header_footer_frame,
     MetafileSkia* metafile) {
-  ParamWithFitToPageScale<mojom::PageSizeMarginsPtr> layout =
+  PageSizeMarginsWithFitToPageScale layout =
       ComputePageLayoutForCss(frame, page_index, params, ignore_css_margins_);
-  auto& page_layout_in_device_pixels = layout.param;
+  auto& page_layout_in_device_pixels = layout.page_size_margins;
   mojom::PageSizeMarginsPtr page_layout_in_css_pixels =
       ConvertedPageSizeMargins(page_layout_in_device_pixels, GetDPI(params),
                                kPixelsPerInch);
