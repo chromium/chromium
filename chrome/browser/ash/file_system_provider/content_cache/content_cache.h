@@ -59,6 +59,10 @@ class ContentCache {
   // event files have been orphaned (i.e. they are on disk with no DB entry or
   // vice versa) then prune them appropriately.
   virtual void LoadFromDisk(base::OnceClosure callback) = 0;
+
+  // Returns the file paths of the cached files on disk, in their most recently
+  // used order.
+  virtual std::vector<base::FilePath> GetCachedFilePaths() = 0;
 };
 
 }  // namespace ash::file_system_provider

@@ -83,6 +83,7 @@ class MockContentCache : public ContentCache {
                FileErrorCallback callback),
               (override));
   MOCK_METHOD(void, LoadFromDisk, (base::OnceClosure callback), (override));
+  MOCK_METHOD(std::vector<base::FilePath>, GetCachedFilePaths, (), (override));
 
   base::WeakPtr<MockContentCache> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

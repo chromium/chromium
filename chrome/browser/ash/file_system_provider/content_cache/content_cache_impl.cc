@@ -440,4 +440,13 @@ void ContentCacheImpl::OnStaleItemsPruned(base::OnceClosure callback,
   std::move(callback).Run();
 }
 
+std::vector<base::FilePath> ContentCacheImpl::GetCachedFilePaths() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<base::FilePath> cached_file_paths;
+  for (const auto& [file_path, cache_file_context] : lru_cache_) {
+    cached_file_paths.push_back(file_path);
+  }
+  return cached_file_paths;
+}
+
 }  // namespace ash::file_system_provider

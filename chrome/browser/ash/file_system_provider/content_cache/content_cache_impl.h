@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_CONTENT_CACHE_CONTENT_CACHE_IMPL_H_
 
 #include "base/files/file_error_or.h"
-#include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -56,6 +55,8 @@ class ContentCacheImpl : public ContentCache {
                        FileErrorCallback callback) override;
 
   void LoadFromDisk(base::OnceClosure callback) override;
+
+  std::vector<base::FilePath> GetCachedFilePaths() override;
 
  private:
   void OnBytesRead(
@@ -110,10 +111,6 @@ class ContentCacheImpl : public ContentCache {
   size_t max_cache_size_;
 
   base::WeakPtrFactory<ContentCacheImpl> weak_ptr_factory_{this};
-
-  FRIEND_TEST_ALL_PREFIXES(
-      FileSystemProviderContentCacheImplTest,
-      FilesOnDiskAndInDbAreInitializedInTheDatabaseAccessedTimeOrder);
 };
 
 }  // namespace ash::file_system_provider

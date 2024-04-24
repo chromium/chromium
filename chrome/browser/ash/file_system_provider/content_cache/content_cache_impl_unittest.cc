@@ -139,6 +139,8 @@ TEST_F(FileSystemProviderContentCacheImplTest, StartWriteBytes) {
 
   // The first write to the disk should use the database ID as the file name.
   EXPECT_TRUE(base::PathExists(temp_dir_.GetPath().Append("1")));
+  EXPECT_THAT(content_cache_->GetCachedFilePaths(),
+              ElementsAre(base::FilePath("random-path")));
 }
 
 TEST_F(FileSystemProviderContentCacheImplTest,
@@ -219,6 +221,10 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   WriteFileToCache(base::FilePath("random-path2"), /*version_tag=*/"versionA",
                    kDefaultChunkSize);
 
+  EXPECT_THAT(content_cache_->GetCachedFilePaths(),
+              ElementsAre(base::FilePath("random-path2"),
+                          base::FilePath("random-path1")));
+
   // Expect third insertion to fail.
   OpenedCloudFile file3(base::FilePath("random-path3"),
                         OpenFileMode::OPEN_FILE_MODE_READ,
@@ -239,6 +245,9 @@ TEST_F(FileSystemProviderContentCacheImplTest,
                                               future.GetCallback()));
   // Contiguous file write should succeed.
   EXPECT_EQ(future.Get(), base::File::FILE_OK);
+  EXPECT_THAT(content_cache_->GetCachedFilePaths(),
+              ElementsAre(base::FilePath("random-path1"),
+                          base::FilePath("random-path2")));
 }
 
 TEST_F(FileSystemProviderContentCacheImplTest,
@@ -432,8 +441,6 @@ TEST_F(FileSystemProviderContentCacheImplTest,
 
 TEST_F(FileSystemProviderContentCacheImplTest,
        FilesOnDiskAndInDbAreInitializedInTheDatabaseAccessedTimeOrder) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(content_cache_->sequence_checker_);
-
   // This is the oldest accessed item on disk, we should order this last in the
   // LRU cache.
   base::Time older_time;
@@ -449,11 +456,8 @@ TEST_F(FileSystemProviderContentCacheImplTest,
   content_cache_->LoadFromDisk(future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  // TODO(b/328679426): Once eviction logic has been created, we can assert on
-  // this. For now let's inspect the underlying `lru_cache_` instead.
-  EXPECT_THAT(content_cache_->lru_cache_,
-              ElementsAre(Key(base::FilePath("/b.txt")),
-                          Key(base::FilePath("/a.txt"))));
+  EXPECT_THAT(content_cache_->GetCachedFilePaths(),
+              ElementsAre(base::FilePath("/b.txt"), base::FilePath("/a.txt")));
 }
 
 TEST_F(FileSystemProviderContentCacheImplTest,
