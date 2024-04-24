@@ -292,10 +292,12 @@ gfx::PointF GetCornerCoordinates(const gfx::RectF& rectf, Corner corner) {
 }
 
 // Determine whether the corner radius of `rect` should be overridden to match
-// the corner radius of `containing_rect`.
+// the corner radius of `containing_rect`. If `consider_curvature` is true,
+// the curvature of `rect` is taken into account.
 bool ShouldOverrideCornerRadius(const gfx::RRectF& rect,
                                 const gfx::RRectF& containing_rect,
-                                Corner corner) {
+                                Corner corner,
+                                bool consider_curvature) {
   if (rect.IsEmpty() || containing_rect.IsEmpty()) {
     return false;
   }
@@ -321,13 +323,20 @@ bool ShouldOverrideCornerRadius(const gfx::RRectF& rect,
     return false;
   }
 
+  const gfx::PointF rect_corner_coordinates =
+      GetCornerCoordinates(rect.rect(), corner);
+
   // If only the corner of rect is square, we must override the radius if the
   // square corner of rect is located outside the curvature of the rect's
   // corner.
   if (rect_corner_radii.IsZero()) {
-    const gfx::PointF rect_corner_coordinates =
-        GetCornerCoordinates(rect.rect(), corner);
     return !CheckCornerContainment(rect_corner_coordinates, containing_rect);
+  }
+
+  if (!consider_curvature) {
+    const gfx::PointF containing_rect_corner_coordinates =
+        GetCornerCoordinates(containing_rect.rect(), corner);
+    return rect_corner_coordinates == containing_rect_corner_coordinates;
   }
 
   const CircularArc arc = GetArcForCorner(rect, corner);
@@ -347,12 +356,14 @@ using Corners = base::flat_set<gfx::RRectF::Corner>;
 // Returns the set of corners of rect that need to have their radius match the
 // corner radius of containing_rect.
 Corners FindCornersToOverrideRadius(const gfx::RRectF& rect,
-                                    const gfx::RRectF& containing_rect) {
+                                    const gfx::RRectF& containing_rect,
+                                    bool consider_curvature) {
   Corners corners;
 
   for (auto corner : {Corner::kUpperLeft, Corner::kUpperRight,
                       Corner::kLowerRight, Corner::kLowerLeft}) {
-    if (ShouldOverrideCornerRadius(rect, containing_rect, corner)) {
+    if (ShouldOverrideCornerRadius(rect, containing_rect, corner,
+                                   consider_curvature)) {
       corners.insert(corner);
     }
   }
@@ -400,6 +411,7 @@ ScopedLayerTreeSynchronizerBase::~ScopedLayerTreeSynchronizerBase() = default;
 
 bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCorners(
     ui::Layer* layer,
+    bool consider_curvature,
     const gfx::RRectF& reference_bounds) {
   CHECK(root_layer_->Contains(layer));
   if (reference_bounds.IsEmpty() ||
@@ -410,12 +422,13 @@ bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCorners(
   gfx::Transform transform;
   layer->GetTargetTransformRelativeTo(root_layer_, &transform);
 
-  return SynchronizeLayerTreeRoundedCornersImpl(layer, reference_bounds,
-                                                transform);
+  return SynchronizeLayerTreeRoundedCornersImpl(layer, consider_curvature,
+                                                reference_bounds, transform);
 }
 
 bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCornersImpl(
     ui::Layer* layer,
+    bool consider_curvature,
     const gfx::RRectF& reference_bounds,
     const gfx::Transform& transform) {
   CHECK(layer);
@@ -433,8 +446,8 @@ bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCornersImpl(
     // of the `reference_bounds` or are drawn outside the curvature (if any) of
     // the reference_bounds rounded corners. The function considers the
     // curvature (if any) of the layer corners as well.
-    const Corners corners_to_update =
-        FindCornersToOverrideRadius(transformed_layer_bounds, reference_bounds);
+    const Corners corners_to_update = FindCornersToOverrideRadius(
+        transformed_layer_bounds, reference_bounds, consider_curvature);
 
     if (!corners_to_update.empty()) {
       // The inverse transform coverts from the coordinate space of `layer` to
@@ -471,8 +484,8 @@ bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCornersImpl(
         // `SynchronizeLayerTreeRoundedCorners()`
         if (restore_tree_ && !original_layers_info_.contains(layer)) {
           original_layers_info_.insert({layer,
-                                         {layer->rounded_corner_radii(),
-                                          layer->is_fast_rounded_corner()}});
+                                        {layer->rounded_corner_radii(),
+                                         layer->is_fast_rounded_corner()}});
         }
 
         layer->SetRoundedCornerRadius(radii);
@@ -485,7 +498,8 @@ bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCornersImpl(
   bool subtree_altered = false;
   for (ui::Layer* child : layer->children()) {
     subtree_altered |= SynchronizeLayerTreeRoundedCornersImpl(
-        child, reference_bounds, AccumulateTargetTransform(child, transform));
+        child, consider_curvature, reference_bounds,
+        AccumulateTargetTransform(child, transform));
   }
 
   return subtree_altered || layer_altered;
@@ -530,7 +544,8 @@ ScopedLayerTreeSynchronizer::~ScopedLayerTreeSynchronizer() {
 void ScopedLayerTreeSynchronizer::SynchronizeRoundedCorners(
     ui::Layer* layer,
     const gfx::RRectF& reference_bounds) {
-  SynchronizeLayerTreeRoundedCorners(layer, reference_bounds);
+  SynchronizeLayerTreeRoundedCorners(layer, /*consider_curvature=*/true,
+                                     reference_bounds);
 }
 
 void ScopedLayerTreeSynchronizer::Restore() {
@@ -552,11 +567,12 @@ ScopedWindowTreeSynchronizer::~ScopedWindowTreeSynchronizer() {
 
 void ScopedWindowTreeSynchronizer::SynchronizeRoundedCorners(
     aura::Window* window,
+    bool consider_curvature,
     const gfx::RRectF& reference_bounds,
     TransientTreeIgnorePredicate ignore_predicate) {
   for (auto* window_iter : GetTransientTreeIterator(window, ignore_predicate)) {
     const bool altered = SynchronizeLayerTreeRoundedCorners(
-        window_iter->layer(), reference_bounds);
+        window_iter->layer(), consider_curvature, reference_bounds);
     if (altered &&
         !altered_window_observations_.IsObservingSource(window_iter)) {
       altered_window_observations_.AddObservation(window_iter);

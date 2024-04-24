@@ -582,7 +582,7 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
   //   ensuring that all four corners of the WindowMiniView appear rounded.
   //   See b/325635179.
   window_tree_synchronizer_->SynchronizeRoundedCorners(
-      window(), rounded_contents_bounds,
+      window(), /*consider_curvature=*/false, rounded_contents_bounds,
       /*ignore_predicate=*/base::BindRepeating([](aura::Window* window) {
         return window->GetProperty(kHideInOverviewKey) ||
                window->GetProperty(kExcludeFromTransientTreeTransformKey);

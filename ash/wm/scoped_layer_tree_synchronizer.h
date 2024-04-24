@@ -49,9 +49,12 @@ class ScopedLayerTreeSynchronizerBase {
   // the radius of corners of the `layer` to match the radius with
   // `reference_bounds` if any corner is drawn outside the curvature of the
   // `reference_bounds`.
+  // The curvature of `layer` is also taken into account if `consider_curvature`
+  // is true.
   // Returns true if any of the layers of the layer tree were altered.
   // Note: `reference_bounds` are in target space of `root_layer_`;
   bool SynchronizeLayerTreeRoundedCorners(ui::Layer* layer,
+                                          bool consider_curvature,
                                           const gfx::RRectF& reference_bounds);
 
   // Traverses through the layer subtree rooted at `layer`. Restores the radii
@@ -64,6 +67,7 @@ class ScopedLayerTreeSynchronizerBase {
   // `transform` is the relative target transform of layer to the `root_layer`.
   bool SynchronizeLayerTreeRoundedCornersImpl(
       ui::Layer* layer,
+      bool consider_curvature,
       const gfx::RRectF& reference_bounds,
       const gfx::Transform& transform);
 
@@ -129,6 +133,7 @@ class ASH_EXPORT ScopedWindowTreeSynchronizer
   // For each window's layer tree, the synchronization is performed as described
   // in `ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCorners()`.
   void SynchronizeRoundedCorners(aura::Window* window,
+                                 bool consider_curvature,
                                  const gfx::RRectF& reference_bounds,
                                  TransientTreeIgnorePredicate ignore_predicate);
 
