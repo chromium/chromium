@@ -89,10 +89,6 @@ class PersonalDataManagerObserver;
 class PersonalDataManager : public KeyedService,
                             public history::HistoryServiceObserver {
  public:
-  // TODO(b/40100455): Remove this using declaration. Update all existing uses
-  // to `AddressDataManager::ProfileOrder`.
-  using ProfileOrder = AddressDataManager::ProfileOrder;
-
   explicit PersonalDataManager(const std::string& app_locale);
   PersonalDataManager(const std::string& app_locale,
                       const std::string& country_code);
@@ -193,7 +189,8 @@ class PersonalDataManager : public KeyedService,
   CreditCard* GetCreditCardByServerId(const std::string& server_id);
   void AddCreditCardBenefitForTest(CreditCardBenefit benefit);
   std::vector<AutofillProfile*> GetProfiles(
-      ProfileOrder order = ProfileOrder::kNone) const;
+      AddressDataManager::ProfileOrder order =
+          AddressDataManager::ProfileOrder::kNone) const;
   std::vector<CreditCard*> GetLocalCreditCards() const;
   std::vector<CreditCard*> GetServerCreditCards() const;
   std::vector<CreditCard*> GetCreditCards() const;

@@ -192,7 +192,7 @@ void AddressDataCleaner::ApplyDeduplicationRoutine() {
 
   const std::vector<AutofillProfile*>& profiles =
       personal_data_manager_->GetProfiles(
-          PersonalDataManager::ProfileOrder::kHighestFrecencyDesc);
+          AddressDataManager::ProfileOrder::kHighestFrecencyDesc);
   // Early return to prevent polluting metrics with uninteresting events.
   if (profiles.size() < 2) {
     return;

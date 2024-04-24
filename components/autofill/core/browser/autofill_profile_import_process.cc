@@ -105,7 +105,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
   // existing profile.
   const std::vector<AutofillProfile*> existing_profiles =
       personal_data_manager_->GetProfiles(
-          PersonalDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc);
+          AddressDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc);
 
   // If we have reason to believe that the country was complemented incorrectly,
   // remove it.

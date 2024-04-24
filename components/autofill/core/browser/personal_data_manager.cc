@@ -224,7 +224,7 @@ bool PersonalDataManager::IsDataLoaded() const {
 }
 
 std::vector<AutofillProfile*> PersonalDataManager::GetProfiles(
-    ProfileOrder order) const {
+    AddressDataManager::ProfileOrder order) const {
   return address_data_manager_->GetProfiles(order);
 }
 
