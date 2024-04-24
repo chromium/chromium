@@ -7,9 +7,10 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {convertKibToGibDecimalString, getNetworkCardTitle, getRoutineGroups, getSignalStrength, getSubnetMaskFromRoutingPrefix, setDisplayStateInTitleForTesting} from 'chrome://diagnostics/diagnostics_utils.js';
 import {NetworkType} from 'chrome://diagnostics/network_health_provider.mojom-webui.js';
-import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 import {RoutineType} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
-import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {RoutineGroup} from 'chrome://diagnostics/routine_group.js';
 
 suite('diagnosticsUtilsTestSuite', function() {
   test('ProperlyConvertsKibToGib', () => {
@@ -63,7 +64,7 @@ suite('diagnosticsUtilsTestSuite', function() {
   });
 
   test('AllRoutineGroupsPresent', () => {
-    const routineGroups = getRoutineGroups(NetworkType.kWiFi);
+    const routineGroups: RoutineGroup[] = getRoutineGroups(NetworkType.kWiFi);
     const [
       localNetworkGroup,
        nameResolutionGroup,
@@ -76,14 +77,17 @@ suite('diagnosticsUtilsTestSuite', function() {
     assertEquals(routineGroups.length, 4);
 
     // WiFi group should exist and all three WiFi routines should be present.
+    assert(wifiGroup);
     assertEquals(wifiGroup.routines.length, 3);
     assertEquals(wifiGroup.groupName, 'wifiGroupLabel');
 
     // ARC routines should be present in their categories.
+    assert(nameResolutionGroup);
     assertTrue(
         nameResolutionGroup.routines.includes(RoutineType.kArcDnsResolution));
-
+    assert(localNetworkGroup);
     assertTrue(localNetworkGroup.routines.includes(RoutineType.kArcPing));
+    assert(internetConnectivityGroup);
     assertTrue(
         internetConnectivityGroup.routines.includes(RoutineType.kArcHttp));
   });
