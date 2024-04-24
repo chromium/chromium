@@ -35,11 +35,13 @@ TEST_F(CachedTextInputInfoTest, Basic) {
       SetSelectionOptions());
   const Element& sample = *GetElementById("sample");
 
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
   EXPECT_EQ(PlainTextRange(1, 1),
             GetInputMethodController().GetSelectionOffsets());
   EXPECT_EQ("ab", GetCachedTextInputInfo().GetText());
 
   To<Text>(sample.firstChild())->appendData("X");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
   EXPECT_EQ(PlainTextRange(1, 1),
             GetInputMethodController().GetSelectionOffsets());
   EXPECT_EQ("abX", GetCachedTextInputInfo().GetText());
@@ -51,6 +53,7 @@ TEST_F(CachedTextInputInfoTest, InlineElementEditable) {
       SetSelectionTextToBody("<span contenteditable><img>|a</img></span>"),
       SetSelectionOptions());
 
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
   EXPECT_EQ(PlainTextRange(1, 1),
             GetInputMethodController().GetSelectionOffsets());
   EXPECT_EQ(String(u"\uFFFCa"), GetCachedTextInputInfo().GetText());
@@ -58,6 +61,7 @@ TEST_F(CachedTextInputInfoTest, InlineElementEditable) {
   auto& span = *GetDocument().QuerySelector(AtomicString("span"));
   span.replaceChild(Text::Create(GetDocument(), "12345"), span.firstChild());
 
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
   EXPECT_EQ(PlainTextRange(5, 5),
             GetInputMethodController().GetSelectionOffsets());
   EXPECT_EQ("12345a", GetCachedTextInputInfo().GetText());
@@ -111,11 +115,13 @@ TEST_F(CachedTextInputInfoTest, RelayoutBoundary) {
   const Element& sample = *GetElementById("sample");
   ASSERT_TRUE(sample.GetLayoutObject()->IsRelayoutBoundary());
 
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
   EXPECT_EQ(PlainTextRange(0, 1),
             GetInputMethodController().GetSelectionOffsets());
   EXPECT_EQ("ab", GetCachedTextInputInfo().GetText());
 
   To<Text>(sample.firstChild())->appendData("X");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
   EXPECT_EQ(PlainTextRange(0, 1),
             GetInputMethodController().GetSelectionOffsets());
   EXPECT_EQ("abX", GetCachedTextInputInfo().GetText());
@@ -134,12 +140,14 @@ TEST_F(CachedTextInputInfoTest, PositionAbsolute) {
   auto& text_ab = *To<Text>(sample.firstChild());
   const auto& text_cd = *To<Text>(sample.lastChild()->firstChild());
 
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
   EXPECT_EQ(PlainTextRange(2, 2),
             GetInputMethodController().GetSelectionOffsets());
   EXPECT_EQ("abcd", GetCachedTextInputInfo().GetText());
 
   // Insert "AB" after "ab"
   text_ab.appendData("AB");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
   EXPECT_EQ(PlainTextRange(2, 2),
             GetInputMethodController().GetSelectionOffsets());
   EXPECT_EQ("abABcd", GetCachedTextInputInfo().GetText());
@@ -152,6 +160,7 @@ TEST_F(CachedTextInputInfoTest, PositionAbsolute) {
   // Insert "CD" after "cd"
   GetDocument().execCommand("insertText", false, "CD", ASSERT_NO_EXCEPTION);
 
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
   EXPECT_EQ(PlainTextRange(8, 8),
             GetInputMethodController().GetSelectionOffsets());
   EXPECT_EQ("abABcdCD", GetCachedTextInputInfo().GetText());
@@ -192,6 +201,7 @@ TEST_F(CachedTextInputInfoTest, VisibilityHiddenToVisible) {
           "<b id=target style='visibility: hidden'>A</b><b>^Z|</b></div>"),
       SetSelectionOptions());
 
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
   EXPECT_EQ(PlainTextRange(0, 1),
             GetInputMethodController().GetSelectionOffsets());
   EXPECT_EQ("Z", GetCachedTextInputInfo().GetText())
@@ -201,6 +211,7 @@ TEST_F(CachedTextInputInfoTest, VisibilityHiddenToVisible) {
   target.style()->setProperty(GetDocument().GetExecutionContext(), "visibility",
                               "visible", "", ASSERT_NO_EXCEPTION);
 
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
   EXPECT_EQ(PlainTextRange(1, 2),
             GetInputMethodController().GetSelectionOffsets());
   EXPECT_EQ("AZ", GetCachedTextInputInfo().GetText());
@@ -214,6 +225,7 @@ TEST_F(CachedTextInputInfoTest, VisibilityVisibleToHidden) {
           "<b id=target style='visibility: visible'>A</b><b>^Z|</b></div>"),
       SetSelectionOptions());
 
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
   EXPECT_EQ(PlainTextRange(1, 2),
             GetInputMethodController().GetSelectionOffsets());
   EXPECT_EQ("AZ", GetCachedTextInputInfo().GetText());
@@ -222,6 +234,7 @@ TEST_F(CachedTextInputInfoTest, VisibilityVisibleToHidden) {
   target.style()->setProperty(GetDocument().GetExecutionContext(), "visibility",
                               "hidden", "", ASSERT_NO_EXCEPTION);
 
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kSelection);
   EXPECT_EQ(PlainTextRange(0, 1),
             GetInputMethodController().GetSelectionOffsets());
   EXPECT_EQ("Z", GetCachedTextInputInfo().GetText())
