@@ -17,6 +17,8 @@
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "media/base/video_frame.h"
+#include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/renderers/video_frame_rgba_to_yuva_converter.h"
@@ -402,6 +404,11 @@ WebRtcVideoFrameAdapter::ScaledBuffer::CropAndScale(int offset_x,
                              scaled_width, scaled_height)));
 }
 
+std::string WebRtcVideoFrameAdapter::ScaledBuffer::storage_representation()
+    const {
+  return "ScaledBuffer(" + parent_->storage_representation() + ")";
+}
+
 WebRtcVideoFrameAdapter::WebRtcVideoFrameAdapter(
     scoped_refptr<media::VideoFrame> frame)
     : WebRtcVideoFrameAdapter(std::move(frame), nullptr) {}
@@ -533,6 +540,13 @@ WebRtcVideoFrameAdapter::GetAdaptedVideoBufferForTesting(
       return adapted_frame.video_frame;
   }
   return nullptr;
+}
+
+std::string WebRtcVideoFrameAdapter::storage_representation() const {
+  std::string result = media::VideoPixelFormatToString(frame_->format());
+  result.append(" ");
+  result.append(media::VideoFrame::StorageTypeToString(frame_->storage_type()));
+  return result;
 }
 
 }  // namespace blink

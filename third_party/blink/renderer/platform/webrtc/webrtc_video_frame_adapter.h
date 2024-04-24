@@ -174,6 +174,8 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
         int scaled_width,
         int scaled_height) override;
 
+    std::string storage_representation() const override;
+
     const ScaledBufferSize& size() const { return size_; }
 
    private:
@@ -217,6 +219,8 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
   // null is returned.
   scoped_refptr<media::VideoFrame> GetAdaptedVideoBufferForTesting(
       const ScaledBufferSize& size);
+
+  std::string storage_representation() const override;
 
  protected:
   ~WebRtcVideoFrameAdapter() override;
