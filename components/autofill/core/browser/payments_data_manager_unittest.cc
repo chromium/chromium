@@ -134,6 +134,10 @@ class PaymentsDataManagerHelper : public PersonalDataManagerTestBase {
     return *payments_data_manager_;
   }
 
+  testing::NiceMock<base::MockRepeatingClosure>& on_payments_data_changed() {
+    return on_payments_data_changed_;
+  }
+
   bool TurnOnSyncFeature() {
     sync_service_.SetHasSyncConsent(true);
     if (!sync_service_.IsSyncFeatureEnabled()) {
@@ -577,21 +581,15 @@ TEST_F(PaymentsDataManagerTest, AddUpdateRemoveCreditCards) {
   ExpectSameElements(cards, payments_data_manager().GetCreditCards());
 
   // Must not add a duplicate server card with same GUID.
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(0);
-
+  EXPECT_CALL(on_payments_data_changed(), Run).Times(0);
   test_api(payments_data_manager()).AddServerCreditCard(credit_card3);
-
   ExpectSameElements(cards, payments_data_manager().GetCreditCards());
 
   // Must not add a duplicate card with same contents as another server card.
   CreditCard duplicate_server_card(credit_card3);
   duplicate_server_card.set_guid(
       base::Uuid::GenerateRandomV4().AsLowercaseString());
-
-  EXPECT_CALL(personal_data_observer_, OnPersonalDataChanged()).Times(0);
-
   test_api(payments_data_manager()).AddServerCreditCard(duplicate_server_card);
-
   ExpectSameElements(cards, payments_data_manager().GetCreditCards());
 }
 
