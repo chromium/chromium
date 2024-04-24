@@ -1,10 +1,9 @@
-import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import './other1.css.js';
 import './other2.css.js';
+export {};
 
-const template = html`
-<style>
-
+const sheet = new CSSStyleSheet();
+sheet.replaceSync(`
 html {
   --my-var: 9px;
 }
@@ -13,7 +12,5 @@ html {
   html {
     --my-var: 10px;
   }
-}
-</style>
-`;
-document.head.appendChild(template.content);
+}`);
+document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];

@@ -12,4 +12,4 @@ html {
     --my-var: 10px;
   }
 }`;
-document.adoptedStyleSheets = [...document.adoptedStyleSheets!, result.styleSheet!];
+document.adoptedStyleSheets = [...document.adoptedStyleSheets, result.styleSheet!];

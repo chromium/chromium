@@ -43,15 +43,12 @@ styleMod.appendChild(html`
 `.content);
 styleMod.register(\'%(id)s\');"""
 
-_POLYMER_VARS_TEMPLATE = """import {html} from \'%(scheme)s//resources/polymer/v3_0/polymer/polymer_bundled.min.js\';
-%(imports)s
+_POLYMER_VARS_TEMPLATE = """%(imports)s
+export {};
 
-const template = html`
-<style>
-%(content)s
-</style>
-`;
-document.head.appendChild(template.content);"""
+const sheet = new CSSStyleSheet();
+sheet.replaceSync(`%(content)s`);
+document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];"""
 
 # Template for Lit component CSS styles.
 _LIT_STYLE_TEMPLATE = """import {css, CSSResultGroup} from '%(scheme)s//resources/lit/v3_0/lit.rollup.js';
@@ -66,7 +63,7 @@ _LIT_VARS_TEMPLATE = """import {css} from '%(scheme)s//resources/lit/v3_0/lit.ro
 %(imports)s
 
 const result = css`%(content)s`;
-document.adoptedStyleSheets = [...document.adoptedStyleSheets!, result.styleSheet!];"""
+document.adoptedStyleSheets = [...document.adoptedStyleSheets, result.styleSheet!];"""
 
 # Map holding all the different types of CSS files to generate wrappers for.
 _TEMPLATE_MAP = {
