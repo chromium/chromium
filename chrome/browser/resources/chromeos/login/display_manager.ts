@@ -286,10 +286,6 @@ export class DisplayManager {
     }
     this.currentStep = nextStepIndex;
 
-    // Call onAfterShow after currentStep so that the step can have a
-    // post-set hook.
-    invokePolymerMethod(newStep, 'onAfterShow', screenData);
-
     const currentScreen = this.currentScreen;
     assert(currentScreen, 'currentScreen must exist at this point');
     $('oobe').dispatchEvent(

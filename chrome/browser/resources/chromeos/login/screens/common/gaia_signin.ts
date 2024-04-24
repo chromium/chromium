@@ -21,14 +21,14 @@ import {Authenticator, AuthFlow, AuthMode, SUPPORTED_PARAMS} from '//oobe/gaia_a
 import {assert} from '//resources/js/assert.js';
 import {sendWithPromise} from '//resources/js/cr.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
-import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import type {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
 import type {GaiaDialog} from '../../components/gaia_dialog.js';
+import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeTypes} from '../../components/oobe_types.js';
 import type {SecurityTokenPin} from '../../components/security_token_pin.js';
 import {Oobe} from '../../cr_ui.js';
@@ -557,23 +557,12 @@ export class GaiaSigninElement extends GaiaSigninElementBase {
     invokePolymerMethod(pinDialog, 'onBeforeShow');
   }
 
+  // Used in tests.
   private getSigninFrame(): chrome.webviewTag.WebView {
     const gaiaDialog =
         this.shadowRoot?.querySelector<GaiaDialog>('#signin-frame-dialog');
     assert(!!gaiaDialog);
     return gaiaDialog.getFrame() as chrome.webviewTag.WebView;
-  }
-
-  private focusSigninFrame(): void {
-    const signinFrame = this.getSigninFrame();
-    afterNextRender(this, () => signinFrame.focus());
-  }
-
-  /** Event handler that is invoked after the screen is shown. */
-  onAfterShow(): void {
-    if (!this.isLoadingUiShown) {
-      this.focusSigninFrame();
-    }
   }
 
   /**
