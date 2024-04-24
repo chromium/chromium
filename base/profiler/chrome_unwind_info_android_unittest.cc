@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and use spans.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "base/profiler/chrome_unwind_info_android.h"
 
 #include <tuple>
