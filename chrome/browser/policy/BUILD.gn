@@ -8,13 +8,13 @@ import("//components/nacl/features.gni")
 import("//components/signin/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
+
 source_set("path_parser") {
   sources = [ "policy_path_parser.h" ]
 
   if (is_chromeos || is_linux) {
     sources += [ "policy_path_parser_linux.cc" ]
-  } else if (is_fuchsia) {
-    sources += [ "policy_path_parser_fuchsia.cc" ]
   } else if (is_mac) {
     sources += [ "policy_path_parser_mac.mm" ]
   } else if (is_win) {

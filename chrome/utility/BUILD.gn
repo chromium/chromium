@@ -14,6 +14,8 @@ import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//services/screen_ai/buildflags/features.gni")
 
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
+
 static_library("utility") {
   sources = [
     "chrome_content_utility_client.cc",
@@ -114,7 +116,7 @@ static_library("utility") {
         "importer/safari_importer.mm",
       ]
     }
-    if (!is_mac && !is_fuchsia && !is_chromeos) {
+    if (!is_mac && !is_chromeos) {
       # NSS decryptor is not needed on ChromeOS. Additionally, it depends on
       # system NSS that is unavailable on MacOS/Fuchsia.
       sources += [

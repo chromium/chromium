@@ -9,6 +9,8 @@ import("//chrome/version.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
+
 source_set("web_applications") {
   sources = [
     "callback_utils.h",
@@ -370,10 +372,6 @@ source_set("web_applications") {
       "web_app_system_web_app_delegate_map_utils.cc",
       "web_app_system_web_app_delegate_map_utils.h",
     ]
-  }
-
-  if (is_fuchsia) {
-    sources += [ "os_integration/web_app_stubs.cc" ]
   }
 
   if (is_linux) {

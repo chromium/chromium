@@ -23,6 +23,7 @@ import("//third_party/widevine/cdm/widevine.gni")
 import("//tools/grit/grit_rule.gni")
 
 assert(enable_supervised_users)
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 fuzzer_test("ini_parser_fuzzer") {
   sources = [ "ini_parser_fuzzer.cc" ]
@@ -101,8 +102,6 @@ source_set("channel_info") {
     sources += [ "channel_info_lacros.cc" ]
   } else if (is_posix) {
     sources += [ "channel_info_posix.cc" ]
-  } else if (is_fuchsia) {
-    sources += [ "channel_info_fuchsia.cc" ]
   }
 }
 
@@ -261,6 +260,7 @@ static_library("common_lib") {
 
   deps = [
     "//build:chromeos_buildflags",
+    "//components/crash/core/app",
     "//components/google/core/common",
     "//components/live_caption:constants",
     "//components/metrics:call_stack_profile_builder",
@@ -349,10 +349,6 @@ static_library("common_lib") {
       "//extensions/strings",
       "//services/device/public/cpp/usb",
     ]
-  }
-
-  if (!is_fuchsia) {
-    deps += [ "//components/crash/core/app" ]
   }
 
   if (is_mac) {
@@ -680,9 +676,6 @@ static_library("constants") {
   if (is_win) {
     sources += [ "chrome_paths_win.cc" ]
     deps += [ "//chrome/install_static:install_static_util" ]
-  }
-  if (is_fuchsia) {
-    sources += [ "chrome_paths_fuchsia.cc" ]
   }
 
   if (enable_widevine && enable_library_cdms) {

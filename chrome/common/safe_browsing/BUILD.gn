@@ -6,6 +6,8 @@ import("//chrome/common/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
+
 proto_library("proto") {
   sources = [ "crx_info.proto" ]
 }
@@ -90,7 +92,7 @@ if (safe_browsing_mode == 1) {
     } else if (is_win) {
       sources += [ "binary_feature_extractor_win.cc" ]
     }
-    if (is_posix || is_fuchsia) {
+    if (is_posix) {
       sources += [ "binary_feature_extractor_posix.cc" ]
     }
 

@@ -13,6 +13,7 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 group("resources") {
   public_deps = [
@@ -104,15 +105,15 @@ group("resources") {
     public_deps += [ "dlp_internals:resources" ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia) {
+  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
     public_deps += [ "browser_switch:resources" ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos || is_fuchsia) {
+  if (is_win || is_mac || is_linux || is_chromeos) {
     public_deps += [ "discards:resources" ]
   }
 
-  if (is_win || is_mac || is_linux || is_fuchsia) {
+  if (is_win || is_mac || is_linux) {
     public_deps += [
       "app_home:resources",
       "app_settings:resources",

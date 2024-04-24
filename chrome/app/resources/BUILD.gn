@@ -9,6 +9,7 @@ import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 grit("locale_settings") {
   source = "locale_settings.grd"
@@ -31,7 +32,7 @@ grit("platform_locale_settings") {
     } else {
       source = "locale_settings_chromiumos.grd"
     }
-  } else if (is_posix || is_fuchsia) {
+  } else if (is_posix) {
     # All other POSIX systems and Fuchsia use the Linux one.
     source = "locale_settings_linux.grd"
   }

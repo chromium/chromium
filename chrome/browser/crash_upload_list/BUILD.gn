@@ -6,6 +6,8 @@ import("//build/buildflag_header.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
+
 static_library("crash_upload_list") {
   sources = [
     "crash_upload_list.cc",
@@ -26,25 +28,15 @@ static_library("crash_upload_list") {
     ]
   }
 
-  if (is_fuchsia) {
-    sources += [
-      "crash_upload_list_fuchsia.cc",
-      "crash_upload_list_fuchsia.h",
-    ]
-  }
-
   deps = [
     "//chrome/common:constants",
+    "//components/crash/core/app:app",
     "//components/crash/core/browser:browser",
     "//components/upload_list",
   ]
 
   if (is_android) {
     deps += [ "//chrome/android:chrome_jni_headers" ]
-  }
-
-  if (!is_fuchsia) {
-    deps += [ "//components/crash/core/app:app" ]
   }
 
   public_deps = [

@@ -5,6 +5,8 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
+
 source_set("google") {
   sources = [
     "google_brand.cc",
@@ -68,7 +70,7 @@ source_set("google") {
     deps += [ "//chrome/common:channel_info" ]
   }
 
-  if (is_posix || is_fuchsia) {
+  if (is_posix) {
     sources += [ "google_update_settings_posix.cc" ]
   }
   if (is_posix) {

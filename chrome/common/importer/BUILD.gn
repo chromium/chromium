@@ -4,6 +4,8 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
+
 mojom("interfaces") {
   sources = [ "profile_import.mojom" ]
 
@@ -92,7 +94,7 @@ source_set("importer") {
     "importer_url_row.h",
     "pstore_declarations.h",
   ]
-  if (is_chromeos || is_linux || is_fuchsia) {
+  if (is_chromeos || is_linux) {
     sources += [ "firefox_importer_utils_linux.cc" ]
   } else if (is_mac) {
     sources += [

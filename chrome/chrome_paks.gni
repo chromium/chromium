@@ -15,6 +15,8 @@ import("//ui/base/ui_features.gni")
 import("//ui/webui/webui_features.gni")
 import("chrome_repack_locales.gni")
 
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
+
 # Generates a rule to repack a set of resources, substituting a given string
 # in for the percentage (e.g. "100", "200"). It generates the repacked files in
 # the "gen" directory, and then introduces a copy rule to copy it to the root
@@ -405,7 +407,7 @@ template("chrome_extra_paks") {
       ]
     }
 
-    if (is_win || is_mac || is_linux || is_fuchsia) {
+    if (is_win || is_mac || is_linux) {
       sources += [ "$root_gen_dir/chrome/app_home_resources.pak" ]
       deps += [ "//chrome/browser/resources/app_home:resources" ]
     }
@@ -425,12 +427,12 @@ template("chrome_extra_paks") {
       deps += [ "//chrome/browser/resources/dlp_internals:resources" ]
     }
 
-    if (is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia) {
+    if (is_win || is_mac || is_linux || is_chromeos_lacros) {
       sources += [ "$root_gen_dir/chrome/browser_switch_resources.pak" ]
       deps += [ "//chrome/browser/resources/browser_switch:resources" ]
     }
 
-    if (is_win || is_mac || is_linux || is_chromeos || is_fuchsia) {
+    if (is_win || is_mac || is_linux || is_chromeos) {
       sources += [ "$root_gen_dir/chrome/discards_resources.pak" ]
       deps += [ "//chrome/browser/resources/discards:resources" ]
     }

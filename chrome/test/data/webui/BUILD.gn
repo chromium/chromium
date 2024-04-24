@@ -17,6 +17,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
 assert(!is_android)
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 source_set("browser_tests") {
   testonly = true
@@ -142,7 +143,7 @@ source_set("browser_tests") {
     sources += [ "discards/discards_browsertest.cc" ]
   }
 
-  if (is_win || is_mac || is_linux || is_fuchsia) {
+  if (is_win || is_mac || is_linux) {
     sources += [ "app_settings/app_settings_browsertest.cc" ]
   }
 

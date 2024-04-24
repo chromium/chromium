@@ -21,6 +21,7 @@ import("//third_party/protobuf/proto_library.gni")
 
 assert(enable_extensions)
 assert(enable_supervised_users)
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 static_library("extensions") {
   sources = [
@@ -1441,6 +1442,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "api/messaging/native_messaging_test_util.cc",
+    "api/messaging/native_messaging_test_util.h",
     "api/passwords_private/test_passwords_private_delegate.cc",
     "api/passwords_private/test_passwords_private_delegate.h",
     "chrome_extension_test_notification_observer.cc",
@@ -1497,14 +1500,6 @@ static_library("test_support") {
     "//extensions/browser:test_support",
     "//services/data_decoder/public/cpp:test_support",
   ]
-
-  if (!is_fuchsia) {
-    # Native Messaging is not available under Fuchsia.
-    sources += [
-      "api/messaging/native_messaging_test_util.cc",
-      "api/messaging/native_messaging_test_util.h",
-    ]
-  }
 
   if (is_chromeos) {
     sources += [

@@ -33,6 +33,7 @@ import("//ui/base/ui_features.gni")
 import("//ui/views/features.gni")
 
 assert(enable_supervised_users)
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 generate_histograms_variants_allowlist("webui_name_variants") {
   namespace = "views_metrics"
@@ -508,6 +509,7 @@ static_library("ui") {
     "//components/content_settings/core/browser:cookie_settings",
     "//components/content_settings/core/common",
     "//components/country_codes",
+    "//components/crash/core/app",
     "//components/crash/core/browser",
     "//components/crx_file",
     "//components/custom_handlers",
@@ -806,10 +808,6 @@ static_library("ui") {
       "//chromeos/dbus/dlp",
       "//components/enterprise/data_controls:data_controls",
     ]
-  }
-
-  if (!is_fuchsia) {
-    deps += [ "//components/crash/core/app" ]
   }
 
   if (is_android) {
@@ -4166,7 +4164,7 @@ static_library("ui") {
     ]
   }
 
-  if (is_win || is_mac || is_linux || is_chromeos || is_fuchsia) {
+  if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [
       "autofill/payments/virtual_card_selection_dialog.h",
       "autofill/payments/virtual_card_selection_dialog_controller.h",
@@ -4245,7 +4243,7 @@ static_library("ui") {
     ]
   }
 
-  if (is_win || is_mac || is_fuchsia || is_linux) {
+  if (is_win || is_mac || is_linux) {
     sources += [
       "views/web_apps/deprecated_apps_dialog_view.cc",
       "views/web_apps/deprecated_apps_dialog_view.h",
@@ -4273,7 +4271,7 @@ static_library("ui") {
     ]
   }
 
-  if (is_win || is_mac || is_fuchsia || is_linux || is_chromeos_ash) {
+  if (is_win || is_mac || is_linux || is_chromeos_ash) {
     sources += [
       "webui/app_management/app_management_page_handler_base.cc",
       "webui/app_management/app_management_page_handler_base.h",
@@ -4282,7 +4280,7 @@ static_library("ui") {
     ]
   }
 
-  if (is_win || is_mac || is_fuchsia || is_linux || is_chromeos_lacros) {
+  if (is_win || is_mac || is_linux || is_chromeos_lacros) {
     sources += [
       "passwords/account_storage_auth_helper.cc",
       "passwords/account_storage_auth_helper.h",
@@ -4436,7 +4434,7 @@ static_library("ui") {
     }
   }
 
-  if (enable_dice_support || is_chromeos_ash || is_fuchsia) {
+  if (enable_dice_support || is_chromeos_ash) {
     sources += [
       "webui/signin/inline_login_ui.cc",
       "webui/signin/inline_login_ui.h",
@@ -4773,7 +4771,7 @@ static_library("ui") {
     ]
   }
 
-  if (is_linux || is_chromeos_lacros || is_fuchsia) {
+  if (is_linux || is_chromeos_lacros) {
     sources += [ "views/apps/chrome_app_window_client_views_aura.cc" ]
   }
 
@@ -6491,17 +6489,6 @@ static_library("ui") {
         "//components/arc/common:arc_intent_helper_constants",
       ]
     }
-    if (is_fuchsia) {
-      sources += [
-        "views/chrome_views_delegate_fuchsia.cc",
-        "views/frame/browser_desktop_window_tree_host.h",
-        "views/frame/browser_desktop_window_tree_host_fuchsia.cc",
-        "views/frame/native_browser_frame_factory_aura.cc",
-        "views/status_icons/status_tray_fuchsia.cc",
-        "webui/help/version_updater_basic.cc",
-        "webui/settings/settings_utils_fuchsia.cc",
-      ]
-    }
 
     if (is_win || is_linux) {
       sources += [
@@ -6546,7 +6533,7 @@ static_library("ui") {
       ]
     }
 
-    if (is_win || is_fuchsia || is_linux || is_chromeos_lacros) {
+    if (is_win || is_linux || is_chromeos_lacros) {
       sources += [
         "views/native_widget_factory.cc",
         "views/native_widget_factory.h",

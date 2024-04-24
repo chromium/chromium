@@ -8,6 +8,8 @@ import("//chrome/version.gni")
 import("//components/optimization_guide/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
+
 static_library("autofill") {
   sources = [
     "address_normalizer_factory.cc",
@@ -194,25 +196,17 @@ if (!is_android) {
       "autofill_flow_test_util.h",
       "autofill_uitest.cc",
       "autofill_uitest.h",
+      "captured_sites_test_utils.cc",
+      "captured_sites_test_utils.h",
     ]
 
     deps = [
       "//chrome/browser/autofill",
       "//chrome/test:test_support",
+      "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
+      "//components/javascript_dialogs",
     ]
-
-    if (!is_fuchsia) {
-      sources += [
-        "captured_sites_test_utils.cc",
-        "captured_sites_test_utils.h",
-      ]
-
-      deps += [
-        "//chrome/test:test_support",
-        "//components/javascript_dialogs",
-      ]
-    }
   }
 
   source_set("interactive_ui_tests") {
@@ -269,7 +263,7 @@ if (!is_android) {
   }
 }
 
-if (!is_android && !is_fuchsia) {
+if (!is_android) {
   source_set("captured_sites_interactive_tests") {
     testonly = true
 

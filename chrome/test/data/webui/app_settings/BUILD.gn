@@ -4,7 +4,9 @@
 
 import("../build_webui_tests.gni")
 
-assert(is_win || is_mac || is_linux || is_fuchsia)
+assert(is_win || is_mac || is_linux)
+
+assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
 build_webui_tests("build") {
   files = [

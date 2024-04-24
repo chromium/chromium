@@ -60,6 +60,8 @@ declare_args() {
   # Enables usage of notifications via Chrome's MessageCenter.
   enable_chrome_notifications = is_mac || is_win || is_linux || is_fuchsia
 
+  # TODO(crbug.com/41481724): Remove this flag and corresponding build
+  # conditions.
   # Disable Click to Call on Fuchsia.
   enable_click_to_call = !is_fuchsia
 
