@@ -2682,7 +2682,7 @@
   </event>
 </project>
 
-<project name="TestProjectTwo">
+<project name="TestProjectTwo" cros_events="true">
   <owner>tby@chromium.org</owner>
   <id>none</id>
   <summary>
