@@ -18,7 +18,7 @@ namespace ui {
 ColorTransform::ColorTransform(Callback callback)
     : callback_(std::move(callback)) {}
 
-ColorTransform::ColorTransform(SkColor color) {
+ColorTransform::ColorTransform(SkColor color) : invariant_(true) {
   const auto generator = [](SkColor color, SkColor input_color,
                             const ColorMixer& mixer) {
     DVLOG(2) << "ColorTransform From Color:"
@@ -30,7 +30,7 @@ ColorTransform::ColorTransform(SkColor color) {
   callback_ = base::BindRepeating(generator, color);
 }
 
-ColorTransform::ColorTransform(ColorId id) {
+ColorTransform::ColorTransform(ColorId id) : invariant_(true) {
   const auto generator = [](ColorId id, SkColor input_color,
                             const ColorMixer& mixer) {
     SkColor result_color = mixer.GetResultColor(id);

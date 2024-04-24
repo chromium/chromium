@@ -29,6 +29,12 @@ ColorRecipe& ColorRecipe::operator=(ColorRecipe&&) noexcept = default;
 ColorRecipe::~ColorRecipe() = default;
 
 ColorRecipe& ColorRecipe::operator+=(const ColorTransform& transform) {
+  if (transform.invariant()) {
+    // If a transform is invariant, previous transform results will be
+    // discarded when the output color is computed. So they can be safely
+    // dropped.
+    transforms_.clear();
+  }
   transforms_.push_back(transform);
   return *this;
 }
@@ -41,6 +47,10 @@ SkColor ColorRecipe::GenerateResult(SkColor input,
   DVLOG(2) << "ColorRecipe::GenerateResult: Input Color " << SkColorName(input)
            << " Result Color " << SkColorName(output_color);
   return output_color;
+}
+
+bool ColorRecipe::Invariant() const {
+  return !transforms_.empty() && transforms_.front().invariant();
 }
 
 ColorRecipe operator+(ColorRecipe recipe, const ColorTransform& transform) {
