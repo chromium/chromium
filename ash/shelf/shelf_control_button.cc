@@ -86,7 +86,8 @@ gfx::PointF ShelfControlButton::GetCenterPoint() const {
   return gfx::RectF(GetLocalBounds()).CenterPoint();
 }
 
-gfx::Size ShelfControlButton::CalculatePreferredSize() const {
+gfx::Size ShelfControlButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return gfx::Size(ShelfConfig::Get()->control_size(),
                    ShelfConfig::Get()->control_size());
 }

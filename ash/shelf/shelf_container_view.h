@@ -37,7 +37,8 @@ class ASH_EXPORT ShelfContainerView : public views::View {
   virtual void TranslateShelfView(const gfx::Vector2dF& offset);
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
  protected:

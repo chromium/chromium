@@ -223,7 +223,7 @@ void ScrollableShelfContainerView::Layout(PassKey) {
   // CalculateIdealSize. Because ShelfView::CalculatePreferredSize relies on the
   // bounds of app icon. Meanwhile, the icon's bounds may be updated by
   // animation.
-  const gfx::Rect ideal_bounds = gfx::Rect(CalculatePreferredSize());
+  const gfx::Rect ideal_bounds = gfx::Rect(CalculatePreferredSize({}));
 
   const gfx::Rect local_bounds = GetLocalBounds();
   gfx::Rect shelf_view_bounds =
@@ -562,7 +562,7 @@ gfx::Insets ScrollableShelfView::CalculateMirroredEdgePadding(
       available_local_bounds.width(), available_local_bounds.height());
 
   int gap = CanFitAllAppsWithoutScrolling(available_local_bounds.size(),
-                                          CalculatePreferredSize())
+                                          CalculatePreferredSize({}))
                 ? available_size_for_app_icons - icons_size
                 : 0;  // overflow
 
@@ -712,8 +712,9 @@ const Shelf* ScrollableShelfView::GetShelf() const {
   return shelf_view_->shelf();
 }
 
-gfx::Size ScrollableShelfView::CalculatePreferredSize() const {
-  return shelf_container_view_->GetPreferredSize();
+gfx::Size ScrollableShelfView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  return shelf_container_view_->GetPreferredSize(available_size);
 }
 
 void ScrollableShelfView::Layout(PassKey) {

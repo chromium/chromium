@@ -33,7 +33,8 @@ gfx::Size ShelfContainerView::CalculateIdealSize(int button_size) const {
              : gfx::Size(button_size, button_strip_size);
 }
 
-gfx::Size ShelfContainerView::CalculatePreferredSize() const {
+gfx::Size ShelfContainerView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   return CalculateIdealSize(shelf_view_->GetButtonSize());
 }
 

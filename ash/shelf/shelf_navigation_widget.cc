@@ -712,8 +712,8 @@ gfx::Size ShelfNavigationWidget::CalculateIdealSize(
     controls_space +=
         home_button_shown
             ? (shelf_->IsHorizontalAlignment()
-                   ? GetHomeButton()->CalculatePreferredSize().width()
-                   : GetHomeButton()->CalculatePreferredSize().height())
+                   ? GetHomeButton()->CalculatePreferredSize({}).width()
+                   : GetHomeButton()->CalculatePreferredSize({}).height())
             : 0;
     controls_space += back_button_shown ? control_size : 0;
     controls_space +=

@@ -571,7 +571,8 @@ gfx::Rect ShelfView::GetVisibleItemsBoundsInScreen() {
   return gfx::Rect(origin, preferred_size);
 }
 
-gfx::Size ShelfView::CalculatePreferredSize() const {
+gfx::Size ShelfView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int hotseat_size = shelf_->hotseat_widget()->GetHotseatSize();
   if (visible_views_indices_.empty()) {
     // There are no visible shelf items.

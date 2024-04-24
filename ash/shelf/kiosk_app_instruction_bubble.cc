@@ -98,11 +98,13 @@ void KioskAppInstructionBubble::OnThemeChanged() {
   title_->SetEnabledColor(label_color);
 }
 
-gfx::Size KioskAppInstructionBubble::CalculatePreferredSize() const {
+gfx::Size KioskAppInstructionBubble::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   const int bubble_margin = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_CONTROL);
   const int width = kBubblePreferredInternalWidth + 2 * bubble_margin;
-  return gfx::Size(width, GetHeightForWidth(width));
+  return gfx::Size(width,
+                   GetLayoutManager()->GetPreferredHeightForWidth(this, width));
 }
 
 BEGIN_METADATA(KioskAppInstructionBubble)

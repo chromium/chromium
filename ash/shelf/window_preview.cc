@@ -56,7 +56,8 @@ WindowPreview::WindowPreview(aura::Window* window, Delegate* delegate)
 
 WindowPreview::~WindowPreview() = default;
 
-gfx::Size WindowPreview::CalculatePreferredSize() const {
+gfx::Size WindowPreview::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
   // The preview itself will always be strictly contained within its container,
   // so only the container's size matters to calculate the preferred size.
   const gfx::Size container_size = GetPreviewContainerSize();
@@ -69,8 +70,7 @@ gfx::Size WindowPreview::CalculatePreferredSize() const {
 void WindowPreview::Layout(PassKey) {
   gfx::Rect content_rect = GetContentsBounds();
 
-  gfx::Size title_size =
-      title_->CalculatePreferredSize(views::SizeBounds(title_->width(), {}));
+  gfx::Size title_size = title_->CalculatePreferredSize({});
   int title_height_with_padding =
       kTitleLineHeight + kTitleMarginTop + kTitleMarginBottom;
   int title_width =

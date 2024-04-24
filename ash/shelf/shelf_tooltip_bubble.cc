@@ -81,8 +81,10 @@ void ShelfTooltipBubble::OnThemeChanged() {
   GetBubbleFrameView()->SetBackgroundColor(color());
 }
 
-gfx::Size ShelfTooltipBubble::CalculatePreferredSize() const {
-  const gfx::Size size = BubbleDialogDelegateView::CalculatePreferredSize();
+gfx::Size ShelfTooltipBubble::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  const gfx::Size size =
+      BubbleDialogDelegateView::CalculatePreferredSize(available_size);
 
   if (chromeos::features::IsJellyrollEnabled()) {
     return size;

@@ -234,7 +234,8 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   const Shelf* GetShelf() const;
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
   void ChildPreferredSizeChanged(views::View* child) override;
   void OnScrollEvent(ui::ScrollEvent* event) override;

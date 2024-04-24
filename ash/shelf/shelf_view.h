@@ -163,7 +163,8 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   gfx::Rect GetVisibleItemsBoundsInScreen();
 
   // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
   void OnThemeChanged() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
