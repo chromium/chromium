@@ -27,7 +27,7 @@ import java.util.Set;
  * Helper class to create, modify, overwrite local tab groups in response to sync updates and
  * startup.
  */
-public final class LocalTabGroupMutationHelper {
+public class LocalTabGroupMutationHelper {
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final TabGroupSyncService mTabGroupSyncService;
     private final TabCreationDelegate mTabCreationDelegate;
@@ -88,9 +88,10 @@ public final class LocalTabGroupMutationHelper {
 
     /**
      * Called in response to a tab group being updated from sync that is already mapped in memory.
-     * It will try to match the local tabs to the sync ones based on their IDs. Removes any tabs
-     * that don't have mapping in sync already. Updates the URLs and positions of the tabs to match
-     * sync. Creates new tabs for new incoming sync tabs.
+     * Also invoked on startup to force update local state to sync. It will try to match the local
+     * tabs to the sync ones based on their IDs. Removes any tabs that don't have mapping in sync
+     * already. Updates the URLs and positions of the tabs to match sync. Creates new tabs for new
+     * incoming sync tabs.
      */
     public void updateTabGroup(SavedTabGroup tabGroup) {
         // We got the updated tab group from sync. We need to update the local one to match.

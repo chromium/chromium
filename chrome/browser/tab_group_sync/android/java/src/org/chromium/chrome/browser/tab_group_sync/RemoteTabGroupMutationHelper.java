@@ -112,22 +112,20 @@ public class RemoteTabGroupMutationHelper {
     }
 
     /**
-     * Updates ID mappings for the tab group ID and optionally tab IDs for a particular group in
-     * {@link TabGroupSyncService}. Doesn't update the mapping in the prefs as it's already stored.
+     * Updates tab ID mappings for a particular group.
      *
-     * @param syncGroupId The sync ID of the tab group.
      * @param localGroupId The local ID of the tab group.
-     * @param updateTabIds Whether or not the tab IDs should also be updated.
      */
-    public void updateIdMappingForGroupOnStartup(
-            String syncGroupId, LocalTabGroupId localGroupId, boolean updateTabIds) {
-        // Update tab group ID mapping.
-        mTabGroupSyncService.updateLocalTabGroupMapping(syncGroupId, localGroupId);
-        if (!updateTabIds) return;
-
+    public void updateTabIdMappingsOnStartup(LocalTabGroupId localGroupId) {
         // Update tab ID mapping for tabs in the group.
         SavedTabGroup group = mTabGroupSyncService.getGroup(localGroupId);
         List<Integer> tabIds = mTabGroupModelFilter.getRelatedTabIds(localGroupId.rootId);
+        // We just reconciled local state with sync. The tabs should match.
+        assert tabIds.size() == group.savedTabs.size()
+                : "Local tab count doesn't match with remote : "
+                        + tabIds.size()
+                        + " vs "
+                        + group.savedTabs.size();
         for (int i = 0; i < group.savedTabs.size() && i < tabIds.size(); i++) {
             SavedTabGroupTab savedTab = group.savedTabs.get(i);
             mTabGroupSyncService.updateLocalTabId(localGroupId, savedTab.syncId, tabIds.get(i));

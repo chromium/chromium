@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -32,6 +33,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+
+import java.util.ArrayList;
 
 /** Unit tests for the {@link TabGroupSyncController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -73,9 +76,10 @@ public class TabGroupSyncControllerUnitTest {
     @Test
     public void testInitialization() {
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
-        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
+        when(mTabGroupSyncService.getDeletedGroupIds()).thenReturn(new ArrayList<>());
         mTabGroupSyncServiceObserverCaptor.getValue().onInitialized();
         mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
-        verify(mTabGroupSyncService, times(2)).getAllGroupIds();
+        verify(mTabGroupSyncService, times(1)).addObserver(any());
+        verify(mTabGroupSyncService, times(2)).getDeletedGroupIds();
     }
 }

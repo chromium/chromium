@@ -4,6 +4,8 @@
 
 package org.chromium.components.tab_group_sync;
 
+import android.util.Pair;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -12,6 +14,9 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.url.GURL;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Java side of the JNI bridge between TabGroupSyncServiceImpl in Java and C++. All method calls are
@@ -118,6 +123,14 @@ public class TabGroupSyncServiceImpl implements TabGroupSyncService {
     public void removeLocalTabGroupMapping(LocalTabGroupId localId) {
         if (mNativePtr == 0) return;
         TabGroupSyncServiceImplJni.get().removeLocalTabGroupMapping(mNativePtr, this, localId);
+    }
+
+    @Override
+    public List<Pair<String, LocalTabGroupId>> getDeletedGroupIds() {
+        if (mNativePtr == 0) return new ArrayList<>();
+
+        // TODO(b/336792770): Implement this API.
+        return new ArrayList<>();
     }
 
     @Override

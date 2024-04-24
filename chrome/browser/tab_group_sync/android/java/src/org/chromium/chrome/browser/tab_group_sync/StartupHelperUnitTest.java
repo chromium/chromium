@@ -6,11 +6,15 @@ package org.chromium.chrome.browser.tab_group_sync;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.util.Pair;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -25,9 +29,11 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncController.TabCreationDelegate;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -47,7 +53,8 @@ public class StartupHelperUnitTest {
     private MockTabModel mTabModel;
     private @Mock TabGroupModelFilter mTabGroupModelFilter;
     private TabGroupSyncService mTabGroupSyncService;
-    private RemoteTabGroupMutationHelper mRemoteMutationHelper;
+    private @Mock LocalTabGroupMutationHelper mLocalMutationHelper;
+    private @Mock RemoteTabGroupMutationHelper mRemoteMutationHelper;
     private StartupHelper mStartupHelper;
     private Tab mTab1;
     private Tab mTab2;
@@ -64,49 +71,72 @@ public class StartupHelperUnitTest {
     public void setUp() {
         mTabGroupSyncService = spy(new TestTabGroupSyncService());
         mTab1 = prepareTab(1, 1);
-        mTab2 = prepareTab(2, 2);
-        Mockito.doReturn(new Token(2, 3)).when(mTab1).getTabGroupId();
+        mTab2 = prepareTab(2, 1);
 
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabGroupModelFilter.getRelatedTabIds(1)).thenReturn(new ArrayList<>());
+
+        mLocalMutationHelper =
+                spy(
+                        new LocalTabGroupMutationHelper(
+                                mTabGroupModelFilter,
+                                mTabGroupSyncService,
+                                new TestTabCreationDelegate(),
+                                new NavigationTracker()));
         mRemoteMutationHelper =
-                new RemoteTabGroupMutationHelper(mTabGroupModelFilter, mTabGroupSyncService);
+                spy(new RemoteTabGroupMutationHelper(mTabGroupModelFilter, mTabGroupSyncService));
         mStartupHelper =
                 new StartupHelper(
-                        mTabGroupModelFilter, mTabGroupSyncService, mRemoteMutationHelper);
+                        mTabGroupModelFilter,
+                        mTabGroupSyncService,
+                        mLocalMutationHelper,
+                        mRemoteMutationHelper);
     }
 
     @Test
-    public void testNotifiesSyncOfIdMappingOnStartup() {
+    public void testCloseLocalTabsAndUpdateLocalGroups() {
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
+        savedTabGroup.savedTabs.remove(1);
+        savedTabGroup.localId = new LocalTabGroupId(1);
         String syncId = savedTabGroup.syncId;
         when(mTab1.getTabGroupId()).thenReturn(new Token(2, 3));
         mTabModel.addTab(
                 mTab1, 0, TabLaunchType.FROM_TAB_GROUP_UI, TabCreationState.LIVE_IN_BACKGROUND);
-        when(mTabGroupModelFilter.getTabGroupSyncId(1)).thenReturn(syncId);
         List<Integer> tabIds = new ArrayList<>();
         tabIds.add(mTab1.getId());
         when(mTabGroupModelFilter.getRelatedTabIds(1)).thenReturn(tabIds);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {syncId});
-        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(1))).thenReturn(savedTabGroup);
+        when(mTabGroupSyncService.getGroup(savedTabGroup.localId)).thenReturn(savedTabGroup);
+        List<Pair<String, LocalTabGroupId>> ids = new ArrayList<>();
+        ids.add(new Pair<>(syncId, savedTabGroup.localId));
+        when(mTabGroupSyncService.getDeletedGroupIds()).thenReturn(ids);
         mStartupHelper.initializeTabGroupSync();
-        verify(mTabGroupSyncService)
-                .updateLocalTabGroupMapping(eq(syncId), eq(new LocalTabGroupId(1)));
         verify(mTabGroupSyncService).updateLocalTabId(any(), anyString(), anyInt());
+        verify(mTabGroupSyncService).getDeletedGroupIds();
+        verify(mLocalMutationHelper).updateTabGroup(any());
+        verify(mTabModel, times(2)).closeMultipleTabs(anyList(), eq(false));
     }
 
     @Test
-    public void testCreatesRemoteGroupsForNewGroupsAndUpdatesPrefs() {
+    public void testCreatesRemoteGroupsForNewGroups() {
         when(mTab1.getTabGroupId()).thenReturn(new Token(2, 3));
         mTabModel.addTab(
                 mTab1, 0, TabLaunchType.FROM_TAB_GROUP_UI, TabCreationState.LIVE_IN_BACKGROUND);
-        when(mTabGroupModelFilter.getTabGroupSyncId(1)).thenReturn(null);
+        when(mTabGroupSyncService.getDeletedGroupIds()).thenReturn(new ArrayList<>());
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
 
         // Initialize. It should add the group to sync and add ID mapping to prefs.
         mStartupHelper.initializeTabGroupSync();
         verify(mTabGroupSyncService).createGroup(new LocalTabGroupId(1));
-        verify(mTabGroupModelFilter)
-                .setTabGroupSyncId(eq(1), eq(TestTabGroupSyncService.SYNC_ID_1));
+    }
+
+    private class TestTabCreationDelegate implements TabCreationDelegate {
+        private int mNextTabId;
+
+        @Override
+        public Tab createBackgroundTab(GURL url, Tab parent, int position) {
+            return new MockTab(++mNextTabId, mProfile);
+        }
     }
 }

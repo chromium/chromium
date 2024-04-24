@@ -76,7 +76,10 @@ public final class TabGroupSyncController {
                 new RemoteTabGroupMutationHelper(mTabGroupModelFilter, mTabGroupSyncService);
         mStartupHelper =
                 new StartupHelper(
-                        mTabGroupModelFilter, mTabGroupSyncService, mRemoteMutationHelper);
+                        mTabGroupModelFilter,
+                        mTabGroupSyncService,
+                        mLocalMutationHelper,
+                        mRemoteMutationHelper);
 
         mLocalObserver =
                 new TabGroupSyncLocalObserver(
