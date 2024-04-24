@@ -587,7 +587,7 @@
 <translation id="4394049700291259645">停用</translation>
 <translation id="439429847087949098">正在重启<ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">键盘自定义</translation>
-<translation id="439946595190720558">此背景是通过 AI 使用以下文字制作的：“<ph name="PROMPT" />”。</translation>
+<translation id="439946595190720558">此背景是通过 AI 使用以下提示词制作的：“<ph name="PROMPT" />”。</translation>
 <translation id="4415951057168511744">当前头像</translation>
 <translation id="4417830657741848074">您的管理员已将部分应用设为自动启动。上述部分应用可能无法关闭。</translation>
 <translation id="4422041425070339732">向下箭头</translation>

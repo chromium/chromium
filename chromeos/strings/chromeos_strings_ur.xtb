@@ -103,7 +103,7 @@
 <translation id="1515129336378114413">براؤزر ہوم</translation>
 <translation id="1526389707933164996">اسکرین سیور اینیمیشن</translation>
 <translation id="152892567002884378">والیوم بڑھائیں</translation>
-<translation id="1539864135338521185">لاپس لازولائے</translation>
+<translation id="1539864135338521185">سنگ لاجورد</translation>
 <translation id="1555130319947370107">نیلا</translation>
 <translation id="155865706765934889">ٹچ پیڈ</translation>
 <translation id="1561927818299383735">بیک لٹ کا رنگ</translation>
@@ -233,7 +233,7 @@
 <translation id="2163937499206714165">تاریک وضع آن کریں</translation>
 <translation id="2180197493692062006">کچھ غلط ہوگیا۔ ایپ کو دوبار کھولنے کی کوشش کریں۔</translation>
 <translation id="2189104374785738357">‏APN کی تفصیلات میں ترمیم کریں</translation>
-<translation id="2195732836444333448">حد پوری ہو گئی۔ بعد میں واپس آئیں۔</translation>
+<translation id="2195732836444333448">فی الحال گنجائش نہیں ہے۔ بعد میں واپس آئیں۔</translation>
 <translation id="2201758491318984023">سائیکل</translation>
 <translation id="2203222757805818543">موجودہ شیڈول <ph name="SUNRISE" /> - <ph name="SUNSET" /> پر سیٹ ہے- تاریک وضع شیڈول کو خودکار طور پر اپ ڈیٹ کرنے کے لیے، <ph name="BEGIN_LINK" />مقام تک رسائی کو آن کریں<ph name="END_LINK" /></translation>
 <translation id="2203272733515928691">گرم چشمہ</translation>
@@ -438,7 +438,7 @@
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />کارکردگی کا پتا لگانے کا ڈیٹا<ph name="END_LINK1" /> بھیجیں</translation>
 <translation id="3517001332549868749">‏Chrome OS اپ ڈیٹ</translation>
 <translation id="3527036260304016759">ناکام ہو گیا - نامعلوم خرابی</translation>
-<translation id="353214771040290298">ترمیم ہوگئی</translation>
+<translation id="353214771040290298">ترمیم ہو گئی</translation>
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> منٹ باقی ہیں</translation>
 <translation id="3533790840489634638">پول</translation>
 <translation id="3547264467365135390">فارمولہ</translation>
@@ -974,7 +974,7 @@
 <translation id="6535178685492749208">آپ آف لائن ہیں۔ تاثرات بعد میں بھیجے جائیں گے۔</translation>
 <translation id="6543412779435705598">ٹاکوز</translation>
 <translation id="6551839203326557324">سیب</translation>
-<translation id="65526652485742171">کنفرم بٹن اب فعال ہے</translation>
+<translation id="65526652485742171">تصدیق کریں بٹن اب فعال ہے</translation>
 <translation id="6557784757915238407">‏APN <ph name="ATTACH" /> کی قسم ہے۔</translation>
 <translation id="65587193855025101">فلیٹ بیڈ</translation>
 <translation id="6560196641871357166">وائبرنٹ</translation>
@@ -1053,13 +1053,13 @@
 <translation id="698242338298293034">‏تھیم منتخب کریں اور پھر اپنی AI تصاویر کو ذاتی نوعیت کا بنانے کے لیے انڈر لائن کردہ الفاظ کا انتخاب کریں۔
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          مزید منفرد اور متنوع AI تصاویر کے اختیارات حاصل کرنے کے لیے "میری حوصلہ افزائی کریں" کو منتخب کریں۔
+          مزید منفرد اور متنوع AI تصاویر کے اختیارات حاصل کرنے کے لیے "مجھے آئیڈیاز فراہم کریں" کو منتخب کریں۔
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          جب آپ AI کے ساتھ تخلیق کرتے ہیں تو <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google کی رازداری کی پالیسی<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> کے ساتھ مشروط تصاویر بنانے اور پروڈکٹ کو بہتر بنانے کیلئے Google AI سرورز کو پرامپٹ بھیجا جاتا ہے۔
+          جب آپ AI کے ذریعے تخلیق کرتے ہیں تو تصاویر بنانے اور پروڈکٹ کو بہتر بنانے کیلئے پرامپٹ Google AI سرورز کو بھیجا جاتا ہے۔ اس پر <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google کی رازداری کی پالیسی<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> لاگو ہوتی ہے۔
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
-          تخلیق کر سکنے والا AI تجرباتی ہے، ترقی کے ابتدائی مرحلے میں ہے، ساتھ ہی دستیابی بھی فی الحال محدود ہے۔</translation>
+          تخلیق کر سکنے والا AI تجرباتی ہے۔ ابھی ڈیولپمنٹ کے ابتدائی مرحلے میں ہے اور ابھی سب کے لیے دستیاب نہیں ہے۔</translation>
 <translation id="6982462588253070448">ریت کے ٹیلے</translation>
 <translation id="7005833343836210400">آلہ آف لائن ہے</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> اس آلے کا نظم کرتا ہے اور ملاحظہ کردہ ویب صفحات، پاس ورڈز اور ای میل سمیت صارف کی تمام سرگرمی تک رسائی حاصل کر سکتا ہے۔</translation>
@@ -1203,7 +1203,7 @@
 <translation id="7791543448312431591">شامل کریں</translation>
 <translation id="779591286616261875">نئی رپورٹ بھیجیں</translation>
 <translation id="7799817062559422778">لائٹ موڈ</translation>
-<translation id="7802764839223122985">کلید غائب ہے۔ <ph name="REASSIGN_INSTRUCTION" /></translation>
+<translation id="7802764839223122985">کلید موجود نہیں ہے۔ <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">نہیں شکریہ</translation>
 <translation id="7805768142964895445">صورتحال</translation>
 <translation id="7813073042185856802">پہاڑ</translation>
@@ -1399,7 +1399,7 @@
 <translation id="8928727111548978589">ناکام ہو گیا - کاغذ ختم ہو گیا</translation>
 <translation id="8930521118335213258">پیئر</translation>
 <translation id="8930622219860340959">وائرلیس</translation>
-<translation id="8933650076320258356">منتخب کلید <ph name="KEYS" /> <ph name="DIRECTION" /> کے لیے ہے۔ <ph name="REASSIGN_INSTRUCTION" /></translation>
+<translation id="8933650076320258356"><ph name="DIRECTION" /> کے لیے <ph name="KEYS" /> کلید منتخب کی گئی ہے۔ <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="8936793075252196307">‏کلائنٹ IP پتہ</translation>
 <translation id="8944651180182756621">لانچر کا رنگ</translation>
 <translation id="8945308580158685341">شہد کی مکھیاں</translation>
@@ -1465,7 +1465,7 @@
 <translation id="932327136139879170">ھوم</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">تاثرات بھیجیں</translation>
-<translation id="950520315903467048"><ph name="DIRECTION" /> کے لیے کلید غائب ہے۔ <ph name="ASSIGN_INSTRUCTION" /></translation>
+<translation id="950520315903467048"><ph name="DIRECTION" /> کے لیے کلید موجود نہیں ہے۔ <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="952992212772159698">فعال نہیں ہے</translation>
 <translation id="95718197892796296">چکنی مٹی</translation>
 <translation id="960719561871045870">آپریٹر کوڈ</translation>

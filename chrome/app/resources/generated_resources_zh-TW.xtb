@@ -10215,7 +10215,7 @@
 <ph name="DOMAIN" /> 需要你插入智慧型卡片，不得拔出。}other{<ph name="DEVICE_TYPE" /> 將在 # 秒後自動鎖定。
 <ph name="DOMAIN" /> 需要你插入智慧型卡片，不得拔出。}}</translation>
 <translation id="8776294611668764629">由於這個檔案過大，無法進行安全性檢查，因此遭到貴機構封鎖。你可開啟的檔案大小上限為 50 MB。</translation>
-<translation id="8777509665768981163">新增或點選平板電腦的按鈕</translation>
+<translation id="8777509665768981163">新增或點選繪圖板的按鈕</translation>
 <translation id="8777628254805677039">Root 密碼</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8779944680596936487">網站只能使用 Cookie 查看你在該網站上的瀏覽活動</translation>
