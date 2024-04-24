@@ -164,19 +164,6 @@ constexpr char kEmptyAccessControlAllowOriginReplacement[] = "";
 
 constexpr char kEmptySharedStorageCrossOriginAllowedReplacement[] = "";
 
-base::StringPairs ResponseHeaderReplacement(
-    const std::string& access_control_allow_origin_replacement,
-    const std::string& shared_storage_cross_origin_allowed_replacement) {
-  base::StringPairs header_replacement;
-  header_replacement.emplace_back("{{ACCESS_CONTROL_ALLOW_ORIGIN_HEADER}}",
-                                  access_control_allow_origin_replacement);
-  header_replacement.emplace_back(
-      "{{SHARED_STORAGE_CROSS_ORIGIN_WORKLET_ALLOWED_HEADER}}",
-      shared_storage_cross_origin_allowed_replacement);
-
-  return header_replacement;
-}
-
 std::string TimeDeltaToString(base::TimeDelta delta) {
   return base::StrCat({base::NumberToString(delta.InMilliseconds()), "ms"});
 }
@@ -2460,7 +2447,7 @@ IN_PROC_BROWSER_TEST_P(
   GURL module_script_url = https_server()->GetURL(
       "b.test", net::test_server::GetFilePathWithReplacements(
                     "/shared_storage/module_with_custom_header.js",
-                    ResponseHeaderReplacement(
+                    SharedStorageCrossOriginWorkletResponseHeaderReplacement(
                         "Access-Control-Allow-Origin: *",
                         "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
 
@@ -4601,7 +4588,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   GURL module_script_url = https_server()->GetURL(
       "a.test", net::test_server::GetFilePathWithReplacements(
                     "/shared_storage/module_with_custom_header.js",
-                    ResponseHeaderReplacement(
+                    SharedStorageCrossOriginWorkletResponseHeaderReplacement(
                         kEmptyAccessControlAllowOriginReplacement,
                         kEmptySharedStorageCrossOriginAllowedReplacement)));
 
@@ -4622,7 +4609,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   GURL module_script_url = https_server()->GetURL(
       "b.test", net::test_server::GetFilePathWithReplacements(
                     "/shared_storage/module_with_custom_header.js",
-                    ResponseHeaderReplacement(
+                    SharedStorageCrossOriginWorkletResponseHeaderReplacement(
                         kEmptyAccessControlAllowOriginReplacement,
                         "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
 
@@ -4676,7 +4663,7 @@ IN_PROC_BROWSER_TEST_P(
   GURL module_script_url = https_server()->GetURL(
       "b.test", net::test_server::GetFilePathWithReplacements(
                     "/shared_storage/module_with_custom_header.js",
-                    ResponseHeaderReplacement(
+                    SharedStorageCrossOriginWorkletResponseHeaderReplacement(
                         "Access-Control-Allow-Origin: *",
                         kEmptySharedStorageCrossOriginAllowedReplacement)));
 
@@ -4729,7 +4716,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   GURL module_script_url = https_server()->GetURL(
       "b.test", net::test_server::GetFilePathWithReplacements(
                     "/shared_storage/module_with_custom_header.js",
-                    ResponseHeaderReplacement(
+                    SharedStorageCrossOriginWorkletResponseHeaderReplacement(
                         "Access-Control-Allow-Origin: *",
                         "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
 
@@ -4759,7 +4746,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   GURL module_script_url = https_server()->GetURL(
       "b.test", net::test_server::GetFilePathWithReplacements(
                     "/shared_storage/module_with_custom_header.js",
-                    ResponseHeaderReplacement(
+                    SharedStorageCrossOriginWorkletResponseHeaderReplacement(
                         "Access-Control-Allow-Origin: *",
                         "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
 
@@ -4791,7 +4778,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   GURL module_script_url = https_server()->GetURL(
       "b.test", net::test_server::GetFilePathWithReplacements(
                     "/shared_storage/module_with_custom_header.js",
-                    ResponseHeaderReplacement(
+                    SharedStorageCrossOriginWorkletResponseHeaderReplacement(
                         "Access-Control-Allow-Origin: *",
                         "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
 
@@ -4816,7 +4803,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   GURL module_script_url = https_server()->GetURL(
       "b.test", net::test_server::GetFilePathWithReplacements(
                     "/shared_storage/module_with_custom_header.js",
-                    ResponseHeaderReplacement(
+                    SharedStorageCrossOriginWorkletResponseHeaderReplacement(
                         "Access-Control-Allow-Origin: *",
                         "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
 
@@ -4845,7 +4832,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   GURL module_script_url = https_server()->GetURL(
       "b.test", net::test_server::GetFilePathWithReplacements(
                     "/shared_storage/module_with_custom_header.js",
-                    ResponseHeaderReplacement(
+                    SharedStorageCrossOriginWorkletResponseHeaderReplacement(
                         "Access-Control-Allow-Origin: *",
                         "Shared-Storage-Cross-Origin-Worklet-Allowed: ?1")));
 

@@ -12,6 +12,7 @@
 #include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/string_split.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -335,6 +336,19 @@ CreateAndOverrideSharedStorageHeaderObserver(StoragePartition* partition) {
   static_cast<StoragePartitionImpl*>(partition)
       ->OverrideSharedStorageHeaderObserverForTesting(std::move(observer));
   return observer_ptr;
+}
+
+base::StringPairs SharedStorageCrossOriginWorkletResponseHeaderReplacement(
+    const std::string& access_control_allow_origin_replacement,
+    const std::string& shared_storage_cross_origin_allowed_replacement) {
+  base::StringPairs header_replacement;
+  header_replacement.emplace_back("{{ACCESS_CONTROL_ALLOW_ORIGIN_HEADER}}",
+                                  access_control_allow_origin_replacement);
+  header_replacement.emplace_back(
+      "{{SHARED_STORAGE_CROSS_ORIGIN_WORKLET_ALLOWED_HEADER}}",
+      shared_storage_cross_origin_allowed_replacement);
+
+  return header_replacement;
 }
 
 }  // namespace content

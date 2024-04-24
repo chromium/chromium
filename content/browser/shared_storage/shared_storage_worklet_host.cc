@@ -519,13 +519,9 @@ void SharedStorageWorkletHost::SelectURL(
     } else {
       // When the worklet and the worklet creator are not same-origin, the user
       // preferences for the worklet origin should not be revealed.
-      //
-      // TODO(cammie): Right now the metric will be recorded as `kSuccess`. We
-      // should record a separate metric for this distorted result using type
-      // `SharedStorageWorkletErrorType
-      // ::kSelectURLNonWebVisibleCrossOriginSharedStorageDisabled` and move
-      // logging of successes to the browser process to prevent counting this as
-      // a success as well.
+      LogSharedStorageWorkletError(
+          blink::SharedStorageWorkletErrorType::
+              kSelectURLNonWebVisibleCrossOriginSharedStorageDisabled);
       FencedFrameConfig config(urn_uuid, GURL());
       std::move(callback).Run(
           /*success=*/true, /*error_message=*/{},
@@ -631,13 +627,9 @@ void SharedStorageWorkletHost::Run(
     } else {
       // When the worklet and the worklet creator are not same-origin, the user
       // preferences for the worklet origin should not be revealed.
-      //
-      // TODO(cammie): Right now the metric will be recorded as `kSuccess`. We
-      // should record a separate metric for this distorted result using type
-      // `SharedStorageWorkletErrorType
-      // ::kRunNonWebVisibleCrossOriginSharedStorageDisabled` and move logging
-      // of successes to the browser process to prevent counting this as a
-      // success as well.
+      LogSharedStorageWorkletError(
+          blink::SharedStorageWorkletErrorType::
+              kRunNonWebVisibleCrossOriginSharedStorageDisabled);
       std::move(callback).Run(
           /*success=*/true,
           /*error_message=*/{});
@@ -1100,6 +1092,9 @@ void SharedStorageWorkletHost::OnRunOperationOnWorkletFinished(
               document_service_->render_frame_host()),
           blink::mojom::ConsoleMessageLevel::kError, error_message);
     }
+  } else {
+    LogSharedStorageWorkletError(
+        blink::SharedStorageWorkletErrorType::kSuccess);
   }
 
   base::UmaHistogramLongTimes(
@@ -1165,7 +1160,20 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
             std::move(urls_with_metadata), index, budget_result.bits,
             budget_status);
 
+    // Log histograms. These do not need the `document_service_`.
     blink::LogSharedStorageSelectURLBudgetStatus(budget_status);
+    if (budget_status !=
+        blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget) {
+      LogSharedStorageWorkletError(
+          blink::SharedStorageWorkletErrorType::
+              kSelectURLNonWebVisibleInsufficientBudget);
+    } else if (!script_execution_succeeded) {
+      LogSharedStorageWorkletErrorFromErrorMessage(
+          /*from_select_url=*/true, script_execution_error_message);
+    } else {
+      LogSharedStorageWorkletError(
+          blink::SharedStorageWorkletErrorType::kSuccess);
+    }
 
     if (document_service_) {
       DCHECK(!IsInKeepAlivePhase());
@@ -1178,17 +1186,12 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
                 document_service_->render_frame_host()),
             blink::mojom::ConsoleMessageLevel::kError,
             "Insufficient budget for selectURL().");
-        LogSharedStorageWorkletError(
-            blink::SharedStorageWorkletErrorType::
-                kSelectURLNonWebVisibleInsufficientBudget);
       } else if (!script_execution_succeeded) {
         devtools_instrumentation::LogWorkletMessage(
             static_cast<RenderFrameHostImpl&>(
                 document_service_->render_frame_host()),
             blink::mojom::ConsoleMessageLevel::kError,
             script_execution_error_message);
-        LogSharedStorageWorkletErrorFromErrorMessage(
-            /*from_select_url=*/true, script_execution_error_message);
       }
     }
 

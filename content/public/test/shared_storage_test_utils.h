@@ -6,9 +6,11 @@
 #define CONTENT_PUBLIC_TEST_SHARED_STORAGE_TEST_UTILS_H_
 
 #include <stddef.h>
+
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_split.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "services/network/public/mojom/optional_bool.mojom.h"
@@ -114,6 +116,10 @@ GetPrivateAggregationHostPipeApiDisabledValue();
 
 base::WeakPtr<TestSharedStorageHeaderObserver>
 CreateAndOverrideSharedStorageHeaderObserver(StoragePartition* partition);
+
+base::StringPairs SharedStorageCrossOriginWorkletResponseHeaderReplacement(
+    const std::string& access_control_allow_origin_replacement,
+    const std::string& shared_storage_cross_origin_allowed_replacement);
 
 }  // namespace content
 

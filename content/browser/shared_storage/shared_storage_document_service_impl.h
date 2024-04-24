@@ -88,6 +88,7 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
   void OnCreateWorkletResponseIntercepted(
       bool is_same_origin,
       CreateWorkletCallback original_callback,
+      bool prefs_success,
       bool success,
       const std::string& error_message);
 

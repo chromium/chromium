@@ -146,24 +146,25 @@ void SharedStorageDocumentServiceImpl::CreateWorklet(
     return;
   }
 
-  auto intercepting_callback = base::BindOnce(
-      &SharedStorageDocumentServiceImpl::OnCreateWorkletResponseIntercepted,
-      weak_ptr_factory_.GetWeakPtr(), is_same_origin, std::move(callback));
-
   std::string debug_message;
   if (!IsSharedStorageAddModuleAllowed(&debug_message)) {
-    std::move(intercepting_callback)
-        .Run(
-            /*success=*/false,
-            /*error_message=*/GetSharedStorageErrorMessage(
-                debug_message, kSharedStorageAddModuleDisabledMessage));
+    OnCreateWorkletResponseIntercepted(
+        is_same_origin, std::move(callback),
+        /*prefs_success=*/false,
+        /*success=*/false,
+        /*error_message=*/
+        GetSharedStorageErrorMessage(debug_message,
+                                     kSharedStorageAddModuleDisabledMessage));
     return;
   }
 
   GetSharedStorageWorkletHostManager()->CreateWorkletHost(
       this, render_frame_host().GetLastCommittedOrigin(), script_source_url,
       credentials_mode, origin_trial_features, std::move(worklet_host),
-      std::move(intercepting_callback));
+      base::BindOnce(
+          &SharedStorageDocumentServiceImpl::OnCreateWorkletResponseIntercepted,
+          weak_ptr_factory_.GetWeakPtr(), is_same_origin, std::move(callback),
+          /*prefs_success=*/true));
 }
 
 void SharedStorageDocumentServiceImpl::SharedStorageGet(
@@ -344,24 +345,31 @@ SharedStorageDocumentServiceImpl::SharedStorageDocumentServiceImpl(
 void SharedStorageDocumentServiceImpl::OnCreateWorkletResponseIntercepted(
     bool is_same_origin,
     CreateWorkletCallback original_callback,
+    bool prefs_success,
     bool success,
     const std::string& error_message) {
   // When the worklet and the worklet creator are not same-origin, the user
   // preferences for the worklet origin should not be revealed.
-  //
-  // TODO(cammie): Right now the metric will be recorded as `kSuccess`. We
-  // should record a separate metric for the result when it's masking a failure,
-  // using `SharedStorageWorkletErrorType
-  // ::kAddModuleNonWebVisibleCrossOriginSharedStorageDisabled` or
-  // `SharedStorageWorkletErrorType::kAddModuleNonWebVisibleOther` as
-  // appropriate. We also need to move logging of successes to the browser
-  // process to prevent counting failures that happen here as successes in the
-  // renderer.
   if (!is_same_origin) {
+    if (!prefs_success) {
+      LogSharedStorageWorkletError(
+          blink::SharedStorageWorkletErrorType::
+              kAddModuleNonWebVisibleCrossOriginSharedStorageDisabled);
+    } else if (!success) {
+      LogSharedStorageWorkletError(
+          blink::SharedStorageWorkletErrorType::kAddModuleNonWebVisibleOther);
+    } else {
+      LogSharedStorageWorkletError(
+          blink::SharedStorageWorkletErrorType::kSuccess);
+    }
     std::move(original_callback).Run(/*success=*/true, /*error_message=*/{});
     return;
   }
 
+  if (success) {
+    LogSharedStorageWorkletError(
+        blink::SharedStorageWorkletErrorType::kSuccess);
+  }
   std::move(original_callback).Run(success, error_message);
 }
 

@@ -196,8 +196,6 @@ void SharedStorageWorklet::AddModuleHelper(ScriptState* script_state,
                   return;
                 }
 
-                LogSharedStorageWorkletError(
-                    SharedStorageWorkletErrorType::kSuccess);
                 base::UmaHistogramMediumTimes(
                     "Storage.SharedStorage.Document.Timing.AddModule",
                     base::TimeTicks::Now() - start_time);
@@ -208,6 +206,9 @@ void SharedStorageWorklet::AddModuleHelper(ScriptState* script_state,
                 } else {
                   resolver->DowncastTo<IDLUndefined>()->Resolve();
                 }
+
+                // `SharedStorageWorkletErrorType::kSuccess` is logged in the
+                // browser process for `addModule()` and `createWorklet()`.
               },
               WrapPersistent(resolver), WrapPersistent(this), start_time,
               resolve_to_worklet));
@@ -475,8 +476,6 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
               return;
             }
 
-            LogSharedStorageWorkletError(
-                SharedStorageWorkletErrorType::kSuccess);
             base::UmaHistogramMediumTimes(
                 "Storage.SharedStorage.Document.Timing.SelectURL",
                 base::TimeTicks::Now() - start_time);
@@ -488,6 +487,9 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
             } else {
               resolver->Resolve(KURL(result_config->urn_uuid().value()));
             }
+
+            // `SharedStorageWorkletErrorType::kSuccess` is logged in the
+            // browser process for `selectURL()`.
           },
           WrapPersistent(resolver), WrapPersistent(this), start_time,
           resolve_to_config));
@@ -591,12 +593,13 @@ ScriptPromise<IDLAny> SharedStorageWorklet::run(
               return;
             }
 
-            LogSharedStorageWorkletError(
-                SharedStorageWorkletErrorType::kSuccess);
             base::UmaHistogramMediumTimes(
                 "Storage.SharedStorage.Document.Timing.Run",
                 base::TimeTicks::Now() - start_time);
             resolver->Resolve();
+
+            // `SharedStorageWorkletErrorType::kSuccess` is logged in the
+            // browser process for `run()`.
           },
           WrapPersistent(resolver), WrapPersistent(this), start_time));
 
