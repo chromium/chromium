@@ -105,7 +105,7 @@ ErrorCode GetMojoErrorFromPackError(const PackResult::ErrorCode pack_error) {
   }
 }
 
-// Called when LanguagePackManager::GetPackState is complete.
+// Called when LanguagePackManager::GetPackState or ::InstallPack is complete.
 void OnLanguagePackManagerResponse(
     read_anything::mojom::UntrustedPageHandler::GetVoicePackInfoCallback
         mojo_remote_callback,

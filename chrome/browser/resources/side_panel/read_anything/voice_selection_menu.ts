@@ -20,6 +20,7 @@ import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bund
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {LanguageMenuElement} from './language_menu.js';
+import {isNatural} from './voice_language_util.js';
 import {getTemplate} from './voice_selection_menu.html.js';
 
 export interface VoiceSelectionMenuElement {
@@ -47,9 +48,6 @@ interface VoiceDropdownItem {
 // Events emitted from the voice selection menu to the app
 export const PLAY_PREVIEW_EVENT = 'preview-voice';
 
-// This string is not localized and will be in English, even for non-English
-// Natural voices.
-const NATURAL_STRING_IDENTIFIER = '(Natural)';
 
 const VoiceSelectionMenuElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -271,16 +269,16 @@ function voiceQualityRankComparator(
     voice1: VoiceDropdownItem,
     voice2: VoiceDropdownItem,
     ): number {
-  if (isNatural(voice1) && isNatural(voice2)) {
+  if (isNatural(voice1.voice) && isNatural(voice2.voice)) {
     return 0;
   }
 
-  if (!isNatural(voice1) && !isNatural(voice2)) {
+  if (!isNatural(voice1.voice) && !isNatural(voice2.voice)) {
     return 0;
   }
 
   // voice1 is a Natural voice and voice2 is not
-  if (isNatural(voice1)) {
+  if (isNatural(voice1.voice)) {
     return -1;
   }
 
@@ -297,10 +295,6 @@ function voicesAreEqual(
   return voice1.default === voice2.default && voice1.lang === voice2.lang &&
       voice1.localService === voice2.localService &&
       voice1.name === voice2.name && voice1.voiceURI === voice2.voiceURI;
-}
-
-function isNatural(voiceDropdownItem: VoiceDropdownItem) {
-  return voiceDropdownItem.voice.name.includes(NATURAL_STRING_IDENTIFIER);
 }
 
 declare global {

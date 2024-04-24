@@ -14,7 +14,7 @@ suite('voice and language utils', () => {
         VoicePackStatus.EXISTS);
     assertEquals(
         (mojoVoicePackStatusToVoicePackStatusEnum('kInstalled')),
-        VoicePackStatus.INSTALLED);
+        VoicePackStatus.DOWNLOADED);
     assertEquals(
         (mojoVoicePackStatusToVoicePackStatusEnum('kInstalling')),
         VoicePackStatus.INSTALLING);

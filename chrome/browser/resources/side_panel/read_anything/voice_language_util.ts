@@ -12,6 +12,14 @@ export enum VoicePackStatus {
   INSTALL_ERROR,
 }
 
+// This string is not localized and will be in English, even for non-English
+// Natural voices.
+const NATURAL_STRING_IDENTIFIER = '(Natural)';
+
+export function isNatural(voice: SpeechSynthesisVoice) {
+  return voice.name.includes(NATURAL_STRING_IDENTIFIER);
+}
+
 export function createInitialListOfEnabledLanguages(
     browserOrPageBaseLang: string, storedLanguagesPref: string[],
     availableLangs: string[], langOfDefaultVoice: string|undefined): string[] {
@@ -85,7 +93,7 @@ export function mojoVoicePackStatusToVoicePackStatusEnum(
   } else if (mojoPackStatus === 'kInstalling') {
     return VoicePackStatus.INSTALLING;
   } else if (mojoPackStatus === 'kInstalled') {
-    return VoicePackStatus.INSTALLED;
+    return VoicePackStatus.DOWNLOADED;
   }
   // The success statuses were not sent so return an Error
   // TODO (b/331795122) Handle install errors on the UI

@@ -20,7 +20,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 import {getTemplate} from './app.html.js';
 import {validatedFontName} from './common.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
-import {convertLangOrLocaleForVoicePackManager, createInitialListOfEnabledLanguages, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from './voice_language_util.js';
+import {convertLangOrLocaleForVoicePackManager, createInitialListOfEnabledLanguages, isNatural, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackStatus} from './voice_language_util.js';
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
@@ -126,15 +126,18 @@ if (chrome.readingMode) {
 
   chrome.readingMode.updateVoicePackStatus = (lang: string, status: string) => {
     const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp, 'no app');
-    readAnythingApp.updateVoicePackStatus(lang, status);
+    if (readAnythingApp) {
+      readAnythingApp.updateVoicePackStatus(lang, status);
+    }
   };
 
   chrome.readingMode.updateVoicePackStatusFromInstallResponse =
       (lang: string, status: string) => {
         const readAnythingApp = document.querySelector('read-anything-app');
-        assert(readAnythingApp, 'no app');
-        readAnythingApp.updateVoicePackStatusFromInstallResponse(lang, status);
+        if (readAnythingApp) {
+          readAnythingApp.updateVoicePackStatusFromInstallResponse(
+              lang, status);
+        }
       };
 
   chrome.readingMode.updateTheme = () => {
@@ -747,34 +750,60 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   updateVoicePackStatusFromInstallResponse(lang: string, status: string) {
-    // Do not rely on this status from Install response. It has responded
-    // "installed" for voices that are not installed. Instead, rely on the
-    // status from GetVoicePackStatus.
-    // TODO (b/323159502) Trigger ChromeOS system notification that voice has
-    // been installed
-    if (lang && status === 'kInstalled') {
-      // TODO (b/335472298) Handle voice menu downloading voice spinners. Keep
-      // in mind that this status is not reliable, and to explicitly check that
-      // the Natural voices have been installed.
+    if (!lang) {
+      return;
     }
+
+    const voicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
+    if (voicePackStatus === VoicePackStatus.INSTALL_ERROR) {
+      // TODO (b/331795122) Handle install errors on the UI
+      return;
+    }
+
+
+    // Do not rely on the status from Install response. It has responded
+    // "installed" for voices that are not installed. Instead, request the
+    // status from GetVoicePackInfo. The result will be returned in
+    // updateVoicePackStatus().
+    this.sendGetVoicePackInfoRequest(lang);
   }
 
   updateVoicePackStatus(lang: string, status: string) {
     if (!lang) {
       return;
     }
-    const voicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
-    if (voicePackStatus === VoicePackStatus.EXISTS &&
-        this.languagesForVoiceDownloads.has(lang)) {
-      chrome.readingMode.sendInstallVoicePackRequest(lang);
-      // TODO(b/326130935): Hide the message when installation completes or
-      // show an error message if something fails.
-      this.voicePackInstallStatus[lang] = VoicePackStatus.INSTALLING;
-    }
 
-    this.voicePackInstallStatus =
-        {...this.voicePackInstallStatus, [lang]: voicePackStatus};
-    // TODO (b/335472298) Handle voice menu downloading voice spinners
+    const voicePackStatus = mojoVoicePackStatusToVoicePackStatusEnum(status);
+    if (voicePackStatus === VoicePackStatus.EXISTS) {
+      if (this.voicePackInstallStatus[lang] === VoicePackStatus.DOWNLOADED) {
+        // If the language pack is uninstalled but we still think it is
+        // installed, then the user removed the language pack outside of reading
+        // mode and we don't want to reinstall.
+        this.setVoicePackStatus_(lang, VoicePackStatus.REMOVED_BY_USER);
+      } else if (this.languagesForVoiceDownloads.has(lang)) {
+        chrome.readingMode.sendInstallVoicePackRequest(lang);
+
+        // TODO(b/326130935): Hide the message when installation completes or
+        // show an error message if something fails.
+        this.setVoicePackStatus_(lang, VoicePackStatus.INSTALLING);
+      }
+    } else if (voicePackStatus === VoicePackStatus.DOWNLOADED) {
+      // If we've never seen the voice pack for this language, then it was
+      // already downloaded so mark it as such.
+      if (!this.voicePackInstallStatus[lang]) {
+        // TODO: (b/325962407) - Trigger ChromeOS system notification that voice
+        // has been installed.
+        this.setVoicePackStatus_(lang, voicePackStatus);
+      }
+
+      // Force a refresh of the voices list since we might not get an update the
+      // voices have changed.
+      this.getVoices(true);
+      return;
+    } else {
+      this.setVoicePackStatus_(lang, voicePackStatus);
+      // TODO (b/335472298) Handle voice menu downloading voice spinners
+    }
   }
 
   private onSpeechRateChange_(event: CustomEvent<{rate: number}>) {
@@ -828,6 +857,19 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.availableLangs = [...new Set(availableVoices.map(({lang}) => lang))];
 
       this.populateDisplayNamesForLocaleCodes();
+
+      // Update natural voices install status if we're refreshing the list.
+      if (refresh) {
+        const isNaturalVoiceDownloaded = (voice: SpeechSynthesisVoice) =>
+            isNatural(voice) &&
+            (this.voicePackInstallStatus[voice.lang] ===
+             VoicePackStatus.DOWNLOADED);
+        availableVoices.filter(isNaturalVoiceDownloaded)
+            .forEach(downloadedNaturalVoice => {
+              this.setVoicePackStatus_(
+                  downloadedNaturalVoice.lang, VoicePackStatus.INSTALLED);
+            });
+      }
     }
     return this.availableVoices;
   }
@@ -1751,19 +1793,23 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         convertLangOrLocaleForVoicePackManager(langOrLocale);
 
     if (!langCodeForVoicePackManager) {
-      this.voicePackInstallStatus = {
-        ...this.voicePackInstallStatus,
-        [langOrLocale]: VoicePackStatus.NONE,
-      };
+      this.setVoicePackStatus_(langOrLocale, VoicePackStatus.NONE);
       return;
     }
 
-    if (this.voicePackInstallStatus[langCodeForVoicePackManager] !==
-        VoicePackStatus.INSTALLED) {
+    const statusForLang =
+        this.voicePackInstallStatus[langCodeForVoicePackManager];
+    if (!statusForLang || (statusForLang === VoicePackStatus.EXISTS)) {
       this.languagesForVoiceDownloads.add(langCodeForVoicePackManager);
       // Inquire if the voice pack is downloaded. If not, it'll trigger a
-      // download when we get the response in updateVoicePackStatus()
+      // download when we get the response in updateVoicePackStatus().
       this.sendGetVoicePackInfoRequest(langCodeForVoicePackManager);
+      this.setVoicePackStatus_(
+          langCodeForVoicePackManager, VoicePackStatus.EXISTS);
+    } else if (statusForLang === VoicePackStatus.DOWNLOADED) {
+      // Force a refresh of the voices list since we might not get an update the
+      // voices have changed.
+      this.getVoices(/*refresh=*/ true);
     }
   }
 
@@ -1772,6 +1818,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       e.stopPropagation();
       this.onPlayPauseClick_();
     }
+  }
+
+  private setVoicePackStatus_(lang: string, status: VoicePackStatus) {
+    this.voicePackInstallStatus = {
+      ...this.voicePackInstallStatus,
+      [lang]: status,
+    };
   }
 }
 

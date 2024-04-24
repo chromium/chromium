@@ -15,6 +15,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-te
 
 import {suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
+import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('LanguageChanged', () => {
@@ -133,22 +134,86 @@ suite('LanguageChanged', () => {
     });
   });
 
-  test('updates voice pack status to none if unsupported', () => {
-    chrome.readingMode.baseLanguageForSpeech = 'zh';
-    let sentRequest = false;
-    chrome.readingMode.sendGetVoicePackInfoRequest = () => {
-      sentRequest = true;
-    };
+  suite('tries to install voice pack', () => {
+    let sentRequest: boolean;
 
-    app.languageChanged();
+    function setInstallStatus(lang: string, status: VoicePackStatus) {
+      // @ts-ignore
+      app.setVoicePackStatus_(lang, status);
+    }
 
-    // Use this check to ensure this stays updated if the supported languages
-    // changes.
-    assertFalse(PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES.has(
-        chrome.readingMode.baseLanguageForSpeech));
-    assertFalse(sentRequest);
-    assertEquals(
-        voicePackInstallStatus()[chrome.readingMode.baseLanguageForSpeech],
-        VoicePackStatus.NONE);
+    setup(() => {
+      sentRequest = false;
+      chrome.readingMode.sendGetVoicePackInfoRequest = () => {
+        sentRequest = true;
+      };
+    });
+
+    test('but doesn\'t if the language is unsupported', () => {
+      chrome.readingMode.baseLanguageForSpeech = 'zh';
+
+      app.languageChanged();
+
+      // Use this check to ensure this stays updated if the supported languages
+      // changes.
+      assertFalse(PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES.has(
+          chrome.readingMode.baseLanguageForSpeech));
+      assertFalse(sentRequest);
+      assertEquals(
+          voicePackInstallStatus()[chrome.readingMode.baseLanguageForSpeech],
+          VoicePackStatus.NONE);
+    });
+
+    test('but doesn\'t if the pack was removed by the user', () => {
+      const lang = 'ko';
+      chrome.readingMode.baseLanguageForSpeech = lang;
+      setInstallStatus(lang, VoicePackStatus.REMOVED_BY_USER);
+
+      app.languageChanged();
+
+      assertFalse(sentRequest);
+      assertEquals(
+          voicePackInstallStatus()[lang], VoicePackStatus.REMOVED_BY_USER);
+    });
+
+    test('and refreshes voice list if already downloaded', () => {
+      const lang = 'it';
+      chrome.readingMode.baseLanguageForSpeech = lang;
+      app.synth = new FakeSpeechSynthesis();
+      const voices = app.synth.getVoices();
+      app.synth.getVoices = () => {
+        return voices.concat(
+            {lang: lang, name: 'Wall-e (Natural)'} as SpeechSynthesisVoice,
+            {lang: lang, name: 'Andy (Natural)'} as SpeechSynthesisVoice,
+        );
+      };
+      setInstallStatus(lang, VoicePackStatus.DOWNLOADED);
+
+      app.languageChanged();
+
+      assertFalse(sentRequest);
+      assertEquals(voicePackInstallStatus()[lang], VoicePackStatus.INSTALLED);
+    });
+
+    test('and gets voice pack info if no status yet', () => {
+      const lang = 'bn';
+      chrome.readingMode.baseLanguageForSpeech = lang;
+
+      app.languageChanged();
+
+      assertTrue(sentRequest);
+      assertEquals(voicePackInstallStatus()[lang], VoicePackStatus.EXISTS);
+    });
+
+    test('and gets voice pack info if we know it exists', () => {
+      const lang = 'de';
+      chrome.readingMode.baseLanguageForSpeech = lang;
+
+      app.languageChanged();
+
+      assertTrue(sentRequest);
+      assertEquals(voicePackInstallStatus()[lang], VoicePackStatus.EXISTS);
+    });
   });
+
 });
