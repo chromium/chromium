@@ -703,6 +703,38 @@ TEST_P(CordTest, CopyToString) {
                                 "copying ", "to ", "a ", "string."})));
 }
 
+static void VerifyAppendCordToString(const absl::Cord& cord) {
+  std::string initially_empty;
+  absl::AppendCordToString(cord, &initially_empty);
+  EXPECT_EQ(initially_empty, cord);
+
+  const absl::string_view kInitialContents = "initial contents.";
+  std::string expected_after_append =
+      absl::StrCat(kInitialContents, std::string(cord));
+
+  std::string no_reserve(kInitialContents);
+  absl::AppendCordToString(cord, &no_reserve);
+  EXPECT_EQ(no_reserve, expected_after_append);
+
+  std::string has_reserved_capacity(kInitialContents);
+  has_reserved_capacity.reserve(has_reserved_capacity.size() + cord.size());
+  const char* address_before_copy = has_reserved_capacity.data();
+  absl::AppendCordToString(cord, &has_reserved_capacity);
+  EXPECT_EQ(has_reserved_capacity, expected_after_append);
+  EXPECT_EQ(has_reserved_capacity.data(), address_before_copy)
+      << "AppendCordToString allocated new string storage; "
+         "has_reserved_capacity = \""
+      << has_reserved_capacity << "\"";
+}
+
+TEST_P(CordTest, AppendToString) {
+  VerifyAppendCordToString(absl::Cord());  // empty cords cannot carry CRCs
+  VerifyAppendCordToString(MaybeHardened(absl::Cord("small cord")));
+  VerifyAppendCordToString(MaybeHardened(
+      absl::MakeFragmentedCord({"fragmented ", "cord ", "to ", "test ",
+                                "appending ", "to ", "a ", "string."})));
+}
+
 TEST_P(CordTest, AppendEmptyBuffer) {
   absl::Cord cord;
   cord.Append(absl::CordBuffer());

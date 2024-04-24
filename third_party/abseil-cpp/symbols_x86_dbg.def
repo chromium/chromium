@@ -2804,6 +2804,7 @@ EXPORTS
     ?Append@StringifySink@strings_internal@absl@@QAEXID@Z
     ?Append@StringifySink@strings_internal@absl@@QAEXV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?AppendArray@InlineRep@Cord@absl@@QAEXV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@W4MethodIdentifier@CordzUpdateTracker@cord_internal@3@@Z
+    ?AppendCordToString@absl@@YAXABVCord@1@PAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
     ?AppendPack@str_format_internal@absl@@YAAAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@PAV345@VUntypedFormatSpecImpl@12@V?$Span@$$CBVFormatArgImpl@str_format_internal@absl@@@2@@Z
     ?AppendPieces@strings_internal@absl@@YAXPAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@V?$initializer_list@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@5@@Z
     ?AppendPrecise@Cord@absl@@AAEXV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@W4MethodIdentifier@CordzUpdateTracker@cord_internal@2@@Z
@@ -2939,6 +2940,8 @@ EXPORTS
     ?CopyRaw@CordRepBtree@cord_internal@absl@@ABEPAV123@I@Z
     ?CopySuffix@CordRepBtree@cord_internal@absl@@AAE?AUCopyResult@123@I@Z
     ?CopyTo@InlineRep@Cord@absl@@QBEXPAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
+    ?CopyToArray@InlineRep@Cord@absl@@QBEXPAD@Z
+    ?CopyToArrayImpl@Cord@absl@@ABEXPAD@Z
     ?CopyToArraySlowPath@Cord@absl@@ABEXPAD@Z
     ?CopyToEndFrom@CordRepBtree@cord_internal@absl@@ABEPAV123@II@Z
     ?CountLeadingEmptyOrDeleted@GroupSse2Impl@container_internal@absl@@QBEIXZ

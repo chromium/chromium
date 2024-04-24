@@ -130,8 +130,8 @@ ABSL_ATTRIBUTE_NO_SANITIZE_UNDEFINED inline void LargeTailCopy(
         size_t data_index = i * kIntLoadsPerVec + j;
 
         int_data[data_index] = *(usrc + j);
-        crcs[region] = crc32c_t{static_cast<uint32_t>(CRC32_u64(
-            static_cast<uint32_t>(crcs[region]), int_data[data_index]))};
+        crcs[region] = crc32c_t{CRC32_u64(static_cast<uint32_t>(crcs[region]),
+                                          int_data[data_index])};
 
         *(udst + j) = int_data[data_index];
       }
@@ -299,8 +299,8 @@ AcceleratedCrcMemcpyEngine<vec_regions, int_regions>::Compute(
 
           // Load and CRC the data.
           int_data[data_index] = *(usrc + i * kIntLoadsPerVec + k);
-          crcs[region] = crc32c_t{static_cast<uint32_t>(CRC32_u64(
-              static_cast<uint32_t>(crcs[region]), int_data[data_index]))};
+          crcs[region] = crc32c_t{CRC32_u64(static_cast<uint32_t>(crcs[region]),
+                                            int_data[data_index])};
 
           // Store the data.
           *(udst + i * kIntLoadsPerVec + k) = int_data[data_index];

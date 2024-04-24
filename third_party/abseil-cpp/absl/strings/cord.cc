@@ -1062,6 +1062,15 @@ void CopyCordToString(const Cord& src, absl::Nonnull<std::string*> dst) {
   }
 }
 
+void AppendCordToString(const Cord& src, absl::Nonnull<std::string*> dst) {
+  const size_t cur_dst_size = dst->size();
+  const size_t new_dst_size = cur_dst_size + src.size();
+  absl::strings_internal::STLStringResizeUninitializedAmortized(dst,
+                                                                new_dst_size);
+  char* append_ptr = &(*dst)[cur_dst_size];
+  src.CopyToArrayImpl(append_ptr);
+}
+
 void Cord::CopyToArraySlowPath(absl::Nonnull<char*> dst) const {
   assert(contents_.is_tree());
   absl::string_view fragment;

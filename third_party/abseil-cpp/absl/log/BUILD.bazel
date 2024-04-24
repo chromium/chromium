@@ -664,6 +664,7 @@ cc_test(
         ":log_entry",
         ":log_sink",
         ":log_sink_registry",
+        ":vlog_is_on",
         "//absl/base:core_headers",
         "//absl/base:log_severity",
         "//absl/flags:flag",

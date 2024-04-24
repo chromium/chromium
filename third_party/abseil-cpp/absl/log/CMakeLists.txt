@@ -290,6 +290,7 @@ absl_cc_library(
   LINKOPTS
     ${ABSL_DEFAULT_LINKOPTS}
   DEPS
+    absl::core_headers
     absl::log_internal_message
     absl::log_internal_nullstream
     absl::log_severity

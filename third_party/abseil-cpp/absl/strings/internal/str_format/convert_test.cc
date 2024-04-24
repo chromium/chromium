@@ -946,32 +946,9 @@ TEST_F(FormatConvertTest, Double) {
     }
   }
 
-  // Workaround libc bug.
-  // https://sourceware.org/bugzilla/show_bug.cgi?id=22142
-  const bool gcc_bug_22142 =
-      StrPrint("%f", std::numeric_limits<double>::max()) !=
-      "1797693134862315708145274237317043567980705675258449965989174768031"
-      "5726078002853876058955863276687817154045895351438246423432132688946"
-      "4182768467546703537516986049910576551282076245490090389328944075868"
-      "5084551339423045832369032229481658085593321233482747978262041447231"
-      "68738177180919299881250404026184124858368.000000";
-
   for (int exp = -300; exp <= 300; ++exp) {
     const double all_ones_mantissa = 0x1fffffffffffff;
     doubles.push_back(std::ldexp(all_ones_mantissa, exp));
-    if (gcc_bug_22142) {
-      skip_verify.insert(doubles.back());
-    }
-  }
-
-  if (gcc_bug_22142) {
-    using L = std::numeric_limits<double>;
-    skip_verify.insert(L::max());
-    skip_verify.insert(L::min());  // NOLINT
-    skip_verify.insert(L::denorm_min());
-    skip_verify.insert(-L::max());
-    skip_verify.insert(-L::min());  // NOLINT
-    skip_verify.insert(-L::denorm_min());
   }
 
   // Remove duplicates to speed up the logic below.

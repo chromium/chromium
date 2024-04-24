@@ -105,6 +105,7 @@ class CordTestPeer;
 template <typename Releaser>
 Cord MakeCordFromExternal(absl::string_view, Releaser&&);
 void CopyCordToString(const Cord& src, absl::Nonnull<std::string*> dst);
+void AppendCordToString(const Cord& src, absl::Nonnull<std::string*> dst);
 
 // Cord memory accounting modes
 enum class CordMemoryAccounting {
@@ -420,6 +421,18 @@ class Cord {
   // object, prefer to simply use the conversion operator to `std::string`.
   friend void CopyCordToString(const Cord& src,
                                absl::Nonnull<std::string*> dst);
+
+  // AppendCordToString()
+  //
+  // Appends the contents of a `src` Cord to a `*dst` string.
+  //
+  // This function optimizes the case of appending to a non-empty destination
+  // string. If `*dst` already has capacity to store the contents of the cord,
+  // this function does not invalidate pointers previously returned by
+  // `dst->data()`. If `*dst` is a new object, prefer to simply use the
+  // conversion operator to `std::string`.
+  friend void AppendCordToString(const Cord& src,
+                                 absl::Nonnull<std::string*> dst);
 
   class CharIterator;
 
@@ -1066,6 +1079,8 @@ class Cord {
       const;
 
   CharIterator FindImpl(CharIterator it, absl::string_view needle) const;
+
+  void CopyToArrayImpl(absl::Nonnull<char*> dst) const;
 };
 
 ABSL_NAMESPACE_END
@@ -1104,8 +1119,8 @@ absl::Nonnull<CordRep*> NewExternalRep(absl::string_view data,
 // Overload for function reference types that dispatches using a function
 // pointer because there are no `alignof()` or `sizeof()` a function reference.
 // NOLINTNEXTLINE - suppress clang-tidy raw pointer return.
-inline absl::Nonnull<CordRep*> NewExternalRep(absl::string_view data,
-                               void (&releaser)(absl::string_view)) {
+inline absl::Nonnull<CordRep*> NewExternalRep(
+    absl::string_view data, void (&releaser)(absl::string_view)) {
   return NewExternalRep(data, &releaser);
 }
 
@@ -1448,6 +1463,14 @@ inline bool Cord::StartsWith(absl::string_view rhs) const {
   size_t rhs_size = rhs.size();
   if (size() < rhs_size) return false;
   return EqualsImpl(rhs, rhs_size);
+}
+
+inline void Cord::CopyToArrayImpl(absl::Nonnull<char*> dst) const {
+  if (!contents_.is_tree()) {
+    if (!empty()) contents_.CopyToArray(dst);
+  } else {
+    CopyToArraySlowPath(dst);
+  }
 }
 
 inline void Cord::ChunkIterator::InitTree(

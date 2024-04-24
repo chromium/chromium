@@ -58,12 +58,13 @@
 #endif
 
 #define ABSL_LOG_INTERNAL_CHECK_OP(name, op, val1, val1_text, val2, val2_text) \
-  while (::std::string* absl_log_internal_check_op_result =                    \
-             ::absl::log_internal::name##Impl(                                 \
-                 ::absl::log_internal::GetReferenceableValue(val1),            \
-                 ::absl::log_internal::GetReferenceableValue(val2),            \
-                 ABSL_LOG_INTERNAL_STRIP_STRING_LITERAL(                       \
-                     val1_text " " #op " " val2_text)))                        \
+  while (::std::string* absl_log_internal_check_op_result                      \
+             ABSL_LOG_INTERNAL_ATTRIBUTE_UNUSED_IF_STRIP_LOG =                 \
+                 ::absl::log_internal::name##Impl(                             \
+                     ::absl::log_internal::GetReferenceableValue(val1),        \
+                     ::absl::log_internal::GetReferenceableValue(val2),        \
+                     ABSL_LOG_INTERNAL_STRIP_STRING_LITERAL(                   \
+                         val1_text " " #op " " val2_text)))                    \
     ABSL_LOG_INTERNAL_CONDITION_FATAL(STATELESS, true)                         \
   ABSL_LOG_INTERNAL_CHECK(*absl_log_internal_check_op_result).InternalStream()
 #define ABSL_LOG_INTERNAL_QCHECK_OP(name, op, val1, val1_text, val2, \

@@ -266,6 +266,7 @@ cc_library(
     deps = [
         ":log_message",
         ":nullstream",
+        "//absl/base:core_headers",
         "//absl/base:log_severity",
     ],
 )
