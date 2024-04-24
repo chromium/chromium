@@ -44,10 +44,6 @@ inline constexpr base::FeatureParam<bool> kWebAuthnAndroidGpmInCredMan{
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnHybridLinkWithoutNotifications);
 
-// Require up-to-date JSON formatting in remote-desktop contexts.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnRequireUpToDateJSONForRemoteDesktop);
-
 // Enable support for iCloud Keychain
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnICloudKeychain);

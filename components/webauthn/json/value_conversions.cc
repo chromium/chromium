@@ -79,10 +79,7 @@ std::tuple<bool, std::optional<std::string>> Base64UrlDecodeOptionalStringKey(
     return {true, std::nullopt};
   }
   if (value->is_none()) {
-    return {!base::FeatureList::IsEnabled(
-                device::kWebAuthnRequireUpToDateJSONForRemoteDesktop) &&
-                user == JSONUser::kRemoteDesktop,
-            std::nullopt};
+    return {false, std::nullopt};
   }
   std::string decoded;
   if (!value->is_string() || !Base64UrlDecode(value->GetString(), &decoded)) {
@@ -320,15 +317,7 @@ OptionalAuthenticatorAttachmentFromValue(const base::Value* value,
     // which is equivalent to `AuthenticatorAttachment::kAny`.
     return device::AuthenticatorAttachment::kAny;
   }
-  if (value->is_none()) {
-    if (base::FeatureList::IsEnabled(
-            device::kWebAuthnRequireUpToDateJSONForRemoteDesktop) ||
-        user != JSONUser::kRemoteDesktop) {
-      return std::nullopt;
-    }
-    return device::AuthenticatorAttachment::kAny;
-  }
-  if (!value->is_string()) {
+  if (value->is_none() || !value->is_string()) {
     return std::nullopt;
   }
   const std::string& attachment_name = value->GetString();
@@ -650,88 +639,48 @@ MakeCredentialResponseFromValue(const base::Value& value, JSONUser user) {
   }
   response->attestation_object = std::move(fields->attestation_object_bytes);
 
-  if (base::FeatureList::IsEnabled(
-          device::kWebAuthnRequireUpToDateJSONForRemoteDesktop) ||
-      user != JSONUser::kRemoteDesktop) {
-    // These fields are checked against the calculated values to ensure that
-    // bugs in providers don't sneak in.
-    std::optional<int> opt_public_key_algo =
-        attestation_response->FindInt("publicKeyAlgorithm");
-    if (!opt_public_key_algo ||
-        *opt_public_key_algo != fields->public_key_algo) {
-      return InvalidMakeCredentialField("publicKeyAlgorithm");
-    }
-    response->public_key_algo = *opt_public_key_algo;
+  // These fields are checked against the calculated values to ensure that
+  // bugs in providers don't sneak in.
+  std::optional<int> opt_public_key_algo =
+      attestation_response->FindInt("publicKeyAlgorithm");
+  if (!opt_public_key_algo || *opt_public_key_algo != fields->public_key_algo) {
+    return InvalidMakeCredentialField("publicKeyAlgorithm");
+  }
+  response->public_key_algo = *opt_public_key_algo;
 
-    std::optional<std::string> opt_authenticator_data =
-        Base64UrlDecodeStringKey(*attestation_response, "authenticatorData");
-    if (!opt_authenticator_data) {
-      return InvalidMakeCredentialField("authenticatorData");
-    }
-    response->info->authenticator_data = ToByteVector(*opt_authenticator_data);
-    if (!base::ranges::equal(response->info->authenticator_data,
-                             fields->authenticator_data)) {
-      return InvalidMakeCredentialField("authenticatorData");
-    }
+  std::optional<std::string> opt_authenticator_data =
+      Base64UrlDecodeStringKey(*attestation_response, "authenticatorData");
+  if (!opt_authenticator_data) {
+    return InvalidMakeCredentialField("authenticatorData");
+  }
+  response->info->authenticator_data = ToByteVector(*opt_authenticator_data);
+  if (!base::ranges::equal(response->info->authenticator_data,
+                           fields->authenticator_data)) {
+    return InvalidMakeCredentialField("authenticatorData");
+  }
 
-    auto [ok, opt_public_key] = Base64UrlDecodeOptionalStringKey(
-        *attestation_response, "publicKey", user);
-    if (!ok) {
-      return InvalidMakeCredentialField("publicKey");
-    }
-    if (opt_public_key) {
-      response->public_key_der = ToByteVector(*opt_public_key);
-    }
-    // For P-256 and Ed25519 keys, providers must be able to provide the
-    // publicKey.
-    if ((response->public_key_algo ==
-             static_cast<int>(device::CoseAlgorithmIdentifier::kEs256) ||
-         response->public_key_algo ==
-             static_cast<int>(device::CoseAlgorithmIdentifier::kEdDSA)) &&
-        !opt_public_key) {
-      return InvalidMakeCredentialField("publicKey");
-    }
-    // For any key, providers must calculate the same key as us.
-    if (fields->public_key_der && opt_public_key &&
-        !base::ranges::equal(*response->public_key_der,
-                             *fields->public_key_der)) {
-      return InvalidMakeCredentialField("publicKey");
-    }
-  } else {
-    response->info->authenticator_data = std::move(fields->authenticator_data);
-    response->public_key_algo = fields->public_key_algo;
-    if (fields->public_key_der) {
-      response->public_key_der = std::move(*fields->public_key_der);
-    }
-
-    // These three values are things that we have already calculated with
-    // `ParseForResponseFields`, above. We will transition to requiring them
-    // from providers on Android but, for now, just check that they have the
-    // correct value if provided.
-
-    std::optional<int> opt_public_key_algo =
-        attestation_response->FindInt("publicKeyAlgorithm");
-    if (opt_public_key_algo &&
-        response->public_key_algo != *opt_public_key_algo) {
-      return InvalidMakeCredentialField("publicKeyAlgorithm");
-    }
-
-    auto [ok, opt_authenticator_data] = Base64UrlDecodeOptionalStringKey(
-        *attestation_response, "authenticatorData", user);
-    if (!ok || (opt_authenticator_data &&
-                !base::ranges::equal(response->info->authenticator_data,
-                                     ToByteVector(*opt_authenticator_data)))) {
-      return InvalidMakeCredentialField("authenticatorData");
-    }
-
-    std::optional<std::string> opt_public_key_der;
-    std::tie(ok, opt_public_key_der) = Base64UrlDecodeOptionalStringKey(
-        *attestation_response, "publicKey", user);
-    if (!ok || (response->public_key_der && opt_public_key_der &&
-                !base::ranges::equal(*response->public_key_der,
-                                     ToByteVector(*opt_public_key_der)))) {
-      return InvalidMakeCredentialField("publicKey");
-    }
+  auto [ok, opt_public_key] = Base64UrlDecodeOptionalStringKey(
+      *attestation_response, "publicKey", user);
+  if (!ok) {
+    return InvalidMakeCredentialField("publicKey");
+  }
+  if (opt_public_key) {
+    response->public_key_der = ToByteVector(*opt_public_key);
+  }
+  // For P-256 and Ed25519 keys, providers must be able to provide the
+  // publicKey.
+  if ((response->public_key_algo ==
+           static_cast<int>(device::CoseAlgorithmIdentifier::kEs256) ||
+       response->public_key_algo ==
+           static_cast<int>(device::CoseAlgorithmIdentifier::kEdDSA)) &&
+      !opt_public_key) {
+    return InvalidMakeCredentialField("publicKey");
+  }
+  // For any key, providers must calculate the same key as us.
+  if (fields->public_key_der && opt_public_key &&
+      !base::ranges::equal(*response->public_key_der,
+                           *fields->public_key_der)) {
+    return InvalidMakeCredentialField("publicKey");
   }
 
   std::optional<std::string> client_data_json =
