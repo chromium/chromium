@@ -19,6 +19,7 @@
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
+#include "components/autofill/core/browser/address_data_manager.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -251,8 +252,9 @@ IbanEntryList GenerateIbanList(
 
 std::optional<api::autofill_private::AccountInfo> GetAccountInfo(
     const autofill::PersonalDataManager& personal_data) {
-  std::optional<CoreAccountInfo> account =
-      personal_data.GetPrimaryAccountInfo();
+  const autofill::AddressDataManager& adm =
+      personal_data.address_data_manager();
+  std::optional<CoreAccountInfo> account = adm.GetPrimaryAccountInfo();
   if (!account.has_value()) {
     return std::nullopt;
   }
@@ -260,14 +262,13 @@ std::optional<api::autofill_private::AccountInfo> GetAccountInfo(
   api::autofill_private::AccountInfo api_account;
   api_account.email = account->email;
   api_account.is_sync_enabled_for_autofill_profiles =
-      personal_data.address_data_manager().IsSyncFeatureEnabledForAutofill();
+      adm.IsSyncFeatureEnabledForAutofill();
   api_account.is_eligible_for_address_account_storage =
-      personal_data.address_data_manager().IsEligibleForAddressAccountStorage();
+      adm.IsEligibleForAddressAccountStorage();
   api_account.is_autofill_sync_toggle_enabled =
-      personal_data.address_data_manager()
-          .IsAutofillUserSelectableTypeEnabled();
+      adm.IsAutofillUserSelectableTypeEnabled();
   api_account.is_autofill_sync_toggle_available =
-      personal_data.address_data_manager().IsAutofillSyncToggleAvailable();
+      adm.IsAutofillSyncToggleAvailable();
   return std::move(api_account);
 }
 

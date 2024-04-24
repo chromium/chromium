@@ -23,7 +23,6 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace autofill {
@@ -65,7 +64,6 @@ void PersonalDataManager::Init(
       notify_observers);
 
   pref_service_ = pref_service;
-  identity_manager_ = identity_manager;
 
   alternative_state_name_map_updater_ =
       std::make_unique<AlternativeStateNameMapUpdater>(local_state, this);
@@ -97,8 +95,6 @@ void PersonalDataManager::Init(
 PersonalDataManager::~PersonalDataManager() = default;
 
 void PersonalDataManager::Shutdown() {
-  identity_manager_ = nullptr;
-
   if (history_service_)
     history_service_observation_.Reset();
   history_service_ = nullptr;
@@ -117,17 +113,6 @@ void PersonalDataManager::OnHistoryDeletions(
     AutofillCrowdsourcingManager::ClearUploadHistory(pref_service_);
   }
   address_data_manager_->OnHistoryDeletions(deletion_info);
-}
-
-std::optional<CoreAccountInfo> PersonalDataManager::GetPrimaryAccountInfo()
-    const {
-  if (identity_manager_ &&
-      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return identity_manager_->GetPrimaryAccountInfo(
-        signin::ConsentLevel::kSignin);
-  }
-
-  return std::nullopt;
 }
 
 void PersonalDataManager::AddObserver(PersonalDataManagerObserver* observer) {

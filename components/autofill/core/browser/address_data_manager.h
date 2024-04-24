@@ -7,6 +7,7 @@
 
 #include <deque>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -26,6 +27,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/prefs/pref_member.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/service/sync_service.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 
@@ -272,6 +274,10 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // non-syncing users. Remove when toggle becomes available on the Sync page.
   void SetAutofillSelectableTypeEnabled(bool enabled);
 
+  // Returns the account info of currently signed-in user, or std::nullopt if
+  // the user is not signed-in or the identity manager is not available.
+  std::optional<CoreAccountInfo> GetPrimaryAccountInfo() const;
+
   bool has_initial_load_finished() const { return has_initial_load_finished_; }
 
   void SetSyncServiceForTest(syncer::SyncService* sync_service) {
@@ -394,8 +400,12 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // but must otherwise outlive this instance.
   raw_ptr<PrefService> pref_service_ = nullptr;
 
+  // The identity manager that this instance uses. May be null in tests, but
+  // must otherwise outlive this instance.
+  raw_ptr<signin::IdentityManager> identity_manager_;
+
   // May be null in tests, but must otherwise outlive this instance.
-  raw_ptr<syncer::SyncService> sync_service_ = nullptr;
+  raw_ptr<syncer::SyncService> sync_service_;
 
   // Make sure to get notified about changes to `AddressAutofillTable` via sync.
   base::ScopedObservation<AutofillWebDataService,

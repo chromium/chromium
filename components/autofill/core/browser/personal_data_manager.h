@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PERSONAL_DATA_MANAGER_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -33,7 +32,6 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class Profile;
@@ -120,7 +118,6 @@ class PersonalDataManager : public KeyedService,
   // The (Address|Payments)DataManager classes are responsible for handling
   // address/payments specific functionality. All new address or payments
   // specific code should go through them.
-  // TODO(b/322170538): Migrate existing callers.
   AddressDataManager& address_data_manager() { return *address_data_manager_; }
   const AddressDataManager& address_data_manager() const {
     return *address_data_manager_;
@@ -140,10 +137,6 @@ class PersonalDataManager : public KeyedService,
   // history. Consider moving the observer there.
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
-
-  // Returns the account info of currently signed-in user, or std::nullopt if
-  // the user is not signed-in or the identity manager is not available.
-  std::optional<CoreAccountInfo> GetPrimaryAccountInfo() const;
 
   // Adds a listener to be notified of PersonalDataManager events.
   virtual void AddObserver(PersonalDataManagerObserver* observer);
@@ -277,9 +270,6 @@ class PersonalDataManager : public KeyedService,
   // TODO(b/322170538): Move to `address_data_manager()`. Since it depends on
   // the observer, this requires splitting the observer first.
   std::unique_ptr<AddressDataCleaner> address_data_cleaner_;
-
-  // The identity manager that this instance uses. Must outlive this instance.
-  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};

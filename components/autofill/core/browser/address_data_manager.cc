@@ -73,6 +73,7 @@ AddressDataManager::AddressDataManager(
     const std::string& app_locale)
     : variation_country_code_(std::move(variation_country_code)),
       webdata_service_(webdata_service),
+      identity_manager_(identity_manager),
       sync_service_(sync_service),
       notify_pdm_observers_(std::move(notify_pdm_observers)),
       app_locale_(app_locale) {
@@ -84,10 +85,10 @@ AddressDataManager::AddressDataManager(
     webdata_service_observer_.Observe(webdata_service_.get());
   }
 
-  if (sync_service_ && identity_manager) {
+  if (sync_service_ && identity_manager_) {
     contact_info_precondition_checker_ =
         std::make_unique<ContactInfoPreconditionChecker>(
-            sync_service_, identity_manager,
+            sync_service_, identity_manager_,
             /*on_precondition_changed=*/base::DoNothing());
   }
 
@@ -589,6 +590,16 @@ void AddressDataManager::SetAutofillSelectableTypeEnabled(bool enabled) {
     sync_service_->GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kAutofill, enabled);
   }
+}
+
+std::optional<CoreAccountInfo> AddressDataManager::GetPrimaryAccountInfo()
+    const {
+  if (identity_manager_ &&
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return identity_manager_->GetPrimaryAccountInfo(
+        signin::ConsentLevel::kSignin);
+  }
+  return std::nullopt;
 }
 
 void AddressDataManager::CancelPendingQuery(
