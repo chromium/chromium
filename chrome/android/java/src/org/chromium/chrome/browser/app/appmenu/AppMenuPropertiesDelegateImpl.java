@@ -553,10 +553,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                                 && shouldShowWebContentsDependentMenuItem(currentTab)
                                 && PageZoomCoordinator.shouldShowMenuItem());
 
-        // Disable find in page on the native NTP or on Start surface.
-        menu.findItem(R.id.find_in_page_id)
-                .setVisible(
-                        isCurrentTabNotNull && shouldShowWebContentsDependentMenuItem(currentTab));
+        // Disable find in page on the native NTP (except for PDF native page) or on Start surface.
+        updateFindInPageMenuItem(menu, currentTab);
 
         // Prepare translate menu button.
         prepareTranslateMenuItem(menu, currentTab);
@@ -821,8 +819,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
     /**
      * @param currentTab The currentTab for which the app menu is showing.
-     * @return Whether the currentTab should show an app menu item that requires a webContents.
-     *         This will return false for the Start service or native NTP, and true otherwise.
+     * @return Whether the currentTab should show an app menu item that requires a webContents. This
+     *     will return false for the Start surface or native NTP, and true otherwise.
      */
     protected boolean shouldShowWebContentsDependentMenuItem(@NonNull Tab currentTab) {
         return !currentTab.isNativePage() && currentTab.getWebContents() != null;
@@ -1255,6 +1253,23 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             startPriceTrackingMenuItem.setVisible(true);
             stopPriceTrackingMenuItem.setVisible(false);
         }
+    }
+
+    /**
+     * Updates the find in page menu item's state.
+     *
+     * @param menu {@link Menu} for find in page.
+     * @param currentTab Current tab being displayed.
+     */
+    private void updateFindInPageMenuItem(Menu menu, @Nullable Tab currentTab) {
+        MenuItem findInPageMenuRow = menu.findItem(R.id.find_in_page_id);
+        // PDF native page should show find in page menu item.
+        boolean itemVisible =
+                currentTab != null
+                        && (shouldShowWebContentsDependentMenuItem(currentTab)
+                                || (currentTab.isNativePage()
+                                        && currentTab.getNativePage().isPdf()));
+        findInPageMenuRow.setVisible(itemVisible);
     }
 
     /**
