@@ -49,6 +49,17 @@ async function navigateToRequestedUrl() {
   return tab;
 }
 
+async function cleanUpState() {
+  // Clear all user script registrations.
+  await chrome.userScripts.unregister();
+
+  // Clear all user script world configurations.
+  const worldConfigs = await chrome.userScripts.getWorldConfigurations();
+  for (const config of worldConfigs) {
+    await chrome.userScripts.resetWorldConfiguration(config.worldId);
+  }
+}
+
 chrome.test.runTests([
   async function UserScriptWorld_worldIdValidation() {
     await chrome.test.assertPromiseRejects(
@@ -89,7 +100,7 @@ chrome.test.runTests([
   // Tests that a registered user script in the USER_SCRIPT world can send or
   // receive messages when messaging is enabled.
   async function UserScriptWorld_messagingEnabled() {
-    await chrome.userScripts.unregister();
+    await cleanUpState();
 
     // Verify user script can send messages.
     chrome.runtime.onUserScriptMessage.addListener(
@@ -135,7 +146,7 @@ chrome.test.runTests([
   // Tests that a registered user script in the MAIN world cannot send or
   // receive messages when messaging is enabled.
   async function mainWorld_messagingAlwaysDisabled() {
-    await chrome.userScripts.unregister();
+    await cleanUpState();
 
     // Register a user script in the MAIN world.
     const userScripts = [{
@@ -164,7 +175,7 @@ chrome.test.runTests([
 
   // Test that enabling messaging affects all registered scripts.
   async function messagingEnabled_MultipleScripts() {
-    await chrome.userScripts.unregister();
+    await cleanUpState();
 
     // Verify all scripts sent messages.
     let hellocount = 0;
@@ -198,7 +209,7 @@ chrome.test.runTests([
   // Tests that configuring the user script world affects scripts registered in
   // the USER_SCRIPT world.
   async function configureCsp_UserScriptWorld() {
-    await chrome.userScripts.unregister();
+    await cleanUpState();
 
     // Register a user script in the USER_SCRIPT world (default).
     let userScripts =
@@ -231,7 +242,7 @@ chrome.test.runTests([
   // Tests that configuring the user script world does not affect scripts
   // registered in the MAIN world.
   async function configureCsp_MainWorldNotAffected() {
-    await chrome.userScripts.unregister();
+    await cleanUpState();
 
     // Register a user script in the USER_SCRIPT world (default) with a script
     // that changes the doc title if it can eval() some code.
@@ -261,7 +272,7 @@ chrome.test.runTests([
   // Verify that multiple user script worlds are unique and can each have a
   // different CSP specified.
   async function configureWorld_MultipleWorldsAreUnique_Csp() {
-    await chrome.userScripts.unregister();
+    await cleanUpState();
 
     // Configure "world 1" to allow eval.
     await chrome.userScripts.configureWorld(
@@ -312,7 +323,7 @@ chrome.test.runTests([
   // Verify that multiple user script worlds are unique and can each have a
   // different value for whether messaging APIs are exposed.
   async function configureWorld_MultipleWorldsAreUnique_Messaging() {
-    await chrome.userScripts.unregister();
+    await cleanUpState();
 
     // Configure "world 1" to allow messaging APIs.
     await chrome.userScripts.configureWorld(
@@ -360,6 +371,33 @@ chrome.test.runTests([
                            tab.title);
     chrome.test.assertTrue(tab.title.includes('world 2: messaging disabled'),
                            tab.title);
+    chrome.test.succeed();
+  },
+
+  async function canOnlyConfigureUpTo100UserScriptWorlds() {
+    await cleanUpState();
+
+    const worldConfigTemplate =
+        {
+          worldId: 'world #',
+          csp: 'test',
+        };
+    // Register 100 user script world configurations. This should succeed
+    // (100 is the current limit).
+    for (let i = 0; i < 100; ++i) {
+      let worldConfig = { ...worldConfigTemplate };
+      worldConfig.worldId += i;
+      await chrome.userScripts.configureWorld(worldConfig);
+    }
+
+    // Attempting to register one more should fail.
+    let worldConfig = { ...worldConfigTemplate };
+    worldConfig.worldId += '100';
+    await chrome.test.assertPromiseRejects(
+        chrome.userScripts.configureWorld(worldConfig),
+        'Error: You may only configure up to 100 ' +
+            'individual user script worlds.');
+
     chrome.test.succeed();
   },
 ]);

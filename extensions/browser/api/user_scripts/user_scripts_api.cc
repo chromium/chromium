@@ -8,8 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
 #include "extensions/browser/api/scripting/scripting_constants.h"
@@ -598,11 +600,19 @@ ExtensionFunction::ResponseAction UserScriptsConfigureWorldFunction::Run() {
     return RespondNow(Error(std::move(error)));
   }
 
-  // TODO(https://crbug.com/331680187): Add some reasonable limit to the number
-  // of worlds an extension may create and configure.
+  UserScriptWorldConfigurationManager* config_manager =
+      UserScriptWorldConfigurationManager::Get(browser_context());
+  static constexpr size_t kMaxNumberOfRegisteredWorlds = 100;
+  if (config_manager->GetAllUserScriptWorlds(extension()->id()).size() >=
+      kMaxNumberOfRegisteredWorlds) {
+    return RespondNow(
+        Error(base::StringPrintf("You may only configure up to %" PRIuS
+                                 " individual user script worlds.",
+                                 kMaxNumberOfRegisteredWorlds)));
+  }
 
-  UserScriptWorldConfigurationManager::Get(browser_context())
-      ->SetUserScriptWorldInfo(*extension(), world_id, csp, enable_messaging);
+  config_manager->SetUserScriptWorldInfo(*extension(), world_id, csp,
+                                         enable_messaging);
 
   return RespondNow(NoArguments());
 }
