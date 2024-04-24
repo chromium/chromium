@@ -326,6 +326,13 @@ bool DawnContextProvider::Initialize(
   }
   adapter_options.nextInChain = &toggles_desc;
 
+#if BUILDFLAG(IS_ANDROID)
+  if (adapter_options.backendType == wgpu::BackendType::Vulkan) {
+    features.push_back(wgpu::FeatureName::StaticSamplers);
+    features.push_back(wgpu::FeatureName::YCbCrVulkanSamplers);
+  }
+#endif
+
 #if BUILDFLAG(IS_WIN)
   if (adapter_options.backendType == wgpu::BackendType::D3D11) {
     features.push_back(wgpu::FeatureName::D3D11MultithreadProtected);
