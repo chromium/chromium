@@ -415,6 +415,7 @@ config("delayloads") {
     "/DELAYLOAD:api-ms-win-core-winrt-l1-1-0.dll",
     "/DELAYLOAD:api-ms-win-core-winrt-string-l1-1-0.dll",
     "/DELAYLOAD:advapi32.dll",
+    "/DELAYLOAD:bcryptprimitives.dll",
     "/DELAYLOAD:comctl32.dll",
     "/DELAYLOAD:comdlg32.dll",
     "/DELAYLOAD:credui.dll",

@@ -197,6 +197,16 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "1.14.3 -> 1.15.0"
 
+[[audits.bytemuck_derive]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+version = "1.6.0"
+notes = """
+Grepped for \"unsafe\", \"crypt\", \"cipher\", \"fs\", \"net\" - there were no
+hits except for 8 occurrences of `unsafe`.  Additional `unsafe` review comments
+can be found in https://crrev.com/c/5445719.
+"""
+
 [[audits.bytes]]
 who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -540,6 +550,22 @@ The CL description contains a link to a Google-internal document with audit deta
 """
 
 [[audits.font-types]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-1"]
+version = "0.5.2"
+notes = """
+Grepped for \"unsafe\", \"crypt\", \"cipher\", \"fs\", \"net\" - there were no
+hits except for 3 `unsafe impl bytemuck::SomeTrait for ...`.  Each `impl` had a
+reasonable safety comment and there were no actual `unsafe` blocks, so I think
+this can be treated as `ub-risk-1`.  Additional `unsafe` review comments can be
+found in https://crrev.com/c/5445719.
+
+For overall `safe-to-deploy` and `does-not-implement-crypto` I am mostly
+relying on certification by the Chromium engineers who work on the library
+(mostly drott@chromium.org).
+"""
+
+[[audits.font-types]]
 who = "danakj <danakj@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "0.4.2 -> 0.4.3"
@@ -807,6 +833,19 @@ notes = """
 Reviewed in https://crrev.com/c/5171063
 
 Previously reviewed during security review and the audit is grandparented in.
+"""
+
+[[audits.read-fonts]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.19.0"
+notes = """
+Grepped for \"unsafe\", \"crypt\", \"cipher\", \"fs\", \"net\" - there were no hits
+(except for a benign \"fs\" hit in a comment).
+
+For overall `safe-to-deploy` and `does-not-implement-crypto` I am mostly
+relying on certification by the Chromium engineers who work on the library
+(mostly drott@chromium.org).
 """
 
 [[audits.regex]]
@@ -1091,6 +1130,19 @@ criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 delta = "0.2.0 -> 0.2.1"
 notes = """
 Reviewed in https://crrev.com/c/5385822
+"""
+
+[[audits.skrifa]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+version = "0.19.0"
+notes = """
+Grepped for \"unsafe\", \"crypt\", \"cipher\", \"fs\", \"net\" - there were no hits
+(except for benign \"fs\" hit in `skrifa-0.19.0/src/color/traversal_tests/mod.rs`).
+
+For overall `safe-to-deploy` and `does-not-implement-crypto` I am mostly
+relying on certification by the Chromium engineers who work on the library
+(mostly drott@chromium.org).
 """
 
 [[audits.skrifa]]

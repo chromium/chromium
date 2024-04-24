@@ -43,9 +43,9 @@ if (use_typeface_fontations) {
     cxx_bindings = [ "//third_party/skia/src/ports/fontations/src/ffi.rs" ]
     deps = [
       ":path_bridge",
-      "//third_party/rust/font_types/v0_4:lib",
-      "//third_party/rust/read_fonts/v0_15:lib",
-      "//third_party/rust/skrifa/v0_15:lib",
+      "//third_party/rust/font_types/v0_5:lib",
+      "//third_party/rust/read_fonts/v0_19:lib",
+      "//third_party/rust/skrifa/v0_19:lib",
     ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [

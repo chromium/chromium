@@ -59,6 +59,9 @@ criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 [policy."bytemuck:1.15.0"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
+[policy."bytemuck_derive:1.6.0"]
+criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
+
 [policy."bytes:1.6.0"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
@@ -98,7 +101,7 @@ criteria = ["does-not-implement-crypto", "safe-to-run"]
 [policy."fend-core:1.4.6"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."font-types:0.4.3"]
+[policy."font-types:0.5.2"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
 [policy."getrandom:0.2.14"]
@@ -170,7 +173,7 @@ criteria = ["does-not-implement-crypto", "safe-to-run"]
 [policy."rand_pcg:0.3.1"]
 criteria = ["does-not-implement-crypto", "safe-to-run"]
 
-[policy."read-fonts:0.15.6"]
+[policy."read-fonts:0.19.0"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
 [policy."regex-automata:0.4.6"]
@@ -221,7 +224,7 @@ criteria = ["does-not-implement-crypto", "safe-to-run"]
 [policy."serde_json_lenient:0.2.1"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
-[policy."skrifa:0.15.5"]
+[policy."skrifa:0.19.0"]
 criteria = ["does-not-implement-crypto", "safe-to-deploy", "ub-risk-2"]
 
 [policy."small_ctor:0.1.1"]
@@ -345,16 +348,6 @@ version = "0.6.4"
 criteria = "does-not-implement-crypto"
 notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
 
-[[exemptions.read-fonts]]
-version = "0.15.6"
-criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-notes = """
-0.15.2 grandparented-in when setting up `cargo vet` in Jan 2024.
-
-Exemption updated to 0.15.5 when updating the crate in Feb 2024.
-Exemption updated to 0.15.6 when updating the crate in Feb 2024.
-"""
-
 [[exemptions.ryu]]
 version = "1.0.17"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
@@ -365,15 +358,6 @@ Delta audit of 1.0.15 -> 1.0.16 has been done in Jan 2024, but because of a
 lack of a fully-audited baseline nothing was recorded in audits.toml
 
 Exemption updated to 1.0.17 in Feb 2024.
-"""
-
-[[exemptions.skrifa]]
-version = "0.15.5"
-criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
-notes = """
-0.15.2 grandparented-in when setting up `cargo vet` in Jan 2024.
-
-Exemption updated to 0.15.5 when updating the crate in Feb 2024.
 """
 
 [[exemptions.syn]]

@@ -207,7 +207,7 @@ extensions/common/manifest_handlers 1 1
 extensions/shell/common 1 1
 google_apis/gaia 1 1
 gpu/config 1 1
-infra 5 3
+infra 4 2
 infra/config/generated/luci 1 1
 infra/config/gn_args 1 1
 infra/config/subprojects/webrtc/consoles 1 1
@@ -693,7 +693,7 @@ third_party/rust/chromium_crates_io/vendor/rand_chacha-0.3.1 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4 4 1
 third_party/rust/chromium_crates_io/vendor/rand_core-0.6.4/src 3 1
 third_party/rust/chromium_crates_io/vendor/rand_pcg-0.3.1 4 1
-third_party/rust/chromium_crates_io/vendor/read-fonts-0.15.6/src/tables 2 1
+third_party/rust/chromium_crates_io/vendor/read-fonts-0.19.0/src/tables 2 1
 third_party/rust/chromium_crates_io/vendor/regex-1.10.4 1 1
 third_party/rust/chromium_crates_io/vendor/regex-1.10.4/src 1 1
 third_party/rust/chromium_crates_io/vendor/regex-1.10.4/tests 7 6
@@ -719,7 +719,7 @@ third_party/rust/chromium_crates_io/vendor/serde_derive-1.0.198 1 1
 third_party/rust/chromium_crates_io/vendor/serde_json-1.0.116 6 1
 third_party/rust/chromium_crates_io/vendor/serde_json-1.0.116/.github/workflows 1 1
 third_party/rust/chromium_crates_io/vendor/serde_json_lenient-0.2.1 1 1
-third_party/rust/chromium_crates_io/vendor/skrifa-0.15.5/src 2 2
+third_party/rust/chromium_crates_io/vendor/skrifa-0.19.0/src 1 1
 third_party/rust/chromium_crates_io/vendor/static_assertions-1.1.0 5 2
 third_party/rust/chromium_crates_io/vendor/static_assertions-1.1.0/src 2 1
 third_party/rust/chromium_crates_io/vendor/strum-0.25.0/src 1 1

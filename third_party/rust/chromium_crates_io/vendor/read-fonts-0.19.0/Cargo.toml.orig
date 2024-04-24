@@ -1,0 +1,25 @@
+[package]
+name = "read-fonts"
+version = "0.19.0"
+edition = "2021"
+license = "MIT/Apache-2.0"
+description = "Reading OpenType font files."
+repository = "https://github.com/googlefonts/fontations"
+readme = "README.md"
+categories = ["text-processing", "parsing", "graphics"]
+
+[features]
+std = []
+codegen_test = []
+scaler_test = []
+traversal = ["std"]
+default = ["traversal"]
+serde = ["dep:serde", "font-types/serde"]
+
+[dependencies]
+font-types = { version = "0.5.2", path = "../font-types", features = ["bytemuck"] }
+serde = { version = "1.0", features = ["derive"], optional = true }
+bytemuck = { workspace = true }
+
+[dev-dependencies]
+font-test-data = { path = "../font-test-data" }

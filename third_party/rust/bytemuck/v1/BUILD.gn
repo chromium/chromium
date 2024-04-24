@@ -44,4 +44,15 @@ cargo_crate("lib") {
   executable_configs += [ "//build/config/compiler:no_chromium_code" ]
   proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
   proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [ "//third_party/rust/bytemuck_derive/v1:lib" ]
+  features = [
+    "bytemuck_derive",
+    "derive",
+    "min_const_generics",
+  ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
 }
