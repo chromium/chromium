@@ -66,8 +66,8 @@ class ProfileIdServiceFactoryTest : public testing::Test {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     store_.set_policy_data_for_testing(std::move(policy_data));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    fake_statistics_provider_.SetMachineStatistic(
-        ash::system::kSerialNumberKeyForTest, kFakeDeviceID);
+    fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                  kFakeDeviceID);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) ||

@@ -24,12 +24,6 @@ const base::FilePath::CharType kDefaultAppOrderFileName[] =
 const base::FilePath::CharType kMachineHardwareInfoFileName[] =
     FILE_PATH_LITERAL("/tmp/machine-info");
 
-const base::FilePath::CharType kVpdFileName[] = FILE_PATH_LITERAL(
-    "/mnt/stateful_partition/unencrypted/cache/vpd/filtered.txt");
-
-const base::FilePath::CharType kVpdStatusFileName[] = FILE_PATH_LITERAL(
-    "/mnt/stateful_partition/unencrypted/cache/vpd/status.txt");
-
 const base::FilePath::CharType kUptimeFileName[] =
     FILE_PATH_LITERAL("/proc/uptime");
 
@@ -79,12 +73,6 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
     case FILE_MACHINE_INFO:
       *result = base::FilePath(kMachineHardwareInfoFileName);
-      break;
-    case FILE_VPD:
-      *result = base::FilePath(kVpdFileName);
-      break;
-    case FILE_VPD_STATUS:
-      *result = base::FilePath(kVpdStatusFileName);
       break;
     case FILE_UPTIME:
       *result = base::FilePath(kUptimeFileName);
@@ -151,8 +139,6 @@ void RegisterStubPathOverrides(const base::FilePath& stubs_dir) {
   base::PathService::OverrideAndCreateIfNeeded(
       FILE_MACHINE_INFO, parent.AppendASCII("stub_machine-info"), is_absolute,
       create);
-  base::PathService::OverrideAndCreateIfNeeded(
-      FILE_VPD, parent.AppendASCII("stub_vpd"), is_absolute, create);
   base::PathService::Override(
       DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS,
       parent.AppendASCII("stub_device_local_account_extensions"));

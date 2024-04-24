@@ -1849,8 +1849,8 @@ IN_PROC_BROWSER_TEST_F(NetworkPolicyApplicationTest,
                        DevicePolicyProfileWideVariableExpansions) {
   const std::string kSerialNumber = "test_serial";
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, kSerialNumber);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                kSerialNumber);
 
   Add8021xWifiService(kServiceWifi1, "DeviceLevelWifiGuidOrig",
                       "DeviceLevelWifiSsid", shill::kStateIdle);

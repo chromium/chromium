@@ -80,8 +80,8 @@ ReportingServerConnector::TestEnvironment::TestEnvironment()
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   fake_statistics_provider_ =
       std::make_unique<ash::system::ScopedFakeStatisticsProvider>();
-  fake_statistics_provider_->SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, "fake-serial-number");
+  fake_statistics_provider_->SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                 "fake-serial-number");
 #endif
   device_management_service_ =
       std::make_unique<policy::DeviceManagementService>(

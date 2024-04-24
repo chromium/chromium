@@ -57,8 +57,8 @@ class EnterpriseDeviceAttributesTest
  public:
   EnterpriseDeviceAttributesTest()
       : ForceInstalledAffiliatedExtensionApiTest(GetParam()) {
-    fake_statistics_provider_.SetMachineStatistic(
-        ash::system::kSerialNumberKeyForTest, kSerialNumber);
+    fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                  kSerialNumber);
   }
 
  protected:

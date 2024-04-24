@@ -22,8 +22,6 @@ enum {
   FILE_DEFAULT_APP_ORDER,  // Full path to the json file that defines the
                            // default app order.
   FILE_MACHINE_INFO,       // Full path to machine hardware info file.
-  FILE_VPD,                // Full path to VPD file.
-  FILE_VPD_STATUS,         // Full path to VPD status file.
   FILE_UPTIME,             // Full path to the file via which the kernel
                            // exposes the current device uptime.
   FILE_UPDATE_REBOOT_NEEDED_UPTIME,  // Full path to a file in which Chrome can

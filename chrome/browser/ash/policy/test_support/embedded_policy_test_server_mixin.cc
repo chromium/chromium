@@ -267,7 +267,7 @@ void EmbeddedPolicyTestServerMixin::ConfigureFakeStatisticsForZeroTouch(
     system::ScopedFakeStatisticsProvider* provider) {
   provider->SetMachineStatistic(system::kRlzBrandCodeKey,
                                 test::kTestRlzBrandCodeKey);
-  provider->SetMachineStatistic(system::kSerialNumberKeyForTest,
+  provider->SetMachineStatistic(system::kSerialNumberKey,
                                 test::kTestSerialNumber);
   provider->SetMachineStatistic(system::kHardwareClassKey,
                                 test::kTestHardwareClass);

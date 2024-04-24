@@ -168,7 +168,7 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
       // The fake serial number must be set before |configuration_| is
       // constructed below.
       fake_statistics_provider->SetMachineStatistic(
-          ash::system::kSerialNumberKeyForTest, "fake_serial_number");
+          ash::system::kSerialNumberKey, "fake_serial_number");
     }
   };
   ScopedFakeSerialNumber fake_serial_number_;

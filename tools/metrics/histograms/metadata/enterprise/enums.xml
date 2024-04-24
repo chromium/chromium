@@ -2452,12 +2452,6 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Explore"/>
 </enum>
 
-<enum name="VPDCacheReadResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="File missing"/>
-  <int value="2" label="Parsing failed"/>
-</enum>
-
 <enum name="WmiQueryError">
   <int value="0" label="Failed to create instance"/>
   <int value="1" label="Failed to initialize product list"/>

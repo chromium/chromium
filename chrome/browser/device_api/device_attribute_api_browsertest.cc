@@ -28,8 +28,8 @@ class DeviceAttributeAPIUnsetTest : public policy::DevicePolicyCrosBrowserTest {
     DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
 
     // Init machine statistic.
-    fake_statistics_provider_.SetMachineStatistic(
-        ash::system::kSerialNumberKeyForTest, std::string());
+    fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                  std::string());
   }
 
  private:
@@ -74,8 +74,8 @@ class DeviceAttributeAPITest : public policy::DevicePolicyCrosBrowserTest {
     RefreshDevicePolicy();
 
     // Init machine statistic.
-    fake_statistics_provider_.SetMachineStatistic(
-        ash::system::kSerialNumberKeyForTest, kSerialNumber);
+    fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                  kSerialNumber);
   }
 
  private:

@@ -157,11 +157,16 @@ extern const char kKeyboardMechanicalLayoutKey[];
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
 extern const char kAttestedDeviceIdKey[];
 
-// Serial number key (VPD v2+ devices, Samsung: caroline and later) for use in
-// tests. Outside of tests GetEnterpriseMachineID() is the backward-compatible
-// way to obtain the serial number.
+// Serial number key (legacy VPD devices). In most cases,
+// GetEnterpriseMachineID() is the appropriate way to obtain the serial number.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
-extern const char kSerialNumberKeyForTest[];
+extern const char kLegacySerialNumberKey[];
+
+// Serial number key (VPD v2+ devices, Samsung: caroline and later). In most
+// cases, GetEnterpriseMachineID() is the appropriate way to obtain the serial
+// number.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)
+extern const char kSerialNumberKey[];
 
 // Display Profiles key.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM)

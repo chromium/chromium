@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/system/statistics_provider_impl.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -19,9 +20,10 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
+#include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
@@ -41,14 +43,8 @@ namespace {
 const char kCrosSystemTool[] = "/usr/bin/crossystem";
 const char kCrosSystemValueError[] = "(error)";
 
-// File to get ECHO coupon info from, and key/value delimiters of
-// the file.
-const char kEchoCouponFile[] =
-    "/mnt/stateful_partition/unencrypted/cache/vpd/echo/vpd_echo.txt";
-
-const char kVpdRoPartitionStatusKey[] = "RO_VPD_status";
-const char kVpdRwPartitionStatusKey[] = "RW_VPD_status";
-const char kVpdPartitionStatusValid[] = "0";
+// Path to the tool to get VPD info.
+const char kVpdTool[] = "/usr/sbin/vpd";
 
 // The location of OEM manifest file used to trigger OOBE flow for kiosk mode.
 const base::CommandLine::CharType kOemManifestFilePath[] =
@@ -73,6 +69,9 @@ const char kKeyboardMechanicalLayoutPath[] = "keyboard_mechanical_layout";
 
 // Timeout that we should wait for statistics to get loaded.
 constexpr base::TimeDelta kLoadTimeout = base::Seconds(3);
+
+// A default activation date for providing results in tests.
+constexpr char kDefaultActivateDateStub[] = "2000-01";
 
 // Gets the list from the given `dictionary` by given `key`, and returns it as a
 // string with all list values joined by ','. Returns nullopt if `key` is not
@@ -154,11 +153,6 @@ constexpr std::pair<const char*,
          &GetKeyboardMechanicalLayoutFromRegionalData},
         {kInitialTimezoneKey, &GetInitialTimezoneFromRegionalData}};
 
-void ReportVpdCacheReadResult(
-    StatisticsProviderImpl::VpdCacheReadResult result) {
-  base::UmaHistogramEnumeration("Enterprise.VPDCacheReadResult", result);
-}
-
 base::FilePath GetFilePathIgnoreFailure(int key) {
   base::FilePath file_path;
   base::PathService::Get(key, &file_path);
@@ -173,57 +167,37 @@ bool HasOemPrefix(std::string_view name) {
 StatisticsProviderImpl::StatisticsSources CreateDefaultSources() {
   StatisticsProviderImpl::StatisticsSources sources;
   sources.crossystem_tool = base::CommandLine(base::FilePath(kCrosSystemTool));
+  sources.vpd_ro_tool =
+      std::vector<std::string>{kVpdTool, "-i", "RO_VPD", "-g"};
+  sources.vpd_rw_tool =
+      std::vector<std::string>{kVpdTool, "-i", "RW_VPD", "-g"};
   sources.machine_info_filepath = GetFilePathIgnoreFailure(FILE_MACHINE_INFO);
-  sources.vpd_echo_filepath = base::FilePath(kEchoCouponFile);
-  sources.vpd_filepath = GetFilePathIgnoreFailure(FILE_VPD);
-  sources.vpd_status_filepath = GetFilePathIgnoreFailure(FILE_VPD_STATUS);
   sources.oem_manifest_filepath = base::FilePath(kOemManifestFilePath);
   sources.cros_regions_filepath = base::FilePath(kCrosRegions);
   return sources;
 }
 
-// Reads `vpd_status_file`, and loads and checks VPD key-value statuses from it.
-// Returns VpdStatus according to file existence and content.
-StatisticsProvider::VpdStatus LoadVpdStatusFile(
-    const base::FilePath& vpd_status_file) {
-  using Status = StatisticsProvider::VpdStatus;
-  if (!base::PathExists(vpd_status_file)) {
-    return Status::kInvalid;
+bool GetVpdResult(const std::vector<std::string>& command_template,
+                  const std::string& key,
+                  std::string* output) {
+  CHECK(!command_template.empty());
+
+  std::vector<std::string> command = command_template;
+  command.push_back(key);
+
+  if (!base::PathExists(base::FilePath(command[0]))) {
+    LOG(WARNING) << "VPD tool not found: " << command[0];
+    return false;
   }
-
-  NameValuePairsParser::NameValueMap map;
-  NameValuePairsParser parser(&map);
-
-  if (!parser.ParseNameValuePairsFromFile(vpd_status_file,
-                                          NameValuePairsFormat::kVpdDump)) {
-    // Failed to parse one of the values in the status file. Let's still check
-    // if partitions statuses are present. It is safe to ignore malformed
-    // values because a missing key is considered as invalid state.
-    LOG(ERROR) << "Failed to parse VPD status file: " << vpd_status_file;
+  if (!base::GetAppOutput(command, output)) {
+    // This happens when keys don't exist, which is OK.
+    VLOG(2) << "Error retrieving VPD key: " << base::JoinString(command, " ");
+    return false;
   }
-
-  const auto ro_vpd_it = map.find(kVpdRoPartitionStatusKey);
-  const bool is_ro_vpd_valid =
-      ro_vpd_it != map.end() && ro_vpd_it->second == kVpdPartitionStatusValid;
-  LOG_IF(ERROR, !is_ro_vpd_valid)
-      << "RO_VPD partition has non-valid status: '"
-      << (ro_vpd_it == map.end() ? "value missing" : ro_vpd_it->second) << "'";
-
-  const auto rw_vpd_it = map.find(kVpdRwPartitionStatusKey);
-  const bool is_rw_vpd_valid =
-      rw_vpd_it != map.end() && rw_vpd_it->second == kVpdPartitionStatusValid;
-  LOG_IF(ERROR, !is_rw_vpd_valid)
-      << "RW_VPD partition has non-valid status: '"
-      << (rw_vpd_it == map.end() ? "value missing" : rw_vpd_it->second) << "'";
-
-  return is_ro_vpd_valid
-             ? (is_rw_vpd_valid ? Status::kValid : Status::kRwInvalid)
-             : (is_rw_vpd_valid ? Status::kRoInvalid : Status::kInvalid);
+  return true;
 }
 
 }  // namespace
-
-const char kMetricVpdCacheReadResult[] = "Enterprise.VPDCacheReadResult";
 
 StatisticsProviderImpl::StatisticsSources::StatisticsSources() = default;
 
@@ -444,7 +418,7 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
   }
 
   LoadMachineInfoFile();
-  LoadVpdFiles();
+  LoadVpd();
 
   // Ensure that the hardware class key is present with the expected
   // key name, and if it couldn't be retrieved, that the value is "unknown".
@@ -558,40 +532,70 @@ void StatisticsProviderImpl::LoadMachineInfoFile() {
                                    NameValuePairsFormat::kMachineInfo);
 }
 
-void StatisticsProviderImpl::LoadVpdFiles() {
-  NameValuePairsParser parser(&machine_info_);
+void StatisticsProviderImpl::LoadVpd() {
+  // Allow-list of keys we want to ingest. This avoids parsing problems with
+  // unexpected/undesired keys, and collisions between disparate tools.
+  constexpr std::array ro_keys{
+      kCustomizationIdKey,
+      kDockMacAddressKey,
+      kEthernetMacAddressKey,
+      kHardwareClassKey,
+      kManufactureDateKey,
+      kRlzBrandCodeKey,
+      kRegionKey,
+      kLegacySerialNumberKey,
+      kSerialNumberKey,
+      kInitialLocaleKey,
+      kInitialTimezoneKey,
+      kKeyboardLayoutKey,
+      kKeyboardMechanicalLayoutKey,
+      kAttestedDeviceIdKey,
+      kDisplayProfilesKey,
+  };
+  constexpr std::array rw_keys{
+      kActivateDateKey,      kBlockDevModeKey,
+      kCheckEnrollmentKey,   kShouldSendRlzPingKey,
+      kRlzEmbargoEndDateKey, kEnterpriseManagementEmbargoEndDateKey,
+      kOffersCouponCodeKey,  kOffersGroupCodeKey,
+  };
 
-  parser.ParseNameValuePairsFromFile(sources_.vpd_echo_filepath,
-                                     NameValuePairsFormat::kVpdDump);
+  bool found_ro = false, found_rw = false;
+  for (const std::string& ro_key : ro_keys) {
+    std::string output;
+    if (GetVpdResult(sources_.vpd_ro_tool, ro_key, &output)) {
+      machine_info_[ro_key] = output;
+      found_ro = true;
+    }
+  }
+  for (const std::string& rw_key : rw_keys) {
+    std::string output;
+    if (GetVpdResult(sources_.vpd_rw_tool, rw_key, &output)) {
+      machine_info_[rw_key] = output;
+      found_rw = true;
+    }
+  }
 
-  if (!base::PathExists(sources_.vpd_filepath)) {
+  if (!found_ro && !found_rw) {
     if (base::SysInfo::IsRunningOnChromeOS()) {
-      // The actual VPD file is missing and there's nothing to load. Record the
-      // metric and continue with loading the next source.
-      ReportVpdCacheReadResult(VpdCacheReadResult::KMissing);
-      LOG(ERROR) << "Missing FILE_VPD: " << sources_.vpd_filepath;
+      // We couldn't find anything in VPD. Continue with loading the next
+      // source.
+      LOG(ERROR) << "Couldn't find any expected VPD keys";
       vpd_status_ = VpdStatus::kInvalid;
       return;
     } else {
-      std::string stub_contents = "\"ActivateDate\"=\"2000-01\"\n";
-      if (!base::WriteFile(sources_.vpd_filepath, stub_contents)) {
-        PLOG(ERROR) << "Error writing VPD stub " << sources_.vpd_filepath;
-      }
+      machine_info_[kActivateDateKey] = kDefaultActivateDateStub;
     }
   }
 
-  const bool vpd_parse_result = parser.ParseNameValuePairsFromFile(
-      sources_.vpd_filepath, NameValuePairsFormat::kVpdDump);
-  if (base::SysInfo::IsRunningOnChromeOS()) {
-    if (vpd_parse_result) {
-      ReportVpdCacheReadResult(VpdCacheReadResult::kSuccess);
-    } else {
-      ReportVpdCacheReadResult(VpdCacheReadResult::kParseFailed);
-      LOG(ERROR) << "Failed to parse FILE_VPD: " << sources_.vpd_filepath;
-    }
+  if (found_ro && found_rw) {
+    vpd_status_ = VpdStatus::kValid;
+  } else if (found_ro) {
+    vpd_status_ = VpdStatus::kRwInvalid;
+  } else if (found_rw) {
+    vpd_status_ = VpdStatus::kRoInvalid;
+  } else {
+    vpd_status_ = VpdStatus::kInvalid;
   }
-
-  vpd_status_ = LoadVpdStatusFile(sources_.vpd_status_filepath);
 
   LOG_IF(ERROR, vpd_status_ != VpdStatus::kValid)
       << "Detected invalid VPD state: "

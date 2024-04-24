@@ -628,8 +628,8 @@ class DeepScanningReportingTest : public DeepScanningRequestTest {
         profile_->GetPrefs(), true);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    fake_statistics_provider_.SetMachineStatistic(
-        ash::system::kSerialNumberKeyForTest, "fake_serial_number");
+    fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                  "fake_serial_number");
 #endif
 
     enterprise_connectors::test::SetAnalysisConnector(

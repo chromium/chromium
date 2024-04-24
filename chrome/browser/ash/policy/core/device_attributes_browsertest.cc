@@ -101,8 +101,8 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributesTest, ReturnsAttributes) {
       ash::kDeviceHostnameTemplate, base::Value(kFakeHostname));
   policy_helper()->RefreshPolicyAndWaitUntilDeviceCloudPolicyUpdated();
 
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, kFakeSerialNumber);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                kFakeSerialNumber);
 
   // Verify returned attributes correspond to what was set.
   EXPECT_EQ(kFakeDomain, attributes_.GetEnterpriseEnrollmentDomain());

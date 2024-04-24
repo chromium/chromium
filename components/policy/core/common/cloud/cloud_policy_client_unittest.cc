@@ -460,8 +460,8 @@ class CloudPolicyClientTest : public testing::Test {
         client_id_(kClientID),
         policy_type_(dm_protocol::kChromeUserPolicyType) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    fake_statistics_provider_.SetMachineStatistic(
-        ash::system::kSerialNumberKeyForTest, "fake_serial_number");
+    fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                  "fake_serial_number");
 #endif
   }
 

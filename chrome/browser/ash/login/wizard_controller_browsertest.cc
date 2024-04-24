@@ -1119,8 +1119,8 @@ class WizardControllerDeviceStateTest : public WizardControllerFlowTest {
 
  protected:
   WizardControllerDeviceStateTest() {
-    fake_statistics_provider_.SetMachineStatistic(
-        system::kSerialNumberKeyForTest, "test");
+    fake_statistics_provider_.SetMachineStatistic(system::kSerialNumberKey,
+                                                  "test");
     fake_statistics_provider_.SetMachineStatistic(system::kActivateDateKey,
                                                   "2000-01");
     fake_statistics_provider_.SetVpdStatus(
@@ -1865,8 +1865,8 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
 
  protected:
   WizardControllerDeviceStateWithInitialEnrollmentTest() {
-    fake_statistics_provider_.SetMachineStatistic(
-        system::kSerialNumberKeyForTest, "test");
+    fake_statistics_provider_.SetMachineStatistic(system::kSerialNumberKey,
+                                                  "test");
     fake_statistics_provider_.SetMachineStatistic(system::kRlzBrandCodeKey,
                                                   "AABC");
   }

@@ -3231,14 +3231,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.VPDCacheReadResult" enum="VPDCacheReadResult"
-    expires_after="2024-09-01">
-  <owner>vsavu@google.com</owner>
-  <owner>igorcov@chromium.org</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>The result of Chrome reading the VPD cache on Chrome OS.</summary>
-</histogram>
-
 <histogram name="Enterprise.VpdCheck" units="units" expires_after="2023-12-01">
   <owner>igorcov@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>

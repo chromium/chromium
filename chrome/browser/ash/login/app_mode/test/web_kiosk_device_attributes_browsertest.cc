@@ -113,8 +113,8 @@ class WebKioskDeviceAttributesTest : public WebKioskBaseTest {
   }
 
   void SetSerialNumber() {
-    fake_statistics_provider_.SetMachineStatistic(
-        ash::system::kSerialNumberKeyForTest, kDeviceSerialNumber);
+    fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                  kDeviceSerialNumber);
   }
 
   content::WebContents* GetKioskAppWebContents() {

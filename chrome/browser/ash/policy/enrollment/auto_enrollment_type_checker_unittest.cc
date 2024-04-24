@@ -126,14 +126,14 @@ class AutoEnrollmentTypeCheckerTest : public testing::Test {
     SetupInitialEnrollmentEnabled();
 
     fake_statistics_provider_.ClearMachineStatistic(
-        ash::system::kSerialNumberKeyForTest);
+        ash::system::kSerialNumberKey);
   }
 
   void SetupInitialEnrollmentEnabledAndRequired() {
     SetupInitialEnrollmentEnabled();
 
-    fake_statistics_provider_.SetMachineStatistic(
-        ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
+    fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                  kSerialNumberValue);
     fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
                                                   kBrandCodeValue);
     fake_statistics_provider_.SetMachineStatistic(
@@ -390,8 +390,8 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
        DetermineAutoEnrollmentCheckTypeOnFlexWhenTokenPresent) {
   flex_test_helper_.SetUpFlexDevice();
   flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
                                                 kBrandCodeValue);
 
@@ -415,8 +415,8 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
 TEST_F(AutoEnrollmentTypeCheckerTest,
        DetermineAutoEnrollmentCheckTypeNotOnFlexWhenTokenPresent) {
   flex_test_helper_.SetUpFlexEnrollmentTokenConfig();
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
                                                 kBrandCodeValue);
 
@@ -437,8 +437,8 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
 TEST_F(AutoEnrollmentTypeCheckerTest,
        DetermineAutoEnrollmentCheckTypeOnFlexWithoutTokenPresent) {
   flex_test_helper_.SetUpFlexDevice();
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
                                                 kBrandCodeValue);
 
@@ -458,8 +458,8 @@ TEST_F(AutoEnrollmentTypeCheckerTest,
   })";
   flex_test_helper_.SetUpFlexEnrollmentTokenConfig(kEmptyFlexTokenOobeConfig);
   flex_test_helper_.SetUpFlexDevice();
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
                                                 kBrandCodeValue);
 
@@ -968,8 +968,8 @@ TEST_P(
   SetupFREDisabled();
   SetupInitialEnrollmentEnabled();
 
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, "");
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                "");
 
   EXPECT_EQ(AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
                 /*is_system_clock_synchronized=*/false,
@@ -987,8 +987,8 @@ TEST_P(
   SetupFREEnabledButNotRequired();
   SetupInitialEnrollmentEnabled();
 
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
                                                 "");
 
@@ -1008,8 +1008,8 @@ TEST_P(
   SetupFREEnabledButNotRequired();
   SetupInitialEnrollmentEnabled();
 
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
                                                 kBrandCodeValue);
 
@@ -1060,8 +1060,8 @@ TEST_P(
   SetupFREEnabledButNotRequired();
   SetupInitialEnrollmentEnabled();
 
-  fake_statistics_provider_.SetMachineStatistic(
-      ash::system::kSerialNumberKeyForTest, kSerialNumberValue);
+  fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                kSerialNumberValue);
   fake_statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
                                                 kBrandCodeValue);
 

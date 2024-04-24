@@ -198,8 +198,8 @@ class ManagedConfigurationVariablesBase {
  public:
   void DoSetUp(bool is_affiliated) {
     // Set up fake StatisticsProvider.
-    statistics_provider_.SetMachineStatistic(
-        ash::system::kSerialNumberKeyForTest, kTestDeviceSerialNumber);
+    statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                             kTestDeviceSerialNumber);
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
 
     // Set up a fake user and capture its profile.

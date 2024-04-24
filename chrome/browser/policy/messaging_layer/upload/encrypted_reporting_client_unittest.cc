@@ -101,8 +101,8 @@ class EncryptedReportingClientTest : public ::testing::Test {
  protected:
   void SetUp() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    fake_statistics_provider_.SetMachineStatistic(
-        ash::system::kSerialNumberKeyForTest, "fake-serial-number");
+    fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                  "fake-serial-number");
 #endif
 
     memory_resource_ =

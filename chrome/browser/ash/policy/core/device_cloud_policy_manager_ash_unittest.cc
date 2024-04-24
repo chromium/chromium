@@ -184,8 +184,8 @@ class DeviceCloudPolicyManagerAshTest
  protected:
   DeviceCloudPolicyManagerAshTest()
       : state_keys_broker_(&session_manager_client_), store_(nullptr) {
-    fake_statistics_provider_.SetMachineStatistic(
-        ash::system::kSerialNumberKeyForTest, "test_sn");
+    fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                                  "test_sn");
     fake_statistics_provider_.SetMachineStatistic(
         ash::system::kHardwareClassKey, "test_hw");
     session_manager_client_.AddObserver(this);

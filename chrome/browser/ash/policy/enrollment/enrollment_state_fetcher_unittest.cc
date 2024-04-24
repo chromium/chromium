@@ -184,8 +184,8 @@ class EnrollmentStateFetcherTest : public testing::Test {
     DeviceCloudPolicyManagerAsh::RegisterPrefs(local_state_.registry());
     EnrollmentStateFetcher::RegisterPrefs(local_state_.registry());
 
-    statistics_provider_.SetMachineStatistic(
-        ash::system::kSerialNumberKeyForTest, kTestSerialNumber);
+    statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                             kTestSerialNumber);
     statistics_provider_.SetMachineStatistic(ash::system::kRlzBrandCodeKey,
                                              kTestBrandCode);
   }
@@ -347,8 +347,7 @@ TEST_F(EnrollmentStateFetcherTest, RlzBrandCodeMissing) {
 
 TEST_F(EnrollmentStateFetcherTest, SerialNumberMissing) {
   base::HistogramTester histograms;
-  statistics_provider_.ClearMachineStatistic(
-      ash::system::kSerialNumberKeyForTest);
+  statistics_provider_.ClearMachineStatistic(ash::system::kSerialNumberKey);
 
   const AutoEnrollmentState state = FetchEnrollmentState();
 
@@ -360,8 +359,7 @@ TEST_F(EnrollmentStateFetcherTest, SerialNumberMissing) {
 TEST_F(EnrollmentStateFetcherTest, RlzBrandCodeAndSerialNumberMissing) {
   base::HistogramTester histograms;
   statistics_provider_.ClearMachineStatistic(ash::system::kRlzBrandCodeKey);
-  statistics_provider_.ClearMachineStatistic(
-      ash::system::kSerialNumberKeyForTest);
+  statistics_provider_.ClearMachineStatistic(ash::system::kSerialNumberKey);
 
   const AutoEnrollmentState state = FetchEnrollmentState();
 

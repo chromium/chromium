@@ -42,8 +42,8 @@ class EnrollmentConfigTest : public testing::Test {
  protected:
   EnrollmentConfigTest() {
     RegisterLocalState(local_state_.registry());
-    statistics_provider_.SetMachineStatistic(
-        ash::system::kSerialNumberKeyForTest, "fake-serial");
+    statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
+                                             "fake-serial");
     statistics_provider_.SetMachineStatistic(ash::system::kHardwareClassKey,
                                              "fake-hardware");
   }
