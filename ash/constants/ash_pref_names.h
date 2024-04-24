@@ -1927,10 +1927,6 @@ inline constexpr char kAshLoginSessionStartedIsFirstSession[] =
 inline constexpr char kInputForceRespectUiGainsEnabled[] =
     "ash.input_force_respect_ui_gains_enabled";
 
-// A boolean pref indicating whether the glanceables feature is allowed to be
-// used for managed device.
-inline constexpr char kGlanceablesEnabled[] = "ash.glanceables_enabled";
-
 // An integer pref that tracks how many times (3) we'll show the user a
 // notification when an incoming event would have been remapped to a right
 // click but either the user's setting is inconsistent with the matched

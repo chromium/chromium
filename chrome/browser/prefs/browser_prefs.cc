@@ -1047,6 +1047,7 @@ inline constexpr char kDIPSTimerLastUpdate[] = "dips_timer_last_update";
 // Deprecated 04/2024
 constexpr char kMetricsUserInheritOwnerConsent[] =
     "metrics.user_inherit_owner_consent";
+constexpr char kGlanceablesEnabled[] = "ash.glanceables_enabled";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Register local state used only for migration (clearing or moving to a new
@@ -1495,6 +1496,7 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 04/2024.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kMetricsUserInheritOwnerConsent, true);
+  registry->RegisterBooleanPref(kGlanceablesEnabled, true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -2819,6 +2821,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 04/2024.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kMetricsUserInheritOwnerConsent);
+  profile_prefs->ClearPref(kGlanceablesEnabled);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

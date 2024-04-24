@@ -35,8 +35,6 @@ GlanceablesController::~GlanceablesController() {
 // static
 void GlanceablesController::RegisterUserProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kGlanceablesEnabled, true);
-
   base::Value::List default_integrations;
   default_integrations.Append(prefs::kGoogleCalendarIntegrationName);
   default_integrations.Append(prefs::kGoogleClassroomIntegrationName);
