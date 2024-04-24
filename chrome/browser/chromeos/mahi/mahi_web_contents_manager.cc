@@ -57,8 +57,6 @@ MahiWebContentsManager::MahiWebContentsManager() = default;
 MahiWebContentsManager::~MahiWebContentsManager() = default;
 
 void MahiWebContentsManager::Initialize() {
-  // TODO(b/333993475): This should be called sooner to avoid client_ is null in
-  // some cases.
   client_ = std::make_unique<
       MahiBrowserClientImpl>(/*request_content_callback=*/
                              base::BindRepeating(
