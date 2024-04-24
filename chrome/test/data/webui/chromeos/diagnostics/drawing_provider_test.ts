@@ -7,59 +7,56 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {CanvasDrawingProvider} from 'chrome://diagnostics/drawing_provider.js';
 import {constructRgba, DESTINATION_OVER, LINE_CAP, LINE_WIDTH, lookupCssVariableValue, MARK_COLOR, MARK_OPACITY, MARK_RADIUS, TRAIL_COLOR, TRAIL_MAX_OPACITY} from 'chrome://diagnostics/drawing_provider_utils.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
-
-import {MockController} from '../mock_controller.m.js';
+import {MockController} from 'chrome://webui-test/mock_controller.js';
 
 /**
  * FakeCanvasCtx class mocks various html Canvas API methods to make it easy to
  * test the drawing behavior.
  */
-class FakeCanvasCtx {
-  constructor() {
-    this.mock = [];
-  }
+class FakeCanvasCtx implements Partial<CanvasRenderingContext2D> {
+  mock: string[] = [];
 
-  getMock() {
+  getMock(): string[] {
     return this.mock;
   }
 
-  beginPath() {
+  beginPath(): void {
     this.mock.push('beginPath');
   }
 
-  stroke() {
+  stroke(): void {
     this.mock.push('stroke');
   }
 
-  fill() {
+  fill(): void {
     this.mock.push('fill');
   }
 
-  moveTo(x, y) {
+  moveTo(x: number, y: number): void {
     this.mock.push(`moveTo:${x}~${y}`);
   }
 
-  lineTo(x, y) {
+  lineTo(x: number, y: number): void {
     this.mock.push(`lineTo:${x}~${y}`);
   }
 
-  arc(x, y, r, startAngle, endAngle) {
+  arc(x: number, y: number, r: number, startAngle: number,
+      endAngle: number): void {
     this.mock.push(`arc:${x}~${y}~${r}~${startAngle}~${endAngle}`);
   }
 }
 
 suite('drawingProviderTestSuite', function() {
-  /** @type {{createFunctionMock: Function, reset: Function}} */
-  let mockController;
+  const mockController = new MockController();
 
   setup(() => {
     // Setup mock for window.getComputedStyle function to prevent test flaky.
-    mockController = new MockController();
     const mockComputedStyle =
         mockController.createFunctionMock(window, 'getComputedStyle');
     mockComputedStyle.returnValue = {
-      getPropertyValue: (valName) => {
+      getPropertyValue: (valName: string) => {
         switch (valName) {
           case TRAIL_COLOR:
             return 'rgb(220, 210, 155)';
@@ -67,6 +64,8 @@ suite('drawingProviderTestSuite', function() {
             return 'rgb(198, 179, 165)';
           case MARK_OPACITY:
             return '0.7';
+          default:
+            assertNotReached();
         }
       },
     };
@@ -76,13 +75,13 @@ suite('drawingProviderTestSuite', function() {
     mockController.reset();
   });
 
-  function initializeDrawingProvider() {
-    return new CanvasDrawingProvider(new FakeCanvasCtx());
+  function initializeDrawingProvider(): CanvasDrawingProvider {
+    return new CanvasDrawingProvider(
+        new FakeCanvasCtx() as unknown as CanvasRenderingContext2D);
   }
 
   test('SettingUpCanvasDrawingProvider', () => {
     const drawingProvider = initializeDrawingProvider();
-
     assertEquals(LINE_CAP, drawingProvider.getLineCap());
     assertEquals(LINE_WIDTH, drawingProvider.getLineWidth());
   });
@@ -104,9 +103,11 @@ suite('drawingProviderTestSuite', function() {
     drawingProvider.drawTrail(x0, y0, x1, y1, pressure);
 
     const expectedStrokeStyle = constructRgba(
-        lookupCssVariableValue(TRAIL_COLOR), TRAIL_MAX_OPACITY * pressure);
+        lookupCssVariableValue(TRAIL_COLOR), `${TRAIL_MAX_OPACITY * pressure}`);
 
-    assertDeepEquals(expectedMock, drawingProvider.getCtx().getMock());
+    assertDeepEquals(
+        expectedMock,
+        (drawingProvider.getCtx() as unknown as FakeCanvasCtx).getMock());
     assertEquals(expectedStrokeStyle, drawingProvider.getStrokeStyle());
   });
 
@@ -126,7 +127,9 @@ suite('drawingProviderTestSuite', function() {
         lookupCssVariableValue(MARK_COLOR),
         lookupCssVariableValue(MARK_OPACITY));
 
-    assertDeepEquals(expectedMock, drawingProvider.getCtx().getMock());
+    assertDeepEquals(
+        expectedMock,
+        (drawingProvider.getCtx() as unknown as FakeCanvasCtx).getMock());
     assertEquals(expectedFillStyle, drawingProvider.getFillStyle());
     assertEquals(
         DESTINATION_OVER, drawingProvider.getGlobalCompositeOperation());
