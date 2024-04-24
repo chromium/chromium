@@ -2203,6 +2203,10 @@ Node::InsertionNotificationRequest Node::InsertedInto(
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {
     cache->NodeIsConnected(this);
   }
+
+  if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+    FlatTreeParentChanged();
+  }
   return kInsertionDone;
 }
 
