@@ -334,8 +334,7 @@ void ExecuteSessionCommandOnSessionThread(
           std::list<std::string> web_view_ids;
           Status status_tmp = session->chrome->GetWebViewIds(
               &web_view_ids, session->w3c_compliant);
-          if (status_tmp.IsError() &&
-              status_tmp.code() != kChromeNotReachable) {
+          if (status_tmp.IsError()) {
             status.AddDetails("failed to check if window was closed: " +
                               status_tmp.message());
           } else if (!base::Contains(web_view_ids, session->window)) {

@@ -1511,7 +1511,6 @@ HttpHandler::PrepareStandardResponse(
       response =
           std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
-    case kChromeNotReachable:
     case kDisconnected:
     case kTabCrashed:
       response = std::make_unique<net::HttpServerResponseInfo>(
@@ -1528,6 +1527,8 @@ HttpHandler::PrepareStandardResponse(
 
     default:
       DCHECK(false);
+      // Examples of unexpected codes:
+      // * kChromeNotReachable - kSessionNotCreated must be returned instead
       response = std::make_unique<net::HttpServerResponseInfo>(
           net::HTTP_INTERNAL_SERVER_ERROR);
       break;

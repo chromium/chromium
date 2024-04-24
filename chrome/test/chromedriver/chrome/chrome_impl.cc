@@ -587,8 +587,6 @@ Status ChromeImpl::CloseTarget(const std::string& id) {
     WebViewsInfo views_info;
     status = target_utils::GetWebViewsInfo(*devtools_websocket_client_,
                                            &timeout, views_info);
-    if (status.code() == kChromeNotReachable)
-      return Status(kOk);
     if (status.code() == kDisconnected)  // The closed target has gone
       return Status(kOk);
     if (status.IsError())
