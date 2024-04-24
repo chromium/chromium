@@ -39,6 +39,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupUtils,
                                       kMoveGroupToNewWindowMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupUtils,
                                       kToggleGroupPinStateMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupUtils, kTabsTitleItem);
 
 void SavedTabGroupUtils::OpenUrlToBrowser(Browser* browser,
                                           const GURL& url,
@@ -180,6 +181,11 @@ SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
                               saved_group),
           ui::DialogModelMenuItem::Params().SetId(kDeleteGroupMenuItem))
       .AddSeparator();
+
+  if (tab_groups::IsTabGroupsSaveUIUpdateEnabled()) {
+    dialog_model.AddTitleItem(l10n_util::GetStringUTF16(IDS_TABS_TITLE_CXMENU),
+                              kTabsTitleItem);
+  }
 
   for (const SavedTabGroupTab& tab : saved_group->saved_tabs()) {
     const ui::ImageModel& image =

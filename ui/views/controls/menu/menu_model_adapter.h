@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/menu_model_delegate.h"
 #include "ui/views/controls/menu/menu_delegate.h"
+#include "ui/views/style/typography.h"
 
 namespace ui {
 class MenuModel;
@@ -95,6 +96,7 @@ class VIEWS_EXPORT MenuModelAdapter : public MenuDelegate,
   void WillShowMenu(MenuItemView* menu) override;
   void WillHideMenu(MenuItemView* menu) override;
   void OnMenuClosed(MenuItemView* menu) override;
+  std::optional<SkColor> GetLabelColor(int command_id) const override;
 
  private:
   // Implementation of BuildMenu().

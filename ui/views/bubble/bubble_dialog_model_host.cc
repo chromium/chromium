@@ -58,6 +58,9 @@ BubbleDialogModelHost::FieldType GetFieldTypeForField(
       return BubbleDialogModelHost::FieldType::kControl;
     case ui::DialogModelField::kMenuItem:
       return BubbleDialogModelHost::FieldType::kMenuItem;
+    case ui::DialogModelField::kTitleItem:
+      // No need to handle titles.
+      NOTREACHED_NORETURN();
     case ui::DialogModelField::kSection:
       // TODO(pbos): Handle nested/multiple sections.
       NOTREACHED_NORETURN();
@@ -344,6 +347,9 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
       case ui::DialogModelField::kMenuItem:
         AddOrUpdateMenuItem(field->AsMenuItem());
         break;
+      case ui::DialogModelField::kTitleItem:
+        // No need to handle titles.
+        NOTREACHED_NORETURN();
       case ui::DialogModelField::kSection:
         // TODO(pbos): Handle nested/multiple sections.
         NOTREACHED_NORETURN();

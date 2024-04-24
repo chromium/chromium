@@ -357,9 +357,10 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
                 AsView<views::View>(el)->GetBoundsInScreen().CenterPoint());
             event_generator.ClickRightButton();
           }),
-      WaitForShow(SavedTabGroupUtils::kDeleteGroupMenuItem),
+      WaitForShow(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
       WaitForShow(SavedTabGroupUtils::kToggleGroupPinStateMenuItem),
-      WaitForShow(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem));
+      WaitForShow(SavedTabGroupUtils::kDeleteGroupMenuItem),
+      WaitForShow(SavedTabGroupUtils::kTabsTitleItem));
 }
 
 // TODO(crbug.com/333956456): Resolve before enabling.
@@ -391,8 +392,10 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
       WaitForShow(STGEverythingMenu::kTabGroup),
       MoveMouseTo(STGEverythingMenu::kTabGroup), ClickMouse(ui_controls::RIGHT),
+      WaitForShow(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem),
+      EnsureNotPresent(SavedTabGroupUtils::kToggleGroupPinStateMenuItem),
       WaitForShow(SavedTabGroupUtils::kDeleteGroupMenuItem),
-      WaitForShow(SavedTabGroupUtils::kMoveGroupToNewWindowMenuItem));
+      WaitForShow(SavedTabGroupUtils::kTabsTitleItem));
 }
 
 // TODO(crbug.com/40934084): Deflake this test before enabling

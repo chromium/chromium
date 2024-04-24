@@ -11180,6 +11180,9 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </if>
 
       <!-- Saved Tab Group V2 -->
+      <message name="IDS_TABS_TITLE_CXMENU" desc="The label of the 'Tabs' title in the context menu of a saved tab group.">
+        Tabs
+      </message>
       <if expr="not use_titlecase">
         <message name="IDS_SAVED_TAB_GROUP_TABS_COUNT" desc="Title of unnamed saved tab group in Everything menu. [ICU_Syntax]">
           {NUM_TABS, plural, =1 {1 tab} other {# tabs}}

@@ -332,6 +332,16 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
       return *this;
     }
 
+    // Adds a title item. See DialogModel::AddTitleItem().
+    // TODO(pengchaocai): Refactor this method once dialog_model supports
+    // multiple DialogModelSection, when the title would be an optional member
+    // of DialogModelSection.
+    Builder& AddTitleItem(std::u16string label,
+                          ElementIdentifier id = ElementIdentifier()) {
+      model_->AddTitleItem(std::move(label), id);
+      return *this;
+    }
+
     // Adds a separator. See DialogModel::AddSeparator().
     Builder& AddSeparator() {
       model_->AddSeparator();
@@ -419,6 +429,15 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
                        DialogModelMenuItem::Params()) {
     contents_.AddMenuItem(std::move(icon), std::move(label),
                           std::move(callback), params);
+  }
+
+  // Adds a title item at the end of the dialog model.
+  // TODO(pengchaocai): Refactor this method once dialog_model supports multiple
+  // DialogModelSection, when the title would be an optional member of
+  // DialogModelSection and explicitly adding it might not be needed.
+  void AddTitleItem(std::u16string label,
+                    ElementIdentifier id = ElementIdentifier()) {
+    contents_.AddTitleItem(std::move(label), id);
   }
 
   // Adds a separator at the end of the dialog model.

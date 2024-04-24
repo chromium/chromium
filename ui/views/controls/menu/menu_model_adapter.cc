@@ -67,6 +67,17 @@ std::unique_ptr<MenuItemView> MenuModelAdapter::CreateMenu() {
   return menu;
 }
 
+std::optional<SkColor> MenuModelAdapter::GetLabelColor(int command_id) const {
+  // Use STYLE_PRIMARY for title item. This aligns with 3-dot menu title style.
+  return command_id == ui::MenuModel::kTitleId
+             ? std::make_optional(
+                   menu_->GetSubmenu()->GetColorProvider()->GetColor(
+                       views::TypographyProvider::Get().GetColorId(
+                           views::style::CONTEXT_MENU,
+                           views::style::STYLE_PRIMARY)))
+             : std::nullopt;
+}
+
 // Static.
 MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
                                                        size_t model_index,

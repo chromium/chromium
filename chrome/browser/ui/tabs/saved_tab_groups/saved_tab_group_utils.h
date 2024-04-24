@@ -33,6 +33,7 @@ class SavedTabGroupUtils {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDeleteGroupMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMoveGroupToNewWindowMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kToggleGroupPinStateMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabsTitleItem);
 
   SavedTabGroupUtils() = delete;
   SavedTabGroupUtils(const SavedTabGroupUtils&) = delete;

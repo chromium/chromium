@@ -31,9 +31,11 @@ size_t DialogModelMenuModelAdapter::GetItemCount() const {
 }
 
 MenuModel::ItemType DialogModelMenuModelAdapter::GetTypeAt(size_t index) const {
-  return GetField(index)->type() == DialogModelField::kSeparator
-             ? TYPE_SEPARATOR
-             : TYPE_COMMAND;
+  const auto type = GetField(index)->type();
+  if (type == DialogModelField::kTitleItem) {
+    return TYPE_TITLE;
+  }
+  return type == DialogModelField::kSeparator ? TYPE_SEPARATOR : TYPE_COMMAND;
 }
 
 MenuSeparatorType DialogModelMenuModelAdapter::GetSeparatorTypeAt(
@@ -44,13 +46,21 @@ MenuSeparatorType DialogModelMenuModelAdapter::GetSeparatorTypeAt(
 }
 
 int DialogModelMenuModelAdapter::GetCommandIdAt(size_t index) const {
+  const auto type = GetField(index)->type();
+  if (type == DialogModelField::kTitleItem) {
+    return ui::MenuModel::kTitleId;
+  }
   // TODO(pbos): Figure out what this should be. Combobox seems to offset by
   // 1000. Dunno why.
   return static_cast<int>(index + 1234);
 }
 
 std::u16string DialogModelMenuModelAdapter::GetLabelAt(size_t index) const {
-  return GetField(index)->AsMenuItem()->label();
+  const DialogModelField* const field = GetField(index);
+  if (field->type() == DialogModelField::kTitleItem) {
+    return field->AsTitleItem()->label();
+  }
+  return field->AsMenuItem()->label();
 }
 
 bool DialogModelMenuModelAdapter::IsItemDynamicAt(size_t index) const {
@@ -74,7 +84,11 @@ int DialogModelMenuModelAdapter::GetGroupIdAt(size_t index) const {
 }
 
 ImageModel DialogModelMenuModelAdapter::GetIconAt(size_t index) const {
-  return GetField(index)->AsMenuItem()->icon();
+  const DialogModelField* const field = GetField(index);
+  if (field->type() == DialogModelField::kTitleItem) {
+    return ImageModel();
+  }
+  return field->AsMenuItem()->icon();
 }
 
 ButtonMenuItemModel* DialogModelMenuModelAdapter::GetButtonMenuItemAt(
@@ -86,6 +100,10 @@ bool DialogModelMenuModelAdapter::IsEnabledAt(size_t index) const {
   CHECK_LT(index, GetItemCount(), base::NotFatalUntil::M123);
 
   const DialogModelField* const field = GetField(index);
+  // Non-interactive title should be disabled.
+  if (field->type() == DialogModelField::kTitleItem) {
+    return false;
+  }
   return field->type() != DialogModelField::kSeparator &&
          field->AsMenuItem()->is_enabled();
 }
@@ -95,6 +113,9 @@ ui::ElementIdentifier DialogModelMenuModelAdapter::GetElementIdentifierAt(
   CHECK_LT(index, GetItemCount(), base::NotFatalUntil::M123);
 
   const DialogModelField* const field = GetField(index);
+  if (field->type() == DialogModelField::kTitleItem) {
+    return field->id();
+  }
   return field->AsMenuItem()->id();
 }
 

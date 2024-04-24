@@ -139,6 +139,11 @@ const DialogModelMenuItem* DialogModelField::AsMenuItem() const {
   return static_cast<const DialogModelMenuItem*>(this);
 }
 
+const DialogModelTitleItem* DialogModelField::AsTitleItem() const {
+  CHECK_EQ(type_, kTitleItem, base::NotFatalUntil::M123);
+  return static_cast<const DialogModelTitleItem*>(this);
+}
+
 DialogModelTextfield* DialogModelField::AsTextfield() {
   CHECK_EQ(type_, kTextfield, base::NotFatalUntil::M123);
   return static_cast<DialogModelTextfield*>(this);
@@ -256,6 +261,13 @@ DialogModelSeparator::DialogModelSeparator()
                        DialogModelField::Params()) {}
 
 DialogModelSeparator::~DialogModelSeparator() = default;
+
+DialogModelTitleItem::DialogModelTitleItem(std::u16string label,
+                                           ElementIdentifier id)
+    : DialogModelField(kTitleItem, id, {}, DialogModelField::Params()),
+      label_(std::move(label)) {}
+
+DialogModelTitleItem::~DialogModelTitleItem() = default;
 
 DialogModelTextfield::Params::Params() = default;
 DialogModelTextfield::Params::~Params() = default;
@@ -398,6 +410,11 @@ void DialogModelSection::AddMenuItem(
     const DialogModelMenuItem::Params& params) {
   AddField(std::make_unique<DialogModelMenuItem>(
       std::move(icon), std::move(label), std::move(callback), params));
+}
+
+void DialogModelSection::AddTitleItem(std::u16string label,
+                                      ElementIdentifier id) {
+  AddField(std::make_unique<DialogModelTitleItem>(std::move(label), id));
 }
 
 void DialogModelSection::AddTextfield(
