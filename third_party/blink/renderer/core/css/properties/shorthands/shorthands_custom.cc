@@ -3662,32 +3662,6 @@ const CSSValue* ViewTimeline::CSSValueFromComputedStyleInternal(
       style.ViewTimelineName() ? style.ViewTimelineName()->GetNames()
                                : HeapVector<Member<const ScopedCSSName>>{};
   const Vector<TimelineAxis>& axis_vector = style.ViewTimelineAxis();
-  return CSSValueForTimelineShorthand(name_vector, axis_vector,
-                                      /* inset_vector */ nullptr, style);
-}
-
-bool AlternativeViewTimelineWithInset::ParseShorthand(
-    bool important,
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  return ParseTimelineShorthand(
-      CSSPropertyID::kAlternativeViewTimelineWithInset,
-      alternativeViewTimelineWithInsetShorthand(), important, range, context,
-      local_context, properties);
-}
-
-const CSSValue*
-AlternativeViewTimelineWithInset::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  const HeapVector<Member<const ScopedCSSName>>& name_vector =
-      style.ViewTimelineName() ? style.ViewTimelineName()->GetNames()
-                               : HeapVector<Member<const ScopedCSSName>>{};
-  const Vector<TimelineAxis>& axis_vector = style.ViewTimelineAxis();
   const Vector<TimelineInset>& inset_vector = style.ViewTimelineInset();
   return CSSValueForTimelineShorthand(name_vector, axis_vector, &inset_vector,
                                       style);

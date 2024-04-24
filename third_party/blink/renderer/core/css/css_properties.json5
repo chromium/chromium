@@ -7930,16 +7930,9 @@
     },
     {
       name: "view-timeline",
-      longhands: ["view-timeline-name", "view-timeline-axis"],
-      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "ScrollTimeline",
-    },
-    {
-      name: "-alternative-view-timeline-with-inset",
-      alternative_of: "view-timeline",
       longhands: ["view-timeline-name", "view-timeline-axis", "view-timeline-inset"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSViewTimelineInsetShorthand",
+      runtime_flag: "ScrollTimeline",
     },
     {
       name: "-webkit-border-after",

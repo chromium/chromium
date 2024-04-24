@@ -691,8 +691,6 @@ String StylePropertySerializer::SerializeShorthand(
       return PageBreakPropertyValue(pageBreakInsideShorthand());
     case CSSPropertyID::kViewTimeline:
       return ViewTimelineValue();
-    case CSSPropertyID::kAlternativeViewTimelineWithInset:
-      return AlternativeViewTimelineWithInsetValue();
     case CSSPropertyID::kWhiteSpace:
       return WhiteSpaceValue();
     case CSSPropertyID::kWebkitColumnBreakAfter:
@@ -938,23 +936,14 @@ String StylePropertySerializer::ScrollTimelineValue() const {
 }
 
 String StylePropertySerializer::ViewTimelineValue() const {
-  CHECK_EQ(viewTimelineShorthand().length(), 2u);
+  CHECK_EQ(viewTimelineShorthand().length(), 3u);
   CHECK_EQ(viewTimelineShorthand().properties()[0],
            &GetCSSPropertyViewTimelineName());
   CHECK_EQ(viewTimelineShorthand().properties()[1],
            &GetCSSPropertyViewTimelineAxis());
-  return TimelineValue(viewTimelineShorthand());
-}
-
-String StylePropertySerializer::AlternativeViewTimelineWithInsetValue() const {
-  CHECK_EQ(alternativeViewTimelineWithInsetShorthand().length(), 3u);
-  CHECK_EQ(alternativeViewTimelineWithInsetShorthand().properties()[0],
-           &GetCSSPropertyViewTimelineName());
-  CHECK_EQ(alternativeViewTimelineWithInsetShorthand().properties()[1],
-           &GetCSSPropertyViewTimelineAxis());
-  CHECK_EQ(alternativeViewTimelineWithInsetShorthand().properties()[2],
+  CHECK_EQ(viewTimelineShorthand().properties()[2],
            &GetCSSPropertyViewTimelineInset());
-  return TimelineValue(alternativeViewTimelineWithInsetShorthand());
+  return TimelineValue(viewTimelineShorthand());
 }
 
 namespace {

@@ -64,22 +64,6 @@ TEST(CSSPropertyNamesTest, AlternativeAnimationDelay) {
   }
 }
 
-TEST(CSSPropertyNamesTest, AlternativeViewTimelineWithInset) {
-  {
-    ScopedCSSViewTimelineInsetShorthandForTest feature(false);
-    EXPECT_EQ(CSSPropertyID::kViewTimeline,
-              UnresolvedCSSPropertyID(/* execution_context */ nullptr,
-                                      "view-timeline"));
-  }
-
-  {
-    ScopedCSSViewTimelineInsetShorthandForTest feature(true);
-    EXPECT_EQ(CSSPropertyID::kAlternativeViewTimelineWithInset,
-              UnresolvedCSSPropertyID(/* execution_context */ nullptr,
-                                      "view-timeline"));
-  }
-}
-
 TEST(CSSPropertyNamesTest, WebkitMaskSize) {
   CSSPropertyID property_id = UnresolvedCSSPropertyID(
       /* execution_context */ nullptr, "-webkit-mask-size");

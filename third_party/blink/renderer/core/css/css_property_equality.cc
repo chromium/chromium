@@ -1237,7 +1237,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kTextSpacing:
     case CSSPropertyID::kTransition:
     case CSSPropertyID::kViewTimeline:
-    case CSSPropertyID::kAlternativeViewTimelineWithInset:
     case CSSPropertyID::kWebkitColumnBreakAfter:
     case CSSPropertyID::kWebkitColumnBreakBefore:
     case CSSPropertyID::kWebkitColumnBreakInside:
