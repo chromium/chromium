@@ -2478,13 +2478,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PasswordManager.PasswordSettingsMigrationFailed.{Setting}.APIError"
+    name="PasswordManager.PasswordSettingsMigrationFailed.{Setting}.APIError2"
     enum="PasswordStoreAndroidBackendAPIError" expires_after="2024-09-29">
   <owner>sygiet@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     The error codes returned by the GMS Core Password preferences 1P API while
     attempting to do migration for {Setting}. This is only recorded on Android.
+    Replaces
+    &quot;PasswordManager.PasswordSettingsMigrationFailed.{Setting}.APIError&quot;
+    which was overly recorded in rare cases if fetching a password setting fails
+    after the migration was just marked as done.
   </summary>
   <token key="Setting" variants="PasswordManagerSetting"/>
 </histogram>
