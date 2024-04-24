@@ -621,11 +621,24 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
             autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup);
       }
       break;
-    // TODO(b/333929225): Implement the following 3 new compose child
-    // suggestions.
     case PopupItemId::kComposeDisable:
+      if (AutofillComposeDelegate* delegate =
+              manager_->client().GetComposeDelegate()) {
+        delegate->DisableCompose();
+      }
+      break;
     case PopupItemId::kComposeGoToSettings:
+      if (AutofillComposeDelegate* delegate =
+              manager_->client().GetComposeDelegate()) {
+        delegate->GoToSettings();
+      }
+      break;
     case PopupItemId::kComposeNeverShowOnThisSiteAgain:
+      if (AutofillComposeDelegate* delegate =
+              manager_->client().GetComposeDelegate()) {
+        delegate->NeverShowComposeForOrigin(
+            manager_->client().GetLastCommittedPrimaryMainFrameOrigin());
+      }
       break;
     case PopupItemId::kInsecureContextPaymentDisabledMessage:
     case PopupItemId::kMixedFormMessage:

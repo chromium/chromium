@@ -23,6 +23,7 @@
 #include "components/compose/core/browser/config.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/origin.h"
 
 namespace compose {
 
@@ -212,6 +213,18 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
   }
 
   return suggestion;
+}
+
+void ComposeManagerImpl::NeverShowComposeForOrigin(const url::Origin& origin) {
+  // TODO(b/333929225): Implement.
+}
+
+void ComposeManagerImpl::DisableCompose() {
+  // TODO(b/333929225): Implement.
+}
+
+void ComposeManagerImpl::GoToSettings() {
+  // TODO(b/333929225): Implement.
 }
 
 }  // namespace compose

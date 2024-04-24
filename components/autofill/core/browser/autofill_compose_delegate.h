@@ -11,6 +11,10 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/unique_ids.h"
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace autofill {
 
 class AutofillDriver;
@@ -41,6 +45,15 @@ class AutofillComposeDelegate {
                            FormGlobalId form_id,
                            FieldGlobalId field_id,
                            UiEntryPoint ui_entry_point) = 0;
+
+  // Disables the compose feature for `origin`.
+  virtual void NeverShowComposeForOrigin(const url::Origin& origin) = 0;
+
+  // Disables the compose feature everywhere.
+  virtual void DisableCompose() = 0;
+
+  // Navigates the user to the compose settings page.
+  virtual void GoToSettings() = 0;
 
   // Returns a suggestion if the compose service is available for
   // `field`.
