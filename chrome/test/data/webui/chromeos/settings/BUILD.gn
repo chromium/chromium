@@ -117,6 +117,7 @@ build_webui_tests("build") {
     "device_page/power_test.ts",
     "device_page/storage_test.ts",
     "device_page/stylus_test.ts",
+    "device_page/test_audio_and_captions_page_browser_proxy.ts",
     "device_page/test_device_page_browser_proxy.ts",
 
     "guest_os/guest_os_shared_paths_test.ts",

@@ -219,6 +219,7 @@ export {SettingsMultideviceWifiSyncDisabledLinkElement} from './multidevice_page
 export {NearbyShareReceiveDialogElement} from './nearby_share_page/nearby_share_receive_dialog.js';
 export {SettingsNearbyShareSubpageElement} from './nearby_share_page/nearby_share_subpage.js';
 export {SettingsAudioAndCaptionsPageElement} from './os_a11y_page/audio_and_captions_page.js';
+export {AudioAndCaptionsPageBrowserProxy, AudioAndCaptionsPageBrowserProxyImpl} from './os_a11y_page/audio_and_captions_page_browser_proxy.js';
 export {BluetoothBrailleDisplayListener, BluetoothBrailleDisplayManager} from './os_a11y_page/bluetooth_braille_display_manager.js';
 export {BluetoothBrailleDisplayUiElement} from './os_a11y_page/bluetooth_braille_display_ui.js';
 export {ChangeDictationLocaleDialog, DictationLocaleOption} from './os_a11y_page/change_dictation_locale_dialog.js';

@@ -433,6 +433,12 @@ export class SettingsAudioElement extends SettingsAudioElementBase {
   private computePowerSoundsHidden_(): boolean {
     return !this.batteryStatus_?.present;
   }
+
+  private onDeviceStartupSoundRowClicked_(): void {
+    this.startupSoundEnabled_ = !this.startupSoundEnabled_;
+    this.audioAndCaptionsBrowserProxy_.setStartupSoundEnabled(
+        this.startupSoundEnabled_);
+  }
 }
 
 declare global {

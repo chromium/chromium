@@ -245,7 +245,8 @@
         deep-link-focus-id$="[[Setting.kChargingSounds]]"
         hidden$="[[powerSoundsHidden_]]">
     </settings-toggle-button>
-    <div class="settings-box start-padding continuation">
+    <div class="settings-box start-padding continuation"
+        on-click="onDeviceStartupSoundRowClicked_" actionable-row>
       <div id="deviceStartupSoundEnabledLabel"
           class="start settings-box-text">
         $i18n{deviceStartupSoundLabel}

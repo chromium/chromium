@@ -4,15 +4,20 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {Router, routes, SettingsAudioElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {AudioAndCaptionsPageBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import {CrToggleElement, Router, routes, SettingsAudioElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestAudioAndCaptionsPageBrowserProxy} from './test_audio_and_captions_page_browser_proxy.js';
+
 suite('<settings-audio>', () => {
   let page: SettingsAudioElement;
+  let browserProxy: TestAudioAndCaptionsPageBrowserProxy;
 
   function getFakePrefs() {
     return {
@@ -36,6 +41,10 @@ suite('<settings-audio>', () => {
   }
 
   async function initPage() {
+    // Set up test browser proxy.
+    browserProxy = new TestAudioAndCaptionsPageBrowserProxy();
+    AudioAndCaptionsPageBrowserProxyImpl.setInstanceForTesting(browserProxy);
+
     page = document.createElement('settings-audio');
     page.set('prefs', getFakePrefs());
     document.body.appendChild(page);
@@ -129,4 +138,32 @@ suite('<settings-audio>', () => {
           assertFalse(isVisible(lowBatterySoundToggle));
         });
   });
+
+  test(
+      'Clicking on the device startup sound toggle or row updates the state',
+      async () => {
+        await initPage();
+
+        const deviceStartupSoundToggle = strictQuery(
+            '#deviceStartupSoundToggle', page.shadowRoot, CrToggleElement);
+        assertTrue(isVisible(deviceStartupSoundToggle));
+        assertFalse(deviceStartupSoundToggle.checked);
+
+        deviceStartupSoundToggle.click();
+        assertTrue(deviceStartupSoundToggle.checked);
+
+        deviceStartupSoundToggle.click();
+        assertFalse(deviceStartupSoundToggle.checked);
+
+        const deviceStartupSoundToggleRow = strictQuery(
+            '#deviceSoundsSection > .settings-box', page.shadowRoot,
+            HTMLDivElement);
+
+        // Clicking on the row should toggle the checkbox.
+        deviceStartupSoundToggleRow.click();
+        assertTrue(deviceStartupSoundToggle.checked);
+
+        deviceStartupSoundToggleRow.click();
+        assertFalse(deviceStartupSoundToggle.checked);
+      });
 });
